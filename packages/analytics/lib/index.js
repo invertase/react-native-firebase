@@ -17,6 +17,7 @@
 
 import {
   isAlphaNumericUnderscore,
+  isE164PhoneNumber,
   isIOS,
   isNull,
   isNumber,
@@ -85,6 +86,7 @@ export {
   logViewSearchResults,
   setDefaultEventParameters,
   initiateOnDeviceConversionMeasurementWithEmailAddress,
+  initiateOnDeviceConversionMeasurementWithPhoneNumber,
 } from './modular/index';
 
 const ReservedEventNames = [
@@ -768,6 +770,20 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     }
 
     return this.native.initiateOnDeviceConversionMeasurementWithEmailAddress(emailAddress);
+  }
+
+  initiateOnDeviceConversionMeasurementWithPhoneNumber(phoneNumber) {
+    if (!isE164PhoneNumber(phoneNumber)) {
+      throw new Error(
+        "firebase.analytics().initiateOnDeviceConversionMeasurementWithPhoneNumber(*) 'phoneNumber' expected a string value in E.164 format.",
+      );
+    }
+
+    if (!isIOS) {
+      return;
+    }
+
+    return this.native.initiateOnDeviceConversionMeasurementWithPhoneNumber(phoneNumber);
   }
 }
 

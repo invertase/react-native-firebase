@@ -1718,6 +1718,15 @@ export namespace FirebaseAnalyticsTypes {
      * @param emailAddress email address, properly formatted complete with domain name e.g, 'user@example.com'
      */
     initiateOnDeviceConversionMeasurementWithEmailAddress(emailAddress: string): Promise<void>;
+
+    /**
+     * start privacy-sensitive on-device conversion management.
+     * This is iOS-only.
+     * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
+     *
+     * @param phoneNumber phone number in E.164 format - that is a leading + sign, then up to 15 digits, no dashes or spaces.
+     */
+    initiateOnDeviceConversionMeasurementWithPhoneNumber(phoneNumber: string): Promise<void>;
   }
 
   /**
