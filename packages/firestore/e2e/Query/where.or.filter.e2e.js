@@ -1163,7 +1163,6 @@ describe('firestore().collection().where(OR Filters)', function () {
 
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        console.error('LOVE', error.stack);
         error.message.should.containEql("'fieldPath' Invalid field path");
         return Promise.resolve();
       }
@@ -1854,7 +1853,7 @@ describe('firestore().collection().where(OR Filters)', function () {
     });
 
     it('returns with where "==" & "!=" filter', async function () {
-      const { getFirestore, collection, where, or, and, query, addDoc, getDocs } = firestoreModular;
+      const { getFirestore, collection, where, and, query, addDoc, getDocs } = firestoreModular;
       const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals`);
 
       const expected = { foo: 'bar', baz: 'baz' };
@@ -2154,8 +2153,7 @@ describe('firestore().collection().where(OR Filters)', function () {
     });
 
     it('backwards compatible whilst chaining Filter', async function () {
-      const { getFirestore, collection, where, or, and, query, addDoc, getDocs, Filter } =
-        firestoreModular;
+      const { getFirestore, collection, where, or, and, query, addDoc, getDocs } = firestoreModular;
       const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals`);
 
       const match = Date.now();
@@ -2195,8 +2193,7 @@ describe('firestore().collection().where(OR Filters)', function () {
     });
 
     it('backwards compatible whilst chaining AND Filter', async function () {
-      const { getFirestore, collection, where, or, and, query, addDoc, getDocs, Filter } =
-        firestoreModular;
+      const { getFirestore, collection, where, or, and, query, addDoc, getDocs } = firestoreModular;
       const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals`);
 
       const match = Date.now();
