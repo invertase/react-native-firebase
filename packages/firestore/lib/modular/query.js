@@ -6,6 +6,8 @@
  * @typedef {import('..').FirebaseFirestoreTypes.QuerySnapshot} QuerySnapshot
  * @typedef {import('..').FirebaseFirestoreTypes.Query} Query
  * @typedef {import('..').FirebaseFirestoreTypes.WhereFilterOp} WhereFilterOp
+ * @typedef {import('../FirestoreFilter')._Filter} _Filter
+ * @typedef {import('./query').IQueryConstraint} IQueryConstraint
  * @typedef {import('./query').OrderByDirection} OrderByDirection
  * @typedef {import('./query').QueryFieldFilterConstraint} QueryFieldFilterConstraint
  * @typedef {import('./query').QueryLimitConstraint} QueryLimitConstraint
@@ -17,7 +19,7 @@
 import { _Filter, Filter } from '../FirestoreFilter';
 
 /**
- * @implements {import('./query').IQueryConstraint}
+ * @implements {IQueryConstraint}
  */
 class QueryConstraint {
   constructor(type, ...args) {
@@ -59,7 +61,7 @@ export function where(fieldPath, opStr, value) {
 
 /**
  * @param {QueryFieldFilterConstraint[]} queries
- * @returns {import('../FirestoreFilter')._Filter[]}
+ * @returns {_Filter[]}
  */
 function getFilterOps(queries) {
   const ops = [];
