@@ -1644,8 +1644,6 @@ describe('firestore().collection().where(OR Filters)', function () {
         query(colRef, or(where('foo', '>', 2), where('foo', '==', 30))),
       );
 
-      console.error((await getDocs(colRef)).forEach(doc => console.log(doc.data())));
-
       snapshot.size.should.eql(2);
       snapshot.forEach(s => {
         s.data().should.eql(jet.contextify(expected));
