@@ -176,6 +176,7 @@ If you're using an older version of React Native without autolinking support, or
 you can follow the manual installation steps for [iOS](/install-ios) and [Android](/install-android).
 
 ---
+
 ## Expo
 
 Integration with Expo is possible in both bare workflow and [custom managed workflow](https://docs.expo.io/workflow/customizing/) via [config plugins](https://docs.expo.io/guides/config-plugins/).
@@ -214,7 +215,7 @@ The `app.json` for integration that included the optional crashlytics and perfor
 }
 ```
 
-> Listing config plugins (the `"plugins"` array in the JSON above) is only required for React Native Firebase modules that involve native installation steps - e.g. modifying the Xcode project, `Podfile`, `build.gradle`, `AndroidManifest.xml` etc. React Native Firebase packages without native steps will work out of the box.  Not all packages have Expo config plugins provided yet. A React Native Firebase module has config plugin support if it contains an `app.plugin.js` file in its package directory.
+> Listing config plugins (the `"plugins"` array in the JSON above) is only required for React Native Firebase modules that involve native installation steps - e.g. modifying the Xcode project, `Podfile`, `build.gradle`, `AndroidManifest.xml` etc. React Native Firebase packages without native steps will work out of the box. Not all packages have Expo config plugins provided yet. A React Native Firebase module has config plugin support if it contains an `app.plugin.js` file in its package directory.
 
 For iOS only, since `firebase-ios-sdk` requires `use_frameworks` please configure [expo-build-properties](https://docs.expo.dev/versions/latest/sdk/build-properties/#pluginconfigtypeios) and add the following entry to their `plugins` array in `app.json`:
 
@@ -332,4 +333,3 @@ To increase throughput, you can tune the thread pool executor via `firebase.json
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `android_task_executor_maximum_pool_size`  | Maximum pool size of ThreadPoolExecutor. Defaults to `1`. Larger values typically improve performance when executing large numbers of asynchronous tasks, e.g. Firestore queries. Setting this value to `0` completely disables the pooled executor and all tasks execute in serial per module. |
 | `android_task_executor_keep_alive_seconds` | Keep-alive time of ThreadPoolExecutor, in seconds. Defaults to `3`. Excess threads in the pool executor will be terminated if they have been idle for more than the keep-alive time. This value doesn't have any effect when the maximum pool size is lower than `2`.                           |
-
