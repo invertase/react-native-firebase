@@ -52,7 +52,7 @@ file within your project.
 
 > The debug signing certificate is optional to use Firebase with your app, but is required for Dynamic Links, Invites and Phone Authentication.
 > To generate a certificate run `cd android && ./gradlew signingReport`. This generates two variant keys.
-> You have to copy both 'SHA1' and 'SHA-256' keys that belong to the 'debugAndroidTest' variant key option.
+> You have to copy **both** 'SHA1' and 'SHA-256' keys that belong to the 'debugAndroidTest' variant key option.
 > Then, you can add those keys to the 'SHA certificate fingerprints' on your app in Firebase console.
 
 Download the `google-services.json` file and place it inside of your project at the following location: `/android/app/google-services.json`.
