@@ -182,6 +182,7 @@ describe('remoteMessage modular', function () {
             await firebase.messaging().sendMessage({
               data: {
                 foo: 'bar',
+                fooObject: { image: 'testURL' },
               },
             });
           } else {
@@ -423,6 +424,7 @@ describe('remoteMessage modular', function () {
             await sendMessage(getMessaging(), {
               data: {
                 foo: 'bar',
+                fooObject: { image: 'testURL' },
               },
             });
           } else {

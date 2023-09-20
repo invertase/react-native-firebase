@@ -108,7 +108,7 @@ export namespace FirebaseMessagingTypes {
     /**
      * Any additional data sent with the message.
      */
-    data?: { [key: string]: string };
+    data?: { [key: string]: string | object };
 
     /**
      * Additional NotificationPayload data sent with the message
