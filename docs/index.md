@@ -188,7 +188,7 @@ If you're using [Bare Workflow](https://docs.expo.io/introduction/managed-vs-bar
 
 ### Expo Managed Workflow
 
-You must use a [custom development client](https://docs.expo.dev/clients/getting-started/). If starting a new app, you can run `npx create-react-native-app -t with-dev-client` to have this set up automatically. It will also allow you to use the Expo Application Service (EAS Build) do the Android and iOS builds.
+Since Expo Go will not work with react-native-firebase, the suggested workflow is to use a [custom development client](https://docs.expo.dev/clients/getting-started/). If starting a new app, you can run `npx create-react-native-app -t with-dev-client` to have this set up automatically. It will also allow you to use the Expo Application Service (EAS Build) do the Android and iOS builds.
 
 After installing the `@react-native-firebase/app` NPM package, add the [config plugin](https://docs.expo.io/guides/config-plugins/) to the [`plugins`](https://docs.expo.io/versions/latest/config/app/#plugins) array of your `app.json` or `app.config.js`.
 
