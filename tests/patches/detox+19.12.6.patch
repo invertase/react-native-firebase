@@ -135,3 +135,16 @@ index fb4b820..d2dc87d 100644
          notifyIdle()
          return true
      }
+diff --git a/node_modules/detox/src/devices/common/drivers/ios/tools/AppleSimUtils.js b/node_modules/detox/src/devices/common/drivers/ios/tools/AppleSimUtils.js
+index 585c99b..46e4b83 100644
+--- a/node_modules/detox/src/devices/common/drivers/ios/tools/AppleSimUtils.js
++++ b/node_modules/detox/src/devices/common/drivers/ios/tools/AppleSimUtils.js
+@@ -272,7 +272,7 @@ class AppleSimUtils {
+       // want to make sure it isn't now.
+       if (err.code === 3 &&
+           (err.stderr.includes(`the app is not currently running`) ||
+-           err.stderr.includes(`The operation couldn’t be completed. found nothing to terminate`))) {
++           err.stderr.includes(`found nothing to terminate`))) {
+         return;
+       }
+ 
