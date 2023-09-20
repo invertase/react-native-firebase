@@ -1212,10 +1212,9 @@ describe(' firestore().collection().where(AND Filters)', function () {
       });
     });
 
-    // FIXME: Works in isolation, but fails in suite
-    xit('returns with where "in" filter', async function () {
-      const { getFirestore, collection, addDoc, getDocs, query, where } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/in-modular`);
+    it('returns with where "in" filter', async function () {
+      const { getFirestore, collection, addDoc, getDocs, query, where, orderBy } = firestoreModular;
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/where-in-modular`);
       const expected1 = 'bar';
       const expected2 = 'baz';
       const data1 = { foo: expected1 };
@@ -1228,7 +1227,9 @@ describe(' firestore().collection().where(AND Filters)', function () {
         addDoc(colRef, data2),
       ]);
 
-      const snapshot = await getDocs(query(colRef, where('foo', 'in', [expected1, expected2])));
+      const snapshot = await getDocs(
+        query(colRef, where('foo', 'in', [expected1, expected2]), orderBy('foo')),
+      );
 
       snapshot.size.should.eql(2);
       snapshot.docs[0].data().foo.should.eql(expected1);
