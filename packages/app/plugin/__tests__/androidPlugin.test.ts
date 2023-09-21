@@ -50,7 +50,7 @@ describe('Config Plugin Android Tests', function () {
     expect(manifestApplication['meta-data']).toContainEqual({
       $: {
         'android:name': 'com.google.firebase.messaging.default_notification_color',
-        'android:resource': '@color/notification_color',
+        'android:resource': '@color/notification_icon_color',
         'tools:replace': 'android:resource',
       },
     });
