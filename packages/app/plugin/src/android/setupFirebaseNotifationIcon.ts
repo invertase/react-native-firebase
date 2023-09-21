@@ -69,7 +69,7 @@ export function setFireBaseMessagingAndroidManifest(
     metaData.push({
       $: {
         'android:name': 'com.google.firebase.messaging.default_notification_color',
-        'android:resource': '@color/notification_color',
+        'android:resource': '@color/notification_icon_color',
         // @react-native-firebase/messaging will automatically configure the notification color from the 'firebase.json' file, setting 'tools:replace' = 'android:resource' to overwrite it.
         // @ts-ignore
         'tools:replace': 'android:resource',

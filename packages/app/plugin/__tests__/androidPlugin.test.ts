@@ -72,7 +72,7 @@ describe('Config Plugin Android Tests', function () {
     expect(manifestApplication['meta-data']).not.toContainEqual({
       $: {
         'android:name': 'com.google.firebase.messaging.default_notification_icon',
-        'android:resource': '@drawable/notification_icon',
+        'android:resource': '@drawable/notification_icon_color',
         'tools:replace': 'android:resource',
       },
     });
