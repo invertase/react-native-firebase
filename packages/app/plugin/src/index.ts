@@ -4,6 +4,7 @@ import {
   withApplyGoogleServicesPlugin,
   withBuildscriptDependency,
   withCopyAndroidGoogleServices,
+  withExpoPluginFirebaseNotification,
 } from './android';
 import { withFirebaseAppDelegate, withIosGoogleServicesFile } from './ios';
 
@@ -20,6 +21,7 @@ const withRnFirebaseApp: ConfigPlugin = config => {
     withBuildscriptDependency,
     withApplyGoogleServicesPlugin,
     withCopyAndroidGoogleServices,
+    withExpoPluginFirebaseNotification,
   ]);
 };
 
