@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.5.0](https://github.com/invertase/react-native-firebase/compare/v18.4.0...v18.5.0) (2023-09-22)
+
+### Features
+
+- **ios:** add initiateOnDeviceConversionMeasurementWithPhoneNumber ([80ac07e](https://github.com/invertase/react-native-firebase/commit/80ac07e207bad7f31a4805edb26e350f892fc5bf))
+
+### Bug Fixes
+
+- **app, sdks:** adopt ios sdk 10.15.0 / android sdk 32.3.1 ([acc58da](https://github.com/invertase/react-native-firebase/commit/acc58da42bb471d1973645f2a2feffe180705c19))
+
 ## [18.4.0](https://github.com/invertase/react-native-firebase/compare/v18.3.2...v18.4.0) (2023-09-11)
 
 **Note:** Version bump only for package @react-native-firebase/app

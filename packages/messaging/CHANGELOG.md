@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.5.0](https://github.com/invertase/react-native-firebase/compare/v18.4.0...v18.5.0) (2023-09-22)
+
+### Bug Fixes
+
+- **messaging:** RemoteMessage.data may be JSON-serializable object as well as string ([#7316](https://github.com/invertase/react-native-firebase/issues/7316)) ([7945a24](https://github.com/invertase/react-native-firebase/commit/7945a2485a4a93fa40c509e518da23317a82b489))
+
 ## [18.4.0](https://github.com/invertase/react-native-firebase/compare/v18.3.2...v18.4.0) (2023-09-11)
 
 **Note:** Version bump only for package @react-native-firebase/messaging

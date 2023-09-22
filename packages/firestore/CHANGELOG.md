@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.5.0](https://github.com/invertase/react-native-firebase/compare/v18.4.0...v18.5.0) (2023-09-22)
+
+### Features
+
+- **firestore:** V9 modular APIs ([#7235](https://github.com/invertase/react-native-firebase/issues/7235)) ([29d81c4](https://github.com/invertase/react-native-firebase/commit/29d81c4d8023f5c0d9c883a8b73b94ad393c8d44))
+
 ## [18.4.0](https://github.com/invertase/react-native-firebase/compare/v18.3.2...v18.4.0) (2023-09-11)
 
 **Note:** Version bump only for package @react-native-firebase/firestore

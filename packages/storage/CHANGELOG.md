@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.5.0](https://github.com/invertase/react-native-firebase/compare/v18.4.0...v18.5.0) (2023-09-22)
+
+### Bug Fixes
+
+- **storage, ios:** remove '443' port from iOS download URLs ([5c687a8](https://github.com/invertase/react-native-firebase/commit/5c687a82dc8272a0d62c2b63cc0206ae6ef99d2f))
+
 ## [18.4.0](https://github.com/invertase/react-native-firebase/compare/v18.3.2...v18.4.0) (2023-09-11)
 
 ### Bug Fixes
