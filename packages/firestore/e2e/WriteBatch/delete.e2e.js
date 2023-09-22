@@ -17,39 +17,83 @@
 const COLLECTION = 'firestore';
 
 describe('firestore.WriteBatch.delete()', function () {
-  it('throws if a DocumentReference instance is not provided', function () {
-    try {
-      firebase.firestore().batch().delete(123);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'documentRef' expected instance of a DocumentReference");
-      return Promise.resolve();
-    }
+  describe('v8 compatibility', function () {
+    it('throws if a DocumentReference instance is not provided', function () {
+      try {
+        firebase.firestore().batch().delete(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'documentRef' expected instance of a DocumentReference");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if a DocumentReference firestore instance is different', function () {
+      try {
+        const app2 = firebase.app('secondaryFromNative');
+        const docRef = firebase.firestore(app2).doc(`${COLLECTION}/foo`);
+
+        firebase.firestore().batch().delete(docRef);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'documentRef' provided DocumentReference is from a different Firestore instance",
+        );
+        return Promise.resolve();
+      }
+    });
+
+    it('adds the DocumentReference to the internal writes', function () {
+      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+      const wb = firebase.firestore().batch().delete(docRef);
+      wb._writes.length.should.eql(1);
+      const expected = {
+        path: `${COLLECTION}/foo`,
+        type: 'DELETE',
+      };
+      wb._writes[0].should.eql(jet.contextify(expected));
+    });
   });
 
-  it('throws if a DocumentReference firestore instance is different', function () {
-    try {
-      const app2 = firebase.app('secondaryFromNative');
-      const docRef = firebase.firestore(app2).doc(`${COLLECTION}/foo`);
+  describe('modular', function () {
+    it('throws if a DocumentReference instance is not provided', function () {
+      const { getFirestore, writeBatch } = firestoreModular;
+      try {
+        writeBatch(getFirestore()).delete(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'documentRef' expected instance of a DocumentReference");
+        return Promise.resolve();
+      }
+    });
 
-      firebase.firestore().batch().delete(docRef);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql(
-        "'documentRef' provided DocumentReference is from a different Firestore instance",
-      );
-      return Promise.resolve();
-    }
-  });
+    it('throws if a DocumentReference firestore instance is different', function () {
+      const { getFirestore, doc, writeBatch } = firestoreModular;
+      try {
+        const app2 = firebase.app('secondaryFromNative');
+        const docRef = doc(getFirestore(app2), `${COLLECTION}/foo`);
 
-  it('adds the DocumentReference to the internal writes', function () {
-    const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
-    const wb = firebase.firestore().batch().delete(docRef);
-    wb._writes.length.should.eql(1);
-    const expected = {
-      path: `${COLLECTION}/foo`,
-      type: 'DELETE',
-    };
-    wb._writes[0].should.eql(jet.contextify(expected));
+        writeBatch(getFirestore()).delete(docRef);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'documentRef' provided DocumentReference is from a different Firestore instance",
+        );
+        return Promise.resolve();
+      }
+    });
+
+    it('adds the DocumentReference to the internal writes', function () {
+      const { getFirestore, doc, writeBatch } = firestoreModular;
+      const db = getFirestore();
+      const docRef = doc(db, `${COLLECTION}/foo`);
+      const wb = writeBatch(db).delete(docRef);
+      wb._writes.length.should.eql(1);
+      const expected = {
+        path: `${COLLECTION}/foo`,
+        type: 'DELETE',
+      };
+      wb._writes[0].should.eql(jet.contextify(expected));
+    });
   });
 });

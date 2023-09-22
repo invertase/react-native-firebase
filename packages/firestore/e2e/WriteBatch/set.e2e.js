@@ -17,62 +17,255 @@
 const COLLECTION = 'firestore';
 
 describe('firestore.WriteBatch.set()', function () {
-  it('throws if a DocumentReference instance is not provided', function () {
-    try {
-      firebase.firestore().batch().set(123);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'documentRef' expected instance of a DocumentReference");
-      return Promise.resolve();
-    }
-  });
+  describe('v8 compatibility', function () {
+    it('throws if a DocumentReference instance is not provided', function () {
+      try {
+        firebase.firestore().batch().set(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'documentRef' expected instance of a DocumentReference");
+        return Promise.resolve();
+      }
+    });
 
-  it('throws if a DocumentReference firestore instance is different', function () {
-    try {
-      const app2 = firebase.app('secondaryFromNative');
-      const docRef = firebase.firestore(app2).doc(`${COLLECTION}/foo`);
+    it('throws if a DocumentReference firestore instance is different', function () {
+      try {
+        const app2 = firebase.app('secondaryFromNative');
+        const docRef = firebase.firestore(app2).doc(`${COLLECTION}/foo`);
 
-      firebase.firestore().batch().set(docRef);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql(
-        "'documentRef' provided DocumentReference is from a different Firestore instance",
-      );
-      return Promise.resolve();
-    }
-  });
+        firebase.firestore().batch().set(docRef);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'documentRef' provided DocumentReference is from a different Firestore instance",
+        );
+        return Promise.resolve();
+      }
+    });
 
-  it('throws if a data is not an object', function () {
-    try {
+    it('throws if a data is not an object', function () {
+      try {
+        const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+
+        firebase.firestore().batch().set(docRef, 123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'data' must be an object");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if a options is not an object', function () {
+      try {
+        const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+
+        firebase.firestore().batch().set(docRef, {}, 123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'options' must be an object");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if merge and mergeFields is provided', function () {
+      try {
+        const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+        firebase
+          .firestore()
+          .batch()
+          .set(
+            docRef,
+            {},
+            {
+              merge: true,
+              mergeFields: ['123'],
+            },
+          );
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'options' must not contain both 'merge' & 'mergeFields'");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if merge is not a boolean', function () {
+      try {
+        const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+        firebase.firestore().batch().set(
+          docRef,
+          {},
+          {
+            merge: 'true',
+          },
+        );
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'options.merge' must be a boolean value");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if mergeFields is not an array', function () {
+      try {
+        const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+        firebase.firestore().batch().set(
+          docRef,
+          {},
+          {
+            mergeFields: '[]',
+          },
+        );
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'options.mergeFields' must be an array");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if mergeFields item is not valid', function () {
+      try {
+        const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+
+        firebase
+          .firestore()
+          .batch()
+          .set(
+            docRef,
+            {},
+            {
+              mergeFields: [123],
+            },
+          );
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'options.mergeFields' all fields must be of type string or FieldPath",
+        );
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if string fieldpath is invalid', function () {
+      try {
+        const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+
+        firebase
+          .firestore()
+          .batch()
+          .set(
+            docRef,
+            {},
+            {
+              mergeFields: ['.foo.bar'],
+            },
+          );
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'options.mergeFields' Invalid field path");
+        return Promise.resolve();
+      }
+    });
+
+    it('accepts string fieldpath & FieldPath', function () {
       const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
 
-      firebase.firestore().batch().set(docRef, 123);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'data' must be an object");
-      return Promise.resolve();
-    }
-  });
-
-  it('throws if a options is not an object', function () {
-    try {
-      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
-
-      firebase.firestore().batch().set(docRef, {}, 123);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'options' must be an object");
-      return Promise.resolve();
-    }
-  });
-
-  it('throws if merge and mergeFields is provided', function () {
-    try {
-      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
       firebase
         .firestore()
         .batch()
         .set(
+          docRef,
+          {},
+          {
+            mergeFields: ['foo.bar', new firebase.firestore.FieldPath('foo', 'bar')],
+          },
+        );
+    });
+
+    it('adds the DocumentReference to the internal writes', function () {
+      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+
+      const wb = firebase
+        .firestore()
+        .batch()
+        .set(
+          docRef,
+          { foo: 'bar' },
+          { mergeFields: [new firebase.firestore.FieldPath('foo', 'bar')] },
+        );
+      wb._writes.length.should.eql(1);
+      const expected = {
+        path: `${COLLECTION}/foo`,
+        type: 'SET',
+        options: jet.contextify({
+          mergeFields: jet.contextify(['foo.bar']),
+        }),
+      };
+      wb._writes[0].should.containEql(jet.contextify(expected));
+    });
+  });
+
+  describe('modular', function () {
+    it('throws if a DocumentReference instance is not provided', function () {
+      const { getFirestore, writeBatch } = firestoreModular;
+      try {
+        writeBatch(getFirestore()).set(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'documentRef' expected instance of a DocumentReference");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if a DocumentReference firestore instance is different', function () {
+      const { getFirestore, doc, writeBatch } = firestoreModular;
+      try {
+        const app2 = firebase.app('secondaryFromNative');
+        const docRef = doc(getFirestore(app2), `${COLLECTION}/foo`);
+
+        writeBatch(getFirestore()).set(docRef);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'documentRef' provided DocumentReference is from a different Firestore instance",
+        );
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if a data is not an object', function () {
+      const { getFirestore, doc, writeBatch } = firestoreModular;
+      const db = getFirestore();
+      try {
+        const docRef = doc(db, `${COLLECTION}/foo`);
+
+        writeBatch(db).set(docRef, 123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'data' must be an object");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if a options is not an object', function () {
+      const { getFirestore, doc, writeBatch } = firestoreModular;
+      const db = getFirestore();
+      try {
+        const docRef = doc(db, `${COLLECTION}/foo`);
+
+        writeBatch(db).set(docRef, {}, 123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'options' must be an object");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if merge and mergeFields is provided', function () {
+      const { getFirestore, doc, writeBatch } = firestoreModular;
+      const db = getFirestore();
+      try {
+        const docRef = doc(db, `${COLLECTION}/foo`);
+        writeBatch(db).set(
           docRef,
           {},
           {
@@ -80,125 +273,126 @@ describe('firestore.WriteBatch.set()', function () {
             mergeFields: ['123'],
           },
         );
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'options' must not contain both 'merge' & 'mergeFields'");
-      return Promise.resolve();
-    }
-  });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'options' must not contain both 'merge' & 'mergeFields'");
+        return Promise.resolve();
+      }
+    });
 
-  it('throws if merge is not a boolean', function () {
-    try {
-      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
-      firebase.firestore().batch().set(
-        docRef,
-        {},
-        {
-          merge: 'true',
-        },
-      );
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'options.merge' must be a boolean value");
-      return Promise.resolve();
-    }
-  });
+    it('throws if merge is not a boolean', function () {
+      const { getFirestore, doc, writeBatch } = firestoreModular;
+      const db = getFirestore();
+      try {
+        const docRef = doc(db, `${COLLECTION}/foo`);
+        writeBatch(db).set(
+          docRef,
+          {},
+          {
+            merge: 'true',
+          },
+        );
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'options.merge' must be a boolean value");
+        return Promise.resolve();
+      }
+    });
 
-  it('throws if mergeFields is not an array', function () {
-    try {
-      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
-      firebase.firestore().batch().set(
-        docRef,
-        {},
-        {
-          mergeFields: '[]',
-        },
-      );
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'options.mergeFields' must be an array");
-      return Promise.resolve();
-    }
-  });
+    it('throws if mergeFields is not an array', function () {
+      const { getFirestore, doc, writeBatch } = firestoreModular;
+      const db = getFirestore();
+      try {
+        const docRef = doc(db, `${COLLECTION}/foo`);
+        writeBatch(db).set(
+          docRef,
+          {},
+          {
+            mergeFields: '[]',
+          },
+        );
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'options.mergeFields' must be an array");
+        return Promise.resolve();
+      }
+    });
 
-  it('throws if mergeFields item is not valid', function () {
-    try {
-      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+    it('throws if mergeFields item is not valid', function () {
+      const { getFirestore, doc, writeBatch } = firestoreModular;
+      const db = getFirestore();
+      try {
+        const docRef = doc(db, `${COLLECTION}/foo`);
 
-      firebase
-        .firestore()
-        .batch()
-        .set(
+        writeBatch(db).set(
           docRef,
           {},
           {
             mergeFields: [123],
           },
         );
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql(
-        "'options.mergeFields' all fields must be of type string or FieldPath",
-      );
-      return Promise.resolve();
-    }
-  });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'options.mergeFields' all fields must be of type string or FieldPath",
+        );
+        return Promise.resolve();
+      }
+    });
 
-  it('throws if string fieldpath is invalid', function () {
-    try {
-      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+    it('throws if string fieldpath is invalid', function () {
+      const { getFirestore, doc, writeBatch } = firestoreModular;
+      const db = getFirestore();
+      try {
+        const docRef = doc(db, `${COLLECTION}/foo`);
 
-      firebase
-        .firestore()
-        .batch()
-        .set(
+        writeBatch(db).set(
           docRef,
           {},
           {
             mergeFields: ['.foo.bar'],
           },
         );
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'options.mergeFields' Invalid field path");
-      return Promise.resolve();
-    }
-  });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'options.mergeFields' Invalid field path");
+        return Promise.resolve();
+      }
+    });
 
-  it('accepts string fieldpath & FieldPath', function () {
-    const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+    it('accepts string fieldpath & FieldPath', function () {
+      const { getFirestore, doc, writeBatch, FieldPath } = firestoreModular;
+      const db = getFirestore();
+      const docRef = doc(db, `${COLLECTION}/foo`);
 
-    firebase
-      .firestore()
-      .batch()
-      .set(
+      writeBatch(db).set(
         docRef,
         {},
         {
-          mergeFields: ['foo.bar', new firebase.firestore.FieldPath('foo', 'bar')],
+          mergeFields: ['foo.bar', new FieldPath('foo', 'bar')],
         },
       );
-  });
+    });
 
-  it('adds the DocumentReference to the internal writes', function () {
-    const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+    it('adds the DocumentReference to the internal writes', function () {
+      const { getFirestore, doc, writeBatch } = firestoreModular;
+      const db = getFirestore();
+      const docRef = doc(db, `${COLLECTION}/foo`);
 
-    const wb = firebase
-      .firestore()
-      .batch()
-      .set(
+      const wb = writeBatch(db).set(
         docRef,
         { foo: 'bar' },
         { mergeFields: [new firebase.firestore.FieldPath('foo', 'bar')] },
       );
-    wb._writes.length.should.eql(1);
-    const expected = {
-      path: `${COLLECTION}/foo`,
-      type: 'SET',
-      options: jet.contextify({
-        mergeFields: jet.contextify(['foo.bar']),
-      }),
-    };
-    wb._writes[0].should.containEql(jet.contextify(expected));
+      wb._writes.length.should.eql(1);
+      const expected = {
+        path: `${COLLECTION}/foo`,
+        type: 'SET',
+        options: jet.contextify({
+          mergeFields: jet.contextify(['foo.bar']),
+        }),
+      };
+      wb._writes[0].should.containEql(jet.contextify(expected));
+    });
   });
 });

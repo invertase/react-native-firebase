@@ -18,25 +18,56 @@
 const COLLECTION = 'firestore';
 
 describe('firestore.doc()', function () {
-  it('returns a Firestore instance', function () {
-    const instance = firebase.firestore().doc(`${COLLECTION}/bar`);
-    should.equal(instance.firestore.constructor.name, 'FirebaseFirestoreModule');
+  describe('v8 compatibility', function () {
+    it('returns a Firestore instance', function () {
+      const instance = firebase.firestore().doc(`${COLLECTION}/bar`);
+      should.equal(instance.firestore.constructor.name, 'FirebaseFirestoreModule');
+    });
+
+    it('returns the document id', function () {
+      const instance = firebase.firestore().doc(`${COLLECTION}/bar`);
+      instance.id.should.equal('bar');
+    });
+
+    it('returns the parent collection reference', function () {
+      const instance = firebase.firestore().doc(`${COLLECTION}/bar`);
+      instance.parent.id.should.equal(COLLECTION);
+    });
+
+    it('returns the path', function () {
+      const instance1 = firebase.firestore().doc(`${COLLECTION}/bar`);
+      const instance2 = firebase.firestore().collection(COLLECTION).doc('bar');
+      instance1.path.should.equal(`${COLLECTION}/bar`);
+      instance2.path.should.equal(`${COLLECTION}/bar`);
+    });
   });
 
-  it('returns the document id', function () {
-    const instance = firebase.firestore().doc(`${COLLECTION}/bar`);
-    instance.id.should.equal('bar');
-  });
+  describe('modular', function () {
+    it('returns a Firestore instance', function () {
+      const { getFirestore, doc } = firestoreModular;
+      const instance = doc(getFirestore(), `${COLLECTION}/bar`);
+      should.equal(instance.firestore.constructor.name, 'FirebaseFirestoreModule');
+    });
 
-  it('returns the parent collection reference', function () {
-    const instance = firebase.firestore().doc(`${COLLECTION}/bar`);
-    instance.parent.id.should.equal(COLLECTION);
-  });
+    it('returns the document id', function () {
+      const { getFirestore, doc } = firestoreModular;
+      const instance = doc(getFirestore(), `${COLLECTION}/bar`);
+      instance.id.should.equal('bar');
+    });
 
-  it('returns the path', function () {
-    const instance1 = firebase.firestore().doc(`${COLLECTION}/bar`);
-    const instance2 = firebase.firestore().collection(COLLECTION).doc('bar');
-    instance1.path.should.equal(`${COLLECTION}/bar`);
-    instance2.path.should.equal(`${COLLECTION}/bar`);
+    it('returns the parent collection reference', function () {
+      const { getFirestore, doc } = firestoreModular;
+      const instance = doc(getFirestore(), `${COLLECTION}/bar`);
+      instance.parent.id.should.equal(COLLECTION);
+    });
+
+    it('returns the path', function () {
+      const { getFirestore, doc, collection } = firestoreModular;
+      const db = getFirestore();
+      const instance1 = doc(db, `${COLLECTION}/bar`);
+      const instance2 = doc(collection(db, COLLECTION), 'bar');
+      instance1.path.should.equal(`${COLLECTION}/bar`);
+      instance2.path.should.equal(`${COLLECTION}/bar`);
+    });
   });
 });

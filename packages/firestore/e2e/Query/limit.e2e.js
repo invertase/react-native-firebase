@@ -21,31 +21,67 @@ describe('firestore().collection().limit()', function () {
   before(function () {
     return wipe();
   });
-  it('throws if limit is invalid', function () {
-    try {
-      firebase.firestore().collection(COLLECTION).limit(-1);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'limit' must be a positive integer value");
-      return Promise.resolve();
-    }
+
+  describe('v8 compatibility', function () {
+    it('throws if limit is invalid', function () {
+      try {
+        firebase.firestore().collection(COLLECTION).limit(-1);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'limit' must be a positive integer value");
+        return Promise.resolve();
+      }
+    });
+
+    it('sets limit on internals', async function () {
+      const colRef = firebase.firestore().collection(COLLECTION).limit(123);
+
+      colRef._modifiers.options.limit.should.eql(123);
+    });
+
+    it('limits the number of documents', async function () {
+      const colRef = firebase.firestore().collection(COLLECTION);
+
+      // Add 3
+      await colRef.add({});
+      await colRef.add({});
+      await colRef.add({});
+
+      const snapshot = await colRef.limit(2).get();
+      snapshot.size.should.eql(2);
+    });
   });
 
-  it('sets limit on internals', async function () {
-    const colRef = firebase.firestore().collection(COLLECTION).limit(123);
+  describe('modular', function () {
+    it('throws if limit is invalid', function () {
+      const { getFirestore, collection, limit, query } = firestoreModular;
+      try {
+        query(collection(getFirestore(), COLLECTION), limit(-1));
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'limit' must be a positive integer value");
+        return Promise.resolve();
+      }
+    });
 
-    colRef._modifiers.options.limit.should.eql(123);
-  });
+    it('sets limit on internals', async function () {
+      const { getFirestore, collection, limit, query } = firestoreModular;
+      const colRef = query(collection(getFirestore(), COLLECTION), limit(123));
 
-  it('limits the number of documents', async function () {
-    const colRef = firebase.firestore().collection(COLLECTION);
+      colRef._modifiers.options.limit.should.eql(123);
+    });
 
-    // Add 3
-    await colRef.add({});
-    await colRef.add({});
-    await colRef.add({});
+    it('limits the number of documents', async function () {
+      const { getFirestore, collection, addDoc, getDocs, limit, query } = firestoreModular;
+      const colRef = collection(getFirestore(), COLLECTION);
 
-    const snapshot = await colRef.limit(2).get();
-    snapshot.size.should.eql(2);
+      // Add 3
+      await addDoc(colRef, {});
+      await addDoc(colRef, {});
+      await addDoc(colRef, {});
+
+      const snapshot = await getDocs(query(colRef, limit(2)));
+      snapshot.size.should.eql(2);
+    });
   });
 });

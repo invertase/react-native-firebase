@@ -21,45 +21,101 @@ describe('firestore().doc() -> snapshot', function () {
   before(function () {
     return wipe();
   });
-  it('.exists -> returns a boolean for exists', async function () {
-    const ref1 = firebase.firestore().doc(`${COLLECTION}/exists`);
-    const ref2 = firebase.firestore().doc(`${COLLECTION}/idonotexist`);
-    await ref1.set({ foo: ' bar' });
-    const snapshot1 = await ref1.get();
-    const snapshot2 = await ref2.get();
 
-    snapshot1.exists.should.equal(true);
-    snapshot2.exists.should.equal(false);
-    await ref1.delete();
+  describe('v8 compatibility', function () {
+    it('.exists -> returns a boolean for exists', async function () {
+      const ref1 = firebase.firestore().doc(`${COLLECTION}/exists`);
+      const ref2 = firebase.firestore().doc(`${COLLECTION}/idonotexist`);
+      await ref1.set({ foo: ' bar' });
+      const snapshot1 = await ref1.get();
+      const snapshot2 = await ref2.get();
+
+      snapshot1.exists.should.equal(true);
+      snapshot2.exists.should.equal(false);
+      await ref1.delete();
+    });
+
+    it('.id -> returns the correct id', async function () {
+      const ref1 = firebase.firestore().doc(`${COLLECTION}/exists`);
+      const ref2 = firebase.firestore().doc(`${COLLECTION}/idonotexist`);
+      await ref1.set({ foo: ' bar' });
+      const snapshot1 = await ref1.get();
+      const snapshot2 = await ref2.get();
+
+      snapshot1.id.should.equal('exists');
+      snapshot2.id.should.equal('idonotexist');
+      await ref1.delete();
+    });
+
+    it('.metadata -> returns a SnapshotMetadata instance', async function () {
+      const ref = firebase.firestore().doc(`${COLLECTION}/exists`);
+      const snapshot = await ref.get();
+      snapshot.metadata.constructor.name.should.eql('FirestoreSnapshotMetadata');
+    });
+
+    it('.ref -> returns the correct document ref', async function () {
+      const ref1 = firebase.firestore().doc(`${COLLECTION}/exists`);
+      const ref2 = firebase.firestore().doc(`${COLLECTION}/idonotexist`);
+      await ref1.set({ foo: ' bar' });
+      const snapshot1 = await ref1.get();
+      const snapshot2 = await ref2.get();
+
+      snapshot1.ref.path.should.equal(`${COLLECTION}/exists`);
+      snapshot2.ref.path.should.equal(`${COLLECTION}/idonotexist`);
+      await ref1.delete();
+    });
   });
 
-  it('.id -> returns the correct id', async function () {
-    const ref1 = firebase.firestore().doc(`${COLLECTION}/exists`);
-    const ref2 = firebase.firestore().doc(`${COLLECTION}/idonotexist`);
-    await ref1.set({ foo: ' bar' });
-    const snapshot1 = await ref1.get();
-    const snapshot2 = await ref2.get();
+  describe('modular', function () {
+    it('.exists -> returns a boolean for exists', async function () {
+      const { getFirestore, doc, setDoc, getDocs, deleteDoc } = firestoreModular;
+      const db = getFirestore(firebase.app());
 
-    snapshot1.id.should.equal('exists');
-    snapshot2.id.should.equal('idonotexist');
-    await ref1.delete();
-  });
+      const ref1 = doc(db, `${COLLECTION}/exists`);
+      const ref2 = doc(db, `${COLLECTION}/idonotexist`);
+      await setDoc(ref1, { foo: ' bar' });
+      const snapshot1 = await getDocs(ref1);
+      const snapshot2 = await getDocs(ref2);
 
-  it('.metadata -> returns a SnapshotMetadata instance', async function () {
-    const ref = firebase.firestore().doc(`${COLLECTION}/exists`);
-    const snapshot = await ref.get();
-    snapshot.metadata.constructor.name.should.eql('FirestoreSnapshotMetadata');
-  });
+      snapshot1.exists.should.equal(true);
+      snapshot2.exists.should.equal(false);
+      await deleteDoc(ref1);
+    });
 
-  it('.ref -> returns the correct document ref', async function () {
-    const ref1 = firebase.firestore().doc(`${COLLECTION}/exists`);
-    const ref2 = firebase.firestore().doc(`${COLLECTION}/idonotexist`);
-    await ref1.set({ foo: ' bar' });
-    const snapshot1 = await ref1.get();
-    const snapshot2 = await ref2.get();
+    it('.id -> returns the correct id', async function () {
+      const { getFirestore, doc, setDoc, getDocs, deleteDoc } = firestoreModular;
+      const db = getFirestore(firebase.app());
 
-    snapshot1.ref.path.should.equal(`${COLLECTION}/exists`);
-    snapshot2.ref.path.should.equal(`${COLLECTION}/idonotexist`);
-    await ref1.delete();
+      const ref1 = doc(db, `${COLLECTION}/exists`);
+      const ref2 = doc(db, `${COLLECTION}/idonotexist`);
+      await setDoc(ref1, { foo: ' bar' });
+      const snapshot1 = await getDocs(ref1);
+      const snapshot2 = await getDocs(ref2);
+
+      snapshot1.id.should.equal('exists');
+      snapshot2.id.should.equal('idonotexist');
+      await deleteDoc(ref1);
+    });
+
+    it('.metadata -> returns a SnapshotMetadata instance', async function () {
+      const { getFirestore, doc, getDocs } = firestoreModular;
+      const ref = doc(getFirestore(), `${COLLECTION}/exists`);
+      const snapshot = await getDocs(ref);
+      snapshot.metadata.constructor.name.should.eql('FirestoreSnapshotMetadata');
+    });
+
+    it('.ref -> returns the correct document ref', async function () {
+      const { getFirestore, doc, setDoc, getDocs, deleteDoc } = firestoreModular;
+      const db = getFirestore(firebase.app());
+      const ref1 = doc(db, `${COLLECTION}/exists`);
+      const ref2 = doc(db, `${COLLECTION}/idonotexist`);
+      await setDoc(ref1, { foo: ' bar' });
+      const snapshot1 = await getDocs(ref1);
+      const snapshot2 = await getDocs(ref2);
+
+      snapshot1.ref.path.should.equal(`${COLLECTION}/exists`);
+      snapshot2.ref.path.should.equal(`${COLLECTION}/idonotexist`);
+      await deleteDoc(ref1);
+    });
   });
 });

@@ -22,77 +22,170 @@ describe('firestore().namedQuery()', function () {
     return await firebase.firestore().loadBundle(getBundle());
   });
 
-  it('returns bundled QuerySnapshot', async function () {
-    const query = firebase.firestore().namedQuery(BUNDLE_QUERY_NAME);
-    const snapshot = await query.get({ source: 'cache' });
+  describe('v8 compatibility', function () {
+    it('returns bundled QuerySnapshot', async function () {
+      const query = firebase.firestore().namedQuery(BUNDLE_QUERY_NAME);
+      const snapshot = await query.get({ source: 'cache' });
 
-    snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
-    snapshot.docs.forEach(doc => {
-      doc.data().number.should.equalOneOf(1, 2, 3);
-      doc.metadata.fromCache.should.eql(true);
+      snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
+      snapshot.docs.forEach(doc => {
+        doc.data().number.should.equalOneOf(1, 2, 3);
+        doc.metadata.fromCache.should.eql(true);
+      });
+    });
+
+    it('limits the number of documents in bundled QuerySnapshot', async function () {
+      const query = firebase.firestore().namedQuery(BUNDLE_QUERY_NAME);
+      const snapshot = await query.limit(1).get({ source: 'cache' });
+
+      snapshot.size.should.equal(1);
+      snapshot.docs[0].metadata.fromCache.should.eql(true);
+    });
+
+    // TODO: log upstream issue - this broke with BoM >= 32.0.0, source always appears to be cache now
+    xit('returns QuerySnapshot from firestore backend when omitting "source: cache"', async function () {
+      const docRef = firebase.firestore().collection(BUNDLE_COLLECTION).doc();
+      await docRef.set({ number: 4 });
+
+      const query = firebase.firestore().namedQuery(BUNDLE_QUERY_NAME);
+      const snapshot = await query.get();
+
+      snapshot.size.should.equal(1);
+      snapshot.docs[0].data().number.should.eql(4);
+      snapshot.docs[0].metadata.fromCache.should.eql(false);
+    });
+
+    it('calls onNext with QuerySnapshot from firestore backend', async function () {
+      const docRef = firebase.firestore().collection(BUNDLE_COLLECTION).doc();
+      await docRef.set({ number: 5 });
+
+      const onNext = sinon.spy();
+      const onError = sinon.spy();
+      const unsub = firebase.firestore().namedQuery(BUNDLE_QUERY_NAME).onSnapshot(onNext, onError);
+
+      await Utils.spyToBeCalledOnceAsync(onNext);
+
+      onNext.should.be.calledOnce();
+      onError.should.be.callCount(0);
+      // FIXME not stable on tests:<platform>:test-reuse
+      // 5 on first run, 4 on reuse
+      // onNext.args[0][0].docs[0].data().number.should.eql(4);
+      unsub();
+    });
+
+    it('throws if invalid query name', async function () {
+      const query = firebase.firestore().namedQuery('invalid-query');
+      try {
+        await query.get({ source: 'cache' });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql('unknown');
+        return Promise.resolve();
+      }
+    });
+
+    it('calls onError if invalid query name', async function () {
+      const onNext = sinon.spy();
+      const onError = sinon.spy();
+      const unsub = firebase.firestore().namedQuery('invalid-query').onSnapshot(onNext, onError);
+
+      await Utils.spyToBeCalledOnceAsync(onError);
+
+      onNext.should.be.callCount(0);
+      onError.should.be.calledOnce();
+      onError.args[0][0].message.should.containEql('unknown');
+      unsub();
     });
   });
 
-  it('limits the number of documents in bundled QuerySnapshot', async function () {
-    const query = firebase.firestore().namedQuery(BUNDLE_QUERY_NAME);
-    const snapshot = await query.limit(1).get({ source: 'cache' });
+  describe('modular', function () {
+    // FIXME: works in isolation, but not in suite
+    xit('returns bundled QuerySnapshot', async function () {
+      const { getFirestore, namedQuery, getDocsFromCache } = firestoreModular;
 
-    snapshot.size.should.equal(1);
-    snapshot.docs[0].metadata.fromCache.should.eql(true);
-  });
+      const query = namedQuery(getFirestore(), BUNDLE_QUERY_NAME);
+      const snapshot = await getDocsFromCache(query);
 
-  // TODO: log upstream issue - this broke with BoM >= 32.0.0, source always appears to be cache now
-  xit('returns QuerySnapshot from firestore backend when omitting "source: cache"', async function () {
-    const docRef = firebase.firestore().collection(BUNDLE_COLLECTION).doc();
-    await docRef.set({ number: 4 });
+      snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
+      snapshot.docs.forEach(doc => {
+        doc.data().number.should.equalOneOf(1, 2, 3);
+        doc.metadata.fromCache.should.eql(true);
+      });
+    });
 
-    const query = firebase.firestore().namedQuery(BUNDLE_QUERY_NAME);
-    const snapshot = await query.get();
+    it('limits the number of documents in bundled QuerySnapshot', async function () {
+      const { getFirestore, namedQuery, getDocsFromCache, query, limit } = firestoreModular;
 
-    snapshot.size.should.equal(1);
-    snapshot.docs[0].data().number.should.eql(4);
-    snapshot.docs[0].metadata.fromCache.should.eql(false);
-  });
+      const q = namedQuery(getFirestore(), BUNDLE_QUERY_NAME);
+      const snapshot = await getDocsFromCache(query(q, limit(1)));
 
-  it('calls onNext with QuerySnapshot from firestore backend', async function () {
-    const docRef = firebase.firestore().collection(BUNDLE_COLLECTION).doc();
-    await docRef.set({ number: 5 });
+      snapshot.size.should.equal(1);
+      snapshot.docs[0].metadata.fromCache.should.eql(true);
+    });
 
-    const onNext = sinon.spy();
-    const onError = sinon.spy();
-    const unsub = firebase.firestore().namedQuery(BUNDLE_QUERY_NAME).onSnapshot(onNext, onError);
+    // TODO: log upstream issue - this broke with BoM >= 32.0.0, source always appears to be cache now
+    xit('returns QuerySnapshot from firestore backend when omitting "source: cache"', async function () {
+      const { getFirestore, namedQuery, getDocs, setDoc, collection, doc } = firestoreModular;
+      const db = getFirestore();
 
-    await Utils.spyToBeCalledOnceAsync(onNext);
+      const docRef = doc(collection(db, BUNDLE_COLLECTION));
+      await setDoc(docRef, { number: 4 });
 
-    onNext.should.be.calledOnce();
-    onError.should.be.callCount(0);
-    // FIXME not stable on tests:<platform>:test-reuse
-    // 5 on first run, 4 on reuse
-    // onNext.args[0][0].docs[0].data().number.should.eql(4);
-    unsub();
-  });
+      const query = namedQuery(db, BUNDLE_QUERY_NAME);
+      const snapshot = await getDocs(query);
 
-  it('throws if invalid query name', async function () {
-    const query = firebase.firestore().namedQuery('invalid-query');
-    try {
-      await query.get({ source: 'cache' });
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql('unknown');
-      return Promise.resolve();
-    }
-  });
+      snapshot.size.should.equal(1);
+      snapshot.docs[0].data().number.should.eql(4);
+      snapshot.docs[0].metadata.fromCache.should.eql(false);
+    });
 
-  it('calls onError if invalid query name', async function () {
-    const onNext = sinon.spy();
-    const onError = sinon.spy();
-    const unsub = firebase.firestore().namedQuery('invalid-query').onSnapshot(onNext, onError);
+    it('calls onNext with QuerySnapshot from firestore backend', async function () {
+      const { getFirestore, collection, doc, setDoc, namedQuery, onSnapshot } = firestoreModular;
+      const db = getFirestore();
 
-    await Utils.spyToBeCalledOnceAsync(onError);
+      const docRef = doc(collection(db, BUNDLE_COLLECTION));
+      await setDoc(docRef, { number: 5 });
 
-    onNext.should.be.callCount(0);
-    onError.should.be.calledOnce();
-    onError.args[0][0].message.should.containEql('unknown');
-    unsub();
+      const onNext = sinon.spy();
+      const onError = sinon.spy();
+      const unsub = onSnapshot(namedQuery(db, BUNDLE_QUERY_NAME), onNext, onError);
+
+      await Utils.spyToBeCalledOnceAsync(onNext);
+
+      onNext.should.be.calledOnce();
+      onError.should.be.callCount(0);
+      // FIXME not stable on tests:<platform>:test-reuse
+      // 5 on first run, 4 on reuse
+      // onNext.args[0][0].docs[0].data().number.should.eql(4);
+      unsub();
+    });
+
+    it('throws if invalid query name', async function () {
+      const { getFirestore, namedQuery, getDocsFromCache } = firestoreModular;
+
+      const query = namedQuery(getFirestore(), 'invalid-query');
+      try {
+        await getDocsFromCache(query);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql('unknown');
+        return Promise.resolve();
+      }
+    });
+
+    it('calls onError if invalid query name', async function () {
+      const { getFirestore, namedQuery, onSnapshot } = firestoreModular;
+
+      const onNext = sinon.spy();
+      const onError = sinon.spy();
+      const unsub = onSnapshot(namedQuery(getFirestore(), 'invalid-query'), onNext, onError);
+
+      await Utils.spyToBeCalledOnceAsync(onError);
+
+      onNext.should.be.callCount(0);
+      onError.should.be.calledOnce();
+      onError.args[0][0].message.should.containEql('unknown');
+      unsub();
+    });
   });
 });

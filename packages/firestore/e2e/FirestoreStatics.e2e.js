@@ -16,20 +16,49 @@
  */
 
 describe('firestore.X', function () {
-  describe('setLogLevel', function () {
-    it('throws if invalid level', function () {
-      try {
-        firebase.firestore.setLogLevel('verbose');
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'logLevel' expected one of 'debug', 'error' or 'silent'");
-        return Promise.resolve();
-      }
-    });
+  describe('v8 compatibility', function () {
+    describe('setLogLevel', function () {
+      it('throws if invalid level', function () {
+        try {
+          firebase.firestore.setLogLevel('verbose');
+          return Promise.reject(new Error('Did not throw an Error.'));
+        } catch (error) {
+          error.message.should.containEql(
+            "'logLevel' expected one of 'debug', 'error' or 'silent'",
+          );
+          return Promise.resolve();
+        }
+      });
 
-    it('enabled and disables logging', function () {
-      firebase.firestore.setLogLevel('silent');
-      firebase.firestore.setLogLevel('debug');
+      it('enabled and disables logging', function () {
+        firebase.firestore.setLogLevel('silent');
+        firebase.firestore.setLogLevel('debug');
+      });
+    });
+  });
+
+  describe('modular', function () {
+    describe('setLogLevel', function () {
+      it('throws if invalid level', function () {
+        const { setLogLevel } = firestoreModular;
+
+        try {
+          setLogLevel('verbose');
+          return Promise.reject(new Error('Did not throw an Error.'));
+        } catch (error) {
+          error.message.should.containEql(
+            "'logLevel' expected one of 'debug', 'error' or 'silent'",
+          );
+          return Promise.resolve();
+        }
+      });
+
+      it('enabled and disables logging', function () {
+        const { setLogLevel } = firestoreModular;
+
+        setLogLevel('silent');
+        setLogLevel('debug');
+      });
     });
   });
 });

@@ -16,58 +16,121 @@
 const COLLECTION = 'firestore';
 
 describe('FirestoreQuery/FirestoreQueryModifiers', function () {
-  it('should not mutate previous queries (#2691)', async function () {
-    const queryBefore = firebase.firestore().collection(COLLECTION).where('age', '>', 30);
-    const queryAfter = queryBefore.orderBy('age');
-    queryBefore._modifiers._orders.length.should.equal(0);
-    queryBefore._modifiers._filters.length.should.equal(1);
+  describe('v8 compatibility', function () {
+    it('should not mutate previous queries (#2691)', async function () {
+      const queryBefore = firebase.firestore().collection(COLLECTION).where('age', '>', 30);
+      const queryAfter = queryBefore.orderBy('age');
+      queryBefore._modifiers._orders.length.should.equal(0);
+      queryBefore._modifiers._filters.length.should.equal(1);
 
-    queryAfter._modifiers._orders.length.should.equal(1);
-    queryAfter._modifiers._filters.length.should.equal(1);
+      queryAfter._modifiers._orders.length.should.equal(1);
+      queryAfter._modifiers._filters.length.should.equal(1);
+    });
+
+    it('throws if where equality operator is invoked, and the where fieldPath parameter matches any orderBy parameter', async function () {
+      try {
+        firebase
+          .firestore()
+          .collection(COLLECTION)
+          .where('foo', '==', 'bar')
+          .orderBy('foo')
+          .limit(1)
+          .endAt(2);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql('Invalid query');
+      }
+
+      try {
+        firebase
+          .firestore()
+          .collection(COLLECTION)
+          .where('foo', '==', 'bar')
+          .orderBy('bar')
+          .orderBy('foo')
+          .limit(1)
+          .endAt(2);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql('Invalid query');
+      }
+    });
+
+    it('throws if where inequality operator is invoked, and the where fieldPath does not match initial orderBy parameter', async function () {
+      try {
+        firebase
+          .firestore()
+          .collection(COLLECTION)
+          .where('foo', '>', 'bar')
+          .orderBy('bar')
+          .orderBy('foo')
+          .limit(1)
+          .endAt(2);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql('Invalid query');
+      }
+    });
   });
 
-  it('throws if where equality operator is invoked, and the where fieldPath parameter matches any orderBy parameter', async function () {
-    try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .where('foo', '==', 'bar')
-        .orderBy('foo')
-        .limit(1)
-        .endAt(2);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql('Invalid query');
-    }
+  describe('modular', function () {
+    it('should not mutate previous queries (#2691)', async function () {
+      const { getFirestore, collection, query, where, orderBy } = firestoreModular;
+      const queryBefore = query(collection(getFirestore(), COLLECTION), where('age', '>', 30));
+      const queryAfter = query(queryBefore, orderBy('age'));
+      queryBefore._modifiers._orders.length.should.equal(0);
+      queryBefore._modifiers._filters.length.should.equal(1);
 
-    try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .where('foo', '==', 'bar')
-        .orderBy('bar')
-        .orderBy('foo')
-        .limit(1)
-        .endAt(2);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql('Invalid query');
-    }
-  });
+      queryAfter._modifiers._orders.length.should.equal(1);
+      queryAfter._modifiers._filters.length.should.equal(1);
+    });
 
-  it('throws if where inequality operator is invoked, and the where fieldPath does not match initial orderBy parameter', async function () {
-    try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .where('foo', '>', 'bar')
-        .orderBy('bar')
-        .orderBy('foo')
-        .limit(1)
-        .endAt(2);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql('Invalid query');
-    }
+    it('throws if where equality operator is invoked, and the where fieldPath parameter matches any orderBy parameter', async function () {
+      const { getFirestore, collection, query, where, orderBy, limit, endAt } = firestoreModular;
+      const db = getFirestore();
+      try {
+        query(
+          collection(db, COLLECTION),
+          where('foo', '==', 'bar'),
+          orderBy('foo'),
+          limit(1),
+          endAt(2),
+        );
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql('Invalid query');
+      }
+
+      try {
+        query(
+          collection(db, COLLECTION)
+            .where('foo', '==', 'bar')
+            .orderBy('bar')
+            .orderBy('foo')
+            .limit(1)
+            .endAt(2),
+        );
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql('Invalid query');
+      }
+    });
+
+    it('throws if where inequality operator is invoked, and the where fieldPath does not match initial orderBy parameter', async function () {
+      const { getFirestore, collection, query, where, orderBy, limit, endAt } = firestoreModular;
+      try {
+        query(
+          collection(getFirestore(), COLLECTION),
+          where('foo', '>', 'bar'),
+          orderBy('bar'),
+          orderBy('foo'),
+          limit(1),
+          endAt(2),
+        );
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql('Invalid query');
+      }
+    });
   });
 });

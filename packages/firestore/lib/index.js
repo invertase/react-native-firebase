@@ -359,6 +359,8 @@ class FirebaseFirestoreModule extends FirebaseModule {
 // import { SDK_VERSION } from '@react-native-firebase/firestore';
 export const SDK_VERSION = version;
 
+export * from './modular';
+
 // import firestore from '@react-native-firebase/firestore';
 // firestore().X(...);
 export default createModuleNamespace({

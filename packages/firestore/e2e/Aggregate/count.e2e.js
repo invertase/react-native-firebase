@@ -21,62 +21,117 @@ describe('firestore().collection().count()', function () {
     return wipe();
   });
 
-  it('throws if no argument provided', function () {
-    try {
-      firebase.firestore().collection(COLLECTION).startAt();
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql(
-        'Expected a DocumentSnapshot or list of field values but got undefined',
-      );
-      return Promise.resolve();
-    }
+  describe('v8 compatibility', function () {
+    it('throws if no argument provided', function () {
+      try {
+        firebase.firestore().collection(COLLECTION).startAt();
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          'Expected a DocumentSnapshot or list of field values but got undefined',
+        );
+        return Promise.resolve();
+      }
+    });
+
+    it('gets count of collection reference - unfiltered', async function () {
+      const colRef = firebase.firestore().collection(`${COLLECTION}/count/collection`);
+
+      const doc1 = colRef.doc('doc1');
+      const doc2 = colRef.doc('doc2');
+      const doc3 = colRef.doc('doc3');
+      await Promise.all([
+        doc1.set({ foo: 1, bar: { value: 1 } }),
+        doc2.set({ foo: 2, bar: { value: 2 } }),
+        doc3.set({ foo: 3, bar: { value: 3 } }),
+      ]);
+
+      const qs = await colRef.count().get();
+      qs.data().count.should.eql(3);
+    });
+    it('gets countFromServer of collection reference - unfiltered', async function () {
+      const colRef = firebase.firestore().collection(`${COLLECTION}/count/collection`);
+
+      const doc1 = colRef.doc('doc1');
+      const doc2 = colRef.doc('doc2');
+      const doc3 = colRef.doc('doc3');
+      await Promise.all([
+        doc1.set({ foo: 1, bar: { value: 1 } }),
+        doc2.set({ foo: 2, bar: { value: 2 } }),
+        doc3.set({ foo: 3, bar: { value: 3 } }),
+      ]);
+
+      const qs = await colRef.countFromServer().get();
+      qs.data().count.should.eql(3);
+    });
+    it('gets correct count of collection reference - where equal', async function () {
+      const colRef = firebase.firestore().collection(`${COLLECTION}/count/collection`);
+
+      const doc1 = colRef.doc('doc1');
+      const doc2 = colRef.doc('doc2');
+      const doc3 = colRef.doc('doc3');
+      await Promise.all([
+        doc1.set({ foo: 1, bar: { value: 1 } }),
+        doc2.set({ foo: 2, bar: { value: 2 } }),
+        doc3.set({ foo: 3, bar: { value: 3 } }),
+      ]);
+
+      const qs = await colRef.where('foo', '==', 3).count().get();
+      qs.data().count.should.eql(1);
+    });
   });
 
-  it('gets count of collection reference - unfiltered', async function () {
-    const colRef = firebase.firestore().collection(`${COLLECTION}/count/collection`);
+  describe('modular', function () {
+    it('throws if no argument provided', function () {
+      const { getFirestore, collection, startAt, query } = firestoreModular;
 
-    const doc1 = colRef.doc('doc1');
-    const doc2 = colRef.doc('doc2');
-    const doc3 = colRef.doc('doc3');
-    await Promise.all([
-      doc1.set({ foo: 1, bar: { value: 1 } }),
-      doc2.set({ foo: 2, bar: { value: 2 } }),
-      doc3.set({ foo: 3, bar: { value: 3 } }),
-    ]);
+      try {
+        query(collection(getFirestore(), COLLECTION), startAt());
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          'Expected a DocumentSnapshot or list of field values but got undefined',
+        );
+        return Promise.resolve();
+      }
+    });
 
-    const qs = await colRef.count().get();
-    qs.data().count.should.eql(3);
-  });
-  it('gets countFromServer of collection reference - unfiltered', async function () {
-    const colRef = firebase.firestore().collection(`${COLLECTION}/count/collection`);
+    it('gets countFromServer of collection reference - unfiltered', async function () {
+      const { getFirestore, collection, doc, setDoc, getCountFromServer } = firestoreModular;
 
-    const doc1 = colRef.doc('doc1');
-    const doc2 = colRef.doc('doc2');
-    const doc3 = colRef.doc('doc3');
-    await Promise.all([
-      doc1.set({ foo: 1, bar: { value: 1 } }),
-      doc2.set({ foo: 2, bar: { value: 2 } }),
-      doc3.set({ foo: 3, bar: { value: 3 } }),
-    ]);
+      const colRef = collection(getFirestore(), `${COLLECTION}/count/collection`);
 
-    const qs = await colRef.countFromServer().get();
-    qs.data().count.should.eql(3);
-  });
-  it('gets correct count of collection reference - where equal', async function () {
-    const colRef = firebase.firestore().collection(`${COLLECTION}/count/collection`);
+      const doc1 = doc(colRef, 'doc1');
+      const doc2 = doc(colRef, 'doc2');
+      const doc3 = doc(colRef, 'doc3');
+      await Promise.all([
+        setDoc(doc1, { foo: 1, bar: { value: 1 } }),
+        setDoc(doc2, { foo: 2, bar: { value: 2 } }),
+        setDoc(doc3, { foo: 3, bar: { value: 3 } }),
+      ]);
 
-    const doc1 = colRef.doc('doc1');
-    const doc2 = colRef.doc('doc2');
-    const doc3 = colRef.doc('doc3');
-    await Promise.all([
-      doc1.set({ foo: 1, bar: { value: 1 } }),
-      doc2.set({ foo: 2, bar: { value: 2 } }),
-      doc3.set({ foo: 3, bar: { value: 3 } }),
-    ]);
+      const qs = await getCountFromServer(colRef);
+      qs.data().count.should.eql(3);
+    });
 
-    const qs = await colRef.where('foo', '==', 3).count().get();
-    qs.data().count.should.eql(1);
+    it('gets correct count of collection reference - where equal', async function () {
+      const { getFirestore, collection, doc, setDoc, query, where, getCountFromServer } =
+        firestoreModular;
+
+      const colRef = collection(getFirestore(), `${COLLECTION}/count/collection`);
+
+      const doc1 = doc(colRef, 'doc1');
+      const doc2 = doc(colRef, 'doc2');
+      const doc3 = doc(colRef, 'doc3');
+      await Promise.all([
+        setDoc(doc1, { foo: 1, bar: { value: 1 } }),
+        setDoc(doc2, { foo: 2, bar: { value: 2 } }),
+        setDoc(doc3, { foo: 3, bar: { value: 3 } }),
+      ]);
+
+      const qs = await getCountFromServer(query(colRef, where('foo', '==', 3)));
+      qs.data().count.should.eql(1);
+    });
   });
 
   // TODO

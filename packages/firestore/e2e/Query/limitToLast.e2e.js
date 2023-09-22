@@ -21,77 +21,162 @@ describe('firestore().collection().limitToLast()', function () {
   before(function () {
     return wipe();
   });
-  it('throws if limitToLast is invalid', function () {
-    try {
-      firebase.firestore().collection(COLLECTION).limitToLast(-1);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'limitToLast' must be a positive integer value");
-      return Promise.resolve();
-    }
-  });
 
-  it('sets limitToLast on internals', async function () {
-    const colRef = firebase.firestore().collection(COLLECTION).limitToLast(123);
-
-    should(colRef._modifiers.options.limitToLast).equal(123);
-  });
-
-  it('removes limit query if limitToLast is set afterwards', function () {
-    const colRef = firebase.firestore().collection(COLLECTION).limit(2).limitToLast(123);
-
-    should(colRef._modifiers.options.limit).equal(undefined);
-  });
-
-  it('removes limitToLast query if limit is set afterwards', function () {
-    const colRef = firebase
-      .firestore()
-      // Firestore caches aggressively, even if you wipe the emulator, local documents are cached
-      // between runs, so use random collections to make sure `tests:*:test-reuse` works while iterating
-      .collection(`${COLLECTION}/${Utils.randString(12, '#aA')}/limitToLast-limit-after`);
-    const colRef2 = colRef.limitToLast(123).limit(2);
-
-    should(colRef2._modifiers.options.limitToLast).equal(undefined);
-  });
-
-  it('limitToLast the number of documents', async function () {
-    // Firestore caches aggressively, even if you wipe the emulator, local documents are cached
-    // between runs, so use random collections to make sure `tests:*:test-reuse` works while iterating
-    const subCol = `${COLLECTION}/${Utils.randString(12, '#aA')}/limitToLast-count`;
-    const colRef = firebase.firestore().collection(subCol);
-
-    // Add 3
-    await colRef.add({ count: 1 });
-    await colRef.add({ count: 2 });
-    await colRef.add({ count: 3 });
-
-    const docs = await firebase
-      .firestore()
-      .collection(subCol)
-      .limitToLast(2)
-      .orderBy('count', 'desc')
-      .get();
-
-    const results = [];
-    docs.forEach(doc => {
-      results.push(doc.data());
+  describe('v8 compatibility', function () {
+    it('throws if limitToLast is invalid', function () {
+      try {
+        firebase.firestore().collection(COLLECTION).limitToLast(-1);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'limitToLast' must be a positive integer value");
+        return Promise.resolve();
+      }
     });
 
-    should(results.length).equal(2);
+    it('sets limitToLast on internals', async function () {
+      const colRef = firebase.firestore().collection(COLLECTION).limitToLast(123);
 
-    should(results[0].count).equal(2);
-    should(results[1].count).equal(1);
+      should(colRef._modifiers.options.limitToLast).equal(123);
+    });
+
+    it('removes limit query if limitToLast is set afterwards', function () {
+      const colRef = firebase.firestore().collection(COLLECTION).limit(2).limitToLast(123);
+
+      should(colRef._modifiers.options.limit).equal(undefined);
+    });
+
+    it('removes limitToLast query if limit is set afterwards', function () {
+      const colRef = firebase
+        .firestore()
+        // Firestore caches aggressively, even if you wipe the emulator, local documents are cached
+        // between runs, so use random collections to make sure `tests:*:test-reuse` works while iterating
+        .collection(`${COLLECTION}/${Utils.randString(12, '#aA')}/limitToLast-limit-after`);
+      const colRef2 = colRef.limitToLast(123).limit(2);
+
+      should(colRef2._modifiers.options.limitToLast).equal(undefined);
+    });
+
+    it('limitToLast the number of documents', async function () {
+      // Firestore caches aggressively, even if you wipe the emulator, local documents are cached
+      // between runs, so use random collections to make sure `tests:*:test-reuse` works while iterating
+      const subCol = `${COLLECTION}/${Utils.randString(12, '#aA')}/limitToLast-count`;
+      const colRef = firebase.firestore().collection(subCol);
+
+      // Add 3
+      await colRef.add({ count: 1 });
+      await colRef.add({ count: 2 });
+      await colRef.add({ count: 3 });
+
+      const docs = await firebase
+        .firestore()
+        .collection(subCol)
+        .limitToLast(2)
+        .orderBy('count', 'desc')
+        .get();
+
+      const results = [];
+      docs.forEach(doc => {
+        results.push(doc.data());
+      });
+
+      should(results.length).equal(2);
+
+      should(results[0].count).equal(2);
+      should(results[1].count).equal(1);
+    });
+
+    it("throws error if no 'orderBy' is set on the query", function () {
+      try {
+        firebase.firestore().collection(COLLECTION).limitToLast(3).get();
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          'limitToLast() queries require specifying at least one firebase.firestore().collection().orderBy() clause',
+        );
+        return Promise.resolve();
+      }
+    });
   });
 
-  it("throws error if no 'orderBy' is set on the query", function () {
-    try {
-      firebase.firestore().collection(COLLECTION).limitToLast(3).get();
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql(
-        'limitToLast() queries require specifying at least one firebase.firestore().collection().orderBy() clause',
+  describe('modular', function () {
+    it('throws if limitToLast is invalid', function () {
+      const { getFirestore, collection, limitToLast, query } = firestoreModular;
+      try {
+        query(collection(getFirestore(), COLLECTION), limitToLast(-1));
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'limitToLast' must be a positive integer value");
+        return Promise.resolve();
+      }
+    });
+
+    it('sets limitToLast on internals', async function () {
+      const { getFirestore, collection, query, limitToLast } = firestoreModular;
+      const colRef = query(collection(getFirestore(), COLLECTION), limitToLast(123));
+
+      should(colRef._modifiers.options.limitToLast).equal(123);
+    });
+
+    it('removes limit query if limitToLast is set afterwards', function () {
+      const { getFirestore, collection, limit, limitToLast, query } = firestoreModular;
+      const colRef = query(collection(getFirestore(), COLLECTION), limit(2), limitToLast(123));
+
+      should(colRef._modifiers.options.limit).equal(undefined);
+    });
+
+    it('removes limitToLast query if limit is set afterwards', function () {
+      const { getFirestore, collection, limit, limitToLast, query } = firestoreModular;
+      const colRef = collection(
+        getFirestore(),
+        // Firestore caches aggressively, even if you wipe the emulator, local documents are cached
+        // between runs, so use random collections to make sure `tests:*:test-reuse` works while iterating
+        `${COLLECTION}/${Utils.randString(12, '#aA')}/limitToLast-limit-after`,
       );
-      return Promise.resolve();
-    }
+      const colRef2 = query(colRef, limitToLast(123), limit(2));
+
+      should(colRef2._modifiers.options.limitToLast).equal(undefined);
+    });
+
+    it('limitToLast the number of documents', async function () {
+      const { getFirestore, collection, addDoc, getDocs, query, limitToLast, orderBy } =
+        firestoreModular;
+      const db = getFirestore();
+      // Firestore caches aggressively, even if you wipe the emulator, local documents are cached
+      // between runs, so use random collections to make sure `tests:*:test-reuse` works while iterating
+      const subCol = `${COLLECTION}/${Utils.randString(12, '#aA')}/limitToLast-count`;
+      const colRef = collection(db, subCol);
+
+      // Add 3
+      await addDoc(colRef, { count: 1 });
+      await addDoc(colRef, { count: 2 });
+      await addDoc(colRef, { count: 3 });
+
+      const docs = await getDocs(
+        query(collection(db, subCol), limitToLast(2), orderBy('count', 'desc')),
+      );
+
+      const results = [];
+      docs.forEach(doc => {
+        results.push(doc.data());
+      });
+
+      should(results.length).equal(2);
+
+      should(results[0].count).equal(2);
+      should(results[1].count).equal(1);
+    });
+
+    it("throws error if no 'orderBy' is set on the query", function () {
+      const { getFirestore, collection, getDocs, limitToLast, query } = firestoreModular;
+      try {
+        getDocs(query(collection(getFirestore(), COLLECTION), limitToLast(3)));
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          'limitToLast() queries require specifying at least one firebase.firestore().collection().orderBy() clause',
+        );
+        return Promise.resolve();
+      }
+    });
   });
 });
