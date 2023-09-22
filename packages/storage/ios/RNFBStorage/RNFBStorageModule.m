@@ -110,7 +110,14 @@ RCT_EXPORT_METHOD(getDownloadURL
     if (error != nil) {
       [self promiseRejectStorageException:reject error:error];
     } else {
-      resolve([URL absoluteString]);
+      NSString *url = URL.absoluteString;
+
+      if ([url rangeOfString:@":443"].location != NSNotFound) {
+        NSRange replaceRange = [url rangeOfString:@":443"];
+        url = [url stringByReplacingCharactersInRange:replaceRange withString:@""];
+      }
+
+      resolve(url);
     }
   }];
 }
