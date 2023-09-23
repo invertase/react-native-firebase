@@ -3,7 +3,7 @@ import { ManifestApplication } from '@expo/config-plugins/build/android/Manifest
 import { ExpoConfig } from '@expo/config-types';
 
 /**
- * 判断 ManifestApplication 是否存在某个属性
+ * Determine whether a ManifestApplication has an attribute.
  */
 const hasMetaData = (application: ManifestApplication, metaData: string) => {
   return application['meta-data']?.some(item => item['$']['android:name'] === metaData);
