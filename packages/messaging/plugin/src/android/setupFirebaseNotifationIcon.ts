@@ -14,6 +14,12 @@ const hasMetaData = (application: ManifestApplication, metaData: string) => {
  */
 export const withExpoPluginFirebaseNotification: ConfigPlugin = config => {
   return withAndroidManifest(config, async config => {
+    // Add NS `xmlns:tools to handle boundary conditions.
+    config.modResults.manifest.$ = {
+      ...config.modResults.manifest.$,
+      'xmlns:tools': 'http://schemas.android.com/tools',
+    };
+
     const application = config.modResults.manifest.application![0];
     setFireBaseMessagingAndroidManifest(config, application);
     return config;
