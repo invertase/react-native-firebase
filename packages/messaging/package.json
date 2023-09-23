@@ -24,7 +24,16 @@
     "messaging"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "18.6.2"
+    "@react-native-firebase/app": "18.6.2",
+    "expo": ">=47.0.0"
+  },
+  "devDependencies": {
+    "expo": "^49.0.0"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
   },
   "publishConfig": {
     "access": "public"
