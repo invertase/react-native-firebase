@@ -75,7 +75,7 @@
     "genversion": "^3.1.1",
     "google-java-format": "^1.1.0",
     "inquirer": "^8.2.4",
-    "jest": "^29.6.4",
+    "jest": "^29.7.0",
     "lerna": "^6.6.2",
     "prettier": "^2.8.8",
     "regenerator-transform": "^0.15.2",
