@@ -1360,7 +1360,7 @@ PODS:
     - React-logger (= 0.72.5)
     - React-perflogger (= 0.72.5)
   - RecaptchaInterop (100.0.0)
-  - RNDeviceInfo (10.9.0):
+  - RNDeviceInfo (10.11.0):
     - React-Core
   - RNFBAnalytics (18.5.0):
     - Firebase/Analytics (= 10.15.0)
@@ -1743,7 +1743,7 @@ SPEC CHECKSUMS:
   React-utils: 40cdd9acee23230df5b78bf78a64ce8a2084c2d0
   ReactCommon: 4ec7cc40d091eed0a510755619940b6a03cb507b
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
-  RNDeviceInfo: 02ea8b23e2280fa18e00a06d7e62804d74028579
+  RNDeviceInfo: bf8a32acbcb875f568217285d1793b0e8588c974
   RNFBAnalytics: acdfdb0ef2d0f391b797e4d4dd3526ca9e31732f
   RNFBApp: 082df9f8ffba99f23f7aee3ecb64df703e7e1adb
   RNFBAppCheck: c93ea3cce9bd195a43a52914d9bbbcb5826ee884
