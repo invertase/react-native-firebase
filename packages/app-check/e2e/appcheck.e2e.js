@@ -49,9 +49,8 @@ describe('appCheck() modular', function () {
       // but in CI it's fresh every time and would be true if not overridden in Info.plist
       it('should configure token auto refresh in Info.plist on ios', async function () {
         if (device.getPlatform() === 'ios') {
-          const tokenRefresh = await NativeModules.RNFBAppCheckModule.isTokenAutoRefreshEnabled(
-            '[DEFAULT]',
-          );
+          const tokenRefresh =
+            await NativeModules.RNFBAppCheckModule.isTokenAutoRefreshEnabled('[DEFAULT]');
           tokenRefresh.should.equal(false);
         } else {
           this.skip();
@@ -65,17 +64,15 @@ describe('appCheck() modular', function () {
 
         // Only iOS lets us assert on this unfortunately, other platforms have no accessor
         if (device.getPlatform() === 'ios') {
-          let tokenRefresh = await NativeModules.RNFBAppCheckModule.isTokenAutoRefreshEnabled(
-            '[DEFAULT]',
-          );
+          let tokenRefresh =
+            await NativeModules.RNFBAppCheckModule.isTokenAutoRefreshEnabled('[DEFAULT]');
           tokenRefresh.should.equal(false);
         }
         firebase.appCheck().setTokenAutoRefreshEnabled(true);
         // Only iOS lets us assert on this unfortunately, other platforms have no accessor
         if (device.getPlatform() === 'ios') {
-          tokenRefresh = await NativeModules.RNFBAppCheckModule.isTokenAutoRefreshEnabled(
-            '[DEFAULT]',
-          );
+          tokenRefresh =
+            await NativeModules.RNFBAppCheckModule.isTokenAutoRefreshEnabled('[DEFAULT]');
           tokenRefresh.should.equal(true);
         }
       });
@@ -223,17 +220,15 @@ describe('appCheck() modular', function () {
         setTokenAutoRefreshEnabled(appCheckInstance, false);
         // Only iOS lets us assert on this unfortunately, other platforms have no accessor
         if (device.getPlatform() === 'ios') {
-          let tokenRefresh = await NativeModules.RNFBAppCheckModule.isTokenAutoRefreshEnabled(
-            '[DEFAULT]',
-          );
+          let tokenRefresh =
+            await NativeModules.RNFBAppCheckModule.isTokenAutoRefreshEnabled('[DEFAULT]');
           tokenRefresh.should.equal(false);
         }
         setTokenAutoRefreshEnabled(appCheckInstance, true);
         // Only iOS lets us assert on this unfortunately, other platforms have no accessor
         if (device.getPlatform() === 'ios') {
-          tokenRefresh = await NativeModules.RNFBAppCheckModule.isTokenAutoRefreshEnabled(
-            '[DEFAULT]',
-          );
+          tokenRefresh =
+            await NativeModules.RNFBAppCheckModule.isTokenAutoRefreshEnabled('[DEFAULT]');
           tokenRefresh.should.equal(true);
         }
       });

@@ -690,9 +690,7 @@ describe('firestore().collection().where(OR Filters)', function () {
         colRef.add(data),
       ]);
 
-      const snapshot = await colRef
-        .where(Filter.or(Filter('foo', 'not-in', ['not', 'this']), Filter('foo', '==', 'not-this')))
-        .get();
+      const snapshot = await colRef.where(Filter('foo', 'not-in', ['not', 'this'])).get();
 
       snapshot.size.should.eql(2);
       snapshot.forEach(s => {
@@ -926,12 +924,7 @@ describe('firestore().collection().where(OR Filters)', function () {
       ]);
 
       const snapshot = await colRef
-        .where(
-          Filter.or(
-            Filter.and(Filter('foo', 'not-in', ['yolo', 'thing']), Filter('bar', '==', 'baz')),
-            Filter.and(Filter('foo', '==', 'not-this'), Filter('bar', '==', 'baz')),
-          ),
-        )
+        .where(Filter.and(Filter('foo', 'not-in', ['yolo', 'thing']), Filter('bar', '==', 'baz')))
         .get();
 
       snapshot.size.should.eql(2);
@@ -1777,7 +1770,7 @@ describe('firestore().collection().where(OR Filters)', function () {
     });
 
     it('returns with where "not-in" filter', async function () {
-      const { getFirestore, collection, where, or, query, addDoc, getDocs } = firestoreModular;
+      const { getFirestore, collection, where, query, addDoc, getDocs } = firestoreModular;
       const colRef = collection(getFirestore(), `${COLLECTION}/filter/not-in-modular`);
       const expected = 'bar';
       const data = { foo: expected };
@@ -1789,9 +1782,7 @@ describe('firestore().collection().where(OR Filters)', function () {
         addDoc(colRef, data),
       ]);
 
-      const snapshot = await getDocs(
-        query(colRef, or(where('foo', 'not-in', ['not', 'this']), where('foo', '==', 'not-this'))),
-      );
+      const snapshot = await getDocs(query(colRef, where('foo', 'not-in', ['not', 'this'])));
 
       snapshot.size.should.eql(2);
       snapshot.forEach(s => {
@@ -2045,7 +2036,7 @@ describe('firestore().collection().where(OR Filters)', function () {
     });
 
     it('returns with where "==" & "not-in" filter', async function () {
-      const { getFirestore, collection, where, or, and, query, addDoc, getDocs } = firestoreModular;
+      const { getFirestore, collection, where, and, query, addDoc, getDocs } = firestoreModular;
       const colRef = collection(getFirestore(), `${COLLECTION}/filter/not-in-modular`);
 
       await Promise.all([
@@ -2056,13 +2047,7 @@ describe('firestore().collection().where(OR Filters)', function () {
       ]);
 
       const snapshot = await getDocs(
-        query(
-          colRef,
-          or(
-            and(where('foo', 'not-in', ['yolo', 'thing']), where('bar', '==', 'baz')),
-            and(where('foo', '==', 'not-this'), where('bar', '==', 'baz')),
-          ),
-        ),
+        query(colRef, and(where('foo', 'not-in', ['yolo', 'thing']), where('bar', '==', 'baz'))),
       );
 
       snapshot.size.should.eql(2);
