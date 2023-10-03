@@ -16,19 +16,35 @@
  */
 
 describe('ml()', function () {
-  describe('namespace', function () {
-    it('accessible from firebase.app()', function () {
-      const app = firebase.app();
-      should.exist(app.ml);
-      app.ml().app.should.equal(app);
+  describe('v8 compatibility', function () {
+    describe('namespace', function () {
+      it('accessible from firebase.app()', function () {
+        const app = firebase.app();
+        should.exist(app.ml);
+        app.ml().app.should.equal(app);
+      });
+
+      it('supports multiple apps', async function () {
+        firebase.ml().app.name.should.equal('[DEFAULT]');
+
+        firebase
+          .ml(firebase.app('secondaryFromNative'))
+          .app.name.should.equal('secondaryFromNative');
+
+        firebase.app('secondaryFromNative').ml().app.name.should.equal('secondaryFromNative');
+      });
     });
+  });
 
-    it('supports multiple apps', async function () {
-      firebase.ml().app.name.should.equal('[DEFAULT]');
+  describe('modular', function () {
+    it('supports multiple apps', function () {
+      const { getML } = mlModular;
+      const ml = getML();
+      const secondaryML = getML(firebase.app('secondaryFromNative'));
 
-      firebase.ml(firebase.app('secondaryFromNative')).app.name.should.equal('secondaryFromNative');
+      ml.app.name.should.equal('[DEFAULT]');
 
-      firebase.app('secondaryFromNative').ml().app.name.should.equal('secondaryFromNative');
+      secondaryML.app.name.should.equal('secondaryFromNative');
     });
   });
 });
