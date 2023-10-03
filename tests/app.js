@@ -51,6 +51,7 @@ import * as inAppMessagingModular from '@react-native-firebase/in-app-messaging'
 import * as installationsModular from '@react-native-firebase/installations';
 import * as crashlyticsModular from '@react-native-firebase/crashlytics';
 import * as dynamicLinksModular from '@react-native-firebase/dynamic-links';
+import * as mlModular from '@react-native-firebase/ml';
 
 jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
@@ -72,6 +73,7 @@ jet.exposeContextProperty('crashlyticsModular', crashlyticsModular);
 jet.exposeContextProperty('dynamicLinksModular', dynamicLinksModular);
 jet.exposeContextProperty('databaseModular', databaseModular);
 jet.exposeContextProperty('firestoreModular', firestoreModular);
+jet.exposeContextProperty('mlModular', mlModular);
 
 firebase.database().useEmulator('localhost', 9000);
 firebase.auth().useEmulator('http://localhost:9099');

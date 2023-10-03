@@ -33,6 +33,8 @@ class FirebaseMLModule extends FirebaseModule {}
 // import { SDK_VERSION } from '@react-native-firebase/ml';
 export const SDK_VERSION = version;
 
+export * from './modular';
+
 // import ML from '@react-native-firebase/ml';
 // ml().X(...);
 export default createModuleNamespace({
