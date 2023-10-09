@@ -87,9 +87,9 @@ describe('onValue()', function () {
     await Utils.spyToBeCalledOnceAsync(callback, 5000);
     callback.should.be.calledWith(value);
 
-    value = Date.now();
-    set(dbRef, value);
-    callback.should.not.be.calledWith(value);
+    let secondValue = Date.now();
+    set(dbRef, secondValue);
+    callback.should.not.be.calledWith(secondValue);
   });
 
   xit('should callback multiple times when the value changes', async function () {
