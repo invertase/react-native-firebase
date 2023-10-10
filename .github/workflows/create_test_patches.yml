@@ -34,9 +34,12 @@ jobs:
       # - make into an action, parameterize directories to pack, and package names to install
       # - name patches w/PR as "semver prerelease" and SHA as "semver build info". Needs patch-package enhancement.
 
+      # FIXME: when github runner bumped from 18.17.1 to 18.18+ we started seeing template copy errors
+      #        different files, could reproduce locally on linux with v18.18+ and v20.8.0. Pinning to
+      #        prior version (18.17.1) to see if it stabilizes
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 18.17.1
 
       - name: Set workflow variables
         id: workflow-variables
