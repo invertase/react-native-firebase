@@ -159,6 +159,8 @@ export const firebase: ReactNativeFirebase.Module & {
   ): ReactNativeFirebase.FirebaseApp & { inAppMessaging(): FirebaseInAppMessagingTypes.Module };
 };
 
+export * from './modular';
+
 export default defaultExport;
 
 /**
