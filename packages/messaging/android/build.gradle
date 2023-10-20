@@ -102,6 +102,12 @@ android {
       firebaseJsonNotificationColor: notificationColor
     ]
   }
+
+  buildFeatures {
+    // AGP 8 no longer builds config by default
+    buildConfig true
+  }
+
   lintOptions {
     disable 'GradleCompatible'
     abortOnError false
