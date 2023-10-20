@@ -1,3 +1,15 @@
+diff --git a/node_modules/detox/android/detox/build.gradle b/node_modules/detox/android/detox/build.gradle
+index 9185a26..9582988 100644
+--- a/node_modules/detox/android/detox/build.gradle
++++ b/node_modules/detox/android/detox/build.gradle
+@@ -13,6 +13,7 @@ def _kotlinVersion = _ext.has('detoxKotlinVersion') ? _ext.detoxKotlinVersion :
+ def _kotlinStdlib = _ext.has('detoxKotlinStdlib') ? _ext.detoxKotlinStdlib : 'kotlin-stdlib-jdk8'
+ 
+ android {
++    namespace 'com.wix.detox'
+     compileSdkVersion _compileSdkVersion
+     buildToolsVersion _buildToolsVersion
+ 
 diff --git a/node_modules/detox/android/detox/src/full/java/com/wix/detox/espresso/common/SliderHelper.kt b/node_modules/detox/android/detox/src/full/java/com/wix/detox/espresso/common/SliderHelper.kt
 index af77cda..253cfb8 100644
 --- a/node_modules/detox/android/detox/src/full/java/com/wix/detox/espresso/common/SliderHelper.kt

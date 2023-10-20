@@ -11303,10 +11303,10 @@ jest@^29.7.0:
     import-local "^3.0.2"
     jest-cli "^29.7.0"
 
-jet@^0.8.2:
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/jet/-/jet-0.8.2.tgz#578928b284effccfb57718212c55c309e9d4dcf7"
-  integrity sha512-FzyIov7QtsUEmglenhRp6QgJcBMxja10uVEvmkwNPPwqvtz1d9SS6//2VfqRpY3AZB0nmSh5H+z8kD9GbVviQw==
+jet@^0.8.3:
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/jet/-/jet-0.8.3.tgz#3300c08007c334430074183cdf8d9283b94c1986"
+  integrity sha512-cS1dIMpeNZ4tBDiNjApIsm2Wlk/HBhLJmH4keymw+4nhleQdX+Nhm7YVHGU+dP9K28Xl/8j9w5KH26Zs1oEv2A==
   dependencies:
     chalk "^4.0.0"
     error-stack-parser "^2.0.6"
