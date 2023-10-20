@@ -88,6 +88,11 @@ android {
     missingDimensionStrategy 'detox', 'full'
   }
 
+  buildFeatures {
+    // AGP 8 no longer builds config by default
+    buildConfig true
+  }
+
   signingConfigs {
     release {
       storeFile file('keystore.jks')
