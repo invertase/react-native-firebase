@@ -200,6 +200,7 @@ Utils
 v15
 v5
 v6
+v7
 v9
 VPN
 VSCode

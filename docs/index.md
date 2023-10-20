@@ -47,8 +47,8 @@ to your project.
 #### Generating Android credentials
 
 On the Firebase console, add a new Android application and enter your projects details. The "Android package name" must match your
-local projects package name which can be found inside of the `manifest` tag within the `/android/app/src/main/AndroidManifest.xml`
-file within your project.
+local projects package name which can be found inside of the `namespace` field in `/android/app/build.gradle`, or in the
+`manifest` tag within the `/android/app/src/main/AndroidManifest.xml` file within your project for projects using android gradle plugin v7 and below
 
 > The debug signing certificate is optional to use Firebase with your app, but is required for Dynamic Links, Invites and Phone Authentication.
 > To generate a certificate run `cd android && ./gradlew signingReport`. This generates two variant keys.
