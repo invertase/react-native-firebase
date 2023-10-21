@@ -31,8 +31,8 @@
     "expo": ">=47.0.0"
   },
   "devDependencies": {
-    "@types/plist": "^3.0.3",
-    "expo": "^47.0.0"
+    "@types/plist": "^3.0.4",
+    "expo": "^49.0.16"
   },
   "peerDependenciesMeta": {
     "expo": {
