@@ -58,7 +58,7 @@
     "@babel/plugin-transform-class-properties": "^7.22.5",
     "@babel/preset-env": "^7.23.2",
     "@octokit/core": "^5.0.1",
-    "@tsconfig/node12": "^1.0.11",
+    "@tsconfig/node-lts": "^18.1.0",
     "@types/react": "^18.2.31",
     "@types/react-native": "^0.72.5",
     "@typescript-eslint/eslint-plugin": "^6.8.0",
