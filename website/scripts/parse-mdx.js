@@ -15,9 +15,7 @@
  *
  */
 
-
 module.exports = async function parseMdx({ node, getNode, actions }) {
-
   if (node.internal.type !== 'Mdx') return;
 
   // Mdx nodes parents are a File

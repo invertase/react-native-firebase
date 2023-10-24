@@ -18,7 +18,6 @@
 const path = require('path');
 
 module.exports = async function createDocumentationPages({ graphql, actions }) {
-
   const { data } = await graphql(`
     {
       allMdx {
@@ -54,11 +53,10 @@ module.exports = async function createDocumentationPages({ graphql, actions }) {
       return;
     }
 
-    let component = path.resolve('./src/templates/documentation.tsx')
+    let component = path.resolve('./src/templates/documentation.tsx');
 
-
-    if(fields.slug.includes("/json-config")){
-      component = path.resolve('./src/templates/json-config.tsx')
+    if (fields.slug.includes('/json-config')) {
+      component = path.resolve('./src/templates/json-config.tsx');
     }
 
     actions.createPage({
