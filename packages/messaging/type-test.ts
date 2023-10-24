@@ -1,7 +1,6 @@
-import firebase from '@react-native-firebase/app';
-import * as messaging from '@react-native-firebase/messaging';
+import firebase, { FirebaseMessagingTypes } from '.';
 
-console.log(messaging.default().app);
+console.log(firebase.default().app);
 
 // checks module exists at root
 console.log(firebase.messaging().app.name);
@@ -22,7 +21,7 @@ console.log(firebase.SDK_VERSION);
 console.log(firebase.SDK_VERSION);
 
 // checks firebase named export exists on module
-console.log(messaging.firebase.SDK_VERSION);
+console.log(firebase.firebase.SDK_VERSION);
 
 // checks multi-app support exists
 // console.log(firebase.messaging(firebase.app()).app.name);
@@ -30,19 +29,10 @@ console.log(messaging.firebase.SDK_VERSION);
 // checks default export supports app arg
 // console.log(defaultExport(firebase.app()).app.name);
 
-firebase
-  .messaging()
-  .subscribeToTopic('foo')
-  .then();
-firebase
-  .messaging()
-  .unsubscribeFromTopic('foo')
-  .then();
-firebase
-  .messaging()
-  .getAPNSToken()
-  .then();
-firebase.messaging().setBackgroundMessageHandler(msg => {
+firebase.messaging().subscribeToTopic('foo').then();
+firebase.messaging().unsubscribeFromTopic('foo').then();
+firebase.messaging().getAPNSToken().then();
+firebase.messaging().setBackgroundMessageHandler((msg: FirebaseMessagingTypes.RemoteMessage) => {
   console.log(msg.data);
   return Promise.resolve();
 });

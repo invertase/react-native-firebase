@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-import firebase, { utils } from '@react-native-firebase/app';
+import firebase, { utils } from '.';
 
 // checks module exists at root
 console.log(firebase.utils().app.name);
