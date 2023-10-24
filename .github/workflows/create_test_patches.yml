@@ -65,7 +65,7 @@ jobs:
             echo "Packing PR version of package $PACKAGE"
             pushd packages/$PACKAGE;
             yarn pack;
-            mv *tgz $HOME/packages;
+            mv package.tgz $HOME/packages/react-native-firebase-${PACKAGE}.tgz;
             ls -la $HOME/packages/*${PACKAGE}*
             popd;
           done
@@ -80,7 +80,7 @@ jobs:
             yarn add @react-native-firebase/$PACKAGE || true
             if [ -d node_modules/@react-native-firebase/$PACKAGE ]; then
               pushd node_modules/@react-native-firebase
-              tar -zxf $HOME/packages/react-native-firebase-${PACKAGE}-v*
+              tar -zxf $HOME/packages/react-native-firebase-${PACKAGE}.tgz
               mv $PACKAGE/package.json package/
               \rm -fr $PACKAGE
               mv package $PACKAGE
