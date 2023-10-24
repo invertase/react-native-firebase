@@ -61,8 +61,7 @@
     "postcss-nesting": "^7.0.1",
     "prettier": "^2.0.4",
     "remark-autolink-headings": "^5.2.1",
-    "rimraf": "^3.0.2",
-    "typescript": "^3.7.5"
+    "rimraf": "^3.0.2"
   },
   "resolutions": {
     "@types/react": "^16.9.49",
