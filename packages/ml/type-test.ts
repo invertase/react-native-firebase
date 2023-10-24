@@ -1,7 +1,6 @@
-import firebase from '@react-native-firebase/app';
-import * as ml from '@react-native-firebase/ml';
+import firebase from '.';
 
-console.log(ml.default().app);
+console.log(firebase.default().app);
 
 // checks module exists at root
 console.log(firebase.ml().app.name);
@@ -15,11 +14,8 @@ console.log(firebase.ml.SDK_VERSION);
 // checks statics exist on defaultExport
 console.log(firebase.SDK_VERSION);
 
-// checks root exists
-console.log(firebase.SDK_VERSION);
-
 // checks firebase named export exists on module
-console.log(ml.firebase.SDK_VERSION);
+console.log(firebase.firebase.SDK_VERSION);
 
 // checks multi-app support exists
 console.log(firebase.ml(firebase.app()).app.name);

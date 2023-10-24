@@ -1,7 +1,6 @@
-import firebase from '@react-native-firebase/app';
-import * as config from '@react-native-firebase/remote-config';
+import firebase from '.';
 
-console.log(config.default().app);
+console.log(firebase.default().app);
 
 // checks module exists at root
 console.log(firebase.remoteConfig().app.name);
@@ -19,7 +18,7 @@ console.log(firebase.SDK_VERSION);
 console.log(firebase.SDK_VERSION);
 
 // checks firebase named export exists on module
-console.log(config.firebase.SDK_VERSION);
+console.log(firebase.firebase.SDK_VERSION);
 
 console.log(firebase.remoteConfig().lastFetchStatus);
 console.log(firebase.remoteConfig().fetchTimeMillis);

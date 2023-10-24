@@ -1,4 +1,4 @@
-import analytics, { firebase } from '@react-native-firebase/analytics';
+import analytics, { firebase } from '.';
 
 analytics.SDK_VERSION;
 analytics().app.name;
