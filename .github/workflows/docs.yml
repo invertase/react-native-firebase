@@ -40,13 +40,6 @@ jobs:
           command: yarn
       - name: Lint
         run: yarn lint:markdown
-      - name: Install Dependencies
-        uses: nick-fields/retry@v2
-        with:
-          timeout_minutes: 10
-          retry_wait_seconds: 60
-          max_attempts: 3
-          command: sudo npm install --global spellchecker-cli
       - name: Spell check
         run: |
           yarn lint:spellcheck
