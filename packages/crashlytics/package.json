@@ -33,7 +33,7 @@
     "expo": ">=47.0.0"
   },
   "dependencies": {
-    "stacktrace-js": "^2.0.0"
+    "stacktrace-js": "^2.0.2"
   },
   "devDependencies": {
     "expo": "^49.0.16"

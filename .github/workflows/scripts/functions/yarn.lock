@@ -1114,7 +1114,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase-admin@npm:^11.10.1":
+"firebase-admin@npm:^11.11.0":
   version: 11.11.0
   resolution: "firebase-admin@npm:11.11.0"
   dependencies:
@@ -1209,7 +1209,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "functions@workspace:."
   dependencies:
-    firebase-admin: "npm:^11.10.1"
+    firebase-admin: "npm:^11.11.0"
     firebase-functions: "npm:^4.4.1"
     firebase-functions-test: "npm:^3.1.0"
     typescript: "npm:^5.2.2"

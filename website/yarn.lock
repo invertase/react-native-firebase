@@ -89,7 +89,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:^7.12.3, @babel/core@npm:^7.6.4":
+"@babel/core@npm:^7.12.3, @babel/core@npm:^7.23.2":
   version: 7.23.2
   resolution: "@babel/core@npm:7.23.2"
   dependencies:
@@ -486,7 +486,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-proposal-object-rest-spread@npm:^7.12.1, @babel/plugin-proposal-object-rest-spread@npm:^7.6.2":
+"@babel/plugin-proposal-object-rest-spread@npm:^7.12.1, @babel/plugin-proposal-object-rest-spread@npm:^7.20.7":
   version: 7.20.7
   resolution: "@babel/plugin-proposal-object-rest-spread@npm:7.20.7"
   dependencies:
@@ -1242,7 +1242,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-react-jsx@npm:^7.12.1, @babel/plugin-transform-react-jsx@npm:^7.12.5, @babel/plugin-transform-react-jsx@npm:^7.22.15, @babel/plugin-transform-react-jsx@npm:^7.22.5, @babel/plugin-transform-react-jsx@npm:^7.3.0":
+"@babel/plugin-transform-react-jsx@npm:^7.12.1, @babel/plugin-transform-react-jsx@npm:^7.12.5, @babel/plugin-transform-react-jsx@npm:^7.22.15, @babel/plugin-transform-react-jsx@npm:^7.22.5":
   version: 7.22.15
   resolution: "@babel/plugin-transform-react-jsx@npm:7.22.15"
   dependencies:
@@ -1660,7 +1660,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/core@npm:^10.0.27":
+"@emotion/core@npm:^10.0.27, @emotion/core@npm:^10.3.1":
   version: 10.3.1
   resolution: "@emotion/core@npm:10.3.1"
   dependencies:
@@ -1745,7 +1745,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/styled@npm:^10.0.27":
+"@emotion/styled@npm:^10.0.27, @emotion/styled@npm:^10.3.0":
   version: 10.3.0
   resolution: "@emotion/styled@npm:10.3.0"
   dependencies:
@@ -2227,7 +2227,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mdx-js/mdx@npm:^1.5.1":
+"@mdx-js/mdx@npm:^1.6.22":
   version: 1.6.22
   resolution: "@mdx-js/mdx@npm:1.6.22"
   dependencies:
@@ -2254,7 +2254,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mdx-js/react@npm:^1.5.1":
+"@mdx-js/react@npm:^1.6.22":
   version: 1.6.22
   resolution: "@mdx-js/react@npm:1.6.22"
   peerDependencies:
@@ -2384,7 +2384,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reach/router@npm:^1.2.1, @reach/router@npm:^1.3.4":
+"@reach/router@npm:^1.3.4":
   version: 1.3.4
   resolution: "@reach/router@npm:1.3.4"
   dependencies:
@@ -2575,12 +2575,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/classnames@npm:^2.2.9":
-  version: 2.3.0
-  resolution: "@types/classnames@npm:2.3.0"
+"@types/classnames@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "@types/classnames@npm:2.3.1"
   dependencies:
     classnames: "npm:*"
-  checksum: e1bd6de60fc5e4ead601838078b10f378d6a66ad21112922856de59a1f450b1361f597aa3ca34f2cc33bc030f950112872fddfde43c5189bec89737a8b237f24
+  checksum: 09a17ea08fcb83380921efdfdac94cfa162f87025cae0bf6f4ba508c2fa5f436459ce7612905a3f968fdddb68c03b8e6ff08e762ed2d0c110c5c4fceb244dc55
   languageName: node
   linkType: hard
 
@@ -2878,7 +2878,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/reach__router@npm:^1.2.6, @types/reach__router@npm:^1.3.7":
+"@types/reach__router@npm:^1.3.13, @types/reach__router@npm:^1.3.7":
   version: 1.3.13
   resolution: "@types/reach__router@npm:1.3.13"
   dependencies:
@@ -2887,7 +2887,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-helmet@npm:^5.0.11":
+"@types/react-helmet@npm:^5.0.23":
   version: 5.0.23
   resolution: "@types/react-helmet@npm:5.0.23"
   dependencies:
@@ -2896,7 +2896,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-scrollspy@npm:^3.3.1":
+"@types/react-scrollspy@npm:^3.3.7":
   version: 3.3.7
   resolution: "@types/react-scrollspy@npm:3.3.7"
   dependencies:
@@ -2905,7 +2905,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^16.9.49":
+"@types/react@npm:^16.14.50":
   version: 16.14.50
   resolution: "@types/react@npm:16.14.50"
   dependencies:
@@ -7333,7 +7333,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-prettier@npm:^6.10.1":
+"eslint-config-prettier@npm:^6.15.0":
   version: 6.15.0
   resolution: "eslint-config-prettier@npm:6.15.0"
   dependencies:
@@ -7482,7 +7482,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-prettier@npm:^3.1.2":
+"eslint-plugin-prettier@npm:^3.4.1":
   version: 3.4.1
   resolution: "eslint-plugin-prettier@npm:3.4.1"
   dependencies:
@@ -7506,7 +7506,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react@npm:^7.19.0, eslint-plugin-react@npm:^7.20.6":
+"eslint-plugin-react@npm:^7.20.6, eslint-plugin-react@npm:^7.33.2":
   version: 7.33.2
   resolution: "eslint-plugin-react@npm:7.33.2"
   dependencies:
@@ -8644,7 +8644,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gatsby-image@npm:^2.2.39":
+"gatsby-image@npm:^2.11.0":
   version: 2.11.0
   resolution: "gatsby-image@npm:2.11.0"
   dependencies:
@@ -8695,7 +8695,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gatsby-plugin-emotion@npm:^4.1.22":
+"gatsby-plugin-emotion@npm:^4.5.0":
   version: 4.5.0
   resolution: "gatsby-plugin-emotion@npm:4.5.0"
   dependencies:
@@ -8709,7 +8709,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gatsby-plugin-google-tagmanager@npm:^2.1.18":
+"gatsby-plugin-google-tagmanager@npm:^2.11.0":
   version: 2.11.0
   resolution: "gatsby-plugin-google-tagmanager@npm:2.11.0"
   dependencies:
@@ -8720,7 +8720,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gatsby-plugin-manifest@npm:^2.2.39":
+"gatsby-plugin-manifest@npm:^2.12.1":
   version: 2.12.1
   resolution: "gatsby-plugin-manifest@npm:2.12.1"
   dependencies:
@@ -8735,7 +8735,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gatsby-plugin-mdx@npm:^1.0.47":
+"gatsby-plugin-mdx@npm:^1.10.1":
   version: 1.10.1
   resolution: "gatsby-plugin-mdx@npm:1.10.1"
   dependencies:
@@ -8782,7 +8782,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gatsby-plugin-netlify@npm:^2.1.31":
+"gatsby-plugin-netlify@npm:^2.11.1":
   version: 2.11.1
   resolution: "gatsby-plugin-netlify@npm:2.11.1"
   dependencies:
@@ -8815,7 +8815,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gatsby-plugin-postcss@npm:^2.1.10":
+"gatsby-plugin-postcss@npm:^2.3.13":
   version: 2.3.13
   resolution: "gatsby-plugin-postcss@npm:2.3.13"
   dependencies:
@@ -8840,7 +8840,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gatsby-plugin-react-helmet@npm:^3.1.21":
+"gatsby-plugin-react-helmet@npm:^3.10.0":
   version: 3.10.0
   resolution: "gatsby-plugin-react-helmet@npm:3.10.0"
   dependencies:
@@ -8852,7 +8852,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gatsby-plugin-sitemap@npm:^2.2.27":
+"gatsby-plugin-sitemap@npm:^2.12.0":
   version: 2.12.0
   resolution: "gatsby-plugin-sitemap@npm:2.12.0"
   dependencies:
@@ -8867,7 +8867,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gatsby-plugin-typescript@npm:^2.1.27, gatsby-plugin-typescript@npm:^2.12.1":
+"gatsby-plugin-typescript@npm:^2.12.1":
   version: 2.12.1
   resolution: "gatsby-plugin-typescript@npm:2.12.1"
   dependencies:
@@ -8972,7 +8972,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gatsby-remark-autolink-headers@npm:^2.1.13":
+"gatsby-remark-autolink-headers@npm:^2.11.0":
   version: 2.11.0
   resolution: "gatsby-remark-autolink-headers@npm:2.11.0"
   dependencies:
@@ -8987,7 +8987,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gatsby-source-filesystem@npm:^2.1.46":
+"gatsby-source-filesystem@npm:^2.11.1":
   version: 2.11.1
   resolution: "gatsby-source-filesystem@npm:2.11.1"
   dependencies:
@@ -11628,7 +11628,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:^3.13.1":
+"js-yaml@npm:^3.13.1, js-yaml@npm:^3.14.1":
   version: 3.14.1
   resolution: "js-yaml@npm:3.14.1"
   dependencies:
@@ -15141,7 +15141,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-nested@npm:^4.1.1, postcss-nested@npm:^4.2.1":
+"postcss-nested@npm:^4.1.1, postcss-nested@npm:^4.2.3":
   version: 4.2.3
   resolution: "postcss-nested@npm:4.2.3"
   dependencies:
@@ -15436,7 +15436,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.0.4, prettier@npm:^2.0.5":
+"prettier@npm:^2.0.5, prettier@npm:^2.8.8":
   version: 2.8.8
   resolution: "prettier@npm:2.8.8"
   bin:
@@ -15882,7 +15882,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^16.12.0":
+"react-dom@npm:^16.14.0":
   version: 16.14.0
   resolution: "react-dom@npm:16.14.0"
   dependencies:
@@ -15978,61 +15978,61 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "react-native-firebase-website@workspace:."
   dependencies:
-    "@babel/core": "npm:^7.6.4"
-    "@babel/plugin-proposal-object-rest-spread": "npm:^7.6.2"
-    "@babel/plugin-transform-react-jsx": "npm:^7.3.0"
-    "@emotion/core": "npm:^10.0.27"
-    "@emotion/styled": "npm:^10.0.27"
+    "@babel/core": "npm:^7.23.2"
+    "@babel/plugin-proposal-object-rest-spread": "npm:^7.20.7"
+    "@babel/plugin-transform-react-jsx": "npm:^7.22.15"
+    "@emotion/core": "npm:^10.3.1"
+    "@emotion/styled": "npm:^10.3.0"
     "@invertase/ui": "npm:^1.0.10"
     "@mapbox/rehype-prism": "npm:^0.3.1"
-    "@mdx-js/mdx": "npm:^1.5.1"
-    "@mdx-js/react": "npm:^1.5.1"
-    "@reach/router": "npm:^1.2.1"
-    "@types/classnames": "npm:^2.2.9"
-    "@types/reach__router": "npm:^1.2.6"
-    "@types/react": "npm:^16.9.49"
-    "@types/react-helmet": "npm:^5.0.11"
-    "@types/react-scrollspy": "npm:^3.3.1"
+    "@mdx-js/mdx": "npm:^1.6.22"
+    "@mdx-js/react": "npm:^1.6.22"
+    "@reach/router": "npm:^1.3.4"
+    "@types/classnames": "npm:^2.3.1"
+    "@types/reach__router": "npm:^1.3.13"
+    "@types/react": "npm:^16.14.50"
+    "@types/react-helmet": "npm:^5.0.23"
+    "@types/react-scrollspy": "npm:^3.3.7"
     "@types/validator": "npm:^12.0.1"
     "@typescript-eslint/eslint-plugin": "npm:^2.14.0"
     "@typescript-eslint/parser": "npm:^2.14.0"
     autoprefixer: "npm:^9.7.1"
     classnames: "npm:^2.2.6"
     eslint: "npm:^6.8.0"
-    eslint-config-prettier: "npm:^6.10.1"
-    eslint-plugin-prettier: "npm:^3.1.2"
-    eslint-plugin-react: "npm:^7.19.0"
+    eslint-config-prettier: "npm:^6.15.0"
+    eslint-plugin-prettier: "npm:^3.4.1"
+    eslint-plugin-react: "npm:^7.33.2"
     gatsby: "npm:^2.19.7"
-    gatsby-image: "npm:^2.2.39"
-    gatsby-plugin-emotion: "npm:^4.1.22"
-    gatsby-plugin-google-tagmanager: "npm:^2.1.18"
-    gatsby-plugin-manifest: "npm:^2.2.39"
-    gatsby-plugin-mdx: "npm:^1.0.47"
-    gatsby-plugin-netlify: "npm:^2.1.31"
-    gatsby-plugin-postcss: "npm:^2.1.10"
+    gatsby-image: "npm:^2.11.0"
+    gatsby-plugin-emotion: "npm:^4.5.0"
+    gatsby-plugin-google-tagmanager: "npm:^2.11.0"
+    gatsby-plugin-manifest: "npm:^2.12.1"
+    gatsby-plugin-mdx: "npm:^1.10.1"
+    gatsby-plugin-netlify: "npm:^2.11.1"
+    gatsby-plugin-postcss: "npm:^2.3.13"
     gatsby-plugin-purgecss: "npm:^5.0.0"
-    gatsby-plugin-react-helmet: "npm:^3.1.21"
-    gatsby-plugin-sitemap: "npm:^2.2.27"
-    gatsby-plugin-typescript: "npm:^2.1.27"
-    gatsby-remark-autolink-headers: "npm:^2.1.13"
-    gatsby-source-filesystem: "npm:^2.1.46"
-    js-yaml: "npm:^3.13.1"
+    gatsby-plugin-react-helmet: "npm:^3.10.0"
+    gatsby-plugin-sitemap: "npm:^2.12.0"
+    gatsby-plugin-typescript: "npm:^2.12.1"
+    gatsby-remark-autolink-headers: "npm:^2.11.0"
+    gatsby-source-filesystem: "npm:^2.11.1"
+    js-yaml: "npm:^3.14.1"
     ncp: "npm:^2.0.0"
-    postcss-nested: "npm:^4.2.1"
+    postcss-nested: "npm:^4.2.3"
     postcss-nesting: "npm:^7.0.1"
-    prettier: "npm:^2.0.4"
-    prop-types: "npm:^15.7.2"
-    react: "npm:^16.12.0"
-    react-dom: "npm:^16.12.0"
+    prettier: "npm:^2.8.8"
+    prop-types: "npm:^15.8.1"
+    react: "npm:^16.14.0"
+    react-dom: "npm:^16.14.0"
     react-helmet: "npm:^5.2.1"
-    remark-autolink-headings: "npm:^5.2.1"
+    remark-autolink-headings: "npm:^5.2.2"
     rimraf: "npm:^3.0.2"
     slug: "npm:^2.1.1"
-    tailwindcss: "npm:^1.4.0"
-    tailwindcss-dark-mode: "npm:^1.1.0"
-    traverse: "npm:^0.6.6"
+    tailwindcss: "npm:^1.9.6"
+    tailwindcss-dark-mode: "npm:^1.1.7"
+    traverse: "npm:^0.6.7"
     typedoc: "npm:~0.19.2"
-    typescript: "npm:^4.8.4"
+    typescript: "npm:^4.9.5"
     use-dark-mode: "npm:^2.3.1"
   languageName: unknown
   linkType: soft
@@ -16055,7 +16055,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^16.12.0":
+"react@npm:^16.14.0":
   version: 16.14.0
   resolution: "react@npm:16.14.0"
   dependencies:
@@ -16323,7 +16323,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"remark-autolink-headings@npm:^5.2.1":
+"remark-autolink-headings@npm:^5.2.2":
   version: 5.2.2
   resolution: "remark-autolink-headings@npm:5.2.2"
   dependencies:
@@ -18307,7 +18307,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwindcss-dark-mode@npm:^1.1.0":
+"tailwindcss-dark-mode@npm:^1.1.7":
   version: 1.1.7
   resolution: "tailwindcss-dark-mode@npm:1.1.7"
   dependencies:
@@ -18317,7 +18317,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwindcss@npm:^1.4.0, tailwindcss@npm:^1.9.2":
+"tailwindcss@npm:^1.9.2, tailwindcss@npm:^1.9.6":
   version: 1.9.6
   resolution: "tailwindcss@npm:1.9.6"
   dependencies:
@@ -18638,7 +18638,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"traverse@npm:^0.6.6":
+"traverse@npm:^0.6.7":
   version: 0.6.7
   resolution: "traverse@npm:0.6.7"
   checksum: b06ea2d1db755ae21d2f5bade6e5ddfc6daf4b571fefe0de343c4fbbb022836a1e9c293b334d04b5c73cc689e9dbbdde33bb41a57508a8b82c73683f76de7a01
@@ -18946,7 +18946,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.8.4":
+"typescript@npm:^4.9.5":
   version: 4.9.5
   resolution: "typescript@npm:4.9.5"
   bin:
@@ -18956,7 +18956,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^4.8.4#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A^4.9.5#optional!builtin<compat/typescript>":
   version: 4.9.5
   resolution: "typescript@patch:typescript@npm%3A4.9.5#optional!builtin<compat/typescript>::version=4.9.5&hash=289587"
   bin:

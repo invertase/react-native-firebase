@@ -57,7 +57,7 @@
     "react-native": "*"
   },
   "dependencies": {
-    "opencollective-postinstall": "^2.0.1",
+    "opencollective-postinstall": "^2.0.3",
     "superstruct": "^0.6.2"
   },
   "devDependencies": {
