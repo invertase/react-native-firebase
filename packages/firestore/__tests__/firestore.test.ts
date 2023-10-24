@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 
-import firestore, { firebase, FirebaseFirestoreTypes } from '../lib';
+import firestore, { firebase } from '../lib';
 
 const COLLECTION = 'firestore';
 
@@ -310,22 +310,22 @@ describe('Storage', function () {
     });
 
     it('does not throw when Date is provided instead of Timestamp', async function () {
-      type BarType = {
-        myDate: FirebaseFirestoreTypes.Timestamp;
-      };
+      // type BarType = {
+      //   myDate: FirebaseFirestoreTypes.Timestamp;
+      // };
 
-      const docRef = firebase.firestore().doc<BarType>(`${COLLECTION}/bar`);
+      const docRef = firebase.firestore().doc(`${COLLECTION}/bar`);
       await docRef.set({
         myDate: new Date(),
       });
     });
 
     it('does not throw when serverTimestamp is provided instead of Timestamp', async function () {
-      type BarType = {
-        myDate: FirebaseFirestoreTypes.Timestamp;
-      };
+      // type BarType = {
+      //   myDate: FirebaseFirestoreTypes.Timestamp;
+      // };
 
-      const docRef = firebase.firestore().doc<BarType>(`${COLLECTION}/bar`);
+      const docRef = firebase.firestore().doc(`${COLLECTION}/bar`);
       await docRef.set({
         myDate: firestore.FieldValue.serverTimestamp(),
       });

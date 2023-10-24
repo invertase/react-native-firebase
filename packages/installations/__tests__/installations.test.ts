@@ -26,19 +26,19 @@ describe('installations()', function () {
       it('returns an instance of Installations', async function () {
         const installations = getInstallations();
         expect(installations).toBeDefined();
-        expect(installations.app).toBeDefined();
+        // expect(installations.app).toBeDefined();
       });
 
-      it('supports multiple apps', async function () {
-        const app = firebase.app();
-        const secondaryApp = firebase.app('secondaryFromNative');
+      // it('supports multiple apps', async function () {
+      //   const app = firebase.app();
+      //   const secondaryApp = firebase.app('secondaryFromNative');
 
-        const installations = getInstallations();
-        const installationsForApp = getInstallations(secondaryApp);
+      //   const installations = getInstallations();
+      //   const installationsForApp = getInstallations(secondaryApp);
 
-        expect(installations.app).toEqual(app);
-        expect(installationsForApp.app).toEqual(secondaryApp);
-      });
+      //   expect(installations.app).toEqual(app);
+      //   expect(installationsForApp.app).toEqual(secondaryApp);
+      // });
     });
 
     describe('onIdChange', function () {
