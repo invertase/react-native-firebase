@@ -30,14 +30,11 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Set workflow variables
-        id: workflow-variables
-        run: echo "yarn-cache-dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
       - uses: actions/cache/restore@v3
         name: Yarn Cache Restore
         id: yarn-cache
         with:
-          path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
+          path: .yarn/cache
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-v1
       - name: Yarn Install
@@ -46,7 +43,7 @@ jobs:
           timeout_minutes: 15
           retry_wait_seconds: 30
           max_attempts: 3
-          command: yarn --no-audit --prefer-offline
+          command: yarn
       - name: Lint
         uses: nick-fields/retry@v2
         with:
@@ -58,7 +55,7 @@ jobs:
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         with:
-          path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
+          path: .yarn/cache
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
 
 
@@ -73,14 +70,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Set workflow variables
-        id: workflow-variables
-        run: echo "yarn-cache-dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
       - uses: actions/cache/restore@v3
         name: Yarn Cache Restore
         id: yarn-cache
         with:
-          path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
+          path: .yarn/cache
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-v1
       - name: Yarn Install
@@ -89,14 +83,14 @@ jobs:
           timeout_minutes: 15
           retry_wait_seconds: 30
           max_attempts: 3
-          command: yarn --no-audit --prefer-offline
+          command: yarn
       - name: Lint
         run: yarn tsc:compile
       - uses: actions/cache/save@v3
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         with:
-          path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
+          path: .yarn/cache
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
 
 
@@ -111,14 +105,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Set workflow variables
-        id: workflow-variables
-        run: echo "yarn-cache-dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
       - uses: actions/cache/restore@v3
         name: Yarn Cache Restore
         id: yarn-cache
         with:
-          path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
+          path: .yarn/cache
           key: ${{ runner.os }}-yarn-with-website-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-with-website-v1
       - name: Yarn Install
@@ -127,19 +118,19 @@ jobs:
           timeout_minutes: 15
           retry_wait_seconds: 30
           max_attempts: 3
-          command: yarn --no-audit --prefer-offline
+          command: yarn
       - name: Yarn Install (Website)
         uses: nick-fields/retry@v2
         with:
           timeout_minutes: 3
           retry_wait_seconds: 30
           max_attempts: 3
-          command: cd website && yarn --no-audit --prefer-offline
+          command: cd website && yarn
       - name: Generate TypeDoc
         run: node -e "require('./website/scripts/generate-typedoc').generateTypedoc()"
       - uses: actions/cache/save@v3
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         with:
-          path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
+          path: .yarn/cache
           key: ${{ runner.os }}-yarn-with-website-v1-${{ hashFiles('yarn.lock') }}

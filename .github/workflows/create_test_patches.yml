@@ -41,15 +41,11 @@ jobs:
         with:
           node-version: 18.17.1
 
-      - name: Set workflow variables
-        id: workflow-variables
-        run: echo "yarn-cache-dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-
       - uses: actions/cache/restore@v3
         name: Yarn Cache Restore
         id: yarn-cache
         with:
-          path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
+          path: .yarn/cache
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-v1
 
@@ -59,7 +55,7 @@ jobs:
           timeout_minutes: 15
           retry_wait_seconds: 60
           max_attempts: 3
-          command: DETOX_DISABLE_POSTINSTALL=1 yarn --no-audit --prefer-offline
+          command: DETOX_DISABLE_POSTINSTALL=1 yarn
 
       - name: Create Patches
         run: |
@@ -105,7 +101,7 @@ jobs:
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         with:
-          path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
+          path: .yarn/cache
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
 
       # create a comment on the PR and any related issues with a direct link to the archive,
