@@ -1,7 +1,7 @@
 require 'json'
 
 # Settings to test various overrides if desired
-appPackage = JSON.parse(File.read(File.join('..', '..', 'node_modules', '@react-native-firebase', 'app', 'package.json')))
+appPackage = JSON.parse(File.read(File.join('..', 'node_modules', '@react-native-firebase', 'app', 'package.json')))
 $FirebaseSDKVersion = appPackage['sdkVersions']['ios']['firebase']
 #$FirebaseSDKVersion = '8.0.0' # https://firebase.google.com/support/release-notes/ios
 Pod::UI.puts "react-native-firebase/tests: Using Firebase SDK version '#{$FirebaseSDKVersion}'"

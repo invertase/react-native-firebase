@@ -24,14 +24,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Set workflow variables
-        id: workflow-variables
-        run: echo "yarn-cache-dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
       - uses: actions/cache/restore@v3
         name: Yarn Cache Restore
         id: yarn-cache
         with:
-          path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
+          path: .yarn/cache
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-v1
       - name: Yarn Install
@@ -40,7 +37,7 @@ jobs:
           timeout_minutes: 15
           retry_wait_seconds: 30
           max_attempts: 3
-          command: yarn --no-audit --prefer-offline
+          command: yarn
       - name: Lint
         run: yarn lint:markdown
       - name: Install Dependencies
@@ -57,5 +54,5 @@ jobs:
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         with:
-          path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
+          path: .yarn/cache
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}

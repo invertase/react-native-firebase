@@ -170,7 +170,7 @@ dependencies {
    * ------------------------ */
     androidTestImplementation(project(path: ':detox'))
 
-    def firebaseBomVersion = new JsonSlurper().parseText(new File('../../node_modules/@react-native-firebase/app/package.json').text).sdkVersions.android.firebase
+    def firebaseBomVersion = new JsonSlurper().parseText(new File('../node_modules/@react-native-firebase/app/package.json').text).sdkVersions.android.firebase
     androidTestImplementation platform("com.google.firebase:firebase-bom:${firebaseBomVersion}")
     androidTestImplementation "com.google.firebase:firebase-appcheck-debug-testing"
 }

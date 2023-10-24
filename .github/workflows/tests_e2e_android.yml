@@ -72,14 +72,13 @@ jobs:
         id: workflow-variables
         run: |
           echo "metro-cache=$HOME/.metro" >> $GITHUB_OUTPUT
-          echo "yarn-cache-dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
           echo "tempdir=$TMPDIR" >> $GITHUB_OUTPUT
 
       - uses: actions/cache/restore@v3
         name: Yarn Cache Restore
         id: yarn-cache
         with:
-          path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
+          path: .yarn/cache
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-v1
 
@@ -89,7 +88,7 @@ jobs:
           timeout_minutes: 15
           retry_wait_seconds: 60
           max_attempts: 3
-          command: DETOX_DISABLE_POSTINSTALL=1 yarn --no-audit --prefer-offline
+          command: DETOX_DISABLE_POSTINSTALL=1 yarn
 
       - name: Cache Firestore Emulator
         uses: actions/cache@v3
@@ -241,7 +240,7 @@ jobs:
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         with:
-          path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
+          path: .yarn/cache
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
 
       - name: Compress Emulator Log
