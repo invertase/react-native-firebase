@@ -43,7 +43,7 @@ jobs:
           timeout_minutes: 15
           retry_wait_seconds: 30
           max_attempts: 3
-          command: yarn
+          command: yarn && yarn lerna:prepare
       - name: Lint
         uses: nick-fields/retry@v2
         with:
@@ -83,7 +83,7 @@ jobs:
           timeout_minutes: 15
           retry_wait_seconds: 30
           max_attempts: 3
-          command: yarn
+          command: yarn && yarn lerna:prepare
       - name: Lint
         run: yarn tsc:compile
       - uses: actions/cache/save@v3
@@ -118,7 +118,7 @@ jobs:
           timeout_minutes: 15
           retry_wait_seconds: 30
           max_attempts: 3
-          command: yarn
+          command: yarn && yarn lerna:prepare
       - name: Yarn Install (Website)
         uses: nick-fields/retry@v2
         with:
