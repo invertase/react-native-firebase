@@ -10960,7 +10960,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^8.0.0, glob@npm:^8.0.1, glob@npm:^8.0.3":
+"glob@npm:^8.0.0, glob@npm:^8.0.1, glob@npm:^8.0.3, glob@npm:^8.1.0":
   version: 8.1.0
   resolution: "glob@npm:8.1.0"
   dependencies:
@@ -11093,16 +11093,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-java-format@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "google-java-format@npm:1.1.0"
+"google-java-format@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "google-java-format@npm:1.2.0"
   dependencies:
     async: "npm:^3.2.4"
-    glob: "npm:^8.0.3"
-    resolve: "npm:^1.22.1"
+    glob: "npm:^8.1.0"
+    resolve: "npm:^1.22.8"
   bin:
     google-java-format: index.js
-  checksum: 4513511e81980e3a6d5ee4783bcdd02140e27c899993596eaf506ad4cb60f49cca27b260bc4ac1d6655e14ef8f4bbca3fd209422cf5aa7392e6b33f527ad8a9a
+  checksum: 5f83c3cd5334db7fd21d009e6979a84f6215b557c669c35b549312f6f55af60013e8804e05104d01ef250174ef4cbeb95d4e0f3a578579952829729d5acafb33
   languageName: node
   linkType: hard
 
@@ -18358,7 +18358,7 @@ __metadata:
     firebase: "npm:^10.5.0"
     firebase-tools: "npm:^12.7.0"
     genversion: "npm:^3.1.1"
-    google-java-format: "npm:^1.1.0"
+    google-java-format: "npm:^1.2.0"
     inquirer: "npm:^8.2.6"
     jest: "npm:^29.7.0"
     lerna: "npm:^6.6.2"
@@ -19027,7 +19027,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@npm:^1.1.6, resolve@npm:^1.10.0, resolve@npm:^1.14.2, resolve@npm:^1.20.0, resolve@npm:^1.22.1":
+"resolve@npm:^1.1.6, resolve@npm:^1.10.0, resolve@npm:^1.14.2, resolve@npm:^1.20.0, resolve@npm:^1.22.1, resolve@npm:^1.22.8":
   version: 1.22.8
   resolution: "resolve@npm:1.22.8"
   dependencies:
@@ -19062,7 +19062,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@npm%3A^1.1.6#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.10.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.14.2#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.20.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.1#optional!builtin<compat/resolve>":
+"resolve@patch:resolve@npm%3A^1.1.6#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.10.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.14.2#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.20.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.1#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.8#optional!builtin<compat/resolve>":
   version: 1.22.8
   resolution: "resolve@patch:resolve@npm%3A1.22.8#optional!builtin<compat/resolve>::version=1.22.8&hash=c3c19d"
   dependencies:
