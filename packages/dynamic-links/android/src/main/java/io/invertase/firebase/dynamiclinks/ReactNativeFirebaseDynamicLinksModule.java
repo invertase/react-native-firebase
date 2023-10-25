@@ -45,16 +45,19 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
 
   /** Ensures calls to getInitialLink only tries to retrieve the link from getDynamicLink once. */
   private boolean gotInitialLink = false;
+
   /**
    * Used by getInitialLink to check if the activity has been resumed. "host" refers to the host
    * activity, in terms of {@link LifeCycleEventListener#onHostResume()}
    */
   private boolean hostResumed = false;
+
   /**
    * Used by getInitialLink to check the current activity's intent flags to verify that the app
    * hasn't been resumed from the Overview (history) screen.
    */
   private boolean launchedFromHistory = false;
+
   /**
    * Holds the Promise that was passed to getInitialLink if getInitialLink was called before {@link
    * com.facebook.react.common.LifecycleState#RESUMED} Lifecycle state.

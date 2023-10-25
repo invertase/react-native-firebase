@@ -1159,6 +1159,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
               promise.resolve("yes");
             });
   }
+
   /**
    * This method is intended to resolve a {@link PhoneAuthCredential} obtained through a
    * multi-factor authentication flow. A credential can either be obtained using:
