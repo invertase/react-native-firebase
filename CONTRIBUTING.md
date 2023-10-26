@@ -125,9 +125,12 @@ The project has a Detox powered end-to-end testing app located in `/tests`.
 To run end-to-end tests for `Android`, please run:
 
 - `yarn tests:android:build` - builds `Android` test application.
+  - Note: for Windows you will need `yarn tests:android:build:windows`
 - `yarn tests:packager:jet-reset-cache` - runs JavaScript bundler.
 - `yarn tests:emulator:start` - runs Firestore emulator for Firestore tests.
+  - Note: for Windows you will need `yarn tests:emulator:start:windows`
 - `yarn tests:android:test` - runs tests using Detox library. Tests for each package can be found in the `e2e` directory (i.e. `[PACKAGE]/e2e/*.e2e.js`)
+  - Note: for Windows you will need `yarn tests:android:test:windows`
 
 To run end-to-end tests for `iOS`, please run:
 

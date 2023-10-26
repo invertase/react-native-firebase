@@ -32,6 +32,7 @@
     "tests:android:build:windows": "cd tests && yarn detox build --configuration android.emu.debug.windows",
     "tests:android:build-release": "cd tests && yarn detox build --configuration android.emu.release",
     "tests:android:test": "yarn tests:android:emulator:forward && cd tests && yarn detox test --configuration android.emu.debug",
+    "tests:android:test:windows": "cd tests && yarn detox test --configuration android.emu.debug",
     "tests:android:test:debug": "yarn tests:android:emulator:forward && cd tests && yarn detox test --configuration android.emu.debug --inspect",
     "tests:android:test-reuse": "yarn tests:android:emulator:forward && cd tests && yarn detox test --configuration android.emu.debug --reuse",
     "tests:android:test-cover": "yarn tests:android:emulator:forward && cd tests && ./node_modules/.bin/nyc yarn detox test --configuration android.emu.debug",
