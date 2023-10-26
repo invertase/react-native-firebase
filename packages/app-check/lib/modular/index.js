@@ -46,6 +46,16 @@ export function getToken(appCheckInstance, forceRefresh) {
 }
 
 /**
+ * Get a limited-use (consumable) App Check token.
+ * For use with server calls to firebase functions or custom backends using firebase admin SDK.
+ * @param appCheckInstance - AppCheck
+ * @returns {Promise<AppCheckTokenResult>}
+ */
+export function getLimitedUseToken(appCheckInstance) {
+  return appCheckInstance.app.appCheck().getLimitedUseToken();
+}
+
+/**
  * Registers a listener to changes in the token state.
  * There can be more than one listener registered at the same time for one or more App Check instances.
  * The listeners call back on the UI thread whenever the current

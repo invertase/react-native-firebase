@@ -80,4 +80,10 @@
   [self.delegateProvider getTokenWithCompletion:handler];
 }
 
+- (void)getLimitedUseTokenWithCompletion:
+    (nonnull void (^)(FIRAppCheckToken *_Nullable, NSError *_Nullable))handler {
+  DLog(@"proxying directly to FIRAppCheck for limitedUse token...");
+  [[FIRAppCheck appCheck] limitedUseTokenWithCompletion:handler];
+}
+
 @end

@@ -29,6 +29,7 @@ import version from './version';
 export {
   addTokenListener,
   getToken,
+  getLimitedUseToken,
   initializeAppCheck,
   setTokenAutoRefreshEnabled,
 } from './modular/index';
@@ -139,6 +140,10 @@ class FirebaseAppCheckModule extends FirebaseModule {
     } else {
       return this.native.getToken(true);
     }
+  }
+
+  getLimitedUseToken() {
+    return this.native.getLimitedUseToken();
   }
 
   _parseListener(listenerOrObserver) {

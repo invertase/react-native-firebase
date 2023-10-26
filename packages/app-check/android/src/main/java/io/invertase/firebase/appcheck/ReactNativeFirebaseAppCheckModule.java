@@ -206,6 +206,34 @@ public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule
             });
   }
 
+  @ReactMethod
+  public void getLimitedUseToken(String appName, Promise promise) {
+    Log.d(LOGTAG, "getLimitedUseToken appName: " + appName);
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+
+    Tasks.call(
+        getExecutor(),
+        () -> {
+          return Tasks.await(FirebaseAppCheck.getInstance(firebaseApp).getLimitedUseAppCheckToken());
+        })
+        .addOnCompleteListener(
+            getExecutor(),
+            (task) -> {
+              if (task.isSuccessful()) {
+                WritableMap tokenResultMap = Arguments.createMap();
+                tokenResultMap.putString("token", task.getResult().getToken());
+                promise.resolve(tokenResultMap);
+              } else {
+                Log.e(
+                    LOGTAG,
+                    "Unknown error while fetching limited-use AppCheck token "
+                        + task.getException().getMessage());
+                rejectPromiseWithCodeAndMessage(
+                    promise, "token-error", task.getException().getMessage());
+              }
+            });
+  }
+
   /** Add a new token change listener - if one doesn't exist already */
   @ReactMethod
   public void addAppCheckListener(final String appName) {
