@@ -47,7 +47,7 @@ export function getToken(appCheckInstance, forceRefresh) {
 
 /**
  * Get a limited-use (consumable) App Check token.
- * For use with server calls to firebase functions or custom backends using firebase admin SDK.
+ * For use with server calls to firebase functions or custom backends using the firebase admin SDK
  * @param appCheckInstance - AppCheck
  * @returns {Promise<AppCheckTokenResult>}
  */
