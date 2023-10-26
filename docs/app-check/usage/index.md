@@ -87,7 +87,7 @@ For instructions on how to generate required keys and register an app for the de
 
 You must call initialize the AppCheck module prior to calling any firebase back-end services for App Check to function.
 
-To do that, edit your `ios/ProjectName/AppDelegate.mm` and add the following two lines:
+To do that, edit your `ios/ProjectName/AppDelegate.m` and add the following two lines:
 
 ```objectivec
 #import "AppDelegate.h"
