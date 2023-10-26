@@ -133,36 +133,40 @@ const nativeModuleName = 'RNFBAnalyticsModule';
 class FirebaseAnalyticsModule extends FirebaseModule {
   logEvent(name, params = {}, options = {}) {
     if (!isString(name)) {
-      throw new Error("firebase.analytics().logEvent(*) 'name' expected a string value.");
+      return Promise.reject(new Error(
+        "firebase.analytics().logEvent(*) 'name' expected a string value."
+      ));
     }
 
     if (!isUndefined(params) && !isObject(params)) {
-      throw new Error("firebase.analytics().logEvent(_, *) 'params' expected an object value.");
+      return Promise.reject(new Error(
+        "firebase.analytics().logEvent(_, *) 'params' expected an object value."
+      ));
     }
 
     // check name is not a reserved event name
     if (isOneOf(name, ReservedEventNames)) {
-      throw new Error(
+      return Promise.reject(new Error(
         `firebase.analytics().logEvent(*) 'name' the event name '${name}' is reserved and can not be used.`,
-      );
+      ));
     }
 
     // name format validation
     if (!isAlphaNumericUnderscore(name) || name.length > 40) {
-      throw new Error(
+      return Promise.reject(new Error(
         `firebase.analytics().logEvent(*) 'name' invalid event name '${name}'. Names should contain 1 to 40 alphanumeric characters or underscores.`,
-      );
+      ));
     }
 
     if (!isUndefined(options)) {
       if (!isObject(options)) {
-        throw new Error(
+        return Promise.reject(new Error(
           "firebase.analytics().logEvent(_, _, *) 'options' expected an object value.",
-        );
+        ));
       }
 
       if (!isUndefined(options.global) && !isBoolean(options.global)) {
-        throw new Error("'options.global' property expected a boolean.");
+        return Promise.reject(new Error("'options.global' property expected a boolean."));
       }
     }
 
@@ -171,9 +175,9 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
   setAnalyticsCollectionEnabled(enabled) {
     if (!isBoolean(enabled)) {
-      throw new Error(
+      return Promise.reject(new Error(
         "firebase.analytics().setAnalyticsCollectionEnabled(*) 'enabled' expected a boolean value.",
-      );
+      ));
     }
 
     return this.native.setAnalyticsCollectionEnabled(enabled);
@@ -181,15 +185,15 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
   setSessionTimeoutDuration(milliseconds = 1800000) {
     if (!isNumber(milliseconds)) {
-      throw new Error(
+      return Promise.reject(new Error(
         "firebase.analytics().setSessionTimeoutDuration(*) 'milliseconds' expected a number value.",
-      );
+      ));
     }
 
     if (milliseconds < 0) {
-      throw new Error(
+      return Promise.reject(new Error(
         "firebase.analytics().setSessionTimeoutDuration(*) 'milliseconds' expected a positive number value.",
-      );
+      ));
     }
 
     return this.native.setSessionTimeoutDuration(milliseconds);
@@ -205,7 +209,9 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
   setUserId(id) {
     if (!isNull(id) && !isString(id)) {
-      throw new Error("firebase.analytics().setUserId(*) 'id' expected a string value.");
+      return Promise.reject(new Error(
+        "firebase.analytics().setUserId(*) 'id' expected a string value."
+      ));
     }
 
     return this.native.setUserId(id);
@@ -213,13 +219,15 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
   setUserProperty(name, value) {
     if (!isString(name)) {
-      throw new Error("firebase.analytics().setUserProperty(*) 'name' expected a string value.");
+      return Promise.reject(new Error(
+        "firebase.analytics().setUserProperty(*) 'name' expected a string value."
+      ));
     }
 
     if (value !== null && !isString(value)) {
-      throw new Error(
+      return Promise.reject(new Error(
         "firebase.analytics().setUserProperty(_, *) 'value' expected a string value.",
-      );
+      ));
     }
 
     return this.native.setUserProperty(name, value);
@@ -227,20 +235,22 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
   setUserProperties(properties, options = {}) {
     if (!isObject(properties)) {
-      throw new Error(
+      return Promise.reject(new Error(
         "firebase.analytics().setUserProperties(*) 'properties' expected an object of key/value pairs.",
-      );
+      ));
     }
 
     if (!isUndefined(options)) {
       if (!isObject(options)) {
-        throw new Error(
+        return Promise.reject(new Error(
           "firebase.analytics().logEvent(_, _, *) 'options' expected an object value.",
-        );
+        ));
       }
 
       if (!isUndefined(options.global) && !isBoolean(options.global)) {
-        throw new Error("'options.global' property expected a boolean.");
+        return Promise.reject(new Error(
+          "'options.global' property expected a boolean."
+        ));
       }
     }
 
@@ -248,9 +258,9 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     for (let i = 0; i < entries.length; i++) {
       const [key, value] = entries[i];
       if (!isNull(value) && !isString(value)) {
-        throw new Error(
+        return Promise.reject(new Error(
           `firebase.analytics().setUserProperties(*) 'properties' value for parameter '${key}' is invalid, expected a string.`,
-        );
+        ));
       }
     }
 
@@ -750,9 +760,9 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
   setDefaultEventParameters(params) {
     if (!isObject(params) && !isNull(params) && !isUndefined(params)) {
-      throw new Error(
+      return Promise.reject(new Error(
         "firebase.analytics().setDefaultEventParameters(*) 'params' expected an object value when it is defined.",
-      );
+      ));
     }
 
     return this.native.setDefaultEventParameters(params);
@@ -760,9 +770,9 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
   initiateOnDeviceConversionMeasurementWithEmailAddress(emailAddress) {
     if (!isString(emailAddress)) {
-      throw new Error(
+      return Promise.reject(new Error(
         "firebase.analytics().initiateOnDeviceConversionMeasurementWithEmailAddress(*) 'emailAddress' expected a string value.",
-      );
+      ));
     }
 
     if (!isIOS) {
@@ -774,9 +784,9 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
   initiateOnDeviceConversionMeasurementWithPhoneNumber(phoneNumber) {
     if (!isE164PhoneNumber(phoneNumber)) {
-      throw new Error(
+      return Promise.reject(new Error(
         "firebase.analytics().initiateOnDeviceConversionMeasurementWithPhoneNumber(*) 'phoneNumber' expected a string value in E.164 format.",
-      );
+      ));
     }
 
     if (!isIOS) {
