@@ -100,6 +100,7 @@ cd react-native-firebase
 
 ```bash
 yarn
+yarn lerna:prepare
 yarn tests:ios:pod:install
 brew tap wix/brew
 brew install applesimutils xcbeautify
