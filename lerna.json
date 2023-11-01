@@ -76,5 +76,5 @@
     "userUrlFormat": "{{host}}/{{user}}"
   },
   "ignoreChanges": ["**/docs/**", "**/.github/**", "**/e2e/**", "**/tests/**"],
-  "version": "18.6.0"
+  "version": "18.6.1"
 }
