@@ -1,22 +1,22 @@
 buildscript {
-  ext.buildToolsVersion = "33.0.0"
+  ext.buildToolsVersion = "34.0.0"
   ext.minSdkVersion = 21
-  ext.compileSdkVersion = 33
-  ext.targetSdkVersion = 33
+  ext.compileSdkVersion = 34
+  ext.targetSdkVersion = 34
 
   ext.ndkVersion = "25.1.8937393"
  
   ext.kotlinVersion = '1.8.22' // https://kotlinlang.org/releases.html
-  ext.supportLibVersion = '1.10.1' // this maps to androidx.core https://developer.android.com/jetpack/androidx/releases/core
+  ext.supportLibVersion = '1.12.0' // this maps to androidx.core https://developer.android.com/jetpack/androidx/releases/core
   ext.appCompatVersion = '1.6.1' // this maps to androidx.appcompat https://developer.android.com/jetpack/androidx/releases/appcompat
   ext.supportVersion = ext.supportLibVersion
-  ext.frescoVersion = '3.0.0' // https://github.com/facebook/fresco/releases
-  ext.fragmentVersion = '1.5.7' // https://developer.android.com/jetpack/androidx/releases/fragment
+  ext.frescoVersion = '3.1.3' // https://github.com/facebook/fresco/releases
+  ext.fragmentVersion = '1.6.1' // https://developer.android.com/jetpack/androidx/releases/fragment
   ext.vectordrawableVersion = '1.1.0' // https://developer.android.com/jetpack/androidx/releases/vectordrawable
-  ext.androidxAnnotationVersion = '1.6.0' // https://developer.android.com/jetpack/androidx/releases/annotation
+  ext.androidxAnnotationVersion = '1.7.0' // https://developer.android.com/jetpack/androidx/releases/annotation
   ext.googlePlayServicesLocationVersion = '21.0.1' // https://developers.google.com/android/guides/setup
   ext.googlePlayServicesVersion = '18.2.0' // play-services-base
-  ext.googlePlayServicesAuthVersion = '20.6.0' // play-services-auth
+  ext.googlePlayServicesAuthVersion = '20.7.0' // play-services-auth
   ext.googlePlayServicesVisionVersion = '20.1.3' // play-services-vision
   ext.googlePlayServicesIidVersion = '17.0.0' // play-services-iid - deprecated, device-info only
   ext.mediaCompatVersion = '1.6.0' // https://developer.android.com/jetpack/androidx/releases/media
@@ -67,7 +67,7 @@ subprojects {
           targetSdkVersion targetSdk
         }
       }
-      }
+    }
 
     // Configure testing settings - if set in module build.gradle files they affect library consumers
     if (project.name.contains('react-native-firebase')
@@ -75,7 +75,7 @@ subprojects {
       android {
         // Instrument all our modules for coverage generation
         buildTypes.debug.testCoverageEnabled true
-        jacoco.version '0.8.10'
+        jacoco.version '0.8.11'
         testOptions.unitTests.includeAndroidResources = true
 
         // Make sure our project are run through basic lint checks
