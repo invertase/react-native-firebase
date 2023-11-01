@@ -37,8 +37,8 @@
     "a2a": "^0.2.1",
     "babel-plugin-istanbul": "^6.1.1",
     "detox": "^19.13.0",
-    "firebase": "^10.5.0",
-    "firebase-tools": "^12.7.0",
+    "firebase": "^10.5.2",
+    "firebase-tools": "^12.8.0",
     "jest-circus": "^29.7.0",
     "jest-environment-node": "^29.7.0",
     "jet": "^0.8.3",
@@ -51,7 +51,7 @@
     "pod-install": "^0.1.39",
     "should": "^13.2.3",
     "should-sinon": "0.0.6",
-    "sinon": "^17.0.0"
+    "sinon": "17.0.0"
   },
   "detox": {
     "test-runner": "mocha",
