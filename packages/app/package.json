@@ -11,7 +11,8 @@
     "build:clean": "rimraf android/build && rimraf ios/build",
     "build:plugin": "rimraf plugin/build && tsc --build plugin",
     "lint:plugin": "eslint plugin/src/*",
-    "prepare": "npm run build && npm run build:plugin"
+    "prepare": "npm run build && npm run build:plugin",
+    "docs": "typedoc --plugin typedoc-plugin-markdown lib/**/*.d.ts"
   },
   "repository": {
     "type": "git",
@@ -61,7 +62,8 @@
     "superstruct": "^0.6.2"
   },
   "devDependencies": {
-    "expo": "^47.0.0"
+    "expo": "^47.0.0",
+    "typedoc": "^0.25.2"
   },
   "peerDependenciesMeta": {
     "expo": {

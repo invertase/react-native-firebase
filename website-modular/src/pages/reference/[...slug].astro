@@ -1,0 +1,91 @@
+---
+import { Debug } from 'astro:components';
+
+export const prerender = false;
+
+let { slug } = Astro.params;
+
+import {
+    packages,
+    join,
+    exists,
+    readFile,
+    modulesPath,
+    icons,
+} from '../../utils/paths';
+
+// import { Layout } from '../../components/Layout';
+import { type TableOfContents, unify } from '../../utils/unify';
+// import { HTMLRender } from '../../components/html-render';
+
+import {
+    getDocument,
+    getModuleTypes,
+    highlightDefinitions,
+    type ModuleTypes,
+    sanitizeDefinitions,
+} from '../../utils/dom';
+// import { ISidebar, ISidebarItem } from '../../components/Sidebar';
+
+const modules = {
+    app: 'App',
+    storage: 'Storage',
+};
+
+const params = slug?.split('/') ?? [];
+const [module, ...segments] = params;
+slug = segments.join('/');
+
+if (!(module in modules)) {
+    return new Response(`Not found: module = ${module}`);
+}
+
+// Get the path based on the params
+const path =
+    params.length === 1
+        ? modulesPath(module)
+        : join(packages, module, 'docs', `${slug}.md`);
+
+// File must exist.. otherwise 404
+if (!exists(path)) {
+    return new Response(`Not found: path = ${path}`);
+}
+
+// Generate a types dictionary for all modules.
+let types: ModuleTypes = {};
+Object.keys(modules).forEach((key) => {
+    const file = readFile(modulesPath(key));
+    const { html } = unify(file);
+
+    types = {
+        ...types,
+        ...getModuleTypes(getDocument(html)),
+    };
+});
+
+// Get the file
+let file = readFile(path);
+
+// Replace any local URLs to remove the `.md` extension.
+file = file.replace(/(?<=\]\()(.*)(\.md)/gm, `$1`);
+
+// Serialize the markdown content via MDX
+const { html, toc } = unify(file);
+
+// Get the document from the converted markdown
+const document = getDocument(html);
+
+// Sanitize the generated definitions
+sanitizeDefinitions(document);
+
+highlightDefinitions(document, types);
+
+const title = document.getElementsByTagName('h1')[0]?.innerHTML ?? 'No title';
+const source = document.body.innerHTML;
+---
+
+{title}
+<hr />
+<Debug {toc} />
+<hr />
+<Fragment set:html={source} />
