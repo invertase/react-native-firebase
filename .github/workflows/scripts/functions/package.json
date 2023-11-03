@@ -2,9 +2,9 @@
   "name": "functions",
   "scripts": {
     "build": "tsc",
-    "serve": "npm run build && firebase emulators:start --only functions",
-    "shell": "npm run build && firebase functions:shell",
-    "start": "npm run shell",
+    "serve": "build && firebase emulators:start --only functions",
+    "shell": "build && firebase functions:shell",
+    "start": "shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log"
   },
@@ -13,7 +13,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "firebase-admin": "^11.10.1",
+    "firebase-admin": "^11.11.0",
     "firebase-functions": "^4.4.1"
   },
   "devDependencies": {

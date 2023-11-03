@@ -106,9 +106,9 @@ module.exports.extractSourceFile = function extractSourceFile(sources = []) {
   return sources.map(source => {
     if (!source) return '';
     if (source.fileName.includes('node_modules')) return '';
-    return `https://github.com/invertase/react-native-firebase/blob/master/${
-      source.fileName
-    }#L${source.line || 0}`;
+    return `https://github.com/invertase/react-native-firebase/blob/master/${source.fileName}#L${
+      source.line || 0
+    }`;
   });
 };
 

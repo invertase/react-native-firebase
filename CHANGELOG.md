@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.6.1](https://github.com/invertase/react-native-firebase/compare/v18.6.0...v18.6.1) (2023-11-01)
+
+### Bug Fixes
+
+- **app, android:** adopt firebase-android-sdk 32.5.0 ([9834bfb](https://github.com/invertase/react-native-firebase/commit/9834bfb7feeef4d40d8524f81be5d1f722cae3b8))
+- **app, sdk:** adopt firebase-ios-sdk 10.17.0 ([c926af3](https://github.com/invertase/react-native-firebase/commit/c926af334999fb6e462487ac43f07e08f808ac13))
+- **windows:** cleanup windows dev regression ([b85f5a4](https://github.com/invertase/react-native-firebase/commit/b85f5a46c199353908715309fb239c4eab633cc6))
+
+## [18.6.0](https://github.com/invertase/react-native-firebase/compare/v18.5.0...v18.6.0) (2023-10-26)
+
+### Features
+
+- **ml:** add modular API ([2d8ac14](https://github.com/invertase/react-native-firebase/commit/2d8ac144a14e79ce1846ecab077f8d7b69d11f05))
+
+### Bug Fixes
+
+- **android:** required compatibility for Gradle 8 in android modules ([b52d0ce](https://github.com/invertase/react-native-firebase/commit/b52d0ce6723c077190618641ce0f33ced9fd4090))
+- **app, sdk:** adopt firebase-android-sdk 32.4.0 ([63f1893](https://github.com/invertase/react-native-firebase/commit/63f1893849578bfab85241bf4458eb845a4d857f))
+
 ## [18.5.0](https://github.com/invertase/react-native-firebase/compare/v18.4.0...v18.5.0) (2023-09-22)
 
 ### Features

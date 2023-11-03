@@ -15,6 +15,8 @@
  *
  */
 
+const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
+
 const { resolve, join } = require('path');
 const { readdirSync, statSync } = require('fs');
 
@@ -76,4 +78,4 @@ const config = {
   watchFolders: [resolve(__dirname, '.'), ...firebaseModules],
 };
 
-module.exports = config;
+module.exports = mergeConfig(getDefaultConfig(__dirname), config);

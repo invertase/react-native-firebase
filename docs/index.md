@@ -47,8 +47,8 @@ to your project.
 #### Generating Android credentials
 
 On the Firebase console, add a new Android application and enter your projects details. The "Android package name" must match your
-local projects package name which can be found inside of the `manifest` tag within the `/android/app/src/main/AndroidManifest.xml`
-file within your project.
+local projects package name which can be found inside of the `namespace` field in `/android/app/build.gradle`, or in the
+`manifest` tag within the `/android/app/src/main/AndroidManifest.xml` file within your project for projects using android gradle plugin v7 and below
 
 > The debug signing certificate is optional to use Firebase with your app, but is required for Dynamic Links, Invites and Phone Authentication.
 > To generate a certificate run `cd android && ./gradlew signingReport`. This generates two variant keys.
@@ -68,7 +68,7 @@ First, add the `google-services` plugin as a dependency inside of your `/android
 buildscript {
   dependencies {
     // ... other dependencies
-    classpath 'com.google.gms:google-services:4.3.15'
+    classpath 'com.google.gms:google-services:4.4.0'
     // Add me --- /\
   }
 }
@@ -281,7 +281,7 @@ project.ext {
       // Overriding Library SDK Versions
       firebase: [
         // Override Firebase SDK Version
-        bom           : "32.3.1"
+        bom           : "32.5.0"
       ],
     ],
   ])
@@ -296,7 +296,7 @@ Open your projects `/ios/Podfile` and add any of the globals shown below to the 
 
 ```ruby
 # Override Firebase SDK Version
-$FirebaseSDKVersion = '10.15.0'
+$FirebaseSDKVersion = '10.17.0'
 ```
 
 Once changed, reinstall your projects pods via pod install and rebuild your project with `npx react-native run-ios`.

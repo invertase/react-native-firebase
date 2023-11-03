@@ -1,7 +1,6 @@
 {
   "npmClient": "yarn",
   "packages": ["packages/*", "tests"],
-  "useWorkspaces": true,
   "command": {
     "version": {
       "allowBranch": "main",
@@ -77,5 +76,5 @@
     "userUrlFormat": "{{host}}/{{user}}"
   },
   "ignoreChanges": ["**/docs/**", "**/.github/**", "**/e2e/**", "**/tests/**"],
-  "version": "18.5.0"
+  "version": "18.6.1"
 }

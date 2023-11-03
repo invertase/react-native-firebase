@@ -1,7 +1,6 @@
-import firebase from '@react-native-firebase/app';
-import * as crashlytics from '@react-native-firebase/crashlytics';
+import firebase from '.';
 
-crashlytics.default().crash();
+firebase.default().crash();
 
 // checks module exists at root
 console.log(firebase.crashlytics().app.name);
@@ -15,13 +14,13 @@ console.log(firebase.app().crashlytics().isCrashlyticsCollectionEnabled);
 console.log(firebase.crashlytics.SDK_VERSION);
 
 // checks statics exist on defaultExport
-console.log(crashlytics.firebase.SDK_VERSION);
+console.log(firebase.firebase.SDK_VERSION);
 
 // checks root exists
 console.log(firebase.SDK_VERSION);
 
 // checks firebase named export exists on module
-console.log(crashlytics.firebase.SDK_VERSION);
+console.log(firebase.firebase.SDK_VERSION);
 
 // checks multi-app support exists
 // console.log(firebase.crashlytics(firebase.app()).app.name);

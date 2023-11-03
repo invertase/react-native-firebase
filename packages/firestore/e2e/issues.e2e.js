@@ -16,7 +16,7 @@
  */
 
 const COLLECTION = 'firestore';
-const { getE2eEmulatorHost } = require('@react-native-firebase/app/e2e/helpers');
+const { getE2eEmulatorHost } = require('../../app/e2e/helpers');
 const jsFirebase = require('firebase/compat/app');
 require('firebase/compat/firestore');
 

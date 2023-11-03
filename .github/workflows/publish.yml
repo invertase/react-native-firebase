@@ -26,7 +26,7 @@ jobs:
           timeout_minutes: 15
           retry_wait_seconds: 60
           max_attempts: 3
-          command: yarn --no-audit --prefer-offline
+          command: yarn && yarn lerna:prepare
       - name: GIT Setup
         run: |
           git config --global user.name '@Salakar'
@@ -37,7 +37,7 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Publish Packages
         run: |
-          yarn logout
+          yarn npm logout
           echo "@react-native-firebase:registry=https://registry.npmjs.org/" > ~/.npmrc
           echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc

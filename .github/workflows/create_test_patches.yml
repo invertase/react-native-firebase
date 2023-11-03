@@ -34,19 +34,18 @@ jobs:
       # - make into an action, parameterize directories to pack, and package names to install
       # - name patches w/PR as "semver prerelease" and SHA as "semver build info". Needs patch-package enhancement.
 
+      # FIXME: when github runner bumped from 18.17.1 to 18.18+ we started seeing template copy errors
+      #        different files, could reproduce locally on linux with v18.18+ and v20.8.0. Pinning to
+      #        prior version (18.17.1) to see if it stabilizes
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
-
-      - name: Set workflow variables
-        id: workflow-variables
-        run: echo "yarn-cache-dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+          node-version: 18.17.1
 
       - uses: actions/cache/restore@v3
         name: Yarn Cache Restore
         id: yarn-cache
         with:
-          path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
+          path: .yarn/cache
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-v1
 
@@ -56,7 +55,7 @@ jobs:
           timeout_minutes: 15
           retry_wait_seconds: 60
           max_attempts: 3
-          command: DETOX_DISABLE_POSTINSTALL=1 yarn --no-audit --prefer-offline
+          command: DETOX_DISABLE_POSTINSTALL=1 yarn && yarn lerna:prepare
 
       - name: Create Patches
         run: |
@@ -66,7 +65,7 @@ jobs:
             echo "Packing PR version of package $PACKAGE"
             pushd packages/$PACKAGE;
             yarn pack;
-            mv *tgz $HOME/packages;
+            mv package.tgz $HOME/packages/react-native-firebase-${PACKAGE}.tgz;
             ls -la $HOME/packages/*${PACKAGE}*
             popd;
           done
@@ -81,7 +80,7 @@ jobs:
             yarn add @react-native-firebase/$PACKAGE || true
             if [ -d node_modules/@react-native-firebase/$PACKAGE ]; then
               pushd node_modules/@react-native-firebase
-              tar -zxf $HOME/packages/react-native-firebase-${PACKAGE}-v*
+              tar -zxf $HOME/packages/react-native-firebase-${PACKAGE}.tgz
               mv $PACKAGE/package.json package/
               \rm -fr $PACKAGE
               mv package $PACKAGE
@@ -102,7 +101,7 @@ jobs:
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         with:
-          path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
+          path: .yarn/cache
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
 
       # create a comment on the PR and any related issues with a direct link to the archive,
