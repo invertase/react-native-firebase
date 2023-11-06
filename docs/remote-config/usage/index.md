@@ -199,7 +199,7 @@ Here is an example of how to use the feature, with comments emphasizing the key 
 // Multiple listeners are supported, so listeners may be screen-specific and only handle certain keys
 // depending on application requirements
 let remoteConfigListenerUnsubscriber = await remoteConfig().onConfigUpdated((event, error) => {
-  if (error !== null) {
+  if (error !== undefined) {
     console.log('remote-config listener subscription error: ' + JSON.stringify(error));
   } else {
     // Updated keys are keys that are added, removed, or changed value, metadata, or source
