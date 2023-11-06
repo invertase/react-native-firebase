@@ -184,6 +184,7 @@ Integration with Expo is possible in both Bare Workflow, and [custom Managed Wor
 React Native Firebase cannot be used in the "Expo Go" app, because [it requires custom native code](https://docs.expo.io/workflow/customizing/).
 
 ### Expo Bare Workflow
+
 Where possible, it is recommended by the Expo team to use Managed Workflow.
 
 If you're using [Bare Workflow](https://docs.expo.io/introduction/managed-vs-bare/#bare-workflow), please follow the above [Android Setup](/#2-android-setup) and [iOS Setup](/#3-ios-setup) steps.
@@ -194,7 +195,7 @@ Since Expo Go will not work with react-native-firebase, the suggested workflow i
 
 Follow [these directions](https://docs.expo.dev/get-started/create-a-project/) to create a new Expo project.
 
-To install React Native Firebase, use the command `npx expo install @react-native-firebase/app`.  After installing, add the [config plugin](https://docs.expo.dev/config-plugins/introduction/) to the [`plugins`](https://docs.expo.io/versions/latest/config/app/#plugins) array of your `app.json` or `app.config.js`.
+To install React Native Firebase, use the command `npx expo install @react-native-firebase/app`. After installing, add the [config plugin](https://docs.expo.dev/config-plugins/introduction/) to the [`plugins`](https://docs.expo.io/versions/latest/config/app/#plugins) array of your `app.json` or `app.config.js`.
 
 Also, you must provide paths to the `google-services.json` and `GoogleService-Info.plist` files by specifying the [`expo.android.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile-1) and [`expo.ios.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile) fields respectively.
 
