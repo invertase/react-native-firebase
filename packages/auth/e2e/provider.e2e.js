@@ -148,14 +148,6 @@ describe('auth() -> Providers', function () {
     });
 
     describe('OAuthProvider', function () {
-      describe('constructor', function () {
-        it('should throw an unsupported error', function () {
-          (() => new firebase.auth.OAuthProvider()).should.throw(
-            '`new OAuthProvider()` is not supported on the native Firebase SDKs.',
-          );
-        });
-      });
-
       describe('credential', function () {
         it('should return a credential object', function () {
           const idToken = '123456';
@@ -168,8 +160,24 @@ describe('auth() -> Providers', function () {
       });
 
       describe('PROVIDER_ID', function () {
-        it('should return oauth', function () {
-          firebase.auth.OAuthProvider.PROVIDER_ID.should.equal('oauth');
+        it('should return microsoft', function () {
+          const provider = new firebase.auth.OAuthProvider('microsoft.com');
+          provider.PROVIDER_ID.should.equal('microsoft.com');
+        });
+      });
+
+      describe('provider object', function () {
+        it('should return a credential object with scopes and custom parameters', function () {
+          const provider = new firebase.auth.OAuthProvider('microsoft.com');
+          provider.addScope('profile');
+          provider.addScope('email');
+          provider.setCustomParameters({
+            prompt: 'consent',
+          });
+
+          provider.toObject().scopes.should.containEql('profile');
+          provider.toObject().scopes.should.containEql('email');
+          provider.toObject().customParameters.prompt.should.equal('consent');
         });
       });
     });
@@ -248,41 +256,6 @@ describe('auth() -> Providers', function () {
       describe('PROVIDER_ID', function () {
         it('should return oidc.', function () {
           firebase.auth.OIDCAuthProvider.PROVIDER_ID.should.equal('oidc.');
-        });
-      });
-    });
-
-    describe('OAuth Provider', function () {
-      describe('credential', function () {
-        it('should return a credential object', function () {
-          const idToken = '123456';
-          const accessToken = '654321';
-          const credential = firebase.auth.OAuthProvider.credential(idToken, accessToken);
-          credential.providerId.should.equal('oauth');
-          credential.token.should.equal(idToken);
-          credential.secret.should.equal(accessToken);
-        });
-      });
-
-      describe('PROVIDER_ID', function () {
-        it('should return microsoft', function () {
-          const provider = new firebase.auth.OAuthProvider('microsoft.com');
-          provider.PROVIDER_ID.should.equal('microsoft.com');
-        });
-      });
-
-      describe('provider object', function () {
-        it('should return a credential object with scopes and custom parameters', function () {
-          const provider = new firebase.auth.OAuthProvider('microsoft.com');
-          provider.addScope('profile');
-          provider.addScope('email');
-          provider.setCustomParameters({
-            prompt: 'consent',
-          });
-          provider.toObject().scopes.should.equal(['profile', 'email']);
-          provider.toObject().customParameters.should.equal({
-            prompt: 'consent',
-          });
         });
       });
     });
@@ -474,16 +447,6 @@ describe('auth() -> Providers', function () {
     });
 
     describe('OAuthProvider', function () {
-      describe('constructor', function () {
-        it('should throw an unsupported error', function () {
-          const { OAuthProvider } = authModular;
-
-          (() => new OAuthProvider()).should.throw(
-            '`new OAuthProvider()` is not supported on the native Firebase SDKs.',
-          );
-        });
-      });
-
       describe('credential', function () {
         it('should return a credential object', function () {
           const { OAuthProvider } = authModular;
@@ -498,10 +461,25 @@ describe('auth() -> Providers', function () {
       });
 
       describe('PROVIDER_ID', function () {
-        it('should return oauth', function () {
+        it('should return microsoft', function () {
           const { OAuthProvider } = authModular;
+          const provider = new OAuthProvider('microsoft.com');
+          provider.PROVIDER_ID.should.equal('microsoft.com');
+        });
+      });
 
-          OAuthProvider.PROVIDER_ID.should.equal('oauth');
+      describe('provider object', function () {
+        it('should return a credential object with scopes and custom parameters', function () {
+          const { OAuthProvider } = authModular;
+          const provider = new OAuthProvider('microsoft.com');
+          provider.addScope('profile');
+          provider.addScope('email');
+          provider.setCustomParameters({
+            prompt: 'consent',
+          });
+          provider.toObject().scopes.should.containEql('profile');
+          provider.toObject().scopes.should.containEql('email');
+          provider.toObject().customParameters.prompt.should.equal('consent');
         });
       });
     });
@@ -589,32 +567,6 @@ describe('auth() -> Providers', function () {
           it('should return oidc.', function () {
             const { OIDCAuthProvider } = authModular;
             OIDCAuthProvider.PROVIDER_ID.should.equal('oidc.');
-          });
-        });
-      });
-
-      describe('Native OAuth Provider', function () {
-        describe('PROVIDER_ID', function () {
-          it('should return microsoft', function () {
-            const { OAuthProvider } = authModular;
-            const provider = new OAuthProvider('microsoft.com');
-            provider.PROVIDER_ID.should.equal('microsoft.com');
-          });
-        });
-
-        describe('provider object', function () {
-          it('should return a credential object with scopes and custom parameters', function () {
-            const { OAuthProvider } = authModular;
-            const provider = new OAuthProvider('microsoft.com');
-            provider.addScope('profile');
-            provider.addScope('email');
-            provider.setCustomParameters({
-              prompt: 'consent',
-            });
-            provider.toObject().scopes.should.equal(['profile', 'email']);
-            provider.toObject().customParameters.should.equal({
-              prompt: 'consent',
-            });
           });
         });
       });
