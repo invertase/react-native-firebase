@@ -118,29 +118,6 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 const Stack = createStackNavigator();
-
-function PostScreen({route}) {
-  const { id } = route.params;
-  const hasPostId = typeof id === 'string';
-
-  useEffect(function fetchPostData() {
-    function fetchPost() {
-      fetch(/* mocking fetch */)
-    }
-
-    if (hasPostId) {
-      fetchPost();
-    }
-  }, [id, hasPostId])
-
-  if (!hasPostId) {
-    return <Text>Missing post id</Text>
-  }
-
-  // assume you fetch post successfully
-  return <Text>{post.title}</Text>
-}
-
 const NAVIGATION_IDS = ['home', 'post', 'settings'];
 
 function buildDeepLinkFromNotificationData(data): string | null {
