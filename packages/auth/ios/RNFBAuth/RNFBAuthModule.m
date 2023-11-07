@@ -592,8 +592,8 @@ RCT_EXPORT_METHOD(signInWithProvider
     [builder setScopes:provider[@"scopes"]];
   }
   // Add custom parameters if present
-  if (provider[@"parameters"]) {
-    [builder setCustomParameters:provider[@"parameters"]];
+  if (provider[@"customParameters"]) {
+    [builder setCustomParameters:provider[@"customParameters"]];
   }
 
   [builder getCredentialWithUIDelegate:nil

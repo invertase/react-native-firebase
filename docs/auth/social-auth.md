@@ -365,6 +365,7 @@ const onMicrosoftButtonPress = async () => {
   // Optionally add custom parameters
   provider.setCustomParameters({
     prompt: 'consent',
+    tenant" 'tenant_name_or_id', //i.e. example.com or 9aaa9999-9999-999a-a9aa-9999aa9aa99a
   });
 
   // Sign-in the user with the provider
