@@ -21,7 +21,7 @@ export default class OAuthProvider {
   /** @internal */
   #customParameters = {};
   /** @internal */
-  #scopes: string[] = [];
+  #scopes = [];
 
   constructor(providerId) {
     this.#providerId = providerId;
