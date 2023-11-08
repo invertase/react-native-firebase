@@ -125,6 +125,9 @@ async function onUserPictureLiked(ownerId, userId, picture) {
       payload: {
         aps: {
           // Required for background/quit data-only messages on iOS
+          // Note: iOS frequently will receive the message but decline to deliver it to your app.
+          //           This is an Apple design choice to favor user battery life over data-only delivery 
+          //           reliability. It is not under app control, though you may see the behavior in device logs.
           'content-available': true,
           // Required for background/quit data-only messages on Android
           priority: 'high',
