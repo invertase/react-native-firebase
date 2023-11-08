@@ -114,22 +114,27 @@ async function onUserPictureLiked(ownerId, userId, picture) {
   // Get the users details
   const user = admin.firestore().collection('users').doc(userId).get();
 
-  await admin.messaging().sendToDevice(
-    owner.tokens, // ['token_1', 'token_2', ...]
-    {
-      data: {
-        owner: JSON.stringify(owner),
-        user: JSON.stringify(user),
-        picture: JSON.stringify(picture),
+  await admin.messaging().sendEachForMulticast({
+    tokens: owner.tokens, // ['token_1', 'token_2', ...]
+    data: {
+      owner: JSON.stringify(owner),
+      user: JSON.stringify(user),
+      picture: JSON.stringify(picture),
+    },
+    apns: {
+      payload: {
+        aps: {
+          // Required for background/quit data-only messages on iOS
+          // Note: iOS frequently will receive the message but decline to deliver it to your app.
+          //           This is an Apple design choice to favor user battery life over data-only delivery
+          //           reliability. It is not under app control, though you may see the behavior in device logs.
+          'content-available': true,
+          // Required for background/quit data-only messages on Android
+          priority: 'high',
+        },
       },
     },
-    {
-      // Required for background/quit data-only messages on iOS
-      contentAvailable: true,
-      // Required for background/quit data-only messages on Android
-      priority: 'high',
-    },
-  );
+  });
 }
 ```
 
@@ -258,8 +263,8 @@ const payload = {
         'mutable-content': 1, // 1 or true
       },
     },
-    fcm_options: {
-      image: 'image-url',
+    fcmOptions: {
+      imageUrl: 'image-url',
     },
   },
 };
@@ -279,7 +284,7 @@ const payload = {
   },
   android: {
     notification: {
-      image: 'image-url',
+      imageUrl: 'image-url',
     },
   },
 };
@@ -310,20 +315,20 @@ const message = {
         'mutable-content': 1,
       },
     },
-    fcm_options: {
-      image: 'image-url',
+    fcmOptions: {
+      imageUrl: 'image-url',
     },
   },
   android: {
     notification: {
-      image: 'image-url',
+      imageUrl: 'image-url',
     },
   },
 };
 
 admin
   .messaging()
-  .send(message)
+  .sendEachForMulticast(message)
   .then(response => {
     console.log('Successfully sent message:', response);
   })
