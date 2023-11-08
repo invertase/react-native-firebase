@@ -186,7 +186,7 @@ auth()
   .then(() => console.log('User signed out!'));
 ```
 
-Once successfully created and/or signed in, any [`onAuthStateChanged`](#listening-to-authentication-state) listeners will trigger an event
+Once successfully signed out, any [`onAuthStateChanged`](#listening-to-authentication-state) listeners will trigger an event
 with the `user` parameter being a `null` value.
 
 ## Other sign-in methods
