@@ -186,8 +186,10 @@ auth()
   .then(() => console.log('User signed out!'));
 ```
 
-Once successfully created and/or signed in, any [`onAuthStateChanged`](#listening-to-authentication-state) listeners will trigger an event
+Once successfully signed out, any [`onAuthStateChanged`](#listening-to-authentication-state) listeners will trigger an event
 with the `user` parameter being a `null` value.
+
+Additionally, using `GoogleSignin.revokeAccess()` forgets the user. This means that the next time someone signs in, they will see the account selection popup. If you don't use this function, the last account will be automatically used without showing the account selection popup.
 
 ## Other sign-in methods
 
