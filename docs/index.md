@@ -68,6 +68,8 @@ First, add the `google-services` plugin as a dependency inside of your `/android
 buildscript {
   dependencies {
     // ... other dependencies
+    // NOTE: if you are on react-native 0.71 or below, you must not update
+    //       the google-services plugin past version 4.3.15
     classpath 'com.google.gms:google-services:4.4.0'
     // Add me --- /\
   }
