@@ -2322,10 +2322,10 @@ export namespace FirebaseFirestoreTypes {
   export type SetValue<T> = T extends Timestamp
     ? Timestamp | Date // allow Date in place of Timestamp
     : T extends object
-    ? {
-        [P in keyof T]: SetValue<T[P]> | FieldValue; // allow FieldValue in place of values
-      }
-    : T;
+      ? {
+          [P in keyof T]: SetValue<T[P]> | FieldValue; // allow FieldValue in place of values
+        }
+      : T;
 }
 
 declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
