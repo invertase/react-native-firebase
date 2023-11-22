@@ -61,7 +61,7 @@
     "superstruct": "^0.6.2"
   },
   "devDependencies": {
-    "expo": "^49.0.16"
+    "expo": "^49.0.20"
   },
   "peerDependenciesMeta": {
     "expo": {
@@ -73,7 +73,7 @@
   },
   "sdkVersions": {
     "ios": {
-      "firebase": "10.17.0",
+      "firebase": "10.18.0",
       "iosTarget": "11.0",
       "macosTarget": "10.13"
     },
@@ -81,7 +81,7 @@
       "minSdk": 19,
       "targetSdk": 33,
       "compileSdk": 33,
-      "firebase": "32.5.0",
+      "firebase": "32.6.0",
       "firebaseCrashlyticsGradle": "2.9.9",
       "firebasePerfGradle": "1.4.2",
       "gmsGoogleServicesGradle": "4.4.0",
