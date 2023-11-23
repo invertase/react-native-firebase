@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.6.2](https://github.com/invertase/react-native-firebase/compare/v18.6.1...v18.6.2) (2023-11-23)
+
+### Bug Fixes
+
+- adopt firebase-ios-sdk 10.18.0 / firebase-android-sdk 32.6.0 ([6a8b25b](https://github.com/invertase/react-native-firebase/commit/6a8b25bc1ed22860d1cef8fa3507ca5df3a28420))
+
+### Performance Improvements
+
+- **ci:** no need to list simulators ([08e40ec](https://github.com/invertase/react-native-firebase/commit/08e40ec87015fed0efa3c2a5c08d1759f3b43fae))
+- **ci:** unload diagnosticsd to speed up macOS runner ([124619e](https://github.com/invertase/react-native-firebase/commit/124619ef6ee0f5bb1160d1cb9ef0d61bc7568998))
+
 ## [18.6.1](https://github.com/invertase/react-native-firebase/compare/v18.6.0...v18.6.1) (2023-11-01)
 
 ### Bug Fixes
