@@ -544,6 +544,7 @@ describe('auth() -> Providers', function () {
       describe('constructor', function () {
         it('should throw an unsupported error', function () {
           const { OIDCAuthProvider } = authModular;
+
           (() => new OIDCAuthProvider()).should.throw(
             '`new OIDCAuthProvider()` is not supported on the native Firebase SDKs.',
           );
@@ -562,12 +563,12 @@ describe('auth() -> Providers', function () {
           credential.token.should.equal(token);
           credential.secret.should.equal(secret);
         });
+      });
 
-        describe('PROVIDER_ID', function () {
-          it('should return oidc.', function () {
-            const { OIDCAuthProvider } = authModular;
-            OIDCAuthProvider.PROVIDER_ID.should.equal('oidc.');
-          });
+      describe('PROVIDER_ID', function () {
+        it('should return oidc.', function () {
+          const { OIDCAuthProvider } = authModular;
+          OIDCAuthProvider.PROVIDER_ID.should.equal('oidc.');
         });
       });
     });
