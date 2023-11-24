@@ -927,7 +927,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
               })
           .addOnFailureListener(
               e -> {
-                Log.w(TAG, "signInWithProvider:failure", e);
+                Log.d(TAG, "signInWithProvider:failure", e);
                 promiseRejectAuthException(promise, e);
               });
     } else {
@@ -935,12 +935,12 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
           .startActivityForSignInWithProvider(getCurrentActivity(), builder.build())
           .addOnSuccessListener(
               authResult -> {
-                Log.w(TAG, "signInWithProvider:success");
+                Log.d(TAG, "signInWithProvider:success");
                 promiseWithAuthResult(authResult, promise);
               })
           .addOnFailureListener(
               e -> {
-                Log.w(TAG, "signInWithProvider:failure", e);
+                Log.d(TAG, "signInWithProvider:failure", e);
                 promiseRejectAuthException(promise, e);
               });
     }
@@ -1657,19 +1657,19 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
               })
           .addOnFailureListener(
               e -> {
-                Log.w(TAG, "linkWithProvider:failure", e);
+                Log.d(TAG, "linkWithProvider:failure", e);
                 promiseRejectAuthException(promise, e);
               });
     } else {
       user.startActivityForLinkWithProvider(getCurrentActivity(), builder.build())
           .addOnSuccessListener(
               authResult -> {
-                Log.w(TAG, "linkWithProvider:success");
+                Log.d(TAG, "linkWithProvider:success");
                 promiseWithAuthResult(authResult, promise);
               })
           .addOnFailureListener(
               e -> {
-                Log.w(TAG, "linkWithProvider:failure", e);
+                Log.d(TAG, "linkWithProvider:failure", e);
                 promiseRejectAuthException(promise, e);
               });
     }
