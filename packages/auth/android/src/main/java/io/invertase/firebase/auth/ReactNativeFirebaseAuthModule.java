@@ -1800,19 +1800,19 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
               })
           .addOnFailureListener(
               e -> {
-                Log.w(TAG, "reauthenticateWithProvider:failure", e);
+                Log.d(TAG, "reauthenticateWithProvider:failure", e);
                 promiseRejectAuthException(promise, e);
               });
     } else {
       user.startActivityForReauthenticateWithProvider(getCurrentActivity(), builder.build())
           .addOnSuccessListener(
               authResult -> {
-                Log.w(TAG, "reauthenticateWithProvider:success");
+                Log.d(TAG, "reauthenticateWithProvider:success");
                 promiseWithAuthResult(authResult, promise);
               })
           .addOnFailureListener(
               e -> {
-                Log.w(TAG, "reauthenticateWithProvider:failure", e);
+                Log.d(TAG, "reauthenticateWithProvider:failure", e);
                 promiseRejectAuthException(promise, e);
               });
     }

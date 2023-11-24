@@ -372,12 +372,6 @@ class FirebaseAuthModule extends FirebaseModule {
     return this.native.revokeToken(authorizationCode);
   }
 
-  signInWithProvider(provider) {
-    return this.native
-      .signInWithProvider(provider.toObject())
-      .then(userCredential => this._setUserCredential(userCredential));
-  }
-
   sendPasswordResetEmail(email, actionCodeSettings = null) {
     return this.native.sendPasswordResetEmail(email, actionCodeSettings);
   }
@@ -439,16 +433,16 @@ class FirebaseAuthModule extends FirebaseModule {
     throw new Error('firebase.auth().setPersistence() is unsupported by the native Firebase SDKs.');
   }
 
-  signInWithPopup() {
-    throw new Error(
-      'firebase.auth().signInWithPopup() is unsupported by the native Firebase SDKs.',
-    );
+  signInWithPopup(provider) {
+    return this.native
+      .signInWithProvider(provider.toObject())
+      .then(userCredential => this._setUserCredential(userCredential));
   }
 
-  signInWithRedirect() {
-    throw new Error(
-      'firebase.auth().signInWithRedirect() is unsupported by the native Firebase SDKs.',
-    );
+  signInWithRedirect(provider) {
+    return this.native
+      .signInWithProvider(provider.toObject())
+      .then(userCredential => this._setUserCredential(userCredential));
   }
 
   // firebase issue - https://github.com/invertase/react-native-firebase/pull/655#issuecomment-349904680

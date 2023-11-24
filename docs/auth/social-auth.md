@@ -336,7 +336,7 @@ To get started, please follow the prerequisites and setup instructions from the 
 
 Additionally, for iOS, please follow step 1 of the "Handle sign-in flow" [section](https://firebase.google.com/docs/auth/ios/microsoft-oauth#handle_the_sign-in_flow_with_the_firebase_sdk), which is to add the custom URL scheme to your Xcode project
 
-Once completed, setup your application to trigger a sign-in request with Microsoft using the `signInWithProvider` method.
+Once completed, setup your application to trigger a sign-in request with Microsoft using either of the `signInWithPopup` or `signInWithRedirect` methods. The underlying implementation is the same and will not operate exactly as the firebase-js-sdk web-based implementations do, but will provide drop-in compatibility for a web implementation if your project has one.
 
 ```jsx
 import React from 'react';
@@ -369,9 +369,11 @@ const onMicrosoftButtonPress = async () => {
   });
 
   // Sign-in the user with the provider
-  return auth().signInWithProvider(provider);
+  return auth().signInWithRedirect(provider);
 };
 ```
+
+Additionally, the similar `linkWithRedirect` and `linkWithPopup` methods may be used in the same way to link an existing user account with the Microsoft account after it is authenticated.
 
 Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger
 with the new authentication state of the user.
