@@ -365,7 +365,10 @@ const onMicrosoftButtonPress = async () => {
   // Optionally add custom parameters
   provider.setCustomParameters({
     prompt: 'consent',
-    tenant" 'tenant_name_or_id', //i.e. example.com or 9aaa9999-9999-999a-a9aa-9999aa9aa99a
+     // Optional "tenant" parameter for optional use of Azure AD tenant.
+     // e.g., specific ID - 9aaa9999-9999-999a-a9aa-9999aa9aa99a or domain - example.com
+     // defaults to "common" for tenant-independent tokens.
+    tenant: 'tenant_name_or_id',
   });
 
   // Sign-in the user with the provider
