@@ -73,7 +73,7 @@ Sometimes, after step 3, you have to click inside a "Text color" field, but this
 
 ### On iOS, when the app is in quit state, the setBackgroundMessageHandler is never invoked even when I receive the notification. How can I fix this?
 
-> Note: If you use @notifee/react-native, since v7.0.0, onNotificationOpenedApp and getInitialNotification will no longer trigger as notifee will handle the event.
+> Note: If you use @notifee/react-native, since v7.0.0, `onNotificationOpenedApp` and `getInitialNotification` will no longer trigger as notifee will handle the event.
 
 When the app is closed/quit, this can happen even when you are getting notifications and even when you are able to invoke the app in a headless state.
 
