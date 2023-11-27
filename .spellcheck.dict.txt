@@ -121,6 +121,7 @@ Node.js
 non-firebase
 NoSQL
 Notifee
+notifee
 NPE
 NPM
 OAuth
