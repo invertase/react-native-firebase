@@ -126,7 +126,7 @@ function buildDeepLinkFromNotificationData(data): string | null {
     console.warn('Unverified navigationId', navigationId)
     return null;
   }
-  if (navigationId === 'home) {
+  if (navigationId === 'home') {
     return 'myapp://home';
   }
   if (navigationId === 'settings') {
