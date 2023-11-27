@@ -11,6 +11,7 @@ module.exports = {
             path: './ios_config.sh',
             execution_position: 'after_compile',
             input_files: ['$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)'],
+            always_out_of_date: '1',
           },
         ],
       },
