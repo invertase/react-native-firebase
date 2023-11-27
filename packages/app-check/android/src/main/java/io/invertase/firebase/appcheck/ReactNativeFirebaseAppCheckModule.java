@@ -212,10 +212,11 @@ public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
 
     Tasks.call(
-        getExecutor(),
-        () -> {
-          return Tasks.await(FirebaseAppCheck.getInstance(firebaseApp).getLimitedUseAppCheckToken());
-        })
+            getExecutor(),
+            () -> {
+              return Tasks.await(
+                  FirebaseAppCheck.getInstance(firebaseApp).getLimitedUseAppCheckToken());
+            })
         .addOnCompleteListener(
             getExecutor(),
             (task) -> {
