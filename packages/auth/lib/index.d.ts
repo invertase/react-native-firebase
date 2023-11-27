@@ -110,6 +110,52 @@ export namespace FirebaseAuthTypes {
   }
 
   /**
+   * Interface that represents an OAuth provider. Implemented by other providers.
+   */
+  export interface OAuthProvider {
+    /**
+     * The provider ID of the provider.
+     * @param providerId
+     */
+    // eslint-disable-next-line @typescript-eslint/no-misused-new
+    new (providerId: string): AuthProvider;
+    /**
+     * Creates a new `AuthCredential`.
+     *
+     * @returns {@link auth.AuthCredential}.
+     * @param token A provider token.
+     * @param secret A provider secret.
+     */
+    credential: (token: string | null, secret?: string) => AuthCredential;
+    /**
+     * Sets the OAuth custom parameters to pass in an OAuth request for sign-in
+     * operations.
+     *
+     * @remarks
+     * For a detailed list, check the reserved required OAuth 2.0 parameters such as `client_id`,
+     * `redirect_uri`, `scope`, `response_type`, and `state` are not allowed and will be ignored.
+     *
+     * @param customOAuthParameters - The custom OAuth parameters to pass in the OAuth request.
+     */
+    setCustomParameters: (customOAuthParameters: Record<string, string>) => AuthProvider;
+    /**
+     * Retrieve the current list of custom parameters.
+     * @returns The current map of OAuth custom parameters.
+     */
+    getCustomParameters: () => Record<string, string>;
+    /**
+     * Add an OAuth scope to the credential.
+     *
+     * @param scope - Provider OAuth scope to add.
+     */
+    addScope: (scope: string) => AuthProvider;
+    /**
+     * Retrieve the current list of OAuth scopes.
+     */
+    getScopes: () => string[];
+  }
+
+  /**
    * Interface that represents an Open ID Connect auth provider. Implemented by other providers.
    */
   export interface OIDCProvider {
@@ -315,7 +361,7 @@ export namespace FirebaseAuthTypes {
      * firebase.auth.OAuthProvider;
      * ```
      */
-    OAuthProvider: AuthProvider;
+    OAuthProvider: OAuthProvider;
     /**
      * Custom Open ID connect auth provider implementation.
      *
@@ -1213,6 +1259,58 @@ export namespace FirebaseAuthTypes {
     linkWithCredential(credential: AuthCredential): Promise<UserCredential>;
 
     /**
+     * Link the user with a federated 3rd party credential provider (Microsoft, Yahoo).
+     * The APIs here are the web-compatible linkWithPopup and linkWithRedirect but both
+     * share the same underlying native SDK behavior and may be used interchangably.
+     *
+     * #### Example
+     *
+     * ```js
+     * const provider = new firebase.auth.OAuthProvider('microsoft.com');
+     * const userCredential = await firebase.auth().currentUser.linkWithPopup(provider);
+     * ```
+     *
+     * @error auth/provider-already-linked Thrown if the provider has already been linked to the user. This error is thrown even if this is not the same provider's account that is currently linked to the user.
+     * @error auth/invalid-credential Thrown if the provider's credential is not valid. This can happen if it has already expired when calling link, or if it used invalid token(s). See the Firebase documentation for your provider, and make sure you pass in the correct parameters to the credential method.
+     * @error auth/credential-already-in-use Thrown if the account corresponding to the credential already exists among your users, or is already linked to a Firebase User.
+     * @error auth/email-already-in-use Thrown if the email corresponding to the credential already exists among your users.
+     * @error auth/operation-not-allowed Thrown if you have not enabled the provider in the Firebase Console. Go to the Firebase Console for your project, in the Auth section and the Sign in Method tab and configure the provider.
+     * @error auth/invalid-email Thrown if the email used in a auth.EmailAuthProvider.credential is invalid.
+     * @error auth/wrong-password Thrown if the password used in a auth.EmailAuthProvider.credential is not correct or when the user associated with the email does not have a password.
+     * @error auth/invalid-verification-code Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification code of the credential is not valid.
+     * @error auth/invalid-verification-id Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid.
+     * @throws on iOS {@link auth.NativeFirebaseAuthError}, on Android {@link auth.NativeFirebaseError}
+     * @param provider A created {@link auth.AuthProvider}.
+     */
+    linkWithPopup(provider: AuthProvider): Promise<UserCredential>;
+
+    /**
+     * Link the user with a federated 3rd party credential provider (Microsoft, Yahoo).
+     * The APIs here are the web-compatible linkWithPopup and linkWithRedirect but both
+     * share the same underlying native SDK behavior and may be used interchangably.
+     *
+     * #### Example
+     *
+     * ```js
+     * const provider = new firebase.auth.OAuthProvider('microsoft.com');
+     * const userCredential = await firebase.auth().currentUser.linkWithRedirect(provider);
+     * ```
+     *
+     * @error auth/provider-already-linked Thrown if the provider has already been linked to the user. This error is thrown even if this is not the same provider's account that is currently linked to the user.
+     * @error auth/invalid-credential Thrown if the provider's credential is not valid. This can happen if it has already expired when calling link, or if it used invalid token(s). See the Firebase documentation for your provider, and make sure you pass in the correct parameters to the credential method.
+     * @error auth/credential-already-in-use Thrown if the account corresponding to the credential already exists among your users, or is already linked to a Firebase User.
+     * @error auth/email-already-in-use Thrown if the email corresponding to the credential already exists among your users.
+     * @error auth/operation-not-allowed Thrown if you have not enabled the provider in the Firebase Console. Go to the Firebase Console for your project, in the Auth section and the Sign in Method tab and configure the provider.
+     * @error auth/invalid-email Thrown if the email used in a auth.EmailAuthProvider.credential is invalid.
+     * @error auth/wrong-password Thrown if the password used in a auth.EmailAuthProvider.credential is not correct or when the user associated with the email does not have a password.
+     * @error auth/invalid-verification-code Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification code of the credential is not valid.
+     * @error auth/invalid-verification-id Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid.
+     * @throws on iOS {@link auth.NativeFirebaseAuthError}, on Android {@link auth.NativeFirebaseError}
+     * @param provider A created {@link auth.AuthProvider}.
+     */
+    linkWithRedirect(provider: AuthProvider): Promise<UserCredential>;
+
+    /**
      * Re-authenticate a user with a third-party authentication provider.
      *
      * #### Example
@@ -1232,6 +1330,27 @@ export namespace FirebaseAuthTypes {
      * @param credential A created {@link auth.AuthCredential}.
      */
     reauthenticateWithCredential(credential: AuthCredential): Promise<UserCredential>;
+
+    /**
+     * Re-authenticate a user with a federated authentication provider (Microsoft, Yahoo)
+     *
+     * #### Example
+     *
+     * ```js
+     * const provider = new firebase.auth.OAuthProvider('microsoft.com');
+     * const userCredential = await firebase.auth().currentUser.reauthenticateWithProvider(provider);
+     * ```
+     *
+     * @error auth/user-mismatch Thrown if the credential given does not correspond to the user.
+     * @error auth/user-not-found Thrown if the credential given does not correspond to any existing user.
+     * @error auth/invalid-credential Thrown if the provider's credential is not valid. This can happen if it has already expired when calling link, or if it used invalid token(s). See the Firebase documentation for your provider, and make sure you pass in the correct parameters to the credential method.
+     * @error auth/invalid-email Thrown if the email used in a auth.EmailAuthProvider.credential is invalid.
+     * @error auth/wrong-password Thrown if the password used in a auth.EmailAuthProvider.credential is not correct or when the user associated with the email does not have a password.
+     * @error auth/invalid-verification-code Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification code of the credential is not valid.
+     * @error auth/invalid-verification-id Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid.
+     * @param provider A created {@link auth.AuthProvider}.
+     */
+    reauthenticateWithProvider(provider: AuthProvider): Promise<UserCredential>;
 
     /**
      * Refreshes the current user.
@@ -1723,6 +1842,56 @@ export namespace FirebaseAuthTypes {
     signInWithCredential(credential: AuthCredential): Promise<UserCredential>;
 
     /**
+     * Signs the user in with a specified provider. This is a web-compatible API along with signInWithRedirect.
+     * They both share the same call to the underlying native SDK signInWithProvider method.
+     *
+     * #### Example
+     *
+     * ```js
+     * // create a new OAuthProvider
+     * const provider = firebase.auth.OAuthProvider('microsoft.com');
+     * // Sign the user in with the provider
+     * const userCredential = await firebase.auth().signInWithPopup(provider);
+     * ```
+     *
+     * @error auth/account-exists-with-different-credential Thrown if there already exists an account with the email address asserted by the credential.
+     * @error auth/invalid-credential Thrown if the credential is malformed or has expired.
+     * @error auth/operation-not-allowed Thrown if the type of account corresponding to the credential is not enabled. Enable the account type in the Firebase Console, under the Auth tab.
+     * @error auth/user-disabled Thrown if the user corresponding to the given credential has been disabled.
+     * @error auth/user-not-found Thrown if signing in with a credential from firebase.auth.EmailAuthProvider.credential and there is no user corresponding to the given email.
+     * @error auth/wrong-password Thrown if signing in with a credential from firebase.auth.EmailAuthProvider.credential and the password is invalid for the given email, or if the account corresponding to the email does not have a password set.
+     * @error auth/invalid-verification-code Thrown if the credential is a firebase.auth.PhoneAuthProvider.credential and the verification code of the credential is not valid.
+     * @error auth/invalid-verification-id Thrown if the credential is a firebase.auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid.
+     * @param provider An `AuthProvider` configured for your desired provider, e.g. "microsoft.com"
+     */
+    signInWithPopup(provider: AuthProvider): Promise<UserCredential>;
+
+    /**
+     * Signs the user in with a specified provider. This is a web-compatible API along with signInWithPopup.
+     * They both share the same call to the underlying native SDK signInWithProvider method.
+     *
+     * #### Example
+     *
+     * ```js
+     * // create a new OAuthProvider
+     * const provider = firebase.auth.OAuthProvider('microsoft.com');
+     * // Sign the user in with the provider
+     * const userCredential = await firebase.auth().signInWithRedirect(provider);
+     * ```
+     *
+     * @error auth/account-exists-with-different-credential Thrown if there already exists an account with the email address asserted by the credential.
+     * @error auth/invalid-credential Thrown if the credential is malformed or has expired.
+     * @error auth/operation-not-allowed Thrown if the type of account corresponding to the credential is not enabled. Enable the account type in the Firebase Console, under the Auth tab.
+     * @error auth/user-disabled Thrown if the user corresponding to the given credential has been disabled.
+     * @error auth/user-not-found Thrown if signing in with a credential from firebase.auth.EmailAuthProvider.credential and there is no user corresponding to the given email.
+     * @error auth/wrong-password Thrown if signing in with a credential from firebase.auth.EmailAuthProvider.credential and the password is invalid for the given email, or if the account corresponding to the email does not have a password set.
+     * @error auth/invalid-verification-code Thrown if the credential is a firebase.auth.PhoneAuthProvider.credential and the verification code of the credential is not valid.
+     * @error auth/invalid-verification-id Thrown if the credential is a firebase.auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid.
+     * @param provider An `AuthProvider` configured for your desired provider, e.g. "microsoft.com"
+     */
+    signInWithRedirect(provider: AuthProvider): Promise<UserCredential>;
+
+    /**
      * Revokes a user's Sign in with Apple token.
      *
      * #### Example
@@ -1737,6 +1906,41 @@ export namespace FirebaseAuthTypes {
      * @param authorizationCode A generated authorization code from Sign in with Apple.
      */
     revokeToken(authorizationCode: string): Promise<void>;
+
+    /**
+     * Signs the user in with a federated OAuth provider supported by Firebase (Microsoft, Yahoo).
+     *
+     * From Firebase Docs:
+     * Unlike other OAuth providers supported by Firebase such as Google, Facebook, and Twitter, where
+     * sign-in can directly be achieved with OAuth access token based credentials, Firebase Auth does not
+     * support the same capability for providers such as Microsoft due to the inability of the Firebase Auth
+     * server to verify the audience of Microsoft OAuth access tokens.
+     *
+     * #### Example
+     * ```js
+     * // Generate an OAuth instance
+     * const provider = new firebase.auth.OAuthProvider('microsoft.com');
+     * // Optionally add scopes to the OAuth instance
+     * provider.addScope('mail.read');
+     * // Optionally add custom parameters to the OAuth instance
+     * provider.setCustomParameters({
+     *  prompt: 'consent',
+     * });
+     * // Sign in using the OAuth provider
+     * const userCredential = await firebase.auth().signInWithProvider(provider);
+     * ```
+     *
+     * @error auth/account-exists-with-different-credential Thrown if there already exists an account with the email address asserted by the credential.
+     * @error auth/invalid-credential Thrown if the credential is malformed or has expired.
+     * @error auth/operation-not-allowed Thrown if the type of account corresponding to the credential is not enabled. Enable the account type in the Firebase Console, under the Auth tab.
+     * @error auth/user-disabled Thrown if the user corresponding to the given credential has been disabled.
+     * @error auth/user-not-found Thrown if signing in with a credential from firebase.auth.EmailAuthProvider.credential and there is no user corresponding to the given email.
+     * @error auth/wrong-password Thrown if signing in with a credential from firebase.auth.EmailAuthProvider.credential and the password is invalid for the given email, or if the account corresponding to the email does not have a password set.
+     * @error auth/invalid-verification-code Thrown if the credential is a firebase.auth.PhoneAuthProvider.credential and the verification code of the credential is not valid.
+     * @error auth/invalid-verification-id Thrown if the credential is a firebase.auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid.
+     * @param provider A generated `AuthProvider`, for example from social auth.
+     */
+    signInWithProvider(provider: AuthProvider): Promise<UserCredential>;
 
     /**
      * Sends a password reset email to the given email address.

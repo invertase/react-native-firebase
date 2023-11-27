@@ -264,14 +264,16 @@ export function verifyPhoneNumber(auth, phoneNumber, autoVerifyTimeoutOrForceRes
 Authenticates a Firebase client using a popup-based OAuth authentication flow.
 */
 export async function signInWithPopup(auth, provider, resolver) {
-  throw new Error('signInWithPopup is unsupported by the native Firebase SDKs');
+  const _auth = _getUnderlyingAuth(auth);
+  return _auth.signInWithPopup(provider, resolver);
 }
 
 /*
 Authenticates a Firebase client using a full-page redirect flow.
 */
 export async function signInWithRedirect(auth, provider, resolver) {
-  throw new Error('signInWithRedirect is unsupported by the native Firebase SDKs');
+  const _auth = _getUnderlyingAuth(auth);
+  return _auth.signInWithRedirect(provider, resolver);
 }
 
 /*
@@ -358,14 +360,14 @@ export async function linkWithPhoneNumber(user, phoneNumber, appVerifier) {
  * Links the authenticated provider to the user account using a pop-up based OAuth flow.
  */
 export async function linkWithPopup(user, provider, resolver) {
-  throw new Error('linkWithPopup is unsupported by the native Firebase SDKs');
+  return user.linkWithPopup(provider, resolver);
 }
 
 /*
  * Links the OAuthProvider to the user account using a full-page redirect flow.
  */
 export async function linkWithRedirect(user, provider, resolver) {
-  throw new Error('linkWithRedirect is unsupported by the native Firebase SDKs');
+  return user.linkWithRedirect(provider, resolver);
 }
 
 /*
@@ -393,14 +395,14 @@ export async function reauthenticateWithPhoneNumber(user, phoneNumber, appVerifi
  * Reauthenticates the current user with the specified OAuthProvider using a pop-up based OAuth flow.
  */
 export async function reauthenticateWithPopup(user, provider, resolver) {
-  throw new Error('reauthenticateWithPopup is unsupported by the native Firebase SDKs');
+  return user.reauthenticateWithPopup(provider, resolver);
 }
 
 /*
  * Reauthenticates the current user with the specified OAuthProvider using a full-page redirect flow.
  */
 export async function reauthenticateWithRedirect(user, provider, resolver) {
-  throw new Error('reauthenticateWithRedirect is unsupported by the native Firebase SDKs');
+  return user.reauthenticateWithRedirect(provider, resolver);
 }
 
 /*

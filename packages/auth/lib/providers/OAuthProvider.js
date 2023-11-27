@@ -15,22 +15,56 @@
  *
  */
 
-const providerId = 'oauth';
-
 export default class OAuthProvider {
-  constructor() {
-    throw new Error('`new OAuthProvider()` is not supported on the native Firebase SDKs.');
-  }
+  /** @internal */
+  #providerId = null;
+  /** @internal */
+  #customParameters = {};
+  /** @internal */
+  #scopes = [];
 
-  static get PROVIDER_ID() {
-    return providerId;
+  constructor(providerId) {
+    this.#providerId = providerId;
   }
 
   static credential(idToken, accessToken) {
     return {
       token: idToken,
       secret: accessToken,
-      providerId,
+      providerId: 'oauth',
+    };
+  }
+
+  get PROVIDER_ID() {
+    return this.#providerId;
+  }
+
+  setCustomParameters(customOAuthParameters) {
+    this.#customParameters = customOAuthParameters;
+    return this;
+  }
+
+  getCustomParameters() {
+    return this.#customParameters;
+  }
+
+  addScope(scope) {
+    if (!this.#scopes.includes(scope)) {
+      this.#scopes.push(scope);
+    }
+    return this;
+  }
+
+  getScopes() {
+    return [...this.#scopes];
+  }
+
+  /** @internal */
+  toObject() {
+    return {
+      providerId: this.#providerId,
+      scopes: this.#scopes,
+      customParameters: this.#customParameters,
     };
   }
 }
