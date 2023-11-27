@@ -168,6 +168,8 @@ or update the in-app UI to signal a new notification.
 
 ### Background & Quit state messages
 
+> Note: If you use @notifee/react-native, since v7.0.0, `onNotificationOpenedApp` and `getInitialNotification` will no longer trigger as notifee will handle the event.
+
 When the application is in a background or quit state, the `onMessage` handler will not be called when receiving messages.
 Instead, you need to setup a background callback handler via the `setBackgroundMessageHandler` method.
 
