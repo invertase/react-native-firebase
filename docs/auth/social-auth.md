@@ -381,17 +381,16 @@ Additionally, the similar `linkWithRedirect` and `linkWithPopup` methods may be 
 Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger
 with the new authentication state of the user.
 
+## Link Multiple Auth Providers to a Firebase Account
 
-## Link Multiple Auth Providers to a Firebase Account 
-
-[From the official documentation](https://firebase.google.com/docs/auth/web/google-signin#expandable-1) 
+[From the official documentation](https://firebase.google.com/docs/auth/web/google-signin#expandable-1)
 
 > If you enabled the **One account per email address** setting in the Firebase console, when a user tries to sign in a to a provider (such as Google) with an email that already exists for another Firebase user's provider (such as Facebook), the error `auth/account-exists-with-different-credential` is thrown along with an `AuthCredential` object (Google ID token). To complete the sign in to the intended provider, the user has to sign first to the existing provider (Facebook) and then link to the former `AuthCredential` (Google ID token).
 
 To provide users with an additional login method, you can link their social media account (or an email & password) with their Firebase account. This is possible for any social provider that uses `auth().signInWithCredential()`.
 To achieve this, you should replace sign-in method in any of the supported social sign-in code snippets with `auth().currentUser.linkWithCredential()`.
 
-This code demonstrates linking a Google provider to an account that is already signed in using Firebase authentication. 
+This code demonstrates linking a Google provider to an account that is already signed in using Firebase authentication.
 
 ```js
 import auth from '@react-native-firebase/auth';
