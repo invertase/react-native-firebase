@@ -5054,8 +5054,14 @@ __metadata:
 "@react-native-firebase/messaging@npm:18.6.2, @react-native-firebase/messaging@workspace:packages/messaging":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/messaging@workspace:packages/messaging"
+  dependencies:
+    expo: "npm:^49.0.20"
   peerDependencies:
     "@react-native-firebase/app": 18.6.2
+    expo: ">=47.0.0"
+  peerDependenciesMeta:
+    expo:
+      optional: true
   languageName: unknown
   linkType: soft
 
