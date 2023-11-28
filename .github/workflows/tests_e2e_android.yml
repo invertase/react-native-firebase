@@ -249,14 +249,9 @@ jobs:
           path: .yarn/cache
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
 
-      - name: Compress Emulator Log
-        if: always()
-        run: gzip -9 adb-*.txt
-        shell: bash
-
       - name: Upload Emulator Log
         uses: actions/upload-artifact@v3
         if: always()
         with:
           name: adb_logs
-          path: adb-*.gz
+          path: adb-*.txt
