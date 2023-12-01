@@ -1,46 +1,19 @@
 name: Testing E2E iOS
 
 on:
-  pull_request:
-    branches:
-      - '**'
-    paths-ignore:
-      - 'docs/**'
-      - 'website/**'
-      - '.spellcheck.dict.txt'
-      - '**/*.md'
-
-  push:
-    branches:
-      - main
-      - v14-release
-    paths-ignore:
-      - 'docs/**'
-      - 'website/**'
-      - '.spellcheck.dict.txt'
-      - '**/*.md'
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  workflow_dispatch
 
 jobs:
   ios:
     name: iOS
-    runs-on: macos-13
+    runs-on: self-hosted
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
     timeout-minutes: 100
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
-      # macOS13 runners are slooooow
-      # This is from: https://github.com/actions/runner-images/issues/7971#issuecomment-1824430407
-      - name: macOS-13-runner speedup
-        run: |
-          sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.diagnosticd.plist
-
       # Set up tool versions
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
 
@@ -49,10 +22,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-
-      - uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: 'latest-stable'
 
       - uses: actions/checkout@v4
         with:
