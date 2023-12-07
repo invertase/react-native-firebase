@@ -317,14 +317,9 @@ describe('functions() modular', function () {
       });
 
       it('HttpsCallableOptions.timeout will error when timeout is exceeded', async function () {
-        const fnName = 'invertaseReactNativeFirebaseFunctionsEmulator';
-        const region = 'europe-west2';
-
-        const functions = firebase.app().functions(region);
-        functions.useFunctionsEmulator('http://api.rnfirebase.io');
-
+        const functionRunner = firebase.functions().httpsCallable('sleeper', { timeout: 1000 });
         try {
-          await functions.httpsCallable(fnName, { timeout: 1000 })({ testTimeout: '3000' });
+          await functionRunner({ delay: 3000 });
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql('DEADLINE').containEql('EXCEEDED');
@@ -697,15 +692,12 @@ describe('functions() modular', function () {
       });
 
       it('HttpsCallableOptions.timeout will error when timeout is exceeded', async function () {
-        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
-        const fnName = 'invertaseReactNativeFirebaseFunctionsEmulator';
-        const region = 'europe-west2';
-
-        const functions = getFunctions(firebase.app(), region);
-        connectFunctionsEmulator(functions, 'api.rnfirebase.io', 5001);
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functions = getFunctions(firebase.app());
+        const functionRunner = httpsCallable(functions, 'sleeper', { timeout: 1000 });
 
         try {
-          await httpsCallable(functions, fnName, { timeout: 1000 })({ testTimeout: '3000' });
+          await functionRunner({ delay: 3000 });
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql('DEADLINE').containEql('EXCEEDED');
