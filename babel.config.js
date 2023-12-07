@@ -10,7 +10,7 @@ module.exports = {
             },
           },
         ],
-        'module:./tests/node_modules/metro-react-native-babel-preset',
+        'module:./tests/node_modules/@react-native/babel-preset',
       ],
     },
   },
