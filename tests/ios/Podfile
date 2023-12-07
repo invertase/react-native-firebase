@@ -19,8 +19,8 @@ $RNFirebaseAsStaticFramework = true # toggle this to true (and set 'use_framewor
 # Toggle this to true if you want to include support for on device conversion measurement APIs
 $RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true
 
-# react-native 0.72 is currently iOS 12.4 as a minimum
-min_ios_version_supported = 12.4
+# react-native 0.73 is currently iOS 13.4 as a minimum
+min_ios_version_supported = 13.4
 
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
@@ -57,14 +57,11 @@ target 'testing' do
 
   use_react_native!(
     :path => config[:reactNativePath],
-    # Hermes is now enabled by default. Disable by setting this flag to false.
-    :hermes_enabled => flags[:hermes_enabled],
-    :fabric_enabled => flags[:fabric_enabled],
     # Enables Flipper.
     #
     # Note that if you have use_frameworks! enabled, Flipper will not work and
     # you should disable the next line.
-    :flipper_configuration => flipper_config,
+    #:flipper_configuration => flipper_config,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
@@ -111,8 +108,6 @@ target 'testing' do
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_version_supported
       end
     end
-
-    __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
 end
 
