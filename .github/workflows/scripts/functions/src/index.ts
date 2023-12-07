@@ -8,6 +8,13 @@ export const helloWorld = functions.https.onRequest((request, response) => {
   response.send('{ "data": "Hello from Firebase!" }');
 });
 
+export const sleeper = functions.https.onCall(async data => {
+  functions.logger.info('Sleeper function starting');
+  return await new Promise(() =>
+    setTimeout(() => functions.logger.info('done sleeping'), data?.delay ?? 3000),
+  );
+});
+
 export { testFunctionCustomRegion } from './testFunctionCustomRegion';
 export { testFunctionDefaultRegion } from './testFunctionDefaultRegion';
 export { testFunctionRemoteConfigUpdate } from './testFunctionRemoteConfigUpdate';
