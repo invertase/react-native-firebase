@@ -201,13 +201,13 @@ Follow [these directions](https://docs.expo.dev/get-started/create-a-project/) t
 
 To install React Native Firebase's base `app` module, use the command `npx expo install @react-native-firebase/app`.
 
-Similarly you can install other RNF modules such as for Authentication and Crashlytics: `npx expo install @react-native-firebase/auth @react-native-firebase/crashlytics`.
+Similarly you can install other React Native Firebase modules such as for Authentication and Crashlytics: `npx expo install @react-native-firebase/auth @react-native-firebase/crashlytics`.
 
 #### Configure React Native Firebase modules
 
 To enable Firebase on the native iOS and Android platforms, you must create and download Service Account files for each platform. Then you provide paths to the `google-services.json` and `GoogleService-Info.plist` files by specifying the [`expo.android.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile-1) and [`expo.ios.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile) fields respectively. See example configuration below.
 
-For each RNF module, add the required [Expo Config Plugin](https://docs.expo.dev/config-plugins/introduction/) to the [`plugins`](https://docs.expo.io/versions/latest/config/app/#plugins) array of your `app.json` or `app.config.js`. See the note below to determine which modules require Config Plugin configurations.
+For each React Native Firebase module, add the required [Expo Config Plugin](https://docs.expo.dev/config-plugins/introduction/) to the [`plugins`](https://docs.expo.io/versions/latest/config/app/#plugins) array of your `app.json` or `app.config.js`. See the note below to determine which modules require Config Plugin configurations.
 
 For iOS only, since `firebase-ios-sdk` requires `use_frameworks` please configure [expo-build-properties](https://docs.expo.dev/versions/latest/sdk/build-properties/#pluginconfigtypeios) and add the following entry to their `plugins` array in `app.json`:
 
