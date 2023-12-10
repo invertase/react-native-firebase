@@ -209,17 +209,19 @@ For each RNF module, add the required [Expo Config Plugin](https://docs.expo.dev
 
 For iOS only, since `firebase-ios-sdk` requires `use_frameworks` please configure [expo-build-properties](https://docs.expo.dev/versions/latest/sdk/build-properties/#pluginconfigtypeios) and add the following entry to their `plugins` array in `app.json`:
 
-Here is an example `app.json` to enable the Firebase App, Auth and Crashlytics modules, and the Service Account files for both mobile platforms:
+Here is an example `app.json` to enable the Firebase App, Auth and Crashlytics modules, the Service Account files for both mobile platforms and setting the applicatio ID to the example value of `com.mycorp.my-app-name`:
 
 ```json
 {
   "expo": {
     "android": {
       "googleServicesFile": "./google-services.json",
+      "package": "com.mycorp.my-app-name",
       "useFrameworks": "static"
     },
     "ios": {
-      "googleServicesFile": "./GoogleService-Info.plist"
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "bundleIdentifier": "com.mycorp.my-app-name"
     },
     "plugins": [
       "@react-native-firebase/app",
@@ -230,7 +232,7 @@ Here is an example `app.json` to enable the Firebase App, Auth and Crashlytics m
 }
 ```
 
-> Listing a module in the Config Plugins (the `"plugins"` array in the JSON above) is only required for React Native Firebase modules that involve native installation steps - e.g. modifying the Xcode project, `Podfile`, `build.gradle`, `AndroidManifest.xml` etc. React Native Firebase packages without native steps will work out of the box; no `"plugins"` entry required. Not all packages have Expo Config Plugins provided yet. A React Native Firebase module has Config Plugin support if it contains an `app.plugin.js` file in its package directory (e.g. `node_modules/@react-native-firebase/app/app.plugin.js`).
+> Listing a module in the Config Plugins (the `"plugins"` array in the JSON above) is only required for React Native Firebase modules that involve _native installation steps_ - e.g. modifying the Xcode project, `Podfile`, `build.gradle`, `AndroidManifest.xml` etc. React Native Firebase packages without native steps will work out of the box; no `"plugins"` entry required. Not all packages have Expo Config Plugins provided yet. A React Native Firebase module has Config Plugin support if it contains an `app.plugin.js` file in its package directory (e.g. `node_modules/@react-native-firebase/app/app.plugin.js`).
 
 #### Non EAS Builds
 
