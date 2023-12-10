@@ -209,19 +209,19 @@ For each RNF module, add the required [Expo Config Plugin](https://docs.expo.dev
 
 For iOS only, since `firebase-ios-sdk` requires `use_frameworks` please configure [expo-build-properties](https://docs.expo.dev/versions/latest/sdk/build-properties/#pluginconfigtypeios) and add the following entry to their `plugins` array in `app.json`:
 
-Here is an example `app.json` to enable the Firebase App, Auth and Crashlytics modules, the Service Account files for both mobile platforms and setting the applicatio ID to the example value of `com.mycorp.my-app-name`:
+Here is an example `app.json` to enable the Firebase App, Auth and Crashlytics modules, the Service Account files for both mobile platforms and setting the applicatio ID to the example value of `com.mycorp.myapp` (change to match your own):
 
 ```json
 {
   "expo": {
     "android": {
       "googleServicesFile": "./google-services.json",
-      "package": "com.mycorp.my-app-name",
+      "package": "com.mycorp.myapp",
       "useFrameworks": "static"
     },
     "ios": {
       "googleServicesFile": "./GoogleService-Info.plist",
-      "bundleIdentifier": "com.mycorp.my-app-name"
+      "bundleIdentifier": "com.mycorp.myapp"
     },
     "plugins": [
       "@react-native-firebase/app",
