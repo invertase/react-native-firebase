@@ -34,7 +34,7 @@ concurrency:
 jobs:
   android:
     name: Android
-    runs-on: macos-13
+    runs-on: macos-12
     timeout-minutes: 90
     strategy:
       fail-fast: false
