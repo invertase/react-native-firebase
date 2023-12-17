@@ -12,11 +12,17 @@ This module requires that the `@react-native-firebase/app` module is already set
 [Getting Started](/) documentation.
 
 ```bash
+# Using Yarn
 # Install & setup the app module
 yarn add @react-native-firebase/app
-
 # Install the messaging module
 yarn add @react-native-firebase/messaging
+
+# Using npm
+# Install & setup the app module
+npm install --save  @react-native-firebase/app
+# Install the messaging module
+npm install --save @react-native-firebase/messaging
 
 # If you're developing your app using iOS, run this command
 cd ios/ && pod install
