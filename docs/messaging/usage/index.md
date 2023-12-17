@@ -15,12 +15,14 @@ This module requires that the `@react-native-firebase/app` module is already set
 # Using Yarn
 # Install & setup the app module
 yarn add @react-native-firebase/app
+
 # Install the messaging module
 yarn add @react-native-firebase/messaging
 
 # Using npm
 # Install & setup the app module
 npm install --save  @react-native-firebase/app
+
 # Install the messaging module
 npm install --save @react-native-firebase/messaging
 
