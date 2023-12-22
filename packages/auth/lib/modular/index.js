@@ -467,3 +467,8 @@ export async function verifyBeforeUpdateEmail(user, newEmail, actionCodeSettings
 export function getAdditionalUserInfo(userCredential) {
   return userCredential.additionalUserInfo;
 }
+
+export function getCustomAuthDomain(auth) {
+  const _auth = _getUnderlyingAuth(auth);
+  return _auth.getCustomAuthDomain();
+}

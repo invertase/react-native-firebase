@@ -16,6 +16,7 @@
  */
 
 #import "RNFBSharedUtils.h"
+#import "RNFBAppModule.h"
 #import "RNFBJSON.h"
 #import "RNFBMeta.h"
 #import "RNFBPreferences.h"
@@ -65,6 +66,10 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
   firAppOptions[@"clientId"] = firOptions.clientID;
   firAppOptions[@"androidClientID"] = firOptions.androidClientID;
   firAppOptions[@"deepLinkUrlScheme"] = firOptions.deepLinkURLScheme;
+  // not in FIROptions API but in JS SDK and project config JSON
+  if ([RNFBAppModule getCustomDomain:name] != nil) {
+    firAppOptions[@"authDomain"] = [RNFBAppModule getCustomDomain:name];
+  }
 
   firAppDictionary[@"options"] = firAppOptions;
   firAppDictionary[@"appConfig"] = firAppConfig;

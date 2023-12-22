@@ -21,6 +21,8 @@
 
 @interface RNFBAppModule : NSObject <RCTBridgeModule>
 
++ (NSString *)getCustomDomain:(NSString *)appName;
+
 - (void)setLogLevel:(NSString *)logLevel;
 
 @end
