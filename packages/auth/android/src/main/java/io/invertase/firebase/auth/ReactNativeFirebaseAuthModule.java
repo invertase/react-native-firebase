@@ -68,6 +68,7 @@ import com.google.firebase.auth.PhoneMultiFactorInfo;
 import com.google.firebase.auth.TwitterAuthProvider;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import io.invertase.firebase.app.ReactNativeFirebaseAppModule;
 import io.invertase.firebase.common.ReactNativeFirebaseEvent;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
@@ -148,6 +149,26 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
     mCachedResolvers.clear();
     mMultiFactorSessions.clear();
+  }
+
+  @ReactMethod
+  public void configureAuthDomain(final String appName) {
+    Log.d(TAG, "configureAuthDomain");
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    String authDomain = ReactNativeFirebaseAppModule.authDomains.get(appName);
+    Log.d(TAG, "configureAuthDomain - app " + appName + " domain? " + authDomain);
+    if (authDomain != null) {
+      firebaseAuth.setCustomAuthDomain(authDomain);
+    }
+  }
+
+  @ReactMethod
+  public void getCustomAuthDomain(final String appName, final Promise promise) {
+    Log.d(TAG, "configureAuthDomain");
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    promise.resolve(firebaseAuth.getCustomAuthDomain());
   }
 
   /** Add a new auth state listener - if one doesn't exist already */

@@ -19,6 +19,7 @@
 #import <React/RCTUtils.h>
 
 #import "RNFBApp/RCTConvert+FIRApp.h"
+#import "RNFBApp/RNFBAppModule.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBAuthModule.h"
 
@@ -157,6 +158,21 @@ RCT_EXPORT_METHOD(removeIdTokenListener : (FIRApp *)firebaseApp) {
         removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:firebaseApp.name]];
     [idTokenHandlers removeObjectForKey:firebaseApp.name];
   }
+}
+
+RCT_EXPORT_METHOD(configureAuthDomain : (FIRApp *)firebaseApp) {
+  NSString *authDomain = [RNFBAppModule getCustomDomain:firebaseApp.name];
+  DLog(@"RNFBAuth app: %@ customAuthDomain: %@", firebaseApp.name, authDomain);
+  if (authDomain != nil) {
+    [FIRAuth authWithApp:firebaseApp].customAuthDomain = authDomain;
+  }
+}
+
+RCT_EXPORT_METHOD(getCustomAuthDomain
+                  : (FIRApp *)firebaseApp
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  resolve([FIRAuth authWithApp:firebaseApp].customAuthDomain);
 }
 
 RCT_EXPORT_METHOD(setAppVerificationDisabledForTesting : (FIRApp *)firebaseApp : (BOOL)disabled) {

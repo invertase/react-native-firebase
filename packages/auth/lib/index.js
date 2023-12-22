@@ -56,6 +56,7 @@ export {
   fetchSignInMethodsForEmail,
   getAdditionalUserInfo,
   getAuth,
+  getCustomAuthDomain,
   getIdToken,
   getIdTokenResult,
   getMultiFactorResolver,
@@ -173,6 +174,12 @@ class FirebaseAuthModule extends FirebaseModule {
 
     this.native.addAuthStateListener();
     this.native.addIdTokenListener();
+
+    // custom authDomain in only available from App's FirebaseOptions,
+    // but we need it in Auth if it exists. During app configuration we store
+    // mappings from app name to authDomain, this auth constructor
+    // is a reasonable time to use the mapping and set it into auth natively
+    this.native.configureAuthDomain();
   }
 
   get languageCode() {
@@ -499,6 +506,10 @@ class FirebaseAuthModule extends FirebaseModule {
       throw new Error('firebase.auth().multiFactor() only operates on currentUser');
     }
     return new MultiFactorUser(this, user);
+  }
+
+  getCustomAuthDomain() {
+    return this.native.getCustomAuthDomain();
   }
 }
 

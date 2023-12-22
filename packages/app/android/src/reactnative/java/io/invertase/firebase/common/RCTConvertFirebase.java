@@ -25,6 +25,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import io.invertase.firebase.app.ReactNativeFirebaseAppModule;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,10 @@ public class RCTConvertFirebase {
     options.put("gaTrackingId", appOptions.getGaTrackingId());
     options.put("messagingSenderId", appOptions.getGcmSenderId());
     options.put("storageBucket", appOptions.getStorageBucket());
+
+    if (ReactNativeFirebaseAppModule.authDomains.get(name) != null) {
+      options.put("authDomain", ReactNativeFirebaseAppModule.authDomains.get(name));
+    }
 
     root.put("options", options);
     root.put("appConfig", appConfig);

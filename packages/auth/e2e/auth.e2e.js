@@ -1139,6 +1139,23 @@ describe('auth() modular', function () {
 
         secondaryApp.auth().app.name.should.equal('secondaryFromNative');
       });
+
+      it('supports an app initialized with custom authDomain', async function () {
+        const { getAuth, getCustomAuthDomain } = authModular;
+        const { initializeApp } = modular;
+
+        const name = `testscoreapp${FirebaseHelpers.id}`;
+        const platformAppConfig = FirebaseHelpers.app.config();
+        platformAppConfig.authDomain = 'example.com';
+        const newApp = await initializeApp(platformAppConfig, name);
+        const secondaryApp = firebase.app(name);
+        const secondaryAuth = getAuth(secondaryApp);
+        secondaryAuth.app.name.should.equal(name);
+        secondaryApp.auth().app.name.should.equal(name);
+        const customAuthDomain = await getCustomAuthDomain(secondaryAuth);
+        customAuthDomain.should.equal(platformAppConfig.authDomain);
+        return newApp.delete();
+      });
     });
     describe('applyActionCode()', function () {
       // Needs a different setup to work against the auth emulator
