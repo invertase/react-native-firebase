@@ -241,11 +241,11 @@ export namespace FirebaseAuthTypes {
    */
   export interface PhoneAuthState {
     /**
-     * The timeout specified in {@link auth#verifyPhoneNumber} has expired.
+     * SMS message with verification code sent to phone number.
      */
     CODE_SENT: 'sent';
     /**
-     * SMS message with verification code sent to phone number.
+     * The timeout specified in {@link auth#verifyPhoneNumber} has expired.
      */
     AUTO_VERIFY_TIMEOUT: 'timeout';
     /**
