@@ -1374,11 +1374,11 @@ RCT_EXPORT_METHOD(useEmulator
 }
 
 - (NSString *)getJSFactorId:(NSString *)factorId {
-  if ([factorId isEqualToString:@"1"]) {
+  if (factorId == nil || [factorId isEqualToString:@"1"]) {
     // Only phone is supported by the front-end so far
     return @"phone";
   }
-
+    
   return factorId;
 }
 
@@ -1649,7 +1649,7 @@ RCT_EXPORT_METHOD(useEmulator
         [[[NSISO8601DateFormatter alloc] init] stringFromDate:hint.enrollmentDate];
     [enrolledFactors addObject:@{
       @"uid" : hint.UID,
-      @"factorId" : [self getJSFactorId:(hint.factorID)],
+      @"factorId" : [self getJSFactorId:(hint.factorID == nil ? nil : hint.factorID)],
       @"displayName" : hint.displayName == nil ? [NSNull null] : hint.displayName,
       @"enrollmentDate" : enrollmentDate,
     }];
