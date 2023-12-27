@@ -1378,7 +1378,6 @@ RCT_EXPORT_METHOD(useEmulator
     // Only phone is supported by the front-end so far
     return @"phone";
   }
-    
   return factorId;
 }
 
@@ -1650,7 +1649,7 @@ RCT_EXPORT_METHOD(useEmulator
     [enrolledFactors addObject:@{
       @"uid" : hint.UID,
       @"factorId" : [self getJSFactorId:(hint.factorID == nil ? nil : hint.factorID)],
-      @"displayName" : hint.displayName == nil ? [NSNull null] : hint.displayName,
+      @"displayName" : hint.factorID == nil ? [NSNull null] : [self getJSFactorID:(hint.factorID)],
       @"enrollmentDate" : enrollmentDate,
     }];
   }
