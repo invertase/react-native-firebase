@@ -138,12 +138,14 @@ describe('firestore().collection().where()', function () {
       }
     });
 
-    it('throws if in query array length is greater than 10', function () {
+    it('throws if in query array length is greater than 30', function () {
       try {
+        const queryArray = Array.from({ length: 30 }, (_, i) => i + 1);
+
         firebase
           .firestore()
           .collection(COLLECTION)
-          .where('foo.bar', 'in', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+          .where('foo.bar', 'in', queryArray);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql('maximum of 10 elements in the value');
@@ -708,12 +710,14 @@ describe('firestore().collection().where()', function () {
       }
     });
 
-    it('throws if in query array length is greater than 10', function () {
+    it('throws if in query array length is greater than 30', function () {
       const { getFirestore, collection, query, where } = firestoreModular;
+      const queryArray = Array.from({ length: 30 }, (_, i) => i + 1);
+
       try {
         query(
           collection(getFirestore(), COLLECTION),
-          where('foo.bar', 'in', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
+          where('foo.bar', 'in', queryArray),
         );
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
