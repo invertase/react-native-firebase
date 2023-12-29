@@ -271,7 +271,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('throws if in query array length is greater than 30', function () {
       try {
-        const queryArray = Array.from({ length: 30 }, (_, i) => i + 1);
+        const queryArray = Array.from({ length: 31 }, (_, i) => i + 1);
 
         firebase
           .firestore()
@@ -1330,7 +1330,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('throws if in query array length is greater than 30', function () {
       const { getFirestore, collection, where, or, and, query } = firestoreModular;
-      const queryArray = Array.from({ length: 30 }, (_, i) => i + 1);
+      const queryArray = Array.from({ length: 31 }, (_, i) => i + 1);
 
       try {
         query(
