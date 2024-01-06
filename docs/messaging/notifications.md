@@ -112,60 +112,89 @@ we can set an initial route when the app is opened from a quit state, and push t
 
 ```jsx
 import React, { useState, useEffect } from 'react';
+import { Linking, ActivityIndicator } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 const Stack = createStackNavigator();
+const NAVIGATION_IDS = ['home', 'post', 'settings'];
 
-function App() {
-  const navigation = useNavigation();
-  const [loading, setLoading] = useState(true);
-  const [initialRoute, setInitialRoute] = useState('Home');
-
-  useEffect(() => {
-    // Assume a message-notification contains a "type" property in the data payload of the screen to open
-
-    messaging().onNotificationOpenedApp(remoteMessage => {
-      console.log(
-        'Notification caused app to open from background state:',
-        remoteMessage.notification,
-      );
-      navigation.navigate(remoteMessage.data.type);
-    });
-
-    // Check whether an initial notification is available
-    messaging()
-      .getInitialNotification()
-      .then(remoteMessage => {
-        if (remoteMessage) {
-          console.log(
-            'Notification caused app to open from quit state:',
-            remoteMessage.notification,
-          );
-          setInitialRoute(remoteMessage.data.type); // e.g. "Settings"
-        }
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) {
+function buildDeepLinkFromNotificationData(data): string | null {
+  const navigationId = data?.navigationId;
+  if (!NAVIGATION_IDS.includes(navigationId)) {
+    console.warn('Unverified navigationId', navigationId)
     return null;
   }
+  if (navigationId === 'home') {
+    return 'myapp://home';
+  }
+  if (navigationId === 'settings') {
+    return 'myapp://settings';
+  }
+  const postId = data?.postId;
+  if (typeof postId === 'string') {
+    return `myapp://post/${postId}`
+  }
+  console.warn('Missing postId')
+  return null
+}
 
+const linking = {
+  prefixes: ['myapp://'],
+  config: {
+    initialRouteName: 'Home',
+    screens: {
+      Home: 'home',
+      Post: 'post/:id',
+      Settings: 'settings'
+    }
+  },
+  async getInitialURL() {
+    const url = await Linking.getInitialURL();
+    if (typeof url === 'string') {
+      return url;
+    }
+    //getInitialNotification: When the application is opened from a quit state.
+    const message = await messaging().getInitialNotification();
+    const deeplinkURL = buildDeepLinkFromNotificationData(message?.data);
+    if (typeof deeplinkURL === 'string') {
+      return deeplinkURL;
+    }
+  },
+  subscribe(listener: (url: string) => void) {
+    const onReceiveURL = ({url}: {url: string}) => listener(url);
+
+    // Listen to incoming links from deep linking
+    const linkingSubscription = Linking.addEventListener('url', onReceiveURL);
+
+    //onNotificationOpenedApp: When the application is running, but in the background.
+    const unsubscribe = messaging().onNotificationOpenedApp(remoteMessage => {
+      const url = buildDeepLinkFromNotificationData(remoteMessage.data)
+      if (typeof url === 'string') {
+        listener(url)
+      }
+    });
+
+    return () => {
+      linkingSubscription.remove();
+      unsubscribe();
+    };
+  },
+}
+
+function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName={initialRoute}>
+    <NavigationContainer linking={linking} fallback={<ActivityIndicator animating />}>
+      <Stack.Navigator>
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Post" component={PostScreen} />
         <Stack.Screen name="Settings" component={SettingsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
 ```
-
-The call to `getInitialNotification` should happen within a React lifecycle method after mounting (e.g. `componentDidMount` or `useEffect`).
-If it's called too soon (e.g. within a class constructor or global scope), the notification data may not be available.
 
 **Quick Tip:** On `Android` you can test receiving remote notifications on the emulator but on `iOS` you will need to use a real device as the iOS simulator does not support receiving remote notifications.
 
