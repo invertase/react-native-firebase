@@ -1649,7 +1649,7 @@ RCT_EXPORT_METHOD(useEmulator
         [[[NSISO8601DateFormatter alloc] init] stringFromDate:hint.enrollmentDate];
     [enrolledFactors addObject:@{
       @"uid" : hint.UID,
-      @"factorId" : [self getJSFactorId:(hint.factorID)],
+      @"factorId" : hint.factorID == nil ? [NSNull null] : [self getJSFactorId:(hint.factorID)],
       @"displayName" : hint.displayName == nil ? [NSNull null] : hint.displayName,
       @"enrollmentDate" : enrollmentDate,
     }];
