@@ -1378,6 +1378,7 @@ RCT_EXPORT_METHOD(useEmulator
     // Only phone is supported by the front-end so far
     return @"phone";
   }
+  
   return factorId;
 }
 
