@@ -1374,7 +1374,7 @@ RCT_EXPORT_METHOD(useEmulator
 }
 
 - (NSString *)getJSFactorId:(NSString *)factorId {
-  if (factorId == nil || [factorId isEqualToString:@"1"]) {
+  if ([factorId isEqualToString:@"1"]) {
     // Only phone is supported by the front-end so far
     return @"phone";
   }
