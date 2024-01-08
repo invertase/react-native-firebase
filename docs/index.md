@@ -203,7 +203,7 @@ Similarly you can install other React Native Firebase modules such as for Authen
 
 #### Configure React Native Firebase modules
 
-To enable Firebase on the native iOS and Android platforms, you must create and download Service Account files for each platform. Then you provide paths to the `google-services.json` and `GoogleService-Info.plist` files by specifying the [`expo.android.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile-1) and [`expo.ios.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile) fields respectively. See example configuration below.
+To enable Firebase on the native Android and iOS platforms, create and download Service Account files for each platform. Then, provide paths to the `google-services.json` and `GoogleService-Info.plist` files by specifying the [`expo.android.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile-1) and [`expo.ios.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile) fields. See the example configuration below.
 
 For each React Native Firebase module, add the required [Expo Config Plugin](https://docs.expo.dev/config-plugins/introduction/) to the [`plugins`](https://docs.expo.io/versions/latest/config/app/#plugins) array of your `app.json` or `app.config.js`. See the note below to determine which modules require Config Plugin configurations.
 
