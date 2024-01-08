@@ -234,7 +234,7 @@ Here is an example `app.json` to enable the Firebase App, Auth and Crashlytics m
 
 > Listing a module in the Config Plugins (the `"plugins"` array in the JSON above) is only required for React Native Firebase modules that involve _native installation steps_ - e.g. modifying the Xcode project, `Podfile`, `build.gradle`, `AndroidManifest.xml` etc. React Native Firebase modules without native steps will work out of the box; no `"plugins" entry is required. Not all modules have Expo Config Plugins provided yet. A React Native Firebase module has Config Plugin support if it contains an `app.plugin.js` file in its package directory (e.g. `node_modules/@react-native-firebase/app/app.plugin.js`).
 
-#### Non EAS Builds
+#### Local app compilation
 
 If you are **not** using EAS Build then you must use the `expo prebuild --clean` command as described in the ["Adding custom native code"](https://docs.expo.io/workflow/customizing/) guide to rebuild your app locally to include the config plugin changes. If this command isn't run, you'll encounter connection errors to Firebase.
 
