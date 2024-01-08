@@ -23,7 +23,7 @@
     "tests:packager:chrome": "cd tests && yarn react-native start --reset-cache",
     "tests:packager:jet": "cd tests && cross-env REACT_DEBUGGER=\"echo nope\" yarn react-native start",
     "tests:packager:jet-ci": "cd tests && (mkdir $HOME/.metro || true) && cross-env TMPDIR=$HOME/.metro REACT_DEBUGGER=\"echo nope\" yarn react-native start",
-    "tests:packager:jet-reset-cache": "cd tests && cross-env REACT_DEBUGGER=\"echo nope\" node yarn react-native start --reset-cache",
+    "tests:packager:jet-reset-cache": "cd tests && cross-env REACT_DEBUGGER=\"echo nope\" yarn react-native start --reset-cache",
     "tests:emulator:prepare": "cd .github/workflows/scripts/functions && yarn && yarn build",
     "tests:emulator:start": "yarn tests:emulator:prepare && cd ./.github/workflows/scripts && ./start-firebase-emulator.sh --no-daemon",
     "tests:emulator:start:windows": "yarn tests:emulator:prepare && cd ./.github/workflows/scripts && ./start-firebase-emulator.bat --no-daemon",
