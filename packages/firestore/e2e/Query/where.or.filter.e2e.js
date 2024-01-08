@@ -278,14 +278,8 @@ describe('firestore().collection().where(OR Filters)', function () {
           .collection(COLLECTION)
           .where(
             Filter.or(
-              Filter.and(
-                Filter('foo.bar', 'in', queryArray),
-                Filter('foo.bar', 'in', queryArray),
-              ),
-              Filter.and(
-                Filter('foo.bar', 'in', queryArray),
-                Filter('foo.bar', 'in', queryArray),
-              ),
+              Filter.and(Filter('foo.bar', 'in', queryArray), Filter('foo.bar', 'in', queryArray)),
+              Filter.and(Filter('foo.bar', 'in', queryArray), Filter('foo.bar', 'in', queryArray)),
             ),
           );
 
@@ -1336,14 +1330,8 @@ describe('firestore().collection().where(OR Filters)', function () {
         query(
           collection(getFirestore(), COLLECTION),
           or(
-            and(
-              where('foo.bar', 'in', queryArray),
-              where('foo.bar', 'in', queryArray),
-            ),
-            and(
-              where('foo.bar', 'in', queryArray),
-              where('foo.bar', 'in', queryArray),
-            ),
+            and(where('foo.bar', 'in', queryArray), where('foo.bar', 'in', queryArray)),
+            and(where('foo.bar', 'in', queryArray), where('foo.bar', 'in', queryArray)),
           ),
         );
 

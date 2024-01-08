@@ -184,10 +184,7 @@ describe(' firestore().collection().where(AND Filters)', function () {
           .firestore()
           .collection(COLLECTION)
           .where(
-            Filter.and(
-              Filter('foo.bar', 'in', queryArray),
-              Filter('foo.bar', 'in', queryArray),
-            ),
+            Filter.and(Filter('foo.bar', 'in', queryArray), Filter('foo.bar', 'in', queryArray)),
           );
 
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -840,10 +837,7 @@ describe(' firestore().collection().where(AND Filters)', function () {
       try {
         query(
           collection(getFirestore(), COLLECTION),
-          and(
-            where('foo.bar', 'in', queryArray),
-            where('foo.bar', 'in', queryArray),
-          ),
+          and(where('foo.bar', 'in', queryArray), where('foo.bar', 'in', queryArray)),
         );
 
         return Promise.reject(new Error('Did not throw an Error.'));
