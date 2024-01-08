@@ -236,7 +236,7 @@ Here is an example `app.json` to enable the Firebase App, Auth and Crashlytics m
 
 #### Local app compilation
 
-If you are **not** using EAS Build then you must use the `expo prebuild --clean` command as described in the ["Adding custom native code"](https://docs.expo.io/workflow/customizing/) guide to rebuild your app locally to include the config plugin changes. If this command isn't run, you'll encounter connection errors to Firebase.
+If you are compiling your app locally, use the local app compilation steps described in [Local app development](https://docs.expo.dev/guides/local-app-development/) guide in Expo docs.
 
 #### Expo Tools for VSCode
 
