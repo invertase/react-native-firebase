@@ -193,9 +193,7 @@ If you're using [Bare Workflow](https://docs.expo.io/introduction/managed-vs-bar
 
 ### Expo Managed Workflow
 
-Since Expo Go will not work with react-native-firebase, the suggested workflow is to use a [custom development client](https://docs.expo.dev/clients/getting-started/).
-
-Follow [these directions](https://docs.expo.dev/get-started/create-a-project/) to create a new Expo project.
+The recommended workflow to use React Native Firebase in your project created with Expo SDK is to [create and use a development build](https://docs.expo.dev/develop/development-builds/create-a-build/). To create a new Expo project, see the [Get started](https://docs.expo.dev/get-started/create-a-project/) guide in Expo documentation.
 
 #### Install React Native Firebase modules
 
