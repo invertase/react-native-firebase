@@ -191,7 +191,7 @@ Where possible, it is recommended by the Expo team to **_use Managed Workflow_**
 
 If you're using [Bare Workflow](https://docs.expo.io/introduction/managed-vs-bare/#bare-workflow), you will need to follow the above [Android Setup](/#2-android-setup) and [iOS Setup](/#3-ios-setup) steps.
 
-### Expo Managed Workflow
+### Development builds
 
 The recommended workflow to use React Native Firebase in your project created with Expo SDK is to [create and use a development build](https://docs.expo.dev/develop/development-builds/create-a-build/). To create a new Expo project, see the [Get started](https://docs.expo.dev/get-started/create-a-project/) guide in Expo documentation.
 
