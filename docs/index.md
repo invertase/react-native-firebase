@@ -207,7 +207,7 @@ To enable Firebase on the native Android and iOS platforms, create and download 
 
 For each React Native Firebase module, add the required [Expo Config Plugin](https://docs.expo.dev/config-plugins/introduction/) to the [`plugins`](https://docs.expo.io/versions/latest/config/app/#plugins) array of your `app.json` or `app.config.js`. See the note below to determine which modules require Config Plugin configurations.
 
-For iOS only, since `firebase-ios-sdk` requires `use_frameworks` please configure [expo-build-properties](https://docs.expo.dev/versions/latest/sdk/build-properties/#pluginconfigtypeios) and add the following entry to their `plugins` array in `app.json`:
+For iOS only, since `firebase-ios-sdk` requires `use_frameworks` configure [`expo-build-properties`](https://docs.expo.dev/versions/latest/sdk/build-properties/#pluginconfigtypeios) and add the following entry to the `plugins` array in `app.json`:
 
 Here is an example `app.json` to enable the Firebase App, Auth and Crashlytics modules, the Service Account files for both mobile platforms and setting the application ID to the example value of `com.mycorp.myapp` (change to match your own):
 
