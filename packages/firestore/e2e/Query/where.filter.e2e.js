@@ -157,16 +157,18 @@ describe('firestore().collection().where(Filters)', function () {
     }
   });
 
-  it('throws if in query array length is greater than 10', function () {
+  it('throws if in query array length is greater than 30', function () {
     try {
+      const queryArray = Array.from({ length: 31 }, (_, i) => i + 1);
+
       firebase
         .firestore()
         .collection(COLLECTION)
-        .where(Filter('foo.bar', 'in', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]));
+        .where(Filter('foo.bar', 'in', queryArray));
 
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql('maximum of 10 elements in the value');
+      error.message.should.containEql('maximum of 30 elements in the value');
       return Promise.resolve();
     }
   });
@@ -243,16 +245,15 @@ describe('firestore().collection().where(Filters)', function () {
 
   it("should throw error when 'not-in' filter has a list of more than 10 items", async function () {
     const ref = firebase.firestore().collection(COLLECTION);
+    const queryArray = Array.from({ length: 31 }, (_, i) => i + 1);
 
     try {
-      ref
-        .where(Filter('foo.bar', '==', 1))
-        .where(Filter('foo.bar', 'not-in', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]));
+      ref.where(Filter('foo.bar', '==', 1)).where(Filter('foo.bar', 'not-in', queryArray));
 
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
-        'filters support a maximum of 10 elements in the value array.',
+        'filters support a maximum of 30 elements in the value array.',
       );
       return Promise.resolve();
     }

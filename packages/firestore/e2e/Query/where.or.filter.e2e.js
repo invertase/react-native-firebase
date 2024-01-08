@@ -269,21 +269,17 @@ describe('firestore().collection().where(OR Filters)', function () {
       }
     });
 
-    it('throws if in query array length is greater than 10', function () {
+    it('throws if in query array length is greater than 30', function () {
       try {
+        const queryArray = Array.from({ length: 31 }, (_, i) => i + 1);
+
         firebase
           .firestore()
           .collection(COLLECTION)
           .where(
             Filter.or(
-              Filter.and(
-                Filter('foo.bar', 'in', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
-                Filter('foo.bar', 'in', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
-              ),
-              Filter.and(
-                Filter('foo.bar', 'in', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
-                Filter('foo.bar', 'in', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
-              ),
+              Filter.and(Filter('foo.bar', 'in', queryArray), Filter('foo.bar', 'in', queryArray)),
+              Filter.and(Filter('foo.bar', 'in', queryArray), Filter('foo.bar', 'in', queryArray)),
             ),
           );
 
@@ -1326,20 +1322,16 @@ describe('firestore().collection().where(OR Filters)', function () {
       }
     });
 
-    it('throws if in query array length is greater than 10', function () {
+    it('throws if in query array length is greater than 30', function () {
       const { getFirestore, collection, where, or, and, query } = firestoreModular;
+      const queryArray = Array.from({ length: 31 }, (_, i) => i + 1);
+
       try {
         query(
           collection(getFirestore(), COLLECTION),
           or(
-            and(
-              where('foo.bar', 'in', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
-              where('foo.bar', 'in', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
-            ),
-            and(
-              where('foo.bar', 'in', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
-              where('foo.bar', 'in', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
-            ),
+            and(where('foo.bar', 'in', queryArray), where('foo.bar', 'in', queryArray)),
+            and(where('foo.bar', 'in', queryArray), where('foo.bar', 'in', queryArray)),
           ),
         );
 
