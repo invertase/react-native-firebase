@@ -181,19 +181,13 @@ you can follow the manual installation steps for [iOS](/install-ios) and [Androi
 
 ## Expo
 
-Integration with Expo is possible in both Bare Workflow, and [custom Managed Workflow](https://docs.expo.io/workflow/customizing/) via [config plugins](https://docs.expo.io/guides/config-plugins/).
+Integration with Expo is possible when using a [development build](https://docs.expo.dev/workflow/overview/#development-builds). You can configuring the project via [config plugins](https://docs.expo.io/guides/config-plugins/) or manually configure the native projects yourself (the "bare workflow").
 
-React Native Firebase cannot be used in the "Expo Go" app, because [it requires custom native code](https://docs.expo.io/workflow/customizing/).
+*NOTE:* React Native Firebase cannot be used in the pre-compiled [Expo Go app](https://docs.expo.dev/get-started/expo-go/) because React Native Firebase uses native code that is not compiled into Expo Go.
 
-### Expo Bare Workflow
+#### Your Expo project
 
-Where possible, it is recommended by the Expo team to **_use Managed Workflow_** (see next section).
-
-If you're using [Bare Workflow](https://docs.expo.io/introduction/managed-vs-bare/#bare-workflow), you will need to follow the above [Android Setup](/#2-android-setup) and [iOS Setup](/#3-ios-setup) steps.
-
-### Development builds
-
-The recommended workflow to use React Native Firebase in your project created with Expo SDK is to [create and use a development build](https://docs.expo.dev/develop/development-builds/create-a-build/). To create a new Expo project, see the [Get started](https://docs.expo.dev/get-started/create-a-project/) guide in Expo documentation.
+To create a new Expo project, see the [Get started](https://docs.expo.dev/get-started/create-a-project/) guide in Expo documentation.
 
 #### Install React Native Firebase modules
 
@@ -203,9 +197,11 @@ Similarly you can install other React Native Firebase modules such as for Authen
 
 #### Configure React Native Firebase modules
 
-To enable Firebase on the native Android and iOS platforms, create and download Service Account files for each platform. Then, provide paths to the `google-services.json` and `GoogleService-Info.plist` files by specifying the [`expo.android.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile-1) and [`expo.ios.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile) fields. See the example configuration below.
+If you are manually adjusting your Android and iOS projects, follow the same instructions as [React Native CLI projects](#installation-for-react-native-cli-projects).
 
-For each React Native Firebase module, add the required [Expo Config Plugin](https://docs.expo.dev/config-plugins/introduction/) to the [`plugins`](https://docs.expo.io/versions/latest/config/app/#plugins) array of your `app.json` or `app.config.js`. See the note below to determine which modules require Config Plugin configurations.
+The recommended approach is to use [Expo Config Plugins](https://docs.expo.dev/config-plugins/introduction/) to configure React Native Firebase.  You will add to the [`plugins`](https://docs.expo.io/versions/latest/config/app/#plugins) array of your `app.json` or `app.config.js`. See the note below to determine which React Native Firebase modules require Config Plugin configurations.
+
+To enable Firebase on the native Android and iOS platforms, create and download Service Account files for each platform. Then, provide paths to the `google-services.json` and `GoogleService-Info.plist` files by specifying the [`expo.android.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile-1) and [`expo.ios.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile) fields. See the example configuration below.
 
 For iOS only, since `firebase-ios-sdk` requires `use_frameworks` configure [`expo-build-properties`](https://docs.expo.dev/versions/latest/sdk/build-properties/#pluginconfigtypeios) and add the following entry to the `plugins` array in `app.json`:
 
