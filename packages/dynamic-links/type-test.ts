@@ -1,6 +1,6 @@
-import firebase from '.';
+import { firebase } from '.';
 
-console.log(firebase.default().getInitialLink);
+console.log(firebase.dynamicLinks().getInitialLink);
 
 // checks module exists at root
 console.log(firebase.dynamicLinks().app.name);
@@ -12,13 +12,13 @@ console.log(firebase.app().dynamicLinks().app.name);
 console.log(firebase.dynamicLinks.SDK_VERSION);
 
 // checks statics exist on defaultExport
-console.log(firebase.firebase.SDK_VERSION);
+console.log(firebase.SDK_VERSION);
 
 // checks root exists
 console.log(firebase.SDK_VERSION);
 
 // checks firebase named export exists on module
-console.log(firebase.firebase.SDK_VERSION);
+console.log(firebase.SDK_VERSION);
 
 // checks multi-app support exists
 // console.log(firebase.links(firebase.app()).app.name);

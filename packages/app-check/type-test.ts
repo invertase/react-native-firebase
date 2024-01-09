@@ -1,4 +1,4 @@
-import firebase  from '.';
+import appCheck, { firebase } from '.';
 
 // checks module exists at root
 console.log(firebase.appCheck().app.name);
@@ -19,4 +19,4 @@ console.log(firebase.SDK_VERSION);
 console.log(firebase.appCheck(firebase.app()).app.name);
 
 // checks default export supports app arg
-console.log(firebase(firebase.app()).app.name);
+console.log(appCheck(firebase.app()).app.name);

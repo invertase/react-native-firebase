@@ -1,0 +1,198 @@
+---
+export const prerender = false;
+
+let { slug } = Astro.params;
+import {
+    docsPath,
+    exists,
+    join,
+    readFile,
+    removeMdExtensionFromFile,
+    root,
+} from '../utils/paths';
+
+import { unify } from '../utils/unify';
+
+import Layout from '../layouts/Layout.astro';
+import { getDocument, sanitizeDefinitions } from '../utils/dom';
+import NextOrPrevious from '../components/NextOrPrevious.astro';
+import { extractFrontMatter } from '../utils/docs';
+
+const params = slug?.split('/') ?? [];
+const [_, ...segments] = params;
+slug = segments.join('/');
+
+// Get the path based on the params
+const path = params.length === 1 ? join(root, 'index.md') : docsPath(slug);
+
+// File must exist.. otherwise 404
+if (!exists(path)) {
+    return new Response(`Not found: path = ${path}`);
+}
+
+// Generate a types dictionary for all modules.
+// Get the file
+let file = readFile(path);
+
+// Replace any local URLs to remove the `.md` extension.
+file = removeMdExtensionFromFile(file);
+
+const { frontMatter, content } = extractFrontMatter(file);
+if (!frontMatter) {
+    return new Response(`No frontmatter`);
+}
+
+const { title, description, next, previous, redirect } = frontMatter;
+
+if (redirect) {
+    return Astro.redirect(`/docs${redirect}`);
+}
+
+// Serialize the markdown content via MDX
+const { html } = unify(content);
+
+// Get the document from the converted markdown
+const document = getDocument(html);
+
+// Sanitize the generated definitions
+sanitizeDefinitions(document);
+
+const source = document.body.innerHTML;
+---
+
+<head>
+    <meta name="description" content={description} />
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+</head>
+
+<Layout {title}>
+    <h1>{title}</h1>
+    <Fragment set:html={source} />
+    <NextOrPrevious previous={previous} next={next} />
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            const tabGroups = document.querySelectorAll('.tabs');
+            for (const tabGroup of tabGroups) {
+                const tabs = Array.from(tabGroup.querySelectorAll('.tab'));
+                if (tabs.length === 0) {
+                    continue;
+                }
+
+                const allIdsArrayString =
+                    '[' +
+                    tabs
+                        .map((tab) => `'${tab.getAttribute('data-tab-id')}'`)
+                        .join(', ') +
+                    ']';
+
+                const tabButtons = tabs.map((tab) => {
+                    const tabId = tab.getAttribute('data-tab-id');
+                    const button = document.createElement('button');
+                    button.setAttribute('type', 'button');
+                    button.setAttribute(
+                        ':class',
+                        `{'active': isActiveTab('${tabId}', ${allIdsArrayString})}`,
+                    );
+                    button.setAttribute(
+                        'x-on:click',
+                        `setActiveTab('${tabId}')`,
+                    );
+                    button.innerText =
+                        tab.getAttribute('data-tab-label') || 'No Label';
+
+                    tab.setAttribute(
+                        'x-show',
+                        `isActiveTab('${tabId}', ${allIdsArrayString})`,
+                    );
+
+                    return button;
+                });
+
+                const tabButtonsContainer = document.createElement('div');
+                tabButtonsContainer.classList.add('tab-buttons');
+                tabButtons.forEach((button) =>
+                    tabButtonsContainer.appendChild(button),
+                );
+                tabGroup.prepend(tabButtonsContainer);
+            }
+
+            document.body.setAttribute('x-data', 'global');
+
+            // @ts-ignore
+            Alpine.data('global', () => ({
+                activeTab: null as string | null,
+                init() {
+                    const urlParams = new URLSearchParams(
+                        window.location.search,
+                    );
+                    const activeTabFromUrlParams = urlParams.get('activeTab');
+                    const activeTabFromLocalStorage =
+                        localStorage.getItem('activeTab');
+
+                    const activeTab =
+                        activeTabFromUrlParams || activeTabFromLocalStorage;
+
+                    if (activeTab) {
+                        this.setActiveTab(activeTab);
+                    }
+                },
+                isActiveTab(id: string, idsInGroup: string[]) {
+                    if (this.activeTab && idsInGroup.includes(this.activeTab)) {
+                        return this.activeTab === id;
+                    }
+                    return id === idsInGroup[0];
+                },
+                setActiveTab(id: string) {
+                    const urlParams = new URLSearchParams(
+                        window.location.search,
+                    );
+                    urlParams.set('activeTab', id);
+                    localStorage.setItem('activeTab', id);
+
+                    const newUrl =
+                        window.location.pathname + '?' + urlParams.toString();
+                    window.history.replaceState({}, '', newUrl);
+
+                    this.activeTab = id;
+                },
+            }));
+        });
+    </script>
+</Layout>
+
+<style is:global>
+    .tabs .tab-buttons {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 1rem;
+    }
+
+    .tabs .tab-buttons button {
+        background: transparent;
+        border: none;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: white;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .tabs .tab-buttons button:not(:last-child) {
+        margin-right: 1rem;
+    }
+
+    .tabs .tab-buttons button:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .tabs .tab-buttons button:focus {
+        outline: none;
+    }
+
+    .tabs .tab-buttons button.active {
+        background: rgba(255, 255, 255, 0.2);
+    }
+</style>

@@ -1,6 +1,6 @@
-import firebase, { FirebaseFirestoreTypes } from '.';
+import firestore, { firebase, FirebaseFirestoreTypes } from '.';
 
-console.log(firebase().collection);
+console.log(firestore().collection);
 
 // checks module exists at root
 console.log(firebase.firestore().app.name);
@@ -16,7 +16,7 @@ console.log(firebase.firestore.SDK_VERSION);
 console.log(firebase.SDK_VERSION);
 
 // checks firebase named export exists on module
-console.log(firebase.firebase.SDK_VERSION);
+console.log(firebase.SDK_VERSION);
 
 // checks multi-app support exists
 console.log(firebase.firestore(firebase.app()).app.name);

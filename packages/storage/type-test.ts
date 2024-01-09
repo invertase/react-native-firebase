@@ -1,7 +1,7 @@
-import firebase, { FirebaseStorageTypes } from '.';
+import {firebase,  FirebaseStorageTypes } from '.';
 
-console.log(firebase().app);
-console.log(firebase.default().app);
+console.log(firebase.app);
+console.log(firebase.storage().app);
 
 // checks module exists at root
 console.log(firebase.storage().app.name);
@@ -16,7 +16,7 @@ console.log(firebase.storage.SDK_VERSION);
 console.log(firebase.SDK_VERSION);
 
 // checks firebase named export exists on module
-console.log(firebase.firebase.SDK_VERSION);
+console.log(firebase.SDK_VERSION);
 
 // checks multi-app support exists
 console.log(firebase.storage(firebase.app()).app.name);
@@ -44,8 +44,8 @@ ref.listAll().then((result: FirebaseStorageTypes.ListResult) => {
 
 const task = firebase.storage().ref('foo').putString('foo');
 task.pause().then();
-task.resume().then((bool: FirebaseStorageTypes.TaskState) => console.log(bool));
-task.cancel().then((bool: FirebaseStorageTypes.TaskState) => console.log(bool));
+task.resume().then((bool: boolean) => console.log(bool));
+task.cancel().then((bool: boolean) => console.log(bool));
 task.on(
   'state_changed',
   (sn: FirebaseStorageTypes.TaskSnapshot) => {

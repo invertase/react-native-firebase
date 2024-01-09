@@ -1,0 +1,63 @@
+---
+import { extractFrontMatter } from '../utils/docs';
+import {
+    docsPath,
+    exists,
+    join,
+    readFile,
+    removeMdExtensionFromFile,
+    root,
+} from '../utils/paths';
+
+interface Props {
+    next?: string;
+    previous?: string;
+}
+
+const { next, previous } = Astro.props;
+
+let nextPath: string | undefined;
+let nextTitle: string | undefined;
+if (next) {
+    nextPath =
+        next?.split('/').length === 1 ? join(root, 'index.md') : docsPath(next);
+    if (exists(nextPath)) {
+        let file = readFile(nextPath);
+        file = removeMdExtensionFromFile(file);
+        const { frontMatter } = extractFrontMatter(file);
+        nextTitle = frontMatter?.title ?? next;
+    }
+}
+
+let previousPath: string | undefined;
+let previousTitle: string | undefined;
+if (previous) {
+    previousPath =
+        previous?.split('/').length === 1
+            ? join(root, 'index.md')
+            : docsPath(previous);
+    if (exists(previousPath)) {
+        let file = readFile(previousPath);
+        file = removeMdExtensionFromFile(file);
+        const { frontMatter } = extractFrontMatter(file);
+        previousTitle = frontMatter?.title ?? previous;
+    }
+}
+---
+
+{
+    (next || previous) && (
+        <div class="grid" style="padding-bottom: 1rem;">
+            {previous && (
+                <a href={`/docs${previous}`} role="button">
+                    Previous: {previousTitle}
+                </a>
+            )}
+            {next && (
+                <a href={`/docs${next}`} role="button">
+                    Next: {nextTitle}
+                </a>
+            )}
+        </div>
+    )
+}

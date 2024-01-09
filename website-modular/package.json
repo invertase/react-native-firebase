@@ -24,11 +24,13 @@
     "remark-rehype": "^11.0.0",
     "remark-unwrap-images": "^4.0.0",
     "sanitize-html": "^2.11.0",
-    "unified": "^11.0.3"
+    "unified": "^11.0.3",
+    "yaml": "^2.3.4"
   },
   "devDependencies": {
     "@types/jsdom": "^21.1.4",
     "@types/sanitize-html": "^2.9.2",
+    "@types/yaml": "^1.9.7",
     "prettier": "^3.0.3",
     "prettier-plugin-astro": "^0.12.0"
   }

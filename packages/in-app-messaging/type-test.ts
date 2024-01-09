@@ -1,6 +1,6 @@
-import firebase from '.';
+import { firebase } from '.';
 
-console.log(firebase.default().app);
+console.log(firebase.inAppMessaging().app);
 
 // checks module exists at root
 console.log(firebase.inAppMessaging().app.name);
@@ -17,15 +17,12 @@ console.log(firebase.inAppMessaging.SDK_VERSION);
 console.log(firebase.SDK_VERSION);
 
 // check module correctly exported
-console.log(firebase.default().isMessagesDisplaySuppressed);
+console.log(firebase.inAppMessaging().isMessagesDisplaySuppressed);
 
 // checks root exists
 console.log(firebase.SDK_VERSION);
 
 // checks firebase named export exists on module
-console.log(firebase.firebase.SDK_VERSION);
+console.log(firebase.SDK_VERSION);
 
-firebase
-  .inAppMessaging()
-  .setAutomaticDataCollectionEnabled(false)
-  .then();
+firebase.inAppMessaging().setAutomaticDataCollectionEnabled(false).then();

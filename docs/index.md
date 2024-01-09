@@ -110,13 +110,13 @@ To do this, open your `/ios/{projectName}/AppDelegate.mm` file (or `AppDelegate.
 
 At the top of the file, import the Firebase SDK right after `'#import "AppDelegate.h"'`:
 
-```
+```objc
 #import <Firebase.h>
 ```
 
 Within your existing `didFinishLaunchingWithOptions` method, add the following to the top of the method:
 
-```
+```objc
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
   // Add me --- \/
   [FIRApp configure];

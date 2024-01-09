@@ -1,6 +1,4 @@
 ---
-import { Debug } from 'astro:components';
-
 export const prerender = false;
 
 let { slug } = Astro.params;
@@ -11,12 +9,9 @@ import {
     exists,
     readFile,
     modulesPath,
-    icons,
 } from '../../utils/paths';
 
-// import { Layout } from '../../components/Layout';
-import { type TableOfContents, unify } from '../../utils/unify';
-// import { HTMLRender } from '../../components/html-render';
+import { unify } from '../../utils/unify';
 
 import {
     getDocument,
@@ -25,10 +20,11 @@ import {
     type ModuleTypes,
     sanitizeDefinitions,
 } from '../../utils/dom';
-// import { ISidebar, ISidebarItem } from '../../components/Sidebar';
+import Layout from '../../layouts/Layout.astro';
 
 const modules = {
     app: 'App',
+    firestore: 'Firestore',
     storage: 'Storage',
 };
 
@@ -70,7 +66,7 @@ let file = readFile(path);
 file = file.replace(/(?<=\]\()(.*)(\.md)/gm, `$1`);
 
 // Serialize the markdown content via MDX
-const { html, toc } = unify(file);
+const { html  } = unify(file);
 
 // Get the document from the converted markdown
 const document = getDocument(html);
@@ -78,14 +74,10 @@ const document = getDocument(html);
 // Sanitize the generated definitions
 sanitizeDefinitions(document);
 
-highlightDefinitions(document, types);
-
-const title = document.getElementsByTagName('h1')[0]?.innerHTML ?? 'No title';
+const title = document.querySelector('h1')?.textContent ?? 'React Native Firebase';
 const source = document.body.innerHTML;
 ---
 
-{title}
-<hr />
-<Debug {toc} />
-<hr />
-<Fragment set:html={source} />
+<Layout {title}>
+  <Fragment set:html={source} />
+</Layout>

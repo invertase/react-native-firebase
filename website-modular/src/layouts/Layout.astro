@@ -10,36 +10,73 @@ const { title } = Astro.props;
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <meta name="description" content="Astro description" />
+        <meta name="description" content="React Native Firebase" />
         <meta name="viewport" content="width=device-width" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="generator" content={Astro.generator} />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
+        />
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"
+        ></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"
+        ></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"
+        ></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"
+        ></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/ruby.min.js"
+        ></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"
+        ></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/objectivec.min.js"
+        ></script>
         <title>{title}</title>
     </head>
     <body>
+        <nav style="padding-bottom: 1rem;">
+            <ul>
+                <li style="display: flex; align-items: center;">
+                    <img
+                        style="width: 50px; padding-right: 1rem;"
+                        src="https://static.invertase.io/assets/React-Native-Firebase.svg"
+                        alt="RNFB Logo"
+                    />
+                    <a href="/"><strong>React Native Firebase</strong></a>
+                </li>
+            </ul>
+            <ul>
+                <li><a href="/docs">Docs</a></li>
+                <li><a href="/reference">Reference API</a></li>
+            </ul>
+        </nav>
+
         <slot />
+
+        <script defer>
+            hljs.highlightAll();
+        </script>
     </body>
 </html>
+
 <style is:global>
     :root {
-        --accent: 136, 58, 234;
-        --accent-light: 224, 204, 250;
-        --accent-dark: 49, 10, 101;
+        --primary: #e88533;
     }
-    html {
-        font-family: system-ui, sans-serif;
-        background: #13151a;
-        background-size: 224px;
-    }
-    code {
-        font-family:
-            Menlo,
-            Monaco,
-            Lucida Console,
-            Liberation Mono,
-            DejaVu Sans Mono,
-            Bitstream Vera Sans Mono,
-            Courier New,
-            monospace;
+
+    body {
+        padding-inline: 4rem;
     }
 </style>

@@ -44,15 +44,47 @@ Cloud Firestore stores data within "documents", which are contained within "coll
 collections. For example, we could store a list of our users documents within a "Users" collection. The `collection` method
 allows us to reference a collection within our code:
 
+<div class="tabs">
+  <div class="tab" data-tab-id="modular" data-tab-label="Modular">
+
+```js
+import { getFirestore, collection } from '@react-native-firebase/firestore';
+
+const firestore = getFirestore();
+const usersCollection = collection(firestore, 'Users');
+```
+
+  </div>
+
+  <div class="tab" data-tab-id="compat" data-tab-label="Compat">
+
 ```js
 import firestore from '@react-native-firebase/firestore';
 
 const usersCollection = firestore().collection('Users');
 ```
 
+  </div>
+</div>
+
 The `collection` method returns a [`CollectionReference`](/reference/firestore/collectionreference) class, which provides
 properties and methods to query and fetch the data from Cloud Firestore. We can also directly reference a single document
 on the collection by calling the `doc` method:
+
+<div class="tabs">
+  <div class="tab" data-tab-id="modular" data-tab-label="Modular">
+
+```js
+import { getFirestore, collection, doc } from '@react-native-firebase/firestore';
+
+const firestore = getFirestore();
+const usersCollection = collection(firestore, 'Users');
+const userDocument = doc(usersCollection, 'ABC');
+```
+
+  </div>
+
+  <div class="tab" data-tab-id="compat" data-tab-label="Compat">
 
 ```js
 import firestore from '@react-native-firebase/firestore';
@@ -60,6 +92,8 @@ import firestore from '@react-native-firebase/firestore';
 // Get user document with an ID of ABC
 const userDocument = firestore().collection('Users').doc('ABC');
 ```
+
+</div>
 
 The `doc` method returns a [`DocumentReference`](/reference/firestore/documentreference).
 

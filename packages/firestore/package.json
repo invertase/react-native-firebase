@@ -8,7 +8,8 @@
   "scripts": {
     "build": "genversion --semi lib/version.js",
     "build:clean": "rimraf android/build && rimraf ios/build",
-    "prepare": "yarn run build"
+    "prepare": "yarn run build",
+    "docs": "typedoc --hideBreadcrumbs --publicPath /reference/firestore/"
   },
   "repository": {
     "type": "git",
@@ -31,5 +32,9 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "devDependencies": {
+    "typedoc": "^0.25.3",
+    "typedoc-plugin-markdown": "^3.17.0"
   }
 }

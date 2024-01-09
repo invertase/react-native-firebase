@@ -1,6 +1,6 @@
-import firebase, { FirebaseDatabaseTypes } from '.';
+import database, { firebase, FirebaseDatabaseTypes } from '.';
 
-console.log(firebase.default().ref().parent);
+console.log(database().ref().parent);
 
 // checks module exists at root
 console.log(firebase.database().app.name);
@@ -16,40 +16,29 @@ console.log(firebase.app().database('some-string').app.name);
 console.log(firebase.database.SDK_VERSION);
 
 // checks statics exist on defaultExport
-console.log(firebase.firebase.SDK_VERSION);
+console.log(firebase.SDK_VERSION);
 
 // checks root exists
 console.log(firebase.SDK_VERSION);
 
 // checks firebase named export exists on module
-console.log(firebase.firebase.SDK_VERSION);
+console.log(firebase.SDK_VERSION);
 
 // checks multi-app support exists
 console.log(firebase.database(firebase.app()).app.name);
 
 // checks default export supports app arg
-console.log(firebase.default(firebase.app('foo')).app.name);
+console.log(database(firebase.app('foo')).app.name);
 
 console.log(firebase.database.ServerValue.TIMESTAMP);
 
-console.log(
-  firebase
-    .app()
-    .database()
-    .ref('foo/bar'),
-);
+console.log(firebase.app().database().ref('foo/bar'));
 
-firebase
-  .database()
-  .ref('foo')
-  .push({
-    foo: 'bar',
-  });
+firebase.database().ref('foo').push({
+  foo: 'bar',
+});
 
-firebase
-  .database()
-  .goOnline()
-  .then();
+firebase.database().goOnline().then();
 
 const r = firebase.database().ref('foo');
 r.child('foo')

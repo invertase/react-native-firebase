@@ -1,4 +1,4 @@
-import firebase from '.';
+import appDistribution, { firebase } from '.';
 
 // checks module exists at root
 console.log(firebase.appDistribution().app.name);
@@ -19,4 +19,4 @@ console.log(firebase.SDK_VERSION);
 console.log(firebase.appDistribution(firebase.app()).app.name);
 
 // checks default export supports app arg
-console.log(firebase(firebase.app()).app.name);
+console.log(appDistribution(firebase.app()).app.name);

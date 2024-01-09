@@ -1,6 +1,6 @@
-import firebase from '.';
+import { firebase } from '.';
 
-console.log(firebase.default().app);
+console.log(firebase.perf().app);
 
 // checks module exists at root
 console.log(firebase.perf().app.name);
@@ -15,7 +15,7 @@ console.log(firebase.perf.SDK_VERSION);
 console.log(firebase.SDK_VERSION);
 
 // checks firebase named export exists on module
-console.log(firebase.firebase.SDK_VERSION);
+console.log(firebase.SDK_VERSION);
 
 // checks multi-app support exists
 // console.log(firebase.perf(firebase.app()).app.name);
