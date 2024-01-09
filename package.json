@@ -20,10 +20,10 @@
     "tests:jest": "jest",
     "tests:jest-watch": "jest --watch",
     "tests:jest-coverage": "jest --coverage",
-    "tests:packager:chrome": "cd tests && node_modules/.bin/react-native start --reset-cache",
-    "tests:packager:jet": "cd tests && cross-env REACT_DEBUGGER=\"echo nope\" node_modules/.bin/react-native start --no-interactive",
-    "tests:packager:jet-ci": "cd tests && cross-env TMPDIR=$HOME/.metro REACT_DEBUGGER=\"echo nope\" node_modules/.bin/react-native start --no-interactive",
-    "tests:packager:jet-reset-cache": "cd tests && cross-env REACT_DEBUGGER=\"echo nope\" node_modules/.bin/react-native start --reset-cache --no-interactive",
+    "tests:packager:chrome": "cd tests && yarn react-native start --reset-cache",
+    "tests:packager:jet": "cd tests && cross-env REACT_DEBUGGER=\"echo nope\" yarn react-native start",
+    "tests:packager:jet-ci": "cd tests && (mkdir $HOME/.metro || true) && cross-env TMPDIR=$HOME/.metro REACT_DEBUGGER=\"echo nope\" yarn react-native start",
+    "tests:packager:jet-reset-cache": "cd tests && cross-env REACT_DEBUGGER=\"echo nope\" node yarn react-native start --reset-cache",
     "tests:emulator:prepare": "cd .github/workflows/scripts/functions && yarn && yarn build",
     "tests:emulator:start": "yarn tests:emulator:prepare && cd ./.github/workflows/scripts && ./start-firebase-emulator.sh --no-daemon",
     "tests:emulator:start:windows": "yarn tests:emulator:prepare && cd ./.github/workflows/scripts && ./start-firebase-emulator.bat --no-daemon",
@@ -50,45 +50,45 @@
     "format:markdown": "prettier --write \"docs/**/*.md\""
   },
   "devDependencies": {
-    "@babel/core": "^7.23.2",
+    "@babel/core": "^7.23.5",
     "@babel/plugin-proposal-class-properties": "^7.18.6",
     "@babel/plugin-proposal-private-methods": "^7.18.6",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@babel/plugin-transform-class-properties": "^7.22.5",
-    "@babel/preset-env": "^7.23.2",
+    "@babel/plugin-transform-class-properties": "^7.23.3",
+    "@babel/preset-env": "^7.23.5",
     "@firebase/rules-unit-testing": "^3.0.1",
-    "@octokit/core": "^5.0.1",
+    "@octokit/core": "^5.0.2",
     "@tsconfig/node-lts": "^18.12.5",
-    "@types/react": "^18.2.33",
-    "@types/react-native": "^0.72.5",
-    "@typescript-eslint/eslint-plugin": "^6.9.1",
-    "@typescript-eslint/parser": "^6.9.1",
+    "@types/react": "^18.2.42",
+    "@types/react-native": "^0.72.8",
+    "@typescript-eslint/eslint-plugin": "^6.13.2",
+    "@typescript-eslint/parser": "^6.13.2",
     "babel-jest": "^29.7.0",
     "clang-format": "^1.8.0",
     "conventional-changelog-cli": "^4.1.0",
     "cross-env": "^7.0.3",
-    "eslint": "^8.52.0",
-    "eslint-config-prettier": "^9.0.0",
+    "eslint": "^8.55.0",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-mocha": "^10.2.0",
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-react": "^7.33.2",
-    "firebase": "^10.5.2",
-    "firebase-tools": "^12.8.0",
+    "firebase": "^10.7.1",
+    "firebase-tools": "^13.0.0",
     "genversion": "^3.1.1",
     "google-java-format": "^1.2.0",
     "inquirer": "^8.2.6",
     "jest": "^29.7.0",
-    "lerna": "^7.4.2",
-    "prettier": "^3.0.3",
+    "lerna": "^8.0.0",
+    "prettier": "^3.1.0",
     "regenerator-transform": "^0.15.2",
     "rimraf": "^5.0.5",
     "shelljs": "^0.8.5",
     "spellchecker-cli": "^6.1.1",
     "ts-jest": "^29.1.1",
-    "typescript": "^5.2.2"
+    "typescript": "^5.3.3"
   },
   "resolutions": {
-    "@types/react": "^18.2.33"
+    "@types/react": "^18.2.42"
   },
   "workspaces": {
     "packages": [
@@ -96,5 +96,5 @@
       "tests"
     ]
   },
-  "packageManager": "yarn@4.0.1"
+  "packageManager": "yarn@4.0.2"
 }

@@ -96,9 +96,31 @@ export default class User {
       .then(userCredential => this._auth._setUserCredential(userCredential));
   }
 
+  linkWithPopup(provider) {
+    // call through to linkWithRedirect for shared implementation
+    return this.linkWithRedirect(provider);
+  }
+
+  linkWithRedirect(provider) {
+    return this._auth.native
+      .linkWithProvider(provider.toObject())
+      .then(userCredential => this._auth._setUserCredential(userCredential));
+  }
+
   reauthenticateWithCredential(credential) {
     return this._auth.native
       .reauthenticateWithCredential(credential.providerId, credential.token, credential.secret)
+      .then(userCredential => this._auth._setUserCredential(userCredential));
+  }
+
+  reauthenticateWithPopup(provider) {
+    // call through to reauthenticateWithRedirect for shared implementation
+    return this.reauthenticateWithRedirect(provider);
+  }
+
+  reauthenticateWithRedirect(provider) {
+    return this._auth.native
+      .reauthenticateWithProvider(provider.toObject())
       .then(userCredential => this._auth._setUserCredential(userCredential));
   }
 
@@ -310,33 +332,9 @@ export default class User {
     );
   }
 
-  linkWithPopup() {
-    throw new Error(
-      'firebase.auth.User.linkWithPopup() is unsupported by the native Firebase SDKs.',
-    );
-  }
-
-  linkWithRedirect() {
-    throw new Error(
-      'firebase.auth.User.linkWithRedirect() is unsupported by the native Firebase SDKs.',
-    );
-  }
-
   reauthenticateWithPhoneNumber() {
     throw new Error(
       'firebase.auth.User.reauthenticateWithPhoneNumber() is unsupported by the native Firebase SDKs.',
-    );
-  }
-
-  reauthenticateWithPopup() {
-    throw new Error(
-      'firebase.auth.User.reauthenticateWithPopup() is unsupported by the native Firebase SDKs.',
-    );
-  }
-
-  reauthenticateWithRedirect() {
-    throw new Error(
-      'firebase.auth.User.reauthenticateWithRedirect() is unsupported by the native Firebase SDKs.',
     );
   }
 

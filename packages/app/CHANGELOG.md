@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.7.3](https://github.com/invertase/react-native-firebase/compare/v18.7.2...v18.7.3) (2023-12-13)
+
+### Bug Fixes
+
+- **sdk, android:** adopt firebase-android-sdk 32.7.0 ([2c13c32](https://github.com/invertase/react-native-firebase/commit/2c13c32290997bcb8b6a9a04cf4f45730eddada1))
+
+## [18.7.2](https://github.com/invertase/react-native-firebase/compare/v18.7.1...v18.7.2) (2023-12-08)
+
+### Bug Fixes
+
+- firebase-ios-sdk 10.19.0 ([a899390](https://github.com/invertase/react-native-firebase/commit/a8993900cbe4c22561c2fe2863899c1d60fbbfd2))
+
+## [18.7.1](https://github.com/invertase/react-native-firebase/compare/v18.7.0...v18.7.1) (2023-11-29)
+
+### Bug Fixes
+
+- **ios): Revert "build(ios:** specify our script phases always run" ([62b44d6](https://github.com/invertase/react-native-firebase/commit/62b44d68d3794e701e173c9f1a97e131844f0406))
+
+## [18.7.0](https://github.com/invertase/react-native-firebase/compare/v18.6.2...v18.7.0) (2023-11-28)
+
+**Note:** Version bump only for package @react-native-firebase/app
+
+## [18.6.2](https://github.com/invertase/react-native-firebase/compare/v18.6.1...v18.6.2) (2023-11-23)
+
+### Bug Fixes
+
+- adopt firebase-ios-sdk 10.18.0 / firebase-android-sdk 32.6.0 ([6a8b25b](https://github.com/invertase/react-native-firebase/commit/6a8b25bc1ed22860d1cef8fa3507ca5df3a28420))
+
 ## [18.6.1](https://github.com/invertase/react-native-firebase/compare/v18.6.0...v18.6.1) (2023-11-01)
 
 ### Bug Fixes

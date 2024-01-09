@@ -19,6 +19,9 @@ $RNFirebaseAsStaticFramework = true # toggle this to true (and set 'use_framewor
 # Toggle this to true if you want to include support for on device conversion measurement APIs
 $RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true
 
+# react-native 0.73 is currently iOS 13.4 as a minimum
+min_ios_version_supported = 13.4
+
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
@@ -54,14 +57,11 @@ target 'testing' do
 
   use_react_native!(
     :path => config[:reactNativePath],
-    # Hermes is now enabled by default. Disable by setting this flag to false.
-    :hermes_enabled => flags[:hermes_enabled],
-    :fabric_enabled => flags[:fabric_enabled],
     # Enables Flipper.
     #
     # Note that if you have use_frameworks! enabled, Flipper will not work and
     # you should disable the next line.
-    :flipper_configuration => flipper_config,
+    #:flipper_configuration => flipper_config,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
@@ -93,16 +93,39 @@ target 'testing' do
 
 
     # Turn off warnings on non-RNFB dependencies - some of them are really really noisy
-    # Also bumps minimum deploy target to ours (which is >12.4): https://github.com/facebook/react-native/issues/34106
     installer.pods_project.targets.each do |target|
       if !target.name.include? "RNFB"
         target.build_configurations.each do |config|
           config.build_settings["GCC_WARN_INHIBIT_ALL_WARNINGS"] = "YES"
-          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_version_supported
         end
       end
     end
 
-    __apply_Xcode_12_5_M1_post_install_workaround(installer)
+    # Bumps minimum deploy target to ours (which is >12.4): https://github.com/facebook/react-native/issues/34106
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings["GCC_WARN_INHIBIT_ALL_WARNINGS"] = "YES"
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_version_supported
+      end
+    end
   end
+end
+
+# Fix Xcode 14 warnings like:
+# warning: Run script build phase '[CP] Copy XCFrameworks' will be run during every build because it does not specify any outputs. To address this warning, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'ATargetNameHere' from project 'YourProjectName')
+# Ref.: https://github.com/CocoaPods/CocoaPods/issues/11444
+post_integrate do |installer|
+  main_project = installer.aggregate_targets[0].user_project
+  pods_project = installer.pods_project
+  targets = main_project.targets + pods_project.targets
+  targets.each do |target|
+    run_script_build_phases = target.build_phases.filter { |phase| phase.is_a?(Xcodeproj::Project::Object::PBXShellScriptBuildPhase) }
+    cocoapods_run_script_build_phases = run_script_build_phases.filter { |phase| (phase.name&.start_with?("Create Symlinks to Header Folders") || phase.name&.start_with?("Bundle React Native") || phase.name&.start_with?("Copy Detox Framework")) }
+    cocoapods_run_script_build_phases.each do |run_script|
+      next unless (run_script.input_paths || []).empty? && (run_script.output_paths || []).empty?
+      run_script.always_out_of_date = "1"
+    end
+  end
+  main_project.save
+  pods_project.save
 end

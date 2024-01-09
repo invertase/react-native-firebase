@@ -36,7 +36,6 @@ console.log(firebase.auth.GoogleAuthProvider.PROVIDER_ID);
 console.log(firebase.auth.GithubAuthProvider.PROVIDER_ID);
 console.log(firebase.auth.TwitterAuthProvider.PROVIDER_ID);
 console.log(firebase.auth.FacebookAuthProvider.PROVIDER_ID);
-console.log(firebase.auth.OAuthProvider.PROVIDER_ID);
 console.log(firebase.auth.PhoneAuthState.CODE_SENT);
 
 firebase.auth().onAuthStateChanged((user: FirebaseAuthTypes.User | null) => {

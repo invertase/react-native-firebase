@@ -56,6 +56,7 @@ export {
   fetchSignInMethodsForEmail,
   getAdditionalUserInfo,
   getAuth,
+  getCustomAuthDomain,
   getIdToken,
   getIdTokenResult,
   getMultiFactorResolver,
@@ -173,6 +174,12 @@ class FirebaseAuthModule extends FirebaseModule {
 
     this.native.addAuthStateListener();
     this.native.addIdTokenListener();
+
+    // custom authDomain in only available from App's FirebaseOptions,
+    // but we need it in Auth if it exists. During app configuration we store
+    // mappings from app name to authDomain, this auth constructor
+    // is a reasonable time to use the mapping and set it into auth natively
+    this.native.configureAuthDomain();
   }
 
   get languageCode() {
@@ -433,16 +440,16 @@ class FirebaseAuthModule extends FirebaseModule {
     throw new Error('firebase.auth().setPersistence() is unsupported by the native Firebase SDKs.');
   }
 
-  signInWithPopup() {
-    throw new Error(
-      'firebase.auth().signInWithPopup() is unsupported by the native Firebase SDKs.',
-    );
+  signInWithPopup(provider) {
+    return this.native
+      .signInWithProvider(provider.toObject())
+      .then(userCredential => this._setUserCredential(userCredential));
   }
 
-  signInWithRedirect() {
-    throw new Error(
-      'firebase.auth().signInWithRedirect() is unsupported by the native Firebase SDKs.',
-    );
+  signInWithRedirect(provider) {
+    return this.native
+      .signInWithProvider(provider.toObject())
+      .then(userCredential => this._setUserCredential(userCredential));
   }
 
   // firebase issue - https://github.com/invertase/react-native-firebase/pull/655#issuecomment-349904680
@@ -499,6 +506,10 @@ class FirebaseAuthModule extends FirebaseModule {
       throw new Error('firebase.auth().multiFactor() only operates on currentUser');
     }
     return new MultiFactorUser(this, user);
+  }
+
+  getCustomAuthDomain() {
+    return this.native.getCustomAuthDomain();
   }
 }
 

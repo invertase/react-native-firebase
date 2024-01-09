@@ -168,7 +168,7 @@ RCT_EXPORT_METHOD(removeListeners : (NSInteger)count) {
 #pragma mark Firebase App Methods
 
 RCT_EXPORT_METHOD(initializeApp
-                  : (FIROptions *)firOptions appConfig
+                  : (NSDictionary *)options appConfig
                   : (NSDictionary *)appConfig resolver
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject) {
@@ -176,6 +176,44 @@ RCT_EXPORT_METHOD(initializeApp
     FIRApp *firApp;
     NSString *appName = [appConfig valueForKey:@"name"];
 
+    NSString *appId = [options valueForKey:@"appId"];
+    NSString *messagingSenderId = [options valueForKey:@"messagingSenderId"];
+    FIROptions *firOptions = [[FIROptions alloc] initWithGoogleAppID:appId
+                                                         GCMSenderID:messagingSenderId];
+    firOptions.APIKey = [options valueForKey:@"apiKey"];
+    firOptions.projectID = [options valueForKey:@"projectId"];
+    // kFirebaseOptionsDatabaseUrl
+    if (![[options valueForKey:@"databaseURL"] isEqual:[NSNull null]]) {
+      firOptions.databaseURL = [options valueForKey:@"databaseURL"];
+    }
+    // kFirebaseOptionsStorageBucket
+    if (![[options valueForKey:@"storageBucket"] isEqual:[NSNull null]]) {
+      firOptions.storageBucket = [options valueForKey:@"storageBucket"];
+    }
+    // kFirebaseOptionsDeepLinkURLScheme
+    if (![[options valueForKey:@"deepLinkURLScheme"] isEqual:[NSNull null]]) {
+      firOptions.deepLinkURLScheme = [options valueForKey:@"deepLinkURLScheme"];
+    }
+    // kFirebaseOptionsIosBundleId
+    if (![[options valueForKey:@"iosBundleId"] isEqual:[NSNull null]]) {
+      firOptions.bundleID = [options valueForKey:@"iosBundleId"];
+    }
+    // kFirebaseOptionsIosClientId
+    if (![[options valueForKey:@"iosClientId"] isEqual:[NSNull null]]) {
+      firOptions.clientID = [options valueForKey:@"iosClientId"];
+    }
+    // kFirebaseOptionsAppGroupId
+    if (![[options valueForKey:@"appGroupId"] isEqual:[NSNull null]]) {
+      firOptions.appGroupID = [options valueForKey:@"appGroupId"];
+    }
+
+    if ([options valueForKey:@"authDomain"] != nil) {
+      DLog(@"RNFBAuth app: %@ customAuthDomain: %@", appName, [options valueForKey:@"authDomain"]);
+      if (customAuthDomains == nil) {
+        customAuthDomains = [[NSMutableDictionary alloc] init];
+      }
+      customAuthDomains[appName] = [options valueForKey:@"authDomain"];
+    }
     @try {
       if (!appName || [appName isEqualToString:DEFAULT_APP_DISPLAY_NAME]) {
         [FIRApp configureWithOptions:firOptions];
@@ -193,6 +231,13 @@ RCT_EXPORT_METHOD(initializeApp
 
     resolve([RNFBSharedUtils firAppToDictionary:firApp]);
   });
+}
+
+static NSMutableDictionary<NSString *, NSString *> *customAuthDomains;
+
++ (NSString *)getCustomDomain:(NSString *)appName {
+  DLog(@"authDomains: %@", customAuthDomains);
+  return customAuthDomains[appName];
 }
 
 RCT_EXPORT_METHOD(setLogLevel : (NSString *)logLevel) {

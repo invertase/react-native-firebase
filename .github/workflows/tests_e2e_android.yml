@@ -34,7 +34,7 @@ concurrency:
 jobs:
   android:
     name: Android
-    runs-on: macos-13
+    runs-on: macos-12
     timeout-minutes: 90
     strategy:
       fail-fast: false
@@ -52,6 +52,12 @@ jobs:
       EMULATOR_COMMAND: "-avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 -timezone 'Europe/London' -cores 2"
       EMULATOR_EXECUTABLE: qemu-system-x86_64-headless
     steps:
+      # macOS13 runners are slooooow
+      # This is from: https://github.com/actions/runner-images/issues/7971#issuecomment-1824430407
+      - name: macOS-13-runner speedup
+        run: |
+          sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.diagnosticd.plist
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 50
@@ -243,14 +249,9 @@ jobs:
           path: .yarn/cache
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
 
-      - name: Compress Emulator Log
-        if: always()
-        run: gzip -9 adb-*.txt
-        shell: bash
-
       - name: Upload Emulator Log
         uses: actions/upload-artifact@v3
         if: always()
         with:
           name: adb_logs
-          path: adb-*.gz
+          path: adb-*.txt

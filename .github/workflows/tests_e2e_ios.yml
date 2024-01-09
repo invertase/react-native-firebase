@@ -27,12 +27,18 @@ concurrency:
 jobs:
   ios:
     name: iOS
-    runs-on: macos-13
+    runs-on: macos-12
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
     timeout-minutes: 100
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
+      # macOS13 runners are slooooow
+      # This is from: https://github.com/actions/runner-images/issues/7971#issuecomment-1824430407
+      - name: macOS-13-runner speedup
+        run: |
+          sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.diagnosticd.plist
+
       # Set up tool versions
       - uses: actions/setup-node@v3
         with:
@@ -134,7 +140,7 @@ jobs:
           timeout_minutes: 5
           retry_wait_seconds: 60
           max_attempts: 3
-          command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew && HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils xcbeautify && applesimutils --list
+          command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew && HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils xcbeautify
 
       - name: Build iOS App
         run: |
@@ -181,16 +187,12 @@ jobs:
         timeout-minutes: 50
         run: yarn tests:ios:test-cover
 
-      - name: Compress Simulator Log
-        if: always()
-        run: gzip -9 simulator.log
-
       - name: Upload Simulator Log
         uses: actions/upload-artifact@v3
         if: always()
         with:
           name: simulator_log
-          path: simulator.log.gz
+          path: simulator.log
 
       - uses: codecov/codecov-action@v3
         with:

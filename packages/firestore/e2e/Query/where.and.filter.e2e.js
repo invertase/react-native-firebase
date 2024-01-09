@@ -176,16 +176,15 @@ describe(' firestore().collection().where(AND Filters)', function () {
       }
     });
 
-    it('throws if in query array length is greater than 10', function () {
+    it('throws if in query array length is greater than 30', function () {
       try {
+        const queryArray = Array.from({ length: 31 }, (_, i) => i + 1);
+
         firebase
           .firestore()
           .collection(COLLECTION)
           .where(
-            Filter.and(
-              Filter('foo.bar', 'in', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
-              Filter('foo.bar', 'in', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
-            ),
+            Filter.and(Filter('foo.bar', 'in', queryArray), Filter('foo.bar', 'in', queryArray)),
           );
 
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -831,15 +830,14 @@ describe(' firestore().collection().where(AND Filters)', function () {
       }
     });
 
-    it('throws if in query array length is greater than 10', function () {
+    it('throws if in query array length is greater than 30', function () {
       const { getFirestore, collection, query, and, where } = firestoreModular;
+      const queryArray = Array.from({ length: 31 }, (_, i) => i + 1);
+
       try {
         query(
           collection(getFirestore(), COLLECTION),
-          and(
-            where('foo.bar', 'in', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
-            where('foo.bar', 'in', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
-          ),
+          and(where('foo.bar', 'in', queryArray), where('foo.bar', 'in', queryArray)),
         );
 
         return Promise.reject(new Error('Did not throw an Error.'));

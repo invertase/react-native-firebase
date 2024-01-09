@@ -471,9 +471,9 @@ export default class FirestoreQuery {
           );
         }
 
-        if (value.length > 10) {
+        if (value.length > 30) {
           throw new Error(
-            `firebase.firestore().collection().where(_, _, *) 'value' is invalid. '${opStr}' filters support a maximum of 10 elements in the value array.`,
+            `firebase.firestore().collection().where(_, _, *) 'value' is invalid. '${opStr}' filters support a maximum of 30 elements in the value array.`,
           );
         }
       }

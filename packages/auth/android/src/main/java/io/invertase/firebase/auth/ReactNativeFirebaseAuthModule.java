@@ -26,10 +26,13 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.FirebaseNetworkException;
@@ -65,6 +68,7 @@ import com.google.firebase.auth.PhoneMultiFactorInfo;
 import com.google.firebase.auth.TwitterAuthProvider;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import io.invertase.firebase.app.ReactNativeFirebaseAppModule;
 import io.invertase.firebase.common.ReactNativeFirebaseEvent;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
@@ -145,6 +149,26 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
     mCachedResolvers.clear();
     mMultiFactorSessions.clear();
+  }
+
+  @ReactMethod
+  public void configureAuthDomain(final String appName) {
+    Log.d(TAG, "configureAuthDomain");
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    String authDomain = ReactNativeFirebaseAppModule.authDomains.get(appName);
+    Log.d(TAG, "configureAuthDomain - app " + appName + " domain? " + authDomain);
+    if (authDomain != null) {
+      firebaseAuth.setCustomAuthDomain(authDomain);
+    }
+  }
+
+  @ReactMethod
+  public void getCustomAuthDomain(final String appName, final Promise promise) {
+    Log.d(TAG, "configureAuthDomain");
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    promise.resolve(firebaseAuth.getCustomAuthDomain());
   }
 
   /** Add a new auth state listener - if one doesn't exist already */
@@ -877,6 +901,72 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     }
   }
 
+  @ReactMethod
+  private void signInWithProvider(String appName, ReadableMap provider, final Promise promise) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    if (provider.getString("providerId") == null) {
+      rejectPromiseWithCodeAndMessage(
+          promise,
+          "invalid-credential",
+          "The supplied auth credential is malformed, has expired or is not currently supported.");
+      return;
+    }
+
+    OAuthProvider.Builder builder = OAuthProvider.newBuilder(provider.getString("providerId"));
+    // Add scopes if present
+    if (provider.hasKey("scopes")) {
+      ReadableArray scopes = provider.getArray("scopes");
+      if (scopes != null) {
+        List<String> scopeList = new ArrayList<>();
+        for (int i = 0; i < scopes.size(); i++) {
+          String scope = scopes.getString(i);
+          scopeList.add(scope);
+        }
+        builder.setScopes(scopeList);
+      }
+    }
+    // Add custom parameters if present
+    if (provider.hasKey("customParameters")) {
+      ReadableMap customParameters = provider.getMap("customParameters");
+      if (customParameters != null) {
+        ReadableMapKeySetIterator iterator = customParameters.keySetIterator();
+        while (iterator.hasNextKey()) {
+          String key = iterator.nextKey();
+          builder.addCustomParameter(key, customParameters.getString(key));
+        }
+      }
+    }
+    Task<AuthResult> pendingResultTask = firebaseAuth.getPendingAuthResult();
+    if (pendingResultTask != null) {
+      pendingResultTask
+          .addOnSuccessListener(
+              authResult -> {
+                Log.d(TAG, "signInWithProvider:success");
+                promiseWithAuthResult(authResult, promise);
+              })
+          .addOnFailureListener(
+              e -> {
+                Log.d(TAG, "signInWithProvider:failure", e);
+                promiseRejectAuthException(promise, e);
+              });
+    } else {
+      firebaseAuth
+          .startActivityForSignInWithProvider(getCurrentActivity(), builder.build())
+          .addOnSuccessListener(
+              authResult -> {
+                Log.d(TAG, "signInWithProvider:success");
+                promiseWithAuthResult(authResult, promise);
+              })
+          .addOnFailureListener(
+              e -> {
+                Log.d(TAG, "signInWithProvider:failure", e);
+                promiseRejectAuthException(promise, e);
+              });
+    }
+  }
+
   /**
    * signInWithPhoneNumber
    *
@@ -1527,6 +1617,85 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     }
   }
 
+  /**
+   * linkWithProvider
+   *
+   * @param provider
+   * @param promise
+   */
+  @ReactMethod
+  private void linkWithProvider(String appName, ReadableMap provider, final Promise promise) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    if (provider.getString("providerId") == null) {
+      rejectPromiseWithCodeAndMessage(
+          promise,
+          "invalid-credential",
+          "The supplied auth credential is malformed, has expired or is not currently supported.");
+      return;
+    }
+
+    FirebaseUser user = firebaseAuth.getCurrentUser();
+    Log.d(TAG, "linkWithProvider");
+
+    if (user == null) {
+      promiseNoUser(promise, true);
+      return;
+    }
+
+    OAuthProvider.Builder builder = OAuthProvider.newBuilder(provider.getString("providerId"));
+    // Add scopes if present
+    if (provider.hasKey("scopes")) {
+      ReadableArray scopes = provider.getArray("scopes");
+      if (scopes != null) {
+        List<String> scopeList = new ArrayList<>();
+        for (int i = 0; i < scopes.size(); i++) {
+          String scope = scopes.getString(i);
+          scopeList.add(scope);
+        }
+        builder.setScopes(scopeList);
+      }
+    }
+    // Add custom parameters if present
+    if (provider.hasKey("customParameters")) {
+      ReadableMap customParameters = provider.getMap("customParameters");
+      if (customParameters != null) {
+        ReadableMapKeySetIterator iterator = customParameters.keySetIterator();
+        while (iterator.hasNextKey()) {
+          String key = iterator.nextKey();
+          builder.addCustomParameter(key, customParameters.getString(key));
+        }
+      }
+    }
+    Task<AuthResult> pendingResultTask = firebaseAuth.getPendingAuthResult();
+    if (pendingResultTask != null) {
+      pendingResultTask
+          .addOnSuccessListener(
+              authResult -> {
+                Log.d(TAG, "linkWithProvider:success");
+                promiseWithAuthResult(authResult, promise);
+              })
+          .addOnFailureListener(
+              e -> {
+                Log.d(TAG, "linkWithProvider:failure", e);
+                promiseRejectAuthException(promise, e);
+              });
+    } else {
+      user.startActivityForLinkWithProvider(getCurrentActivity(), builder.build())
+          .addOnSuccessListener(
+              authResult -> {
+                Log.d(TAG, "linkWithProvider:success");
+                promiseWithAuthResult(authResult, promise);
+              })
+          .addOnFailureListener(
+              e -> {
+                Log.d(TAG, "linkWithProvider:failure", e);
+                promiseRejectAuthException(promise, e);
+              });
+    }
+  }
+
   @ReactMethod
   public void unlink(final String appName, final String providerId, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
@@ -1587,6 +1756,86 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       } else {
         promiseNoUser(promise, true);
       }
+    }
+  }
+
+  /**
+   * reauthenticateWithProvider
+   *
+   * @param provider
+   * @param promise
+   */
+  @ReactMethod
+  private void reauthenticateWithProvider(
+      String appName, ReadableMap provider, final Promise promise) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    if (provider.getString("providerId") == null) {
+      rejectPromiseWithCodeAndMessage(
+          promise,
+          "invalid-credential",
+          "The supplied auth credential is malformed, has expired or is not currently supported.");
+      return;
+    }
+
+    FirebaseUser user = firebaseAuth.getCurrentUser();
+    Log.d(TAG, "reauthenticateWithProvider");
+
+    if (user == null) {
+      promiseNoUser(promise, true);
+      return;
+    }
+
+    OAuthProvider.Builder builder = OAuthProvider.newBuilder(provider.getString("providerId"));
+    // Add scopes if present
+    if (provider.hasKey("scopes")) {
+      ReadableArray scopes = provider.getArray("scopes");
+      if (scopes != null) {
+        List<String> scopeList = new ArrayList<>();
+        for (int i = 0; i < scopes.size(); i++) {
+          String scope = scopes.getString(i);
+          scopeList.add(scope);
+        }
+        builder.setScopes(scopeList);
+      }
+    }
+    // Add custom parameters if present
+    if (provider.hasKey("customParameters")) {
+      ReadableMap customParameters = provider.getMap("customParameters");
+      if (customParameters != null) {
+        ReadableMapKeySetIterator iterator = customParameters.keySetIterator();
+        while (iterator.hasNextKey()) {
+          String key = iterator.nextKey();
+          builder.addCustomParameter(key, customParameters.getString(key));
+        }
+      }
+    }
+    Task<AuthResult> pendingResultTask = firebaseAuth.getPendingAuthResult();
+    if (pendingResultTask != null) {
+      pendingResultTask
+          .addOnSuccessListener(
+              authResult -> {
+                Log.d(TAG, "reauthenticateWithProvider:success");
+                promiseWithAuthResult(authResult, promise);
+              })
+          .addOnFailureListener(
+              e -> {
+                Log.d(TAG, "reauthenticateWithProvider:failure", e);
+                promiseRejectAuthException(promise, e);
+              });
+    } else {
+      user.startActivityForReauthenticateWithProvider(getCurrentActivity(), builder.build())
+          .addOnSuccessListener(
+              authResult -> {
+                Log.d(TAG, "reauthenticateWithProvider:success");
+                promiseWithAuthResult(authResult, promise);
+              })
+          .addOnFailureListener(
+              e -> {
+                Log.d(TAG, "reauthenticateWithProvider:failure", e);
+                promiseRejectAuthException(promise, e);
+              });
     }
   }
 

@@ -33,7 +33,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-      <string>Firebase Deep Links</string>
+			<string>Firebase Deep Links</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>reactnativefirebase.page.link</string>
@@ -54,6 +54,8 @@
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>

@@ -17,6 +17,7 @@ package io.invertase.firebase.app;
  *
  */
 
+import android.util.Log;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
@@ -38,6 +39,8 @@ import java.util.Map;
 public class ReactNativeFirebaseAppModule extends ReactNativeFirebaseModule {
   private static final String TAG = "App";
 
+  public static Map<String, String> authDomains = new HashMap<>();
+
   ReactNativeFirebaseAppModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
   }
@@ -52,9 +55,20 @@ public class ReactNativeFirebaseAppModule extends ReactNativeFirebaseModule {
   public void initializeApp(ReadableMap options, ReadableMap appConfig, Promise promise) {
     FirebaseApp firebaseApp =
         RCTConvertFirebase.readableMapToFirebaseApp(options, appConfig, getContext());
+    ReactNativeFirebaseAppModule.configureAuthDomain(
+        appConfig.getString("name"), options.getString("authDomain"));
 
     WritableMap firebaseAppMap = RCTConvertFirebase.firebaseAppToWritableMap(firebaseApp);
     promise.resolve(firebaseAppMap);
+  }
+
+  public static void configureAuthDomain(String name, String authDomain) {
+    if (authDomain != null) {
+      Log.d(TAG, name + " custom authDomain " + authDomain);
+      authDomains.put(name, authDomain);
+    } else {
+      authDomains.remove(name);
+    }
   }
 
   @ReactMethod

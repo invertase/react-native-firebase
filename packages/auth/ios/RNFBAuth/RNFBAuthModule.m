@@ -19,6 +19,7 @@
 #import <React/RCTUtils.h>
 
 #import "RNFBApp/RCTConvert+FIRApp.h"
+#import "RNFBApp/RNFBAppModule.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBAuthModule.h"
 
@@ -157,6 +158,21 @@ RCT_EXPORT_METHOD(removeIdTokenListener : (FIRApp *)firebaseApp) {
         removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:firebaseApp.name]];
     [idTokenHandlers removeObjectForKey:firebaseApp.name];
   }
+}
+
+RCT_EXPORT_METHOD(configureAuthDomain : (FIRApp *)firebaseApp) {
+  NSString *authDomain = [RNFBAppModule getCustomDomain:firebaseApp.name];
+  DLog(@"RNFBAuth app: %@ customAuthDomain: %@", firebaseApp.name, authDomain);
+  if (authDomain != nil) {
+    [FIRAuth authWithApp:firebaseApp].customAuthDomain = authDomain;
+  }
+}
+
+RCT_EXPORT_METHOD(getCustomAuthDomain
+                  : (FIRApp *)firebaseApp
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  resolve([FIRAuth authWithApp:firebaseApp].customAuthDomain);
 }
 
 RCT_EXPORT_METHOD(setAppVerificationDisabledForTesting : (FIRApp *)firebaseApp : (BOOL)disabled) {
@@ -571,6 +587,63 @@ RCT_EXPORT_METHOD(signInWithCredential
                 }];
 }
 
+RCT_EXPORT_METHOD(signInWithProvider
+                  : (FIRApp *)firebaseApp
+                  : (NSDictionary *)provider
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  NSString *providerId = provider[@"providerId"];
+  if (providerId == nil) {
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                      userInfo:(NSMutableDictionary *)@{
+                                        @"code" : @"invalid-credential",
+                                        @"message" : @"The supplied auth credential is malformed, "
+                                                     @"has expired or is not currently supported.",
+                                      }];
+  }
+
+  __block FIROAuthProvider *builder = [FIROAuthProvider providerWithProviderID:providerId];
+  // Add scopes if present
+  if (provider[@"scopes"]) {
+    [builder setScopes:provider[@"scopes"]];
+  }
+  // Add custom parameters if present
+  if (provider[@"customParameters"]) {
+    [builder setCustomParameters:provider[@"customParameters"]];
+  }
+
+  [builder getCredentialWithUIDelegate:nil
+                            completion:^(FIRAuthCredential *_Nullable credential,
+                                         NSError *_Nullable error) {
+                              if (error) {
+                                [self promiseRejectAuthException:reject error:error];
+                                return;
+                              }
+                              if (credential) {
+                                [[FIRAuth auth]
+                                    signInWithCredential:credential
+                                              completion:^(FIRAuthDataResult *_Nullable authResult,
+                                                           NSError *_Nullable error) {
+                                                if (error) {
+                                                  [self promiseRejectAuthException:reject
+                                                                             error:error];
+                                                  return;
+                                                }
+
+                                                // NOTE: This variable has NO PURPOSE AT ALL, it is
+                                                // only to keep a strong reference to the builder
+                                                // variable so it is not deallocated prematurely by
+                                                // ARC.
+                                                NSString *providerID = builder.providerID;
+
+                                                [self promiseWithAuthResult:resolve
+                                                                   rejecter:reject
+                                                                 authResult:authResult];
+                                              }];
+                              }
+                            }];
+}
+
 RCT_EXPORT_METHOD(confirmPasswordReset
                   : (FIRApp *)firebaseApp
                   : (NSString *)code
@@ -983,6 +1056,68 @@ RCT_EXPORT_METHOD(linkWithCredential
   }
 }
 
+RCT_EXPORT_METHOD(linkWithProvider
+                  : (FIRApp *)firebaseApp
+                  : (NSDictionary *)provider
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  NSString *providerId = provider[@"providerId"];
+  if (providerId == nil) {
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                      userInfo:(NSMutableDictionary *)@{
+                                        @"code" : @"invalid-credential",
+                                        @"message" : @"The supplied auth credential is malformed, "
+                                                     @"has expired or is not currently supported.",
+                                      }];
+  }
+
+  __block FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
+  if (user == nil) {
+    [self promiseNoUser:resolve rejecter:reject isError:YES];
+    return;
+  }
+
+  __block FIROAuthProvider *builder = [FIROAuthProvider providerWithProviderID:providerId];
+  // Add scopes if present
+  if (provider[@"scopes"]) {
+    [builder setScopes:provider[@"scopes"]];
+  }
+  // Add custom parameters if present
+  if (provider[@"parameters"]) {
+    [builder setCustomParameters:provider[@"parameters"]];
+  }
+
+  [builder getCredentialWithUIDelegate:nil
+                            completion:^(FIRAuthCredential *_Nullable credential,
+                                         NSError *_Nullable error) {
+                              if (error) {
+                                [self promiseRejectAuthException:reject error:error];
+                                return;
+                              }
+                              if (credential) {
+                                [user linkWithCredential:credential
+                                              completion:^(FIRAuthDataResult *_Nullable authResult,
+                                                           NSError *_Nullable error) {
+                                                if (error) {
+                                                  [self promiseRejectAuthException:reject
+                                                                             error:error];
+                                                  return;
+                                                }
+
+                                                // NOTE: This variable has NO PURPOSE AT ALL, it is
+                                                // only to keep a strong reference to the builder
+                                                // variable so it is not deallocated prematurely by
+                                                // ARC.
+                                                NSString *providerID = builder.providerID;
+
+                                                [self promiseWithAuthResult:resolve
+                                                                   rejecter:reject
+                                                                 authResult:authResult];
+                                              }];
+                              }
+                            }];
+}
+
 RCT_EXPORT_METHOD(unlink
                   : (FIRApp *)firebaseApp
                   : (NSString *)providerId
@@ -1041,6 +1176,69 @@ RCT_EXPORT_METHOD(reauthenticateWithCredential
   } else {
     [self promiseNoUser:resolve rejecter:reject isError:YES];
   }
+}
+
+RCT_EXPORT_METHOD(reauthenticateWithProvider
+                  : (FIRApp *)firebaseApp
+                  : (NSDictionary *)provider
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  NSString *providerId = provider[@"providerId"];
+  if (providerId == nil) {
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                      userInfo:(NSMutableDictionary *)@{
+                                        @"code" : @"invalid-credential",
+                                        @"message" : @"The supplied auth credential is malformed, "
+                                                     @"has expired or is not currently supported.",
+                                      }];
+  }
+
+  __block FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
+  if (user == nil) {
+    [self promiseNoUser:resolve rejecter:reject isError:YES];
+    return;
+  }
+
+  __block FIROAuthProvider *builder = [FIROAuthProvider providerWithProviderID:providerId];
+  // Add scopes if present
+  if (provider[@"scopes"]) {
+    [builder setScopes:provider[@"scopes"]];
+  }
+  // Add custom parameters if present
+  if (provider[@"parameters"]) {
+    [builder setCustomParameters:provider[@"parameters"]];
+  }
+
+  [builder getCredentialWithUIDelegate:nil
+                            completion:^(FIRAuthCredential *_Nullable credential,
+                                         NSError *_Nullable error) {
+                              if (error) {
+                                [self promiseRejectAuthException:reject error:error];
+                                return;
+                              }
+                              if (credential) {
+                                [user reauthenticateWithCredential:credential
+                                                        completion:^(
+                                                            FIRAuthDataResult *_Nullable authResult,
+                                                            NSError *_Nullable error) {
+                                                          if (error) {
+                                                            [self promiseRejectAuthException:reject
+                                                                                       error:error];
+                                                            return;
+                                                          }
+
+                                                          // NOTE: This variable has NO PURPOSE AT
+                                                          // ALL, it is only to keep a strong
+                                                          // reference to the builder variable so it
+                                                          // is not deallocated prematurely by ARC.
+                                                          NSString *providerID = builder.providerID;
+
+                                                          [self promiseWithAuthResult:resolve
+                                                                             rejecter:reject
+                                                                           authResult:authResult];
+                                                        }];
+                              }
+                            }];
 }
 
 RCT_EXPORT_METHOD(fetchSignInMethodsForEmail
@@ -1467,7 +1665,7 @@ RCT_EXPORT_METHOD(useEmulator
         [[[NSISO8601DateFormatter alloc] init] stringFromDate:hint.enrollmentDate];
     [enrolledFactors addObject:@{
       @"uid" : hint.UID,
-      @"factorId" : [self getJSFactorId:(hint.factorID)],
+      @"factorId" : hint.factorID == nil ? [NSNull null] : [self getJSFactorId:(hint.factorID)],
       @"displayName" : hint.displayName == nil ? [NSNull null] : hint.displayName,
       @"enrollmentDate" : enrollmentDate,
     }];

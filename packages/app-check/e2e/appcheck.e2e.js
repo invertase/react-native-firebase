@@ -156,6 +156,18 @@ describe('appCheck() modular', function () {
       });
     });
 
+    describe('getLimitedUseToken())', function () {
+      it('limited use token fetch attempt with configured debug token should work', async function () {
+        const { token } = await firebase.appCheck().getLimitedUseToken();
+        token.should.not.equal('');
+        const decodedToken = jwt.decode(token);
+        decodedToken.aud[1].should.equal('projects/react-native-firebase-testing');
+        if (decodedToken.exp < Date.now()) {
+          Promise.reject('Token already expired');
+        }
+      });
+    });
+
     describe('activate())', function () {
       it('should activate with default provider and defined token refresh', function () {
         firebase
@@ -309,6 +321,40 @@ describe('appCheck() modular', function () {
         });
 
         const { token } = await getToken(instance2, true);
+        token.should.not.equal('');
+        const decodedToken = jwt.decode(token);
+        decodedToken.aud[1].should.equal('projects/react-native-firebase-testing');
+        if (decodedToken.exp < Date.now()) {
+          Promise.reject('Token already expired');
+        }
+      });
+    });
+
+    describe('getLimitedUseToken())', function () {
+      it('limited use token fetch attempt with configured debug token should work', async function () {
+        const { initializeAppCheck, getLimitedUseToken } = appCheckModular;
+
+        rnfbProvider = firebase.appCheck().newReactNativeFirebaseAppCheckProvider();
+        rnfbProvider.configure({
+          android: {
+            provider: 'debug',
+            debugToken: '698956B2-187B-49C6-9E25-C3F3530EEBAF',
+          },
+          apple: {
+            provider: 'debug',
+          },
+          web: {
+            provider: 'debug',
+            siteKey: 'none',
+          },
+        });
+
+        const appCheckInstance = await initializeAppCheck(undefined, {
+          provider: rnfbProvider,
+          isTokenAutoRefreshEnabled: false,
+        });
+
+        const { token } = await getLimitedUseToken(appCheckInstance);
         token.should.not.equal('');
         const decodedToken = jwt.decode(token);
         decodedToken.aud[1].should.equal('projects/react-native-firebase-testing');
