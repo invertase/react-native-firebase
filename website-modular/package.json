@@ -11,8 +11,9 @@
     "format": "prettier --write \"src/**/*.astro\""
   },
   "dependencies": {
+    "@astrojs/node": "^7.0.4",
     "@stefanprobst/rehype-extract-toc": "^2.2.0",
-    "astro": "^3.2.2",
+    "astro": "^4.1.1",
     "jsdom": "^22.1.0",
     "minimatch": "^9.0.3",
     "rehype-accessible-emojis": "^0.3.2",

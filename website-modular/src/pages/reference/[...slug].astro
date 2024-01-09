@@ -1,8 +1,4 @@
 ---
-export const prerender = false;
-
-let { slug } = Astro.params;
-
 import {
     packages,
     join,
@@ -16,11 +12,14 @@ import { unify } from '../../utils/unify';
 import {
     getDocument,
     getModuleTypes,
-    highlightDefinitions,
     type ModuleTypes,
     sanitizeDefinitions,
 } from '../../utils/dom';
 import Layout from '../../layouts/Layout.astro';
+
+export const prerender = false;
+
+let { slug } = Astro.params;
 
 const modules = {
     app: 'App',

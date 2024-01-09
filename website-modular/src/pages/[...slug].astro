@@ -71,7 +71,7 @@ const source = document.body.innerHTML;
     <Fragment set:html={source} />
     <NextOrPrevious previous={previous} next={next} />
 
-    <script>
+    <script lang="js">
         document.addEventListener('alpine:init', () => {
             const tabGroups = document.querySelectorAll('.tabs');
             for (const tabGroup of tabGroups) {
@@ -120,9 +120,14 @@ const source = document.body.innerHTML;
 
             document.body.setAttribute('x-data', 'global');
 
-            // @ts-ignore
             Alpine.data('global', () => ({
-                activeTab: null as string | null,
+                /**
+                 * @type {string | null}
+                 */
+                activeTab: null,
+                /**
+                 * @returns {void}
+                 */
                 init() {
                     const urlParams = new URLSearchParams(
                         window.location.search,
@@ -138,13 +143,22 @@ const source = document.body.innerHTML;
                         this.setActiveTab(activeTab);
                     }
                 },
-                isActiveTab(id: string, idsInGroup: string[]) {
+                /**
+                 * @param {string} id
+                 * @param {string[]} idsInGroup
+                 * @returns {boolean}
+                 */
+                isActiveTab(id, idsInGroup) {
                     if (this.activeTab && idsInGroup.includes(this.activeTab)) {
                         return this.activeTab === id;
                     }
                     return id === idsInGroup[0];
                 },
-                setActiveTab(id: string) {
+                /**
+                 * @param {string} id
+                 * @returns {void}
+                 */
+                setActiveTab(id) {
                     const urlParams = new URLSearchParams(
                         window.location.search,
                     );

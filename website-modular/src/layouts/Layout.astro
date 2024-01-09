@@ -23,24 +23,31 @@ const { title } = Astro.props;
             href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
         />
         <script
+            is:inline
             src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"
         ></script>
         <script
+            is:inline
             src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"
         ></script>
         <script
+            is:inline
             src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"
         ></script>
         <script
+            is:inline
             src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"
         ></script>
         <script
+            is:inline
             src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/ruby.min.js"
         ></script>
         <script
+            is:inline
             src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"
         ></script>
         <script
+            is:inline
             src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/objectivec.min.js"
         ></script>
         <title>{title}</title>
@@ -66,6 +73,7 @@ const { title } = Astro.props;
         <slot />
 
         <script defer>
+            hljs.configure({ ignoreUnescapedHTML: true });
             hljs.highlightAll();
         </script>
     </body>
