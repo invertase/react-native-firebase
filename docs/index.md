@@ -183,7 +183,7 @@ you can follow the manual installation steps for [iOS](/install-ios) and [Androi
 
 Integration with Expo is possible when using a [development build](https://docs.expo.dev/workflow/overview/#development-builds). You can configuring the project via [config plugins](https://docs.expo.io/guides/config-plugins/) or manually configure the native projects yourself (the "bare workflow").
 
-*NOTE:* React Native Firebase cannot be used in the pre-compiled [Expo Go app](https://docs.expo.dev/get-started/expo-go/) because React Native Firebase uses native code that is not compiled into Expo Go.
+_NOTE:_ React Native Firebase cannot be used in the pre-compiled [Expo Go app](https://docs.expo.dev/get-started/expo-go/) because React Native Firebase uses native code that is not compiled into Expo Go.
 
 #### Your Expo project
 
@@ -199,7 +199,7 @@ Similarly you can install other React Native Firebase modules such as for Authen
 
 If you are manually adjusting your Android and iOS projects, follow the same instructions as [React Native CLI projects](#installation-for-react-native-cli-projects).
 
-The recommended approach is to use [Expo Config Plugins](https://docs.expo.dev/config-plugins/introduction/) to configure React Native Firebase.  You will add to the [`plugins`](https://docs.expo.io/versions/latest/config/app/#plugins) array of your `app.json` or `app.config.js`. See the note below to determine which React Native Firebase modules require Config Plugin configurations.
+The recommended approach is to use [Expo Config Plugins](https://docs.expo.dev/config-plugins/introduction/) to configure React Native Firebase. You will add to the [`plugins`](https://docs.expo.io/versions/latest/config/app/#plugins) array of your `app.json` or `app.config.js`. See the note below to determine which React Native Firebase modules require Config Plugin configurations.
 
 To enable Firebase on the native Android and iOS platforms, create and download Service Account files for each platform. Then, provide paths to the `google-services.json` and `GoogleService-Info.plist` files by specifying the [`expo.android.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile-1) and [`expo.ios.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile) fields. See the example configuration below.
 
