@@ -150,6 +150,26 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     mMultiFactorSessions.clear();
   }
 
+    @ReactMethod
+  public void configureAuthDomain(final String appName) {
+    Log.d(TAG, "configureAuthDomain");
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    String authDomain = ReactNativeFirebaseAppModule.authDomains.get(appName);
+    Log.d(TAG, "configureAuthDomain - app " + appName + " domain? " + authDomain);
+    if (authDomain != null) {
+      firebaseAuth.setCustomAuthDomain(authDomain);
+    }
+  }
+
+  @ReactMethod
+  public void getCustomAuthDomain(final String appName, final Promise promise) {
+    Log.d(TAG, "configureAuthDomain");
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    promise.resolve(firebaseAuth.getCustomAuthDomain());
+  }
+
   /** Add a new auth state listener - if one doesn't exist already */
   @ReactMethod
   public void addAuthStateListener(final String appName) {
