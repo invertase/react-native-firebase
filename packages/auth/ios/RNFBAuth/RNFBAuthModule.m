@@ -474,7 +474,7 @@ RCT_EXPORT_METHOD(updateProfile
           [changeRequest setValue:props[key] forKey:key];
         }
       } @catch (NSException *exception) {
-        
+        DLog(@"Exception occurred while configuring: %@", exception);
       }
     }
 
