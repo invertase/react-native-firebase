@@ -491,6 +491,11 @@ export namespace FirebaseAuthTypes {
     uid: string;
   }
 
+  export interface PhoneMultiFactorInfo extends MultiFactorInfo {
+      factorId: "phone";
+      phoneNumber: string;
+  }
+
   export interface MultiFactorAssertion {
     token: string;
     secret: string;
