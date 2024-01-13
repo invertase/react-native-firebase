@@ -1243,12 +1243,14 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
         .enroll(assertion, displayName)
         .addOnCompleteListener(
             task -> {
-              if (!task.isSuccessful()) {
-                rejectPromiseWithExceptionMap(promise, task.getException());
+              if (task.isSuccessful()) {
+                Log.d(TAG, "finalizeMultiFactorEnrollment:onComplete:success");
+                promise.resolve(null);
+              } else {
+                Exception exception = task.getException();
+                Log.e(TAG, "finalizeMultiFactorEnrollment:onComplete:failure", exception);
+                promiseRejectAuthException(promise, exception);
               }
-
-              // Need to reload user to make it all visible?
-              promise.resolve("yes");
             });
   }
 
