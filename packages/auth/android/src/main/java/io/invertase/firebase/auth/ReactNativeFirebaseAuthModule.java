@@ -2553,6 +2553,10 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     hintMap.putString("factorId", hint.getFactorId());
     hintMap.putString("uid", hint.getUid());
 
+    if (hint.getFactorId().equals(PhoneMultiFactorGenerator.FACTOR_ID)) {
+      hintMap.putString("phoneNumber", ((PhoneMultiFactorInfo) hint).getPhoneNumber());
+    }
+
     return hintMap;
   }
 

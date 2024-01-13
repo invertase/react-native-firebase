@@ -547,6 +547,7 @@ describe('multi-factor modular', function () {
           this.skip();
         }
         const { phoneNumber, email, password } = await createUserWithMultiFactor();
+        const maskedNumber = '+********' + phoneNumber.substring(phoneNumber.length - 4);
 
         const { signInWithEmailAndPassword, getAuth, getMultiFactorResolver } = authModular;
 
@@ -562,6 +563,9 @@ describe('multi-factor modular', function () {
           multiFactorResolver.should.be.an.Object();
           multiFactorResolver.hints.should.be.an.Array();
           multiFactorResolver.hints.length.should.equal(1);
+          multiFactorResolver.hints[0].factorId.should.equal('phone');
+          multiFactorResolver.hints[0].phoneNumber.should.equal(maskedNumber);
+
           multiFactorResolver.session.should.be.a.String();
 
           const verificationId = await new firebase.auth.PhoneAuthProvider(
@@ -575,7 +579,6 @@ describe('multi-factor modular', function () {
           let verificationCode = await getLastSmsCode(phoneNumber);
           if (verificationCode == null) {
             // iOS simulator uses a masked phone number
-            const maskedNumber = '+********' + phoneNumber.substring(phoneNumber.length - 4);
             verificationCode = await getLastSmsCode(maskedNumber);
           }
           const phoneAuthCredential = new firebase.auth.PhoneAuthProvider.credential(
@@ -591,6 +594,8 @@ describe('multi-factor modular', function () {
               user.email.should.equal('verified@example.com');
               user.multiFactor.should.be.an.Object();
               user.multiFactor.enrolledFactors.length.should.equal(1);
+              user.multiFactor.enrolledFactors[0].factorId.should.equal('phone');
+              user.multiFactor.enrolledFactors[0].phoneNumber.should.equal(phoneNumber);
               return Promise.resolve();
             })
             .catch(e => {

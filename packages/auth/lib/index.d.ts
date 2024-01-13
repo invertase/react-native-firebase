@@ -472,7 +472,21 @@ export namespace FirebaseAuthTypes {
   /**
    * Contains information about a second factor.
    */
-  export interface MultiFactorInfo {
+  export type MultiFactorInfo = PhoneMultiFactorInfo | TotpMultiFactorInfo;
+
+  export interface PhoneMultiFactorInfo extends MultiFactorInfoCommon {
+    factorId: 'phone';
+    /**
+     * The phone number used for this factor.
+     */
+    phoneNumber: string;
+  }
+
+  export interface TotpMultiFactorInfo extends MultiFactorInfoCommon {
+    factorId: 'totp';
+  }
+
+  export interface MultiFactorInfoCommon {
     /**
      * User friendly name for this factor.
      */
@@ -481,10 +495,6 @@ export namespace FirebaseAuthTypes {
      * Time the second factor was enrolled, in UTC.
      */
     enrollmentTime: string;
-    /**
-     * Type of factor.
-     */
-    factorId: FactorId;
     /**
      * Unique id for this factor.
      */
