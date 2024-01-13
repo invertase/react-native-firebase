@@ -1695,6 +1695,8 @@ RCT_EXPORT_METHOD(useEmulator
       @"enrollmentTime" : enrollmentTime,
       // @deprecated enrollmentDate kept for backwards compatibility, please use enrollmentTime
       @"enrollmentDate" : enrollmentTime,
+      // phoneNumber only present on FIRPhoneMultiFactorInfo
+      @"phoneNumber" : hint.phoneNumber == nil ? [NSNull null] : hint.phoneNumber,
     }];
   }
   return enrolledFactors;
