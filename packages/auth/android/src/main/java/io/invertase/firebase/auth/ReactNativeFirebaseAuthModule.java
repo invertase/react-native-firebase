@@ -1250,6 +1250,33 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
             });
   }
 
+  @ReactMethod
+  public void unenrollMultiFactor(
+    final String appName,
+    final String factorUid,
+    final Promise promise
+  ) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    firebaseAuth
+      .getCurrentUser()
+      .getMultiFactor()
+      .unenroll(factorUid)
+      .addOnCompleteListener(
+        getExecutor(),
+        task -> {
+          if (task.isSuccessful()) {
+            Log.d(TAG, "unenrollMultiFactor:onComplete:success");
+            promise.resolve(null);
+          } else {
+            Exception exception = task.getException();
+            Log.e(TAG, "unenrollMultiFactor:onComplete:failure", exception);
+            promiseRejectAuthException(promise, exception);
+          }
+        });
+  }
+
   /**
    * This method is intended to resolve a {@link PhoneAuthCredential} obtained through a
    * multi-factor authentication flow. A credential can either be obtained using:

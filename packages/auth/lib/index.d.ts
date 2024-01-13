@@ -577,6 +577,11 @@ export namespace FirebaseAuthTypes {
      * The method will ensure the user state is reloaded after successfully enrolling a factor.
      */
     enroll(assertion: MultiFactorAssertion, displayName?: string): Promise<void>;
+
+    /**
+    * Unenroll a previously enrolled factor.
+    */
+    unenroll(multiFactorInfoOrFactorUid: MultiFactorInfo | string): Promise<void>;
   }
 
   /**

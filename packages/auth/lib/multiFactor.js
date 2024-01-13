@@ -34,7 +34,11 @@ export class MultiFactorUser {
     return this._auth.currentUser.reload();
   }
 
-  unenroll() {
-    return Promise.reject(new Error('No implemented yet.'));
+  async unenroll(multiFactorInfoOrFactorUid) {
+    const factorUid = typeof multiFactorInfoOrFactorUid === "string" ? multiFactorInfoOrFactorUid : multiFactorInfoOrFactorUid.uid
+
+    await this._auth.native.unenrollMultiFactor(factorUid)
+
+    return this._auth.currentUser.reload();
   }
 }
