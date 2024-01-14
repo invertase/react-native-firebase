@@ -965,6 +965,25 @@ RCT_EXPORT_METHOD(finalizeMultiFactorEnrollment
                              }];
 }
 
+RCT_EXPORT_METHOD(unenrollMultiFactor
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)factorUID
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+
+  FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
+  [user.multiFactor unenrollWithFactorUID:factorUID
+                             completion:^(NSError *_Nullable error) {
+                               if (error != nil) {
+                                 [self promiseRejectAuthException:reject error:error];
+                                 return;
+                               }
+
+                               resolve(nil);
+                               return;
+                             }];
+}
+
 RCT_EXPORT_METHOD(verifyPhoneNumber
                   : (FIRApp *)firebaseApp
                   : (NSString *)phoneNumber
