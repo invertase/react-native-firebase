@@ -193,7 +193,7 @@ If you're using [Bare Workflow](https://docs.expo.io/introduction/managed-vs-bar
 
 ### Expo Managed Workflow
 
-Since Expo Go will not work with react-native-firebase, the suggested workflow is to use a [custom development client]([https://docs.expo.dev/clients/getting-started/](https://docs.expo.dev/develop/development-builds/create-a-build/).
+Since Expo Go will not work with react-native-firebase, the suggested workflow is to use a [custom development client](https://docs.expo.dev/develop/development-builds/create-a-build/).
 
 Follow [these directions](https://docs.expo.dev/get-started/create-a-project/) to create a new Expo project.
 
