@@ -930,24 +930,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase-functions-test@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "firebase-functions-test@npm:3.1.0"
+"firebase-functions-test@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "firebase-functions-test@npm:3.1.1"
   dependencies:
     "@types/lodash": "npm:^4.14.104"
     lodash: "npm:^4.17.5"
     ts-deepmerge: "npm:^2.0.1"
   peerDependencies:
-    firebase-admin: ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
+    firebase-admin: ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0 || ^12.0.0
     firebase-functions: ">=4.3.0"
     jest: ">=28.0.0"
-  checksum: b39aac00a45090d8149e472041c06fd9959ac94bb6e5e8ada40f85bbba910d70fe8ee2a7047e3e75cd9b94777ceac2a8fe1298c73dde0386e28f12215fbd1721
+  checksum: ec672cca1f5aa1e85c0bcc6a71c9de4a930452c92fd3241759f29d87da848d22a9450518a674972d752d8680c964ce320ac7595ae122fa57a5b2f9483eb94e51
   languageName: node
   linkType: hard
 
-"firebase-functions@npm:^4.5.0":
-  version: 4.5.0
-  resolution: "firebase-functions@npm:4.5.0"
+"firebase-functions@npm:^4.6.0":
+  version: 4.6.0
+  resolution: "firebase-functions@npm:4.6.0"
   dependencies:
     "@types/cors": "npm:^2.8.5"
     "@types/express": "npm:4.17.3"
@@ -956,10 +956,10 @@ __metadata:
     node-fetch: "npm:^2.6.7"
     protobufjs: "npm:^7.2.2"
   peerDependencies:
-    firebase-admin: ^10.0.0 || ^11.0.0
+    firebase-admin: ^10.0.0 || ^11.0.0 || ^12.0.0
   bin:
     firebase-functions: lib/bin/firebase-functions.js
-  checksum: e84cf6b3152caa95acb8cb08351db341c1488cde4b74f20cba7a12fb463c00b6565e02cda4fd2c22ca427c817686499009023312a8ab265cdf6a76df346c8c44
+  checksum: a51dec932d551e90c39aa642037927ddeee727cdab545fcbf3dc15c5086e9ac9e0cf9f32ba251d0c76a830e9537e77e47fa2d6e2d58d153b42e893ef8944151b
   languageName: node
   linkType: hard
 
@@ -1007,8 +1007,8 @@ __metadata:
   resolution: "functions@workspace:."
   dependencies:
     firebase-admin: "npm:^12.0.0"
-    firebase-functions: "npm:^4.5.0"
-    firebase-functions-test: "npm:^3.1.0"
+    firebase-functions: "npm:^4.6.0"
+    firebase-functions-test: "npm:^3.1.1"
     typescript: "npm:^5.3.3"
   languageName: unknown
   linkType: soft
