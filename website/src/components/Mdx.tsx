@@ -1,147 +1,127 @@
-/*
- * Copyright (c) 2016-present Invertase Limited & Contributors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this library except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
+import Link from 'next/link'
+import clsx from 'clsx'
 
-/* eslint-disable react/display-name */
-import React, { ReactElement } from 'react';
-import cx from 'classnames';
-import { MDXRenderer } from 'gatsby-plugin-mdx';
-import { mdx, MDXProvider } from '@mdx-js/react';
-import { HeadingLink, ImageZoom, CodeBlock, Youtube } from '@invertase/ui';
+import { Feedback } from '@/components/Feedback'
+import { Heading } from '@/components/Heading'
+import { Prose } from '@/components/Prose'
 
-import { BlockQuote } from './BlockQuote';
-import { Link } from './Link';
+export const a = Link
+export { Button } from '@/components/Button'
+export { CodeGroup, Code as code, Pre as pre } from '@/components/Code'
 
-type Props = {
-  body: string;
-};
-
-const text = 'leading-loose';
-
-const components = {
-  // Headings
-  h1: ({ id, children }: any) => (
-    <HeadingLink id={id || ''} size="h1" as="h2">
-      {children}
-    </HeadingLink>
-  ),
-  h2: ({ id, children }: any) => (
-    <HeadingLink id={id || ''} size="h2" as="h3">
-      {children}
-    </HeadingLink>
-  ),
-  h3: ({ id, children }: any) => (
-    <HeadingLink id={id || ''} size="h3" as="h4">
-      {children}
-    </HeadingLink>
-  ),
-  h4: ({ id, children }: any) => (
-    <HeadingLink id={id || ''} size="h4" as="h5">
-      {children}
-    </HeadingLink>
-  ),
-  h5: ({ id, children }: any) => (
-    <HeadingLink id={id || ''} size="h5" as="h6">
-      {children}
-    </HeadingLink>
-  ),
-  h6: ({ id, children }: any) => (
-    <HeadingLink id={id || ''} size="h6">
-      {children}
-    </HeadingLink>
-  ),
-
-  // Text
-  p: ({ children }: any) => {
-    return <p className={cx('my-4', text)}>{children}</p>;
-  },
-
-  // Code
-  pre: ({ className, children }: any) => <CodeBlock className={className}>{children}</CodeBlock>,
-  code: ({ className, ...props }: any) => {
-    return <code {...props} className={className || 'language-text'} />;
-  },
-
-  // Lists
-  ul: (props: any) => <ul {...props} className="list-disc list-inside pl-4" />,
-  ol: (props: any) => <ul {...props} className="list-decimal list-inside pl-4" />,
-  li: (props: any) => <li {...props} className={cx('mb-2', text)} />,
-
-  // Table
-  table: (props: any) => (
-    <table
-      {...props}
-      className="overflow-x-auto border-collapse"
-      style={{ width: 'list-content' }}
-    />
-  ),
-
-  // Meta
-  img: ({ src, alt }: any) => {
-    let _alt = alt;
-    let hide = false;
-    if (_alt?.startsWith('hide:')) {
-      hide = true;
-      _alt = alt.replace('hide:');
-    }
-
-    return (
-      <figure className="block my-6 text-center">
-        <ImageZoom src={src} alt={_alt} />
-        {!!alt && !hide && <figcaption className="mt-4 text-xs">{_alt}</figcaption>}
-      </figure>
-    );
-  },
-  a: ({ href, children }: any) => (
-    <Link to={href} target="auto">
-      {children}
-    </Link>
-  ),
-  blockquote: ({ children }: any) => <BlockQuote>{children}</BlockQuote>,
-
-  Youtube: ({ id }: any) => (
-    <div>
-      <Youtube id={id} />
-    </div>
-  ),
-};
-
-function Provider({ children }: { children: ReactElement }): JSX.Element {
-  return <MDXProvider components={components}>{children}</MDXProvider>;
-}
-
-function Mdx({ body }: Props): JSX.Element {
+export function wrapper({ children }: { children: React.ReactNode }) {
   return (
-    <Provider>
-      <MDXRenderer>{body}</MDXRenderer>
-    </Provider>
-  );
+    <article className="flex h-full flex-col pb-10 pt-16">
+      <Prose className="flex-auto">{children}</Prose>
+      <footer className="mx-auto mt-16 w-full max-w-2xl lg:max-w-5xl">
+        <Feedback />
+      </footer>
+    </article>
+  )
 }
 
-function MdxRaw({ raw }: { raw: string }): JSX.Element {
-  let fn;
-  try {
-    fn = new Function('React', 'mdx', `${raw}; return React.createElement(MDXContent)`);
-  } catch (e) {
-    throw e;
-  }
-
-  // @ts-ignore
-  const element = fn(React, mdx);
-  return <Provider>{element}</Provider>;
+export const h2 = function H2(
+  props: Omit<React.ComponentPropsWithoutRef<typeof Heading>, 'level'>,
+) {
+  return <Heading level={2} {...props} />
 }
 
-export { Mdx, MdxRaw };
+function InfoIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
+  return (
+    <svg viewBox="0 0 16 16" aria-hidden="true" {...props}>
+      <circle cx="8" cy="8" r="8" strokeWidth="0" />
+      <path
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+        d="M6.75 7.75h1.5v3.5"
+      />
+      <circle cx="8" cy="4" r=".5" fill="none" />
+    </svg>
+  )
+}
+
+export function Note({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="my-6 flex gap-2.5 rounded-2xl border border-emerald-500/20 bg-emerald-50/50 p-4 leading-6 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/5 dark:text-emerald-200 dark:[--tw-prose-links-hover:theme(colors.emerald.300)] dark:[--tw-prose-links:theme(colors.white)]">
+      <InfoIcon className="mt-1 h-4 w-4 flex-none fill-emerald-500 stroke-white dark:fill-emerald-200/20 dark:stroke-emerald-200" />
+      <div className="[&>:first-child]:mt-0 [&>:last-child]:mb-0">
+        {children}
+      </div>
+    </div>
+  )
+}
+
+export function Row({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="grid grid-cols-1 items-start gap-x-16 gap-y-10 xl:max-w-none xl:grid-cols-2">
+      {children}
+    </div>
+  )
+}
+
+export function Col({
+  children,
+  sticky = false,
+}: {
+  children: React.ReactNode
+  sticky?: boolean
+}) {
+  return (
+    <div
+      className={clsx(
+        '[&>:first-child]:mt-0 [&>:last-child]:mb-0',
+        sticky && 'xl:sticky xl:top-24',
+      )}
+    >
+      {children}
+    </div>
+  )
+}
+
+export function Properties({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="my-6">
+      <ul
+        role="list"
+        className="m-0 max-w-[calc(theme(maxWidth.lg)-theme(spacing.8))] list-none divide-y divide-zinc-900/5 p-0 dark:divide-white/5"
+      >
+        {children}
+      </ul>
+    </div>
+  )
+}
+
+export function Property({
+  name,
+  children,
+  type,
+}: {
+  name: string
+  children: React.ReactNode
+  type?: string
+}) {
+  return (
+    <li className="m-0 px-0 py-4 first:pt-0 last:pb-0">
+      <dl className="m-0 flex flex-wrap items-center gap-x-3 gap-y-2">
+        <dt className="sr-only">Name</dt>
+        <dd>
+          <code>{name}</code>
+        </dd>
+        {type && (
+          <>
+            <dt className="sr-only">Type</dt>
+            <dd className="font-mono text-xs text-zinc-400 dark:text-zinc-500">
+              {type}
+            </dd>
+          </>
+        )}
+        <dt className="sr-only">Description</dt>
+        <dd className="w-full flex-none [&>:first-child]:mt-0 [&>:last-child]:mb-0">
+          {children}
+        </dd>
+      </dl>
+    </li>
+  )
+}
