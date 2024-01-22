@@ -2,6 +2,15 @@ import * as ReactNative from 'react-native';
 import { jest } from '@jest/globals';
 
 jest.doMock('react-native', () => {
+  // @ts-ignore - react-native empty bridge config so native modules at least default init
+  global.__fbBatchedBridgeConfig = {};
+
+  // @ts-ignore - react-native new architecture interop flag to true
+  global.RN$TurboInterop = true;
+
+  // make sure PlatformConstants is visible otherwise turbo modules default init fails
+  ReactNative.NativeModules['PlatformConstants'] = {};
+
   return Object.setPrototypeOf(
     {
       Platform: {
