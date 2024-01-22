@@ -5,6 +5,7 @@ import {
     exists,
     readFile,
     modulesPath,
+    modules,
 } from '../../utils/paths';
 
 import { unify } from '../../utils/unify';
@@ -21,11 +22,10 @@ export const prerender = false;
 
 let { slug } = Astro.params;
 
-const modules = {
-    app: 'App',
-    firestore: 'Firestore',
-    storage: 'Storage',
-};
+console.log('slug', slug);
+if (!slug) {
+    return Astro.redirect('/reference/app');
+}
 
 const params = slug?.split('/') ?? [];
 const [module, ...segments] = params;
@@ -65,7 +65,7 @@ let file = readFile(path);
 file = file.replace(/(?<=\]\()(.*)(\.md)/gm, `$1`);
 
 // Serialize the markdown content via MDX
-const { html  } = unify(file);
+const { html, toc } = unify(file);
 
 // Get the document from the converted markdown
 const document = getDocument(html);
@@ -73,10 +73,11 @@ const document = getDocument(html);
 // Sanitize the generated definitions
 sanitizeDefinitions(document);
 
-const title = document.querySelector('h1')?.textContent ?? 'React Native Firebase';
+const title =
+    document.querySelector('h1')?.textContent ?? 'React Native Firebase';
 const source = document.body.innerHTML;
 ---
 
-<Layout {title}>
-  <Fragment set:html={source} />
+<Layout {title} {toc}>
+    <Fragment set:html={source} />
 </Layout>

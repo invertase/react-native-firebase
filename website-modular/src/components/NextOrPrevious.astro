@@ -8,6 +8,7 @@ import {
     removeMdExtensionFromFile,
     root,
 } from '../utils/paths';
+import ButtonLink from './ButtonLink.astro';
 
 interface Props {
     next?: string;
@@ -47,16 +48,14 @@ if (previous) {
 
 {
     (next || previous) && (
-        <div class="grid" style="padding-bottom: 1rem;">
+        <div class="flex justify-between space-x-4 py-4">
             {previous && (
-                <a href={`/docs${previous}`} role="button">
+                <ButtonLink href={`/docs${previous}`}>
                     Previous: {previousTitle}
-                </a>
+                </ButtonLink>
             )}
             {next && (
-                <a href={`/docs${next}`} role="button">
-                    Next: {nextTitle}
-                </a>
+                <ButtonLink href={`/docs${next}`}>Next: {nextTitle}</ButtonLink>
             )}
         </div>
     )

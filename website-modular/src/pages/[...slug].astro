@@ -1,7 +1,10 @@
 ---
 export const prerender = false;
 
-let { slug } = Astro.params;
+import NextOrPrevious from '../components/NextOrPrevious.astro';
+import Layout from '../layouts/Layout.astro';
+import { extractFrontMatter } from '../utils/docs';
+import { getDocument, sanitizeDefinitions } from '../utils/dom';
 import {
     docsPath,
     exists,
@@ -10,15 +13,14 @@ import {
     removeMdExtensionFromFile,
     root,
 } from '../utils/paths';
-
 import { unify } from '../utils/unify';
 
-import Layout from '../layouts/Layout.astro';
-import { getDocument, sanitizeDefinitions } from '../utils/dom';
-import NextOrPrevious from '../components/NextOrPrevious.astro';
-import { extractFrontMatter } from '../utils/docs';
+let { slug } = Astro.params;
 
 const params = slug?.split('/') ?? [];
+if (params.length && params[0] !== 'docs') {
+    return Astro.redirect(`/docs/${slug}`);
+}
 const [_, ...segments] = params;
 slug = segments.join('/');
 
@@ -30,7 +32,6 @@ if (!exists(path)) {
     return new Response(`Not found: path = ${path}`);
 }
 
-// Generate a types dictionary for all modules.
 // Get the file
 let file = readFile(path);
 
@@ -49,7 +50,7 @@ if (redirect) {
 }
 
 // Serialize the markdown content via MDX
-const { html } = unify(content);
+const { html, toc } = unify(content);
 
 // Get the document from the converted markdown
 const document = getDocument(html);
@@ -66,7 +67,7 @@ const source = document.body.innerHTML;
     ></script>
 </head>
 
-<Layout {title}>
+<Layout {title} {toc}>
     <h1>{title}</h1>
     <Fragment set:html={source} />
     <NextOrPrevious previous={previous} next={next} />

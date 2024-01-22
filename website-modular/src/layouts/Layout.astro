@@ -1,9 +1,52 @@
 ---
+import yaml from 'yaml';
+import {
+    type ISidebar,
+    Sidebar,
+    type ISidebarItem,
+} from '../components/SideBar';
+import {
+    readFile,
+    join,
+    root,
+    modules,
+    modulesPath,
+    icons,
+} from '../utils/paths';
+import { unify, type TableOfContents } from '../utils/unify';
+import Navigation from '../components/Navigation.astro';
+import { getDocument, getModuleTypes } from '../utils/dom';
+
 interface Props {
     title: string;
+    toc: TableOfContents;
 }
 
-const { title } = Astro.props;
+const { title, toc } = Astro.props;
+let sidebar: ISidebar;
+
+if (Astro.url.pathname.startsWith('/reference')) {
+    sidebar = Object.entries(modules).map(([key, value]) => {
+        const file = readFile(modulesPath(key));
+        const { html } = unify(file);
+        const types = getModuleTypes(getDocument(html));
+
+        const children: ISidebar = [['Overview', `/reference/${key}`, null]];
+        console.log(types);
+
+        Object.entries(types).forEach(([type, href]) => {
+            children.push([type, href, null]);
+        });
+
+        return [
+            value,
+            children,
+            icons[key as keyof typeof icons] || null,
+        ] as ISidebarItem;
+    });
+} else {
+    sidebar = yaml.parse(readFile(join(root, 'sidebar.yaml'))) as ISidebar;
+}
 ---
 
 <!doctype html>
@@ -16,15 +59,15 @@ const { title } = Astro.props;
         <meta name="generator" content={Astro.generator} />
         <link
             rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"
-        />
-        <link
-            rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
         />
         <script
             is:inline
             src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"
+        ></script>
+        <script
+            is:inline
+            src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/groovy.min.js"
         ></script>
         <script
             is:inline
@@ -52,25 +95,31 @@ const { title } = Astro.props;
         ></script>
         <title>{title}</title>
     </head>
-    <body>
-        <nav style="padding-bottom: 1rem;">
-            <ul>
-                <li style="display: flex; align-items: center;">
-                    <img
-                        style="width: 50px; padding-right: 1rem;"
-                        src="https://static.invertase.io/assets/React-Native-Firebase.svg"
-                        alt="RNFB Logo"
-                    />
-                    <a href="/"><strong>React Native Firebase</strong></a>
-                </li>
-            </ul>
-            <ul>
-                <li><a href="/docs">Docs</a></li>
+    <body class="dark:bg-slate-950 dark:text-slate-100">
+        <nav class="flex items-center justify-between py-4">
+            <span class="flex items-center">
+                <img
+                    style="width: 50px; padding-right: 1rem;"
+                    src="https://static.invertase.io/assets/React-Native-Firebase.svg"
+                    alt="RNFB Logo"
+                />
+                <a href="/"><strong>React Native Firebase</strong></a>
+            </span>
+            <ul class="flex space-x-4">
+                <li><a href="/">Docs</a></li>
                 <li><a href="/reference">Reference API</a></li>
             </ul>
         </nav>
 
-        <slot />
+        <div class="mx-auto flex max-w-[1400px] justify-between px-3">
+            <Sidebar sidebar={sidebar} />
+            <main class="prose w-full min-w-[40rem] px-8 dark:prose-invert">
+                <slot />
+            </main>
+            <Navigation {toc} />
+        </div>
+
+        <!-- <Footer /> -->
 
         <script defer>
             hljs.configure({ ignoreUnescapedHTML: true });

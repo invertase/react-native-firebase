@@ -1,0 +1,26 @@
+---
+import type { TableOfContents } from '../utils/unify';
+import NavigationList from './NavigationList.astro';
+
+interface Props {
+    toc: TableOfContents;
+}
+
+const { toc } = Astro.props;
+---
+
+<aside class="sticky top-16 min-w-[260px]">
+    <div
+        class="overflow-y-auto pb-16 pt-4"
+        style={{ height: 'calc(100vh - 4rem)' }}
+    >
+        <div
+            class="mb-4 text-base font-bold uppercase tracking-wide text-gray-500 lg:text-xs dark:text-gray-400"
+        >
+            On this page
+        </div>
+        <div class="pr-2 text-sm text-gray-600">
+            <NavigationList {toc} />
+        </div>
+    </div>
+</aside>

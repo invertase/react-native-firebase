@@ -1,0 +1,22 @@
+---
+import { twMerge } from 'tailwind-merge';
+
+interface Props {
+    href: string;
+    type?: 'primary';
+    class?: string;
+}
+let { href, type, class: userDefinedClasses } = Astro.props;
+type = type || 'primary';
+
+let classes = '';
+
+if (type === 'primary') {
+    classes =
+        'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded';
+}
+---
+
+<a href={href} class={twMerge(classes, 'text-center', userDefinedClasses)}>
+    <slot />
+</a>

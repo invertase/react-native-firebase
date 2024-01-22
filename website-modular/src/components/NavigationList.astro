@@ -1,0 +1,33 @@
+---
+import { TableOfContents } from '../utils/unify';
+
+interface Props {
+    toc: TableOfContents;
+}
+
+const { toc } = Astro.props;
+
+const DEPTH = 3;
+---
+
+<ul>
+    {
+        toc.map((item) => {
+            if (item.depth > DEPTH) {
+                return null;
+            }
+
+            return (
+                <li style={{ paddingLeft: item.depth * 3 }}>
+                    <a
+                        href={`#${item.id}`}
+                        class="whitespace-no-wrap block truncate pb-2 opacity-100 transition-all hover:opacity-75 dark:hover:text-gray-400"
+                    >
+                        {item.value}
+                    </a>
+                    {!!item.children && <Astro.self toc={item.children} />}
+                </li>
+            );
+        })
+    }
+</ul>

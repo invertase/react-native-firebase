@@ -12,6 +12,7 @@ import rehypeSlugs from 'rehype-slug';
 import { rehypeAccessibleEmojis } from 'rehype-accessible-emojis';
 import withToc, { type Toc } from '@stefanprobst/rehype-extract-toc';
 import toHighlight from 'rehype-highlight';
+import addClasses from 'rehype-class-names';
 
 const processor = unified()
     // Convert the raw markdown into remark format
@@ -31,7 +32,10 @@ const processor = unified()
     // Converts code blocks into Highlight formatting
     .use(toHighlight)
     // Convert rehype to a HTML string
-    .use(toHtml, { allowDangerousHtml: true });
+    .use(toHtml, { allowDangerousHtml: true })
+    // Add classes to elements
+    // @ts-ignore
+    .use(addClasses, { pre: 'not-prose' });
 
 export type TableOfContents = Toc;
 

@@ -2,6 +2,12 @@ import path from 'path';
 import fs from 'fs';
 import { minimatch } from 'minimatch';
 
+export const modules = {
+    app: 'App',
+    firestore: 'Firestore',
+    storage: 'Storage',
+};
+
 /**
  * Join paths together.
  */
