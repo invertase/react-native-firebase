@@ -72,7 +72,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/core@npm:^7.11.6, @babel/core@npm:^7.12.3, @babel/core@npm:^7.13.16, @babel/core@npm:^7.20.0, @babel/core@npm:^7.23.6, @babel/core@npm:^7.7.5":
+"@babel/core@npm:^7.11.6, @babel/core@npm:^7.12.3, @babel/core@npm:^7.13.16, @babel/core@npm:^7.20.0, @babel/core@npm:^7.23.7, @babel/core@npm:^7.7.5":
   version: 7.23.7
   resolution: "@babel/core@npm:7.23.7"
   dependencies:
@@ -1524,7 +1524,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-env@npm:^7.20.0, @babel/preset-env@npm:^7.23.6":
+"@babel/preset-env@npm:^7.20.0, @babel/preset-env@npm:^7.23.8":
   version: 7.23.8
   resolution: "@babel/preset-env@npm:7.23.8"
   dependencies:
@@ -3595,7 +3595,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/core@npm:^5.0.2":
+"@octokit/core@npm:^5.1.0":
   version: 5.1.0
   resolution: "@octokit/core@npm:5.1.0"
   dependencies:
@@ -4321,15 +4321,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native/babel-plugin-codegen@npm:*":
-  version: 0.74.0
-  resolution: "@react-native/babel-plugin-codegen@npm:0.74.0"
-  dependencies:
-    "@react-native/codegen": "npm:*"
-  checksum: 4663bd2395503ce0e14908b718107bc5d82708be709db746eba448b57193e5dfce7a404688b12b319bf6c9e37ca4db5dd9591f471daba9dfe219970eb8ed2bf7
-  languageName: node
-  linkType: hard
-
 "@react-native/babel-plugin-codegen@npm:0.73.2":
   version: 0.73.2
   resolution: "@react-native/babel-plugin-codegen@npm:0.73.2"
@@ -4339,7 +4330,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native/babel-preset@npm:0.73.19":
+"@react-native/babel-preset@npm:0.73.19, @react-native/babel-preset@npm:^0.73.19":
   version: 0.73.19
   resolution: "@react-native/babel-preset@npm:0.73.19"
   dependencies:
@@ -4388,72 +4379,6 @@ __metadata:
   peerDependencies:
     "@babel/core": "*"
   checksum: 4473dca00c66031ca84c93c7b02bc3dc0040a38033bd67f9bca4c1a9ac26ad1359a1c0ccf082ee2e793e8d03ff8f11ebf2573173694169d2495979688207e1ef
-  languageName: node
-  linkType: hard
-
-"@react-native/babel-preset@npm:^0.74.0":
-  version: 0.74.0
-  resolution: "@react-native/babel-preset@npm:0.74.0"
-  dependencies:
-    "@babel/core": "npm:^7.20.0"
-    "@babel/plugin-proposal-async-generator-functions": "npm:^7.0.0"
-    "@babel/plugin-proposal-class-properties": "npm:^7.18.0"
-    "@babel/plugin-proposal-export-default-from": "npm:^7.0.0"
-    "@babel/plugin-proposal-nullish-coalescing-operator": "npm:^7.18.0"
-    "@babel/plugin-proposal-numeric-separator": "npm:^7.0.0"
-    "@babel/plugin-proposal-object-rest-spread": "npm:^7.20.0"
-    "@babel/plugin-proposal-optional-catch-binding": "npm:^7.0.0"
-    "@babel/plugin-proposal-optional-chaining": "npm:^7.20.0"
-    "@babel/plugin-syntax-dynamic-import": "npm:^7.8.0"
-    "@babel/plugin-syntax-export-default-from": "npm:^7.0.0"
-    "@babel/plugin-syntax-flow": "npm:^7.18.0"
-    "@babel/plugin-syntax-nullish-coalescing-operator": "npm:^7.0.0"
-    "@babel/plugin-syntax-optional-chaining": "npm:^7.0.0"
-    "@babel/plugin-transform-arrow-functions": "npm:^7.0.0"
-    "@babel/plugin-transform-async-to-generator": "npm:^7.20.0"
-    "@babel/plugin-transform-block-scoping": "npm:^7.0.0"
-    "@babel/plugin-transform-classes": "npm:^7.0.0"
-    "@babel/plugin-transform-computed-properties": "npm:^7.0.0"
-    "@babel/plugin-transform-destructuring": "npm:^7.20.0"
-    "@babel/plugin-transform-flow-strip-types": "npm:^7.20.0"
-    "@babel/plugin-transform-function-name": "npm:^7.0.0"
-    "@babel/plugin-transform-literals": "npm:^7.0.0"
-    "@babel/plugin-transform-modules-commonjs": "npm:^7.0.0"
-    "@babel/plugin-transform-named-capturing-groups-regex": "npm:^7.0.0"
-    "@babel/plugin-transform-parameters": "npm:^7.0.0"
-    "@babel/plugin-transform-private-methods": "npm:^7.22.5"
-    "@babel/plugin-transform-private-property-in-object": "npm:^7.22.11"
-    "@babel/plugin-transform-react-display-name": "npm:^7.0.0"
-    "@babel/plugin-transform-react-jsx": "npm:^7.0.0"
-    "@babel/plugin-transform-react-jsx-self": "npm:^7.0.0"
-    "@babel/plugin-transform-react-jsx-source": "npm:^7.0.0"
-    "@babel/plugin-transform-runtime": "npm:^7.0.0"
-    "@babel/plugin-transform-shorthand-properties": "npm:^7.0.0"
-    "@babel/plugin-transform-spread": "npm:^7.0.0"
-    "@babel/plugin-transform-sticky-regex": "npm:^7.0.0"
-    "@babel/plugin-transform-typescript": "npm:^7.5.0"
-    "@babel/plugin-transform-unicode-regex": "npm:^7.0.0"
-    "@babel/template": "npm:^7.0.0"
-    "@react-native/babel-plugin-codegen": "npm:*"
-    babel-plugin-transform-flow-enums: "npm:^0.0.2"
-    react-refresh: "npm:^0.14.0"
-  peerDependencies:
-    "@babel/core": "*"
-  checksum: 31c6aa22c919620615f5fea7e847f1ee4628c2cf102a14eff17f8830d6bcb125102217c217f8d1c945accbd439997977c46953e6c6e20bd40609f976e6a254f7
-  languageName: node
-  linkType: hard
-
-"@react-native/codegen@npm:*":
-  version: 0.74.0
-  resolution: "@react-native/codegen@npm:0.74.0"
-  dependencies:
-    "@babel/parser": "npm:^7.20.0"
-    flow-parser: "npm:^0.206.0"
-    jscodeshift: "npm:^0.14.0"
-    nullthrows: "npm:^1.1.1"
-  peerDependencies:
-    "@babel/preset-env": ^7.1.6
-  checksum: 585cc1252c75e624e25c04c67bc6296bb7a8caf46f8e2661ba5b00ea5089ec20cd90ab773fbe4d5f6200ce16da2472dcf06ca761a0111b01b89d2693bbaf3bf5
   languageName: node
   linkType: hard
 
@@ -4778,7 +4703,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tsconfig/node-lts@npm:^20.1.0":
+"@tsconfig/node-lts@npm:^20.1.1":
   version: 20.1.1
   resolution: "@tsconfig/node-lts@npm:20.1.1"
   checksum: 3ff342657ba6a9ff29eb6c673e2c95abc5e11ce70b4829bec847bfa292a2e00ee985d87e8b8aef8885ce3aa07c9e798182b38ab8a8537695c7cbb1cd1e725b5c
@@ -5048,7 +4973,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^18.2.45":
+"@types/react@npm:^18.2.48":
   version: 18.2.48
   resolution: "@types/react@npm:18.2.48"
   dependencies:
@@ -5129,7 +5054,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:^6.15.0":
+"@typescript-eslint/eslint-plugin@npm:^6.19.1":
   version: 6.19.1
   resolution: "@typescript-eslint/eslint-plugin@npm:6.19.1"
   dependencies:
@@ -5154,7 +5079,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:^6.15.0":
+"@typescript-eslint/parser@npm:^6.19.1":
   version: 6.19.1
   resolution: "@typescript-eslint/parser@npm:6.19.1"
   dependencies:
@@ -8800,7 +8725,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-prettier@npm:^5.1.1":
+"eslint-plugin-prettier@npm:^5.1.3":
   version: 5.1.3
   resolution: "eslint-plugin-prettier@npm:5.1.3"
   dependencies:
@@ -9659,7 +9584,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase-tools@npm:^13.0.2":
+"firebase-tools@npm:^13.0.3":
   version: 13.0.3
   resolution: "firebase-tools@npm:13.0.3"
   dependencies:
@@ -9728,7 +9653,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase@npm:^10.7.1":
+"firebase@npm:^10.7.2":
   version: 10.7.2
   resolution: "firebase@npm:10.7.2"
   dependencies:
@@ -10188,7 +10113,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"genversion@npm:^3.1.1":
+"genversion@npm:^3.2.0":
   version: 3.2.0
   resolution: "genversion@npm:3.2.0"
   dependencies:
@@ -13059,7 +12984,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lerna@npm:^8.0.1":
+"lerna@npm:^8.0.2":
   version: 8.0.2
   resolution: "lerna@npm:8.0.2"
   dependencies:
@@ -16544,12 +16469,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pod-install@npm:^0.1.39":
-  version: 0.1.39
-  resolution: "pod-install@npm:0.1.39"
+"pod-install@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "pod-install@npm:0.2.0"
   bin:
     pod-install: build/index.js
-  checksum: 9be0b3ac5217ac990081a1ef02f4294efcff04bcff85cfbfb4054bc47cd6c163dbc7b814f7af44014b42b70ceaa2c9a7e1e1890d5e91fb3b4d0e133a113600fc
+  checksum: 68be7d56c4a2ee5d0c36d876cc6706248c9563cb51c9635ec5c4c84917b78249dc17c7af72f73bac832cd4b20aa184fdde17b60500a1244263fc244ae31fe6e5
   languageName: node
   linkType: hard
 
@@ -16605,7 +16530,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^3.1.1":
+"prettier@npm:^3.2.4":
   version: 3.2.4
   resolution: "prettier@npm:3.2.4"
   bin:
@@ -17130,13 +17055,13 @@ __metadata:
     "@react-native-firebase/private-tests-helpers": "npm:^1.0.0"
     "@react-native-firebase/remote-config": "npm:18.7.3"
     "@react-native-firebase/storage": "npm:18.7.3"
-    "@react-native/babel-preset": "npm:^0.74.0"
+    "@react-native/babel-preset": "npm:^0.73.19"
     "@react-native/metro-config": "npm:^0.73.3"
     a2a: "npm:^0.2.1"
     babel-plugin-istanbul: "npm:^6.1.1"
     detox: "npm:^19.13.0"
-    firebase: "npm:^10.7.1"
-    firebase-tools: "npm:^13.0.2"
+    firebase: "npm:^10.7.2"
+    firebase-tools: "npm:^13.0.3"
     jest-circus: "npm:^29.7.0"
     jest-environment-node: "npm:^29.7.0"
     jet: "npm:^0.8.3"
@@ -17145,7 +17070,7 @@ __metadata:
     node-fetch: "npm:^2.7.0"
     nyc: "npm:^15.1.0"
     patch-package: "npm:^8.0.0"
-    pod-install: "npm:^0.1.39"
+    pod-install: "npm:^0.2.0"
     postinstall-postinstall: "npm:2.1.0"
     react: "npm:18.2.0"
     react-native: "npm:0.73.2"
@@ -17160,19 +17085,19 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "react-native-firebase@workspace:."
   dependencies:
-    "@babel/core": "npm:^7.23.6"
+    "@babel/core": "npm:^7.23.7"
     "@babel/plugin-proposal-class-properties": "npm:^7.18.6"
     "@babel/plugin-proposal-private-methods": "npm:^7.18.6"
     "@babel/plugin-proposal-private-property-in-object": "npm:^7.21.11"
     "@babel/plugin-transform-class-properties": "npm:^7.23.3"
-    "@babel/preset-env": "npm:^7.23.6"
+    "@babel/preset-env": "npm:^7.23.8"
     "@firebase/rules-unit-testing": "npm:^3.0.1"
-    "@octokit/core": "npm:^5.0.2"
-    "@tsconfig/node-lts": "npm:^20.1.0"
-    "@types/react": "npm:^18.2.45"
+    "@octokit/core": "npm:^5.1.0"
+    "@tsconfig/node-lts": "npm:^20.1.1"
+    "@types/react": "npm:^18.2.48"
     "@types/react-native": "npm:^0.73.0"
-    "@typescript-eslint/eslint-plugin": "npm:^6.15.0"
-    "@typescript-eslint/parser": "npm:^6.15.0"
+    "@typescript-eslint/eslint-plugin": "npm:^6.19.1"
+    "@typescript-eslint/parser": "npm:^6.19.1"
     babel-jest: "npm:^29.7.0"
     clang-format: "npm:^1.8.0"
     conventional-changelog-cli: "npm:^4.1.0"
@@ -17180,21 +17105,21 @@ __metadata:
     eslint: "npm:^8.56.0"
     eslint-config-prettier: "npm:^9.1.0"
     eslint-plugin-mocha: "npm:^10.2.0"
-    eslint-plugin-prettier: "npm:^5.1.1"
+    eslint-plugin-prettier: "npm:^5.1.3"
     eslint-plugin-react: "npm:^7.33.2"
-    firebase: "npm:^10.7.1"
-    firebase-tools: "npm:^13.0.2"
-    genversion: "npm:^3.1.1"
+    firebase: "npm:^10.7.2"
+    firebase-tools: "npm:^13.0.3"
+    genversion: "npm:^3.2.0"
     google-java-format: "npm:^1.3.1"
     inquirer: "npm:^8.2.6"
     jest: "npm:^29.7.0"
-    lerna: "npm:^8.0.1"
-    prettier: "npm:^3.1.1"
+    lerna: "npm:^8.0.2"
+    prettier: "npm:^3.2.4"
     regenerator-transform: "npm:^0.15.2"
     rimraf: "npm:^5.0.5"
     shelljs: "npm:^0.8.5"
     spellchecker-cli: "npm:^6.1.1"
-    ts-jest: "npm:^29.1.1"
+    ts-jest: "npm:^29.1.2"
     typescript: "npm:^5.3.3"
   languageName: unknown
   linkType: soft
@@ -19754,7 +19679,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-jest@npm:^29.1.1":
+"ts-jest@npm:^29.1.2":
   version: 29.1.2
   resolution: "ts-jest@npm:29.1.2"
   dependencies:
