@@ -216,7 +216,8 @@ Here is an example `app.json` to enable the Firebase App, Auth and Crashlytics m
     },
     "ios": {
       "googleServicesFile": "./GoogleService-Info.plist",
-      "bundleIdentifier": "com.mycorp.myapp"
+      "bundleIdentifier": "com.mycorp.myapp",
+      "useFrameworks": "static"
     },
     "plugins": [
       "@react-native-firebase/app",
