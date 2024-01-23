@@ -212,8 +212,7 @@ Here is an example `app.json` to enable the Firebase App, Auth and Crashlytics m
   "expo": {
     "android": {
       "googleServicesFile": "./google-services.json",
-      "package": "com.mycorp.myapp",
-      "useFrameworks": "static"
+      "package": "com.mycorp.myapp"
     },
     "ios": {
       "googleServicesFile": "./GoogleService-Info.plist",
