@@ -556,9 +556,11 @@ describe('multi-factor modular', function () {
 
     describe('sign-in', function () {
       it('requires multi-factor auth when enrolled', async function () {
-        if (Platform.ios) {
-          this.skip();
-        }
+        // iOS receives:
+        //      NativeFirebaseError: [auth/unknown] MFA_ENROLLMENT_NOT_FOUND
+        // if (device.getPlatform() === 'ios') {
+        //   this.skip();
+        // }
         const { phoneNumber, email, password } = await createUserWithMultiFactor();
         const maskedNumber = '+********' + phoneNumber.substring(phoneNumber.length - 4);
 
