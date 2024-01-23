@@ -181,7 +181,7 @@ you can follow the manual installation steps for [iOS](/install-ios) and [Androi
 
 ## Expo
 
-Integration with Expo is possible when using a [development build](https://docs.expo.dev/workflow/overview/#development-builds). You can configuring the project via [config plugins](https://docs.expo.io/guides/config-plugins/) or manually configure the native projects yourself (the "bare workflow").
+Integration with Expo is possible when using a [development build](https://docs.expo.dev/workflow/overview/#development-builds). You can configure the project via [config plugins](https://docs.expo.io/guides/config-plugins/) or manually configure the native projects yourself (the "bare workflow").
 
 _NOTE:_ React Native Firebase cannot be used in the pre-compiled [Expo Go app](https://docs.expo.dev/get-started/expo-go/) because React Native Firebase uses native code that is not compiled into Expo Go.
 
