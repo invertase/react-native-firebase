@@ -181,64 +181,62 @@ you can follow the manual installation steps for [iOS](/install-ios) and [Androi
 
 ## Expo
 
-Integration with Expo is possible in both Bare Workflow, and [custom Managed Workflow](https://docs.expo.io/workflow/customizing/) via [config plugins](https://docs.expo.io/guides/config-plugins/).
+Integration with Expo is possible when using a [development build](https://docs.expo.dev/workflow/overview/#development-builds). You can configuring the project via [config plugins](https://docs.expo.io/guides/config-plugins/) or manually configure the native projects yourself (the "bare workflow").
 
-React Native Firebase cannot be used in the "Expo Go" app, because [it requires custom native code](https://docs.expo.io/workflow/customizing/).
+_NOTE:_ React Native Firebase cannot be used in the pre-compiled [Expo Go app](https://docs.expo.dev/get-started/expo-go/) because React Native Firebase uses native code that is not compiled into Expo Go.
 
-### Expo Bare Workflow
+#### Your Expo project
 
-Where possible, it is recommended by the Expo team to use Managed Workflow.
+To create a new Expo project, see the [Get started](https://docs.expo.dev/get-started/create-a-project/) guide in Expo documentation.
 
-If you're using [Bare Workflow](https://docs.expo.io/introduction/managed-vs-bare/#bare-workflow), please follow the above [Android Setup](/#2-android-setup) and [iOS Setup](/#3-ios-setup) steps.
+#### Install React Native Firebase modules
 
-### Expo Managed Workflow
+To install React Native Firebase's base `app` module, use the command `npx expo install @react-native-firebase/app`.
 
-Since Expo Go will not work with react-native-firebase, the suggested workflow is to use a [custom development client]([https://docs.expo.dev/clients/getting-started/](https://docs.expo.dev/develop/development-builds/create-a-build/).
+Similarly you can install other React Native Firebase modules such as for Authentication and Crashlytics: `npx expo install @react-native-firebase/auth @react-native-firebase/crashlytics`.
 
-Follow [these directions](https://docs.expo.dev/get-started/create-a-project/) to create a new Expo project.
+#### Configure React Native Firebase modules
 
-To install React Native Firebase, use the command `npx expo install @react-native-firebase/app`. After installing, add the [config plugin](https://docs.expo.dev/config-plugins/introduction/) to the [`plugins`](https://docs.expo.io/versions/latest/config/app/#plugins) array of your `app.json` or `app.config.js`.
+If you are manually adjusting your Android and iOS projects, follow the same instructions as [React Native CLI projects](#installation-for-react-native-cli-projects).
 
-Also, you must provide paths to the `google-services.json` and `GoogleService-Info.plist` files by specifying the [`expo.android.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile-1) and [`expo.ios.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile) fields respectively.
+The recommended approach is to use [Expo Config Plugins](https://docs.expo.dev/config-plugins/introduction/) to configure React Native Firebase. You will add to the [`plugins`](https://docs.expo.io/versions/latest/config/app/#plugins) array of your `app.json` or `app.config.js`. See the note below to determine which React Native Firebase modules require Config Plugin configurations.
 
-The `app.json` for integration that included the optional crashlytics and performance as well as the mandatory app plugin would look like this, customize based on which optional modules you use:
+To enable Firebase on the native Android and iOS platforms, create and download Service Account files for each platform. Then, provide paths to the `google-services.json` and `GoogleService-Info.plist` files by specifying the [`expo.android.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile-1) and [`expo.ios.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile) fields. See the example configuration below.
+
+For iOS only, since `firebase-ios-sdk` requires `use_frameworks` configure [`expo-build-properties`](https://docs.expo.dev/versions/latest/sdk/build-properties/#pluginconfigtypeios) and add the following entry to the `plugins` array in `app.json`:
+
+Here is an example `app.json` to enable the Firebase App, Auth and Crashlytics modules, the Service Account files for both mobile platforms and setting the application ID to the example value of `com.mycorp.myapp` (change to match your own):
 
 ```json
 {
   "expo": {
     "android": {
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "package": "com.mycorp.myapp"
     },
     "ios": {
-      "googleServicesFile": "./GoogleService-Info.plist"
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "bundleIdentifier": "com.mycorp.myapp",
+      "useFrameworks": "static"
     },
     "plugins": [
       "@react-native-firebase/app",
-      "@react-native-firebase/perf",
+      "@react-native-firebase/auth",
       "@react-native-firebase/crashlytics"
     ]
   }
 }
 ```
 
-> Listing config plugins (the `"plugins"` array in the JSON above) is only required for React Native Firebase modules that involve native installation steps - e.g. modifying the Xcode project, `Podfile`, `build.gradle`, `AndroidManifest.xml` etc. React Native Firebase packages without native steps will work out of the box. Not all packages have Expo config plugins provided yet. A React Native Firebase module has config plugin support if it contains an `app.plugin.js` file in its package directory.
+> Listing a module in the Config Plugins (the `"plugins"` array in the JSON above) is only required for React Native Firebase modules that involve _native installation steps_ - e.g. modifying the Xcode project, `Podfile`, `build.gradle`, `AndroidManifest.xml` etc. React Native Firebase modules without native steps will work out of the box; no `"plugins" entry is required. Not all modules have Expo Config Plugins provided yet. A React Native Firebase module has Config Plugin support if it contains an `app.plugin.js` file in its package directory (e.g.`node_modules/@react-native-firebase/app/app.plugin.js`).
 
-For iOS only, since `firebase-ios-sdk` requires `use_frameworks` please configure [expo-build-properties](https://docs.expo.dev/versions/latest/sdk/build-properties/#pluginconfigtypeios) and add the following entry to their `plugins` array in `app.json`:
+#### Local app compilation
 
-```json
-[
-  "expo-build-properties",
-  {
-    "ios": {
-      "useFrameworks": "static"
-    }
-  }
-]
-```
+If you are compiling your app locally, use the local app compilation steps described in [Local app development](https://docs.expo.dev/guides/local-app-development/) guide in Expo docs.
 
-Next, if you are **not** using EAS Build then you must use the `expo prebuild --clean` command as described in the ["Adding custom native code"](https://docs.expo.io/workflow/customizing/) guide to rebuild your app locally to include the config plugin changes. If this command isn't run, you'll encounter connection errors to Firebase.
+#### Expo Tools for VSCode
 
-> If you are using the [Expo Tools](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools) VSCode extension, the IntelliSense will display a list of available plugins, when editing the `plugins` section of `app.json`.
+If you are using the [Expo Tools](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools) VSCode extension, the IntelliSense will display a list of available plugins when editing the `plugins` section of `app.json`.
 
 ---
 
