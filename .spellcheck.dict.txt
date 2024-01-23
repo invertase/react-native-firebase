@@ -133,6 +133,7 @@ performant
 personalization
 plist
 Podfile
+pre-compiled
 pre-configured
 pre-fetched
 pre-release
