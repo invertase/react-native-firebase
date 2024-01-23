@@ -151,7 +151,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     mMultiFactorSessions.clear();
   }
 
-    @ReactMethod
+  @ReactMethod
   public void configureAuthDomain(final String appName) {
     Log.d(TAG, "configureAuthDomain");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);

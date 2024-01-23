@@ -90,14 +90,14 @@ RCT_EXPORT_MODULE();
   for (NSString *key in authStateHandlers) {
     FIRApp *firebaseApp = [RCTConvert firAppFromString:key];
 
-     [[FIRAuth authWithApp:firebaseApp]
+    [[FIRAuth authWithApp:firebaseApp]
         removeAuthStateDidChangeListener:[authStateHandlers valueForKey:key]];
   }
   [authStateHandlers removeAllObjects];
 
   for (NSString *key in idTokenHandlers) {
     FIRApp *firebaseApp = [RCTConvert firAppFromString:key];
-     [[FIRAuth authWithApp:firebaseApp]
+    [[FIRAuth authWithApp:firebaseApp]
         removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:key]];
   }
   [idTokenHandlers removeAllObjects];
@@ -112,7 +112,7 @@ RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(addAuthStateListener : (FIRApp *)firebaseApp) {
   if (![authStateHandlers valueForKey:firebaseApp.name]) {
-    FIRAuthStateDidChangeListenerHandle newListenerHandle =   [[FIRAuth authWithApp:firebaseApp]
+    FIRAuthStateDidChangeListenerHandle newListenerHandle = [[FIRAuth authWithApp:firebaseApp]
         addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth, FIRUser *_Nullable user) {
           if (user != nil) {
             [RNFBSharedUtils sendJSEventForApp:firebaseApp
