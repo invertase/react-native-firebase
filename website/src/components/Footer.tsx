@@ -37,7 +37,7 @@ function PageLink({
   )
 }
 
-async function PageNavigation(props: { navigation: NavGroup[] }) {
+function PageNavigation(props: { navigation: NavGroup[] }) {
   let pathname = usePathname()
   let allPages = props.navigation.flatMap((group) => group.links)
   let currentPageIndex = allPages.findIndex((page) => page.href === pathname)
@@ -135,7 +135,7 @@ function SmallPrint() {
   )
 }
 
-export async function Footer(props: { navigation: NavGroup[] }) {
+export function Footer(props: { navigation: NavGroup[] }) {
   return (
     <footer className="mx-auto w-full max-w-2xl space-y-10 pb-16 lg:max-w-5xl">
       <PageNavigation navigation={props.navigation} />

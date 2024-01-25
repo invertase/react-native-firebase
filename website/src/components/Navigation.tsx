@@ -254,7 +254,7 @@ function NavigationGroup({
   )
 }
 
-export async function Navigation(
+export function Navigation(
   props: React.ComponentPropsWithoutRef<'nav'> & {
     navigation: NavigationProps
   },
