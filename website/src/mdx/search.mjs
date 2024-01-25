@@ -58,7 +58,7 @@ export default function Search(nextConfig = {}) {
 
             let files = glob.sync('**/*.mdx', { cwd: appDir })
             let data = files.map((file) => {
-              let url = '/' + file.replace(/(^|\/)page\.mdx$/, '')
+              let url = '/' + file.replace(/(^|\/)page\.mdx$/, '').replace('(docs)/', '')
               let mdx = fs.readFileSync(path.join(appDir, file), 'utf8')
 
               let sections = []
