@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.8.0](https://github.com/invertase/react-native-firebase/compare/v18.7.3...v18.8.0) (2024-01-25)
+
+### Features
+
+- **auth, authDomain:** implement FirebaseOptions.authDomain on Auth ([a1f4710](https://github.com/invertase/react-native-firebase/commit/a1f471029352b7597d7e83a8c1ea06145768cf89))
+
+### Bug Fixes
+
+- **app:** firebase-ios-sdk 10.20.0 / firebase-android-sdk 32.7.1 ([8d3c3a0](https://github.com/invertase/react-native-firebase/commit/8d3c3a02689d8ec7dd7d705adb941808039cdd50))
+- **auth, ios:** factorId nil check ([#7541](https://github.com/invertase/react-native-firebase/issues/7541)) ([b1cee9a](https://github.com/invertase/react-native-firebase/commit/b1cee9a899e963d5fc5d0f0af056214dd676cd5a))
+- **firestore, types:** string is also correct type for orderBy ([#7570](https://github.com/invertase/react-native-firebase/issues/7570)) ([1ea166a](https://github.com/invertase/react-native-firebase/commit/1ea166aa1f06d9c332eab150cd2049a3cdd6c472))
+- **firestore:** increase amount of maximum disjunctions in firebase ([#7543](https://github.com/invertase/react-native-firebase/issues/7543)) ([c576f87](https://github.com/invertase/react-native-firebase/commit/c576f875bcf1e1de338f107796d64e2b1805b831))
+
 ## [18.7.3](https://github.com/invertase/react-native-firebase/compare/v18.7.2...v18.7.3) (2023-12-13)
 
 ### Bug Fixes

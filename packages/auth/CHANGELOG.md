@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.8.0](https://github.com/invertase/react-native-firebase/compare/v18.7.3...v18.8.0) (2024-01-25)
+
+### Features
+
+- **auth, authDomain:** implement FirebaseOptions.authDomain on Auth ([a1f4710](https://github.com/invertase/react-native-firebase/commit/a1f471029352b7597d7e83a8c1ea06145768cf89))
+
+### Bug Fixes
+
+- **auth, ios:** factorId nil check ([#7541](https://github.com/invertase/react-native-firebase/issues/7541)) ([b1cee9a](https://github.com/invertase/react-native-firebase/commit/b1cee9a899e963d5fc5d0f0af056214dd676cd5a))
+
 ## [18.7.3](https://github.com/invertase/react-native-firebase/compare/v18.7.2...v18.7.3) (2023-12-13)
 
 **Note:** Version bump only for package @react-native-firebase/auth

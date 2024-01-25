@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.8.0](https://github.com/invertase/react-native-firebase/compare/v18.7.3...v18.8.0) (2024-01-25)
+
+### Bug Fixes
+
+- **firestore, types:** string is also correct type for orderBy ([#7570](https://github.com/invertase/react-native-firebase/issues/7570)) ([1ea166a](https://github.com/invertase/react-native-firebase/commit/1ea166aa1f06d9c332eab150cd2049a3cdd6c472))
+- **firestore:** increase amount of maximum disjunctions in firebase ([#7543](https://github.com/invertase/react-native-firebase/issues/7543)) ([c576f87](https://github.com/invertase/react-native-firebase/commit/c576f875bcf1e1de338f107796d64e2b1805b831))
+
 ## [18.7.3](https://github.com/invertase/react-native-firebase/compare/v18.7.2...v18.7.3) (2023-12-13)
 
 **Note:** Version bump only for package @react-native-firebase/firestore
