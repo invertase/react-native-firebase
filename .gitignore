@@ -577,3 +577,4 @@ website/public
 !**/.yarn/sdks
 !**/.yarn/versions
 website/src/app/page.mdx
+.vercel
