@@ -1,5 +1,0 @@
-{
-  "installCommand": "cd website && bun install",
-  "buildCommand": "cd website && ./docs.sh && next build",
-  "outputDirectory": "website/.next"
-}
