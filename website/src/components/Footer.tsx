@@ -1,10 +1,6 @@
-'use client'
-
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 
 import { Button } from '@/components/Button'
-import { NavGroup } from './Navigation'
+import { type NavGroup } from '@/components/Navigation'
 
 function PageLink({
   label,
@@ -25,20 +21,21 @@ function PageLink({
       >
         {label}
       </Button>
-      <Link
+      <a
         href={page.href}
         tabIndex={-1}
         aria-hidden="true"
         className="text-base font-semibold text-zinc-900 transition hover:text-zinc-600 dark:text-white dark:hover:text-zinc-300"
       >
         {page.title}
-      </Link>
+      </a>
     </>
   )
 }
 
-async function PageNavigation(props: { navigation: NavGroup[] }) {
-  let pathname = usePathname()
+function PageNavigation(props: { navigation: NavGroup[] }) {
+  // let pathname = usePathname()
+  let pathname = '/' // TODO
   let allPages = props.navigation.flatMap((group) => group.links)
   let currentPageIndex = allPages.findIndex((page) => page.href === pathname)
 
@@ -107,10 +104,10 @@ function SocialLink({
   children: React.ReactNode
 }) {
   return (
-    <Link href={href} className="group">
+    <a href={href} className="group">
       <span className="sr-only">{children}</span>
       <Icon className="h-5 w-5 fill-zinc-700 transition group-hover:fill-zinc-900 dark:group-hover:fill-zinc-500" />
-    </Link>
+    </a>
   )
 }
 
@@ -121,13 +118,13 @@ function SmallPrint() {
         &copy; Copyright {new Date().getFullYear()}. All rights reserved.
       </p>
       <div className="flex gap-4">
-        <SocialLink href="https://x.com/invertaseio" icon={XIcon}>
+        <SocialLink href="#" icon={XIcon}>
           Follow us on X
         </SocialLink>
-        <SocialLink href="https://github.com/invertase" icon={GitHubIcon}>
+        <SocialLink href="#" icon={GitHubIcon}>
           Follow us on GitHub
         </SocialLink>
-        <SocialLink href="https://invertase.link/discord" icon={DiscordIcon}>
+        <SocialLink href="#" icon={DiscordIcon}>
           Join our Discord server
         </SocialLink>
       </div>
@@ -135,7 +132,7 @@ function SmallPrint() {
   )
 }
 
-export async function Footer(props: { navigation: NavGroup[] }) {
+export function Footer(props: { navigation: NavGroup[] }) {
   return (
     <footer className="mx-auto w-full max-w-2xl space-y-10 pb-16 lg:max-w-5xl">
       <PageNavigation navigation={props.navigation} />

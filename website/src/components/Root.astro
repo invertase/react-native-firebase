@@ -1,0 +1,16 @@
+---
+import { Entry } from '@/components/Entry';
+console.log(Astro.props)
+
+// TODO -> pass props.frontmatter does as "sections" to Entry
+// Theme provider stuff (without next-themes)
+---
+<html lang="en" class="h-full">
+  <body class="flex min-h-full bg-white antialiased dark:bg-zinc-900">
+    <div class="w-full">
+      <Entry>
+        <slot />
+      </Entry>
+    </div>
+  </body>
+</div>

@@ -1,10 +1,10 @@
-import Link from 'next/link'
+import React from 'react'
 import clsx from 'clsx'
 
+import { Feedback } from '@/components/Feedback'
 import { Heading } from '@/components/Heading'
 import { Prose } from '@/components/Prose'
 
-export const a = Link
 export { Button } from '@/components/Button'
 export { CodeGroup, Code as code, Pre as pre } from '@/components/Code'
 
@@ -12,8 +12,9 @@ export function wrapper({ children }: { children: React.ReactNode }) {
   return (
     <article className="flex h-full flex-col pb-10 pt-16">
       <Prose className="flex-auto">{children}</Prose>
-      {/* <footer className="mx-auto mt-16 w-full max-w-2xl lg:max-w-5xl">
-      </footer> */}
+      <footer className="mx-auto mt-16 w-full max-w-2xl lg:max-w-5xl">
+        <Feedback />
+      </footer>
     </article>
   )
 }
@@ -121,19 +122,5 @@ export function Property({
         </dd>
       </dl>
     </li>
-  )
-}
-
-export function Youtube({ id }: { id: string }) {
-  return (
-    <iframe
-      width="560"
-      height="315"
-      src={`https://www.youtube.com/embed/${id}`}
-      title="YouTube video player"
-      frameBorder="0"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-      allowFullScreen
-    ></iframe>
   )
 }

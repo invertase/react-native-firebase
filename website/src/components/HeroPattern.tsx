@@ -1,3 +1,4 @@
+import React from 'react';
 import { GridPattern } from '@/components/GridPattern'
 
 export function HeroPattern() {

@@ -1,3 +1,4 @@
+import React from 'react'
 import clsx from 'clsx'
 
 export function Prose<T extends React.ElementType = 'div'>({

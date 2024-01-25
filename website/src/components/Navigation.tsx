@@ -1,10 +1,6 @@
-'use client'
-
+import { useRef } from 'react'
 import clsx from 'clsx'
 import { AnimatePresence, motion, useIsPresent } from 'framer-motion'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useRef } from 'react'
 
 import { Button } from '@/components/Button'
 import { useIsInsideMobileNavigation } from '@/components/MobileNavigation'
@@ -30,6 +26,7 @@ export interface NavigationProps {
   navigation: NavGroup[]
 }
 
+
 function useInitialValue<T>(value: T, condition = true) {
   let initialValue = useRef(value).current
   return condition ? initialValue : value
@@ -44,12 +41,12 @@ function TopLevelNavItem({
 }) {
   return (
     <li className="md:hidden">
-      <Link
+      <a
         href={href}
         className="block py-1 text-sm text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
       >
         {children}
-      </Link>
+      </a>
     </li>
   )
 }
@@ -68,7 +65,7 @@ function NavLink({
   isAnchorLink?: boolean
 }) {
   return (
-    <Link
+    <a
       href={href}
       aria-current={active ? 'page' : undefined}
       className={clsx(
@@ -85,7 +82,7 @@ function NavLink({
           {tag}
         </Tag>
       )}
-    </Link>
+    </a>
   )
 }
 
@@ -167,7 +164,8 @@ function NavigationGroup({
   // The state will still update when we re-open (re-render) the navigation.
   let isInsideMobileNavigation = useIsInsideMobileNavigation()
   let [pathname, sections] = useInitialValue(
-    [usePathname(), useSectionStore((s) => s.sections)],
+    // TODO usePathName()
+    ['/', useSectionStore((s) => s.sections)],
     isInsideMobileNavigation,
   )
 
@@ -175,14 +173,14 @@ function NavigationGroup({
     group.links.findIndex((link) => link.href === pathname) !== -1
 
   return (
-    <li className={clsx('relative mt-4', className)}>
+    <li className={clsx('relative mt-6', className)}>
       <motion.h2
         layout="position"
         className="text-xs font-semibold text-zinc-900 dark:text-white"
       >
         {group.title}
       </motion.h2>
-      <div className="relative mt-2 pl-2">
+      <div className="relative mt-3 pl-2">
         <AnimatePresence initial={!isInsideMobileNavigation}>
           {isActiveGroup && (
             <VisibleSectionHighlight group={group} pathname={pathname} />
@@ -201,22 +199,7 @@ function NavigationGroup({
           {group.links.map((link) => (
             <motion.li key={link.href} layout="position" className="relative">
               <NavLink href={link.href} active={link.href === pathname}>
-                <span className='flex items-center gap-1'>
-                  {link.title}
-                  {link.href.startsWith('https://') ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 16 16"
-                      fill="currentColor"
-                      className="h-4 w-4"
-                    >
-                      <path d="M6.22 8.72a.75.75 0 0 0 1.06 1.06l5.22-5.22v1.69a.75.75 0 0 0 1.5 0v-3.5a.75.75 0 0 0-.75-.75h-3.5a.75.75 0 0 0 0 1.5h1.69L6.22 8.72Z" />
-                      <path d="M3.5 6.75c0-.69.56-1.25 1.25-1.25H7A.75.75 0 0 0 7 4H4.75A2.75 2.75 0 0 0 2 6.75v4.5A2.75 2.75 0 0 0 4.75 14h4.5A2.75 2.75 0 0 0 12 11.25V9a.75.75 0 0 0-1.5 0v2.25c0 .69-.56 1.25-1.25 1.25h-4.5c-.69 0-1.25-.56-1.25-1.25v-4.5Z" />
-                    </svg>
-                  ) : (
-                    ''
-                  )}
-                </span>
+                {link.title}
               </NavLink>
               <AnimatePresence mode="popLayout" initial={false}>
                 {link.href === pathname && sections.length > 0 && (
@@ -254,11 +237,10 @@ function NavigationGroup({
   )
 }
 
-export async function Navigation(
-  props: React.ComponentPropsWithoutRef<'nav'> & {
-    navigation: NavigationProps
-  },
-) {
+
+export function Navigation(props: React.ComponentPropsWithoutRef<'nav'> & {
+  navigation: NavigationProps
+}) {
   return (
     <nav {...props}>
       <ul role="list">

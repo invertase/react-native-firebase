@@ -1,5 +1,3 @@
-import Image from 'next/image'
-
 import { Button } from '@/components/Button'
 import { Heading } from '@/components/Heading'
 import logoGo from '@/images/logos/go.svg'
@@ -68,11 +66,10 @@ export function Libraries() {
                 </Button>
               </p>
             </div>
-            <Image
+            <img
               src={library.logo}
               alt=""
               className="h-12 w-12"
-              unoptimized
             />
           </div>
         ))}

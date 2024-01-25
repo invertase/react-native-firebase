@@ -1,5 +1,4 @@
 import { forwardRef } from 'react'
-import Link from 'next/link'
 import clsx from 'clsx'
 import { motion, useScroll, useTransform } from 'framer-motion'
 
@@ -10,9 +9,9 @@ import {
   useIsInsideMobileNavigation,
 } from '@/components/MobileNavigation'
 import { useMobileNavigationStore } from '@/components/MobileNavigation'
-import { MobileSearch, Search } from '@/components/Search'
+// import { MobileSearch, Search } from '@/components/Search'
 import { ThemeToggle } from '@/components/ThemeToggle'
-import { NavGroup, NavigationProps } from './Navigation'
+import type { NavigationProps } from './Navigation'
 
 function TopLevelNavItem({
   href,
@@ -23,20 +22,20 @@ function TopLevelNavItem({
 }) {
   return (
     <li>
-      <Link
+      <a
         href={href}
         className="text-sm leading-5 text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
       >
         {children}
-      </Link>
+      </a>
     </li>
   )
 }
 
 export const Header = forwardRef<
   React.ElementRef<'div'>,
-  { className?: string; navigation: NavigationProps }
->(function Header({ className, navigation }, ref) {
+  { className?: string, navigation: NavigationProps }
+>(function Header({ className }, ref) {
   let { isOpen: mobileNavIsOpen } = useMobileNavigationStore()
   let isInsideMobileNavigation = useIsInsideMobileNavigation()
 
@@ -70,35 +69,28 @@ export const Header = forwardRef<
             'bg-zinc-900/7.5 dark:bg-white/7.5',
         )}
       />
-      <Search navigation={navigation.navigation} />
+      {/* <Search /> */}
       <div className="flex items-center gap-5 lg:hidden">
-        <MobileNavigation navigation={navigation} />
-        <Link href="/" aria-label="Home">
+        <MobileNavigation />
+        <a href="/" aria-label="Home">
           <Logo className="h-6" />
-        </Link>
+        </a>
       </div>
       <div className="flex items-center gap-5">
         <nav className="hidden md:block">
           <ul role="list" className="flex items-center gap-8">
-            {navigation.topLevelNav.map((nav) => (
-              <TopLevelNavItem key={nav.title} href={nav.href}>
-                {nav.title}
-              </TopLevelNavItem>
-            ))}
+            <TopLevelNavItem href="/">API</TopLevelNavItem>
+            <TopLevelNavItem href="#">Documentation</TopLevelNavItem>
+            <TopLevelNavItem href="#">Support</TopLevelNavItem>
           </ul>
         </nav>
         <div className="hidden md:block md:h-5 md:w-px md:bg-zinc-900/10 md:dark:bg-white/15" />
         <div className="flex gap-4">
-          <MobileSearch navigation={navigation.navigation} />
+          {/* <MobileSearch /> */}
           <ThemeToggle />
         </div>
         <div className="hidden min-[416px]:contents">
-          <Button
-            href="https://github.com/invertase-react-native-firebase"
-            target="_blank"
-          >
-            GitHub
-          </Button>
+          <Button href="#">Sign in</Button>
         </div>
       </div>
     </motion.div>

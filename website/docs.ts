@@ -1,7 +1,7 @@
 import { Glob } from 'bun'
 import yaml from 'yaml'
 import matter from 'gray-matter'
-import { NavGroup, TopLevelNav } from '@/components/Navigation'
+import type { NavGroup, TopLevelNav } from './src/components/Navigation'
 
 const glob = new Glob('../docs/**/*.md')
 
@@ -9,21 +9,19 @@ for (const file of glob.scanSync()) {
   const bunFile = Bun.file(file)
   const { content, data: frontMatter } = matter(await bunFile.text())
   let mdxFilePath = file
-    .replace('.md', '/page.mdx')
-    .replace('../docs/', './src/app/(docs)/')
+    .replace('.md', '.mdx')
+    .replace('../docs/', './src/pages/')
 
-  if (mdxFilePath.endsWith('/index/page.mdx')) {
-    mdxFilePath = mdxFilePath.replace('/index/page.mdx', '/page.mdx')
-  }
+  // if (mdxFilePath.endsWith('/index/page.mdx')) {
+  //   mdxFilePath = mdxFilePath.replace('/index/page.mdx', '/page.mdx')
+  // }
 
   const newFile = Bun.file(mdxFilePath)
-  const newContent = `
-{/* THIS FILE IS GENERATED, DO NOT EDIT IT */}
-
-export const metadata = {
-  title: '${frontMatter.title || ''}',
-  description: '${frontMatter.description || ''}',
-};
+  const newContent = `---
+layout: '@/components/Root.astro'
+title: '${frontMatter.title || ''}'
+description: '${frontMatter.description || ''}'
+---
 
 ${content}`.trim()
   await Bun.write(newFile, newContent)
