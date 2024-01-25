@@ -8,7 +8,7 @@ import { visit } from 'unist-util-visit'
 /**
  * These are used to generate the table of contents.
  */
-const headingsForSections = ['h2', 'h3', 'h4']
+const headingsForSections = ['h2']
 
 function rehypeParseCodeBlocks() {
   return (tree) => {
