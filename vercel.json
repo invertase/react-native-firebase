@@ -1,5 +1,5 @@
 {
   "installCommand": "cd website && npm install",
-  "buildCommand": "cd website && next build",
+  "buildCommand": "cd website && ./docs.sh && next build",
   "outputDirectory": "website/build"
 }

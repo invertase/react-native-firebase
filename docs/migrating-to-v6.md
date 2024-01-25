@@ -252,23 +252,23 @@ Install the modules required for your application:
 
 | Module                                                       | NPM Package                             |
 | ------------------------------------------------------------ | --------------------------------------- |
-| <Anchor href="v6/admob">AdMob</Anchor>                       | @react-native-firebase/admob            |
-| <Anchor href="v6/analytics">Analytics</Anchor>               | @react-native-firebase/analytics        |
-| <Anchor href="v6/app">App</Anchor>                           | @react-native-firebase/app              |
-| <Anchor href="v6/invites">App Invites</Anchor>               | @react-native-firebase/invites          |
-| <Anchor href="v6/auth">Authentication</Anchor>               | @react-native-firebase/auth             |
-| <Anchor href="v6/firestore">Cloud Firestore</Anchor>         | @react-native-firebase/firestore        |
-| <Anchor href="v6/functions">Cloud Functions</Anchor>         | @react-native-firebase/functions        |
-| <Anchor href="v6/messaging">Cloud Messaging</Anchor>         | @react-native-firebase/messaging        |
-| <Anchor href="v6/storage">Cloud Storage</Anchor>             | @react-native-firebase/storage          |
-| <Anchor href="v6/crashlytics">Crashlytics</Anchor>           | @react-native-firebase/crashlytics      |
-| <Anchor href="v6/links">Dynamic Links</Anchor>               | @react-native-firebase/dynamic-links    |
-| <Anchor href="v6/in-app-messaging">In-app Messaging</Anchor> | @react-native-firebase/in-app-messaging |
-| <Anchor href="v6/iid">Instance ID</Anchor>                   | @react-native-firebase/iid              |
-| <Anchor href="v6/ml">ML</Anchor>                             | @react-native-firebase/ml               |
-| <Anchor href="v6/perf">Performance Monitoring</Anchor>       | @react-native-firebase/perf             |
-| <Anchor href="v6/database">Realtime Database</Anchor>        | @react-native-firebase/database         |
-| <Anchor href="v6/remote-config">Remote Config</Anchor>       | @react-native-firebase/remote-config    |
+| AdMob                       | @react-native-firebase/admob            |
+| Analytics               | @react-native-firebase/analytics        |
+| App                           | @react-native-firebase/app              |
+| App Invites               | @react-native-firebase/invites          |
+| Authentication               | @react-native-firebase/auth             |
+| Cloud Firestore         | @react-native-firebase/firestore        |
+| Cloud Functions         | @react-native-firebase/functions        |
+| Cloud Messaging         | @react-native-firebase/messaging        |
+| Cloud Storage             | @react-native-firebase/storage          |
+| Crashlytics           | @react-native-firebase/crashlytics      |
+| Dynamic Links               | @react-native-firebase/dynamic-links    |
+| In-app Messaging | @react-native-firebase/in-app-messaging |
+| Instance ID                   | @react-native-firebase/iid              |
+| ML                             | @react-native-firebase/ml               |
+| Performance Monitoring       | @react-native-firebase/perf             |
+| Realtime Database        | @react-native-firebase/database         |
+| -config">Remote Config       | @react-native-firebase/remote-config    |
 
 Users on React Native version 0.60+, the modules will be automatically linked. For users on a lower version,
 see the module specific pages for manual installation guides.
@@ -337,7 +337,7 @@ app functionality is tested once migrated to version 6 is complete.
 `@react-native-firebase/admob`
 
 The AdMob module has undergone a full re-write to support a new, cleaner API and regulation changes (such as GDPR).
-Please see the <Anchor href="/admob">AdMob</Anchor> documentation and update your code usage.
+Please see the [AdMob](/admob) documentation and update your code usage.
 
 - `RewardedVideo` has now been deprecated in favor of a new native API. Please see `RewardedAd` for more information.
 
