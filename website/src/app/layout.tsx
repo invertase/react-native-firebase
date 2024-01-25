@@ -30,6 +30,9 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>
+      <head>
+        <link rel="icon" type="image/png" href="//static.invertase.io/assets/react-native-firebase-favicon.png" />
+      </head>
       <body className="flex min-h-full bg-white antialiased dark:bg-zinc-900">
         <Providers>
           <div className="w-full">

@@ -77,7 +77,7 @@ export const Header = forwardRef<
           <Logo className="h-6" />
         </Link>
       </div>
-      <div className="flex items-center gap-5">
+      <div className="flex items-center gap-3">
         <nav className="hidden md:block">
           <ul role="list" className="flex items-center gap-8">
             {navigation.topLevelNav.map((nav) => (
@@ -94,10 +94,17 @@ export const Header = forwardRef<
         </div>
         <div className="hidden min-[416px]:contents">
           <Button
+            variant="outline"
             href="https://github.com/invertase-react-native-firebase"
             target="_blank"
           >
             GitHub
+          </Button>
+          <Button
+            href="https://invertase.io"
+            target="_blank"
+          >
+            Invertase
           </Button>
         </div>
       </div>
