@@ -95,7 +95,7 @@ export const Header = forwardRef<
         <div className="hidden min-[416px]:contents">
           <Button
             variant="outline"
-            href="https://github.com/invertase-react-native-firebase"
+            href="https://github.com/invertase/react-native-firebase"
             target="_blank"
           >
             GitHub
