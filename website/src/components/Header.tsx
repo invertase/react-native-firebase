@@ -93,7 +93,12 @@ export const Header = forwardRef<
           <ThemeToggle />
         </div>
         <div className="hidden min-[416px]:contents">
-          <Button href="#">Sign in</Button>
+          <Button
+            href="https://github.com/invertase-react-native-firebase"
+            target="_blank"
+          >
+            GitHub
+          </Button>
         </div>
       </div>
     </motion.div>

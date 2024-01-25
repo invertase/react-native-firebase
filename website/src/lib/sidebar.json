@@ -1,39 +1,43 @@
 {
-  "topLevelNav": [
-    {
-      "title": "Getting Started",
-      "href": "/"
-    },
-    {
-      "title": "TypeScript",
-      "href": "/typescript"
-    },
-    {
-      "title": "Release Notes",
-      "href": "/releases"
-    },
-    {
-      "title": "Migrating to v6",
-      "href": "/migrating-to-v6"
-    },
-    {
-      "title": "FAQs and Tips",
-      "href": "/faqs-and-tips"
-    },
-    {
-      "title": "Feature Requests",
-      "href": "https://invertase.canny.io/react-native-firebase"
-    },
-    {
-      "title": "Contributing",
-      "href": "https://github.com/invertase/react-native-firebase/blob/main/CONTRIBUTING.md"
-    },
-    {
-      "title": "Legacy Docs (\\<= v5)",
-      "href": "https://v5.rnfirebase.io/docs/v5.x.x/getting-started"
-    }
-  ],
+  "topLevelNav": [],
   "navigation": [
+    {
+      "title": "Overview",
+      "links": [
+        {
+          "title": "Getting Started",
+          "href": "/"
+        },
+        {
+          "title": "TypeScript",
+          "href": "/typescript"
+        },
+        {
+          "title": "Release Notes",
+          "href": "/releases"
+        },
+        {
+          "title": "Migrating to v6",
+          "href": "/migrating-to-v6"
+        },
+        {
+          "title": "FAQs and Tips",
+          "href": "/faqs-and-tips"
+        },
+        {
+          "title": "Feature Requests",
+          "href": "https://invertase.canny.io/react-native-firebase"
+        },
+        {
+          "title": "Contributing",
+          "href": "https://github.com/invertase/react-native-firebase/blob/main/CONTRIBUTING.md"
+        },
+        {
+          "title": "Legacy Docs (\\<= v5)",
+          "href": "https://v5.rnfirebase.io/docs/v5.x.x/getting-started"
+        }
+      ]
+    },
     {
       "title": "Analytics",
       "links": [
