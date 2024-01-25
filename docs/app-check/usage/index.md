@@ -89,7 +89,7 @@ You must call initialize the AppCheck module prior to calling any firebase back-
 
 To do that, edit your `ios/ProjectName/AppDelegate.mm` and add the following two lines:
 
-```objectivec
+```objective-c
 #import "AppDelegate.h"
 #import "RNFBAppCheckModule.h" // ⬅️ ADD THIS LINE
 #import <Firebase.h>

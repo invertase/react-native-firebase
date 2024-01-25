@@ -1,6 +1,15 @@
 'use client'
 
 import {
+  createAutocomplete,
+  type AutocompleteApi,
+  type AutocompleteCollection,
+  type AutocompleteState,
+} from '@algolia/autocomplete-core'
+import { Dialog, Transition } from '@headlessui/react'
+import clsx from 'clsx'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import {
   forwardRef,
   Fragment,
   Suspense,
@@ -11,18 +20,9 @@ import {
   useState,
 } from 'react'
 import Highlighter from 'react-highlight-words'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import {
-  type AutocompleteApi,
-  createAutocomplete,
-  type AutocompleteState,
-  type AutocompleteCollection,
-} from '@algolia/autocomplete-core'
-import { Dialog, Transition } from '@headlessui/react'
-import clsx from 'clsx'
 
-import { navigation } from '@/components/Navigation'
 import { type Result } from '@/mdx/search.mjs'
+import { NavGroup } from './Navigation'
 
 type EmptyObject = Record<string, never>
 
@@ -166,12 +166,14 @@ function SearchResult({
   autocomplete,
   collection,
   query,
+  navigation,
 }: {
   result: Result
   resultIndex: number
   autocomplete: Autocomplete
   collection: AutocompleteCollection<Result>
   query: string
+  navigation: NavGroup[]
 }) {
   let id = useId()
 
@@ -231,10 +233,12 @@ function SearchResults({
   autocomplete,
   query,
   collection,
+  navigation,
 }: {
   autocomplete: Autocomplete
   query: string
   collection: AutocompleteCollection<Result>
+  navigation: NavGroup[]
 }) {
   if (collection.items.length === 0) {
     return (
@@ -261,6 +265,7 @@ function SearchResults({
           autocomplete={autocomplete}
           collection={collection}
           query={query}
+          navigation={navigation}
         />
       ))}
     </ul>
@@ -318,10 +323,12 @@ function SearchDialog({
   open,
   setOpen,
   className,
+  navigation,
 }: {
   open: boolean
   setOpen: (open: boolean) => void
   className?: string
+  navigation: NavGroup[]
 }) {
   let formRef = useRef<React.ElementRef<'form'>>(null)
   let panelRef = useRef<React.ElementRef<'div'>>(null)
@@ -413,6 +420,7 @@ function SearchDialog({
                         autocomplete={autocomplete}
                         query={autocompleteState.query}
                         collection={autocompleteState.collections[0]}
+                        navigation={navigation}
                       />
                     )}
                   </div>
@@ -453,7 +461,7 @@ function useSearchProps() {
   }
 }
 
-export function Search() {
+export function Search({ navigation }: { navigation: NavGroup[] }) {
   let [modifierKey, setModifierKey] = useState<string>()
   let { buttonProps, dialogProps } = useSearchProps()
 
@@ -478,13 +486,17 @@ export function Search() {
         </kbd>
       </button>
       <Suspense fallback={null}>
-        <SearchDialog className="hidden lg:block" {...dialogProps} />
+        <SearchDialog
+          className="hidden lg:block"
+          {...dialogProps}
+          navigation={navigation}
+        />
       </Suspense>
     </div>
   )
 }
 
-export function MobileSearch() {
+export function MobileSearch({ navigation }: { navigation: NavGroup[] }) {
   let { buttonProps, dialogProps } = useSearchProps()
 
   return (
@@ -498,7 +510,11 @@ export function MobileSearch() {
         <SearchIcon className="h-5 w-5 stroke-zinc-900 dark:stroke-white" />
       </button>
       <Suspense fallback={null}>
-        <SearchDialog className="lg:hidden" {...dialogProps} />
+        <SearchDialog
+          className="lg:hidden"
+          {...dialogProps}
+          navigation={navigation}
+        />
       </Suspense>
     </div>
   )

@@ -20,7 +20,7 @@ This package wraps `firebase-android-sdk` and `firebase-ios-sdk` into a Javascri
 
 - Some of the modules that are both in the web SDK and native SDK have a great deal more functionality when they can harness native APIs, like messaging (with background delivery that can start your app if not running), like App Check where you can tie the attestation to device-level providers, Storage where you can do background downloads, Performance where you can start measurements from boot, etc.
 
-### I need help with [anything regarding <= v5 of React Native Firebase]. Where could I get help with that?
+### I need help with [anything regarding \<= v5 of React Native Firebase]. Where could I get help with that?
 
 React Native Firebase v5 is now deprecated and unsupported. There's been over a year's grace period provided to migrate to v6, so moving forward maintainers probably won't pay much attention to issues regarding v5. Understandably, upgrading to v6 can take some effort, but staying on v5 probably isn't a great choice for the long-term health of your project.
 Lots of the breaking changes that were introduced were either due to upstream deprecations in the official SDKs, or to simply make the package more stable and more representative of how the actual SDKs work.

@@ -7,7 +7,7 @@ previous: /database/usage
 
 # iOS Manual Linking
 
-The following steps are only required if you are using React Native <= 0.59 or need to manually integrate the library.
+The following steps are only required if you are using React Native \<= 0.59 or need to manually integrate the library.
 
 ## 1. Add the `RNFBAnalytics` Pod
 

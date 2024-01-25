@@ -14,7 +14,7 @@ import { motion } from 'framer-motion'
 import { create } from 'zustand'
 
 import { Header } from '@/components/Header'
-import { Navigation } from '@/components/Navigation'
+import { Navigation, NavigationProps } from '@/components/Navigation'
 
 function MenuIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
   return (
@@ -49,9 +49,11 @@ const IsInsideMobileNavigationContext = createContext(false)
 function MobileNavigationDialog({
   isOpen,
   close,
+  navigation,
 }: {
   isOpen: boolean
   close: () => void
+  navigation: NavigationProps
 }) {
   let pathname = usePathname()
   let searchParams = useSearchParams()
@@ -108,7 +110,7 @@ function MobileNavigationDialog({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Header />
+            <Header navigation={navigation} />
           </Transition.Child>
 
           <Transition.Child
@@ -124,7 +126,7 @@ function MobileNavigationDialog({
               layoutScroll
               className="fixed bottom-0 left-0 top-14 w-full overflow-y-auto bg-white px-4 pb-4 pt-6 shadow-lg shadow-zinc-900/10 ring-1 ring-zinc-900/7.5 min-[416px]:max-w-sm sm:px-6 sm:pb-10 dark:bg-zinc-900 dark:ring-zinc-800"
             >
-              <Navigation />
+              <Navigation navigation={navigation} />
             </motion.div>
           </Transition.Child>
         </Dialog.Panel>
@@ -149,7 +151,11 @@ export const useMobileNavigationStore = create<{
   toggle: () => set((state) => ({ isOpen: !state.isOpen })),
 }))
 
-export function MobileNavigation() {
+export function MobileNavigation({
+  navigation,
+}: {
+  navigation: NavigationProps
+}) {
   let isInsideMobileNavigation = useIsInsideMobileNavigation()
   let { isOpen, toggle, close } = useMobileNavigationStore()
   let ToggleIcon = isOpen ? XIcon : MenuIcon
@@ -166,7 +172,11 @@ export function MobileNavigation() {
       </button>
       {!isInsideMobileNavigation && (
         <Suspense fallback={null}>
-          <MobileNavigationDialog isOpen={isOpen} close={close} />
+          <MobileNavigationDialog
+            navigation={navigation}
+            isOpen={isOpen}
+            close={close}
+          />
         </Suspense>
       )}
     </IsInsideMobileNavigationContext.Provider>

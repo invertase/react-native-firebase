@@ -9,8 +9,8 @@ import { type Section } from '@/components/SectionProvider'
 
 export const metadata: Metadata = {
   title: {
-    template: '%s - Protocol API Reference',
-    default: 'Protocol API Reference',
+    template: '%s - React Native Firebase',
+    default: 'React Native Firebase',
   },
 }
 
@@ -19,14 +19,14 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  let pages = await glob('**/*.mdx', { cwd: 'src/app' })
-  let allSectionsEntries = (await Promise.all(
+  const pages = await glob('**/*.mdx', { cwd: 'src/app' })
+  const allSectionsEntries = (await Promise.all(
     pages.map(async (filename) => [
-      '/' + filename.replace(/(^|\/)page\.mdx$/, ''),
+      '/' + filename.replace(/(^|\/)page\.mdx$/, '').replace('(docs)/', ''),
       (await import(`./${filename}`)).sections,
     ]),
   )) as Array<[string, Array<Section>]>
-  let allSections = Object.fromEntries(allSectionsEntries)
+  const allSections = Object.fromEntries(allSectionsEntries)
 
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>

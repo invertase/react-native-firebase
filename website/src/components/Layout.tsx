@@ -10,6 +10,8 @@ import { Logo } from '@/components/Logo'
 import { Navigation } from '@/components/Navigation'
 import { type Section, SectionProvider } from '@/components/SectionProvider'
 
+import navigation from '@/lib/sidebar.json' with { type: 'json' }
+
 export function Layout({
   children,
   allSections,
@@ -32,13 +34,16 @@ export function Layout({
                 <Logo className="h-6" />
               </Link>
             </div>
-            <Header />
-            <Navigation className="hidden lg:mt-10 lg:block" />
+            <Header navigation={navigation} />
+            <Navigation
+              navigation={navigation}
+              className="hidden lg:mt-10 lg:block"
+            />
           </div>
         </motion.header>
         <div className="relative flex h-full flex-col px-4 pt-14 sm:px-6 lg:px-8">
           <main className="flex-auto">{children}</main>
-          <Footer />
+          <Footer navigation={navigation.navigation} />
         </div>
       </div>
     </SectionProvider>

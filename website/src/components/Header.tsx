@@ -12,6 +12,7 @@ import {
 import { useMobileNavigationStore } from '@/components/MobileNavigation'
 import { MobileSearch, Search } from '@/components/Search'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { NavGroup, NavigationProps } from './Navigation'
 
 function TopLevelNavItem({
   href,
@@ -34,8 +35,8 @@ function TopLevelNavItem({
 
 export const Header = forwardRef<
   React.ElementRef<'div'>,
-  { className?: string }
->(function Header({ className }, ref) {
+  { className?: string; navigation: NavigationProps }
+>(function Header({ className, navigation }, ref) {
   let { isOpen: mobileNavIsOpen } = useMobileNavigationStore()
   let isInsideMobileNavigation = useIsInsideMobileNavigation()
 
@@ -69,7 +70,7 @@ export const Header = forwardRef<
             'bg-zinc-900/7.5 dark:bg-white/7.5',
         )}
       />
-      <Search />
+      <Search navigation={navigation.navigation} />
       <div className="flex items-center gap-5 lg:hidden">
         <MobileNavigation />
         <Link href="/" aria-label="Home">
@@ -79,14 +80,16 @@ export const Header = forwardRef<
       <div className="flex items-center gap-5">
         <nav className="hidden md:block">
           <ul role="list" className="flex items-center gap-8">
-            <TopLevelNavItem href="/">API</TopLevelNavItem>
-            <TopLevelNavItem href="#">Documentation</TopLevelNavItem>
-            <TopLevelNavItem href="#">Support</TopLevelNavItem>
+            {navigation.topLevelNav.map((nav) => (
+              <TopLevelNavItem key={nav.title} href={nav.href}>
+                {nav.title}
+              </TopLevelNavItem>
+            ))}
           </ul>
         </nav>
         <div className="hidden md:block md:h-5 md:w-px md:bg-zinc-900/10 md:dark:bg-white/15" />
         <div className="flex gap-4">
-          <MobileSearch />
+          <MobileSearch navigation={navigation.navigation} />
           <ThemeToggle />
         </div>
         <div className="hidden min-[416px]:contents">

@@ -5,6 +5,11 @@ import { mdxAnnotations } from 'mdx-annotations'
 import shiki from 'shiki'
 import { visit } from 'unist-util-visit'
 
+/**
+ * These are used to generate the table of contents.
+ */
+const headingsForSections = ['h2', 'h3', 'h4']
+
 function rehypeParseCodeBlocks() {
   return (tree) => {
     visit(tree, 'element', (node, _nodeIndex, parentNode) => {
@@ -55,7 +60,7 @@ function rehypeSlugify() {
   return (tree) => {
     let slugify = slugifyWithCounter()
     visit(tree, 'element', (node) => {
-      if (node.tagName === 'h2' && !node.properties.id) {
+      if (headingsForSections.includes(node.tagName) && !node.properties.id) {
         node.properties.id = slugify(toString(node))
       }
     })
@@ -96,8 +101,12 @@ function getSections(node) {
   let sections = []
 
   for (let child of node.children ?? []) {
-    if (child.type === 'element' && child.tagName === 'h2') {
+    if (
+      child.type === 'element' &&
+      headingsForSections.includes(child.tagName)
+    ) {
       sections.push(`{
+        depth: ${child.tagName.at(1)},
         title: ${JSON.stringify(toString(child))},
         id: ${JSON.stringify(child.properties.id)},
         ...${child.properties.annotation}

@@ -1,10 +1,10 @@
 'use client'
 
-import { useRef } from 'react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
 import { AnimatePresence, motion, useIsPresent } from 'framer-motion'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { useRef } from 'react'
 
 import { Button } from '@/components/Button'
 import { useIsInsideMobileNavigation } from '@/components/MobileNavigation'
@@ -12,12 +12,22 @@ import { useSectionStore } from '@/components/SectionProvider'
 import { Tag } from '@/components/Tag'
 import { remToPx } from '@/lib/remToPx'
 
-interface NavGroup {
+export interface TopLevelNav {
+  title: string
+  href: string
+}
+
+export interface NavGroup {
   title: string
   links: Array<{
     title: string
     href: string
   }>
+}
+
+export interface NavigationProps {
+  topLevelNav: TopLevelNav[]
+  navigation: NavGroup[]
 }
 
 function useInitialValue<T>(value: T, condition = true) {
@@ -229,39 +239,20 @@ function NavigationGroup({
   )
 }
 
-export const navigation: Array<NavGroup> = [
-  {
-    title: 'Guides',
-    links: [
-      { title: 'Introduction', href: '/' },
-      { title: 'Quickstart', href: '/quickstart' },
-      { title: 'SDKs', href: '/sdks' },
-      { title: 'Authentication', href: '/authentication' },
-      { title: 'Pagination', href: '/pagination' },
-      { title: 'Errors', href: '/errors' },
-      { title: 'Webhooks', href: '/webhooks' },
-    ],
+export async function Navigation(
+  props: React.ComponentPropsWithoutRef<'nav'> & {
+    navigation: NavigationProps
   },
-  {
-    title: 'Resources',
-    links: [
-      { title: 'Contacts', href: '/contacts' },
-      { title: 'Conversations', href: '/conversations' },
-      { title: 'Messages', href: '/messages' },
-      { title: 'Groups', href: '/groups' },
-      { title: 'Attachments', href: '/attachments' },
-    ],
-  },
-]
-
-export function Navigation(props: React.ComponentPropsWithoutRef<'nav'>) {
+) {
   return (
     <nav {...props}>
       <ul role="list">
-        <TopLevelNavItem href="/">API</TopLevelNavItem>
-        <TopLevelNavItem href="#">Documentation</TopLevelNavItem>
-        <TopLevelNavItem href="#">Support</TopLevelNavItem>
-        {navigation.map((group, groupIndex) => (
+        {props.navigation.topLevelNav.map((nav) => (
+          <TopLevelNavItem key={nav.title} href={nav.href}>
+            {nav.title}
+          </TopLevelNavItem>
+        ))}
+        {props.navigation.navigation.map((group, groupIndex) => (
           <NavigationGroup
             key={group.title}
             group={group}

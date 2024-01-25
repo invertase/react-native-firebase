@@ -1,0 +1,283 @@
+{
+  "topLevelNav": [
+    {
+      "title": "Getting Started",
+      "href": "/"
+    },
+    {
+      "title": "TypeScript",
+      "href": "/typescript"
+    },
+    {
+      "title": "Release Notes",
+      "href": "/releases"
+    },
+    {
+      "title": "Migrating to v6",
+      "href": "/migrating-to-v6"
+    },
+    {
+      "title": "FAQs and Tips",
+      "href": "/faqs-and-tips"
+    },
+    {
+      "title": "Feature Requests",
+      "href": "https://invertase.canny.io/react-native-firebase"
+    },
+    {
+      "title": "Contributing",
+      "href": "https://github.com/invertase/react-native-firebase/blob/main/CONTRIBUTING.md"
+    },
+    {
+      "title": "Legacy Docs (\\<= v5)",
+      "href": "https://v5.rnfirebase.io/docs/v5.x.x/getting-started"
+    }
+  ],
+  "navigation": [
+    {
+      "title": "Analytics",
+      "links": [
+        {
+          "title": "Usage",
+          "href": "/analytics/usage"
+        },
+        {
+          "title": "Screen Tracking",
+          "href": "/analytics/screen-tracking"
+        },
+        {
+          "title": "Building an Analytics Funnel",
+          "href": "https://blog.theodo.com/2018/01/building-google-analytics-funnel-firebase-react-native"
+        }
+      ]
+    },
+    {
+      "title": "App Check",
+      "links": [
+        {
+          "title": "Usage",
+          "href": "/app-check/usage"
+        }
+      ]
+    },
+    {
+      "title": "App Distribution",
+      "links": [
+        {
+          "title": "Usage",
+          "href": "/app-distribution/usage"
+        }
+      ]
+    },
+    {
+      "title": "Authentication",
+      "links": [
+        {
+          "title": "Usage",
+          "href": "/auth/usage"
+        },
+        {
+          "title": "Social Auth",
+          "href": "/auth/social-auth"
+        },
+        {
+          "title": "Phone Auth",
+          "href": "/auth/phone-auth"
+        },
+        {
+          "title": "OpenID Connect Auth",
+          "href": "/auth/oidc-auth"
+        },
+        {
+          "title": "Multi-factor Auth",
+          "href": "/auth/multi-factor-auth"
+        }
+      ]
+    },
+    {
+      "title": "Cloud Firestore",
+      "links": [
+        {
+          "title": "Usage",
+          "href": "/firestore/usage"
+        },
+        {
+          "title": "Usage with Emulator",
+          "href": "/firestore/emulator"
+        },
+        {
+          "title": "Usage with FlatLists",
+          "href": "/firestore/usage-with-flatlists"
+        },
+        {
+          "title": "Implementing Pagination",
+          "href": "/firestore/pagination"
+        },
+        {
+          "title": "Building a \"TODO\" app",
+          "href": "https://invertase.io/blog/getting-started-with-cloud-firestore-on-react-native"
+        }
+      ]
+    },
+    {
+      "title": "Cloud Functions",
+      "links": [
+        {
+          "title": "Usage",
+          "href": "/functions/usage"
+        },
+        {
+          "title": "Writing & Deploying Functions",
+          "href": "/functions/writing-deploying-functions"
+        }
+      ]
+    },
+    {
+      "title": "Cloud Messaging",
+      "links": [
+        {
+          "title": "Usage",
+          "href": "/messaging/usage"
+        },
+        {
+          "title": "iOS Project Setup",
+          "href": "/messaging/usage/ios-setup"
+        },
+        {
+          "title": "iOS Permissions",
+          "href": "/messaging/ios-permissions"
+        },
+        {
+          "title": "Notifications",
+          "href": "/messaging/notifications"
+        },
+        {
+          "title": "iOS Notification Images",
+          "href": "/messaging/ios-notification-images"
+        },
+        {
+          "title": "Server Integration",
+          "href": "/messaging/server-integration"
+        }
+      ]
+    },
+    {
+      "title": "Cloud Storage",
+      "links": [
+        {
+          "title": "Usage",
+          "href": "/storage/usage"
+        }
+      ]
+    },
+    {
+      "title": "Core / App",
+      "links": [
+        {
+          "title": "Usage",
+          "href": "/app/usage"
+        },
+        {
+          "title": "JSON Config",
+          "href": "/app/json-config"
+        },
+        {
+          "title": "Utils",
+          "href": "/app/utils"
+        }
+      ]
+    },
+    {
+      "title": "Crashlytics",
+      "links": [
+        {
+          "title": "Usage",
+          "href": "/crashlytics/usage"
+        },
+        {
+          "title": "Viewing crash reports",
+          "href": "/crashlytics/crash-reports"
+        }
+      ]
+    },
+    {
+      "title": "Realtime Database",
+      "links": [
+        {
+          "title": "Usage",
+          "href": "/database/usage"
+        },
+        {
+          "title": "Offline Support",
+          "href": "/database/offline-support"
+        },
+        {
+          "title": "Presence Detection",
+          "href": "/database/presence-detection"
+        }
+      ]
+    },
+    {
+      "title": "Dynamic Links",
+      "links": [
+        {
+          "title": "Usage",
+          "href": "/dynamic-links/usage"
+        }
+      ]
+    },
+    {
+      "title": "In-App Messaging",
+      "links": [
+        {
+          "title": "Usage",
+          "href": "/in-app-messaging/usage"
+        }
+      ]
+    },
+    {
+      "title": "Installations",
+      "links": [
+        {
+          "title": "Usage",
+          "href": "/installations/usage"
+        }
+      ]
+    },
+    {
+      "title": "ML",
+      "links": [
+        {
+          "title": "Usage",
+          "href": "/ml/usage"
+        }
+      ]
+    },
+    {
+      "title": "Remote Config",
+      "links": [
+        {
+          "title": "Usage",
+          "href": "/remote-config/usage"
+        }
+      ]
+    },
+    {
+      "title": "Performance Monitoring",
+      "links": [
+        {
+          "title": "Usage",
+          "href": "/perf/usage"
+        },
+        {
+          "title": "Axios Integration",
+          "href": "/perf/axios-integration"
+        },
+        {
+          "title": "KY Integration",
+          "href": "/perf/ky-integration"
+        }
+      ]
+    }
+  ]
+}

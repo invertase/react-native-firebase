@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 import { Button } from '@/components/Button'
-import { navigation } from '@/components/Navigation'
+import { NavGroup } from './Navigation'
 
 function PageLink({
   label,
@@ -37,9 +37,9 @@ function PageLink({
   )
 }
 
-function PageNavigation() {
+async function PageNavigation(props: { navigation: NavGroup[] }) {
   let pathname = usePathname()
-  let allPages = navigation.flatMap((group) => group.links)
+  let allPages = props.navigation.flatMap((group) => group.links)
   let currentPageIndex = allPages.findIndex((page) => page.href === pathname)
 
   if (currentPageIndex === -1) {
@@ -135,10 +135,10 @@ function SmallPrint() {
   )
 }
 
-export function Footer() {
+export async function Footer(props: { navigation: NavGroup[] }) {
   return (
     <footer className="mx-auto w-full max-w-2xl space-y-10 pb-16 lg:max-w-5xl">
-      <PageNavigation />
+      <PageNavigation navigation={props.navigation} />
       <SmallPrint />
     </footer>
   )
