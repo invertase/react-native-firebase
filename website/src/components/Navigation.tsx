@@ -175,14 +175,14 @@ function NavigationGroup({
     group.links.findIndex((link) => link.href === pathname) !== -1
 
   return (
-    <li className={clsx('relative mt-6', className)}>
+    <li className={clsx('relative mt-4', className)}>
       <motion.h2
         layout="position"
         className="text-xs font-semibold text-zinc-900 dark:text-white"
       >
         {group.title}
       </motion.h2>
-      <div className="relative mt-3 pl-2">
+      <div className="relative mt-2 pl-2">
         <AnimatePresence initial={!isInsideMobileNavigation}>
           {isActiveGroup && (
             <VisibleSectionHighlight group={group} pathname={pathname} />
