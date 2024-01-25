@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 import glob from 'fast-glob'
 
-export default async function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pages = await glob('**/*.mdx', { cwd: 'src/app' })
 
   return pages.map((page) => {
