@@ -4,6 +4,8 @@ description: Welcome to React Native Firebase! To get started, you must first se
 next: /typescript
 ---
 
+<HeroPattern />
+
 # React Native Firebase
 
 React Native Firebase is the officially recommended collection of packages that brings React Native support for all Firebase services on both Android and iOS apps.
