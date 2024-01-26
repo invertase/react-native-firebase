@@ -56,9 +56,8 @@ export declare type AddPrefixToKeys<Prefix extends string, T extends Record<stri
  *
  * See https://www.typescriptlang.org/docs/handbook/advanced-types.html#distributive-conditional-types
  */
-export declare type ChildUpdateFields<K extends string, V> = V extends Record<string, unknown>
-  ? AddPrefixToKeys<K, UpdateData<V>>
-  : never;
+export declare type ChildUpdateFields<K extends string, V> =
+  V extends Record<string, unknown> ? AddPrefixToKeys<K, UpdateData<V>> : never;
 
 /**
  * For each field (e.g. 'bar'), find all nested keys (e.g. {'bar.baz': T1, 'bar.qux': T2}).

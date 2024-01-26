@@ -1288,7 +1288,7 @@ export namespace FirebaseFirestoreTypes {
      * @param fieldPath The field to sort by. Either a string or FieldPath instance.
      * @param directionStr Optional direction to sort by (`asc` or `desc`). If not specified, order will be ascending.
      */
-    orderBy(fieldPath: keyof T | FieldPath, directionStr?: 'asc' | 'desc'): Query<T>;
+    orderBy(fieldPath: keyof T | string | FieldPath, directionStr?: 'asc' | 'desc'): Query<T>;
 
     /**
      * Creates and returns a new Query that starts after the provided document (exclusive). The start
