@@ -1,0 +1,461 @@
+[@react-native-firebase/database](README.md) / Exports
+
+# @react-native-firebase/database
+
+## Table of contents
+
+### Namespaces
+
+- [FirebaseDatabaseTypes](modules/FirebaseDatabaseTypes.md)
+
+### Type Aliases
+
+- [FirebaseApp](modules.md#firebaseapp)
+
+### Variables
+
+- [firebase](modules.md#firebase)
+
+### Functions
+
+- [connectDatabaseEmulator](modules.md#connectdatabaseemulator)
+- [default](modules.md#default)
+- [forceLongPolling](modules.md#forcelongpolling)
+- [forceWebSockets](modules.md#forcewebsockets)
+- [getDatabase](modules.md#getdatabase)
+- [goOffline](modules.md#gooffline)
+- [goOnline](modules.md#goonline)
+- [increment](modules.md#increment)
+- [ref](modules.md#ref)
+- [refFromURL](modules.md#reffromurl)
+- [serverTimestamp](modules.md#servertimestamp)
+- [setLoggingEnabled](modules.md#setloggingenabled)
+- [setPersistenceCacheSizeBytes](modules.md#setpersistencecachesizebytes)
+- [setPersistenceEnabled](modules.md#setpersistenceenabled)
+
+## Type Aliases
+
+### FirebaseApp
+
+Ƭ **FirebaseApp**: `ReactNativeFirebase.FirebaseApp`
+
+#### Defined in
+
+[database/lib/index.d.ts:22](https://github.com/invertase/react-native-firebase/blob/4cf6b1c51/packages/database/lib/index.d.ts#L22)
+
+## Variables
+
+### firebase
+
+• `Const` **firebase**: `ReactNativeFirebase.Module` & \{ `database`: typeof [`default`](modules.md#default) ; `app`: (`name?`: `string`) => `FirebaseApp` & \{ `database`: () => [`Module`](classes/FirebaseDatabaseTypes.Module.md)  }  }
+
+#### Defined in
+
+[database/lib/index.d.ts:1293](https://github.com/invertase/react-native-firebase/blob/4cf6b1c51/packages/database/lib/index.d.ts#L1293)
+
+## Functions
+
+### connectDatabaseEmulator
+
+▸ **connectDatabaseEmulator**(`db`, `host`, `port`): `void`
+
+Modify this Database instance to communicate with the Firebase Database emulator.
+This must be called synchronously immediately following the first call to firebase.database().
+Do not use with production credentials as emulator traffic is not encrypted.
+
+Note: on android, hosts 'localhost' and '127.0.0.1' are automatically remapped to '10.0.2.2' (the
+"host" computer IP address for android emulators) to make the standard development experience easy.
+If you want to use the emulator on a real android device, you will need to specify the actual host
+computer IP address.
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `db` | [`Module`](classes/FirebaseDatabaseTypes.Module.md) |
+| `host` | `string` |
+| `port` | `number` |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[database/lib/modular/index.d.ts:34](https://github.com/invertase/react-native-firebase/blob/4cf6b1c51/packages/database/lib/modular/index.d.ts#L34)
+
+___
+
+### default
+
+▸ **default**(`app?`): [`Module`](classes/FirebaseDatabaseTypes.Module.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `app?` | `FirebaseApp` |
+
+#### Returns
+
+[`Module`](classes/FirebaseDatabaseTypes.Module.md)
+
+#### Defined in
+
+[database/lib/index.d.ts:1288](https://github.com/invertase/react-native-firebase/blob/4cf6b1c51/packages/database/lib/index.d.ts#L1288)
+
+___
+
+### forceLongPolling
+
+▸ **forceLongPolling**(): `void`
+
+Force the use of longPolling instead of websockets. This will be ignored if websocket protocol is used in databaseURL.
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[database/lib/modular/index.d.ts:196](https://github.com/invertase/react-native-firebase/blob/4cf6b1c51/packages/database/lib/modular/index.d.ts#L196)
+
+___
+
+### forceWebSockets
+
+▸ **forceWebSockets**(): `void`
+
+Force the use of websockets instead of longPolling.
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[database/lib/modular/index.d.ts:201](https://github.com/invertase/react-native-firebase/blob/4cf6b1c51/packages/database/lib/modular/index.d.ts#L201)
+
+___
+
+### getDatabase
+
+▸ **getDatabase**(`app?`, `url?`): [`Module`](classes/FirebaseDatabaseTypes.Module.md)
+
+Returns the instance of the Realtime Database SDK that is associated with
+the provided FirebaseApp. Initializes a new instance with
+default settings if no instance exists or if the existing
+instance uses a custom database URL.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `app?` | `FirebaseApp` | The FirebaseApp instance that the returned Realtime Database instance is associated with. |
+| `url?` | `string` |  |
+
+#### Returns
+
+[`Module`](classes/FirebaseDatabaseTypes.Module.md)
+
+#### Defined in
+
+[database/lib/modular/index.d.ts:18](https://github.com/invertase/react-native-firebase/blob/4cf6b1c51/packages/database/lib/modular/index.d.ts#L18)
+
+___
+
+### goOffline
+
+▸ **goOffline**(`db`): `Promise`\<`void`\>
+
+Disconnects from the server (all Database operations will be completed offline).
+
+The client automatically maintains a persistent connection to the Database server, which
+will remain active indefinitely and reconnect when disconnected. However, the `goOffline()` and
+`goOnline()` methods may be used to control the client connection in cases where a persistent
+connection is undesirable.
+
+While offline, the client will no longer receive data updates from the Database. However,
+all Database operations performed locally will continue to immediately fire events, allowing
+your application to continue behaving normally. Additionally, each operation performed locally
+will automatically be queued and retried upon reconnection to the Database server.
+
+To reconnect to the Database and begin receiving remote events, see `goOnline()`.
+
+#### Example
+
+```js
+const db = getDatabase();;
+await goOnline(db);
+```
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `db` | [`Module`](classes/FirebaseDatabaseTypes.Module.md) |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+#### Defined in
+
+[database/lib/modular/index.d.ts:67](https://github.com/invertase/react-native-firebase/blob/4cf6b1c51/packages/database/lib/modular/index.d.ts#L67)
+
+___
+
+### goOnline
+
+▸ **goOnline**(`db`): `Promise`\<`void`\>
+
+Reconnects to the server and synchronizes the offline Database state with the server state.
+
+This method should be used after disabling the active connection with `goOffline()`. Once
+reconnected, the client will transmit the proper data and fire the appropriate events so that
+your client "catches up" automatically.
+
+#### Example
+
+```js
+const db = getDatabase();
+await goOnline(db);
+```
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `db` | [`Module`](classes/FirebaseDatabaseTypes.Module.md) |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+#### Defined in
+
+[database/lib/modular/index.d.ts:83](https://github.com/invertase/react-native-firebase/blob/4cf6b1c51/packages/database/lib/modular/index.d.ts#L83)
+
+___
+
+### increment
+
+▸ **increment**(`delta`): `object`
+
+Returns a placeholder value that can be used to atomically increment the
+current database value by the provided delta.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `delta` | `number` | the amount to modify the current value atomically. |
+
+#### Returns
+
+`object`
+
+A placeholder value for modifying data atomically server-side.
+
+#### Defined in
+
+[database/lib/modular/index.d.ts:217](https://github.com/invertase/react-native-firebase/blob/4cf6b1c51/packages/database/lib/modular/index.d.ts#L217)
+
+___
+
+### ref
+
+▸ **ref**(`db`, `path?`): [`Reference`](interfaces/FirebaseDatabaseTypes.Reference.md)
+
+Returns a `Reference` representing the location in the Database corresponding to the provided path.
+If no path is provided, the Reference will point to the root of the Database.
+
+#### Example
+
+```js
+const db = getDatabase();
+
+// Get a reference to the root of the Database
+const rootRef = ref(db);
+
+// Get a reference to the /users/ada node
+const adaRef = ref(db, "users/ada");
+```
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `db` | [`Module`](classes/FirebaseDatabaseTypes.Module.md) | The Database instance. |
+| `path?` | `string` | Optional path representing the location the returned `Reference` will point. If not provided, the returned `Reference` will point to the root of the Database. |
+
+#### Returns
+
+[`Reference`](interfaces/FirebaseDatabaseTypes.Reference.md)
+
+#### Defined in
+
+[database/lib/modular/index.d.ts:104](https://github.com/invertase/react-native-firebase/blob/4cf6b1c51/packages/database/lib/modular/index.d.ts#L104)
+
+___
+
+### refFromURL
+
+▸ **refFromURL**(`db`, `url`): [`Reference`](interfaces/FirebaseDatabaseTypes.Reference.md)
+
+Generates a Reference from a database URL.
+Note domain must be the same.
+Any query parameters are stripped as per the web SDK.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `db` | [`Module`](classes/FirebaseDatabaseTypes.Module.md) | The Database instance. |
+| `url` | `string` | The Firebase URL at which the returned Reference will point. |
+
+#### Returns
+
+[`Reference`](interfaces/FirebaseDatabaseTypes.Reference.md)
+
+#### Defined in
+
+[database/lib/modular/index.d.ts:115](https://github.com/invertase/react-native-firebase/blob/4cf6b1c51/packages/database/lib/modular/index.d.ts#L115)
+
+___
+
+### serverTimestamp
+
+▸ **serverTimestamp**(): `object`
+
+Returns a placeholder value for auto-populating the current timestamp (time
+since the Unix epoch, in milliseconds) as determined by the Firebase
+servers.
+
+#### Returns
+
+`object`
+
+#### Defined in
+
+[database/lib/modular/index.d.ts:208](https://github.com/invertase/react-native-firebase/blob/4cf6b1c51/packages/database/lib/modular/index.d.ts#L208)
+
+___
+
+### setLoggingEnabled
+
+▸ **setLoggingEnabled**(`db`, `enabled`): `void`
+
+Sets the native logging level for the database module. By default,
+only warnings and errors are logged natively. Setting this to true will log all
+database events.
+
+> Ensure logging is disabled for production apps, as excessive logging can cause performance issues.
+
+#### Example
+
+```js
+const db = getDatabase();
+
+// Set debug logging if developing
+if (__DEV__) {
+  setLoggingEnabled(db, true);
+}
+```
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `db` | [`Module`](classes/FirebaseDatabaseTypes.Module.md) | The Database instance. |
+| `enabled` | `boolean` | Whether debug logging is enabled. |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[database/lib/modular/index.d.ts:163](https://github.com/invertase/react-native-firebase/blob/4cf6b1c51/packages/database/lib/modular/index.d.ts#L163)
+
+___
+
+### setPersistenceCacheSizeBytes
+
+▸ **setPersistenceCacheSizeBytes**(`db`, `bytes`): `void`
+
+By default, Firebase Database will use up to 10MB of disk space to cache data. If the cache grows beyond this size,
+Firebase Database will start removing data that hasn't been recently used. If you find that your application
+caches too little or too much data, call this method to change the cache size. This method must be called before
+creating your first Database reference and only needs to be called once per application.
+
+Note that the specified cache size is only an approximation and the size on disk may temporarily exceed it at times.
+Cache sizes smaller than 1 MB or greater than 100 MB are not supported.
+
+#### Example
+
+```js
+const db = getDatabase();
+
+setPersistenceEnabled(db, true);
+setPersistenceCacheSizeBytes(db, 2000000); // 2MB
+
+async function bootstrap() {
+  // Bootstrapping application
+  const snapshot = await ref(db, 'settings').once("value");
+}
+```
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `db` | [`Module`](classes/FirebaseDatabaseTypes.Module.md) | The Database instance. |
+| `bytes` | `number` | The new size of the cache in bytes. |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[database/lib/modular/index.d.ts:191](https://github.com/invertase/react-native-firebase/blob/4cf6b1c51/packages/database/lib/modular/index.d.ts#L191)
+
+___
+
+### setPersistenceEnabled
+
+▸ **setPersistenceEnabled**(`db`, `enabled`): `void`
+
+Sets whether persistence is enabled for all database calls for the current app
+instance.
+
+> Ensure this is called before any database calls are performed, otherwise
+persistence will only come into effect when the app is next started.
+
+#### Example
+
+```js
+const db = getDatabase();
+setPersistenceEnabled(db, true);
+
+async function bootstrap() {
+  // Bootstrapping application
+  const snapshot = await ref(db, "settings").once("value");
+}
+```
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `db` | [`Module`](classes/FirebaseDatabaseTypes.Module.md) | The Database instance. |
+| `enabled` | `boolean` | Whether persistence is enabled for the Database service. |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[database/lib/modular/index.d.ts:139](https://github.com/invertase/react-native-firebase/blob/4cf6b1c51/packages/database/lib/modular/index.d.ts#L139)
