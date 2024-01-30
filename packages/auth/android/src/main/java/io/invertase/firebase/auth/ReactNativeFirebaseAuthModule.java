@@ -1140,10 +1140,11 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
           promise, "unknown", "Unsupported second factor. Only phone factors are supported.");
       return;
     }
-
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
     final Activity activity = getCurrentActivity();
     final PhoneAuthOptions phoneAuthOptions =
-        PhoneAuthOptions.newBuilder()
+        PhoneAuthOptions.newBuilder(firebaseAuth)
             .setActivity(activity)
             .setMultiFactorHint((PhoneMultiFactorInfo) selectedHint)
             .setTimeout(30L, TimeUnit.SECONDS)
@@ -1184,9 +1185,10 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       rejectPromiseWithCodeAndMessage(promise, "unknown", "can't find session for provided key");
       return;
     }
-
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
     final PhoneAuthOptions phoneAuthOptions =
-        PhoneAuthOptions.newBuilder()
+        PhoneAuthOptions.newBuilder(firebaseAuth)
             .setPhoneNumber(phoneNumber)
             .setActivity(getCurrentActivity())
             .setTimeout(30L, TimeUnit.SECONDS)
