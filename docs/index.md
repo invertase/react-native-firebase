@@ -216,13 +216,20 @@ The following is an example `app.json` to enable the React Native Firebase modul
     },
     "ios": {
       "googleServicesFile": "./GoogleService-Info.plist",
-      "bundleIdentifier": "com.mycorp.myapp",
-      "useFrameworks": "static"
+      "bundleIdentifier": "com.mycorp.myapp"
     },
     "plugins": [
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
-      "@react-native-firebase/crashlytics"
+      "@react-native-firebase/crashlytics",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ]
     ]
   }
 }
