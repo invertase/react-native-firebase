@@ -222,7 +222,7 @@ The following is an example `app.json` to enable the React Native Firebase modul
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
       "@react-native-firebase/crashlytics",
-       [
+      [
         "expo-build-properties",
         {
           "ios": {
