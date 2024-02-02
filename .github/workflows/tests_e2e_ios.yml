@@ -27,18 +27,12 @@ concurrency:
 jobs:
   ios:
     name: iOS
-    runs-on: macos-12
+    runs-on: macos-14
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
     timeout-minutes: 100
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
-      # macOS13 runners are slooooow
-      # This is from: https://github.com/actions/runner-images/issues/7971#issuecomment-1824430407
-      - name: macOS-13-runner speedup
-        run: |
-          sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.diagnosticd.plist
-
       # Set up tool versions
       - uses: actions/setup-node@v3
         with:
