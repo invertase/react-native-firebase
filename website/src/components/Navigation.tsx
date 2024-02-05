@@ -201,7 +201,7 @@ function NavigationGroup({
           {group.links.map((link) => (
             <motion.li key={link.href} layout="position" className="relative">
               <NavLink href={link.href} active={link.href === pathname}>
-                <span className='flex items-center gap-1'>
+                <span className="flex items-center gap-1">
                   {link.title}
                   {link.href.startsWith('https://') ? (
                     <svg
@@ -274,11 +274,6 @@ export function Navigation(
             className={groupIndex === 0 ? 'md:mt-0' : ''}
           />
         ))}
-        <li className="sticky bottom-0 z-10 mt-6 min-[416px]:hidden">
-          <Button href="#" variant="filled" className="w-full">
-            Sign in
-          </Button>
-        </li>
       </ul>
     </nav>
   )
