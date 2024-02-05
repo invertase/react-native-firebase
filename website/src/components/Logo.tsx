@@ -78,7 +78,9 @@ export function Logo(props: React.ComponentPropsWithoutRef<'svg'>) {
           className="st0"
         />
       </svg>
-      <span className="text-sm font-bold">React Native Firebase</span>
+      <span className="hidden text-sm font-bold min-[600px]:inline">
+        React Native Firebase
+      </span>
     </div>
   )
 }
