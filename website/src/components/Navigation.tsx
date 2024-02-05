@@ -60,16 +60,19 @@ function NavLink({
   tag,
   active = false,
   isAnchorLink = false,
+  target = '_self',
 }: {
   href: string
   children: React.ReactNode
   tag?: string
   active?: boolean
   isAnchorLink?: boolean
+  target?: '_self' | '_parent' | '_top' | '_blank'
 }) {
   return (
     <Link
       href={href}
+      target={target}
       aria-current={active ? 'page' : undefined}
       className={clsx(
         'flex justify-between gap-2 py-1 pr-3 text-sm transition',
@@ -200,7 +203,11 @@ function NavigationGroup({
         <ul role="list" className="border-l border-transparent">
           {group.links.map((link) => (
             <motion.li key={link.href} layout="position" className="relative">
-              <NavLink href={link.href} active={link.href === pathname}>
+              <NavLink
+                href={link.href}
+                target={link.href.startsWith('https://') ? '_blank' : '_self'}
+                active={link.href === pathname}
+              >
                 <span className="flex items-center gap-1">
                   {link.title}
                   {link.href.startsWith('https://') ? (
