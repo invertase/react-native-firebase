@@ -57,12 +57,12 @@ jobs:
           fetch-depth: 50
 
       # Set up tool versions
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
 
       - name: Configure JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -74,7 +74,7 @@ jobs:
           echo "metro-cache=$HOME/.metro" >> $GITHUB_OUTPUT
           echo "tempdir=$TMPDIR" >> $GITHUB_OUTPUT
 
-      - uses: actions/cache/restore@v3
+      - uses: actions/cache/restore@v4
         name: Yarn Cache Restore
         id: yarn-cache
         with:
@@ -83,7 +83,7 @@ jobs:
           restore-keys: ${{ runner.os }}-yarn-v1
 
       - name: Yarn Install
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 15
           retry_wait_seconds: 60
@@ -91,7 +91,7 @@ jobs:
           command: DETOX_DISABLE_POSTINSTALL=1 yarn && yarn lerna:prepare
 
       - name: Cache Firestore Emulator
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/firebase/emulators
           key: firebase-emulators-v1-${{ github.run_id }}
@@ -100,7 +100,7 @@ jobs:
       - name: Start Firestore Emulator
         run: yarn tests:emulator:start-ci
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         name: Gradle Cache
         with:
           path: ~/.gradle/caches
@@ -108,7 +108,7 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle-v1
 
       - name: Build Android App
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 25
           retry_wait_seconds: 60
@@ -116,7 +116,7 @@ jobs:
           command: yarn tests:android:build
 
       - name: Metro Bundler Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.workflow-variables.outputs.metro-cache }}
           key: ${{ runner.os }}-metro-v1-${{ github.run_id }}
@@ -165,7 +165,7 @@ jobs:
         with:
           verbose: true
 
-      - uses: actions/cache/save@v3
+      - uses: actions/cache/save@v4
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         with:
@@ -173,7 +173,7 @@ jobs:
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
 
       - name: Upload Emulator Log
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: adb_logs

@@ -35,10 +35,10 @@ jobs:
         with:
           fetch-depth: 50
       # Note, cannot use node > v18.15.0 until https://github.com/facebook/react-native/issues/36440 resolved
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18.15.0
-      - uses: actions/cache/restore@v3
+      - uses: actions/cache/restore@v4
         name: Yarn Cache Restore
         id: yarn-cache
         with:
@@ -46,7 +46,7 @@ jobs:
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-v1
       - name: Yarn Install
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 15
           retry_wait_seconds: 60
@@ -57,7 +57,7 @@ jobs:
       - uses: codecov/codecov-action@v3
         with:
           verbose: true
-      - uses: actions/cache/save@v3
+      - uses: actions/cache/save@v4
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         with:
