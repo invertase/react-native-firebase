@@ -176,5 +176,5 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: adb_logs
+          name: adb_logs_${{ matrix.api-level}}_${{ matrix.arch }}_${{ matrix.target }}_${{ matrix.iteration }}
           path: adb-*.txt
