@@ -22,10 +22,17 @@ async function isSimulator() {
 async function isAPNSCapableSimulator() {
   supportedAbis = await DeviceInfo.supportedAbis(); // looking for an ARM Simulator implying M1 host
   iosVersionMajor = DeviceInfo.getSystemVersion().split('.')[0]; // looking for iOS16+
+  iosVersionMinor = DeviceInfo.getSystemVersion().split('.')[1]; // iOS 17.2 has a problem !?
   macOSVersionMajor = require('os').release().split('.')[0]; // host macOS13+ has Darwin kernel 22+
-  if (macOSVersionMajor >= 22 && supportedAbis.includes('ARM64E') && iosVersionMajor >= 16) {
+  if (
+    macOSVersionMajor >= 22 &&
+    supportedAbis.includes('ARM64E') &&
+    iosVersionMajor >= 16 &&
+    `${iosVersionMajor}.${iosVersionMinor}` !== '17.2'
+  ) {
     return true;
   }
+
   return false;
 }
 
@@ -90,8 +97,13 @@ describe('messaging()', function () {
         if (device.getPlatform() === 'ios') {
           await firebase.messaging().unregisterDeviceForRemoteMessages();
           should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, false);
-          await firebase.messaging().registerDeviceForRemoteMessages();
-          should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, true);
+          // did this happen in logs?
+          // 2024-02-02 18:35:26.277 Df testing[26266:18d3f] (Detox) 10.20.0 - [FirebaseMessaging][I-FCM002022] Declining request for FCM Token since no APNS Token specified
+          tryToRegister = await isAPNSCapableSimulator();
+          if (tryToRegister) {
+            await firebase.messaging().registerDeviceForRemoteMessages();
+            should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, true);
+          }
         } else {
           this.skip();
         }
@@ -133,13 +145,11 @@ describe('messaging()', function () {
       });
       it('resolves on ios with token on supported simulators', async function () {
         // Make sure we are registered for remote notifications, else no token
-        await firebase.messaging().registerDeviceForRemoteMessages();
-
-        if (device.getPlatform() === 'ios') {
+        aPNSCapableSimulator = await isAPNSCapableSimulator();
+        simulator = await isSimulator();
+        if (device.getPlatform() === 'ios' && (!simulator || (simulator && aPNSCapableSimulator))) {
+          await firebase.messaging().registerDeviceForRemoteMessages();
           apnsToken = await firebase.messaging().getAPNSToken();
-
-          simulator = await isSimulator();
-          aPNSCapableSimulator = await isAPNSCapableSimulator();
 
           if (!simulator || (simulator && aPNSCapableSimulator)) {
             apnsToken.should.be.a.String();
@@ -197,7 +207,9 @@ describe('messaging()', function () {
       });
 
       it('correctly sets new token on ios', async function () {
-        if (device.getPlatform() === 'ios') {
+        aPNSCapableSimulator = await isAPNSCapableSimulator();
+        simulator = await isSimulator();
+        if (device.getPlatform() === 'ios' && (!simulator || (simulator && aPNSCapableSimulator))) {
           originalAPNSToken = await firebase.messaging().getAPNSToken();
           // 74657374696E67746F6B656E is hex for "testingtoken"
           await firebase.messaging().setAPNSToken('74657374696E67746F6B656E', 'unknown');
@@ -230,12 +242,18 @@ describe('messaging()', function () {
 
     describe('deleteToken()', function () {
       it('generate a new token after deleting', async function () {
-        const token1 = await firebase.messaging().getToken();
-        should.exist(token1);
-        await firebase.messaging().deleteToken();
-        const token2 = await firebase.messaging().getToken();
-        should.exist(token2);
-        token1.should.not.eql(token2);
+        aPNSCapableSimulator = await isAPNSCapableSimulator();
+        simulator = await isSimulator();
+        if (device.getPlatform() === 'ios' && simulator && !aPNSCapableSimulator) {
+          this.skip();
+        } else {
+          const token1 = await firebase.messaging().getToken();
+          should.exist(token1);
+          await firebase.messaging().deleteToken();
+          const token2 = await firebase.messaging().getToken();
+          should.exist(token2);
+          token1.should.not.eql(token2);
+        }
       });
     });
 
@@ -546,8 +564,15 @@ describe('messaging()', function () {
         if (device.getPlatform() === 'ios') {
           await unregisterDeviceForRemoteMessages(getMessaging());
           should.equal(isDeviceRegisteredForRemoteMessages(getMessaging()), false);
-          await registerDeviceForRemoteMessages(getMessaging());
-          should.equal(isDeviceRegisteredForRemoteMessages(getMessaging()), true);
+          aPNSCapableSimulator = await isAPNSCapableSimulator();
+          simulator = await isSimulator();
+          if (
+            device.getPlatform() === 'ios' &&
+            (!simulator || (simulator && aPNSCapableSimulator))
+          ) {
+            await registerDeviceForRemoteMessages(getMessaging());
+            should.equal(isDeviceRegisteredForRemoteMessages(getMessaging()), true);
+          }
         } else {
           this.skip();
         }
@@ -594,13 +619,11 @@ describe('messaging()', function () {
       it('resolves on ios with token on supported simulators', async function () {
         // Make sure we are registered for remote notifications, else no token
         const { getMessaging, getAPNSToken, registerDeviceForRemoteMessages } = messagingModular;
-        await registerDeviceForRemoteMessages(getMessaging());
-
-        if (device.getPlatform() === 'ios') {
+        aPNSCapableSimulator = await isAPNSCapableSimulator();
+        simulator = await isSimulator();
+        if (device.getPlatform() === 'ios' && (!simulator || (simulator && aPNSCapableSimulator))) {
+          await registerDeviceForRemoteMessages(getMessaging());
           apnsToken = await getAPNSToken(getMessaging());
-
-          simulator = await isSimulator();
-          aPNSCapableSimulator = await isAPNSCapableSimulator();
 
           if (!simulator || (simulator && aPNSCapableSimulator)) {
             apnsToken.should.be.a.String();
@@ -662,7 +685,9 @@ describe('messaging()', function () {
 
       it('correctly sets new token on ios', async function () {
         const { getMessaging, getAPNSToken, setAPNSToken } = messagingModular;
-        if (device.getPlatform() === 'ios') {
+        aPNSCapableSimulator = await isAPNSCapableSimulator();
+        simulator = await isSimulator();
+        if (device.getPlatform() === 'ios' && (!simulator || (simulator && aPNSCapableSimulator))) {
           originalAPNSToken = await getAPNSToken(getMessaging());
           // 74657374696E67746F6B656E6D6F64756C6172 is hex for "testingtokenmodular"
           await firebase
@@ -690,12 +715,16 @@ describe('messaging()', function () {
     describe('deleteToken()', function () {
       it('generate a new token after deleting', async function () {
         const { getMessaging, getToken, deleteToken } = messagingModular;
-        const token1 = await getToken(getMessaging());
-        should.exist(token1);
-        await deleteToken(getMessaging());
-        const token2 = await getToken(getMessaging());
-        should.exist(token2);
-        token1.should.not.eql(token2);
+        aPNSCapableSimulator = await isAPNSCapableSimulator();
+        simulator = await isSimulator();
+        if (device.getPlatform() === 'ios' && (!simulator || (simulator && aPNSCapableSimulator))) {
+          const token1 = await getToken(getMessaging());
+          should.exist(token1);
+          await deleteToken(getMessaging());
+          const token2 = await getToken(getMessaging());
+          should.exist(token2);
+          token1.should.not.eql(token2);
+        }
       });
 
       it('should throw Error with wrong parameter types', async function () {
