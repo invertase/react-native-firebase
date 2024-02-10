@@ -1,5 +1,8 @@
 require 'json'
 
+# source 'https://github.com/paulb777/TestFirebaseBinaryStaging.git'
+# source 'https://cdn.cocoapods.org/'
+
 # Uncomment these two lines and specify an *unsupported* testing version of firebase-ios-sdk
 # to check things before release in cooperation with firebase-ios-sdk team
 # source 'https://github.com/firebase/SpecsStaging'
@@ -65,6 +68,22 @@ target 'testing' do
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
+
+# uncomment to use local versions
+ # pod 'FirebaseAppCheckInterop', :path => '/Users/paulbeusterien/gh/firebase-ios-sdk'
+ # pod 'FirebaseCore', :path => '/Users/paulbeusterien/gh/firebase-ios-sdk'
+ # pod 'FirebaseCoreInternal', :path => '/Users/paulbeusterien/gh/firebase-ios-sdk'
+ # pod 'FirebaseCoreExtension', :path => '/Users/paulbeusterien/gh/firebase-ios-sdk'
+#  pod 'FirebaseAuth', :path => '/Users/paulbeusterien/gh/firebase-ios-sdk'
+#  pod 'FirebaseAuthInterop', :path => '/Users/paulbeusterien/gh/firebase-ios-sdk'
+
+ pod 'FirebaseAppCheckInterop',  :git => 'https://github.com/firebase/firebase-ios-sdk.git', :tag => 'paul-rn-1020-podspecs'
+ pod 'FirebaseCore',  :git => 'https://github.com/firebase/firebase-ios-sdk.git', :tag => 'paul-rn-1020-podspecs'
+ pod 'FirebaseCoreInternal',  :git => 'https://github.com/firebase/firebase-ios-sdk.git', :tag => 'paul-rn-1020-podspecs'
+ pod 'FirebaseCoreExtension', :git => 'https://github.com/firebase/firebase-ios-sdk.git', :tag => 'paul-rn-1020-podspecs'
+ pod 'FirebaseAuth',  :git => 'https://github.com/firebase/firebase-ios-sdk.git', :tag => 'paul-rn-1020-podspecs'
+ pod 'FirebaseAuthInterop',  :git => 'https://github.com/firebase/firebase-ios-sdk.git', :tag => 'paul-rn-1020-podspecs'
+  pod 'Firebase',  :git => 'https://github.com/firebase/firebase-ios-sdk.git', :tag => 'paul-rn-1020-podspecs'
 
   # Use pre-compiled firestore frameworks to optimize compile time. Auto-includes leveldb if needed.
   # pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
