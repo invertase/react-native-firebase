@@ -139,7 +139,7 @@ To run end-to-end tests for `iOS`, please run:
 - `yarn tests:emulator:start` - runs Firestore emulator for Firestore tests.
 - `yarn tests:ios:test` - runs tests using Detox library. Tests for each package can be found in the `e2e` directory (i.e. `[PACKAGE]/e2e/*.e2e.js`)
 
-See it's local testing guide [here](https://github.com/invertase/react-native-firebase/blob/main/tests/README.md) to get started
+See its local testing guide [here](https://github.com/invertase/react-native-firebase/blob/main/tests/README.md) to get started
 with `e2e` testing this project.
 
 ---
