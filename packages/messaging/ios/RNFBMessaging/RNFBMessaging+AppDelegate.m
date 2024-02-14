@@ -122,9 +122,8 @@
   for (id appId in [FIRApp allApps]) {
     FIRApp *app = [[FIRApp allApps] objectForKey:appId];
     if ([[FIRAuth authWithApp:app] canHandleNotification:userInfo]) {
-      DLog(
-          @"didReceiveRemoteNotification Firebase Auth handled the notification with instance: %@",
-          app.name);
+      DLog(@"didReceiveRemoteNotification Firebase Auth handled the notification with instance: %@",
+           app.name);
       completionHandler(UIBackgroundFetchResultNoData);
       return;
     }
