@@ -69,8 +69,8 @@ buildscript {
   dependencies {
     // ... other dependencies
     // NOTE: if you are on react-native 0.71 or below, you must not update
-    //       the google-services plugin past version 4.3.15
-    classpath 'com.google.gms:google-services:4.4.0'
+    //       the google-services plugin past version 4.3.15 as it requires gradle >= 7.3.0
+    classpath 'com.google.gms:google-services:4.4.1'
     // Add me --- /\
   }
 }
@@ -290,7 +290,7 @@ project.ext {
       // Overriding Library SDK Versions
       firebase: [
         // Override Firebase SDK Version
-        bom           : "32.7.1"
+        bom           : "32.7.2"
       ],
     ],
   ])
@@ -305,7 +305,7 @@ Open your projects `/ios/Podfile` and add any of the globals shown below to the 
 
 ```ruby
 # Override Firebase SDK Version
-$FirebaseSDKVersion = '10.20.0'
+$FirebaseSDKVersion = '10.21.0'
 ```
 
 Once changed, reinstall your projects pods via pod install and rebuild your project with `npx react-native run-ios`.
