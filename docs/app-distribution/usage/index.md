@@ -34,7 +34,7 @@ Add the plugin to your `/android/build.gradle` file as a dependency:
 buildscript {
     dependencies {
         // ...
-        classpath 'com.google.firebase:firebase-appdistribution-gradle:4.0.1'
+        classpath 'com.google.firebase:firebase-appdistribution-gradle:4.1.0'
     }
 ```
 

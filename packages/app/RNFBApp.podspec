@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   s.social_media_url    = 'http://twitter.com/invertaseio'
   s.ios.deployment_target = firebase_ios_target
   s.macos.deployment_target = firebase_macos_target
-  s.cocoapods_version   = '>= 1.10.2'
+  s.cocoapods_version   = '>= 1.12.0'
   s.source_files        = "ios/**/*.{h,m}"
 
   # React Native dependencies
