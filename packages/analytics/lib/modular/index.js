@@ -652,11 +652,11 @@ export function isSupported() {
  * references once Firebase Analytics is initialized. Web only.
  * @param analytics Analytics instance.
  * @param consentSettings See {@link analytics.ConsentSettings}.
- * @returns {void}
+ * @returns {Promise<void>}
  */
 // eslint-disable-next-line
 export function setConsent(consentSettings) {
-  // Returns nothing until Web implemented.
+  return analytics.setConsent(consentSettings);
 }
 
 /**

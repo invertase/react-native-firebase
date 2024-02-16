@@ -774,15 +774,19 @@ export namespace FirebaseAnalyticsTypes {
    */
   export interface ConsentSettings {
     /** Enables storage, such as cookies, related to advertising */
-    ad_storage?: ConsentStatusString;
+    ad_storage?: boolean;
+    /** Sets consent for sending user data to Google for online advertising purposes */
+    ad_user_data?: boolean;
+    /** Sets consent for personalized advertising */
+    ad_personalization?: boolean;
     /** Enables storage, such as cookies, related to analytics (for example, visit duration) */
-    analytics_storage?: ConsentStatusString;
+    analytics_storage?: boolean;
     /**
      * Enables storage that supports the functionality of the website or app such as language settings
      */
-    functionality_storage?: ConsentStatusString;
+    functionality_storage?: boolean;
     /** Enables storage related to personalization such as video recommendations */
-    personalization_storage?: ConsentStatusString;
+    personalization_storage?: boolean;
     /**
      * Enables storage related to security such as authentication functionality, fraud prevention,
      * and other user protection.
@@ -1727,6 +1731,28 @@ export namespace FirebaseAnalyticsTypes {
      * @param phoneNumber phone number in E.164 format - that is a leading + sign, then up to 15 digits, no dashes or spaces.
      */
     initiateOnDeviceConversionMeasurementWithPhoneNumber(phoneNumber: string): Promise<void>;
+
+    /**
+     * For Consent Mode!
+     *
+     * #### Example
+     *
+     * ```js
+     * // Disable consent
+     * await firebase.analytics().setConsent({
+     *  ad_personalization: false,
+     *  analytics_storage: false,
+     *  ad_storage: false,
+     *  ad_user_data: false,
+     * });
+     * ```
+     *
+     * Sets the applicable end user consent state (e.g., for device identifiers) for this app on this device.
+     * Use the consent map to specify individual consent type values.
+     * Settings are persisted across app sessions.
+     * @param consentSettings Consent status settings for each consent type.
+     */
+    setConsent(consentSettings: ConsentSettings): Promise<void>;
   }
 
   /**

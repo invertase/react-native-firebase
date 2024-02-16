@@ -182,6 +182,19 @@ import { firebase } from '@react-native-firebase/analytics';
 await firebase.analytics().setAnalyticsCollectionEnabled(true);
 ```
 
+To update user's consent (e.g. once you have the users consent), call the `setConsent` method:
+
+```js
+import { firebase } from '@react-native-firebase/analytics';
+// ...
+await firebase.analytics().setConsent({
+  analytics_storage: true,
+  ad_storage: true,
+  ad_user_data: true,
+  ad_personalization: true
+});
+```
+
 ## Disable screenview tracking
 
 Analytics automatically tracks some information about screens in your application, such as the class name of the UIViewController or Activity that is currently in focus.

@@ -98,6 +98,31 @@ describe('Analytics', function () {
     );
   });
 
+  it('throws if consentSettings is not an object', function () {
+    // @ts-ignore test
+    expect(() => firebase.analytics().setConsent(1337)).toThrowError(
+      'The supplied arg must be an object of key/values.',
+    );
+  });
+  it('throws if consentSettings is invalid', function () {
+    const consentSettings = {
+      ad_storage: true,
+      foo: {
+        bar: 'baz',
+      },
+    };
+    // @ts-ignore test
+    expect(() => firebase.analytics().setConsent(consentSettings)).toThrowError(
+      "'consentSettings' value for parameter 'foo' is invalid, expected a boolean.",
+    );
+  });
+  it('throws if one value of consentSettings is a number', function () {
+    // @ts-ignore test
+    expect(() => firebase.analytics().setConsent({ ad_storage: 123 })).toThrowError(
+      "'consentSettings' value for parameter 'ad_storage' is invalid, expected a boolean.",
+    );
+  });
+
   it('errors when no parameters are set', function () {
     // @ts-ignore test
     expect(() => firebase.analytics().logSearch()).toThrowError(

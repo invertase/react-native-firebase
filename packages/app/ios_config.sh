@@ -119,6 +119,30 @@ if [[ ${_SEARCH_RESULT} ]]; then
     _PLIST_ENTRY_VALUES+=("$(jsonBoolToYesNo "$_ANALYTICS_IDFV_COLLECTION")")
   fi
 
+  # config.analytics_default_allow_analytics_storage
+  _ANALYTICS_STORAGE=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "analytics_default_allow_analytics_storage")
+  if [[ $_ANALYTICS_STORAGE ]]; then
+    _PLIST_ENTRY_KEYS+=("GOOGLE_ANALYTICS_DEFAULT_ALLOW_ANALYTICS_STORAGE")
+    _PLIST_ENTRY_TYPES+=("bool")
+    _PLIST_ENTRY_VALUES+=("$(jsonBoolToYesNo "$_ANALYTICS_STORAGE")")
+  fi
+
+  # config.analytics_default_allow_ad_storage
+  _ANALYTICS_AD_STORAGE=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "analytics_default_allow_ad_storage")
+  if [[ $_ANALYTICS_AD_STORAGE ]]; then
+    _PLIST_ENTRY_KEYS+=("GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_STORAGE")
+    _PLIST_ENTRY_TYPES+=("bool")
+    _PLIST_ENTRY_VALUES+=("$(jsonBoolToYesNo "$_ANALYTICS_AD_STORAGE")")
+  fi
+
+  # config.analytics_default_allow_ad_user_data
+  _ANALYTICS_AD_USER_DATA=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "analytics_default_allow_ad_user_data")
+  if [[ $_ANALYTICS_AD_USER_DATA ]]; then
+    _PLIST_ENTRY_KEYS+=("GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_USER_DATA")
+    _PLIST_ENTRY_TYPES+=("bool")
+    _PLIST_ENTRY_VALUES+=("$(jsonBoolToYesNo "$_ANALYTICS_AD_USER_DATA")")
+  fi
+
   # config.analytics_default_allow_ad_personalization_signals
   _ANALYTICS_PERSONALIZATION=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "analytics_default_allow_ad_personalization_signals")
   if [[ $_ANALYTICS_PERSONALIZATION ]]; then

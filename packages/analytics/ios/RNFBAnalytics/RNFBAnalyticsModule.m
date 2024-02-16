@@ -177,6 +177,27 @@ RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithPhoneNumber
   return resolve([NSNull null]);
 }
 
+RCT_EXPORT_METHOD(setConsent
+                  : (NSDictionary *)consentSettings resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  @try {
+    BOOL analyticsStorage = [consentSettings[@"analytics_storage"] boolValue];
+    BOOL adStorage = [consentSettings[@"ad_storage"] boolValue];
+    BOOL adUserData = [consentSettings[@"ad_user_data"] boolValue];
+    BOOL adPersonalization = [consentSettings[@"ad_personalization"] boolValue];
+    [FIRAnalytics setConsent:@{
+        FIRConsentTypeAnalyticsStorage : analyticsStorage ? FIRConsentStatusGranted : FIRConsentStatusDenied,
+        FIRConsentTypeAdStorage : adStorage ? FIRConsentStatusGranted : FIRConsentStatusDenied,
+        FIRConsentTypeAdUserData : adUserData ? FIRConsentStatusGranted : FIRConsentStatusDenied,
+        FIRConsentTypeAdPersonalization : adPersonalization ? FIRConsentStatusGranted : FIRConsentStatusDenied,
+      }];
+  } @catch (NSException *exception) {
+    return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
+  }
+  return resolve([NSNull null]);
+}
+
 #pragma mark -
 #pragma mark Private methods
 

@@ -87,6 +87,7 @@ export {
   setDefaultEventParameters,
   initiateOnDeviceConversionMeasurementWithEmailAddress,
   initiateOnDeviceConversionMeasurementWithPhoneNumber,
+  setConsent,
 } from './modular/index';
 
 const ReservedEventNames = [
@@ -259,6 +260,26 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
   resetAnalyticsData() {
     return this.native.resetAnalyticsData();
+  }
+
+  setConsent(consentSettings) {
+    if (!isObject(consentSettings)) {
+      throw new Error(
+        'firebase.analytics().setConsent(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    const entries = Object.entries(consentSettings);
+    for (let i = 0; i < entries.length; i++) {
+      const [key, value] = entries[i];
+      if (!isBoolean(value)) {
+        throw new Error(
+          `firebase.analytics().setConsent(*) 'consentSettings' value for parameter '${key}' is invalid, expected a boolean.`,
+        );
+      }
+    }
+
+    return this.native.setConsent(consentSettings);
   }
 
   /** -------------------
