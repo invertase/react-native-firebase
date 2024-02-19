@@ -65,8 +65,11 @@ apply from: file('./../../app/android/firebase-json.gradle')
 String collectionDeactivated = 'false'
 String adidEnabled = 'true'
 String ssaidEnabled = 'true'
-String personalizationEnabled = 'true'
 String automaticScreenReportingEnabled = 'true'
+String analyticsStorageEnabled = 'true'
+String adStorageEnabled = 'true'
+String adUserDataEnabled = 'true'
+String personalizationEnabled = 'true'
 
 // If nothing is defined, data collection defaults to true
 String dataCollectionEnabled = 'true'
@@ -130,7 +133,7 @@ android {
       firebaseJsonAnalyticsStorageEnabled: analyticsStorageEnabled,
       firebaseJsonAdStorageEnabled: adStorageEnabled,
       firebaseJsonAdUserDataEnabled: adUserDataEnabled,
-      firebaseJsonPersonalizationEnabled: personalizationEnabled,
+      firebaseJsonPersonalizationEnabled: personalizationEnabled
     ]
   }
 
