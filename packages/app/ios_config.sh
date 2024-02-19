@@ -14,6 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+##########################################################################
+##########################################################################
+#
+#  NOTE THAT IF YOU CHANGE THIS FILE YOU MUST RUN pod install AFTERWARDS
+#
+#  This file is installed as an Xcode build script in the project file
+#  by cocoapods, and you will not see your changes until you pod install
+#
+##########################################################################
+##########################################################################
+
 set -e
 
 _MAX_LOOKUPS=2;
