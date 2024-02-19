@@ -191,7 +191,7 @@ await firebase.analytics().setConsent({
   analytics_storage: true,
   ad_storage: true,
   ad_user_data: true,
-  ad_personalization: true
+  ad_personalization: true,
 });
 ```
 

@@ -187,11 +187,13 @@ RCT_EXPORT_METHOD(setConsent
     BOOL adUserData = [consentSettings[@"ad_user_data"] boolValue];
     BOOL adPersonalization = [consentSettings[@"ad_personalization"] boolValue];
     [FIRAnalytics setConsent:@{
-        FIRConsentTypeAnalyticsStorage : analyticsStorage ? FIRConsentStatusGranted : FIRConsentStatusDenied,
-        FIRConsentTypeAdStorage : adStorage ? FIRConsentStatusGranted : FIRConsentStatusDenied,
-        FIRConsentTypeAdUserData : adUserData ? FIRConsentStatusGranted : FIRConsentStatusDenied,
-        FIRConsentTypeAdPersonalization : adPersonalization ? FIRConsentStatusGranted : FIRConsentStatusDenied,
-      }];
+      FIRConsentTypeAnalyticsStorage : analyticsStorage ? FIRConsentStatusGranted
+                                                        : FIRConsentStatusDenied,
+      FIRConsentTypeAdStorage : adStorage ? FIRConsentStatusGranted : FIRConsentStatusDenied,
+      FIRConsentTypeAdUserData : adUserData ? FIRConsentStatusGranted : FIRConsentStatusDenied,
+      FIRConsentTypeAdPersonalization : adPersonalization ? FIRConsentStatusGranted
+                                                          : FIRConsentStatusDenied,
+    }];
   } @catch (NSException *exception) {
     return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
   }

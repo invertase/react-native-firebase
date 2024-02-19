@@ -1193,7 +1193,7 @@ export function isSupported(): Promise<boolean>;
  * references once Firebase Analytics is initialized.
  * @param analytics Analytics instance.
  * @param consentSettings See {@link analytics.ConsentSettings}.
- * @returns {void}
+ * @returns {Promise<void>}
  */
 export function setConsent(
   analytics: Analytics,
