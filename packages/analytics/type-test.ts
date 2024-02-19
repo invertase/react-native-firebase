@@ -30,6 +30,9 @@ firebase
   .analytics()
   .setUserProperties({ foo: 'bar' })
   .then();
+firebase
+  .analytics()
+  .setConsent({ ad_storage: true })
 
 console.log(firebase.analytics().logAddPaymentInfo);
 console.log(firebase.analytics().logAddToCart);
@@ -72,6 +75,7 @@ console.log(firebase.analytics().setUserId);
 console.log(firebase.analytics().setUserProperties);
 console.log(firebase.analytics().logViewSearchResults);
 console.log(firebase.analytics().setUserProperty);
+console.log(firebase.analytics().setConsent);
 
 console.log(analytics().logAddPaymentInfo);
 console.log(analytics().logAddToCart);
@@ -114,3 +118,4 @@ console.log(analytics().setUserId);
 console.log(analytics().setUserProperties);
 console.log(analytics().logViewSearchResults);
 console.log(analytics().setUserProperty);
+console.log(analytics().setConsent);

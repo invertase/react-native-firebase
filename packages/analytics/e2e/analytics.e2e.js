@@ -453,6 +453,22 @@ describe('analytics() modular', function () {
       });
     });
 
+    describe('setConsent()', function () {
+      it('set ad_storage=true on consentSettings', async function () {
+        const consentSettings = {
+          ad_storage: true,
+        };
+        await firebase.analytics().setConsent(consentSettings);
+      });
+      it('set ad_storage=false and analytics_storage=true on consentSettings', async function () {
+        const consentSettings = {
+          ad_storage: false,
+          analytics_storage: true,
+        };
+        await firebase.analytics().setConsent(consentSettings);
+      });
+    });
+
     // Test this one near end so all the previous hits are visible in DebugView is that is enabled
     describe('resetAnalyticsData()', function () {
       it('calls native fn without error', async function () {
@@ -1066,6 +1082,24 @@ describe('analytics() modular', function () {
       it('true', async function () {
         const { getAnalytics, setAnalyticsCollectionEnabled } = analyticsModular;
         await setAnalyticsCollectionEnabled(getAnalytics(), true);
+      });
+    });
+
+    describe('setConsent()', function () {
+      it('set ad_storage=true on consentSettings', async function () {
+        const consentSettings = {
+          ad_storage: true,
+        };
+        const { getAnalytics, setConsent } = analyticsModular;
+        await setConsent(getAnalytics(), consentSettings);
+      });
+      it('set ad_storage=false and analytics_storage=true on consentSettings', async function () {
+        const consentSettings = {
+          ad_storage: false,
+          analytics_storage: true,
+        };
+        const { getAnalytics, setConsent } = analyticsModular;
+        await setConsent(getAnalytics(), consentSettings);
       });
     });
   });

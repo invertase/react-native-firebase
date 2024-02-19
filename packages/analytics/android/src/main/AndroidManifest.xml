@@ -11,7 +11,11 @@
     <meta-data android:name="firebase_analytics_collection_deactivated" android:value="${firebaseJsonCollectionDeactivated}" />
     <meta-data android:name="google_analytics_adid_collection_enabled" android:value="${firebaseJsonAdidEnabled}" />
     <meta-data android:name="google_analytics_ssaid_collection_enabled" android:value="${firebaseJsonSsaidEnabled}" />
-    <meta-data android:name="google_analytics_default_allow_ad_personalization_signals" android:value="${firebaseJsonPersonalizationEnabled}" />
     <meta-data android:name="google_analytics_automatic_screen_reporting_enabled" android:value="${firebaseJsonAutomaticScreenReportingEnabled}" />
+    <meta-data android:name="google_analytics_default_allow_analytics_storage" android:value="${firebaseJsonAnalyticsStorageEnabled}" />
+    <meta-data android:name="google_analytics_default_allow_ad_storage" android:value="${firebaseJsonAdStorageEnabled}" />
+    <meta-data android:name="google_analytics_default_allow_ad_user_data" android:value="${firebaseJsonAdUserDataEnabled}" />
+    <meta-data android:name="google_analytics_default_allow_ad_personalization_signals" android:value="${firebaseJsonPersonalizationEnabled}" />
+
   </application>
 </manifest>

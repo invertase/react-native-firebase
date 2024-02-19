@@ -1189,16 +1189,16 @@ export function initiateOnDeviceConversionMeasurementWithPhoneNumber(
 export function isSupported(): Promise<boolean>;
 
 /**
- * Sets the applicable end user consent state for this web app across all gtag
- * references once Firebase Analytics is initialized. Web only.
+ * Sets the applicable end user consent state for this app.
+ * references once Firebase Analytics is initialized.
  * @param analytics Analytics instance.
  * @param consentSettings See {@link analytics.ConsentSettings}.
- * @returns {void}
+ * @returns {Promise<void>}
  */
 export function setConsent(
   analytics: Analytics,
   consentSettings: FirebaseAnalyticsTypes.ConsentSettings,
-): void;
+): Promise<void>;
 
 /**
  * Configures Firebase Analytics to use custom gtag or dataLayer names.

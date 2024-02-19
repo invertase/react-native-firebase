@@ -22,7 +22,11 @@ import android.os.Bundle;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.analytics.FirebaseAnalytics.ConsentStatus;
+import com.google.firebase.analytics.FirebaseAnalytics.ConsentType;
 import io.invertase.firebase.common.UniversalFirebaseModule;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Set;
 
 @SuppressWarnings("WeakerAccess")
@@ -106,6 +110,31 @@ public class UniversalFirebaseAnalyticsModule extends UniversalFirebaseModule {
     return Tasks.call(
         () -> {
           FirebaseAnalytics.getInstance(getContext()).setDefaultEventParameters(parameters);
+          return null;
+        });
+  }
+
+  Task<Void> setConsent(Bundle consentSettings) {
+    return Tasks.call(
+        () -> {
+          boolean analyticsStorage = consentSettings.getBoolean("analytics_storage");
+          boolean adStorage = consentSettings.getBoolean("ad_storage");
+          boolean adUserData = consentSettings.getBoolean("ad_user_data");
+          boolean adPersonalization = consentSettings.getBoolean("ad_personalization");
+
+          Map<ConsentType, ConsentStatus> consentMap = new EnumMap<>(ConsentType.class);
+          consentMap.put(
+              ConsentType.ANALYTICS_STORAGE,
+              analyticsStorage ? ConsentStatus.GRANTED : ConsentStatus.DENIED);
+          consentMap.put(
+              ConsentType.AD_STORAGE, adStorage ? ConsentStatus.GRANTED : ConsentStatus.DENIED);
+          consentMap.put(
+              ConsentType.AD_USER_DATA, adUserData ? ConsentStatus.GRANTED : ConsentStatus.DENIED);
+          consentMap.put(
+              ConsentType.AD_PERSONALIZATION,
+              adPersonalization ? ConsentStatus.GRANTED : ConsentStatus.DENIED);
+
+          FirebaseAnalytics.getInstance(getContext()).setConsent(consentMap);
           return null;
         });
   }

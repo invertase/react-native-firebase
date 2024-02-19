@@ -33,6 +33,18 @@
           "description": "For your convenience, on iOS the SDK automatically registers your app with Apple for ad network attribution with SKAdNetwork.\nDefaults to true, include this key as false to disable.",
           "type": "boolean"
         },
+        "analytics_default_allow_analytics_storage": {
+          "description": "Enables storage (such as app identifiers) related to analytics, e.g. visit duration.",
+          "type": "boolean"
+        },
+        "analytics_default_allow_ad_storage": {
+          "description": "Enables storage (such as device identifiers) related to advertising.",
+          "type": "boolean"
+        },
+        "analytics_default_allow_ad_user_data": {
+          "description": "Sets consent for sending user data to Google for advertising purposes.",
+          "type": "boolean"
+        },
         "analytics_default_allow_ad_personalization_signals": {
           "description": "Configure whether a user's Analytics data may be used for personalized advertising in other products.\n If set, may be overridden at runtime by calling setUserProperty on the key 'allow_personalized_ads'",
           "type": "boolean"
