@@ -52,6 +52,12 @@ Pod::Spec.new do |s|
       Pod::UI.puts "#{s.name}: You may set variable `$RNFirebaseAnalyticsWithoutAdIdSupport=true` in Podfile to use analytics without ad ids."
     end
     s.dependency          'Firebase/Analytics', firebase_sdk_version
+
+    # Special pod for on-device conversion
+    if defined?($RNFirebaseAnalyticsEnableAdSupport) && ($RNFirebaseAnalyticsEnableAdSupport == true)
+      Pod::UI.puts "#{s.name}: Adding Apple AdSupport.framework dependency for optional analytics features"
+      s.frameworks =       'AdSupport'
+    end
   end
 
   # Special pod for on-device conversion
