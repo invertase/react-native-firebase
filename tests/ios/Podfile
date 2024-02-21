@@ -10,7 +10,7 @@ appPackage = JSON.parse(File.read(File.join('..', 'node_modules', '@react-native
 $FirebaseSDKVersion = appPackage['sdkVersions']['ios']['firebase']
 # $FirebaseSDKVersion = '10.17.0' # https://firebase.google.com/support/release-notes/ios
 Pod::UI.puts "react-native-firebase/tests: Using Firebase SDK version '#{$FirebaseSDKVersion}'"
-$RNFirebaseAsStaticFramework = true # toggle this to true (and set 'use_frameworks!' below to test static frameworks)
+$RNFirebaseAnalyticsEnableAdSupport = true # toggle this to true (and set 'use_frameworks!' below to test static frameworks)
 
 # Toggle this to true for the no-ad-tracking Analytics subspec. Useful at minimum for Kids category apps.
 # See: https://firebase.google.com/support/release-notes/ios#analytics - requires firebase-ios-sdk 7.11.0+
@@ -18,6 +18,9 @@ $RNFirebaseAsStaticFramework = true # toggle this to true (and set 'use_framewor
 
 # Toggle this to true if you want to include support for on device conversion measurement APIs
 $RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true
+
+# Toggle this to true if you want to include optional support for extended analytics features
+$RNFirebaseAnalyticsEnableAdSupport = true
 
 # react-native 0.73 is currently iOS 13.4 as a minimum
 min_ios_version_supported = 13.4
