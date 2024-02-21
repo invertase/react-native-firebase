@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.9.0](https://github.com/invertase/react-native-firebase/compare/v18.8.0...v18.9.0) (2024-02-21)
+
+### Bug Fixes
+
+- **firestore, types:** Add string type to `DocumentSnapshot.get` ([#7593](https://github.com/invertase/react-native-firebase/issues/7593)) ([d5b66ca](https://github.com/invertase/react-native-firebase/commit/d5b66ca94fe133a14058c1052ec767f1e4a1ee8a))
+
 ## [18.8.0](https://github.com/invertase/react-native-firebase/compare/v18.7.3...v18.8.0) (2024-01-25)
 
 ### Bug Fixes
