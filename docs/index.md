@@ -131,7 +131,7 @@ Within your existing `didFinishLaunchingWithOptions` method, add the following t
 
 Beginning with firebase-ios-sdk v9+ (react-native-firebase v15+) you must tell CocoaPods to use frameworks.
 
-Open the file `./ios/Podfile` and add this line inside your targets (right after the line calling the react native Podfile function to get the native modules config):
+Open the file `./ios/Podfile` and add this line inside your targets (right before the `use_react_native` line in current react-native releases that calls the react native Podfile function to get the native modules config):
 
 ```ruby
 use_frameworks! :linkage => :static
@@ -144,13 +144,11 @@ To use Static Frameworks on iOS, you also need to manually enable this for the p
 $RNFirebaseAsStaticFramework = true
 ```
 
-> Notes: React-Native-Firebase uses `use_frameworks`, which has compatibility issues with Flipper, Hermes & Fabric.
+> Notes: React-Native-Firebase uses `use_frameworks`, which has compatibility issues with Flipper & Fabric.
 >
-> **Flipper:** `use_frameworks` [is _not_ compatible with Flipper](https://github.com/reactwg/react-native-releases/discussions/21#discussioncomment-2924919). You need to disable Flipper by commenting out the `:flipper_configuration` line in your Podfile.
+> **Flipper:** `use_frameworks` [is _not_ compatible with Flipper](https://github.com/reactwg/react-native-releases/discussions/21#discussioncomment-2924919). You must disable Flipper by commenting out the `:flipper_configuration` line in your Podfile. Flipper is deprecated in the react-native community and this will not be fixed - Flipper and react-native-firebase will never work together on iOS.
 >
-> **Hermes:** a fix was put in place in [react-native release 0.69.1](https://github.com/facebook/react-native/releases/tag/v0.69.1) that allows Hermes to work with `use_frameworks!`. To use `use_frameworks` with Hermes, make sure you have set static linkage with `use_frameworks! :linkage => :static`.
->
-> **New Architecture:** Fabric is not compatible with `use_frameworks!`. Community support to help fix `use_frameworks` support for New Architecture is welcome!
+> **New Architecture:** Fabric is partially compatible with `use_frameworks!`. If you enable the bridged / compatibility mode, react-native-firebase will compile correctly and be usable.
 
 ### 4. Autolinking & rebuilding
 
