@@ -20,6 +20,7 @@ describe('multi-factor modular', function () {
         await Utils.sleep(50);
       }
     });
+
     it('has no multi-factor information if not enrolled', async function () {
       await firebase.auth().signInWithEmailAndPassword(TEST_EMAIL, TEST_PASS);
       const { multiFactor } = firebase.auth().currentUser;
@@ -84,6 +85,7 @@ describe('multi-factor modular', function () {
           new Error('Multi-factor users need to handle an exception on sign-in'),
         );
       });
+
       it('reports an error when providing an invalid sms code', async function () {
         if (device.getPlatform() === 'ios') {
           this.skip();
@@ -130,6 +132,7 @@ describe('multi-factor modular', function () {
         }
         return Promise.reject();
       });
+
       it('reports an error when providing an invalid verification code', async function () {
         if (device.getPlatform() === 'ios') {
           this.skip();
@@ -165,6 +168,7 @@ describe('multi-factor modular', function () {
         }
         return Promise.reject();
       });
+
       it('reports an error when using an unknown factor', async function () {
         const { email, password } = await createUserWithMultiFactor();
 
@@ -253,6 +257,7 @@ describe('multi-factor modular', function () {
         }
         return Promise.resolve();
       });
+
       it('can enroll new factor without display name', async function () {
         if (device.getPlatform() === 'ios') {
           this.skip();
@@ -283,6 +288,7 @@ describe('multi-factor modular', function () {
         }
         return Promise.resolve();
       });
+
       it('can enroll multiple factors', async function () {
         if (device.getPlatform() === 'ios') {
           this.skip();
@@ -314,6 +320,7 @@ describe('multi-factor modular', function () {
 
         return Promise.resolve();
       });
+
       it('can not enroll the same factor twice', async function () {
         this.skip();
         // This test should probably be implemented but doesn't work:
@@ -389,6 +396,7 @@ describe('multi-factor modular', function () {
         }
         return Promise.reject();
       });
+
       it('throws an error for unknown sessions', async function () {
         const { email, password } = await createUserWithMultiFactor();
         let resolver = null;
@@ -415,6 +423,7 @@ describe('multi-factor modular', function () {
         }
         return Promise.reject();
       });
+
       it('throws an error for unknown verification code', async function () {
         const { email, password } = await createUserWithMultiFactor();
 
@@ -482,6 +491,7 @@ describe('multi-factor modular', function () {
           new Error('Enrolling a second factor when using phone authentication is not supported.'),
         );
       });
+
       it('can not enroll when phone number is missing + sign', async function () {
         await createVerifiedUser('verified@example.com', 'test123');
         const multiFactorUser = firebase.auth().multiFactor(firebase.auth().currentUser);
@@ -516,6 +526,7 @@ describe('multi-factor modular', function () {
         await Utils.sleep(50);
       }
     });
+
     it('has no multi-factor information if not enrolled', async function () {
       const { signInWithEmailAndPassword, getAuth } = authModular;
 
@@ -804,6 +815,7 @@ describe('multi-factor modular', function () {
         }
         return Promise.resolve();
       });
+
       it('can enroll new factor without display name', async function () {
         if (device.getPlatform() === 'ios') {
           this.skip();
@@ -842,6 +854,7 @@ describe('multi-factor modular', function () {
         }
         return Promise.resolve();
       });
+
       it('can enroll multiple factors', async function () {
         if (device.getPlatform() === 'ios') {
           this.skip();
@@ -881,6 +894,7 @@ describe('multi-factor modular', function () {
 
         return Promise.resolve();
       });
+
       it('can not enroll the same factor twice', async function () {
         this.skip();
         // This test should probably be implemented but doesn't work:
@@ -962,6 +976,7 @@ describe('multi-factor modular', function () {
         }
         return Promise.reject();
       });
+
       it('throws an error for unknown sessions', async function () {
         const { getAuth, signInWithEmailAndPassword, getMultiFactorResolver } = authModular;
 
@@ -994,6 +1009,7 @@ describe('multi-factor modular', function () {
         }
         return Promise.reject();
       });
+
       it('throws an error for unknown verification code', async function () {
         const { getAuth, signInWithEmailAndPassword, getMultiFactorResolver } = authModular;
 
@@ -1075,6 +1091,7 @@ describe('multi-factor modular', function () {
           new Error('Enrolling a second factor when using phone authentication is not supported.'),
         );
       });
+
       it('can not enroll when phone number is missing + sign', async function () {
         const { getAuth, multiFactor } = authModular;
 

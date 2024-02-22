@@ -27,6 +27,7 @@ describe('Trace modular', function () {
         await Utils.sleep(125);
         await trace.stop();
       });
+
       it('resolves null if already started', async function () {
         const trace = firebase.perf().newTrace('invertase');
         await trace.start();
@@ -36,6 +37,7 @@ describe('Trace modular', function () {
         await trace.stop();
       });
     });
+
     describe('stop()', function () {
       it('correctly stops with internal flag ', async function () {
         const trace = firebase.perf().newTrace('invertase');
@@ -48,6 +50,7 @@ describe('Trace modular', function () {
         await trace.stop();
         should.equal(trace._stopped, true);
       });
+
       it('resolves null if already stopped', async function () {
         const trace = firebase.perf().newTrace('invertase');
         await trace.start();
@@ -84,12 +87,14 @@ describe('Trace modular', function () {
         const value = trace.getAttribute('inver');
         should.equal(value, null);
       });
+
       it('should return an attribute string value', async function () {
         const trace = firebase.perf().newTrace('invertase');
         trace.putAttribute('inver', 'tase');
         const value = trace.getAttribute('inver');
         should.equal(value, 'tase');
       });
+
       it('errors if attribute name is not a string', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
@@ -101,6 +106,7 @@ describe('Trace modular', function () {
         }
       });
     });
+
     describe('putAttribute()', function () {
       it('sets an attribute string value', async function () {
         const trace = firebase.perf().newTrace('invertase');
@@ -108,6 +114,7 @@ describe('Trace modular', function () {
         const value = trace.getAttribute('inver');
         value.should.equal('tase');
       });
+
       it('errors if attribute name is not a string', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
@@ -118,6 +125,7 @@ describe('Trace modular', function () {
           return Promise.resolve();
         }
       });
+
       it('errors if attribute value is not a string', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
@@ -128,6 +136,7 @@ describe('Trace modular', function () {
           return Promise.resolve();
         }
       });
+
       it('errors if attribute name is greater than 40 characters', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
@@ -138,6 +147,7 @@ describe('Trace modular', function () {
           return Promise.resolve();
         }
       });
+
       it('errors if attribute value is greater than 100 characters', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
@@ -148,6 +158,7 @@ describe('Trace modular', function () {
           return Promise.resolve();
         }
       });
+
       it('errors if more than 5 attributes are put', async function () {
         const trace = firebase.perf().newTrace('invertase');
         trace.putAttribute('invertase1', '1337');
@@ -187,6 +198,7 @@ describe('Trace modular', function () {
           return Promise.resolve();
         }
       });
+
       it('removes a metric', async function () {
         const trace = firebase.perf().newTrace('invertase');
         trace.putMetric('likes', 1337);
@@ -197,18 +209,21 @@ describe('Trace modular', function () {
         should.equal(value2, 0);
       });
     });
+
     describe('getMetric()', function () {
       it('should return 0 if metric does not exist', async function () {
         const trace = firebase.perf().newTrace('invertase');
         const value = trace.getMetric('likes');
         should.equal(value, 0);
       });
+
       it('should return an metric number value', async function () {
         const trace = firebase.perf().newTrace('invertase');
         trace.putMetric('likes', 7331);
         const value = trace.getMetric('likes');
         should.equal(value, 7331);
       });
+
       it('errors if metric name is not a string', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
@@ -220,6 +235,7 @@ describe('Trace modular', function () {
         }
       });
     });
+
     describe('putMetric()', function () {
       it('sets a metric number value', async function () {
         const trace = firebase.perf().newTrace('invertase');
@@ -227,6 +243,7 @@ describe('Trace modular', function () {
         const value = trace.getMetric('likes');
         value.should.equal(9001);
       });
+
       it('overwrites existing metric if it exists', async function () {
         const trace = firebase.perf().newTrace('invertase');
         trace.putMetric('likes', 1);
@@ -237,6 +254,7 @@ describe('Trace modular', function () {
         const value2 = trace.getMetric('likes');
         value2.should.equal(1);
       });
+
       it('errors if metric name is not a string', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
@@ -247,6 +265,7 @@ describe('Trace modular', function () {
           return Promise.resolve();
         }
       });
+
       it('errors if metric value is not a number', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
@@ -258,6 +277,7 @@ describe('Trace modular', function () {
         }
       });
     });
+
     describe('incrementMetric()', function () {
       it('increments a metric number value', async function () {
         const trace = firebase.perf().newTrace('invertase');
@@ -266,12 +286,14 @@ describe('Trace modular', function () {
         const value = trace.getMetric('likes');
         value.should.equal(9001);
       });
+
       it('increments a metric even if it does not already exist', async function () {
         const trace = firebase.perf().newTrace('invertase');
         trace.incrementMetric('likes', 9001);
         const value = trace.getMetric('likes');
         value.should.equal(9001);
       });
+
       it('errors if metric name is not a string', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
@@ -282,6 +304,7 @@ describe('Trace modular', function () {
           return Promise.resolve();
         }
       });
+
       it('errors if incrementBy value is not a number', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
@@ -293,6 +316,7 @@ describe('Trace modular', function () {
         }
       });
     });
+
     it('getMetrics()', async function () {
       const trace = firebase.perf().newTrace('invertase');
       trace.putMetric('likes', 1337);
@@ -318,6 +342,7 @@ describe('Trace modular', function () {
         await Utils.sleep(125);
         await traceInvertase.stop();
       });
+
       it('resolves null if already started', async function () {
         const { getPerformance, trace } = perfModular;
         const perf = getPerformance();
@@ -329,6 +354,7 @@ describe('Trace modular', function () {
         await traceInvertase.stop();
       });
     });
+
     describe('stop()', function () {
       it('correctly stops with internal flag ', async function () {
         const { getPerformance, trace } = perfModular;
@@ -343,6 +369,7 @@ describe('Trace modular', function () {
         await traceInvertase.stop();
         should.equal(traceInvertase._stopped, true);
       });
+
       it('resolves null if already stopped', async function () {
         const { getPerformance, trace } = perfModular;
         const perf = getPerformance();
@@ -387,12 +414,14 @@ describe('Trace modular', function () {
         const value = traceInvertase.getAttribute('inver');
         should.equal(value, null);
       });
+
       it('should return an attribute string value', async function () {
         const trace = firebase.perf().newTrace('invertase');
         trace.putAttribute('inver', 'tase');
         const value = trace.getAttribute('inver');
         should.equal(value, 'tase');
       });
+
       it('errors if attribute name is not a string', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
@@ -404,6 +433,7 @@ describe('Trace modular', function () {
         }
       });
     });
+
     describe('putAttribute()', function () {
       it('sets an attribute string value', async function () {
         const trace = firebase.perf().newTrace('invertase');
@@ -411,6 +441,7 @@ describe('Trace modular', function () {
         const value = trace.getAttribute('inver');
         value.should.equal('tase');
       });
+
       it('errors if attribute name is not a string', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
@@ -421,6 +452,7 @@ describe('Trace modular', function () {
           return Promise.resolve();
         }
       });
+
       it('errors if attribute value is not a string', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
@@ -431,6 +463,7 @@ describe('Trace modular', function () {
           return Promise.resolve();
         }
       });
+
       it('errors if attribute name is greater than 40 characters', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
@@ -441,6 +474,7 @@ describe('Trace modular', function () {
           return Promise.resolve();
         }
       });
+
       it('errors if attribute value is greater than 100 characters', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
@@ -451,6 +485,7 @@ describe('Trace modular', function () {
           return Promise.resolve();
         }
       });
+
       it('errors if more than 5 attributes are put', async function () {
         const trace = firebase.perf().newTrace('invertase');
         trace.putAttribute('invertase1', '1337');
@@ -490,6 +525,7 @@ describe('Trace modular', function () {
           return Promise.resolve();
         }
       });
+
       it('removes a metric', async function () {
         const trace = firebase.perf().newTrace('invertase');
         trace.putMetric('likes', 1337);
@@ -500,18 +536,21 @@ describe('Trace modular', function () {
         should.equal(value2, 0);
       });
     });
+
     describe('getMetric()', function () {
       it('should return 0 if metric does not exist', async function () {
         const trace = firebase.perf().newTrace('invertase');
         const value = trace.getMetric('likes');
         should.equal(value, 0);
       });
+
       it('should return an metric number value', async function () {
         const trace = firebase.perf().newTrace('invertase');
         trace.putMetric('likes', 7331);
         const value = trace.getMetric('likes');
         should.equal(value, 7331);
       });
+
       it('errors if metric name is not a string', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
@@ -523,6 +562,7 @@ describe('Trace modular', function () {
         }
       });
     });
+
     describe('putMetric()', function () {
       it('sets a metric number value', async function () {
         const trace = firebase.perf().newTrace('invertase');
@@ -530,6 +570,7 @@ describe('Trace modular', function () {
         const value = trace.getMetric('likes');
         value.should.equal(9001);
       });
+
       it('overwrites existing metric if it exists', async function () {
         const trace = firebase.perf().newTrace('invertase');
         trace.putMetric('likes', 1);
@@ -540,6 +581,7 @@ describe('Trace modular', function () {
         const value2 = trace.getMetric('likes');
         value2.should.equal(1);
       });
+
       it('errors if metric name is not a string', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
@@ -550,6 +592,7 @@ describe('Trace modular', function () {
           return Promise.resolve();
         }
       });
+
       it('errors if metric value is not a number', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
@@ -561,6 +604,7 @@ describe('Trace modular', function () {
         }
       });
     });
+
     describe('incrementMetric()', function () {
       it('increments a metric number value', async function () {
         const trace = firebase.perf().newTrace('invertase');
@@ -569,12 +613,14 @@ describe('Trace modular', function () {
         const value = trace.getMetric('likes');
         value.should.equal(9001);
       });
+
       it('increments a metric even if it does not already exist', async function () {
         const trace = firebase.perf().newTrace('invertase');
         trace.incrementMetric('likes', 9001);
         const value = trace.getMetric('likes');
         value.should.equal(9001);
       });
+
       it('errors if metric name is not a string', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
@@ -585,6 +631,7 @@ describe('Trace modular', function () {
           return Promise.resolve();
         }
       });
+
       it('errors if incrementBy value is not a number', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
@@ -596,6 +643,7 @@ describe('Trace modular', function () {
         }
       });
     });
+
     it('getMetrics()', async function () {
       const trace = firebase.perf().newTrace('invertase');
       trace.putMetric('likes', 1337);

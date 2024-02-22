@@ -237,6 +237,7 @@ describe('storage() modular', function () {
       });
     });
   });
+
   describe('modular', function () {
     describe('getStorage', function () {
       it('pass app as argument', function () {

@@ -141,6 +141,7 @@ describe('crashlytics()', function () {
           e.message.should.containEql("has been set to 'true', all reports are automatically sent");
         }
       });
+
       it("checks device cache for unsent crashlytic's reports", async function () {
         await firebase.crashlytics().setCrashlyticsCollectionEnabled(false);
         const anyUnsentReports = await firebase.crashlytics().checkForUnsentReports();
@@ -327,6 +328,7 @@ describe('crashlytics()', function () {
           e.message.should.containEql("has been set to 'true', all reports are automatically sent");
         }
       });
+
       it("checks device cache for unsent crashlytic's reports", async function () {
         const { getCrashlytics, setCrashlyticsCollectionEnabled, checkForUnsentReports } =
           crashlyticsModular;

@@ -32,6 +32,7 @@ describe('storage() -> StorageTask', function () {
       before(async function () {
         await seed(PATH);
       });
+
       describe('writeToFile()', function () {
         // TODO - followup - the storage emulator currently inverts not-found / permission error conditions
         // this one returns the permission denied against live storage, but object not found against emulator
@@ -48,6 +49,7 @@ describe('storage() -> StorageTask', function () {
             return Promise.resolve();
           }
         });
+
         it('downloads a file', async function () {
           const meta = await firebase
             .storage()
@@ -57,6 +59,7 @@ describe('storage() -> StorageTask', function () {
           meta.bytesTransferred.should.eql(meta.totalBytes);
         });
       });
+
       describe('putString()', function () {
         it('uploads a raw string', async function () {
           const jsonDerulo = JSON.stringify({ foo: 'bar' });
@@ -70,6 +73,7 @@ describe('storage() -> StorageTask', function () {
           uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
           uploadTaskSnapshot.metadata.should.be.an.Object();
         });
+
         it('uploads a data_url formatted string', async function () {
           const dataUrl = 'data:application/json;base64,eyJmb28iOiJiYXNlNjQifQ==';
           const uploadTaskSnapshot = await firebase
@@ -80,6 +84,7 @@ describe('storage() -> StorageTask', function () {
           uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
           uploadTaskSnapshot.metadata.should.be.an.Object();
         });
+
         it('uploads a url encoded data_url formatted string', async function () {
           const dataUrl = 'data:text/html,%3Ch1%3EHello%2C%20World!%3C%2Fh1%3E';
           const uploadTaskSnapshot = await firebase
@@ -90,6 +95,7 @@ describe('storage() -> StorageTask', function () {
           uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
           uploadTaskSnapshot.metadata.should.be.an.Object();
         });
+
         it('when using data_url it still sets the content type if metadata is provided', async function () {
           const dataUrl = 'data:text/html,%3Ch1%3EHello%2C%20World!%3C%2Fh1%3E';
           const uploadTaskSnapshot = await firebase
@@ -105,6 +111,7 @@ describe('storage() -> StorageTask', function () {
           uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
           uploadTaskSnapshot.metadata.should.be.an.Object();
         });
+
         it('uploads a base64 string', async function () {
           const base64String = 'eyJmb28iOiJiYXNlNjQifQ==';
           const uploadTaskSnapshot = await firebase
@@ -117,6 +124,7 @@ describe('storage() -> StorageTask', function () {
           uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
           uploadTaskSnapshot.metadata.should.be.an.Object();
         });
+
         it('uploads a base64url string', async function () {
           const base64UrlString = 'eyJmb28iOiJiYXNlNjQifQ';
           const uploadTaskSnapshot = await firebase
@@ -129,6 +137,7 @@ describe('storage() -> StorageTask', function () {
           uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
           uploadTaskSnapshot.metadata.should.be.an.Object();
         });
+
         it('throws an error on invalid data_url', async function () {
           const dataUrl = '';
           try {
@@ -142,6 +151,7 @@ describe('storage() -> StorageTask', function () {
             return Promise.resolve();
           }
         });
+
         it('throws if string arg is not a valid string', async function () {
           try {
             await firebase.storage().ref('/a.b').putString(1, 'base64');
@@ -151,6 +161,7 @@ describe('storage() -> StorageTask', function () {
             return Promise.resolve();
           }
         });
+
         it('throws an error on invalid string format', async function () {
           try {
             await firebase.storage().ref('/a.b').putString('fooby', 'abc');
@@ -160,6 +171,7 @@ describe('storage() -> StorageTask', function () {
             return Promise.resolve();
           }
         });
+
         it('throws an error if metadata is not an object', async function () {
           try {
             await firebase.storage().ref('/a.b').putString('fooby', 'raw', 1234);
@@ -170,6 +182,7 @@ describe('storage() -> StorageTask', function () {
           }
         });
       });
+
       describe('put()', function () {
         it('uploads a Blob', async function () {
           const jsonDerulo = JSON.stringify({ foo: 'bar' });
@@ -184,6 +197,7 @@ describe('storage() -> StorageTask', function () {
           uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
           uploadTaskSnapshot.metadata.should.be.an.Object();
         });
+
         it('uploads an ArrayBuffer', async function () {
           const jsonDerulo = JSON.stringify({ foo: 'bar' });
           const arrayBuffer = new jet.context.window.ArrayBuffer(jsonDerulo.length);
@@ -201,6 +215,7 @@ describe('storage() -> StorageTask', function () {
           uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
           uploadTaskSnapshot.metadata.should.be.an.Object();
         });
+
         it('uploads an Uint8Array', async function () {
           const jsonDerulo = JSON.stringify({ foo: 'bar' });
           const arrayBuffer = new jet.context.window.ArrayBuffer(jsonDerulo.length);
@@ -218,6 +233,7 @@ describe('storage() -> StorageTask', function () {
           uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
           uploadTaskSnapshot.metadata.should.be.an.Object();
         });
+
         it('should have access to the snapshot values outside of the Task thennable', async function () {
           const jsonDerulo = JSON.stringify({ foo: 'bar' });
           const bob = new jet.context.Blob([jsonDerulo], {
@@ -229,6 +245,7 @@ describe('storage() -> StorageTask', function () {
           snapshotProperties(snapshot);
         });
       });
+
       describe('upload tasks', function () {
         // before(async function () {
         //   // TODO we need some semi-large assets to upload and download I think?
@@ -298,6 +315,7 @@ describe('storage() -> StorageTask', function () {
             uploadTaskSnapshot.metadata.contentType.should.equal('image/heic');
           }
         });
+
         it('uploads a file without read permission', async function () {
           const uploadTaskSnapshot = await firebase
             .storage()
@@ -307,6 +325,7 @@ describe('storage() -> StorageTask', function () {
           uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
           uploadTaskSnapshot.metadata.should.be.an.Object();
         });
+
         it('should have access to the snapshot values outside of the Task thennable', async function () {
           const uploadTaskSnapshot = firebase
             .storage()
@@ -316,6 +335,7 @@ describe('storage() -> StorageTask', function () {
           const snapshot = uploadTaskSnapshot.snapshot;
           snapshotProperties(snapshot);
         });
+
         it('should have access to the snapshot values outside of the event subscriber', async function () {
           const uploadTaskSnapshot = firebase
             .storage()
@@ -333,6 +353,7 @@ describe('storage() -> StorageTask', function () {
           await promise;
         });
       });
+
       describe('on()', function () {
         before(async function () {
           await firebase
@@ -340,6 +361,7 @@ describe('storage() -> StorageTask', function () {
             .ref(`${PATH}/ok.jpeg`)
             .putString('Just a string to put in a file for upload');
         });
+
         it('throws an Error if event is invalid', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/ok.jpeg`);
           try {
@@ -353,6 +375,7 @@ describe('storage() -> StorageTask', function () {
             return Promise.resolve();
           }
         });
+
         it('throws an Error if nextOrObserver is invalid', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/ok.jpeg`);
           try {
@@ -366,6 +389,7 @@ describe('storage() -> StorageTask', function () {
             return Promise.resolve();
           }
         });
+
         it('observer calls error callback', async function () {
           const ref = firebase.storage().ref(`${PATH}/uploadOk.jpeg`);
           const { resolve, promise } = Promise.defer();
@@ -384,6 +408,7 @@ describe('storage() -> StorageTask', function () {
           }
           await promise;
         });
+
         it('observer: calls next callback', async function () {
           const ref = firebase.storage().ref(`${PATH}/ok.jpeg`);
           const { resolve, promise } = Promise.defer();
@@ -399,6 +424,7 @@ describe('storage() -> StorageTask', function () {
           await task;
           await promise;
         });
+
         it('observer: calls completion callback', async function () {
           const ref = firebase.storage().ref(`${PATH}/ok.jpeg`);
           const { resolve, promise } = Promise.defer();
@@ -413,6 +439,7 @@ describe('storage() -> StorageTask', function () {
           await task;
           await promise;
         });
+
         it('calls error callback', async function () {
           const ref = firebase.storage().ref(`${PATH}/uploadOk.jpeg`);
           const { resolve, promise } = Promise.defer();
@@ -434,6 +461,7 @@ describe('storage() -> StorageTask', function () {
           }
           await promise;
         });
+
         it('calls next callback', async function () {
           const ref = firebase.storage().ref(`${PATH}/ok.jpeg`);
           const { resolve, promise } = Promise.defer();
@@ -447,6 +475,7 @@ describe('storage() -> StorageTask', function () {
           await task;
           await promise;
         });
+
         it('calls completion callback', async function () {
           const ref = firebase.storage().ref(`${PATH}/ok.jpeg`);
           const { resolve, promise } = Promise.defer();
@@ -459,6 +488,7 @@ describe('storage() -> StorageTask', function () {
           await task;
           await promise;
         });
+
         it('returns a subscribe fn', async function () {
           const ref = firebase.storage().ref(`${PATH}/ok.jpeg`);
           const { resolve, promise } = Promise.defer();
@@ -473,6 +503,7 @@ describe('storage() -> StorageTask', function () {
           await task;
           await promise;
         });
+
         it('returns a subscribe fn supporting observer usage syntax', async function () {
           const ref = firebase.storage().ref(`${PATH}/ok.jpeg`);
           const { resolve, promise } = Promise.defer();
@@ -489,6 +520,7 @@ describe('storage() -> StorageTask', function () {
           await task;
           await promise;
         });
+
         it('listens to download state', async function () {
           const ref = firebase.storage().ref(`${PATH}/ok.jpeg`);
           const { resolve, reject, promise } = Promise.defer();
@@ -507,6 +539,7 @@ describe('storage() -> StorageTask', function () {
           );
           await promise;
         });
+
         it('listens to upload state', async function () {
           const { resolve, reject, promise } = Promise.defer();
           const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.gif`;
@@ -635,6 +668,7 @@ describe('storage() -> StorageTask', function () {
           await promise;
         });
       });
+
       describe('cancel()', function () {
         // TODO stage a file big enough to test upload cancel
         xit('successfully cancels an upload', async function () {

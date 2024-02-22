@@ -49,6 +49,7 @@ describe('firestore().collection().count()', function () {
       const qs = await colRef.count().get();
       qs.data().count.should.eql(3);
     });
+
     it('gets countFromServer of collection reference - unfiltered', async function () {
       const colRef = firebase.firestore().collection(`${COLLECTION}/count/collection`);
 
@@ -64,6 +65,7 @@ describe('firestore().collection().count()', function () {
       const qs = await colRef.countFromServer().get();
       qs.data().count.should.eql(3);
     });
+
     it('gets correct count of collection reference - where equal', async function () {
       const colRef = firebase.firestore().collection(`${COLLECTION}/count/collection`);
 

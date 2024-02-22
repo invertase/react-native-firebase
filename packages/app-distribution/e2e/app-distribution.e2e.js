@@ -42,6 +42,7 @@ describe('appDistribution()', function () {
         }
       });
     });
+
     describe('signOutTester()', function () {
       it('signs out a tester', async function () {
         if (device.getPlatform() === 'ios') {
@@ -96,6 +97,7 @@ describe('appDistribution()', function () {
         }
       });
     });
+
     describe('signOutTester()', function () {
       it('signs out a tester', async function () {
         const { getAppDistribution, signOutTester } = appDistributionModular;
