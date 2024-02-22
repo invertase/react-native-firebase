@@ -23,6 +23,7 @@ describe('onValue()', function () {
   before(async function () {
     await seed(TEST_PATH);
   });
+
   after(async function () {
     await wipe(TEST_PATH);
   });

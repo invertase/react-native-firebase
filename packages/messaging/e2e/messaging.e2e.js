@@ -93,6 +93,7 @@ describe('messaging()', function () {
           this.skip();
         }
       });
+
       it('successfully unregisters on ios', async function () {
         if (device.getPlatform() === 'ios') {
           await firebase.messaging().unregisterDeviceForRemoteMessages();
@@ -118,6 +119,7 @@ describe('messaging()', function () {
           this.skip();
         }
       });
+
       it('returns -1 on ios (default)', async function () {
         if (device.getPlatform() === 'ios') {
           should.equal(await firebase.messaging().hasPermission(), -1);
@@ -143,6 +145,7 @@ describe('messaging()', function () {
           this.skip();
         }
       });
+
       it('resolves on ios with token on supported simulators', async function () {
         // Make sure we are registered for remote notifications, else no token
         aPNSCapableSimulator = await isAPNSCapableSimulator();
@@ -229,6 +232,7 @@ describe('messaging()', function () {
       it('useServiceWorker should not error when called', function () {
         firebase.messaging().useServiceWorker();
       });
+
       it('usePublicVapidKey should not error when called', function () {
         firebase.messaging().usePublicVapidKey();
       });
@@ -553,6 +557,7 @@ describe('messaging()', function () {
           this.skip();
         }
       });
+
       it('successfully unregisters on ios', async function () {
         const {
           getMessaging,
@@ -588,6 +593,7 @@ describe('messaging()', function () {
           this.skip();
         }
       });
+
       it('returns -1 on ios (default)', async function () {
         const { getMessaging, hasPermission } = messagingModular;
         if (device.getPlatform() === 'ios') {
@@ -616,6 +622,7 @@ describe('messaging()', function () {
           this.skip();
         }
       });
+
       it('resolves on ios with token on supported simulators', async function () {
         // Make sure we are registered for remote notifications, else no token
         const { getMessaging, getAPNSToken, registerDeviceForRemoteMessages } = messagingModular;

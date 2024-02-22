@@ -33,6 +33,7 @@ describe('remoteMessage modular', function () {
           Promise.resolve();
         }
       });
+
       it('throws if no object provided', function () {
         if (device.getPlatform() === 'android') {
           try {
@@ -46,6 +47,7 @@ describe('remoteMessage modular', function () {
           this.skip();
         }
       });
+
       it('uses default values', async function () {
         if (device.getPlatform() === 'android') {
           firebase.messaging().sendMessage({});
@@ -53,6 +55,7 @@ describe('remoteMessage modular', function () {
           this.skip();
         }
       });
+
       describe('to', function () {
         it('throws if to is not a string', function () {
           if (device.getPlatform() === 'android') {
@@ -69,6 +72,7 @@ describe('remoteMessage modular', function () {
             this.skip();
           }
         });
+
         it('accepts custom to value', async function () {
           if (device.getPlatform() === 'android') {
             await firebase.messaging().sendMessage({
@@ -79,6 +83,7 @@ describe('remoteMessage modular', function () {
           }
         });
       });
+
       describe('messageId', function () {
         it('throws if messageId is not a string', function () {
           if (device.getPlatform() === 'android') {
@@ -95,6 +100,7 @@ describe('remoteMessage modular', function () {
             this.skip();
           }
         });
+
         it('accepts custom messageId value', async function () {
           if (device.getPlatform() === 'android') {
             await firebase.messaging().sendMessage({
@@ -105,6 +111,7 @@ describe('remoteMessage modular', function () {
           }
         });
       });
+
       describe('ttl', function () {
         it('throws if not a number', function () {
           if (device.getPlatform() === 'android') {
@@ -121,6 +128,7 @@ describe('remoteMessage modular', function () {
             this.skip();
           }
         });
+
         it('throws if negative number', function () {
           if (device.getPlatform() === 'android') {
             try {
@@ -136,6 +144,7 @@ describe('remoteMessage modular', function () {
             this.skip();
           }
         });
+
         it('throws if float number', function () {
           if (device.getPlatform() === 'android') {
             try {
@@ -151,6 +160,7 @@ describe('remoteMessage modular', function () {
             this.skip();
           }
         });
+
         it('accepts custom ttl value', async function () {
           if (device.getPlatform() === 'android') {
             await firebase.messaging().sendMessage({
@@ -161,6 +171,7 @@ describe('remoteMessage modular', function () {
           }
         });
       });
+
       describe('data', function () {
         it('throws if data not an object', function () {
           if (device.getPlatform() === 'android') {
@@ -177,6 +188,7 @@ describe('remoteMessage modular', function () {
             this.skip();
           }
         });
+
         it('accepts custom data value', async function () {
           if (device.getPlatform() === 'android') {
             await firebase.messaging().sendMessage({
@@ -190,6 +202,7 @@ describe('remoteMessage modular', function () {
           }
         });
       });
+
       describe('collapseKey', function () {
         it('throws if collapseKey is not a string', function () {
           if (device.getPlatform() === 'android') {
@@ -206,6 +219,7 @@ describe('remoteMessage modular', function () {
             this.skip();
           }
         });
+
         it('accepts custom collapseKey value', async function () {
           if (device.getPlatform() === 'android') {
             await firebase.messaging().sendMessage({
@@ -216,6 +230,7 @@ describe('remoteMessage modular', function () {
           }
         });
       });
+
       describe('messageType', function () {
         it('throws if messageType is not a string', function () {
           if (device.getPlatform() === 'android') {
@@ -232,6 +247,7 @@ describe('remoteMessage modular', function () {
             this.skip();
           }
         });
+
         it('accepts custom messageType value', async function () {
           if (device.getPlatform() === 'android') {
             await firebase.messaging().sendMessage({
@@ -263,6 +279,7 @@ describe('remoteMessage modular', function () {
           Promise.resolve();
         }
       });
+
       it('throws if no object provided', function () {
         const { getMessaging, sendMessage } = messagingModular;
         if (device.getPlatform() === 'android') {
@@ -277,6 +294,7 @@ describe('remoteMessage modular', function () {
           this.skip();
         }
       });
+
       it('uses default values', async function () {
         const { getMessaging, sendMessage } = messagingModular;
         if (device.getPlatform() === 'android') {
@@ -285,6 +303,7 @@ describe('remoteMessage modular', function () {
           this.skip();
         }
       });
+
       describe('to', function () {
         it('throws if to is not a string', function () {
           const { getMessaging, sendMessage } = messagingModular;
@@ -302,6 +321,7 @@ describe('remoteMessage modular', function () {
             this.skip();
           }
         });
+
         it('accepts custom to value', async function () {
           const { getMessaging, sendMessage } = messagingModular;
           if (device.getPlatform() === 'android') {
@@ -313,6 +333,7 @@ describe('remoteMessage modular', function () {
           }
         });
       });
+
       describe('messageId', function () {
         it('throws if messageId is not a string', function () {
           const { getMessaging, sendMessage } = messagingModular;
@@ -330,6 +351,7 @@ describe('remoteMessage modular', function () {
             this.skip();
           }
         });
+
         it('accepts custom messageId value', async function () {
           const { getMessaging, sendMessage } = messagingModular;
           if (device.getPlatform() === 'android') {
@@ -341,6 +363,7 @@ describe('remoteMessage modular', function () {
           }
         });
       });
+
       describe('ttl', function () {
         it('throws if not a number', function () {
           const { getMessaging, sendMessage } = messagingModular;
@@ -358,6 +381,7 @@ describe('remoteMessage modular', function () {
             this.skip();
           }
         });
+
         it('throws if negative number', function () {
           const { getMessaging, sendMessage } = messagingModular;
           if (device.getPlatform() === 'android') {
@@ -374,6 +398,7 @@ describe('remoteMessage modular', function () {
             this.skip();
           }
         });
+
         it('throws if float number', function () {
           const { getMessaging, sendMessage } = messagingModular;
           if (device.getPlatform() === 'android') {
@@ -390,6 +415,7 @@ describe('remoteMessage modular', function () {
             this.skip();
           }
         });
+
         it('accepts custom ttl value', async function () {
           const { getMessaging, sendMessage } = messagingModular;
           if (device.getPlatform() === 'android') {
@@ -401,6 +427,7 @@ describe('remoteMessage modular', function () {
           }
         });
       });
+
       describe('data', function () {
         it('throws if data not an object', function () {
           const { getMessaging, sendMessage } = messagingModular;
@@ -418,6 +445,7 @@ describe('remoteMessage modular', function () {
             this.skip();
           }
         });
+
         it('accepts custom data value', async function () {
           const { getMessaging, sendMessage } = messagingModular;
           if (device.getPlatform() === 'android') {
@@ -432,6 +460,7 @@ describe('remoteMessage modular', function () {
           }
         });
       });
+
       describe('collapseKey', function () {
         it('throws if collapseKey is not a string', function () {
           const { getMessaging, sendMessage } = messagingModular;
@@ -449,6 +478,7 @@ describe('remoteMessage modular', function () {
             this.skip();
           }
         });
+
         it('accepts custom collapseKey value', async function () {
           const { getMessaging, sendMessage } = messagingModular;
           if (device.getPlatform() === 'android') {
@@ -460,6 +490,7 @@ describe('remoteMessage modular', function () {
           }
         });
       });
+
       describe('messageType', function () {
         it('throws if messageType is not a string', function () {
           const { getMessaging, sendMessage } = messagingModular;
@@ -477,6 +508,7 @@ describe('remoteMessage modular', function () {
             this.skip();
           }
         });
+
         it('accepts custom messageType value', async function () {
           const { getMessaging, sendMessage } = messagingModular;
           if (device.getPlatform() === 'android') {

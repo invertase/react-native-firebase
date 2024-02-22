@@ -23,6 +23,7 @@ describe('get()', function () {
   before(function () {
     return seed(TEST_PATH);
   });
+
   after(function () {
     return wipe(TEST_PATH);
   });

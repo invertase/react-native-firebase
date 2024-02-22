@@ -66,6 +66,7 @@ describe('Analytics', function () {
       "'name' expected a string value",
     );
   });
+
   it('throws if value is invalid', function () {
     // @ts-ignore test
     expect(() => firebase.analytics().setUserProperty('invertase3', 33.3333)).toThrowError(
@@ -79,6 +80,7 @@ describe('Analytics', function () {
       "'properties' expected an object of key/value pairs",
     );
   });
+
   it('throws if property value is invalid', function () {
     const props = {
       test: '123',
@@ -91,6 +93,7 @@ describe('Analytics', function () {
       "'properties' value for parameter 'foo' is invalid",
     );
   });
+
   it('throws if value is a number', function () {
     // @ts-ignore test
     expect(() => firebase.analytics().setUserProperties({ invertase1: 123 })).toThrowError(
@@ -104,6 +107,7 @@ describe('Analytics', function () {
       'The supplied arg must be an object of key/values.',
     );
   });
+
   it('throws if consentSettings is invalid', function () {
     const consentSettings = {
       ad_storage: true,
@@ -116,6 +120,7 @@ describe('Analytics', function () {
       "'consentSettings' value for parameter 'foo' is invalid, expected a boolean.",
     );
   });
+
   it('throws if one value of consentSettings is a number', function () {
     // @ts-ignore test
     expect(() => firebase.analytics().setConsent({ ad_storage: 123 })).toThrowError(
@@ -164,6 +169,7 @@ describe('Analytics', function () {
           'firebase.analytics().logScreenView(*):',
         );
       });
+
       it('accepts arbitrary custom event parameters while rejecting defined parameters with wrong types', function () {
         expect(() => firebase.analytics().logScreenView({ foo: 'bar' })).not.toThrow();
         expect(() =>
@@ -180,6 +186,7 @@ describe('Analytics', function () {
           'firebase.analytics().logAddPaymentInfo(*):',
         );
       });
+
       it('errors when compound values are not set', function () {
         expect(() =>
           firebase.analytics().logAddPaymentInfo({
@@ -206,6 +213,7 @@ describe('Analytics', function () {
         'firebase.analytics().logAddToCart(*):',
       );
     });
+
     it('errors when compound values are not set', function () {
       expect(() =>
         firebase.analytics().logAddToCart({
@@ -222,6 +230,7 @@ describe('Analytics', function () {
         'firebase.analytics().logAddShippingInfo(*):',
       );
     });
+
     it('errors when compound values are not set', function () {
       expect(() =>
         firebase.analytics().logAddShippingInfo({
@@ -238,6 +247,7 @@ describe('Analytics', function () {
         'firebase.analytics().logAddToWishlist(*):',
       );
     });
+
     it('errors when compound values are not set', function () {
       expect(() =>
         firebase.analytics().logAddToWishlist({
@@ -254,6 +264,7 @@ describe('Analytics', function () {
         'firebase.analytics().logBeginCheckout(*):',
       );
     });
+
     it('errors when compound values are not set', function () {
       expect(() =>
         firebase.analytics().logBeginCheckout({
@@ -270,6 +281,7 @@ describe('Analytics', function () {
         'firebase.analytics().logGenerateLead(*):',
       );
     });
+
     it('errors when compound values are not set', function () {
       expect(() =>
         firebase.analytics().logGenerateLead({
@@ -439,6 +451,7 @@ describe('Analytics', function () {
         'firebase.analytics().logPurchase(*):',
       );
     });
+
     it('errors when compound values are not set', function () {
       expect(() =>
         firebase.analytics().logPurchase({
@@ -472,6 +485,7 @@ describe('Analytics', function () {
         'firebase.analytics().logViewCart(*):',
       );
     });
+
     it('errors when compound values are not set', function () {
       expect(() =>
         firebase.analytics().logViewCart({
@@ -488,6 +502,7 @@ describe('Analytics', function () {
         'firebase.analytics().logViewItem(*):',
       );
     });
+
     it('errors when compound values are not set', function () {
       expect(() =>
         firebase.analytics().logViewItem({
@@ -513,6 +528,7 @@ describe('Analytics', function () {
         'firebase.analytics().logRemoveFromCart(*):',
       );
     });
+
     it('errors when compound values are not set', function () {
       expect(() =>
         firebase.analytics().logRemoveFromCart({

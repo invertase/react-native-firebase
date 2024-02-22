@@ -460,6 +460,7 @@ describe('analytics() modular', function () {
         };
         await firebase.analytics().setConsent(consentSettings);
       });
+
       it('set ad_storage=false and analytics_storage=true on consentSettings', async function () {
         const consentSettings = {
           ad_storage: false,
@@ -492,6 +493,7 @@ describe('analytics() modular', function () {
           .analytics()
           .initiateOnDeviceConversionMeasurementWithPhoneNumber('+14155551212');
       });
+
       it('handles mal-formatted phone number', async function () {
         try {
           await firebase
@@ -1053,6 +1055,7 @@ describe('analytics() modular', function () {
           analyticsModular;
         await initiateOnDeviceConversionMeasurementWithPhoneNumber(getAnalytics(), '+14155551212');
       });
+
       it('handles mal-formatted phone number', async function () {
         try {
           const { getAnalytics, initiateOnDeviceConversionMeasurementWithPhoneNumber } =
@@ -1093,6 +1096,7 @@ describe('analytics() modular', function () {
         const { getAnalytics, setConsent } = analyticsModular;
         await setConsent(getAnalytics(), consentSettings);
       });
+
       it('set ad_storage=false and analytics_storage=true on consentSettings', async function () {
         const consentSettings = {
           ad_storage: false,

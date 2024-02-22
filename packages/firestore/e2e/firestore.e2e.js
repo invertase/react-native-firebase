@@ -224,6 +224,7 @@ describe('firestore()', function () {
           await promise;
           await ref.delete();
         });
+
         it("handles 'previous'", async function () {
           firebase.firestore().settings({ serverTimestampBehavior: 'previous' });
           const ref = firebase.firestore().doc(`${COLLECTION}/serverTimestampPrevious`);
@@ -274,6 +275,7 @@ describe('firestore()', function () {
           await promise;
           await ref.delete();
         });
+
         it("handles 'none'", async function () {
           firebase.firestore().settings({ serverTimestampBehavior: 'none' });
           const ref = firebase.firestore().doc(`${COLLECTION}/serverTimestampNone`);
