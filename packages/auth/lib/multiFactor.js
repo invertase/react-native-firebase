@@ -14,7 +14,7 @@ export class MultiFactorUser {
       user = auth.currentUser;
     }
     this._user = user;
-    this.enrolledFactor = user.multiFactor.enrolledFactors;
+    this.enrolledFactors = user.multiFactor.enrolledFactors;
   }
 
   getSession() {
