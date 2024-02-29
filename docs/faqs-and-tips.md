@@ -5,12 +5,14 @@ next: /releases
 previous: /migrating-to-v6
 ---
 
+# FAQs and Tips
+
 Over the years, there’s been a lot of discussions on our [GitHub](https://github.com/invertase/react-native-firebase) and [Discord](https://invertase.link/discord). Many of them have been about common problems developers face when using our package, and some of them resulted in very good advice being given.
 
 In order to save others time and frustration, this page has been created to document some of these common problems and good pieces of advice.
 If you come across a discussion that results in great advice that can benefit many developers, or a discussion that resolves a problem that many developers encounter, please do add it here! Someone will definitely be grateful.
 
-# FAQs
+## FAQs
 
 ### Why `react-native-firebase` over `firebase-js-sdk`?
 
@@ -84,7 +86,7 @@ To fix this:
 
 To view the complete detail for this solution, please refer to this page: [#5656](https://github.com/invertase/react-native-firebase/issues/5656)
 
-# Tips
+## Tips
 
 - Whenever you face a strange issue (or an issue that causes build errors), there are two things you should always consider.
   - Build processes are costly and complex, so caching is used a lot. As a result, certain changes that you make in your app can cause cache conflicts in subsequent builds. Deal with this via `npx react-native-clean-project`. This does solve a lot of problems.

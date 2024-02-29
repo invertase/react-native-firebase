@@ -6,19 +6,21 @@
       - '/typescript'
     - - Release Notes
       - '/releases'
-    - - Migrating to v6
-      - '/migrating-to-v6'
     - - FAQs and Tips
       - '/faqs-and-tips'
     - - Feature Requests
       - 'https://invertase.canny.io/react-native-firebase'
     - - Contributing
       - 'https://github.com/invertase/react-native-firebase/blob/main/CONTRIBUTING.md'
-    - - Legacy Docs (\<= v5)
-      - 'https://v5.rnfirebase.io/docs/v5.x.x/getting-started'
+    - - Legacy Docs (\<= v19)
+      - 'https://rnfirebase.io'
 - - Analytics
   - - - Usage
       - '/analytics/usage'
+    - - Android Installation
+      - '/analytics/usage/installation/android'
+    - - iOS Installation
+      - '/analytics/usage/installation/ios'
     - - Screen Tracking
       - '/analytics/screen-tracking'
     - - Building an Analytics Funnel

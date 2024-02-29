@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generate:docs": "nodemon -e md -w ../docs -d 1 --exec \"./docs.sh\""
   },
   "browserslist": "defaults, not ie <= 11",
   "dependencies": {
@@ -54,6 +55,7 @@
     "@types/bun": "^1.0.3",
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.0.4",
+    "nodemon": "^3.1.0",
     "prettier": "^3.1.1",
     "prettier-plugin-tailwindcss": "^0.5.11",
     "sharp": "0.33.1"

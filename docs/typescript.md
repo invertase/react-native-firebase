@@ -5,6 +5,8 @@ next: /releases
 previous:
 ---
 
+# TypeScript
+
 The React Native Firebase project comes with support for TypeScript. The project provides
 Ambient Declarations for each Firebase module, without having to install any additional dependencies.
 

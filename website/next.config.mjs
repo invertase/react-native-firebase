@@ -8,6 +8,7 @@ import withSearch from './src/mdx/search.mjs'
 const withMDX = nextMDX({
   options: {
     remarkPlugins,
+    // @ts-ignore
     rehypePlugins,
     recmaPlugins,
   },
@@ -16,6 +17,10 @@ const withMDX = nextMDX({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'mdx'],
+  experimental: {
+    // Code blocks do not work currently with the new MDX runtime
+    // mdxRs: true,
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },

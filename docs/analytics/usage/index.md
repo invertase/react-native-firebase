@@ -6,7 +6,11 @@ next: /analytics/screen-tracking
 previous: /contributing
 ---
 
-# Installation
+# Usage
+
+The Analytics module allows you to collect app usage data to better understand the behavior of your users. You can then use this data to make informed decisions about your app's performance and user engagement.
+
+## Installation
 
 This module requires that the `@react-native-firebase/app` module is already setup and installed. To install the "app" module, view the
 [Getting Started](/) documentation.
@@ -25,7 +29,7 @@ cd ios/ && pod install
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/analytics/usage/installation/ios) and [Android](/analytics/usage/installation/android).
 
-# What does it do
+## What does it do
 
 Analytics collects usage and behavior data for your app. Its two primary concerns are:
 
@@ -36,11 +40,11 @@ Analytics collects usage and behavior data for your app. Its two primary concern
 
 Analytics automatically logs some [events](https://support.google.com/analytics/answer/9234069) and [user properties](https://support.google.com/analytics/answer/9268042); you don't need to add any code to enable them. However, Analytics also allows you to log [custom](#custom-events) or [predefined](#predefined-events) events within your app. How you can do this will be explained below.
 
-# Usage
+## Usage
 
 Analytics offers a wealth of [Predefined Events](#predefined-events) to track user behavior. Analytics also offers folks the ability to log [Custom Events](#custom-events) . If you're already familiar with Google Analytics, this method is equivalent to using the event command in [gtag.js](https://developers.google.com/gtagjs/).
 
-## Custom Events
+### Custom Events
 
 Below is an example showing how a custom event can be logged. Please be aware that primitive data types or arrays of primitive data types are logged in your Firebase Analytics console.
 
@@ -68,7 +72,7 @@ function App() {
 }
 ```
 
-## Predefined Events
+### Predefined Events
 
 To help you get started, Analytics provides a number of [event methods](/reference/analytics) that are common among
 different types of apps, including retail and e-commerce, travel, and gaming apps. To learn more about these events and
@@ -103,7 +107,7 @@ function App() {
 
 For a full reference to predefined events and expected parameters, please check out the [reference API](/reference/analytics).
 
-## Reserved Events
+### Reserved Events
 
 The Analytics package works out of the box, however a number of events are automatically reported to Firebase.
 These event names are called as 'Reserved Events'. Attempting to send any custom event using the `logEvent` method
@@ -123,7 +127,7 @@ with any of the following event names will throw an error.
 | `os_update`                      | `session_start`                | `session_start_with_rollout`    |
 | `user_engagement`                |
 
-## App instance id
+### App instance id
 
 Below is an example showing how to retrieve the app instance id of the application. This will return null on android
 if FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE has been set to FirebaseAnalytics.ConsentStatus.DENIED and null on
@@ -135,7 +139,7 @@ import analytics from '@react-native-firebase/analytics';
 const appInstanceId = await analytics().getAppInstanceId();
 ```
 
-# Disable Ad Id usage on iOS
+## Disable Ad Id usage on iOS
 
 Apple has a strict ban on the usage of Ad Ids ("IDFA") in Kids Category apps. They will not accept any app
 in the Kids category if the app accesses the IDFA iOS symbols.
@@ -157,9 +161,9 @@ of your app handle data in a way that requires ATT)
 
 Note that for obvious reasons, configuring Firebase Analytics for use without IDFA is incompatible with AdMob
 
-# firebase.json
+## firebase.json
 
-## Disable Auto-Initialization
+### Disable Auto-Initialization
 
 Analytics can be further configured to disable auto collection of Analytics data. This is useful for opt-in-first
 data flows, for example when dealing with GDPR compliance. This is possible by setting the below noted property
@@ -182,7 +186,7 @@ import { firebase } from '@react-native-firebase/analytics';
 await firebase.analytics().setAnalyticsCollectionEnabled(true);
 ```
 
-## Disable screenview tracking
+### Disable screenview tracking
 
 Analytics automatically tracks some information about screens in your application, such as the class name of the UIViewController or Activity that is currently in focus.
 Automatic screenview reporting can be turned off/on through `google_analytics_automatic_screen_reporting_enabled` property of `firebase.json` file.
@@ -196,14 +200,14 @@ Automatic screenview reporting can be turned off/on through `google_analytics_au
 }
 ```
 
-# Seeing Events in Firebase Console's DebugView
+## Seeing Events in Firebase Console's DebugView
 
-## iOS
+### iOS
 
 When running on iOS in debug, events won't be logged by default. If you want to see events in DebugView in the Firebase Console when running debug builds, you'll need to [first set a flag](https://firebase.google.com/docs/analytics/debugview#ios+) when launching in debug. This flag used to be variously called `-FIRAnalyticsDebugEnabled` and `-FIRDebugEnabled`, but please check the previous link.
 
 To always set the flag when running debug builds of your app, you can [edit your scheme in Xcode](https://stackoverflow.com/questions/5025256/how-do-you-specify-command-line-arguments-in-xcode-4) to always include the flag.
 
-## Android
+### Android
 
 When running on Android in debug, events won't be logged by default. If you want to see events in DebugView in the Firebase Console when running debug builds, you'll need to run the following command on the terminal `adb shell setprop debug.firebase.analytics.app <package-name>` - where `<package-name>` should be replaced with your app's package name.

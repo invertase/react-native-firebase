@@ -17,10 +17,6 @@
           "href": "/releases"
         },
         {
-          "title": "Migrating to v6",
-          "href": "/migrating-to-v6"
-        },
-        {
           "title": "FAQs and Tips",
           "href": "/faqs-and-tips"
         },
@@ -33,8 +29,8 @@
           "href": "https://github.com/invertase/react-native-firebase/blob/main/CONTRIBUTING.md"
         },
         {
-          "title": "Legacy Docs (\\<= v5)",
-          "href": "https://v5.rnfirebase.io/docs/v5.x.x/getting-started"
+          "title": "Legacy Docs (\\<= v19)",
+          "href": "https://rnfirebase.io"
         }
       ]
     },
@@ -44,6 +40,14 @@
         {
           "title": "Usage",
           "href": "/analytics/usage"
+        },
+        {
+          "title": "Android Installation",
+          "href": "/analytics/usage/installation/android"
+        },
+        {
+          "title": "iOS Installation",
+          "href": "/analytics/usage/installation/ios"
         },
         {
           "title": "Screen Tracking",
