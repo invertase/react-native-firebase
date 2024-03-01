@@ -6,7 +6,11 @@ next: /app-distribution/usage
 previous: /analytics/screen-tracking
 ---
 
-# Installation
+# App Check
+
+App Check works alongside other Firebase services to help protect your backend resources from abuse, such as billing fraud or phishing.
+
+## Installation
 
 This module requires that the `@react-native-firebase/app` module is already setup and installed. To install the "app"
 module, view the [Getting Started](/) documentation.
@@ -40,7 +44,7 @@ You may find excluding the `i386` architecture via an addition to the `ios/Podfi
     end
 ```
 
-# What does it do
+## What does it do
 
 App Check works alongside other Firebase services to help protect your backend resources from abuse, such as billing fraud or phishing. With App Check, devices running your app will use an app or device attestation provider that attests to one or both of the following:
 
@@ -68,9 +72,9 @@ App Check currently works with the following Firebase products:
 
 The [official Firebase App Check documentation](https://firebase.google.com/docs/app-check) has more information, including about the iOS AppAttest provider, and testing/ CI integration, it is worth a read.
 
-# Usage
+## Usage
 
-## Register Firebase Apps
+### Register Firebase Apps
 
 Before the App Check package can be used on iOS or Android, the corresponding App must be registered in the firebase console.
 
@@ -83,7 +87,7 @@ For instructions on how to generate required keys and register an app for the de
 
 > Additionally, You can reference the iOS private key creation and registrations steps outlined in the [Cloud Messaging iOS Setup](/messaging/usage/ios-setup#linking-apns-with-fcm-ios).
 
-## Initialize
+### Initialize
 
 You must call initialize the AppCheck module prior to calling any firebase back-end services for App Check to function.
 
@@ -118,7 +122,7 @@ It is through the use of a react-native-specific `ReactNativeFirebaseAppCheckPro
 
 So AppCheck module initialization is done in two steps in react-native-firebase - first you create and configure the custom provider, then you initialize AppCheck using that custom provider.
 
-### Configure a Custom Provider
+#### Configure a Custom Provider
 
 To configure the react-native-firebase custom provider, first obtain one, then configure it according to the providers you want to use on each platform.
 
@@ -140,7 +144,7 @@ rnfbProvider.configure({
 });
 ```
 
-### Install the Custom Provider
+#### Install the Custom Provider
 
 Once you have the custom provider configured, install it in app-check using the firebase-js-sdk compatible API:
 
@@ -148,7 +152,7 @@ Once you have the custom provider configured, install it in app-check using the 
 firebase.appCheck().initializeAppCheck({ provider: rnfbProvider, isTokenAutoRefreshEnabled: true });
 ```
 
-### Verify AppCheck was initialized correctly
+# ## Verify AppCheck was initialized correctly
 
 After initializing the custom provider, you can verify AppCheck is working by logging a response from the token server:
 
@@ -164,7 +168,7 @@ try {
 }
 ```
 
-## Automatic Data Collection
+### Automatic Data Collection
 
 App Check has an "tokenAutoRefreshEnabled" setting. This may cause App Check to attempt a remote App Check token fetch prior to user consent. In certain scenarios, like those that exist in GDPR-compliant apps running for the first time, this may be unwanted.
 
@@ -172,23 +176,23 @@ You may configure this setting in `firebase.json` such that your desired configu
 
 If unset, the "tokenAutoRefreshEnabled" setting will defer to the app's "automatic data collection" setting, which may be set in `firebase.json`, or if you wish directly in the Info.plist or AndroidManifest.xml according to the Firebase native SDK documentation. Unless otherwise configured, it will default to true implying there will be automatic data collection and app check token refresh attempts.
 
-## Using App Check tokens for non-firebase services
+### Using App Check tokens for non-firebase services
 
 The [official documentation](https://firebase.google.com/docs/app-check/web/custom-resource) shows how to use `getToken` to access the current App Check token and then verify it in external services.
 
-## Manually Setting Up App Check Debug Token for Testing Environments / CI
+### Manually Setting Up App Check Debug Token for Testing Environments / CI
 
-### on iOS
+#### on iOS
 
 The react-native-firebase CustomProvider implementation allows for runtime configuration of the `debug` provider as well as a `debugToken` in the `ios` CustomProvider options. This allows the easy use of a token pre-configured in the Firebase console, allowing for dynamic configuration and testing of AppCheck in CI environments or iOS Simulators.
 
-### on Android
+#### on Android
 
 The react-native-firebase CustomProvider implementation allows for runtime configuration of the `debug` provider as well as a `debugToken` in the `android` CustomProvider options. This allows the easy use of a token pre-configured in the Firebase console, allowing for dynamic configuration and testing of AppCheck in CI environments or Android Emulators.
 
 There are a variety of other ways to obtain and configure debug tokens for AppCheck testing, a few of which follow:
 
-#### A) When testing on an actual android device (debug build)
+##### A) When testing on an actual android device (debug build)
 
 1.  Start your application on the android device.
 2.  Use `$adb logcat | grep DebugAppCheckProvider` to grab your temporary secret from the android logs. The output should look lit this:
@@ -198,7 +202,7 @@ There are a variety of other ways to obtain and configure debug tokens for AppCh
 
 3.  In the [Project Settings > App Check](https://console.firebase.google.com/project/_/settings/appcheck) section of the Firebase console, choose _Manage debug tokens_ from your app's overflow menu. Then, register the debug token you logged in the previous step.
 
-#### B) Specifying a generated `FIREBASE_APP_CHECK_DEBUG_TOKEN` -- building for CI/CD (debug build)
+##### B) Specifying a generated `FIREBASE_APP_CHECK_DEBUG_TOKEN` -- building for CI/CD (debug build)
 
 When you want to test using an Android virtual device -or- when you prefer to (re)use a token of your choice -- e.g. when configuring a CI/CD pipeline -- use the following steps:
 
@@ -209,7 +213,7 @@ When you want to test using an Android virtual device -or- when you prefer to (r
 
 Please note that once the android app has successfully passed the app-checks controls on the device, it will keep passing them, whether you rebuild without the secret token or not. To completely reset app-check, you must first uninstall, and then re-build / install.
 
-#### C) When using Expo Development Client
+##### C) When using Expo Development Client
 
 When using expo-dev-client, the process is a little different, especially on an android emulator.
 
