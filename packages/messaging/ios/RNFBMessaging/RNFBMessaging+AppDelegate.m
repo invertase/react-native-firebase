@@ -118,10 +118,15 @@
     didReceiveRemoteNotification:(NSDictionary *)userInfo
           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
 #if __has_include(<FirebaseAuth/FirebaseAuth.h>)
-  if ([[FIRAuth auth] canHandleNotification:userInfo]) {
-    DLog(@"didReceiveRemoteNotification Firebase Auth handeled the notification");
-    completionHandler(UIBackgroundFetchResultNoData);
-    return;
+
+  for (id appId in [FIRApp allApps]) {
+    FIRApp *app = [[FIRApp allApps] objectForKey:appId];
+    if ([[FIRAuth authWithApp:app] canHandleNotification:userInfo]) {
+      DLog(@"didReceiveRemoteNotification Firebase Auth handled the notification with instance: %@",
+           app.name);
+      completionHandler(UIBackgroundFetchResultNoData);
+      return;
+    }
   }
 
   // If the notification is a probe notification, always call the completion

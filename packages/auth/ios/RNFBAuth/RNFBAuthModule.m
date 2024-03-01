@@ -307,9 +307,8 @@ RCT_EXPORT_METHOD(reload
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
-
   if (user) {
-    [self reloadAndReturnUser:user resolver:resolve rejecter:reject];
+    [self reloadAndReturnUser:user resolver:resolve rejecter:reject firebaseApp:firebaseApp];
   } else {
     [self promiseNoUser:resolve rejecter:reject isError:YES];
   }
@@ -383,7 +382,10 @@ RCT_EXPORT_METHOD(updateEmail
              if (error) {
                [self promiseRejectAuthException:reject error:error];
              } else {
-               [self reloadAndReturnUser:user resolver:resolve rejecter:reject];
+               [self reloadAndReturnUser:user
+                                resolver:resolve
+                                rejecter:reject
+                             firebaseApp:firebaseApp];
              }
            }];
   } else {
@@ -426,7 +428,8 @@ RCT_EXPORT_METHOD(updatePhoneNumber
     FIRPhoneAuthCredential *credential =
         (FIRPhoneAuthCredential *)[self getCredentialForProvider:provider
                                                            token:authToken
-                                                          secret:authSecret];
+                                                          secret:authSecret
+                                                     firebaseApp:firebaseApp];
 
     if (credential == nil) {
       [RNFBSharedUtils
@@ -481,7 +484,7 @@ RCT_EXPORT_METHOD(updateProfile
       if (error) {
         [self promiseRejectAuthException:reject error:error];
       } else {
-        [self reloadAndReturnUser:user resolver:resolve rejecter:reject];
+        [self reloadAndReturnUser:user resolver:resolve rejecter:reject firebaseApp:firebaseApp];
       }
     }];
   } else {
@@ -565,8 +568,8 @@ RCT_EXPORT_METHOD(signInWithCredential
                   : (RCTPromiseRejectBlock)reject) {
   FIRAuthCredential *credential = [self getCredentialForProvider:provider
                                                            token:authToken
-                                                          secret:authSecret];
-
+                                                          secret:authSecret
+                                                     firebaseApp:firebaseApp];
   if (credential == nil) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject
                                       userInfo:(NSMutableDictionary *)@{
@@ -575,8 +578,7 @@ RCT_EXPORT_METHOD(signInWithCredential
                                                      @"has expired or is not currently supported.",
                                       }];
   }
-
-  [[FIRAuth authWithApp:firebaseApp]
+  DLog(@"using app SignInWithCredential: %@", firebaseApp.name)[[FIRAuth authWithApp:firebaseApp]
       signInWithCredential:credential
                 completion:^(FIRAuthDataResult *authResult, NSError *error) {
                   if (error) {
@@ -602,7 +604,8 @@ RCT_EXPORT_METHOD(signInWithProvider
                                       }];
   }
 
-  __block FIROAuthProvider *builder = [FIROAuthProvider providerWithProviderID:providerId];
+  __block FIROAuthProvider *builder =
+      [FIROAuthProvider providerWithProviderID:providerId auth:[FIRAuth authWithApp:firebaseApp]];
   // Add scopes if present
   if (provider[@"scopes"]) {
     [builder setScopes:provider[@"scopes"]];
@@ -620,7 +623,7 @@ RCT_EXPORT_METHOD(signInWithProvider
                                 return;
                               }
                               if (credential) {
-                                [[FIRAuth auth]
+                                [[FIRAuth authWithApp:firebaseApp]
                                     signInWithCredential:credential
                                               completion:^(FIRAuthDataResult *_Nullable authResult,
                                                            NSError *_Nullable error) {
@@ -817,7 +820,8 @@ RCT_EXPORT_METHOD(signInWithPhoneNumber
                   : (NSString *)phoneNumber
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
+  DLog(@"SignInWthPhoneNumber instance: %@",
+       firebaseApp.name)[[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
       verifyPhoneNumber:phoneNumber
              UIDelegate:nil
              completion:^(NSString *_Nullable verificationID, NSError *_Nullable error) {
@@ -858,8 +862,8 @@ RCT_EXPORT_METHOD(verifyPhoneNumberWithMultiFactorInfo
                                       }];
     return;
   }
-
-  [FIRPhoneAuthProvider.provider
+  DLog(@"using instance verifyPhoneNumberWithMultiFactorInfo: %@",
+       firebaseApp.name)[[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
       verifyPhoneNumberWithMultiFactorInfo:hint
                                 UIDelegate:nil
                         multiFactorSession:session
@@ -868,7 +872,8 @@ RCT_EXPORT_METHOD(verifyPhoneNumberWithMultiFactorInfo
                                   if (error) {
                                     [self promiseRejectAuthException:reject error:error];
                                   } else {
-                                    resolve(verificationID);
+                                    DLog(@"verificationID: %@", verificationID)
+                                        resolve(verificationID);
                                   }
                                 }];
 }
@@ -880,7 +885,8 @@ RCT_EXPORT_METHOD(verifyPhoneNumberForMultiFactor
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   FIRMultiFactorSession *session = cachedSessions[sessionId];
-  [FIRPhoneAuthProvider.provider
+  DLog(@"using instance VerifyPhoneNumberForMultifactor: %@",
+       firebaseApp.name)[[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
        verifyPhoneNumber:phoneNumber
               UIDelegate:nil
       multiFactorSession:session
@@ -901,19 +907,22 @@ RCT_EXPORT_METHOD(resolveMultiFactorSignIn
                   : (NSString *)verificationCode
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  FIRPhoneAuthCredential *credential =
-      [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
-          credentialWithVerificationID:verificationId
-                      verificationCode:verificationCode];
-  FIRMultiFactorAssertion *assertion =
+  DLog(@"using instance resolve MultiFactorSignIn: %@", firebaseApp.name)
+      FIRPhoneAuthCredential *credential =
+          [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
+              credentialWithVerificationID:verificationId
+                          verificationCode:verificationCode];
+  DLog(@"credential: %@", credential) FIRMultiFactorAssertion *assertion =
       [FIRPhoneMultiFactorGenerator assertionWithCredential:credential];
+
   [cachedResolver[sessionKey] resolveSignInWithAssertion:assertion
                                               completion:^(FIRAuthDataResult *_Nullable authResult,
                                                            NSError *_Nullable error) {
-                                                if (error) {
+                                                DLog(@"authError: %@", error) if (error) {
                                                   [self promiseRejectAuthException:reject
                                                                              error:error];
-                                                } else {
+                                                }
+                                                else {
                                                   [self promiseWithAuthResult:resolve
                                                                      rejecter:reject
                                                                    authResult:authResult];
@@ -946,9 +955,11 @@ RCT_EXPORT_METHOD(finalizeMultiFactorEnrollment
                   : (NSString *_Nullable)displayName
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  FIRPhoneAuthCredential *credential =
-      [FIRPhoneAuthProvider.provider credentialWithVerificationID:verificationId
-                                                 verificationCode:verificationCode];
+  DLog(@"using instance finalizeMultifactorEnrollment: %@", firebaseApp.name)
+      FIRPhoneAuthCredential *credential =
+          [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
+              credentialWithVerificationID:verificationId
+                          verificationCode:verificationCode];
   FIRMultiFactorAssertion *assertion =
       [FIRPhoneMultiFactorGenerator assertionWithCredential:credential];
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
@@ -969,12 +980,13 @@ RCT_EXPORT_METHOD(verifyPhoneNumber
                   : (FIRApp *)firebaseApp
                   : (NSString *)phoneNumber
                   : (NSString *)requestKey) {
-  [FIRPhoneAuthProvider.provider
+  DLog(@"using instance verifyPhoneNumber: %@",
+       firebaseApp.name)[[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
       verifyPhoneNumber:phoneNumber
              UIDelegate:nil
              completion:^(NSString *_Nullable verificationID, NSError *_Nullable error) {
                if (error) {
-                 NSDictionary *jsError = [self getJSError:(error)];
+                 NSDictionary *jsError = [self getJSError:error];
                  NSDictionary *body = @{
                    @"type" : @"onVerificationFailed",
                    @"requestKey" : requestKey,
@@ -1007,12 +1019,14 @@ RCT_EXPORT_METHOD(confirmationResultConfirm
   NSString *verificationId = [defaults stringForKey:@"authVerificationID"];
 
   FIRAuthCredential *credential =
-      [[FIRPhoneAuthProvider provider] credentialWithVerificationID:verificationId
-                                                   verificationCode:verificationCode];
+      [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
+          credentialWithVerificationID:verificationId
+                      verificationCode:verificationCode];
 
   [[FIRAuth authWithApp:firebaseApp]
       signInWithCredential:credential
                 completion:^(FIRAuthDataResult *authResult, NSError *error) {
+                  DLog(@"auth error: %long", (long)error.code);
                   if (error) {
                     [self promiseRejectAuthException:reject error:error];
                   } else {
@@ -1030,7 +1044,8 @@ RCT_EXPORT_METHOD(linkWithCredential
                   : (RCTPromiseRejectBlock)reject) {
   FIRAuthCredential *credential = [self getCredentialForProvider:provider
                                                            token:authToken
-                                                          secret:authSecret];
+                                                          secret:authSecret
+                                                     firebaseApp:firebaseApp];
 
   if (credential == nil) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject
@@ -1077,7 +1092,8 @@ RCT_EXPORT_METHOD(linkWithProvider
     return;
   }
 
-  __block FIROAuthProvider *builder = [FIROAuthProvider providerWithProviderID:providerId];
+  __block FIROAuthProvider *builder =
+      [FIROAuthProvider providerWithProviderID:providerId auth:[FIRAuth authWithApp:firebaseApp]];
   // Add scopes if present
   if (provider[@"scopes"]) {
     [builder setScopes:provider[@"scopes"]];
@@ -1131,7 +1147,10 @@ RCT_EXPORT_METHOD(unlink
                     if (error) {
                       [self promiseRejectAuthException:reject error:error];
                     } else {
-                      [self reloadAndReturnUser:user resolver:resolve rejecter:reject];
+                      [self reloadAndReturnUser:user
+                                       resolver:resolve
+                                       rejecter:reject
+                                    firebaseApp:firebaseApp];
                     }
                   }];
   } else {
@@ -1148,7 +1167,8 @@ RCT_EXPORT_METHOD(reauthenticateWithCredential
                   : (RCTPromiseRejectBlock)reject) {
   FIRAuthCredential *credential = [self getCredentialForProvider:provider
                                                            token:authToken
-                                                          secret:authSecret];
+                                                          secret:authSecret
+                                                     firebaseApp:firebaseApp];
 
   if (credential == nil) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject
@@ -1199,7 +1219,8 @@ RCT_EXPORT_METHOD(reauthenticateWithProvider
     return;
   }
 
-  __block FIROAuthProvider *builder = [FIROAuthProvider providerWithProviderID:providerId];
+  __block FIROAuthProvider *builder =
+      [FIROAuthProvider providerWithProviderID:providerId auth:[FIRAuth authWithApp:firebaseApp]];
   // Add scopes if present
   if (provider[@"scopes"]) {
     [builder setScopes:provider[@"scopes"]];
@@ -1305,7 +1326,8 @@ RCT_EXPORT_METHOD(useEmulator
 
 - (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider
                                           token:(NSString *)authToken
-                                         secret:(NSString *)authTokenSecret {
+                                         secret:(NSString *)authTokenSecret
+                                    firebaseApp:(FIRApp *)firebaseApp {
   FIRAuthCredential *credential;
 
   // First check if we cached an authToken
@@ -1334,8 +1356,10 @@ RCT_EXPORT_METHOD(useEmulator
   } else if ([provider compare:@"github.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIRGitHubAuthProvider credentialWithToken:authToken];
   } else if ([provider compare:@"phone" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-    credential = [[FIRPhoneAuthProvider provider] credentialWithVerificationID:authToken
-                                                              verificationCode:authTokenSecret];
+    DLog(@"using app credGen: %@", firebaseApp.name) credential =
+        [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
+            credentialWithVerificationID:authToken
+                        verificationCode:authTokenSecret];
   } else if ([provider compare:@"oauth" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIROAuthProvider credentialWithProviderID:@"oauth"
                                                     IDToken:authToken
@@ -1355,7 +1379,8 @@ RCT_EXPORT_METHOD(useEmulator
 // correctly refresh the user object when performing certain operations
 - (void)reloadAndReturnUser:(FIRUser *)user
                    resolver:(RCTPromiseResolveBlock)resolve
-                   rejecter:(RCTPromiseRejectBlock)reject {
+                   rejecter:(RCTPromiseRejectBlock)reject
+                firebaseApp:(FIRApp *)firebaseApp {
   [user reloadWithCompletion:^(NSError *_Nullable error) {
     if (error) {
       [self promiseRejectAuthException:reject error:error];
@@ -1386,6 +1411,7 @@ RCT_EXPORT_METHOD(useEmulator
   return @{
     @"hints" : [self convertMultiFactorData:resolver.hints],
     @"session" : sessionHash,
+    @"auth" : resolver.auth
   };
 }
 
@@ -1399,7 +1425,7 @@ RCT_EXPORT_METHOD(useEmulator
 }
 
 - (void)promiseRejectAuthException:(RCTPromiseRejectBlock)reject error:(NSError *)error {
-  NSDictionary *jsError = [self getJSError:(error)];
+  NSDictionary *jsError = [self getJSError:error];
 
   [RNFBSharedUtils
       rejectPromiseWithUserInfo:reject
@@ -1499,8 +1525,7 @@ RCT_EXPORT_METHOD(useEmulator
 
   NSDictionary *resolverDict = nil;
   if ([error userInfo][FIRAuthErrorUserInfoMultiFactorResolverKey] != nil) {
-    FIRMultiFactorResolver *resolver =
-        (FIRMultiFactorResolver *)error.userInfo[FIRAuthErrorUserInfoMultiFactorResolverKey];
+    FIRMultiFactorResolver *resolver = error.userInfo[FIRAuthErrorUserInfoMultiFactorResolverKey];
     resolverDict = [self multiFactorResolverToDict:resolver];
 
     NSString *sessionKey = [NSString stringWithFormat:@"%@", @([resolver.session hash])];
@@ -1665,7 +1690,7 @@ RCT_EXPORT_METHOD(useEmulator
         [[[NSISO8601DateFormatter alloc] init] stringFromDate:hint.enrollmentDate];
     [enrolledFactors addObject:@{
       @"uid" : hint.UID,
-      @"factorId" : hint.factorID == nil ? [NSNull null] : [self getJSFactorId:(hint.factorID)],
+      @"factorId" : [self getJSFactorId:(hint.factorID)],
       @"displayName" : hint.displayName == nil ? [NSNull null] : hint.displayName,
       @"enrollmentDate" : enrollmentDate,
     }];

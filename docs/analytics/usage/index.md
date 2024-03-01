@@ -161,6 +161,18 @@ of your app handle data in a way that requires ATT)
 
 Note that for obvious reasons, configuring Firebase Analytics for use without IDFA is incompatible with AdMob
 
+## Device Identification
+
+If you would like to enable Firebase Analytics to generate automatic audience metrics for iOS (as it does by default in Android), you must link additional iOS libraries, [as documented by the Google Firebase team](https://support.google.com/firebase/answer/6318039). Specifically you need to link in `AdSupport.framework`.
+
+The way to do this using CocoaPods is to add this variable to your `Podfile` so `@react-native-firebase/analytics` will link it in for you:
+
+```ruby
+$RNFirebaseAnalyticsEnableAdSupport = true
+```
+
+Note: this is setting will have no effect if you disabled Ad IDs as described above, since this setting is specifically linking in the `AdSupport` framework which requires the Ad IDs.
+
 ## firebase.json
 
 ### Disable Auto-Initialization
@@ -184,6 +196,19 @@ To re-enable analytics (e.g. once you have the users consent), call the `setAnal
 import { firebase } from '@react-native-firebase/analytics';
 // ...
 await firebase.analytics().setAnalyticsCollectionEnabled(true);
+```
+
+To update user's consent (e.g. once you have the users consent), call the `setConsent` method:
+
+```js
+import { firebase } from '@react-native-firebase/analytics';
+// ...
+await firebase.analytics().setConsent({
+  analytics_storage: true,
+  ad_storage: true,
+  ad_user_data: true,
+  ad_personalization: true,
+});
 ```
 
 ### Disable screenview tracking

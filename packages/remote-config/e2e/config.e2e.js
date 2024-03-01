@@ -35,6 +35,7 @@ describe('remoteConfig() modular', function () {
           .lastFetchStatus.should.equal(firebase.remoteConfig.LastFetchStatus.SUCCESS);
         should.equal(firebase.remoteConfig().fetchTimeMillis >= date, true);
       });
+
       it('without expiration provided', function () {
         return firebase.remoteConfig().fetch();
       });
@@ -378,6 +379,7 @@ describe('remoteConfig() modular', function () {
         remoteConfig.lastFetchStatus.should.equal(firebase.remoteConfig.LastFetchStatus.SUCCESS);
         should.equal(firebase.remoteConfig().fetchTimeMillis >= date, true);
       });
+
       it('without expiration provided', function () {
         const { getRemoteConfig, fetch } = remoteConfigModular;
         return fetch(getRemoteConfig());
@@ -719,6 +721,7 @@ describe('remoteConfig() modular', function () {
         }
       });
     });
+
     describe('defaultConfig', function () {
       it('gets plain key/value object of defaults', async function () {
         const { getRemoteConfig, setDefaults } = remoteConfigModular;
@@ -755,6 +758,7 @@ describe('remoteConfig() modular', function () {
 
     describe('onConfigUpdated', function () {
       let unsubscribers = [];
+
       before(async function () {
         // configure a listener so any new templates are fetched and cached locally
         const { fetchAndActivate, getRemoteConfig, onConfigUpdated } = remoteConfigModular;

@@ -23,6 +23,7 @@ describe('database().ref().on()', function () {
   before(async function () {
     await seed(TEST_PATH);
   });
+
   after(async function () {
     await wipe(TEST_PATH);
   });
@@ -77,6 +78,7 @@ describe('database().ref().on()', function () {
       return Promise.resolve();
     }
   });
+
   it('should callback with an initial value', async function () {
     const callback = sinon.spy();
     const ref = firebase.database().ref(`${TEST_PATH}/init`);

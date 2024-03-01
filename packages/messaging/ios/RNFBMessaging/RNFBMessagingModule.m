@@ -173,8 +173,9 @@ RCT_EXPORT_METHOD(getAPNSToken : (RCTPromiseResolveBlock)resolve : (RCTPromiseRe
         resolve([NSNull null]);
     return;
 #endif
-    DLog(@"RNFBMessaging getAPNSToken - ARM64 Simulator detected, but no APNS token set. Assuming "
-         @"APNS token is possible. macOS13+ / iOS16+ / M1 mac required for assumption to be valid. "
+    DLog(@"RNFBMessaging getAPNSToken - ARM64 Simulator detected, but no APNS token available. "
+         @"APNS token may be possible. macOS13+ / iOS16+ / M1 mac required for assumption to be "
+         @"valid. "
          @"Use setAPNSToken in testing if needed.");
 #endif
     if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == NO) {
@@ -188,6 +189,7 @@ RCT_EXPORT_METHOD(getAPNSToken : (RCTPromiseResolveBlock)resolve : (RCTPromiseRe
                            }];
       return;
     }
+    resolve([NSNull null]);
   }
 }
 

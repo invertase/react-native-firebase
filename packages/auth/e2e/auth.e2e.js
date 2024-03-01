@@ -68,6 +68,7 @@ describe('auth() modular', function () {
           .applyActionCode('fooby shooby dooby')
           .then($ => $);
       });
+
       it('errors on invalid code', async function () {
         try {
           await firebase
@@ -1157,6 +1158,7 @@ describe('auth() modular', function () {
         return newApp.delete();
       });
     });
+
     describe('applyActionCode()', function () {
       // Needs a different setup to work against the auth emulator
       xit('works as expected', async function () {
@@ -1164,6 +1166,7 @@ describe('auth() modular', function () {
         const defaultAuth = getAuth(firebase.app());
         await applyActionCode(defaultAuth, 'fooby shooby dooby').then($ => $);
       });
+
       it('errors on invalid code', async function () {
         const { applyActionCode, getAuth } = authModular;
         const defaultAuth = getAuth(firebase.app());

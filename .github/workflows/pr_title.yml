@@ -17,7 +17,7 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - uses: amannn/action-semantic-pull-request@v5

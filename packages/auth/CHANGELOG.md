@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [19.0.0](https://github.com/invertase/react-native-firebase/compare/v18.9.0...v19.0.0) (2024-02-26)
+
+### ⚠ BREAKING CHANGES
+
+- **auth, android:** multifactor error messages were auth/unknown before on android
+  Now they will correctly come through as auth/invalid-verification-code
+  If you were relying on the previous auth/unknown codes you
+  will need to update your error handling code
+
+### Bug Fixes
+
+- **auth, android:** correct error messages for finalizeMultiFactorEnrollment ([b0be508](https://github.com/invertase/react-native-firebase/commit/b0be508e3336fc5577795791b727f23e1a9bbbca))
+
+## [18.9.0](https://github.com/invertase/react-native-firebase/compare/v18.8.0...v18.9.0) (2024-02-21)
+
+### Bug Fixes
+
+- **auth:** use correct app instance (vs always default) in multifactor and phone auth ([#7564](https://github.com/invertase/react-native-firebase/issues/7564)) ([ff32fd3](https://github.com/invertase/react-native-firebase/commit/ff32fd37b39557e9a55fce016cbf986348436b92))
+
+## [18.8.0](https://github.com/invertase/react-native-firebase/compare/v18.7.3...v18.8.0) (2024-01-25)
+
+### Features
+
+- **auth, authDomain:** implement FirebaseOptions.authDomain on Auth ([a1f4710](https://github.com/invertase/react-native-firebase/commit/a1f471029352b7597d7e83a8c1ea06145768cf89))
+
+### Bug Fixes
+
+- **auth, ios:** factorId nil check ([#7541](https://github.com/invertase/react-native-firebase/issues/7541)) ([b1cee9a](https://github.com/invertase/react-native-firebase/commit/b1cee9a899e963d5fc5d0f0af056214dd676cd5a))
+
 ## [18.7.3](https://github.com/invertase/react-native-firebase/compare/v18.7.2...v18.7.3) (2023-12-13)
 
 **Note:** Version bump only for package @react-native-firebase/auth

@@ -27,25 +27,19 @@ concurrency:
 jobs:
   ios:
     name: iOS
-    runs-on: macos-12
+    runs-on: macos-14
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
     timeout-minutes: 100
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
-      # macOS13 runners are slooooow
-      # This is from: https://github.com/actions/runner-images/issues/7971#issuecomment-1824430407
-      - name: macOS-13-runner speedup
-        run: |
-          sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.diagnosticd.plist
-
       # Set up tool versions
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
 
       - name: Configure JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -65,7 +59,7 @@ jobs:
           echo "metro-cache=$HOME/.metro" >> $GITHUB_OUTPUT
           echo "xcode-version=$(xcodebuild -version|tail -1|cut -f3 -d' ')" >> $GITHUB_OUTPUT
 
-      - uses: actions/cache/restore@v3
+      - uses: actions/cache/restore@v4
         name: Yarn Cache Restore
         id: yarn-cache
         with:
@@ -73,7 +67,7 @@ jobs:
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-v1
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         name: Detox Framework Cache
         id: detox-cache
         with:
@@ -88,7 +82,7 @@ jobs:
           max-size: 1500M
 
       - name: Yarn Install
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 15
           retry_wait_seconds: 60
@@ -101,14 +95,14 @@ jobs:
           ruby-version: 3
 
       - name: Update Ruby build tools
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 2
           retry_wait_seconds: 60
           max_attempts: 3
           command: gem update cocoapods xcodeproj
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         name: Cache Pods
         id: pods-cache
         with:
@@ -117,7 +111,7 @@ jobs:
           restore-keys: ${{ runner.os }}-pods-v2
 
       - name: Pod Install
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 20
           retry_wait_seconds: 30
@@ -125,7 +119,7 @@ jobs:
           command: yarn tests:ios:pod:install
 
       - name: Cache Firestore Emulator
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/firebase/emulators
           key: firebase-emulators-v1-${{ github.run_id }}
@@ -135,7 +129,7 @@ jobs:
         run: yarn tests:emulator:start-ci
 
       - name: Install brew utilities
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 5
           retry_wait_seconds: 60
@@ -159,7 +153,7 @@ jobs:
         shell: bash
 
       - name: Metro Bundler Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.workflow-variables.outputs.metro-cache }}
           key: ${{ runner.os }}-metro-v1-${{ github.run_id }}
@@ -188,7 +182,7 @@ jobs:
         run: yarn tests:ios:test-cover
 
       - name: Upload Simulator Log
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: simulator_log
@@ -198,7 +192,7 @@ jobs:
         with:
           verbose: true
 
-      - uses: actions/cache/save@v3
+      - uses: actions/cache/save@v4
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         with:

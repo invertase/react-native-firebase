@@ -199,6 +199,7 @@ describe('appCheck() modular', function () {
 
   describe('modular', function () {
     var appCheckInstance;
+
     before(async function () {
       const { initializeAppCheck } = appCheckModular;
 

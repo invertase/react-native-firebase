@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [19.0.0](https://github.com/invertase/react-native-firebase/compare/v18.9.0...v19.0.0) (2024-02-26)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [18.9.0](https://github.com/invertase/react-native-firebase/compare/v18.8.0...v18.9.0) (2024-02-21)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [18.8.0](https://github.com/invertase/react-native-firebase/compare/v18.7.3...v18.8.0) (2024-01-25)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
 ## [18.7.3](https://github.com/invertase/react-native-firebase/compare/v18.7.2...v18.7.3) (2023-12-13)
 
 **Note:** Version bump only for package @react-native-firebase/remote-config

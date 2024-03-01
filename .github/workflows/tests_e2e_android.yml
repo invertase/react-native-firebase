@@ -2,12 +2,6 @@ name: Testing E2E Android
 
 on:
   workflow_dispatch:
-    inputs:
-      clearCaches:
-        description: "Clear workflow caches where possible"
-        required: false
-        type: string
-
   pull_request:
     branches:
       - '**'
@@ -34,17 +28,17 @@ concurrency:
 jobs:
   android:
     name: Android
-    runs-on: macos-12
+    runs-on: ubuntu-latest
     timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
-        # Refactor to make these dynamic with a low/high bracket only on schedule, not push
-        # For now this is just the fastest combo (api/arch/target/snapshot-warm-time) based on testing
-        api-level: [30]
+        # all APIs below 23, and 27 just do not work
+        # 26 does not support performance tracing due to hardware acceleration bugs
+        # min-possible + max-possible skew looks like 23 and 34 then
+        api-level: [23, 34]
         arch: [x86_64]
         target: [google_apis]
-        first-boot-delay: [600]
         # This is useful for benchmarking, do 0, 1, 2, etc (up to 256 max job-per-matrix limit) for averages
         iteration: [0]
     env:
@@ -52,23 +46,34 @@ jobs:
       EMULATOR_COMMAND: "-avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 -timezone 'Europe/London' -cores 2"
       EMULATOR_EXECUTABLE: qemu-system-x86_64-headless
     steps:
-      # macOS13 runners are slooooow
-      # This is from: https://github.com/actions/runner-images/issues/7971#issuecomment-1824430407
-      - name: macOS-13-runner speedup
+      - name: Liberate disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: false
+          dotnet: true
+          haskell: true
+          large-packages: false
+          docker-images: true
+          swap-storage: false
+
+      - name: Enable KVM group perms
         run: |
-          sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.diagnosticd.plist
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
 
       - uses: actions/checkout@v4
         with:
           fetch-depth: 50
 
       # Set up tool versions
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
 
       - name: Configure JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -80,7 +85,7 @@ jobs:
           echo "metro-cache=$HOME/.metro" >> $GITHUB_OUTPUT
           echo "tempdir=$TMPDIR" >> $GITHUB_OUTPUT
 
-      - uses: actions/cache/restore@v3
+      - uses: actions/cache/restore@v4
         name: Yarn Cache Restore
         id: yarn-cache
         with:
@@ -89,7 +94,7 @@ jobs:
           restore-keys: ${{ runner.os }}-yarn-v1
 
       - name: Yarn Install
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 15
           retry_wait_seconds: 60
@@ -97,7 +102,7 @@ jobs:
           command: DETOX_DISABLE_POSTINSTALL=1 yarn && yarn lerna:prepare
 
       - name: Cache Firestore Emulator
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/firebase/emulators
           key: firebase-emulators-v1-${{ github.run_id }}
@@ -106,40 +111,15 @@ jobs:
       - name: Start Firestore Emulator
         run: yarn tests:emulator:start-ci
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         name: Gradle Cache
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-v1-${{ hashFiles('yarn.lock', 'tests/android/build.gradle', 'tests/android/app/build.gradle') }}
           restore-keys: ${{ runner.os }}-gradle-v1
 
-        # This appears to be 'Cache Size: ~1230 MB (1290026823 B)' based on watching action logs
-        # Repo limit is 10GB; branch caches are independent; branches may read default branch cache.
-        # We don't want branches to evict main branch snapshot, so save on main, read-only all else
-      - name: AVD cache
-        uses: actions/cache@v3
-        id: avd-cache
-        with:
-          path: |
-            ~/.android/avd/*
-            ~/.android/adb*
-          key: avd-${{ matrix.api-level }}-${{ matrix.arch }}-${{matrix.target}}-v1-${{ github.event.inputs.clearCaches }}
-          restore-keys: |
-            avd-${{ matrix.api-level }}-${{ matrix.arch }}-${{matrix.target}}-v1
-
-      - name: Clear Caches Optionally
-        if: "${{ github.event.inputs.clearCaches != '' }}"
-        shell: bash
-        run: |
-          du -sk ~/.gradle
-          du -sk ~/.android
-          rm -fr ~/.gradle
-          rm -fr ~/.android
-          du -sk ~/.gradle || echo ~/.gradle is gone
-          du -sk ~/.android || echo ~/.android is gone
-
       - name: Build Android App
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 25
           retry_wait_seconds: 60
@@ -147,7 +127,7 @@ jobs:
           command: yarn tests:android:build
 
       - name: Metro Bundler Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.workflow-variables.outputs.metro-cache }}
           key: ${{ runner.os }}-metro-v1-${{ github.run_id }}
@@ -166,54 +146,8 @@ jobs:
           curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=android&dev=true&minify=false&inlineSourceMap=true"
           echo "...javascript bundle ready."
 
-      - name: AVD Boot and Snapshot Creation
-        # Only generate a snapshot with a cache miss
-        # Comment the if out to generate snapshots on branch for performance testing
-        if: "${{ github.event.inputs.clearCaches != '' || (steps.avd-cache.outputs.cache-hit != 'true' && github.ref == 'refs/heads/main') }}"
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ matrix.api-level }}
-          avd-name: TestingAVD
-          force-avd-creation: false
-          target: ${{ matrix.target }}
-          arch: ${{ matrix.arch }}
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          sdcard-path-or-size: 100M
-          disable-animations: true
-          # Give the emulator a little time to run and do first boot stuff before taking snapshot
-          script: |
-            $ANDROID_HOME/platform-tools/adb logcat '*:D' -d > adb-snapshot-log.txt
-            $ANDROID_HOME/platform-tools/adb logcat --clear
-            echo "Generated AVD snapshot for caching."
-
-        # This step is separate so pure install time may be calculated as a step
-      - name: Emulator Snapshot After Firstboot Warmup
-        # Only generate a snapshot for saving with a cache miss
-        # Switch the if statements via comment if generating snapshots for performance testing
-        # if: matrix.first-boot-delay != '0'
-        if: "${{ github.event.inputs.clearCaches != '' || (steps.avd-cache.outputs.cache-hit != 'true' && github.ref == 'refs/heads/main') }}"
-        env:
-          FIRST_BOOT_DELAY: ${{ matrix.first-boot-delay }}
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ matrix.api-level }}
-          avd-name: TestingAVD
-          force-avd-creation: false
-          target: ${{ matrix.target }}
-          arch: ${{ matrix.arch }}
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          sdcard-path-or-size: 100M
-          disable-animations: true
-          # Give the emulator a little time to run and do first boot stuff before taking snapshot
-          # The zygote restart makes sure zygote has correct heap size as a workaround for android emulator init bug
-          script: |
-            $ANDROID_HOME/platform-tools/adb shell su root "setprop ctl.restart zygote"
-            sleep $FIRST_BOOT_DELAY
-            $ANDROID_HOME/platform-tools/adb logcat '*:D' -d > adb-warmup-log.txt
-            $ANDROID_HOME/platform-tools/adb logcat --clear
-            echo "First boot warmup completed."
-
       - name: Test Tapper
+        # Detox uses Espresso to choreograph UI events, we send a stream of taps to keep choreography moving quickly
         # Run this outside the emulator runner so the emulator runner does not wait on it for cleanup
         run: |
           nohup sh -c "until false; do $ANDROID_HOME/platform-tools/adb shell input tap 100 800; sleep 0.2; done" &
@@ -225,24 +159,24 @@ jobs:
         with:
           api-level: ${{ matrix.api-level }}
           avd-name: TestingAVD
-          force-avd-creation: false
           target: ${{ matrix.target }}
           arch: ${{ matrix.arch }}
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          sdcard-path-or-size: 100M
-          disable-animations: true
-          # Detox uses Espresso to choreograph steps in reaction to UI events, so we need to send a stream of taps.
+          pre-emulator-launch-script: |
+            sudo mkdir /mnt/avd
+            sudo chown $USER:$USER /mnt/avd
+            mkdir -p $HOME/.android
+            ln -s /mnt/avd $HOME/.android/avd
           script: |
             $ANDROID_HOME/platform-tools/adb devices
             nohup sh -c "$ANDROID_HOME/platform-tools/adb logcat '*:D' > adb-log.txt" &
-            yarn tests:android:test-cover
+            yarn tests:android:test-cover --headless
             yarn tests:android:test:jacoco-report
 
       - uses: codecov/codecov-action@v3
         with:
           verbose: true
 
-      - uses: actions/cache/save@v3
+      - uses: actions/cache/save@v4
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         with:
@@ -250,8 +184,8 @@ jobs:
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
 
       - name: Upload Emulator Log
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: adb_logs
+          name: adb_logs_${{ matrix.api-level}}_${{ matrix.arch }}_${{ matrix.target }}_${{ matrix.iteration }}
           path: adb-*.txt

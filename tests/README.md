@@ -6,8 +6,8 @@ Our tests are powered by [Jet ✈️](https://github.com/invertase/jet).
 
 ## Requirements
 
-- Make sure you have Xcode installed (tested with Xcode 13+) to develop iOS items
-- Make sure you have Node.js installed with yarn installed globally (node version 16, yarn v1 is required).
+- Make sure you have Xcode installed (tested with Xcode 15+) to develop iOS items
+- Make sure you have Node.js installed with yarn installed globally (node version 18 and 20 tested, `npm install --global yarn`).
 - Make sure you have all required iOS dependencies installed:
 
   - [Apple Sim Utils](https://github.com/wix/AppleSimulatorUtils):
@@ -36,6 +36,7 @@ yarn build:all:clean
 
 ```bash
 yarn
+yarn lerna:prepare
 yarn tests:ios:pod:install  # for iOS development
 ```
 
@@ -138,7 +139,7 @@ Another way to do this is via adding a `--grep` option to `e2e/mocha.opts` file,
 
 > 💡 Don't forget to remove these before committing your code and submitting a pull request
 
-For more Mocha options see https://mochajs.org/#usage
+For more Mocha options see <https://mochajs.org/#usage>
 
 ---
 

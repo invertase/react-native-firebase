@@ -428,6 +428,7 @@ describe('auth().currentUser', function () {
         }
         await firebase.auth().currentUser.delete();
       });
+
       it('should error if actionCodeSettings.url is not present', async function () {
         const random = Utils.randString(12, '#aA');
         const random2 = Utils.randString(12, '#aA');
@@ -672,6 +673,7 @@ describe('auth().currentUser', function () {
         return Promise.resolve();
       });
     });
+
     describe('unlink()', function () {
       it('should unlink the email address', async function () {
         const random = Utils.randString(12, '#aA');

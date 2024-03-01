@@ -178,6 +178,20 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
             });
   }
 
+  @ReactMethod
+  public void setConsent(ReadableMap consentSettings, Promise promise) {
+    module
+        .setConsent(Arguments.toBundle(consentSettings))
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(task.getResult());
+              } else {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
+  }
+
   private Bundle toBundle(ReadableMap readableMap) {
     Bundle bundle = Arguments.toBundle(readableMap);
     if (bundle == null) {

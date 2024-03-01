@@ -648,15 +648,15 @@ export function isSupported() {
 }
 
 /**
- * Sets the applicable end user consent state for this web app across all gtag
- * references once Firebase Analytics is initialized. Web only.
+ * Sets the applicable end user consent state for this app.
+ * references once Firebase Analytics is initialized.
  * @param analytics Analytics instance.
  * @param consentSettings See {@link analytics.ConsentSettings}.
- * @returns {void}
+ * @returns {Promise<void>}
  */
 // eslint-disable-next-line
-export function setConsent(consentSettings) {
-  // Returns nothing until Web implemented.
+export function setConsent(analytics, consentSettings) {
+  return analytics.setConsent(consentSettings);
 }
 
 /**

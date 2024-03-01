@@ -22,6 +22,7 @@ describe('storage() -> StorageReference', function () {
     before(async function () {
       await seed(PATH);
     });
+
     describe('firebase v8 compatibility', function () {
       describe('toString()', function () {
         it('returns the correct bucket path to the file', function () {
@@ -159,6 +160,7 @@ describe('storage() -> StorageReference', function () {
             this.skip();
           }
         });
+
         it('throws error if file does not exist', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/iDoNotExist.txt`);
           try {
@@ -172,6 +174,7 @@ describe('storage() -> StorageReference', function () {
             return Promise.resolve();
           }
         });
+
         it('throws error if no read permission', async function () {
           const storageReference = firebase.storage().ref(WRITE_ONLY_NAME);
           try {
@@ -186,6 +189,7 @@ describe('storage() -> StorageReference', function () {
           }
         });
       });
+
       describe('getMetadata', function () {
         it('should return a metadata for a file', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/list/file1.txt`);
@@ -216,6 +220,7 @@ describe('storage() -> StorageReference', function () {
           // should.equal(metadata.customMetadata, null);
         });
       });
+
       describe('list', function () {
         it('should return list results', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/list`);
@@ -229,6 +234,7 @@ describe('storage() -> StorageReference', function () {
           result.prefixes.length.should.be.greaterThan(0);
           result.prefixes[0].constructor.name.should.eql('StorageReference');
         });
+
         it('throws if options is not an object', function () {
           try {
             const storageReference = firebase.storage().ref(`${PATH}/ok.jpeg`);
@@ -239,6 +245,7 @@ describe('storage() -> StorageReference', function () {
             return Promise.resolve();
           }
         });
+
         describe('maxResults', function () {
           it('should limit with maxResults are passed', async function () {
             const storageReference = firebase.storage().ref(`${PATH}/list`);
@@ -252,6 +259,7 @@ describe('storage() -> StorageReference', function () {
             result.prefixes.should.be.Array();
             // todo length?
           });
+
           it('throws if maxResults is not a number', function () {
             try {
               const storageReference = firebase.storage().ref(`${PATH}/list`);
@@ -264,6 +272,7 @@ describe('storage() -> StorageReference', function () {
               return Promise.resolve();
             }
           });
+
           it('throws if maxResults is not a valid number', function () {
             try {
               const storageReference = firebase.storage().ref(`${PATH}/list`);
@@ -279,6 +288,7 @@ describe('storage() -> StorageReference', function () {
             }
           });
         });
+
         describe('pageToken', function () {
           it('throws if pageToken is not a string', function () {
             try {
@@ -292,6 +302,7 @@ describe('storage() -> StorageReference', function () {
               return Promise.resolve();
             }
           });
+
           it('should return and use a page token', async function () {
             const storageReference = firebase.storage().ref(`${PATH}/list`);
             const result1 = await storageReference.list({
@@ -309,6 +320,7 @@ describe('storage() -> StorageReference', function () {
           });
         });
       });
+
       describe('listAll', function () {
         it('should return all results', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/list`);
@@ -321,6 +333,7 @@ describe('storage() -> StorageReference', function () {
           result.prefixes.length.should.be.greaterThan(0);
           result.prefixes[0].constructor.name.should.eql('StorageReference');
         });
+
         it('should not crash if the user is not allowed to list the directory', async function () {
           const storageReference = firebase.storage().ref('/forbidden');
           try {
@@ -335,6 +348,7 @@ describe('storage() -> StorageReference', function () {
           }
         });
       });
+
       describe('updateMetadata', function () {
         it('should return the updated metadata for a file', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/list/file1.txt`);
@@ -410,6 +424,7 @@ describe('storage() -> StorageReference', function () {
           should.equal(metadata.contentType, undefined);
           should.equal(metadata.customMetadata, undefined);
         });
+
         it('should set update or remove customMetadata properties correctly', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/list/file1.txt`);
           let metadata = await storageReference.updateMetadata({
@@ -444,6 +459,7 @@ describe('storage() -> StorageReference', function () {
           Object.keys(metadata.customMetadata).length.should.equal(1);
           metadata.customMetadata.keepMe.should.equal('please');
         });
+
         it('should error if updateMetadata includes md5hash', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/list/file1.txt`);
           try {
@@ -457,6 +473,7 @@ describe('storage() -> StorageReference', function () {
           }
         });
       });
+
       describe('putFile', function () {
         it('errors if file path is not a string', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/ok.jpeg`);
@@ -468,6 +485,7 @@ describe('storage() -> StorageReference', function () {
             return Promise.resolve();
           }
         });
+
         it('errors if metadata is not an object', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/ok.jpeg`);
           try {
@@ -478,6 +496,7 @@ describe('storage() -> StorageReference', function () {
             return Promise.resolve();
           }
         });
+
         it('errors if metadata contains an unsupported property', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/ok.jpeg`);
           try {
@@ -488,6 +507,7 @@ describe('storage() -> StorageReference', function () {
             return Promise.resolve();
           }
         });
+
         it('errors if metadata property value is not a string or null value', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/ok.jpeg`);
           try {
@@ -498,6 +518,7 @@ describe('storage() -> StorageReference', function () {
             return Promise.resolve();
           }
         });
+
         it('errors if metadata.customMetadata is not an object', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/ok.jpeg`);
           try {
@@ -512,6 +533,7 @@ describe('storage() -> StorageReference', function () {
         });
         // TODO check an metaData:md5hash property passes through correcty on putFile
       });
+
       describe('putString', function () {
         it('errors if metadata is not an object', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/ok.jpeg`);
@@ -523,6 +545,7 @@ describe('storage() -> StorageReference', function () {
             return Promise.resolve();
           }
         });
+
         it('errors if metadata contains an unsupported property', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/ok.jpeg`);
           try {
@@ -533,6 +556,7 @@ describe('storage() -> StorageReference', function () {
             return Promise.resolve();
           }
         });
+
         it('errors if metadata property value is not a string or null value', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/ok.jpeg`);
           try {
@@ -543,6 +567,7 @@ describe('storage() -> StorageReference', function () {
             return Promise.resolve();
           }
         });
+
         it('errors if metadata.customMetadata is not an object', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/ok.jpeg`);
           try {
@@ -555,6 +580,7 @@ describe('storage() -> StorageReference', function () {
             return Promise.resolve();
           }
         });
+
         it('allows valid metadata properties for upload', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/metadataTest.txt`);
           await storageReference.putString('foo', 'raw', {
@@ -570,6 +596,7 @@ describe('storage() -> StorageReference', function () {
           });
         });
       });
+
       describe('put', function () {
         it('errors if metadata is not an object', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/ok.jpeg`);
@@ -581,6 +608,7 @@ describe('storage() -> StorageReference', function () {
             return Promise.resolve();
           }
         });
+
         it('errors if metadata contains an unsupported property', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/ok.jpeg`);
           try {
@@ -591,6 +619,7 @@ describe('storage() -> StorageReference', function () {
             return Promise.resolve();
           }
         });
+
         it('errors if metadata property value is not a string or null value', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/ok.jpeg`);
           try {
@@ -601,6 +630,7 @@ describe('storage() -> StorageReference', function () {
             return Promise.resolve();
           }
         });
+
         it('errors if metadata.customMetadata is not an object', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/ok.jpeg`);
           try {
@@ -613,6 +643,7 @@ describe('storage() -> StorageReference', function () {
             return Promise.resolve();
           }
         });
+
         it('allows valid metadata properties for upload', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/metadataTest.jpeg`);
           await storageReference.put(new jet.context.window.ArrayBuffer(), {

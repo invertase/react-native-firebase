@@ -45,7 +45,7 @@ can complete the process:
 ```js
 const cred = auth.PhoneAuthProvider.credential(verificationId, verificationCode);
 const multiFactorAssertion = auth.PhoneMultiFactorGenerator.assertion(cred);
-await multiFactorUser.enroll(multiFactorAssertion, 'Optional display name for the user);
+await multiFactorUser.enroll(multiFactorAssertion, 'Optional display name for the user');
 ```
 
 You can inspect [`User#multiFactor`](/reference/auth/user#multiFactor) for
