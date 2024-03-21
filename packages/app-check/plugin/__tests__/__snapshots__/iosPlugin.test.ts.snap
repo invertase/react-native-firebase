@@ -41,7 +41,7 @@ static void InitializeFlipper(UIApplication *application) {
   InitializeFlipper(application);
 #endif
   
-// @generated begin @react-native-firebase/app-check-didFinishLaunchingWithOptions - expo prebuild (DO NOT MODIFY) sync-5b7813c3af090f886568429140e982730142dbe7
+// @generated begin @react-native-firebase/app-check-didFinishLaunchingWithOptions - expo prebuild (DO NOT MODIFY) sync-39c06fe0cc03ffe4bc9cc005b839c559e7ba13d2
 [RNFBAppCheckModule sharedInstance];
 // @generated end @react-native-firebase/app-check-didFinishLaunchingWithOptions
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
@@ -134,7 +134,7 @@ static void InitializeFlipper(UIApplication *application) {
   InitializeFlipper(application);
 #endif
   
-// @generated begin @react-native-firebase/app-check-didFinishLaunchingWithOptions - expo prebuild (DO NOT MODIFY) sync-5b7813c3af090f886568429140e982730142dbe7
+// @generated begin @react-native-firebase/app-check-didFinishLaunchingWithOptions - expo prebuild (DO NOT MODIFY) sync-39c06fe0cc03ffe4bc9cc005b839c559e7ba13d2
 [RNFBAppCheckModule sharedInstance];
 // @generated end @react-native-firebase/app-check-didFinishLaunchingWithOptions
   RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
@@ -201,7 +201,7 @@ exports[`Config Plugin iOS Tests tests changes made to AppDelegate.m with fallba
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-// @generated begin @react-native-firebase/app-didFinishLaunchingWithOptions-fallback - expo prebuild (DO NOT MODIFY) sync-5b7813c3af090f886568429140e982730142dbe7
+// @generated begin @react-native-firebase/app-didFinishLaunchingWithOptions-fallback - expo prebuild (DO NOT MODIFY) sync-39c06fe0cc03ffe4bc9cc005b839c559e7ba13d2
 [RNFBAppCheckModule sharedInstance];
 // @generated end @react-native-firebase/app-didFinishLaunchingWithOptions-fallback
 
@@ -287,7 +287,7 @@ static void InitializeFlipper(UIApplication *application) {
   InitializeFlipper(application);
 #endif
   
-// @generated begin @react-native-firebase/app-check-didFinishLaunchingWithOptions - expo prebuild (DO NOT MODIFY) sync-5b7813c3af090f886568429140e982730142dbe7
+// @generated begin @react-native-firebase/app-check-didFinishLaunchingWithOptions - expo prebuild (DO NOT MODIFY) sync-39c06fe0cc03ffe4bc9cc005b839c559e7ba13d2
 [RNFBAppCheckModule sharedInstance];
 // @generated end @react-native-firebase/app-check-didFinishLaunchingWithOptions
   self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
@@ -386,7 +386,7 @@ exports[`Config Plugin iOS Tests works with AppDelegate.mm (RN 0.68+) 1`] = `
 {
   RCTAppSetupPrepareApp(application);
 
-// @generated begin @react-native-firebase/app-check-didFinishLaunchingWithOptions - expo prebuild (DO NOT MODIFY) sync-5b7813c3af090f886568429140e982730142dbe7
+// @generated begin @react-native-firebase/app-check-didFinishLaunchingWithOptions - expo prebuild (DO NOT MODIFY) sync-39c06fe0cc03ffe4bc9cc005b839c559e7ba13d2
 [RNFBAppCheckModule sharedInstance];
 // @generated end @react-native-firebase/app-check-didFinishLaunchingWithOptions
   RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];

@@ -88,8 +88,7 @@ describe('Config Plugin iOS Tests', function () {
   });
 
   it('does not add the firebase import multiple times', async function () {
-    const singleImport =
-      '#import "AppDelegate.h"\n#import <RNFBAppCheckModule.h>';
+    const singleImport = '#import "AppDelegate.h"\n#import <RNFBAppCheckModule.h>';
     const doubleImport = singleImport + '\n#import <RNFBAppCheckModule.h>';
 
     const appDelegate = await fs.readFile(path.join(__dirname, './fixtures/AppDelegate_sdk45.mm'), {

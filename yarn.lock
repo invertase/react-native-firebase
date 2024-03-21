@@ -4119,8 +4119,14 @@ __metadata:
 "@react-native-firebase/app-check@npm:19.0.1, @react-native-firebase/app-check@workspace:packages/app-check":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/app-check@workspace:packages/app-check"
+  dependencies:
+    expo: "npm:^49.0.21"
   peerDependencies:
     "@react-native-firebase/app": 19.0.1
+    expo: ">=47.0.0"
+  peerDependenciesMeta:
+    expo:
+      optional: true
   languageName: unknown
   linkType: soft
 
