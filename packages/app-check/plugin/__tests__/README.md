@@ -2,7 +2,7 @@
 
 To test the changes to native code applied by config plugins, [snapshot tests](https://jestjs.io/docs/snapshot-testing) are used. Plugin test flow, in short:
 
-1. A test fixture is loaded. In this case, fixtures are template files (`build.gradle`, `AppDelegate.m` etc.) from [`expo-template-bare-minimum`](https://github.com/expo/expo/tree/master/templates/expo-template-bare-minimum).
+1. A test fixture is loaded. In this case, fixtures are template files (`build.gradle`, `AppDelegate.m` etc.) from [`expo-template-bare-minimum`](https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum).
 2. Plugin changes are applied (e.g. gradle dependency is added).
 3. Modified file is compared with previously saved snapshot. If they're equal, the test passes. If not, the test fails and the difference (actual vs expected) is shown.
 
