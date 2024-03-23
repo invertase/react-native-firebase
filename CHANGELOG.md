@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [19.1.0](https://github.com/invertase/react-native-firebase/compare/v19.0.1...v19.1.0) (2024-03-23)
+
+### Features
+
+- **app-check, expo:** add config plugin for iOS module initialization ([#7662](https://github.com/invertase/react-native-firebase/issues/7662)) ([c6e813e](https://github.com/invertase/react-native-firebase/commit/c6e813e1d73b464e48525b16b447a808b15ae2b3))
+
+### Bug Fixes
+
+- **app, android:** adopt firebase-android-sdk 32.7.4 ([6793b1d](https://github.com/invertase/react-native-firebase/commit/6793b1d395c7112d6571e012c3ad50398784b574))
+- **app, android:** adopt firebase-android-sdk 32.8.0 ([450da62](https://github.com/invertase/react-native-firebase/commit/450da6265ab2b54f63675009588f26609c0aa263))
+- **app, ios:** adopt firebase-ios-sdk 10.23.0 ([d7fd10e](https://github.com/invertase/react-native-firebase/commit/d7fd10e97268ac08f4960323d5204acd3ecffa07))
+
 ## [19.0.1](https://github.com/invertase/react-native-firebase/compare/v19.0.0...v19.0.1) (2024-03-07)
 
 ### Bug Fixes

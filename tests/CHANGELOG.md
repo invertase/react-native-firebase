@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [19.1.0](https://github.com/invertase/react-native-firebase/compare/v19.0.1...v19.1.0) (2024-03-23)
+
+### Bug Fixes
+
+- **app, android:** adopt firebase-android-sdk 32.7.4 ([6793b1d](https://github.com/invertase/react-native-firebase/commit/6793b1d395c7112d6571e012c3ad50398784b574))
+- **app, ios:** adopt firebase-ios-sdk 10.23.0 ([d7fd10e](https://github.com/invertase/react-native-firebase/commit/d7fd10e97268ac08f4960323d5204acd3ecffa07))
+
 ## [19.0.1](https://github.com/invertase/react-native-firebase/compare/v19.0.0...v19.0.1) (2024-03-07)
 
 **Note:** Version bump only for package react-native-firebase-tests
