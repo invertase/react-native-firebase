@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [19.1.1](https://github.com/invertase/react-native-firebase/compare/v19.1.0...v19.1.1) (2024-03-26)
+
+### Bug Fixes
+
+- **app-check, expo:** ensure config plugin is built before using ([#7704](https://github.com/invertase/react-native-firebase/issues/7704)) ([873130c](https://github.com/invertase/react-native-firebase/commit/873130c11595690924cf60feb08b64b3b9421042))
+- **app, android:** bump google play-services-auth to 21.0.0 ([85dfa4e](https://github.com/invertase/react-native-firebase/commit/85dfa4e13b7da4358a12cc51e372a423bb63c9c3)), closes [/github.com/firebase/firebase-android-sdk/issues/5768#issuecomment-2020388078](https://github.com/invertase//github.com/firebase/firebase-android-sdk/issues/5768/issues/issuecomment-2020388078)
+
 ## [19.1.0](https://github.com/invertase/react-native-firebase/compare/v19.0.1...v19.1.0) (2024-03-23)
 
 ### Features
