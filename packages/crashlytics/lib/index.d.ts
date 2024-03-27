@@ -264,6 +264,8 @@ export const firebase: ReactNativeFirebase.Module & {
   ): ReactNativeFirebase.FirebaseApp & { crashlytics(): FirebaseCrashlyticsTypes.Module };
 };
 
+export * from './modular';
+
 export default defaultExport;
 
 /**

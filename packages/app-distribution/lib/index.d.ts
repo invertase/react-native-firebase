@@ -143,6 +143,8 @@ export const firebase: ReactNativeFirebase.Module & {
   ): ReactNativeFirebase.FirebaseApp & { appDistribution(): FirebaseAppDistributionTypes.Module };
 };
 
+export * from './modular';
+
 export default defaultExport;
 
 /**

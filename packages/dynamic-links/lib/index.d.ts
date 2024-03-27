@@ -625,6 +625,8 @@ export const firebase: ReactNativeFirebase.Module & {
   ): ReactNativeFirebase.FirebaseApp & { dynamicLinks(): FirebaseDynamicLinksTypes.Module };
 };
 
+export * from './modular';
+
 export default defaultExport;
 
 /**

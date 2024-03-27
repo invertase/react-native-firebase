@@ -1295,6 +1295,8 @@ export const firebase: ReactNativeFirebase.Module & {
   ): ReactNativeFirebase.FirebaseApp & { database(): FirebaseDatabaseTypes.Module };
 };
 
+export * from './modular';
+
 export default defaultExport;
 
 /**
