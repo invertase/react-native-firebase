@@ -1686,13 +1686,15 @@ RCT_EXPORT_METHOD(useEmulator
   NSMutableArray *enrolledFactors = [NSMutableArray array];
 
   for (FIRPhoneMultiFactorInfo *hint in hints) {
-    NSString *enrollmentDate =
+    NSString *enrollmentTime =
         [[[NSISO8601DateFormatter alloc] init] stringFromDate:hint.enrollmentDate];
     [enrolledFactors addObject:@{
       @"uid" : hint.UID,
       @"factorId" : [self getJSFactorId:(hint.factorID)],
       @"displayName" : hint.displayName == nil ? [NSNull null] : hint.displayName,
-      @"enrollmentDate" : enrollmentDate,
+      @"enrollmentTime" : enrollmentTime,
+      // @deprecated enrollmentDate kept for backwards compatibility, please use enrollmentTime
+      @"enrollmentDate" : enrollmentTime,
     }];
   }
   return enrolledFactors;
