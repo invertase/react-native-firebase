@@ -4108,27 +4108,33 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-firebase/analytics@npm:19.0.0, @react-native-firebase/analytics@workspace:packages/analytics":
+"@react-native-firebase/analytics@npm:19.1.1, @react-native-firebase/analytics@workspace:packages/analytics":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/analytics@workspace:packages/analytics"
   peerDependencies:
-    "@react-native-firebase/app": 19.0.0
+    "@react-native-firebase/app": 19.1.1
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/app-check@npm:19.0.0, @react-native-firebase/app-check@workspace:packages/app-check":
+"@react-native-firebase/app-check@npm:19.1.1, @react-native-firebase/app-check@workspace:packages/app-check":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/app-check@workspace:packages/app-check"
+  dependencies:
+    expo: "npm:^49.0.21"
   peerDependencies:
-    "@react-native-firebase/app": 19.0.0
+    "@react-native-firebase/app": 19.1.1
+    expo: ">=47.0.0"
+  peerDependenciesMeta:
+    expo:
+      optional: true
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/app-distribution@npm:19.0.0, @react-native-firebase/app-distribution@workspace:packages/app-distribution":
+"@react-native-firebase/app-distribution@npm:19.1.1, @react-native-firebase/app-distribution@workspace:packages/app-distribution":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/app-distribution@workspace:packages/app-distribution"
   peerDependencies:
-    "@react-native-firebase/app": 19.0.0
+    "@react-native-firebase/app": 19.1.1
   languageName: unknown
   linkType: soft
 
@@ -4139,7 +4145,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-firebase/app@npm:19.0.0, @react-native-firebase/app@workspace:packages/app":
+"@react-native-firebase/app@npm:19.1.1, @react-native-firebase/app@workspace:packages/app":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/app@workspace:packages/app"
   dependencies:
@@ -4156,7 +4162,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/auth@npm:19.0.0, @react-native-firebase/auth@workspace:packages/auth":
+"@react-native-firebase/auth@npm:19.1.1, @react-native-firebase/auth@workspace:packages/auth":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/auth@workspace:packages/auth"
   dependencies:
@@ -4164,7 +4170,7 @@ __metadata:
     expo: "npm:^49.0.21"
     plist: "npm:^3.1.0"
   peerDependencies:
-    "@react-native-firebase/app": 19.0.0
+    "@react-native-firebase/app": 19.1.1
     expo: ">=47.0.0"
   peerDependenciesMeta:
     expo:
@@ -4172,14 +4178,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/crashlytics@npm:19.0.0, @react-native-firebase/crashlytics@workspace:packages/crashlytics":
+"@react-native-firebase/crashlytics@npm:19.1.1, @react-native-firebase/crashlytics@workspace:packages/crashlytics":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/crashlytics@workspace:packages/crashlytics"
   dependencies:
     expo: "npm:^49.0.21"
     stacktrace-js: "npm:^2.0.2"
   peerDependencies:
-    "@react-native-firebase/app": 19.0.0
+    "@react-native-firebase/app": 19.1.1
     expo: ">=47.0.0"
   peerDependenciesMeta:
     expo:
@@ -4187,21 +4193,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/database@npm:19.0.0, @react-native-firebase/database@workspace:packages/database":
+"@react-native-firebase/database@npm:19.1.1, @react-native-firebase/database@workspace:packages/database":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/database@workspace:packages/database"
   peerDependencies:
-    "@react-native-firebase/app": 19.0.0
+    "@react-native-firebase/app": 19.1.1
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/dynamic-links@npm:19.0.0, @react-native-firebase/dynamic-links@workspace:packages/dynamic-links":
+"@react-native-firebase/dynamic-links@npm:19.1.1, @react-native-firebase/dynamic-links@workspace:packages/dynamic-links":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/dynamic-links@workspace:packages/dynamic-links"
   dependencies:
     expo: "npm:^49.0.21"
   peerDependencies:
-    "@react-native-firebase/app": 19.0.0
+    "@react-native-firebase/app": 19.1.1
     expo: ">=47.0.0"
   peerDependenciesMeta:
     expo:
@@ -4209,48 +4215,48 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/firestore@npm:19.0.0, @react-native-firebase/firestore@workspace:packages/firestore":
+"@react-native-firebase/firestore@npm:19.1.1, @react-native-firebase/firestore@workspace:packages/firestore":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/firestore@workspace:packages/firestore"
   peerDependencies:
-    "@react-native-firebase/app": 19.0.0
+    "@react-native-firebase/app": 19.1.1
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/functions@npm:19.0.0, @react-native-firebase/functions@workspace:packages/functions":
+"@react-native-firebase/functions@npm:19.1.1, @react-native-firebase/functions@workspace:packages/functions":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/functions@workspace:packages/functions"
   dependencies:
     "@react-native-firebase/private-tests-firebase-functions": "npm:^0.0.1"
   peerDependencies:
-    "@react-native-firebase/app": 19.0.0
+    "@react-native-firebase/app": 19.1.1
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/in-app-messaging@npm:19.0.0, @react-native-firebase/in-app-messaging@workspace:packages/in-app-messaging":
+"@react-native-firebase/in-app-messaging@npm:19.1.1, @react-native-firebase/in-app-messaging@workspace:packages/in-app-messaging":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/in-app-messaging@workspace:packages/in-app-messaging"
   peerDependencies:
-    "@react-native-firebase/analytics": 19.0.0
-    "@react-native-firebase/app": 19.0.0
+    "@react-native-firebase/analytics": 19.1.1
+    "@react-native-firebase/app": 19.1.1
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/installations@npm:19.0.0, @react-native-firebase/installations@workspace:packages/installations":
+"@react-native-firebase/installations@npm:19.1.1, @react-native-firebase/installations@workspace:packages/installations":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/installations@workspace:packages/installations"
   peerDependencies:
-    "@react-native-firebase/app": 19.0.0
+    "@react-native-firebase/app": 19.1.1
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/messaging@npm:19.0.0, @react-native-firebase/messaging@workspace:packages/messaging":
+"@react-native-firebase/messaging@npm:19.1.1, @react-native-firebase/messaging@workspace:packages/messaging":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/messaging@workspace:packages/messaging"
   dependencies:
     expo: "npm:^49.0.21"
   peerDependencies:
-    "@react-native-firebase/app": 19.0.0
+    "@react-native-firebase/app": 19.1.1
     expo: ">=47.0.0"
   peerDependenciesMeta:
     expo:
@@ -4258,21 +4264,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/ml@npm:19.0.0, @react-native-firebase/ml@workspace:packages/ml":
+"@react-native-firebase/ml@npm:19.1.1, @react-native-firebase/ml@workspace:packages/ml":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/ml@workspace:packages/ml"
   peerDependencies:
-    "@react-native-firebase/app": 19.0.0
+    "@react-native-firebase/app": 19.1.1
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/perf@npm:19.0.0, @react-native-firebase/perf@workspace:packages/perf":
+"@react-native-firebase/perf@npm:19.1.1, @react-native-firebase/perf@workspace:packages/perf":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/perf@workspace:packages/perf"
   dependencies:
     expo: "npm:^49.0.21"
   peerDependencies:
-    "@react-native-firebase/app": 19.0.0
+    "@react-native-firebase/app": 19.1.1
     expo: ">=47.0.0"
   peerDependenciesMeta:
     expo:
@@ -4298,20 +4304,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-firebase/remote-config@npm:19.0.0, @react-native-firebase/remote-config@workspace:packages/remote-config":
+"@react-native-firebase/remote-config@npm:19.1.1, @react-native-firebase/remote-config@workspace:packages/remote-config":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/remote-config@workspace:packages/remote-config"
   peerDependencies:
-    "@react-native-firebase/analytics": 19.0.0
-    "@react-native-firebase/app": 19.0.0
+    "@react-native-firebase/analytics": 19.1.1
+    "@react-native-firebase/app": 19.1.1
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/storage@npm:19.0.0, @react-native-firebase/storage@workspace:packages/storage":
+"@react-native-firebase/storage@npm:19.1.1, @react-native-firebase/storage@workspace:packages/storage":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/storage@workspace:packages/storage"
   peerDependencies:
-    "@react-native-firebase/app": 19.0.0
+    "@react-native-firebase/app": 19.1.1
   languageName: unknown
   linkType: soft
 
@@ -17075,25 +17081,25 @@ __metadata:
   resolution: "react-native-firebase-tests@workspace:tests"
   dependencies:
     "@firebase/rules-unit-testing": "npm:^3.0.1"
-    "@react-native-firebase/analytics": "npm:19.0.0"
-    "@react-native-firebase/app": "npm:19.0.0"
-    "@react-native-firebase/app-check": "npm:19.0.0"
-    "@react-native-firebase/app-distribution": "npm:19.0.0"
+    "@react-native-firebase/analytics": "npm:19.1.1"
+    "@react-native-firebase/app": "npm:19.1.1"
+    "@react-native-firebase/app-check": "npm:19.1.1"
+    "@react-native-firebase/app-distribution": "npm:19.1.1"
     "@react-native-firebase/app-types": "npm:6.7.2"
-    "@react-native-firebase/auth": "npm:19.0.0"
-    "@react-native-firebase/crashlytics": "npm:19.0.0"
-    "@react-native-firebase/database": "npm:19.0.0"
-    "@react-native-firebase/dynamic-links": "npm:19.0.0"
-    "@react-native-firebase/firestore": "npm:19.0.0"
-    "@react-native-firebase/functions": "npm:19.0.0"
-    "@react-native-firebase/in-app-messaging": "npm:19.0.0"
-    "@react-native-firebase/installations": "npm:19.0.0"
-    "@react-native-firebase/messaging": "npm:19.0.0"
-    "@react-native-firebase/ml": "npm:19.0.0"
-    "@react-native-firebase/perf": "npm:19.0.0"
+    "@react-native-firebase/auth": "npm:19.1.1"
+    "@react-native-firebase/crashlytics": "npm:19.1.1"
+    "@react-native-firebase/database": "npm:19.1.1"
+    "@react-native-firebase/dynamic-links": "npm:19.1.1"
+    "@react-native-firebase/firestore": "npm:19.1.1"
+    "@react-native-firebase/functions": "npm:19.1.1"
+    "@react-native-firebase/in-app-messaging": "npm:19.1.1"
+    "@react-native-firebase/installations": "npm:19.1.1"
+    "@react-native-firebase/messaging": "npm:19.1.1"
+    "@react-native-firebase/ml": "npm:19.1.1"
+    "@react-native-firebase/perf": "npm:19.1.1"
     "@react-native-firebase/private-tests-helpers": "npm:^1.0.0"
-    "@react-native-firebase/remote-config": "npm:19.0.0"
-    "@react-native-firebase/storage": "npm:19.0.0"
+    "@react-native-firebase/remote-config": "npm:19.1.1"
+    "@react-native-firebase/storage": "npm:19.1.1"
     "@react-native/babel-preset": "npm:^0.73.21"
     "@react-native/metro-config": "npm:^0.73.5"
     a2a: "npm:^0.2.1"

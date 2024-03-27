@@ -237,7 +237,7 @@ The following is an example `app.json` to enable the React Native Firebase modul
 }
 ```
 
-> Listing a module in the Config Plugins (the `"plugins"` array in the JSON above) is only required for React Native Firebase modules that involve _native installation steps_ - e.g. modifying the Xcode project, `Podfile`, `build.gradle`, `AndroidManifest.xml` etc. React Native Firebase modules without native steps will work out of the box; no `"plugins" entry is required. Not all modules have Expo Config Plugins provided yet. A React Native Firebase module has Config Plugin support if it contains an `app.plugin.js` file in its package directory (e.g.`node_modules/@react-native-firebase/app/app.plugin.js`).
+> Listing a module in the Config Plugins (the `"plugins"` array in the JSON above) is only required for React Native Firebase modules that involve _native installation steps_ - e.g. modifying the Xcode project, `Podfile`, `build.gradle`, `AndroidManifest.xml` etc. React Native Firebase modules without native steps will work out of the box; no `"plugins"` entry is required. Not all modules have Expo Config Plugins provided yet. A React Native Firebase module has Config Plugin support if it contains an `app.plugin.js` file in its package directory (e.g.`node_modules/@react-native-firebase/app/app.plugin.js`).
 
 #### Local app compilation
 
@@ -294,7 +294,7 @@ project.ext {
       // Overriding Library SDK Versions
       firebase: [
         // Override Firebase SDK Version
-        bom           : "32.7.2"
+        bom           : "32.8.0"
       ],
     ],
   ])
@@ -309,7 +309,7 @@ Open your projects `/ios/Podfile` and add any of the globals shown below to the 
 
 ```ruby
 # Override Firebase SDK Version
-$FirebaseSDKVersion = '10.21.0'
+$FirebaseSDKVersion = '10.23.0'
 ```
 
 Once changed, reinstall your projects pods via pod install and rebuild your project with `npx react-native run-ios`.

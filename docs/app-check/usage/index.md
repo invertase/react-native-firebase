@@ -89,6 +89,8 @@ For instructions on how to generate required keys and register an app for the de
 
 ### Initialize
 
+> If you're using Expo Managed Workflow, you can load the `@react-native-firebase/app-check` config plugin to skip the Initialize setup step.
+
 You must call initialize the AppCheck module prior to calling any firebase back-end services for App Check to function.
 
 To do that, edit your `ios/ProjectName/AppDelegate.mm` and add the following two lines:
