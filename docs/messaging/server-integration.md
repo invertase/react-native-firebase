@@ -176,8 +176,8 @@ This means that by default, if your app has users and you allow them to log out 
 
 How and when you invalidate a token and generate a new one will be specific to your project, but a common pattern is to delete the FCM token during logout and update your back end to remove it, then to fetch the FCM token during login and update your back end systems to associate the new token with the logged in user.
 
-<https://rnfirebase.io/reference/messaging#deleteToken>
-<https://rnfirebase.io/reference/messaging#getToken>
+\<https://rnfirebase.io/reference/messaging#deleteToken>
+\<https://rnfirebase.io/reference/messaging#getToken>
 
 Note that when a token is deleted by calling the `deleteToken` method, it is immediately and permanently invalid.
 

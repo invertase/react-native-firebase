@@ -5,12 +5,14 @@ next: /releases
 previous: /migrating-to-v6
 ---
 
+# FAQs and Tips
+
 Over the years, there’s been a lot of discussions on our [GitHub](https://github.com/invertase/react-native-firebase) and [Discord](https://invertase.link/discord). Many of them have been about common problems developers face when using our package, and some of them resulted in very good advice being given.
 
 In order to save others time and frustration, this page has been created to document some of these common problems and good pieces of advice.
 If you come across a discussion that results in great advice that can benefit many developers, or a discussion that resolves a problem that many developers encounter, please do add it here! Someone will definitely be grateful.
 
-# FAQs
+## FAQs
 
 ### Why `react-native-firebase` over `firebase-js-sdk`?
 
@@ -20,7 +22,7 @@ This package wraps `firebase-android-sdk` and `firebase-ios-sdk` into a Javascri
 
 - Some of the modules that are both in the web SDK and native SDK have a great deal more functionality when they can harness native APIs, like messaging (with background delivery that can start your app if not running), like App Check where you can tie the attestation to device-level providers, Storage where you can do background downloads, Performance where you can start measurements from boot, etc.
 
-### I need help with [anything regarding <= v5 of React Native Firebase]. Where could I get help with that?
+### I need help with [anything regarding \<= v5 of React Native Firebase]. Where could I get help with that?
 
 React Native Firebase v5 is now deprecated and unsupported. There's been over a year's grace period provided to migrate to v6, so moving forward maintainers probably won't pay much attention to issues regarding v5. Understandably, upgrading to v6 can take some effort, but staying on v5 probably isn't a great choice for the long-term health of your project.
 Lots of the breaking changes that were introduced were either due to upstream deprecations in the official SDKs, or to simply make the package more stable and more representative of how the actual SDKs work.
@@ -84,7 +86,7 @@ To fix this:
 
 To view the complete detail for this solution, please refer to this page: [#5656](https://github.com/invertase/react-native-firebase/issues/5656)
 
-# Tips
+## Tips
 
 - Whenever you face a strange issue (or an issue that causes build errors), there are two things you should always consider.
   - Build processes are costly and complex, so caching is used a lot. As a result, certain changes that you make in your app can cause cache conflicts in subsequent builds. Deal with this via `npx react-native-clean-project`. This does solve a lot of problems.

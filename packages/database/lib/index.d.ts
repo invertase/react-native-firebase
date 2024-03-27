@@ -17,6 +17,8 @@
 
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 
+export * from './modular/index';
+
 export type FirebaseApp = ReactNativeFirebase.FirebaseApp;
 
 /**

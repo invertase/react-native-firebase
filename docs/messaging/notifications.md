@@ -75,7 +75,7 @@ reference.
 If you are unable to use a [Firebase Admin SDK](https://firebase.google.com/docs/reference/admin), Firebase also provides
 support for sending messages to devices via a POST request:
 
-```HTTP
+```http
 POST https://fcm.googleapis.com/v1/projects/myproject-b5ae1/messages:send HTTP/1.1
 
 Content-Type: application/json

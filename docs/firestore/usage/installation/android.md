@@ -7,7 +7,7 @@ previous: /firestore/usage
 
 # Android Manual Installation
 
-The following steps are only required if you are using React Native without auto-linking (<= 0.59) or you need to manually integrate the library.
+The following steps are only required if you are using React Native without auto-linking (\<= 0.59) or you need to manually integrate the library.
 
 ## 1. Add Firestore to Gradle Settings
 

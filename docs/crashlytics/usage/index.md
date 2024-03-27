@@ -274,7 +274,7 @@ try {
 
 ### iOS
 
-```objectivec
+```objective-c
 #import <RNFBCrashlytics/RNFBCrashlyticsNativeHelper.h>
 //...
 

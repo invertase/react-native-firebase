@@ -4,6 +4,10 @@ description: Welcome to React Native Firebase! To get started, you must first se
 next: /typescript
 ---
 
+<HeroPattern />
+
+# React Native Firebase
+
 React Native Firebase is the officially recommended collection of packages that brings React Native support for all Firebase services on both Android and iOS apps.
 
 React Native Firebase fully supports React Native apps built using [React Native CLI](https://reactnative.dev/docs/environment-setup?guide=native) or using [Expo](https://docs.expo.dev/).
@@ -112,13 +116,13 @@ To do this, open your `/ios/{projectName}/AppDelegate.mm` file (or `AppDelegate.
 
 At the top of the file, import the Firebase SDK right after `'#import "AppDelegate.h"'`:
 
-```
+```objc
 #import <Firebase.h>
 ```
 
 Within your existing `didFinishLaunchingWithOptions` method, add the following to the top of the method:
 
-```
+```objc
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
   // Add me --- \/
   [FIRApp configure];

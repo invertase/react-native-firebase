@@ -31,7 +31,7 @@ Ensure that your new extension has access to Firebase/Messaging pod by adding it
 - From the Navigator open the Podfile: **Pods > Podfile**
 - Scroll down to the bottom of the file and add
 
-```Ruby
+```ruby
 target 'ImageNotification' do
   pod 'Firebase/Messaging', '~> VERSION_NUMBER' # eg 6.31.0
 end

@@ -296,7 +296,7 @@ AppRegistry.registerComponent('app', () => HeadlessCheck);
 
 To inject a `isHeadless` prop into your app, please update your `AppDelegate.m` file as instructed below:
 
-```objectivec
+```objective-c
 // add this import statement at the top of your `AppDelegate.m` file
 #import "RNFBMessagingModule.h"
 
