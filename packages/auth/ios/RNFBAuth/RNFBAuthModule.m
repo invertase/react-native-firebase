@@ -1692,7 +1692,8 @@ RCT_EXPORT_METHOD(useEmulator
       @"uid" : hint.UID,
       @"factorId" : [self getJSFactorId:(hint.factorID)],
       @"displayName" : hint.displayName == nil ? [NSNull null] : hint.displayName,
-      @"enrollmentDate" : enrollmentDate,
+      @"enrollmentTime" : enrollmentDate,
+      @"phoneNumber" : hint.phoneNumber
     }];
   }
   return enrolledFactors;
