@@ -198,7 +198,7 @@ Here is an example of how to use the feature, with comments emphasizing the key 
 // Add a config update listener where appropriate, perhaps in app startup, or a specific app area.
 // Multiple listeners are supported, so listeners may be screen-specific and only handle certain keys
 // depending on application requirements
-let remoteConfigListenerUnsubscriber = await remoteConfig().onConfigUpdated((event, error) => {
+let remoteConfigListenerUnsubscriber = remoteConfig().onConfigUpdated((event, error) => {
   if (error !== undefined) {
     console.log('remote-config listener subscription error: ' + JSON.stringify(error));
   } else {
