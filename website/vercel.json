@@ -1,0 +1,4 @@
+{
+  "buildCommand": "cd website && ./docs.sh && next build",
+  "installCommand": "cd website && bun install"
+}
