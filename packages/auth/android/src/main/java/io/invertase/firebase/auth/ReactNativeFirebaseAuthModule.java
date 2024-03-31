@@ -1111,122 +1111,122 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
   @ReactMethod
   public void generateSecret(
-    final String appName, 
-    final String sessionKey, 
-    final Boolean openInApp, 
-    final Promise promise
-    ) {
-      final MultiFactorSession session = mMultiFactorSessions.get(sessionKey);
-      if (session == null) {
-          rejectPromiseWithCodeAndMessage(promise, "unknown", "can't find session for provided key");
-          return;
-      }
+      final String appName,
+      final String sessionKey,
+      final Boolean openInApp,
+      final Promise promise) {
+    final MultiFactorSession session = mMultiFactorSessions.get(sessionKey);
+    if (session == null) {
+      rejectPromiseWithCodeAndMessage(promise, "unknown", "can't find session for provided key");
+      return;
+    }
 
-      TotpMultiFactorGenerator.generateSecret(session)
-              .addOnCompleteListener(
-                      task -> {
-                          if (!task.isSuccessful()) {
-                              rejectPromiseWithExceptionMap(promise, task.getException());
-                              return;
-                          }
+    TotpMultiFactorGenerator.generateSecret(session)
+        .addOnCompleteListener(
+            task -> {
+              if (!task.isSuccessful()) {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+                return;
+              }
 
-                          final TotpSecret secret = task.getResult();
-                          final String sharedSecret = secret.getSharedSecretKey();
+              final TotpSecret secret = task.getResult();
+              final String sharedSecret = secret.getSharedSecretKey();
 
-                          if (openInApp) {
-                            FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-                            final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
-                          
+              if (openInApp) {
+                FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+                final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+                FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                            if (user == null) {
-                                rejectPromiseWithCodeAndMessage(promise, "unknown", "current user must be set");
-                                return;
-                            }
-                            String email = user.getEmail();
-                            if (email == null) {
-                                rejectPromiseWithCodeAndMessage(promise, "unknown", "email must be set");
-                                return;
-                            }
-                            final String qrCodeUrl = secret.generateQrCodeUrl(email, appName);
-                            secret.openInOtpApp(qrCodeUrl);
-                          }
-                          this.totpSecret = secret;
-                          promise.resolve(sharedSecret);
-                      });
+                if (user == null) {
+                  rejectPromiseWithCodeAndMessage(promise, "unknown", "current user must be set");
+                  return;
+                }
+                String email = user.getEmail();
+                if (email == null) {
+                  rejectPromiseWithCodeAndMessage(promise, "unknown", "email must be set");
+                  return;
+                }
+                final String qrCodeUrl = secret.generateQrCodeUrl(email, appName);
+                secret.openInOtpApp(qrCodeUrl);
+              }
+              this.totpSecret = secret;
+              promise.resolve(sharedSecret);
+            });
   }
 
   private void resolveTotpMultiFactorCredential(
-    final String verificationId, final String verificationCode, final String sessionKey, final Promise promise) {
+      final String verificationId,
+      final String verificationCode,
+      final String sessionKey,
+      final Promise promise) {
 
-      final MultiFactorAssertion multiFactorAssertion = TotpMultiFactorGenerator.getAssertionForSignIn(verificationId, verificationCode);
+    final MultiFactorAssertion multiFactorAssertion =
+        TotpMultiFactorGenerator.getAssertionForSignIn(verificationId, verificationCode);
 
-      final MultiFactorResolver resolver = mCachedResolvers.get(sessionKey);
-      if (resolver == null) {
-          rejectPromiseWithCodeAndMessage(
-                  promise,
-                  "invalid-multi-factor-session",
-                  "No resolver for session found. Is the session id correct?");
-          return;
-      }
+    final MultiFactorResolver resolver = mCachedResolvers.get(sessionKey);
+    if (resolver == null) {
+      rejectPromiseWithCodeAndMessage(
+          promise,
+          "invalid-multi-factor-session",
+          "No resolver for session found. Is the session id correct?");
+      return;
+    }
 
-      resolver
-              .resolveSignIn(multiFactorAssertion)
-              .addOnCompleteListener(
-                      task -> {
-                          if (task.isSuccessful()) {
-                              AuthResult authResult = task.getResult();
-                              promiseWithAuthResult(authResult, promise);
-                          } else {
-                              promiseRejectAuthException(promise, task.getException());
-                          }
-                      });
+    resolver
+        .resolveSignIn(multiFactorAssertion)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                AuthResult authResult = task.getResult();
+                promiseWithAuthResult(authResult, promise);
+              } else {
+                promiseRejectAuthException(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod
   public void resolveTotpMultiFactorSignIn(
-          final String appName,
-          final String session,
-          final String verificationId,
-          final String verificationCode,
-          final Promise promise) {
-      resolveTotpMultiFactorCredential(verificationId, verificationCode, session, promise);
+      final String appName,
+      final String session,
+      final String verificationId,
+      final String verificationCode,
+      final Promise promise) {
+    resolveTotpMultiFactorCredential(verificationId, verificationCode, session, promise);
   }
 
   @ReactMethod
   public void enrollTotp(
-          final String appName,
-          final String verificationCode,
-          @Nullable final String displayName,
-          final Promise promise) {
+      final String appName,
+      final String verificationCode,
+      @Nullable final String displayName,
+      final Promise promise) {
 
-      if (this.totpSecret == null) {
-          rejectPromiseWithCodeAndMessage(
-                  promise,
-                  "unknown",
-                  "totp secret isn't set yet");
-          return;
-      }
-      FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-      FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    if (this.totpSecret == null) {
+      rejectPromiseWithCodeAndMessage(promise, "unknown", "totp secret isn't set yet");
+      return;
+    }
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-      final TotpMultiFactorAssertion assertion = TotpMultiFactorGenerator.getAssertionForEnrollment(this.totpSecret, verificationCode);
-      firebaseAuth
-              .getCurrentUser()
-              .getMultiFactor()
-              .enroll(assertion, displayName)
-              .addOnCompleteListener(
-                      task -> {
-                          if (task.isSuccessful()) {
-                              Log.d(TAG, "finalizeMultiFactorEnrollment:onComplete:success");
-                              this.totpSecret = null;
-                              promise.resolve(null);
-                          } else {
-                              Exception exception = task.getException();
-                              Log.e(TAG, "finalizeMultiFactorEnrollment:onComplete:failure", exception);
-                              promiseRejectAuthException(promise, exception);
-                          }
-                      });
+    final TotpMultiFactorAssertion assertion =
+        TotpMultiFactorGenerator.getAssertionForEnrollment(this.totpSecret, verificationCode);
+    firebaseAuth
+        .getCurrentUser()
+        .getMultiFactor()
+        .enroll(assertion, displayName)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                Log.d(TAG, "finalizeMultiFactorEnrollment:onComplete:success");
+                this.totpSecret = null;
+                promise.resolve(null);
+              } else {
+                Exception exception = task.getException();
+                Log.e(TAG, "finalizeMultiFactorEnrollment:onComplete:failure", exception);
+                promiseRejectAuthException(promise, exception);
+              }
+            });
   }
 
   @ReactMethod

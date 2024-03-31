@@ -949,7 +949,12 @@ RCT_EXPORT_METHOD(getSession
   }];
 }
 
-RCT_EXPORT_METHOD(generateSecret:(NSString *)appName sessionKey:(NSString *)sessionKey openInApp:(BOOL)openInApp resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(generateSecret
+                  : (NSString *)appName sessionKey
+                  : (NSString *)sessionKey openInApp
+                  : (BOOL)openInApp resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
   if ([cachedResolver valueForKey:sessionKey] == nil) {
     [RNFBSharedUtils
         rejectPromiseWithUserInfo:reject
@@ -961,47 +966,67 @@ RCT_EXPORT_METHOD(generateSecret:(NSString *)appName sessionKey:(NSString *)sess
   }
   FIRMultiFactorSession *session = cachedResolver[sessionKey].session;
 
-  [TotpMultiFactorGenerator generateSecretWithSession:session completion:^(TotpSecret * _Nullable secret, NSError * _Nullable error) {
-      if (error) {
-          [self promiseRejectAuthException:reject
-            error:error];
-          return;
-      }
+  [TotpMultiFactorGenerator
+      generateSecretWithSession:session
+                     completion:^(TotpSecret *_Nullable secret, NSError *_Nullable error) {
+                       if (error) {
+                         [self promiseRejectAuthException:reject error:error];
+                         return;
+                       }
 
-      NSString *sharedSecret = secret.sharedSecretKey;
+                       NSString *sharedSecret = secret.sharedSecretKey;
 
-      if (openInApp) {
-          FirebaseAuth *firebaseAuth = [FIRAuth authWithApp:[FIRApp appNamed:appName]];
-          FIRUser *user = [firebaseAuth currentUser];
-          if (user == nil) {
-              reject(@"unknown", @"current user must be set", nil);
-              return;
-          }
-          NSString *email = user.email;
-          if (email == nil) {
-              reject(@"unknown", @"email must be set", nil);
-              return;
-          }
-          NSString *qrCodeUrl = [secret generateQrCodeUrlWithEmail:email appName:appName];
-          [secret openInOtpAppWithQrCodeUrl:qrCodeUrl];
-      }
-      self.totpSecret = secret;
-      resolve(sharedSecret);
-  }];
+                       if (openInApp) {
+                         FirebaseAuth *firebaseAuth =
+                             [FIRAuth authWithApp:[FIRApp appNamed:appName]];
+                         FIRUser *user = [firebaseAuth currentUser];
+                         if (user == nil) {
+                           reject(@"unknown", @"current user must be set", nil);
+                           return;
+                         }
+                         NSString *email = user.email;
+                         if (email == nil) {
+                           reject(@"unknown", @"email must be set", nil);
+                           return;
+                         }
+                         NSString *qrCodeUrl = [secret generateQrCodeUrlWithEmail:email
+                                                                          appName:appName];
+                         [secret openInOtpAppWithQrCodeUrl:qrCodeUrl];
+                       }
+                       self.totpSecret = secret;
+                       resolve(sharedSecret);
+                     }];
 }
 
-RCT_EXPORT_METHOD(resolveTotpMultiFactorSignIn:(NSString *)appName session:(NSString *)session verificationId:(NSString *)verificationId verificationCode:(NSString *)verificationCode resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-  [self resolveTotpMultiFactorCredentialWithVerificationId:verificationId verificationCode:verificationCode sessionKey:session resolver:resolve rejecter:reject];
+RCT_EXPORT_METHOD(resolveTotpMultiFactorSignIn
+                  : (NSString *)appName session
+                  : (NSString *)session verificationId
+                  : (NSString *)verificationId verificationCode
+                  : (NSString *)verificationCode resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  [self resolveTotpMultiFactorCredentialWithVerificationId:verificationId
+                                          verificationCode:verificationCode
+                                                sessionKey:session
+                                                  resolver:resolve
+                                                  rejecter:reject];
 }
 
-RCT_EXPORT_METHOD(enrollTotp:(NSString *)appName verificationCode:(NSString *)verificationCode displayName:(NSString *)displayName resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    if (self.totpSecret == nil) {
-        reject(@"unknown", @"totp secret isn't set yet", nil);
-        return;
-    }
-    TotpMultiFactorAssertion *assertion = [TotpMultiFactorGenerator getAssertionForEnrollmentWithSecret:self.totpSecret verificationCode:verificationCode];
-    FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
-    [user.multiFactor enrollWithAssertion:assertion
+RCT_EXPORT_METHOD(enrollTotp
+                  : (NSString *)appName verificationCode
+                  : (NSString *)verificationCode displayName
+                  : (NSString *)displayName resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  if (self.totpSecret == nil) {
+    reject(@"unknown", @"totp secret isn't set yet", nil);
+    return;
+  }
+  TotpMultiFactorAssertion *assertion =
+      [TotpMultiFactorGenerator getAssertionForEnrollmentWithSecret:self.totpSecret
+                                                   verificationCode:verificationCode];
+  FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
+  [user.multiFactor enrollWithAssertion:assertion
                             displayName:displayName
                              completion:^(NSError *_Nullable error) {
                                if (error != nil) {
@@ -1014,26 +1039,33 @@ RCT_EXPORT_METHOD(enrollTotp:(NSString *)appName verificationCode:(NSString *)ve
                              }];
 }
 
-- (void)resolveTotpMultiFactorCredentialWithVerificationId:(NSString *)verificationId verificationCode:(NSString *)verificationCode sessionKey:(NSString *)sessionKey resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
-    MultiFactorAssertion *multiFactorAssertion = [TotpMultiFactorGenerator getAssertionForSignInWithVerificationId:verificationId verificationCode:verificationCode];
+- (void)resolveTotpMultiFactorCredentialWithVerificationId:(NSString *)verificationId
+                                          verificationCode:(NSString *)verificationCode
+                                                sessionKey:(NSString *)sessionKey
+                                                  resolver:(RCTPromiseResolveBlock)resolve
+                                                  rejecter:(RCTPromiseRejectBlock)reject {
+  MultiFactorAssertion *multiFactorAssertion =
+      [TotpMultiFactorGenerator getAssertionForSignInWithVerificationId:verificationId
+                                                       verificationCode:verificationCode];
 
-    MultiFactorResolver *resolver = [self.cachedResolvers objectForKey:sessionKey];
-    if (resolver == nil) {
-        reject(@"invalid-multi-factor-session", @"No resolver for session found. Is the session id correct?", nil);
-        return;
-    }
+  MultiFactorResolver *resolver = [self.cachedResolvers objectForKey:sessionKey];
+  if (resolver == nil) {
+    reject(@"invalid-multi-factor-session",
+           @"No resolver for session found. Is the session id correct?", nil);
+    return;
+  }
 
-    [resolver resolveSignInWithAssertion:multiFactorAssertion completion:^(FIRAuthDataResult * _Nullable authResult, NSError * _Nullable error) {
-        if (error) {
-            reject(@"unknown", error.localizedDescription, error);
-        } else {
-            // Handle the authResult as needed
-            resolve(authResult);
-        }
-    }];
+  [resolver resolveSignInWithAssertion:multiFactorAssertion
+                            completion:^(FIRAuthDataResult *_Nullable authResult,
+                                         NSError *_Nullable error) {
+                              if (error) {
+                                reject(@"unknown", error.localizedDescription, error);
+                              } else {
+                                // Handle the authResult as needed
+                                resolve(authResult);
+                              }
+                            }];
 }
-
-
 
 RCT_EXPORT_METHOD(finalizeMultiFactorEnrollment
                   : (FIRApp *)firebaseApp
