@@ -1134,20 +1134,22 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
                           final String sharedSecret = secret.getSharedSecretKey();
 
                           if (openInApp) {
-                              FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-                              FirebaseUser user = firebaseAuth.getCurrentUser();
-                              final String email;
-                              if (user == null) {
-                                  rejectPromiseWithExceptionMap(promise, "unknown", "current user must be set");
-                                  return;
-                              }
-                              email = user.getEmail();
-                              if (email == null) {
-                                  rejectPromiseWithExceptionMap(promise, "unknown", "email must be set");
-                                  return;
-                              }
-                              final String qrCodeUrl = secret.generateQrCodeUrl(email, appName);
-                              secret.openInOtpApp(qrCodeUrl);
+                            FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+                            final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+                            FirebaseUser user = firebaseAuth.getCurrentUser();
+                          
+
+                            if (user == null) {
+                                rejectPromiseWithCodeAndMessage(promise, "unknown", "current user must be set");
+                                return;
+                            }
+                            String email = user.getEmail();
+                            if (email == null) {
+                                rejectPromiseWithCodeAndMessage(promise, "unknown", "email must be set");
+                                return;
+                            }
+                            final String qrCodeUrl = secret.generateQrCodeUrl(email, appName);
+                            secret.openInOtpApp(qrCodeUrl);
                           }
                           this.totpSecret = secret;
                           promise.resolve(sharedSecret);
