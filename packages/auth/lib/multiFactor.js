@@ -34,6 +34,12 @@ export class MultiFactorUser {
     return this._auth.currentUser.reload();
   }
 
+  async enrollTotp(verificationCode, displayName) {
+    await this._auth.native.enrollTotp(verificationCode, displayName);
+
+    return this._auth.currentUser.reload();
+  }
+
   unenroll() {
     return Promise.reject(new Error('No implemented yet.'));
   }
