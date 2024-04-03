@@ -3,7 +3,7 @@ require 'json'
 # Uncomment these two lines and specify an *unsupported* testing version of firebase-ios-sdk
 # to check things before release in cooperation with firebase-ios-sdk team
 # source 'https://github.com/firebase/SpecsStaging'
-# source 'https://cdn.cocoapods.org/'
+ source 'https://cdn.cocoapods.org/'
 
 # Settings to test various overrides if desired
 appPackage = JSON.parse(File.read(File.join('..', 'node_modules', '@react-native-firebase', 'app', 'package.json')))
