@@ -5,6 +5,7 @@
     "version": "node ./scripts/version.js",
     "lerna:prepare": "lerna run prepare",
     "lerna:clean": "lerna clean",
+    "reference:build": "typedoc",
     "build:all:clean": "lerna run build:clean",
     "build:all:build": "lerna run build",
     "lint": "yarn lint:js && yarn lint:android && yarn lint:ios:check",
@@ -85,6 +86,7 @@
     "shelljs": "^0.8.5",
     "spellchecker-cli": "^6.2.0",
     "ts-jest": "^29.1.2",
+    "typedoc": "0.25.13",
     "typescript": "^5.3.3"
   },
   "resolutions": {

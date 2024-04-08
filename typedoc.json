@@ -1,0 +1,33 @@
+{
+  "entryPoints": [
+    "./packages/app/lib/index.d.ts",
+    "./packages/analytics/lib/index.d.ts",
+    "./packages/app-check/lib/index.d.ts",
+    "./packages/app-distribution/lib/index.d.ts",
+    "./packages/auth/lib/index.d.ts",
+    "./packages/crashlytics/lib/index.d.ts",
+    "./packages/database/lib/index.d.ts",
+    "./packages/dynamic-links/lib/index.d.ts",
+    "./packages/firestore/lib/index.d.ts",
+    "./packages/functions/lib/index.d.ts",
+    "./packages/in-app-messaging/lib/index.d.ts",
+    "./packages/installations/lib/index.d.ts",
+    "./packages/messaging/lib/index.d.ts",
+    "./packages/ml/lib/index.d.ts",
+    "./packages/perf/lib/index.d.ts",
+    "./packages/remote-config/lib/index.d.ts",
+    "./packages/storage/lib/index.d.ts",
+  ],
+  "name": "React Native Firebase",
+  "entryPointStrategy": "resolve",
+  "logLevel": "Verbose",
+  "out": "./reference",
+  "githubPages": false,
+  "cacheBust": true,
+  "titleLink": "https://reference.rnfirebase.io",
+  "navigationLinks": {
+    "Documentation": "https://rnfirebase.io",
+    "Discord": "https://invertase.link/discord",
+    "GitHub": "https://github.com/invertase/react-native-firebase"
+  }
+}
