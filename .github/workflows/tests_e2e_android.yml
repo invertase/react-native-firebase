@@ -174,7 +174,7 @@ jobs:
             yarn tests:android:test-cover --headless
             yarn tests:android:test:jacoco-report
 
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
         with:
           verbose: true
 
