@@ -914,7 +914,9 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       return;
     }
 
-    OAuthProvider.Builder builder = OAuthProvider.newBuilder(provider.getString("providerId"));
+    OAuthProvider.Builder builder = OAuthProvider.newBuilder(
+        provider.getString("providerId"),
+        firebaseAuth);
     // Add scopes if present
     if (provider.hasKey("scopes")) {
       ReadableArray scopes = provider.getArray("scopes");
@@ -1648,7 +1650,9 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       return;
     }
 
-    OAuthProvider.Builder builder = OAuthProvider.newBuilder(provider.getString("providerId"));
+    OAuthProvider.Builder builder = OAuthProvider.newBuilder(
+        provider.getString("providerId"),
+        firebaseAuth);
     // Add scopes if present
     if (provider.hasKey("scopes")) {
       ReadableArray scopes = provider.getArray("scopes");
@@ -1791,7 +1795,9 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       return;
     }
 
-    OAuthProvider.Builder builder = OAuthProvider.newBuilder(provider.getString("providerId"));
+    OAuthProvider.Builder builder = OAuthProvider.newBuilder(
+        provider.getString("providerId"),
+        firebaseAuth);
     // Add scopes if present
     if (provider.hasKey("scopes")) {
       ReadableArray scopes = provider.getArray("scopes");
