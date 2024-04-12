@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [19.2.1](https://github.com/invertase/react-native-firebase/compare/v19.2.0...v19.2.1) (2024-04-12)
+
+### Bug Fixes
+
+- **auth, android:** Pass firebaseAuth into OAuthProvider.newBuilder(...) ([#7677](https://github.com/invertase/react-native-firebase/issues/7677)) ([21a9454](https://github.com/invertase/react-native-firebase/commit/21a945496cb422ab1a0ff0a6e412ffdda0e75e95))
+- **auth, ios:** deprecate MultifactorInfo.enrollmentDate should be `enrollmentTime` ([#7653](https://github.com/invertase/react-native-firebase/issues/7653)) ([d9987da](https://github.com/invertase/react-native-firebase/commit/d9987dae0245b62a0ca705e3fd61ffc7a2c31097)), closes [/github.com/invertase/react-native-firebase/blob/main/packages/auth/android/src/main/java/io/invertase/firebase/auth/ReactNativeFirebaseAuthModule.java#L2500](https://github.com/invertase//github.com/invertase/react-native-firebase/blob/main/packages/auth/android/src/main/java/io/invertase/firebase/auth/ReactNativeFirebaseAuthModule.java/issues/L2500) [/github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/index.d.ts#L483](https://github.com/invertase//github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/index.d.ts/issues/L483) [#7565](https://github.com/invertase/react-native-firebase/issues/7565)
+- **auth:** deprecate MultiFactorUser.enrolledFactor should be plural `enrolledFactors` ([#7652](https://github.com/invertase/react-native-firebase/issues/7652)) ([1ae7481](https://github.com/invertase/react-native-firebase/commit/1ae74816e4d70b129d831e4adf14794d4c69c372)), closes [/github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/index.d.ts#L568](https://github.com/invertase//github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/index.d.ts/issues/L568) [/github.com/invertase/react-native-firebase/blob/main/packages/auth/android/src/main/java/io/invertase/firebase/auth/ReactNativeFirebaseAuthModule.java#L2476](https://github.com/invertase//github.com/invertase/react-native-firebase/blob/main/packages/auth/android/src/main/java/io/invertase/firebase/auth/ReactNativeFirebaseAuthModule.java/issues/L2476) [/github.com/invertase/react-native-firebase/blob/main/packages/auth/ios/RNFBAuth/RNFBAuthModule.m#L1681](https://github.com/invertase//github.com/invertase/react-native-firebase/blob/main/packages/auth/ios/RNFBAuth/RNFBAuthModule.m/issues/L1681) [/github.com/firebase/firebase-js-sdk/blob/master/packages/auth/src/mfa/mfa_user.ts#L34](https://github.com/invertase//github.com/firebase/firebase-js-sdk/blob/master/packages/auth/src/mfa/mfa_user.ts/issues/L34)
+
 ## [19.2.0](https://github.com/invertase/react-native-firebase/compare/v19.1.2...v19.2.0) (2024-04-10)
 
 ### Features
