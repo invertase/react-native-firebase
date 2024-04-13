@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [19.2.2](https://github.com/invertase/react-native-firebase/compare/v19.2.1...v19.2.2) (2024-04-13)
+
+### Bug Fixes
+
+- **app, android:** bump firebase-android-sdk to 32.8.1 ([ae24918](https://github.com/invertase/react-native-firebase/commit/ae24918ff124020b120f2bd12e24db4b6b5f54b4))
+
 ## [19.2.1](https://github.com/invertase/react-native-firebase/compare/v19.2.0...v19.2.1) (2024-04-12)
 
 **Note:** Version bump only for package @react-native-firebase/app
