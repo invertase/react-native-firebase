@@ -930,36 +930,35 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase-functions-test@npm:^3.1.1":
-  version: 3.1.1
-  resolution: "firebase-functions-test@npm:3.1.1"
+"firebase-functions-test@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "firebase-functions-test@npm:3.2.0"
   dependencies:
     "@types/lodash": "npm:^4.14.104"
     lodash: "npm:^4.17.5"
     ts-deepmerge: "npm:^2.0.1"
   peerDependencies:
     firebase-admin: ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0 || ^12.0.0
-    firebase-functions: ">=4.3.0"
+    firebase-functions: ">=4.9.0"
     jest: ">=28.0.0"
-  checksum: 10/ec672cca1f5aa1e85c0bcc6a71c9de4a930452c92fd3241759f29d87da848d22a9450518a674972d752d8680c964ce320ac7595ae122fa57a5b2f9483eb94e51
+  checksum: 10/52f334cc0887c9da8b3af712fdf6e33d5a560b9db2b09faf34c16a9260e30dcabc5bce818a77ad710240bd20fedf0df5c4058d79643c7e50334a51bd83df2b81
   languageName: node
   linkType: hard
 
-"firebase-functions@npm:^4.6.0":
-  version: 4.6.0
-  resolution: "firebase-functions@npm:4.6.0"
+"firebase-functions@npm:^4.9.0":
+  version: 4.9.0
+  resolution: "firebase-functions@npm:4.9.0"
   dependencies:
     "@types/cors": "npm:^2.8.5"
     "@types/express": "npm:4.17.3"
     cors: "npm:^2.8.5"
     express: "npm:^4.17.1"
-    node-fetch: "npm:^2.6.7"
     protobufjs: "npm:^7.2.2"
   peerDependencies:
     firebase-admin: ^10.0.0 || ^11.0.0 || ^12.0.0
   bin:
     firebase-functions: lib/bin/firebase-functions.js
-  checksum: 10/a51dec932d551e90c39aa642037927ddeee727cdab545fcbf3dc15c5086e9ac9e0cf9f32ba251d0c76a830e9537e77e47fa2d6e2d58d153b42e893ef8944151b
+  checksum: 10/7b23295bb40053ea4e80018bf7bcfc55afc41d13c2db236c2e263b4ac1fef30f6ed379424945e38190a1b8a97e30392fad0f983cd4a0d11ad2c5e68dc4130a09
   languageName: node
   linkType: hard
 
@@ -1007,9 +1006,9 @@ __metadata:
   resolution: "functions@workspace:."
   dependencies:
     firebase-admin: "npm:^12.0.0"
-    firebase-functions: "npm:^4.6.0"
-    firebase-functions-test: "npm:^3.1.1"
-    typescript: "npm:^5.3.3"
+    firebase-functions: "npm:^4.9.0"
+    firebase-functions-test: "npm:^3.2.0"
+    typescript: "npm:^5.4.5"
   languageName: unknown
   linkType: soft
 
@@ -1512,7 +1511,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.7, node-fetch@npm:^2.6.9":
+"node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.9":
   version: 2.7.0
   resolution: "node-fetch@npm:2.7.0"
   dependencies:
@@ -1918,23 +1917,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.3.3":
-  version: 5.3.3
-  resolution: "typescript@npm:5.3.3"
+"typescript@npm:^5.4.5":
+  version: 5.4.5
+  resolution: "typescript@npm:5.4.5"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10/6e4e6a14a50c222b3d14d4ea2f729e79f972fa536ac1522b91202a9a65af3605c2928c4a790a4a50aa13694d461c479ba92cedaeb1e7b190aadaa4e4b96b8e18
+  checksum: 10/d04a9e27e6d83861f2126665aa8d84847e8ebabcea9125b9ebc30370b98cb38b5dff2508d74e2326a744938191a83a69aa9fddab41f193ffa43eabfdf3f190a5
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^5.3.3#optional!builtin<compat/typescript>":
-  version: 5.3.3
-  resolution: "typescript@patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"
+"typescript@patch:typescript@npm%3A^5.4.5#optional!builtin<compat/typescript>":
+  version: 5.4.5
+  resolution: "typescript@patch:typescript@npm%3A5.4.5#optional!builtin<compat/typescript>::version=5.4.5&hash=5adc0c"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10/c93786fcc9a70718ba1e3819bab56064ead5817004d1b8186f8ca66165f3a2d0100fee91fa64c840dcd45f994ca5d615d8e1f566d39a7470fc1e014dbb4cf15d
+  checksum: 10/760f7d92fb383dbf7dee2443bf902f4365db2117f96f875cf809167f6103d55064de973db9f78fe8f31ec08fff52b2c969aee0d310939c0a3798ec75d0bca2e1
   languageName: node
   linkType: hard
 
