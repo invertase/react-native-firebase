@@ -170,6 +170,30 @@ export function limitToLast(limit) {
 }
 
 /**
+ * @param {DocumentReference} query
+ * @returns {Promise<DocumentSnapshot>}
+ */
+export function getDoc(reference) {
+  return reference.get({ source: 'default' });
+}
+
+/**
+ * @param {DocumentReference} query
+ * @returns {Promise<DocumentSnapshot>}
+ */
+export function getDocFromCache(reference) {
+  return reference.get({ source: 'cache' });
+}
+
+/**
+ * @param {DocumentReference} query
+ * @returns {Promise<DocumentSnapshot>}
+ */
+export function getDocFromServer(reference) {
+  return reference.get({ source: 'server' });
+}
+
+/**
  * @param {Query} query
  * @returns {Promise<QuerySnapshot>}
  */
