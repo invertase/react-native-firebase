@@ -168,9 +168,9 @@ describe('firestore().doc() -> snapshot.get()', function () {
 
   describe('modular', function () {
     it('throws if invalid fieldPath argument', async function () {
-      const { getFirestore, doc, getDocs } = firestoreModular;
+      const { getFirestore, doc, getDoc } = firestoreModular;
       const ref = doc(getFirestore(), `${COLLECTION}/foo`);
-      const snapshot = await getDocs(ref);
+      const snapshot = await getDoc(ref);
 
       try {
         snapshot.get(123);
@@ -182,9 +182,9 @@ describe('firestore().doc() -> snapshot.get()', function () {
     });
 
     it('throws if fieldPath is an empty string', async function () {
-      const { getFirestore, doc, getDocs } = firestoreModular;
+      const { getFirestore, doc, getDoc } = firestoreModular;
       const ref = doc(getFirestore(), `${COLLECTION}/foo`);
-      const snapshot = await getDocs(ref);
+      const snapshot = await getDoc(ref);
 
       try {
         snapshot.get('');
@@ -196,9 +196,9 @@ describe('firestore().doc() -> snapshot.get()', function () {
     });
 
     it('throws if fieldPath starts with a period (.)', async function () {
-      const { getFirestore, doc, getDocs } = firestoreModular;
+      const { getFirestore, doc, getDoc } = firestoreModular;
       const ref = doc(getFirestore(), `${COLLECTION}/foo`);
-      const snapshot = await getDocs(ref);
+      const snapshot = await getDoc(ref);
 
       try {
         snapshot.get('.foo');
@@ -210,9 +210,9 @@ describe('firestore().doc() -> snapshot.get()', function () {
     });
 
     it('throws if fieldPath ends with a period (.)', async function () {
-      const { getFirestore, doc, getDocs } = firestoreModular;
+      const { getFirestore, doc, getDoc } = firestoreModular;
       const ref = doc(getFirestore(), `${COLLECTION}/foo`);
-      const snapshot = await getDocs(ref);
+      const snapshot = await getDoc(ref);
 
       try {
         snapshot.get('foo.');
@@ -224,9 +224,9 @@ describe('firestore().doc() -> snapshot.get()', function () {
     });
 
     it('throws if fieldPath contains ..', async function () {
-      const { getFirestore, doc, getDocs } = firestoreModular;
+      const { getFirestore, doc, getDoc } = firestoreModular;
       const ref = doc(getFirestore(), `${COLLECTION}/foo`);
-      const snapshot = await getDocs(ref);
+      const snapshot = await getDoc(ref);
 
       try {
         snapshot.get('foo..bar');
@@ -238,9 +238,9 @@ describe('firestore().doc() -> snapshot.get()', function () {
     });
 
     it('returns undefined if the data does not exist', async function () {
-      const { getFirestore, doc, getDocs, FieldPath } = firestoreModular;
+      const { getFirestore, doc, getDoc, FieldPath } = firestoreModular;
       const ref = doc(getFirestore(), `${COLLECTION}/foo`);
-      const snapshot = await getDocs(ref);
+      const snapshot = await getDoc(ref);
 
       const val1 = snapshot.get('foo');
       const val2 = snapshot.get('foo.bar');
@@ -256,7 +256,7 @@ describe('firestore().doc() -> snapshot.get()', function () {
     });
 
     it('returns the correct data with string fieldPath', async function () {
-      const { getFirestore, doc, getDocs, setDoc, deleteDoc } = firestoreModular;
+      const { getFirestore, doc, getDoc, setDoc, deleteDoc } = firestoreModular;
       const ref = doc(getFirestore(), `${COLLECTION}/foo`);
       const types = {
         string: '12345',
@@ -270,7 +270,7 @@ describe('firestore().doc() -> snapshot.get()', function () {
       };
 
       await setDoc(ref, types);
-      const snapshot = await getDocs(ref);
+      const snapshot = await getDoc(ref);
 
       const string1 = snapshot.get('string');
       const string2 = snapshot.get('map.string');
@@ -287,7 +287,7 @@ describe('firestore().doc() -> snapshot.get()', function () {
     });
 
     it('returns the correct data with FieldPath', async function () {
-      const { getFirestore, doc, getDocs, setDoc, deleteDoc, FieldPath } = firestoreModular;
+      const { getFirestore, doc, getDoc, setDoc, deleteDoc, FieldPath } = firestoreModular;
       const ref = doc(getFirestore(), `${COLLECTION}/foo`);
       const types = {
         string: '12345',
@@ -301,7 +301,7 @@ describe('firestore().doc() -> snapshot.get()', function () {
       };
 
       await setDoc(ref, types);
-      const snapshot = await getDocs(ref);
+      const snapshot = await getDoc(ref);
 
       const string1 = snapshot.get(new FieldPath('string'));
       const string2 = snapshot.get(new FieldPath('map', 'string'));

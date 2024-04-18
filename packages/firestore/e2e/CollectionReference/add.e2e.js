@@ -58,12 +58,12 @@ describe('firestore.collection().add()', function () {
     });
 
     it('adds a new document', async function () {
-      const { getFirestore, collection, addDoc, getDocs, deleteDoc } = firestoreModular;
+      const { getFirestore, collection, addDoc, getDoc, deleteDoc } = firestoreModular;
 
       const data = { foo: 'bar' };
       const docRef = await addDoc(collection(getFirestore(), COLLECTION), data);
       should.equal(docRef.constructor.name, 'FirestoreDocumentReference');
-      const docSnap = await getDocs(docRef);
+      const docSnap = await getDoc(docRef);
       docSnap.data().should.eql(jet.contextify(data));
       docSnap.exists.should.eql(true);
       await deleteDoc(docRef);

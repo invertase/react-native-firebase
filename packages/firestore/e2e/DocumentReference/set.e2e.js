@@ -342,49 +342,49 @@ describe('firestore.doc().set()', function () {
     });
 
     it('sets new data', async function () {
-      const { getFirestore, doc, setDoc, getDocs, deleteDoc } = firestoreModular;
+      const { getFirestore, doc, setDoc, getDoc, deleteDoc } = firestoreModular;
       const ref = doc(getFirestore(), `${COLLECTION}/set`);
       const data1 = { foo: 'bar' };
       const data2 = { foo: 'baz', bar: 123 };
       await setDoc(ref, data1);
-      const snapshot1 = await getDocs(ref);
+      const snapshot1 = await getDoc(ref);
       snapshot1.data().should.eql(jet.contextify(data1));
       await setDoc(ref, data2);
-      const snapshot2 = await getDocs(ref);
+      const snapshot2 = await getDoc(ref);
       snapshot2.data().should.eql(jet.contextify(data2));
       await deleteDoc(ref);
     });
 
     it('merges all fields', async function () {
-      const { getFirestore, doc, setDoc, getDocs, deleteDoc } = firestoreModular;
+      const { getFirestore, doc, setDoc, getDoc, deleteDoc } = firestoreModular;
       const ref = doc(getFirestore(), `${COLLECTION}/merge`);
       const data1 = { foo: 'bar' };
       const data2 = { bar: 'baz' };
       const merged = { ...data1, ...data2 };
       await setDoc(ref, data1);
-      const snapshot1 = await getDocs(ref);
+      const snapshot1 = await getDoc(ref);
       snapshot1.data().should.eql(jet.contextify(data1));
       await setDoc(ref, data2, {
         merge: true,
       });
-      const snapshot2 = await getDocs(ref);
+      const snapshot2 = await getDoc(ref);
       snapshot2.data().should.eql(jet.contextify(merged));
       await deleteDoc(ref);
     });
 
     it('merges specific fields', async function () {
-      const { getFirestore, doc, setDoc, getDocs, deleteDoc } = firestoreModular;
+      const { getFirestore, doc, setDoc, getDoc, deleteDoc } = firestoreModular;
       const ref = doc(getFirestore(), `${COLLECTION}/merge`);
       const data1 = { foo: '123', bar: 123, baz: '456' };
       const data2 = { foo: '234', bar: 234, baz: '678' };
       const merged = { foo: data1.foo, bar: data2.bar, baz: data2.baz };
       await setDoc(ref, data1);
-      const snapshot1 = await getDocs(ref);
+      const snapshot1 = await getDoc(ref);
       snapshot1.data().should.eql(jet.contextify(data1));
       await setDoc(ref, data2, {
         mergeFields: ['bar', new firebase.firestore.FieldPath('baz')],
       });
-      const snapshot2 = await getDocs(ref);
+      const snapshot2 = await getDoc(ref);
       snapshot2.data().should.eql(jet.contextify(merged));
       await deleteDoc(ref);
     });
@@ -428,7 +428,7 @@ describe('firestore.doc().set()', function () {
     });
 
     it('filters out undefined properties when setting enabled', async function () {
-      const { getFirestore, initializeFirestore, doc, setDoc, getDocs } = firestoreModular;
+      const { getFirestore, initializeFirestore, doc, setDoc, getDoc } = firestoreModular;
       const db = getFirestore();
       initializeFirestore(db.app, { ignoreUndefinedProperties: true });
 
@@ -438,7 +438,7 @@ describe('firestore.doc().set()', function () {
         field2: undefined,
       });
 
-      const snap = await getDocs(docRef);
+      const snap = await getDoc(docRef);
       const snapData = snap.data();
       if (!snapData) {
         return Promise.reject(new Error('Snapshot not saved'));
@@ -449,7 +449,7 @@ describe('firestore.doc().set()', function () {
     });
 
     it('filters out nested undefined properties when setting enabled', async function () {
-      const { getFirestore, initializeFirestore, doc, setDoc, getDocs } = firestoreModular;
+      const { getFirestore, initializeFirestore, doc, setDoc, getDoc } = firestoreModular;
       const db = getFirestore();
       initializeFirestore(db.app, { ignoreUndefinedProperties: true });
 
@@ -467,7 +467,7 @@ describe('firestore.doc().set()', function () {
         ],
       });
 
-      const snap = await getDocs(docRef);
+      const snap = await getDoc(docRef);
       const snapData = snap.data();
       if (!snapData) {
         return Promise.reject(new Error('Snapshot not saved'));

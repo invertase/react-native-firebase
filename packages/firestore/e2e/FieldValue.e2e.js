@@ -335,25 +335,25 @@ describe('firestore.FieldValue', function () {
       });
 
       it('increments a number if it exists', async function () {
-        const { getFirestore, doc, setDoc, updateDoc, getDocs, increment, deleteDoc } =
+        const { getFirestore, doc, setDoc, updateDoc, getDoc, increment, deleteDoc } =
           firestoreModular;
         const db = getFirestore();
 
         const ref = doc(db, `${COLLECTION}/increment`);
         await setDoc(ref, { foo: 2 });
         await updateDoc(ref, { foo: increment(1) });
-        const snapshot = await getDocs(ref);
+        const snapshot = await getDoc(ref);
         snapshot.data().foo.should.equal(3);
         await deleteDoc(ref);
       });
 
       it('sets the value if it doesnt exist or being set', async function () {
-        const { getFirestore, doc, setDoc, getDocs, increment, deleteDoc } = firestoreModular;
+        const { getFirestore, doc, setDoc, getDoc, increment, deleteDoc } = firestoreModular;
         const db = getFirestore();
 
         const ref = doc(db, `${COLLECTION}/increment`);
         await setDoc(ref, { foo: increment(1) });
-        const snapshot = await getDocs(ref);
+        const snapshot = await getDoc(ref);
         snapshot.data().foo.should.equal(1);
         await deleteDoc(ref);
       });
@@ -361,24 +361,24 @@ describe('firestore.FieldValue', function () {
 
     describe('serverTime()', function () {
       it('sets a new server time value', async function () {
-        const { getFirestore, doc, setDoc, getDocs, serverTimestamp, deleteDoc } = firestoreModular;
+        const { getFirestore, doc, setDoc, getDoc, serverTimestamp, deleteDoc } = firestoreModular;
         const db = getFirestore();
 
         const ref = doc(db, `${COLLECTION}/servertime`);
         await setDoc(ref, { foo: serverTimestamp() });
-        const snapshot = await getDocs(ref);
+        const snapshot = await getDoc(ref);
         snapshot.data().foo.seconds.should.be.a.Number();
         await deleteDoc(ref);
       });
 
       it('updates a server time value', async function () {
-        const { getFirestore, doc, setDoc, updateDoc, getDocs, serverTimestamp, deleteDoc } =
+        const { getFirestore, doc, setDoc, updateDoc, getDoc, serverTimestamp, deleteDoc } =
           firestoreModular;
         const db = getFirestore();
 
         const ref = doc(db, `${COLLECTION}/servertime`);
         await setDoc(ref, { foo: serverTimestamp() });
-        const snapshot1 = await getDocs(ref);
+        const snapshot1 = await getDoc(ref);
         snapshot1.data().foo.nanoseconds.should.be.a.Number();
         const current = snapshot1.data().foo.nanoseconds;
         await Utils.sleep(100);
@@ -392,14 +392,14 @@ describe('firestore.FieldValue', function () {
 
     describe('delete()', function () {
       it('removes a value', async function () {
-        const { getFirestore, doc, setDoc, updateDoc, getDocs, deleteDoc, deleteField } =
+        const { getFirestore, doc, setDoc, updateDoc, getDoc, deleteDoc, deleteField } =
           firestoreModular;
         const db = getFirestore();
 
         const ref = doc(db, `${COLLECTION}/valuedelete`);
         await setDoc(ref, { foo: 'bar', bar: 'baz' });
         await updateDoc(ref, { bar: deleteField() });
-        const snapshot = await getDocs(ref);
+        const snapshot = await getDoc(ref);
         snapshot.data().should.eql(jet.contextify({ foo: 'bar' }));
         await deleteDoc(ref);
       });
@@ -433,7 +433,7 @@ describe('firestore.FieldValue', function () {
       });
 
       it('updates an existing array', async function () {
-        const { getFirestore, doc, setDoc, updateDoc, getDocs, arrayUnion, deleteDoc } =
+        const { getFirestore, doc, setDoc, updateDoc, getDoc, arrayUnion, deleteDoc } =
           firestoreModular;
         const db = getFirestore();
 
@@ -444,14 +444,14 @@ describe('firestore.FieldValue', function () {
         await updateDoc(ref, {
           foo: arrayUnion(3, 4),
         });
-        const snapshot = await getDocs(ref);
+        const snapshot = await getDoc(ref);
         const expected = [1, 2, 3, 4];
         snapshot.data().foo.should.eql(jet.contextify(expected));
         await deleteDoc(ref);
       });
 
       it('sets an array if existing value isnt an array with update', async function () {
-        const { getFirestore, doc, setDoc, updateDoc, getDocs, arrayUnion, deleteDoc } =
+        const { getFirestore, doc, setDoc, updateDoc, getDoc, arrayUnion, deleteDoc } =
           firestoreModular;
         const db = getFirestore();
 
@@ -462,14 +462,14 @@ describe('firestore.FieldValue', function () {
         await updateDoc(ref, {
           foo: arrayUnion(3, 4),
         });
-        const snapshot = await getDocs(ref);
+        const snapshot = await getDoc(ref);
         const expected = [3, 4];
         snapshot.data().foo.should.eql(jet.contextify(expected));
         await deleteDoc(ref);
       });
 
       it('sets an existing array to the new array with set', async function () {
-        const { getFirestore, doc, setDoc, getDocs, arrayUnion, deleteDoc } = firestoreModular;
+        const { getFirestore, doc, setDoc, getDoc, arrayUnion, deleteDoc } = firestoreModular;
         const db = getFirestore();
 
         const ref = doc(db, `${COLLECTION}/arrayunion`);
@@ -479,7 +479,7 @@ describe('firestore.FieldValue', function () {
         await setDoc(ref, {
           foo: arrayUnion(3, 4),
         });
-        const snapshot = await getDocs(ref);
+        const snapshot = await getDoc(ref);
         const expected = [3, 4];
         snapshot.data().foo.should.eql(jet.contextify(expected));
         await deleteDoc(ref);
@@ -514,7 +514,7 @@ describe('firestore.FieldValue', function () {
       });
 
       it('removes items in an array', async function () {
-        const { getFirestore, doc, setDoc, updateDoc, getDocs, arrayRemove, deleteDoc } =
+        const { getFirestore, doc, setDoc, updateDoc, getDoc, arrayRemove, deleteDoc } =
           firestoreModular;
         const db = getFirestore();
 
@@ -525,14 +525,14 @@ describe('firestore.FieldValue', function () {
         await updateDoc(ref, {
           foo: arrayRemove(3, 4),
         });
-        const snapshot = await getDocs(ref);
+        const snapshot = await getDoc(ref);
         const expected = [1, 2];
         snapshot.data().foo.should.eql(jet.contextify(expected));
         await deleteDoc(ref);
       });
 
       it('removes all items in the array if existing value isnt array with update', async function () {
-        const { getFirestore, doc, setDoc, updateDoc, getDocs, arrayRemove, deleteDoc } =
+        const { getFirestore, doc, setDoc, updateDoc, getDoc, arrayRemove, deleteDoc } =
           firestoreModular;
         const db = getFirestore();
 
@@ -543,14 +543,14 @@ describe('firestore.FieldValue', function () {
         await updateDoc(ref, {
           foo: arrayRemove(3, 4),
         });
-        const snapshot = await getDocs(ref);
+        const snapshot = await getDoc(ref);
         const expected = [];
         snapshot.data().foo.should.eql(jet.contextify(expected));
         await deleteDoc(ref);
       });
 
       it('removes all items in the array if existing value isnt array with set', async function () {
-        const { getFirestore, doc, setDoc, getDocs, arrayRemove, deleteDoc } = firestoreModular;
+        const { getFirestore, doc, setDoc, getDoc, arrayRemove, deleteDoc } = firestoreModular;
         const db = getFirestore();
 
         const ref = doc(db, `${COLLECTION}/arrayunion`);
@@ -560,7 +560,7 @@ describe('firestore.FieldValue', function () {
         await setDoc(ref, {
           foo: arrayRemove(3, 4),
         });
-        const snapshot = await getDocs(ref);
+        const snapshot = await getDoc(ref);
         const expected = [];
         snapshot.data().foo.should.eql(jet.contextify(expected));
         await deleteDoc(ref);

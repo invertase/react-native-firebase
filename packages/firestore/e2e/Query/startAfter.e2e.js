@@ -180,10 +180,10 @@ describe('firestore().collection().startAfter()', function () {
     });
 
     it('throws if providing snapshot and field values', async function () {
-      const { getFirestore, collection, doc, getDocs, query, startAfter } = firestoreModular;
+      const { getFirestore, collection, doc, getDoc, query, startAfter } = firestoreModular;
       const db = getFirestore();
       try {
-        const docRef = await getDocs(doc(db, `${COLLECTION}/foo`));
+        const docRef = await getDoc(doc(db, `${COLLECTION}/foo`));
         query(collection(db, COLLECTION), startAfter(docRef, 'baz'));
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
@@ -193,10 +193,10 @@ describe('firestore().collection().startAfter()', function () {
     });
 
     it('throws if provided snapshot does not exist', async function () {
-      const { getFirestore, collection, doc, getDocs, query, startAfter } = firestoreModular;
+      const { getFirestore, collection, doc, getDoc, query, startAfter } = firestoreModular;
       const db = getFirestore();
       try {
-        const docRef = await getDocs(doc(db, `${COLLECTION}/idonotexist`));
+        const docRef = await getDoc(doc(db, `${COLLECTION}/idonotexist`));
         query(collection(db, COLLECTION), startAfter(docRef));
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
@@ -206,13 +206,13 @@ describe('firestore().collection().startAfter()', function () {
     });
 
     it('throws if order used with snapshot but fields do not exist', async function () {
-      const { getFirestore, collection, doc, setDoc, getDocs, query, orderBy, startAfter } =
+      const { getFirestore, collection, doc, setDoc, getDoc, query, orderBy, startAfter } =
         firestoreModular;
       const db = getFirestore();
       try {
         const docRef = doc(db, `${COLLECTION}/iexist`);
         await setDoc(docRef, { foo: { bar: 'baz' } });
-        const snap = await getDocs(docRef);
+        const snap = await getDoc(docRef);
 
         query(collection(db, COLLECTION), orderBy('foo.baz'), startAfter(snap));
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -246,7 +246,7 @@ describe('firestore().collection().startAfter()', function () {
     });
 
     it('starts after snapshot field values', async function () {
-      const { getFirestore, collection, doc, setDoc, query, startAfter, getDocs } =
+      const { getFirestore, collection, doc, setDoc, query, startAfter, getDocs, getDoc } =
         firestoreModular;
       const colRef = collection(getFirestore(), `${COLLECTION}/startAfter/snapshotFields`);
       const doc1 = doc(colRef, 'doc1');
@@ -259,7 +259,7 @@ describe('firestore().collection().startAfter()', function () {
         setDoc(doc3, { foo: 3, bar: { value: 'c' } }),
       ]);
 
-      const startAfterSnapshot = await getDocs(doc2);
+      const startAfterSnapshot = await getDoc(doc2);
 
       const qs = await getDocs(query(colRef.orderBy('bar.value'), startAfter(startAfterSnapshot)));
 
@@ -268,7 +268,7 @@ describe('firestore().collection().startAfter()', function () {
     });
 
     it('startAfter snapshot', async function () {
-      const { getFirestore, collection, doc, setDoc, query, startAfter, getDocs } =
+      const { getFirestore, collection, doc, setDoc, query, startAfter, getDocs, getDoc } =
         firestoreModular;
       const colRef = collection(getFirestore(), `${COLLECTION}/endsAt/snapshot`);
       const doc1 = doc(colRef, 'doc1');
@@ -281,7 +281,7 @@ describe('firestore().collection().startAfter()', function () {
         setDoc(doc3, { foo: 1 }),
       ]);
 
-      const startAfterSnapshot = await getDocs(doc2);
+      const startAfterSnapshot = await getDoc(doc2);
 
       const qs = await getDocs(query(colRef, startAfter(startAfterSnapshot)));
 
@@ -296,6 +296,7 @@ describe('firestore().collection().startAfter()', function () {
         doc,
         setDoc,
         getDocs,
+        getDoc,
         query,
         orderBy,
         startAfter,
@@ -312,8 +313,8 @@ describe('firestore().collection().startAfter()', function () {
         setDoc(doc3, { age: 3 }),
       ]);
 
-      const first = await getDocs(doc1);
-      const last = await getDocs(doc3);
+      const first = await getDoc(doc1);
+      const last = await getDoc(doc3);
 
       const inBetween = await getDocs(
         query(colRef, orderBy('age', 'asc'), startAfter(first), endBefore(last)),
