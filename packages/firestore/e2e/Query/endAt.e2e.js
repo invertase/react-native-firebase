@@ -168,10 +168,10 @@ describe('firestore().collection().endAt()', function () {
     });
 
     it('throws if providing snapshot and field values', async function () {
-      const { getFirestore, collection, doc, endAt, query, getDocs } = firestoreModular;
+      const { getFirestore, collection, doc, endAt, query, getDoc } = firestoreModular;
       const db = getFirestore();
       try {
-        const docRef = await getDocs(doc(collection(db, COLLECTION), 'foo'));
+        const docRef = await getDoc(doc(collection(db, COLLECTION), 'foo'));
         query(collection(db, COLLECTION), endAt(docRef, 'baz'));
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
@@ -181,10 +181,10 @@ describe('firestore().collection().endAt()', function () {
     });
 
     it('throws if provided snapshot does not exist', async function () {
-      const { getFirestore, collection, doc, endAt, query, getDocs } = firestoreModular;
+      const { getFirestore, collection, doc, endAt, query, getDoc } = firestoreModular;
       const db = getFirestore();
       try {
-        const docSnapshot = await getDocs(doc(db, `${COLLECTION}/idonotexist`));
+        const docSnapshot = await getDoc(doc(db, `${COLLECTION}/idonotexist`));
         query(collection(db, COLLECTION), endAt(docSnapshot));
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
@@ -194,13 +194,13 @@ describe('firestore().collection().endAt()', function () {
     });
 
     it('throws if order used with snapshot but fields do not exist', async function () {
-      const { getFirestore, collection, doc, setDoc, getDocs, endAt, orderBy, query } =
+      const { getFirestore, collection, doc, setDoc, getDoc, endAt, orderBy, query } =
         firestoreModular;
       const db = getFirestore();
       try {
         const docRef = doc(db, `${COLLECTION}/iexist`);
         await setDoc(docRef, { foo: { bar: 'baz' } });
-        const snap = await getDocs(docRef);
+        const snap = await getDoc(docRef);
 
         query(collection(db, COLLECTION), orderBy('foo.baz'), endAt(snap));
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -236,7 +236,7 @@ describe('firestore().collection().endAt()', function () {
     });
 
     it('ends at snapshot field values', async function () {
-      const { getFirestore, collection, doc, setDoc, getDocs, endAt, orderBy, query } =
+      const { getFirestore, collection, doc, setDoc, getDocs, getDoc, endAt, orderBy, query } =
         firestoreModular;
       // await Utils.sleep(3000);
       const colRef = collection(getFirestore(), `${COLLECTION}/endsAt/snapshotFields`);
@@ -250,7 +250,7 @@ describe('firestore().collection().endAt()', function () {
         setDoc(doc3, { foo: 3, bar: { value: 1 } }),
       ]);
 
-      const endAtSnapshot = await getDocs(doc2);
+      const endAtSnapshot = await getDoc(doc2);
 
       const qs = await getDocs(query(colRef, orderBy('bar.value'), endAt(endAtSnapshot)));
 
@@ -260,7 +260,8 @@ describe('firestore().collection().endAt()', function () {
     });
 
     it('ends at snapshot', async function () {
-      const { getFirestore, collection, doc, setDoc, getDocs, endAt, query } = firestoreModular;
+      const { getFirestore, collection, doc, setDoc, getDocs, getDoc, endAt, query } =
+        firestoreModular;
 
       const colRef = collection(getFirestore(), `${COLLECTION}/endsAt/snapshot`);
       const doc1 = doc(colRef, 'doc1');
@@ -273,7 +274,7 @@ describe('firestore().collection().endAt()', function () {
         setDoc(doc3, { foo: 1 }),
       ]);
 
-      const endAtSnapshot = await getDocs(doc2);
+      const endAtSnapshot = await getDoc(doc2);
 
       const qs = await getDocs(query(colRef, endAt(endAtSnapshot)));
 

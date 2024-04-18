@@ -576,7 +576,7 @@ describe('firestore.QuerySnapshot', function () {
       });
 
       it('returns false if not equal (expensive checks)', async function () {
-        const { getFirestore, collection, doc, setDoc, getDocs, updateDoc } = firestoreModular;
+        const { getFirestore, collection, doc, setDoc, getDoc, updateDoc } = firestoreModular;
 
         const colRef = collection(
           getFirestore(),
@@ -592,7 +592,7 @@ describe('firestore.QuerySnapshot', function () {
         });
 
         // Grab snapshot
-        const qs1 = await getDocs(colRef);
+        const qs1 = await getDoc(colRef);
 
         // Update same collection
         await updateDoc(docRef, {

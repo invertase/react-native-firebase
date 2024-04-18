@@ -443,7 +443,7 @@ describe('firestore()', function () {
     describe('Clear cached data persistence', function () {
       // NOTE: removed as it breaks emulator tests
       xit('should clear any cached data', async function () {
-        const { getFirestore, doc, setDoc, getDocsFromCache, terminate, clearPersistence } =
+        const { getFirestore, doc, setDoc, getDocFromCache, terminate, clearPersistence } =
           firestoreModular;
 
         const db = getFirestore();
@@ -456,12 +456,12 @@ describe('firestore()', function () {
         } catch (error) {
           error.code.should.equal('firestore/failed-precondition');
         }
-        const docRef = await getDocsFromCache(ref);
+        const docRef = await getDocFromCache(ref);
         should(docRef.id).equal(id);
         await terminate(db);
         await clearPersistence(db);
         try {
-          await getDocsFromCache(ref);
+          await getDocFromCache(ref);
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.code.should.equal('firestore/unavailable');

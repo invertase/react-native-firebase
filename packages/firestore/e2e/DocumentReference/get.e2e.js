@@ -77,35 +77,35 @@ describe('firestore.doc().get()', function () {
 
   describe('modular', function () {
     it('gets data from default source', async function () {
-      const { getFirestore, doc, setDoc, getDocs, deleteDoc } = firestoreModular;
+      const { getFirestore, doc, setDoc, getDoc, deleteDoc } = firestoreModular;
 
       const ref = doc(getFirestore(), `${COLLECTION}/get`);
       const data = { foo: 'bar', bar: 123 };
       await setDoc(ref, data);
-      const snapshot = await getDocs(ref);
+      const snapshot = await getDoc(ref);
       snapshot.data().should.eql(jet.contextify(data));
       await deleteDoc(ref);
     });
 
     it('gets data from the server', async function () {
-      const { getFirestore, doc, setDoc, getDocsFromServer, deleteDoc } = firestoreModular;
+      const { getFirestore, doc, setDoc, getDocFromServer, deleteDoc } = firestoreModular;
 
       const ref = doc(getFirestore(), `${COLLECTION}/get`);
       const data = { foo: 'bar', bar: 123 };
       await setDoc(ref, data);
-      const snapshot = await getDocsFromServer(ref);
+      const snapshot = await getDocFromServer(ref);
       snapshot.data().should.eql(jet.contextify(data));
       snapshot.metadata.fromCache.should.equal(false);
       await deleteDoc(ref);
     });
 
     it('gets data from cache', async function () {
-      const { getFirestore, doc, setDoc, getDocsFromCache, deleteDoc } = firestoreModular;
+      const { getFirestore, doc, setDoc, getDocFromCache, deleteDoc } = firestoreModular;
 
       const ref = doc(getFirestore(), `${COLLECTION}/get`);
       const data = { foo: 'bar', bar: 123 };
       await setDoc(ref, data);
-      const snapshot = await getDocsFromCache(ref);
+      const snapshot = await getDocFromCache(ref);
       snapshot.data().should.eql(jet.contextify(data));
       snapshot.metadata.fromCache.should.equal(true);
       await deleteDoc(ref);

@@ -492,7 +492,7 @@ describe('firestore.Transaction', function () {
       });
 
       it('should delete documents', async function () {
-        const { getFirestore, runTransaction, doc, setDoc, getDocs } = firestoreModular;
+        const { getFirestore, runTransaction, doc, setDoc, getDoc } = firestoreModular;
         const db = getFirestore();
         const docRef1 = doc(db, `${COLLECTION}/transactions/transaction/delete-delete1`);
         await setDoc(docRef1, {});
@@ -505,10 +505,10 @@ describe('firestore.Transaction', function () {
           t.delete(docRef2);
         });
 
-        const snapshot1 = await getDocs(docRef1);
+        const snapshot1 = await getDoc(docRef1);
         snapshot1.exists.should.eql(false);
 
-        const snapshot2 = await getDocs(docRef2);
+        const snapshot2 = await getDoc(docRef2);
         snapshot2.exists.should.eql(false);
       });
     });
@@ -544,7 +544,7 @@ describe('firestore.Transaction', function () {
       });
 
       it('should update documents', async function () {
-        const { getFirestore, runTransaction, doc, setDoc, getDocs } = firestoreModular;
+        const { getFirestore, runTransaction, doc, setDoc, getDoc } = firestoreModular;
         const db = getFirestore();
         const value = Date.now();
 
@@ -572,11 +572,11 @@ describe('firestore.Transaction', function () {
           bar: value,
         };
 
-        const snapshot1 = await getDocs(docRef1);
+        const snapshot1 = await getDoc(docRef1);
         snapshot1.exists.should.eql(true);
         snapshot1.data().should.eql(jet.contextify(expected));
 
-        const snapshot2 = await getDocs(docRef2);
+        const snapshot2 = await getDoc(docRef2);
         snapshot2.exists.should.eql(true);
         snapshot2.data().should.eql(jet.contextify(expected));
       });
@@ -638,7 +638,7 @@ describe('firestore.Transaction', function () {
       });
 
       it('should set data', async function () {
-        const { getFirestore, runTransaction, doc, getDocs, setDoc } = firestoreModular;
+        const { getFirestore, runTransaction, doc, getDoc, setDoc } = firestoreModular;
         const db = getFirestore();
         const docRef = doc(db, `${COLLECTION}/transactions/transaction/set`);
         await setDoc(docRef, {
@@ -652,12 +652,12 @@ describe('firestore.Transaction', function () {
           t.set(docRef, expected);
         });
 
-        const snapshot = await getDocs(docRef);
+        const snapshot = await getDoc(docRef);
         snapshot.data().should.eql(jet.contextify(expected));
       });
 
       it('should set data with merge', async function () {
-        const { getFirestore, runTransaction, doc, getDocs, setDoc } = firestoreModular;
+        const { getFirestore, runTransaction, doc, getDoc, setDoc } = firestoreModular;
         const db = getFirestore();
         const docRef = doc(db, `${COLLECTION}/transactions/transaction/set-merge`);
         await setDoc(docRef, {
@@ -681,12 +681,12 @@ describe('firestore.Transaction', function () {
           );
         });
 
-        const snapshot = await getDocs(docRef);
+        const snapshot = await getDoc(docRef);
         snapshot.data().should.eql(jet.contextify(expected));
       });
 
       it('should set data with merge fields', async function () {
-        const { getFirestore, runTransaction, doc, getDocs, setDoc } = firestoreModular;
+        const { getFirestore, runTransaction, doc, getDoc, setDoc } = firestoreModular;
         const db = getFirestore();
 
         const docRef = doc(db, `${COLLECTION}/transactions/transaction/set-mergefields`);
@@ -714,12 +714,12 @@ describe('firestore.Transaction', function () {
           );
         });
 
-        const snapshot = await getDocs(docRef);
+        const snapshot = await getDoc(docRef);
         snapshot.data().should.eql(jet.contextify(expected));
       });
 
       it('should roll back any updates that failed', async function () {
-        const { getFirestore, runTransaction, doc, getDocs, setDoc } = firestoreModular;
+        const { getFirestore, runTransaction, doc, getDoc, setDoc } = firestoreModular;
         const db = getFirestore();
 
         const docRef = doc(db, `${COLLECTION}/transactions/transaction/rollback`);
@@ -759,7 +759,7 @@ describe('firestore.Transaction', function () {
         } catch (error) {
           error.message.should.containEql(errorMessage);
         }
-        const result = await getDocs(docRef);
+        const result = await getDoc(docRef);
         should(result.data()).not.have.properties([prop1, prop2]);
       });
     });

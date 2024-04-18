@@ -38,15 +38,15 @@ describe('firestore.doc().delete()', function () {
 
   describe('modular', function () {
     it('deletes a document', async function () {
-      const { getFirestore, doc, setDoc, getDocs, deleteDoc } = firestoreModular;
+      const { getFirestore, doc, setDoc, getDoc, deleteDoc } = firestoreModular;
 
       const ref = doc(getFirestore(), `${COLLECTION}/deleteme`);
       await setDoc(ref, { foo: 'bar' });
-      const snapshot1 = await getDocs(ref);
+      const snapshot1 = await getDoc(ref);
       snapshot1.id.should.equal('deleteme');
       snapshot1.exists.should.equal(true);
       await deleteDoc(ref);
-      const snapshot2 = await getDocs(ref);
+      const snapshot2 = await getDoc(ref);
       snapshot2.id.should.equal('deleteme');
       snapshot2.exists.should.equal(false);
     });

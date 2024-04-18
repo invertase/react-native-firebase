@@ -254,7 +254,7 @@ describe('firestore.WriteBatch.commit()', function () {
     });
 
     it('should set & commit', async function () {
-      const { getFirestore, writeBatch, doc, setDoc, getDocs, deleteDoc } = firestoreModular;
+      const { getFirestore, writeBatch, doc, setDoc, getDoc, deleteDoc } = firestoreModular;
       const db = getFirestore();
       const lRef = doc(db, `${COLLECTION}/LON`);
       const nycRef = doc(db, `${COLLECTION}/NYC`);
@@ -268,11 +268,7 @@ describe('firestore.WriteBatch.commit()', function () {
 
       await batch.commit();
 
-      const [lDoc, nycDoc, sDoc] = await Promise.all([
-        getDocs(lRef),
-        getDocs(nycRef),
-        getDocs(sfRef),
-      ]);
+      const [lDoc, nycDoc, sDoc] = await Promise.all([getDoc(lRef), getDoc(nycRef), getDoc(sfRef)]);
 
       lDoc.data().name.should.eql('London');
       nycDoc.data().name.should.eql('New York');
@@ -281,7 +277,7 @@ describe('firestore.WriteBatch.commit()', function () {
     });
 
     it('should set/merge & commit', async function () {
-      const { getFirestore, writeBatch, doc, setDoc, getDocs, deleteDoc } = firestoreModular;
+      const { getFirestore, writeBatch, doc, setDoc, getDoc, deleteDoc } = firestoreModular;
       const db = getFirestore();
       const lRef = doc(db, `${COLLECTION}/LON`);
       const nycRef = doc(db, `${COLLECTION}/NYC`);
@@ -301,11 +297,7 @@ describe('firestore.WriteBatch.commit()', function () {
 
       await batch.commit();
 
-      const [lDoc, nycDoc, sDoc] = await Promise.all([
-        getDocs(lRef),
-        getDocs(nycRef),
-        getDocs(sfRef),
-      ]);
+      const [lDoc, nycDoc, sDoc] = await Promise.all([getDoc(lRef), getDoc(nycRef), getDoc(sfRef)]);
 
       lDoc.data().name.should.eql('London');
       lDoc.data().country.should.eql('UK');
@@ -318,7 +310,7 @@ describe('firestore.WriteBatch.commit()', function () {
     });
 
     it('should set/mergeFields & commit', async function () {
-      const { getFirestore, writeBatch, doc, setDoc, FieldPath, getDocs, deleteDoc } =
+      const { getFirestore, writeBatch, doc, setDoc, FieldPath, getDoc, deleteDoc } =
         firestoreModular;
       const db = getFirestore();
       const lRef = doc(db, `${COLLECTION}/LON`);
@@ -339,11 +331,7 @@ describe('firestore.WriteBatch.commit()', function () {
 
       await batch.commit();
 
-      const [lDoc, nycDoc, sDoc] = await Promise.all([
-        getDocs(lRef),
-        getDocs(nycRef),
-        getDocs(sfRef),
-      ]);
+      const [lDoc, nycDoc, sDoc] = await Promise.all([getDoc(lRef), getDoc(nycRef), getDoc(sfRef)]);
 
       lDoc.data().name.should.eql('London');
       lDoc.data().country.should.eql('UK');
@@ -356,7 +344,7 @@ describe('firestore.WriteBatch.commit()', function () {
     });
 
     it('should delete & commit', async function () {
-      const { getFirestore, writeBatch, doc, setDoc, getDocs } = firestoreModular;
+      const { getFirestore, writeBatch, doc, setDoc, getDoc } = firestoreModular;
       const db = getFirestore();
       const lRef = doc(db, `${COLLECTION}/LON`);
       const nycRef = doc(db, `${COLLECTION}/NYC`);
@@ -376,11 +364,7 @@ describe('firestore.WriteBatch.commit()', function () {
 
       await batch.commit();
 
-      const [lDoc, nycDoc, sDoc] = await Promise.all([
-        getDocs(lRef),
-        getDocs(nycRef),
-        getDocs(sfRef),
-      ]);
+      const [lDoc, nycDoc, sDoc] = await Promise.all([getDoc(lRef), getDoc(nycRef), getDoc(sfRef)]);
 
       lDoc.exists.should.be.False();
       nycDoc.exists.should.be.False();
@@ -388,7 +372,7 @@ describe('firestore.WriteBatch.commit()', function () {
     });
 
     it('should update & commit', async function () {
-      const { getFirestore, writeBatch, doc, setDoc, getDocs, deleteDoc } = firestoreModular;
+      const { getFirestore, writeBatch, doc, setDoc, getDoc, deleteDoc } = firestoreModular;
       const db = getFirestore();
       const lRef = doc(db, `${COLLECTION}/LON`);
       const nycRef = doc(db, `${COLLECTION}/NYC`);
@@ -408,11 +392,7 @@ describe('firestore.WriteBatch.commit()', function () {
 
       await batch.commit();
 
-      const [lDoc, nycDoc, sDoc] = await Promise.all([
-        getDocs(lRef),
-        getDocs(nycRef),
-        getDocs(sfRef),
-      ]);
+      const [lDoc, nycDoc, sDoc] = await Promise.all([getDoc(lRef), getDoc(nycRef), getDoc(sfRef)]);
 
       lDoc.data().name.should.eql('LON');
       lDoc.data().country.should.eql('UK');

@@ -252,14 +252,14 @@ describe('firestore.GeoPoint', function () {
     });
 
     it('sets & returns correctly', async function () {
-      const { getFirestore, doc, setDoc, getDocs, deleteDoc, GeoPoint } = firestoreModular;
+      const { getFirestore, doc, setDoc, getDoc, deleteDoc, GeoPoint } = firestoreModular;
       const db = getFirestore();
 
       const ref = doc(db, `${COLLECTION}/geopoint`);
       await setDoc(ref, {
         geopoint: new GeoPoint(20, 30),
       });
-      const snapshot = await getDocs(ref);
+      const snapshot = await getDoc(ref);
       const geo = snapshot.data().geopoint;
       should.equal(geo.constructor.name, 'FirestoreGeoPoint');
       geo.latitude.should.equal(20);

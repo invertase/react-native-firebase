@@ -166,13 +166,13 @@ describe('firestore().collection().orderBy()', function () {
     });
 
     it('throws if a startAt()/startAfter() has already been set', async function () {
-      const { getFirestore, collection, doc, setDoc, getDocs, query, startAt, orderBy } =
+      const { getFirestore, collection, doc, setDoc, getDoc, query, startAt, orderBy } =
         firestoreModular;
       const db = getFirestore();
       try {
         const docRef = doc(db, `${COLLECTION}/startATstartAfter`);
         await setDoc(docRef, { foo: 'bar' });
-        const snapshot = await getDocs(docRef);
+        const snapshot = await getDoc(docRef);
 
         query(collection(db, COLLECTION), startAt(snapshot), orderBy('foo'));
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -183,13 +183,13 @@ describe('firestore().collection().orderBy()', function () {
     });
 
     it('throws if a endAt()/endBefore() has already been set', async function () {
-      const { getFirestore, collection, doc, setDoc, getDocs, query, endAt, orderBy } =
+      const { getFirestore, collection, doc, setDoc, getDoc, query, endAt, orderBy } =
         firestoreModular;
       const db = getFirestore();
       try {
         const docRef = doc(db, `${COLLECTION}/endAtendBefore`);
         await setDoc(docRef, { foo: 'bar' });
-        const snapshot = await getDocs(docRef);
+        const snapshot = await getDoc(docRef);
 
         query(collection(db, COLLECTION), endAt(snapshot), orderBy('foo'));
         return Promise.reject(new Error('Did not throw an Error.'));

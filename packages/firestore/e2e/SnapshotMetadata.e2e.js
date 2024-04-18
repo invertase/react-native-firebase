@@ -81,25 +81,25 @@ describe('firestore.SnapshotMetadata', function () {
 
   describe('modular', function () {
     it('.fromCache -> returns a boolean', async function () {
-      const { getFirestore, collection, doc, getDocs } = firestoreModular;
+      const { getFirestore, collection, doc, getDocs, getDoc } = firestoreModular;
       const db = getFirestore();
 
       const ref1 = collection(db, COLLECTION);
       const ref2 = doc(db, `${COLLECTION}/idonotexist`);
       const colRef = await getDocs(ref1);
-      const docRef = await getDocs(ref2);
+      const docRef = await getDoc(ref2);
       colRef.metadata.fromCache.should.be.Boolean();
       docRef.metadata.fromCache.should.be.Boolean();
     });
 
     it('.hasPendingWrites -> returns a boolean', async function () {
-      const { getFirestore, collection, doc, getDocs } = firestoreModular;
+      const { getFirestore, collection, doc, getDocs, getDoc } = firestoreModular;
       const db = getFirestore();
 
       const ref1 = collection(db, COLLECTION);
       const ref2 = doc(db, `${COLLECTION}/idonotexist`);
       const colRef = await getDocs(ref1);
-      const docRef = await getDocs(ref2);
+      const docRef = await getDoc(ref2);
       colRef.metadata.hasPendingWrites.should.be.Boolean();
       docRef.metadata.hasPendingWrites.should.be.Boolean();
     });

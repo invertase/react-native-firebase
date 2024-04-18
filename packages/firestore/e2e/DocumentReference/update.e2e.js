@@ -127,27 +127,27 @@ describe('firestore.doc().update()', function () {
     });
 
     it('updates data with an object value', async function () {
-      const { getFirestore, doc, setDoc, getDocs, updateDoc, deleteDoc } = firestoreModular;
+      const { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc } = firestoreModular;
       const ref = doc(getFirestore(), `${COLLECTION}/update-obj`);
       const value = Date.now();
       const data1 = { foo: value };
       const data2 = { foo: 'bar' };
       await setDoc(ref, data1);
-      const snapshot1 = await getDocs(ref);
+      const snapshot1 = await getDoc(ref);
       snapshot1.data().should.eql(jet.contextify(data1));
       await updateDoc(ref, data2);
-      const snapshot2 = await getDocs(ref);
+      const snapshot2 = await getDoc(ref);
       snapshot2.data().should.eql(jet.contextify(data2));
       await deleteDoc(ref);
     });
 
     it('updates data with an key/value pairs', async function () {
-      const { getFirestore, doc, setDoc, getDocs, updateDoc, deleteDoc } = firestoreModular;
+      const { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc } = firestoreModular;
       const ref = doc(getFirestore(), `${COLLECTION}/update-obj`);
       const value = Date.now();
       const data1 = { foo: value, bar: value };
       await setDoc(ref, data1);
-      const snapshot1 = await getDocs(ref);
+      const snapshot1 = await getDoc(ref);
       snapshot1.data().should.eql(jet.contextify(data1));
 
       await updateDoc(ref, 'foo', 'bar', 'bar', 'baz', 'foo1', 'bar1');
@@ -156,7 +156,7 @@ describe('firestore.doc().update()', function () {
         bar: 'baz',
         foo1: 'bar1',
       };
-      const snapshot2 = await getDocs(ref);
+      const snapshot2 = await getDoc(ref);
       snapshot2.data().should.eql(jet.contextify(expected));
       await deleteDoc(ref);
     });

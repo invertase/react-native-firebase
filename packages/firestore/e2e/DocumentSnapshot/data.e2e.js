@@ -145,28 +145,28 @@ describe('firestore().doc() -> snapshot.data()', function () {
 
   describe('modular', function () {
     it('returns undefined if documet does not exist', async function () {
-      const { getFirestore, doc, getDocs } = firestoreModular;
+      const { getFirestore, doc, getDoc } = firestoreModular;
       const ref = doc(getFirestore(), `${COLLECTION}/idonotexist`);
-      const snapshot = await getDocs(ref);
+      const snapshot = await getDoc(ref);
       should.equal(snapshot.data(), undefined);
     });
 
     it('returns an object if exists', async function () {
-      const { getFirestore, doc, setDoc, getDocs, deleteDoc } = firestoreModular;
+      const { getFirestore, doc, setDoc, getDoc, deleteDoc } = firestoreModular;
       const ref = doc(getFirestore(), `${COLLECTION}/getData`);
       const data = { foo: 'bar' };
       await setDoc(ref, data);
-      const snapshot = await getDocs(ref);
+      const snapshot = await getDoc(ref);
       snapshot.data().should.eql(jet.contextify(data));
       await deleteDoc(ref);
     });
 
     it('returns an object when document is empty', async function () {
-      const { getFirestore, doc, setDoc, getDocs, deleteDoc } = firestoreModular;
+      const { getFirestore, doc, setDoc, getDoc, deleteDoc } = firestoreModular;
       const ref = doc(getFirestore(), `${COLLECTION}/getData`);
       const data = {};
       await setDoc(ref, data);
-      const snapshot = await getDocs(ref);
+      const snapshot = await getDoc(ref);
       snapshot.data().should.eql(jet.contextify(data));
       await deleteDoc(ref);
     });
@@ -176,7 +176,7 @@ describe('firestore().doc() -> snapshot.data()', function () {
     // });
 
     it('handles all data types', async function () {
-      const { getFirestore, doc, setDoc, getDocs, deleteDoc } = firestoreModular;
+      const { getFirestore, doc, setDoc, getDoc, deleteDoc } = firestoreModular;
       const types = {
         string: '123456',
         stringEmpty: '',
@@ -203,7 +203,7 @@ describe('firestore().doc() -> snapshot.data()', function () {
 
       const ref = doc(getFirestore(), `${COLLECTION}/types`);
       await setDoc(ref, types);
-      const snapshot = await getDocs(ref);
+      const snapshot = await getDoc(ref);
       const data = snapshot.data();
 
       // String

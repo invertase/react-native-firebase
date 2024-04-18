@@ -61,11 +61,11 @@ describe('firestore.doc() -> snapshot.isEqual()', function () {
 
   describe('modular', function () {
     it('throws if other is not a DocumentSnapshot', async function () {
-      const { getFirestore, doc, getDocs } = firestoreModular;
+      const { getFirestore, doc, getDoc } = firestoreModular;
       try {
         const docRef = doc(getFirestore(), `${COLLECTION}/baz`);
 
-        const docSnapshot = await getDocs(docRef);
+        const docSnapshot = await getDoc(docRef);
         docSnapshot.isEqual(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
@@ -75,15 +75,15 @@ describe('firestore.doc() -> snapshot.isEqual()', function () {
     });
 
     it('returns false when not equal', async function () {
-      const { getFirestore, doc, setDoc, getDocs } = firestoreModular;
+      const { getFirestore, doc, setDoc, getDoc } = firestoreModular;
       const db = getFirestore();
       const docRef = doc(db, `${COLLECTION}/isEqual-false-exists`);
       await setDoc(docRef, { foo: 'bar' });
 
-      const docSnapshot1 = await getDocs(docRef);
+      const docSnapshot1 = await getDoc(docRef);
       const docSnapshot2 = await doc(db, `${COLLECTION}/idonotexist`).get();
       await setDoc(docRef, { foo: 'baz' });
-      const docSnapshot3 = await getDocs(docRef);
+      const docSnapshot3 = await getDoc(docRef);
 
       const eql1 = docSnapshot1.isEqual(docSnapshot2);
       const eql2 = docSnapshot1.isEqual(docSnapshot3);
@@ -93,11 +93,11 @@ describe('firestore.doc() -> snapshot.isEqual()', function () {
     });
 
     it('returns true when equal', async function () {
-      const { getFirestore, doc, setDoc, getDocs } = firestoreModular;
+      const { getFirestore, doc, setDoc, getDoc } = firestoreModular;
       const docRef = doc(getFirestore(), `${COLLECTION}/isEqual-true-exists`);
       await setDoc(docRef, { foo: 'bar' });
 
-      const docSnapshot = await getDocs(docRef);
+      const docSnapshot = await getDoc(docRef);
 
       const eql1 = docSnapshot.isEqual(docSnapshot);
 
