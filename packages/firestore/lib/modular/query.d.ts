@@ -40,7 +40,7 @@ export interface AppliableConstraint {
  * can then be passed to {@link (query:1)} to create a new query instance that
  * also contains this `QueryConstraint`.
  */
-export interface IQueryConstraint extends AppliableConstraint {
+export interface QueryConstraint extends AppliableConstraint {
   /** The type of this query constraint */
   readonly type: QueryConstraintType;
 
