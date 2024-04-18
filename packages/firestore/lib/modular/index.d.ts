@@ -532,3 +532,11 @@ export function namedQuery(firestore: Firestore, name: string): Query<DocumentDa
  * writes.
  */
 export function writeBatch(firestore: Firestore): FirebaseFirestoreTypes.WriteBatch;
+
+export * from './query';
+export * from './snapshot';
+export * from './Bytes';
+export * from './FieldPath';
+export * from './FieldValue';
+export * from './GeoPoint';
+export * from './Timestamp';
