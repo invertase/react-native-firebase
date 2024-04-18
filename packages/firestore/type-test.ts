@@ -15,6 +15,7 @@ import firebase, {
   query,
   startAfter,
   updateDoc,
+  where,
 } from '.';
 
 console.log(firebase().collection);
@@ -50,6 +51,7 @@ firebase.firestore.setLogLevel('debug');
 firebase.firestore().collection('foo');
 firebase.firestore().collection('foo').doc('foo').collection('foo');
 firebase.firestore().collection('foo').doc('foo');
+firebase.firestore().collection('foo').where('foo', '==', 'bar');
 firebase.firestore().collection('foo').doc('foo').collection('foo').add({ foo: 'bar' }).then();
 firebase.firestore().collection('foo').doc('foo').update({ foo: 'bar' }).then();
 firebase
@@ -130,6 +132,7 @@ collection(firebase.firestore(), 'foo', 'foo', 'foo');
 collection(doc(collection(firebase.firestore(), 'foo'), 'foo'), 'foo');
 doc(firebase.firestore(), 'foo', 'foo');
 doc(collection(firebase.firestore(), 'foo'), 'foo');
+query(collection(firebase.firestore(), 'foo'), where('foo', '==', 'bar'));
 addDoc(collection(firebase.firestore(), 'foo'), { foo: 'bar' }).then();
 updateDoc(doc(firebase.firestore(), 'foo', 'foo'), { foo: 'bar' }).then();
 getDoc(doc(firebase.firestore(), 'foo', 'foo')).then();
