@@ -65,7 +65,7 @@ export const AddToWishlist = struct({
   currency: 'string?',
 });
 
-export const BeginCheckout = struct({
+export const BeginCheckout = struct.interface({
   items: struct.optional([Item]),
   value: 'number?',
   currency: 'string?',
@@ -131,7 +131,7 @@ export const Refund = struct({
   transaction_id: 'string?',
 });
 
-export const Purchase = struct({
+export const Purchase = struct.interface({
   affiliation: 'string?',
   coupon: 'string?',
   currency: 'string?',
