@@ -117,8 +117,8 @@ export namespace FirebaseFunctionsTypes {
   /**
    * An HttpsCallableResult wraps a single result from a function call.
    */
-  export interface HttpsCallableResult {
-    readonly data: any;
+  export interface HttpsCallableResult<response = any> {
+    readonly data: response;
   }
 
   /**
@@ -140,8 +140,8 @@ export namespace FirebaseFunctionsTypes {
    * }
    * ```
    */
-  export interface HttpsCallable {
-    (data?: any): Promise<HttpsCallableResult>;
+  export interface HttpsCallable<args = any, response = any> {
+    (data?: args): Promise<HttpsCallableResult<response>>;
   }
 
   /**
@@ -336,7 +336,7 @@ export namespace FirebaseFunctionsTypes {
      * @param name The name of the https callable function.
      * @return The `HttpsCallable` instance.
      */
-    httpsCallable(name: string, options?: HttpsCallableOptions): HttpsCallable;
+    httpsCallable<args = any, response = any>(name: string, options?: HttpsCallableOptions): HttpsCallable<args, response>;
 
     /**
      * Gets an `HttpsCallable` instance that refers to the function with the given
@@ -359,7 +359,7 @@ export namespace FirebaseFunctionsTypes {
      * @param name The name of the https callable function.
      * @return The `HttpsCallable` instance.
      */
-    httpsCallableFromUrl(url: string, options?: HttpsCallableOptions): HttpsCallable;
+    httpsCallableFromUrl<args = any, response = any>(url: string, options?: HttpsCallableOptions): HttpsCallable<args, response>;
 
     /**
      * Changes this instance to point to a Cloud Functions emulator running locally.
