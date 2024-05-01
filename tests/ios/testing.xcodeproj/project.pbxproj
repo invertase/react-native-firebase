@@ -11,6 +11,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		22CA46D7BBF8916E3B1C7DD8 /* Pods_testing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 327B0CEB26D00056AE09E0DA /* Pods_testing.framework */; };
 		271CB185206AFCD300EBADF4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 271CB184206AFCD300EBADF4 /* GoogleService-Info.plist */; };
+		2799C5D72BE2C21900514CA1 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2799C5D62BE2C21800514CA1 /* PrivacyInfo.xcprivacy */; };
 		27CE6A36224923D200222E16 /* remote_config_resource_test.plist in Resources */ = {isa = PBXBuildFile; fileRef = 27CE6A35224923D200222E16 /* remote_config_resource_test.plist */; };
 		27DBE25D2594E43C00CEC69A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 27DBE25C2594E43C00CEC69A /* LaunchScreen.storyboard */; };
 		3323F06104C7189BEC46D8B5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3323FFA47718EA67C36AD776 /* Images.xcassets */; };
@@ -39,6 +40,7 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = testing/main.m; sourceTree = "<group>"; };
 		27034D93212869A1004B697E /* testing.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = testing.entitlements; path = testing/testing.entitlements; sourceTree = "<group>"; };
 		271CB184206AFCD300EBADF4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		2799C5D62BE2C21800514CA1 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = testing/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		27CE6A35224923D200222E16 /* remote_config_resource_test.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = remote_config_resource_test.plist; sourceTree = "<group>"; };
 		27DBE25C2594E43C00CEC69A /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2867162C3D0FAFF97CDACF63 /* Pods-testing.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-testing.release.xcconfig"; path = "Target Support Files/Pods-testing/Pods-testing.release.xcconfig"; sourceTree = "<group>"; };
@@ -80,6 +82,7 @@
 		13B07FAE1A68108700A75B9A /* testing */ = {
 			isa = PBXGroup;
 			children = (
+				2799C5D62BE2C21800514CA1 /* PrivacyInfo.xcprivacy */,
 				27034D93212869A1004B697E /* testing.entitlements */,
 				271CB184206AFCD300EBADF4 /* GoogleService-Info.plist */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -236,6 +239,7 @@
 				271CB185206AFCD300EBADF4 /* GoogleService-Info.plist in Resources */,
 				27CE6A36224923D200222E16 /* remote_config_resource_test.plist in Resources */,
 				27DBE25D2594E43C00CEC69A /* LaunchScreen.storyboard in Resources */,
+				2799C5D72BE2C21900514CA1 /* PrivacyInfo.xcprivacy in Resources */,
 				3323F06104C7189BEC46D8B5 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
