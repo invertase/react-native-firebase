@@ -18537,7 +18537,7 @@ __metadata:
     pod-install: "npm:^0.2.0"
     postinstall-postinstall: "npm:2.1.0"
     react: "npm:18.2.0"
-    react-native: "npm:0.73.6"
+    react-native: "npm:0.73.8"
     react-native-device-info: "npm:^10.13.1"
     should: "npm:^13.2.3"
     should-sinon: "npm:0.0.6"
@@ -18638,9 +18638,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native@npm:0.73.6":
-  version: 0.73.6
-  resolution: "react-native@npm:0.73.6"
+"react-native@npm:0.73.8":
+  version: 0.73.8
+  resolution: "react-native@npm:0.73.8"
   dependencies:
     "@jest/create-cache-key-function": "npm:^29.6.3"
     "@react-native-community/cli": "npm:12.3.6"
@@ -18684,7 +18684,7 @@ __metadata:
     react: 18.2.0
   bin:
     react-native: cli.js
-  checksum: 10/990f3b0cd064f40ca645b2b2cc32a12c18b6d6976a070aa71181bc1eb8f46d608618e9f481b7b6b43177c566663d033c899f138da17e8471fe1c810723d4f345
+  checksum: 10/54e57bd22ddf4485a990e39ccfabc55547a50a1a917565ee0e57f76915159506acd3320bb5d0c295d78537fb84e2dae161866fb2b1d8c4437436640f8b57c17b
   languageName: node
   linkType: hard
 
