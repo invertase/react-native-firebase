@@ -16,7 +16,7 @@ If you do not meet these prerequisites, follow the links below:
 - [React Native - Setting up the development environment](https://reactnative.dev/docs/environment-setup)
 - [Create a new Firebase project](https://console.firebase.google.com/)
 
-Additionally, current versions of firebase-ios-sdk have a minimum Xcode requirement of 14.1, which implies a minimum macOS version of 12.5 (macOS Monterey).
+Additionally, current versions of firebase-ios-sdk have a minimum Xcode requirement of 15.2, which implies a minimum macOS version of 13.5 (macOS Ventura).
 
 ## Installation for React Native CLI projects
 
@@ -305,7 +305,7 @@ Open your projects `/ios/Podfile` and add any of the globals shown below to the 
 
 ```ruby
 # Override Firebase SDK Version
-$FirebaseSDKVersion = '10.24.0'
+$FirebaseSDKVersion = '10.25.0'
 ```
 
 Once changed, reinstall your projects pods via pod install and rebuild your project with `npx react-native run-ios`.

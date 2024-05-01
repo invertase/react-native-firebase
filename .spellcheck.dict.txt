@@ -204,6 +204,7 @@ v5
 v6
 v7
 v9
+Ventura
 VPN
 VSCode
 Wix
