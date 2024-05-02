@@ -117,8 +117,8 @@ export namespace FirebaseFunctionsTypes {
   /**
    * An HttpsCallableResult wraps a single result from a function call.
    */
-  export interface HttpsCallableResult<response = any> {
-    readonly data: response;
+  export interface HttpsCallableResult<ResponseData = unknown> {
+    readonly data: ResponseData;
   }
 
   /**
@@ -128,11 +128,11 @@ export namespace FirebaseFunctionsTypes {
    * #### Example
    *
    * ```js
-   * // Create a HttpsCallable instance
-   * const instance = firebase.functions().httpsCallable('order');
+   * // Create an HttpsCallable reference
+   * const reference = firebase.functions().httpsCallable('order');
    *
    * try {
-   *  const response = await instance({
+   *  const response = await reference({
    *    id: '12345',
    *  });
    * } catch (e) {
@@ -140,21 +140,21 @@ export namespace FirebaseFunctionsTypes {
    * }
    * ```
    */
-  export interface HttpsCallable<args = any, response = any> {
-    (data?: args): Promise<HttpsCallableResult<response>>;
+  export interface HttpsCallable<RequestData = unknown, ResponseData = unknown> {
+    (data?: RequestData | null): Promise<HttpsCallableResult<ResponseData>>;
   }
 
   /**
-   * An HttpsCallableOptions object that can be passed as the second argument to `firebase.functions().httpsCallable(name, HttpsCallableOptions)`.
+   * An interface for metadata about how calls should be executed. An instance of HttpsCallableOptions can be passed as the second argument to `firebase.functions().httpsCallable(name, httpsCallableOptions)`.
    **/
   export interface HttpsCallableOptions {
     /**
-     * The timeout property allows you to control how long the application will wait for the cloud function to respond in milliseconds.
+     * The timeout property is the time in milliseconds after which to cancel if there is no response. Default is 70000.
      *
      * #### Example
      *
      *```js
-     * // The below will wait 7 seconds for a response from the cloud function before an error is thrown
+     * // The below will wait 7 seconds for a response from the cloud function before an error is thrown.
      * try {
      *  const instance = firebase.functions().httpsCallable('order', { timeout: 7000 });
      *  const response = await instance({
@@ -316,16 +316,15 @@ export namespace FirebaseFunctionsTypes {
    */
   export class Module extends FirebaseModule {
     /**
-     * Gets an `HttpsCallable` instance that refers to the function with the given
-     * name.
+     * Returns a reference to the callable HTTPS trigger with the given name.
      *
      * #### Example
      *
      * ```js
-     * const instance = firebase.functions().httpsCallable('order');
+     * const reference = firebase.functions().httpsCallable('order');
      *
      * try {
-     *  const response = await instance({
+     *  const response = await reference({
      *    id: '12345',
      *  });
      * } catch (e) {
@@ -334,24 +333,23 @@ export namespace FirebaseFunctionsTypes {
      * ```
      *
      * @param name The name of the https callable function.
-     * @return The `HttpsCallable` instance.
+     * @return The `HttpsCallable` reference.
      */
-    httpsCallable<args = any, response = any>(
+    httpsCallable<RequestData = unknown, ResponseData = unknown>(
       name: string,
       options?: HttpsCallableOptions,
-    ): HttpsCallable<args, response>;
+    ): HttpsCallable<RequestData, ResponseData>;
 
     /**
-     * Gets an `HttpsCallable` instance that refers to the function with the given
-     * URL.
+     * Returns a reference to the callable HTTPS trigger with the specified url.
      *
      * #### Example
      *
      * ```js
-     * const instance = firebase.functions().httpsCallable('order');
+     * const reference = firebase.functions().httpsCallable('order');
      *
      * try {
-     *  const response = await instance({
+     *  const response = await reference({
      *    id: '12345',
      *  });
      * } catch (e) {
@@ -360,12 +358,12 @@ export namespace FirebaseFunctionsTypes {
      * ```
      *
      * @param name The name of the https callable function.
-     * @return The `HttpsCallable` instance.
+     * @return The `HttpsCallable` reference.
      */
-    httpsCallableFromUrl<args = any, response = any>(
+    httpsCallableFromUrl<RequestData = unknown, ResponseData = unknown>(
       url: string,
       options?: HttpsCallableOptions,
-    ): HttpsCallable<args, response>;
+    ): HttpsCallable<RequestData, ResponseData>;
 
     /**
      * Changes this instance to point to a Cloud Functions emulator running locally.
