@@ -30,8 +30,8 @@ jobs:
             If you think this is a mistake please comment and ping a maintainer to get this merged ASAP! Thanks for contributing!
 
             You have 15 days until this gets closed automatically
-          exempt-issue-labels: '📌%20pin,Help:%20Good%20First%20Issue,Blocked:%20Needs%20Review'
-          exempt-pr-labels: '📌%20pin,Help:%20Good First%20Issue,Blocked:%20Needs%20Review'
+          exempt-issue-labels: 'Keep Open,Help: Good First Issue,Workflow: Needs Review'
+          exempt-pr-labels: 'Keep Open,Help: Good First Issue,Workflow: Needs Review'
           close-issue-reason: not_planned
           days-before-stale: 28
           days-before-close: 15
