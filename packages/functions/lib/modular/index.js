@@ -40,7 +40,7 @@ export function getFunctions(app, regionOrCustomDomain) {
 /**
  * Modify this instance to communicate with the Cloud Functions emulator.
  * Note: this must be called before this instance has been used to do any operations.
- * @param {Functions} functionsInstance
+ * @param {Functions} functionsInstance A functions instance.
  * @param {string} host The emulator host. (ex: localhost)
  * @param {number} port The emulator port. (ex: 5001)
  */
