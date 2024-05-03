@@ -272,6 +272,16 @@ describe('Analytics', function () {
         }),
       ).toThrowError('firebase.analytics().logBeginCheckout(*):');
     });
+
+    it('accepts arbitrary custom event parameters', function () {
+      expect(() =>
+        firebase.analytics().logBeginCheckout({
+          value: 123,
+          currency: 'EUR',
+          foo: 'bar',
+        }),
+      ).not.toThrow();
+    });
   });
 
   describe('logGenerateLead()', function () {
@@ -458,6 +468,16 @@ describe('Analytics', function () {
           value: 123,
         }),
       ).toThrowError('firebase.analytics().logPurchase(*):');
+    });
+
+    it('accepts arbitrary custom event parameters', function () {
+      expect(() =>
+        firebase.analytics().logPurchase({
+          value: 123,
+          currency: 'EUR',
+          foo: 'bar',
+        }),
+      ).not.toThrow();
     });
   });
 

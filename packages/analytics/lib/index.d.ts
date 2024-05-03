@@ -179,6 +179,10 @@ export namespace FirebaseAnalyticsTypes {
     coupon?: string;
 
     items?: Item[];
+    /**
+     * Custom event parameters.
+     */
+    [key: string]: any;
   }
 
   export interface CampaignDetailsEventParameters {
@@ -334,6 +338,10 @@ export namespace FirebaseAnalyticsTypes {
      * A single ID for a ecommerce group transaction.
      */
     transaction_id?: string;
+    /**
+     * Custom event parameters.
+     */
+    [key: string]: any;
   }
 
   export interface ScreenViewParameters {
