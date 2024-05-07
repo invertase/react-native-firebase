@@ -75,7 +75,7 @@ subprojects {
       android {
         // Instrument all our modules for coverage generation
         buildTypes.debug.testCoverageEnabled true
-        jacoco.version '0.8.11'
+        jacoco.version '0.8.12'
         testOptions.unitTests.includeAndroidResources = true
 
         // Make sure our project are run through basic lint checks
