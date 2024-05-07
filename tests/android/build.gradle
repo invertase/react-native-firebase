@@ -4,7 +4,7 @@ buildscript {
   ext.compileSdkVersion = 34
   ext.targetSdkVersion = 34
 
-  ext.ndkVersion = "25.1.8937393"
+  ext.ndkVersion = "26.1.10909125"
  
   ext.kotlinVersion = '1.9.22' // https://kotlinlang.org/releases.html
   ext.supportLibVersion = '1.12.0' // this maps to androidx.core https://developer.android.com/jetpack/androidx/releases/core
