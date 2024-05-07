@@ -282,15 +282,15 @@ project.ext {
     versions: [
       // Overriding Build/Android SDK Versions
       android : [
-        minSdk    : 19,
+        minSdk    : 21, // 23+ if using auth module
         targetSdk : 33,
-        compileSdk: 33,
+        compileSdk: 34,
       ],
 
       // Overriding Library SDK Versions
       firebase: [
         // Override Firebase SDK Version
-        bom           : "32.8.1"
+        bom           : "33.0.0"
       ],
     ],
   ])
