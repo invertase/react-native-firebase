@@ -28,7 +28,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-import com.google.common.collect.Iterables;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentChange;
@@ -199,10 +198,12 @@ public class ReactNativeFirebaseFirestoreSerialize {
       boolean isMetadataChange = false;
       if (checkIfMetadataChange) {
         int hashCode = documentChange.hashCode();
-        DocumentChange exists =
-            Iterables.tryFind(
-                    comparableDocumentChanges, docChange -> docChange.hashCode() == hashCode)
-                .orNull();
+        DocumentChange exists = null;
+        for (DocumentChange docChange : comparableDocumentChanges) {
+          if (docChange.hashCode() == hashCode) {
+            exists = docChange;
+          }
+        }
 
         // Exists in docChanges with meta, but doesnt exist in docChanges without meta
         if (exists == null) {
