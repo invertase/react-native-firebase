@@ -78,14 +78,14 @@
       "macosTarget": "10.13"
     },
     "android": {
-      "minSdk": 19,
-      "targetSdk": 33,
-      "compileSdk": 33,
-      "firebase": "32.8.1",
-      "firebaseCrashlyticsGradle": "2.9.9",
+      "minSdk": 21,
+      "targetSdk": 34,
+      "compileSdk": 34,
+      "firebase": "33.0.0",
+      "firebaseCrashlyticsGradle": "3.0.0",
       "firebasePerfGradle": "1.4.2",
       "gmsGoogleServicesGradle": "4.4.1",
-      "playServicesAuth": "21.0.0"
+      "playServicesAuth": "21.1.1"
     }
   }
 }

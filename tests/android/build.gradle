@@ -1,6 +1,6 @@
 buildscript {
   ext.buildToolsVersion = "34.0.0"
-  ext.minSdkVersion = 21
+  ext.minSdkVersion = 23
   ext.compileSdkVersion = 34
   ext.targetSdkVersion = 34
 
@@ -14,9 +14,9 @@ buildscript {
   ext.fragmentVersion = '1.6.1' // https://developer.android.com/jetpack/androidx/releases/fragment
   ext.vectordrawableVersion = '1.1.0' // https://developer.android.com/jetpack/androidx/releases/vectordrawable
   ext.androidxAnnotationVersion = '1.7.1' // https://developer.android.com/jetpack/androidx/releases/annotation
-  ext.googlePlayServicesLocationVersion = '21.1.0' // https://developers.google.com/android/guides/setup
-  ext.googlePlayServicesVersion = '18.3.0' // play-services-base
-  ext.googlePlayServicesAuthVersion = '20.7.0' // play-services-auth
+  ext.googlePlayServicesLocationVersion = '21.2.0' // https://developers.google.com/android/guides/setup
+  ext.googlePlayServicesVersion = '18.4.0' // play-services-base
+  ext.googlePlayServicesAuthVersion = '21.1.1' // play-services-auth
   ext.googlePlayServicesVisionVersion = '20.1.3' // play-services-vision
   ext.googlePlayServicesIidVersion = '17.0.0' // play-services-iid - deprecated, device-info only
   ext.mediaCompatVersion = '1.7.0' // https://developer.android.com/jetpack/androidx/releases/media
@@ -32,12 +32,12 @@ buildscript {
   }
   dependencies {
     classpath 'com.google.gms:google-services:4.4.1' // https://developers.google.com/android/guides/google-services-plugin
-    classpath("com.android.tools.build:gradle:8.2.2")
+    classpath("com.android.tools.build:gradle:8.4.0")
     classpath("com.facebook.react:react-native-gradle-plugin")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
     classpath 'com.google.firebase:perf-plugin:1.4.2'
-    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.9'
-    classpath 'com.google.firebase:firebase-appdistribution-gradle:4.2.0'
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.0'
+    classpath 'com.google.firebase:firebase-appdistribution-gradle:5.0.0'
   }
 }
 
