@@ -14,13 +14,19 @@
  * limitations under the License.
  *
  */
+/**
+ * @typedef {import("..").FirebaseFunctionsTypes.Module} Functions
+ * @typedef {import("..").FirebaseFunctionsTypes.HttpsCallable} HttpsCallable
+ * @typedef {import("..").FirebaseFunctionsTypes.HttpsCallableOptions} HttpsCallableOptions
+ * @typedef {import("@firebase/app").FirebaseApp} FirebaseApp
+ */
 
 import { firebase } from '..';
 
 /**
  * Returns a Functions instance for the given app.
- * @param app - FirebaseApp. Optional.
- * @param regionOrCustomDomain - A String of the region or domain of the Firebase Function you wish to call. Optional.
+ * @param {FirebaseApp | undefined} app - The FirebaseApp to use. Optional.
+ * @param {string | undefined} regionOrCustomDomain - One of: a) The region the callable functions are located in (ex: us-central1) b) A custom domain hosting the callable functions (ex: https://mydomain.com). Optional.
  * @returns {Functions}
  */
 export function getFunctions(app, regionOrCustomDomain) {
@@ -32,34 +38,34 @@ export function getFunctions(app, regionOrCustomDomain) {
 }
 
 /**
- * Returns nothing
- * @param functions - Functions instance
- * @param host - The domain host of the Functions emulator
- * @param port - The port of the Functions emulator
- * @returns {void}
+ * Modify this instance to communicate with the Cloud Functions emulator.
+ * Note: this must be called before this instance has been used to do any operations.
+ * @param {Functions} functionsInstance A functions instance.
+ * @param {string} host The emulator host. (ex: localhost)
+ * @param {number} port The emulator port. (ex: 5001)
  */
-export function connectFunctionsEmulator(functions, host, port) {
-  return firebase.app(functions.app.name).functions().useEmulator(host, port);
+export function connectFunctionsEmulator(functionsInstance, host, port) {
+  return firebase.app(functionsInstance.app.name).functions().useEmulator(host, port);
 }
 
 /**
- * Returns a HttpsCallable instance
- * @param functions - Functions instance
- * @param name - The name of the trigger
- * @param options - An HttpsCallableOptions object
+ * Returns a reference to the callable HTTPS trigger with the given name.
+ * @param {Functions} functionsInstance A functions instance.
+ * @param {string} name The name of the trigger.
+ * @param {HttpsCallableOptions | undefined} options An interface for metadata about how calls should be executed.
  * @returns {HttpsCallable}
  */
-export function httpsCallable(functions, name, options) {
-  return firebase.app(functions.app.name).functions().httpsCallable(name, options);
+export function httpsCallable(functionsInstance, name, options) {
+  return firebase.app(functionsInstance.app.name).functions().httpsCallable(name, options);
 }
 
 /**
- * Returns a HttpsCallable instance
- * @param functions - Functions instance
- * @param url - The url of the trigger
- * @param options - An HttpsCallableOptions object
+ * Returns a reference to the callable HTTPS trigger with the specified url.
+ * @param {Functions} functionsInstance A functions instance.
+ * @param {string} url The url of the trigger.
+ * @param {HttpsCallableOptions | undefined} options An instance of {@link HttpsCallableOptions} containing metadata about how calls should be executed.
  * @returns {HttpsCallable}
  */
-export function httpsCallableFromUrl(functions, url, options) {
-  return firebase.app(functions.app.name).functions().httpsCallableFromUrl(url, options);
+export function httpsCallableFromUrl(functionsInstance, url, options) {
+  return firebase.app(functionsInstance.app.name).functions().httpsCallableFromUrl(url, options);
 }
