@@ -53,7 +53,9 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
           FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
           FirebaseFunctions functionsInstance = FirebaseFunctions.getInstance(firebaseApp, region);
 
-          HttpsCallableReference httpReference = functionsInstance.getHttpsCallable(name);
+          HttpsCallableReference httpReference = options.hasKey("requireLimitedUseAppCheckTokens") && options.getBoolean("requireLimitedUseAppCheckTokens")
+              ? functionsInstance.getHttpsCallable(name, new HttpsCallableOptions.Builder().setRequireLimitedUseAppCheckToken(true).build())
+              : functionsInstance.getHttpsCallable(name);
 
           if (options.hasKey("timeout")) {
             httpReference.setTimeout((long) options.getInt("timeout"), TimeUnit.SECONDS);
@@ -81,8 +83,9 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
           FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
           FirebaseFunctions functionsInstance = FirebaseFunctions.getInstance(firebaseApp, region);
           URL parsedUrl = new URL(url);
-          HttpsCallableReference httpReference =
-              functionsInstance.getHttpsCallableFromUrl(parsedUrl);
+          HttpsCallableReference httpReference = options.hasKey("requireLimitedUseAppCheckTokens") && options.getBoolean("requireLimitedUseAppCheckTokens")
+              ? functionsInstance.getHttpsCallableFromUrl(parsedUrl, new HttpsCallableOptions.Builder().setRequireLimitedUseAppCheckToken(true).build())
+              : functionsInstance.getHttpsCallableFromUrl(parsedUrl);
 
           if (options.hasKey("timeout")) {
             httpReference.setTimeout((long) options.getInt("timeout"), TimeUnit.SECONDS);

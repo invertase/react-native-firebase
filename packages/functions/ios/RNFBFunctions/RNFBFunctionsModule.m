@@ -50,7 +50,10 @@ RCT_EXPORT_METHOD(httpsCallable
     [functions useEmulatorWithHost:host port:[port intValue]];
   }
 
-  FIRHTTPSCallable *callable = [functions HTTPSCallableWithName:name];
+  FIRHTTPSCallable *callable = 
+      (options[@"requireLimitedUseAppCheckTokens"])
+          ? [functions HTTPSCallableWithName:name options:[[FIRHTTPSCallableOptions alloc] initWithRequireLimitedUseAppCheckTokens: [options[@"requireLimitedUseAppCheckTokens"] boolValue]]]
+          : [functions HTTPSCallableWithName:name];
 
   if (options[@"timeout"]) {
     callable.timeoutInterval = [options[@"timeout"] doubleValue];
@@ -102,7 +105,10 @@ RCT_EXPORT_METHOD(httpsCallableFromUrl
 
   NSURL *functionUrl = [NSURL URLWithString:url];
 
-  FIRHTTPSCallable *callable = [functions HTTPSCallableWithURL:functionUrl];
+  FIRHTTPSCallable *callable = 
+      (options[@"requireLimitedUseAppCheckTokens"])
+          ? [functions HTTPSCallableWithURL:functionUrl options:[[FIRHTTPSCallableOptions alloc] initWithRequireLimitedUseAppCheckTokens: [options[@"requireLimitedUseAppCheckTokens"] boolValue]]]
+          : [functions HTTPSCallableWithURL:functionUrl];
 
   if (options[@"timeout"]) {
     callable.timeoutInterval = [options[@"timeout"] doubleValue];

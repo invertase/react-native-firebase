@@ -166,6 +166,11 @@ export namespace FirebaseFunctionsTypes {
      * ```
      */
     timeout?: number;
+
+    /**
+     * Whether or not to protect the callable function with a limited-use App Check token.
+     */
+    requireLimitedUseAppCheckTokens?: boolean;
   }
 
   /**
