@@ -888,6 +888,9 @@ RCT_EXPORT_METHOD(verifyPhoneNumberForMultiFactor
                   : (NSString *)sessionId
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
+  DLog(@"verifyPhoneNumberForMultifactor using app: %@", firebaseApp.name);
+  DLog(@"verifyPhoneNumberForMultifactor phoneNumber: %@", phoneNumber);
+  DLog(@"verifyPhoneNumberForMultifactor sessionId: %@", sessionId);
   FIRMultiFactorSession *session = cachedSessions[sessionId];
   DLog(@"using instance VerifyPhoneNumberForMultifactor: %@",
        firebaseApp.name)[[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
