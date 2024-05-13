@@ -892,8 +892,15 @@ RCT_EXPORT_METHOD(verifyPhoneNumberForMultiFactor
   DLog(@"verifyPhoneNumberForMultifactor phoneNumber: %@", phoneNumber);
   DLog(@"verifyPhoneNumberForMultifactor sessionId: %@", sessionId);
   FIRMultiFactorSession *session = cachedSessions[sessionId];
-  DLog(@"using instance VerifyPhoneNumberForMultifactor: %@",
-       firebaseApp.name)[[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
+  if (session == nil) {
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                      userInfo:(NSMutableDictionary *)@{
+                                        @"code" : @"invalid-multi-factor-session",
+                                        @"message" : @"can't find session for provided key"
+                                      }];
+    return;
+  }
+  [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
        verifyPhoneNumber:phoneNumber
               UIDelegate:nil
       multiFactorSession:session
