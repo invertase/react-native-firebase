@@ -578,7 +578,9 @@ RCT_EXPORT_METHOD(signInWithCredential
                                                      @"has expired or is not currently supported.",
                                       }];
   }
-  DLog(@"using app SignInWithCredential: %@", firebaseApp.name)[[FIRAuth authWithApp:firebaseApp]
+  DLog(@"using app SignInWithCredential: %@", firebaseApp.name);
+
+  [[FIRAuth authWithApp:firebaseApp]
       signInWithCredential:credential
                 completion:^(FIRAuthDataResult *authResult, NSError *error) {
                   if (error) {
@@ -820,8 +822,9 @@ RCT_EXPORT_METHOD(signInWithPhoneNumber
                   : (NSString *)phoneNumber
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  DLog(@"SignInWthPhoneNumber instance: %@",
-       firebaseApp.name)[[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
+  DLog(@"SignInWthPhoneNumber instance: %@", firebaseApp.name);
+
+  [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
       verifyPhoneNumber:phoneNumber
              UIDelegate:nil
              completion:^(NSString *_Nullable verificationID, NSError *_Nullable error) {
@@ -862,8 +865,9 @@ RCT_EXPORT_METHOD(verifyPhoneNumberWithMultiFactorInfo
                                       }];
     return;
   }
-  DLog(@"using instance verifyPhoneNumberWithMultiFactorInfo: %@",
-       firebaseApp.name)[[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
+  DLog(@"using instance verifyPhoneNumberWithMultiFactorInfo: %@", firebaseApp.name);
+
+  [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
       verifyPhoneNumberWithMultiFactorInfo:hint
                                 UIDelegate:nil
                         multiFactorSession:session
@@ -907,12 +911,15 @@ RCT_EXPORT_METHOD(resolveMultiFactorSignIn
                   : (NSString *)verificationCode
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  DLog(@"using instance resolve MultiFactorSignIn: %@", firebaseApp.name)
-      FIRPhoneAuthCredential *credential =
-          [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
-              credentialWithVerificationID:verificationId
-                          verificationCode:verificationCode];
-  DLog(@"credential: %@", credential) FIRMultiFactorAssertion *assertion =
+  DLog(@"using instance resolve MultiFactorSignIn: %@", firebaseApp.name);
+
+  FIRPhoneAuthCredential *credential =
+      [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
+          credentialWithVerificationID:verificationId
+                      verificationCode:verificationCode];
+  DLog(@"credential: %@", credential);
+
+  FIRMultiFactorAssertion *assertion =
       [FIRPhoneMultiFactorGenerator assertionWithCredential:credential];
 
   [cachedResolver[sessionKey] resolveSignInWithAssertion:assertion
@@ -955,11 +962,12 @@ RCT_EXPORT_METHOD(finalizeMultiFactorEnrollment
                   : (NSString *_Nullable)displayName
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  DLog(@"using instance finalizeMultifactorEnrollment: %@", firebaseApp.name)
-      FIRPhoneAuthCredential *credential =
-          [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
-              credentialWithVerificationID:verificationId
-                          verificationCode:verificationCode];
+  DLog(@"using instance finalizeMultifactorEnrollment: %@", firebaseApp.name);
+
+  FIRPhoneAuthCredential *credential =
+      [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
+          credentialWithVerificationID:verificationId
+                      verificationCode:verificationCode];
   FIRMultiFactorAssertion *assertion =
       [FIRPhoneMultiFactorGenerator assertionWithCredential:credential];
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
@@ -980,8 +988,9 @@ RCT_EXPORT_METHOD(verifyPhoneNumber
                   : (FIRApp *)firebaseApp
                   : (NSString *)phoneNumber
                   : (NSString *)requestKey) {
-  DLog(@"using instance verifyPhoneNumber: %@",
-       firebaseApp.name)[[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
+  DLog(@"using instance verifyPhoneNumber: %@", firebaseApp.name);
+
+  [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
       verifyPhoneNumber:phoneNumber
              UIDelegate:nil
              completion:^(NSString *_Nullable verificationID, NSError *_Nullable error) {
