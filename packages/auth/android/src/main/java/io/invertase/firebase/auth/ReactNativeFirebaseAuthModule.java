@@ -1188,7 +1188,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       final Promise promise) {
     final MultiFactorSession multiFactorSession = mMultiFactorSessions.get(sessionKey);
     if (multiFactorSession == null) {
-      rejectPromiseWithCodeAndMessage(promise, "unknown", "can't find session for provided key");
+      rejectPromiseWithCodeAndMessage(promise, "invalid-multi-factor-session", "can't find session for provided key");
       return;
     }
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
