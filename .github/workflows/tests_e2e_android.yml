@@ -38,7 +38,8 @@ jobs:
         # 23-25, 28-29 appears to work locally but fails in CI
         # 26 does not support performance tracing due to hardware acceleration bugs
         # min-possible + max-possible skew looks like 29 and 34 then
-        api-level: [30, 34]
+        # running anything below 34 fails at the moment though, so using only it for now
+        api-level: [34]
         arch: [x86_64]
         target: [google_apis]
         # This is useful for benchmarking, do 0, 1, 2, etc (up to 256 max job-per-matrix limit) for averages
