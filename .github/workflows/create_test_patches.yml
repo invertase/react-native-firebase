@@ -77,7 +77,7 @@ jobs:
           npx react-native init template --skip-install --skip-git-init
           cd template
           yarn
-          yarn add patch-package --save-dev
+          yarn add patch-package --dev
           mkdir patches || true
           for PACKAGE in $PACKAGE_LIST; do
             echo "Installing package $PACKAGE into fresh template app, then clobbering with PR version"
