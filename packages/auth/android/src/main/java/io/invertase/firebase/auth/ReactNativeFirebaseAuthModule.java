@@ -108,7 +108,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   private final HashMap<String, MultiFactorResolver> mCachedResolvers = new HashMap<>();
   private final HashMap<String, MultiFactorSession> mMultiFactorSessions = new HashMap<>();
 
-  // patching anonumous phone auth linkWithCredentials
+  // storage for anonymous phone auth credentials, used for linkWithCredentials
   // https://github.com/invertase/react-native-firebase/issues/4911
   private HashMap<String, AuthCredential> credentials = new HashMap<>();
 
@@ -919,7 +919,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       return;
     }
 
-    OAuthProvider.Builder builder = OAuthProvider.newBuilder(provider.getString("providerId"));
+    OAuthProvider.Builder builder = OAuthProvider.newBuilder(provider.getString("providerId"), firebaseAuth);
     // Add scopes if present
     if (provider.hasKey("scopes")) {
       ReadableArray scopes = provider.getArray("scopes");
@@ -1619,7 +1619,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
                     if (exception instanceof FirebaseAuthUserCollisionException) {
                       FirebaseAuthUserCollisionException authUserCollisionException = (FirebaseAuthUserCollisionException) exception;
                       AuthCredential updatedCredential = authUserCollisionException.getUpdatedCredential();
-                      Log.e(TAG, "link:onComplete:collisionFailure", exception);
+                      Log.d(TAG, "link:onComplete:collisionFailure", exception);
                       promiseRejectLinkAuthException(promise, exception, updatedCredential);
                     } else {
                       Log.e(TAG, "link:onComplete:failure", exception);
@@ -1660,7 +1660,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       return;
     }
 
-    OAuthProvider.Builder builder = OAuthProvider.newBuilder(provider.getString("providerId"));
+    OAuthProvider.Builder builder = OAuthProvider.newBuilder(provider.getString("providerId"), firebaseAuth);
     // Add scopes if present
     if (provider.hasKey("scopes")) {
       ReadableArray scopes = provider.getArray("scopes");
@@ -1803,7 +1803,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       return;
     }
 
-    OAuthProvider.Builder builder = OAuthProvider.newBuilder(provider.getString("providerId"));
+    OAuthProvider.Builder builder = OAuthProvider.newBuilder(provider.getString("providerId"), firebaseAuth);
     // Add scopes if present
     if (provider.hasKey("scopes")) {
       ReadableArray scopes = provider.getArray("scopes");
@@ -1863,7 +1863,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     }
     if (credentials.containsKey(authToken) && credentials.get(authToken) != null) {
       return credentials.get(authToken);
-    } else {
+    }
+
       switch (provider) {
         case "facebook.com":
           return FacebookAuthProvider.getCredential(authToken);
@@ -1891,7 +1892,6 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
           return EmailAuthProvider.getCredentialWithLink(authToken, authSecret);
         default:
           return null;
-      }
     }
   }
 
