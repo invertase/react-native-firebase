@@ -46,10 +46,10 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthMultiFactorException;
 import com.google.firebase.auth.FirebaseAuthProvider;
 import com.google.firebase.auth.FirebaseAuthSettings;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseUserMetadata;
 import com.google.firebase.auth.GetTokenResult;
@@ -919,7 +919,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       return;
     }
 
-    OAuthProvider.Builder builder = OAuthProvider.newBuilder(provider.getString("providerId"), firebaseAuth);
+    OAuthProvider.Builder builder =
+        OAuthProvider.newBuilder(provider.getString("providerId"), firebaseAuth);
     // Add scopes if present
     if (provider.hasKey("scopes")) {
       ReadableArray scopes = provider.getArray("scopes");
@@ -1617,8 +1618,10 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
                   } else {
                     Exception exception = task.getException();
                     if (exception instanceof FirebaseAuthUserCollisionException) {
-                      FirebaseAuthUserCollisionException authUserCollisionException = (FirebaseAuthUserCollisionException) exception;
-                      AuthCredential updatedCredential = authUserCollisionException.getUpdatedCredential();
+                      FirebaseAuthUserCollisionException authUserCollisionException =
+                          (FirebaseAuthUserCollisionException) exception;
+                      AuthCredential updatedCredential =
+                          authUserCollisionException.getUpdatedCredential();
                       Log.d(TAG, "link:onComplete:collisionFailure", exception);
                       promiseRejectLinkAuthException(promise, exception, updatedCredential);
                     } else {
@@ -1660,7 +1663,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       return;
     }
 
-    OAuthProvider.Builder builder = OAuthProvider.newBuilder(provider.getString("providerId"), firebaseAuth);
+    OAuthProvider.Builder builder =
+        OAuthProvider.newBuilder(provider.getString("providerId"), firebaseAuth);
     // Add scopes if present
     if (provider.hasKey("scopes")) {
       ReadableArray scopes = provider.getArray("scopes");
@@ -1803,7 +1807,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       return;
     }
 
-    OAuthProvider.Builder builder = OAuthProvider.newBuilder(provider.getString("providerId"), firebaseAuth);
+    OAuthProvider.Builder builder =
+        OAuthProvider.newBuilder(provider.getString("providerId"), firebaseAuth);
     // Add scopes if present
     if (provider.hasKey("scopes")) {
       ReadableArray scopes = provider.getArray("scopes");
@@ -1865,33 +1870,33 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       return credentials.get(authToken);
     }
 
-      switch (provider) {
-        case "facebook.com":
-          return FacebookAuthProvider.getCredential(authToken);
-        case "google.com":
-          return GoogleAuthProvider.getCredential(authToken, authSecret);
-        case "twitter.com":
-          return TwitterAuthProvider.getCredential(authToken, authSecret);
-        case "github.com":
-          return GithubAuthProvider.getCredential(authToken);
-        case "apple.com":
-          return OAuthProvider.newCredentialBuilder(provider)
-              .setIdTokenWithRawNonce(authToken, authSecret)
-              .build();
-        case "oauth":
-          return OAuthProvider.getCredential(provider, authToken, authSecret);
-        case "phone":
-          return getPhoneAuthCredential(authToken, authSecret);
-        case "password":
-          // authToken = email
-          // authSecret = password
-          return EmailAuthProvider.getCredential(authToken, authSecret);
-        case "emailLink":
-          // authToken = email
-          // authSecret = link
-          return EmailAuthProvider.getCredentialWithLink(authToken, authSecret);
-        default:
-          return null;
+    switch (provider) {
+      case "facebook.com":
+        return FacebookAuthProvider.getCredential(authToken);
+      case "google.com":
+        return GoogleAuthProvider.getCredential(authToken, authSecret);
+      case "twitter.com":
+        return TwitterAuthProvider.getCredential(authToken, authSecret);
+      case "github.com":
+        return GithubAuthProvider.getCredential(authToken);
+      case "apple.com":
+        return OAuthProvider.newCredentialBuilder(provider)
+            .setIdTokenWithRawNonce(authToken, authSecret)
+            .build();
+      case "oauth":
+        return OAuthProvider.getCredential(provider, authToken, authSecret);
+      case "phone":
+        return getPhoneAuthCredential(authToken, authSecret);
+      case "password":
+        // authToken = email
+        // authSecret = password
+        return EmailAuthProvider.getCredential(authToken, authSecret);
+      case "emailLink":
+        // authToken = email
+        // authSecret = link
+        return EmailAuthProvider.getCredentialWithLink(authToken, authSecret);
+      default:
+        return null;
     }
   }
 
@@ -2233,7 +2238,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param exception
    * @param authCredential
    */
-  private void promiseRejectLinkAuthException(Promise promise, Exception exception, AuthCredential authCredential) {
+  private void promiseRejectLinkAuthException(
+      Promise promise, Exception exception, AuthCredential authCredential) {
     WritableMap error = getJSError(exception);
     String authHashCode = String.valueOf(authCredential.hashCode());
 
