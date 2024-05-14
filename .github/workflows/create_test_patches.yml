@@ -58,6 +58,9 @@ jobs:
           command: DETOX_DISABLE_POSTINSTALL=1 yarn && yarn lerna:prepare
 
       - name: Create Patches
+        env:
+          # yarn3+ by default disables lockfile alteration in CI. We want it.
+          YARN_ENABLE_IMMUTABLE_INSTALLS: false
         run: |
           PACKAGE_LIST=`find packages -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | egrep -v 'template|invites'`
           mkdir $HOME/packages
