@@ -1617,17 +1617,19 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
                     promiseWithAuthResult(task.getResult(), promise);
                   } else {
                     Exception exception = task.getException();
-                    if (exception instanceof FirebaseAuthUserCollisionException) {
-                      FirebaseAuthUserCollisionException authUserCollisionException =
-                          (FirebaseAuthUserCollisionException) exception;
-                      AuthCredential updatedCredential =
-                          authUserCollisionException.getUpdatedCredential();
-                      Log.d(TAG, "link:onComplete:collisionFailure", exception);
-                      promiseRejectLinkAuthException(promise, exception, updatedCredential);
-                    } else {
-                      Log.e(TAG, "link:onComplete:failure", exception);
-                      promiseRejectAuthException(promise, exception);
+                    if (exception instanceof FirebaseAuthUserCollisionException collEx) {
+                      AuthCredential updatedCredential = collEx.getUpdatedCredential();
+                      Log.d(TAG, "link:onComplete:collisionFailure", collEx);
+                      // If we have a credential in the error, we can return it, otherwise fall
+                      // through
+                      if (updatedCredential != null) {
+                        Log.d(TAG, "link:onComplete:collisionFailure had credential", collEx);
+                        promiseRejectLinkAuthException(promise, collEx, updatedCredential);
+                        return;
+                      }
                     }
+                    Log.e(TAG, "link:onComplete:failure", exception);
+                    promiseRejectAuthException(promise, exception);
                   }
                 });
       } else {
@@ -2239,7 +2241,9 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param authCredential
    */
   private void promiseRejectLinkAuthException(
-      Promise promise, Exception exception, AuthCredential authCredential) {
+      @NonNull Promise promise,
+      @NonNull Exception exception,
+      @NonNull AuthCredential authCredential) {
     WritableMap error = getJSError(exception);
     String authHashCode = String.valueOf(authCredential.hashCode());
 
