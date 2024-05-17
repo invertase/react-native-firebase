@@ -303,8 +303,7 @@ RCT_EXPORT_METHOD(registerForRemoteNotifications
                   : (RCTPromiseRejectBlock)reject) {
 #if TARGET_IPHONE_SIMULATOR
 #if !TARGET_CPU_ARM64
-  // Do the registration on this unsupported simulator, but don't set up to wait for a token that
-  // won't arrive
+  // Register on this unsupported simulator, but no waiting for a token that won't arrive
   [[UIApplication sharedApplication] registerForRemoteNotifications];
   resolve(@([RCTConvert BOOL:@(YES)]));
   return;
@@ -317,6 +316,7 @@ RCT_EXPORT_METHOD(registerForRemoteNotifications
       if (@available(iOS 10.0, *)) {
 #pragma pop
     if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
+      DLog(@"RNFBMessaging registerForRemoteNotifications - already registered.");
       resolve(@([RCTConvert BOOL:@(YES)]));
       return;
     } else {
@@ -326,6 +326,32 @@ RCT_EXPORT_METHOD(registerForRemoteNotifications
     // Apple docs recommend that registerForRemoteNotifications is always called on app start
     // regardless of current status
     dispatch_async(dispatch_get_main_queue(), ^{
+      // Sometimes the registration never completes, which deserves separate attention in other
+      // areas. This area should protect itself against hanging forever regardless. Just in case,
+      // check in after a delay and cleanup if required
+      dispatch_after(
+          dispatch_time(DISPATCH_TIME_NOW, 10.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            if ([RNFBMessagingAppDelegate sharedInstance].registerPromiseResolver != nil) {
+              // if we got here and resolve/reject are still set, unset, log failure, reject
+              DLog(@"RNFBMessaging dispatch_after block: we appear to have timed out. Rejecting");
+              [[RNFBMessagingAppDelegate sharedInstance] setPromiseResolve:nil
+                                                          andPromiseReject:nil];
+
+              [RNFBSharedUtils
+                  rejectPromiseWithUserInfo:reject
+                                   userInfo:[@{
+                                     @"code" : @"unknown-error",
+                                     @"message" :
+                                         @"registerDeviceForRemoteMessages requested but "
+                                         @"system did not respond. Possibly missing permission."
+                                   } mutableCopy]];
+              return;
+            } else {
+              DLog(@"RNFBMessaging dispatch_after: registerDeviceForRemoteMessages handled.");
+              return;
+            }
+          });
+
       [[UIApplication sharedApplication] registerForRemoteNotifications];
     });
   }
