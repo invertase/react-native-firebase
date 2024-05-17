@@ -37,6 +37,16 @@ async function isAPNSCapableSimulator() {
 }
 
 describe('messaging()', function () {
+  before(async function () {
+    // our device registration tests require permissions. Set them up
+    await firebase.messaging().requestPermission({
+      alert: true,
+      badge: true,
+      sound: true,
+      provisional: true,
+    });
+  });
+
   describe('firebase v8 compatibility', function () {
     describe('namespace', function () {
       it('accessible from firebase.app()', function () {
@@ -98,8 +108,6 @@ describe('messaging()', function () {
         if (device.getPlatform() === 'ios') {
           await firebase.messaging().unregisterDeviceForRemoteMessages();
           should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, false);
-          // did this happen in logs?
-          // 2024-02-02 18:35:26.277 Df testing[26266:18d3f] (Detox) 10.20.0 - [FirebaseMessaging][I-FCM002022] Declining request for FCM Token since no APNS Token specified
           tryToRegister = await isAPNSCapableSimulator();
           if (tryToRegister) {
             await firebase.messaging().registerDeviceForRemoteMessages();
@@ -112,27 +120,21 @@ describe('messaging()', function () {
     });
 
     describe('hasPermission', function () {
-      it('returns true android (default)', async function () {
-        if (device.getPlatform() === 'android') {
-          should.equal(await firebase.messaging().hasPermission(), true);
-        } else {
-          this.skip();
-        }
-      });
-
-      it('returns -1 on ios (default)', async function () {
-        if (device.getPlatform() === 'ios') {
-          should.equal(await firebase.messaging().hasPermission(), -1);
-        }
+      // we request permission in a before block, so both should be truthy
+      it('returns truthy', async function () {
+        should.equal(!!(await firebase.messaging().hasPermission()), true);
       });
     });
 
     describe('requestPermission', function () {
-      it('resolves 1 on android', async function () {
+      // we request permission in a before block
+      it('resolves correctly for default request', async function () {
         if (device.getPlatform() === 'android') {
-          should.equal(await firebase.messaging().requestPermission(), 1);
+          // our default resolve on android is "authorized"
+          should.equal(await firebase.messaging().requestPermission({ provisional: true }), 1);
         } else {
-          this.skip();
+          // our default request on iOS results in "provisional"
+          should.equal(await firebase.messaging().requestPermission({ provisional: true }), 2);
         }
       });
     });
@@ -585,30 +587,22 @@ describe('messaging()', function () {
     });
 
     describe('hasPermission', function () {
-      it('returns true android (default)', async function () {
+      it('returns true', async function () {
+        // our before block requests permission, so both should be truthy
         const { getMessaging, hasPermission } = messagingModular;
-        if (device.getPlatform() === 'android') {
-          should.equal(await hasPermission(getMessaging()), true);
-        } else {
-          this.skip();
-        }
-      });
-
-      it('returns -1 on ios (default)', async function () {
-        const { getMessaging, hasPermission } = messagingModular;
-        if (device.getPlatform() === 'ios') {
-          should.equal(await hasPermission(getMessaging()), -1);
-        }
+        should.equal(!!(await hasPermission(getMessaging())), true);
       });
     });
 
     describe('requestPermission', function () {
-      it('resolves 1 on android', async function () {
+      it('resolves correctly for default request', async function () {
         const { getMessaging, requestPermission } = messagingModular;
+        // our before block requests, android will always be 1
         if (device.getPlatform() === 'android') {
           should.equal(await requestPermission(getMessaging()), 1);
         } else {
-          this.skip();
+          // ... and iOS should always be 2 (provisional)
+          should.equal(await requestPermission(getMessaging(), { provisional: true }), 2);
         }
       });
     });

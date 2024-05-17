@@ -284,6 +284,15 @@ RCT_EXPORT_METHOD(requestPermission
                             if (error) {
                               [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
                             } else {
+                              // if we do not attempt to register immediately, registration fails
+                              // later unknown reason why, but this was the only difference between
+                              // using a react-native-permissions vs built-in permissions request in
+                              // a sequence of "request permissions" --> "register for messages" you
+                              // only want to request permission if you want to register for
+                              // messages, so we register directly now - see #7272
+                              dispatch_async(dispatch_get_main_queue(), ^{
+                                [[UIApplication sharedApplication] registerForRemoteNotifications];
+                              });
                               [self hasPermission:resolve:reject];
                             }
                           }];
