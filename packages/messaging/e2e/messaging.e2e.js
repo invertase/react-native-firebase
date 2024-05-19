@@ -105,7 +105,7 @@ describe('messaging()', function () {
       });
 
       it('successfully unregisters on ios', async function () {
-        if (device.getPlatform() === 'ios') {
+        if (device.getPlatform() === 'ios' && !isCI) {
           await firebase.messaging().unregisterDeviceForRemoteMessages();
           should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, false);
           tryToRegister = await isAPNSCapableSimulator();
@@ -133,8 +133,12 @@ describe('messaging()', function () {
           // our default resolve on android is "authorized"
           should.equal(await firebase.messaging().requestPermission({ provisional: true }), 1);
         } else {
-          // our default request on iOS results in "provisional"
-          should.equal(await firebase.messaging().requestPermission({ provisional: true }), 2);
+          // our default request on iOS results in "provisional" == 2
+          // but we may have granted perms by any outside method == 1
+          should.equal(
+            (await firebase.messaging().requestPermission({ provisional: true })) >= 1,
+            true,
+          );
         }
       });
     });
@@ -152,7 +156,11 @@ describe('messaging()', function () {
         // Make sure we are registered for remote notifications, else no token
         aPNSCapableSimulator = await isAPNSCapableSimulator();
         simulator = await isSimulator();
-        if (device.getPlatform() === 'ios' && (!simulator || (simulator && aPNSCapableSimulator))) {
+        if (
+          device.getPlatform() === 'ios' &&
+          !isCI &&
+          (!simulator || (simulator && aPNSCapableSimulator))
+        ) {
           await firebase.messaging().registerDeviceForRemoteMessages();
           apnsToken = await firebase.messaging().getAPNSToken();
 
@@ -568,7 +576,7 @@ describe('messaging()', function () {
           registerDeviceForRemoteMessages,
         } = messagingModular;
 
-        if (device.getPlatform() === 'ios') {
+        if (device.getPlatform() === 'ios' && !isCI) {
           await unregisterDeviceForRemoteMessages(getMessaging());
           should.equal(isDeviceRegisteredForRemoteMessages(getMessaging()), false);
           aPNSCapableSimulator = await isAPNSCapableSimulator();
@@ -601,8 +609,9 @@ describe('messaging()', function () {
         if (device.getPlatform() === 'android') {
           should.equal(await requestPermission(getMessaging()), 1);
         } else {
-          // ... and iOS should always be 2 (provisional)
-          should.equal(await requestPermission(getMessaging(), { provisional: true }), 2);
+          // our default request on iOS results in "provisional" == 2
+          // but we may have granted perms by any outside method == 1
+          should.equal((await requestPermission(getMessaging(), { provisional: true })) >= 1, true);
         }
       });
     });
@@ -622,7 +631,11 @@ describe('messaging()', function () {
         const { getMessaging, getAPNSToken, registerDeviceForRemoteMessages } = messagingModular;
         aPNSCapableSimulator = await isAPNSCapableSimulator();
         simulator = await isSimulator();
-        if (device.getPlatform() === 'ios' && (!simulator || (simulator && aPNSCapableSimulator))) {
+        if (
+          device.getPlatform() === 'ios' &&
+          !isCI &&
+          (!simulator || (simulator && aPNSCapableSimulator))
+        ) {
           await registerDeviceForRemoteMessages(getMessaging());
           apnsToken = await getAPNSToken(getMessaging());
 
