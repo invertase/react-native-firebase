@@ -29,6 +29,19 @@ config.configurations['android.emu.debug'].device.avdName =
 before(async function () {
   await detox.init(config);
   await device.launchApp();
+
+  // WIP - remote messaging notification is hanging in CI
+  //       this chunk of work is intended to grant the required permissions
+  //       for it to succeed. It is not stable though, so this is
+  //       commented out and the relevant test is skipped in CI
+  // our messaging tests require notification permission now
+  // this command only works on macOS though, so || true to make it pass everywhere
+  // execSync(
+  //   `applesimutils --booted --setPermissions notifications=YES --bundle io.invertase.testing || true`,
+  // );
+  // after setting perms you have to launch the app again, after a slight delay
+  // await Utils.sleep(15000);
+  // await device.launchApp();
   await jet.init();
 });
 
