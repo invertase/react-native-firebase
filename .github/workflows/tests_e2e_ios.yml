@@ -79,6 +79,7 @@ jobs:
         name: Xcode Compile Cache
         with:
           key: ${{ runner.os }}-v2 # makes a unique key w/related restore key internally
+          create-symlink: true
           max-size: 1500M
 
       - name: Yarn Install
@@ -138,7 +139,6 @@ jobs:
 
       - name: Build iOS App
         run: |
-          export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
           export CCACHE_SLOPPINESS=clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
           export CCACHE_FILECLONE=true
           export CCACHE_DEPEND=true
@@ -148,6 +148,8 @@ jobs:
           export SKIP_BUNDLING=1
           export RCT_NO_LAUNCH_PACKAGER=1
           set -o pipefail
+          echo $PATH
+          which clang
           yarn tests:ios:build
           ccache -s
         shell: bash
