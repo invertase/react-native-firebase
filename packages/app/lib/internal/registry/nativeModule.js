@@ -65,7 +65,8 @@ function nativeModuleWrapped(namespace, NativeModule, argToPrepend) {
     return NativeModule;
   }
 
-  const properties = Object.keys(NativeModule);
+  let properties = Object.keys(Object.getPrototypeOf(NativeModule));
+  if (!properties.length) properties = Object.keys(NativeModule);
 
   for (let i = 0, len = properties.length; i < len; i++) {
     const property = properties[i];
