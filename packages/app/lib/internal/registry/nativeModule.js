@@ -60,7 +60,7 @@ function nativeModuleMethodWrapped(namespace, method, argToPrepend) {
  * @param argToPrepend
  */
 function nativeModuleWrapped(namespace, NativeModule, argToPrepend) {
-  const native = NativeModule;
+  const native = {};
   if (!NativeModule) {
     return NativeModule;
   }
@@ -71,6 +71,8 @@ function nativeModuleWrapped(namespace, NativeModule, argToPrepend) {
     const property = properties[i];
     if (typeof NativeModule[property] === 'function') {
       native[property] = nativeModuleMethodWrapped(namespace, NativeModule[property], argToPrepend);
+    } else {
+      native[property] = NativeModule[property];
     }
   }
 
