@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [19.3.0](https://github.com/invertase/react-native-firebase/compare/v19.2.2...v19.3.0) (2024-05-20)
+
+### Features
+
+- **analytics:** allow custom event parameters for begin_checkout and purchase events ([#7760](https://github.com/invertase/react-native-firebase/issues/7760)) ([424b9d9](https://github.com/invertase/react-native-firebase/commit/424b9d9c15921268ba3cc96a3e154fe2ee18c345))
+- **firestore:** export and test types for the modular API ([ad40ea2](https://github.com/invertase/react-native-firebase/commit/ad40ea2eb828a59451a619059bb4bef96277e23f))
+- **firestore:** implement the getDoc modular api ([e90782b](https://github.com/invertase/react-native-firebase/commit/e90782b00702878204dd93d3a04c09c620cdf163))
+- **functions:** typescript definitions for httpsCallable and httpsCallableFromUrl ([#7762](https://github.com/invertase/react-native-firebase/issues/7762)) ([3446ca3](https://github.com/invertase/react-native-firebase/commit/3446ca346e417fc6b499d1508a4a32e45c063986))
+- **functions:** typescript definitions for modular functions API ([#7777](https://github.com/invertase/react-native-firebase/issues/7777)) ([e724a46](https://github.com/invertase/react-native-firebase/commit/e724a467eba19f53573dc1518342391ffd4c2bcc))
+- include phoneNumber from PhoneMultiFactorInfo ([5acdfb3](https://github.com/invertase/react-native-firebase/commit/5acdfb306279560a9fdd31a35c80f3edca4d0d59))
+
+### Bug Fixes
+
+- **app:** react-native 0.74 bridgeless mode compatibility ([#7688](https://github.com/invertase/react-native-firebase/issues/7688)) ([a6805bc](https://github.com/invertase/react-native-firebase/commit/a6805bc1e6894aadf3167b7958fd52644bfe90ca))
+- **auth, android:** change error code for invalid multi-factor session to match iOS WIP needs test ([0f15f2d](https://github.com/invertase/react-native-firebase/commit/0f15f2d36cfec807c42b91b53289fa699ffe4f66))
+- **auth, android:** return credential for signin if phone auth has link collision ([#7793](https://github.com/invertase/react-native-firebase/issues/7793)) ([f8916e2](https://github.com/invertase/react-native-firebase/commit/f8916e25371d43db2bd8c22c7f35e8064edc6806))
+- **auth, ios:** reject multi-factor API call if session not found ([3d61e32](https://github.com/invertase/react-native-firebase/commit/3d61e32394d83fae5d136d21ecbea71590a2adb7))
+- **ci:** allow yarn lockfile modification in CI for patch generation ([94979f5](https://github.com/invertase/react-native-firebase/commit/94979f5c3ed2a4437313cdcf5ad40a0c9eb37423))
+- **ci:** fix executable bits on ios_config script during patchset generation ([0c1c4ae](https://github.com/invertase/react-native-firebase/commit/0c1c4aec15a6695610d4a043240f483f01f18952))
+- **ci:** use modern yarn syntax to add packages during patchset generation ([cfd6f19](https://github.com/invertase/react-native-firebase/commit/cfd6f1960955f730593ee57c743ccd7f2874299c))
+- **firestore:** fix types for the `where` api in modular queries ([d874e15](https://github.com/invertase/react-native-firebase/commit/d874e15145086f59bba11fee4f23a8d9cc50cc68))
+- **messaging, ios:** register for notifications on permission grant ([ccd78b9](https://github.com/invertase/react-native-firebase/commit/ccd78b9cf5d6961f5252e582ede785932599d25d)), closes [#7272](https://github.com/invertase/react-native-firebase/issues/7272)
+- **messaging, ios:** reject notification registration after 10 seconds ([1f86483](https://github.com/invertase/react-native-firebase/commit/1f8648329ce812644f4bbd0f0caadcfe6a0bbddf)), closes [#7272](https://github.com/invertase/react-native-firebase/issues/7272)
+
 ## [19.2.2](https://github.com/invertase/react-native-firebase/compare/v19.2.1...v19.2.2) (2024-04-13)
 
 ### Bug Fixes

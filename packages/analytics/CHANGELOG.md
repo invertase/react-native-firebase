@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [19.3.0](https://github.com/invertase/react-native-firebase/compare/v19.2.2...v19.3.0) (2024-05-20)
+
+### Features
+
+- **analytics:** allow custom event parameters for begin_checkout and purchase events ([#7760](https://github.com/invertase/react-native-firebase/issues/7760)) ([424b9d9](https://github.com/invertase/react-native-firebase/commit/424b9d9c15921268ba3cc96a3e154fe2ee18c345))
+
 ## [19.2.2](https://github.com/invertase/react-native-firebase/compare/v19.2.1...v19.2.2) (2024-04-13)
 
 **Note:** Version bump only for package @react-native-firebase/analytics

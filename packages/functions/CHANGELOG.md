@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [19.3.0](https://github.com/invertase/react-native-firebase/compare/v19.2.2...v19.3.0) (2024-05-20)
+
+### Features
+
+- **functions:** typescript definitions for httpsCallable and httpsCallableFromUrl ([#7762](https://github.com/invertase/react-native-firebase/issues/7762)) ([3446ca3](https://github.com/invertase/react-native-firebase/commit/3446ca346e417fc6b499d1508a4a32e45c063986))
+- **functions:** typescript definitions for modular functions API ([#7777](https://github.com/invertase/react-native-firebase/issues/7777)) ([e724a46](https://github.com/invertase/react-native-firebase/commit/e724a467eba19f53573dc1518342391ffd4c2bcc))
+
 ## [19.2.2](https://github.com/invertase/react-native-firebase/compare/v19.2.1...v19.2.2) (2024-04-13)
 
 **Note:** Version bump only for package @react-native-firebase/functions

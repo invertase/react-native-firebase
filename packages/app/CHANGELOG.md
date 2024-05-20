@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [19.3.0](https://github.com/invertase/react-native-firebase/compare/v19.2.2...v19.3.0) (2024-05-20)
+
+### Bug Fixes
+
+- **app:** react-native 0.74 bridgeless mode compatibility ([#7688](https://github.com/invertase/react-native-firebase/issues/7688)) ([a6805bc](https://github.com/invertase/react-native-firebase/commit/a6805bc1e6894aadf3167b7958fd52644bfe90ca))
+
 ## [19.2.2](https://github.com/invertase/react-native-firebase/compare/v19.2.1...v19.2.2) (2024-04-13)
 
 ### Bug Fixes

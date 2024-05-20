@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [19.3.0](https://github.com/invertase/react-native-firebase/compare/v19.2.2...v19.3.0) (2024-05-20)
+
+### Bug Fixes
+
+- **messaging, ios:** register for notifications on permission grant ([ccd78b9](https://github.com/invertase/react-native-firebase/commit/ccd78b9cf5d6961f5252e582ede785932599d25d)), closes [#7272](https://github.com/invertase/react-native-firebase/issues/7272)
+- **messaging, ios:** reject notification registration after 10 seconds ([1f86483](https://github.com/invertase/react-native-firebase/commit/1f8648329ce812644f4bbd0f0caadcfe6a0bbddf)), closes [#7272](https://github.com/invertase/react-native-firebase/issues/7272)
+
 ## [19.2.2](https://github.com/invertase/react-native-firebase/compare/v19.2.1...v19.2.2) (2024-04-13)
 
 **Note:** Version bump only for package @react-native-firebase/messaging

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [19.3.0](https://github.com/invertase/react-native-firebase/compare/v19.2.2...v19.3.0) (2024-05-20)
+
+### Features
+
+- include phoneNumber from PhoneMultiFactorInfo ([5acdfb3](https://github.com/invertase/react-native-firebase/commit/5acdfb306279560a9fdd31a35c80f3edca4d0d59))
+
+### Bug Fixes
+
+- **auth, android:** change error code for invalid multi-factor session to match iOS WIP needs test ([0f15f2d](https://github.com/invertase/react-native-firebase/commit/0f15f2d36cfec807c42b91b53289fa699ffe4f66))
+- **auth, android:** return credential for signin if phone auth has link collision ([#7793](https://github.com/invertase/react-native-firebase/issues/7793)) ([f8916e2](https://github.com/invertase/react-native-firebase/commit/f8916e25371d43db2bd8c22c7f35e8064edc6806))
+- **auth, ios:** reject multi-factor API call if session not found ([3d61e32](https://github.com/invertase/react-native-firebase/commit/3d61e32394d83fae5d136d21ecbea71590a2adb7))
+
 ## [19.2.2](https://github.com/invertase/react-native-firebase/compare/v19.2.1...v19.2.2) (2024-04-13)
 
 **Note:** Version bump only for package @react-native-firebase/auth

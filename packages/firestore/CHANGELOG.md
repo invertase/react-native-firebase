@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [19.3.0](https://github.com/invertase/react-native-firebase/compare/v19.2.2...v19.3.0) (2024-05-20)
+
+### Features
+
+- **firestore:** export and test types for the modular API ([ad40ea2](https://github.com/invertase/react-native-firebase/commit/ad40ea2eb828a59451a619059bb4bef96277e23f))
+- **firestore:** implement the getDoc modular api ([e90782b](https://github.com/invertase/react-native-firebase/commit/e90782b00702878204dd93d3a04c09c620cdf163))
+
+### Bug Fixes
+
+- **firestore:** fix types for the `where` api in modular queries ([d874e15](https://github.com/invertase/react-native-firebase/commit/d874e15145086f59bba11fee4f23a8d9cc50cc68))
+
 ## [19.2.2](https://github.com/invertase/react-native-firebase/compare/v19.2.1...v19.2.2) (2024-04-13)
 
 **Note:** Version bump only for package @react-native-firebase/firestore
