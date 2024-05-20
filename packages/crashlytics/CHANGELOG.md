@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [20.0.0](https://github.com/invertase/react-native-firebase/compare/v19.3.0...v20.0.0) (2024-05-20)
+
+### ⚠ BREAKING CHANGES
+
+- **app, android:** - requires minSdk 21+ in general, 23+ for auth module
+
+* requires compileSdk 34+
+* app-distribution gradle plugin requires
+  - gradle 7.3+
+  - android gradle plugin 7+
+  - google services plugin 4.3.2+
+* crashlytics plugin requires
+  - gradle 8+
+  - android gradle plugin 8.1+
+  - google services plugin 4.4.1+
+
+### Features
+
+- **app, android:** android-sdk 33.0.0 - needs minSdk 21+ (23+ for auth) ([f29fecb](https://github.com/invertase/react-native-firebase/commit/f29fecbe72c27e60f8fec1cee6fa879b788d27b3))
+
 ## [19.3.0](https://github.com/invertase/react-native-firebase/compare/v19.2.2...v19.3.0) (2024-05-20)
 
 **Note:** Version bump only for package @react-native-firebase/crashlytics

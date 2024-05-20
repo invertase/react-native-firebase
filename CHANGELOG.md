@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [20.0.0](https://github.com/invertase/react-native-firebase/compare/v19.3.0...v20.0.0) (2024-05-20)
+
+### ⚠ BREAKING CHANGES
+
+- **app, android:** - requires minSdk 21+ in general, 23+ for auth module
+
+* requires compileSdk 34+
+* app-distribution gradle plugin requires
+  - gradle 7.3+
+  - android gradle plugin 7+
+  - google services plugin 4.3.2+
+* crashlytics plugin requires
+  - gradle 8+
+  - android gradle plugin 8.1+
+  - google services plugin 4.4.1+
+
+- **app, ios:** firebase-ios-sdk 10.25.0 requires minimum Xcode 15.2+
+
+This transitively requires macOS Ventura 13.5+ - for old hardware
+you may investigate OCLP (OpenCore Legacy Patcher) to update macOS
+to current versions and access newer Xcode versions
+
+### Features
+
+- **app, android:** android-sdk 33.0.0 - needs minSdk 21+ (23+ for auth) ([f29fecb](https://github.com/invertase/react-native-firebase/commit/f29fecbe72c27e60f8fec1cee6fa879b788d27b3))
+- **app, ios:** adopt firebase-ios-sdk 10.25.0 requires Xcode 15.2+ ([73f3c23](https://github.com/invertase/react-native-firebase/commit/73f3c2397d2f56ed5a139d2a8b8a13930c86aabc))
+
+### Bug Fixes
+
+- **firestore, android:** remove usage of Guava library ([d6f62a3](https://github.com/invertase/react-native-firebase/commit/d6f62a3b374e321a86d97cd2765cc91b1f006e29))
+
 ## [19.3.0](https://github.com/invertase/react-native-firebase/compare/v19.2.2...v19.3.0) (2024-05-20)
 
 ### Features

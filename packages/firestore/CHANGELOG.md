@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [20.0.0](https://github.com/invertase/react-native-firebase/compare/v19.3.0...v20.0.0) (2024-05-20)
+
+### Bug Fixes
+
+- **firestore, android:** remove usage of Guava library ([d6f62a3](https://github.com/invertase/react-native-firebase/commit/d6f62a3b374e321a86d97cd2765cc91b1f006e29))
+
 ## [19.3.0](https://github.com/invertase/react-native-firebase/compare/v19.2.2...v19.3.0) (2024-05-20)
 
 ### Features
