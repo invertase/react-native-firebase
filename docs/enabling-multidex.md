@@ -49,4 +49,16 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
 
 ```
 
+If you are using a kotlin file, istead of the java one above, `android/app/src/main/java/.../MainApplication.kt` extend `MultiDexApplication` like so:
+
+```kt
+
+// ... all your other imports here
+import androidx.multidex.MultiDexApplication; // <-- ADD THIS IMPORT
+
+
+// Your class definition needs `extends MultiDexApplication` like below
+class MainApplication : MultiDexApplication(), ReactApplication {
+```
+
 Once added, rebuild your application: `npx react-native run-android`.
