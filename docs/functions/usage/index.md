@@ -51,7 +51,7 @@ To learn more about deploying Functions to Firebase, view the [Writing & Deployi
 
 Whilst developing your application with Cloud Functions, it is possible to run the functions inside of a local emulator.
 
-To call the emulated functions, call the `useEmulator` method exposed by the library:
+To call the emulated functions in the **default** region, call the `useEmulator` method exposed by the library:
 
 ```js
 import functions from '@react-native-firebase/functions';
@@ -59,9 +59,11 @@ import functions from '@react-native-firebase/functions';
 // Use a local emulator in development
 if (__DEV__) {
   // If you are running on a physical device, replace http://localhost with the local ip of your PC. (http://192.168.x.x)
-  firebase.functions().useEmulator('localhost', 5001);
+  functions().useEmulator('localhost', 5001);
 }
 ```
+
+If your functions are deployed on a different region, then please see [Region-specific Functions](#region-specific-functions)
 
 ## Calling an endpoint
 
