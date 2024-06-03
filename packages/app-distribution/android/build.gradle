@@ -96,11 +96,11 @@ dependencies {
   api appProject
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
   // TODO remove the specific version once it is out of beta and participates in bom versioning
-  implementation 'com.google.firebase:firebase-appdistribution-api:16.0.0-beta12'
+  implementation 'com.google.firebase:firebase-appdistribution-api:16.0.0-beta13'
   // TODO demonstrate how to only include this in certain build variants
   // - perhaps have firebase.json name the variants to include, then roll through variants here and only
   //   add the dependency to variants that match? Or... (PRs welcome...)
-  // implementation 'com.google.firebase:firebase-appdistribution:16.0.0-beta12'
+  // implementation 'com.google.firebase:firebase-appdistribution:16.0.0-beta13'
 }
 
 ReactNative.shared.applyPackageVersion()
