@@ -26,6 +26,11 @@ const { detox: config } = require('../package.json');
 config.configurations['android.emu.debug'].device.avdName =
   process.env.ANDROID_AVD_NAME || config.configurations['android.emu.debug'].device.avdName;
 
+process.on('unhandledRejection', err => {
+  console.error(err);
+  process.exit(1);
+});
+
 before(async function () {
   await detox.init(config);
   await device.launchApp();

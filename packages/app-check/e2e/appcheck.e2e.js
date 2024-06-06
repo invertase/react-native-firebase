@@ -84,8 +84,10 @@ describe('appCheck() modular', function () {
         token.should.not.equal('');
         const decodedToken = jwt.decode(token);
         decodedToken.aud[1].should.equal('projects/react-native-firebase-testing');
-        if (decodedToken.exp < Date.now()) {
-          Promise.reject('Token already expired');
+        if (decodedToken.exp * 1000 < Date.now()) {
+          return Promise.reject(
+            `Token expired? now ${Date.now()} token exp: ${decodedToken.exp * 1000}`,
+          );
         }
 
         // on android if you move too fast, you may not get a fresh token
@@ -97,8 +99,10 @@ describe('appCheck() modular', function () {
         token2.should.not.equal('');
         const decodedToken2 = jwt.decode(token2);
         decodedToken2.aud[1].should.equal('projects/react-native-firebase-testing');
-        if (decodedToken2.exp < Date.now()) {
-          Promise.reject('Token already expired');
+        if (decodedToken2.exp * 1000 < Date.now()) {
+          return Promise.reject(
+            `Token expired? now ${Date.now()} token exp: ${decodedToken2.exp * 1000}`,
+          );
         }
         (token === token2).should.be.false();
       });
@@ -150,8 +154,10 @@ describe('appCheck() modular', function () {
         token.should.not.equal('');
         const decodedToken = jwt.decode(token);
         decodedToken.aud[1].should.equal('projects/react-native-firebase-testing');
-        if (decodedToken.exp < Date.now()) {
-          Promise.reject('Token already expired');
+        if (decodedToken.exp * 1000 < Date.now()) {
+          return Promise.reject(
+            `Token expired? now ${Date.now()} token exp: ${decodedToken.exp * 1000}`,
+          );
         }
       });
     });
@@ -162,8 +168,10 @@ describe('appCheck() modular', function () {
         token.should.not.equal('');
         const decodedToken = jwt.decode(token);
         decodedToken.aud[1].should.equal('projects/react-native-firebase-testing');
-        if (decodedToken.exp < Date.now()) {
-          Promise.reject('Token already expired');
+        if (decodedToken.exp * 1000 < Date.now()) {
+          return Promise.reject(
+            `Token expired? now ${Date.now()} token exp: ${decodedToken.exp * 1000}`,
+          );
         }
       });
     });
@@ -255,8 +263,10 @@ describe('appCheck() modular', function () {
         token.should.not.equal('');
         const decodedToken = jwt.decode(token);
         decodedToken.aud[1].should.equal('projects/react-native-firebase-testing');
-        if (decodedToken.exp < Date.now()) {
-          Promise.reject('Token already expired');
+        if (decodedToken.exp * 1000 < Date.now()) {
+          return Promise.reject(
+            `Token expired? now ${Date.now()} token exp: ${decodedToken.exp * 1000}`,
+          );
         }
 
         // on android if you move too fast, you may not get a fresh token
@@ -268,8 +278,10 @@ describe('appCheck() modular', function () {
         token2.should.not.equal('');
         const decodedToken2 = jwt.decode(token2);
         decodedToken2.aud[1].should.equal('projects/react-native-firebase-testing');
-        if (decodedToken2.exp < Date.now()) {
-          Promise.reject('Token already expired');
+        if (decodedToken2.exp * 1000 < Date.now()) {
+          return Promise.reject(
+            `Token expired? now ${Date.now()} token exp: ${decodedToken2.exp * 1000}`,
+          );
         }
         (token === token2).should.be.false();
       });
@@ -325,8 +337,10 @@ describe('appCheck() modular', function () {
         token.should.not.equal('');
         const decodedToken = jwt.decode(token);
         decodedToken.aud[1].should.equal('projects/react-native-firebase-testing');
-        if (decodedToken.exp < Date.now()) {
-          Promise.reject('Token already expired');
+        if (decodedToken.exp * 1000 < Date.now()) {
+          return Promise.reject(
+            `Token expired? now ${Date.now()} token exp: ${decodedToken.exp * 1000}`,
+          );
         }
       });
     });
@@ -359,8 +373,10 @@ describe('appCheck() modular', function () {
         token.should.not.equal('');
         const decodedToken = jwt.decode(token);
         decodedToken.aud[1].should.equal('projects/react-native-firebase-testing');
-        if (decodedToken.exp < Date.now()) {
-          Promise.reject('Token already expired');
+        if (decodedToken.exp * 1000 < Date.now()) {
+          return Promise.reject(
+            `Token expired? now ${Date.now()} token exp: ${decodedToken.exp * 1000}`,
+          );
         }
       });
     });
