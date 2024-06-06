@@ -168,3 +168,8 @@ Object.defineProperty(global, 'mlModular', {
 });
 
 global.isCI = !!process.env.CI;
+global.skipCompatTests = !!process.env.SKIP_COMPAT_TESTS;
+if (skipCompatTests) {
+  console.warn('WARNING: Skipping v8 API compatibility tests.');
+  console.warn('WARNING: Run full test suite before trusting results.');
+}
