@@ -61,7 +61,7 @@
     "superstruct": "^0.6.2"
   },
   "devDependencies": {
-    "expo": "^50.0.18"
+    "expo": "^50.0.19"
   },
   "peerDependenciesMeta": {
     "expo": {
