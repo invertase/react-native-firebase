@@ -30,8 +30,4 @@
 /// FIRApp and participate in dependency resolution and injection.
 + (NSArray<FIRComponent *> *)componentsToRegister;
 
-/// Implement this method if the library needs notifications for lifecycle events. This method is
-/// called when the developer calls `FirebaseApp.configure()`.
-+ (void)configureWithApp:(FIRApp *)app;
-
 @end
