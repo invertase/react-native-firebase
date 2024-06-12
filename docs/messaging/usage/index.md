@@ -30,6 +30,24 @@ cd ios/ && pod install
 If you're using an older version of React Native without auto-linking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/messaging/usage/installation/ios) and [Android](/messaging/usage/installation/android).
 
+
+# Expo
+
+## iOS - Notifications entitlement
+Since Expo SDK51, Notifications entitlement is no longer always added to iOS projects during prebuild. If your project uses push notifications, you may need to add the aps-environment entitlement to your app config:
+
+```json
+{
+  "expo": {
+    "ios": {
+      "entitlements": {
+        "aps-environment": “production”
+      }
+    }
+  }
+}
+```
+
 # What does it do
 
 React Native Firebase provides native integration of Firebase Cloud Messaging (FCM) for both Android & iOS. FCM is a cost
