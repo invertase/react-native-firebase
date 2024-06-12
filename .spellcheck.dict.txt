@@ -12,6 +12,7 @@ APNs
 AppAttest
 AppCheck
 AppDelegate.m
+aps-environment
 async
 ATT
 ATT-compatible
@@ -138,6 +139,7 @@ pre-configured
 pre-fetched
 pre-release
 pre-rendered
+prebuild
 preflight
 preloaded
 prepended
@@ -163,6 +165,7 @@ screenview
 scrollable
 SDK
 SDK.
+SDK51
 SDKs
 SDKs.
 serverless
