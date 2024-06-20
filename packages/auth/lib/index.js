@@ -375,6 +375,16 @@ class FirebaseAuthModule extends FirebaseModule {
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
+  generateSecret(session, openInApp = false) {
+    return this.native.generateSecret(session, openInApp);
+  }
+
+  resolveTotpMultiFactorSignIn(session, verificationId, verificationCode) {
+    return this.native
+      .resolveTotpMultiFactorSignIn(session, verificationId, verificationCode)
+      .then(userCredential => this._setUserCredential(userCredential));
+  }
+
   revokeToken(authorizationCode) {
     return this.native.revokeToken(authorizationCode);
   }

@@ -587,6 +587,12 @@ export namespace FirebaseAuthTypes {
      * The method will ensure the user state is reloaded after successfully enrolling a factor.
      */
     enroll(assertion: MultiFactorAssertion, displayName?: string): Promise<void>;
+
+    /**
+     * Enroll TOTP factor. Provide an optional display name that can be shown to the user.
+     * The method will ensure the user state is reloaded after successfully enrolling a factor.
+     */
+    enrollTotp(verificationCode: string, displayName?: string): Promise<void>;
   }
 
   /**
@@ -1850,6 +1856,10 @@ export namespace FirebaseAuthTypes {
      * @param credential A generated `AuthCredential`, for example from social auth.
      */
     signInWithCredential(credential: AuthCredential): Promise<UserCredential>;
+
+    generateSecret(session: MultiFactorSession, openInApp?: boolean): Promise<string>;
+  
+    resolveTotpMultiFactorSignIn(session: MultiFactorSession, verificationId: string, verificationCode: string): Promise<UserCredential>; 
 
     /**
      * Signs the user in with a specified provider. This is a web-compatible API along with signInWithRedirect.
