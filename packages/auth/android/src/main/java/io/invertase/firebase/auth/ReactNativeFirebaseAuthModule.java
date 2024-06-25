@@ -1618,7 +1618,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
                     promiseWithAuthResult(task.getResult(), promise);
                   } else {
                     Exception exception = task.getException();
-                    if (exception instanceof FirebaseAuthUserCollisionException collEx) {
+                    if (exception instanceof FirebaseAuthUserCollisionException) {
+                      FirebaseAuthUserCollisionException collEx = (FirebaseAuthUserCollisionException) exception;
                       AuthCredential updatedCredential = collEx.getUpdatedCredential();
                       Log.d(TAG, "link:onComplete:collisionFailure", collEx);
                       // If we have a credential in the error, we can return it, otherwise fall
