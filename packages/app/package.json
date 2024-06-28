@@ -81,11 +81,11 @@
       "minSdk": 21,
       "targetSdk": 34,
       "compileSdk": 34,
-      "firebase": "33.1.0",
-      "firebaseCrashlyticsGradle": "3.0.0",
+      "firebase": "33.1.1",
+      "firebaseCrashlyticsGradle": "3.0.2",
       "firebasePerfGradle": "1.4.2",
       "gmsGoogleServicesGradle": "4.4.2",
-      "playServicesAuth": "21.1.1"
+      "playServicesAuth": "21.2.0"
     }
   }
 }
