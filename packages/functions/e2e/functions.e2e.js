@@ -15,7 +15,78 @@
  *
  */
 
-const SAMPLE_DATA = require('../../../.github/workflows/scripts/functions/lib/sample-data').default;
+// Keep this in sync with the data in:
+// https://github.com/invertase/react-native-firebase/blob/main/.github/workflows/scripts/functions/src/sample-data.ts
+const SAMPLE_DATA = {
+  number: 1234,
+  string: 'acde',
+  boolean: true,
+  null: null,
+  object: {
+    number: 1234,
+    string: 'acde',
+    boolean: true,
+    null: null,
+  },
+  array: [1234, 'acde', true, null],
+  deepObject: {
+    array: [1234, 'acde', false, null],
+    object: {
+      number: 1234,
+      string: 'acde',
+      boolean: true,
+      null: null,
+      array: [1234, 'acde', true, null],
+    },
+    number: 1234,
+    string: 'acde',
+    boolean: true,
+    null: null,
+  },
+  deepArray: [
+    1234,
+    'acde',
+    true,
+    null,
+    [1234, 'acde', true, null],
+    {
+      number: 1234,
+      string: 'acde',
+      boolean: true,
+      null: null,
+      array: [1234, 'acde', true, null],
+    },
+  ],
+  deepMap: {
+    number: 123,
+    string: 'foo',
+    booleanTrue: true,
+    booleanFalse: false,
+    null: null,
+    list: ['1', 2, true, false],
+    map: {
+      number: 123,
+      string: 'foo',
+      booleanTrue: true,
+      booleanFalse: false,
+      null: null,
+    },
+  },
+  deepList: [
+    '1',
+    2,
+    true,
+    false,
+    ['1', 2, true, false],
+    {
+      number: 123,
+      string: 'foo',
+      booleanTrue: true,
+      booleanFalse: false,
+      null: null,
+    },
+  ],
+};
 
 describe('functions() modular', function () {
   describe('firebase v8 compatibility', function () {
@@ -104,7 +175,7 @@ describe('functions() modular', function () {
     describe('httpsCallableFromUrl()', function () {
       it('Calls a function by URL', async function () {
         let hostname = 'localhost';
-        if (device.getPlatform() === 'android') {
+        if (Platform.android) {
           hostname = '10.0.2.2';
         }
         const functionRunner = firebase
@@ -322,7 +393,11 @@ describe('functions() modular', function () {
           await functionRunner({ delay: 3000 });
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
-          error.message.should.containEql('DEADLINE').containEql('EXCEEDED');
+          if (Platform.other) {
+            error.message.should.containEql('deadline-exceeded');
+          } else {
+            error.message.should.containEql('DEADLINE').containEql('EXCEEDED');
+          }
           return Promise.resolve();
         }
       });
@@ -431,7 +506,7 @@ describe('functions() modular', function () {
         const { getFunctions, httpsCallableFromUrl } = functionsModular;
 
         let hostname = 'localhost';
-        if (device.getPlatform() === 'android') {
+        if (Platform.android) {
           hostname = '10.0.2.2';
         }
         const functions = getFunctions(firebase.app());
@@ -700,7 +775,11 @@ describe('functions() modular', function () {
           await functionRunner({ delay: 3000 });
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
-          error.message.should.containEql('DEADLINE').containEql('EXCEEDED');
+          if (Platform.other) {
+            error.message.should.containEql('deadline-exceeded');
+          } else {
+            error.message.should.containEql('DEADLINE').containEql('EXCEEDED');
+          }
           return Promise.resolve();
         }
       });
