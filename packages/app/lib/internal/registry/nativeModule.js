@@ -15,11 +15,12 @@
  *
  */
 
-import { NativeModules, Platform } from 'react-native';
 import { APP_NATIVE_MODULE } from '../constants';
 import NativeFirebaseError from '../NativeFirebaseError';
 import RNFBNativeEventEmitter from '../RNFBNativeEventEmitter';
 import SharedEventEmitter from '../SharedEventEmitter';
+import { getReactNativeModule } from '../nativeModule';
+import { isAndroid, isIOS } from '../../common';
 
 const NATIVE_MODULE_REGISTRY = {};
 const NATIVE_MODULE_EVENT_SUBSCRIPTIONS = {};
@@ -102,7 +103,7 @@ function initialiseNativeModule(module) {
   const nativeModuleNames = multiModule ? nativeModuleName : [nativeModuleName];
 
   for (let i = 0; i < nativeModuleNames.length; i++) {
-    const nativeModule = NativeModules[nativeModuleNames[i]];
+    const nativeModule = getReactNativeModule(nativeModuleNames[i]);
 
     // only error if there's a single native module
     // as multi modules can mean some are optional
@@ -173,24 +174,19 @@ function subscribeToNativeModuleEvent(eventName) {
  */
 function getMissingModuleHelpText(namespace) {
   const snippet = `firebase.${namespace}()`;
-  const nativeModule = namespace.charAt(0).toUpperCase() + namespace.slice(1);
 
-  if (Platform.OS === 'ios') {
+  if (isIOS || isAndroid) {
     return (
-      `You attempted to use a firebase module that's not installed natively on your iOS project by calling ${snippet}.` +
-      '\r\n\r\nEnsure you have either linked the module or added it to your projects Podfile.' +
-      '\r\n\r\nSee http://invertase.link/ios for full setup instructions.'
+      `You attempted to use a Firebase module that's not installed natively on your project by calling ${snippet}.` +
+      `\r\n\r\nEnsure you have installed the npm package '@react-native-firebase/${namespace}',` +
+      ' have imported it in your project, and have rebuilt your native application.'
     );
   }
 
-  const rnFirebasePackage = `'io.invertase.firebase.${namespace}.ReactNativeFirebase${nativeModule}Package'`;
-  const newInstance = `'new ReactNativeFirebase${nativeModule}Package()'`;
-
   return (
-    `You attempted to use a firebase module that's not installed on your Android project by calling ${snippet}.` +
-    `\r\n\r\nEnsure you have:\r\n\r\n1) imported the ${rnFirebasePackage} module in your 'MainApplication.java' file.\r\n\r\n2) Added the ` +
-    `${newInstance} line inside of the RN 'getPackages()' method list.` +
-    '\r\n\r\nSee http://invertase.link/android for full setup instructions.'
+    `You attempted to use a Firebase module that's not installed on your project by calling ${snippet}.` +
+    `\r\n\r\nEnsure you have installed the npm package '@react-native-firebase/${namespace}' and` +
+    ' have imported it in your project.'
   );
 }
 
@@ -222,7 +218,7 @@ export function getAppModule() {
   }
 
   const namespace = 'app';
-  const nativeModule = NativeModules[APP_NATIVE_MODULE];
+  const nativeModule = getReactNativeModule(APP_NATIVE_MODULE);
 
   if (!nativeModule) {
     throw new Error(getMissingModuleHelpText(namespace));

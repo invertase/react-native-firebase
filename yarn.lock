@@ -5849,6 +5849,7 @@ __metadata:
   resolution: "@react-native-firebase/app@workspace:packages/app"
   dependencies:
     expo: "npm:^50.0.19"
+    firebase: "npm:10.12.2"
     opencollective-postinstall: "npm:^2.0.3"
     superstruct: "npm:^0.6.2"
   peerDependencies:
@@ -11793,7 +11794,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase@npm:^10.12.2":
+"firebase@npm:10.12.2, firebase@npm:^10.12.2":
   version: 10.12.2
   resolution: "firebase@npm:10.12.2"
   dependencies:

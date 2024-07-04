@@ -85,6 +85,8 @@ export const isIOS = Platform.OS === 'ios';
 
 export const isAndroid = Platform.OS === 'android';
 
+export const isOther = Platform.OS !== 'ios' && Platform.OS !== 'android';
+
 export function tryJSONParse(string) {
   try {
     return string && JSON.parse(string);

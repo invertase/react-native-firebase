@@ -16,6 +16,8 @@
  */
 
 describe('utils()', function () {
+  if (Platform.other) return; // Not supported on non-native platforms.
+
   describe('namespace', function () {
     it('accessible from firebase.app()', function () {
       const app = firebase.app();
