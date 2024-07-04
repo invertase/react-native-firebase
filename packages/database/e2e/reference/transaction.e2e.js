@@ -99,7 +99,7 @@ describe('database().ref().transaction()', function () {
 
     // FIXME flaky on android local against emulator?
     it('passes valid data through the callback', async function () {
-      if (device.getPlatform() === 'ios') {
+      if (Platform.ios) {
         const ref = firebase.database().ref(`${TEST_PATH}/transactionCallback`);
         await ref.set(1);
 
@@ -129,7 +129,7 @@ describe('database().ref().transaction()', function () {
 
     // FIXME flaky on android local against emulator?
     it('throws when an error occurs', async function () {
-      if (device.getPlatform() === 'ios') {
+      if (Platform.ios) {
         const ref = firebase.database().ref('nope');
 
         try {
@@ -150,7 +150,7 @@ describe('database().ref().transaction()', function () {
 
     // FIXME flaky on android in CI? works most of the time...
     it('passes error back to the callback', async function () {
-      if (device.getPlatform() === 'ios' || !global.isCI) {
+      if (Platform.ios || !global.isCI) {
         const ref = firebase.database().ref('nope');
 
         return new Promise((resolve, reject) => {
@@ -276,7 +276,7 @@ describe('database().ref().transaction()', function () {
 
     // FIXME flaky on android local against emulator?
     it('throws when an error occurs', async function () {
-      if (device.getPlatform() === 'ios') {
+      if (Platform.ios) {
         const { getDatabase, ref, runTransaction } = databaseModular;
 
         const dbRef = ref(getDatabase(), 'nope');

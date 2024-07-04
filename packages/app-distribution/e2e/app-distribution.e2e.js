@@ -25,7 +25,7 @@ describe('appDistribution()', function () {
 
     describe('isTesterSignedIn()', function () {
       it('checks if a tester is signed in', async function () {
-        if (device.getPlatform() === 'ios') {
+        if (Platform.ios) {
           await firebase.appDistribution().isTesterSignedIn();
         } else {
           this.skip();
@@ -35,7 +35,7 @@ describe('appDistribution()', function () {
     // Requires a valid google account logged in on device and associated with iOS testing app
     xdescribe('signInTester()', function () {
       it('signs a tester in', async function () {
-        if (device.getPlatform() === 'ios') {
+        if (Platform.ios) {
           await firebase.appDistribution().signInTester();
         } else {
           this.skip();
@@ -45,7 +45,7 @@ describe('appDistribution()', function () {
 
     describe('signOutTester()', function () {
       it('signs out a tester', async function () {
-        if (device.getPlatform() === 'ios') {
+        if (Platform.ios) {
           await firebase.appDistribution().signOutTester();
         } else {
           this.skip();
@@ -56,7 +56,7 @@ describe('appDistribution()', function () {
     // plus a new IPA file uploaded
     xdescribe('checkForUpdate()', function () {
       it('checks for an update', async function () {
-        if (device.getPlatform() === 'ios') {
+        if (Platform.ios) {
           await firebase.appDistribution().checkForUpdate();
         } else {
           this.skip();
@@ -78,7 +78,7 @@ describe('appDistribution()', function () {
       it('checks if a tester is signed in', async function () {
         const { getAppDistribution, isTesterSignedIn } = appDistributionModular;
         const appDistribution = getAppDistribution();
-        if (device.getPlatform() === 'ios') {
+        if (Platform.ios) {
           await isTesterSignedIn(appDistribution);
         } else {
           this.skip();
@@ -90,7 +90,7 @@ describe('appDistribution()', function () {
       it('signs a tester in', async function () {
         const { getAppDistribution, signInTester } = appDistributionModular;
         const appDistribution = getAppDistribution();
-        if (device.getPlatform() === 'ios') {
+        if (Platform.ios) {
           await signInTester(appDistribution);
         } else {
           this.skip();
@@ -102,7 +102,7 @@ describe('appDistribution()', function () {
       it('signs out a tester', async function () {
         const { getAppDistribution, signOutTester } = appDistributionModular;
         const appDistribution = getAppDistribution();
-        if (device.getPlatform() === 'ios') {
+        if (Platform.ios) {
           await signOutTester(appDistribution);
         } else {
           this.skip();
@@ -115,7 +115,7 @@ describe('appDistribution()', function () {
       it('checks for an update', async function () {
         const { getAppDistribution, checkForUpdate } = appDistributionModular;
         const appDistribution = getAppDistribution();
-        if (device.getPlatform() === 'ios') {
+        if (Platform.ios) {
           await checkForUpdate(appDistribution);
         } else {
           this.skip();

@@ -66,6 +66,7 @@ const config = {
     runInspectorProxy: !process.env.CI,
   },
   transformer: {
+    unstable_allowRequireContext: true,
     getTransformOptions: async () => ({
       transform: {
         experimentalImportSupport: false,

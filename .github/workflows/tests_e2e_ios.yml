@@ -27,7 +27,7 @@ concurrency:
 jobs:
   ios:
     name: iOS
-    runs-on: macos-14
+    runs-on: macos-14-xl
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
     timeout-minutes: 100
     env:
@@ -78,7 +78,7 @@ jobs:
       - uses: hendrikmuhs/ccache-action@v1
         name: Xcode Compile Cache
         with:
-          key: ${{ runner.os }}-v2 # makes a unique key w/related restore key internally
+          key: ${{ runner.os }}-v3 # makes a unique key w/related restore key internally
           create-symlink: true
           max-size: 1500M
 
@@ -108,8 +108,8 @@ jobs:
         id: pods-cache
         with:
           path: tests/ios/Pods
-          key: ${{ runner.os }}-pods-v2-${{ hashFiles('tests/ios/Podfile.lock') }}
-          restore-keys: ${{ runner.os }}-pods-v2
+          key: ${{ runner.os }}-pods-v3-${{ hashFiles('tests/ios/Podfile.lock') }}
+          restore-keys: ${{ runner.os }}-pods-v3
 
       - name: Pod Install
         uses: nick-fields/retry@v3

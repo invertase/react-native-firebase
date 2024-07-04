@@ -17,18 +17,6 @@
 
 describe('crashlytics()', function () {
   describe('v8 compatibility', function () {
-    // Run locally only - flakey on CI
-    xdescribe('crash()', function () {
-      it('crashes the app', async function () {
-        jet.context._BEFORE_CRASH_ = 1;
-        firebase.crashlytics().crash();
-        await Utils.sleep(1500);
-        await device.launchApp({ newInstance: false });
-        await Utils.sleep(1500);
-        should.equal(jet.context._BEFORE_CRASH_, undefined);
-      });
-    });
-
     describe('log()', function () {
       it('accepts any value', async function () {
         firebase.crashlytics().log('invertase');
@@ -97,12 +85,15 @@ describe('crashlytics()', function () {
 
     describe('recordError()', function () {
       it('warns if not an error', async function () {
-        const orig = jet.context.console.warn;
+        // eslint-disable-next-line no-console
+        const orig = console.warn;
         let logged = false;
-        jet.context.console.warn = msg => {
+        // eslint-disable-next-line no-console
+        console.warn = msg => {
           msg.should.containEql('expects an instance of Error');
           logged = true;
-          jet.context.console.warn = orig;
+          // eslint-disable-next-line no-console
+          console.warn = orig;
         };
 
         firebase.crashlytics().recordError(1337);
@@ -188,20 +179,6 @@ describe('crashlytics()', function () {
   });
 
   describe('modular', function () {
-    // Run locally only - flakey on CI
-    xdescribe('crash()', function () {
-      it('crashes the app', async function () {
-        const { getCrashlytics, crash } = crashlyticsModular;
-        const crashlytics = getCrashlytics();
-        jet.context._BEFORE_CRASH_ = 1;
-        crash(crashlytics);
-        await Utils.sleep(1500);
-        await device.launchApp({ newInstance: false });
-        await Utils.sleep(1500);
-        should.equal(jet.context._BEFORE_CRASH_, undefined);
-      });
-    });
-
     describe('log()', function () {
       it('accepts any value', async function () {
         const { getCrashlytics, log } = crashlyticsModular;
@@ -279,12 +256,15 @@ describe('crashlytics()', function () {
     describe('recordError()', function () {
       it('warns if not an error', async function () {
         const { getCrashlytics, recordError } = crashlyticsModular;
-        const orig = jet.context.console.warn;
+        // eslint-disable-next-line no-console
+        const orig = console.warn;
         let logged = false;
-        jet.context.console.warn = msg => {
+        // eslint-disable-next-line no-console
+        console.warn = msg => {
           msg.should.containEql('expects an instance of Error');
           logged = true;
-          jet.context.console.warn = orig;
+          // eslint-disable-next-line no-console
+          console.warn = orig;
         };
 
         recordError(getCrashlytics(), 1337);
