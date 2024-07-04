@@ -17,7 +17,7 @@
  */
 
 import { NativeModules } from 'react-native';
-import { stripTrailingSlash } from '../../lib/common';
+import { stripTrailingSlash, isOther } from '../../lib/common';
 
 const PATH_NAMES = [
   'MAIN_BUNDLE',
@@ -60,6 +60,7 @@ function processPathConstants(nativeModule) {
 export default {
   SDK_VERSION: require('./../version'),
   get FilePath() {
-    return processPathConstants(NativeModules.RNFBUtilsModule);
+    // We don't support path constants on non-native platforms.
+    return processPathConstants(isOther ? {} : NativeModules.RNFBUtilsModule);
   },
 };

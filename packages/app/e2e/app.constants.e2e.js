@@ -14,21 +14,29 @@
  * limitations under the License.
  *
  */
+import { getAppModule } from '@react-native-firebase/app/lib/internal/registry/nativeModule';
 
 describe('App -> NativeModules -> Constants', function () {
   describe('.apps', function () {
     it('should be an array', function () {
-      const { NATIVE_FIREBASE_APPS } = NativeModules.RNFBAppModule;
+      const { NATIVE_FIREBASE_APPS } = getAppModule();
 
       NATIVE_FIREBASE_APPS.should.be.an.Array();
+
+      // There is no native app initialization on non-native platforms.
+      if (Platform.other) return;
       // secondaryFromNative + default
       NATIVE_FIREBASE_APPS.length.should.equal(2);
     });
 
     it('array items contain name, options & state properties', function () {
-      const { NATIVE_FIREBASE_APPS } = NativeModules.RNFBAppModule;
+      const { NATIVE_FIREBASE_APPS } = getAppModule();
 
       NATIVE_FIREBASE_APPS.should.be.an.Array();
+
+      // There is no native app initialization on non-native platforms.
+      if (Platform.other) return;
+
       NATIVE_FIREBASE_APPS.length.should.equal(2);
 
       for (let i = 0; i < NATIVE_FIREBASE_APPS.length; i++) {

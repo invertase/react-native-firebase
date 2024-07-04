@@ -16,6 +16,8 @@
  */
 
 describe('utils()', function () {
+  if (Platform.other) return; // Not supported on non-native platforms.
+
   describe('statics', function () {
     it('provides native path strings', function () {
       firebase.utils.FilePath.should.be.an.Object();
