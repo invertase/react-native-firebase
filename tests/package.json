@@ -3,7 +3,7 @@
   "version": "20.1.0",
   "private": true,
   "scripts": {
-    "build:clean": "rimraf dist && rimraf android/build && rimraf android/app/build && rimraf android/.gradle && rimraf ios/build",
+    "build:clean": "rimraf dist && rimraf android/build && rimraf android/app/build && rimraf android/.gradle && rimraf ios/build && rimraf macos/build",
     "prepare": "patch-package"
   },
   "dependencies": {
@@ -28,24 +28,21 @@
     "postinstall-postinstall": "2.1.0",
     "react": "18.3.1",
     "react-native": "0.74.2",
-    "react-native-device-info": "^11.1.0"
+    "react-native-device-info": "^11.1.0",
+    "util": "^0.12.5"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^3.0.3",
-    "@react-native-firebase/private-tests-helpers": "^1.0.0",
     "@react-native/babel-preset": "^0.74.84",
     "@react-native/metro-config": "^0.74.84",
-    "a2a": "^0.2.1",
-    "babel-plugin-istanbul": "^6.1.1",
+    "axios": "^1.5.1",
     "detox": "^19.13.0",
     "firebase": "^10.12.2",
     "firebase-tools": "^13.11.2",
     "jest-circus": "^29.7.0",
     "jest-environment-node": "^29.7.0",
-    "jet": "^0.8.3",
-    "jsonwebtoken": "^9.0.2",
+    "jet": "0.9.0-dev.8",
     "mocha": "^10.4.0",
-    "node-fetch": "^2.7.0",
     "nyc": "^15.1.0",
     "patch-package": "^8.0.0",
     "pod-install": "^0.2.2",
@@ -55,7 +52,6 @@
   },
   "detox": {
     "test-runner": "mocha",
-    "specs": "e2e",
     "runner-config": "e2e/.mocharc.js",
     "configurations": {
       "ios.sim.debug": {

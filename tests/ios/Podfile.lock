@@ -1057,7 +1057,7 @@ PODS:
     - FirebaseCore (~> 10.0)
   - FirebaseCoreInternal (10.28.0):
     - "GoogleUtilities/NSData+zlib (~> 7.8)"
-  - FirebaseCrashlytics (10.28.0):
+  - FirebaseCrashlytics (10.28.1):
     - FirebaseCore (~> 10.5)
     - FirebaseInstallations (~> 10.0)
     - FirebaseRemoteConfigInterop (~> 10.23)
@@ -1296,12 +1296,10 @@ PODS:
     - gRPC-Core/Privacy (= 1.62.5)
   - gRPC-Core/Interface (1.62.5)
   - gRPC-Core/Privacy (1.62.5)
-  - GTMSessionFetcher/Core (3.4.1)
+  - GTMSessionFetcher/Core (3.5.0)
   - hermes-engine (0.74.2):
     - hermes-engine/Pre-built (= 0.74.2)
   - hermes-engine/Pre-built (0.74.2)
-  - Jet (0.8.3):
-    - React-Core
   - leveldb-library (1.22.5)
   - nanopb (2.30909.1):
     - nanopb/decode (= 2.30909.1)
@@ -2552,7 +2550,6 @@ DEPENDENCIES:
   - fmt (from `../node_modules/react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
-  - Jet (from `../node_modules/jet`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTDeprecation (from `../node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation`)
@@ -2682,8 +2679,6 @@ EXTERNAL SOURCES:
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2024-06-03-RNv0.74.2-bb1e74fe1e95c2b5a2f4f9311152da052badc2bc
-  Jet:
-    :path: "../node_modules/jet"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTDeprecation:
@@ -2835,7 +2830,7 @@ SPEC CHECKSUMS:
   FirebaseCore: 857dc1c6dd1255675047404d8466f7dfaac5d779
   FirebaseCoreExtension: f63147b723e2a700fe0f34ec6fb7f358d6fe83e0
   FirebaseCoreInternal: 58d07f1362fddeb0feb6a857d1d1d1c5e558e698
-  FirebaseCrashlytics: d3cffa6e6eb4fa9234162dff3ba62e37b93252a6
+  FirebaseCrashlytics: f51e12b93f8e1134bbed602ed22df33804d55ccf
   FirebaseDatabase: f697c0d1be5477182ecd008292a33299f5668658
   FirebaseDynamicLinks: f6a65ece086df7d8366400b8bb99e50dd2659ad4
   FirebaseFirestore: 55636df3da462136352b3465e26a86a988cc792c
@@ -2859,9 +2854,8 @@ SPEC CHECKSUMS:
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   "gRPC-C++": e725ef63c4475d7cdb7e2cf16eb0fde84bd9ee51
   gRPC-Core: eee4be35df218649fe66d721a05a7f27a28f069b
-  GTMSessionFetcher: 8000756fc1c19d2e5697b90311f7832d2e33f6cd
+  GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   hermes-engine: 01d3e052018c2a13937aca1860fbedbccd4a41b7
-  Jet: 115c08882ff1bd917e1aa32af128641169d04ffd
   leveldb-library: e8eadf9008a61f9e1dde3978c086d2b6d9b9dc28
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
@@ -2933,7 +2927,7 @@ SPEC CHECKSUMS:
   RNFBRemoteConfig: ddbdd83a1fa02401026cb37de8f2306a899d74aa
   RNFBStorage: 8b2b7a6b0309b8d9c77452167b6f77d483755cba
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  Yoga: 9ad2c02dbd9811bb5a35fe23081cb0f5d5a3f9dd
+  Yoga: 45564236f670899c9739b1581a12b00ead5d391f
 
 PODFILE CHECKSUM: a83a0adae6210dd30029d996615dde4180bdab0f
 

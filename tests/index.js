@@ -15,4 +15,5 @@
  *
  */
 
+require('./globals');
 require('./app');

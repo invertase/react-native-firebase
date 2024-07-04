@@ -15,101 +15,108 @@
  *
  */
 
-import '@react-native-firebase/analytics';
-import * as analyticsModular from '@react-native-firebase/analytics';
-import firebase, * as modular from '@react-native-firebase/app';
-import '@react-native-firebase/app-check';
-import * as appCheckModular from '@react-native-firebase/app-check';
-import '@react-native-firebase/app-distribution';
-import * as appDistributionModular from '@react-native-firebase/app-distribution';
-import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNativeEventEmitter';
-import '@react-native-firebase/app/lib/utils';
-import '@react-native-firebase/auth';
-import * as authModular from '@react-native-firebase/auth';
-import '@react-native-firebase/crashlytics';
-import '@react-native-firebase/database';
-import '@react-native-firebase/dynamic-links';
-import '@react-native-firebase/firestore';
-import * as firestoreModular from '@react-native-firebase/firestore';
-import * as functionsModular from '@react-native-firebase/functions';
-import '@react-native-firebase/in-app-messaging';
-import '@react-native-firebase/installations';
-import '@react-native-firebase/messaging';
-import * as messagingModular from '@react-native-firebase/messaging';
-import '@react-native-firebase/ml';
-import * as perfModular from '@react-native-firebase/perf';
-import '@react-native-firebase/remote-config';
-import * as remoteConfigModular from '@react-native-firebase/remote-config';
-import '@react-native-firebase/storage';
-import * as storageModular from '@react-native-firebase/storage';
-import * as databaseModular from '@react-native-firebase/database';
-import jet from 'jet/platform/react-native';
 import React from 'react';
-import { AppRegistry, Button, NativeModules, Text, View } from 'react-native';
-import DeviceInfo from 'react-native-device-info';
-import * as inAppMessagingModular from '@react-native-firebase/in-app-messaging';
-import * as installationsModular from '@react-native-firebase/installations';
-import * as crashlyticsModular from '@react-native-firebase/crashlytics';
-import * as dynamicLinksModular from '@react-native-firebase/dynamic-links';
-import * as mlModular from '@react-native-firebase/ml';
+import { StyleSheet, View, StatusBar, AppRegistry } from 'react-native';
 
-jet.exposeContextProperty('NativeModules', NativeModules);
-jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
-jet.exposeContextProperty('DeviceInfo', DeviceInfo);
-jet.exposeContextProperty('module', firebase);
-jet.exposeContextProperty('modular', modular);
-jet.exposeContextProperty('functionsModular', functionsModular);
-jet.exposeContextProperty('analyticsModular', analyticsModular);
-jet.exposeContextProperty('appDistributionModular', appDistributionModular);
-jet.exposeContextProperty('remoteConfigModular', remoteConfigModular);
-jet.exposeContextProperty('perfModular', perfModular);
-jet.exposeContextProperty('authModular', authModular);
-jet.exposeContextProperty('appCheckModular', appCheckModular);
-jet.exposeContextProperty('messagingModular', messagingModular);
-jet.exposeContextProperty('storageModular', storageModular);
-jet.exposeContextProperty('inAppMessagingModular', inAppMessagingModular);
-jet.exposeContextProperty('installationsModular', installationsModular);
-jet.exposeContextProperty('crashlyticsModular', crashlyticsModular);
-jet.exposeContextProperty('dynamicLinksModular', dynamicLinksModular);
-jet.exposeContextProperty('databaseModular', databaseModular);
-jet.exposeContextProperty('firestoreModular', firestoreModular);
-jet.exposeContextProperty('mlModular', mlModular);
+import { JetProvider, ConnectionText, StatusEmoji, StatusText } from 'jet';
 
-firebase.database().useEmulator('localhost', 9000);
-firebase.auth().useEmulator('http://localhost:9099');
-firebase.firestore().useEmulator('localhost', 8080);
-firebase.storage().useEmulator('localhost', 9199);
-firebase.functions().useEmulator('localhost', 5001);
+// Registering an error handler that always throw unhandled exceptions
+// This is to enable Jet to exit on uncaught errors
+const originalHandler = ErrorUtils.getGlobalHandler();
+ErrorUtils.setGlobalHandler((err, isFatal) => {
+  originalHandler(err, isFatal);
+  throw err;
+});
 
-// Firestore caches documents locally (a great feature!) and that confounds tests
-// as data from previous runs pollutes following runs until re-install the app. Clear it.
-firebase.firestore().clearPersistence();
+function loadTests(_) {
+  beforeEach(async () => {
+    // Allow time for things to settle between tests.
+    await Utils.sleep(100);
+  });
+  const appTests = require.context('../packages/app/e2e', true, /\.e2e\.js$/);
+  appTests.keys().forEach(appTests);
+  const appCheckTests = require.context('../packages/app-check/e2e', true, /\.e2e\.js$/);
+  appCheckTests.keys().forEach(appCheckTests);
+  const appDistributionTests = require.context(
+    '../packages/app-distribution/e2e',
+    true,
+    /\.e2e\.js$/,
+  );
+  appDistributionTests.keys().forEach(appDistributionTests);
+  const analyticsTests = require.context('../packages/analytics/e2e', true, /\.e2e\.js$/);
+  analyticsTests.keys().forEach(analyticsTests);
+  const authTests = require.context('../packages/auth/e2e', true, /\.e2e\.js$/);
+  authTests.keys().forEach(authTests);
+  const crashlyticsTests = require.context('../packages/crashlytics/e2e', true, /\.e2e\.js$/);
+  crashlyticsTests.keys().forEach(crashlyticsTests);
+  const databaseTests = require.context('../packages/database/e2e', true, /\.e2e\.js$/);
+  databaseTests.keys().forEach(databaseTests);
+  const dynamicLinksTests = require.context('../packages/dynamic-links/e2e', true, /\.e2e\.js$/);
+  dynamicLinksTests.keys().forEach(dynamicLinksTests);
+  const firestoreTests = require.context('../packages/firestore/e2e', true, /\.e2e\.js$/);
+  firestoreTests.keys().forEach(firestoreTests);
+  const functionsTests = require.context('../packages/functions/e2e', true, /\.e2e\.js$/);
+  functionsTests.keys().forEach(functionsTests);
+  const perfTests = require.context('../packages/perf/e2e', true, /\.e2e\.js$/);
+  perfTests.keys().forEach(perfTests);
+  const messagingTests = require.context('../packages/messaging/e2e', true, /\.e2e\.js$/);
+  messagingTests.keys().forEach(messagingTests);
+  const mlTests = require.context('../packages/ml/e2e', true, /\.e2e\.js$/);
+  mlTests.keys().forEach(mlTests);
+  const inAppMessagingTests = require.context(
+    '../packages/in-app-messaging/e2e',
+    true,
+    /\.e2e\.js$/,
+  );
+  inAppMessagingTests.keys().forEach(inAppMessagingTests);
+  const installationsTests = require.context('../packages/installations/e2e', true, /\.e2e\.js$/);
+  installationsTests.keys().forEach(installationsTests);
+  const remoteConfigTests = require.context('../packages/remote-config/e2e', true, /\.e2e\.js$/);
+  remoteConfigTests.keys().forEach(remoteConfigTests);
+  const storageTests = require.context('../packages/storage/e2e', true, /\.e2e\.js$/);
+  storageTests.keys().forEach(storageTests);
+}
 
-function Root() {
+function App() {
   return (
-    <View
-      testID="welcome"
-      style={{ flex: 1, paddingTop: 20, justifyContent: 'center', alignItems: 'center' }}
-    >
-      <Text style={{ fontSize: 25, marginBottom: 30 }}>React Native Firebase</Text>
-      <Text style={{ fontSize: 25, marginBottom: 30 }}>End-to-End Testing App</Text>
-      <Button
-        style={{ flex: 1, marginTop: 20 }}
-        title={'Test Native Crash Now.'}
-        onPress={() => {
-          firebase.crashlytics().crash();
-        }}
-      />
-      <View testId="spacer" style={{ height: 20 }} />
-      <Button
-        style={{ flex: 1, marginTop: 20 }}
-        title={'Test Javascript Crash Now.'}
-        onPress={() => {
-          undefinedVariable.notAFunction();
-        }}
-      />
-    </View>
+    <JetProvider tests={loadTests}>
+      <StatusBar hidden />
+      <View style={styles.container}>
+        <ConnectionText style={styles.connectionText} />
+        <View style={styles.statusContainer}>
+          <StatusEmoji style={styles.statusEmoji} />
+          <StatusText style={styles.statusText} />
+        </View>
+      </View>
+    </JetProvider>
   );
 }
 
-AppRegistry.registerComponent('testing', () => Root);
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  statusContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  statusEmoji: {
+    fontSize: 30,
+    margin: 30,
+    textAlign: 'center',
+  },
+  statusText: {
+    fontSize: 20,
+    margin: 20,
+    textAlign: 'center',
+    color: 'black',
+  },
+  connectionText: {
+    textAlign: 'center',
+    color: 'black',
+  },
+});
+
+AppRegistry.registerComponent('testing', () => App);

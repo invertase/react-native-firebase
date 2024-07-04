@@ -17,11 +17,8 @@
 const { wipe } = require('../helpers');
 const COLLECTION = 'firestore';
 
-// Used to create a Blob
-const blobObject = { hello: 'world' };
-const blobString = JSON.stringify(blobObject);
-const blobBuffer = Buffer.from(blobString);
-const blobBase64 = blobBuffer.toString('base64');
+// { hello: 'world' };
+const blobBase64 = 'eyJoZWxsbyI6IndvcmxkIn0=';
 
 describe('firestore().doc() -> snapshot.data()', function () {
   before(function () {
@@ -29,7 +26,7 @@ describe('firestore().doc() -> snapshot.data()', function () {
   });
 
   describe('v8 compatibility', function () {
-    it('returns undefined if documet does not exist', async function () {
+    it('returns undefined if document does not exist', async function () {
       const ref = firebase.firestore().doc(`${COLLECTION}/idonotexist`);
       const snapshot = await ref.get();
       should.equal(snapshot.data(), undefined);

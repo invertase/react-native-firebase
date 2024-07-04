@@ -19,7 +19,7 @@ describe('remoteMessage modular', function () {
   describe('firebase v8 compatibility', function () {
     describe('messaging().sendMessage(*)', function () {
       it('throws if used on ios', function () {
-        if (device.getPlatform() === 'ios') {
+        if (Platform.ios) {
           try {
             firebase.messaging().sendMessage(123);
             return Promise.reject(new Error('Did not throw Error.'));
@@ -35,7 +35,7 @@ describe('remoteMessage modular', function () {
       });
 
       it('throws if no object provided', function () {
-        if (device.getPlatform() === 'android') {
+        if (Platform.android) {
           try {
             firebase.messaging().sendMessage(123);
             return Promise.reject(new Error('Did not throw Error.'));
@@ -49,7 +49,7 @@ describe('remoteMessage modular', function () {
       });
 
       it('uses default values', async function () {
-        if (device.getPlatform() === 'android') {
+        if (Platform.android) {
           firebase.messaging().sendMessage({});
         } else {
           this.skip();
@@ -58,7 +58,7 @@ describe('remoteMessage modular', function () {
 
       describe('to', function () {
         it('throws if to is not a string', function () {
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             try {
               firebase.messaging().sendMessage({
                 to: 123,
@@ -74,7 +74,7 @@ describe('remoteMessage modular', function () {
         });
 
         it('accepts custom to value', async function () {
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             await firebase.messaging().sendMessage({
               to: 'foobar',
             });
@@ -86,7 +86,7 @@ describe('remoteMessage modular', function () {
 
       describe('messageId', function () {
         it('throws if messageId is not a string', function () {
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             try {
               firebase.messaging().sendMessage({
                 messageId: 123,
@@ -102,7 +102,7 @@ describe('remoteMessage modular', function () {
         });
 
         it('accepts custom messageId value', async function () {
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             await firebase.messaging().sendMessage({
               messageId: 'foobar',
             });
@@ -114,7 +114,7 @@ describe('remoteMessage modular', function () {
 
       describe('ttl', function () {
         it('throws if not a number', function () {
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             try {
               firebase.messaging().sendMessage({
                 ttl: '123',
@@ -130,7 +130,7 @@ describe('remoteMessage modular', function () {
         });
 
         it('throws if negative number', function () {
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             try {
               firebase.messaging().sendMessage({
                 ttl: -2,
@@ -146,7 +146,7 @@ describe('remoteMessage modular', function () {
         });
 
         it('throws if float number', function () {
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             try {
               firebase.messaging().sendMessage({
                 ttl: 123.4,
@@ -162,7 +162,7 @@ describe('remoteMessage modular', function () {
         });
 
         it('accepts custom ttl value', async function () {
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             await firebase.messaging().sendMessage({
               ttl: 123,
             });
@@ -174,7 +174,7 @@ describe('remoteMessage modular', function () {
 
       describe('data', function () {
         it('throws if data not an object', function () {
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             try {
               firebase.messaging().sendMessage({
                 data: 123,
@@ -190,7 +190,7 @@ describe('remoteMessage modular', function () {
         });
 
         it('accepts custom data value', async function () {
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             await firebase.messaging().sendMessage({
               data: {
                 foo: 'bar',
@@ -205,7 +205,7 @@ describe('remoteMessage modular', function () {
 
       describe('collapseKey', function () {
         it('throws if collapseKey is not a string', function () {
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             try {
               firebase.messaging().sendMessage({
                 collapseKey: 123,
@@ -221,7 +221,7 @@ describe('remoteMessage modular', function () {
         });
 
         it('accepts custom collapseKey value', async function () {
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             await firebase.messaging().sendMessage({
               collapseKey: 'foobar',
             });
@@ -233,7 +233,7 @@ describe('remoteMessage modular', function () {
 
       describe('messageType', function () {
         it('throws if messageType is not a string', function () {
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             try {
               firebase.messaging().sendMessage({
                 messageType: 123,
@@ -249,7 +249,7 @@ describe('remoteMessage modular', function () {
         });
 
         it('accepts custom messageType value', async function () {
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             await firebase.messaging().sendMessage({
               messageType: 'foobar',
             });
@@ -265,7 +265,7 @@ describe('remoteMessage modular', function () {
     describe('messaging().sendMessage(*)', function () {
       it('throws if used on ios', function () {
         const { getMessaging, sendMessage } = messagingModular;
-        if (device.getPlatform() === 'ios') {
+        if (Platform.ios) {
           try {
             sendMessage(getMessaging(), 123);
             return Promise.reject(new Error('Did not throw Error.'));
@@ -282,7 +282,7 @@ describe('remoteMessage modular', function () {
 
       it('throws if no object provided', function () {
         const { getMessaging, sendMessage } = messagingModular;
-        if (device.getPlatform() === 'android') {
+        if (Platform.android) {
           try {
             sendMessage(getMessaging(), 123);
             return Promise.reject(new Error('Did not throw Error.'));
@@ -297,7 +297,7 @@ describe('remoteMessage modular', function () {
 
       it('uses default values', async function () {
         const { getMessaging, sendMessage } = messagingModular;
-        if (device.getPlatform() === 'android') {
+        if (Platform.android) {
           sendMessage(getMessaging(), {});
         } else {
           this.skip();
@@ -307,7 +307,7 @@ describe('remoteMessage modular', function () {
       describe('to', function () {
         it('throws if to is not a string', function () {
           const { getMessaging, sendMessage } = messagingModular;
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             try {
               sendMessage(getMessaging(), {
                 to: 123,
@@ -324,7 +324,7 @@ describe('remoteMessage modular', function () {
 
         it('accepts custom to value', async function () {
           const { getMessaging, sendMessage } = messagingModular;
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             await sendMessage(getMessaging(), {
               to: 'foobar',
             });
@@ -337,7 +337,7 @@ describe('remoteMessage modular', function () {
       describe('messageId', function () {
         it('throws if messageId is not a string', function () {
           const { getMessaging, sendMessage } = messagingModular;
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             try {
               sendMessage(getMessaging(), {
                 messageId: 123,
@@ -354,7 +354,7 @@ describe('remoteMessage modular', function () {
 
         it('accepts custom messageId value', async function () {
           const { getMessaging, sendMessage } = messagingModular;
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             await sendMessage(getMessaging(), {
               messageId: 'foobar',
             });
@@ -367,7 +367,7 @@ describe('remoteMessage modular', function () {
       describe('ttl', function () {
         it('throws if not a number', function () {
           const { getMessaging, sendMessage } = messagingModular;
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             try {
               sendMessage(getMessaging(), {
                 ttl: '123',
@@ -384,7 +384,7 @@ describe('remoteMessage modular', function () {
 
         it('throws if negative number', function () {
           const { getMessaging, sendMessage } = messagingModular;
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             try {
               sendMessage(getMessaging(), {
                 ttl: -2,
@@ -401,7 +401,7 @@ describe('remoteMessage modular', function () {
 
         it('throws if float number', function () {
           const { getMessaging, sendMessage } = messagingModular;
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             try {
               sendMessage(getMessaging(), {
                 ttl: 123.4,
@@ -418,7 +418,7 @@ describe('remoteMessage modular', function () {
 
         it('accepts custom ttl value', async function () {
           const { getMessaging, sendMessage } = messagingModular;
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             await sendMessage(getMessaging(), {
               ttl: 123,
             });
@@ -431,7 +431,7 @@ describe('remoteMessage modular', function () {
       describe('data', function () {
         it('throws if data not an object', function () {
           const { getMessaging, sendMessage } = messagingModular;
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             try {
               sendMessage(getMessaging(), {
                 data: 123,
@@ -448,7 +448,7 @@ describe('remoteMessage modular', function () {
 
         it('accepts custom data value', async function () {
           const { getMessaging, sendMessage } = messagingModular;
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             await sendMessage(getMessaging(), {
               data: {
                 foo: 'bar',
@@ -464,7 +464,7 @@ describe('remoteMessage modular', function () {
       describe('collapseKey', function () {
         it('throws if collapseKey is not a string', function () {
           const { getMessaging, sendMessage } = messagingModular;
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             try {
               sendMessage(getMessaging(), {
                 collapseKey: 123,
@@ -481,7 +481,7 @@ describe('remoteMessage modular', function () {
 
         it('accepts custom collapseKey value', async function () {
           const { getMessaging, sendMessage } = messagingModular;
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             await sendMessage(getMessaging(), {
               collapseKey: 'foobar',
             });
@@ -494,7 +494,7 @@ describe('remoteMessage modular', function () {
       describe('messageType', function () {
         it('throws if messageType is not a string', function () {
           const { getMessaging, sendMessage } = messagingModular;
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             try {
               sendMessage(getMessaging(), {
                 messageType: 123,
@@ -511,7 +511,7 @@ describe('remoteMessage modular', function () {
 
         it('accepts custom messageType value', async function () {
           const { getMessaging, sendMessage } = messagingModular;
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             await sendMessage(getMessaging(), {
               messageType: 'foobar',
             });

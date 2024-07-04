@@ -30,7 +30,7 @@ describe('onChildMoved', function () {
 
   // FIXME super flaky on ios simulator
   it('should stop listening if ListeningOptions.onlyOnce is true', async function () {
-    if (device.getPlatform() === 'ios') {
+    if (Platform.ios) {
       this.skip();
     }
 
