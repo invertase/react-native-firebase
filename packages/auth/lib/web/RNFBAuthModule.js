@@ -37,9 +37,9 @@ import {
 } from '@react-native-firebase/app/lib/internal/web/firebaseAuth';
 
 // A general purpose guard function to catch errors and return a structured error object.
-function guard(fn) {
+async function guard(fn) {
   try {
-    return fn();
+    return await fn();
   } catch (e) {
     return rejectPromiseWithCodeAndMessage(e);
   }
