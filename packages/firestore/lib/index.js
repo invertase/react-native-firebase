@@ -24,6 +24,7 @@ import {
   isUndefined,
   isAndroid,
 } from '@react-native-firebase/app/lib/common';
+import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import {
   createModuleNamespace,
   FirebaseModule,
@@ -378,3 +379,9 @@ export default createModuleNamespace({
 // firestore().X(...);
 // firebase.firestore().X(...);
 export const firebase = getFirebaseRoot();
+
+// Register the interop module for non-native platforms.
+setReactNativeModule(nativeModuleName[0], fallBackModule);
+setReactNativeModule(nativeModuleName[1], fallBackModule);
+setReactNativeModule(nativeModuleName[2], fallBackModule);
+setReactNativeModule(nativeModuleName[3], fallBackModule);
