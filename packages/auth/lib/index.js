@@ -45,7 +45,7 @@ import OIDCAuthProvider from './providers/OIDCAuthProvider';
 import PhoneAuthProvider from './providers/PhoneAuthProvider';
 import TwitterAuthProvider from './providers/TwitterAuthProvider';
 import version from './version';
-import fallBackModule from './web/RNFBFunctionsModule';
+import fallBackModule from './web/RNFBAuthModule';
 
 export {
   applyActionCode,
