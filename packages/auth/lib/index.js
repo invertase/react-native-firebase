@@ -22,6 +22,7 @@ import {
   isString,
   isValidUrl,
 } from '@react-native-firebase/app/lib/common';
+import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import {
   FirebaseModule,
   createModuleNamespace,
@@ -44,6 +45,7 @@ import OIDCAuthProvider from './providers/OIDCAuthProvider';
 import PhoneAuthProvider from './providers/PhoneAuthProvider';
 import TwitterAuthProvider from './providers/TwitterAuthProvider';
 import version from './version';
+import fallBackModule from './web/RNFBFunctionsModule';
 
 export {
   applyActionCode,
@@ -137,7 +139,6 @@ const statics = {
 };
 
 const namespace = 'auth';
-
 const nativeModuleName = 'RNFBAuthModule';
 
 class FirebaseAuthModule extends FirebaseModule {
@@ -533,3 +534,6 @@ export default createModuleNamespace({
 // auth().X(...);
 // firebase.auth().X(...);
 export const firebase = getFirebaseRoot();
+
+// Register the interop module for non-native platforms.
+setReactNativeModule(nativeModuleName, fallBackModule);
