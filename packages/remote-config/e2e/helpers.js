@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 const { getE2eTestProject } = require('../../app/e2e/helpers');
-const fetch = require('node-fetch');
 
 exports.updateTemplate = async function updateTemplate(operations) {
   // console.error('remoteConfig::helpers::updateTemplate');

@@ -17,13 +17,8 @@
 
 const testObject = { hello: 'world' };
 const testString = JSON.stringify(testObject);
-const testBuffer = Buffer.from(testString);
-const testBase64 = testBuffer.toString('base64');
-
-const testObjectLarge = new Array(5000).fill(testObject);
-const testStringLarge = JSON.stringify(testObjectLarge);
-const testBufferLarge = Buffer.from(testStringLarge);
-const testBase64Large = testBufferLarge.toString('base64');
+const testBuffer = [123, 34, 104, 101, 108, 108, 111, 34, 58, 34, 119, 111, 114, 108, 100, 34, 125];
+const testBase64 = 'eyJoZWxsbyI6IndvcmxkIn0=';
 
 describe('Bytes modular', function () {
   it('.fromBase64String() -> returns new instance of Bytes', async function () {
@@ -48,7 +43,7 @@ describe('Bytes modular', function () {
   });
 
   it('.fromUint8Array() -> returns new instance of Bytes', async function () {
-    const testUInt8Array = new jet.context.window.Uint8Array(testBuffer);
+    const testUInt8Array = new Uint8Array(testBuffer);
     const { Bytes } = firestoreModular;
     const myBytes = Bytes.fromUint8Array(testUInt8Array);
     myBytes.should.be.instanceOf(Bytes);
@@ -57,7 +52,7 @@ describe('Bytes modular', function () {
   });
 
   it('.fromUint8Array() -> throws if arg not instanceof Uint8Array', async function () {
-    const testUInt8Array = new jet.context.window.Uint8Array(testBuffer);
+    const testUInt8Array = new Uint8Array(testBuffer);
     const { Bytes } = firestoreModular;
     const myBytes = Bytes.fromUint8Array(testUInt8Array);
     myBytes.should.be.instanceOf(Bytes);
@@ -78,7 +73,7 @@ describe('Bytes modular', function () {
   it('.isEqual() -> returns true or false', async function () {
     const { Bytes } = firestoreModular;
     const myBytes = Bytes.fromBase64String(testBase64);
-    const myBytes2 = Bytes.fromBase64String(testBase64Large);
+    const myBytes2 = Bytes.fromBase64String('aGVsbG8gdGhlcmUh'); // 'hello there!'
     myBytes.isEqual(myBytes).should.equal(true);
     myBytes2.isEqual(myBytes).should.equal(false);
   });
@@ -86,9 +81,8 @@ describe('Bytes modular', function () {
   it('.isEqual() -> throws if arg not instanceof Bytes', async function () {
     const { Bytes } = firestoreModular;
     const myBytes = Bytes.fromBase64String(testBase64);
-    const myBytes2 = Bytes.fromBase64String(testBase64Large);
     myBytes.isEqual(myBytes).should.equal(true);
-    (() => myBytes2.isEqual('derp')).should.throwError();
+    (() => myBytes.isEqual('derp')).should.throwError();
   });
 
   it('.toBase64() -> returns base64 string', async function () {
@@ -101,8 +95,8 @@ describe('Bytes modular', function () {
   it('.toUint8Array() -> returns Uint8Array', async function () {
     const { Bytes } = firestoreModular;
     const myBytes = Bytes.fromBase64String(testBase64);
-    const testUInt8Array = new jet.context.window.Uint8Array(testBuffer);
-    const testUInt8Array2 = new jet.context.window.Uint8Array();
+    const testUInt8Array = new Uint8Array(testBuffer);
+    const testUInt8Array2 = new Uint8Array();
 
     myBytes.should.be.instanceOf(Bytes);
     should.deepEqual(myBytes.toUint8Array(), testUInt8Array);

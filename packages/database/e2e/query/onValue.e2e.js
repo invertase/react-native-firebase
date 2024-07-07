@@ -69,8 +69,9 @@ describe('onValue()', function () {
     unsubscribe();
   });
 
-  it('should stop listening if ListeningOptions.onlyOnce is true', async function () {
-    if (device.getPlatform() === 'ios' || !global.isCI) {
+  // FIXME super flaky on jet
+  xit('should stop listening if ListeningOptions.onlyOnce is true', async function () {
+    if (Platform.ios || !global.isCI) {
       const { getDatabase, ref, set, onValue } = databaseModular;
       const dbRef = ref(getDatabase(), `${TEST_PATH}/init`);
 

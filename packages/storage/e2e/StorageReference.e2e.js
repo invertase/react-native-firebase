@@ -196,7 +196,7 @@ describe('storage() -> StorageReference', function () {
           const metadata = await storageReference.getMetadata();
           metadata.generation.should.be.a.String();
           metadata.fullPath.should.equal(`${PATH}/list/file1.txt`);
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             metadata.name.should.equal('file1.txt');
           } else {
             // FIXME on ios file comes through as fully-qualified
@@ -366,7 +366,7 @@ describe('storage() -> StorageReference', function () {
           // Things that are set automagically for us
           metadata.generation.should.be.a.String();
           metadata.fullPath.should.equal(`${PATH}/list/file1.txt`);
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             metadata.name.should.equal('file1.txt');
           } else {
             // FIXME on ios file comes through as fully-qualified
@@ -402,7 +402,7 @@ describe('storage() -> StorageReference', function () {
           // Things that are set automagically for us and are not updatable
           metadata.generation.should.be.a.String();
           metadata.fullPath.should.equal(`${PATH}/list/file1.txt`);
-          if (device.getPlatform() === 'android') {
+          if (Platform.android) {
             metadata.name.should.equal('file1.txt');
           } else {
             // FIXME on ios file comes through as fully-qualified
@@ -601,7 +601,7 @@ describe('storage() -> StorageReference', function () {
         it('errors if metadata is not an object', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/ok.jpeg`);
           try {
-            storageReference.put(new jet.context.window.ArrayBuffer(), 123);
+            storageReference.put(new ArrayBuffer(), 123);
             return Promise.reject(new Error('Did not error!'));
           } catch (error) {
             error.message.should.containEql('must be an object value');
@@ -612,7 +612,7 @@ describe('storage() -> StorageReference', function () {
         it('errors if metadata contains an unsupported property', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/ok.jpeg`);
           try {
-            storageReference.put(new jet.context.window.ArrayBuffer(), { foo: true });
+            storageReference.put(new ArrayBuffer(), { foo: true });
             return Promise.reject(new Error('Did not error!'));
           } catch (error) {
             error.message.should.containEql("unknown property 'foo'");
@@ -623,7 +623,7 @@ describe('storage() -> StorageReference', function () {
         it('errors if metadata property value is not a string or null value', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/ok.jpeg`);
           try {
-            storageReference.put(new jet.context.window.ArrayBuffer(), { contentType: true });
+            storageReference.put(new ArrayBuffer(), { contentType: true });
             return Promise.reject(new Error('Did not error!'));
           } catch (error) {
             error.message.should.containEql('should be a string or null value');
@@ -634,7 +634,7 @@ describe('storage() -> StorageReference', function () {
         it('errors if metadata.customMetadata is not an object', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/ok.jpeg`);
           try {
-            storageReference.put(new jet.context.window.ArrayBuffer(), { customMetadata: true });
+            storageReference.put(new ArrayBuffer(), { customMetadata: true });
             return Promise.reject(new Error('Did not error!'));
           } catch (error) {
             error.message.should.containEql(
@@ -646,7 +646,7 @@ describe('storage() -> StorageReference', function () {
 
         it('allows valid metadata properties for upload', async function () {
           const storageReference = firebase.storage().ref(`${PATH}/metadataTest.jpeg`);
-          await storageReference.put(new jet.context.window.ArrayBuffer(), {
+          await storageReference.put(new ArrayBuffer(), {
             contentType: 'image/jpg',
             md5hash: '123412341234',
             cacheControl: 'true',
@@ -667,7 +667,7 @@ describe('storage() -> StorageReference', function () {
           .storage(firebase.app('secondaryFromNative'))
           // .storage()
           .ref(`${PATH}/metadataTest.jpeg`);
-        await storageReference.put(new jet.context.window.ArrayBuffer(), {
+        await storageReference.put(new ArrayBuffer(), {
           contentType: 'image/jpg',
           md5hash: '123412341234',
           cacheControl: 'true',
@@ -878,7 +878,7 @@ describe('storage() -> StorageReference', function () {
         const metadata = await getMetadata(storageReference);
         metadata.generation.should.be.a.String();
         metadata.fullPath.should.equal(`${PATH}/list/file1.txt`);
-        if (device.getPlatform() === 'android') {
+        if (Platform.android) {
           metadata.name.should.equal('file1.txt');
         } else {
           // FIXME on ios file comes through as fully-qualified
@@ -1077,7 +1077,7 @@ describe('storage() -> StorageReference', function () {
         // Things that are set automagically for us
         metadata.generation.should.be.a.String();
         metadata.fullPath.should.equal(`${PATH}/list/file1.txt`);
-        if (device.getPlatform() === 'android') {
+        if (Platform.android) {
           metadata.name.should.equal('file1.txt');
         } else {
           // FIXME on ios file comes through as fully-qualified
@@ -1116,7 +1116,7 @@ describe('storage() -> StorageReference', function () {
         // Things that are set automagically for us and are not updatable
         metadata.generation.should.be.a.String();
         metadata.fullPath.should.equal(`${PATH}/list/file1.txt`);
-        if (device.getPlatform() === 'android') {
+        if (Platform.android) {
           metadata.name.should.equal('file1.txt');
         } else {
           // FIXME on ios file comes through as fully-qualified
@@ -1340,7 +1340,7 @@ describe('storage() -> StorageReference', function () {
         const storageReference = ref(getStorage(), `${PATH}/ok.jpeg`);
 
         try {
-          uploadBytesResumable(storageReference, new jet.context.window.ArrayBuffer(), 123);
+          uploadBytesResumable(storageReference, new ArrayBuffer(), 123);
           return Promise.reject(new Error('Did not error!'));
         } catch (error) {
           error.message.should.containEql('must be an object value');
@@ -1352,7 +1352,7 @@ describe('storage() -> StorageReference', function () {
         const { getStorage, ref, uploadBytesResumable } = storageModular;
         const storageReference = ref(getStorage(), `${PATH}/ok.jpeg`);
         try {
-          uploadBytesResumable(storageReference, new jet.context.window.ArrayBuffer(), {
+          uploadBytesResumable(storageReference, new ArrayBuffer(), {
             foo: true,
           });
           return Promise.reject(new Error('Did not error!'));
@@ -1366,7 +1366,7 @@ describe('storage() -> StorageReference', function () {
         const { getStorage, ref, uploadBytesResumable } = storageModular;
         const storageReference = ref(getStorage(), `${PATH}/ok.jpeg`);
         try {
-          uploadBytesResumable(storageReference, new jet.context.window.ArrayBuffer(), {
+          uploadBytesResumable(storageReference, new ArrayBuffer(), {
             contentType: true,
           });
           return Promise.reject(new Error('Did not error!'));
@@ -1380,7 +1380,7 @@ describe('storage() -> StorageReference', function () {
         const { getStorage, ref, uploadBytesResumable } = storageModular;
         const storageReference = ref(getStorage(), `${PATH}/ok.jpeg`);
         try {
-          uploadBytesResumable(storageReference, new jet.context.window.ArrayBuffer(), {
+          uploadBytesResumable(storageReference, new ArrayBuffer(), {
             customMetadata: true,
           });
           return Promise.reject(new Error('Did not error!'));
@@ -1396,7 +1396,7 @@ describe('storage() -> StorageReference', function () {
         const { getStorage, ref, uploadBytesResumable } = storageModular;
         const storageReference = ref(getStorage(), `${PATH}/metadataTest.jpeg`);
 
-        await uploadBytesResumable(storageReference, new jet.context.window.ArrayBuffer(), {
+        await uploadBytesResumable(storageReference, new ArrayBuffer(), {
           contentType: 'image/jpg',
           md5hash: '123412341234',
           cacheControl: 'true',
@@ -1419,7 +1419,7 @@ describe('storage() -> StorageReference', function () {
           `${PATH}/metadataTest.jpeg`,
         );
 
-        await uploadBytesResumable(storageReference, new jet.context.window.ArrayBuffer(), {
+        await uploadBytesResumable(storageReference, new ArrayBuffer(), {
           contentType: 'image/jpg',
           md5hash: '123412341234',
           cacheControl: 'true',
