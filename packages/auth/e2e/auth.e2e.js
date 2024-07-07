@@ -70,14 +70,17 @@ describe('auth() modular', function () {
       });
 
       it('errors on invalid code', async function () {
+        let didError = false;
         try {
           await firebase
             .auth()
             .applyActionCode('fooby shooby dooby')
             .then($ => $);
         } catch (e) {
+          didError = true;
           e.message.should.containEql('code is invalid');
         }
+        didError.should.equal(true, 'Did not error');
       });
     });
 
