@@ -39,7 +39,7 @@ describe('auth() -> emailLink Provider', function () {
       const auth = getAuth();
       const random = Utils.randString(12, '#aa');
       const email = `${random}@${random}.com`;
-      const continueUrl = 'http://localhost:1337/authLinkFoo?bar=' + random;
+      const continueUrl = `http://${Platform.android ? '10.0.2.2' : '127.0.0.1'}:8081/authLinkFoo?bar=${random}`;
       const actionCodeSettings = {
         url: continueUrl,
         handleCodeInApp: true,

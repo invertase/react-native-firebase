@@ -1,0 +1,14 @@
+diff --git a/node_modules/@firebase/rules-unit-testing/dist/index.cjs.js b/node_modules/@firebase/rules-unit-testing/dist/index.cjs.js
+index 0f92028..e9523b7 100644
+--- a/node_modules/@firebase/rules-unit-testing/dist/index.cjs.js
++++ b/node_modules/@firebase/rules-unit-testing/dist/index.cjs.js
+@@ -126,8 +126,7 @@ function makeUrl(hostAndPort, path) {
+             hostAndPort = "".concat(host, ":").concat(port);
+         }
+     }
+-    var url = new URL("http://".concat(hostAndPort, "/"));
+-    url.pathname = path;
++    var url = new URL("http://".concat(hostAndPort, path));
+     return url;
+ }
+ 

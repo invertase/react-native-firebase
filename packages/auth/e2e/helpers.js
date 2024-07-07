@@ -1,32 +1,19 @@
 /* eslint-disable no-console */
 const { getE2eTestProject, getE2eEmulatorHost } = require('../../app/e2e/helpers');
-const http = require('http');
-const fetch = require('node-fetch');
 
 // Call HTTP REST API URL and return JSON response parsed into object
-const callRestApi = async function callRestAPI(url, rawResult = false) {
-  // const TAG = 'auth::e2e:helpers:callRestApi - ';
-  return await new Promise((resolve, reject) => {
-    // console.log(TAG + 'making request');
-    const req = http.get(url, response => {
-      // console.log(TAG + 'callback');
-      let data = '';
-      response.on('data', chunk => {
-        // console.log(TAG + 'request callback response data callback');
-        // console.log(TAG + 'data event, got chunk: ' + chunk);
-        data += chunk;
-      });
-      response.on('end', () => {
-        // console.log(TAG + 'request callback response end callback');
-        if (rawResult) {
-          resolve(data);
-        } else {
-          resolve(JSON.parse(data));
-        }
-      });
-    });
-    req.on('error', error => reject(error));
+const callRestApi = async function callRestAPI(url, returnRedirectUrl = false) {
+  let _url = url;
+  if (Platform.android) {
+    _url = _url.replace('127.0.0.1', '10.0.2.2');
+  }
+  const response = await fetch(_url, {
+    redirect: returnRedirectUrl ? 'manual' : 'follow',
   });
+  if (returnRedirectUrl) {
+    return response.url;
+  }
+  return response.json();
 };
 
 function getRandomPhoneNumber() {

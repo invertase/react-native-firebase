@@ -82,16 +82,7 @@ describe('database issues', function () {
       await ref.set(data);
       const snapshot = await ref.once('value');
 
-      snapshot
-        .val()
-        .should.eql(
-          jet.contextify([
-            null,
-            jet.contextify(data[1]),
-            jet.contextify(data[2]),
-            jet.contextify(data[3]),
-          ]),
-        );
+      snapshot.val().should.eql([null, data[1], data[2], data[3]]);
     });
 
     describe('#108 filters correctly by float values', function () {
@@ -121,7 +112,7 @@ describe('database issues', function () {
           .once('value');
 
         const val = snapshot.val();
-        val.foobar.should.eql(jet.contextify(data.foobar));
+        val.foobar.should.eql(data.foobar);
 
         should.equal(Object.keys(val).length, 1);
       });
@@ -149,7 +140,7 @@ describe('database issues', function () {
 
         const val = snapshot.val();
 
-        val.notAFloat.should.eql(jet.contextify(data.notAFloat));
+        val.notAFloat.should.eql(data.notAFloat);
 
         should.equal(Object.keys(val).length, 1);
       });
@@ -223,16 +214,7 @@ describe('database issues', function () {
       await set(dbRef, data);
       const snapshot = await get(dbRef);
 
-      snapshot
-        .val()
-        .should.eql(
-          jet.contextify([
-            null,
-            jet.contextify(data[1]),
-            jet.contextify(data[2]),
-            jet.contextify(data[3]),
-          ]),
-        );
+      snapshot.val().should.eql([null, data[1], data[2], data[3]]);
     });
 
     describe('#108 filters correctly by float values', function () {
@@ -267,7 +249,7 @@ describe('database issues', function () {
         );
 
         const val = snapshot.val();
-        val.foobar.should.eql(jet.contextify(data.foobar));
+        val.foobar.should.eql(data.foobar);
 
         should.equal(Object.keys(val).length, 1);
       });
@@ -297,7 +279,7 @@ describe('database issues', function () {
 
         const val = snapshot.val();
 
-        val.notAFloat.should.eql(jet.contextify(data.notAFloat));
+        val.notAFloat.should.eql(data.notAFloat);
 
         should.equal(Object.keys(val).length, 1);
       });

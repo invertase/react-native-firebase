@@ -15,11 +15,8 @@
  * limitations under the License.
  *
  */
-require('./globals');
-
 const detox = require('detox');
-const { execSync } = require('child_process');
-const jet = require('jet/platform/node');
+const { execSync, spawn } = require('child_process');
 
 const { detox: config } = require('../package.json');
 
@@ -33,40 +30,41 @@ process.on('unhandledRejection', err => {
 
 before(async function () {
   await detox.init(config);
-  await device.launchApp();
-
-  // WIP - remote messaging notification is hanging in CI
-  //       this chunk of work is intended to grant the required permissions
-  //       for it to succeed. It is not stable though, so this is
-  //       commented out and the relevant test is skipped in CI
-  // our messaging tests require notification permission now
-  // this command only works on macOS though, so || true to make it pass everywhere
-  // execSync(
-  //   `applesimutils --booted --setPermissions notifications=YES --bundle io.invertase.testing || true`,
-  // );
-  // after setting perms you have to launch the app again, after a slight delay
-  // await Utils.sleep(15000);
-  // await device.launchApp();
-  await jet.init();
 });
 
-beforeEach(async function beforeEach() {
+beforeEach(async function beforeEachTest() {
   const retry = this.currentTest.currentRetry();
-
   if (retry > 0) {
     if (retry === 1) {
       console.log('');
-      console.warn('⚠️ A test failed:');
-      console.warn(`️   ->  ${this.currentTest.title}`);
+      console.warn('⚠️ Suite failed. Relaunching application and trying again.');
     }
-
     if (retry > 1) {
-      console.warn(`   🔴  Retry #${retry - 1} failed...`);
+      console.warn(`   🔴  Suite Retry #${retry - 1} failed...`);
     }
-
-    console.warn(`️   ->  Retrying in ${5 * retry} seconds ... (${retry})`);
-    await Utils.sleep(5000 * retry);
+    console.warn(`️   ->  Retrying suite in ${5 * retry} seconds ... (${retry})`);
+    await new Promise(resolve => setTimeout(resolve, 5000 * retry));
   }
+  await device.launchApp({ newInstance: true, delete: true });
+  // Give the app time to settle before starting the tests.
+  await new Promise(resolve => setTimeout(resolve, 1000));
+});
+
+describe('Jet Tests', () => {
+  it('runs all tests', async () => {
+    return new Promise((resolve, reject) => {
+      const platform = detox.device.getPlatform();
+      const jetProcess = spawn('yarn', ['jet', `--target=${platform}`, '--coverage'], {
+        stdio: ['ignore', 'inherit', 'inherit'],
+      });
+      jetProcess.on('close', code => {
+        if (code === 0) {
+          resolve();
+        }
+        reject(new Error(`Jet tests failed!`));
+      });
+    });
+  });
 });
 
 after(async function () {
@@ -87,11 +85,12 @@ after(async function () {
     const emuOrig = `/data/user/0/${pkg}/files/coverage.ec`;
     const emuDest = '/data/local/tmp/detox/coverage.ec';
     const localDestDir = './android/app/build/output/coverage/';
+    const adb = process.env.ANDROID_HOME ? `${process.env.ANDROID_HOME}/platform-tools/adb` : 'adb';
 
     try {
-      execSync(`adb -s ${deviceId} shell "run-as ${pkg} cat ${emuOrig} > ${emuDest}"`);
+      execSync(`${adb} -s ${deviceId} shell "run-as ${pkg} cat ${emuOrig} > ${emuDest}"`);
       execSync(`mkdir -p ${localDestDir}`);
-      execSync(`adb -s ${deviceId} pull ${emuDest} ${localDestDir}/emulator_coverage.ec`);
+      execSync(`${adb} -s ${deviceId} pull ${emuDest} ${localDestDir}/emulator_coverage.ec`);
       console.log(`Coverage data downloaded to: ${localDestDir}/emulator_coverage.ec`);
     } catch (e) {
       console.log('Unable to download coverage data from device: ', JSON.stringify(e));
@@ -101,6 +100,6 @@ after(async function () {
   try {
     await device.terminateApp();
   } catch (e) {
-    console.log('Unable to terminate app?', e);
+    // No-op
   }
 });

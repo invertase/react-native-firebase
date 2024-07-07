@@ -14,26 +14,27 @@
  * limitations under the License.
  *
  */
+import DeviceInfo from 'react-native-device-info';
 
 async function isSimulator() {
   return await DeviceInfo.isEmulator();
 }
 
 async function isAPNSCapableSimulator() {
-  supportedAbis = await DeviceInfo.supportedAbis(); // looking for an ARM Simulator implying M1 host
-  iosVersionMajor = DeviceInfo.getSystemVersion().split('.')[0]; // looking for iOS16+
-  iosVersionMinor = DeviceInfo.getSystemVersion().split('.')[1]; // iOS 17.2 has a problem !?
-  macOSVersionMajor = require('os').release().split('.')[0]; // host macOS13+ has Darwin kernel 22+
-  if (
-    macOSVersionMajor >= 22 &&
-    supportedAbis.includes('ARM64E') &&
-    iosVersionMajor >= 16 &&
-    `${iosVersionMajor}.${iosVersionMinor}` !== '17.2'
-  ) {
-    return true;
-  }
-
   return false;
+  // TODO need to fix this for M1 on CI
+  // supportedAbis = await DeviceInfo.supportedAbis(); // looking for an ARM Simulator implying M1 host
+  // iosVersionMajor = DeviceInfo.getSystemVersion().split('.')[0]; // looking for iOS16+
+  // iosVersionMinor = DeviceInfo.getSystemVersion().split('.')[1]; // iOS 17.2 has a problem !?
+  // if (
+  //   supportedAbis.includes('ARM64E') &&
+  //   iosVersionMajor >= 16 &&
+  //   `${iosVersionMajor}.${iosVersionMinor}` !== '17.2'
+  // ) {
+  //   return true;
+  // }
+
+  // return false;
 }
 
 describe('messaging()', function () {
@@ -86,7 +87,7 @@ describe('messaging()', function () {
 
     describe('isDeviceRegisteredForRemoteMessages', function () {
       it('returns true on android', function () {
-        if (device.getPlatform() === 'android') {
+        if (Platform.android) {
           should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, true);
         } else {
           this.skip();
@@ -96,7 +97,7 @@ describe('messaging()', function () {
 
     describe('unregisterDeviceForRemoteMessages', function () {
       it('resolves on android, remains registered', async function () {
-        if (device.getPlatform() === 'android') {
+        if (Platform.android) {
           await firebase.messaging().unregisterDeviceForRemoteMessages();
           should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, true);
         } else {
@@ -105,7 +106,7 @@ describe('messaging()', function () {
       });
 
       it('successfully unregisters on ios', async function () {
-        if (device.getPlatform() === 'ios' && !isCI) {
+        if (Platform.ios && !isCI) {
           await firebase.messaging().unregisterDeviceForRemoteMessages();
           should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, false);
           tryToRegister = await isAPNSCapableSimulator();
@@ -129,7 +130,7 @@ describe('messaging()', function () {
     describe('requestPermission', function () {
       // we request permission in a before block
       it('resolves correctly for default request', async function () {
-        if (device.getPlatform() === 'android') {
+        if (Platform.android) {
           // our default resolve on android is "authorized"
           should.equal(await firebase.messaging().requestPermission({ provisional: true }), 1);
         } else {
@@ -145,7 +146,7 @@ describe('messaging()', function () {
 
     describe('getAPNSToken', function () {
       it('resolves null on android', async function () {
-        if (device.getPlatform() === 'android') {
+        if (Platform.android) {
           should.equal(await firebase.messaging().getAPNSToken(), null);
         } else {
           this.skip();
@@ -156,11 +157,7 @@ describe('messaging()', function () {
         // Make sure we are registered for remote notifications, else no token
         aPNSCapableSimulator = await isAPNSCapableSimulator();
         simulator = await isSimulator();
-        if (
-          device.getPlatform() === 'ios' &&
-          !isCI &&
-          (!simulator || (simulator && aPNSCapableSimulator))
-        ) {
+        if (Platform.ios && !isCI && (!simulator || (simulator && aPNSCapableSimulator))) {
           await firebase.messaging().registerDeviceForRemoteMessages();
           apnsToken = await firebase.messaging().getAPNSToken();
 
@@ -212,7 +209,7 @@ describe('messaging()', function () {
       });
 
       it('resolves on android', async function () {
-        if (device.getPlatform() === 'android') {
+        if (Platform.android) {
           should.equal(await firebase.messaging().setAPNSToken('foo'), null);
         } else {
           this.skip();
@@ -222,7 +219,7 @@ describe('messaging()', function () {
       it('correctly sets new token on ios', async function () {
         aPNSCapableSimulator = await isAPNSCapableSimulator();
         simulator = await isSimulator();
-        if (device.getPlatform() === 'ios' && (!simulator || (simulator && aPNSCapableSimulator))) {
+        if (Platform.ios && (!simulator || (simulator && aPNSCapableSimulator))) {
           originalAPNSToken = await firebase.messaging().getAPNSToken();
           // 74657374696E67746F6B656E is hex for "testingtoken"
           await firebase.messaging().setAPNSToken('74657374696E67746F6B656E', 'unknown');
@@ -258,7 +255,7 @@ describe('messaging()', function () {
       it('generate a new token after deleting', async function () {
         aPNSCapableSimulator = await isAPNSCapableSimulator();
         simulator = await isSimulator();
-        if (device.getPlatform() === 'ios' && simulator && !aPNSCapableSimulator) {
+        if (Platform.ios && simulator && !aPNSCapableSimulator) {
           this.skip();
         } else {
           const token1 = await firebase.messaging().getToken();
@@ -304,7 +301,7 @@ describe('messaging()', function () {
       xit('receives messages when the app is in the foreground', async function () {
         const spy = sinon.spy();
         const unsubscribe = firebase.messaging().onMessage(spy);
-        if (device.getPlatform() === 'ios') {
+        if (Platform.ios) {
           await firebase.messaging().registerDeviceForRemoteMessages();
         }
         const token = await firebase.messaging().getToken();
@@ -378,34 +375,6 @@ describe('messaging()', function () {
         } catch (e) {
           e.message.should.containEql("'handler' expected a function");
           return Promise.resolve();
-        }
-      });
-
-      // FIXME unfortunately this has started to fake locally as well. Disabling for now.
-      xit('receives messages when the app is in the background', async function () {
-        // This is slow and thus flaky in CI. It runs locally on android though.
-        if (device.getPlatform() === 'android' && !global.isCI) {
-          const spy = sinon.spy();
-          const token = await firebase.messaging().getToken();
-          firebase.messaging().setBackgroundMessageHandler(remoteMessage => {
-            spy(remoteMessage);
-            return Promise.resolve();
-          });
-
-          await device.sendToHome();
-          await TestsAPI.messaging().sendToDevice(token, {
-            data: {
-              foo: 'bar',
-              doop: 'boop',
-            },
-          });
-          await Utils.spyToBeCalledOnceAsync(spy);
-          await device.launchApp({ newInstance: false });
-          spy.firstCall.args[0].should.be.an.Object();
-          spy.firstCall.args[0].data.should.be.an.Object();
-          spy.firstCall.args[0].data.foo.should.eql('bar');
-        } else {
-          this.skip();
         }
       });
     });
@@ -544,7 +513,7 @@ describe('messaging()', function () {
       it('returns true on android', function () {
         const { getMessaging, isDeviceRegisteredForRemoteMessages } = messagingModular;
 
-        if (device.getPlatform() === 'android') {
+        if (Platform.android) {
           should.equal(isDeviceRegisteredForRemoteMessages(getMessaging()), true);
         } else {
           this.skip();
@@ -560,7 +529,7 @@ describe('messaging()', function () {
           isDeviceRegisteredForRemoteMessages,
         } = messagingModular;
 
-        if (device.getPlatform() === 'android') {
+        if (Platform.android) {
           await unregisterDeviceForRemoteMessages(getMessaging());
           should.equal(isDeviceRegisteredForRemoteMessages(getMessaging()), true);
         } else {
@@ -576,15 +545,12 @@ describe('messaging()', function () {
           registerDeviceForRemoteMessages,
         } = messagingModular;
 
-        if (device.getPlatform() === 'ios' && !isCI) {
+        if (Platform.ios && !isCI) {
           await unregisterDeviceForRemoteMessages(getMessaging());
           should.equal(isDeviceRegisteredForRemoteMessages(getMessaging()), false);
           aPNSCapableSimulator = await isAPNSCapableSimulator();
           simulator = await isSimulator();
-          if (
-            device.getPlatform() === 'ios' &&
-            (!simulator || (simulator && aPNSCapableSimulator))
-          ) {
+          if (Platform.ios && (!simulator || (simulator && aPNSCapableSimulator))) {
             await registerDeviceForRemoteMessages(getMessaging());
             should.equal(isDeviceRegisteredForRemoteMessages(getMessaging()), true);
           }
@@ -606,7 +572,7 @@ describe('messaging()', function () {
       it('resolves correctly for default request', async function () {
         const { getMessaging, requestPermission } = messagingModular;
         // our before block requests, android will always be 1
-        if (device.getPlatform() === 'android') {
+        if (Platform.android) {
           should.equal(await requestPermission(getMessaging()), 1);
         } else {
           // our default request on iOS results in "provisional" == 2
@@ -619,7 +585,7 @@ describe('messaging()', function () {
     describe('getAPNSToken', function () {
       it('resolves null on android', async function () {
         const { getMessaging, getAPNSToken } = messagingModular;
-        if (device.getPlatform() === 'android') {
+        if (Platform.android) {
           should.equal(await getAPNSToken(getMessaging()), null);
         } else {
           this.skip();
@@ -631,11 +597,7 @@ describe('messaging()', function () {
         const { getMessaging, getAPNSToken, registerDeviceForRemoteMessages } = messagingModular;
         aPNSCapableSimulator = await isAPNSCapableSimulator();
         simulator = await isSimulator();
-        if (
-          device.getPlatform() === 'ios' &&
-          !isCI &&
-          (!simulator || (simulator && aPNSCapableSimulator))
-        ) {
+        if (Platform.ios && !isCI && (!simulator || (simulator && aPNSCapableSimulator))) {
           await registerDeviceForRemoteMessages(getMessaging());
           apnsToken = await getAPNSToken(getMessaging());
 
@@ -690,7 +652,7 @@ describe('messaging()', function () {
 
       it('resolves on android', async function () {
         const { getMessaging, setAPNSToken } = messagingModular;
-        if (device.getPlatform() === 'android') {
+        if (Platform.android) {
           should.equal(await setAPNSToken(getMessaging(), 'foo'), null);
         } else {
           this.skip();
@@ -701,7 +663,7 @@ describe('messaging()', function () {
         const { getMessaging, getAPNSToken, setAPNSToken } = messagingModular;
         aPNSCapableSimulator = await isAPNSCapableSimulator();
         simulator = await isSimulator();
-        if (device.getPlatform() === 'ios' && (!simulator || (simulator && aPNSCapableSimulator))) {
+        if (Platform.ios && (!simulator || (simulator && aPNSCapableSimulator))) {
           originalAPNSToken = await getAPNSToken(getMessaging());
           // 74657374696E67746F6B656E6D6F64756C6172 is hex for "testingtokenmodular"
           await firebase
@@ -731,7 +693,7 @@ describe('messaging()', function () {
         const { getMessaging, getToken, deleteToken } = messagingModular;
         aPNSCapableSimulator = await isAPNSCapableSimulator();
         simulator = await isSimulator();
-        if (device.getPlatform() === 'ios' && (!simulator || (simulator && aPNSCapableSimulator))) {
+        if (Platform.ios && (!simulator || (simulator && aPNSCapableSimulator))) {
           const token1 = await getToken(getMessaging());
           should.exist(token1);
           await deleteToken(getMessaging());
@@ -776,7 +738,7 @@ describe('messaging()', function () {
           messagingModular;
         const spy = sinon.spy();
         const unsubscribe = onMessage(getMessaging(), spy);
-        if (device.getPlatform() === 'ios') {
+        if (Platform.ios) {
           await registerDeviceForRemoteMessages(getMessaging());
         }
         const token = await getToken(getMessaging());
@@ -855,35 +817,6 @@ describe('messaging()', function () {
         } catch (e) {
           e.message.should.containEql("'handler' expected a function");
           return Promise.resolve();
-        }
-      });
-
-      // FIXME unfortunately this has started to fake locally as well. Disabling for now.
-      xit('receives messages when the app is in the background', async function () {
-        const { getMessaging, getToken, setBackgroundMessageHandler } = messagingModular;
-        // This is slow and thus flaky in CI. It runs locally on android though.
-        if (device.getPlatform() === 'android' && !global.isCI) {
-          const spy = sinon.spy();
-          const token = await getToken(getMessaging());
-          setBackgroundMessageHandler(getMessaging(), remoteMessage => {
-            spy(remoteMessage);
-            return Promise.resolve();
-          });
-
-          await device.sendToHome();
-          await TestsAPI.messaging().sendToDevice(token, {
-            data: {
-              foo: 'bar',
-              doop: 'boop',
-            },
-          });
-          await Utils.spyToBeCalledOnceAsync(spy);
-          await device.launchApp({ newInstance: false });
-          spy.firstCall.args[0].should.be.an.Object();
-          spy.firstCall.args[0].data.should.be.an.Object();
-          spy.firstCall.args[0].data.foo.should.eql('bar');
-        } else {
-          this.skip();
         }
       });
     });
