@@ -28,7 +28,7 @@ concurrency:
 jobs:
   android:
     name: Android
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-l
     timeout-minutes: 90
     strategy:
       fail-fast: false
@@ -46,7 +46,7 @@ jobs:
         iteration: [0]
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      EMULATOR_COMMAND: "-avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 -timezone 'Europe/London' -cores 2"
+      EMULATOR_COMMAND: "-avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 4096 -timezone 'Europe/London' -cores 4"
       EMULATOR_EXECUTABLE: qemu-system-x86_64-headless
     steps:
       - name: Liberate disk space

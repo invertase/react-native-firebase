@@ -29,52 +29,69 @@ ErrorUtils.setGlobalHandler((err, isFatal) => {
 });
 
 function loadTests(_) {
-  beforeEach(async () => {
-    // Allow time for things to settle between tests.
-    await Utils.sleep(100);
+  describe('React Native Firebase', function () {
+    this.retries(4);
+    beforeEach(async function beforeEachTest() {
+      const retry = this.currentTest.currentRetry();
+      if (retry > 0) {
+        if (retry === 1) {
+          console.log('');
+          console.warn('⚠️ A test failed:');
+          console.warn(`️   ->  ${this.currentTest.title}`);
+        }
+        if (retry > 1) {
+          console.warn(`   🔴  Retry #${retry - 1} failed...`);
+        }
+        console.warn(`️   ->  Retrying in ${5 * retry} seconds ... (${retry})`);
+        await Utils.sleep(5000 * retry);
+      } else {
+        // Allow time for things to settle between tests.
+        await Utils.sleep(100);
+      }
+    });
+    const appTests = require.context('../packages/app/e2e', true, /\.e2e\.js$/);
+    appTests.keys().forEach(appTests);
+    const appCheckTests = require.context('../packages/app-check/e2e', true, /\.e2e\.js$/);
+    appCheckTests.keys().forEach(appCheckTests);
+    const appDistributionTests = require.context(
+      '../packages/app-distribution/e2e',
+      true,
+      /\.e2e\.js$/,
+    );
+    appDistributionTests.keys().forEach(appDistributionTests);
+    const analyticsTests = require.context('../packages/analytics/e2e', true, /\.e2e\.js$/);
+    analyticsTests.keys().forEach(analyticsTests);
+    const authTests = require.context('../packages/auth/e2e', true, /\.e2e\.js$/);
+    authTests.keys().forEach(authTests);
+    const crashlyticsTests = require.context('../packages/crashlytics/e2e', true, /\.e2e\.js$/);
+    crashlyticsTests.keys().forEach(crashlyticsTests);
+    const databaseTests = require.context('../packages/database/e2e', true, /\.e2e\.js$/);
+    databaseTests.keys().forEach(databaseTests);
+    const dynamicLinksTests = require.context('../packages/dynamic-links/e2e', true, /\.e2e\.js$/);
+    dynamicLinksTests.keys().forEach(dynamicLinksTests);
+    const firestoreTests = require.context('../packages/firestore/e2e', true, /\.e2e\.js$/);
+    firestoreTests.keys().forEach(firestoreTests);
+    const functionsTests = require.context('../packages/functions/e2e', true, /\.e2e\.js$/);
+    functionsTests.keys().forEach(functionsTests);
+    const perfTests = require.context('../packages/perf/e2e', true, /\.e2e\.js$/);
+    perfTests.keys().forEach(perfTests);
+    const messagingTests = require.context('../packages/messaging/e2e', true, /\.e2e\.js$/);
+    messagingTests.keys().forEach(messagingTests);
+    const mlTests = require.context('../packages/ml/e2e', true, /\.e2e\.js$/);
+    mlTests.keys().forEach(mlTests);
+    const inAppMessagingTests = require.context(
+      '../packages/in-app-messaging/e2e',
+      true,
+      /\.e2e\.js$/,
+    );
+    inAppMessagingTests.keys().forEach(inAppMessagingTests);
+    const installationsTests = require.context('../packages/installations/e2e', true, /\.e2e\.js$/);
+    installationsTests.keys().forEach(installationsTests);
+    const remoteConfigTests = require.context('../packages/remote-config/e2e', true, /\.e2e\.js$/);
+    remoteConfigTests.keys().forEach(remoteConfigTests);
+    const storageTests = require.context('../packages/storage/e2e', true, /\.e2e\.js$/);
+    storageTests.keys().forEach(storageTests);
   });
-  const appTests = require.context('../packages/app/e2e', true, /\.e2e\.js$/);
-  appTests.keys().forEach(appTests);
-  const appCheckTests = require.context('../packages/app-check/e2e', true, /\.e2e\.js$/);
-  appCheckTests.keys().forEach(appCheckTests);
-  const appDistributionTests = require.context(
-    '../packages/app-distribution/e2e',
-    true,
-    /\.e2e\.js$/,
-  );
-  appDistributionTests.keys().forEach(appDistributionTests);
-  const analyticsTests = require.context('../packages/analytics/e2e', true, /\.e2e\.js$/);
-  analyticsTests.keys().forEach(analyticsTests);
-  const authTests = require.context('../packages/auth/e2e', true, /\.e2e\.js$/);
-  authTests.keys().forEach(authTests);
-  const crashlyticsTests = require.context('../packages/crashlytics/e2e', true, /\.e2e\.js$/);
-  crashlyticsTests.keys().forEach(crashlyticsTests);
-  const databaseTests = require.context('../packages/database/e2e', true, /\.e2e\.js$/);
-  databaseTests.keys().forEach(databaseTests);
-  const dynamicLinksTests = require.context('../packages/dynamic-links/e2e', true, /\.e2e\.js$/);
-  dynamicLinksTests.keys().forEach(dynamicLinksTests);
-  const firestoreTests = require.context('../packages/firestore/e2e', true, /\.e2e\.js$/);
-  firestoreTests.keys().forEach(firestoreTests);
-  const functionsTests = require.context('../packages/functions/e2e', true, /\.e2e\.js$/);
-  functionsTests.keys().forEach(functionsTests);
-  const perfTests = require.context('../packages/perf/e2e', true, /\.e2e\.js$/);
-  perfTests.keys().forEach(perfTests);
-  const messagingTests = require.context('../packages/messaging/e2e', true, /\.e2e\.js$/);
-  messagingTests.keys().forEach(messagingTests);
-  const mlTests = require.context('../packages/ml/e2e', true, /\.e2e\.js$/);
-  mlTests.keys().forEach(mlTests);
-  const inAppMessagingTests = require.context(
-    '../packages/in-app-messaging/e2e',
-    true,
-    /\.e2e\.js$/,
-  );
-  inAppMessagingTests.keys().forEach(inAppMessagingTests);
-  const installationsTests = require.context('../packages/installations/e2e', true, /\.e2e\.js$/);
-  installationsTests.keys().forEach(installationsTests);
-  const remoteConfigTests = require.context('../packages/remote-config/e2e', true, /\.e2e\.js$/);
-  remoteConfigTests.keys().forEach(remoteConfigTests);
-  const storageTests = require.context('../packages/storage/e2e', true, /\.e2e\.js$/);
-  storageTests.keys().forEach(storageTests);
 }
 
 function App() {

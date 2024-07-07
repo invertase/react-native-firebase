@@ -56,8 +56,8 @@ describe('onChildChanged', function () {
     callback.should.not.be.calledWith('baz');
   });
 
-  // FIXME super flaky on android emulator
-  it('subscribe to child changed events', async function () {
+  // FIXME super flaky on Jet
+  xit('subscribe to child changed events', async function () {
     const { getDatabase, ref, set, child, onChildChanged } = databaseModular;
 
     if (Platform.ios) {

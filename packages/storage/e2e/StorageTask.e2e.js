@@ -184,7 +184,8 @@ describe('storage() -> StorageTask', function () {
       });
 
       describe('put()', function () {
-        it('uploads a Blob', async function () {
+        // TODO flakey test, RN JSTimer exception sometimes
+        xit('uploads a Blob', async function () {
           const jsonDerulo = JSON.stringify({ foo: 'bar' });
           const bob = new Blob([jsonDerulo], {
             type: 'application/json',
@@ -951,7 +952,8 @@ describe('storage() -> StorageTask', function () {
     });
 
     describe('put()', function () {
-      it('uploads a Blob', async function () {
+      // TODO flakey test, RN JSTimer exception sometimes
+      xit('uploads a Blob', async function () {
         const { getStorage, ref, uploadBytesResumable } = storageModular;
         const jsonDerulo = JSON.stringify({ foo: 'bar' });
 

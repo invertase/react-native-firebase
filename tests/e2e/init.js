@@ -30,15 +30,31 @@ process.on('unhandledRejection', err => {
 
 before(async function () {
   await detox.init(config);
-  await device.launchApp();
+});
+
+beforeEach(async function beforeEachTest() {
+  const retry = this.currentTest.currentRetry();
+  if (retry > 0) {
+    if (retry === 1) {
+      console.log('');
+      console.warn('⚠️ Suite failed. Relaunching application and trying again.');
+    }
+    if (retry > 1) {
+      console.warn(`   🔴  Suite Retry #${retry - 1} failed...`);
+    }
+    console.warn(`️   ->  Retrying suite in ${5 * retry} seconds ... (${retry})`);
+    await new Promise(resolve => setTimeout(resolve, 5000 * retry));
+  }
+  await device.launchApp({ newInstance: true, delete: true });
+  // Give the app time to settle before starting the tests.
+  await new Promise(resolve => setTimeout(resolve, 1000));
 });
 
 describe('Jet Tests', () => {
   it('runs all tests', async () => {
     return new Promise((resolve, reject) => {
       const platform = detox.device.getPlatform();
-      // TODO Coverage crashes half way through - OOM?
-      const jetProcess = spawn('yarn', ['jet', `--target=${platform}`], {
+      const jetProcess = spawn('yarn', ['jet', `--target=${platform}`, '--coverage'], {
         stdio: ['ignore', 'inherit', 'inherit'],
       });
       jetProcess.on('close', code => {
