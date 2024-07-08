@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build:clean": "rimraf dist && rimraf android/build && rimraf android/app/build && rimraf android/.gradle && rimraf ios/build && rimraf macos/build",
+    "build:macos": "xcodebuild CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace macos/io.invertase.testing.xcworkspace -scheme io.invertase.testing-macOS -configuration Debug -derivedDataPath macos/build | xcbeautify",
     "prepare": "patch-package"
   },
   "dependencies": {
@@ -26,9 +27,10 @@
     "@react-native-firebase/remote-config": "20.1.0",
     "@react-native-firebase/storage": "20.1.0",
     "postinstall-postinstall": "2.1.0",
-    "react": "18.3.1",
-    "react-native": "0.74.2",
+    "react": "18.2.0",
+    "react-native": "0.73.4",
     "react-native-device-info": "^11.1.0",
+    "react-native-macos": "^0.73.0-0",
     "util": "^0.12.5"
   },
   "devDependencies": {
@@ -45,7 +47,6 @@
     "mocha": "^10.4.0",
     "nyc": "^15.1.0",
     "patch-package": "^8.0.0",
-    "pod-install": "^0.2.2",
     "should": "^13.2.3",
     "should-sinon": "0.0.6",
     "sinon": "17.0.0"

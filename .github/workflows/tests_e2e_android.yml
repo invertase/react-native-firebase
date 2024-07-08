@@ -29,7 +29,7 @@ jobs:
   android:
     name: Android
     runs-on: ubuntu-latest-l
-    timeout-minutes: 90
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -46,20 +46,7 @@ jobs:
         iteration: [0]
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      EMULATOR_COMMAND: "-avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 4096 -timezone 'Europe/London' -cores 4"
-      EMULATOR_EXECUTABLE: qemu-system-x86_64-headless
     steps:
-      - name: Liberate disk space
-        uses: jlumbroso/free-disk-space@main
-        with:
-          tool-cache: false
-          android: false
-          dotnet: true
-          haskell: true
-          large-packages: false
-          docker-images: true
-          swap-storage: false
-
       - name: Enable KVM group perms
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -88,13 +75,13 @@ jobs:
           echo "metro-cache=$HOME/.metro" >> $GITHUB_OUTPUT
           echo "tempdir=$TMPDIR" >> $GITHUB_OUTPUT
 
-      - uses: actions/cache/restore@v4
-        name: Yarn Cache Restore
+      - uses: actions/cache@v4
+        name: Yarn Cache
         id: yarn-cache
         with:
           path: .yarn/cache
-          key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
-          restore-keys: ${{ runner.os }}-yarn-v1
+          key: ${{ runner.os }}-android-yarn-v1-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.os }}-android-yarn-v1
 
       - name: Yarn Install
         uses: nick-fields/retry@v3
@@ -158,11 +145,12 @@ jobs:
 
       - name: Detox Tests
         uses: reactivecircus/android-emulator-runner@v2
-        timeout-minutes: 60
+        timeout-minutes: 45
         with:
           api-level: ${{ matrix.api-level }}
           avd-name: TestingAVD
           target: ${{ matrix.target }}
+          disable-spellchecker: true
           arch: ${{ matrix.arch }}
           pre-emulator-launch-script: |
             sudo mkdir /mnt/avd
@@ -178,13 +166,6 @@ jobs:
       - uses: codecov/codecov-action@v4
         with:
           verbose: true
-
-      - uses: actions/cache/save@v4
-        name: Yarn Cache Save
-        if: "${{ github.ref == 'refs/heads/main' }}"
-        with:
-          path: .yarn/cache
-          key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
 
       - name: Upload Emulator Log
         uses: actions/upload-artifact@v4

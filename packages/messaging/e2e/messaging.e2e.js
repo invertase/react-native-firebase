@@ -14,9 +14,9 @@
  * limitations under the License.
  *
  */
-import DeviceInfo from 'react-native-device-info';
 
 async function isSimulator() {
+  const DeviceInfo = require('react-native-device-info');
   return await DeviceInfo.isEmulator();
 }
 
