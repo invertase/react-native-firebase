@@ -247,6 +247,7 @@ export default {
   documentOnSnapshot() {
     return rejectPromiseWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
   },
+
   documentOffSnapshot() {
     return rejectPromiseWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
   },
@@ -423,7 +424,6 @@ export default {
       const firestore = getCachedFirestoreInstance(appName);
 
       try {
-        // TODO(ehesp): Max attempts?
         await runTransaction(firestore, tsx => {
           transactionHandler[transactionId] = tsx;
 

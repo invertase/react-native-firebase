@@ -146,13 +146,13 @@ export function buildTypeMap(value) {
 
   if (Array.isArray(value)) {
     out.push(INT_ARRAY);
-    // TODO push array;
+    out.push(arrayToWriteable(value));
     return out;
   }
 
   if (typeof value === 'object') {
     out.push(INT_OBJECT);
-    // TODO push object;
+    out.push(objectToWriteable(value));
     return out;
   }
 
