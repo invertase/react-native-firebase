@@ -381,7 +381,6 @@ export default createModuleNamespace({
 export const firebase = getFirebaseRoot();
 
 // Register the interop module for non-native platforms.
-setReactNativeModule(nativeModuleName[0], fallBackModule);
-setReactNativeModule(nativeModuleName[1], fallBackModule);
-setReactNativeModule(nativeModuleName[2], fallBackModule);
-setReactNativeModule(nativeModuleName[3], fallBackModule);
+for (let i = 0; i < nativeModuleName.length; i++) {
+  setReactNativeModule(nativeModuleName[i], FirebaseFirestoreModule);
+}

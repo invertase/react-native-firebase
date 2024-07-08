@@ -56,6 +56,7 @@ function rejectPromise(error) {
   return Promise.reject(nativeError);
 }
 
+// Converts a Firestore document snapshot to a plain object.
 function documentSnapshotToObject(snapshot) {
   const exists = snapshot.exists();
 
@@ -72,6 +73,7 @@ function documentSnapshotToObject(snapshot) {
   return out;
 }
 
+// Converts a Firestore query snapshot to a plain object.
 function querySnapshotToObject(snapshot) {
   return {
     source: 'get',
@@ -200,9 +202,7 @@ export default {
     return guard(async () => {
       const firestore = getCachedFirestoreInstance(appName);
       const queryRef =
-        type === 'collectionGroup'
-          ? collectionGroup(firestore, collectionRef)
-          : collection(firestore, path);
+        type === 'collectionGroup' ? collectionGroup(firestore, path) : collection(firestore, path);
       const query = buildQuery(queryRef, filters, orders, options);
       const snapshot = await getCount(query);
 
@@ -396,7 +396,7 @@ export default {
    * @param {string} transactionId - The transaction id.
    */
   transactionDispose(appName, transactionId) {
-    // There's no abort method in the lite SDK, so we just remove the transaction handler.
+    // There's no abort method in the JS SDK, so we just remove the transaction handler.
     delete transactionHandler[transactionId];
   },
 
