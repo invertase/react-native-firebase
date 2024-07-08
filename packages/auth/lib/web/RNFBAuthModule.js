@@ -10,7 +10,6 @@ import {
   signInWithEmailAndPassword,
   signInWithEmailLink,
   signInWithCustomToken,
-  signInWithRedirect,
   sendPasswordResetEmail,
   useDeviceLanguage,
   verifyPasswordResetCode,
@@ -24,6 +23,8 @@ import {
   updatePhoneNumber,
   signInWithCredential,
   unlink,
+  linkWithCredential,
+  reauthenticateWithCredential,
   getIdToken,
   getIdTokenResult,
   applyActionCode,
@@ -134,7 +135,6 @@ function getAuthCredential(auth, provider, token, secret) {
         rawNonce: secret,
       });
     case 'oauth':
-      // TODO(ehesp): Is this correct?
       return new OAuthProvider(provider).credential({
         idToken: token,
         accessToken: secret,
@@ -217,7 +217,7 @@ function authResultToObject(userCredential) {
 
 const instances = {};
 const authStateListeners = {};
-const IdTokenListeners = {};
+const idTokenListeners = {};
 const sessionMap = new Map();
 let sessionId = 0;
 
@@ -233,17 +233,25 @@ function getCachedAuthInstance(appName) {
  * java methods on Android.
  */
 export default {
-  // TODO
   configureAuthDomain() {
-    // TODO(ehesp): Is this a noop?
+    return rejectPromiseWithCodeAndMessage(
+      'unsupported',
+      'This operation is not supported in this environment.',
+    );
   },
 
-  // TODO
   async getCustomAuthDomain() {
-    // TODO(ehesp): Is this a noop?
+    return rejectPromiseWithCodeAndMessage(
+      'unsupported',
+      'This operation is not supported in this environment.',
+    );
   },
 
-  // TODO
+  /**
+   * Create a new auth state listener instance for a given app.
+   * @param {string} appName - The name of the app to get the auth instance for.
+   * @returns {Promise<void>} - Void promise.
+   */
   addAuthStateListener(appName) {
     if (authStateListeners[appName]) {
       return;
@@ -264,7 +272,11 @@ export default {
     });
   },
 
-  // TODO
+  /**
+   * Remove an auth state listener instance for a given app.
+   * @param {string} appName - The name of the app to get the auth instance for.
+   * @returns {Promise<void>} - Void promise.
+   */
   removeAuthStateListener(appName) {
     if (authStateListeners[appName]) {
       authStateListeners[appName]();
@@ -272,16 +284,20 @@ export default {
     }
   },
 
-  // TODO
+  /**
+   * Create a new ID token listener instance for a given app.
+   * @param {string} appName - The name of the app to get the auth instance for.
+   * @returns {Promise<void>} - Void promise.
+   */
   addIdTokenListener(appName) {
-    if (IdTokenListeners[appName]) {
+    if (idTokenListeners[appName]) {
       return;
     }
 
     return guard(() => {
       const auth = getCachedAuthInstance(appName);
 
-      IdTokenListeners[appName] = onIdTokenChanged(auth, user => {
+      idTokenListeners[appName] = onIdTokenChanged(auth, user => {
         const body = {
           authenticated: !!user,
           appName,
@@ -294,22 +310,38 @@ export default {
     });
   },
 
-  // TODO
+  /**
+   * Remove an ID token listener instance for a given app.
+   * @param {string} appName - The name of the app to get the auth instance for.
+   * @returns {Promise<void>} - Void promise.
+   */
   removeIdTokenListener(appName) {
-    if (IdTokenListeners[appName]) {
-      IdTokenListeners[appName]();
-      delete IdTokenListeners[appName];
+    if (idTokenListeners[appName]) {
+      idTokenListeners[appName]();
+      delete idTokenListeners[appName];
     }
   },
 
-  // TODO
-  async forceRecaptchaFlowForTesting() {},
+  async forceRecaptchaFlowForTesting() {
+    return rejectPromiseWithCodeAndMessage(
+      'unsupported',
+      'This operation is not supported in this environment.',
+    );
+  },
 
-  // TODO
-  async setAutoRetrievedSmsCodeForPhoneNumber() {},
+  async setAutoRetrievedSmsCodeForPhoneNumber() {
+    return rejectPromiseWithCodeAndMessage(
+      'unsupported',
+      'This operation is not supported in this environment.',
+    );
+  },
 
-  // TODO
-  async setAppVerificationDisabledForTesting() {},
+  async setAppVerificationDisabledForTesting() {
+    return rejectPromiseWithCodeAndMessage(
+      'unsupported',
+      'This operation is not supported in this environment.',
+    );
+  },
 
   /**
    * Sign out the current user.
@@ -418,7 +450,6 @@ export default {
   async sendPasswordResetEmail(appName, email, settings) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
-      // TODO(ehesp): Looks like settings comes through as expected, but double check.
       await sendPasswordResetEmail(auth, email, settings);
       return promiseNoUser();
     });
@@ -434,7 +465,6 @@ export default {
   async sendSignInLinkToEmail(appName, email, settings) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
-      // TODO(ehesp): Looks like settings comes through as expected, but double check.
       await sendPasswordResetEmail(auth, email, settings);
       return promiseNoUser();
     });
@@ -494,7 +524,6 @@ export default {
         return promiseNoUser(true);
       }
 
-      // TODO(ehesp): Do action code settings come through as expected?
       await sendEmailVerification(auth.currentUser, actionCodeSettings);
       return userToObject(auth.currentUser);
     });
@@ -515,7 +544,6 @@ export default {
         return promiseNoUser(true);
       }
 
-      // TODO(ehesp): Do action code settings come through as expected?
       await verifyBeforeUpdateEmail(auth.currentUser, email, actionCodeSettings);
       return userToObject(auth.currentUser);
     });
@@ -645,33 +673,11 @@ export default {
     });
   },
 
-  // TODO...
-  async signInWithProvider(appName, provider) {
-    return guard(async () => {
-      const auth = getCachedAuthInstance(appName);
-
-      if (provider.providerId === null) {
-        return rejectPromiseWithCodeAndMessage(
-          'invalid-credential',
-          'The supplied auth credential is malformed, has expired or is not currently supported.',
-        );
-      }
-
-      const oauthProvider = new OAuthProvider(provider.providerId);
-
-      if ('scopes' in provider) {
-        for (const scope of provider.scopes) {
-          oauthProvider.addScope(scope);
-        }
-      }
-
-      if ('customParameters' in provider) {
-        oauthProvider.setCustomParameters(provider.customParameters);
-      }
-
-      // TODO(ehesp): Is this correct? How do we get the result?
-      await signInWithRedirect(auth, oauthProvider);
-    });
+  async signInWithProvider() {
+    return rejectPromiseWithCodeAndMessage(
+      'unsupported',
+      'This operation is not supported in this environment.',
+    );
   },
 
   // TODO...
@@ -701,36 +707,40 @@ export default {
     });
   },
 
-  // TODO
-  async verifyPhoneNumberForMultiFactor(appName, phoneNumber, sessionKey) {
-    return guard(async () => {
-      const session = sessionMap.get(sessionKey);
-
-      if (!session) {
-        return rejectPromiseWithCodeAndMessage(
-          'invalid-multi-factor-session',
-          "can't find session for provided key",
-        );
-      }
-
-      // TODO...
-    });
+  verifyPhoneNumberForMultiFactor() {
+    return rejectPromiseWithCodeAndMessage(
+      'unsupported',
+      'This operation is not supported in this environment.',
+    );
   },
 
-  // TODO
-  async finalizeMultiFactorEnrollment() {},
+  finalizeMultiFactorEnrollment() {
+    return rejectPromiseWithCodeAndMessage(
+      'unsupported',
+      'This operation is not supported in this environment.',
+    );
+  },
 
-  // TODO
-  async resolveMultiFactorCredential() {},
+  resolveMultiFactorSignIn() {
+    return rejectPromiseWithCodeAndMessage(
+      'unsupported',
+      'This operation is not supported in this environment.',
+    );
+  },
 
-  // TODO
-  async resolveMultiFactorSignIn() {},
+  confirmationResultConfirm() {
+    return rejectPromiseWithCodeAndMessage(
+      'unsupported',
+      'This operation is not supported in this environment.',
+    );
+  },
 
-  // TODO
-  async confirmationResultConfirm() {},
-
-  // TODO
-  async verifyPhoneNumber() {},
+  verifyPhoneNumber() {
+    return rejectPromiseWithCodeAndMessage(
+      'unsupported',
+      'This operation is not supported in this environment.',
+    );
+  },
 
   /**
    * Confirm the password reset code.
@@ -782,11 +792,41 @@ export default {
     });
   },
 
-  // TODO
-  async linkWithCredential() {},
+  /**
+   * Link a credential to the current user.
+   * @param {string} appName - The name of the app to get the auth instance for.
+   * @param {string} provider - The provider to link.
+   * @param {string} authToken - The auth token to link.
+   * @param {string} authSecret - The auth secret to link.
+   * @returns {Promise<object>} - The current user object.
+   */
+  async linkWithCredential(appName, provider, authToken, authSecret) {
+    return guard(async () => {
+      const auth = getCachedAuthInstance(appName);
+      const credential = getAuthCredential(auth, provider, authToken, authSecret);
 
-  // TODO
-  async linkWithProvider() {},
+      if (credential === null) {
+        return rejectPromiseWithCodeAndMessage(
+          'invalid-credential',
+          'The supplied auth credential is malformed, has expired or is not currently supported.',
+        );
+      }
+
+      if (auth.currentUser === null) {
+        return promiseNoUser(true);
+      }
+
+      return authResultToObject(await linkWithCredential(auth.currentUser, credential));
+    });
+  },
+
+  async linkWithProvider() {
+    // TODO: We could check if window is available here, but for now it's not supported.
+    return rejectPromiseWithCodeAndMessage(
+      'unsupported',
+      'This operation is not supported in this environment.',
+    );
+  },
 
   /**
    * Unlink a provider from the current user.
@@ -807,11 +847,41 @@ export default {
     });
   },
 
-  // TODO
-  async reauthenticateWithCredential() {},
+  /**
+   * Reauthenticate with a credential.
+   * @param {string} appName - The name of the app to get the auth instance for.
+   * @param {string} provider - The provider to reauthenticate with.
+   * @param {string} authToken - The auth token to reauthenticate with.
+   * @param {string} authSecret - The auth secret to reauthenticate with.
+   * @returns {Promise<object>} - The current user object.
+   */
+  async reauthenticateWithCredential(appName, provider, authToken, authSecret) {
+    return guard(async () => {
+      const auth = getCachedAuthInstance(appName);
+      const credential = getAuthCredential(auth, provider, authToken, authSecret);
 
-  // TODO
-  async reauthenticateWithProvider() {},
+      if (credential === null) {
+        return rejectPromiseWithCodeAndMessage(
+          'invalid-credential',
+          'The supplied auth credential is malformed, has expired or is not currently supported.',
+        );
+      }
+
+      if (auth.currentUser === null) {
+        return promiseNoUser(true);
+      }
+
+      return authResultToObject(await reauthenticateWithCredential(auth.currentUser, credential));
+    });
+  },
+
+  async reauthenticateWithProvider() {
+    // TODO: We could check if window is available here, but for now it's not supported.
+    return rejectPromiseWithCodeAndMessage(
+      'unsupported',
+      'This operation is not supported in this environment.',
+    );
+  },
 
   /**
    * Get the ID token for the current user.
