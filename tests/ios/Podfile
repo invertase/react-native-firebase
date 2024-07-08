@@ -57,11 +57,8 @@ target 'testing' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  # Use pre-compiled firestore frameworks to optimize compile time. Auto-includes leveldb if needed.
-  # pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
-
-  # If leveldb auto-inclusion fails and build fails with leveldb symbol conflicts, use this subspec:
-  # pod 'FirebaseFirestore/WithoutLeveldb', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
+  # Use pre-compiled firestore frameworks to optimize compile time.
+  pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
 
   post_install do |installer|
     # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
