@@ -5,8 +5,12 @@ import {
   orderBy,
   limit,
   limitToLast,
+  startAt,
+  startAfter,
+  endAt,
+  endBefore,
 } from '@react-native-firebase/app/lib/internal/web/firebaseFirestore';
-import { parseTypeMap } from './convert';
+import { parseTypeMap, readableToArray } from './convert';
 
 export function buildQuery(queryInstance, filters, orders, options) {
   // Apply filters
@@ -48,8 +52,9 @@ export function buildQuery(queryInstance, filters, orders, options) {
           queryInstance = query(queryInstance, where(fieldPath, 'not-in', value));
           break;
       }
-    } else {
-      // TODO apply filter queries
+    } else if ('operator' in filter && 'queries' in filter) {
+      // TODO: Not sure how to handle this yet
+      // queryInstance = query(queryInstance, );
     }
   }
 
@@ -69,7 +74,25 @@ export function buildQuery(queryInstance, filters, orders, options) {
     queryInstance = query(queryInstance, limitToLast(options.limitToLast));
   }
 
-  // TODO(ehesp): How do parse snapshots?
+  if ('startAt' in options) {
+    const fieldList = readableToArray(queryInstance.firestore, options.startAt);
+    queryInstance = query(queryInstance, startAt(...fieldList));
+  }
+
+  if ('startAfter' in options) {
+    const fieldList = readableToArray(queryInstance.firestore, options.startAfter);
+    queryInstance = query(queryInstance, startAfter(...fieldList));
+  }
+
+  if ('endAt' in options) {
+    const fieldList = readableToArray(queryInstance.firestore, options.endAt);
+    queryInstance = query(queryInstance, endAt(...fieldList));
+  }
+
+  if ('endBefore' in options) {
+    const fieldList = readableToArray(queryInstance.firestore, options.endBefore);
+    queryInstance = query(queryInstance, endBefore(...fieldList));
+  }
 
   return queryInstance;
 }
