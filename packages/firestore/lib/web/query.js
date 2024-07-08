@@ -70,4 +70,6 @@ export function buildQuery(queryInstance, filters, orders, options) {
   }
 
   // TODO(ehesp): How do parse snapshots?
+
+  return queryInstance;
 }
