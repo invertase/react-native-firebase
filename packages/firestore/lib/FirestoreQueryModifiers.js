@@ -269,15 +269,6 @@ export default class FirestoreQueryModifiers {
         this.hasInequality = filter;
         continue;
       }
-
-      // Check the set value is the same as the new one
-      if (INEQUALITY[filter.operator] && this.hasInequality) {
-        if (this.hasInequality.fieldPath._toPath() !== filter.fieldPath._toPath()) {
-          throw new Error(
-            `Invalid query. All where filters with an inequality (<, <=, >, != or >=) must be on the same field. But you have inequality filters on '${this.hasInequality.fieldPath._toPath()}' and '${filter.fieldPath._toPath()}'`,
-          );
-        }
-      }
     }
 
     for (let i = 0; i < filters.length; i++) {
