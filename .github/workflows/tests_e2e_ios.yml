@@ -29,7 +29,7 @@ jobs:
     name: iOS
     runs-on: macos-14-xlarge
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
-    timeout-minutes: 100
+    timeout-minutes: 60
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
@@ -128,6 +128,13 @@ jobs:
 
       - name: Start Firestore Emulator
         run: yarn tests:emulator:start-ci
+
+      # https://bitrise.io/blog/post/xcode-15-performance-regressions
+      - name: Install yeetd
+        run: |
+          wget https://github.com/biscuitehh/yeetd/releases/download/1.0/yeetd-normal.pkg
+          sudo installer -pkg yeetd-normal.pkg -target /
+          yeetd &
 
       - name: Install brew utilities
         uses: nick-fields/retry@v3

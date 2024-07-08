@@ -62,9 +62,6 @@ const config = {
       },
     ),
   },
-  server: {
-    runInspectorProxy: !process.env.CI,
-  },
   transformer: {
     unstable_allowRequireContext: true,
     getTransformOptions: async () => ({
