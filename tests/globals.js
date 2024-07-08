@@ -21,8 +21,9 @@ import 'should-sinon';
 import 'should';
 import shouldMatchers from 'should';
 
-// Set debugging before importing any RNFB packages.
-global.RNFBDebug = true;
+// Toggle this to see bridge and event debug logs
+// specific to the React Native Firebase packages
+global.RNFBDebug = false;
 
 // RNFB packages.
 import '@react-native-firebase/analytics';
@@ -414,6 +415,5 @@ global.jet = {
   },
 };
 
-// TODO
-global.isCI = false;
-// global.isCI = !!process.env.CI;
+// TODO toggle this correct in CI only.
+global.isCI = true;

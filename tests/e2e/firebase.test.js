@@ -15,44 +15,13 @@
  * limitations under the License.
  *
  */
-const detox = require('detox');
 const { execSync, spawn } = require('child_process');
 
-const { detox: config } = require('../package.json');
-
-config.configurations['android.emu.debug'].device.avdName =
-  process.env.ANDROID_AVD_NAME || config.configurations['android.emu.debug'].device.avdName;
-
-process.on('unhandledRejection', err => {
-  console.error(err);
-  process.exit(1);
-});
-
-before(async function () {
-  await detox.init(config);
-});
-
-beforeEach(async function beforeEachTest() {
-  const retry = this.currentTest.currentRetry();
-  if (retry > 0) {
-    if (retry === 1) {
-      console.log('');
-      console.warn('⚠️ Suite failed. Relaunching application and trying again.');
-    }
-    if (retry > 1) {
-      console.warn(`   🔴  Suite Retry #${retry - 1} failed...`);
-    }
-    console.warn(`️   ->  Retrying suite in ${5 * retry} seconds ... (${retry})`);
-    await new Promise(resolve => setTimeout(resolve, 5000 * retry));
-  }
-  await device.launchApp({ newInstance: true, delete: true });
-  // Give the app time to settle before starting the tests.
-  await new Promise(resolve => setTimeout(resolve, 1000));
-});
-
 describe('Jet Tests', () => {
+  jest.retryTimes(3, { logErrorsBeforeRetry: true });
+
   it('runs all tests', async () => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       const platform = detox.device.getPlatform();
       const jetProcess = spawn('yarn', ['jet', `--target=${platform}`, '--coverage'], {
         stdio: ['ignore', 'inherit', 'inherit'],
@@ -63,11 +32,24 @@ describe('Jet Tests', () => {
         }
         reject(new Error(`Jet tests failed!`));
       });
+      await device.launchApp({
+        newInstance: true,
+        delete: true,
+        launchArgs: { detoxURLBlacklistRegex: `.*` },
+      });
     });
   });
 });
 
-after(async function () {
+beforeAll(async function () {
+  // Nothing to do here.
+});
+
+beforeEach(async function () {
+  // Nothing to do here.
+});
+
+afterAll(async function () {
   console.log(' ✨ Tests Complete ✨ ');
   const isAndroid = detox.device.getPlatform() === 'android';
   const deviceId = detox.device.id;

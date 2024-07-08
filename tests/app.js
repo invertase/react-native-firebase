@@ -91,7 +91,8 @@ function loadTests(_) {
         await Utils.sleep(5000 * retry);
       } else {
         // Allow time for things to settle between tests.
-        await Utils.sleep(100);
+        await Utils.sleep(50);
+        
       }
     });
 
