@@ -15,6 +15,8 @@
  *
  */
 
+import { Base64 } from '@react-native-firebase/app/lib/common';
+
 function decodeJWT(token) {
   // Split the token into its parts
   const parts = token.split('.');
@@ -40,7 +42,7 @@ function decodeJWT(token) {
     }
 
     return decodeURIComponent(
-      atob(base64)
+      Base64.atob(base64)
         .split('')
         .map(function (c) {
           return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
