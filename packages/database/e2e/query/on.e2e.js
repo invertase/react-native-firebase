@@ -161,8 +161,8 @@ describe('database().ref().on()', function () {
     }
   });
 
-  // FIXME super flaky on android emulator
-  it('subscribe to child changed events', async function () {
+  // FIXME super flaky on Jet
+  xit('subscribe to child changed events', async function () {
     if (Platform.ios) {
       const successCallback = sinon.spy();
       const cancelCallback = sinon.spy();

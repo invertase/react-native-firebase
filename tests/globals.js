@@ -68,6 +68,9 @@ global.sinon = require('sinon');
 global.Platform = {
   android: Platform.OS === 'android',
   ios: Platform.OS === 'ios',
+  // TODO: macos could technically be supported through the same codebase
+  // as iOS but for now we're treating it as an 'other' platform as that
+  // is a larger task to implement.
   other: Platform.OS !== 'android' && Platform.OS !== 'ios',
 };
 
@@ -132,6 +135,20 @@ global.FirebaseHelpers = {
   },
   app: {
     config() {
+      if (global.Platform.ios) {
+        return {
+          clientId: '448618578101-28tsenal97nceuij1msj7iuqinv48t02.apps.googleusercontent.com',
+          androidClientId:
+            '448618578101-pdjje2lkv3p941e03hkrhfa7459cr2v8.apps.googleusercontent.com',
+          appId: '1:448618578101:ios:cc6c1dc7a65cc83c',
+          apiKey: 'AIzaSyAHAsf51D0A407EklG1bs-5wA7EbyfNFg0',
+          authDomain: 'react-native-firebase-testing.firebaseapp.com',
+          databaseURL: 'https://react-native-firebase-testing.firebaseio.com',
+          projectId: 'react-native-firebase-testing',
+          storageBucket: 'react-native-firebase-testing.appspot.com',
+          messagingSenderId: '448618578101',
+        };
+      }
       return {
         clientId: '448618578101-pdjje2lkv3p941e03hkrhfa7459cr2v8.apps.googleusercontent.com',
         appId: '1:448618578101:android:cc6c1dc7a65cc83c',
