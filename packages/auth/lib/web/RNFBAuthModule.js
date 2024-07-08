@@ -215,10 +215,16 @@ function authResultToObject(userCredential) {
   };
 }
 
+const instances = {};
 const authStateListeners = {};
 const IdTokenListeners = {};
 const sessionMap = new Map();
 let sessionId = 0;
+
+// Returns a cached Firestore instance.
+function getCachedAuthInstance(appName) {
+  return (instances[appName] ??= getAuth(getApp(appName)));
+}
 
 /**
  * This is a 'NativeModule' for the web platform.
@@ -244,8 +250,7 @@ export default {
     }
 
     return guard(() => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
 
       authStateListeners[appName] = onAuthStateChanged(auth, user => {
         const body = {
@@ -274,8 +279,7 @@ export default {
     }
 
     return guard(() => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
 
       IdTokenListeners[appName] = onIdTokenChanged(auth, user => {
         const body = {
@@ -314,8 +318,7 @@ export default {
    */
   signOut(appName) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
 
       if (auth.currentUser === null) {
         return promiseNoUser(true);
@@ -333,8 +336,7 @@ export default {
    */
   signInAnonymously(appName) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
       const credential = await signInAnonymously(auth);
       return authResultToObject(credential);
     });
@@ -349,8 +351,7 @@ export default {
    */
   async createUserWithEmailAndPassword(appName, email, password) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
       const credential = await createUserWithEmailAndPassword(auth, email, password);
       return authResultToObject(credential);
     });
@@ -365,8 +366,7 @@ export default {
    */
   async signInWithEmailAndPassword(appName, email, password) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
       const credential = await signInWithEmailAndPassword(auth, email, password);
       return authResultToObject(credential);
     });
@@ -381,8 +381,7 @@ export default {
    */
   async signInWithEmailLink(appName, email, emailLink) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
       const credential = await signInWithEmailLink(auth, email, emailLink);
       return authResultToObject(credential);
     });
@@ -396,8 +395,7 @@ export default {
    */
   async signInWithCustomToken(appName, token) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
       const credential = await signInWithCustomToken(auth, token);
       return authResultToObject(credential);
     });
@@ -419,8 +417,7 @@ export default {
    */
   async sendPasswordResetEmail(appName, email, settings) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
       // TODO(ehesp): Looks like settings comes through as expected, but double check.
       await sendPasswordResetEmail(auth, email, settings);
       return promiseNoUser();
@@ -436,8 +433,7 @@ export default {
    */
   async sendSignInLinkToEmail(appName, email, settings) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
       // TODO(ehesp): Looks like settings comes through as expected, but double check.
       await sendPasswordResetEmail(auth, email, settings);
       return promiseNoUser();
@@ -455,8 +451,7 @@ export default {
    */
   async delete() {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
 
       if (auth.currentUser === null) {
         return promiseNoUser(true);
@@ -474,8 +469,7 @@ export default {
    */
   async reload() {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
 
       if (auth.currentUser === null) {
         return promiseNoUser(true);
@@ -494,8 +488,7 @@ export default {
    */
   async sendEmailVerification(appName, actionCodeSettings) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
 
       if (auth.currentUser === null) {
         return promiseNoUser(true);
@@ -516,8 +509,7 @@ export default {
    */
   async verifyBeforeUpdateEmail(appName, email, actionCodeSettings) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
 
       if (auth.currentUser === null) {
         return promiseNoUser(true);
@@ -537,8 +529,7 @@ export default {
    */
   async updateEmail(appName, email) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
 
       if (auth.currentUser === null) {
         return promiseNoUser(true);
@@ -557,8 +548,7 @@ export default {
    */
   async updatePassword(appName, password) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
 
       if (auth.currentUser === null) {
         return promiseNoUser(true);
@@ -579,8 +569,7 @@ export default {
    */
   async updatePhoneNumber(appName, provider, authToken, authSecret) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
 
       if (auth.currentUser === null) {
         return promiseNoUser(true);
@@ -616,8 +605,7 @@ export default {
    */
   async updateProfile(appName, props) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
 
       if (auth.currentUser === null) {
         return promiseNoUser(true);
@@ -642,8 +630,7 @@ export default {
    */
   async signInWithCredential(appName, provider, authToken, authSecret) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
       const credential = getAuthCredential(auth, provider, authToken, authSecret);
 
       if (credential === null) {
@@ -661,8 +648,7 @@ export default {
   // TODO...
   async signInWithProvider(appName, provider) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
 
       if (provider.providerId === null) {
         return rejectPromiseWithCodeAndMessage(
@@ -698,8 +684,7 @@ export default {
    */
   async getSession(appName) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
 
       if (auth.currentUser === null) {
         return promiseNoUser(true);
@@ -756,8 +741,7 @@ export default {
    */
   async confirmPasswordReset(appName, code, newPassword) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
       await confirmPasswordReset(auth, code, newPassword);
       return promiseNoUser();
     });
@@ -771,8 +755,7 @@ export default {
    */
   async applyActionCode(appName, code) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
       await applyActionCode(auth, code);
     });
   },
@@ -785,8 +768,7 @@ export default {
    */
   async checkActionCode(appName, code) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
       const result = await checkActionCode(auth, code);
 
       return {
@@ -814,8 +796,7 @@ export default {
    */
   async unlink(appName, providerId) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
 
       if (auth.currentUser === null) {
         return promiseNoUser(true);
@@ -840,8 +821,7 @@ export default {
    */
   async getIdToken(appName, forceRefresh) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
 
       if (auth.currentUser === null) {
         return promiseNoUser(true);
@@ -860,8 +840,7 @@ export default {
    */
   async getIdTokenResult(appName, forceRefresh) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
 
       if (auth.currentUser === null) {
         return promiseNoUser(true);
@@ -893,8 +872,7 @@ export default {
    */
   async fetchSignInMethodsForEmail(appName, email) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
       const methods = await fetchSignInMethodsForEmail(auth, email);
       return methods;
     });
@@ -908,8 +886,7 @@ export default {
    */
   setLanguageCode(appName, code) {
     return guard(() => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
       auth.languageCode = code;
     });
   },
@@ -922,8 +899,7 @@ export default {
    */
   setTenantId() {
     return guard((appName, tenantId) => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
       auth.tenantId = tenantId;
     });
   },
@@ -935,8 +911,7 @@ export default {
    */
   useDeviceLanguage(appName) {
     return guard(() => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
       useDeviceLanguage(auth);
     });
   },
@@ -947,8 +922,7 @@ export default {
    */
   verifyPasswordResetCode(appName, code) {
     return guard(async () => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
       const email = await verifyPasswordResetCode(auth, code);
       return email;
     });
@@ -963,8 +937,7 @@ export default {
    */
   useEmulator(appName, host, port) {
     return guard(() => {
-      const app = getApp(appName);
-      const auth = getAuth(app);
+      const auth = getCachedAuthInstance(appName);
       connectAuthEmulator(auth, `http://${host}:${port}`);
     });
   },
