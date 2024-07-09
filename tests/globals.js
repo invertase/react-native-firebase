@@ -21,8 +21,9 @@ import 'should-sinon';
 import 'should';
 import shouldMatchers from 'should';
 
-// Set debugging before importing any RNFB packages.
-global.RNFBDebug = true;
+// Toggle this to see bridge and event debug logs
+// specific to the React Native Firebase packages
+global.RNFBDebug = false;
 
 // RNFB packages.
 import '@react-native-firebase/analytics';
@@ -414,16 +415,5 @@ global.jet = {
   },
 };
 
-// TODO
-global.isCI = false;
-// global.isCI = !!process.env.CI;
-
-firebase.database().useEmulator('localhost', 9000);
-firebase.auth().useEmulator('http://localhost:9099');
-firebase.firestore().useEmulator('localhost', 8080);
-firebase.storage().useEmulator('localhost', 9199);
-firebase.functions().useEmulator('localhost', 5001);
-
-// Firestore caches documents locally (a great feature!) and that confounds tests
-// as data from previous runs pollutes following runs until re-install the app. Clear it.
-firebase.firestore().clearPersistence();
+// TODO toggle this correct in CI only.
+global.isCI = true;

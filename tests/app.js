@@ -20,6 +20,33 @@ import { StyleSheet, View, StatusBar, AppRegistry } from 'react-native';
 
 import { JetProvider, ConnectionText, StatusEmoji, StatusText } from 'jet';
 
+const platformSupportedModules = [];
+
+if (Platform.other) {
+  platformSupportedModules.push('app');
+  platformSupportedModules.push('functions');
+  // TODO add more modules here once they are supported.
+}
+
+if (!Platform.other) {
+  platformSupportedModules.push('app');
+  platformSupportedModules.push('functions');
+  platformSupportedModules.push('auth');
+  platformSupportedModules.push('database');
+  platformSupportedModules.push('firestore');
+  platformSupportedModules.push('storage');
+  platformSupportedModules.push('messaging');
+  platformSupportedModules.push('perf');
+  platformSupportedModules.push('analytics');
+  platformSupportedModules.push('remoteConfig');
+  platformSupportedModules.push('crashlytics');
+  platformSupportedModules.push('inAppMessaging');
+  platformSupportedModules.push('installations');
+  platformSupportedModules.push('appCheck');
+  platformSupportedModules.push('appDistribution');
+  platformSupportedModules.push('dynamicLinks');
+  platformSupportedModules.push('ml');
+}
 // Registering an error handler that always throw unhandled exceptions
 // This is to enable Jet to exit on uncaught errors
 const originalHandler = ErrorUtils.getGlobalHandler();
@@ -31,6 +58,24 @@ ErrorUtils.setGlobalHandler((err, isFatal) => {
 function loadTests(_) {
   describe('React Native Firebase', function () {
     this.retries(4);
+
+    before(async function () {
+      if (platformSupportedModules.includes('functions'))
+        firebase.functions().useEmulator('localhost', 5001);
+      if (platformSupportedModules.includes('database'))
+        firebase.database().useEmulator('localhost', 9000);
+      if (platformSupportedModules.includes('auth'))
+        firebase.auth().useEmulator('http://localhost:9099');
+      if (platformSupportedModules.includes('firestore')) {
+        firebase.firestore().useEmulator('localhost', 8080);
+        // Firestore caches documents locally (a great feature!) and that confounds tests
+        // as data from previous runs pollutes following runs until re-install the app. Clear it.
+        firebase.firestore().clearPersistence();
+      }
+      if (platformSupportedModules.includes('storage'))
+        firebase.storage().useEmulator('localhost', 9199);
+    });
+
     beforeEach(async function beforeEachTest() {
       const retry = this.currentTest.currentRetry();
       if (retry > 0) {
@@ -46,51 +91,101 @@ function loadTests(_) {
         await Utils.sleep(5000 * retry);
       } else {
         // Allow time for things to settle between tests.
-        await Utils.sleep(100);
+        await Utils.sleep(50);
+        
       }
     });
-    const appTests = require.context('../packages/app/e2e', true, /\.e2e\.js$/);
-    appTests.keys().forEach(appTests);
-    const appCheckTests = require.context('../packages/app-check/e2e', true, /\.e2e\.js$/);
-    appCheckTests.keys().forEach(appCheckTests);
-    const appDistributionTests = require.context(
-      '../packages/app-distribution/e2e',
-      true,
-      /\.e2e\.js$/,
-    );
-    appDistributionTests.keys().forEach(appDistributionTests);
-    const analyticsTests = require.context('../packages/analytics/e2e', true, /\.e2e\.js$/);
-    analyticsTests.keys().forEach(analyticsTests);
-    const authTests = require.context('../packages/auth/e2e', true, /\.e2e\.js$/);
-    authTests.keys().forEach(authTests);
-    const crashlyticsTests = require.context('../packages/crashlytics/e2e', true, /\.e2e\.js$/);
-    crashlyticsTests.keys().forEach(crashlyticsTests);
-    const databaseTests = require.context('../packages/database/e2e', true, /\.e2e\.js$/);
-    databaseTests.keys().forEach(databaseTests);
-    const dynamicLinksTests = require.context('../packages/dynamic-links/e2e', true, /\.e2e\.js$/);
-    dynamicLinksTests.keys().forEach(dynamicLinksTests);
-    const firestoreTests = require.context('../packages/firestore/e2e', true, /\.e2e\.js$/);
-    firestoreTests.keys().forEach(firestoreTests);
-    const functionsTests = require.context('../packages/functions/e2e', true, /\.e2e\.js$/);
-    functionsTests.keys().forEach(functionsTests);
-    const perfTests = require.context('../packages/perf/e2e', true, /\.e2e\.js$/);
-    perfTests.keys().forEach(perfTests);
-    const messagingTests = require.context('../packages/messaging/e2e', true, /\.e2e\.js$/);
-    messagingTests.keys().forEach(messagingTests);
-    const mlTests = require.context('../packages/ml/e2e', true, /\.e2e\.js$/);
-    mlTests.keys().forEach(mlTests);
-    const inAppMessagingTests = require.context(
-      '../packages/in-app-messaging/e2e',
-      true,
-      /\.e2e\.js$/,
-    );
-    inAppMessagingTests.keys().forEach(inAppMessagingTests);
-    const installationsTests = require.context('../packages/installations/e2e', true, /\.e2e\.js$/);
-    installationsTests.keys().forEach(installationsTests);
-    const remoteConfigTests = require.context('../packages/remote-config/e2e', true, /\.e2e\.js$/);
-    remoteConfigTests.keys().forEach(remoteConfigTests);
-    const storageTests = require.context('../packages/storage/e2e', true, /\.e2e\.js$/);
-    storageTests.keys().forEach(storageTests);
+
+    // Load tests for each Firebase module.
+    if (platformSupportedModules.includes('app')) {
+      const appTests = require.context('../packages/app/e2e', true, /\.e2e\.js$/);
+      appTests.keys().forEach(appTests);
+    }
+    if (platformSupportedModules.includes('functions')) {
+      const functionsTests = require.context('../packages/functions/e2e', true, /\.e2e\.js$/);
+      functionsTests.keys().forEach(functionsTests);
+    }
+    if (platformSupportedModules.includes('appCheck')) {
+      const appCheckTests = require.context('../packages/app-check/e2e', true, /\.e2e\.js$/);
+      appCheckTests.keys().forEach(appCheckTests);
+    }
+    if (platformSupportedModules.includes('appDistribution')) {
+      const appDistributionTests = require.context(
+        '../packages/app-distribution/e2e',
+        true,
+        /\.e2e\.js$/,
+      );
+      appDistributionTests.keys().forEach(appDistributionTests);
+    }
+    if (platformSupportedModules.includes('analytics')) {
+      const analyticsTests = require.context('../packages/analytics/e2e', true, /\.e2e\.js$/);
+      analyticsTests.keys().forEach(analyticsTests);
+    }
+    if (platformSupportedModules.includes('auth')) {
+      const authTests = require.context('../packages/auth/e2e', true, /\.e2e\.js$/);
+      authTests.keys().forEach(authTests);
+    }
+    if (platformSupportedModules.includes('crashlytics')) {
+      const crashlyticsTests = require.context('../packages/crashlytics/e2e', true, /\.e2e\.js$/);
+      crashlyticsTests.keys().forEach(crashlyticsTests);
+    }
+    if (platformSupportedModules.includes('database')) {
+      const databaseTests = require.context('../packages/database/e2e', true, /\.e2e\.js$/);
+      databaseTests.keys().forEach(databaseTests);
+    }
+
+    if (platformSupportedModules.includes('dynamicLinks')) {
+      const dynamicLinksTests = require.context(
+        '../packages/dynamic-links/e2e',
+        true,
+        /\.e2e\.js$/,
+      );
+      dynamicLinksTests.keys().forEach(dynamicLinksTests);
+    }
+    if (platformSupportedModules.includes('firestore')) {
+      const firestoreTests = require.context('../packages/firestore/e2e', true, /\.e2e\.js$/);
+      firestoreTests.keys().forEach(firestoreTests);
+    }
+    if (platformSupportedModules.includes('perf')) {
+      const perfTests = require.context('../packages/perf/e2e', true, /\.e2e\.js$/);
+      perfTests.keys().forEach(perfTests);
+    }
+    if (platformSupportedModules.includes('messaging')) {
+      const messagingTests = require.context('../packages/messaging/e2e', true, /\.e2e\.js$/);
+      messagingTests.keys().forEach(messagingTests);
+    }
+    if (platformSupportedModules.includes('ml')) {
+      const mlTests = require.context('../packages/ml/e2e', true, /\.e2e\.js$/);
+      mlTests.keys().forEach(mlTests);
+    }
+    if (platformSupportedModules.includes('inAppMessaging')) {
+      const inAppMessagingTests = require.context(
+        '../packages/in-app-messaging/e2e',
+        true,
+        /\.e2e\.js$/,
+      );
+      inAppMessagingTests.keys().forEach(inAppMessagingTests);
+    }
+    if (platformSupportedModules.includes('installations')) {
+      const installationsTests = require.context(
+        '../packages/installations/e2e',
+        true,
+        /\.e2e\.js$/,
+      );
+      installationsTests.keys().forEach(installationsTests);
+    }
+    if (platformSupportedModules.includes('remoteConfig')) {
+      const remoteConfigTests = require.context(
+        '../packages/remote-config/e2e',
+        true,
+        /\.e2e\.js$/,
+      );
+      remoteConfigTests.keys().forEach(remoteConfigTests);
+    }
+    if (platformSupportedModules.includes('storage')) {
+      const storageTests = require.context('../packages/storage/e2e', true, /\.e2e\.js$/);
+      storageTests.keys().forEach(storageTests);
+    }
   });
 }
 
