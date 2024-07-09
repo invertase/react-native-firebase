@@ -1,4 +1,5 @@
 import {
+  getApps,
   getApp,
   getAuth,
   onAuthStateChanged,
@@ -226,6 +227,20 @@ function getCachedAuthInstance(appName) {
   return (instances[appName] ??= getAuth(getApp(appName)));
 }
 
+// getConstants
+const CONSTANTS = {
+  APP_LANGUAGE: {},
+  APP_USER: {},
+};
+
+for (const appName of getApps()) {
+  const instance = getAuth(getApp(appName));
+  CONSTANTS.APP_LANGUAGE[appName] = instance.languageCode;
+  if (instance.currentUser) {
+    CONSTANTS.APP_USER[appName] = userToObject(instance.currentUser);
+  }
+}
+
 /**
  * This is a 'NativeModule' for the web platform.
  * Methods here are identical to the ones found in
@@ -233,6 +248,9 @@ function getCachedAuthInstance(appName) {
  * java methods on Android.
  */
 export default {
+  // Expose all the constants.
+  ...CONSTANTS,
+
   configureAuthDomain() {
     return rejectPromiseWithCodeAndMessage(
       'unsupported',
