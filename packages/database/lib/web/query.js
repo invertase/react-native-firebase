@@ -36,14 +36,14 @@ export function getQueryInstance(dbRef, modifiers) {
     }
 
     if (type === 'limit') {
-      const { limit } = modifier;
+      const { value } = modifier;
 
       switch (name) {
         case 'limitToLast':
-          constraints.push(limitToLast(limit));
+          constraints.push(limitToLast(value));
           break;
         case 'limitToFirst':
-          constraints.push(limitToFirst(limit));
+          constraints.push(limitToFirst(value));
           break;
       }
     }
