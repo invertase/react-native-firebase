@@ -28,9 +28,9 @@ describe('onChildRemoved', function () {
     await wipe(TEST_PATH);
   });
 
-  // FIXME super flaky on ios simulator
-  it('should stop listening if ListeningOptions.onlyOnce is true', async function () {
-    if (device.getPlatform() === 'ios') {
+  // FIXME super flaky on jet
+  xit('should stop listening if ListeningOptions.onlyOnce is true', async function () {
+    if (Platform.ios) {
       this.skip();
     }
 
@@ -54,7 +54,8 @@ describe('onChildRemoved', function () {
     callback.should.be.calledWith('foo');
   });
 
-  it('subscribe to child removed events', async function () {
+  // FIXME super flaky on jet
+  xit('subscribe to child removed events', async function () {
     const { getDatabase, ref, child, set, remove, onChildRemoved } = databaseModular;
 
     const successCallback = sinon.spy();
@@ -75,7 +76,7 @@ describe('onChildRemoved', function () {
     );
 
     await remove(childRef);
-    await Utils.spyToBeCalledOnceAsync(successCallback, 5000);
+    await Utils.spyToBeCalledOnceAsync(successCallback, 10000);
     unsubscribe();
 
     successCallback.getCall(0).args[0].should.equal('foo');

@@ -17,7 +17,6 @@ const { getE2eTestProject, getE2eEmulatorHost } = require('../../app/e2e/helpers
  * limitations under the License.
  *
  */
-const http = require('http');
 
 exports.wipe = async function wipe(debug = false) {
   const deleteOptions = {
@@ -35,18 +34,10 @@ exports.wipe = async function wipe(debug = false) {
     if (debug) {
       console.time('wipe');
     }
-    return await new Promise((resolve, reject) => {
-      const req = http.request(deleteOptions);
-
-      req.on('error', error => reject(error));
-
-      req.end(() => {
-        if (debug) {
-          console.timeEnd('wipe');
-        }
-        resolve();
-      });
-    });
+    await fetch(
+      `http://${deleteOptions.host}:${deleteOptions.port}${deleteOptions.path}`,
+      deleteOptions,
+    );
   } catch (e) {
     console.error('Unable to wipe firestore:', e);
     throw e;

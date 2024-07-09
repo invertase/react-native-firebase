@@ -27,9 +27,9 @@ concurrency:
 jobs:
   ios:
     name: iOS
-    runs-on: macos-14
+    runs-on: macos-14-xlarge
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
-    timeout-minutes: 100
+    timeout-minutes: 60
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
@@ -59,13 +59,13 @@ jobs:
           echo "metro-cache=$HOME/.metro" >> $GITHUB_OUTPUT
           echo "xcode-version=$(xcodebuild -version|tail -1|cut -f3 -d' ')" >> $GITHUB_OUTPUT
 
-      - uses: actions/cache/restore@v4
-        name: Yarn Cache Restore
+      - uses: actions/cache@v4
+        name: Yarn Cache
         id: yarn-cache
         with:
           path: .yarn/cache
-          key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
-          restore-keys: ${{ runner.os }}-yarn-v1
+          key: ${{ runner.os }}-ios-yarn-v1-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.os }}-ios-yarn-v1
 
       - uses: actions/cache@v4
         name: Detox Framework Cache
@@ -78,7 +78,7 @@ jobs:
       - uses: hendrikmuhs/ccache-action@v1
         name: Xcode Compile Cache
         with:
-          key: ${{ runner.os }}-v2 # makes a unique key w/related restore key internally
+          key: ${{ runner.os }}-ios-v3 # makes a unique key w/related restore key internally
           create-symlink: true
           max-size: 1500M
 
@@ -108,8 +108,8 @@ jobs:
         id: pods-cache
         with:
           path: tests/ios/Pods
-          key: ${{ runner.os }}-pods-v2-${{ hashFiles('tests/ios/Podfile.lock') }}
-          restore-keys: ${{ runner.os }}-pods-v2
+          key: ${{ runner.os }}-ios-pods-v3-${{ hashFiles('tests/ios/Podfile.lock') }}
+          restore-keys: ${{ runner.os }}-ios-pods-v3
 
       - name: Pod Install
         uses: nick-fields/retry@v3
@@ -128,6 +128,13 @@ jobs:
 
       - name: Start Firestore Emulator
         run: yarn tests:emulator:start-ci
+
+      # https://bitrise.io/blog/post/xcode-15-performance-regressions
+      - name: Install yeetd
+        run: |
+          wget https://github.com/biscuitehh/yeetd/releases/download/1.0/yeetd-normal.pkg
+          sudo installer -pkg yeetd-normal.pkg -target /
+          yeetd &
 
       - name: Install brew utilities
         uses: nick-fields/retry@v3
@@ -158,8 +165,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.workflow-variables.outputs.metro-cache }}
-          key: ${{ runner.os }}-metro-v1-${{ github.run_id }}
-          restore-keys: ${{ runner.os }}-metro-v1
+          key: ${{ runner.os }}-ios-metro-v1-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-ios-metro-v1
 
       - name: Pre-fetch Javascript bundle
         run: |
@@ -210,10 +217,3 @@ jobs:
       - uses: codecov/codecov-action@v4
         with:
           verbose: true
-
-      - uses: actions/cache/save@v4
-        name: Yarn Cache Save
-        if: "${{ github.ref == 'refs/heads/main' }}"
-        with:
-          path: .yarn/cache
-          key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}

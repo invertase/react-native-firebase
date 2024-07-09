@@ -17,6 +17,7 @@
 
 import {
   isIOS,
+  isOther,
   isNull,
   isObject,
   isString,
@@ -201,7 +202,7 @@ export function setLogLevel(logLevel) {
     throw new Error('LogLevel must be one of "error", "warn", "info", "debug", "verbose"');
   }
 
-  if (isIOS) {
+  if (isIOS || isOther) {
     getAppModule().setLogLevel(logLevel);
   }
 }

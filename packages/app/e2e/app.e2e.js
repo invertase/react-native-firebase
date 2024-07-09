@@ -16,19 +16,22 @@
  */
 
 describe('modular', function () {
-  describe('firebase v8 compatibility', function () {
+  describe('firebase v8 compat', function () {
     it('it should allow read the default app from native', function () {
+      if (Platform.other) return; // Not supported on non-native platforms.
       // app is created in tests app before all hook
       should.equal(firebase.app()._nativeInitialized, true);
       should.equal(firebase.app().name, '[DEFAULT]');
     });
 
     it('it should create js apps for natively initialized apps', function () {
+      if (Platform.other) return; // Not supported on non-native platforms.
       should.equal(firebase.app('secondaryFromNative')._nativeInitialized, true);
       should.equal(firebase.app('secondaryFromNative').name, 'secondaryFromNative');
     });
 
     it('natively initialized apps should have options available in js', function () {
+      if (Platform.other) return; // Not supported on non-native platforms.
       const platformAppConfig = FirebaseHelpers.app.config();
       should.equal(firebase.app().options.apiKey, platformAppConfig.apiKey);
       should.equal(firebase.app().options.appId, platformAppConfig.appId);
@@ -45,7 +48,6 @@ describe('modular', function () {
     it('apps should provide an array of apps', function () {
       should.equal(!!firebase.apps.length, true);
       should.equal(firebase.apps.includes(firebase.app('[DEFAULT]')), true);
-      return Promise.resolve();
     });
 
     it('apps can get and set data collection', async function () {
@@ -93,8 +95,8 @@ describe('modular', function () {
     });
 
     it('should error if dynamic app initialization values are invalid', async function () {
-      // firebase-android-sdk will not complain on invalid initialization values, iOS throws
-      if (device.getPlatform() === 'android') {
+      // firebase-android-sdk and js-sdk will not complain on invalid initialization values, iOS throws
+      if (Platform.android || Platform.other) {
         return;
       }
 
@@ -120,7 +122,7 @@ describe('modular', function () {
       }
     });
 
-    it('apps can be deleted, but only once', async function () {
+    it('apps can be deleted, but only if it exists', async function () {
       const name = `testscoreapp${FirebaseHelpers.id}`;
       const platformAppConfig = FirebaseHelpers.app.config();
       const newApp = await firebase.initializeApp(platformAppConfig, name);
@@ -145,6 +147,7 @@ describe('modular', function () {
     });
 
     it('prevents the default app from being deleted', async function () {
+      if (Platform.other) return; // We can delete the default app on other platforms.
       try {
         await firebase.app().delete();
       } catch (e) {
@@ -161,8 +164,9 @@ describe('modular', function () {
     });
   });
 
-  describe('firebase', function () {
+  describe('firebase v9 modular', function () {
     it('it should allow read the default app from native', function () {
+      if (Platform.other) return; // Not supported on non-native platforms.
       const { getApp } = modular;
 
       // app is created in tests app before all hook
@@ -171,6 +175,7 @@ describe('modular', function () {
     });
 
     it('it should create js apps for natively initialized apps', function () {
+      if (Platform.other) return; // Not supported on non-native platforms.
       const { getApp } = modular;
 
       should.equal(getApp('secondaryFromNative')._nativeInitialized, true);
@@ -189,7 +194,7 @@ describe('modular', function () {
 
       try {
         setLogLevel('silent');
-        throw new Error('did not throw on invalid loglevel');
+        throw new Error('did not throw on invalid log level');
       } catch (e) {
         e.message.should.containEql('LogLevel must be one of');
       }
@@ -230,8 +235,8 @@ describe('modular', function () {
     it('should error if dynamic app initialization values are invalid', async function () {
       const { initializeApp, getApps } = modular;
 
-      // firebase-android-sdk will not complain on invalid initialization values, iOS throws
-      if (device.getPlatform() === 'android') {
+      // firebase-android-sdk & js-sdk will not complain on invalid initialization values, iOS throws
+      if (Platform.android || Platform.other) {
         return;
       }
 
@@ -257,7 +262,7 @@ describe('modular', function () {
       }
     });
 
-    it('apps can be deleted, but only once', async function () {
+    it('apps can be deleted, but only if it exists', async function () {
       const { initializeApp, getApp, deleteApp } = modular;
 
       const name = `testscoreapp${FirebaseHelpers.id}`;
@@ -286,6 +291,7 @@ describe('modular', function () {
     });
 
     it('prevents the default app from being deleted', async function () {
+      if (Platform.other) return; // We can delete the default app on other platforms.
       const { getApp, deleteApp } = modular;
 
       try {

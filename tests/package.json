@@ -3,7 +3,8 @@
   "version": "20.1.0",
   "private": true,
   "scripts": {
-    "build:clean": "rimraf dist && rimraf android/build && rimraf android/app/build && rimraf android/.gradle && rimraf ios/build",
+    "build:clean": "rimraf dist && rimraf android/build && rimraf android/app/build && rimraf android/.gradle && rimraf ios/build && rimraf macos/build",
+    "build:macos": "xcodebuild CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace macos/io.invertase.testing.xcworkspace -scheme io.invertase.testing-macOS -configuration Debug -derivedDataPath macos/build | xcbeautify",
     "prepare": "patch-package"
   },
   "dependencies": {
@@ -26,82 +27,28 @@
     "@react-native-firebase/remote-config": "20.1.0",
     "@react-native-firebase/storage": "20.1.0",
     "postinstall-postinstall": "2.1.0",
-    "react": "18.3.1",
-    "react-native": "0.74.2",
-    "react-native-device-info": "^11.1.0"
+    "react": "18.2.0",
+    "react-native": "0.73.4",
+    "react-native-device-info": "^11.1.0",
+    "react-native-macos": "^0.73.0-0",
+    "util": "^0.12.5"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^3.0.3",
-    "@react-native-firebase/private-tests-helpers": "^1.0.0",
     "@react-native/babel-preset": "^0.74.84",
     "@react-native/metro-config": "^0.74.84",
-    "a2a": "^0.2.1",
-    "babel-plugin-istanbul": "^6.1.1",
-    "detox": "^19.13.0",
+    "axios": "^1.5.1",
+    "detox": "20.23.1",
     "firebase": "^10.12.2",
     "firebase-tools": "^13.11.2",
     "jest-circus": "^29.7.0",
     "jest-environment-node": "^29.7.0",
-    "jet": "^0.8.3",
-    "jsonwebtoken": "^9.0.2",
+    "jet": "0.9.0-dev.11",
     "mocha": "^10.4.0",
-    "node-fetch": "^2.7.0",
     "nyc": "^15.1.0",
     "patch-package": "^8.0.0",
-    "pod-install": "^0.2.2",
     "should": "^13.2.3",
     "should-sinon": "0.0.6",
     "sinon": "17.0.0"
-  },
-  "detox": {
-    "test-runner": "mocha",
-    "specs": "e2e",
-    "runner-config": "e2e/.mocharc.js",
-    "configurations": {
-      "ios.sim.debug": {
-        "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
-        "build": "set -o pipefail && xcodebuild VALID_ARCHS=\"`uname -m`\"  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build | xcbeautify",
-        "type": "ios.simulator",
-        "device": {
-          "type": "iPhone 15"
-        }
-      },
-      "ios.sim.release": {
-        "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/testing.app",
-        "build": "export RCT_NO_LAUNCH_PACKAGER=true && set -o pipefail | xcodebuild  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build | xcbeautify",
-        "type": "ios.simulator",
-        "device": {
-          "type": "iPhone 15"
-        }
-      },
-      "android.emu.debug": {
-        "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
-        "build": "cd android && ./gradlew assembleDebug assembleAndroidTest lintDebug -DtestBuildType=debug && cd ..",
-        "type": "android.emulator",
-        "device": {
-          "avdName": "TestingAVD"
-        },
-        "session": {
-          "server": "ws://localhost:60994",
-          "autoStart": true
-        }
-      },
-      "android.emu.debug.windows": {
-        "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
-        "build": "cd android && gradlew.bat assembleDebug assembleAndroidTest lintDebug -DtestBuildType=debug && cd ..",
-        "type": "android.emulator",
-        "device": {
-          "avdName": "TestingAVD"
-        }
-      },
-      "android.emu.release": {
-        "binaryPath": "android/app/build/outputs/apk/release/app-release.apk",
-        "build": "cd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ..",
-        "type": "android.emulator",
-        "device": {
-          "avdName": "TestingAVD"
-        }
-      }
-    }
   }
 }
