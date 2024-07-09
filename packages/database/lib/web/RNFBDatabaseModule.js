@@ -26,7 +26,7 @@ async function guard(fn) {
   try {
     return await fn();
   } catch (e) {
-    return rejectPromise(e);
+    return Promise.reject(getNativeError(error));
   }
 }
 
@@ -37,20 +37,6 @@ function getNativeError(error) {
     code: `database/${error.code}`,
     message: error.message,
   };
-}
-
-/**
- * Returns a structured error object.
- * @param {error} error The error object.
- * @returns {never}
- */
-function rejectPromise(error) {
-  const { code, message } = error;
-  const nativeError = {
-    code,
-    message,
-  };
-  return Promise.reject(nativeError);
 }
 
 // Converts a DataSnapshot to an object.
