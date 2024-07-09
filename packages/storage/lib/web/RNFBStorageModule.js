@@ -372,8 +372,6 @@ export default {
         );
       });
 
-      const snapshot = await promise;
-
       return uploadTaskSnapshotToObject(snapshot);
     });
   },
