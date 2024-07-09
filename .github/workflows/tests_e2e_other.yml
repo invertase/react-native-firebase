@@ -1,4 +1,4 @@
-name: Testing E2E iOS
+name: Testing E2E Other
 
 on:
   pull_request:
@@ -25,15 +25,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  ios:
-    name: iOS
+  other:
+    name: Other
     runs-on: macos-14-xlarge
-    # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
-    timeout-minutes: 60
+    timeout-minutes: 100
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
-      # Set up tool versions
       - uses: actions/setup-node@v4
         with:
           node-version: 18
@@ -64,21 +62,13 @@ jobs:
         id: yarn-cache
         with:
           path: .yarn/cache
-          key: ${{ runner.os }}-ios-yarn-v1-${{ hashFiles('yarn.lock') }}
-          restore-keys: ${{ runner.os }}-ios-yarn-v1
+          key: ${{ runner.os }}-macos-yarn-v1-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.os }}-macos-yarn-v1
 
-      - uses: actions/cache@v4
-        name: Detox Framework Cache
-        id: detox-cache
-        with:
-          path: ~/Library/Detox/ios
-          key: ${{ runner.os }}-detox-framework-cache-${{ steps.workflow-variables.outputs.xcode-version }}
-
-      # Detox is compiled during yarn install, using Xcode, set up cache first
       - uses: hendrikmuhs/ccache-action@v1
         name: Xcode Compile Cache
         with:
-          key: ${{ runner.os }}-ios-v3 # makes a unique key w/related restore key internally
+          key: ${{ runner.os }}-macos-v2
           create-symlink: true
           max-size: 1500M
 
@@ -88,7 +78,7 @@ jobs:
           timeout_minutes: 15
           retry_wait_seconds: 60
           max_attempts: 3
-          command: yarn && yarn lerna:prepare
+          command: DETOX_DISABLE_POSTINSTALL=1 yarn && yarn lerna:prepare
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -107,9 +97,9 @@ jobs:
         name: Cache Pods
         id: pods-cache
         with:
-          path: tests/ios/Pods
-          key: ${{ runner.os }}-ios-pods-v3-${{ hashFiles('tests/ios/Podfile.lock') }}
-          restore-keys: ${{ runner.os }}-ios-pods-v3
+          path: tests/macos/Pods
+          key: ${{ runner.os }}-macos-pods-v2-${{ hashFiles('tests/macos/Podfile.lock') }}
+          restore-keys: ${{ runner.os }}-macos-pods-v2
 
       - name: Pod Install
         uses: nick-fields/retry@v3
@@ -117,7 +107,7 @@ jobs:
           timeout_minutes: 20
           retry_wait_seconds: 30
           max_attempts: 3
-          command: yarn tests:ios:pod:install
+          command: yarn tests:macos:pod:install
 
       - name: Cache Firestore Emulator
         uses: actions/cache@v4
@@ -129,22 +119,15 @@ jobs:
       - name: Start Firestore Emulator
         run: yarn tests:emulator:start-ci
 
-      # https://bitrise.io/blog/post/xcode-15-performance-regressions
-      - name: Install yeetd
-        run: |
-          wget https://github.com/biscuitehh/yeetd/releases/download/1.0/yeetd-normal.pkg
-          sudo installer -pkg yeetd-normal.pkg -target /
-          yeetd &
-
       - name: Install brew utilities
         uses: nick-fields/retry@v3
         with:
           timeout_minutes: 5
           retry_wait_seconds: 60
           max_attempts: 3
-          command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew && HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils xcbeautify
+          command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew && HOMEBREW_NO_AUTO_UPDATE=1 brew install xcbeautify
 
-      - name: Build iOS App
+      - name: Build macos App
         run: |
           export CCACHE_SLOPPINESS=clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
           export CCACHE_FILECLONE=true
@@ -157,7 +140,7 @@ jobs:
           set -o pipefail
           echo $PATH
           which clang
-          yarn tests:ios:build
+          yarn tests:macos:build
           ccache -s
         shell: bash
 
@@ -165,55 +148,32 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.workflow-variables.outputs.metro-cache }}
-          key: ${{ runner.os }}-ios-metro-v1-${{ github.run_id }}
-          restore-keys: ${{ runner.os }}-ios-metro-v1
+          key: ${{ runner.os }}-macos-metro-v1-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-macos-metro-v1
 
       - name: Pre-fetch Javascript bundle
         run: |
-          nohup yarn tests:packager:jet-ci &
+          nohup sh -c "yarn tests:packager:jet-ci > metro.log 2>&1 &"
           printf 'Waiting for packager to come online'
           until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
             printf '.'
             sleep 2
           done
           echo "Packager is online! Preparing bundle..."
-          curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false&inlineSourceMap=true"
+          curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=macos&dev=true&minify=false&inlineSourceMap=true"
           echo "...javascript bundle ready"
 
-      - name: Record App Video
-        # With a little delay so the detox test below has time to spawn it, missing the first part of boot is fine
-        continue-on-error: true
-        run: nohup sh -c "sleep 30 && xcrun simctl io booted recordVideo --codec=h264 -f simulator.mp4 2>&1 &"
-
-      - name: Create Simulator Log
-        # With a little delay so the detox test below has time to spawn it, missing the first part of boot is fine
-        # If you boot the simulator separately from detox, some other race fails and detox testee never sends ready to proxy
-        continue-on-error: true
-        run: nohup sh -c "sleep 30 && xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &"
-
-      - name: Detox Test
-        timeout-minutes: 50
-        run: yarn tests:ios:test-cover
-
-      - name: Stop App Video
-        if: always()
-        run: killall -INT simctl
-
-      - name: Upload App Video
-        uses: actions/upload-artifact@v4
-        continue-on-error: true
-        if: always()
-        with:
-          name: simulator_video
-          path: simulator.mp4
-
-      - name: Upload Simulator Log
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: simulator_log
-          path: simulator.log
+      - name: Jet Test
+        timeout-minutes: 20
+        run: yarn tests:macos:test-cover
 
       - uses: codecov/codecov-action@v4
         with:
           verbose: true
+
+      - name: Upload Metro Log
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: metro_log
+          path: metro.log

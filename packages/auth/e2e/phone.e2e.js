@@ -57,7 +57,9 @@ describe('auth() => Phone', function () {
       });
     });
 
-    describe('verifyPhoneNumber', function () {
+    // TODO these are now heavily rate limited by Firebase so they fail often
+    // or take minutes to complete each test.
+    xdescribe('verifyPhoneNumber', function () {
       it('successfully verifies', async function () {
         const testPhone = getRandomPhoneNumber();
         const confirmResult = await firebase.auth().signInWithPhoneNumber(testPhone);
@@ -254,8 +256,9 @@ describe('auth() => Phone', function () {
     });
 
     // Note: verifyPhoneNumber is not available in the Firebase v9 API. The following tests need to be updated to use the new API.
-
-    describe('verifyPhoneNumber', function () {
+    // TODO these are now heavily rate limited by Firebase so they fail often
+    // or take minutes to complete each test.
+    xdescribe('verifyPhoneNumber', function () {
       it('successfully verifies', async function () {
         const { getAuth, signInWithPhoneNumber } = authModular;
 
