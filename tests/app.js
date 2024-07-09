@@ -25,6 +25,7 @@ const platformSupportedModules = [];
 if (Platform.other) {
   platformSupportedModules.push('app');
   platformSupportedModules.push('functions');
+  platformSupportedModules.push('storage');
   // TODO add more modules here once they are supported.
 }
 
@@ -92,7 +93,6 @@ function loadTests(_) {
       } else {
         // Allow time for things to settle between tests.
         await Utils.sleep(50);
-        
       }
     });
 
