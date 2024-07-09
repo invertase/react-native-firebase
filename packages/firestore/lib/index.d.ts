@@ -78,12 +78,12 @@ export namespace FirebaseFirestoreTypes {
      * The Filter.or() static function used to generate a logical OR query using multiple Filter instances.
      * e.g. Filter.or(Filter('name', '==', 'Ada'), Filter('name', '==', 'Bob'))
      */
-    static or(...queries: QueryFilterConstraint[]): QueryCompositeFilterConstraint;
+    or(...queries: QueryFilterConstraint[]): QueryCompositeFilterConstraint;
     /**
      * The Filter.and() static function used to generate a logical AND query using multiple Filter instances.
      * e.g. Filter.and(Filter('name', '==', 'Ada'), Filter('name', '==', 'Bob'))
      */
-    static and(...queries: QueryFilterConstraint[]): QueryCompositeFilterConstraint;
+    and(...queries: QueryFilterConstraint[]): QueryCompositeFilterConstraint;
   }
   /**
    * The Filter function used to generate an instance of Filter.
