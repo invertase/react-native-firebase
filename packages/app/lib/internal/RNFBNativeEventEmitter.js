@@ -39,6 +39,18 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
       if (global.RNFBDebug) {
         // eslint-disable-next-line no-console
         console.debug(`[RNFB<--Event][📣] ${eventType} <-`, JSON.stringify(args[0]));
+        // Possible leaking test if events are still being received after the test.
+        // This is not super accurate but it's better than nothing, e.g. if doing setup/teardown
+        // logic outside of a test this may cause false positives.
+        if (global.RNFBTest && !global.RNFBDebugInTestLeakDetection) {
+          // eslint-disable-next-line no-console
+          console.debug(
+            `[TEST--->Leak][💡] Possible leaking test detected! An event (☝️) ` +
+              `was received outside of any running tests which may indicates that some ` +
+              `listeners/event subscriptions that have not been unsubscribed from in your ` +
+              `test code. The last test that ran was: "${global.RNFBDebugLastTest}".`,
+          );
+        }
       }
       return listener(...args);
     };

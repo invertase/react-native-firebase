@@ -14652,9 +14652,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jet@npm:0.9.0-dev.11":
-  version: 0.9.0-dev.11
-  resolution: "jet@npm:0.9.0-dev.11"
+"jet@npm:0.9.0-dev.12":
+  version: 0.9.0-dev.12
+  resolution: "jet@npm:0.9.0-dev.12"
   dependencies:
     "@types/mocha": "npm:^10.0.6"
     babel-plugin-istanbul: "npm:^6.1.1"
@@ -14671,7 +14671,7 @@ __metadata:
     react-native: "*"
   bin:
     jet: jet.js
-  checksum: 10/b1feb0a4e6c8c817db599279eb9beebb064eb25bd73e4c3fc12c2ebab8b599f7a530eebd6fb75ef740dc7eee8257e7096f64f6ee8fe315612ccbb68785121b04
+  checksum: 10/4255dbe287d6cf3696ffb02956122fa6ecc6d107c77ac0e2fa6c4700d255da3fb43ea243f16f92358412a7959803f60f9b8dd90ff9c1d01fafc9d880bd0d6af4
   languageName: node
   linkType: hard
 
@@ -19413,7 +19413,7 @@ __metadata:
     firebase-tools: "npm:^13.11.2"
     jest-circus: "npm:^29.7.0"
     jest-environment-node: "npm:^29.7.0"
-    jet: "npm:0.9.0-dev.11"
+    jet: "npm:0.9.0-dev.12"
     mocha: "npm:^10.4.0"
     nyc: "npm:^15.1.0"
     patch-package: "npm:^8.0.0"
