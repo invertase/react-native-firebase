@@ -19,25 +19,8 @@ import {
   onChildRemoved,
   runTransaction,
 } from '@react-native-firebase/app/lib/internal/web/firebaseDatabase';
+import { guard, getWebError, emitEvent } from '@react-native-firebase/app/lib/internal/web/utils';
 import { getQueryInstance } from './query';
-
-// A general purpose guard function to catch errors and return a structured error object.
-async function guard(fn) {
-  try {
-    return await fn();
-  } catch (e) {
-    return Promise.reject(getNativeError(error));
-  }
-}
-
-// Converts a thrown error to a structured error object.
-function getNativeError(error) {
-  return {
-    // JS doesn't expose the `database/` part of the error code.
-    code: `database/${error.code}`,
-    message: error.message,
-  };
-}
 
 // Converts a DataSnapshot to an object.
 function snapshotToObject(snapshot) {
@@ -68,15 +51,31 @@ function snapshotWithPreviousChildToObject(snapshot, previousChildName) {
   };
 }
 
-const instances = {};
+const appInstances = {};
+const databaseInstances = {};
 const onDisconnectRef = {};
 const listeners = {};
 const transactions = {};
+const emulatorForApp = {};
+
+function getCachedAppInstance(appName) {
+  return (appInstances[appName] ??= getApp(appName));
+}
 
 // Returns a cached Firestore instance.
 function getCachedDatabaseInstance(appName, dbURL) {
-  // TODO(ehesp): Does this need to cache based on dbURL too?
-  return (instances[appName] ??= getDatabase(getApp(appName), dbURL));
+  const instance = (databaseInstances[`${appName}|${dbURL}`] ??= getDatabase(
+    getCachedAppInstance(appName),
+    dbURL,
+  ));
+
+  if (emulatorForApp[appName] && !emulatorForApp[appName].connected) {
+    const { host, port } = emulatorForApp[appName];
+    connectDatabaseEmulator(instance, host, port);
+    emulatorForApp[appName].connected = true;
+  }
+
+  return instance;
 }
 
 // Returns a cached onDisconnect instance.
@@ -92,8 +91,8 @@ export default {
    * @returns {Promise<void>}
    */
   goOnline(appName, dbURL) {
-    return guard(() => {
-      const db = getCachedDatabaseInstance(app.name, dbURL);
+    return guard(async () => {
+      const db = getCachedDatabaseInstance(appName, dbURL);
       goOnline(db);
     });
   },
@@ -105,15 +104,19 @@ export default {
    * @returns {Promise<void>}
    */
   goOffline(appName, dbURL) {
-    return guard(() => {
-      const db = getCachedDatabaseInstance(app.name, dbURL);
+    return guard(async () => {
+      const db = getCachedDatabaseInstance(appName, dbURL);
       goOffline(db);
     });
   },
 
   setPersistenceEnabled() {
-    // TODO(ehesp): Should this throw?
-    // no-op on other platforms
+    if (__DEV__) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'The Firebase Database `setPersistenceEnabled` method is not available in the this environment.',
+      );
+    }
     return Promise.resolve();
   },
 
@@ -124,7 +127,7 @@ export default {
    * @param {boolean} enabled - The logging enabled state.
    */
   setLoggingEnabled(app, dbURL, enabled) {
-    return guard(() => {
+    return guard(async () => {
       enableLogging(enabled);
     });
   },
@@ -143,9 +146,10 @@ export default {
    * @returns {Promise<void>}
    */
   useEmulator(appName, dbURL, host, port) {
-    return guard(() => {
+    return guard(async () => {
       const db = getCachedDatabaseInstance(appName, dbURL);
-      connectDatabaseEmulator(db, host, port);
+      // connectDatabaseEmulator(db, host, port);
+      emulatorForApp[appName] = { host, port };
     });
   },
 
@@ -308,23 +312,29 @@ export default {
 
       function sendEvent(data) {
         const event = {
-          data,
-          key,
-          eventType,
-          registration,
+          eventName: 'database_sync_event',
+          body: {
+            data,
+            key,
+            registration,
+            eventType,
+          },
         };
 
-        console.warn('SEND EVENT', event);
+        emitEvent('database_sync_event', event);
       }
 
       function sendError(error) {
         const event = {
-          key,
-          registration,
-          error: getNativeError(error),
+          eventName: 'database_sync_event',
+          body: {
+            key,
+            registration,
+            error: getWebError(error),
+          },
         };
 
-        console.warn('SEND ERROR EVENT', event);
+        emitEvent('database_sync_event', event);
       }
 
       let listener = null;
@@ -497,12 +507,16 @@ export default {
           dbRef,
           async currentData => {
             const event = {
-              currentData,
+              body: {
+                type: 'update',
+                value: currentData,
+              },
               appName,
               transactionId,
+              eventName: 'database_transaction_event',
             };
 
-            console.warn('Transaction send event', event);
+            emitEvent('database_transaction_event', event);
 
             // Wait for the promise to resolve from the `transactionTryCommit` method.
             const updates = await promise;
@@ -519,24 +533,34 @@ export default {
         );
 
         const event = {
-          type: 'complete',
-          timeout: false,
-          interrupted: false,
-          committed,
-          snapshot: snapshotToObject(snapshot),
+          body: {
+            timeout: false,
+            interrupted: false,
+            committed,
+            type: 'complete',
+            snapshot: snapshotToObject(snapshot),
+          },
+          appName,
+          transactionId,
+          eventName: 'database_transaction_event',
         };
 
-        console.warn('Transaction send event', event);
+        emitEvent('database_transaction_event', event);
       } catch (e) {
         const event = {
-          type: 'error',
-          timeout: false,
-          interrupted: false,
-          committed: false,
-          error: getNativeError(e),
+          body: {
+            timeout: false,
+            interrupted: false,
+            committed,
+            type: 'error',
+            error: getWebError(e),
+          },
+          appName,
+          transactionId,
+          eventName: 'database_transaction_event',
         };
 
-        console.warn('Transaction send error event', event);
+        emitEvent('database_transaction_event', event);
       }
     });
   },
