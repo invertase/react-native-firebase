@@ -2342,7 +2342,7 @@ export const firebase: ReactNativeFirebase.Module & {
 
 export * from './modular';
 
-export const Filter: FilterFunction;
+export const Filter: FirebaseFirestoreTypes.FilterFunction;
 
 export default defaultExport;
 
