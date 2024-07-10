@@ -39,6 +39,7 @@ import FirestoreStatics from './FirestoreStatics';
 import FirestoreTransactionHandler from './FirestoreTransactionHandler';
 import FirestoreWriteBatch from './FirestoreWriteBatch';
 import version from './version';
+import fallBackModule from './web/RNFBFirestoreModule';
 
 const namespace = 'firestore';
 
@@ -382,5 +383,5 @@ export const firebase = getFirebaseRoot();
 
 // Register the interop module for non-native platforms.
 for (let i = 0; i < nativeModuleName.length; i++) {
-  setReactNativeModule(nativeModuleName[i], FirebaseFirestoreModule);
+  setReactNativeModule(nativeModuleName[i], fallBackModule);
 }

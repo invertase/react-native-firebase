@@ -20,6 +20,15 @@ import { guard, getWebError, emitEvent } from '@react-native-firebase/app/lib/in
 import { objectToWriteable, readableToObject, parseDocumentBatches } from './convert';
 import { buildQuery } from './query';
 
+function rejectWithCodeAndMessage(code, message) {
+  return Promise.reject(
+    getWebError({
+      code,
+      message,
+    }),
+  );
+}
+
 // Converts a Firestore document snapshot to a plain object.
 function documentSnapshotToObject(snapshot) {
   const exists = snapshot.exists();
@@ -48,13 +57,25 @@ function querySnapshotToObject(snapshot) {
   };
 }
 
-const instances = {};
+const emulatorForApp = {};
+const firestoreInstances = {};
+const appInstances = {};
 const transactionHandler = {};
 const transactionBuffer = {};
 
+function getCachedAppInstance(appName) {
+  return (appInstances[appName] ??= getApp(appName));
+}
+
 // Returns a cached Firestore instance.
 function getCachedFirestoreInstance(appName) {
-  return (instances[appName] ??= getFirestore(getApp(appName)));
+  const instance = (firestoreInstances[appName] ??= getFirestore(getCachedAppInstance(appName)));
+
+  if (emulatorForApp[appName]) {
+    connectFirestoreEmulator(instance, emulatorForApp[appName].host, emulatorForApp[appName].port);
+  }
+
+  return instance;
 }
 
 export default {
@@ -71,11 +92,11 @@ export default {
   },
 
   loadBundle() {
-    return rejectPromiseWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
+    return rejectWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
   },
 
   clearPersistence() {
-    return rejectPromiseWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
+    return rejectWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
   },
 
   /**
@@ -88,11 +109,11 @@ export default {
   },
 
   disableNetwork() {
-    return rejectPromiseWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
+    return rejectWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
   },
 
   enableNetwork() {
-    return rejectPromiseWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
+    return rejectWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
   },
 
   /**
@@ -106,6 +127,7 @@ export default {
     return guard(async () => {
       const firestore = getCachedFirestoreInstance(appName);
       connectFirestoreEmulator(firestore, host, port);
+      emulatorForApp[appName] = { host, port };
     });
   },
 
@@ -117,8 +139,8 @@ export default {
    */
   settings(appName, settings) {
     return guard(() => {
-      const instance = initializeFirestore(getApp(appName), settings);
-      instances[appName] = instance;
+      const instance = initializeFirestore(getCachedAppInstance(appName), settings);
+      firestoreInstances[appName] = instance;
     });
   },
 
@@ -137,19 +159,19 @@ export default {
 
   // Collection
   namedQueryOnSnapshot() {
-    return rejectPromiseWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
+    return rejectWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
   },
 
   collectionOnSnapshot() {
-    return rejectPromiseWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
+    return rejectWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
   },
 
   collectionOffSnapshot() {
-    return rejectPromiseWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
+    return rejectWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
   },
 
   namedQueryGet() {
-    return rejectPromiseWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
+    return rejectWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
   },
 
   /**
@@ -189,7 +211,7 @@ export default {
    */
   collectionGet(appName, path, type, filters, orders, options, getOptions) {
     if (getOptions && getOptions.source === 'cache') {
-      return rejectPromiseWithCodeAndMessage(
+      return rejectWithCodeAndMessage(
         'unsupported',
         'The source cache is not supported in the lite SDK.',
       );
@@ -209,11 +231,11 @@ export default {
 
   // Document
   documentOnSnapshot() {
-    return rejectPromiseWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
+    return rejectWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
   },
 
   documentOffSnapshot() {
-    return rejectPromiseWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
+    return rejectWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
   },
 
   /**
@@ -226,7 +248,7 @@ export default {
   documentGet(appName, path, getOptions) {
     return guard(async () => {
       if (getOptions && getOptions.source === 'cache') {
-        return rejectPromiseWithCodeAndMessage(
+        return rejectWithCodeAndMessage(
           'unsupported',
           'The source cache is not supported in the lite SDK.',
         );
@@ -303,9 +325,9 @@ export default {
       const writesArray = parseDocumentBatches(firestore, writes);
 
       for (const parsed of writesArray) {
-        const { type, path, data } = parsed;
+        const { type, path } = parsed;
         const ref = doc(firestore, path);
-        const data = readableToObject(data);
+        const data = readableToObject(parsed.data);
 
         switch (type) {
           case 'DELETE':
@@ -340,7 +362,7 @@ export default {
    */
   transactionGetDocument(appName, transactionId, path) {
     if (!transactionHandler[transactionId]) {
-      return rejectPromiseWithCodeAndMessage(
+      return rejectWithCodeAndMessage(
         'internal-error',
         'An internal error occurred whilst attempting to find a native transaction by id.',
       );
