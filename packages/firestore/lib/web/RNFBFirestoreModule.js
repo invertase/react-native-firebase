@@ -16,45 +16,9 @@ import {
   writeBatch,
   terminate,
 } from '@react-native-firebase/app/lib/internal/web/firebaseFirestore';
+import { guard, getWebError, emitEvent } from '@react-native-firebase/app/lib/internal/web/utils';
 import { objectToWriteable, readableToObject, parseDocumentBatches } from './convert';
 import { buildQuery } from './query';
-
-// A general purpose guard function to catch errors and return a structured error object.
-async function guard(fn) {
-  try {
-    return await fn();
-  } catch (e) {
-    return rejectPromiseWithCodeAndMessage(e);
-  }
-}
-
-/**
- * Returns a structured error object.
- * @param {string} code - The error code.
- * @param {string} message - The error message.
- */
-function rejectPromiseWithCodeAndMessage(code, message) {
-  return rejectPromise({ code: `firestore/${code}`, message });
-}
-
-/**
- * Returns a structured error object.
- * @param {error} error The error object.
- * @returns {never}
- */
-function rejectPromise(error) {
-  const { code, message, details } = error;
-  const nativeError = {
-    code,
-    message,
-    userInfo: {
-      code: code ? code.replace('firestore/', '') : 'unknown',
-      message,
-      details,
-    },
-  };
-  return Promise.reject(nativeError);
-}
 
 // Converts a Firestore document snapshot to a plain object.
 function documentSnapshotToObject(snapshot) {
@@ -427,9 +391,12 @@ export default {
         await runTransaction(firestore, tsx => {
           transactionHandler[transactionId] = tsx;
 
-          // const event = { type: 'update' };
-          // TODO(ehesp): Send transaction event (rnfb_firestore_transaction_event)
-          // SendEvent('rnfb_firestore_transaction_event', event, appName, transactionId);
+          emitEvent('firestore_transaction_event', {
+            eventName: 'firestore_transaction_event',
+            body: { type: 'update' },
+            appName,
+            listenerId: transactionId,
+          });
 
           // Get the stored buffer array for the transaction.
           const buffer = transactionBuffer[transactionId];
@@ -462,15 +429,20 @@ export default {
             }
           }
 
-          // const event = { type: 'complete' };
-          // TODO(ehesp): Send transaction event (rnfb_firestore_transaction_event)
-          // SendEvent('rnfb_firestore_transaction_event', event, appName, transactionId);
+          emitEvent('firestore_transaction_event', {
+            eventName: 'firestore_transaction_event',
+            body: { type: 'complete' },
+            appName,
+            listenerId: transactionId,
+          });
         });
       } catch (e) {
-        // TODO(ehesp): Handle error
-        // const event = { type: 'error' };
-        // TODO(ehesp): Send transaction event (rnfb_firestore_transaction_event)
-        // SendEvent('rnfb_firestore_transaction_event', event, appName, transactionId);
+        emitEvent('firestore_transaction_event', {
+          eventName: 'firestore_transaction_event',
+          body: { type: 'error', error: getWebError(e) },
+          appName,
+          listenerId: transactionId,
+        });
       }
     });
   },
