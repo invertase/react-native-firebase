@@ -30,7 +30,7 @@ module.exports = {
     macos: {
       async before(config) {
         try {
-          execSync(`osascript -e 'quit app "io.invertase.testing.app"'`);
+          execSync(`killall "io.invertase.testing"`);
         } catch (e) {
           // noop
         }
@@ -59,7 +59,7 @@ module.exports = {
       },
       async after(config) {
         try {
-          execSync(`osascript -e 'quit app "io.invertase.testing.app"'`);
+          execSync(`killall "io.invertase.testing"`);
         } catch (e) {
           // noop
         }
