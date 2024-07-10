@@ -1,10 +1,10 @@
 import { describe, expect, it } from '@jest/globals';
 
-import firestore, { firebase } from '../lib';
+import firestore, { firebase, Filter } from '../lib';
 
 const COLLECTION = 'firestore';
 
-describe('Storage', function () {
+describe('Firestore', function () {
   describe('namespace', function () {
     it('accessible from firebase.app()', function () {
       const app = firebase.app();
@@ -371,6 +371,18 @@ describe('Storage', function () {
       } catch (e: any) {
         return expect(e.message).toContain("'queryName' must be a non-empty string");
       }
+    });
+
+    it('`Filter` is properly exposed to end user', async function () {
+      const filter1 = Filter('name', '==', 'Tim');
+      const filter2 = Filter('age', '>', 21);
+
+      // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const query = Filter.and(filter1, filter2);
+      // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const query2 = Filter.or(filter1, filter2);
     });
   });
 });
