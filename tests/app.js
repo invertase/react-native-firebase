@@ -58,7 +58,11 @@ ErrorUtils.setGlobalHandler((err, isFatal) => {
 
 function loadTests(_) {
   describe('React Native Firebase', function () {
-    this.retries(4);
+    if (!global.RNFBDebug) {
+      // Only retry tests if not debugging locally,
+      // otherwise it gets annoying to debug.
+      this.retries(4);
+    }
 
     before(async function () {
       if (platformSupportedModules.includes('functions'))
@@ -77,8 +81,25 @@ function loadTests(_) {
         firebase.storage().useEmulator('localhost', 9199);
     });
 
+    afterEach(async function afterEachTest() {
+      global.RNFBDebugLastTest = this.currentTest.title;
+      global.RNFBDebugInTestLeakDetection = false;
+      if (RNFBDebug) {
+        const emoji = this.currentTest.state === 'passed' ? '✅' : '❌';
+        console.debug(`[TEST->Finish][${emoji}] ${this.currentTest.title}`);
+        console.debug('');
+      }
+      // Allow time for things to settle between tests.
+      await Utils.sleep(25);
+    });
+
     beforeEach(async function beforeEachTest() {
       const retry = this.currentTest.currentRetry();
+      if (RNFBDebug) {
+        console.debug('');
+        console.debug('');
+        console.debug(`[TEST-->Start][🧪] ${this.currentTest.title}`);
+      }
       if (retry > 0) {
         if (retry === 1) {
           console.log('');
@@ -94,6 +115,7 @@ function loadTests(_) {
         // Allow time for things to settle between tests.
         await Utils.sleep(50);
       }
+      global.RNFBDebugInTestLeakDetection = true;
     });
 
     // Load tests for each Firebase module.

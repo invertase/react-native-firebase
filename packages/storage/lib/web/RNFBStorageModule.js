@@ -10,29 +10,14 @@ import {
   listAll,
   updateMetadata,
   uploadBytesResumable,
+  ref as firebaseStorageRef,
 } from '@react-native-firebase/app/lib/internal/web/firebaseStorage';
-
-// A general purpose guard function to catch errors and return a structured error object.
-async function guard(fn) {
-  try {
-    return await fn();
-  } catch (e) {
-    return Promise.reject(getNativeError(e));
-  }
-}
-
-// Converts a thrown error to a structured error object.
-function getNativeError(error) {
-  return {
-    // JS doesn't expose the `storage/` part of the error code.
-    code: `storage/${error.code}`,
-    message: error.message,
-  };
-}
+import { guard, getWebError, emitEvent } from '@react-native-firebase/app/lib/internal/web/utils';
+import { Base64 } from '@react-native-firebase/app/lib/common';
 
 function rejectWithCodeAndMessage(code, message) {
   return Promise.reject(
-    getNativeError({
+    getWebError({
       code,
       message,
     }),
@@ -49,6 +34,7 @@ function metadataToObject(metadata) {
     size: metadata.size,
     timeCreated: metadata.timeCreated,
     updated: metadata.updated,
+    md5Hash: metadata.md5Hash,
   };
 
   if ('cacheControl' in metadata) {
@@ -73,6 +59,8 @@ function metadataToObject(metadata) {
 
   if ('customMetadata' in metadata) {
     out.customMetadata = metadata.customMetadata;
+    // To match Android/iOS
+    out.metadata = metadata.customMetadata;
   }
 
   return out;
@@ -82,7 +70,7 @@ function uploadTaskErrorToObject(error, snapshot) {
   return {
     ...uploadTaskSnapshotToObject(snapshot),
     state: 'error',
-    error: getNativeError(error),
+    error: getWebError(error),
   };
 }
 
@@ -90,12 +78,12 @@ function uploadTaskSnapshotToObject(snapshot) {
   return {
     totalBytes: snapshot ? snapshot.totalBytes : 0,
     bytesTransferred: snapshot ? snapshot.bytesTransferred : 0,
-    state: snapshot ? tastStateToString(snapshot.state) : 'unknown',
+    state: snapshot ? taskStateToString(snapshot.state) : 'unknown',
     metadata: snapshot ? metadataToObject(snapshot.metadata) : {},
   };
 }
 
-function tastStateToString(state) {
+function taskStateToString(state) {
   const override = {
     canceled: 'cancelled',
   };
@@ -107,12 +95,13 @@ function tastStateToString(state) {
   return state;
 }
 
-function readableToSettableMetadata(metadata) {
+function makeSettableMetadata(metadata) {
   return {
     cacheControl: metadata.cacheControl,
     contentDisposition: metadata.contentDisposition,
     contentEncoding: metadata.contentEncoding,
     contentType: metadata.contentType,
+    contentLanguage: metadata.contentLanguage,
     customMetadata: metadata.customMetadata,
   };
 }
@@ -125,15 +114,47 @@ function listResultToObject(result) {
   };
 }
 
-const instances = {};
+const emulatorForApp = {};
+const appInstances = {};
+const storageInstances = {};
 const tasks = {};
 
-// Returns a cached Firestore instance.
-function getCachedStorageInstance(appName, url) {
+function getBucketFromUrl(url) {
   const pathWithBucketName = url.substring(5);
   const bucket = url.substring(0, pathWithBucketName.indexOf('/') + 5);
-  // TODO(ehesp): Does this need to cache based on dbURL too?
-  return (instances[`${appName}|${bucket}`] ??= getStorage(getApp(appName), bucket));
+  return bucket;
+}
+
+function getCachedAppInstance(appName) {
+  return (appInstances[appName] ??= getApp(appName));
+}
+
+// Returns a cached Storage instance.
+function getCachedStorageInstance(appName, url) {
+  let instance;
+  if (!url) {
+    instance = getCachedStorageInstance(
+      appName,
+      getCachedAppInstance(appName).options.storageBucket,
+    );
+  } else {
+    const bucket = getBucketFromUrl(url);
+    instance = storageInstances[`${appName}|${bucket}`] ??= getStorage(
+      getCachedAppInstance(appName),
+      bucket,
+    );
+  }
+  if (emulatorForApp[appName]) {
+    connectStorageEmulator(instance, emulatorForApp[appName].host, emulatorForApp[appName].port);
+  }
+  return instance;
+}
+
+// Returns a Storage Reference.
+function getReferenceFromUrl(appName, url) {
+  const path = url.substring(url.indexOf('/') + 1);
+  const instance = getCachedStorageInstance(appName, path);
+  return firebaseStorageRef(instance, url);
 }
 
 const CONSTANTS = {};
@@ -156,7 +177,7 @@ export default {
    */
   delete(appName, url) {
     return guard(async () => {
-      const ref = getCachedStorageInstance(appName, url);
+      const ref = getReferenceFromUrl(appName, url);
       await deleteObject(ref);
     });
   },
@@ -169,7 +190,7 @@ export default {
    */
   getDownloadURL(appName, url) {
     return guard(async () => {
-      const ref = getCachedStorageInstance(appName, url);
+      const ref = getReferenceFromUrl(appName, url);
       const downloadURL = await getDownloadURL(ref);
       return downloadURL;
     });
@@ -183,7 +204,7 @@ export default {
    */
   getMetadata(appName, url) {
     return guard(async () => {
-      const ref = getCachedStorageInstance(appName, url);
+      const ref = getReferenceFromUrl(appName, url);
       const metadata = await getMetadata(ref);
       return metadataToObject(metadata);
     });
@@ -198,7 +219,7 @@ export default {
    */
   list(appName, url, listOptions) {
     return guard(async () => {
-      const ref = getCachedStorageInstance(appName, url);
+      const ref = getReferenceFromUrl(appName, url);
       const listResult = await list(ref, listOptions);
       return listResultToObject(listResult);
     });
@@ -212,7 +233,7 @@ export default {
    */
   listAll(appName, url) {
     return guard(async () => {
-      const ref = getCachedStorageInstance(appName, url);
+      const ref = getReferenceFromUrl(appName, url);
       const listResult = await listAll(ref);
       return listResultToObject(listResult);
     });
@@ -226,14 +247,20 @@ export default {
    */
   updateMetadata(appName, url, metadata) {
     return guard(async () => {
-      const ref = getCachedStorageInstance(appName, url);
-      const updated = await updateMetadata(ref, readableToSettableMetadata(metadata));
+      const ref = getReferenceFromUrl(appName, url);
+      const updated = await updateMetadata(ref, makeSettableMetadata(metadata));
       return metadataToObject(updated);
     });
   },
 
   setMaxDownloadRetryTime() {
-    // TODO(ehesp): No-op or error?
+    if (__DEV__) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'The Firebase Storage `setMaxDownloadRetryTime` method is not available in the this environment.',
+      );
+      return;
+    }
   },
 
   /**
@@ -244,7 +271,7 @@ export default {
    */
   setMaxOperationRetryTime(appName, milliseconds) {
     return guard(async () => {
-      const storage = getStorage(getApp(appName));
+      const storage = getCachedStorageInstance(appName);
       storage.maxOperationRetryTime = milliseconds;
     });
   },
@@ -257,7 +284,7 @@ export default {
    */
   setMaxUploadRetryTime(appName, milliseconds) {
     return guard(async () => {
-      const storage = getStorage(getApp(appName));
+      const storage = getCachedStorageInstance(appName);
       storage.maxUploadRetryTime = milliseconds;
     });
   },
@@ -271,8 +298,9 @@ export default {
    */
   useEmulator(appName, host, port) {
     return guard(async () => {
-      const app = getApp(appName);
-      connectStorageEmulator(app, host, port);
+      const instance = getCachedStorageInstance(appName);
+      connectStorageEmulator(instance, host, port);
+      emulatorForApp[appName] = { host, port };
     });
   },
 
@@ -293,18 +321,18 @@ export default {
    * @param {string} taskId - The task ID.
    * @return {Promise<Object>} The upload snapshot.
    */
-  putString(appName, url, string, format, metadata, taskId) {
+  putString(appName, url, string, format, metadata = {}, taskId) {
     return guard(async () => {
-      const ref = getCachedStorageInstance(appName, url);
+      const ref = getReferenceFromUrl(appName, url);
 
       let base64String = null;
 
       switch (format) {
         case 'base64':
-          base64String = atob(string);
+          base64String = Base64.atob(string);
           break;
         case 'base64url':
-          base64String = atob(string.replace(/_/g, '/').replace(/-/g, '+'));
+          base64String = Base64.atob(string.replace(/_/g, '/').replace(/-/g, '+'));
           break;
       }
 
@@ -318,7 +346,7 @@ export default {
 
       // Start a resumable upload task.
       const task = uploadBytesResumable(ref, byteArray, {
-        ...readableToSettableMetadata(metadata),
+        ...makeSettableMetadata(metadata),
         md5Hash: metadata.md5Hash,
       });
 
@@ -329,44 +357,49 @@ export default {
         task.on(
           'state_changed',
           snapshot => {
-            // On progress.
             const event = {
-              data: uploadTaskSnapshotToObject(snapshot),
+              body: uploadTaskSnapshotToObject(snapshot),
               appName,
               taskId,
+              eventName: 'state_changed',
             };
-
-            console.console.warn('SEND EVENT_STATE_CHANGED event', event);
+            emitEvent('storage_event', event);
           },
           error => {
             const errorSnapshot = uploadTaskErrorToObject(error, task.snapshot);
-
-            if (errorSnapshot != null) {
-              console.warn('SEND EVENT_STATE_CHANGED event', event);
-            }
-
-            console.warn('SEND EVENT_UPLOAD_FAILURE event', event, errorSnapshot);
-
-            delete tasks[taskId];
-
-            // Reject the promise.
-            reject(error);
-          },
-          unsub => {
-            // On complete.
-            unsub();
-            delete tasks[taskId];
-
-            // On progress.
             const event = {
-              data: uploadTaskSnapshotToObject(task.snapshot),
+              body: {
+                ...errorSnapshot,
+                state: 'error',
+              },
               appName,
               taskId,
+              eventName: 'state_changed',
             };
-
-            console.console.warn('SEND EVENT_UPLOAD_SUCCESS event', event);
-
-            // Complete the promise.
+            emitEvent('storage_event', event);
+            emitEvent('storage_event', {
+              ...event,
+              eventName: 'upload_failure',
+            });
+            delete tasks[taskId];
+            reject(error);
+          },
+          () => {
+            delete tasks[taskId];
+            const event = {
+              body: {
+                ...uploadTaskSnapshotToObject(snapshot),
+                state: 'success',
+              },
+              appName,
+              taskId,
+              eventName: 'state_changed',
+            };
+            emitEvent('storage_event', event);
+            emitEvent('storage_event', {
+              ...event,
+              eventName: 'upload_success',
+            });
             resolve(task.snapshot);
           },
         );
@@ -391,6 +424,10 @@ export default {
    * @return {Promise<boolean>} Whether the status was set.
    */
   setTaskStatus(appName, taskId, status) {
+    // TODO this function implementation cannot
+    // be tested right now since we're unable
+    // to create a big enough upload to be able to
+    // pause/resume/cancel it in time.
     return guard(async () => {
       const task = tasks[taskId];
 
@@ -413,7 +450,7 @@ export default {
           break;
       }
 
-      console.warn('SEND EVENT_TASK_STATUS event', {
+      emitEvent('storage_event', {
         data: buildUploadSnapshotMap(task.snapshot),
         appName,
         taskId,
