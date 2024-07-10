@@ -34,6 +34,7 @@ describe('storage() -> StorageTask', function () {
       });
 
       describe('writeToFile()', function () {
+        if (Platform.other) return;
         // TODO - followup - the storage emulator currently inverts not-found / permission error conditions
         // this one returns the permission denied against live storage, but object not found against emulator
         xit('errors if permission denied', async function () {
@@ -51,6 +52,7 @@ describe('storage() -> StorageTask', function () {
         });
 
         it('downloads a file', async function () {
+          if (Platform.other) return;
           const meta = await firebase
             .storage()
             .ref(`${PATH}/list/file1.txt`)
@@ -392,6 +394,7 @@ describe('storage() -> StorageTask', function () {
         });
 
         it('observer calls error callback', async function () {
+          if (Platform.other) return; // TODO refactor to use putString instead of writeToFile/putFile
           const ref = firebase.storage().ref(`${PATH}/uploadOk.jpeg`);
           const { resolve, promise } = Promise.defer();
           const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/notFoundFooFile.bar`;
@@ -411,6 +414,7 @@ describe('storage() -> StorageTask', function () {
         });
 
         it('observer: calls next callback', async function () {
+          if (Platform.other) return; // TODO refactor to use putString instead of writeToFile/putFile
           const ref = firebase.storage().ref(`${PATH}/ok.jpeg`);
           const { resolve, promise } = Promise.defer();
           const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.jpeg`;
@@ -427,6 +431,7 @@ describe('storage() -> StorageTask', function () {
         });
 
         it('observer: calls completion callback', async function () {
+          if (Platform.other) return; // TODO refactor to use putString instead of writeToFile
           const ref = firebase.storage().ref(`${PATH}/ok.jpeg`);
           const { resolve, promise } = Promise.defer();
           const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.jpeg`;
@@ -442,6 +447,7 @@ describe('storage() -> StorageTask', function () {
         });
 
         it('calls error callback', async function () {
+          if (Platform.other) return; // TODO refactor to use putString instead of putFile
           const ref = firebase.storage().ref(`${PATH}/uploadOk.jpeg`);
           const { resolve, promise } = Promise.defer();
           const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/notFoundFooFile.bar`;
@@ -464,6 +470,7 @@ describe('storage() -> StorageTask', function () {
         });
 
         it('calls next callback', async function () {
+          if (Platform.other) return; // TODO refactor to use putString instead of writeToFile
           const ref = firebase.storage().ref(`${PATH}/ok.jpeg`);
           const { resolve, promise } = Promise.defer();
           const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.jpeg`;
@@ -478,6 +485,7 @@ describe('storage() -> StorageTask', function () {
         });
 
         it('calls completion callback', async function () {
+          if (Platform.other) return; // TODO refactor to use putString instead of writeToFile
           const ref = firebase.storage().ref(`${PATH}/ok.jpeg`);
           const { resolve, promise } = Promise.defer();
           const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.jpeg`;
@@ -491,6 +499,7 @@ describe('storage() -> StorageTask', function () {
         });
 
         it('returns a subscribe fn', async function () {
+          if (Platform.other) return; // TODO refactor to use putString instead of writeToFile
           const ref = firebase.storage().ref(`${PATH}/ok.jpeg`);
           const { resolve, promise } = Promise.defer();
           const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.jpeg`;
@@ -506,6 +515,7 @@ describe('storage() -> StorageTask', function () {
         });
 
         it('returns a subscribe fn supporting observer usage syntax', async function () {
+          if (Platform.other) return; // TODO refactor to use putString instead of writeToFile
           const ref = firebase.storage().ref(`${PATH}/ok.jpeg`);
           const { resolve, promise } = Promise.defer();
           const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.jpeg`;
@@ -523,6 +533,7 @@ describe('storage() -> StorageTask', function () {
         });
 
         it('listens to download state', async function () {
+          if (Platform.other) return; // TODO refactor to use putString instead of writeToFile
           const ref = firebase.storage().ref(`${PATH}/ok.jpeg`);
           const { resolve, reject, promise } = Promise.defer();
           const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.gif`;
@@ -542,6 +553,7 @@ describe('storage() -> StorageTask', function () {
         });
 
         it('listens to upload state', async function () {
+          if (Platform.other) return; // TODO refactor to use putString instead of putFile
           const { resolve, reject, promise } = Promise.defer();
           const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.gif`;
           const ref = firebase.storage().ref(`${PATH}/uploadOk.jpeg`);
@@ -763,6 +775,7 @@ describe('storage() -> StorageTask', function () {
     });
 
     describe('writeToFile()', function () {
+      if (Platform.other) return;
       // TODO - followup - the storage emulator currently inverts not-found / permission error conditions
       // this one returns the permission denied against live storage, but object not found against emulator
       xit('errors if permission denied', async function () {
@@ -780,6 +793,7 @@ describe('storage() -> StorageTask', function () {
       });
 
       it('downloads a file', async function () {
+        if (Platform.other) return;
         const { getStorage, ref } = storageModular;
 
         const meta = await ref(getStorage(), `${PATH}/list/file1.txt`).writeToFile(
@@ -1207,6 +1221,7 @@ describe('storage() -> StorageTask', function () {
       });
 
       it('observer calls error callback', async function () {
+        if (Platform.other) return; // TODO refactor to use putString instead of writeToFile/putFile
         const { getStorage, ref, putFile } = storageModular;
         const storageRef = ref(getStorage(), `${PATH}/uploadOk.jpeg`);
         const { resolve, promise } = Promise.defer();
@@ -1230,6 +1245,7 @@ describe('storage() -> StorageTask', function () {
       });
 
       it('observer: calls next callback', async function () {
+        if (Platform.other) return; // TODO refactor to use putString instead of writeToFile
         const { getStorage, ref, writeToFile } = storageModular;
 
         const storageRef = ref(getStorage(), `${PATH}/ok.jpeg`);
@@ -1248,6 +1264,7 @@ describe('storage() -> StorageTask', function () {
       });
 
       it('observer: calls completion callback', async function () {
+        if (Platform.other) return; // TODO refactor to use putString instead of writeToFile
         const { getStorage, ref, writeToFile } = storageModular;
         const storageRef = ref(getStorage(), `${PATH}/ok.jpeg`);
 
@@ -1267,6 +1284,7 @@ describe('storage() -> StorageTask', function () {
       });
 
       it('calls error callback', async function () {
+        if (Platform.other) return; // TODO refactor to use putString instead of writeToFile/putFile
         const { getStorage, ref, putFile } = storageModular;
         const storageRef = ref(getStorage(), `${PATH}/uploadOk.jpeg`);
         const { resolve, promise } = Promise.defer();
@@ -1293,6 +1311,7 @@ describe('storage() -> StorageTask', function () {
       });
 
       it('calls next callback', async function () {
+        if (Platform.other) return; // TODO refactor to use putString instead of writeToFile
         const { getStorage, ref, writeToFile } = storageModular;
         const storageRef = ref(getStorage(), `${PATH}/ok.jpeg`);
 
@@ -1311,6 +1330,7 @@ describe('storage() -> StorageTask', function () {
       });
 
       it('calls completion callback', async function () {
+        if (Platform.other) return; // TODO refactor to use putString instead of writeToFile
         const { getStorage, ref, writeToFile } = storageModular;
         const storageRef = ref(getStorage(), `${PATH}/ok.jpeg`);
         const { resolve, promise } = Promise.defer();
@@ -1327,6 +1347,7 @@ describe('storage() -> StorageTask', function () {
       });
 
       it('returns a subscribe fn', async function () {
+        if (Platform.other) return; // TODO refactor to use putString instead of writeToFile
         const { getStorage, ref, writeToFile } = storageModular;
         const storageRef = ref(getStorage(), `${PATH}/ok.jpeg`);
         const { resolve, promise } = Promise.defer();
@@ -1346,6 +1367,7 @@ describe('storage() -> StorageTask', function () {
       });
 
       it('returns a subscribe fn supporting observer usage syntax', async function () {
+        if (Platform.other) return; // TODO refactor to use putString instead of writeToFile
         const { getStorage, ref, writeToFile } = storageModular;
         const storageRef = ref(getStorage(), `${PATH}/ok.jpeg`);
         const { resolve, promise } = Promise.defer();
@@ -1367,6 +1389,7 @@ describe('storage() -> StorageTask', function () {
       });
 
       it('listens to download state', async function () {
+        if (Platform.other) return; // TODO refactor to use putString instead of writeToFile
         const { getStorage, ref, writeToFile } = storageModular;
         const storageRef = ref(getStorage(), `${PATH}/ok.jpeg`);
         const { resolve, reject, promise } = Promise.defer();
@@ -1389,6 +1412,7 @@ describe('storage() -> StorageTask', function () {
       });
 
       it('listens to upload state', async function () {
+        if (Platform.other) return; // TODO refactor to use putString instead of putFile
         const { getStorage, ref, putFile } = storageModular;
         const storageRef = ref(getStorage(), `${PATH}/ok.jpeg`);
         const { resolve, reject, promise } = Promise.defer();
@@ -1482,6 +1506,7 @@ describe('storage() -> StorageTask', function () {
       });
 
       it('successfully pauses and resumes a download', async function () {
+        if (Platform.other) return; // TODO refactor to use putString instead of writeToFile
         const { getStorage, ref, writeToFile } = storageModular;
         const storageRef = ref(getStorage(), Platform.ios ? '/1mbTestFile.gif' : '/cat.gif');
 

@@ -9,8 +9,9 @@ const PATH = `${PATH_ROOT}/${ID}`;
 const WRITE_ONLY_NAME = 'writeOnly.jpeg';
 
 exports.seed = async function seed(path) {
+  let leakDetectCurrent = global.RNFBDebugInTestLeakDetection;
+  global.RNFBDebugInTestLeakDetection = false;
   // Force the rules for the storage emulator to be what we expect
-
   await testingUtils.initializeTestEnvironment({
     projectId: getE2eTestProject(),
     storage: {
@@ -54,7 +55,11 @@ exports.seed = async function seed(path) {
     await firebase.storage().ref(`${path}/list/file4.txt`).putString('File 4');
     await firebase.storage().ref(`${path}/list/nested/file5.txt`).putString('File 5');
   } catch (e) {
-    throw new Error('unable to seed storage service with test fixture: ' + e);
+    // eslint-disable-next-line no-console
+    console.error('unable to seed storage service with test fixtures');
+    throw e;
+  } finally {
+    global.RNFBDebugInTestLeakDetection = leakDetectCurrent;
   }
 };
 
