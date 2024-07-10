@@ -24,9 +24,9 @@ const platformSupportedModules = [];
 
 if (Platform.other) {
   platformSupportedModules.push('app');
-  // platformSupportedModules.push('functions');
-  // platformSupportedModules.push('storage');
+  platformSupportedModules.push('functions');
   platformSupportedModules.push('database');
+  platformSupportedModules.push('storage');
   // TODO add more modules here once they are supported.
 }
 
