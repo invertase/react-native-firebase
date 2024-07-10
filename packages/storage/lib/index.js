@@ -16,6 +16,7 @@
  */
 
 import { isAndroid, isNumber, isString } from '@react-native-firebase/app/lib/common';
+import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import {
   createModuleNamespace,
   FirebaseModule,
@@ -25,6 +26,7 @@ import StorageReference from './StorageReference';
 import StorageStatics from './StorageStatics';
 import { getGsUrlParts, getHttpUrlParts, handleStorageEvent } from './utils';
 import version from './version';
+import fallBackModule from './web/RNFBStorageModule';
 
 export {
   getStorage,
@@ -230,3 +232,5 @@ export default createModuleNamespace({
 // storage().X(...);
 // firebase.storage().X(...);
 export const firebase = getFirebaseRoot();
+
+setReactNativeModule(nativeModuleName, fallBackModule);
