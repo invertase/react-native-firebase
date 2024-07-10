@@ -21,8 +21,32 @@ import 'should-sinon';
 import 'should';
 import shouldMatchers from 'should';
 
-// Toggle this to see bridge and event debug logs
-// specific to the React Native Firebase packages
+// This flag toggles on detailed debugging logging for RNFB internals.
+//
+// It tracks and logs the following:
+//  - (🔵 -> 🟢/🔴) Native module method calls, their arguments and results.
+//      e.g.:
+//            [RNFB->Native][🔵] RNFBAppModule.eventsPing -> ["pong",{"foo":"bar"}]
+//            [RNFB<-Native][🟢] RNFBAppModule.eventsPing <- undefined
+//            [RNFB->Native][🔵] RNFBFunctionsModule.httpsCallable -> ["[DEFAULT]","us-central1","localhost",5001, ...]
+//            [RNFB<-Native][🔴] RNFBFunctionsModule.httpsCallable <- {"code":"functions/deadline-exceeded", ...}
+//  - (👂 -> 📣) Subscriptions to native event emitters and receiving of events from native emitters.
+//      e.g.:
+//            [RNFB-->Event][👂] storage_event -> listening
+//            [RNFB<--Event][📣] storage_event <- {"body":{...},"appName":"[DEFAULT]","taskId":32,"eventName":"state_changed"}
+//  - (💡) Possible leaking tests detection. This is a heuristic based on the assumption that
+//        tests should not be receiving events when no tests are running. This is not perfect
+//        but it's better than nothing.
+//      e.g.:
+//            [TEST--->Leak][💡] Possible leaking test detected! ... The last test that ran was: "...".
+//  - (🧪 -> ✅/❌) Start and end of each test, mainly for grouping logs.
+//      e.g.:
+//            [TEST-->Start][🧪] uploads a base64url string
+//            [RNFB->Native][🔵] RNFBStorageModule.putString [...]
+//            [RNFB<--Event][📣] storage_event <- {...}
+//            [RNFB<--Event][📣] storage_event <- {...}
+//            [RNFB<-Native][🟢] RNFBStorageModule.putString <- {...}
+//            [TEST->Finish][✅] uploads a base64url string
 global.RNFBDebug = false;
 
 // RNFB packages.
@@ -310,6 +334,7 @@ Object.defineProperty(global, 'modular', {
 
 if (global.Platform.other) {
   firebase.initializeApp(global.FirebaseHelpers.app.config());
+  firebase.initializeApp(global.FirebaseHelpers.app.config(), 'secondaryFromNative');
 }
 
 Object.defineProperty(global, 'functionsModular', {
@@ -417,3 +442,5 @@ global.jet = {
 
 // TODO toggle this correct in CI only.
 global.isCI = true;
+// Used to tell our internals that we are running tests.
+global.RNFBTest = true;
