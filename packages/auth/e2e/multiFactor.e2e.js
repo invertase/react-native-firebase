@@ -11,6 +11,11 @@ const TEST_EMAIL = 'test@example.com';
 const TEST_PASS = 'test1234';
 
 describe('multi-factor modular', function () {
+  // Other does not support multi-factor
+  if (Platform.other) {
+    return;
+  }
+
   describe('firebase v8 compatibility', function () {
     beforeEach(async function () {
       await clearAllUsers();

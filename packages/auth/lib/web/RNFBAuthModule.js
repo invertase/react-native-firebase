@@ -5,6 +5,7 @@ import {
   onAuthStateChanged,
   onIdTokenChanged,
   signInAnonymously,
+  sendSignInLinkToEmail,
   getAdditionalUserInfo,
   multiFactor,
   createUserWithEmailAndPassword,
@@ -18,6 +19,7 @@ import {
   fetchSignInMethodsForEmail,
   sendEmailVerification,
   verifyBeforeUpdateEmail,
+  confirmPasswordReset,
   updateEmail,
   updatePassword,
   updateProfile,
@@ -30,6 +32,7 @@ import {
   getIdTokenResult,
   applyActionCode,
   checkActionCode,
+  EmailAuthProvider,
   FacebookAuthProvider,
   GoogleAuthProvider,
   TwitterAuthProvider,
@@ -37,15 +40,7 @@ import {
   PhoneAuthProvider,
   OAuthProvider,
 } from '@react-native-firebase/app/lib/internal/web/firebaseAuth';
-
-// A general purpose guard function to catch errors and return a structured error object.
-async function guard(fn) {
-  try {
-    return await fn();
-  } catch (e) {
-    return rejectPromiseWithCodeAndMessage(e);
-  }
-}
+import { guard, getWebError, emitEvent } from '@react-native-firebase/app/lib/internal/web/utils';
 
 /**
  * Resolves or rejects an auth method promise without a user (user was missing).
@@ -67,7 +62,7 @@ function promiseNoUser(isError = false) {
  * @param {string} message - The error message.
  */
 function rejectPromiseWithCodeAndMessage(code, message) {
-  return rejectPromise({ code: `auth/${code}`, message });
+  return rejectPromise(getWebError({ code: `auth/${code}`, message }));
 }
 
 /**
@@ -123,29 +118,29 @@ function getAuthCredential(auth, provider, token, secret) {
 
   switch (provider) {
     case 'facebook.com':
-      return new FacebookAuthProvider().credential(token);
+      return FacebookAuthProvider().credential(token);
     case 'google.com':
-      return new GoogleAuthProvider().credential(token, secret);
+      return GoogleAuthProvider().credential(token, secret);
     case 'twitter.com':
-      return new TwitterAuthProvider().credential(token, secret);
+      return TwitterAuthProvider().credential(token, secret);
     case 'github.com':
-      return new GithubAuthProvider().credential(token);
+      return GithubAuthProvider().credential(token);
     case 'apple.com':
       return new OAuthProvider(provider).credential({
         idToken: token,
         rawNonce: secret,
       });
     case 'oauth':
-      return new OAuthProvider(provider).credential({
+      return OAuthProvider(provider).credential({
         idToken: token,
         accessToken: secret,
       });
     case 'phone':
-      return new PhoneAuthProvider(auth).credential(token, secret);
+      return PhoneAuthProvider.credential(token, secret);
     case 'password':
-      return new EmailAuthProvider().credential(token, secret);
+      return EmailAuthProvider.credential(token, secret);
     case 'emailLink':
-      return new EmailAuthProvider().credentialWithLink(token, secret);
+      return EmailAuthProvider.credentialWithLink(token, secret);
     default:
       return null;
   }
@@ -174,8 +169,10 @@ function userInfoToObject(userInfo) {
  */
 function userMetadataToObject(metadata) {
   return {
-    creationTime: metadata.creationTime ? new Date(metadata.creationTime).getTime() : null,
-    creationTime: metadata.lastSignInTime ? new Date(metadata.lastSignInTime).getTime() : null,
+    creationTime: metadata.creationTime ? new Date(metadata.creationTime).toISOString() : null,
+    lastSignInTime: metadata.lastSignInTime
+      ? new Date(metadata.lastSignInTime).toISOString()
+      : null,
   };
 }
 
@@ -251,6 +248,10 @@ export default {
   // Expose all the constants.
   ...CONSTANTS,
 
+  async useUserAccessGroup() {
+    // noop
+  },
+
   configureAuthDomain() {
     return rejectPromiseWithCodeAndMessage(
       'unsupported',
@@ -275,17 +276,14 @@ export default {
       return;
     }
 
-    return guard(() => {
+    return guard(async () => {
       const auth = getCachedAuthInstance(appName);
 
       authStateListeners[appName] = onAuthStateChanged(auth, user => {
-        const body = {
+        emitEvent('auth_state_changed', {
           appName,
           user: user ? userToObject(user) : null,
-        };
-
-        console.log(body);
-        // TODO: Emit event: rnfb_auth_state_changed
+        });
       });
     });
   },
@@ -312,18 +310,15 @@ export default {
       return;
     }
 
-    return guard(() => {
+    return guard(async () => {
       const auth = getCachedAuthInstance(appName);
 
       idTokenListeners[appName] = onIdTokenChanged(auth, user => {
-        const body = {
+        emitEvent('auth_id_token_changed', {
           authenticated: !!user,
           appName,
           user: user ? userToObject(user) : null,
-        };
-
-        console.log(body);
-        // TODO: Emit event: rnfb_auth_id_token_changed
+        });
       });
     });
   },
@@ -483,7 +478,7 @@ export default {
   async sendSignInLinkToEmail(appName, email, settings) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
-      await sendPasswordResetEmail(auth, email, settings);
+      await sendSignInLinkToEmail(auth, email, settings);
       return promiseNoUser();
     });
   },
@@ -497,7 +492,7 @@ export default {
    * @param {string} appName - The name of the app to get the auth instance for.
    * @returns {Promise<null>}
    */
-  async delete() {
+  async delete(appName) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
 
@@ -515,7 +510,7 @@ export default {
    * @param {string} appName - The name of the app to get the auth instance for.
    * @returns {Promise<object>} - The current user object.
    */
-  async reload() {
+  async reload(appName) {
     return guard(async () => {
       const auth = getCachedAuthInstance(appName);
 
@@ -973,7 +968,7 @@ export default {
    * @returns {void}
    */
   setLanguageCode(appName, code) {
-    return guard(() => {
+    return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       auth.languageCode = code;
     });
@@ -985,8 +980,8 @@ export default {
    * @param {string} tenantId - The tenant ID to set.
    * @returns {void}
    */
-  setTenantId() {
-    return guard((appName, tenantId) => {
+  setTenantId(appName, tenantId) {
+    return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       auth.tenantId = tenantId;
     });
@@ -998,7 +993,7 @@ export default {
    * @returns void
    */
   useDeviceLanguage(appName) {
-    return guard(() => {
+    return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       useDeviceLanguage(auth);
     });
@@ -1024,7 +1019,7 @@ export default {
    * @returns {void}
    */
   useEmulator(appName, host, port) {
-    return guard(() => {
+    return guard(async () => {
       const auth = getCachedAuthInstance(appName);
       connectAuthEmulator(auth, `http://${host}:${port}`);
     });
