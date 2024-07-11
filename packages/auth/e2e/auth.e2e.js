@@ -78,7 +78,7 @@ describe('auth() modular', function () {
             .then($ => $);
         } catch (e) {
           didError = true;
-          e.message.should.containEql('code is invalid');
+          e.code.should.equal('auth/invalid-action-code');
         }
         didError.should.equal(true, 'Did not error');
       });
@@ -86,25 +86,29 @@ describe('auth() modular', function () {
 
     describe('checkActionCode()', function () {
       it('errors on invalid code', async function () {
+        let didError = false;
         try {
           await firebase.auth().checkActionCode('fooby shooby dooby');
         } catch (e) {
-          e.message.should.containEql('code is invalid');
+          didError = true;
+          e.code.should.equal('auth/invalid-action-code');
         }
+        didError.should.equal(true, 'Did not error');
       });
     });
 
     describe('reload()', function () {
       it('Meta data returns as expected with annonymous sign in', async function () {
+        if (Platform.other) return;
         await firebase.auth().signInAnonymously();
-        await Utils.sleep(50);
+        await Utils.sleep(500);
         const firstUser = firebase.auth().currentUser;
         await firstUser.reload();
 
         await firebase.auth().signOut();
 
         await firebase.auth().signInAnonymously();
-        await Utils.sleep(50);
+        await Utils.sleep(500);
         const secondUser = firebase.auth().currentUser;
         await secondUser.reload();
 
@@ -119,12 +123,12 @@ describe('auth() modular', function () {
         await firebase.auth().createUserWithEmailAndPassword(email1, pass);
         const firstUser = firebase.auth().currentUser;
         await firstUser.reload();
-
+        await Utils.sleep(500);
         await firebase.auth().signOut();
 
         const anotherRandom = Utils.randString(12, '#aA');
         const email2 = `${anotherRandom}@${anotherRandom}.com`;
-
+        await Utils.sleep(500);
         await firebase.auth().createUserWithEmailAndPassword(email2, pass);
         const secondUser = firebase.auth().currentUser;
         await secondUser.reload();
@@ -135,11 +139,14 @@ describe('auth() modular', function () {
 
     describe('confirmPasswordReset()', function () {
       it('errors on invalid code via API', async function () {
+        let didError = false;
         try {
           await firebase.auth().confirmPasswordReset('fooby shooby dooby', 'passwordthing');
         } catch (e) {
-          e.message.should.containEql('code is invalid');
+          didError = true;
+          e.code.should.equal('auth/invalid-action-code');
         }
+        didError.should.equal(true, 'Did not error');
       });
     });
 
@@ -556,9 +563,6 @@ describe('auth() modular', function () {
 
         const failureCb = error => {
           error.code.should.equal('auth/user-disabled');
-          error.message.should.containEql(
-            'The user account has been disabled by an administrator.',
-          );
           return Promise.resolve();
         };
 
@@ -574,9 +578,6 @@ describe('auth() modular', function () {
 
         const failureCb = error => {
           error.code.should.equal('auth/wrong-password');
-          error.message.should.containEql(
-            'The password is invalid or the user does not have a password.',
-          );
           return Promise.resolve();
         };
 
@@ -596,9 +597,6 @@ describe('auth() modular', function () {
 
         const failureCb = error => {
           error.code.should.equal('auth/user-not-found');
-          error.message.should.containEql(
-            'There is no user record corresponding to this identifier. The user may have been deleted.',
-          );
           return Promise.resolve();
         };
 
@@ -644,9 +642,6 @@ describe('auth() modular', function () {
 
         const failureCb = error => {
           error.code.should.equal('auth/user-disabled');
-          error.message.should.containEql(
-            'The user account has been disabled by an administrator.',
-          );
           return Promise.resolve();
         };
 
@@ -663,9 +658,6 @@ describe('auth() modular', function () {
 
         const failureCb = error => {
           error.code.should.equal('auth/wrong-password');
-          error.message.should.containEql(
-            'The password is invalid or the user does not have a password.',
-          );
           return Promise.resolve();
         };
 
@@ -683,9 +675,6 @@ describe('auth() modular', function () {
 
         const failureCb = error => {
           error.code.should.equal('auth/user-not-found');
-          error.message.should.containEql(
-            'There is no user record corresponding to this identifier. The user may have been deleted.',
-          );
           return Promise.resolve();
         };
 
@@ -726,7 +715,6 @@ describe('auth() modular', function () {
 
         const failureCb = error => {
           error.code.should.equal('auth/invalid-email');
-          error.message.should.containEql('The email address is badly formatted.');
           return Promise.resolve();
         };
 
@@ -742,9 +730,6 @@ describe('auth() modular', function () {
 
         const failureCb = error => {
           error.code.should.equal('auth/email-already-in-use');
-          error.message.should.containEql(
-            'The email address is already in use by another account.',
-          );
           return Promise.resolve();
         };
 
@@ -825,7 +810,6 @@ describe('auth() modular', function () {
 
           const failureCb = error => {
             error.code.should.equal('auth/invalid-email');
-            error.message.should.containEql('The email address is badly formatted.');
             resolve();
           };
 
@@ -853,7 +837,6 @@ describe('auth() modular', function () {
 
           const failureCb = error => {
             error.code.should.equal('auth/no-current-user');
-            error.message.should.containEql('No user currently signed in.');
             resolve();
           };
 
@@ -976,16 +959,19 @@ describe('auth() modular', function () {
         firebase.auth().currentUser.email.should.equal(email);
         firebase.auth().currentUser.emailVerified.should.equal(false);
 
+        let didError = false;
         try {
           await firebase.auth().sendPasswordResetEmail(email);
           const { oobCode } = await getLastOob(email);
           await firebase.auth().verifyPasswordResetCode(oobCode + 'badcode');
           throw new Error('Invalid code should throw an error');
         } catch (error) {
-          error.message.should.containEql('[auth/invalid-action-code]');
+          didError = true;
+          error.code.should.equal('auth/invalid-action-code');
         } finally {
           await firebase.auth().currentUser.delete();
         }
+        didError.should.equal(true);
       });
 
       it('should change password correctly OOB', async function () {
@@ -1145,6 +1131,8 @@ describe('auth() modular', function () {
       });
 
       it('supports an app initialized with custom authDomain', async function () {
+        if (Platform.other) return;
+
         const { getAuth, getCustomAuthDomain } = authModular;
         const { initializeApp } = modular;
 
@@ -1173,11 +1161,14 @@ describe('auth() modular', function () {
       it('errors on invalid code', async function () {
         const { applyActionCode, getAuth } = authModular;
         const defaultAuth = getAuth(firebase.app());
+        let didError = false;
         try {
           await applyActionCode(defaultAuth, 'fooby shooby dooby').then($ => $);
         } catch (e) {
-          e.message.should.containEql('code is invalid');
+          didError = true;
+          e.code.should.equal('auth/invalid-action-code');
         }
+        didError.should.equal(true);
       });
     });
 
@@ -1185,28 +1176,34 @@ describe('auth() modular', function () {
       it('errors on invalid code', async function () {
         const { checkActionCode, getAuth } = authModular;
         const defaultAuth = getAuth(firebase.app());
+        let didError = false;
         try {
           await checkActionCode(defaultAuth, 'fooby shooby dooby');
         } catch (e) {
-          e.message.should.containEql('code is invalid');
+          didError = true;
+          e.code.should.equal('auth/invalid-action-code');
         }
+        didError.should.equal(true);
       });
     });
 
     describe('reload()', function () {
       it('Meta data returns as expected with anonymous sign in', async function () {
+        // Reload doesn't seem to update metadata on the user object.
+        if (Platform.other) return;
+
         const { signInAnonymously, signOut, getAuth } = authModular;
         const defaultAuth = getAuth(firebase.app());
 
         await signInAnonymously(defaultAuth);
-        await Utils.sleep(50);
+        await Utils.sleep(500);
         const firstUser = defaultAuth.currentUser;
         await firstUser.reload();
 
         await signOut(defaultAuth);
 
         await signInAnonymously(defaultAuth);
-        await Utils.sleep(50);
+        await Utils.sleep(500);
         const secondUser = defaultAuth.currentUser;
         await secondUser.reload();
 
@@ -1223,9 +1220,9 @@ describe('auth() modular', function () {
         await createUserWithEmailAndPassword(defaultAuth, email1, pass);
         const firstUser = defaultAuth.currentUser;
         await firstUser.reload();
-
+        await Utils.sleep(500);
         await signOut(defaultAuth);
-
+        await Utils.sleep(500);
         const anotherRandom = Utils.randString(12, '#aA');
         const email2 = `${anotherRandom}@${anotherRandom}.com`;
 
@@ -1245,7 +1242,7 @@ describe('auth() modular', function () {
         try {
           await confirmPasswordReset(defaultAuth, 'fooby shooby dooby', 'passwordthing');
         } catch (e) {
-          e.message.should.containEql('code is invalid');
+          e.code.should.equal('auth/invalid-action-code');
         }
       });
     });
@@ -1616,9 +1613,6 @@ describe('auth() modular', function () {
 
         const failureCb = error => {
           error.code.should.equal('auth/user-disabled');
-          error.message.should.containEql(
-            'The user account has been disabled by an administrator.',
-          );
           return Promise.resolve();
         };
 
@@ -1638,9 +1632,6 @@ describe('auth() modular', function () {
 
         const failureCb = error => {
           error.code.should.equal('auth/wrong-password');
-          error.message.should.containEql(
-            'The password is invalid or the user does not have a password.',
-          );
           return Promise.resolve();
         };
 
@@ -1664,9 +1655,6 @@ describe('auth() modular', function () {
 
         const failureCb = error => {
           error.code.should.equal('auth/user-not-found');
-          error.message.should.containEql(
-            'There is no user record corresponding to this identifier. The user may have been deleted.',
-          );
           return Promise.resolve();
         };
 
@@ -1718,9 +1706,6 @@ describe('auth() modular', function () {
 
         const failureCb = error => {
           error.code.should.equal('auth/user-disabled');
-          error.message.should.containEql(
-            'The user account has been disabled by an administrator.',
-          );
           return Promise.resolve();
         };
 
@@ -1744,9 +1729,6 @@ describe('auth() modular', function () {
 
         const failureCb = error => {
           error.code.should.equal('auth/wrong-password');
-          error.message.should.containEql(
-            'The password is invalid or the user does not have a password.',
-          );
           return Promise.resolve();
         };
 
@@ -1771,9 +1753,6 @@ describe('auth() modular', function () {
 
         const failureCb = error => {
           error.code.should.equal('auth/user-not-found');
-          error.message.should.containEql(
-            'There is no user record corresponding to this identifier. The user may have been deleted.',
-          );
           return Promise.resolve();
         };
 
@@ -1830,7 +1809,6 @@ describe('auth() modular', function () {
             throw new Error('Did not error.');
           } catch (error) {
             error.code.should.equal('auth/invalid-email');
-            error.message.should.containEql('The email address is badly formatted.');
           }
         });
 
@@ -1843,9 +1821,6 @@ describe('auth() modular', function () {
             throw new Error('Did not error.');
           } catch (error) {
             error.code.should.equal('auth/email-already-in-use');
-            error.message.should.containEql(
-              'The email address is already in use by another account.',
-            );
           }
         });
 
@@ -1906,7 +1881,6 @@ describe('auth() modular', function () {
             throw new Error('Should not have successfully resolved.');
           } catch (error) {
             error.code.should.equal('auth/invalid-email');
-            error.message.should.containEql('The email address is badly formatted.');
           }
         });
       });

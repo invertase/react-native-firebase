@@ -4,6 +4,11 @@
 const { clearAllUsers, getLastSmsCode, getRandomPhoneNumber } = require('./helpers');
 
 describe('auth() => Phone', function () {
+  // Other platforms don't support phone auth
+  if (Platform.other) {
+    return;
+  }
+
   describe('firebase v8 compatibility', function () {
     before(async function () {
       try {

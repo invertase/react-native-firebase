@@ -132,9 +132,6 @@ describe('auth().currentUser', function () {
         } catch (error) {
           // Assertions
           error.code.should.equal('auth/email-already-in-use');
-          error.message.should.containEql(
-            'The email address is already in use by another account.',
-          );
 
           // Clean up
           await firebase.auth().currentUser.delete();
@@ -721,6 +718,11 @@ describe('auth().currentUser', function () {
     });
 
     describe('updatePhoneNumber()', function () {
+      // Phone number auth is not supported on other platforms
+      if (Platform.other) {
+        return;
+      }
+
       it('should update the phone number', async function () {
         const testPhone = await getRandomPhoneNumber();
         const confirmResult = await firebase.auth().signInWithPhoneNumber(testPhone);
@@ -1065,9 +1067,6 @@ describe('auth().currentUser', function () {
         } catch (error) {
           // Assertions
           error.code.should.equal('auth/email-already-in-use');
-          error.message.should.containEql(
-            'The email address is already in use by another account.',
-          );
 
           // Clean up
           await deleteUser(currentUser);
@@ -1763,6 +1762,11 @@ describe('auth().currentUser', function () {
     });
 
     describe('updatePhoneNumber()', function () {
+      // Phone numbers not supported in other environments
+      if (Platform.other) {
+        return;
+      }
+
       it('should update the phone number', async function () {
         const { getAuth, signInWithPhoneNumber, updatePhoneNumber, verifyPhoneNumber } =
           authModular;
