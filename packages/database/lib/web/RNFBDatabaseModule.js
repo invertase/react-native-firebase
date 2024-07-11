@@ -69,7 +69,7 @@ function getCachedDatabaseInstance(appName, dbURL) {
     dbURL,
   ));
 
-  if (emulatorForApp[appName] && !emulatorForApp[appName].connected) {
+  if (emulatorForApp[appName]) {
     const { host, port } = emulatorForApp[appName];
     connectDatabaseEmulator(instance, host, port);
     emulatorForApp[appName].connected = true;
@@ -148,7 +148,7 @@ export default {
   useEmulator(appName, dbURL, host, port) {
     return guard(async () => {
       const db = getCachedDatabaseInstance(appName, dbURL);
-      // connectDatabaseEmulator(db, host, port);
+      connectDatabaseEmulator(db, host, port);
       emulatorForApp[appName] = { host, port };
     });
   },
@@ -267,7 +267,7 @@ export default {
 
         return snapshotToObject(snapshot);
       } else {
-        const fn = null;
+        let fn = null;
 
         if (eventType === 'child_added') {
           fn = onChildAdded;
@@ -347,7 +347,7 @@ export default {
       if (eventType === 'value') {
         listener = onValue(queryRef, snapshot => sendEvent(snapshotToObject(snapshot)), sendError);
       } else {
-        const fn = null;
+        let fn = null;
 
         if (eventType === 'child_added') {
           fn = onChildAdded;
