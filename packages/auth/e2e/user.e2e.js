@@ -1766,6 +1766,7 @@ describe('auth().currentUser', function () {
       if (Platform.other) {
         return;
       }
+
       it('should update the phone number', async function () {
         const { getAuth, signInWithPhoneNumber, updatePhoneNumber, verifyPhoneNumber } =
           authModular;
