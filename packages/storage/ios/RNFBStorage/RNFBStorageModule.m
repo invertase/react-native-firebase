@@ -511,12 +511,15 @@ RCT_EXPORT_METHOD(putString
 RCT_EXPORT_METHOD(useEmulator
                   : (FIRApp *)firebaseApp
                   : (nonnull NSString *)host
-                  : (NSInteger)port) {
+                  : (NSInteger)port
+                  : (NSString *)bucketUrl) {
   emulatorHost = host;
   emulatorPort = port;
-  if (!emulatorConfigs[firebaseApp.name]) {
-    [[FIRStorage storageForApp:firebaseApp] useEmulatorWithHost:host port:port];
-    emulatorConfigs[firebaseApp.name] = @YES;
+  NSString *key = [self createEmulatorKey:bucketUrl appName:firebaseApp.name];
+
+  if (!emulatorConfigs[key]) {
+    [[FIRStorage storageForApp:firebaseApp URL:bucketUrl] useEmulatorWithHost:host port:port];
+    emulatorConfigs[key] = @YES;
   }
 }
 
@@ -556,6 +559,10 @@ RCT_EXPORT_METHOD(setTaskStatus
 
 #pragma mark -
 #pragma mark Firebase Storage Internals
+
+- (NSString *)createEmulatorKey:(NSString *)bucketUrl appName:(NSString *)appName {
+  return [NSString stringWithFormat:@"%@-%@", appName, bucketUrl];
+}
 
 - (void)addUploadTaskObservers:(FIRStorageUploadTask *)uploadTask
                 appDisplayName:(NSString *)appDisplayName
@@ -675,11 +682,11 @@ RCT_EXPORT_METHOD(setTaskStatus
   storage = [FIRStorage storageForApp:firebaseApp URL:bucket];
 
   NSLog(@"Setting emulator - host %@ port %ld", emulatorHost, (long)emulatorPort);
-  if (![emulatorHost isEqual:[NSNull null]] && emulatorHost != nil &&
-      !emulatorConfigs[firebaseApp.name]) {
+  NSString *key = [self createEmulatorKey:bucket appName:firebaseApp.name];
+  if (![emulatorHost isEqual:[NSNull null]] && emulatorHost != nil && !emulatorConfigs[key]) {
     @try {
       [storage useEmulatorWithHost:emulatorHost port:emulatorPort];
-      emulatorConfigs[firebaseApp.name] = @YES;
+      emulatorConfigs[key] = @YES;
     } @catch (NSException *e) {
       NSLog(@"WARNING: Unable to set the Firebase Storage emulator settings. These must be set "
             @"before any usages of Firebase Storage. If you see this log after a hot "

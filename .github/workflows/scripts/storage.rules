@@ -1,6 +1,6 @@
 rules_version = '2';
 service firebase.storage {
-  match /b/{bucket}/o {
+  match /b/react-native-firebase-testing.appspot.com/o {
     match /{document=**} {
       allow read, write: if false;
     }
@@ -15,6 +15,12 @@ service firebase.storage {
     }
 
     match /react-native-firebase-testing/{document=**} {
+      allow read, write: if true;
+    }
+  }
+
+  match /b/react-native-firebase-testing/o {
+    match /only-second-bucket/{document=**} {
       allow read, write: if true;
     }
   }

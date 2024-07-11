@@ -82,8 +82,10 @@ function loadTests(_) {
         // as data from previous runs pollutes following runs until re-install the app. Clear it.
         firebase.firestore().clearPersistence();
       }
-      if (platformSupportedModules.includes('storage'))
+      if (platformSupportedModules.includes('storage')) {
         firebase.storage().useEmulator('localhost', 9199);
+        firebase.app().storage('gs://react-native-firebase-testing').useEmulator('localhost', 9199);
+      }
     });
 
     afterEach(async function afterEachTest() {
