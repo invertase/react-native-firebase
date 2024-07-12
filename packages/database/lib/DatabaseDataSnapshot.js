@@ -66,6 +66,7 @@ export default class DatabaseDataSnapshot {
       key: childRef.key,
       exists: value !== null,
       childKeys: isObject(value) ? Object.keys(value) : [],
+      priority: this._snapshot.childPriorities[childRef.key] || null,
     });
   }
 
