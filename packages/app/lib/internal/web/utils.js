@@ -12,10 +12,18 @@ export function getWebError(error) {
     code: error.code || 'unknown',
     message: error.message,
   };
+
+  // Some modules send codes as PERMISSION_DENIED, which is not
+  // the same as the Firebase error code format.
+  obj.code = obj.code.toLowerCase();
+  // Replace _ with - in code
+  obj.code = obj.code.replace(/_/g, '-');
+
   // Split out prefix, since we internally prefix all error codes already.
   if (obj.code.includes('/')) {
     obj.code = obj.code.split('/')[1];
   }
+
   return {
     ...obj,
     userInfo: obj,

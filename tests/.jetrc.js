@@ -55,6 +55,9 @@ module.exports = {
             process.exit(1);
           }
         });
+        macApp.on('spawn', () => {
+          console.log('[💻] macOS app started');
+        });
         return config;
       },
       async after(config) {

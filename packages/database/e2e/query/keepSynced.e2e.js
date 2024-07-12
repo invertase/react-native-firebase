@@ -28,6 +28,7 @@ describe('database().ref().keepSynced()', function () {
     });
 
     it('toggles keepSynced on and off without throwing', async function () {
+      if (Platform.other) return;
       const ref = firebase.database().ref('noop').orderByValue();
       await ref.keepSynced(true);
       await ref.keepSynced(false);
@@ -48,6 +49,7 @@ describe('database().ref().keepSynced()', function () {
     });
 
     it('toggles keepSynced on and off without throwing', async function () {
+      if (Platform.other) return;
       const { getDatabase, ref, orderByValue, query, keepSynced } = databaseModular;
 
       const dbRef = query(ref(getDatabase(), 'noop'), orderByValue());

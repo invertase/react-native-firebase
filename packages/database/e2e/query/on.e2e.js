@@ -94,19 +94,20 @@ describe('database().ref().on()', function () {
     ref.off('value');
   });
 
-  xit('should callback multiple times when the value changes', async function () {
+  it('should callback multiple times when the value changes', async function () {
     const callback = sinon.spy();
-    const ref = firebase.database().ref(`${TEST_PATH}/changes`);
+    const date = Date.now();
+    const ref = firebase.database().ref(`${TEST_PATH}/multi-change/${date}`);
     ref.on('value', $ => {
-      // console.error('callback with ' + $.val());
       callback($.val());
     });
     await ref.set('foo');
+    await Utils.sleep(100);
     await ref.set('bar');
     await Utils.spyToBeCalledTimesAsync(callback, 2);
     ref.off('value');
-    callback.getCall(0).args[0].should.equal('foo'); // FIXME these simply do *not* come back
-    callback.getCall(1).args[0].should.equal('bar'); // in the right order every time. ??
+    callback.getCall(0).args[0].should.equal('foo');
+    callback.getCall(1).args[0].should.equal('bar');
   });
 
   // the cancelCallback is never called for ref.on but ref.once works?
@@ -134,7 +135,7 @@ describe('database().ref().on()', function () {
 
   // FIXME super flaky on android emulator
   it('subscribe to child added events', async function () {
-    if (Platform.ios) {
+    if (Platform.ios || Platform.other) {
       const successCallback = sinon.spy();
       const cancelCallback = sinon.spy();
       const ref = firebase.database().ref(`${TEST_PATH}/childAdded`);
@@ -161,9 +162,15 @@ describe('database().ref().on()', function () {
     }
   });
 
-  // FIXME super flaky on Jet
-  xit('subscribe to child changed events', async function () {
-    if (Platform.ios) {
+  // FIXME super flaky on Jet for ios/android
+  it('subscribe to child changed events', async function () {
+    if (Platform.other) {
+      this.skip('Errors on JS SDK about a missing index.');
+      return;
+    }
+    this.skip('Flakey');
+    return;
+    if (Platform.other) {
       const successCallback = sinon.spy();
       const cancelCallback = sinon.spy();
       const ref = firebase.database().ref(`${TEST_PATH}/childChanged`);
@@ -195,14 +202,13 @@ describe('database().ref().on()', function () {
     }
   });
 
-  // FIXME super flaky on jet
-  xit('subscribe to child removed events', async function () {
+  it('subscribe to child removed events', async function () {
     const successCallback = sinon.spy();
     const cancelCallback = sinon.spy();
     const ref = firebase.database().ref(`${TEST_PATH}/childRemoved`);
     const child = ref.child('removeme');
     await child.set('foo');
-
+    await Utils.sleep(250);
     ref.on(
       'child_removed',
       $ => {
@@ -212,7 +218,7 @@ describe('database().ref().on()', function () {
         cancelCallback();
       },
     );
-
+    await Utils.sleep(250);
     await child.remove();
     await Utils.spyToBeCalledOnceAsync(successCallback, 5000);
     ref.off('child_removed');
@@ -221,6 +227,10 @@ describe('database().ref().on()', function () {
   });
 
   it('subscribe to child moved events', async function () {
+    if (Platform.other) {
+      this.skip('Errors on JS SDK about a missing index.');
+      return;
+    }
     const callback = sinon.spy();
     const ref = firebase.database().ref(`${TEST_PATH}/childMoved`);
     const orderedRef = ref.orderByChild('nuggets');

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -25,6 +26,7 @@ const platformSupportedModules = [];
 if (Platform.other) {
   platformSupportedModules.push('app');
   platformSupportedModules.push('functions');
+  platformSupportedModules.push('database');
   platformSupportedModules.push('auth');
   platformSupportedModules.push('storage');
   // TODO add more modules here once they are supported.
@@ -57,6 +59,7 @@ ErrorUtils.setGlobalHandler((err, isFatal) => {
   throw err;
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function loadTests(_) {
   describe('React Native Firebase', function () {
     if (!global.RNFBDebug) {

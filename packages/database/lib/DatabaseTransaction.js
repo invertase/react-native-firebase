@@ -16,6 +16,7 @@
  */
 
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
+import { isOther } from '@react-native-firebase/app/lib/common';
 
 let transactionId = 0;
 
@@ -59,7 +60,11 @@ export default class DatabaseTransaction {
       started: true,
     };
 
-    this._database.native.transactionStart(reference.path, id, applyLocally);
+    if (isOther) {
+      this._database.native.transactionStart(reference.path, id, applyLocally, transactionUpdater);
+    } else {
+      this._database.native.transactionStart(reference.path, id, applyLocally);
+    }
   }
 
   /**
