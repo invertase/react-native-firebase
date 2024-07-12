@@ -57,9 +57,15 @@ describe('onValue()', function () {
     const dbRef = ref(getDatabase(), `${TEST_PATH}/init`);
 
     const callback = sinon.spy();
-    const unsubscribe = onValue(dbRef, $ => {
-      callback($.val());
-    });
+    const unsubscribe = onValue(
+      dbRef,
+      $ => {
+        callback($.val());
+      },
+      error => {
+        callback(error);
+      },
+    );
 
     const value = Date.now();
     await set(dbRef, value);

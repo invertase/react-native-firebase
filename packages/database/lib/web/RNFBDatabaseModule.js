@@ -43,6 +43,11 @@ function snapshotToObject(snapshot) {
   };
 }
 
+function getDatabaseWebError(error) {
+  // Possible to override messages/codes here if necessary.
+  return getWebError(error);
+}
+
 // Converts a DataSnapshot and previous child name to an object.
 function snapshotWithPreviousChildToObject(snapshot, previousChildName) {
   return {
@@ -55,26 +60,24 @@ const appInstances = {};
 const databaseInstances = {};
 const onDisconnectRef = {};
 const listeners = {};
-const transactions = {};
 const emulatorForApp = {};
 
 function getCachedAppInstance(appName) {
   return (appInstances[appName] ??= getApp(appName));
 }
 
-// Returns a cached Firestore instance.
+// Returns a cached Database instance.
 function getCachedDatabaseInstance(appName, dbURL) {
-  const instance = (databaseInstances[`${appName}|${dbURL}`] ??= getDatabase(
-    getCachedAppInstance(appName),
-    dbURL,
-  ));
-
-  if (emulatorForApp[appName]) {
-    const { host, port } = emulatorForApp[appName];
-    connectDatabaseEmulator(instance, host, port);
-    emulatorForApp[appName].connected = true;
+  let instance = databaseInstances[`${appName}|${dbURL}`];
+  if (!instance) {
+    instance = getDatabase(getCachedAppInstance(appName), dbURL);
+    // Relying on internals here so need to be careful between SDK versions.
+    if (emulatorForApp[appName] && !instance._instanceStarted) {
+      const { host, port } = emulatorForApp[appName];
+      connectDatabaseEmulator(instance, host, port);
+      emulatorForApp[appName].connected = true;
+    }
   }
-
   return instance;
 }
 
@@ -303,10 +306,9 @@ export default {
   on(appName, dbURL, props) {
     return guard(async () => {
       const db = getCachedDatabaseInstance(appName, dbURL);
-      const dbRef = ref(db, path);
-
       const { key, modifiers, path, eventType, registration } = props;
       const { eventRegistrationKey } = registration;
+      const dbRef = ref(db, path);
 
       const queryRef = getQueryInstance(dbRef, modifiers);
 
@@ -330,7 +332,7 @@ export default {
           body: {
             key,
             registration,
-            error: getWebError(error),
+            error: getDatabaseWebError(error),
           },
         };
 
@@ -487,61 +489,24 @@ export default {
    * Transaction
    */
 
-  transactionStart(appName, dbURL, path, transactionId, applyLocally) {
+  transactionStart(appName, dbURL, path, transactionId, applyLocally, userExecutor) {
     return guard(async () => {
       const db = getCachedDatabaseInstance(appName, dbURL);
       const dbRef = ref(db, path);
 
-      let resolver;
-
-      // Create a promise that resolves when the transaction is complete.
-      const promise = new Promise(resolve => {
-        resolver = resolve;
-      });
-
-      // Store the resolver in the transactions cache.
-      transactions[transactionId] = resolver;
-
       try {
-        const { committed, snapshot } = await runTransaction(
-          dbRef,
-          async currentData => {
-            const event = {
-              body: {
-                type: 'update',
-                value: currentData,
-              },
-              appName,
-              transactionId,
-              eventName: 'database_transaction_event',
-            };
-
-            emitEvent('database_transaction_event', event);
-
-            // Wait for the promise to resolve from the `transactionTryCommit` method.
-            const updates = await promise;
-
-            // Update the current data with the updates.
-            currentData = updates;
-
-            // Return the updated data.
-            return currentData;
-          },
-          {
-            applyLocally,
-          },
-        );
+        const { committed, snapshot } = await runTransaction(dbRef, userExecutor, {
+          applyLocally,
+        });
 
         const event = {
           body: {
-            timeout: false,
-            interrupted: false,
             committed,
             type: 'complete',
             snapshot: snapshotToObject(snapshot),
           },
           appName,
-          transactionId,
+          id: transactionId,
           eventName: 'database_transaction_event',
         };
 
@@ -549,14 +514,12 @@ export default {
       } catch (e) {
         const event = {
           body: {
-            timeout: false,
-            interrupted: false,
-            committed,
+            committed: false,
             type: 'error',
-            error: getWebError(e),
+            error: getDatabaseWebError(e),
           },
           appName,
-          transactionId,
+          id: transactionId,
           eventName: 'database_transaction_event',
         };
 
@@ -573,12 +536,10 @@ export default {
    * @param {object} updates - The updates.
    * @returns {Promise<void>}
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async transactionTryCommit(appName, dbURL, transactionId, updates) {
-    const resolver = transactions[transactionId];
-
-    if (resolver) {
-      resolver(updates);
-      delete transactions[transactionId];
-    }
+    // We don't need to implement this as for 'Other' platforms
+    // we pass the users transaction function to the Firebase JS SDK directly.
+    throw new Error('Not implemented');
   },
 };

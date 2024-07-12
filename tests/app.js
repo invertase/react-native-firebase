@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -57,6 +58,7 @@ ErrorUtils.setGlobalHandler((err, isFatal) => {
   throw err;
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function loadTests(_) {
   describe('React Native Firebase', function () {
     if (!global.RNFBDebug) {

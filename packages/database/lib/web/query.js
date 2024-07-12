@@ -67,6 +67,5 @@ export function getQueryInstance(dbRef, modifiers) {
       }
     }
   }
-
   return query(dbRef, ...constraints);
 }

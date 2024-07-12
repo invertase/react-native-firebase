@@ -73,17 +73,22 @@ describe('database().ref().push()', function () {
 
     it('throws if push errors', async function () {
       const ref = firebase.database().ref('nope');
-      return ref.push('foo').catch(error => {
-        error.message.should.containEql("doesn't have permission to access");
-        return Promise.resolve();
-      });
+      return ref
+        .push('foo')
+        .then(() => {
+          throw new Error('Did not error');
+        })
+        .catch(error => {
+          error.code.should.equal('database/permission-denied');
+          return Promise.resolve();
+        });
     });
 
     it('returns an error to the callback', async function () {
       const callback = sinon.spy();
       const ref = firebase.database().ref('nope');
       ref.push('foo', error => {
-        error.message.should.containEql("doesn't have permission to access");
+        error.code.should.equal('database/permission-denied');
         callback();
       });
       await Utils.spyToBeCalledOnceAsync(callback);
@@ -134,7 +139,7 @@ describe('database().ref().push()', function () {
         await push(dbRef, 'foo');
         return Promise.reject(new Error('Did not throw Error'));
       } catch (error) {
-        error.message.should.containEql("doesn't have permission to access");
+        error.code.should.equal('database/permission-denied');
         return Promise.resolve();
       }
     });
