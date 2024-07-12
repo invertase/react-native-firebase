@@ -21,13 +21,10 @@ import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromi
 import static io.invertase.firebase.common.SharedUtils.mapPutValue;
 
 import android.util.Log;
-
 import com.facebook.react.bridge.*;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.MutableData;
-
 import java.util.HashMap;
-
 import javax.annotation.Nullable;
 
 public class ReactNativeFirebaseDatabaseCommon {
@@ -40,10 +37,10 @@ public class ReactNativeFirebaseDatabaseCommon {
    * @param exception
    */
   public static void rejectPromiseDatabaseException(
-    Promise promise, @Nullable Exception exception) {
+      Promise promise, @Nullable Exception exception) {
     UniversalDatabaseException databaseException = (UniversalDatabaseException) exception;
     rejectPromiseWithCodeAndMessage(
-      promise, databaseException.getCode(), databaseException.getMessage());
+        promise, databaseException.getCode(), databaseException.getMessage());
   }
 
   /**
@@ -52,7 +49,7 @@ public class ReactNativeFirebaseDatabaseCommon {
    * @return
    */
   public static WritableMap snapshotWithPreviousChildToMap(
-    DataSnapshot dataSnapshot, @Nullable String previousChildName) {
+      DataSnapshot dataSnapshot, @Nullable String previousChildName) {
     WritableMap result = Arguments.createMap();
     WritableMap snapshot = snapshotToMap(dataSnapshot);
 
@@ -396,9 +393,9 @@ public class ReactNativeFirebaseDatabaseCommon {
       }
     }
 
-    childProperties.put(childKeysKey,childKeys);
-    childProperties.put(childPrioritiesKey,childPriorities);
+    childProperties.put(childKeysKey, childKeys);
+    childProperties.put(childPrioritiesKey, childPriorities);
 
     return childProperties;
-}
+  }
 }
