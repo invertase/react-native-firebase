@@ -69,12 +69,18 @@ function getCachedAppInstance(appName) {
 
 // Returns a cached Firestore instance.
 function getCachedFirestoreInstance(appName) {
-  const instance = (firestoreInstances[appName] ??= getFirestore(getCachedAppInstance(appName)));
-
-  if (emulatorForApp[appName]) {
-    connectFirestoreEmulator(instance, emulatorForApp[appName].host, emulatorForApp[appName].port);
+  let instance = firestoreInstances[appName];
+  if (!instance) {
+    instance = getFirestore(getCachedAppInstance(appName));
+    if (emulatorForApp[appName]) {
+      connectFirestoreEmulator(
+        instance,
+        emulatorForApp[appName].host,
+        emulatorForApp[appName].port,
+      );
+    }
+    firestoreInstances[appName] = instance;
   }
-
   return instance;
 }
 
@@ -294,7 +300,7 @@ export default {
       } else if ('mergeFields' in options) {
         setOptions.mergeFields = options.mergeFields;
       }
-      await setDoc(ref, readableToObject(data), setOptions);
+      await setDoc(ref, readableToObject(firestore, data), setOptions);
     });
   },
 
@@ -309,7 +315,7 @@ export default {
     return guard(async () => {
       const firestore = getCachedFirestoreInstance(appName);
       const ref = doc(firestore, path);
-      await updateDoc(ref, readableToObject(data));
+      await updateDoc(ref, readableToObject(firestore, data));
     });
   },
 
@@ -327,7 +333,7 @@ export default {
       for (const parsed of writesArray) {
         const { type, path } = parsed;
         const ref = doc(firestore, path);
-        const data = readableToObject(parsed.data);
+        const data = readableToObject(firestore, parsed.data);
 
         switch (type) {
           case 'DELETE':
