@@ -29,8 +29,9 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
+import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
+import fallBackModule from './web/RNFBConfigModule';
 import version from './version';
-import { Platform } from 'react-native';
 
 export {
   getRemoteConfig,
@@ -84,7 +85,6 @@ class FirebaseConfigModule extends FirebaseModule {
     };
     this._lastFetchTime = -1;
     this._values = {};
-    this._isWeb = Platform.OS !== 'ios' && Platform.OS !== 'android';
     this._configUpdateListenerCount = 0;
   }
 
@@ -178,14 +178,10 @@ class FirebaseConfigModule extends FirebaseModule {
 
   setConfigSettings(settings) {
     const updatedSettings = {};
-    if (this._isWeb) {
-      updatedSettings.fetchTimeMillis = this._settings.fetchTimeMillis;
-      updatedSettings.minimumFetchIntervalMillis = this._settings.minimumFetchIntervalMillis;
-    } else {
-      //iOS & Android expect seconds & different property names
-      updatedSettings.fetchTimeout = this._settings.fetchTimeMillis / 1000;
-      updatedSettings.minimumFetchInterval = this._settings.minimumFetchIntervalMillis / 1000;
-    }
+
+    updatedSettings.fetchTimeout = this._settings.fetchTimeMillis / 1000;
+    updatedSettings.minimumFetchInterval = this._settings.minimumFetchIntervalMillis / 1000;
+
     const apiCalled = arguments[1] == true ? 'settings' : 'setConfigSettings';
     if (!isObject(settings)) {
       throw new Error(`firebase.remoteConfig().${apiCalled}(*): settings must set an object.`);
@@ -197,11 +193,7 @@ class FirebaseConfigModule extends FirebaseModule {
           `firebase.remoteConfig().${apiCalled}(): 'settings.minimumFetchIntervalMillis' must be a number type in milliseconds.`,
         );
       } else {
-        if (this._isWeb) {
-          updatedSettings.minimumFetchIntervalMillis = settings.minimumFetchIntervalMillis;
-        } else {
-          updatedSettings.minimumFetchInterval = settings.minimumFetchIntervalMillis / 1000;
-        }
+        updatedSettings.minimumFetchInterval = settings.minimumFetchIntervalMillis / 1000;
       }
     }
 
@@ -211,11 +203,7 @@ class FirebaseConfigModule extends FirebaseModule {
           `firebase.remoteConfig().${apiCalled}(): 'settings.fetchTimeMillis' must be a number type in milliseconds.`,
         );
       } else {
-        if (this._isWeb) {
-          updatedSettings.fetchTimeMillis = settings.fetchTimeMillis;
-        } else {
-          updatedSettings.fetchTimeout = settings.fetchTimeMillis / 1000;
-        }
+        updatedSettings.fetchTimeout = settings.fetchTimeMillis / 1000;
       }
     }
 
@@ -348,17 +336,10 @@ class FirebaseConfigModule extends FirebaseModule {
       this._lastFetchStatus = constants.lastFetchStatus;
     }
 
-    if (this._isWeb) {
-      this._settings = {
-        fetchTimeMillis: constants.fetchTimeMillis,
-        minimumFetchIntervalMillis: constants.minimumFetchIntervalMillis,
-      };
-    } else {
-      this._settings = {
-        fetchTimeMillis: constants.fetchTimeout * 1000,
-        minimumFetchIntervalMillis: constants.minimumFetchInterval * 1000,
-      };
-    }
+    this._settings = {
+      fetchTimeMillis: constants.fetchTimeout * 1000,
+      minimumFetchIntervalMillis: constants.minimumFetchInterval * 1000,
+    };
 
     this._values = Object.freeze(constants.values);
   }
@@ -391,3 +372,5 @@ export default createModuleNamespace({
 // config().X(...);
 // firebase.remoteConfig().X(...);
 export const firebase = getFirebaseRoot();
+
+setReactNativeModule(nativeModuleName, fallBackModule);
