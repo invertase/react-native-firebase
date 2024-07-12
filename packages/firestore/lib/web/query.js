@@ -9,61 +9,27 @@ import {
   startAfter,
   endAt,
   endBefore,
+  and,
+  or,
 } from '@react-native-firebase/app/lib/internal/web/firebaseFirestore';
 import { parseTypeMap, readableToArray } from './convert';
 
 export function buildQuery(queryInstance, filters, orders, options) {
+  console.log('FILTERS', filters);
   // Apply filters
   for (const filter of filters) {
-    if ('fieldPath' in filter) {
-      const fieldPath = new FieldPath(...filter.fieldPath);
-      const operator = filter.operator;
-      const value = parseTypeMap(query.firestore, filter.value);
-
-      switch (operator) {
-        case 'EQUAL':
-          queryInstance = query(queryInstance, where(fieldPath, '==', value));
-          break;
-        case 'NOT_EQUAL':
-          queryInstance = query(queryInstance, where(fieldPath, '!=', value));
-          break;
-        case 'GREATER_THAN':
-          queryInstance = query(queryInstance, where(fieldPath, '>', value));
-          break;
-        case 'GREATER_THAN_OR_EQUAL':
-          queryInstance = query(queryInstance, where(fieldPath, '>=', value));
-          break;
-        case 'LESS_THAN':
-          queryInstance = query(queryInstance, where(fieldPath, '<', value));
-          break;
-        case 'LESS_THAN_OR_EQUAL':
-          queryInstance = query(queryInstance, where(fieldPath, '<=', value));
-          break;
-        case 'ARRAY_CONTAINS':
-          queryInstance = query(queryInstance, where(fieldPath, 'array-contains', value));
-          break;
-        case 'ARRAY_CONTAINS_ANY':
-          queryInstance = query(queryInstance, where(fieldPath, 'array-contains-any', value));
-          break;
-        case 'IN':
-          queryInstance = query(queryInstance, where(fieldPath, 'in', value));
-          break;
-        case 'NOT_IN':
-          queryInstance = query(queryInstance, where(fieldPath, 'not-in', value));
-          break;
-      }
-    } else if ('operator' in filter && 'queries' in filter) {
-      // TODO: Not sure how to handle this yet
-      // queryInstance = query(queryInstance, );
-    }
+    queryInstance = query(queryInstance, getFilterConstraint(filter));
   }
 
+  console.log('ORDERS', orders);
   // Apply orders
   for (const order of orders) {
     const fieldPath =
       typeof order.fieldPath === 'string' ? order.fieldPath : new FieldPath(...order.fieldPath);
     queryInstance = query(queryInstance, orderBy(fieldPath, order.direction));
   }
+
+  console.log('OPTIONS', options);
 
   // Apply options
   if ('limit' in options) {
@@ -95,4 +61,55 @@ export function buildQuery(queryInstance, filters, orders, options) {
   }
 
   return queryInstance;
+}
+
+function getFilterConstraint(filter) {
+  if ('fieldPath' in filter && filter.fieldPath) {
+    const fieldPath =
+      typeof filter.fieldPath === 'array'
+        ? new FieldPath(...filter.fieldPath)
+        : new FieldPath(...filter.fieldPath._segments);
+    const operator = filter.operator;
+    const value = parseTypeMap(query.firestore, filter.value);
+
+    switch (operator) {
+      case 'EQUAL':
+        return where(fieldPath, '==', value);
+      case 'NOT_EQUAL':
+        return where(fieldPath, '!=', value);
+      case 'GREATER_THAN':
+        return where(fieldPath, '>', value);
+      case 'GREATER_THAN_OR_EQUAL':
+        return where(fieldPath, '>=', value);
+      case 'LESS_THAN':
+        return where(fieldPath, '<', value);
+      case 'LESS_THAN_OR_EQUAL':
+        return where(fieldPath, '<=', value);
+      case 'ARRAY_CONTAINS':
+        return where(fieldPath, 'array-contains', value);
+      case 'ARRAY_CONTAINS_ANY':
+        return where(fieldPath, 'array-contains-any', value);
+      case 'IN':
+        return where(fieldPath, 'in', value);
+      case 'NOT_IN':
+        return where(fieldPath, 'not-in', value);
+    }
+  } else if ('operator' in filter && 'queries' in filter) {
+    console.log('HERE', filter);
+    const constraints = [];
+
+    for (const constraint of filter.queries) {
+      constraints.push(getFilterConstraint(constraint));
+    }
+
+    if (filter.operator === 'AND') {
+      return and(...constraints);
+    }
+
+    if (filter.operator === 'OR') {
+      return or(...constraints);
+    }
+
+    throw new Error('Invalid filter operator');
+  }
 }

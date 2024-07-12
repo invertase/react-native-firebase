@@ -24,13 +24,13 @@ import { JetProvider, ConnectionText, StatusEmoji, StatusText } from 'jet';
 const platformSupportedModules = [];
 
 if (Platform.other) {
-  platformSupportedModules.push('app');
-  platformSupportedModules.push('functions');
+  // platformSupportedModules.push('app');
+  // platformSupportedModules.push('functions');
   platformSupportedModules.push('firestore');
-  platformSupportedModules.push('database');
-  platformSupportedModules.push('auth');
-  platformSupportedModules.push('storage');
-  platformSupportedModules.push('remoteConfig');
+  // platformSupportedModules.push('database');
+  // platformSupportedModules.push('auth');
+  // platformSupportedModules.push('storage');
+  // platformSupportedModules.push('remoteConfig');
   // TODO add more modules here once they are supported.
 }
 

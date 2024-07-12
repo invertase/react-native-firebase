@@ -34,6 +34,7 @@ const INT_NEGATIVE_ZERO = 18;
 const INT_UNKNOWN = -999;
 
 const TYPE = 'type';
+const KEY_PATH = 'path';
 const KEY_DATA = 'data';
 const KEY_OPTIONS = 'options';
 
@@ -41,6 +42,7 @@ const KEY_OPTIONS = 'options';
 export function objectToWriteable(object) {
   const out = {};
   for (const [key, value] of Object.entries(object)) {
+    console.log(key, value, buildTypeMap(value));
     out[key] = buildTypeMap(value);
   }
   return out;
@@ -74,7 +76,7 @@ export function parseDocumentBatches(firestore, readableArray) {
   for (const map of readableArray) {
     const write = {
       [TYPE]: map[TYPE],
-      [PATH]: map[PATH],
+      [KEY_PATH]: map[KEY_PATH],
     };
 
     if (KEY_DATA in map) {
@@ -95,6 +97,7 @@ export function parseDocumentBatches(firestore, readableArray) {
 export function buildTypeMap(value) {
   const out = [];
   if (value === null) {
+    console.log('send null', value);
     out.push(INT_NULL);
     return out;
   }
@@ -214,19 +217,19 @@ export function parseTypeMap(firestore, typedArray) {
     case INT_STRING_EMPTY:
       return '';
     case INT_ARRAY:
-      return parseReadableArray(firestore, typeArray.getArray(1)); // TODO
+      return readableToArray(firestore, typedArray.getArray(1));
     case INT_REFERENCE:
       return doc(firestore, typedArray[1]);
     case INT_GEOPOINT:
-      const [latitude, longitude] = typeArray[1];
+      const [latitude, longitude] = typedArray[1];
       return new GeoPoint(latitude, longitude);
     case INT_TIMESTAMP:
-      const [seconds, nanoseconds] = typeArray[1];
+      const [seconds, nanoseconds] = typedArray[1];
       return new Timestamp(seconds, nanoseconds);
     case INT_BLOB:
-      return Bytes.fromBase64String(typeArray[1]);
+      return Bytes.fromBase64String(typedArray[1]);
     case INT_FIELDVALUE:
-      const fieldValueArray = typeArray[1];
+      const fieldValueArray = typedArray[1];
       const fieldValueType = fieldValueArray[0];
 
       if (fieldValueType === 'timestamp') {
