@@ -275,6 +275,11 @@ describe('remoteConfig()', function () {
     });
 
     describe('setDefaultsFromResource()', function () {
+      if (Platform.other) {
+        // Not supported on Web.
+        return;
+      }
+
       it('sets defaults from remote_config_resource_test file', async function () {
         await firebase.remoteConfig().setDefaultsFromResource('remote_config_resource_test');
         const config = firebase.remoteConfig().getAll();
@@ -661,6 +666,11 @@ describe('remoteConfig()', function () {
     });
 
     describe('setDefaultsFromResource()', function () {
+      if (Platform.other) {
+        // Not supported on Web.
+        return;
+      }
+
       it('sets defaults from remote_config_resource_test file', async function () {
         const { getRemoteConfig, getAll, setDefaultsFromResource } = remoteConfigModular;
         const remoteConfig = getRemoteConfig();
@@ -760,6 +770,11 @@ describe('remoteConfig()', function () {
     });
 
     describe('onConfigUpdated', function () {
+      if (Platform.other) {
+        // Not supported on Web.
+        return;
+      }
+
       let unsubscribers = [];
 
       before(async function () {
