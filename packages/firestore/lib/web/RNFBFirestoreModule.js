@@ -2,6 +2,7 @@ import {
   setLogLevel,
   connectFirestoreEmulator,
   initializeFirestore,
+  runTransaction,
   getApp,
   getFirestore,
   collection,
