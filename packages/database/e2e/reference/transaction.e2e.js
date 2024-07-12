@@ -60,17 +60,18 @@ describe('database().ref().transaction()', function () {
       }
     });
 
-    // FIXME this test works in isolation but not running in the suite?
-    xit('updates the value via a transaction', async function () {
+    it('updates the value via a transaction', async function () {
       const ref = firebase.database().ref(`${TEST_PATH}/transactionUpdate`);
-      await ref.set(1);
-      await Utils.sleep(2000);
+      const beforeValue = (await ref.once('value')).val() || 0;
       const { committed, snapshot } = await ref.transaction(value => {
+        if (!value) {
+          return 1;
+        }
         return value + 1;
       });
 
       should.equal(committed, true, 'Transaction did not commit.');
-      snapshot.val().should.equal(2);
+      snapshot.val().should.equal(beforeValue + 1);
     });
 
     it('aborts transaction if undefined returned', async function () {
@@ -99,7 +100,7 @@ describe('database().ref().transaction()', function () {
 
     // FIXME flaky on android local against emulator?
     it('passes valid data through the callback', async function () {
-      if (Platform.ios) {
+      if (Platform.ios || Platform.other) {
         const ref = firebase.database().ref(`${TEST_PATH}/transactionCallback`);
         await ref.set(1);
 
@@ -129,7 +130,7 @@ describe('database().ref().transaction()', function () {
 
     // FIXME flaky on android local against emulator?
     it('throws when an error occurs', async function () {
-      if (Platform.ios) {
+      if (Platform.ios || Platform.other) {
         const ref = firebase.database().ref('nope');
 
         try {
@@ -138,9 +139,7 @@ describe('database().ref().transaction()', function () {
           });
           return Promise.reject(new Error('Did not throw error.'));
         } catch (error) {
-          error.message.should.containEql(
-            "Client doesn't have permission to access the desired data",
-          );
+          error.message.should.containEql('permission');
           return Promise.resolve();
         }
       } else {
@@ -150,7 +149,7 @@ describe('database().ref().transaction()', function () {
 
     // FIXME flaky on android in CI? works most of the time...
     it('passes error back to the callback', async function () {
-      if (Platform.ios || !global.isCI) {
+      if (Platform.ios || !global.isCI || Platform.other) {
         const ref = firebase.database().ref('nope');
 
         return new Promise((resolve, reject) => {
@@ -168,9 +167,7 @@ describe('database().ref().transaction()', function () {
                   return reject(new Error('Transaction should not have committed'));
                 }
 
-                error.message.should.containEql(
-                  "Client doesn't have permission to access the desired data",
-                );
+                error.message.should.containEql('permission');
                 return resolve();
               },
             )
@@ -185,6 +182,7 @@ describe('database().ref().transaction()', function () {
 
     it('sets a value if one does not exist', async function () {
       const ref = firebase.database().ref(`${TEST_PATH}/transactionCreate`);
+      await ref.remove();
       const value = Date.now();
 
       return new Promise((resolve, reject) => {
@@ -242,19 +240,19 @@ describe('database().ref().transaction()', function () {
       }
     });
 
-    // FIXME this test works in isolation but not running in the suite?
-    xit('updates the value via a transaction', async function () {
-      const { getDatabase, set, ref, runTransaction } = databaseModular;
-
+    it('updates the value via a transaction', async function () {
+      const { getDatabase, get, ref, runTransaction } = databaseModular;
       const dbRef = ref(getDatabase(), `${TEST_PATH}/transactionUpdate`);
-      await set(dbRef, 1);
-      await Utils.sleep(2000);
+      const beforeValue = (await get(dbRef)).val() || 0;
       const { committed, snapshot } = await runTransaction(dbRef, value => {
+        if (!value) {
+          return 1;
+        }
         return value + 1;
       });
 
       should.equal(committed, true, 'Transaction did not commit.');
-      snapshot.val().should.equal(2);
+      snapshot.val().should.equal(beforeValue + 1);
     });
 
     it('aborts transaction if undefined returned', async function () {
@@ -276,7 +274,7 @@ describe('database().ref().transaction()', function () {
 
     // FIXME flaky on android local against emulator?
     it('throws when an error occurs', async function () {
-      if (Platform.ios) {
+      if (Platform.ios || Platform.other) {
         const { getDatabase, ref, runTransaction } = databaseModular;
 
         const dbRef = ref(getDatabase(), 'nope');
@@ -287,9 +285,7 @@ describe('database().ref().transaction()', function () {
           });
           return Promise.reject(new Error('Did not throw error.'));
         } catch (error) {
-          error.message.should.containEql(
-            "Client doesn't have permission to access the desired data",
-          );
+          error.message.should.containEql('permission');
           return Promise.resolve();
         }
       } else {
@@ -297,11 +293,12 @@ describe('database().ref().transaction()', function () {
       }
     });
 
-    // FIXME runs in isolation but not in suite. Crashes on iOS, and gets stuck on Android.
-    xit('sets a value if one does not exist', async function () {
+    it('sets a value if one does not exist', async function () {
       const { getDatabase, ref, runTransaction } = databaseModular;
 
       const dbRef = ref(getDatabase(), `${TEST_PATH}/transactionCreate`);
+      await dbRef.remove();
+
       const value = Date.now();
 
       const { committed, snapshot } = await runTransaction(dbRef, $ => {

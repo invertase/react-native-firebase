@@ -16,9 +16,9 @@
  */
 
 import { isString } from '@react-native-firebase/app/lib/common';
+import { getReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
 import SharedEventEmitter from '@react-native-firebase/app/lib/internal/SharedEventEmitter';
-import { NativeModules } from 'react-native';
 import DatabaseDataSnapshot from './DatabaseDataSnapshot';
 
 class DatabaseSyncTree {
@@ -39,7 +39,7 @@ class DatabaseSyncTree {
   }
 
   get native() {
-    return NativeModules.RNFBDatabaseQueryModule;
+    return getReactNativeModule('RNFBDatabaseQueryModule');
   }
 
   // from upstream EventEmitter: initialize registrations for an emitter key
