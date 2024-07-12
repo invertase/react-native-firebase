@@ -27,6 +27,7 @@ if (Platform.other) {
   platformSupportedModules.push('app');
   platformSupportedModules.push('functions');
   platformSupportedModules.push('database');
+  platformSupportedModules.push('auth');
   platformSupportedModules.push('storage');
   // TODO add more modules here once they are supported.
 }
