@@ -75,6 +75,11 @@ export default {
       newAppConfig.automaticDataCollectionEnabled = appConfig.automaticDataCollectionEnabled;
     }
     const optionsCopy = Object.assign({}, options);
+    // TODO RNFB is using the old gaTrackingId property, we should remove this in the future
+    // in favor of the measurementId property.
+    if (optionsCopy.gaTrackingId) {
+      optionsCopy.measurementId = optionsCopy.gaTrackingId;
+    }
     delete optionsCopy.clientId;
     initializeApp(optionsCopy, newAppConfig);
     return {

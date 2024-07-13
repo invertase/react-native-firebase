@@ -16,9 +16,11 @@
  */
 
 describe('analytics() modular', function () {
-  describe('firebase v8 compatibility', function () {
-    describe('namespace', function () {});
+  beforeEach(async function () {
+    await firebase.analytics().logEvent('screen_view');
+  });
 
+  describe('firebase v8 compatibility', function () {
     describe('logEvent()', function () {
       it('log an event without parameters', async function () {
         await firebase.analytics().logEvent('invertase_event');
@@ -56,6 +58,9 @@ describe('analytics() modular', function () {
       });
 
       it('returns a non empty session ID', async function () {
+        if (Platform.other) {
+          this.skip();
+        }
         let sessionId = await firebase.analytics().getSessionId();
         // On iOS it can take ~ 3 minutes for the session ID to be generated
         // Otherwise, `Analytics uninitialized` error will be thrown
@@ -584,6 +589,9 @@ describe('analytics() modular', function () {
       });
 
       it('returns a non empty session ID', async function () {
+        if (Platform.other) {
+          this.skip();
+        }
         const { getAnalytics, getSessionId } = analyticsModular;
         let sessionId = await getSessionId(getAnalytics());
         // On iOS it can take ~ 3 minutes for the session ID to be generated

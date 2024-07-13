@@ -30,6 +30,7 @@ if (Platform.other) {
   platformSupportedModules.push('auth');
   platformSupportedModules.push('storage');
   platformSupportedModules.push('remoteConfig');
+  platformSupportedModules.push('analytics');
   // TODO add more modules here once they are supported.
 }
 

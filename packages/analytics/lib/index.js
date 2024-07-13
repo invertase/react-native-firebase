@@ -33,8 +33,10 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
+import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import { isBoolean } from '@react-native-firebase/app/lib/common';
 
+import fallBackModule from './web/RNFBAnalyticsModule';
 import version from './version';
 import * as structs from './structs';
 
@@ -828,3 +830,6 @@ export default createModuleNamespace({
 // analytics().logEvent(...);
 // firebase.analytics().logEvent(...);
 export const firebase = getFirebaseRoot();
+
+// Register the interop module for non-native platforms.
+setReactNativeModule(nativeModuleName, fallBackModule);
