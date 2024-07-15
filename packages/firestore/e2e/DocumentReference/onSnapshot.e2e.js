@@ -78,6 +78,7 @@ describe('firestore().doc().onSnapshot()', function () {
       if (Platform.other) {
         return;
       }
+
       it('calls onNext when successful', async function () {
         const onNext = sinon.spy();
         const onError = sinon.spy();
@@ -114,6 +115,7 @@ describe('firestore().doc().onSnapshot()', function () {
       if (Platform.other) {
         return;
       }
+
       it('calls next when successful', async function () {
         const onNext = sinon.spy();
         const onError = sinon.spy();
@@ -537,6 +539,7 @@ describe('firestore().doc().onSnapshot()', function () {
       if (Platform.other) {
         return;
       }
+
       it('calls next with snapshot when successful', async function () {
         const { getFirestore, doc, onSnapshot } = firestoreModular;
 
