@@ -6,7 +6,7 @@ next: /release-notes
 
 ## Status
 
-By default React Native Firebase supports multiple platforms using the native Firebase SDK's:
+By default React Native Firebase supports multiple platforms using the native Firebase SDK for the specific platform:
 
 - Android
 - iOS
