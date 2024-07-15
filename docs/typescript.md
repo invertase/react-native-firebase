@@ -1,7 +1,7 @@
 ---
 title: TypeScript
 description: Using TypeScript with React Native Firebase
-next: /releases
+next: /other-platforms
 previous:
 ---
 
