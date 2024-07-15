@@ -17,7 +17,7 @@ exports.seed = async function seed(path) {
     storage: {
       rules: `rules_version = '2';
       service firebase.storage {
-        match /b/{bucket}/o {
+        match /b/react-native-firebase-testing.appspot.com/o {
           match /{document=**} {
             allow read, write: if false;
           }
@@ -32,6 +32,12 @@ exports.seed = async function seed(path) {
           }
 
           match /${getE2eTestProject()}/{document=**} {
+            allow read, write: if true;
+          }
+        }
+        
+        match /b/react-native-firebase-testing/o {
+          match /only-second-bucket/{document=**} {
             allow read, write: if true;
           }
         }

@@ -203,7 +203,7 @@ class FirebaseStorageModule extends FirebaseModule {
     }
     this.emulatorHost = host;
     this.emulatorPort = port;
-    this.native.useEmulator(_host, port);
+    this.native.useEmulator(_host, port, this._customUrlOrRegion);
     return [_host, port]; // undocumented return, just used to unit test android host remapping
   }
 }
