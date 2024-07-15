@@ -15,7 +15,13 @@
  *
  */
 
-import { isArray, isFunction, isObject, isString } from '@react-native-firebase/app/lib/common';
+import {
+  isArray,
+  isFunction,
+  isObject,
+  isString,
+  isNumber,
+} from '@react-native-firebase/app/lib/common';
 import { deepGet } from '@react-native-firebase/app/lib/common/deeps';
 
 export default class DatabaseDataSnapshot {
@@ -61,11 +67,19 @@ export default class DatabaseDataSnapshot {
 
     const childRef = this._ref.child(path);
 
+    let childPriority = null;
+    if (this._snapshot.childPriorities) {
+      const childPriorityValue = this._snapshot.childPriorities[childRef.key];
+      if (isString(childPriorityValue) || isNumber(childPriorityValue)) {
+        childPriority = childPriorityValue;
+      }
+    }
     return new DatabaseDataSnapshot(childRef, {
       value,
       key: childRef.key,
       exists: value !== null,
       childKeys: isObject(value) ? Object.keys(value) : [],
+      priority: childPriority,
     });
   }
 
