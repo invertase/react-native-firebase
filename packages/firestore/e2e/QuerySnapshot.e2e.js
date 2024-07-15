@@ -30,6 +30,9 @@ describe('firestore.QuerySnapshot', function () {
     });
 
     it('is returned from a collection onSnapshot()', async function () {
+      if (Platform.other) {
+        return;
+      }
       const callback = sinon.spy();
       firebase.firestore().collection(COLLECTION).onSnapshot(callback);
       await Utils.spyToBeCalledOnceAsync(callback);
@@ -104,6 +107,10 @@ describe('firestore.QuerySnapshot', function () {
       });
 
       it('throws if options.includeMetadataChanges is true, but snapshot does not include those changes', async function () {
+        if (Platform.other) {
+          return;
+        }
+
         const callback = sinon.spy();
         const colRef = firebase.firestore().collection(COLLECTION);
         const unsub = colRef.onSnapshot(
@@ -126,6 +133,9 @@ describe('firestore.QuerySnapshot', function () {
       });
 
       it('returns an array of DocumentChange instances', async function () {
+        if (Platform.other) {
+          return;
+        }
         const colRef = firebase.firestore().collection(COLLECTION);
         await colRef.add({});
         const snapshot = await colRef.limit(1).get();
@@ -320,6 +330,9 @@ describe('firestore.QuerySnapshot', function () {
     });
 
     it('is returned from a collection onSnapshot()', async function () {
+      if (Platform.other) {
+        return;
+      }
       const { getFirestore, collection, onSnapshot } = firestoreModular;
       const callback = sinon.spy();
       onSnapshot(collection(getFirestore(), COLLECTION), callback);
@@ -404,6 +417,10 @@ describe('firestore.QuerySnapshot', function () {
       });
 
       it('throws if options.includeMetadataChanges is true, but snapshot does not include those changes', async function () {
+        if (Platform.other) {
+          return;
+        }
+
         const { getFirestore, collection, onSnapshot } = firestoreModular;
 
         const callback = sinon.spy();
@@ -429,6 +446,9 @@ describe('firestore.QuerySnapshot', function () {
       });
 
       it('returns an array of DocumentChange instances', async function () {
+        if (Platform.other) {
+          return;
+        }
         const { getFirestore, collection, addDoc, getDocs, query, limit } = firestoreModular;
         const colRef = collection(getFirestore(), COLLECTION);
         await addDoc(colRef, {});

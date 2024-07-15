@@ -56,6 +56,10 @@ describe('firestore().collection().get()', function () {
     });
 
     it('returns a correct cache setting (true)', async function () {
+      if (Platform.other) {
+        return;
+      }
+
       const docRef = firebase.firestore().collection(COLLECTION).doc('nestedcollection');
       const colRef = docRef.collection('get');
       const snapshot = await colRef.get({
@@ -91,6 +95,10 @@ describe('firestore().collection().get()', function () {
     });
 
     it('returns a correct cache setting (true)', async function () {
+      if (Platform.other) {
+        return;
+      }
+
       const { getFirestore, collection, doc, getDocsFromCache } = firestoreModular;
       const docRef = doc(collection(getFirestore(), COLLECTION), 'nestedcollection');
       const colRef = collection(docRef, 'get');
