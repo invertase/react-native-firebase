@@ -96,7 +96,6 @@ export function parseDocumentBatches(firestore, readableArray) {
 export function buildTypeMap(value) {
   const out = [];
   if (value === null) {
-    console.log('send null', value);
     out.push(INT_NULL);
     return out;
   }
