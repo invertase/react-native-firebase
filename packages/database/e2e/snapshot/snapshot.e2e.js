@@ -267,6 +267,10 @@ describe('database()...snapshot', function () {
     });
 
     it('should return the correct priority for the child snapshots', async function () {
+      if (Platform.other) {
+        // TODO - remove once "other" is fully integrated
+        this.skip();
+      }
       const ref = firebase.database().ref(TEST_PATH).child('get-priority-children');
       const child1 = ref.child('child1');
       const child2 = ref.child('child2');
@@ -554,6 +558,10 @@ describe('database()...snapshot', function () {
     });
 
     it('should return the correct priority for the child snapshots', async function () {
+      if (Platform.other) {
+        // TODO - remove once "other" is fully integrated
+        this.skip();
+      }
       const { getDatabase, ref, child, set, setPriority, get } = databaseModular;
       const reference = child(ref(getDatabase(), TEST_PATH), 'get-priority-children-mod');
 
