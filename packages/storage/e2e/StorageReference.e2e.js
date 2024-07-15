@@ -56,10 +56,6 @@ describe('storage() -> StorageReference', function () {
           return Promise.reject(new Error('Did not throw'));
         } catch (error) {
           error.code.should.equal('storage/unauthorized');
-          // TODO - reinsert once macOS integration is complete
-          // error.message.should.equal(
-          //   '[storage/unauthorized] User is not authorized to perform the desired action.',
-          // );
           return Promise.resolve();
         }
       });
