@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [20.2.0](https://github.com/invertase/react-native-firebase/compare/v20.1.0...v20.2.0) (2024-07-15)
+
+### Features
+
+- **other:** Add Firestore support ([#7882](https://github.com/invertase/react-native-firebase/issues/7882)) ([0ebd1dd](https://github.com/invertase/react-native-firebase/commit/0ebd1ddd221c50dde489bce30ad5ed64037d8439))
+
+### Bug Fixes
+
+- **firestore:** expose modular `Filter` and it's proper types ([#7884](https://github.com/invertase/react-native-firebase/issues/7884)) ([272efe5](https://github.com/invertase/react-native-firebase/commit/272efe56acdd46b8c994789f751d2c097cb8d025))
+- **firestore:** remove exception throw on inequality queries on different fields ([da24246](https://github.com/invertase/react-native-firebase/commit/da242466d80609f61420feb56d72ad2ee20b2410))
+
 ## [20.1.0](https://github.com/invertase/react-native-firebase/compare/v20.0.0...v20.1.0) (2024-06-04)
 
 **Note:** Version bump only for package @react-native-firebase/firestore
