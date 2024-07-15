@@ -24,7 +24,7 @@ Below is a table outlining which Firebase modules are supported on each platform
 | Firebase Service | Android | iOS | Other |
 | ---------------- | :-----: | :-: | :---: |
 | analytics        |   🟢    | 🟢  |  🟢   |
-| app-check        |   🟢    | 🟠  |  🟠   |
+| app-check        |   🟠    | 🟠  |  🟠   |
 | app-distribution |   🟢    | 🟢  |  🔴   |
 | app              |   🟢    | 🟢  |  🟢   |
 | auth             |   🟢    | 🟢  |  🟠   |
@@ -51,19 +51,17 @@ Whenever the React Native Firebase SDK is running on platforms other than Androi
 
 No implementation changes are required to use the React Native Firebase SDK on other platforms, as the JavaScript implementation is automatically used when a native platform is not available. This allows you to use the same API across all platforms, regardless of the underlying implementation.
 
-### Module Support
-
-There are some minor limitations or differences in behavior compared to the native platforms. Where a particular method is not supported, an error will be thrown with a code of `unsupported` to indicate the method is not available on the current platform.
+There are however some minor limitations or differences in behavior compared to the native platforms. Where a particular method is not supported, an error will be thrown with a code of `unsupported` to indicate the method is not available on the current platform.
 
 Details of these limitations are summarized below.
 
-#### Analytics
+### Analytics
 
 The other platform implementation of Analytics does not capture automatic metrics like screen view, you must call `logEvent` and other logging based methods to send your events to Firebase.
 
 - [Screen Tracking Guide](/analytics/screen-tracking)
 
-#### App Check
+### App Check
 
 App Check for other platforms only supports the `CustomProvider` provider. Here's how to setup your own custom provider:
 
@@ -95,7 +93,7 @@ initializeAppCheck(firebaseApp, {
 firebase.appCheck().initializeAppCheck({ provider: myCustomProvider });
 ```
 
-#### Authentication
+### Authentication
 
 Multi-factor authentication is not supported on other platforms.
 
@@ -108,7 +106,7 @@ Phone authentication methods are unsupported, specifically:
 - `verifyPhoneNumber`
 - `reauthenticateWithProvider`
 
-#### Database
+### Database
 
 Offline persistence is not supported on other platforms.
 
@@ -116,7 +114,7 @@ Unsupported methods:
 
 - `keepSynced` - for offline persistence
 
-#### Firestore
+### Firestore
 
 For performance reasons and to reduce the size of the JavaScript bundle, the Other platform implementation in
 React Native Firebase uses the JavaScript [lite](https://firebase.google.com/docs/reference/js/firestore_lite) SDK,
@@ -132,7 +130,7 @@ Specifically, the following methods are not supported:
 - `onSnapshot` (for both `CollectionReference` & `DocumentReference`)
 - `GetOptions.source`
 
-#### Storage
+### Storage
 
 No-op methods:
 
