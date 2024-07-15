@@ -67,7 +67,7 @@ The other platform implementation of Analytics does not capture automatic metric
 
 App Check for other platforms only supports the `CustomProvider` provider. Here's how to setup your own custom provider:
 
-- [Implement server suport to get tokens](https://firebase.google.com/docs/app-check/custom-provider)
+- [Implement server support to get tokens](https://firebase.google.com/docs/app-check/custom-provider)
 - Create a custom provider in your app:
 
 ```js
