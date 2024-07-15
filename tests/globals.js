@@ -47,7 +47,7 @@ import shouldMatchers from 'should';
 //            [RNFB<--Event][📣] storage_event <- {...}
 //            [RNFB<-Native][🟢] RNFBStorageModule.putString <- {...}
 //            [TEST->Finish][✅] uploads a base64url string
-global.RNFBDebug = true;
+global.RNFBDebug = false;
 
 // RNFB packages.
 import '@react-native-firebase/analytics';
