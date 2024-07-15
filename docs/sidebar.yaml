@@ -3,8 +3,8 @@
   - '/'
 - - TypeScript
   - '/typescript'
-- - Other Platforms
-  - '/other-platforms'
+- - Platforms
+  - '/platforms'
 - - Release Notes
   - '/releases'
 - - Migrating to v6
