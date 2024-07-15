@@ -10,24 +10,23 @@ import { isNumber } from '@react-native-firebase/app/lib/common';
 
 /**
  * Generates a Google Analytics client ID.
- * @param {string} [seed] - Optional device-specific information for seeding.
  * @returns {string} The generated client ID.
  */
-function generateGAClientId(seed) {
-  var randomNumber = Math.round(Math.random() * 2147483647);
-  var hash = 1;
-
-  if (seed) {
-    for (var i = seed.length - 1; i >= 0; i--) {
-      var char = seed.charCodeAt(i);
-      hash = ((hash << 6) & 268435455) + char + (char << 14);
-      var flag = hash & 266338304;
-      hash = flag !== 0 ? hash ^ (flag >> 21) : hash;
-    }
-  }
-
-  var randomPart = String(randomNumber ^ (hash & 2147483647));
-  var timestamp = Math.round(Date.now() / 1000);
+function generateGAClientId() {
+  const randomNumber = Math.round(Math.random() * 2147483647);
+  // TODO: Don't seem to need this for now.
+  // var hash = 1;
+  // if (seed) {
+  //   for (var i = seed.length - 1; i >= 0; i--) {
+  //     var char = seed.charCodeAt(i);
+  //     hash = ((hash << 6) & 268435455) + char + (char << 14);
+  //     var flag = hash & 266338304;
+  //     hash = flag !== 0 ? hash ^ (flag >> 21) : hash;
+  //   }
+  // }
+  // const randomPart = seed ? String(randomNumber ^ (hash & 2147483647)) : String(randomNumber);
+  const randomPart = String(randomNumber);
+  const timestamp = Math.round(Date.now() / 1000);
   return randomPart + '.' + timestamp;
 }
 
@@ -212,6 +211,46 @@ class AnalyticsApi {
       }
 
       if (event.params && Object.keys(event.params).length > 0) {
+        // TODO we need to handle 'items' arrays and also key name conversions based on the following map;
+        // const keyConvert = {
+        //   item_id: 'id',
+        //   item_name: 'nm',
+        //   item_brand: 'br',
+        //   item_category: 'ca',
+        //   item_category2: 'c2',
+        //   item_category3: 'c3',
+        //   item_category4: 'c4',
+        //   item_category5: 'c5',
+        //   item_variant: 'va',
+        //   price: 'pr',
+        //   quantity: 'qt',
+        //   coupon: 'cp',
+        //   item_list_name: 'ln',
+        //   index: 'lp',
+        //   item_list_id: 'li',
+        //   discount: 'ds',
+        //   affiliation: 'af',
+        //   promotion_id: 'pi',
+        //   promotion_name: 'pn',
+        //   creative_name: 'cn',
+        //   creative_slot: 'cs',
+        //   location_id: 'lo',
+        //   id: 'id',
+        //   name: 'nm',
+        //   brand: 'br',
+        //   variant: 'va',
+        //   list_name: 'ln',
+        //   list_position: 'lp',
+        //   list: 'ln',
+        //   position: 'lp',
+        //   creative: 'cn',
+        // };
+        // items array should for example become:
+        //   pr1 for items[0]
+        //   pr2 for items[1]
+        //   ... etc
+        // with the format for each looking something like:
+        //   iditem_id~nmitem_name~britem_brand~caitem_category~c2item_category2~c3item_category3~c4item_category4~c5item_category5~vaitem_variant~prprice~qtquantity~cpcoupon~lnitem_list_name~lpindex~liitem_list_id~dsdiscount~afaffiliation~pipromotion_id~pnpromotion_name~cncreative_name~cscreative_slot~lolocation_id
         for (const [key, value] of Object.entries(event.params)) {
           if (isNumber(value)) {
             queryParams.append(`epn.${key}`, `${value}`);
