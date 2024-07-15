@@ -81,7 +81,9 @@ function loadTests(_) {
         firebase.firestore().useEmulator('localhost', 8080);
         // Firestore caches documents locally (a great feature!) and that confounds tests
         // as data from previous runs pollutes following runs until re-install the app. Clear it.
-        firebase.firestore().clearPersistence();
+        if (!Platform.other) {
+          firebase.firestore().clearPersistence();
+        }
       }
       if (platformSupportedModules.includes('storage'))
         firebase.storage().useEmulator('localhost', 9199);

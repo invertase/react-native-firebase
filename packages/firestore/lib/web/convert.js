@@ -42,7 +42,6 @@ const KEY_OPTIONS = 'options';
 export function objectToWriteable(object) {
   const out = {};
   for (const [key, value] of Object.entries(object)) {
-    console.log(key, value, buildTypeMap(value));
     out[key] = buildTypeMap(value);
   }
   return out;
@@ -84,7 +83,7 @@ export function parseDocumentBatches(firestore, readableArray) {
     }
 
     if (KEY_OPTIONS in map) {
-      write[KEY_OPTIONS] = map[KEY_OPTIONS]; // TODO toHashMap
+      write[KEY_OPTIONS] = map[KEY_OPTIONS];
     }
 
     out.push(write);
@@ -153,12 +152,6 @@ export function buildTypeMap(value) {
     return out;
   }
 
-  if (typeof value === 'object') {
-    out.push(INT_OBJECT);
-    out.push(objectToWriteable(value));
-    return out;
-  }
-
   if (value instanceof DocumentReference) {
     out.push(INT_REFERENCE);
     out.push(value.path);
@@ -180,6 +173,12 @@ export function buildTypeMap(value) {
   if (value instanceof Bytes) {
     out.push(INT_BLOB);
     out.push(value.toBase64());
+    return out;
+  }
+
+  if (typeof value === 'object') {
+    out.push(INT_OBJECT);
+    out.push(objectToWriteable(value));
     return out;
   }
 
@@ -217,7 +216,7 @@ export function parseTypeMap(firestore, typedArray) {
     case INT_STRING_EMPTY:
       return '';
     case INT_ARRAY:
-      return readableToArray(firestore, typedArray.getArray(1));
+      return readableToArray(firestore, typedArray[1]);
     case INT_REFERENCE:
       return doc(firestore, typedArray[1]);
     case INT_GEOPOINT:
@@ -245,13 +244,13 @@ export function parseTypeMap(firestore, typedArray) {
       }
 
       if (fieldValueType === 'array_union') {
-        const elements = fieldValueArray[1];
-        return arrayUnion(readableToArray(firestore, elements));
+        const elements = readableToArray(firestore, fieldValueArray[1]);
+        return arrayUnion(...elements);
       }
 
       if (fieldValueType === 'array_remove') {
-        const elements = fieldValueArray[1];
-        return arrayRemove(readableToArray(firestore, elements));
+        const elements = readableToArray(firestore, fieldValueArray[1]);
+        return arrayRemove(...elements);
       }
     case INT_OBJECT:
       return readableToObject(firestore, typedArray[1]);

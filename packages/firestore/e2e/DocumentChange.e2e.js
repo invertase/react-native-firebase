@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-const { Platform } = require('react-native');
 const { wipe } = require('./helpers');
 const COLLECTION = 'firestore';
 

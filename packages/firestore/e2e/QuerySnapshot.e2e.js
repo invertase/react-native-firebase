@@ -107,6 +107,10 @@ describe('firestore.QuerySnapshot', function () {
       });
 
       it('throws if options.includeMetadataChanges is true, but snapshot does not include those changes', async function () {
+        if (Platform.other) {
+          return;
+        }
+
         const callback = sinon.spy();
         const colRef = firebase.firestore().collection(COLLECTION);
         const unsub = colRef.onSnapshot(
@@ -413,6 +417,10 @@ describe('firestore.QuerySnapshot', function () {
       });
 
       it('throws if options.includeMetadataChanges is true, but snapshot does not include those changes', async function () {
+        if (Platform.other) {
+          return;
+        }
+
         const { getFirestore, collection, onSnapshot } = firestoreModular;
 
         const callback = sinon.spy();

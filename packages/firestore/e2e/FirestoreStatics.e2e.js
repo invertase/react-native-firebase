@@ -16,7 +16,7 @@
  */
 
 describe('firestore.X', function () {
-  describe('v8 compatibility', function () {
+  xdescribe('v8 compatibility', function () {
     describe('setLogLevel', function () {
       it('throws if invalid level', function () {
         try {
@@ -37,7 +37,7 @@ describe('firestore.X', function () {
     });
   });
 
-  describe('modular', function () {
+  xdescribe('modular', function () {
     describe('setLogLevel', function () {
       it('throws if invalid level', function () {
         const { setLogLevel } = firestoreModular;

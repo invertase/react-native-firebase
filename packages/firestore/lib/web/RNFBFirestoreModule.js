@@ -90,7 +90,7 @@ export default {
    * Sets the log level for Firestore.
    * @param {string} logLevel - The log level.
    */
-  setLogLevel(logLevel) {
+  async setLogLevel(logLevel) {
     if (logLevel === 'debug' || logLevel === 'error') {
       setLogLevel(logLevel);
     } else {
@@ -227,9 +227,7 @@ export default {
     return guard(async () => {
       const firestore = getCachedFirestoreInstance(appName);
       const queryRef =
-        type === 'collectionGroup'
-          ? collectionGroup(firestore, collectionRef)
-          : collection(firestore, path);
+        type === 'collectionGroup' ? collectionGroup(firestore, path) : collection(firestore, path);
       const query = buildQuery(queryRef, filters, orders, options);
       const snapshot = await getDocs(query);
       return querySnapshotToObject(snapshot);
@@ -334,14 +332,13 @@ export default {
       for (const parsed of writesArray) {
         const { type, path } = parsed;
         const ref = doc(firestore, path);
-        const data = readableToObject(firestore, parsed.data);
 
         switch (type) {
           case 'DELETE':
             batch.delete(ref);
             break;
           case 'UPDATE':
-            batch.update(ref, data);
+            batch.update(ref, parsed.data);
             break;
           case 'SET':
             const options = parsed.options;
@@ -351,7 +348,7 @@ export default {
             } else if ('mergeFields' in options) {
               setOptions.mergeFields = options.mergeFields;
             }
-            batch.set(ref, data, setOptions);
+            batch.set(ref, parsed.data, setOptions);
             break;
         }
       }
@@ -417,7 +414,7 @@ export default {
       const firestore = getCachedFirestoreInstance(appName);
 
       try {
-        await runTransaction(firestore, tsx => {
+        await runTransaction(firestore, async tsx => {
           transactionHandler[transactionId] = tsx;
 
           emitEvent('firestore_transaction_event', {
@@ -427,12 +424,20 @@ export default {
             listenerId: transactionId,
           });
 
-          // Get the stored buffer array for the transaction.
-          const buffer = transactionBuffer[transactionId];
-
-          if (!buffer) {
-            return null;
+          function getBuffer() {
+            return transactionBuffer[transactionId];
           }
+
+          // Wait for and get the stored buffer array for the transaction.
+          const buffer = await new Promise(resolve => {
+            const interval = setInterval(() => {
+              const buffer = getBuffer();
+              if (buffer) {
+                clearInterval(interval);
+                resolve(buffer);
+              }
+            }, 100);
+          });
 
           for (const serialized of buffer) {
             const { path, type, data } = serialized;
@@ -457,13 +462,13 @@ export default {
                 break;
             }
           }
+        });
 
-          emitEvent('firestore_transaction_event', {
-            eventName: 'firestore_transaction_event',
-            body: { type: 'complete' },
-            appName,
-            listenerId: transactionId,
-          });
+        emitEvent('firestore_transaction_event', {
+          eventName: 'firestore_transaction_event',
+          body: { type: 'complete' },
+          appName,
+          listenerId: transactionId,
         });
       } catch (e) {
         emitEvent('firestore_transaction_event', {

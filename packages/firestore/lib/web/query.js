@@ -15,21 +15,18 @@ import {
 import { parseTypeMap, readableToArray } from './convert';
 
 export function buildQuery(queryInstance, filters, orders, options) {
-  console.log('FILTERS', filters);
   // Apply filters
   for (const filter of filters) {
     queryInstance = query(queryInstance, getFilterConstraint(filter));
   }
 
-  console.log('ORDERS', orders);
   // Apply orders
   for (const order of orders) {
     const fieldPath =
       typeof order.fieldPath === 'string' ? order.fieldPath : new FieldPath(...order.fieldPath);
-    queryInstance = query(queryInstance, orderBy(fieldPath, order.direction));
+    const direction = order.direction === 'ASCENDING' ? 'asc' : 'desc';
+    queryInstance = query(queryInstance, orderBy(fieldPath, direction));
   }
-
-  console.log('OPTIONS', options);
 
   // Apply options
   if ('limit' in options) {
@@ -65,10 +62,9 @@ export function buildQuery(queryInstance, filters, orders, options) {
 
 function getFilterConstraint(filter) {
   if ('fieldPath' in filter && filter.fieldPath) {
-    const fieldPath =
-      typeof filter.fieldPath === 'array'
-        ? new FieldPath(...filter.fieldPath)
-        : new FieldPath(...filter.fieldPath._segments);
+    const fieldPath = Array.isArray(filter.fieldPath)
+      ? new FieldPath(...filter.fieldPath)
+      : new FieldPath(...filter.fieldPath._segments);
     const operator = filter.operator;
     const value = parseTypeMap(query.firestore, filter.value);
 
@@ -95,7 +91,6 @@ function getFilterConstraint(filter) {
         return where(fieldPath, 'not-in', value);
     }
   } else if ('operator' in filter && 'queries' in filter) {
-    console.log('HERE', filter);
     const constraints = [];
 
     for (const constraint of filter.queries) {
@@ -112,4 +107,6 @@ function getFilterConstraint(filter) {
 
     throw new Error('Invalid filter operator');
   }
+
+  throw new Error('Invaldi filter.');
 }
