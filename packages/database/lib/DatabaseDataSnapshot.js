@@ -66,13 +66,20 @@ export default class DatabaseDataSnapshot {
     }
 
     const childRef = this._ref.child(path);
-    const childPriority = this._snapshot.childPriorities[childRef.key];
+
+    let childPriority = null;
+    if (this._snapshot.childPriorities) {
+      const childPriorityValue = this._snapshot.childPriorities[childRef.key];
+      if (isString(childPriorityValue) || isNumber(childPriorityValue)) {
+        childPriority = childPriorityValue;
+      }
+    }
     return new DatabaseDataSnapshot(childRef, {
       value,
       key: childRef.key,
       exists: value !== null,
       childKeys: isObject(value) ? Object.keys(value) : [],
-      priority: isString(childPriority) || isNumber(childPriority) ? childPriority : null,
+      priority: childPriority,
     });
   }
 
