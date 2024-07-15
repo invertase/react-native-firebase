@@ -1,4 +1,6 @@
-import firebase  from '.';
+import firebase from '.';
+
+// TODO none of these seem to work, local issue?
 
 // checks module exists at root
 console.log(firebase.appCheck().app.name);
