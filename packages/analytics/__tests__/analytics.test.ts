@@ -255,8 +255,11 @@ describe('Analytics', function () {
         }),
       ).toThrowError('firebase.analytics().logAddToWishlist(*):');
     });
+
     it('items accept arbitrary custom event parameters', function () {
-      expect(() => firebase.analytics().logAddToWishlist({ items: [{foo: 'bar'}] })).not.toThrow();
+      expect(() =>
+        firebase.analytics().logAddToWishlist({ items: [{ foo: 'bar' }] }),
+      ).not.toThrow();
     });
   });
 
