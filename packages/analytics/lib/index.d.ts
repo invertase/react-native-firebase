@@ -109,6 +109,10 @@ export namespace FirebaseAnalyticsTypes {
      * See https://github.com/invertase/react-native-firebase/issues/4578#issuecomment-771703420 for more information
      */
     price?: number;
+    /**
+     * Custom event parameters.
+     */
+    [key: string]: any;
   }
 
   export interface AddPaymentInfoEventParameters {
