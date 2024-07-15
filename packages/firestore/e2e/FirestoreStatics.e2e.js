@@ -16,7 +16,7 @@
  */
 
 describe('firestore.X', function () {
-  xdescribe('v8 compatibility', function () {
+  describe.only('v8 compatibility', function () {
     describe('setLogLevel', function () {
       it('throws if invalid level', function () {
         try {
