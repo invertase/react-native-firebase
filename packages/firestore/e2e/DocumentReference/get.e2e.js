@@ -65,6 +65,9 @@ describe('firestore.doc().get()', function () {
     });
 
     it('gets data from cache', async function () {
+      if (Platform.other) {
+        return;
+      }
       const ref = firebase.firestore().doc(`${COLLECTION}/get`);
       const data = { foo: 'bar', bar: 123 };
       await ref.set(data);
@@ -100,6 +103,9 @@ describe('firestore.doc().get()', function () {
     });
 
     it('gets data from cache', async function () {
+      if (Platform.other) {
+        return;
+      }
       const { getFirestore, doc, setDoc, getDocFromCache, deleteDoc } = firestoreModular;
 
       const ref = doc(getFirestore(), `${COLLECTION}/get`);

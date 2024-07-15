@@ -189,6 +189,25 @@ global.FirebaseHelpers = {
       };
     },
   },
+  async fetchAppCheckToken() {
+    const tokenRequest = await fetch(
+      'https://us-central1-react-native-firebase-testing.cloudfunctions.net/fetchAppCheckToken',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data: {
+            appId: global.FirebaseHelpers.app.config().appId,
+          },
+        }),
+        redirect: 'follow',
+      },
+    );
+    const { result } = await tokenRequest.json();
+    return result;
+  },
 };
 
 global.android = {

@@ -54,6 +54,10 @@ describe('firestore.SnapshotMetadata', function () {
       });
 
       it('returns true if is equal', async function () {
+        if (Platform.other) {
+          return;
+        }
+
         const snapshot1 = await firebase
           .firestore()
           .collection(COLLECTION)
@@ -66,6 +70,10 @@ describe('firestore.SnapshotMetadata', function () {
       });
 
       it('returns false if not equal', async function () {
+        if (Platform.other) {
+          return;
+        }
+
         const snapshot1 = await firebase
           .firestore()
           .collection(COLLECTION)
@@ -119,6 +127,10 @@ describe('firestore.SnapshotMetadata', function () {
       });
 
       it('returns true if is equal', async function () {
+        if (Platform.other) {
+          return;
+        }
+
         const { getFirestore, collection, getDocsFromCache } = firestoreModular;
         const db = getFirestore();
 
@@ -128,6 +140,10 @@ describe('firestore.SnapshotMetadata', function () {
       });
 
       it('returns false if not equal', async function () {
+        if (Platform.other) {
+          return;
+        }
+
         const { getFirestore, collection, getDocsFromCache, getDocsFromServer } = firestoreModular;
         const db = getFirestore();
 

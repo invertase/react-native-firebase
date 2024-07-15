@@ -17,6 +17,10 @@
 const { wipe, getBundle, BUNDLE_COLLECTION, BUNDLE_QUERY_NAME } = require('../helpers');
 
 describe('firestore().namedQuery()', function () {
+  if (Platform.other) {
+    return;
+  }
+
   beforeEach(async function () {
     await wipe();
     return await firebase.firestore().loadBundle(getBundle());

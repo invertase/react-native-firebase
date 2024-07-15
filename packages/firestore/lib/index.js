@@ -24,6 +24,7 @@ import {
   isUndefined,
   isAndroid,
 } from '@react-native-firebase/app/lib/common';
+import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import {
   createModuleNamespace,
   FirebaseModule,
@@ -38,6 +39,7 @@ import FirestoreStatics from './FirestoreStatics';
 import FirestoreTransactionHandler from './FirestoreTransactionHandler';
 import FirestoreWriteBatch from './FirestoreWriteBatch';
 import version from './version';
+import fallBackModule from './web/RNFBFirestoreModule';
 
 const namespace = 'firestore';
 
@@ -378,3 +380,8 @@ export default createModuleNamespace({
 // firestore().X(...);
 // firebase.firestore().X(...);
 export const firebase = getFirebaseRoot();
+
+// Register the interop module for non-native platforms.
+for (let i = 0; i < nativeModuleName.length; i++) {
+  setReactNativeModule(nativeModuleName[i], fallBackModule);
+}

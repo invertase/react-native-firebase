@@ -15,7 +15,7 @@
  *
  */
 
-import { NativeModules } from 'react-native';
+import { getReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import FirestoreBlob from './FirestoreBlob';
 import FirestoreFieldPath from './FirestoreFieldPath';
 import FirestoreFieldValue from './FirestoreFieldValue';
@@ -39,7 +39,7 @@ export default {
       );
     }
 
-    const native = NativeModules.RNFBFirestoreModule;
+    const native = getReactNativeModule('RNFBFirestoreModule');
     native.setLogLevel(logLevel);
   },
 };

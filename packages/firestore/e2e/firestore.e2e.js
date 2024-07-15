@@ -114,6 +114,10 @@ describe('firestore()', function () {
 
     describe('disableNetwork() & enableNetwork()', function () {
       it('disables and enables with no errors', async function () {
+        if (Platform.other) {
+          return;
+        }
+
         await firebase.firestore().disableNetwork();
         await firebase.firestore().enableNetwork();
       });
@@ -205,6 +209,11 @@ describe('firestore()', function () {
     describe('settings', function () {
       describe('serverTimestampBehavior', function () {
         it("handles 'estimate'", async function () {
+          // TODO(ehesp): Figure out how to call settings on other.
+          if (Platform.other) {
+            return;
+          }
+
           firebase.firestore().settings({ serverTimestampBehavior: 'estimate' });
           const ref = firebase.firestore().doc(`${COLLECTION}/serverTimestampEstimate`);
 
@@ -226,6 +235,11 @@ describe('firestore()', function () {
         });
 
         it("handles 'previous'", async function () {
+          // TODO(ehesp): Figure out how to call settings on other.
+          if (Platform.other) {
+            return;
+          }
+
           firebase.firestore().settings({ serverTimestampBehavior: 'previous' });
           const ref = firebase.firestore().doc(`${COLLECTION}/serverTimestampPrevious`);
 
@@ -277,6 +291,11 @@ describe('firestore()', function () {
         });
 
         it("handles 'none'", async function () {
+          // TODO(ehesp): Figure out how to call settings on other.
+          if (Platform.other) {
+            return;
+          }
+
           firebase.firestore().settings({ serverTimestampBehavior: 'none' });
           const ref = firebase.firestore().doc(`${COLLECTION}/serverTimestampNone`);
 
@@ -432,6 +451,10 @@ describe('firestore()', function () {
 
     describe('disableNetwork() & enableNetwork()', function () {
       it('disables and enables with no errors', async function () {
+        if (Platform.other) {
+          return;
+        }
+
         const { getFirestore, disableNetwork, enableNetwork } = firestoreModular;
         const db = getFirestore();
 

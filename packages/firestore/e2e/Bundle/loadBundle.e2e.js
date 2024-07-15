@@ -17,6 +17,11 @@
 const { wipe, getBundle, BUNDLE_COLLECTION } = require('../helpers');
 
 describe('firestore().loadBundle()', function () {
+  // Not supported on web.
+  if (Platform.other) {
+    return;
+  }
+
   before(async function () {
     return await wipe();
   });

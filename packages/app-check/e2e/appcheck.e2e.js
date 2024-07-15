@@ -57,29 +57,120 @@ function decodeJWT(token) {
   return payload;
 }
 
-describe('appCheck() modular', function () {
-  describe('firebase v8 compatibility', function () {
-    before(function () {
-      rnfbProvider = firebase.appCheck().newReactNativeFirebaseAppCheckProvider();
-      rnfbProvider.configure({
-        android: {
-          provider: 'debug',
-          debugToken: '698956B2-187B-49C6-9E25-C3F3530EEBAF',
-        },
-        apple: {
-          provider: 'debug',
-          debugToken: '698956B2-187B-49C6-9E25-C3F3530EEBAF',
-        },
-        web: {
-          provider: 'debug',
-          siteKey: 'none',
+describe('appCheck()', function () {
+  describe('CustomProvider', function () {
+    if (!Platform.other) {
+      return;
+    }
+
+    it('should throw an error if no provider options are defined', function () {
+      try {
+        new firebase.appCheck.CustomProvider();
+        return Promise.reject(new Error('Did not throw an error.'));
+      } catch (e) {
+        e.message.should.containEql('no provider options defined');
+        return Promise.resolve();
+      }
+    });
+
+    it('should throw an error if no getToken function is defined', function () {
+      try {
+        new firebase.appCheck.CustomProvider({});
+        return Promise.reject(new Error('Did not throw an error.'));
+      } catch (e) {
+        e.message.should.containEql('no getToken function defined');
+        return Promise.resolve();
+      }
+    });
+
+    it('should return a token from a custom provider', async function () {
+      const spy = sinon.spy();
+      const provider = new firebase.appCheck.CustomProvider({
+        getToken() {
+          spy();
+          return FirebaseHelpers.fetchAppCheckToken();
         },
       });
 
+      // Call from the provider directly.
+      const { token, expireTimeMillis } = await provider.getToken();
+      spy.should.be.calledOnce();
+      token.should.be.a.String();
+      expireTimeMillis.should.be.a.Number();
+
+      // Call from the app check instance.
+      await firebase.appCheck().initializeAppCheck({ provider, isTokenAutoRefreshEnabled: false });
+      const { token: tokenFromAppCheck } = await firebase.appCheck().getToken(true);
+      tokenFromAppCheck.should.be.a.String();
+
+      // Confirm that app check used the custom provider getToken function.
+      spy.should.be.calledTwice();
+    });
+
+    it('should return a limited use token from a custom provider', async function () {
+      const provider = new firebase.appCheck.CustomProvider({
+        getToken() {
+          return FirebaseHelpers.fetchAppCheckToken();
+        },
+      });
+
+      await firebase.appCheck().initializeAppCheck({ provider, isTokenAutoRefreshEnabled: false });
+      const { token: tokenFromAppCheck } = await firebase.appCheck().getLimitedUseToken();
+      tokenFromAppCheck.should.be.a.String();
+    });
+
+    it('should listen for token changes', async function () {
+      const provider = new firebase.appCheck.CustomProvider({
+        getToken() {
+          return FirebaseHelpers.fetchAppCheckToken();
+        },
+      });
+
+      await firebase.appCheck().initializeAppCheck({ provider, isTokenAutoRefreshEnabled: false });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const unsubscribe = firebase.appCheck().onTokenChanged(_ => {
+        // TODO - improve testing cloud function to allow us to return tokens with low expiry
+      });
+
+      // TODO - improve testing cloud function to allow us to return tokens with low expiry
+      // result.should.be.an.Object();
+      // const { token, expireTimeMillis } = result;
+      // token.should.be.a.String();
+      // expireTimeMillis.should.be.a.Number();
+      unsubscribe();
+    });
+  });
+
+  describe('firebase v8 compatibility', function () {
+    before(function () {
+      let provider;
+
+      if (!Platform.other) {
+        provider = firebase.appCheck().newReactNativeFirebaseAppCheckProvider();
+        provider.configure({
+          android: {
+            provider: 'debug',
+            debugToken: '698956B2-187B-49C6-9E25-C3F3530EEBAF',
+          },
+          apple: {
+            provider: 'debug',
+            debugToken: '698956B2-187B-49C6-9E25-C3F3530EEBAF',
+          },
+          web: {
+            provider: 'debug',
+            siteKey: 'none',
+          },
+        });
+      } else {
+        provider = new firebase.appCheck.CustomProvider({
+          getToken() {
+            return FirebaseHelpers.fetchAppCheckToken();
+          },
+        });
+      }
+
       // Our tests configure a debug provider with shared secret so we should get a valid token
-      firebase
-        .appCheck()
-        .initializeAppCheck({ provider: rnfbProvider, isTokenAutoRefreshEnabled: false });
+      firebase.appCheck().initializeAppCheck({ provider, isTokenAutoRefreshEnabled: false });
     });
 
     describe('config', function () {
@@ -221,6 +312,10 @@ describe('appCheck() modular', function () {
     });
 
     describe('activate())', function () {
+      if (Platform.other) {
+        return;
+      }
+
       it('should activate with default provider and defined token refresh', function () {
         firebase
           .appCheck()
@@ -255,25 +350,35 @@ describe('appCheck() modular', function () {
     before(async function () {
       const { initializeAppCheck } = appCheckModular;
 
-      rnfbProvider = firebase.appCheck().newReactNativeFirebaseAppCheckProvider();
-      rnfbProvider.configure({
-        android: {
-          provider: 'debug',
-          debugToken: '698956B2-187B-49C6-9E25-C3F3530EEBAF',
-        },
-        apple: {
-          provider: 'debug',
-          debugToken: '698956B2-187B-49C6-9E25-C3F3530EEBAF',
-        },
-        web: {
-          provider: 'debug',
-          siteKey: 'none',
-        },
-      });
+      let provider;
+
+      if (!Platform.other) {
+        provider = firebase.appCheck().newReactNativeFirebaseAppCheckProvider();
+        provider.configure({
+          android: {
+            provider: 'debug',
+            debugToken: '698956B2-187B-49C6-9E25-C3F3530EEBAF',
+          },
+          apple: {
+            provider: 'debug',
+            debugToken: '698956B2-187B-49C6-9E25-C3F3530EEBAF',
+          },
+          web: {
+            provider: 'debug',
+            siteKey: 'none',
+          },
+        });
+      } else {
+        provider = new firebase.appCheck.CustomProvider({
+          getToken() {
+            return FirebaseHelpers.fetchAppCheckToken();
+          },
+        });
+      }
 
       // Our tests configure a debug provider with shared secret so we should get a valid token
       appCheckInstance = await initializeAppCheck(undefined, {
-        provider: rnfbProvider,
+        provider,
         isTokenAutoRefreshEnabled: false,
       });
     });
