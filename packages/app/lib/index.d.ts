@@ -85,6 +85,7 @@ export namespace ReactNativeFirebase {
     /**
      * The tracking ID for Google Analytics, e.g. "UA-12345678-1", used to configure Google Analytics.
      */
+    // TODO this should now be measurementId
     gaTrackingId?: string;
 
     /**
