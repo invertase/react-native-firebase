@@ -1,10 +1,10 @@
----
 name: '⚠️ Other Platforms - Bug/Issue report'
-about: Please provide as much detail as possible. Issues may be closed if they do
-  not follow the template.
 title: "[\U0001F41B] Other Platforms Bug Report Title - CHANGE ME "
-labels: 'Help: Needs Triage, Impact: Bug, Platform: Other'
-description: Create an issue specific to Other platforms on React Native Firebase.
+labels:
+  - 'Help: Needs Triage'
+  - 'Impact: Bug'
+  - 'Platform: Other'
+description: Create an issue specific to 'Other' platforms on React Native Firebase (not Android or iOS).
 body:
   - type: checkboxes
     attributes:
@@ -61,6 +61,3 @@ body:
       label: Additional context and comments
       description: |
         Anything else you want to add for this issue?
----
-
-- 👉 Check out [`React Native Firebase`](https://twitter.com/rnfirebase) and [`Invertase`](https://twitter.com/invertaseio) on Twitter for updates on the library.
