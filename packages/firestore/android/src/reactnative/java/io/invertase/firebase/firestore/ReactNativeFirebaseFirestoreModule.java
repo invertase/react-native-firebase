@@ -22,7 +22,6 @@ import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreCommon
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getFirestoreForApp;
 
 import android.util.Log;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -32,7 +31,6 @@ import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.LoadBundleTaskProgress;
 import com.google.firebase.firestore.PersistentCacheIndexManager;
-
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModule {
@@ -168,7 +166,8 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
 
   @ReactMethod
   public void persistenceCacheIndexManager(String appName, int requestType, Promise promise) {
-    PersistentCacheIndexManager indexManager = getFirestoreForApp(appName).getPersistentCacheIndexManager();
+    PersistentCacheIndexManager indexManager =
+        getFirestoreForApp(appName).getPersistentCacheIndexManager();
     if (indexManager != null) {
       switch (requestType) {
         case 0:
