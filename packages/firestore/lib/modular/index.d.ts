@@ -533,6 +533,22 @@ export function namedQuery(firestore: Firestore, name: string): Query<DocumentDa
  */
 export function writeBatch(firestore: Firestore): FirebaseFirestoreTypes.WriteBatch;
 
+export function getPersistentCacheIndexManager(
+  firestore: Firestore,
+): FirebaseFirestoreTypes.PersistentCacheIndexManager;
+
+export function enablePersistentCacheIndexAutoCreation(
+  indexManager: FirebaseFirestoreTypes.PersistentCacheIndexManager,
+): Promise<void>;
+
+export function disablePersistentCacheIndexAutoCreation(
+  indexManager: FirebaseFirestoreTypes.PersistentCacheIndexManager,
+): Promise<void>;
+
+export function deleteAllPersistentCacheIndexes(
+  indexManager: FirebaseFirestoreTypes.PersistentCacheIndexManager,
+): Promise<void>;
+
 export * from './query';
 export * from './snapshot';
 export * from './Bytes';

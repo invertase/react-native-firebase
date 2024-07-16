@@ -209,6 +209,38 @@ export function writeBatch(firestore) {
   return firestore.batch();
 }
 
+/**
+ * @param {Firestore} firestore
+ * @returns {FirebaseFirestoreTypes.PersistenceCacheIndexManager}
+ */
+export function getPersistentCacheIndexManager(firestore) {
+  return firestore.persistentCacheIndexManager();
+}
+
+/**
+ * @param {FirebaseFirestoreTypes.PersistenceCacheIndexManager} indexManager
+ * @returns {Promise<void}
+ */
+export function enablePersistentCacheIndexAutoCreation(indexManager) {
+  return indexManager.enableIndexAutoCreation();
+}
+
+/**
+ * @param {FirebaseFirestoreTypes.PersistenceCacheIndexManager} indexManager
+ * @returns {Promise<void}
+ */
+export function disablePersistentCacheIndexAutoCreation(indexManager) {
+  return indexManager.disableIndexAutoCreation();
+}
+
+/**
+ * @param {FirebaseFirestoreTypes.PersistenceCacheIndexManager} indexManager
+ * @returns {Promise<void}
+ */
+export function deleteAllPersistentCacheIndexes(indexManager) {
+  return indexManager.deleteAllIndexes();
+}
+
 export * from './query';
 export * from './snapshot';
 export * from './Bytes';

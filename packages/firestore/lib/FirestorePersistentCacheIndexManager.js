@@ -20,15 +20,15 @@ export default class FirestorePersistentCacheIndexManager {
     this._firestore = firestore;
   }
 
-  get enableIndexAutoCreation() {
-    return this._firestore.native.enableIndexAutoCreation(0);
+  async enableIndexAutoCreation() {
+    await this._firestore.native.persistenceCacheIndexManager(0);
   }
 
-  get disableIndexAutoCreation() {
-    return this._firestore.native.disableIndexAutoCreation(1);
+  async disableIndexAutoCreation() {
+    await this._firestore.native.persistenceCacheIndexManager(1);
   }
 
-  get deleteAllIndexes() {
-    return this._firestore.native.deleteAllIndexes(2);
+  async deleteAllIndexes() {
+    await this._firestore.native.persistenceCacheIndexManager(2);
   }
 }
