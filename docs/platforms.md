@@ -147,4 +147,4 @@ Unsupported methods:
 
 Known issues will be documented here and updated regularly.
 
-- There are currently no known issues. 
+- There are currently no known issues.
