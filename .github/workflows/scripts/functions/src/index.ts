@@ -18,3 +18,4 @@ export const sleeper = functions.https.onCall(async data => {
 export { testFunctionCustomRegion } from './testFunctionCustomRegion';
 export { testFunctionDefaultRegion } from './testFunctionDefaultRegion';
 export { testFunctionRemoteConfigUpdate } from './testFunctionRemoteConfigUpdate';
+export { fetchAppCheckToken } from './fetchAppCheckToken';

@@ -23,6 +23,44 @@ describe('storage() -> StorageReference', function () {
       await seed(PATH);
     });
 
+    describe('second storage bucket writes to Storage emulator', function () {
+      let secondStorage;
+      // Same bucket defined in app.js when setting up emulator
+      const secondStorageBucket = 'gs://react-native-firebase-testing';
+
+      before(function () {
+        const { getStorage } = storageModular;
+        secondStorage = getStorage(firebase.app(), secondStorageBucket);
+      });
+
+      it('should write a file to the second storage bucket', async function () {
+        const { ref } = storageModular;
+
+        // "only-second-bucket" is not an allowable path on live project for either bucket
+        const storageReference = ref(secondStorage, 'only-second-bucket/ok.txt');
+
+        await storageReference.putString('Hello World');
+      });
+
+      it('should throw exception on path not allowed on second bucket security rules', async function () {
+        const { ref } = storageModular;
+
+        // "react-native-firebase-testing" is not an allowed on second bucket, only "ony-second-bucket"
+        const storageReference = ref(
+          secondStorage,
+          'react-native-firebase-testing/should-fail.txt',
+        );
+
+        try {
+          await storageReference.putString('Hello World');
+          return Promise.reject(new Error('Did not throw'));
+        } catch (error) {
+          error.code.should.equal('storage/unauthorized');
+          return Promise.resolve();
+        }
+      });
+    });
+
     describe('firebase v8 compatibility', function () {
       describe('toString()', function () {
         it('returns the correct bucket path to the file', function () {

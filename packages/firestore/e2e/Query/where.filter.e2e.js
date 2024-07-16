@@ -106,19 +106,26 @@ describe('firestore().collection().where(Filters)', function () {
       .where(Filter('foo.bar', '!=', null));
   });
 
-  it('throws if multiple inequalities on different paths is provided', function () {
-    try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .where(Filter('foo.bar', '>', 123))
-        .where(Filter('bar', '>', 123));
+  it('allows multiple inequalities (excluding `!=`) on different paths provided', async function () {
+    const colRef = firebase
+      .firestore()
+      .collection(`${COLLECTION}/filter/different-path-inequality`);
+    const expected = { foo: { bar: 300 }, bar: 200 };
+    await Promise.all([
+      colRef.add({ foo: { bar: 1 }, bar: 1 }),
+      colRef.add(expected),
+      colRef.add(expected),
+    ]);
 
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql('All where filters with an inequality');
-      return Promise.resolve();
-    }
+    const snapshot = await colRef
+      .where(Filter('foo.bar', '>', 123))
+      .where(Filter('bar', '>', 123))
+      .get();
+
+    snapshot.size.should.eql(2);
+    snapshot.forEach(s => {
+      s.data().should.eql(jet.contextify(expected));
+    });
   });
 
   it('allows inequality on the same path', function () {
@@ -287,38 +294,25 @@ describe('firestore().collection().where(Filters)', function () {
     }
   });
 
-  it("should throw error when combining '!=' operator with any other inequality operator on a different field", async function () {
-    const ref = firebase.firestore().collection(COLLECTION);
+  it("should allow query when combining '!=' operator with any other inequality operator on a different field", async function () {
+    const colRef = firebase
+      .firestore()
+      .collection(`${COLLECTION}/filter/inequality-combine-not-equal`);
+    const expected = { foo: { bar: 300 }, bar: 200 };
+    await Promise.all([
+      colRef.add({ foo: { bar: 1 }, bar: 1 }),
+      colRef.add(expected),
+      colRef.add(expected),
+    ]);
+    const snapshot = await colRef
+      .where(Filter('foo.bar', '>', 123))
+      .where(Filter('bar', '!=', 123))
+      .get();
 
-    try {
-      ref.where(Filter('differentField', '>', 2)).where(Filter('foo.bar', '!=', 1));
-      return Promise.reject(new Error('Did not throw an Error on >.'));
-    } catch (error) {
-      error.message.should.containEql('must be on the same field.');
-    }
-
-    try {
-      ref.where(Filter('foo.bar', '!=', 1)).where(Filter('differentField', '<', 2));
-      return Promise.reject(new Error('Did not throw an Error on <.'));
-    } catch (error) {
-      error.message.should.containEql('must be on the same field.');
-    }
-
-    try {
-      ref.where(Filter('foo.bar', '!=', 1)).where(Filter('differentField', '<=', 2));
-      return Promise.reject(new Error('Did not throw an Error <=.'));
-    } catch (error) {
-      error.message.should.containEql('must be on the same field.');
-    }
-
-    try {
-      ref.where(Filter('foo.bar', '!=', 1)).where(Filter('differentField', '>=', 2));
-      return Promise.reject(new Error('Did not throw an Error >=.'));
-    } catch (error) {
-      error.message.should.containEql('must be on the same field.');
-    }
-
-    return Promise.resolve();
+    snapshot.size.should.eql(2);
+    snapshot.forEach(s => {
+      s.data().should.eql(jet.contextify(expected));
+    });
   });
 
   /* Queries */

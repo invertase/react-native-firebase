@@ -26,6 +26,9 @@ NSString *const DATABASE_PERSISTENCE_ENABLED = @"firebase_database_persistence_e
 NSString *const DATABASE_LOGGING_ENABLED = @"firebase_database_logging_enabled";
 NSString *const DATABASE_PERSISTENCE_CACHE_SIZE = @"firebase_database_persistence_cache_size_bytes";
 
+NSString *const childPrioritiesKey = @"childPriorities";
+NSString *const childKeysKey = @"childKeys";
+
 @implementation RNFBDatabaseCommon
 
 + (void)load {
@@ -250,28 +253,32 @@ NSString *const DATABASE_PERSISTENCE_CACHE_SIZE = @"firebase_database_persistenc
   } else {
     [snapshot setValue:[NSNull null] forKey:@"key"];
   }
+  NSMutableDictionary *childProperties = [self getSnapshotChildProperties:dataSnapshot];
   [snapshot setValue:@(dataSnapshot.exists) forKey:@"exists"];
   [snapshot setValue:@(dataSnapshot.hasChildren) forKey:@"hasChildren"];
   [snapshot setValue:@(dataSnapshot.childrenCount) forKey:@"childrenCount"];
-  [snapshot setValue:[self getSnapshotChildKeys:dataSnapshot] forKey:@"childKeys"];
+  [snapshot setValue:childProperties[childKeysKey] forKey:childKeysKey];
+  [snapshot setValue:childProperties[childPrioritiesKey] forKey:childPrioritiesKey];
   [snapshot setValue:dataSnapshot.priority forKey:@"priority"];
   [snapshot setValue:dataSnapshot.value forKey:@"value"];
 
   return snapshot;
 }
 
-+ (NSMutableArray *)getSnapshotChildKeys:(FIRDataSnapshot *)dataSnapshot {
++ (NSMutableDictionary *)getSnapshotChildProperties:(FIRDataSnapshot *)dataSnapshot {
   NSMutableArray *childKeys = [NSMutableArray array];
+  NSMutableDictionary *childPriorities = [[NSMutableDictionary alloc] init];
   if (dataSnapshot.childrenCount > 0) {
     NSEnumerator *children = [dataSnapshot children];
     FIRDataSnapshot *child;
     child = [children nextObject];
     while (child) {
       [childKeys addObject:child.key];
+      [childPriorities setValue:child.priority forKey:child.key];
       child = [children nextObject];
     }
   }
-  return childKeys;
+  return @{childKeysKey : childKeys, childPrioritiesKey : childPriorities};
 }
 
 @end

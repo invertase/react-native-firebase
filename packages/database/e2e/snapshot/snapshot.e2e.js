@@ -265,6 +265,32 @@ describe('database()...snapshot', function () {
       snapshot1.val().should.equal('foobar');
       snapshot2.val().should.eql(jet.contextify(CONTENT.TYPES.object));
     });
+
+    it('should return the correct priority for the child snapshots', async function () {
+      if (Platform.other) {
+        // TODO - remove once "other" is fully integrated
+        this.skip();
+      }
+      const ref = firebase.database().ref(TEST_PATH).child('get-priority-children');
+      const child1 = ref.child('child1');
+      const child2 = ref.child('child2');
+      const child3 = ref.child('child3');
+
+      await Promise.all([
+        child1.set({ foo: 'bar' }),
+        child2.set({ foo: 'bar' }),
+        child3.set({ foo: 'bar' }),
+      ]);
+
+      await child1.setPriority(1);
+      await child2.setPriority(2);
+      await child3.setPriority(3);
+
+      const snapshot = await ref.once('value');
+      snapshot.child('child1').getPriority().should.equal(1);
+      snapshot.child('child2').getPriority().should.equal(2);
+      snapshot.child('child3').getPriority().should.equal(3);
+    });
   });
 
   describe('modular', function () {
@@ -529,6 +555,34 @@ describe('database()...snapshot', function () {
 
       snapshot1.val().should.equal('foobar');
       snapshot2.val().should.eql(jet.contextify(CONTENT.TYPES.object));
+    });
+
+    it('should return the correct priority for the child snapshots', async function () {
+      if (Platform.other) {
+        // TODO - remove once "other" is fully integrated
+        this.skip();
+      }
+      const { getDatabase, ref, child, set, setPriority, get } = databaseModular;
+      const reference = child(ref(getDatabase(), TEST_PATH), 'get-priority-children-mod');
+
+      const child1 = child(reference, 'child1');
+      const child2 = child(reference, 'child2');
+      const child3 = child(reference, 'child3');
+
+      await Promise.all([
+        set(child1, { foo: 'bar' }),
+        set(child2, { foo: 'bar' }),
+        set(child3, { foo: 'bar' }),
+      ]);
+
+      await setPriority(child1, 1);
+      await setPriority(child2, 2);
+      await setPriority(child3, 3);
+
+      const snapshot = await get(reference);
+      snapshot.child('child1').getPriority().should.equal(1);
+      snapshot.child('child2').getPriority().should.equal(2);
+      snapshot.child('child3').getPriority().should.equal(3);
     });
   });
 });

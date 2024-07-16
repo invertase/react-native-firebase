@@ -11,6 +11,14 @@
         {
           "fieldPath": "b",
           "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "foo.bar",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "baz",
+          "order": "ASCENDING"
         }
       ]
     }

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [20.2.0](https://github.com/invertase/react-native-firebase/compare/v20.1.0...v20.2.0) (2024-07-15)
+
+### Features
+
+- **Other:** Add Remote Config support ([#7895](https://github.com/invertase/react-native-firebase/issues/7895)) ([a41e556](https://github.com/invertase/react-native-firebase/commit/a41e5568869320fb91afc01403ed402e5312e15c))
+
 ## [20.1.0](https://github.com/invertase/react-native-firebase/compare/v20.0.0...v20.1.0) (2024-06-04)
 
 **Note:** Version bump only for package @react-native-firebase/remote-config

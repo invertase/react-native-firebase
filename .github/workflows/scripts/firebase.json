@@ -4,11 +4,9 @@
     "indexes": "firestore.indexes.json"
   },
   "functions": {
-    "predeploy": [
-      "cd functions && yarn",
-      "cd functions && yarn --prefix \"$RESOURCE_DIR\" build"
-    ],
-    "source": "functions"
+    "predeploy": ["cd functions && yarn", "cd functions && yarn --prefix \"$RESOURCE_DIR\" build"],
+    "source": "functions",
+    "ignore": [".yarn", "yarn.lock", "*.log", "node_modules"]
   },
   "database": {
     "rules": "database.rules"

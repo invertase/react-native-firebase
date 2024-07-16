@@ -24,10 +24,13 @@ import android.util.Log;
 import com.facebook.react.bridge.*;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.MutableData;
+import java.util.HashMap;
 import javax.annotation.Nullable;
 
 public class ReactNativeFirebaseDatabaseCommon {
   private static final String TAG = "DatabaseCommon";
+  private static final String childPrioritiesKey = "childPriorities";
+  private static final String childKeysKey = "childKeys";
 
   /**
    * @param promise
@@ -61,12 +64,13 @@ public class ReactNativeFirebaseDatabaseCommon {
    */
   public static WritableMap snapshotToMap(DataSnapshot dataSnapshot) {
     WritableMap snapshot = Arguments.createMap();
-
+    HashMap<String, Object> childProperties = getChildProperties(dataSnapshot);
     snapshot.putString("key", dataSnapshot.getKey());
     snapshot.putBoolean("exists", dataSnapshot.exists());
     snapshot.putBoolean("hasChildren", dataSnapshot.hasChildren());
     snapshot.putDouble("childrenCount", dataSnapshot.getChildrenCount());
-    snapshot.putArray("childKeys", getChildKeys(dataSnapshot));
+    snapshot.putArray(childKeysKey, (ReadableArray) childProperties.get(childKeysKey));
+    snapshot.putMap(childPrioritiesKey, (WritableMap) childProperties.get(childPrioritiesKey));
     mapPutValue("priority", dataSnapshot.getPriority(), snapshot);
 
     if (!dataSnapshot.hasChildren()) {
@@ -369,15 +373,29 @@ public class ReactNativeFirebaseDatabaseCommon {
    * @param snapshot
    * @return
    */
-  public static WritableArray getChildKeys(DataSnapshot snapshot) {
+  public static HashMap<String, Object> getChildProperties(DataSnapshot snapshot) {
     WritableArray childKeys = Arguments.createArray();
-
+    WritableMap childPriorities = Arguments.createMap();
+    HashMap<String, Object> childProperties = new HashMap<>();
     if (snapshot.hasChildren()) {
       for (DataSnapshot child : snapshot.getChildren()) {
         childKeys.pushString(child.getKey());
+
+        Object priority = child.getPriority();
+        // Priority can be String, Double or null
+        if (priority instanceof String) {
+          childPriorities.putString(child.getKey(), (String) priority);
+        } else if (priority instanceof Double) {
+          childPriorities.putDouble(child.getKey(), (Double) priority);
+        } else if (priority == null) {
+          childPriorities.putNull(child.getKey());
+        }
       }
     }
 
-    return childKeys;
+    childProperties.put(childKeysKey, childKeys);
+    childProperties.put(childPrioritiesKey, childPriorities);
+
+    return childProperties;
   }
 }
