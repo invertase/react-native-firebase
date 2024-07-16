@@ -1419,7 +1419,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param filter The filter to apply to the query.
      */
-    where(filter: QueryCompositeFilterConstraint): Query<T>;
+    where(filter: QueryFilterConstraint): Query<T>;
   }
 
   /**
