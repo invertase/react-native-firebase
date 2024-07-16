@@ -40,6 +40,7 @@ import FirestoreTransactionHandler from './FirestoreTransactionHandler';
 import FirestoreWriteBatch from './FirestoreWriteBatch';
 import version from './version';
 import fallBackModule from './web/RNFBFirestoreModule';
+import FirestorePersistentCacheIndexManager from './FirestorePersistentCacheIndexManager';
 
 const namespace = 'firestore';
 
@@ -355,6 +356,10 @@ class FirebaseFirestoreModule extends FirebaseModule {
     }
 
     return this.native.settings(settings);
+  }
+
+  persistentCacheIndexManager() {
+    return new FirestorePersistentCacheIndexManager(this);
   }
 }
 

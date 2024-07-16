@@ -19,6 +19,9 @@ package io.invertase.firebase.firestore;
 
 import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
 import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreCommon.rejectPromiseFirestoreException;
+import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getFirestoreForApp;
+
+import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -28,6 +31,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.LoadBundleTaskProgress;
+import com.google.firebase.firestore.PersistentCacheIndexManager;
+
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModule {
@@ -159,6 +164,27 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
                 rejectPromiseFirestoreException(promise, task.getException());
               }
             });
+  }
+
+  @ReactMethod
+  public void persistenceCacheIndexManager(String appName, int requestType, Promise promise) {
+    PersistentCacheIndexManager indexManager = getFirestoreForApp(appName).getPersistentCacheIndexManager();
+    if (indexManager != null) {
+      switch (requestType) {
+        case 0:
+          indexManager.enableIndexAutoCreation();
+          break;
+        case 1:
+          indexManager.disableIndexAutoCreation();
+          break;
+        case 2:
+          indexManager.deleteAllIndexes();
+          break;
+      }
+    } else {
+      Log.d("RNFBFirestoreModule", "`PersistentCacheIndexManager` is not available.");
+    }
+    promise.resolve(null);
   }
 
   private WritableMap taskProgressToWritableMap(LoadBundleTaskProgress progress) {

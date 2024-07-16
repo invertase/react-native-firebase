@@ -19,6 +19,7 @@
 #import <React/RCTUtils.h>
 #import "RNFBFirestoreCommon.h"
 #import "RNFBPreferences.h"
+#import "FirebaseFirestoreInternal/FIRPersistentCacheIndexManager.h"
 
 NSMutableDictionary *emulatorConfigs;
 
@@ -187,6 +188,32 @@ RCT_EXPORT_METHOD(terminate
       resolve(nil);
     }
   }];
+}
+
+RCT_EXPORT_METHOD(persistenceCacheIndexManager
+                  : (FIRApp *)firebaseApp
+                  : (NSInteger)requestType
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  FIRPersistentCacheIndexManager *persistentCacheIndexManager =
+  [RNFBFirestoreCommon getFirestoreForApp:firebaseApp].persistentCacheIndexManager;
+
+    if (persistentCacheIndexManager) {
+      switch (requestType) {
+        case 0:
+          [persistentCacheIndexManager enableIndexAutoCreation];
+          break;
+        case 1:
+          [persistentCacheIndexManager disableIndexAutoCreation];
+          break;
+        case 2:
+          [persistentCacheIndexManager deleteAllIndexes];
+          break;
+      }
+    } else {
+      NSLog(@"RNFBFirestoreModule: `PersistentCacheIndexManager` is not available.");
+    }
+    resolve(nil);
 }
 
 - (NSMutableDictionary *)taskProgressToDictionary:(FIRLoadBundleTaskProgress *)progress {
