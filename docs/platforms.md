@@ -140,3 +140,11 @@ Unsupported methods:
 
 - `writeToFile`
 - `putFile`
+
+---
+
+## Known Issues
+
+Known issues will be documented here and updated regularly.
+
+- There are currently no known issues. 
