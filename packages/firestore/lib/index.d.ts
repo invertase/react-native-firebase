@@ -55,7 +55,7 @@ export namespace FirebaseFirestoreTypes {
 
   export type QueryFilterType = 'OR' | 'AND';
 
-  export interface QueryFilterConstraint {
+  export interface QueryFieldFilterConstraint {
     fieldPath: keyof T | FieldPath;
     operator: WhereFilterOp;
     value: any;
@@ -63,8 +63,11 @@ export namespace FirebaseFirestoreTypes {
 
   export interface QueryCompositeFilterConstraint {
     operator: QueryFilterType;
-    queries: QueryFilterConstraint[];
+    queries: QueryFieldFilterConstraint[];
   }
+
+  export type QueryFilterConstraint = QueryFieldFilterConstraint | QueryCompositeFilterConstraint;
+
   /**
    * The Filter functions used to generate an instance of Filter.
    */
@@ -73,21 +76,21 @@ export namespace FirebaseFirestoreTypes {
      * The Filter function used to generate an instance of Filter.
      * e.g. Filter('name', '==', 'Ada')
      */
-    (fieldPath: keyof T | FieldPath, operator: WhereFilterOp, value: any): QueryFilterConstraint;
+    (
+      fieldPath: keyof T | FieldPath,
+      operator: WhereFilterOp,
+      value: any,
+    ): QueryFieldFilterConstraint;
     /**
      * The Filter.or() static function used to generate a logical OR query using multiple Filter instances.
      * e.g. Filter.or(Filter('name', '==', 'Ada'), Filter('name', '==', 'Bob'))
      */
-    or(
-      ...queries: (QueryFilterConstraint | QueryCompositeFilterConstraint)[]
-    ): QueryCompositeFilterConstraint;
+    or(...queries: QueryFilterConstraint[]): QueryCompositeFilterConstraint;
     /**
      * The Filter.and() static function used to generate a logical AND query using multiple Filter instances.
      * e.g. Filter.and(Filter('name', '==', 'Ada'), Filter('name', '==', 'Bob'))
      */
-    and(
-      ...queries: (QueryFilterConstraint | QueryCompositeFilterConstraint)[]
-    ): QueryCompositeFilterConstraint;
+    and(...queries: QueryFilterConstraint[]): QueryCompositeFilterConstraint;
   }
   /**
    * The Filter function used to generate an instance of Filter.
@@ -1416,7 +1419,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param filter The filter to apply to the query.
      */
-    where(filter: QueryFilterConstraint | QueryCompositeFilterConstraint): Query<T>;
+    where(filter: QueryCompositeFilterConstraint): Query<T>;
   }
 
   /**
