@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [20.2.1](https://github.com/invertase/react-native-firebase/compare/v20.2.0...v20.2.1) (2024-07-17)
+
+### Bug Fixes
+
+- **firestore:** Filter typing. `Filter.or` & `Filter.and` can accept each other ([#7904](https://github.com/invertase/react-native-firebase/issues/7904)) ([f6c12ec](https://github.com/invertase/react-native-firebase/commit/f6c12ec208f15c4a8dd2132810fcfe914b675251))
+- **storage:** ensure emulator is used for different storage buckets ([#7892](https://github.com/invertase/react-native-firebase/issues/7892)) ([3fa3f11](https://github.com/invertase/react-native-firebase/commit/3fa3f110b357ef0dbe2cc0fc12e982edc913b588))
+
 ## [20.2.0](https://github.com/invertase/react-native-firebase/compare/v20.1.0...v20.2.0) (2024-07-15)
 
 ### Features
