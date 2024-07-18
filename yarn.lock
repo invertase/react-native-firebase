@@ -5436,6 +5436,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-async-storage/async-storage@npm:^1.24.0":
+  version: 1.24.0
+  resolution: "@react-native-async-storage/async-storage@npm:1.24.0"
+  dependencies:
+    merge-options: "npm:^3.0.4"
+  peerDependencies:
+    react-native: ^0.0.0-0 || >=0.60 <1.0
+  checksum: 10/5a6b7ac8bd7a9e537a53a3f2301530c284fd885a45ce4a4e0014859bc0f7c89bee5c4b5a6b3740b8d83751561159b237474d18f32fad75ea7d56d4ddb2180d91
+  languageName: node
+  linkType: hard
+
 "@react-native-community/cli-clean@npm:12.3.2":
   version: 12.3.2
   resolution: "@react-native-community/cli-clean@npm:12.3.2"
@@ -5833,9 +5844,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/app@workspace:packages/app"
   dependencies:
+    "@react-native-async-storage/async-storage": "npm:^1.24.0"
     expo: "npm:^50.0.19"
     firebase: "npm:10.12.2"
-    opencollective-postinstall: "npm:^2.0.3"
     superstruct: "npm:^0.6.2"
   peerDependencies:
     expo: ">=47.0.0"
@@ -16072,6 +16083,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"merge-options@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "merge-options@npm:3.0.4"
+  dependencies:
+    is-plain-obj: "npm:^2.1.0"
+  checksum: 10/d86ddb3dd6e85d558dbf25dc944f3527b6bacb944db3fdda6e84a3f59c4e4b85231095f58b835758b9a57708342dee0f8de0dffa352974a48221487fe9f4584f
+  languageName: node
+  linkType: hard
+
 "merge-stream@npm:^2.0.0":
   version: 2.0.0
   resolution: "merge-stream@npm:2.0.0"
@@ -18015,15 +18035,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"opencollective-postinstall@npm:^2.0.3":
-  version: 2.0.3
-  resolution: "opencollective-postinstall@npm:2.0.3"
-  bin:
-    opencollective-postinstall: index.js
-  checksum: 10/69d63778087cd10c9d707d9ed360556780cfdd0cd6241ded0e26632f467f1d5a064f4a9aec19a30c187770c17adba034d988f7684b226f3a73e79f44e73fab0e
-  languageName: node
-  linkType: hard
-
 "optionator@npm:^0.9.3":
   version: 0.9.3
   resolution: "optionator@npm:0.9.3"
@@ -19362,6 +19373,7 @@ __metadata:
   resolution: "react-native-firebase-tests@workspace:tests"
   dependencies:
     "@firebase/rules-unit-testing": "npm:^3.0.3"
+    "@react-native-async-storage/async-storage": "npm:^1.24.0"
     "@react-native-firebase/analytics": "npm:20.2.1"
     "@react-native-firebase/app": "npm:20.2.1"
     "@react-native-firebase/app-check": "npm:20.2.1"
