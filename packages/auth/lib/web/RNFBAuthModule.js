@@ -1,7 +1,7 @@
 import {
-  getApps,
   getApp,
-  getAuth,
+  initializeAuth,
+  getReactNativePersistence,
   onAuthStateChanged,
   onIdTokenChanged,
   signInAnonymously,
@@ -41,6 +41,10 @@ import {
   OAuthProvider,
 } from '@react-native-firebase/app/lib/internal/web/firebaseAuth';
 import { guard, getWebError, emitEvent } from '@react-native-firebase/app/lib/internal/web/utils';
+import {
+  getReactNativeAsyncStorageInternal,
+  isMemoryStorage,
+} from '@react-native-firebase/app/lib/internal/asyncStorage';
 
 /**
  * Resolves or rejects an auth method promise without a user (user was missing).
@@ -221,7 +225,32 @@ let sessionId = 0;
 
 // Returns a cached Firestore instance.
 function getCachedAuthInstance(appName) {
-  return (instances[appName] ??= getAuth(getApp(appName)));
+  if (!instances[appName]) {
+    if (!isMemoryStorage()) {
+      // Warn auth persistence is is disabled unless Async Storage implementation is provided.
+      // eslint-disable-next-line no-console
+      console.warn(
+        ```
+Firebase Auth persistence is disabled. To enable persistence, provide an Async Storage implementation.
+
+For example, to use React Native Async Storage:
+
+  import AsyncStorage from '@react-native-async-storage/async-storage';
+
+  // Before initializing Firebase set the Async Storage implementation
+  // that will be used to persist user sessions.
+  firebase.setReactNativeAsyncStorage(AsyncStorage);
+
+  // Then initialize Firebase as normal.
+  await firebase.initializeApp({ ... });
+```,
+      );
+    }
+    instances[appName] = initializeAuth(getApp(appName), {
+      persistence: getReactNativePersistence(getReactNativeAsyncStorageInternal()),
+    });
+  }
+  return instances[appName];
 }
 
 // getConstants
@@ -230,13 +259,16 @@ const CONSTANTS = {
   APP_USER: {},
 };
 
-for (const appName of getApps()) {
-  const instance = getAuth(getApp(appName));
-  CONSTANTS.APP_LANGUAGE[appName] = instance.languageCode;
-  if (instance.currentUser) {
-    CONSTANTS.APP_USER[appName] = userToObject(instance.currentUser);
-  }
-}
+// Not required for web, since it's dynamic initialization
+// and we are not making instances of auth based on apps that already exist
+// since there are none that exist before we initialize them in our code below.
+// for (const appName of getApps()) {
+//   const instance = getAuth(getApp(appName));
+//   CONSTANTS.APP_LANGUAGE[appName] = instance.languageCode;
+//   if (instance.currentUser) {
+//     CONSTANTS.APP_USER[appName] = userToObject(instance.currentUser);
+//   }
+// }
 
 /**
  * This is a 'NativeModule' for the web platform.
@@ -693,8 +725,12 @@ export default {
     );
   },
 
-  // TODO...
-  async signInWithPhoneNumber() {},
+  async signInWithPhoneNumber() {
+    return rejectPromiseWithCodeAndMessage(
+      'unsupported',
+      'This operation is not supported in this environment.',
+    );
+  },
 
   /**
    * Get a multi-factor session.
