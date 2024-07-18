@@ -1015,6 +1015,8 @@ PODS:
     - React-jsi (= 0.73.32)
     - React-logger (= 0.73.32)
     - React-perflogger (= 0.73.32)
+  - RNCAsyncStorage (1.24.0):
+    - React-Core
   - SocketRocket (0.7.0)
   - Yoga (1.14.0)
 
@@ -1068,6 +1070,7 @@ DEPENDENCIES:
   - React-runtimescheduler (from `../node_modules/react-native-macos/ReactCommon/react/renderer/runtimescheduler`)
   - React-utils (from `../node_modules/react-native-macos/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native-macos/ReactCommon`)
+  - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - SocketRocket (from `../node_modules/react-native-macos/third-party-podspecs/SocketRocket.podspec`)
   - Yoga (from `../node_modules/react-native-macos/ReactCommon/yoga`)
 
@@ -1166,6 +1169,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-macos/ReactCommon/react/utils"
   ReactCommon:
     :path: "../node_modules/react-native-macos/ReactCommon"
+  RNCAsyncStorage:
+    :path: "../node_modules/@react-native-async-storage/async-storage"
   SocketRocket:
     :podspec: "../node_modules/react-native-macos/third-party-podspecs/SocketRocket.podspec"
   Yoga:
@@ -1219,9 +1224,10 @@ SPEC CHECKSUMS:
   React-runtimescheduler: 508ec4adf3a3a5ffb7b3d10d1f236a2a9022ce5a
   React-utils: 52afeb88f90c5a40fa42a145df7877595302f6cf
   ReactCommon: ddcf7d2e41fbb7d047c169f7c56364e69f5036a8
+  RNCAsyncStorage: ec53e44dc3e75b44aa2a9f37618a49c3bc080a7a
   SocketRocket: f6c6249082c011e6de2de60ed641ef8bbe0cfac9
   Yoga: b734a95cb36e2b7e9e7b5733ce679a97e4f37da4
 
-PODFILE CHECKSUM: 0e3d4e19f503b3fd21110dfec7c03e5e583c2cd8
+PODFILE CHECKSUM: 719f065f3a2d6d82a8890049d7de13039d11f851
 
 COCOAPODS: 1.15.2
