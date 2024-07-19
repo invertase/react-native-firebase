@@ -94,7 +94,7 @@ export namespace FirebaseAnalyticsTypes {
     /**
      * The Google [Place ID](https://developers.google.com/places/place-id) that corresponds to the associated item (String). Alternatively, you can supply your own custom Location ID.
      */
-    item_location_id?: string;
+    location_id?: string;
     /**
      * The Item variant.
      */
@@ -109,6 +109,38 @@ export namespace FirebaseAnalyticsTypes {
      * See https://github.com/invertase/react-native-firebase/issues/4578#issuecomment-771703420 for more information
      */
     price?: number;
+    /**
+     * The affiliation of the item.
+     */
+    affiliation?: string;
+    /**
+     * The coupon associated with the item.
+     */
+    coupon?: string;
+    /**
+     * The creative name associated with the item.
+     */
+    creative_name?: string;
+    /**
+     * The creative slot associated with the item.
+     */
+    creative_slot?: string;
+    /**
+     * The discount applied to the item.
+     */
+    discount?: Currency;
+    /**
+     * The index of the item.
+     */
+    index?: number;
+    /**
+     * The promotion ID associated with the item.
+     */
+    promotion_id?: string;
+    /**
+     * The promotion name associated with the item.
+     */
+    promotion_name?: string;
   }
 
   export interface AddPaymentInfoEventParameters {
