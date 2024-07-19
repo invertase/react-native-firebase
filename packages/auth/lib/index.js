@@ -22,12 +22,12 @@ import {
   isString,
   isValidUrl,
 } from '@react-native-firebase/app/lib/common';
-import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import {
   FirebaseModule,
   createModuleNamespace,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
+import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import ConfirmationResult from './ConfirmationResult';
 import PhoneAuthListener from './PhoneAuthListener';
 import PhoneMultiFactorGenerator from './PhoneMultiFactorGenerator';
@@ -101,20 +101,13 @@ export {
   useUserAccessGroup,
   verifyBeforeUpdateEmail,
   verifyPasswordResetCode,
-  verifyPhoneNumber,
+  verifyPhoneNumber
 } from './modular/index';
 // For modular imports
 export {
   AppleAuthProvider,
-  EmailAuthProvider,
-  PhoneAuthProvider,
-  GoogleAuthProvider,
-  GithubAuthProvider,
-  TwitterAuthProvider,
-  FacebookAuthProvider,
-  PhoneMultiFactorGenerator,
-  OAuthProvider,
-  OIDCAuthProvider,
+  EmailAuthProvider, FacebookAuthProvider, GithubAuthProvider, GoogleAuthProvider, OAuthProvider,
+  OIDCAuthProvider, PhoneAuthProvider, PhoneMultiFactorGenerator, TwitterAuthProvider
 };
 
 const statics = {
@@ -389,11 +382,7 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   isSignInWithEmailLink(emailLink) {
-    return (
-      typeof emailLink === 'string' &&
-      (emailLink.includes('mode=signIn') || emailLink.includes('mode%3DsignIn')) &&
-      (emailLink.includes('oobCode=') || emailLink.includes('oobCode%3D'))
-    );
+    return this.native.isSignInWithEmailLink(emailLink);
   }
 
   signInWithEmailLink(email, emailLink) {
