@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 
-import database, { firebase } from '../lib';
+import database, { firebase, onValue, runTransaction } from '../lib';
 
 describe('Database', function () {
   describe('namespace', function () {
@@ -43,6 +43,16 @@ describe('Database', function () {
 
       const bar = database().useEmulator('127.0.0.1', 9000);
       expect(bar).toEqual(['10.0.2.2', 9000]);
+    });
+  });
+
+  describe('modular', function () {
+    it('`onValue` query method is properly exposed to end user', function () {
+      expect(onValue).toBeDefined();
+    });
+
+    it('`runTransaction` transaciton method is properly exposed to end user', function () {
+      expect(runTransaction).toBeDefined();
     });
   });
 });

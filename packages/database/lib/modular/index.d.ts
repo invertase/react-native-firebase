@@ -215,3 +215,6 @@ export function serverTimestamp(): object;
  * @returns A placeholder value for modifying data atomically server-side.
  */
 export function increment(delta: number): object;
+
+export * from './query';
+export * from './transaction';
