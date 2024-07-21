@@ -35,6 +35,11 @@ export function doc(parent, path, ...pathSegments) {
   if (pathSegments && pathSegments.length) {
     path = path + '/' + pathSegments.map(e => e.replace(/^\/|\/$/g, '')).join('/');
   }
+  
+  if ('collection' in parent) {
+    const [firstSegment, ...restSegments] = path.split('/');
+    return parent.collection(firstSegment).doc(restSegments.join('/'));
+  }
 
   return parent.doc(path);
 }
@@ -48,6 +53,11 @@ export function doc(parent, path, ...pathSegments) {
 export function collection(parent, path, ...pathSegments) {
   if (pathSegments && pathSegments.length) {
     path = path + '/' + pathSegments.map(e => e.replace(/^\/|\/$/g, '')).join('/');
+  }
+
+  if ('doc' in parent) {
+    const [firstSegment, ...restSegments] = path.split('/');
+    return parent.doc(firstSegment).collection(restSegments.join('/'));
   }
 
   return parent.collection(path);
