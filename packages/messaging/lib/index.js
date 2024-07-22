@@ -506,7 +506,7 @@ export default createModuleNamespace({
   ModuleClass: FirebaseMessagingModule,
 });
 
-export * from '../modular/index';
+export * from './modular';
 
 // import messaging, { firebase } from '@react-native-firebase/messaging';
 // messaging().X(...);
