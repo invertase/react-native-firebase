@@ -61,20 +61,13 @@ export declare function getStorage(app?: FirebaseApp): Storage;
 export declare function getStorage(app?: FirebaseApp, bucketUrl?: string): Storage;
 
 export function getStorage(app?: FirebaseApp, bucketUrl?: string): Storage;
+
 /**
- * Modify this Storage instance to communicate with the Firebase Storage emulator.
- * This must be called synchronously immediately following the first call to firebase.storage().
- * Do not use with production credentials as emulator traffic is not encrypted.
- *
- * Note: on android, hosts 'localhost' and '127.0.0.1' are automatically remapped to '10.0.2.2' (the
- * "host" computer IP address for android emulators) to make the standard development experience easy.
- * If you want to use the emulator on a real android device, you will need to specify the actual host
- * computer IP address.
- *
- * @param storage: A reference to the `Storage` instance.
- * @param host: emulator host (eg, 'localhost')
- * @param port: emulator port (eg, 9199)
- * @param options: Storage Emulator options. Web only.
+ * Connects a {@link Storage} instance to the Firebase Storage emulator.
+ * @param storage - A reference to the `Storage` instance.
+ * @param host - Emulator host, e.g., 'localhost'.
+ * @param port - Emulator port, e.g., 9199.
+ * @param options - Optional. {@link EmulatorMockTokenOptions} instance.
  */
 export function connectStorageEmulator(
   storage: Storage,
@@ -82,65 +75,123 @@ export function connectStorageEmulator(
   port: number,
   options?: EmulatorMockTokenOptions,
 ): void;
+
 /**
- * Returns a new {@link Reference} instance.
- *
- * #### Example
- *
- * ```js
- * const ref = firebase.storage().ref('cats.gif');
- * ```
- *
- * @param path An optional string pointing to a location on the storage bucket. If no path
- * is provided, the returned reference will be the bucket root path.
+ * Creates a {@link Reference} from a given path or URL.
+ * @param storage - The {@link Storage} instance.
+ * @param path - Optional. A string pointing to a location within the storage bucket.
+ * @returns A new {@link Reference}.
  */
 export function ref(storage: Storage, path?: string): Reference;
+
 /**
- * Deletes the object at this reference's location.
- *
- * #### Example
- *
- * ```js
- * const ref = firebase.storage().ref('invertase/logo.png');
- * await ref.delete();
- * ```
+ * Deletes the object at the given reference's location.
+ * @param storageRef - The {@link Reference} to the object to delete.
+ * @returns A promise that resolves when the delete is complete.
  */
 export function deleteObject(storageRef: Reference): Promise<void>;
 
+/**
+ * Retrieves the blob at the given reference's location. Throws an error if the object is not found.
+ * @param storageRef - The {@link Reference} to the object.
+ * @returns A promise resolving to the Blob.
+ */
 export function getBlob(storageRef: Reference): Promise<Blob>;
 
+/**
+ * Retrieves bytes (up to the specified max size) from an object at the given reference's location.
+ * Throws an error if the object is not found or if the size exceeds the maximum allowed.
+ * @param storageRef - The {@link Reference} to the object.
+ * @param maxDownloadSizeBytes - Maximum size in bytes to retrieve.
+ * @returns A promise resolving to an ArrayBuffer.
+ */
 export function getBytes(storageRef: Reference, maxDownloadSizeBytes: number): Promise<ArrayBuffer>;
 
+/**
+ * Retrieves a long-lived download URL for the object at the given reference's location.
+ * @param storageRef - The {@link Reference} to the object.
+ * @returns A promise resolving to the URL string.
+ */
 export function getDownloadURL(storageRef: Reference): Promise<string>;
 
+/**
+ * Retrieves metadata for the object at the given reference's location.
+ * @param storageRef - The {@link Reference} to the object.
+ * @returns A promise resolving to the object's {@link FullMetadata}.
+ */
 export function getMetadata(storageRef: Reference): Promise<FullMetadata>;
 
+/**
+ * Retrieves a readable stream for the object at the given reference's location. This API is only available in Node.js.
+ * @param storageRef - The {@link Reference} to the object.
+ * @param maxDownloadSizeBytes - Maximum size in bytes to retrieve.
+ * @returns A NodeJS ReadableStream.
+ */
 export function getStream(
   storageRef: Reference,
   maxDownloadSizeBytes: number,
 ): NodeJS.ReadableStream;
 
+/**
+ * Lists items and prefixes under the given reference.
+ * @param storageRef - The {@link Reference} under which to list items.
+ * @param options - Optional. Configuration for listing.
+ * @returns A promise resolving to a {@link ListResult}.
+ */
 export function list(storageRef: Reference, options?: ListOptions): Promise<ListResult>;
 
+/**
+ * Lists all items and prefixes under the given reference.
+ * @param storageRef - The {@link Reference} under which to list items.
+ * @returns A promise resolving to a {@link ListResult}.
+ */
 export function listAll(storageRef: Reference): Promise<ListResult>;
 
+/**
+ * Updates metadata for the object at the given reference.
+ * @param storageRef - The {@link Reference} to the object.
+ * @param metadata - The metadata to update.
+ * @returns A promise resolving to the updated {@link FullMetadata}.
+ */
 export function updateMetadata(
   storageRef: Reference,
   metadata: SettableMetadata,
 ): Promise<FullMetadata>;
 
+/**
+ * Uploads data to the object's location at the given reference. The upload is not resumable.
+ * @param storageRef - The {@link Reference} where the data should be uploaded.
+ * @param data - The data to upload.
+ * @param metadata - Optional. Metadata to associate with the uploaded object.
+ * @returns A promise resolving to a {@link TaskResult}.
+ */
 export function uploadBytes(
   storageRef: Reference,
   data: Blob | Uint8Array | ArrayBuffer,
   metadata?: SettableMetadata,
 ): Promise<TaskResult>;
 
+/**
+ * Initiates a resumable upload session for the data to the object's location at the given reference.
+ * @param storageRef - The {@link Reference} where the data should be uploaded.
+ * @param data - The data to upload.
+ * @param metadata - Optional. Metadata to associate with the uploaded object.
+ * @returns A {@link Task} associated with the upload process.
+ */
 export function uploadBytesResumable(
   storageRef: Reference,
   data: Blob | Uint8Array | ArrayBuffer,
   metadata?: SettableMetadata,
 ): Task;
 
+/**
+ * Uploads a string to the object's location at the given reference. The string format must be specified.
+ * @param storageRef - The {@link Reference} where the string should be uploaded.
+ * @param data - The string data to upload.
+ * @param format - Optional. The format of the string ('raw', 'base64', 'base64url', 'data_url').
+ * @param metadata - Optional. Metadata to associate with the uploaded object.
+ * @returns A {@link Task} associated with the upload process.
+ */
 export function uploadString(
   storageRef: Reference,
   data: string,
@@ -148,18 +199,63 @@ export function uploadString(
   metadata?: SettableMetadata,
 ): Task;
 
+/**
+ * Creates a {@link Reference} from a storage bucket URL.
+ * @param storage - The {@link Storage} instance.
+ * @param url - A URL pointing to a file or location in a storage bucket.
+ * @returns A {@link Reference} pointing to the specified URL.
+ */
 export function refFromURL(storage: Storage, url: string): Reference;
 
+/**
+ * Sets the maximum time in milliseconds to retry operations other than upload and download if a failure occurs.
+ * @param storage - The {@link Storage} instance.
+ * @param time - The new maximum operation retry time in milliseconds.
+ */
 export function setMaxOperationRetryTime(storage: Storage, time: number): Promise<void>;
 
+/**
+ * Sets the maximum time in milliseconds to retry upload operations if a failure occurs.
+ * @param storage - The {@link Storage} instance.
+ * @param time - The new maximum upload retry time in milliseconds.
+ */
 export function setMaxUploadRetryTime(storage: Storage, time: number): Promise<void>;
 
+/**
+ * Puts a file from a local disk onto the storage bucket at the given reference.
+ * @param storageRef - The {@link Reference} where the file should be uploaded.
+ * @param filePath - The local file path of the file to upload.
+ * @param metadata - Optional. Metadata to associate with the uploaded file.
+ * @returns A {@link Task} associated with the upload process.
+ */
 export function putFile(storageRef: Reference, filePath: string, metadata?: SettableMetadata): Task;
 
+/**
+ * Downloads a file to the specified local file path on the device.
+ * @param storageRef - The {@link Reference} from which the file should be downloaded.
+ * @param filePath - The local file path where the file should be written.
+ * @returns A {@link Task} associated with the download process.
+ */
 export function writeToFile(storageRef: Reference, filePath: string): Task;
 
+/**
+ * Returns a gs:// URL for the object at the given reference.
+ * @param storageRef - The {@link Reference} to the object.
+ * @returns The URL as a string.
+ */
 export function toString(storageRef: Reference): string;
 
+/**
+ * Returns a reference to a relative path from the given reference.
+ * @param storageRef - The {@link Reference} as the base.
+ * @param path - The relative path from the base reference.
+ * @returns A new {@link Reference}.
+ */
 export function child(storageRef: Reference, path: string): Reference;
 
+/**
+ * Sets the maximum time in milliseconds to retry download operations if a failure occurs.
+ * @param storage - The {@link Storage} instance.
+ * @param time - The new maximum download retry time in milliseconds.
+ */
 export function setMaxDownloadRetryTime(storage: Storage, time: number): Promise<void>;
