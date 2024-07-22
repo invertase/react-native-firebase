@@ -1,6 +1,57 @@
 import { describe, expect, it } from '@jest/globals';
 
-import firestore, { firebase, Filter } from '../lib';
+import firestore, {
+  firebase,
+  Filter,
+  getFirestore,
+  doc,
+  collection,
+  collectionGroup,
+  setDoc,
+  updateDoc,
+  addDoc,
+  enableNetwork,
+  disableNetwork,
+  clearPersistence,
+  terminate,
+  waitForPendingWrites,
+  initializeFirestore,
+  setLogLevel,
+  runTransaction,
+  getCountFromServer,
+  loadBundle,
+  namedQuery,
+  writeBatch,
+  Bytes,
+  FieldPath,
+  FieldValue,
+  deleteField,
+  serverTimestamp,
+  arrayUnion,
+  arrayRemove,
+  increment,
+  GeoPoint,
+  query,
+  where,
+  or,
+  and,
+  orderBy,
+  startAt,
+  startAfter,
+  endAt,
+  endBefore,
+  limit,
+  limitToLast,
+  getDoc,
+  getDocFromCache,
+  getDocFromServer,
+  getDocs,
+  getDocsFromCache,
+  getDocsFromServer,
+  deleteDoc,
+  onSnapshot,
+  Timestamp,
+} from '../lib';
 
 const COLLECTION = 'firestore';
 
@@ -372,6 +423,12 @@ describe('Firestore', function () {
         return expect(e.message).toContain("'queryName' must be a non-empty string");
       }
     });
+  });
+
+  describe('modular', function () {
+    it('`getFirestore` function is properly exposed to end user', function () {
+      expect(getFirestore).toBeDefined();
+    });
 
     it('`Filter` is properly exposed to end user', async function () {
       const filter1 = Filter('name', '==', 'Tim');
@@ -383,6 +440,194 @@ describe('Firestore', function () {
       // @ts-ignore
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const query2 = Filter.or(filter1, filter2);
+    });
+
+    it('`doc` function is properly exposed to end user', function () {
+      expect(doc).toBeDefined();
+    });
+
+    it('`collection` function is properly exposed to end user', function () {
+      expect(collection).toBeDefined();
+    });
+
+    it('`collectionGroup` function is properly exposed to end user', function () {
+      expect(collectionGroup).toBeDefined();
+    });
+
+    it('`setDoc` function is properly exposed to end user', function () {
+      expect(setDoc).toBeDefined();
+    });
+
+    it('`updateDoc` function is properly exposed to end user', function () {
+      expect(updateDoc).toBeDefined();
+    });
+
+    it('`addDoc` function is properly exposed to end user', function () {
+      expect(addDoc).toBeDefined();
+    });
+
+    it('`enableNetwork` function is properly exposed to end user', function () {
+      expect(enableNetwork).toBeDefined();
+    });
+
+    it('`disableNetwork` function is properly exposed to end user', function () {
+      expect(disableNetwork).toBeDefined();
+    });
+
+    it('`clearPersistence` function is properly exposed to end user', function () {
+      expect(clearPersistence).toBeDefined();
+    });
+
+    it('`terminate` function is properly exposed to end user', function () {
+      expect(terminate).toBeDefined();
+    });
+
+    it('`waitForPendingWrites` function is properly exposed to end user', function () {
+      expect(waitForPendingWrites).toBeDefined();
+    });
+
+    it('`initializeFirestore` function is properly exposed to end user', function () {
+      expect(initializeFirestore).toBeDefined();
+    });
+
+    it('`setLogLevel` function is properly exposed to end user', function () {
+      expect(setLogLevel).toBeDefined();
+    });
+
+    it('`runTransaction` function is properly exposed to end user', function () {
+      expect(runTransaction).toBeDefined();
+    });
+
+    it('`getCountFromServer` function is properly exposed to end user', function () {
+      expect(getCountFromServer).toBeDefined();
+    });
+
+    it('`loadBundle` function is properly exposed to end user', function () {
+      expect(loadBundle).toBeDefined();
+    });
+
+    it('`namedQuery` function is properly exposed to end user', function () {
+      expect(namedQuery).toBeDefined();
+    });
+
+    it('`writeBatch` function is properly exposed to end user', function () {
+      expect(writeBatch).toBeDefined();
+    });
+
+    it('`Bytes` class is properly exposed to end user', function () {
+      expect(Bytes).toBeDefined();
+    });
+
+    it('`FieldPath` class is properly exposed to end user', function () {
+      expect(FieldPath).toBeDefined();
+    });
+
+    it('`FieldValue` is properly exposed to end user', function () {
+      expect(FieldValue).toBeDefined();
+    });
+
+    it('`deleteField` function is properly exposed to end user', function () {
+      expect(deleteField).toBeDefined();
+    });
+
+    it('`serverTimestamp` function is properly exposed to end user', function () {
+      expect(serverTimestamp).toBeDefined();
+    });
+
+    it('`arrayUnion` function is properly exposed to end user', function () {
+      expect(arrayUnion).toBeDefined();
+    });
+
+    it('`arrayRemove` function is properly exposed to end user', function () {
+      expect(arrayRemove).toBeDefined();
+    });
+
+    it('`increment` function is properly exposed to end user', function () {
+      expect(increment).toBeDefined();
+    });
+
+    it('`GeoPoint` is properly exposed to end user', function () {
+      expect(GeoPoint).toBeDefined();
+    });
+
+    it('`query` function is properly exposed to end user', function () {
+      expect(query).toBeDefined();
+    });
+
+    it('`where` function is properly exposed to end user', function () {
+      expect(where).toBeDefined();
+    });
+
+    it('`or` function is properly exposed to end user', function () {
+      expect(or).toBeDefined();
+    });
+
+    it('`and` function is properly exposed to end user', function () {
+      expect(and).toBeDefined();
+    });
+
+    it('`orderBy` function is properly exposed to end user', function () {
+      expect(orderBy).toBeDefined();
+    });
+
+    it('`startAt` function is properly exposed to end user', function () {
+      expect(startAt).toBeDefined();
+    });
+
+    it('`startAfter` function is properly exposed to end user', function () {
+      expect(startAfter).toBeDefined();
+    });
+
+    it('`endAt` function is properly exposed to end user', function () {
+      expect(endAt).toBeDefined();
+    });
+
+    it('`endBefore` function is properly exposed to end user', function () {
+      expect(endBefore).toBeDefined();
+    });
+
+    it('`limit` function is properly exposed to end user', function () {
+      expect(limit).toBeDefined();
+    });
+
+    it('`limitToLast` function is properly exposed to end user', function () {
+      expect(limitToLast).toBeDefined();
+    });
+
+    it('`getDoc` function is properly exposed to end user', function () {
+      expect(getDoc).toBeDefined();
+    });
+
+    it('`getDocFromCache` function is properly exposed to end user', function () {
+      expect(getDocFromCache).toBeDefined();
+    });
+
+    it('`getDocFromServer` function is properly exposed to end user', function () {
+      expect(getDocFromServer).toBeDefined();
+    });
+
+    it('`getDocs` function is properly exposed to end user', function () {
+      expect(getDocs).toBeDefined();
+    });
+
+    it('`getDocsFromCache` function is properly exposed to end user', function () {
+      expect(getDocsFromCache).toBeDefined();
+    });
+
+    it('`getDocsFromServer` function is properly exposed to end user', function () {
+      expect(getDocsFromServer).toBeDefined();
+    });
+
+    it('`deleteDoc` function is properly exposed to end user', function () {
+      expect(deleteDoc).toBeDefined();
+    });
+
+    it('`onSnapshot` function is properly exposed to end user', function () {
+      expect(onSnapshot).toBeDefined();
+    });
+
+    it('`Timestamp` is properly exposed to end user', function () {
+      expect(Timestamp).toBeDefined();
     });
   });
 });
