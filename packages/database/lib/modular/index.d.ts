@@ -208,6 +208,10 @@ export declare function forceWebSockets(): void;
 export function serverTimestamp(): object;
 
 /**
+ * Returns the current Firebase Database server time as a JavaScript Date object.
+ */
+export function getServerTime(db: Database): Promise<number>;
+/**
  * Returns a placeholder value that can be used to atomically increment the
  * current database value by the provided delta.
  *
