@@ -2156,10 +2156,14 @@ export namespace FirebaseAuthTypes {
      * @param user The user.
      */
     multiFactor(user: User): MultiFactorUser;
+    /**
+     * Returns the custom auth domain for the auth instance.
+     */
+    getCustomAuthDomain(): Promise<string>;
   }
 }
 
-type CallbackOrObserver<T extends (...args: any[]) => any> = T | { next: T };
+export type CallbackOrObserver<T extends (...args: any[]) => any> = T | { next: T };
 
 declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
   FirebaseAuthTypes.Module,
@@ -2188,3 +2192,5 @@ declare module '@react-native-firebase/app' {
     }
   }
 }
+
+export * from './modular';

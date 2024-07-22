@@ -48,63 +48,6 @@ import version from './version';
 import fallBackModule from './web/RNFBAuthModule';
 
 export {
-  applyActionCode,
-  beforeAuthStateChanged,
-  checkActionCode,
-  confirmPasswordReset,
-  connectAuthEmulator,
-  createUserWithEmailAndPassword,
-  deleteUser,
-  fetchSignInMethodsForEmail,
-  getAdditionalUserInfo,
-  getAuth,
-  getCustomAuthDomain,
-  getIdToken,
-  getIdTokenResult,
-  getMultiFactorResolver,
-  getRedirectResult,
-  initializeAuth,
-  isSignInWithEmailLink,
-  linkWithCredential,
-  linkWithPhoneNumber,
-  linkWithPopup,
-  linkWithRedirect,
-  multiFactor,
-  onAuthStateChanged,
-  onIdTokenChanged,
-  parseActionCodeURL,
-  reauthenticateWithCredential,
-  reauthenticateWithPhoneNumber,
-  reauthenticateWithPopup,
-  reauthenticateWithRedirect,
-  reload,
-  sendEmailVerification,
-  sendPasswordResetEmail,
-  sendSignInLinkToEmail,
-  setPersistence,
-  signInAnonymously,
-  signInWithCredential,
-  signInWithCustomToken,
-  signInWithEmailAndPassword,
-  signInWithEmailLink,
-  signInWithPhoneNumber,
-  signInWithPopup,
-  signInWithRedirect,
-  signOut,
-  unlink,
-  updateCurrentUser,
-  updateEmail,
-  updatePassword,
-  updatePhoneNumber,
-  updateProfile,
-  useDeviceLanguage,
-  useUserAccessGroup,
-  verifyBeforeUpdateEmail,
-  verifyPasswordResetCode,
-  verifyPhoneNumber,
-} from './modular/index';
-// For modular imports
-export {
   AppleAuthProvider,
   EmailAuthProvider,
   PhoneAuthProvider,
@@ -529,6 +472,8 @@ export default createModuleNamespace({
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseAuthModule,
 });
+
+export * from './modular/index';
 
 // import auth, { firebase } from '@react-native-firebase/auth';
 // auth().X(...);
