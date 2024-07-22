@@ -89,7 +89,7 @@ describe('database.X', function () {
         timestamp['.sv'].should.eql('timestamp');
       });
 
-      it.only('populates the property with a Unix timestamp', async function () {
+      it('populates the property with a Unix timestamp', async function () {
         const { serverTimestamp, getDatabase, ref, set } = databaseModular;
         const dbRef = ref(getDatabase(), `${TEST_PATH}/timestamp`);
         await set(dbRef, serverTimestamp());
