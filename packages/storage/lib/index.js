@@ -208,6 +208,6 @@ export default createModuleNamespace({
 // firebase.storage().X(...);
 export const firebase = getFirebaseRoot();
 
-export * from './modular/index';
+export * from './modular';
 
 setReactNativeModule(nativeModuleName, fallBackModule);
