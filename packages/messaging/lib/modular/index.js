@@ -2,7 +2,13 @@ import { firebase } from '..';
 
 /**
  * @typedef {import('..').FirebaseMessagingTypes} FirebaseMessagingTypes
- * @typedef {import('..').FirebaseStorageTypes.Module} Messaging
+ * @typedef {import('..').FirebaseMessagingTypes.Module} Messaging
+ * @typedef {import('..').FirebaseMessagingTypes.RemoteMessage} RemoteMessage
+ * @typedef {import('..').FirebaseMessagingTypes.NativeTokenOptions} NativeTokenOptions
+ * @typedef {import('..').FirebaseMessagingTypes.GetTokenOptions} GetTokenOptions
+ * @typedef {import('..').FirebaseMessagingTypes.IOSPermissions} IOSPermissions
+ * @typedef {import('..').FirebaseMessagingTypes.AuthorizationStatus} AuthorizationStatus
+ * @typedef {import('..').FirebaseMessagingTypes.SendErrorEvent} SendErrorEvent
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
  */
 
@@ -23,7 +29,7 @@ export function getMessaging(app) {
  * Removes access to an FCM token previously authorized by its scope.
  * Messages sent by the server to this token will fail.
  * @param {Messaging} messaging - Messaging instance.
- * @param {FirebaseMessagingTypes.NativeTokenOptions} [tokenOptions] - Options to override senderId (iOS) and projectId (Android).
+ * @param {NativeTokenOptions} [tokenOptions] - Options to override senderId (iOS) and projectId (Android).
  * @returns {Promise<void>}
  */
 export function deleteToken(messaging, tokenOptions) {
@@ -37,7 +43,7 @@ export function deleteToken(messaging, tokenOptions) {
 /**
  * Returns an FCM token for this device. Optionally, you can specify custom options for your own use case.
  * @param {Messaging} messaging - Messaging instance.
- * @param {FirebaseMessagingTypes.GetTokenOptions & FirebaseMessagingTypes.NativeTokenOptions} [options] - Options to override senderId (iOS) and appName.
+ * @param {GetTokenOptions & NativeTokenOptions} [options] - Options to override senderId (iOS) and appName.
  * @returns {Promise<string>}
  */
 export function getToken(messaging, options) {
@@ -52,7 +58,7 @@ export function getToken(messaging, options) {
  * When any FCM payload is received, the listener callback is called with a `RemoteMessage`.
  * > This subscriber method is only called when the app is active (in the foreground).
  * @param {Messaging} messaging - Messaging instance.
- * @param {(message: FirebaseMessagingTypes.RemoteMessage) => any} listener - Called with a `RemoteMessage` when a new FCM payload is received from the server.
+ * @param {(message: RemoteMessage) => any} listener - Called with a `RemoteMessage` when a new FCM payload is received from the server.
  * @returns {() => void}
  */
 export function onMessage(messaging, listener) {
@@ -63,7 +69,7 @@ export function onMessage(messaging, listener) {
  * When the user presses a notification displayed via FCM, this listener will be called if the app
  * has opened from a background state.
  * @param {Messaging} messaging - Messaging instance.
- * @param {(message: FirebaseMessagingTypes.RemoteMessage) => any} listener - Called with a `RemoteMessage` when a notification press opens the application.
+ * @param {(message: RemoteMessage) => any} listener - Called with a `RemoteMessage` when a notification press opens the application.
  * @returns {() => void}
  */
 export function onNotificationOpenedApp(messaging, listener) {
@@ -86,8 +92,8 @@ export function onTokenRefresh(messaging, listener) {
  * On iOS, messaging permission must be requested by the current application before messages can
  * be received or sent.
  * @param {Messaging} messaging - Messaging instance.
- * @param {FirebaseMessagingTypes.IOSPermissions} [iosPermissions] - All the available permissions for iOS that can be requested.
- * @returns {Promise<FirebaseMessagingTypes.AuthorizationStatus>}
+ * @param {IOSPermissions} [iosPermissions] - All the available permissions for iOS that can be requested.
+ * @returns {Promise<AuthorizationStatus>}
  */
 export function requestPermission(messaging, iosPermissions) {
   return messaging.requestPermission(iosPermissions);
@@ -117,7 +123,7 @@ export function setAutoInitEnabled(messaging, enabled) {
  * this method will return a `RemoteMessage` containing the notification data, or `null` if
  * the app was opened via another method.
  * @param {Messaging} messaging - Messaging instance.
- * @returns {Promise<FirebaseMessagingTypes.RemoteMessage | null>}
+ * @returns {Promise<RemoteMessage | null>}
  */
 export function getInitialNotification(messaging) {
   return messaging.getInitialNotification();
@@ -212,7 +218,7 @@ export function setAPNSToken(messaging, token, type) {
 /**
  * Returns a `AuthorizationStatus` as to whether the user has messaging permission for this app.
  * @param {Messaging} messaging - Messaging instance.
- * @returns {Promise<FirebaseMessagingTypes.AuthorizationStatus>}
+ * @returns {Promise<AuthorizationStatus>}
  */
 export function hasPermission(messaging) {
   return messaging.hasPermission();
@@ -241,7 +247,7 @@ export function onMessageSent(messaging, listener) {
 /**
  * When sending a `RemoteMessage`, this listener is called when the message has been sent to FCM.
  * @param {Messaging} messaging - Messaging instance.
- * @param {(evt: FirebaseMessagingTypes.SendErrorEvent) => any} listener - Called when the FCM sends the remote message to FCM.
+ * @param {(evt: SendErrorEvent) => any} listener - Called when the FCM sends the remote message to FCM.
  * @returns {() => void}
  */
 export function onSendError(messaging, listener) {
@@ -253,7 +259,7 @@ export function onSendError(messaging, listener) {
  * or terminated. In Android, a headless task is created, allowing you to access the React Native environment
  * to perform tasks such as updating local storage, or sending a network request.
  * @param {Messaging} messaging - Messaging instance.
- * @param {(message: FirebaseMessagingTypes.RemoteMessage) => Promise<any>} handler - Called when a message is sent and the application is in a background or terminated state.
+ * @param {(message: RemoteMessage) => Promise<any>} handler - Called when a message is sent and the application is in a background or terminated state.
  * @returns {void}
  */
 export function setBackgroundMessageHandler(messaging, handler) {
@@ -264,7 +270,7 @@ export function setBackgroundMessageHandler(messaging, handler) {
  * Set a handler function which is called when the `${App Name} notifications settings`
  * link in iOS settings is clicked.
  * @param {Messaging} messaging - Messaging instance.
- * @param {(message: FirebaseMessagingTypes.RemoteMessage) => any} handler - Called when link in iOS settings is clicked.
+ * @param {(message: RemoteMessage) => any} handler - Called when link in iOS settings is clicked.
  * @returns {void}
  */
 export function setOpenSettingsForNotificationsHandler(messaging, handler) {
@@ -274,7 +280,7 @@ export function setOpenSettingsForNotificationsHandler(messaging, handler) {
 /**
  * Send a new `RemoteMessage` to the FCM server.
  * @param {Messaging} messaging - Messaging instance.
- * @param {FirebaseMessagingTypes.RemoteMessage} message - A `RemoteMessage` interface.
+ * @param {RemoteMessage} message - A `RemoteMessage` interface.
  * @returns {Promise<void>}
  */
 export function sendMessage(messaging, message) {
