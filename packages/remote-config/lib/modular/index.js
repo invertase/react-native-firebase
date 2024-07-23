@@ -18,6 +18,17 @@
 import { firebase } from '..';
 
 /**
+ * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
+ * @typedef {import('..').FirebaseRemoteConfigTypes.Module} RemoteConfig
+ * @typedef {import('..').FirebaseRemoteConfigTypes.ConfigDefaults} ConfigDefaults
+ * @typedef {import('..').FirebaseRemoteConfigTypes.ConfigSettings} ConfigSettings
+ * @typedef {import('..').FirebaseRemoteConfigTypes.ConfigValue} ConfigValue
+ * @typedef {import('..').FirebaseRemoteConfigTypes.ConfigValues} ConfigValues
+ * @typedef {import('..').FirebaseRemoteConfigTypes.LastFetchStatusType} LastFetchStatusType
+ * @typedef {import('..').FirebaseRemoteConfigTypes.RemoteConfigLogLevel} RemoteConfigLogLevel
+ */
+
+/**
  * Returns a RemoteConfig instance for the given app.
  * @param app - FirebaseApp. Optional.
  * @returns {RemoteConfig}
