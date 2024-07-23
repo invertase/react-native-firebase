@@ -37,4 +37,38 @@ export function onLog(logCallback, options) {
   throw new Error('onLog is only supported on Web');
 }
 
-export { getApps, initializeApp, getApp, setLogLevel };
+/**
+ * Gets the list of all initialized apps.
+ * @returns {FirebaseApp[]} - An array of all initialized Firebase apps.
+ */
+export function getApps() {
+  return getAppsCompat();
+}
+
+/**
+ * Initializes a Firebase app with the provided options and name.
+ * @param {FirebaseAppOptions} options - Options to configure the services used in the app.
+ * @param {string} [name] - The optional name of the app to initialize ('[DEFAULT]' if omitted).
+ * @returns {FirebaseApp} - The initialized Firebase app.
+ */
+export function initializeApp(options, name) {
+  return initializeAppCompat(options, name);
+}
+
+/**
+ * Retrieves an instance of a Firebase app.
+ * @param {string} [name] - The optional name of the app to return ('[DEFAULT]' if omitted).
+ * @returns {FirebaseApp} - The requested Firebase app instance.
+ */
+export function getApp(name) {
+  return getAppCompat(name);
+}
+
+/**
+ * Sets the log level across all Firebase SDKs.
+ * @param {LogLevelString} logLevel - The log level to set ('debug', 'verbose', 'info', 'warn', 'error', 'silent').
+ * @returns {void}
+ */
+export function setLogLevel(logLevel) {
+  return setLogLevelCompat(logLevel);
+}
