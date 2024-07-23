@@ -61,7 +61,7 @@ export function getLimitedUseToken(appCheckInstance) {
  * The listeners call back on the UI thread whenever the current
  * token associated with this App Check instance changes.
  * @param appCheckInstance - AppCheck
- * @param listener - PartialObserver<AppCheckTokenResult>
+ * @param {PartialObserver<AppCheckTokenResult>} listener
  * @returns {Unsubscribe}
  */
 export function addTokenListener(appCheckInstance, listener) {
