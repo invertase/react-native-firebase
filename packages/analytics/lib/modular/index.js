@@ -59,6 +59,7 @@ export function getAnalytics(app) {
  * @param {object} [options] - AnalyticsSettings. Web only.
  * @returns {FirebaseAnalytics}
  */
+// eslint-disable-next-line
 export function initializeAnalytics(app, options) {
   return firebase.app(app.name).analytics();
 }
