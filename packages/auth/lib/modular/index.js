@@ -21,50 +21,15 @@ import { firebase } from '..';
 
 /*
  * Returns the Auth instance associated with the provided FirebaseApp.
- */
-class Auth {
-  constructor(app) {
-    this.app = app ? firebase.app(app.name) : firebase.app();
-    this._languageCode = this.app.auth().languageCode;
-  }
-
-  get config() {
-    return this.app.auth().config;
-  }
-
-  get currentUser() {
-    return this.app.auth().currentUser;
-  }
-
-  get languageCode() {
-    return this._languageCode;
-  }
-
-  set languageCode(code) {
-    if (code === null || isString(code)) {
-      this._languageCode = code;
-      this.app.auth().languageCode = code;
-      return;
-    }
-    throw new Error("expected 'languageCode' to be a string or null value");
-  }
-
-  get settings() {
-    return this.app.auth().settings;
-  }
-
-  get tenantId() {
-    return this.app.auth().tenantId;
-  }
-}
-
-/*
- * Returns the Auth instance associated with the provided FirebaseApp.
  *
  * If no instance exists, initializes an Auth instance with platform-specific default dependencies.
  */
 export function getAuth(app) {
-  return new Auth(app);
+  if (app) {
+    return firebase.app(app.name).auth();
+  }
+
+  return firebase.app().auth();
 }
 
 /*
@@ -76,7 +41,11 @@ export function getAuth(app) {
  * if you're not using either signInWithPopup or signInWithRedirect.
  */
 export function initializeAuth(app, deps) {
-  return getAuth(app);
+  if (app) {
+    return firebase.app(app.name).auth();
+  }
+
+  return firebase.app().auth();
 }
 
 /*
