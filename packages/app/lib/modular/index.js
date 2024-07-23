@@ -8,6 +8,12 @@ import {
 } from '../internal';
 
 /**
+ * @typedef {import('..').ReactNativeFirebase.FirebaseApp} FirebaseApp
+ * @typedef {import('..').ReactNativeFirebase.FirebaseAppOptions} FirebaseAppOptions
+ * @typedef {import('..').ReactNativeFirebase.LogLevelString} LogLevelString
+ */
+
+/**
  * Renders this app unusable and frees the resources of all associated services.
  * @param {FirebaseApp} app - The app to delete.
  * @returns {Promise<void>}
