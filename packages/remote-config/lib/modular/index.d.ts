@@ -23,6 +23,7 @@ import ConfigValue = FirebaseRemoteConfigTypes.ConfigValue;
 import ConfigDefaults = FirebaseRemoteConfigTypes.ConfigDefaults;
 import ConfigSettings = FirebaseRemoteConfigTypes.ConfigSettings;
 import LastFetchStatusType = FirebaseRemoteConfigTypes.LastFetchStatusType;
+import RemoteConfigLogLevel = FirebaseRemoteConfigTypes.RemoteConfigLogLevel;
 
 /**
  * Returns a RemoteConfig instance for the given app.
@@ -104,12 +105,12 @@ export function getValue(remoteConfig: RemoteConfig, key: string): ConfigValue;
  * Defines the log level to use.
  * @param remoteConfig - RemoteConfig instance
  * @param logLevel - The log level to set
- * @returns {FirebaseRemoteConfigTypes.RemoteConfigLogLevel}
+ * @returns {RemoteConfigLogLevel}
  */
 export function setLogLevel(
   remoteConfig: RemoteConfig,
-  logLevel: FirebaseRemoteConfigTypes.RemoteConfigLogLevel,
-): FirebaseRemoteConfigTypes.RemoteConfigLogLevel;
+  logLevel: RemoteConfigLogLevel,
+): RemoteConfigLogLevel;
 
 /**
  * Checks two different things.
