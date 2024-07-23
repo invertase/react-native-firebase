@@ -43,6 +43,7 @@ export function getFunctions(app, regionOrCustomDomain) {
  * @param {Functions} functionsInstance A functions instance.
  * @param {string} host The emulator host. (ex: localhost)
  * @param {number} port The emulator port. (ex: 5001)
+ * @returns {void}
  */
 export function connectFunctionsEmulator(functionsInstance, host, port) {
   return firebase
