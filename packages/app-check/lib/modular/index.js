@@ -19,6 +19,13 @@
 import { firebase } from '..';
 
 /**
+ * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
+ * @typedef {import('..').FirebaseAppCheckTypes.Module} AppCheck
+ * @typedef {import('..').FirebaseAppCheckTypes.AppCheckTokenResult} AppCheckTokenResult
+ * @typedef {import('..').FirebaseAppCheckTypes.Unsubscribe} Unsubscribe
+ */
+
+/**
  * Activate App Check for the given app. Can be called only once per app.
  * @param app - FirebaseApp. Optional.
  * @param options - AppCheckOptions
