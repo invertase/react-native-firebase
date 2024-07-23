@@ -26,11 +26,7 @@ import { firebase } from '..';
  */
 
 // FIXME these are duplicated from the non-modular types and should be by reference
-export const ShortLinkType = {
-  SHORT: 'SHORT',
-  UNGUESSABLE: 'UNGUESSABLE',
-  DEFAULT: 'DEFAULT',
-};
+export { ShortLinkType } from '..';
 
 /**
  * @returns {FirebaseDynamicLinks}
