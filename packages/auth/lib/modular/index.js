@@ -67,10 +67,6 @@ export function getAuth(app) {
   return new Auth(app);
 }
 
-function _getUnderlyingAuth(auth) {
-  return auth.app.auth();
-}
-
 /*
  * This function allows more control over the Auth instance than getAuth().
  *
@@ -89,8 +85,7 @@ export function initializeAuth(app, deps) {
  * Returns a promise that resolves when the code is applied successfully.
  */
 export async function applyActionCode(auth, oobCode) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.applyActionCode(oobCode);
+  return auth.applyActionCode(oobCode);
 }
 
 /*
@@ -104,16 +99,14 @@ export function beforeAuthStateChanged(auth, callback, onAbort) {
  * Checks a verification code sent to the user by email or other out-of-band mechanism.
  */
 export async function checkActionCode(auth, oobCode) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.checkActionCode(oobCode);
+  return auth.checkActionCode(oobCode);
 }
 
 /*
  * Completes the password reset process, given a confirmation code and new password.
  */
 export async function confirmPasswordReset(auth, oobCode, newPassword) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.confirmPasswordReset(oobCode, newPassword);
+  return auth.confirmPasswordReset(oobCode, newPassword);
 }
 
 /*
@@ -122,32 +115,28 @@ export async function confirmPasswordReset(auth, oobCode, newPassword) {
  * This must be called synchronously immediately following the first call to initializeAuth(). Do not use with production credentials as emulator traffic is not encrypted.
  */
 export function connectAuthEmulator(auth, url, options) {
-  const _auth = _getUnderlyingAuth(auth);
-  _auth.useEmulator(url, options);
+  auth.useEmulator(url, options);
 }
 
 /*
  * Creates a new user account associated with the specified email address and password.
  */
 export async function createUserWithEmailAndPassword(auth, email, password) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.createUserWithEmailAndPassword(email, password);
+  return auth.createUserWithEmailAndPassword(email, password);
 }
 
 /*
  * Gets the list of possible sign in methods for the given email address.
  */
 export async function fetchSignInMethodsForEmail(auth, email) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.fetchSignInMethodsForEmail(email);
+  return auth.fetchSignInMethodsForEmail(email);
 }
 
 /*
  * Provides a MultiFactorResolver suitable for completion of a multi-factor flow.
  */
 export function getMultiFactorResolver(auth, error) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.getMultiFactorResolver(error);
+  return auth.getMultiFactorResolver(error);
 }
 
 /*
@@ -161,40 +150,35 @@ export async function getRedirectResult(auth, resolver) {
  * Checks if an incoming link is a sign-in with email link suitable for signInWithEmailLink().
  */
 export function isSignInWithEmailLink(auth, emailLink) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.isSignInWithEmailLink(emailLink);
+  return auth.isSignInWithEmailLink(emailLink);
 }
 
 /*
  * Adds an observer for changes to the user's sign-in state.
  */
 export function onAuthStateChanged(auth, nextOrObserver) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.onAuthStateChanged(nextOrObserver);
+  return auth.onAuthStateChanged(nextOrObserver);
 }
 
 /*
  * Adds an observer for changes to the signed-in user's ID token.
  */
 export function onIdTokenChanged(auth, nextOrObserver) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.onIdTokenChanged(nextOrObserver);
+  return auth.onIdTokenChanged(nextOrObserver);
 }
 
 /*
  * Sends a password reset email to the given email address.
  */
 export async function sendPasswordResetEmail(auth, email, actionCodeSettings) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.sendPasswordResetEmail(email, actionCodeSettings);
+  return auth.sendPasswordResetEmail(email, actionCodeSettings);
 }
 
 /*
  * Sends a sign-in email link to the user with the specified email.
  */
 export async function sendSignInLinkToEmail(auth, email, actionCodeSettings) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.sendSignInLinkToEmail(email, actionCodeSettings);
+  return auth.sendSignInLinkToEmail(email, actionCodeSettings);
 }
 
 /*
@@ -208,110 +192,98 @@ export async function setPersistence(auth, persistence) {
  * Asynchronously signs in as an anonymous user.
  */
 export async function signInAnonymously(auth) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.signInAnonymously();
+  return auth.signInAnonymously();
 }
 
 /*
  * Asynchronously signs in with the given credentials.
  */
 export async function signInWithCredential(auth, credential) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.signInWithCredential(credential);
+  return auth.signInWithCredential(credential);
 }
 
 /*
  * Asynchronously signs in using a custom token.
  */
 export async function signInWithCustomToken(auth, customToken) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.signInWithCustomToken(customToken);
+  return auth.signInWithCustomToken(customToken);
 }
 
 /*
  * Asynchronously signs in using an email and password.
  */
 export async function signInWithEmailAndPassword(auth, email, password) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.signInWithEmailAndPassword(email, password);
+  return auth.signInWithEmailAndPassword(email, password);
 }
 
 /*
  * Asynchronously signs in using an email and sign-in email link.
  */
 export async function signInWithEmailLink(auth, email, emailLink) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.signInWithEmailLink(email, emailLink);
+  return auth.signInWithEmailLink(email, emailLink);
 }
 
 /*
  * Asynchronously signs in using a phone number.
  */
 export async function signInWithPhoneNumber(auth, phoneNumber, appVerifier) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.signInWithPhoneNumber(phoneNumber);
+  return auth.signInWithPhoneNumber(phoneNumber, appVerifier);
 }
 
 /*
- * Asynchronously signs in using a phone number.
+ * Asynchronously verifies a phone number.
  */
 export function verifyPhoneNumber(auth, phoneNumber, autoVerifyTimeoutOrForceResend, forceResend) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.verifyPhoneNumber(phoneNumber, autoVerifyTimeoutOrForceResend, forceResend);
+  return auth.verifyPhoneNumber(phoneNumber, autoVerifyTimeoutOrForceResend, forceResend);
 }
 
 /*
-Authenticates a Firebase client using a popup-based OAuth authentication flow.
-*/
+ * Authenticates a Firebase client using a popup-based OAuth authentication flow.
+ */
 export async function signInWithPopup(auth, provider, resolver) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.signInWithPopup(provider, resolver);
+  return auth.signInWithPopup(provider, resolver);
 }
 
 /*
-Authenticates a Firebase client using a full-page redirect flow.
-*/
+ * Authenticates a Firebase client using a full-page redirect flow.
+ */
 export async function signInWithRedirect(auth, provider, resolver) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.signInWithRedirect(provider, resolver);
+  return auth.signInWithRedirect(provider, resolver);
 }
 
 /*
-Signs out the current user.
-*/
+ * Signs out the current user.
+ */
 export async function signOut(auth) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.signOut();
+  return auth.signOut();
 }
 
 /*
-Asynchronously sets the provided user as Auth.currentUser on the Auth instance.
-*/
+ * Asynchronously sets the provided user as Auth.currentUser on the Auth instance.
+ */
 export async function updateCurrentUser(auth, user) {
   throw new Error('updateCurrentUser is unsupported by the native Firebase SDKs');
 }
 
 /*
-Sets the current language to the default device/browser preference.
-*/
+ * Sets the current language to the default device/browser preference.
+ */
 export function useDeviceLanguage(auth) {
   throw new Error('useDeviceLanguage is unsupported by the native Firebase SDKs');
 }
 
 /*
- Sets the current language to the default device/browser preference.
-*/
+ * Sets the current language to the default device/browser preference.
+ */
 export function useUserAccessGroup(auth, userAccessGroup) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.useUserAccessGroup(userAccessGroup);
+  return auth.useUserAccessGroup(userAccessGroup);
 }
 
 /*
-Verifies the password reset code sent to the user by email or other out-of-band mechanism.
-*/
+ * Verifies the password reset code sent to the user by email or other out-of-band mechanism.
+ */
 export async function verifyPasswordResetCode(auth, code) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.verifyPasswordResetCode(code);
+  return auth.verifyPasswordResetCode(code);
 }
 
 /*
@@ -469,6 +441,5 @@ export function getAdditionalUserInfo(userCredential) {
 }
 
 export function getCustomAuthDomain(auth) {
-  const _auth = _getUnderlyingAuth(auth);
-  return _auth.getCustomAuthDomain();
+  return auth.getCustomAuthDomain();
 }
