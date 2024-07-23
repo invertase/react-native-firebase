@@ -29,13 +29,6 @@ import fallBackModule from './web/RNFBFunctionsModule';
 const namespace = 'functions';
 const nativeModuleName = 'RNFBFunctionsModule';
 
-export {
-  getFunctions,
-  httpsCallable,
-  httpsCallableFromUrl,
-  connectFunctionsEmulator,
-} from './modular/index';
-
 export const HttpsErrorCode = {
   OK: 'ok',
   CANCELLED: 'cancelled',
@@ -206,6 +199,8 @@ export default createModuleNamespace({
   hasCustomUrlOrRegionSupport: true,
   ModuleClass: FirebaseFunctionsModule,
 });
+
+export * from './modular';
 
 // import functions, { firebase } from '@react-native-firebase/functions';
 // functions().logEvent(...);
