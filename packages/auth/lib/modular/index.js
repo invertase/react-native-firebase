@@ -16,7 +16,6 @@
  *
  */
 
-import { isString } from '@react-native-firebase/app/lib/common';
 import { firebase } from '..';
 
 /*
