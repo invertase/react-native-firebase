@@ -129,6 +129,6 @@
   - '//static.invertase.io/assets/firebase/performance-monitoring.svg'
 - - Legacy docs
   - - - Migrating to v6
-    - '/migrating-to-v6'
-  - - - Legacy Docs (<= v5)
-    - 'https://v5.rnfirebase.io/docs/v5.x.x/getting-started'
+      - '/migrating-to-v6'
+    - - Legacy Docs (<= v5)
+      - 'https://v5.rnfirebase.io/docs/v5.x.x/getting-started'
