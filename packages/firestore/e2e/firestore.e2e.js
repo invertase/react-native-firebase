@@ -716,34 +716,47 @@ describe('firestore()', function () {
     });
 
     describe('FirestorePersistentCacheIndexManager', function () {
-      it('should enableIndexAutoCreation()', async function () {
-        const {
-          getFirestore,
-          getPersistentCacheIndexManager,
-          enablePersistentCacheIndexAutoCreation,
-        } = firestoreModular;
-        const db = getFirestore();
-        const indexManager = getPersistentCacheIndexManager(db);
-        await enablePersistentCacheIndexAutoCreation(indexManager);
+      describe('if persistence is enabled', function () {
+        it('should enableIndexAutoCreation()', async function () {
+          const {
+            getFirestore,
+            getPersistentCacheIndexManager,
+            enablePersistentCacheIndexAutoCreation,
+          } = firestoreModular;
+          const db = getFirestore();
+          const indexManager = getPersistentCacheIndexManager(db);
+          await enablePersistentCacheIndexAutoCreation(indexManager);
+        });
+
+        it('should disableIndexAutoCreation()', async function () {
+          const {
+            getFirestore,
+            getPersistentCacheIndexManager,
+            disablePersistentCacheIndexAutoCreation,
+          } = firestoreModular;
+          const db = getFirestore();
+          const indexManager = getPersistentCacheIndexManager(db);
+          await disablePersistentCacheIndexAutoCreation(indexManager);
+        });
+
+        it('should deleteAllIndexes()', async function () {
+          const { getFirestore, getPersistentCacheIndexManager, deleteAllPersistentCacheIndexes } =
+            firestoreModular;
+          const db = getFirestore();
+          const indexManager = getPersistentCacheIndexManager(db);
+          await deleteAllPersistentCacheIndexes(indexManager);
+        });
       });
 
-      it('should disableIndexAutoCreation()', async function () {
-        const {
-          getFirestore,
-          getPersistentCacheIndexManager,
-          disablePersistentCacheIndexAutoCreation,
-        } = firestoreModular;
-        const db = getFirestore();
-        const indexManager = getPersistentCacheIndexManager(db);
-        await disablePersistentCacheIndexAutoCreation(indexManager);
-      });
+      describe('if persistence is disabled', function () {
+        it('should return `null` when calling `persistentCacheIndexManager()`', async function () {
+          const { initializeFirestore, getPersistentCacheIndexManager } = firestoreModular;
+          const app = getApp('secondaryFromNative');
+          const db = initializeFirestore(app, { persistence: false });
 
-      it('should deleteAllIndexes()', async function () {
-        const { getFirestore, getPersistentCacheIndexManager, deleteAllPersistentCacheIndexes } =
-          firestoreModular;
-        const db = getFirestore();
-        const indexManager = getPersistentCacheIndexManager(db);
-        await deleteAllPersistentCacheIndexes(indexManager);
+          const indexManager = getPersistentCacheIndexManager(db);
+          should.equal(indexManager, null);
+        });
       });
     });
   });
