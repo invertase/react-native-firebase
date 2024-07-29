@@ -33,30 +33,6 @@ import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/na
 import fallBackModule from './web/RNFBConfigModule';
 import version from './version';
 
-export {
-  getRemoteConfig,
-  activate,
-  ensureInitialized,
-  fetchAndActivate,
-  fetchConfig,
-  getAll,
-  getBoolean,
-  getNumber,
-  getString,
-  getValue,
-  setLogLevel,
-  isSupported,
-  fetchTimeMillis,
-  settings,
-  lastFetchStatus,
-  reset,
-  setConfigSettings,
-  fetch,
-  setDefaults,
-  setDefaultsFromResource,
-  onConfigUpdated,
-} from './modular/index';
-
 const statics = {
   LastFetchStatus: {
     SUCCESS: 'success',
@@ -367,6 +343,8 @@ export default createModuleNamespace({
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseConfigModule,
 });
+
+export * from './modular';
 
 // import config, { firebase } from '@react-native-firebase/remote-config';
 // config().X(...);
