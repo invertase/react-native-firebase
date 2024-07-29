@@ -57,8 +57,13 @@ const nativeEvents = [
 ];
 
 class FirebaseFirestoreModule extends FirebaseModule {
-  constructor(app, config) {
+  constructor(app, config, databaseId) {
     super(app, config);
+    if (isString(databaseId) || databaseId === undefined) {
+      this._customUrlOrRegion = databaseId || '(default)';
+    } else if (!isString(databaseId)) {
+      throw new Error('firebase.app().storage(*) bucket url must be a string');
+    }
     this._referencePath = new FirestorePath();
     this._transactionHandler = new FirestoreTransactionHandler(this);
 
@@ -372,7 +377,7 @@ export default createModuleNamespace({
   nativeModuleName,
   nativeEvents,
   hasMultiAppSupport: true,
-  hasCustomUrlOrRegionSupport: false,
+  hasCustomUrlOrRegionSupport: true,
   ModuleClass: FirebaseFirestoreModule,
 });
 
