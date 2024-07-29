@@ -47,13 +47,46 @@ Below is a table outlining which Firebase modules are supported on each platform
 
 ## Other Platforms
 
-Whenever the React Native Firebase SDK is running on platforms other than Android or iOS, the internal implementation uses a fallback platform which is implemented in JavaScript, using the [Firebase JavaScript Modular SDK](https://firebase.google.com/docs/reference/js).
+Whenever the React Native Firebase SDK is running on platforms other than Android
+or iOS, the internal implementation uses a fallback platform which is implemented
+in JavaScript, using the [Firebase JavaScript Modular SDK](https://firebase.google.com/docs/reference/js).
 
-No implementation changes are required to use the React Native Firebase SDK on other platforms, as the JavaScript implementation is automatically used when a native platform is not available. This allows you to use the same API across all platforms, regardless of the underlying implementation.
+No implementation changes are required to use the React Native Firebase SDK on
+other platforms (with the exception of Async Storage detailed below), as the
+JavaScript implementation is automatically used when a native platform is not
+available. This allows you to use the same API across all platforms, regardless
+of the underlying implementation.
 
-There are however some minor limitations or differences in behavior compared to the native platforms. Where a particular method is not supported, an error will be thrown with a code of `unsupported` to indicate the method is not available on the current platform.
+There are however some minor limitations or differences in behavior compared
+to the native platforms. Where a particular method is not supported, an error
+will be thrown with a code of `unsupported` to indicate the method is not
+available on the current platform.
 
-Details of these limitations are summarized below.
+Further details of Firebase service specific limitations are summarized below.
+
+### Async Storage
+
+Some services (currently Auth and Analytics) for our 'Other' platforms
+implementation require a Async Storage implementation to be provided to
+enable persistence, React Native Firebase provides an API to set this implementation:
+
+```js
+import firebase from '@react-native-firebase/app';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Before initializing Firebase set the Async Storage implementation
+// that will be used to persist user sessions.
+firebase.setReactNativeAsyncStorage(AsyncStorage);
+
+// Then initialize Firebase as normal.
+await firebase.initializeApp({ ... });
+```
+
+> Note: we use `@react-native-async-storage/async-storage` as an example, you should use the Async Storage implementation that is appropriate for your platform that you are targeting.
+
+If you do not provide an Async Storage implementation, we use an in memory implementation
+which will result in resetting the data every time your app is restarted, in the case of
+Firebase Auth this means your users have to sign in again.
 
 ### Analytics
 
@@ -140,3 +173,11 @@ Unsupported methods:
 
 - `writeToFile`
 - `putFile`
+
+---
+
+## Known Issues
+
+Known issues will be documented here and updated regularly.
+
+- There are currently no known issues.

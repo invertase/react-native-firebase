@@ -6,6 +6,12 @@ import {
   getInstallations,
   makeIDBAvailable,
 } from '@react-native-firebase/app/lib/internal/web/firebaseInstallations';
+import {
+  getItem,
+  setItem,
+  isMemoryStorage,
+} from '@react-native-firebase/app/lib/internal/asyncStorage';
+
 import { isNumber } from '@react-native-firebase/app/lib/common';
 
 /**
@@ -47,8 +53,6 @@ class AnalyticsApi {
     this.debug = false;
     this.currentScreen = null;
 
-    // TODO this should be persisted once we have a way to do so in app internals
-    this.cid = generateGAClientId();
     this._getInstallationId().catch(error => {
       if (global.RNFBDebug) {
         console.debug('[RNFB->Analytics][🔴] Error getting Firebase Installation Id:', error);
@@ -158,13 +162,46 @@ class AnalyticsApi {
     }
   }
 
+  async _getCid() {
+    this.cid = await getItem('analytics:cid');
+    if (this.cid) {
+      return this.cid;
+    }
+    this.cid = generateGAClientId();
+    await setItem('analytics:cid', this.cid);
+    if (isMemoryStorage()) {
+      console.warn(
+        ```
+Firebase Analytics is using in memory persistence. This means that the analytics
+client ID is reset every time your app is restarted which may result in 
+inaccurate data being shown on the Firebase Analytics dashboard.
+
+To enable persistence, provide an Async Storage implementation.
+
+For example, to use React Native Async Storage:
+
+  import AsyncStorage from '@react-native-async-storage/async-storage';
+
+  // Before initializing Firebase set the Async Storage implementation
+  // that will be used to persist user sessions.
+  firebase.setReactNativeAsyncStorage(AsyncStorage);
+
+  // Then initialize Firebase as normal.
+  await firebase.initializeApp({ ... });
+```,
+      );
+    }
+    return this.cid;
+  }
+
   async _sendEvents(events) {
+    const cid = this.cid || (await this._getCid());
     for (const event of events) {
       const queryParams = new URLSearchParams({
         v: '2',
         tid: this.measurementId,
         en: event.name,
-        cid: this.cid,
+        cid,
         pscdl: 'noapi',
         sid: this.sessionId,
         'ep.origin': 'firebase',

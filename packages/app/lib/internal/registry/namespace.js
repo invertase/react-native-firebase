@@ -25,6 +25,7 @@ import {
   getApps,
   initializeApp,
   setLogLevel,
+  setReactNativeAsyncStorage,
   setOnAppCreate,
   setOnAppDestroy,
 } from './app';
@@ -241,6 +242,7 @@ export function firebaseAppModuleProxy(app, moduleNamespace) {
 export function createFirebaseRoot() {
   FIREBASE_ROOT = {
     initializeApp,
+    setReactNativeAsyncStorage,
     get app() {
       return getApp;
     },
