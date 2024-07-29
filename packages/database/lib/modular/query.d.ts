@@ -1,14 +1,9 @@
 import { FirebaseDatabaseTypes } from '../..';
 
-import Query = FirebaseDatabaseTypes.Query;
-import DataSnapshot = FirebaseDatabaseTypes.DataSnapshot;
-import DatabaseReference = FirebaseDatabaseTypes.Reference;
-import OnDisconnect = FirebaseDatabaseTypes.OnDisconnect;
-
-export type Query = Query;
-export type DataSnapshot = DataSnapshot;
-export type DatabaseReference = DatabaseReference;
-export type OnDisconnect = OnDisconnect;
+export type Query = FirebaseDatabaseTypes.Query;
+export type DataSnapshot = FirebaseDatabaseTypes.DataSnapshot;
+export type DatabaseReference = FirebaseDatabaseTypes.Reference;
+export type OnDisconnect = FirebaseDatabaseTypes.OnDisconnect;
 
 /**
  * A `Promise` that can also act as a `DatabaseReference` when returned by

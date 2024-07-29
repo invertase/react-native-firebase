@@ -16,7 +16,30 @@
  */
 import { describe, expect, it } from '@jest/globals';
 
-import { firebase } from '../lib';
+import {
+  firebase,
+  getRemoteConfig,
+  activate,
+  ensureInitialized,
+  fetchAndActivate,
+  fetchConfig,
+  getAll,
+  getBoolean,
+  getNumber,
+  getString,
+  getValue,
+  setLogLevel,
+  isSupported,
+  fetchTimeMillis,
+  settings,
+  lastFetchStatus,
+  reset,
+  setConfigSettings,
+  fetch,
+  setDefaults,
+  setDefaultsFromResource,
+  onConfigUpdated,
+} from '../lib';
 
 describe('remoteConfig()', function () {
   describe('namespace', function () {
@@ -106,6 +129,92 @@ describe('remoteConfig()', function () {
       const config = firebase.remoteConfig().getAll();
       expect(config).toBeDefined();
       expect(config).toEqual({});
+    });
+  });
+
+  describe('modular', function () {
+    it('`getRemoteConfig` function is properly exposed to end user', function () {
+      expect(getRemoteConfig).toBeDefined();
+    });
+
+    it('`activate` function is properly exposed to end user', function () {
+      expect(activate).toBeDefined();
+    });
+
+    it('`ensureInitialized` function is properly exposed to end user', function () {
+      expect(ensureInitialized).toBeDefined();
+    });
+
+    it('`fetchAndActivate` function is properly exposed to end user', function () {
+      expect(fetchAndActivate).toBeDefined();
+    });
+
+    it('`fetchConfig` function is properly exposed to end user', function () {
+      expect(fetchConfig).toBeDefined();
+    });
+
+    it('`getAll` function is properly exposed to end user', function () {
+      expect(getAll).toBeDefined();
+    });
+
+    it('`getBoolean` function is properly exposed to end user', function () {
+      expect(getBoolean).toBeDefined();
+    });
+
+    it('`getNumber` function is properly exposed to end user', function () {
+      expect(getNumber).toBeDefined();
+    });
+
+    it('`getString` function is properly exposed to end user', function () {
+      expect(getString).toBeDefined();
+    });
+
+    it('`getValue` function is properly exposed to end user', function () {
+      expect(getValue).toBeDefined();
+    });
+
+    it('`setLogLevel` function is properly exposed to end user', function () {
+      expect(setLogLevel).toBeDefined();
+    });
+
+    it('`isSupported` function is properly exposed to end user', function () {
+      expect(isSupported).toBeDefined();
+    });
+
+    it('`fetchTimeMillis` function is properly exposed to end user', function () {
+      expect(fetchTimeMillis).toBeDefined();
+    });
+
+    it('`settings` function is properly exposed to end user', function () {
+      expect(settings).toBeDefined();
+    });
+
+    it('`lastFetchStatus` function is properly exposed to end user', function () {
+      expect(lastFetchStatus).toBeDefined();
+    });
+
+    it('`reset` function is properly exposed to end user', function () {
+      expect(reset).toBeDefined();
+    });
+
+    it('`setConfigSettings` function is properly exposed to end user', function () {
+      expect(setConfigSettings).toBeDefined();
+    });
+
+    it('`fetch` function is properly exposed to end user', function () {
+      expect(fetch).toBeDefined();
+    });
+
+    it('`setDefaults` function is properly exposed to end user', function () {
+      expect(setDefaults).toBeDefined();
+    });
+
+    it('`setDefaultsFromResource` function is properly exposed to end user', function () {
+      expect(setDefaultsFromResource).toBeDefined();
+    });
+
+    it('`onConfigUpdated` function is properly exposed to end user', function () {
+      expect(onConfigUpdated).toBeDefined();
     });
   });
 });
