@@ -2337,6 +2337,14 @@ export namespace FirebaseFirestoreTypes {
      * @param port: emulator port (eg, 8080)
      */
     useEmulator(host: string, port: number): void;
+
+    /**
+     * Gets the `PersistentCacheIndexManager` instance used by this Cloud Firestore instance.
+     * This is not the same as Cloud Firestore Indexes.
+     * Persistent cache indexes are optional indexes that only exist within the SDK to assist in local query execution.
+     * Returns `null` if local persistent storage is not in use.
+     */
+    persistentCacheIndexManager(): PersistentCacheIndexManager | null;
   }
 
   /**
