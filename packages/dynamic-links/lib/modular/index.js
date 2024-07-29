@@ -19,16 +19,14 @@ import { firebase } from '..';
 
 /**
  * @typedef {import("..").FirebaseApp} FirebaseApp
- * @typedef {import("..").FirebaseDynamicLinksTypes} FirebaseDynamicLinksTypes
+ * @typedef {import("..").FirebaseDynamicLinksTypes.ShortLinkType} ShortLinkType
+ * @typedef {import("..").FirebaseDynamicLinksTypes.DynamicLink} DynamicLink
+ * @typedef {import("..").FirebaseDynamicLinksTypes.DynamicLinkParameters} DynamicLinkParameters
  * @typedef {import("..").FirebaseDynamicLinksTypes.Module} FirebaseDynamicLinks
  */
 
 // FIXME these are duplicated from the non-modular types and should be by reference
-export const ShortLinkType = {
-  SHORT: 'SHORT',
-  UNGUESSABLE: 'UNGUESSABLE',
-  DEFAULT: 'DEFAULT',
-};
+export { ShortLinkType } from '..';
 
 /**
  * @returns {FirebaseDynamicLinks}
@@ -40,7 +38,7 @@ export function getDynamicLinks() {
 /**
  *
  * @param {FirebaseDynamicLinks} dynamicLinks
- * @param {FirebaseDynamicLinksTypes.DynamicLinkParameters} dynamicLinkParams
+ * @param {DynamicLinkParameters} dynamicLinkParams
  * @returns {Promise<string>}
  */
 export function buildLink(dynamicLinks, dynamicLinkParams) {
@@ -50,8 +48,8 @@ export function buildLink(dynamicLinks, dynamicLinkParams) {
 /**
  *
  * @param {FirebaseDynamicLinks} dynamicLinks
- * @param {FirebaseDynamicLinksTypes.DynamicLinkParameters} dynamicLinkParams
- * @param {FirebaseDynamicLinksTypes.ShortLinkType | undefined} shortLinkType
+ * @param {DynamicLinkParameters} dynamicLinkParams
+ * @param {ShortLinkType | undefined} shortLinkType
  * @returns {Promise<string>}
  */
 export function buildShortLink(dynamicLinks, dynamicLinkParams, shortLinkType) {
@@ -60,7 +58,7 @@ export function buildShortLink(dynamicLinks, dynamicLinkParams, shortLinkType) {
 
 /**
  * @param {FirebaseDynamicLinks} dynamicLinks
- * @returns {Promise<FirebaseDynamicLinksTypes.DynamicLink | null>}
+ * @returns {Promise<DynamicLink | null>}
  */
 export function getInitialLink(dynamicLinks) {
   return dynamicLinks.getInitialLink();
@@ -68,7 +66,7 @@ export function getInitialLink(dynamicLinks) {
 
 /**
  * @param {FirebaseDynamicLinks} dynamicLinks
- * @param {(link: FirebaseDynamicLinksTypes.DynamicLink) => void} listener
+ * @param {(link: DynamicLink) => void} listener
  * @returns {() => void}
  */
 export function onLink(dynamicLinks, listener) {
@@ -86,10 +84,10 @@ export function performDiagnostics(dynamicLinks) {
 
 /**
  *
- * @param {FirebaseDynamicLinks} dynmaicLinks
+ * @param {FirebaseDynamicLinks} dynamicLinks
  * @param {string} link
- * @returns {Promise<FirebaseDynamicLinksTypes.DynamicLink>}
+ * @returns {Promise<DynamicLink>}
  */
-export function resolveLink(dynmaicLinks, link) {
-  return dynmaicLinks.resolveLink(link);
+export function resolveLink(dynamicLinks, link) {
+  return dynamicLinks.resolveLink(link);
 }

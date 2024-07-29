@@ -1,7 +1,7 @@
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { FirebaseDynamicLinksTypes } from '..';
 
-type DynamicLinks = FirebaseDynamicLinksTypes.Module;
+type FirebaseDynamicLinks = FirebaseDynamicLinksTypes.Module;
 
 export declare const ShortLinkType = FirebaseDynamicLinksTypes.ShortLinkType;
 
@@ -141,6 +141,6 @@ export declare function performDiagnostics(dynamicLinks: FirebaseDynamicLinks): 
  * Can throw error with code 'resolve-link-error' if there is a processing error
  */
 export declare function resolveLink(
-  dynmaicLinks: FirebaseDynamicLinks,
+  dynamicLinks: FirebaseDynamicLinks,
   link: string,
 ): Promise<FirebaseDynamicLinksTypes.DynamicLink>;
