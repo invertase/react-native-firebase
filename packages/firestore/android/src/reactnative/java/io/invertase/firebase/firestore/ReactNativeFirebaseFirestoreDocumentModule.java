@@ -56,12 +56,12 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
 
   @ReactMethod
   public void documentOnSnapshot(
-      String appName, String path, int listenerId, ReadableMap listenerOptions) {
+      String appName, String databaseId, String path, int listenerId, ReadableMap listenerOptions) {
     if (documentSnapshotListeners.get(listenerId) != null) {
       return;
     }
 
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
     final EventListener<DocumentSnapshot> listener =
@@ -95,7 +95,7 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   }
 
   @ReactMethod
-  public void documentOffSnapshot(String appName, int listenerId) {
+  public void documentOffSnapshot(String appName, String databaseId, int listenerId) {
     ListenerRegistration listenerRegistration = documentSnapshotListeners.get(listenerId);
     if (listenerRegistration != null) {
       listenerRegistration.remove();
@@ -104,8 +104,8 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   }
 
   @ReactMethod
-  public void documentGet(String appName, String path, ReadableMap getOptions, Promise promise) {
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+  public void documentGet(String appName, String databaseId, String path, ReadableMap getOptions, Promise promise) {
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
     Source source;
@@ -140,8 +140,8 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   }
 
   @ReactMethod
-  public void documentDelete(String appName, String path, Promise promise) {
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+  public void documentDelete(String appName, String databaseId, String path, Promise promise) {
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
     Tasks.call(getTransactionalExecutor(), documentReference::delete)
         .addOnCompleteListener(
@@ -156,8 +156,8 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
 
   @ReactMethod
   public void documentSet(
-      String appName, String path, ReadableMap data, ReadableMap options, Promise promise) {
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+      String appName, String databaseId, String path, ReadableMap data, ReadableMap options, Promise promise) {
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
     Tasks.call(getTransactionalExecutor(), () -> parseReadableMap(firebaseFirestore, data))
@@ -195,8 +195,8 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   }
 
   @ReactMethod
-  public void documentUpdate(String appName, String path, ReadableMap data, Promise promise) {
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+  public void documentUpdate(String appName, String databaseId, String path, ReadableMap data, Promise promise) {
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
     Tasks.call(getTransactionalExecutor(), () -> parseReadableMap(firebaseFirestore, data))
@@ -214,8 +214,8 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   }
 
   @ReactMethod
-  public void documentBatch(String appName, ReadableArray writes, Promise promise) {
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+  public void documentBatch(String appName, String databaseId, ReadableArray writes, Promise promise) {
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
 
     Tasks.call(getTransactionalExecutor(), () -> parseDocumentBatches(firebaseFirestore, writes))
         .continueWithTask(

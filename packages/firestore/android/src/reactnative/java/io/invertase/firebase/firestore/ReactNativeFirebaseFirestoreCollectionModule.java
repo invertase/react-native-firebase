@@ -53,6 +53,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   @ReactMethod
   public void namedQueryOnSnapshot(
       String appName,
+      String databaseId,
       String queryName,
       String type,
       ReadableArray filters,
@@ -64,7 +65,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
       return;
     }
 
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     firebaseFirestore
         .getNamedQuery(queryName)
         .addOnCompleteListener(
@@ -88,6 +89,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   @ReactMethod
   public void collectionOnSnapshot(
       String appName,
+      String databaseId,
       String path,
       String type,
       ReadableArray filters,
@@ -99,7 +101,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
       return;
     }
 
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     ReactNativeFirebaseFirestoreQuery firestoreQuery =
         new ReactNativeFirebaseFirestoreQuery(
             appName, getQueryForFirestore(firebaseFirestore, path, type), filters, orders, options);
@@ -108,7 +110,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   }
 
   @ReactMethod
-  public void collectionOffSnapshot(String appName, int listenerId) {
+  public void collectionOffSnapshot(String appName, String databaseId, int listenerId) {
     ListenerRegistration listenerRegistration = collectionSnapshotListeners.get(listenerId);
     if (listenerRegistration != null) {
       listenerRegistration.remove();
@@ -120,6 +122,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   @ReactMethod
   public void namedQueryGet(
       String appName,
+      String databaseId,
       String queryName,
       String type,
       ReadableArray filters,
@@ -127,7 +130,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
       ReadableMap options,
       ReadableMap getOptions,
       Promise promise) {
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     firebaseFirestore
         .getNamedQuery(queryName)
         .addOnCompleteListener(
@@ -151,13 +154,14 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   @ReactMethod
   public void collectionCount(
       String appName,
+      String databaseId,
       String path,
       String type,
       ReadableArray filters,
       ReadableArray orders,
       ReadableMap options,
       Promise promise) {
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     ReactNativeFirebaseFirestoreQuery firestoreQuery =
         new ReactNativeFirebaseFirestoreQuery(
             appName, getQueryForFirestore(firebaseFirestore, path, type), filters, orders, options);
@@ -181,6 +185,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   @ReactMethod
   public void collectionGet(
       String appName,
+      String databaseId,
       String path,
       String type,
       ReadableArray filters,
@@ -188,7 +193,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
       ReadableMap options,
       ReadableMap getOptions,
       Promise promise) {
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     ReactNativeFirebaseFirestoreQuery firestoreQuery =
         new ReactNativeFirebaseFirestoreQuery(
             appName, getQueryForFirestore(firebaseFirestore, path, type), filters, orders, options);

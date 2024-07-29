@@ -62,7 +62,7 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
 
   @ReactMethod
   public void transactionGetDocument(
-      String appName, int transactionId, String path, Promise promise) {
+      String appName, String databaseId, int transactionId, String path, Promise promise) {
     ReactNativeFirebaseFirestoreTransactionHandler transactionHandler =
         transactionHandlers.get(transactionId);
 
@@ -74,7 +74,7 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
       return;
     }
 
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
     Tasks.call(
@@ -91,7 +91,7 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
   }
 
   @ReactMethod
-  public void transactionDispose(String appName, int transactionId) {
+  public void transactionDispose(String appName, String databaseId, int transactionId) {
     ReactNativeFirebaseFirestoreTransactionHandler transactionHandler =
         transactionHandlers.get(transactionId);
 
@@ -103,7 +103,7 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
 
   @ReactMethod
   public void transactionApplyBuffer(
-      String appName, int transactionId, ReadableArray commandBuffer) {
+      String appName, String databaseId, int transactionId, ReadableArray commandBuffer) {
     ReactNativeFirebaseFirestoreTransactionHandler handler = transactionHandlers.get(transactionId);
 
     if (handler != null) {
@@ -112,12 +112,12 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
   }
 
   @ReactMethod
-  public void transactionBegin(String appName, int transactionId) {
+  public void transactionBegin(String appName, String databaseId, int transactionId) {
     ReactNativeFirebaseFirestoreTransactionHandler transactionHandler =
         new ReactNativeFirebaseFirestoreTransactionHandler(appName, transactionId);
     transactionHandlers.put(transactionId, transactionHandler);
 
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
 
     // Provides its own executor
