@@ -18,8 +18,19 @@
 import { firebase } from '..';
 
 /**
+ * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
+ * @typedef {import('..').FirebaseRemoteConfigTypes.Module} RemoteConfig
+ * @typedef {import('..').FirebaseRemoteConfigTypes.ConfigDefaults} ConfigDefaults
+ * @typedef {import('..').FirebaseRemoteConfigTypes.ConfigSettings} ConfigSettings
+ * @typedef {import('..').FirebaseRemoteConfigTypes.ConfigValue} ConfigValue
+ * @typedef {import('..').FirebaseRemoteConfigTypes.ConfigValues} ConfigValues
+ * @typedef {import('..').FirebaseRemoteConfigTypes.LastFetchStatusType} LastFetchStatusType
+ * @typedef {import('..').FirebaseRemoteConfigTypes.RemoteConfigLogLevel} RemoteConfigLogLevel
+ */
+
+/**
  * Returns a RemoteConfig instance for the given app.
- * @param app - FirebaseApp. Optional.
+ * @param {FirebaseApp} [app] - FirebaseApp. Optional.
  * @returns {RemoteConfig}
  */
 export function getRemoteConfig(app) {
@@ -33,7 +44,7 @@ export function getRemoteConfig(app) {
 /**
  * Returns a Boolean which resolves to true if the current call
  * activated the fetched configs.
- * @param remoteConfig - RemoteConfig instance
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
  * @returns {Promise<boolean>}
  */
 export function activate(remoteConfig) {
@@ -42,7 +53,7 @@ export function activate(remoteConfig) {
 
 /**
  * Ensures the last activated config are available to the getters.
- * @param remoteConfig - RemoteConfig instance
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
  * @returns {Promise<void>}
  */
 export function ensureInitialized(remoteConfig) {
@@ -52,7 +63,7 @@ export function ensureInitialized(remoteConfig) {
 /**
  * Performs a fetch and returns a Boolean which resolves to true
  * if the current call activated the fetched configs.
- * @param remoteConfig - RemoteConfig instance
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
  * @returns {Promise<boolean>}
  */
 export function fetchAndActivate(remoteConfig) {
@@ -61,7 +72,7 @@ export function fetchAndActivate(remoteConfig) {
 
 /**
  * Fetches and caches configuration from the Remote Config service.
- * @param remoteConfig - RemoteConfig instance
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
  * @returns {Promise<void>}
  */
 export function fetchConfig(remoteConfig) {
@@ -70,8 +81,8 @@ export function fetchConfig(remoteConfig) {
 
 /**
  * Gets all config.
- * @param remoteConfig - RemoteConfig instance
- * @returns {Promise<ConfigValues>}
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
+ * @returns {ConfigValues}
  */
 export function getAll(remoteConfig) {
   return remoteConfig.getAll();
@@ -79,8 +90,8 @@ export function getAll(remoteConfig) {
 
 /**
  * Gets the value for the given key as a boolean.
- * @param remoteConfig - RemoteConfig instance
- * @param key - key for boolean value
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
+ * @param {string} key - key for boolean value
  * @returns {boolean}
  */
 export function getBoolean(remoteConfig, key) {
@@ -89,8 +100,8 @@ export function getBoolean(remoteConfig, key) {
 
 /**
  * Gets the value for the given key as a number.
- * @param remoteConfig - RemoteConfig instance
- * @param key - key for number value
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
+ * @param {string} key - key for number value
  * @returns {number}
  */
 export function getNumber(remoteConfig, key) {
@@ -99,8 +110,8 @@ export function getNumber(remoteConfig, key) {
 
 /**
  * Gets the value for the given key as a string.
- * @param remoteConfig - RemoteConfig instance
- * @param key - key for string value
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
+ * @param {string} key - key for string value
  * @returns {string}
  */
 export function getString(remoteConfig, key) {
@@ -109,8 +120,8 @@ export function getString(remoteConfig, key) {
 
 /**
  * Gets the value for the given key
- * @param remoteConfig - RemoteConfig instance
- * @param key - key for the given value
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
+ * @param {string} key - key for the given value
  * @returns {ConfigValue}
  */
 export function getValue(remoteConfig, key) {
@@ -119,8 +130,8 @@ export function getValue(remoteConfig, key) {
 
 /**
  * Defines the log level to use.
- * @param remoteConfig - RemoteConfig instance
- * @param logLevel - The log level to set
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
+ * @param {RemoteConfigLogLevel} logLevel - The log level to set
  * @returns {RemoteConfigLogLevel}
  */
 // eslint-disable-next-line
@@ -143,7 +154,7 @@ export function isSupported() {
 /**
  * Indicates the default value in milliseconds to abandon a pending fetch
  * request made to the Remote Config server. Defaults to 60000 (One minute).
- * @param remoteConfig - RemoteConfig instance
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
  * @returns {number}
  */
 export function fetchTimeMillis(remoteConfig) {
@@ -153,7 +164,7 @@ export function fetchTimeMillis(remoteConfig) {
 /**
  * Returns a ConfigSettings object which provides the properties `minimumFetchIntervalMillis` & `fetchTimeMillis` if they have been set
  * using setConfigSettings({ fetchTimeMillis: number, minimumFetchIntervalMillis: number }).
- * @param remoteConfig - RemoteConfig instance
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
  * @returns {ConfigSettings}
  */
 export function settings(remoteConfig) {
@@ -162,7 +173,7 @@ export function settings(remoteConfig) {
 
 /**
  * The status of the latest Remote RemoteConfig fetch action.
- * @param remoteConfig - RemoteConfig instance
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
  * @returns {LastFetchStatusType}
  */
 export function lastFetchStatus(remoteConfig) {
@@ -173,7 +184,7 @@ export function lastFetchStatus(remoteConfig) {
  * Deletes all activated, fetched and defaults configs and
  * resets all Firebase Remote Config settings.
  * Android only. iOS does not reset anything.
- * @param remoteConfig - RemoteConfig instance
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
  * @returns {Promise<void>}
  */
 export function reset(remoteConfig) {
@@ -184,8 +195,8 @@ export function reset(remoteConfig) {
  * Set the Remote RemoteConfig settings, currently able to set
  * `fetchTimeMillis` & `minimumFetchIntervalMillis`
  * Android only. iOS does not reset anything.
- * @param remoteConfig - RemoteConfig instance
- * @param settings - ConfigSettings instance
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
+ * @param {ConfigSettings} settings - ConfigSettings instance
  * @returns {Promise<void>}
  */
 export function setConfigSettings(remoteConfig, settings) {
@@ -194,8 +205,8 @@ export function setConfigSettings(remoteConfig, settings) {
 
 /**
  * Fetches parameter values for your app.
- * @param remoteConfig - RemoteConfig instance
- * @param expirationDurationSeconds - number
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
+ * @param {number} expirationDurationSeconds - number
  * @returns {Promise<void>}
  */
 export function fetch(remoteConfig, expirationDurationSeconds) {
@@ -204,8 +215,8 @@ export function fetch(remoteConfig, expirationDurationSeconds) {
 
 /**
  * Fetches parameter values for your app.
- * @param remoteConfig - RemoteConfig instance
- * @param defaults - ConfigDefaults
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
+ * @param {ConfigDefaults} defaults - ConfigDefaults
  * @returns {Promise<void>}
  */
 export function setDefaults(remoteConfig, defaults) {
@@ -214,8 +225,8 @@ export function setDefaults(remoteConfig, defaults) {
 
 /**
  * Fetches parameter values for your app.
- * @param remoteConfig - RemoteConfig instance
- * @param resourceName - string
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
+ * @param {string} resourceName - string
  * @returns {Promise<null>}
  */
 export function setDefaultsFromResource(remoteConfig, resourceName) {
@@ -225,8 +236,8 @@ export function setDefaultsFromResource(remoteConfig, resourceName) {
 /**
  * Registers a listener to changes in the configuration.
  *
- * @param remoteConfig - RemoteConfig instance
- * @param callback - function called on config change
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
+ * @param {function(ConfigValues): void} callback - function called on config change
  * @returns {function} unsubscribe listener
  */
 export function onConfigUpdated(remoteConfig, callback) {
