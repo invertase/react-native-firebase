@@ -752,7 +752,7 @@ describe('firestore()', function () {
         it('should return `null` when calling `persistentCacheIndexManager()`', async function () {
           const { initializeFirestore, getPersistentCacheIndexManager } = firestoreModular;
           const app = getApp('secondaryFromNative');
-          const db = initializeFirestore(app, { persistence: false });
+          const db = await initializeFirestore(app, { persistence: false });
 
           const indexManager = getPersistentCacheIndexManager(db);
           should.equal(indexManager, null);
