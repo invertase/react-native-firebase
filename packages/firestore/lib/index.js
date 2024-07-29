@@ -80,6 +80,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
 
     this._settings = {
       ignoreUndefinedProperties: false,
+      persistence: true,
     };
   }
 
@@ -355,10 +356,18 @@ class FirebaseFirestoreModule extends FirebaseModule {
       delete settings.ignoreUndefinedProperties;
     }
 
+    if (settings.persistence === false) {
+      // Required for persistentCacheIndexManager(), if this setting is `false`, it returns `null`
+      this._settings.persistence = false;
+    }
+
     return this.native.settings(settings);
   }
 
   persistentCacheIndexManager() {
+    if (this._settings.persistence === false) {
+      return null;
+    }
     return new FirestorePersistentCacheIndexManager(this);
   }
 }
