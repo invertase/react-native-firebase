@@ -333,22 +333,33 @@ describe('firestore()', function () {
     });
 
     describe('FirestorePersistentCacheIndexManager', function () {
-      it('should enableIndexAutoCreation()', async function () {
-        const db = firebase.firestore();
-        const indexManager = db.persistentCacheIndexManager();
-        await indexManager.enableIndexAutoCreation();
+      describe('if persistence is enabled', function () {
+        it('should enableIndexAutoCreation()', async function () {
+          const db = firebase.firestore();
+          const indexManager = db.persistentCacheIndexManager();
+          await indexManager.enableIndexAutoCreation();
+        });
+
+        it('should disableIndexAutoCreation()', async function () {
+          const db = firebase.firestore();
+          const indexManager = db.persistentCacheIndexManager();
+          await indexManager.disableIndexAutoCreation();
+        });
+
+        it('should deleteAllIndexes()', async function () {
+          const db = firebase.firestore();
+          const indexManager = db.persistentCacheIndexManager();
+          await indexManager.deleteAllIndexes();
+        });
       });
 
-      it('should disableIndexAutoCreation()', async function () {
-        const db = firebase.firestore();
-        const indexManager = db.persistentCacheIndexManager();
-        await indexManager.disableIndexAutoCreation();
-      });
-
-      it('should deleteAllIndexes()', async function () {
-        const db = firebase.firestore();
-        const indexManager = db.persistentCacheIndexManager();
-        await indexManager.deleteAllIndexes();
+      describe('if persistence is disabled', function () {
+        it('should return `null` when calling `persistentCacheIndexManager()`', async function () {
+          const secondFirestore = firebase.app('secondaryFromNative').firestore();
+          secondFirestore.settings({ persistence: false });
+          const indexManager = secondFirestore.persistentCacheIndexManager();
+          should.equal(indexManager, null);
+        });
       });
     });
   });
