@@ -27,15 +27,6 @@ import Trace from './Trace';
 import ScreenTrace from './ScreenTrace';
 import version from './version';
 
-export {
-  getPerformance,
-  initializePerformance,
-  trace,
-  httpMetric,
-  newScreenTrace,
-  startScreenTrace,
-} from './modular/index';
-
 const statics = {};
 
 const namespace = 'perf';
@@ -174,6 +165,8 @@ export default createModuleNamespace({
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebasePerfModule,
 });
+
+export * from './modular';
 
 // import perf, { firebase } from '@react-native-firebase/perf';
 // perf().X(...);

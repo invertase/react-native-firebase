@@ -36,14 +36,6 @@ import fallBackModule from './web/RNFBAppCheckModule';
 
 import version from './version';
 
-export {
-  addTokenListener,
-  getToken,
-  getLimitedUseToken,
-  initializeAppCheck,
-  setTokenAutoRefreshEnabled,
-} from './modular/index';
-
 const namespace = 'appCheck';
 
 const nativeModuleName = 'RNFBAppCheckModule';
@@ -239,6 +231,8 @@ export default createModuleNamespace({
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseAppCheckModule,
 });
+
+export * from './modular';
 
 // import appCheck, { firebase } from '@react-native-firebase/app-check';
 // appCheck().X(...);
