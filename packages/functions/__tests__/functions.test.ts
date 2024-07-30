@@ -1,6 +1,12 @@
 import { describe, expect, it } from '@jest/globals';
 
-import functions, { firebase } from '../lib';
+import functions, {
+  firebase,
+  getFunctions,
+  connectFunctionsEmulator,
+  httpsCallable,
+  httpsCallableFromUrl,
+} from '../lib';
 
 describe('Cloud Functions', function () {
   describe('namespace', function () {
@@ -44,6 +50,24 @@ describe('Cloud Functions', function () {
       expect(() => app.functions().httpsCallable('example', { timeout: 'test' })).toThrow(
         'HttpsCallableOptions.timeout expected a Number in milliseconds',
       );
+    });
+  });
+
+  describe('modular', function () {
+    it('`getFunctions` function is properly exposed to end user', function () {
+      expect(getFunctions).toBeDefined();
+    });
+
+    it('`connectFunctionsEmulator` function is properly exposed to end user', function () {
+      expect(connectFunctionsEmulator).toBeDefined();
+    });
+
+    it('`httpsCallable` function is properly exposed to end user', function () {
+      expect(httpsCallable).toBeDefined();
+    });
+
+    it('`httpsCallableFromUrl` function is properly exposed to end user', function () {
+      expect(httpsCallableFromUrl).toBeDefined();
     });
   });
 });

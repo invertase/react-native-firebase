@@ -45,7 +45,7 @@ export declare function httpsCallable<RequestData = unknown, ResponseData = unkn
  * @param {HttpsCallableOptions | undefined} options An instance of {@link HttpsCallableOptions} containing metadata about how calls should be executed.
  * @returns {HttpsCallable}
  */
-export declare function httpsCallableFromURL<RequestData = unknown, ResponseData = unknown>(
+export declare function httpsCallableFromUrl<RequestData = unknown, ResponseData = unknown>(
   functionsInstance: Functions,
   url: string,
   options?: HttpsCallableOptions,
