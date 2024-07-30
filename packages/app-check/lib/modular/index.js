@@ -19,10 +19,19 @@
 import { firebase } from '..';
 
 /**
+ * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
+ * @typedef {import('..').FirebaseAppCheckTypes.Module} AppCheck
+ * @typedef {import('..').FirebaseAppCheckTypes.AppCheckTokenResult} AppCheckTokenResult
+ * @typedef {import('..').FirebaseAppCheckTypes.Unsubscribe} Unsubscribe
+ * @typedef {import('..').FirebaseAppCheckTypes.PartialObserver} PartialObserver
+ * @typedef {import('..').FirebaseAppCheckTypes.AppCheckOptions} AppCheckOptions
+ */
+
+/**
  * Activate App Check for the given app. Can be called only once per app.
- * @param app - FirebaseApp. Optional.
- * @param options - AppCheckOptions
- * @returns {AppCheck}
+ * @param {FirebaseApp} [app] - The app to initialize App Check for. Optional.
+ * @param {AppCheckOptions} options - App Check options.
+ * @returns {Promise<{ app: FirebaseApp }>}
  */
 export async function initializeAppCheck(app, options) {
   if (app) {
@@ -37,8 +46,8 @@ export async function initializeAppCheck(app, options) {
 /**
  * Get the current App Check token. Attaches to the most recent in-flight request if one is present.
  * Returns null if no token is present and no token requests are in-flight.
- * @param appCheckInstance - AppCheck
- * @param forceRefresh - boolean
+ * @param {AppCheck} appCheckInstance - The App Check instance.
+ * @param {boolean} forceRefresh - Whether to force refresh the token.
  * @returns {Promise<AppCheckTokenResult>}
  */
 export function getToken(appCheckInstance, forceRefresh) {
@@ -47,8 +56,8 @@ export function getToken(appCheckInstance, forceRefresh) {
 
 /**
  * Get a limited-use (consumable) App Check token.
- * For use with server calls to firebase functions or custom backends using the firebase admin SDK
- * @param appCheckInstance - AppCheck
+ * For use with server calls to firebase functions or custom backends using the firebase admin SDK.
+ * @param {AppCheck} appCheckInstance - The App Check instance.
  * @returns {Promise<AppCheckTokenResult>}
  */
 export function getLimitedUseToken(appCheckInstance) {
@@ -60,8 +69,8 @@ export function getLimitedUseToken(appCheckInstance) {
  * There can be more than one listener registered at the same time for one or more App Check instances.
  * The listeners call back on the UI thread whenever the current
  * token associated with this App Check instance changes.
- * @param appCheckInstance - AppCheck
- * @param listener - PartialObserver<AppCheckTokenResult>
+ * @param {AppCheck} appCheckInstance - The App Check instance.
+ * @param {PartialObserver<AppCheckTokenResult>} listener - The listener to register.
  * @returns {Unsubscribe}
  */
 export function addTokenListener(appCheckInstance, listener) {
@@ -72,8 +81,8 @@ export function addTokenListener(appCheckInstance, listener) {
 
 /**
  * Set whether App Check will automatically refresh tokens as needed.
- * @param appCheckInstance - AppCheck
- * @param isAutoRefreshEnabled - boolean
+ * @param {AppCheck} appCheckInstance - The App Check instance.
+ * @param {boolean} isAutoRefreshEnabled - Whether to enable auto-refresh.
  */
 export function setTokenAutoRefreshEnabled(appCheckInstance, isAutoRefreshEnabled) {
   return appCheckInstance.app.appCheck().setTokenAutoRefreshEnabled(isAutoRefreshEnabled);
