@@ -2160,6 +2160,16 @@ export namespace FirebaseAuthTypes {
      * Returns the custom auth domain for the auth instance.
      */
     getCustomAuthDomain(): Promise<string>;
+    /**
+     * Sets the language code on the auth instance. This is to match Firebase JS SDK behavior.
+     * Please use the `setLanguageCode` method for setting the language code.
+     */
+    set languageCode(code: string | null);
+    /**
+     * Gets the config used to initialize this auth instance. This is to match Firebase JS SDK behavior.
+     * It returns an empty map as the config is not available in the native SDK.
+     */
+    get config(): Map<any, any>;
   }
 }
 
