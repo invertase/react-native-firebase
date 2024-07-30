@@ -1,6 +1,31 @@
 import { describe, expect, it } from '@jest/globals';
 
-import storage, { firebase } from '../lib';
+import storage, {
+  firebase,
+  getStorage,
+  connectStorageEmulator,
+  ref,
+  deleteObject,
+  getBlob,
+  getBytes,
+  getDownloadURL,
+  getMetadata,
+  getStream,
+  list,
+  listAll,
+  updateMetadata,
+  uploadBytes,
+  uploadBytesResumable,
+  uploadString,
+  refFromURL,
+  setMaxOperationRetryTime,
+  setMaxUploadRetryTime,
+  putFile,
+  writeToFile,
+  toString,
+  child,
+  setMaxDownloadRetryTime,
+} from '../lib';
 
 describe('Storage', function () {
   describe('namespace', function () {
@@ -43,6 +68,100 @@ describe('Storage', function () {
 
       const bar = storage().useEmulator('127.0.0.1', 9000);
       expect(bar).toEqual(['10.0.2.2', 9000]);
+    });
+  });
+
+  describe('modular', function () {
+    it('`getStorage` function is properly exposed to end user', function () {
+      expect(getStorage).toBeDefined();
+    });
+
+    it('`connectStorageEmulator` function is properly exposed to end user', function () {
+      expect(connectStorageEmulator).toBeDefined();
+    });
+
+    it('`ref` function is properly exposed to end user', function () {
+      expect(ref).toBeDefined();
+    });
+
+    it('`deleteObject` function is properly exposed to end user', function () {
+      expect(deleteObject).toBeDefined();
+    });
+
+    it('`getBlob` function is properly exposed to end user', function () {
+      expect(getBlob).toBeDefined();
+    });
+
+    it('`getBytes` function is properly exposed to end user', function () {
+      expect(getBytes).toBeDefined();
+    });
+
+    it('`getDownloadURL` function is properly exposed to end user', function () {
+      expect(getDownloadURL).toBeDefined();
+    });
+
+    it('`getMetadata` function is properly exposed to end user', function () {
+      expect(getMetadata).toBeDefined();
+    });
+
+    it('`getStream` function is properly exposed to end user', function () {
+      expect(getStream).toBeDefined();
+    });
+
+    it('`list` function is properly exposed to end user', function () {
+      expect(list).toBeDefined();
+    });
+
+    it('`listAll` function is properly exposed to end user', function () {
+      expect(listAll).toBeDefined();
+    });
+
+    it('`updateMetadata` function is properly exposed to end user', function () {
+      expect(updateMetadata).toBeDefined();
+    });
+
+    it('`uploadBytes` function is properly exposed to end user', function () {
+      expect(uploadBytes).toBeDefined();
+    });
+
+    it('`uploadBytesResumable` function is properly exposed to end user', function () {
+      expect(uploadBytesResumable).toBeDefined();
+    });
+
+    it('`uploadString` function is properly exposed to end user', function () {
+      expect(uploadString).toBeDefined();
+    });
+
+    it('`refFromURL` function is properly exposed to end user', function () {
+      expect(refFromURL).toBeDefined();
+    });
+
+    it('`setMaxOperationRetryTime` function is properly exposed to end user', function () {
+      expect(setMaxOperationRetryTime).toBeDefined();
+    });
+
+    it('`setMaxUploadRetryTime` function is properly exposed to end user', function () {
+      expect(setMaxUploadRetryTime).toBeDefined();
+    });
+
+    it('`putFile` function is properly exposed to end user', function () {
+      expect(putFile).toBeDefined();
+    });
+
+    it('`writeToFile` function is properly exposed to end user', function () {
+      expect(writeToFile).toBeDefined();
+    });
+
+    it('`toString` function is properly exposed to end user', function () {
+      expect(toString).toBeDefined();
+    });
+
+    it('`child` function is properly exposed to end user', function () {
+      expect(child).toBeDefined();
+    });
+
+    it('`setMaxDownloadRetryTime` function is properly exposed to end user', function () {
+      expect(setMaxDownloadRetryTime).toBeDefined();
     });
   });
 });
