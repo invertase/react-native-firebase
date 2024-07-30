@@ -130,6 +130,32 @@ class FirebaseAuthModule extends FirebaseModule {
     return this._languageCode;
   }
 
+  set languageCode(code) {
+    // For modular API, not recommended to set languageCode directly as it should be set in the native SDKs first
+    if (!isString(code) && !isNull(code)) {
+      throw new Error(
+        "firebase.auth().languageCode = (*) expected 'languageCode' to be a string or null value",
+      );
+    }
+    // as this is a setter, we can't use async/await. So we set it first so it is available immediately
+    if (code === null) {
+      this._languageCode = this.native.APP_LANGUAGE[this.app._name];
+
+      if (!this.languageCode) {
+        this._languageCode = this.native.APP_LANGUAGE['[DEFAULT]'];
+      }
+    } else {
+      this._languageCode = code;
+    }
+    // This sets it natively
+    this.setLanguageCode(code);
+  }
+
+  get config() {
+    // for modular API, firebase JS SDK has a config object which is not available in native SDKs
+    return {};
+  }
+
   get tenantId() {
     return this._tenantId;
   }
