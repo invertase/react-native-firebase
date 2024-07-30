@@ -751,6 +751,7 @@ describe('firestore()', function () {
       describe('if persistence is disabled', function () {
         it('should return `null` when calling `persistentCacheIndexManager()`', async function () {
           const { initializeFirestore, getPersistentCacheIndexManager } = firestoreModular;
+          const { getApp } = modular;
           const app = getApp('secondaryFromNative');
           const db = await initializeFirestore(app, { persistence: false });
 
