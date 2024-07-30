@@ -1210,3 +1210,13 @@ export function setConsent(
  * @returns {void}
  */
 export function settings(options: FirebaseAnalyticsTypes.SettingsOptions): void;
+
+/**
+ * Retrieves the session id from the client.
+ * On iOS, Firebase SDK may return an error that is handled internally and may take many minutes to return a valid value. Check native debug logs for more details.
+ *
+ * Returns the session id or null if session is expired, null on android if FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE has been set to FirebaseAnalytics.ConsentStatus.DENIED and null on iOS if ConsentType.analyticsStorage has been set to ConsentStatus.denied.
+ * @param {Analytics} instance.
+ * @returns {Promise<number | null>}
+ */
+export function getSessionId(analytics: Analytics): Promise<number | null>;

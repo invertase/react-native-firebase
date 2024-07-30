@@ -32,6 +32,13 @@ describe('database.X', function () {
         TIMESTAMP.should.have.property('.sv');
         TIMESTAMP['.sv'].should.eql('timestamp');
       });
+
+      it('populates the property with a Unix timestamp', async function () {
+        const ref = firebase.database().ref(`${TEST_PATH}/timestamp`);
+        await ref.set(firebase.database.ServerValue.TIMESTAMP);
+        const snapshot = await ref.once('value');
+        snapshot.val().should.be.a.Number();
+      });
     });
 
     describe('ServerValue.increment', function () {
@@ -80,6 +87,14 @@ describe('database.X', function () {
         should.equal(Object.keys(timestamp).length, 1);
         timestamp.should.have.property('.sv');
         timestamp['.sv'].should.eql('timestamp');
+      });
+
+      it('populates the property with a Unix timestamp', async function () {
+        const { serverTimestamp, getDatabase, ref, set } = databaseModular;
+        const dbRef = ref(getDatabase(), `${TEST_PATH}/timestamp`);
+        await set(dbRef, serverTimestamp());
+        const snapshot = await dbRef.once('value');
+        snapshot.val().should.be.a.Number();
       });
     });
 

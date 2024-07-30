@@ -1,58 +1,86 @@
 import { firebase } from '..';
 
 /**
- * @typedef {import("..").FirebaseApp} FirebaseApp
+ * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
  * @typedef {import("..").FirebaseAnalyticsTypes.Module} FirebaseAnalytics
+ * @typedef {import("..").FirebaseAnalyticsTypes.AnalyticsCallOptions} AnalyticsCallOptions
+ * @typedef {import("..").FirebaseAnalyticsTypes.EventParams} EventParams
+ * @typedef {import("..").FirebaseAnalyticsTypes.AddPaymentInfoEventParameters} AddPaymentInfoEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.ScreenViewParameters} ScreenViewParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.AddShippingInfoParameters} AddShippingInfoParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.AddToCartEventParameters} AddToCartEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.AddToWishlistEventParameters} AddToWishlistEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.BeginCheckoutEventParameters} BeginCheckoutEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.CampaignDetailsEventParameters} CampaignDetailsEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.EarnVirtualCurrencyEventParameters} EarnVirtualCurrencyEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.GenerateLeadEventParameters} GenerateLeadEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.JoinGroupEventParameters} JoinGroupEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.LevelEndEventParameters} LevelEndEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.LevelStartEventParameters} LevelStartEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.LevelUpEventParameters} LevelUpEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.LoginEventParameters} LoginEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.PostScoreEventParameters} PostScoreEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.SelectContentEventParameters} SelectContentEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.PurchaseEventParameters} PurchaseEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.RefundEventParameters} RefundEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.RemoveFromCartEventParameters} RemoveFromCartEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.SearchEventParameters} SearchEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.SelectItemEventParameters} SelectItemEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.SetCheckoutOptionEventParameters} SetCheckoutOptionEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.SelectPromotionEventParameters} SelectPromotionEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.ShareEventParameters} ShareEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.SignUpEventParameters} SignUpEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.SpendVirtualCurrencyEventParameters} SpendVirtualCurrencyEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.UnlockAchievementEventParameters} UnlockAchievementEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.ViewCartEventParameters} ViewCartEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.ViewItemEventParameters} ViewItemEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.ViewItemListEventParameters} ViewItemListEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.ViewPromotionEventParameters} ViewPromotionEventParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.ViewSearchResultsParameters} ViewSearchResultsParameters
+ * @typedef {import("..").FirebaseAnalyticsTypes.ConsentSettings} ConsentSettings
+ * @typedef {import("..").FirebaseAnalyticsTypes.SettingsOptions} SettingsOptions
  */
 
 /**
- * Returns a Analytics instance for the given app.
- * @param app - FirebaseApp. Optional.
+ * Returns an Analytics instance for the given app.
+ * @param {FirebaseApp} [app] - FirebaseApp. Optional.
  * @returns {FirebaseAnalytics}
  */
 export function getAnalytics(app) {
   if (app) {
     return firebase.app(app.name).analytics();
   }
-
   return firebase.app().analytics();
 }
 
 /**
- * Returns a Analytics instance for the given app.
- * @param app - FirebaseApp.
- * @param options - `AnalyticsSettings`. Web only.
+ * Returns an Analytics instance for the given app.
+ * @param {FirebaseApp} app - FirebaseApp.
+ * @param {object} [options] - AnalyticsSettings. Web only.
  * @returns {FirebaseAnalytics}
  */
 // eslint-disable-next-line
 export function initializeAnalytics(app, options) {
-  // options is specifically for web. Implement when it becomes available.
   return firebase.app(app.name).analytics();
 }
 
 /**
- * Log a custom event with optional params. Note that there are various limits that applied
- * to event parameters (total parameter count, etc), but analytics applies the limits during
- * cloud processing, the errors will not be seen as Promise rejections when you call logEvent.
- * While integrating this API in your app you are strongly encouraged to enable
- * [DebugView](https://firebase.google.com/docs/analytics/debugview) -
- * any errors in your events will show up in the firebase web console with links to relevant documentation
- *
- * @param analytics Analytics instance.
- * @param name Event name must not conflict with any Reserved Events.
- * @param params Parameters to be sent and displayed with the event.
- * @param options Additional options that can be passed. Web only.
+ * Log a custom event with optional params.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {string} name - Event name must not conflict with any Reserved Events.
+ * @param {object} [params={}] - Parameters to be sent and displayed with the event.
+ * @param {AnalyticsCallOptions} [options={}] - Additional options that can be passed. Web only.
+ * @returns {Promise<void>}
  */
-export function logEvent(analytics, name, eventParams = {}, options = {}) {
-  return analytics.logEvent(name, eventParams, options);
+export function logEvent(analytics, name, params = {}, options = {}) {
+  return analytics.logEvent(name, params, options);
 }
 
 /**
- * If true, allows the device to collect analytical data and send it to
- * Firebase. Useful for GDPR.
- *
- * @param analytics Analytics instance.
- * @param enabled A boolean value representing whether Analytics collection is enabled or disabled. Analytics collection is enabled by default.
+ * If true, allows the device to collect analytical data and send it to Firebase. Useful for GDPR.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {boolean} enabled - A boolean value representing whether Analytics collection is enabled or disabled.
+ * @returns {Promise<void>}
  */
 export function setAnalyticsCollectionEnabled(analytics, enabled) {
   return analytics.setAnalyticsCollectionEnabled(enabled);
@@ -60,9 +88,9 @@ export function setAnalyticsCollectionEnabled(analytics, enabled) {
 
 /**
  * Sets the duration of inactivity that terminates the current session.
- *
- * @param analytics Analytics instance.
- * @param milliseconds The default value is 1800000 (30 minutes).
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {number} [milliseconds=1800000] - The default value is 1800000 (30 minutes).
+ * @returns {Promise<void>}
  */
 export function setSessionTimeoutDuration(analytics, milliseconds = 1800000) {
   return analytics.setSessionTimeoutDuration(milliseconds);
@@ -70,9 +98,8 @@ export function setSessionTimeoutDuration(analytics, milliseconds = 1800000) {
 
 /**
  * Retrieve the app instance id of the application.
- *
- * @param analytics Analytics instance.
- * @returns Returns the app instance id or null on android if FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE has been set to FirebaseAnalytics.ConsentStatus.DENIED and null on iOS if ConsentType.analyticsStorage has been set to ConsentStatus.denied.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @returns {Promise<string|null>} Returns the app instance id or null on android if FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE has been set to FirebaseAnalytics.ConsentStatus.DENIED and null on iOS if ConsentType.analyticsStorage has been set to ConsentStatus.denied.
  */
 export function getAppInstanceId(analytics) {
   return analytics.getAppInstanceId();
@@ -81,19 +108,18 @@ export function getAppInstanceId(analytics) {
 /**
  * Retrieves the session id from the client.
  * On iOS, Firebase SDK may return an error that is handled internally and may take many minutes to return a valid value. Check native debug logs for more details.
- *
- * @param analytics Analytics instance.
- * @returns Returns the session id or null if session is expired, null on android if FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE has been set to FirebaseAnalytics.ConsentStatus.DENIED and null on iOS if ConsentType.analyticsStorage has been set to ConsentStatus.denied.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @returns {Promise<string|null>} Returns the session id or null if session is expired, null on android if FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE has been set to FirebaseAnalytics.ConsentStatus.DENIED and null on iOS if ConsentType.analyticsStorage has been set to ConsentStatus.denied.
  */
 export function getSessionId(analytics) {
   return analytics.getSessionId();
 }
+
 /**
  * Gives a user a unique identification.
- *
- * @param analytics Analytics instance.
- * @param id Set to null to remove a previously assigned ID from analytics
- * events
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {string|null} id - Set to null to remove a previously assigned ID from analytics events.
+ * @returns {Promise<void>}
  */
 export function setUserId(analytics, id) {
   return analytics.setUserId(id);
@@ -101,10 +127,10 @@ export function setUserId(analytics, id) {
 
 /**
  * Sets a key/value pair of data on the current user. Each Firebase project can have up to 25 uniquely named (case-sensitive) user properties.
- *
- * @param analytics Analytics instance.
- * @param name A user property identifier.
- * @param value Set to null to remove a previously assigned ID from analytics events.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {string} name - A user property identifier.
+ * @param {string|null} value - Set to null to remove a previously assigned ID from analytics events.
+ * @returns {Promise<void>}
  */
 export function setUserProperty(analytics, name, value) {
   return analytics.setUserProperty(name, value);
@@ -112,12 +138,10 @@ export function setUserProperty(analytics, name, value) {
 
 /**
  * Sets multiple key/value pairs of data on the current user. Each Firebase project can have up to 25 uniquely named (case-sensitive) user properties.
- *
- * > When you set user properties, be sure to never include personally identifiable information such as names, social security numbers, or email addresses, even in hashed form.
- *
- * @param analytics Analytics instance.
- * @param properties Set a property value to null to remove it.
- * @param options `AnalyticsCallOptions`. Additional options that can be passed. Web only.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {object} properties - Set a property value to null to remove it.
+ * @param {AnalyticsCallOptions} [options={}] - Additional options that can be passed. Web only.
+ * @returns {Promise<void>}
  */
 export function setUserProperties(analytics, properties, options = {}) {
   return analytics.setUserProperties(properties, options);
@@ -125,377 +149,286 @@ export function setUserProperties(analytics, properties, options = {}) {
 
 /**
  * Clears all analytics data for this instance from the device and resets the app instance ID.
- *
- * @param analytics Analytics instance.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @returns {Promise<void>}
  */
 export function resetAnalyticsData(analytics) {
   return analytics.resetAnalyticsData();
 }
 
 /**
- * E-Commerce Purchase event. This event signifies that an item(s) was purchased by a user. Note: This is different from the in-app purchase event, which is reported
- * automatically for Google Play-based apps.
- *
- * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
- *
- * Logged event name: `purchase`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.AddPaymentInfoEventParameters}.
+ * E-Commerce Purchase event. This event signifies that an item(s) was purchased by a user. Note: This is different from the in-app purchase event, which is reported automatically for Google Play-based apps.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {AddPaymentInfoEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logAddPaymentInfo(analytics, object = {}) {
-  return analytics.logAddPaymentInfo(object);
+export function logAddPaymentInfo(analytics, params) {
+  return analytics.logAddPaymentInfo(params);
 }
 
 /**
- * Sets or clears the screen name and class the user is currently viewing
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.ScreenViewParameters}.
+ * Sets or clears the screen name and class the user is currently viewing.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {ScreenViewParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logScreenView(analytics, object = {}) {
-  return analytics.logScreenView(object);
+export function logScreenView(analytics, params) {
+  return analytics.logScreenView(params);
 }
 
 /**
  * Add Payment Info event. This event signifies that a user has submitted their payment information to your app.
- *
- * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
- *
- * Logged event name: `add_payment_info`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.AddShippingInfoParameters}.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {AddShippingInfoParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logAddShippingInfo(analytics, object = {}) {
-  return analytics.logAddShippingInfo(object);
+export function logAddShippingInfo(analytics, params) {
+  return analytics.logAddShippingInfo(params);
 }
 
 /**
  * E-Commerce Add To Cart event.
- *
- * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
- *
- * Logged event name: `add_to_cart`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.AddToCartEventParameters}.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {AddToCartEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logAddToCart(analytics, object = {}) {
-  return analytics.logAddToCart(object);
+export function logAddToCart(analytics, params) {
+  return analytics.logAddToCart(params);
 }
 
 /**
  * E-Commerce Add To Wishlist event. This event signifies that an item was added to a wishlist.
- * Use this event to identify popular gift items in your app.
- *
- * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
- *
- * Logged event name: `add_to_wishlist
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.AddToWishlistEventParameters}.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {AddToWishlistEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logAddToWishlist(analytics, object = {}) {
-  return analytics.logAddToWishlist(object);
+export function logAddToWishlist(analytics, params) {
+  return analytics.logAddToWishlist(params);
 }
 
 /**
- * App Open event. By logging this event when an App is moved to the foreground, developers can
- * understand how often users leave and return during the course of a Session. Although Sessions
- * are automatically reported, this event can provide further clarification around the continuous
- * engagement of app-users.
- *
- * @param analytics Analytics instance.
+ * App Open event. By logging this event when an App is moved to the foreground, developers can understand how often users leave and return during the course of a Session.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @returns {Promise<void>}
  */
 export function logAppOpen(analytics) {
   return analytics.logAppOpen();
 }
 
 /**
- * E-Commerce Begin Checkout event. This event signifies that a user has begun the process of
- * checking out.
- *
- * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
- *
- * Logged event name: `begin_checkout`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.BeginCheckoutEventParameters}.
+ * E-Commerce Begin Checkout event. This event signifies that a user has begun the process of checking out.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {BeginCheckoutEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logBeginCheckout(analytics, object = {}) {
-  return analytics.logBeginCheckout(object);
+export function logBeginCheckout(analytics, params) {
+  return analytics.logBeginCheckout(params);
 }
 
 /**
  * Log this event to supply the referral details of a re-engagement campaign.
- *
- * Logged event name: `campaign_details`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.CampaignDetailsEventParameters}.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {CampaignDetailsEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logCampaignDetails(analytics, object = {}) {
-  return analytics.logCampaignDetails(object);
+export function logCampaignDetails(analytics, params) {
+  return analytics.logCampaignDetails(params);
 }
 
 /**
- * Earn Virtual Currency event. This event tracks the awarding of virtual currency in your app. Log this along with
- * {@link analytics.logSpendVirtualCurrency} to better understand your virtual economy.
- *
- * Logged event name: `earn_virtual_currency`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.EarnVirtualCurrencyEventParameters}.
+ * Earn Virtual Currency event. This event tracks the awarding of virtual currency in your app.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {EarnVirtualCurrencyEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logEarnVirtualCurrency(analytics, object = {}) {
-  return analytics.logEarnVirtualCurrency(object);
+export function logEarnVirtualCurrency(analytics, params) {
+  return analytics.logEarnVirtualCurrency(params);
 }
 
 /**
- * Generate Lead event. Log this event when a lead has been generated in the app to understand
- * the efficacy of your install and re-engagement campaigns.
- *
- * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
- *
- * Logged event name: `generate_lead`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.GenerateLeadEventParameters}.
+ * Generate Lead event. Log this event when a lead has been generated in the app.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {GenerateLeadEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logGenerateLead(analytics, object = {}) {
-  return analytics.logGenerateLead(object);
+export function logGenerateLead(analytics, params) {
+  return analytics.logGenerateLead(params);
 }
 
 /**
  * Join Group event. Log this event when a user joins a group such as a guild, team or family.
- * Use this event to analyze how popular certain groups or social features are in your app
- *
- * Logged event name: `join_group`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.JoinGroupEventParameters}.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {JoinGroupEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logJoinGroup(analytics, object = {}) {
-  return analytics.logJoinGroup(object);
+export function logJoinGroup(analytics, params) {
+  return analytics.logJoinGroup(params);
 }
 
 /**
  * Level End event.
- *
- * Logged event name: `level_end`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.LevelEndEventParameters}.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {LevelEndEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logLevelEnd(analytics, object = {}) {
-  return analytics.logLevelEnd(object);
+export function logLevelEnd(analytics, params) {
+  return analytics.logLevelEnd(params);
 }
 
 /**
  * Level Start event.
- *
- * Logged event name: `level_start`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.LevelStartEventParameters}.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {LevelStartEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logLevelStart(analytics, object = {}) {
-  return analytics.logLevelStart(object);
+export function logLevelStart(analytics, params) {
+  return analytics.logLevelStart(params);
 }
 
 /**
  * Level Up event. This event signifies that a player has leveled up in your gaming app.
- * It can help you gauge the level distribution of your userbase and help you identify certain levels that are difficult to pass.
- *
- * Logged event name: `level_up`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.LevelUpEventParameters}.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {LevelUpEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logLevelUp(analytics, object = {}) {
-  return analytics.logLevelUp(object);
+export function logLevelUp(analytics, params) {
+  return analytics.logLevelUp(params);
 }
 
 /**
  * Login event. Apps with a login feature can report this event to signify that a user has logged in.
- *
- * Logged event name: `login`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.LoginEventParameters}.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {LoginEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logLogin(analytics, object = {}) {
-  return analytics.logLogin(object);
+export function logLogin(analytics, params) {
+  return analytics.logLogin(params);
 }
 
 /**
- * Post Score event. Log this event when the user posts a score in your gaming app. This event can
- * help you understand how users are actually performing in your game and it can help you correlate
- * high scores with certain audiences or behaviors.
- *
- * Logged event name: `post_score`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.PostScoreEventParameters}.
+ * Post Score event. Log this event when the user posts a score in your gaming app.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {PostScoreEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logPostScore(analytics, object = {}) {
-  return analytics.logPostScore(object);
+export function logPostScore(analytics, params) {
+  return analytics.logPostScore(params);
 }
 
 /**
- * Select Content event. This general purpose event signifies that a user has selected some
- * content of a certain type in an app. The content can be any object in your app. This event
- * can help you identify popular content and categories of content in your app.
- *
- * Logged event name: `select_content`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.SelectContentEventParameters}.
+ * Select Content event. This general purpose event signifies that a user has selected some content of a certain type in an app.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {SelectContentEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logSelectContent(analytics, object = {}) {
-  return analytics.logSelectContent(object);
+export function logSelectContent(analytics, params) {
+  return analytics.logSelectContent(params);
 }
 
 /**
- * E-Commerce Purchase event. This event signifies that an item(s) was purchased by a user. Note: This is different from the in-app purchase event, which is reported
- * automatically for Google Play-based apps.
- *
- * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
- *
- * Logged event name: `purchase`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.PurchaseEventParameters}.
+ * E-Commerce Purchase event. This event signifies that an item(s) was purchased by a user.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {PurchaseEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logPurchase(analytics, object = {}) {
-  return analytics.logPurchase(object);
+export function logPurchase(analytics, params) {
+  return analytics.logPurchase(params);
 }
 
 /**
  * E-Commerce Refund event. This event signifies that a refund was issued.
- *
- * Logged event name: `remove_from_cart`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.RefundEventParameters}.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {RefundEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logRefund(analytics, object = {}) {
-  return analytics.logRefund(object);
+export function logRefund(analytics, params) {
+  return analytics.logRefund(params);
 }
 
 /**
  * Remove from cart event.
- *
- * Logged event name: `remove_from_cart`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.RemoveFromCartEventParameters}.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {RemoveFromCartEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logRemoveFromCart(analytics, object = {}) {
-  return analytics.logRemoveFromCart(object);
+export function logRemoveFromCart(analytics, params) {
+  return analytics.logRemoveFromCart(params);
 }
 
 /**
- * Search event. Apps that support search features can use this event to contextualize search
- * operations by supplying the appropriate, corresponding parameters. This event can help you
- * identify the most popular content in your app.
- *
- * Logged event name: `search`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.SearchEventParameters}.
+ * Search event. Apps that support search features can use this event to contextualize search operations by supplying the appropriate, corresponding parameters.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {SearchEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logSearch(analytics, object = {}) {
-  return analytics.logSearch(object);
+export function logSearch(analytics, params) {
+  return analytics.logSearch(params);
 }
 
 /**
  * Select Item event. This event signifies that an item was selected by a user from a list.
- * Use the appropriate parameters to contextualize the event.
- * Use this event to discover the most popular items selected.
- *
- * Logged event name: `select_item`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.SelectItemEventParameters}.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {SelectItemEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logSelectItem(analytics, object = {}) {
-  return analytics.logSelectItem(object);
+export function logSelectItem(analytics, params) {
+  return analytics.logSelectItem(params);
 }
 
 /**
  * Set checkout option event.
- *
- * Logged event name: `set_checkout_option`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.SetCheckoutOptionEventParameters}.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {SetCheckoutOptionEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logSetCheckoutOption(analytics, object = {}) {
-  return analytics.logSetCheckoutOption(object);
+export function logSetCheckoutOption(analytics, params) {
+  return analytics.logSetCheckoutOption(params);
 }
 
 /**
- * Select promotion event. This event signifies that a user has selected a promotion offer. Use the
- * appropriate parameters to contextualize the event, such as the item(s) for which the promotion applies.
- *
- * Logged event name: `select_promotion`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.SelectPromotionEventParameters}.
+ * Select promotion event. This event signifies that a user has selected a promotion offer.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {SelectPromotionEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logSelectPromotion(analytics, object = {}) {
-  return analytics.logSelectPromotion(object);
+export function logSelectPromotion(analytics, params) {
+  return analytics.logSelectPromotion(params);
 }
 
 /**
  * Share event. Apps with social features can log the Share event to identify the most viral content.
- *
- * Logged event name: `share`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.ShareEventParameters}.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {ShareEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logShare(analytics, object = {}) {
-  return analytics.logShare(object);
+export function logShare(analytics, params) {
+  return analytics.logShare(params);
 }
 
 /**
  * Sign Up event. This event indicates that a user has signed up for an account in your app.
- * The parameter signifies the method by which the user signed up. Use this event to understand
- * the different behaviors between logged in and logged out users.
- *
- * Logged event name: `sign_up`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.SignUpEventParameters}.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {SignUpEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logSignUp(analytics, object = {}) {
-  return analytics.logSignUp(object);
+export function logSignUp(analytics, params) {
+  return analytics.logSignUp(params);
 }
 
 /**
- * Spend Virtual Currency event. This event tracks the sale of virtual goods in your app and can
- * help you identify which virtual goods are the most popular objects of purchase.
- *
- * Logged event name: `spend_virtual_currency`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.SpendVirtualCurrencyEventParameters}.
+ * Spend Virtual Currency event. This event tracks the sale of virtual goods in your app.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {SpendVirtualCurrencyEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logSpendVirtualCurrency(analytics, object = {}) {
-  return analytics.logSpendVirtualCurrency(object);
+export function logSpendVirtualCurrency(analytics, params) {
+  return analytics.logSpendVirtualCurrency(params);
 }
 
 /**
  * Tutorial Begin event. This event signifies the start of the on-boarding process in your app.
- * Use this in a funnel with {@link analytics#logTutorialComplete} to understand how many users
- * complete this process and move on to the full app experience.
- *
- * Logged event name: `tutorial_begin`
- *
- * @param analytics Analytics instance.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @returns {Promise<void>}
  */
 export function logTutorialBegin(analytics) {
   return analytics.logTutorialBegin();
@@ -503,12 +436,8 @@ export function logTutorialBegin(analytics) {
 
 /**
  * Tutorial End event. Use this event to signify the user's completion of your app's on-boarding process.
- * Add this to a funnel with {@link analytics#logTutorialBegin} to understand how many users
- * complete this process and move on to the full app experience.
- *
- * Logged event name: `tutorial_complete`
- *
- * @param analytics Analytics instance.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @returns {Promise<void>}
  */
 export function logTutorialComplete(analytics) {
   return analytics.logTutorialComplete();
@@ -516,95 +445,69 @@ export function logTutorialComplete(analytics) {
 
 /**
  * Unlock Achievement event. Log this event when the user has unlocked an achievement in your game.
- * Since achievements generally represent the breadth of a gaming experience, this event can help
- * you understand how many users are experiencing all that your game has to offer.
- *
- * Logged event name: `unlock_achievement`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.UnlockAchievementEventParameters}.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {UnlockAchievementEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logUnlockAchievement(analytics, object = {}) {
-  return analytics.logUnlockAchievement(object);
+export function logUnlockAchievement(analytics, params) {
+  return analytics.logUnlockAchievement(params);
 }
 
 /**
- * E-commerce View Cart event. This event signifies that a user has viewed their cart. Use this to analyze your purchase funnel.
- *
- * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
- *
- * Logged event name: `view_cart`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.ViewCartEventParameters}.
+ * E-commerce View Cart event. This event signifies that a user has viewed their cart.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {ViewCartEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logViewCart(analytics, object = {}) {
-  return analytics.logViewCart(object);
+export function logViewCart(analytics, params) {
+  return analytics.logViewCart(params);
 }
 
 /**
- * View Item event. This event signifies that some content was shown to the user. This content
- * may be a product, a screen or just a simple image or text. Use the appropriate parameters
- * to contextualize the event. Use this event to discover the most popular items viewed in your app.
- *
- * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
- *
- * Logged event name: `view_item`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.ViewItemEventParameters}.
+ * View Item event. This event signifies that some content was shown to the user.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {ViewItemEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logViewItem(analytics, object = {}) {
-  return analytics.logViewItem(object);
+export function logViewItem(analytics, params) {
+  return analytics.logViewItem(params);
 }
 
 /**
  * View Item List event. Log this event when the user has been presented with a list of items of a certain category.
- *
- * Logged event name: `view_item_list`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.ViewItemListEventParameters}.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {ViewItemListEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logViewItemList(analytics, object = {}) {
-  return analytics.logViewItemList(object);
+export function logViewItemList(analytics, params) {
+  return analytics.logViewItemList(params);
 }
 
 /**
  * View Promotion event. This event signifies that a promotion was shown to a user.
- *
- * Logged event name: `view_promotion`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.ViewPromotionEventParameters}.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {ViewPromotionEventParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logViewPromotion(analytics, object = {}) {
-  return analytics.logViewPromotion(object);
+export function logViewPromotion(analytics, params) {
+  return analytics.logViewPromotion(params);
 }
 
 /**
  * View Search Results event. Log this event when the user has been presented with the results of a search.
- *
- * Logged event name: `view_search_results`
- *
- * @param analytics Analytics instance.
- * @param params See {@link analytics.ViewSearchResultsParameters}.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {ViewSearchResultsParameters} params - Event parameters.
+ * @returns {Promise<void>}
  */
-export function logViewSearchResults(analytics, object = {}) {
-  return analytics.logViewSearchResults(object);
+export function logViewSearchResults(analytics, params) {
+  return analytics.logViewSearchResults(params);
 }
 
 /**
  * Adds parameters that will be set on every event logged from the SDK, including automatic ones.
- *
- * @param analytics Analytics instance.
- * @param params Parameters to be added to the map of parameters added to every event.
- * They will be added to the map of default event parameters, replacing any existing
- * parameter with the same name. Valid parameter values are String, long, and double.
- * Setting a key's value to null will clear that parameter. Passing in a null bundle
- * will clear all parameters.
- * For Web, the values passed persist on the current page and are passed with all
- * subsequent events.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {object} [params={}] - Parameters to be added to the map of parameters added to every event.
+ * @returns {Promise<void>}
  */
 export function setDefaultEventParameters(analytics, params = {}) {
   return analytics.setDefaultEventParameters(params);
@@ -613,10 +516,9 @@ export function setDefaultEventParameters(analytics, params = {}) {
 /**
  * start privacy-sensitive on-device conversion management.
  * This is iOS-only.
- * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
- *
- * @param analytics Analytics instance.
- * @param emailAddress email address, properly formatted complete with domain name e.g, 'user@example.com'
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {string} emailAddress - Email address, properly formatted complete with domain name e.g, 'user@example.com'.
+ * @returns {Promise<void>}
  */
 export function initiateOnDeviceConversionMeasurementWithEmailAddress(analytics, emailAddress) {
   return analytics.initiateOnDeviceConversionMeasurementWithEmailAddress(emailAddress);
@@ -625,10 +527,9 @@ export function initiateOnDeviceConversionMeasurementWithEmailAddress(analytics,
 /**
  * start privacy-sensitive on-device conversion management.
  * This is iOS-only.
- * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
- *
- * @param analytics Analytics instance.
- * @param phoneNumber phone number in E.164 format - that is a leading + sign, then up to 15 digits, no dashes or spaces.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {string} phoneNumber - Phone number in E.164 format - that is a leading + sign, then up to 15 digits, no dashes or spaces.
+ * @returns {Promise<void>}
  */
 export function initiateOnDeviceConversionMeasurementWithPhoneNumber(analytics, phoneNumber) {
   return analytics.initiateOnDeviceConversionMeasurementWithPhoneNumber(phoneNumber);
@@ -643,29 +544,23 @@ export function initiateOnDeviceConversionMeasurementWithPhoneNumber(analytics, 
  * @returns {Promise<boolean>}
  */
 export function isSupported() {
-  // always return "true" for now until Web implementation. Web only.
   return Promise.resolve(true);
 }
 
 /**
  * Sets the applicable end user consent state for this app.
- * references once Firebase Analytics is initialized.
- * @param analytics Analytics instance.
- * @param consentSettings See {@link analytics.ConsentSettings}.
+ * @param {FirebaseAnalytics} analytics - Analytics instance.
+ * @param {ConsentSettings} consentSettings - See ConsentSettings.
  * @returns {Promise<void>}
  */
-// eslint-disable-next-line
 export function setConsent(analytics, consentSettings) {
   return analytics.setConsent(consentSettings);
 }
 
 /**
  * Configures Firebase Analytics to use custom gtag or dataLayer names.
- * Intended to be used if gtag.js script has been installed on this page
- * independently of Firebase Analytics, and is using non-default names for
- * either the gtag function or for dataLayer. Must be called before calling
- * `getAnalytics()` or it won't have any effect. Web only.
- * @param options See {@link analytics.SettingsOptions}.
+ * Intended to be used if gtag.js script has been installed on this page independently of Firebase Analytics, and is using non-default names for either the gtag function or for dataLayer. Must be called before calling `getAnalytics()` or it won't have any effect. Web only.
+ * @param {SettingsOptions} options - See SettingsOptions.
  * @returns {void}
  */
 // eslint-disable-next-line

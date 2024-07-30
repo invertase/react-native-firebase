@@ -1,9 +1,7 @@
-import { FirebaseDatabaseTypes } from '../../index';
+import { FirebaseDatabaseTypes } from '../..';
 
-import TransactionResult = FirebaseDatabaseTypes.TransactionResult;
+export type TransactionResult = FirebaseDatabaseTypes.TransactionResult;
 import DatabaseReference = FirebaseDatabaseTypes.Reference;
-
-export { TransactionResult };
 
 /**
  * An options object to configure transactions.
