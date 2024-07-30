@@ -560,6 +560,37 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
         .addOnCompleteListener(getExecutor(), listener);
   }
 
+  /**
+   * isSignInWithEmailLink
+   *
+   * @param email
+   * @param promise
+   */
+  @ReactMethod
+  public void isSignInWithEmailLink(
+      String appName, String email, final Promise promise) {
+    Log.d(TAG, "isSignInWithEmailLink");
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    OnCompleteListener<Void> listener =
+        task -> {
+          if (task.isSuccessful()) {
+            Log.d(TAG, "isSignInWithEmailLink:onComplete:success");
+            promiseNoUser(promise, false);
+          } else {
+            Exception exception = task.getException();
+            Log.e(TAG, "isSignInWithEmailLink:onComplete:failure", exception);
+            promiseRejectAuthException(promise, exception);
+          }
+        };
+
+    ActionCodeSettings settings = buildActionCodeSettings(actionCodeSettings);
+    firebaseAuth
+        .sendSignInLinkToEmail(email, settings)
+        .addOnCompleteListener(getExecutor(), listener);
+  }
+
   /* ----------------------
    *  .currentUser methods
    * ---------------------- */
