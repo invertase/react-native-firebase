@@ -10,12 +10,11 @@ import {
   triggerEvent,
 } from '../lib';
 
-describe('Auth', function () {
+describe('in-app-messaging', function () {
   describe('namespace', function () {
     it('accessible from firebase.app()', function () {
       const app = firebase.app();
-      expect(app.auth).toBeDefined();
-      expect(app.auth().useEmulator).toBeDefined();
+      expect(app.inAppMessaging).toBeDefined();
     });
   });
 
