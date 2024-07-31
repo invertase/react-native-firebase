@@ -21,7 +21,6 @@ import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
 import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreCommon.rejectPromiseFirestoreException;
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getFirestoreForApp;
 
-import android.util.Log;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -181,7 +180,8 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
           break;
       }
     } else {
-      Log.d("RNFBFirestoreModule", "`PersistentCacheIndexManager` is not available.");
+      promise.reject("firestore/index-manager-null", "`PersistentCacheIndexManager` is not available, persistence has not been enabled for Firestore");
+      return;
     }
     promise.resolve(null);
   }
