@@ -180,7 +180,10 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
           break;
       }
     } else {
-      promise.reject("firestore/index-manager-null", "`PersistentCacheIndexManager` is not available, persistence has not been enabled for Firestore");
+      promise.reject(
+          "firestore/index-manager-null",
+          "`PersistentCacheIndexManager` is not available, persistence has not been enabled for"
+              + " Firestore");
       return;
     }
     promise.resolve(null);

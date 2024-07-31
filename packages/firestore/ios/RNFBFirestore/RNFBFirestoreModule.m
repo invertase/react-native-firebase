@@ -211,7 +211,10 @@ RCT_EXPORT_METHOD(persistenceCacheIndexManager
         break;
     }
   } else {
-    reject(@"firestore/index-manager-null", @"`PersistentCacheIndexManager` is not available, persistence has not been enabled for Firestore", nil);
+    reject(@"firestore/index-manager-null",
+           @"`PersistentCacheIndexManager` is not available, persistence has not been enabled for "
+           @"Firestore",
+           nil);
     return;
   }
   resolve(nil);
