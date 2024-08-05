@@ -1,6 +1,13 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { firebase, getInstallations, onIdChange } from '../lib';
+import {
+  firebase,
+  getInstallations,
+  deleteInstallations,
+  getId,
+  getToken,
+  onIdChange,
+} from '../lib';
 
 describe('installations()', function () {
   describe('namespace', function () {
@@ -22,23 +29,32 @@ describe('installations()', function () {
   });
 
   describe('modular', function () {
+    it('`getInstallations` function is properly exposed to end user', function () {
+      expect(getInstallations).toBeDefined();
+    });
+
+    it('`deleteInstallations` function is properly exposed to end user', function () {
+      expect(deleteInstallations).toBeDefined();
+    });
+
+    it('`getId` function is properly exposed to end user', function () {
+      expect(getId).toBeDefined();
+    });
+
+    it('`getToken` function is properly exposed to end user', function () {
+      expect(getToken).toBeDefined();
+    });
+
+    it('`onIdChange` function is properly exposed to end user', function () {
+      expect(onIdChange).toBeDefined();
+    });
+
     describe('getInstallations', function () {
       it('returns an instance of Installations', async function () {
         const installations = getInstallations();
         expect(installations).toBeDefined();
         // expect(installations.app).toBeDefined();
       });
-
-      // it('supports multiple apps', async function () {
-      //   const app = firebase.app();
-      //   const secondaryApp = firebase.app('secondaryFromNative');
-
-      //   const installations = getInstallations();
-      //   const installationsForApp = getInstallations(secondaryApp);
-
-      //   expect(installations.app).toEqual(app);
-      //   expect(installationsForApp.app).toEqual(secondaryApp);
-      // });
     });
 
     describe('onIdChange', function () {

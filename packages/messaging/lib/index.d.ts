@@ -1156,3 +1156,5 @@ declare module '@react-native-firebase/app' {
     }
   }
 }
+
+export * from './modular';
