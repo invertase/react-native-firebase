@@ -61,6 +61,7 @@ RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(transactionGetDocument
                   : (FIRApp *)firebaseApp
+                  : (NSString *) databaseId
                   : (nonnull NSNumber *)transactionId
                   : (NSString *)path
                   : (RCTPromiseResolveBlock)resolve
@@ -75,7 +76,7 @@ RCT_EXPORT_METHOD(transactionGetDocument
 
     NSError *error = nil;
     FIRTransaction *transaction = [transactionState valueForKey:@"transaction"];
-    FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp];
+    FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId];
     FIRDocumentReference *ref = [RNFBFirestoreCommon getDocumentForFirestore:firestore path:path];
     FIRDocumentSnapshot *snapshot = [transaction getDocument:ref error:&error];
 
@@ -96,7 +97,7 @@ RCT_EXPORT_METHOD(transactionGetDocument
   }
 }
 
-RCT_EXPORT_METHOD(transactionDispose : (FIRApp *)firebaseApp : (nonnull NSNumber *)transactionId) {
+RCT_EXPORT_METHOD(transactionDispose : (FIRApp *)firebaseApp : (NSString *) databaseId : (nonnull NSNumber *)transactionId) {
   @synchronized(transactions[[transactionId stringValue]]) {
     NSMutableDictionary *transactionState = transactions[[transactionId stringValue]];
 
@@ -112,6 +113,7 @@ RCT_EXPORT_METHOD(transactionDispose : (FIRApp *)firebaseApp : (nonnull NSNumber
 
 RCT_EXPORT_METHOD(transactionApplyBuffer
                   : (FIRApp *)firebaseApp
+                  : (NSString *) databaseId
                   : (nonnull NSNumber *)transactionId
                   : (NSArray *)commandBuffer) {
   @synchronized(transactions[[transactionId stringValue]]) {
@@ -128,8 +130,8 @@ RCT_EXPORT_METHOD(transactionApplyBuffer
   }
 }
 
-RCT_EXPORT_METHOD(transactionBegin : (FIRApp *)firebaseApp : (nonnull NSNumber *)transactionId) {
-  FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp];
+RCT_EXPORT_METHOD(transactionBegin : (FIRApp *)firebaseApp : (NSString *) databaseId : (nonnull NSNumber *)transactionId) {
+  FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId];
   __block BOOL aborted = false;
   __block NSMutableDictionary *transactionState = [NSMutableDictionary new];
 
