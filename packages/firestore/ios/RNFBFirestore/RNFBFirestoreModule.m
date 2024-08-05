@@ -80,32 +80,33 @@ RCT_EXPORT_METHOD(settings
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   NSString *appName = [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name];
+  NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName databaseId:databaseId];
 
   if (settings[@"cacheSizeBytes"]) {
-    NSString *cacheKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_CACHE_SIZE, appName];
+    NSString *cacheKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_CACHE_SIZE, firestoreKey];
     [[RNFBPreferences shared] setIntegerValue:cacheKey
                                  integerValue:[settings[@"cacheSizeBytes"] integerValue]];
   }
 
   if (settings[@"host"]) {
-    NSString *hostKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_HOST, appName];
+    NSString *hostKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_HOST, firestoreKey];
     [[RNFBPreferences shared] setStringValue:hostKey stringValue:settings[@"host"]];
   }
 
   if (settings[@"persistence"]) {
-    NSString *persistenceKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_PERSISTENCE, appName];
+    NSString *persistenceKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_PERSISTENCE, firestoreKey];
     [[RNFBPreferences shared] setBooleanValue:persistenceKey
                                     boolValue:[settings[@"persistence"] boolValue]];
   }
 
   if (settings[@"ssl"]) {
-    NSString *sslKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_SSL, appName];
+    NSString *sslKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_SSL, firestoreKey];
     [[RNFBPreferences shared] setBooleanValue:sslKey boolValue:[settings[@"ssl"] boolValue]];
   }
 
   if (settings[@"serverTimestampBehavior"]) {
     NSString *key =
-        [NSString stringWithFormat:@"%@_%@", FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR, appName];
+        [NSString stringWithFormat:@"%@_%@", FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR, firestoreKey];
     [[RNFBPreferences shared] setStringValue:key stringValue:settings[@"serverTimestampBehavior"]];
   }
 
