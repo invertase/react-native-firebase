@@ -243,6 +243,10 @@ export default {
     return rejectWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
   },
 
+  persistentCacheIndexManager() {
+    return rejectWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
+  },
+
   /**
    * Get a document from Firestore.
    * @param {string} appName - The app name.
