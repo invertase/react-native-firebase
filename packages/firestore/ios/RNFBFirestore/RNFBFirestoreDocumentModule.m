@@ -83,7 +83,7 @@ RCT_EXPORT_METHOD(documentOnSnapshot
         [listener remove];
         [documentSnapshotListeners removeObjectForKey:listenerId];
       }
-      [weakSelf sendSnapshotError:firebaseApp listenerId:listenerId error:error];
+      [weakSelf sendSnapshotError:firebaseApp databaseId:databaseId listenerId:listenerId error:error];
     } else {
       [weakSelf sendSnapshotEvent:firebaseApp databaseId:databaseId listenerId:listenerId snapshot:snapshot];
     }
@@ -281,6 +281,7 @@ RCT_EXPORT_METHOD(documentBatch
       sendEventWithName:RNFB_FIRESTORE_DOCUMENT_SYNC
                    body:@{
                      @"appName" : [RNFBSharedUtils getAppJavaScriptName:firApp.name],
+                     @"databaseId": databaseId,
                      @"listenerId" : listenerId,
                      @"body" : @{
                        @"snapshot" : serialized,
@@ -289,6 +290,7 @@ RCT_EXPORT_METHOD(documentBatch
 }
 
 - (void)sendSnapshotError:(FIRApp *)firApp
+               databaseId: (NSString *) databaseId
                listenerId:(nonnull NSNumber *)listenerId
                     error:(NSError *)error {
   NSArray *codeAndMessage = [RNFBFirestoreCommon getCodeAndMessage:error];
@@ -296,6 +298,7 @@ RCT_EXPORT_METHOD(documentBatch
       sendEventWithName:RNFB_FIRESTORE_DOCUMENT_SYNC
                    body:@{
                      @"appName" : [RNFBSharedUtils getAppJavaScriptName:firApp.name],
+                     @"databaseId": databaseId,
                      @"listenerId" : listenerId,
                      @"body" : @{
                        @"error" : @{

@@ -62,7 +62,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
     if (isString(databaseId) || databaseId === undefined) {
       this._customUrlOrRegion = databaseId || '(default)';
     } else if (!isString(databaseId)) {
-      throw new Error('firebase.app().storage(*) bucket url must be a string');
+      throw new Error('firebase.app().firestore(*) database ID must be a string');
     }
     this._referencePath = new FirestorePath();
     this._transactionHandler = new FirestoreTransactionHandler(this);
@@ -85,6 +85,10 @@ class FirebaseFirestoreModule extends FirebaseModule {
     this._settings = {
       ignoreUndefinedProperties: false,
     };
+  }
+  // We override the FirebaseModule's `eventNameForApp()` method to include the customUrlOrRegion
+  eventNameForApp(...args) {
+    return `${this.app.name}-${this._customUrlOrRegion}-${args.join('-')}`;
   }
 
   batch() {

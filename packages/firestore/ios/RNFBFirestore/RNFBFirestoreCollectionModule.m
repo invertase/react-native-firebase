@@ -80,6 +80,7 @@ RCT_EXPORT_METHOD(namedQueryOnSnapshot
                                completion:^(FIRQuery *query) {
                                  if (query == nil) {
                                    [self sendSnapshotError:firebaseApp
+                                                databaseId:databaseId
                                                 listenerId:listenerId
                                                      error:nil];
                                    return;
@@ -92,6 +93,7 @@ RCT_EXPORT_METHOD(namedQueryOnSnapshot
                                                                             orders:orders
                                                                            options:options];
                                  [self handleQueryOnSnapshot:firebaseApp
+                                                  databaseId:databaseId
                                               firestoreQuery:firestoreQuery
                                                   listenerId:listenerId
                                              listenerOptions:listenerOptions];
@@ -121,6 +123,7 @@ RCT_EXPORT_METHOD(collectionOnSnapshot
                                                                               orders:orders
                                                                              options:options];
   [self handleQueryOnSnapshot:firebaseApp
+                   databaseId:databaseId
                firestoreQuery:firestoreQuery
                    listenerId:listenerId
               listenerOptions:listenerOptions];
@@ -234,6 +237,7 @@ RCT_EXPORT_METHOD(collectionGet
 }
 
 - (void)handleQueryOnSnapshot:(FIRApp *)firebaseApp
+               databaseId: (NSString *) databaseId
                firestoreQuery:(RNFBFirestoreQuery *)firestoreQuery
                    listenerId:(nonnull NSNumber *)listenerId
               listenerOptions:(NSDictionary *)listenerOptions {
@@ -250,9 +254,10 @@ RCT_EXPORT_METHOD(collectionGet
         [listener remove];
         [collectionSnapshotListeners removeObjectForKey:listenerId];
       }
-      [weakSelf sendSnapshotError:firebaseApp listenerId:listenerId error:error];
+      [weakSelf sendSnapshotError:firebaseApp databaseId:databaseId listenerId:listenerId error:error];
     } else {
       [weakSelf sendSnapshotEvent:firebaseApp
+                       databaseId:databaseId
                        listenerId:listenerId
                          snapshot:snapshot
            includeMetadataChanges:includeMetadataChanges];
@@ -289,6 +294,7 @@ RCT_EXPORT_METHOD(collectionGet
 }
 
 - (void)sendSnapshotEvent:(FIRApp *)firApp
+               databaseId: (NSString *) databaseId
                 listenerId:(nonnull NSNumber *)listenerId
                   snapshot:(FIRQuerySnapshot *)snapshot
     includeMetadataChanges:(BOOL)includeMetadataChanges {
@@ -302,6 +308,7 @@ RCT_EXPORT_METHOD(collectionGet
       sendEventWithName:RNFB_FIRESTORE_COLLECTION_SYNC
                    body:@{
                      @"appName" : [RNFBSharedUtils getAppJavaScriptName:firApp.name],
+                     @"databaseId": databaseId,
                      @"listenerId" : listenerId,
                      @"body" : @{
                        @"snapshot" : serialized,
@@ -310,6 +317,7 @@ RCT_EXPORT_METHOD(collectionGet
 }
 
 - (void)sendSnapshotError:(FIRApp *)firApp
+               databaseId: (NSString *) databaseId
                listenerId:(nonnull NSNumber *)listenerId
                     error:(NSError *)error {
   NSArray *codeAndMessage = [RNFBFirestoreCommon getCodeAndMessage:error];
@@ -317,6 +325,7 @@ RCT_EXPORT_METHOD(collectionGet
       sendEventWithName:RNFB_FIRESTORE_COLLECTION_SYNC
                    body:@{
                      @"appName" : [RNFBSharedUtils getAppJavaScriptName:firApp.name],
+                     @"databaseId": databaseId,
                      @"listenerId" : listenerId,
                      @"body" : @{
                        @"error" : @{

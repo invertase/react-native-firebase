@@ -156,6 +156,7 @@ RCT_EXPORT_METHOD(transactionBegin : (FIRApp *)firebaseApp : (NSString *) databa
                          body:@{
                            @"listenerId" : transactionId,
                            @"appName" : [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name],
+                           @"databaseId": databaseId,
                            @"body" : eventMap,
                          }];
       });
@@ -244,6 +245,7 @@ RCT_EXPORT_METHOD(transactionBegin : (FIRApp *)firebaseApp : (NSString *) databa
                          body:@{
                            @"listenerId" : transactionId,
                            @"appName" : [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name],
+                           @"databaseId": databaseId,
                            @"body" : eventMap,
                          }];
       }
