@@ -77,8 +77,9 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
                 } else {
                   ReactNativeFirebaseFirestoreQuery firestoreQuery =
                       new ReactNativeFirebaseFirestoreQuery(
-                          appName, query, filters, orders, options);
-                  handleQueryOnSnapshot(firestoreQuery, appName, databaseId, listenerId, listenerOptions);
+                          appName, databaseId, query, filters, orders, options);
+                  handleQueryOnSnapshot(
+                      firestoreQuery, appName, databaseId, listenerId, listenerOptions);
                 }
               } else {
                 sendOnSnapshotError(appName, databaseId, listenerId, task.getException());
@@ -104,7 +105,12 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     ReactNativeFirebaseFirestoreQuery firestoreQuery =
         new ReactNativeFirebaseFirestoreQuery(
-            appName, getQueryForFirestore(firebaseFirestore, path, type), filters, orders, options);
+            appName,
+            databaseId,
+            getQueryForFirestore(firebaseFirestore, path, type),
+            filters,
+            orders,
+            options);
 
     handleQueryOnSnapshot(firestoreQuery, appName, databaseId, listenerId, listenerOptions);
   }
@@ -142,7 +148,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
                 } else {
                   ReactNativeFirebaseFirestoreQuery firestoreQuery =
                       new ReactNativeFirebaseFirestoreQuery(
-                          appName, query, filters, orders, options);
+                          appName, databaseId, query, filters, orders, options);
                   handleQueryGet(firestoreQuery, getSource(getOptions), promise);
                 }
               } else {
@@ -164,7 +170,12 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     ReactNativeFirebaseFirestoreQuery firestoreQuery =
         new ReactNativeFirebaseFirestoreQuery(
-            appName, getQueryForFirestore(firebaseFirestore, path, type), filters, orders, options);
+            appName,
+            databaseId,
+            getQueryForFirestore(firebaseFirestore, path, type),
+            filters,
+            orders,
+            options);
 
     AggregateQuery aggregateQuery = firestoreQuery.query.count();
 
@@ -196,7 +207,12 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     ReactNativeFirebaseFirestoreQuery firestoreQuery =
         new ReactNativeFirebaseFirestoreQuery(
-            appName, getQueryForFirestore(firebaseFirestore, path, type), filters, orders, options);
+            appName,
+            databaseId,
+            getQueryForFirestore(firebaseFirestore, path, type),
+            filters,
+            orders,
+            options);
     handleQueryGet(firestoreQuery, getSource(getOptions), promise);
   }
 
@@ -258,7 +274,9 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
       MetadataChanges metadataChanges) {
     Tasks.call(
             getTransactionalExecutor(Integer.toString(listenerId)),
-            () -> snapshotToWritableMap(appName, "onSnapshot", querySnapshot, metadataChanges))
+            () ->
+                snapshotToWritableMap(
+                    appName, databaseId, "onSnapshot", querySnapshot, metadataChanges))
         .addOnCompleteListener(
             task -> {
               if (task.isSuccessful()) {
@@ -281,7 +299,8 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
             });
   }
 
-  private void sendOnSnapshotError(String appName, String databaseId, int listenerId, Exception exception) {
+  private void sendOnSnapshotError(
+      String appName, String databaseId, int listenerId, Exception exception) {
     WritableMap body = Arguments.createMap();
     WritableMap error = Arguments.createMap();
 
@@ -301,7 +320,11 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
 
     emitter.sendEvent(
         new ReactNativeFirebaseFirestoreEvent(
-            ReactNativeFirebaseFirestoreEvent.COLLECTION_EVENT_SYNC, body, appName, databaseId, listenerId));
+            ReactNativeFirebaseFirestoreEvent.COLLECTION_EVENT_SYNC,
+            body,
+            appName,
+            databaseId,
+            listenerId));
   }
 
   private Source getSource(ReadableMap getOptions) {

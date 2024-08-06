@@ -104,7 +104,8 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   }
 
   @ReactMethod
-  public void documentGet(String appName, String databaseId, String path, ReadableMap getOptions, Promise promise) {
+  public void documentGet(
+      String appName, String databaseId, String path, ReadableMap getOptions, Promise promise) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
@@ -127,7 +128,7 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
             getExecutor(),
             () -> {
               DocumentSnapshot documentSnapshot = Tasks.await(documentReference.get(source));
-              return snapshotToWritableMap(appName, documentSnapshot);
+              return snapshotToWritableMap(appName, databaseId, documentSnapshot);
             })
         .addOnCompleteListener(
             task -> {
@@ -156,7 +157,12 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
 
   @ReactMethod
   public void documentSet(
-      String appName, String databaseId, String path, ReadableMap data, ReadableMap options, Promise promise) {
+      String appName,
+      String databaseId,
+      String path,
+      ReadableMap data,
+      ReadableMap options,
+      Promise promise) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
@@ -195,7 +201,8 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   }
 
   @ReactMethod
-  public void documentUpdate(String appName, String databaseId, String path, ReadableMap data, Promise promise) {
+  public void documentUpdate(
+      String appName, String databaseId, String path, ReadableMap data, Promise promise) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
@@ -214,7 +221,8 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   }
 
   @ReactMethod
-  public void documentBatch(String appName, String databaseId, ReadableArray writes, Promise promise) {
+  public void documentBatch(
+      String appName, String databaseId, ReadableArray writes, Promise promise) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
 
     Tasks.call(getTransactionalExecutor(), () -> parseDocumentBatches(firebaseFirestore, writes))
@@ -282,8 +290,8 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   }
 
   private void sendOnSnapshotEvent(
-      String appName,String databaseId, int listenerId, DocumentSnapshot documentSnapshot) {
-    Tasks.call(getExecutor(), () -> snapshotToWritableMap(appName, documentSnapshot))
+      String appName, String databaseId, int listenerId, DocumentSnapshot documentSnapshot) {
+    Tasks.call(getExecutor(), () -> snapshotToWritableMap(appName, databaseId, documentSnapshot))
         .addOnCompleteListener(
             task -> {
               if (task.isSuccessful()) {
@@ -306,7 +314,8 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
             });
   }
 
-  private void sendOnSnapshotError(String appName, String databaseId, int listenerId, Exception exception) {
+  private void sendOnSnapshotError(
+      String appName, String databaseId, int listenerId, Exception exception) {
     WritableMap body = Arguments.createMap();
     WritableMap error = Arguments.createMap();
 
@@ -326,6 +335,10 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
 
     emitter.sendEvent(
         new ReactNativeFirebaseFirestoreEvent(
-            ReactNativeFirebaseFirestoreEvent.DOCUMENT_EVENT_SYNC, body, appName, databaseId, listenerId));
+            ReactNativeFirebaseFirestoreEvent.DOCUMENT_EVENT_SYNC,
+            body,
+            appName,
+            databaseId,
+            listenerId));
   }
 }

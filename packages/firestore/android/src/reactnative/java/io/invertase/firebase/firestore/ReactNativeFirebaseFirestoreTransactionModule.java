@@ -79,7 +79,9 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
 
     Tasks.call(
             getTransactionalExecutor(),
-            () -> snapshotToWritableMap(appName, transactionHandler.getDocument(documentReference)))
+            () ->
+                snapshotToWritableMap(
+                    appName, databaseId, transactionHandler.getDocument(documentReference)))
         .addOnCompleteListener(
             task -> {
               if (task.isSuccessful()) {

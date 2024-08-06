@@ -79,7 +79,7 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
-  public void waitForPendingWrites(String appName,String databaseId, Promise promise) {
+  public void waitForPendingWrites(String appName, String databaseId, Promise promise) {
     module
         .waitForPendingWrites(appName, databaseId)
         .addOnCompleteListener(
@@ -121,7 +121,8 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
-  public void useEmulator(String appName, String databaseId, String host, int port, Promise promise) {
+  public void useEmulator(
+      String appName, String databaseId, String host, int port, Promise promise) {
     module
         .useEmulator(appName, databaseId, host, port)
         .addOnCompleteListener(
