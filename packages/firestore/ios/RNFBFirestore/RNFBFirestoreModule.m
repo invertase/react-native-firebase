@@ -199,7 +199,9 @@ RCT_EXPORT_METHOD(terminate
     if (error) {
       [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
     } else {
-      [instanceCache removeObjectForKey:[firebaseApp name]];
+      NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:firebaseApp.name
+                                                                       databaseId:databaseId];
+      [instanceCache removeObjectForKey:firestoreKey];
       resolve(nil);
     }
   }];
