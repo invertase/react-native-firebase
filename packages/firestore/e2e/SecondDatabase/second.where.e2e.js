@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-const { wipe } = require('./helpers');
+const { wipe } = require('../helpers');
 
 // This collection is only allowed on the second database
 const COLLECTION = 'second-database';
@@ -22,17 +22,17 @@ const SECOND_DATABASE_ID = 'second-rnfb';
 
 describe('Second Database', function () {
   describe('firestore().collection().where()', function () {
-    let firestore;
-
-    before(function () {
-      firestore = firebase.app().firestore(SECOND_DATABASE_ID);
-    });
-
-    beforeEach(async function () {
-      return await wipe(false, SECOND_DATABASE_ID);
-    });
-
     describe('v8 compatibility', function () {
+      let firestore;
+
+      before(function () {
+        firestore = firebase.app().firestore(SECOND_DATABASE_ID);
+      });
+
+      beforeEach(async function () {
+        return await wipe(false, SECOND_DATABASE_ID);
+      });
+
       it('throws if fieldPath is invalid', function () {
         try {
           firestore.collection(COLLECTION).where(123);
@@ -539,6 +539,10 @@ describe('Second Database', function () {
       before(function () {
         const { getFirestore } = firestoreModular;
         firestore = getFirestore(null, SECOND_DATABASE_ID);
+      });
+
+      beforeEach(async function () {
+        return await wipe(false, SECOND_DATABASE_ID);
       });
 
       it('throws if fieldPath is invalid', function () {
