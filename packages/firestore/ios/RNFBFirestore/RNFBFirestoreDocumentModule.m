@@ -85,7 +85,7 @@ RCT_EXPORT_METHOD(documentOnSnapshot
       }
       [weakSelf sendSnapshotError:firebaseApp listenerId:listenerId error:error];
     } else {
-      [weakSelf sendSnapshotEvent:firebaseApp listenerId:listenerId snapshot:snapshot];
+      [weakSelf sendSnapshotEvent:firebaseApp databaseId:databaseId listenerId:listenerId snapshot:snapshot];
     }
   };
 
@@ -141,9 +141,10 @@ RCT_EXPORT_METHOD(documentGet
                                                                            error:error];
                    } else {
                      NSString *appName = [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name];
+                     NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName databaseId: databaseId];
                      NSDictionary *serialized =
                          [RNFBFirestoreSerialize documentSnapshotToDictionary:snapshot
-                                                                      appName:appName];
+                                                                      firestoreKey:firestoreKey];
                      resolve(serialized);
                    }
                  }];
@@ -269,11 +270,13 @@ RCT_EXPORT_METHOD(documentBatch
 }
 
 - (void)sendSnapshotEvent:(FIRApp *)firApp
+               databaseId: (NSString *) databaseId
                listenerId:(nonnull NSNumber *)listenerId
                  snapshot:(FIRDocumentSnapshot *)snapshot {
   NSString *appName = [RNFBSharedUtils getAppJavaScriptName:firApp.name];
+  NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName databaseId: databaseId];
   NSDictionary *serialized = [RNFBFirestoreSerialize documentSnapshotToDictionary:snapshot
-                                                                          appName:appName];
+                                                                          firestoreKey:firestoreKey];
   [[RNFBRCTEventEmitter shared]
       sendEventWithName:RNFB_FIRESTORE_DOCUMENT_SYNC
                    body:@{

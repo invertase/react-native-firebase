@@ -84,8 +84,9 @@ RCT_EXPORT_METHOD(transactionGetDocument
       [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
     } else {
       NSString *appName = [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name];
+      NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName databaseId: databaseId];
       NSDictionary *snapshotDict = [RNFBFirestoreSerialize documentSnapshotToDictionary:snapshot
-                                                                                appName:appName];
+                                                                                firestoreKey:firestoreKey];
       NSString *snapshotPath = snapshotDict[@"path"];
 
       if (snapshotPath == nil) {

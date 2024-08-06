@@ -128,7 +128,7 @@ enum TYPE_MAP {
   // set documents
   NSMutableArray *documents = [[NSMutableArray alloc] init];
   for (FIRDocumentSnapshot *documentSnapshot in documentSnapshots) {
-    [documents addObject:[self documentSnapshotToDictionary:documentSnapshot appName:appName]];
+    [documents addObject:[self documentSnapshotToDictionary:documentSnapshot firestoreKey:appName]];
   }
   snapshotMap[KEY_DOCUMENTS] = documents;
 
@@ -156,7 +156,7 @@ enum TYPE_MAP {
   }
 
   changeMap[KEY_DOC_CHANGE_DOCUMENT] = [self documentSnapshotToDictionary:documentChange.document
-                                                                  appName:appName];
+                                                                  firestoreKey:appName];
 
   // Note the Firestore C++ SDK here returns a maxed UInt that is != NSUIntegerMax, so we make one
   // ourselves so we can convert to -1 for JS land
@@ -180,7 +180,7 @@ enum TYPE_MAP {
 
 // Native DocumentSnapshot -> NSDictionary (for JS)
 + (NSDictionary *)documentSnapshotToDictionary:(FIRDocumentSnapshot *)snapshot
-                                       appName:(NSString *)appName {
+                                       firestoreKey:(NSString *)firestoreKey {
   NSMutableArray *metadata = [[NSMutableArray alloc] init];
   NSMutableDictionary *documentMap = [[NSMutableDictionary alloc] init];
 
@@ -194,7 +194,7 @@ enum TYPE_MAP {
 
   if (snapshot.exists) {
     NSString *key =
-        [NSString stringWithFormat:@"%@_%@", FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR, appName];
+        [NSString stringWithFormat:@"%@_%@", FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR, firestoreKey];
     NSString *behavior = [[RNFBPreferences shared] getStringValue:key defaultValue:@"none"];
 
     FIRServerTimestampBehavior serverTimestampBehavior;
