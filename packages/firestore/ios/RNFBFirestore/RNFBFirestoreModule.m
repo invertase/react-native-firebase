@@ -154,10 +154,12 @@ RCT_EXPORT_METHOD(useEmulator
   if (emulatorConfigs == nil) {
     emulatorConfigs = [[NSMutableDictionary alloc] init];
   }
-  if (!emulatorConfigs[firebaseApp.name]) {
+  
+  NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:firebaseApp.name databaseId: databaseId];
+  if (!emulatorConfigs[firestoreKey]) {
     FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId];
     [firestore useEmulatorWithHost:host port:port];
-    emulatorConfigs[firebaseApp.name] = @YES;
+    emulatorConfigs[firestoreKey] = @YES;
 
     // It is not sufficient to just use emulator. You have toggle SSL off too.
     FIRFirestoreSettings *settings = firestore.settings;
