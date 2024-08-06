@@ -138,6 +138,7 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
                                 ReactNativeFirebaseFirestoreEvent.TRANSACTION_EVENT_SYNC,
                                 eventMap,
                                 transactionHandler.getAppName(),
+                                databaseId,
                                 transactionHandler.getTransactionId()));
                       });
 
@@ -227,6 +228,7 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
                         ReactNativeFirebaseFirestoreEvent.TRANSACTION_EVENT_SYNC,
                         eventMap,
                         transactionHandler.getAppName(),
+                        databaseId,
                         transactionHandler.getTransactionId()));
               } else {
                 eventMap.putString("type", "error");
@@ -247,6 +249,7 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
                         ReactNativeFirebaseFirestoreEvent.TRANSACTION_EVENT_SYNC,
                         eventMap,
                         transactionHandler.getAppName(),
+                        databaseId,
                         transactionHandler.getTransactionId()));
               }
             });

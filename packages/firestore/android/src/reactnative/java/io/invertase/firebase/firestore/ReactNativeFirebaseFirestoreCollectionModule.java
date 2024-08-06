@@ -73,15 +73,15 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
               if (task.isSuccessful()) {
                 Query query = task.getResult();
                 if (query == null) {
-                  sendOnSnapshotError(appName, listenerId, new NullPointerException());
+                  sendOnSnapshotError(appName, databaseId, listenerId, new NullPointerException());
                 } else {
                   ReactNativeFirebaseFirestoreQuery firestoreQuery =
                       new ReactNativeFirebaseFirestoreQuery(
                           appName, query, filters, orders, options);
-                  handleQueryOnSnapshot(firestoreQuery, appName, listenerId, listenerOptions);
+                  handleQueryOnSnapshot(firestoreQuery, appName, databaseId, listenerId, listenerOptions);
                 }
               } else {
-                sendOnSnapshotError(appName, listenerId, task.getException());
+                sendOnSnapshotError(appName, databaseId, listenerId, task.getException());
               }
             });
   }
@@ -106,7 +106,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
         new ReactNativeFirebaseFirestoreQuery(
             appName, getQueryForFirestore(firebaseFirestore, path, type), filters, orders, options);
 
-    handleQueryOnSnapshot(firestoreQuery, appName, listenerId, listenerOptions);
+    handleQueryOnSnapshot(firestoreQuery, appName, databaseId, listenerId, listenerOptions);
   }
 
   @ReactMethod
@@ -203,6 +203,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   private void handleQueryOnSnapshot(
       ReactNativeFirebaseFirestoreQuery firestoreQuery,
       String appName,
+      String databaseId,
       int listenerId,
       ReadableMap listenerOptions) {
     MetadataChanges metadataChanges;
@@ -223,9 +224,9 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
               listenerRegistration.remove();
               collectionSnapshotListeners.remove(listenerId);
             }
-            sendOnSnapshotError(appName, listenerId, exception);
+            sendOnSnapshotError(appName, databaseId, listenerId, exception);
           } else {
-            sendOnSnapshotEvent(appName, listenerId, querySnapshot, metadataChanges);
+            sendOnSnapshotEvent(appName, databaseId, listenerId, querySnapshot, metadataChanges);
           }
         };
 
@@ -251,6 +252,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
 
   private void sendOnSnapshotEvent(
       String appName,
+      String databaseId,
       int listenerId,
       QuerySnapshot querySnapshot,
       MetadataChanges metadataChanges) {
@@ -271,14 +273,15 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
                         ReactNativeFirebaseFirestoreEvent.COLLECTION_EVENT_SYNC,
                         body,
                         appName,
+                        databaseId,
                         listenerId));
               } else {
-                sendOnSnapshotError(appName, listenerId, task.getException());
+                sendOnSnapshotError(appName, databaseId, listenerId, task.getException());
               }
             });
   }
 
-  private void sendOnSnapshotError(String appName, int listenerId, Exception exception) {
+  private void sendOnSnapshotError(String appName, String databaseId, int listenerId, Exception exception) {
     WritableMap body = Arguments.createMap();
     WritableMap error = Arguments.createMap();
 
@@ -298,7 +301,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
 
     emitter.sendEvent(
         new ReactNativeFirebaseFirestoreEvent(
-            ReactNativeFirebaseFirestoreEvent.COLLECTION_EVENT_SYNC, body, appName, listenerId));
+            ReactNativeFirebaseFirestoreEvent.COLLECTION_EVENT_SYNC, body, appName, databaseId, listenerId));
   }
 
   private Source getSource(ReadableMap getOptions) {

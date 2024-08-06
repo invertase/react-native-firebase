@@ -72,9 +72,9 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
               listenerRegistration.remove();
               documentSnapshotListeners.remove(listenerId);
             }
-            sendOnSnapshotError(appName, listenerId, exception);
+            sendOnSnapshotError(appName, databaseId, listenerId, exception);
           } else {
-            sendOnSnapshotEvent(appName, listenerId, documentSnapshot);
+            sendOnSnapshotEvent(appName, databaseId, listenerId, documentSnapshot);
           }
         };
 
@@ -282,7 +282,7 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   }
 
   private void sendOnSnapshotEvent(
-      String appName, int listenerId, DocumentSnapshot documentSnapshot) {
+      String appName,String databaseId, int listenerId, DocumentSnapshot documentSnapshot) {
     Tasks.call(getExecutor(), () -> snapshotToWritableMap(appName, documentSnapshot))
         .addOnCompleteListener(
             task -> {
@@ -298,14 +298,15 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
                         ReactNativeFirebaseFirestoreEvent.DOCUMENT_EVENT_SYNC,
                         body,
                         appName,
+                        databaseId,
                         listenerId));
               } else {
-                sendOnSnapshotError(appName, listenerId, task.getException());
+                sendOnSnapshotError(appName, databaseId, listenerId, task.getException());
               }
             });
   }
 
-  private void sendOnSnapshotError(String appName, int listenerId, Exception exception) {
+  private void sendOnSnapshotError(String appName, String databaseId, int listenerId, Exception exception) {
     WritableMap body = Arguments.createMap();
     WritableMap error = Arguments.createMap();
 
@@ -325,6 +326,6 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
 
     emitter.sendEvent(
         new ReactNativeFirebaseFirestoreEvent(
-            ReactNativeFirebaseFirestoreEvent.DOCUMENT_EVENT_SYNC, body, appName, listenerId));
+            ReactNativeFirebaseFirestoreEvent.DOCUMENT_EVENT_SYNC, body, appName, databaseId, listenerId));
   }
 }
