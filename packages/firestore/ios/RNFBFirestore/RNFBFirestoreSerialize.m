@@ -156,7 +156,7 @@ enum TYPE_MAP {
   }
 
   changeMap[KEY_DOC_CHANGE_DOCUMENT] = [self documentSnapshotToDictionary:documentChange.document
-                                                                  firestoreKey:appName];
+                                                             firestoreKey:appName];
 
   // Note the Firestore C++ SDK here returns a maxed UInt that is != NSUIntegerMax, so we make one
   // ourselves so we can convert to -1 for JS land
@@ -180,7 +180,7 @@ enum TYPE_MAP {
 
 // Native DocumentSnapshot -> NSDictionary (for JS)
 + (NSDictionary *)documentSnapshotToDictionary:(FIRDocumentSnapshot *)snapshot
-                                       firestoreKey:(NSString *)firestoreKey {
+                                  firestoreKey:(NSString *)firestoreKey {
   NSMutableArray *metadata = [[NSMutableArray alloc] init];
   NSMutableDictionary *documentMap = [[NSMutableDictionary alloc] init];
 

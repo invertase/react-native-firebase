@@ -45,7 +45,7 @@ RCT_EXPORT_METHOD(setLogLevel : (FIRLoggerLevel)loggerLevel) {
 
 RCT_EXPORT_METHOD(disableNetwork
                   : (FIRApp *)firebaseApp
-                  : (NSString *) databaseId
+                  : (NSString *)databaseId
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId]
@@ -60,7 +60,7 @@ RCT_EXPORT_METHOD(disableNetwork
 
 RCT_EXPORT_METHOD(enableNetwork
                   : (FIRApp *)firebaseApp
-                  : (NSString *) databaseId
+                  : (NSString *)databaseId
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId]
@@ -75,12 +75,13 @@ RCT_EXPORT_METHOD(enableNetwork
 
 RCT_EXPORT_METHOD(settings
                   : (FIRApp *)firebaseApp
-                  : (NSString *) databaseId
+                  : (NSString *)databaseId
                   : (NSDictionary *)settings
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   NSString *appName = [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name];
-  NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName databaseId:databaseId];
+  NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName
+                                                                   databaseId:databaseId];
 
   if (settings[@"cacheSizeBytes"]) {
     NSString *cacheKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_CACHE_SIZE, firestoreKey];
@@ -94,7 +95,8 @@ RCT_EXPORT_METHOD(settings
   }
 
   if (settings[@"persistence"]) {
-    NSString *persistenceKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_PERSISTENCE, firestoreKey];
+    NSString *persistenceKey =
+        [NSString stringWithFormat:@"%@_%@", FIRESTORE_PERSISTENCE, firestoreKey];
     [[RNFBPreferences shared] setBooleanValue:persistenceKey
                                     boolValue:[settings[@"persistence"] boolValue]];
   }
@@ -115,7 +117,7 @@ RCT_EXPORT_METHOD(settings
 
 RCT_EXPORT_METHOD(loadBundle
                   : (FIRApp *)firebaseApp
-                  : (NSString *) databaseId
+                  : (NSString *)databaseId
                   : (nonnull NSString *)bundle
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
@@ -133,7 +135,7 @@ RCT_EXPORT_METHOD(loadBundle
 
 RCT_EXPORT_METHOD(clearPersistence
                   : (FIRApp *)firebaseApp
-                  : (NSString *) databaseId
+                  : (NSString *)databaseId
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId]
@@ -148,16 +150,18 @@ RCT_EXPORT_METHOD(clearPersistence
 
 RCT_EXPORT_METHOD(useEmulator
                   : (FIRApp *)firebaseApp
-                  : (NSString *) databaseId
+                  : (NSString *)databaseId
                   : (nonnull NSString *)host
                   : (NSInteger)port) {
   if (emulatorConfigs == nil) {
     emulatorConfigs = [[NSMutableDictionary alloc] init];
   }
-  
-  NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:firebaseApp.name databaseId: databaseId];
+
+  NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:firebaseApp.name
+                                                                   databaseId:databaseId];
   if (!emulatorConfigs[firestoreKey]) {
-    FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId];
+    FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
+                                                           databaseId:databaseId];
     [firestore useEmulatorWithHost:host port:port];
     emulatorConfigs[firestoreKey] = @YES;
 
@@ -170,7 +174,7 @@ RCT_EXPORT_METHOD(useEmulator
 
 RCT_EXPORT_METHOD(waitForPendingWrites
                   : (FIRApp *)firebaseApp
-                  : (NSString *) databaseId
+                  : (NSString *)databaseId
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId]
@@ -185,10 +189,11 @@ RCT_EXPORT_METHOD(waitForPendingWrites
 
 RCT_EXPORT_METHOD(terminate
                   : (FIRApp *)firebaseApp
-                  : (NSString *) databaseId
+                  : (NSString *)databaseId
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  FIRFirestore *instance = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId];
+  FIRFirestore *instance = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
+                                                        databaseId:databaseId];
 
   [instance terminateWithCompletion:^(NSError *error) {
     if (error) {

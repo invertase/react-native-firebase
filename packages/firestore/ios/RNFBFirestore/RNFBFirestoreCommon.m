@@ -29,11 +29,12 @@ NSString *const FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR =
 NSMutableDictionary *instanceCache;
 
 @implementation RNFBFirestoreCommon
-+ (FIRFirestore *)getFirestoreForApp:(FIRApp *)app databaseId:(NSString *) databaseId {
++ (FIRFirestore *)getFirestoreForApp:(FIRApp *)app databaseId:(NSString *)databaseId {
   if (instanceCache == nil) {
     instanceCache = [[NSMutableDictionary alloc] init];
   }
-  NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:[app name] databaseId: databaseId];
+  NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:[app name]
+                                                                   databaseId:databaseId];
   FIRFirestore *cachedInstance = instanceCache[firestoreKey];
 
   if (cachedInstance) {
@@ -42,7 +43,9 @@ NSMutableDictionary *instanceCache;
 
   FIRFirestore *instance = [FIRFirestore firestoreForApp:app database:databaseId];
 
-  [self setFirestoreSettings:instance appName:[RNFBSharedUtils getAppJavaScriptName:app.name] databaseId:databaseId];
+  [self setFirestoreSettings:instance
+                     appName:[RNFBSharedUtils getAppJavaScriptName:app.name]
+                  databaseId:databaseId];
 
   instanceCache[[app name]] = instance;
 
@@ -50,7 +53,7 @@ NSMutableDictionary *instanceCache;
 }
 
 + (NSString *)createFirestoreKeyWithAppName:(NSString *)appName databaseId:(NSString *)databaseId {
-    return [NSString stringWithFormat:@"%@:%@", appName, databaseId];
+  return [NSString stringWithFormat:@"%@:%@", appName, databaseId];
 }
 
 + (dispatch_queue_t)getFirestoreQueue {
@@ -63,13 +66,16 @@ NSMutableDictionary *instanceCache;
   return firestoreQueue;
 }
 
-+ (void)setFirestoreSettings:(FIRFirestore *)firestore appName:(NSString *)appName databaseId:(NSString *)databaseId {
++ (void)setFirestoreSettings:(FIRFirestore *)firestore
+                     appName:(NSString *)appName
+                  databaseId:(NSString *)databaseId {
   FIRFirestoreSettings *firestoreSettings = [[FIRFirestoreSettings alloc] init];
   RNFBPreferences *preferences = [RNFBPreferences shared];
 
   firestoreSettings.dispatchQueue = [self getFirestoreQueue];
-  
-  NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName databaseId: databaseId];
+
+  NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName
+                                                                   databaseId:databaseId];
 
   NSString *cacheKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_CACHE_SIZE, firestoreKey];
   NSInteger size = [preferences getIntegerValue:cacheKey defaultValue:0];
@@ -86,7 +92,8 @@ NSMutableDictionary *instanceCache;
   firestoreSettings.host = [preferences getStringValue:hostKey
                                           defaultValue:firestore.settings.host];
 
-  NSString *persistenceKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_PERSISTENCE, firestoreKey];
+  NSString *persistenceKey =
+      [NSString stringWithFormat:@"%@_%@", FIRESTORE_PERSISTENCE, firestoreKey];
   firestoreSettings.persistenceEnabled =
       (BOOL)[preferences getBooleanValue:persistenceKey
                             defaultValue:firestore.settings.persistenceEnabled];

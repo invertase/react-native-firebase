@@ -31,7 +31,7 @@
                                      appName:(NSString *)appName;
 
 + (NSDictionary *)documentSnapshotToDictionary:(FIRDocumentSnapshot *)snapshot
-                                       firestoreKey:(NSString *)appName;
+                                  firestoreKey:(NSString *)appName;
 
 + (NSDictionary *)serializeDictionary:(NSDictionary *)dictionary;
 

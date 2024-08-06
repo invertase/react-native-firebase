@@ -52,14 +52,17 @@ public class UniversalFirebaseFirestoreCommon {
     return instance;
   }
 
-  private static void setFirestoreSettings(FirebaseFirestore firebaseFirestore, String firestoreKey) {
+  private static void setFirestoreSettings(
+      FirebaseFirestore firebaseFirestore, String firestoreKey) {
 
     UniversalFirebasePreferences preferences = UniversalFirebasePreferences.getSharedInstance();
     FirebaseFirestoreSettings.Builder firestoreSettings = new FirebaseFirestoreSettings.Builder();
 
-    String cacheSizeKey = UniversalFirebaseFirestoreStatics.FIRESTORE_CACHE_SIZE + "_" + firestoreKey;
+    String cacheSizeKey =
+        UniversalFirebaseFirestoreStatics.FIRESTORE_CACHE_SIZE + "_" + firestoreKey;
     String hostKey = UniversalFirebaseFirestoreStatics.FIRESTORE_HOST + "_" + firestoreKey;
-    String persistenceKey = UniversalFirebaseFirestoreStatics.FIRESTORE_PERSISTENCE + "_" + firestoreKey;
+    String persistenceKey =
+        UniversalFirebaseFirestoreStatics.FIRESTORE_PERSISTENCE + "_" + firestoreKey;
     String sslKey = UniversalFirebaseFirestoreStatics.FIRESTORE_SSL + "_" + firestoreKey;
 
     int cacheSizeBytes =

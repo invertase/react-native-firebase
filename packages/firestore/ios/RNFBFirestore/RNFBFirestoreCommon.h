@@ -27,7 +27,9 @@
 
 + (NSString *)createFirestoreKeyWithAppName:(NSString *)appName databaseId:(NSString *)databaseId;
 
-+ (void)setFirestoreSettings:(FIRFirestore *)firestore appName:(NSString *)appName databaseId:(NSString *)databaseId;
++ (void)setFirestoreSettings:(FIRFirestore *)firestore
+                     appName:(NSString *)appName
+                  databaseId:(NSString *)databaseId;
 
 + (FIRDocumentReference *)getDocumentForFirestore:(FIRFirestore *)firestore path:(NSString *)path;
 
