@@ -15,6 +15,7 @@
  *
  */
 
+import { isString } from '../../common';
 import FirebaseApp from '../../FirebaseApp';
 import SDK_VERSION from '../../version';
 import { DEFAULT_APP_NAME, KNOWN_NAMESPACES } from '../constants';
@@ -28,7 +29,6 @@ import {
   setOnAppCreate,
   setOnAppDestroy,
 } from './app';
-import { isUndefined } from '../../common';
 
 // firebase.X
 let FIREBASE_ROOT = null;
@@ -95,16 +95,13 @@ function getOrCreateModuleForApp(app, moduleNamespace) {
 
   // e.g. firebase.storage(customUrlOrRegion), firebase.functions(customUrlOrRegion), firebase.firestore(databaseId), firebase.database(url)
   function firebaseModuleWithArgs(customUrlOrRegionOrDatabaseId) {
-    if (!isUndefined(customUrlOrRegionOrDatabaseId)) {
+    if (customUrlOrRegion !== undefined) {
       if (!hasCustomUrlOrRegionSupport) {
-        // TODO update tests for those not supported
-        throw new Error(
-          [
-            `You attempted to call "firebase.app('${app.name}').${moduleNamespace}(${customUrlOrRegionOrDatabaseId})" but; '${moduleNamespace}()' does not support an argument.`,
-            '',
-            `Ensure you call '${moduleNamespace}()' without any arguments.`,
-          ].join('\r\n'),
-        );
+        // TODO throw Module does not support arguments error
+      }
+
+      if (!isString(customUrlOrRegion)) {
+        // TODO throw Module first argument must be a string error
       }
     }
 
