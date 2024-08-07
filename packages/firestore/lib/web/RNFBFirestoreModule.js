@@ -243,7 +243,7 @@ export default {
     return rejectWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
   },
 
-  persistentCacheIndexManager() {
+  persistenceCacheIndexManager() {
     return rejectWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
   },
 
