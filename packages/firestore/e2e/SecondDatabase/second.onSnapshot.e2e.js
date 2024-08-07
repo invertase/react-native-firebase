@@ -77,7 +77,6 @@ describe('Second Database', function () {
         await Utils.spyToBeCalledOnceAsync(callback);
 
         callback.should.be.calledOnce();
-        console.log('ssss', callback.args[0][0]);
 
         callback.args[0][1].code.should.containEql('firestore/permission-denied');
         should.equal(callback.args[0][0], null);
