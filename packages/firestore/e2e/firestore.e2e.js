@@ -116,7 +116,8 @@ describe('firestore()', function () {
 
     describe('disableNetwork() & enableNetwork()', function () {
       it('disables and enables with no errors', async function () {
-        if (Platform.other) {
+        if (!(Platform.android || Platform.ios)) {
+          // Not supported on web lite sdk
           return;
         }
 
@@ -212,7 +213,8 @@ describe('firestore()', function () {
       describe('serverTimestampBehavior', function () {
         it("handles 'estimate'", async function () {
           // TODO(ehesp): Figure out how to call settings on other.
-          if (Platform.other) {
+          if (!(Platform.android || Platform.ios)) {
+            // Not supported on web lite sdk
             return;
           }
 
@@ -238,7 +240,8 @@ describe('firestore()', function () {
 
         it("handles 'previous'", async function () {
           // TODO(ehesp): Figure out how to call settings on other.
-          if (Platform.other) {
+          if (!(Platform.android || Platform.ios)) {
+            // Not supported on web lite sdk
             return;
           }
 
@@ -337,17 +340,18 @@ describe('firestore()', function () {
     describe('FirestorePersistentCacheIndexManager', function () {
       describe('if persistence is enabled', function () {
         it('should enableIndexAutoCreation()', async function () {
-          if (Platform.other) {
+          if (!(Platform.android || Platform.ios)) {
             // Not supported on web lite sdk
             return;
           }
+
           const db = firebase.firestore();
           const indexManager = db.persistentCacheIndexManager();
           await indexManager.enableIndexAutoCreation();
         });
 
         it('should disableIndexAutoCreation()', async function () {
-          if (Platform.other) {
+          if (!(Platform.android || Platform.ios)) {
             // Not supported on web lite sdk
             return;
           }
@@ -357,7 +361,7 @@ describe('firestore()', function () {
         });
 
         it('should deleteAllIndexes()', async function () {
-          if (Platform.other) {
+          if (!(Platform.android || Platform.ios)) {
             // Not supported on web lite sdk
             return;
           }
@@ -369,7 +373,7 @@ describe('firestore()', function () {
 
       describe('if persistence is disabled', function () {
         it('should return `null` when calling `persistentCacheIndexManager()`', async function () {
-          if (Platform.other) {
+          if (!(Platform.android || Platform.ios)) {
             // Not supported on web lite sdk
             return;
           }
@@ -752,7 +756,7 @@ describe('firestore()', function () {
     describe('FirestorePersistentCacheIndexManager', function () {
       describe('if persistence is enabled', function () {
         it('should enableIndexAutoCreation()', async function () {
-          if (Platform.other) {
+          if (!(Platform.android || Platform.ios)) {
             // Not supported on web lite sdk
             return;
           }
@@ -767,7 +771,7 @@ describe('firestore()', function () {
         });
 
         it('should disableIndexAutoCreation()', async function () {
-          if (Platform.other) {
+          if (!(Platform.android || Platform.ios)) {
             // Not supported on web lite sdk
             return;
           }
@@ -782,7 +786,7 @@ describe('firestore()', function () {
         });
 
         it('should deleteAllIndexes()', async function () {
-          if (Platform.other) {
+          if (!(Platform.android || Platform.ios)) {
             // Not supported on web lite sdk
             return;
           }
@@ -796,7 +800,7 @@ describe('firestore()', function () {
 
       describe('if persistence is disabled', function () {
         it('should return `null` when calling `persistentCacheIndexManager()`', async function () {
-          if (Platform.other) {
+          if (!(Platform.android || Platform.ios)) {
             // Not supported on web lite sdk
             return;
           }
@@ -812,7 +816,7 @@ describe('firestore()', function () {
 
       describe('macOS should throw exception when calling `persistentCacheIndexManager()`', function () {
         it('should throw an exception', async function () {
-          if (!Platform.other) {
+          if (Platform.android || Platform.ios) {
             return;
           }
           const { getFirestore, getPersistentCacheIndexManager } = firestoreModular;
