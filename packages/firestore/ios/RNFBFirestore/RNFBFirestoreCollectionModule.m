@@ -169,6 +169,7 @@ RCT_EXPORT_METHOD(namedQueryGet
                                                             options:options];
                   FIRFirestoreSource source = [self getSource:getOptions];
                   [self handleQueryGet:firebaseApp
+                            databaseId:databaseId
                         firestoreQuery:firestoreQuery
                                 source:source
                                resolve:resolve
@@ -237,6 +238,7 @@ RCT_EXPORT_METHOD(collectionGet
                                                                              options:options];
   FIRFirestoreSource source = [self getSource:getOptions];
   [self handleQueryGet:firebaseApp
+            databaseId:databaseId
         firestoreQuery:firestoreQuery
                 source:source
                resolve:resolve
@@ -281,6 +283,7 @@ RCT_EXPORT_METHOD(collectionGet
 }
 
 - (void)handleQueryGet:(FIRApp *)firebaseApp
+            databaseId:(NSString *)databaseId
         firestoreQuery:(RNFBFirestoreQuery *)firestoreQuery
                 source:(FIRFirestoreSource)source
                resolve:(RCTPromiseResolveBlock)resolve
@@ -297,7 +300,8 @@ RCT_EXPORT_METHOD(collectionGet
                           [RNFBFirestoreSerialize querySnapshotToDictionary:@"get"
                                                                    snapshot:snapshot
                                                      includeMetadataChanges:false
-                                                                    appName:appName];
+                                                                    appName:appName
+                                                                 databaseId:databaseId];
                       resolve(serialized);
                     }
                   }];
@@ -313,7 +317,8 @@ RCT_EXPORT_METHOD(collectionGet
       [RNFBFirestoreSerialize querySnapshotToDictionary:@"onSnapshot"
                                                snapshot:snapshot
                                  includeMetadataChanges:includeMetadataChanges
-                                                appName:appName];
+                                                appName:appName
+                                             databaseId:databaseId];
   [[RNFBRCTEventEmitter shared]
       sendEventWithName:RNFB_FIRESTORE_COLLECTION_SYNC
                    body:@{
