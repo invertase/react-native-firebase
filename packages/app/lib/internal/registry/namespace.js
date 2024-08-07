@@ -95,12 +95,12 @@ function getOrCreateModuleForApp(app, moduleNamespace) {
 
   // e.g. firebase.storage(customUrlOrRegion), firebase.functions(customUrlOrRegion), firebase.firestore(databaseId), firebase.database(url)
   function firebaseModuleWithArgs(customUrlOrRegionOrDatabaseId) {
-    if (customUrlOrRegion !== undefined) {
+    if (customUrlOrRegionOrDatabaseId !== undefined) {
       if (!hasCustomUrlOrRegionSupport) {
         // TODO throw Module does not support arguments error
       }
 
-      if (!isString(customUrlOrRegion)) {
+      if (!isString(customUrlOrRegionOrDatabaseId)) {
         // TODO throw Module first argument must be a string error
       }
     }
