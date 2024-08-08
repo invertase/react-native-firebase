@@ -164,12 +164,40 @@ RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithEmailAddress
   return resolve([NSNull null]);
 }
 
+RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithHashedEmailAddress
+                  : (NSString *)hashedEmailAddress resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  @try {
+    NSData* emailAddress = [hashedEmailAddress dataUsingEncoding:NSUTF8StringEncoding];
+    [FIRAnalytics initiateOnDeviceConversionMeasurementWithHashedEmailAddress:emailAddress];
+  } @catch (NSException *exception) {
+    return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
+  }
+
+  return resolve([NSNull null]);
+}
+
 RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithPhoneNumber
                   : (NSString *)phoneNumber resolver
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject) {
   @try {
     [FIRAnalytics initiateOnDeviceConversionMeasurementWithPhoneNumber:phoneNumber];
+  } @catch (NSException *exception) {
+    return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
+  }
+
+  return resolve([NSNull null]);
+}
+
+RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithHashedPhoneNumber
+                  : (NSString *)hashedPhoneNumber resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  @try {
+    NSData* phoneNumber = [hashedPhoneNumber dataUsingEncoding:NSUTF8StringEncoding];
+    [FIRAnalytics initiateOnDeviceConversionMeasurementWithHashedPhoneNumber:phoneNumber];
   } @catch (NSException *exception) {
     return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
   }

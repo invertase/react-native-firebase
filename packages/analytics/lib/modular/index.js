@@ -527,12 +527,44 @@ export function initiateOnDeviceConversionMeasurementWithEmailAddress(analytics,
 /**
  * start privacy-sensitive on-device conversion management.
  * This is iOS-only.
+ * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
+ *
+ * @param analytics Analytics instance.
+ * @param hashedEmailAddress sha256-hashed of normalized email address, properly formatted complete with domain name e.g, 'user@example.com'
+ * @link https://firebase.google.com/docs/tutorials/ads-ios-on-device-measurement/step-3#use-hashed-credentials
+ */
+export function initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
+  analytics,
+  hashedEmailAddress,
+) {
+  return analytics.initiateOnDeviceConversionMeasurementWithHashedEmailAddress(hashedEmailAddress);
+}
+
+/**
+ * start privacy-sensitive on-device conversion management.
+ * This is iOS-only.
  * @param {FirebaseAnalytics} analytics - Analytics instance.
  * @param {string} phoneNumber - Phone number in E.164 format - that is a leading + sign, then up to 15 digits, no dashes or spaces.
  * @returns {Promise<void>}
  */
 export function initiateOnDeviceConversionMeasurementWithPhoneNumber(analytics, phoneNumber) {
   return analytics.initiateOnDeviceConversionMeasurementWithPhoneNumber(phoneNumber);
+}
+
+/**
+ * start privacy-sensitive on-device conversion management.
+ * This is iOS-only.
+ * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
+ *
+ * @param analytics Analytics instance.
+ * @param hashedPhoneNumber sha256-hashed of normalized phone number in E.164 format - that is a leading + sign, then up to 15 digits, no dashes or spaces.
+ * @link https://firebase.google.com/docs/tutorials/ads-ios-on-device-measurement/step-3#use-hashed-credentials
+ */
+export function initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
+  analytics,
+  hashedPhoneNumber,
+) {
+  return analytics.initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(hashedPhoneNumber);
 }
 
 /**
