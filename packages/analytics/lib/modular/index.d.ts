@@ -1143,6 +1143,7 @@ export function logViewSearchResults(
  * For Web, the values passed persist on the current page and are passed with all
  * subsequent events.
  *
+ * @platform ios
  * @param analytics Analytics instance.
  * @param params Parameters to be added to the map of parameters added to every event.
  */
@@ -1156,6 +1157,7 @@ export function setDefaultEventParameters(
  * This is iOS-only.
  * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
  *
+ * @platform ios
  * @param analytics Analytics instance.
  * @param emailAddress email address, properly formatted complete with domain name e.g, 'user@example.com'
  */
@@ -1169,6 +1171,7 @@ export function initiateOnDeviceConversionMeasurementWithEmailAddress(
  * This is iOS-only.
  * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
  *
+ * @platform ios
  * @param analytics Analytics instance.
  * @param hashedEmailAddress sha256-hashed of normalized email address, properly formatted complete with domain name e.g, 'user@example.com'
  * @link https://firebase.google.com/docs/tutorials/ads-ios-on-device-measurement/step-3#use-hashed-credentials
@@ -1183,6 +1186,7 @@ export function initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
  * This is iOS-only.
  * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
  *
+ * @platform ios
  * @param analytics Analytics instance.
  * @param phoneNumber phone number in E.164 format - that is a leading + sign, then up to 15 digits, no dashes or spaces.
  */
@@ -1196,6 +1200,7 @@ export function initiateOnDeviceConversionMeasurementWithPhoneNumber(
  * This is iOS-only.
  * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
  *
+ * @platform ios
  * @param analytics Analytics instance.
  * @param hashedPhoneNumber sha256-hashed of normalized phone number in E.164 format - that is a leading + sign, then up to 15 digits, no dashes or spaces.
  * @link https://firebase.google.com/docs/tutorials/ads-ios-on-device-measurement/step-3#use-hashed-credentials

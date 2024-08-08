@@ -1759,6 +1759,7 @@ export namespace FirebaseAnalyticsTypes {
      * This is iOS-only.
      * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
      *
+     * @platform ios iOS
      * @param emailAddress email address, properly formatted complete with domain name e.g, 'user@example.com'
      */
     initiateOnDeviceConversionMeasurementWithEmailAddress(emailAddress: string): Promise<void>;
@@ -1768,9 +1769,38 @@ export namespace FirebaseAnalyticsTypes {
      * This is iOS-only.
      * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
      *
+     * @platform ios iOS
+     * @param analytics Analytics instance.
+     * @param hashedEmailAddress sha256-hashed of normalized email address, properly formatted complete with domain name e.g, 'user@example.com'
+     * @link https://firebase.google.com/docs/tutorials/ads-ios-on-device-measurement/step-3#use-hashed-credentials
+     */
+    initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
+      hashedEmailAddress: string,
+    ): Poromise<void>;
+
+    /**
+     * start privacy-sensitive on-device conversion management.
+     * This is iOS-only.
+     * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
+     *
+     * @platform ios iOS
      * @param phoneNumber phone number in E.164 format - that is a leading + sign, then up to 15 digits, no dashes or spaces.
      */
     initiateOnDeviceConversionMeasurementWithPhoneNumber(phoneNumber: string): Promise<void>;
+
+    /**
+     * start privacy-sensitive on-device conversion management.
+     * This is iOS-only.
+     * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
+     *
+     * @platform ios iOS
+     * @param analytics Analytics instance.
+     * @param hashedPhoneNumber sha256-hashed of normalized phone number in E.164 format - that is a leading + sign, then up to 15 digits, no dashes or spaces.
+     * @link https://firebase.google.com/docs/tutorials/ads-ios-on-device-measurement/step-3#use-hashed-credentials
+     */
+    initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
+      hashedPhoneNumber: string,
+    ): Promise<void>;
 
     /**
      * For Consent Mode!
