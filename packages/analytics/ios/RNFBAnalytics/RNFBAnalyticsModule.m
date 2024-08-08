@@ -169,7 +169,7 @@ RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithHashedEmailAddress
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject) {
   @try {
-    NSData* emailAddress = [hashedEmailAddress dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *emailAddress = [hashedEmailAddress dataUsingEncoding:NSUTF8StringEncoding];
     [FIRAnalytics initiateOnDeviceConversionMeasurementWithHashedEmailAddress:emailAddress];
   } @catch (NSException *exception) {
     return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
@@ -196,7 +196,7 @@ RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithHashedPhoneNumber
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject) {
   @try {
-    NSData* phoneNumber = [hashedPhoneNumber dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *phoneNumber = [hashedPhoneNumber dataUsingEncoding:NSUTF8StringEncoding];
     [FIRAnalytics initiateOnDeviceConversionMeasurementWithHashedPhoneNumber:phoneNumber];
   } @catch (NSException *exception) {
     return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
