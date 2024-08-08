@@ -774,6 +774,12 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(hashedPhoneNumber) {
+    if (isE164PhoneNumber(hashedPhoneNumber)) {
+      throw new Error(
+        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a sha256-hashed value of a phone number in E.164 format.",
+      );
+    }
+
     if (!isString(hashedPhoneNumber)) {
       throw new Error(
         "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a string value.",
