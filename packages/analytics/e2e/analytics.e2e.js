@@ -489,6 +489,17 @@ describe('analytics() modular', function () {
           .analytics()
           .initiateOnDeviceConversionMeasurementWithEmailAddress('conversionTest@example.com');
       });
+
+      it('calls native API successfully with hashed email', async function () {
+        // Normalized email address: 'conversiontest@example.com'
+        // echo -n 'conversiontest@example.com' | shasum -a 256
+
+        await firebase
+          .analytics()
+          .initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
+            '73914334417d04bc2922331e5fb3b3572ab88debfa0c63beb0c56f7b31d4aaed',
+          );
+      });
     });
 
     // Test this last so it does not stop delivery to DebugView
@@ -497,6 +508,14 @@ describe('analytics() modular', function () {
         await firebase
           .analytics()
           .initiateOnDeviceConversionMeasurementWithPhoneNumber('+14155551212');
+      });
+
+      it('calls native API successfully with hashed phone', async function () {
+        await firebase
+          .analytics()
+          .initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
+            '5dce05f429bc23dbd9e2caa03f336b56d4ee2aa374d8708f4f12eb4e10204c2b',
+          );
       });
 
       it('handles mal-formatted phone number', async function () {
