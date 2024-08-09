@@ -22,6 +22,10 @@ public class ReactNativeFirebaseMessagingReceiver extends BroadcastReceiver {
     if (ReactNativeFirebaseApp.getApplicationContext() == null) {
       ReactNativeFirebaseApp.setApplicationContext(context.getApplicationContext());
     }
+    if (intent.getExtras() == null) {
+      Log.e(TAG, "broadcast intent received with no extras");
+      return;
+    }
     RemoteMessage remoteMessage = new RemoteMessage(intent.getExtras());
     ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
 
