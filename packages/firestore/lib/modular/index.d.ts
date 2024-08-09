@@ -118,6 +118,18 @@ export declare function getFirestore(app: FirebaseApp): Firestore;
 export function getFirestore(app?: FirebaseApp): Firestore;
 
 /**
+ * Returns the existing default {@link Firestore} instance that is associated with the
+ * provided {@link @firebase/app#FirebaseApp} and database ID. If no instance exists, initializes a new
+ * instance with default settings.
+ *
+ * @param app - The {@link @firebase/app#FirebaseApp} instance that the returned {@link Firestore}
+ * instance is associated with.
+ * @param databaseId - The ID of the Firestore database to use. If not provided, the default database is used.
+ * @returns The {@link Firestore}
+ */
+export declare function getFirestore(app?: FirebaseApp, databaseId?: string): Firestore;
+
+/**
  * Gets a `DocumentReference` instance that refers to the document at the
  * specified absolute path.
  *

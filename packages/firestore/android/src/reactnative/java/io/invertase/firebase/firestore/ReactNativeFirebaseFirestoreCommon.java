@@ -19,6 +19,7 @@ package io.invertase.firebase.firestore;
 
 import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithCodeAndMessage;
 import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithExceptionMap;
+import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.createFirestoreKey;
 
 import com.facebook.react.bridge.Promise;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -48,10 +49,12 @@ class ReactNativeFirebaseFirestoreCommon {
     }
   }
 
-  static DocumentSnapshot.ServerTimestampBehavior getServerTimestampBehavior(String appName) {
+  static DocumentSnapshot.ServerTimestampBehavior getServerTimestampBehavior(
+      String appName, String databaseId) {
+    String firestoreKey = createFirestoreKey(appName, databaseId);
     UniversalFirebasePreferences preferences = UniversalFirebasePreferences.getSharedInstance();
     String key =
-        UniversalFirebaseFirestoreStatics.FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR + "_" + appName;
+        UniversalFirebaseFirestoreStatics.FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR + "_" + firestoreKey;
     String behavior = preferences.getStringValue(key, "none");
 
     if ("estimate".equals(behavior)) {

@@ -45,9 +45,10 @@ RCT_EXPORT_METHOD(setLogLevel : (FIRLoggerLevel)loggerLevel) {
 
 RCT_EXPORT_METHOD(disableNetwork
                   : (FIRApp *)firebaseApp
+                  : (NSString *)databaseId
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp]
+  [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId]
       disableNetworkWithCompletion:^(NSError *error) {
         if (error) {
           [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
@@ -59,9 +60,10 @@ RCT_EXPORT_METHOD(disableNetwork
 
 RCT_EXPORT_METHOD(enableNetwork
                   : (FIRApp *)firebaseApp
+                  : (NSString *)databaseId
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp]
+  [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId]
       enableNetworkWithCompletion:^(NSError *error) {
         if (error) {
           [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
@@ -73,36 +75,40 @@ RCT_EXPORT_METHOD(enableNetwork
 
 RCT_EXPORT_METHOD(settings
                   : (FIRApp *)firebaseApp
+                  : (NSString *)databaseId
                   : (NSDictionary *)settings
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   NSString *appName = [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name];
+  NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName
+                                                                   databaseId:databaseId];
 
   if (settings[@"cacheSizeBytes"]) {
-    NSString *cacheKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_CACHE_SIZE, appName];
+    NSString *cacheKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_CACHE_SIZE, firestoreKey];
     [[RNFBPreferences shared] setIntegerValue:cacheKey
                                  integerValue:[settings[@"cacheSizeBytes"] integerValue]];
   }
 
   if (settings[@"host"]) {
-    NSString *hostKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_HOST, appName];
+    NSString *hostKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_HOST, firestoreKey];
     [[RNFBPreferences shared] setStringValue:hostKey stringValue:settings[@"host"]];
   }
 
   if (settings[@"persistence"]) {
-    NSString *persistenceKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_PERSISTENCE, appName];
+    NSString *persistenceKey =
+        [NSString stringWithFormat:@"%@_%@", FIRESTORE_PERSISTENCE, firestoreKey];
     [[RNFBPreferences shared] setBooleanValue:persistenceKey
                                     boolValue:[settings[@"persistence"] boolValue]];
   }
 
   if (settings[@"ssl"]) {
-    NSString *sslKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_SSL, appName];
+    NSString *sslKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_SSL, firestoreKey];
     [[RNFBPreferences shared] setBooleanValue:sslKey boolValue:[settings[@"ssl"] boolValue]];
   }
 
   if (settings[@"serverTimestampBehavior"]) {
     NSString *key =
-        [NSString stringWithFormat:@"%@_%@", FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR, appName];
+        [NSString stringWithFormat:@"%@_%@", FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR, firestoreKey];
     [[RNFBPreferences shared] setStringValue:key stringValue:settings[@"serverTimestampBehavior"]];
   }
 
@@ -111,11 +117,12 @@ RCT_EXPORT_METHOD(settings
 
 RCT_EXPORT_METHOD(loadBundle
                   : (FIRApp *)firebaseApp
+                  : (NSString *)databaseId
                   : (nonnull NSString *)bundle
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   NSData *bundleData = [bundle dataUsingEncoding:NSUTF8StringEncoding];
-  [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp]
+  [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId]
       loadBundle:bundleData
       completion:^(FIRLoadBundleTaskProgress *progress, NSError *error) {
         if (error) {
@@ -128,9 +135,10 @@ RCT_EXPORT_METHOD(loadBundle
 
 RCT_EXPORT_METHOD(clearPersistence
                   : (FIRApp *)firebaseApp
+                  : (NSString *)databaseId
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp]
+  [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId]
       clearPersistenceWithCompletion:^(NSError *error) {
         if (error) {
           [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
@@ -142,15 +150,20 @@ RCT_EXPORT_METHOD(clearPersistence
 
 RCT_EXPORT_METHOD(useEmulator
                   : (FIRApp *)firebaseApp
+                  : (NSString *)databaseId
                   : (nonnull NSString *)host
                   : (NSInteger)port) {
   if (emulatorConfigs == nil) {
     emulatorConfigs = [[NSMutableDictionary alloc] init];
   }
-  if (!emulatorConfigs[firebaseApp.name]) {
-    FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp];
+
+  NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:firebaseApp.name
+                                                                   databaseId:databaseId];
+  if (!emulatorConfigs[firestoreKey]) {
+    FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
+                                                           databaseId:databaseId];
     [firestore useEmulatorWithHost:host port:port];
-    emulatorConfigs[firebaseApp.name] = @YES;
+    emulatorConfigs[firestoreKey] = @YES;
 
     // It is not sufficient to just use emulator. You have toggle SSL off too.
     FIRFirestoreSettings *settings = firestore.settings;
@@ -161,9 +174,10 @@ RCT_EXPORT_METHOD(useEmulator
 
 RCT_EXPORT_METHOD(waitForPendingWrites
                   : (FIRApp *)firebaseApp
+                  : (NSString *)databaseId
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp]
+  [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId]
       waitForPendingWritesWithCompletion:^(NSError *error) {
         if (error) {
           [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
@@ -175,15 +189,19 @@ RCT_EXPORT_METHOD(waitForPendingWrites
 
 RCT_EXPORT_METHOD(terminate
                   : (FIRApp *)firebaseApp
+                  : (NSString *)databaseId
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  FIRFirestore *instance = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp];
+  FIRFirestore *instance = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
+                                                        databaseId:databaseId];
 
   [instance terminateWithCompletion:^(NSError *error) {
     if (error) {
       [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
     } else {
-      [instanceCache removeObjectForKey:[firebaseApp name]];
+      NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:firebaseApp.name
+                                                                       databaseId:databaseId];
+      [instanceCache removeObjectForKey:firestoreKey];
       resolve(nil);
     }
   }];

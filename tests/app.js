@@ -81,6 +81,7 @@ function loadTests(_) {
         firebase.auth().useEmulator('http://localhost:9099');
       if (platformSupportedModules.includes('firestore')) {
         firebase.firestore().useEmulator('localhost', 8080);
+        firebase.app().firestore('second-rnfb').useEmulator('localhost', 8080);
         // Firestore caches documents locally (a great feature!) and that confounds tests
         // as data from previous runs pollutes following runs until re-install the app. Clear it.
         if (!Platform.other) {
