@@ -743,6 +743,22 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     return this.native.initiateOnDeviceConversionMeasurementWithEmailAddress(emailAddress);
   }
 
+  initiateOnDeviceConversionMeasurementWithHashedEmailAddress(hashedEmailAddress) {
+    if (!isString(hashedEmailAddress)) {
+      throw new Error(
+        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedEmailAddress(*) 'hashedEmailAddress' expected a string value.",
+      );
+    }
+
+    if (!isIOS) {
+      return;
+    }
+
+    return this.native.initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
+      hashedEmailAddress,
+    );
+  }
+
   initiateOnDeviceConversionMeasurementWithPhoneNumber(phoneNumber) {
     if (!isE164PhoneNumber(phoneNumber)) {
       throw new Error(
@@ -755,6 +771,28 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     }
 
     return this.native.initiateOnDeviceConversionMeasurementWithPhoneNumber(phoneNumber);
+  }
+
+  initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(hashedPhoneNumber) {
+    if (isE164PhoneNumber(hashedPhoneNumber)) {
+      throw new Error(
+        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a sha256-hashed value of a phone number in E.164 format.",
+      );
+    }
+
+    if (!isString(hashedPhoneNumber)) {
+      throw new Error(
+        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a string value.",
+      );
+    }
+
+    if (!isIOS) {
+      return;
+    }
+
+    return this.native.initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
+      hashedPhoneNumber,
+    );
   }
 }
 

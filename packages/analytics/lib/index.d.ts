@@ -1755,22 +1755,50 @@ export namespace FirebaseAnalyticsTypes {
     setDefaultEventParameters(params?: { [key: string]: any }): Promise<void>;
 
     /**
-     * start privacy-sensitive on-device conversion management.
+     * Start privacy-sensitive on-device conversion management.
      * This is iOS-only.
-     * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
+     * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile.
      *
+     * @platform ios
      * @param emailAddress email address, properly formatted complete with domain name e.g, 'user@example.com'
      */
     initiateOnDeviceConversionMeasurementWithEmailAddress(emailAddress: string): Promise<void>;
 
     /**
-     * start privacy-sensitive on-device conversion management.
+     * Start privacy-sensitive on-device conversion management.
      * This is iOS-only.
-     * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
+     * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile.
+     * You need to pass the sha256-hashed of normalized email address to this function. See [this link](https://firebase.google.com/docs/tutorials/ads-ios-on-device-measurement/step-3#use-hashed-credentials) for more information.
      *
+     * @platform ios
+     * @param hashedEmailAddress sha256-hashed of normalized email address, properly formatted complete with domain name e.g, 'user@example.com'
+     */
+    initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
+      hashedEmailAddress: string,
+    ): Poromise<void>;
+
+    /**
+     * Start privacy-sensitive on-device conversion management.
+     * This is iOS-only.
+     * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile.
+     *
+     * @platform ios
      * @param phoneNumber phone number in E.164 format - that is a leading + sign, then up to 15 digits, no dashes or spaces.
      */
     initiateOnDeviceConversionMeasurementWithPhoneNumber(phoneNumber: string): Promise<void>;
+
+    /**
+     * Start privacy-sensitive on-device conversion management.
+     * This is iOS-only.
+     * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile.
+     * You need to pass the sha256-hashed of phone number in E.164 format. See [this link](https://firebase.google.com/docs/tutorials/ads-ios-on-device-measurement/step-3#use-hashed-credentials) for more information.
+     *
+     * @platform ios
+     * @param hashedPhoneNumber sha256-hashed of normalized phone number in E.164 format - that is a leading + sign, then up to 15 digits, no dashes or spaces.
+     */
+    initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
+      hashedPhoneNumber: string,
+    ): Promise<void>;
 
     /**
      * For Consent Mode!
