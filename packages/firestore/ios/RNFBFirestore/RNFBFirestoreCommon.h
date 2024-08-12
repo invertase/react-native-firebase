@@ -23,9 +23,13 @@
 
 + (dispatch_queue_t)getFirestoreQueue;
 
-+ (FIRFirestore *)getFirestoreForApp:(FIRApp *)firebaseApp;
++ (FIRFirestore *)getFirestoreForApp:(FIRApp *)firebaseApp databaseId:(NSString *)databaseId;
 
-+ (void)setFirestoreSettings:(FIRFirestore *)firestore appName:(NSString *)appName;
++ (NSString *)createFirestoreKeyWithAppName:(NSString *)appName databaseId:(NSString *)databaseId;
+
++ (void)setFirestoreSettings:(FIRFirestore *)firestore
+                     appName:(NSString *)appName
+                  databaseId:(NSString *)databaseId;
 
 + (FIRDocumentReference *)getDocumentForFirestore:(FIRFirestore *)firestore path:(NSString *)path;
 

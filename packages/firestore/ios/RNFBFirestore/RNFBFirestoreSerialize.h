@@ -24,14 +24,16 @@
 + (NSDictionary *)querySnapshotToDictionary:(NSString *)source
                                    snapshot:(FIRQuerySnapshot *)snapshot
                      includeMetadataChanges:(BOOL)includeMetadataChanges
-                                    appName:(NSString *)appName;
+                                    appName:(NSString *)appName
+                                 databaseId:(NSString *)databaseId;
 
 + (NSDictionary *)documentChangeToDictionary:(FIRDocumentChange *)documentChange
                             isMetadataChange:(BOOL)isMetadataChange
-                                     appName:(NSString *)appName;
+                                     appName:(NSString *)appName
+                                  databaseId:(NSString *)databaseId;
 
 + (NSDictionary *)documentSnapshotToDictionary:(FIRDocumentSnapshot *)snapshot
-                                       appName:(NSString *)appName;
+                                  firestoreKey:(NSString *)firestoreKey;
 
 + (NSDictionary *)serializeDictionary:(NSDictionary *)dictionary;
 

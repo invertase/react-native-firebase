@@ -16,14 +16,22 @@ import { firebase } from '../index';
 
 /**
  * @param {FirebaseApp?} app
+ * @param {String?} databaseId
  * @returns {Firestore}
  */
-export function getFirestore(app) {
+export function getFirestore(app, databaseId) {
   if (app) {
-    return firebase.firestore(app);
+    if (databaseId) {
+      return firebase.app(app.name).firestore(databaseId);
+    } else {
+      return firebase.app(app.name).firestore();
+    }
+  }
+  if (databaseId) {
+    return firebase.app().firestore(databaseId);
   }
 
-  return firebase.firestore();
+  return firebase.app().firestore();
 }
 
 /**

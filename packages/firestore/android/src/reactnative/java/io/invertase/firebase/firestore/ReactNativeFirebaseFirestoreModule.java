@@ -20,6 +20,7 @@ package io.invertase.firebase.firestore;
 import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
 import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreCommon.rejectPromiseFirestoreException;
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getFirestoreForApp;
+import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.createFirestoreKey;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -51,9 +52,9 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
-  public void loadBundle(String appName, String bundle, Promise promise) {
+  public void loadBundle(String appName, String databaseId, String bundle, Promise promise) {
     module
-        .loadBundle(appName, bundle)
+        .loadBundle(appName, databaseId, bundle)
         .addOnCompleteListener(
             task -> {
               if (task.isSuccessful()) {
@@ -66,9 +67,9 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
-  public void clearPersistence(String appName, Promise promise) {
+  public void clearPersistence(String appName, String databaseId, Promise promise) {
     module
-        .clearPersistence(appName)
+        .clearPersistence(appName, databaseId)
         .addOnCompleteListener(
             task -> {
               if (task.isSuccessful()) {
@@ -80,9 +81,9 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
-  public void waitForPendingWrites(String appName, Promise promise) {
+  public void waitForPendingWrites(String appName, String databaseId, Promise promise) {
     module
-        .waitForPendingWrites(appName)
+        .waitForPendingWrites(appName, databaseId)
         .addOnCompleteListener(
             task -> {
               if (task.isSuccessful()) {
@@ -94,9 +95,9 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
-  public void disableNetwork(String appName, Promise promise) {
+  public void disableNetwork(String appName, String databaseId, Promise promise) {
     module
-        .disableNetwork(appName)
+        .disableNetwork(appName, databaseId)
         .addOnCompleteListener(
             task -> {
               if (task.isSuccessful()) {
@@ -108,9 +109,9 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
-  public void enableNetwork(String appName, Promise promise) {
+  public void enableNetwork(String appName, String databaseId, Promise promise) {
     module
-        .enableNetwork(appName)
+        .enableNetwork(appName, databaseId)
         .addOnCompleteListener(
             task -> {
               if (task.isSuccessful()) {
@@ -122,9 +123,10 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
-  public void useEmulator(String appName, String host, int port, Promise promise) {
+  public void useEmulator(
+      String appName, String databaseId, String host, int port, Promise promise) {
     module
-        .useEmulator(appName, host, port)
+        .useEmulator(appName, databaseId, host, port)
         .addOnCompleteListener(
             task -> {
               if (task.isSuccessful()) {
@@ -136,9 +138,10 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
-  public void settings(String appName, ReadableMap settings, Promise promise) {
+  public void settings(String appName, String databaseId, ReadableMap settings, Promise promise) {
+    String firestoreKey = createFirestoreKey(appName, databaseId);
     module
-        .settings(appName, toHashMap(settings))
+        .settings(firestoreKey, toHashMap(settings))
         .addOnCompleteListener(
             task -> {
               if (task.isSuccessful()) {
@@ -150,9 +153,9 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
-  public void terminate(String appName, Promise promise) {
+  public void terminate(String appName, String databaseId, Promise promise) {
     module
-        .terminate(appName)
+        .terminate(appName, databaseId)
         .addOnCompleteListener(
             task -> {
               if (task.isSuccessful()) {

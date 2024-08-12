@@ -56,12 +56,12 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
 
   @ReactMethod
   public void documentOnSnapshot(
-      String appName, String path, int listenerId, ReadableMap listenerOptions) {
+      String appName, String databaseId, String path, int listenerId, ReadableMap listenerOptions) {
     if (documentSnapshotListeners.get(listenerId) != null) {
       return;
     }
 
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
     final EventListener<DocumentSnapshot> listener =
@@ -72,9 +72,9 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
               listenerRegistration.remove();
               documentSnapshotListeners.remove(listenerId);
             }
-            sendOnSnapshotError(appName, listenerId, exception);
+            sendOnSnapshotError(appName, databaseId, listenerId, exception);
           } else {
-            sendOnSnapshotEvent(appName, listenerId, documentSnapshot);
+            sendOnSnapshotEvent(appName, databaseId, listenerId, documentSnapshot);
           }
         };
 
@@ -95,7 +95,7 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   }
 
   @ReactMethod
-  public void documentOffSnapshot(String appName, int listenerId) {
+  public void documentOffSnapshot(String appName, String databaseId, int listenerId) {
     ListenerRegistration listenerRegistration = documentSnapshotListeners.get(listenerId);
     if (listenerRegistration != null) {
       listenerRegistration.remove();
@@ -104,8 +104,9 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   }
 
   @ReactMethod
-  public void documentGet(String appName, String path, ReadableMap getOptions, Promise promise) {
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+  public void documentGet(
+      String appName, String databaseId, String path, ReadableMap getOptions, Promise promise) {
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
     Source source;
@@ -127,7 +128,7 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
             getExecutor(),
             () -> {
               DocumentSnapshot documentSnapshot = Tasks.await(documentReference.get(source));
-              return snapshotToWritableMap(appName, documentSnapshot);
+              return snapshotToWritableMap(appName, databaseId, documentSnapshot);
             })
         .addOnCompleteListener(
             task -> {
@@ -140,8 +141,8 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   }
 
   @ReactMethod
-  public void documentDelete(String appName, String path, Promise promise) {
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+  public void documentDelete(String appName, String databaseId, String path, Promise promise) {
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
     Tasks.call(getTransactionalExecutor(), documentReference::delete)
         .addOnCompleteListener(
@@ -156,8 +157,13 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
 
   @ReactMethod
   public void documentSet(
-      String appName, String path, ReadableMap data, ReadableMap options, Promise promise) {
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+      String appName,
+      String databaseId,
+      String path,
+      ReadableMap data,
+      ReadableMap options,
+      Promise promise) {
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
     Tasks.call(getTransactionalExecutor(), () -> parseReadableMap(firebaseFirestore, data))
@@ -195,8 +201,9 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   }
 
   @ReactMethod
-  public void documentUpdate(String appName, String path, ReadableMap data, Promise promise) {
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+  public void documentUpdate(
+      String appName, String databaseId, String path, ReadableMap data, Promise promise) {
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
     Tasks.call(getTransactionalExecutor(), () -> parseReadableMap(firebaseFirestore, data))
@@ -214,8 +221,9 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   }
 
   @ReactMethod
-  public void documentBatch(String appName, ReadableArray writes, Promise promise) {
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+  public void documentBatch(
+      String appName, String databaseId, ReadableArray writes, Promise promise) {
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
 
     Tasks.call(getTransactionalExecutor(), () -> parseDocumentBatches(firebaseFirestore, writes))
         .continueWithTask(
@@ -282,8 +290,8 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   }
 
   private void sendOnSnapshotEvent(
-      String appName, int listenerId, DocumentSnapshot documentSnapshot) {
-    Tasks.call(getExecutor(), () -> snapshotToWritableMap(appName, documentSnapshot))
+      String appName, String databaseId, int listenerId, DocumentSnapshot documentSnapshot) {
+    Tasks.call(getExecutor(), () -> snapshotToWritableMap(appName, databaseId, documentSnapshot))
         .addOnCompleteListener(
             task -> {
               if (task.isSuccessful()) {
@@ -298,14 +306,16 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
                         ReactNativeFirebaseFirestoreEvent.DOCUMENT_EVENT_SYNC,
                         body,
                         appName,
+                        databaseId,
                         listenerId));
               } else {
-                sendOnSnapshotError(appName, listenerId, task.getException());
+                sendOnSnapshotError(appName, databaseId, listenerId, task.getException());
               }
             });
   }
 
-  private void sendOnSnapshotError(String appName, int listenerId, Exception exception) {
+  private void sendOnSnapshotError(
+      String appName, String databaseId, int listenerId, Exception exception) {
     WritableMap body = Arguments.createMap();
     WritableMap error = Arguments.createMap();
 
@@ -325,6 +335,10 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
 
     emitter.sendEvent(
         new ReactNativeFirebaseFirestoreEvent(
-            ReactNativeFirebaseFirestoreEvent.DOCUMENT_EVENT_SYNC, body, appName, listenerId));
+            ReactNativeFirebaseFirestoreEvent.DOCUMENT_EVENT_SYNC,
+            body,
+            appName,
+            databaseId,
+            listenerId));
   }
 }
