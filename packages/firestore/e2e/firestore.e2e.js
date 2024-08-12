@@ -1,5 +1,3 @@
-import { Platform } from 'react-native';
-
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -213,7 +211,7 @@ describe('firestore()', function () {
       describe('serverTimestampBehavior', function () {
         it("handles 'estimate'", async function () {
           // TODO(ehesp): Figure out how to call settings on other.
-          if (!(Platform.android || Platform.ios)) {
+          if (Platform.other) {
             // Not supported on web lite sdk
             return;
           }
@@ -240,7 +238,7 @@ describe('firestore()', function () {
 
         it("handles 'previous'", async function () {
           // TODO(ehesp): Figure out how to call settings on other.
-          if (!(Platform.android || Platform.ios)) {
+          if (Platform.other) {
             // Not supported on web lite sdk
             return;
           }
@@ -340,7 +338,7 @@ describe('firestore()', function () {
     describe('FirestorePersistentCacheIndexManager', function () {
       describe('if persistence is enabled', function () {
         it('should enableIndexAutoCreation()', async function () {
-          if (!(Platform.android || Platform.ios)) {
+          if (Platform.other) {
             // Not supported on web lite sdk
             return;
           }
@@ -351,7 +349,7 @@ describe('firestore()', function () {
         });
 
         it('should disableIndexAutoCreation()', async function () {
-          if (!(Platform.android || Platform.ios)) {
+          if (Platform.other) {
             // Not supported on web lite sdk
             return;
           }
@@ -361,7 +359,7 @@ describe('firestore()', function () {
         });
 
         it('should deleteAllIndexes()', async function () {
-          if (!(Platform.android || Platform.ios)) {
+          if (Platform.other) {
             // Not supported on web lite sdk
             return;
           }
@@ -373,7 +371,7 @@ describe('firestore()', function () {
 
       describe('if persistence is disabled', function () {
         it('should return `null` when calling `persistentCacheIndexManager()`', async function () {
-          if (!(Platform.android || Platform.ios)) {
+          if (Platform.other) {
             // Not supported on web lite sdk
             return;
           }
@@ -385,17 +383,35 @@ describe('firestore()', function () {
       });
 
       describe('macOS should throw exception when calling `persistentCacheIndexManager()`', function () {
-        it('should throw an exception', async function () {
+        it('should throw an exception when calling PersistentCacheIndexManager API', async function () {
           if (!Platform.other) {
             return;
           }
+          const db = firebase.firestore();
+          const indexManager = db.persistentCacheIndexManager();
 
           try {
-            const db = firebase.firestore();
-            db.persistentCacheIndexManager();
+            await indexManager.enableIndexAutoCreation();
+
             throw new Error('Did not throw an Error.');
           } catch (e) {
-            e.message.should.containEql('not supported');
+            e.message.should.containEql('Not supported in the lite SDK');
+          }
+
+          try {
+            await indexManager.deleteAllIndexes();
+
+            throw new Error('Did not throw an Error.');
+          } catch (e) {
+            e.message.should.containEql('Not supported in the lite SDK');
+          }
+
+          try {
+            await indexManager.disableIndexAutoCreation();
+
+            throw new Error('Did not throw an Error.');
+          } catch (e) {
+            e.message.should.containEql('Not supported in the lite SDK');
           }
         });
       });
@@ -756,7 +772,7 @@ describe('firestore()', function () {
     describe('FirestorePersistentCacheIndexManager', function () {
       describe('if persistence is enabled', function () {
         it('should enableIndexAutoCreation()', async function () {
-          if (!(Platform.android || Platform.ios)) {
+          if (Platform.other) {
             // Not supported on web lite sdk
             return;
           }
@@ -771,7 +787,7 @@ describe('firestore()', function () {
         });
 
         it('should disableIndexAutoCreation()', async function () {
-          if (!(Platform.android || Platform.ios)) {
+          if (Platform.other) {
             // Not supported on web lite sdk
             return;
           }
@@ -786,7 +802,7 @@ describe('firestore()', function () {
         });
 
         it('should deleteAllIndexes()', async function () {
-          if (!(Platform.android || Platform.ios)) {
+          if (Platform.other) {
             // Not supported on web lite sdk
             return;
           }
@@ -800,7 +816,7 @@ describe('firestore()', function () {
 
       describe('if persistence is disabled', function () {
         it('should return `null` when calling `persistentCacheIndexManager()`', async function () {
-          if (!(Platform.android || Platform.ios)) {
+          if (Platform.other) {
             // Not supported on web lite sdk
             return;
           }
@@ -815,18 +831,40 @@ describe('firestore()', function () {
       });
 
       describe('macOS should throw exception when calling `persistentCacheIndexManager()`', function () {
-        it('should throw an exception', async function () {
+        it('should throw an exception when calling PersistentCacheIndexManager API', async function () {
           if (Platform.android || Platform.ios) {
             return;
           }
-          const { getFirestore, getPersistentCacheIndexManager } = firestoreModular;
+          const {
+            getFirestore,
+            getPersistentCacheIndexManager,
+            enablePersistentCacheIndexAutoCreation,
+            disablePersistentCacheIndexAutoCreation,
+            deleteAllPersistentCacheIndexes,
+          } = firestoreModular;
+
+          const db = getFirestore();
+          const indexManager = getPersistentCacheIndexManager(db);
 
           try {
-            const db = getFirestore();
-            getPersistentCacheIndexManager(db);
+            await enablePersistentCacheIndexAutoCreation(indexManager);
             throw new Error('Did not throw an Error.');
           } catch (e) {
-            e.message.should.containEql('not supported');
+            e.message.should.containEql('Not supported in the lite SDK');
+          }
+
+          try {
+            await disablePersistentCacheIndexAutoCreation(indexManager);
+            throw new Error('Did not throw an Error.');
+          } catch (e) {
+            e.message.should.containEql('Not supported in the lite SDK');
+          }
+
+          try {
+            await deleteAllPersistentCacheIndexes(indexManager);
+            throw new Error('Did not throw an Error.');
+          } catch (e) {
+            e.message.should.containEql('Not supported in the lite SDK');
           }
         });
       });
