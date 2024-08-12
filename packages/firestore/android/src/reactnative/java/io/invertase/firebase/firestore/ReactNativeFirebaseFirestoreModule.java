@@ -19,8 +19,8 @@ package io.invertase.firebase.firestore;
 
 import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
 import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreCommon.rejectPromiseFirestoreException;
-import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getFirestoreForApp;
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.createFirestoreKey;
+import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getFirestoreForApp;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -167,9 +167,10 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
-  public void persistenceCacheIndexManager(String appName, int requestType, Promise promise) {
+  public void persistenceCacheIndexManager(
+      String appName, String databaseId, int requestType, Promise promise) {
     PersistentCacheIndexManager indexManager =
-        getFirestoreForApp(appName).getPersistentCacheIndexManager();
+        getFirestoreForApp(appName, databaseId).getPersistentCacheIndexManager();
     if (indexManager != null) {
       switch (requestType) {
         case 0:

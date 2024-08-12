@@ -210,11 +210,13 @@ RCT_EXPORT_METHOD(terminate
 
 RCT_EXPORT_METHOD(persistenceCacheIndexManager
                   : (FIRApp *)firebaseApp
+                  : (NSString *)databaseId
                   : (NSInteger)requestType
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   FIRPersistentCacheIndexManager *persistentCacheIndexManager =
-      [RNFBFirestoreCommon getFirestoreForApp:firebaseApp].persistentCacheIndexManager;
+      [RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId]
+          .persistentCacheIndexManager;
 
   if (persistentCacheIndexManager) {
     switch (requestType) {
