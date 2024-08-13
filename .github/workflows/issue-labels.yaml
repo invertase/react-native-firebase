@@ -1,4 +1,4 @@
-name: Label 'Needs Attention' on issues with OP response
+name: Update labels on issues with OP response
 
 on:
   issue_comment:
@@ -25,5 +25,12 @@ jobs:
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: 'Needs Attention'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Remove 'blocked customer-response' label if OP responded
+        if: env.op_comment == 'true'
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: 'blocked: customer-response'
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
