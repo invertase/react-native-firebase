@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [20.4.0](https://github.com/invertase/react-native-firebase/compare/v20.3.0...v20.4.0) (2024-08-13)
+
+### Bug Fixes
+
+- **analytics:** update the typing for Item ([#7919](https://github.com/invertase/react-native-firebase/issues/7919)) ([c2c4576](https://github.com/invertase/react-native-firebase/commit/c2c457608c865f6d25e4b9b6689cbc00721de194))
+
 ## [20.3.0](https://github.com/invertase/react-native-firebase/compare/v20.2.1...v20.3.0) (2024-07-19)
 
 ### Bug Fixes

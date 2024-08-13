@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [20.4.0](https://github.com/invertase/react-native-firebase/compare/v20.3.0...v20.4.0) (2024-08-13)
+
+### Features
+
+- **firestore:** support for `PersistentCacheIndexManager` ([#7910](https://github.com/invertase/react-native-firebase/issues/7910)) ([0b0de45](https://github.com/invertase/react-native-firebase/commit/0b0de45513cd3aab9f7037fd8468a63cf96aa62c))
+- **firestore:** support for second database ([#7949](https://github.com/invertase/react-native-firebase/issues/7949)) ([eec08a0](https://github.com/invertase/react-native-firebase/commit/eec08a06f41dd96d13778fbed2afcaaac238fca4))
+
+### Bug Fixes
+
+- **analytics:** update the typing for Item ([#7919](https://github.com/invertase/react-native-firebase/issues/7919)) ([c2c4576](https://github.com/invertase/react-native-firebase/commit/c2c457608c865f6d25e4b9b6689cbc00721de194))
+- **database:** fixes modular imports exports ([#7916](https://github.com/invertase/react-native-firebase/issues/7916)) ([7022204](https://github.com/invertase/react-native-firebase/commit/7022204616f6149e3327cbf2ab8a469f537a7b61))
+
 ## [20.3.0](https://github.com/invertase/react-native-firebase/compare/v20.2.1...v20.3.0) (2024-07-19)
 
 ### Features
