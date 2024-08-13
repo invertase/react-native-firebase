@@ -20,7 +20,7 @@ jobs:
             echo "op_comment=false" >> $GITHUB_ENV
           fi
 
-      - name: Add label if OP responded
+      - name: Add 'Needs Attention' label if OP responded
         if: env.op_comment == 'true'
         uses: actions-ecosystem/action-add-labels@v1
         with:
