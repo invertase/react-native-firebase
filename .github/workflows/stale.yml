@@ -35,4 +35,4 @@ jobs:
           close-issue-reason: not_planned
           days-before-stale: 28
           days-before-close: 15
-          stale-issue-label: 'Type: Stale'
+          stale-issue-label: 'Stale'
