@@ -3,7 +3,7 @@ name: "⚠️ Bug/Issue report - React Native"
 about: Please provide as much detail as possible. Issues may be closed if they do
   not follow the template.
 title: "[\U0001F41B] Bug Report Title - CHANGE ME "
-labels: 'Help: Needs Triage, Impact: Bug'
+labels: 'Help: Needs Triage, Needs Attention, type: bug'
 assignees: ''
 
 ---
