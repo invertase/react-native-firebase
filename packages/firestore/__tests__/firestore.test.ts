@@ -51,6 +51,10 @@ import firestore, {
   deleteDoc,
   onSnapshot,
   Timestamp,
+  getPersistentCacheIndexManager,
+  deleteAllPersistentCacheIndexes,
+  disablePersistentCacheIndexAutoCreation,
+  enablePersistentCacheIndexAutoCreation,
 } from '../lib';
 
 const COLLECTION = 'firestore';
@@ -628,6 +632,48 @@ describe('Firestore', function () {
 
     it('`Timestamp` is properly exposed to end user', function () {
       expect(Timestamp).toBeDefined();
+    });
+
+    it('`getPersistentCacheIndexManager` is properly exposed to end user', function () {
+      expect(getPersistentCacheIndexManager).toBeDefined();
+      const indexManager = getPersistentCacheIndexManager(firebase.firestore());
+      expect(indexManager!.constructor.name).toEqual('FirestorePersistentCacheIndexManager');
+    });
+
+    it('`deleteAllPersistentCacheIndexes` is properly exposed to end user', function () {
+      expect(deleteAllPersistentCacheIndexes).toBeDefined();
+    });
+
+    it('`disablePersistentCacheIndexAutoCreation` is properly exposed to end user', function () {
+      expect(disablePersistentCacheIndexAutoCreation).toBeDefined();
+    });
+
+    it('`enablePersistentCacheIndexAutoCreation` is properly exposed to end user', function () {
+      expect(enablePersistentCacheIndexAutoCreation).toBeDefined();
+    });
+  });
+
+  describe('FirestorePersistentCacheIndexManager', function () {
+    it('is exposed to end user', function () {
+      const firestore1 = firebase.firestore();
+      firestore1.settings({ persistence: true });
+      const indexManager = firestore1.persistentCacheIndexManager();
+      expect(indexManager).toBeDefined();
+      expect(indexManager.constructor.name).toEqual('FirestorePersistentCacheIndexManager');
+
+      expect(indexManager.enableIndexAutoCreation).toBeInstanceOf(Function);
+      expect(indexManager.disableIndexAutoCreation).toBeInstanceOf(Function);
+      expect(indexManager.deleteAllIndexes).toBeInstanceOf(Function);
+
+      const firestore2 = firebase.firestore();
+      firestore2.settings({ persistence: false });
+
+      const nullIndexManager = firestore2.persistentCacheIndexManager();
+
+      expect(nullIndexManager).toBeNull();
+
+      const nullIndexManagerModular = getPersistentCacheIndexManager(firestore2);
+      expect(nullIndexManagerModular).toBeNull();
     });
   });
 });
