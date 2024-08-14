@@ -341,7 +341,7 @@ For example:
 import database, { firebase } from '@react-native-firebase/database';
 
 // create a secondary app
-const secondaryApp = await firebase.initalizeApp(credentials, config);
+const secondaryApp = await firebase.initializeApp(credentials, config);
 
 // pass the secondary app instance to the database module
 const secondaryDatabase = database(secondaryApp);
