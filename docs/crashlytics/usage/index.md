@@ -120,7 +120,7 @@ export default function App() {
     try {
       if (users) {
         // An empty array is truthy, but not actually true.
-        // Therefore the array was never initialised.
+        // Therefore the array was never initialized.
         setUserCounts(userCounts.push(users.length));
       }
     } catch (error) {

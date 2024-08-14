@@ -1,7 +1,6 @@
-import { ReactNativeFirebase } from '@react-native-firebase/app';
+import { FirebaseApp } from '@firebase/app-types';
 import { FirebaseMLTypes } from '..';
 
-type FirebaseApp = ReactNativeFirebase.Module;
 type FirebaseML = FirebaseMLTypes.Module;
 
 /**

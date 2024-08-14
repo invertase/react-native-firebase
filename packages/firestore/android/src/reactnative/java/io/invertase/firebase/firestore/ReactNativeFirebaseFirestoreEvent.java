@@ -30,16 +30,19 @@ public class ReactNativeFirebaseFirestoreEvent implements NativeEvent {
   private static final String KEY_BODY = "body";
   private static final String KEY_APP_NAME = "appName";
   private static final String KEY_EVENT_NAME = "eventName";
+  private static final String DATABASE_ID = "databaseId";
   private String eventName;
   private WritableMap eventBody;
   private String appName;
+  private String databaseId;
   private int listenerId;
 
   ReactNativeFirebaseFirestoreEvent(
-      String eventName, WritableMap eventBody, String appName, int listenerId) {
+      String eventName, WritableMap eventBody, String appName, String databaseId, int listenerId) {
     this.eventName = eventName;
     this.eventBody = eventBody;
     this.appName = appName;
+    this.databaseId = databaseId;
     this.listenerId = listenerId;
   }
 
@@ -54,6 +57,7 @@ public class ReactNativeFirebaseFirestoreEvent implements NativeEvent {
     event.putInt(KEY_ID, listenerId);
     event.putMap(KEY_BODY, eventBody);
     event.putString(KEY_APP_NAME, appName);
+    event.putString(DATABASE_ID, databaseId);
     event.putString(KEY_EVENT_NAME, eventName);
     return event;
   }

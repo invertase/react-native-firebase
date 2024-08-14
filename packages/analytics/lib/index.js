@@ -40,58 +40,6 @@ import fallBackModule from './web/RNFBAnalyticsModule';
 import version from './version';
 import * as structs from './structs';
 
-export {
-  getAnalytics,
-  logEvent,
-  setAnalyticsCollectionEnabled,
-  setSessionTimeoutDuration,
-  getAppInstanceId,
-  getSessionId,
-  setUserId,
-  setUserProperty,
-  setUserProperties,
-  resetAnalyticsData,
-  logAddPaymentInfo,
-  logScreenView,
-  logAddShippingInfo,
-  logAddToCart,
-  logAddToWishlist,
-  logAppOpen,
-  logBeginCheckout,
-  logCampaignDetails,
-  logEarnVirtualCurrency,
-  logGenerateLead,
-  logJoinGroup,
-  logLevelEnd,
-  logLevelStart,
-  logLevelUp,
-  logLogin,
-  logPostScore,
-  logSelectContent,
-  logPurchase,
-  logRefund,
-  logRemoveFromCart,
-  logSearch,
-  logSelectItem,
-  logSetCheckoutOption,
-  logSelectPromotion,
-  logShare,
-  logSignUp,
-  logSpendVirtualCurrency,
-  logTutorialBegin,
-  logTutorialComplete,
-  logUnlockAchievement,
-  logViewCart,
-  logViewItem,
-  logViewItemList,
-  logViewPromotion,
-  logViewSearchResults,
-  setDefaultEventParameters,
-  initiateOnDeviceConversionMeasurementWithEmailAddress,
-  initiateOnDeviceConversionMeasurementWithPhoneNumber,
-  setConsent,
-} from './modular/index';
-
 const ReservedEventNames = [
   'ad_activeview',
   'ad_click',
@@ -825,6 +773,8 @@ export default createModuleNamespace({
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseAnalyticsModule,
 });
+
+export * from './modular/index';
 
 // import analytics, { firebase } from '@react-native-firebase/analytics';
 // analytics().logEvent(...);

@@ -9,9 +9,13 @@ service cloud.firestore {
     }
   match /firestore/{document=**} {
       allow read, write: if true;
-    } 
+    }
   match /{path=**}/collectionGroup/{documentId} {
       allow read, write: if true;
-    }  
+    }
+  match /second-database/{document=**} {
+    // separate rules are not supported so we need to use the same rules for both databases to prove it is querying different databases
+    allow read, write: if database == "second-rnfb";
+  }
   }
 }

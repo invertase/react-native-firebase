@@ -65,7 +65,8 @@ enum TYPE_MAP {
 + (NSDictionary *)querySnapshotToDictionary:(NSString *)source
                                    snapshot:(FIRQuerySnapshot *)snapshot
                      includeMetadataChanges:(BOOL)includeMetadataChanges
-                                    appName:(NSString *)appName {
+                                    appName:(NSString *)appName
+                                 databaseId:(NSString *)databaseId {
   NSMutableArray *metadata = [[NSMutableArray alloc] init];
   NSMutableDictionary *snapshotMap = [[NSMutableDictionary alloc] init];
 
@@ -84,7 +85,8 @@ enum TYPE_MAP {
     for (FIRDocumentChange *documentChange in documentChangesList) {
       [changes addObject:[self documentChangeToDictionary:documentChange
                                          isMetadataChange:false
-                                                  appName:appName]];
+                                                  appName:appName
+                                               databaseId:databaseId]];
     }
   } else {
     // If listening to metadata changes, get the changes list with document changes array.
@@ -119,16 +121,19 @@ enum TYPE_MAP {
 
       [changes addObject:[self documentChangeToDictionary:documentMetadataChange
                                          isMetadataChange:isMetadataChange
-                                                  appName:appName]];
+                                                  appName:appName
+                                               databaseId:databaseId]];
     }
   }
 
   snapshotMap[KEY_CHANGES] = changes;
-
+  NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName
+                                                                   databaseId:databaseId];
   // set documents
   NSMutableArray *documents = [[NSMutableArray alloc] init];
   for (FIRDocumentSnapshot *documentSnapshot in documentSnapshots) {
-    [documents addObject:[self documentSnapshotToDictionary:documentSnapshot appName:appName]];
+    [documents addObject:[self documentSnapshotToDictionary:documentSnapshot
+                                               firestoreKey:firestoreKey]];
   }
   snapshotMap[KEY_DOCUMENTS] = documents;
 
@@ -143,7 +148,8 @@ enum TYPE_MAP {
 
 + (NSDictionary *)documentChangeToDictionary:(FIRDocumentChange *)documentChange
                             isMetadataChange:(BOOL)isMetadataChange
-                                     appName:(NSString *)appName {
+                                     appName:(NSString *)appName
+                                  databaseId:(NSString *)databaseId {
   NSMutableDictionary *changeMap = [[NSMutableDictionary alloc] init];
   changeMap[@"isMetadataChange"] = @(isMetadataChange);
 
@@ -154,9 +160,10 @@ enum TYPE_MAP {
   } else {
     changeMap[KEY_DOC_CHANGE_TYPE] = CHANGE_REMOVED;
   }
-
+  NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName
+                                                                   databaseId:databaseId];
   changeMap[KEY_DOC_CHANGE_DOCUMENT] = [self documentSnapshotToDictionary:documentChange.document
-                                                                  appName:appName];
+                                                             firestoreKey:firestoreKey];
 
   // Note the Firestore C++ SDK here returns a maxed UInt that is != NSUIntegerMax, so we make one
   // ourselves so we can convert to -1 for JS land
@@ -180,7 +187,7 @@ enum TYPE_MAP {
 
 // Native DocumentSnapshot -> NSDictionary (for JS)
 + (NSDictionary *)documentSnapshotToDictionary:(FIRDocumentSnapshot *)snapshot
-                                       appName:(NSString *)appName {
+                                  firestoreKey:(NSString *)firestoreKey {
   NSMutableArray *metadata = [[NSMutableArray alloc] init];
   NSMutableDictionary *documentMap = [[NSMutableDictionary alloc] init];
 
@@ -194,7 +201,7 @@ enum TYPE_MAP {
 
   if (snapshot.exists) {
     NSString *key =
-        [NSString stringWithFormat:@"%@_%@", FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR, appName];
+        [NSString stringWithFormat:@"%@_%@", FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR, firestoreKey];
     NSString *behavior = [[RNFBPreferences shared] getStringValue:key defaultValue:@"none"];
 
     FIRServerTimestampBehavior serverTimestampBehavior;

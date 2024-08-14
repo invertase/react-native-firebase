@@ -38,10 +38,12 @@ import java.util.concurrent.Executor;
 
 public class ReactNativeFirebaseFirestoreQuery {
   String appName;
+  String databaseId;
   Query query;
 
   ReactNativeFirebaseFirestoreQuery(
       String appName,
+      String databaseId,
       Query query,
       ReadableArray filters,
       ReadableArray orders,
@@ -58,7 +60,7 @@ public class ReactNativeFirebaseFirestoreQuery {
         executor,
         () -> {
           QuerySnapshot querySnapshot = Tasks.await(query.get(source));
-          return snapshotToWritableMap(this.appName, "get", querySnapshot, null);
+          return snapshotToWritableMap(this.appName, this.databaseId, "get", querySnapshot, null);
         });
   }
 

@@ -14,6 +14,19 @@
  * limitations under the License.
  *
  */
+/**
+ * @typedef {import('..').FirebaseStorageTypes} FirebaseStorageTypes
+ * @typedef {import('..').FirebaseStorageTypes.Module} Storage
+ * @typedef {import('..').FirebaseStorageTypes.Reference} Reference
+ * @typedef {import('..').FirebaseStorageTypes.FullMetadata} FullMetadata
+ * @typedef {import('..').FirebaseStorageTypes.ListResult} ListResult
+ * @typedef {import('..').FirebaseStorageTypes.TaskResult} TaskResult
+ * @typedef {import('..').FirebaseStorageTypes.Task} Task
+ * @typedef {import('..').FirebaseStorageTypes.ListOptions} ListOptions
+ * @typedef {import('..').FirebaseStorageTypes.SettableMetadata} SettableMetadata
+ * @typedef {import('..').FirebaseStorageTypes.EmulatorMockTokenOptions} EmulatorMockTokenOptions
+ * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
+ */
 
 import { firebase } from '..';
 
@@ -56,7 +69,7 @@ export function connectStorageEmulator(storage, host, port, options) {
  * @param storage - Storage instance.
  * @param path An optional string pointing to a location on the storage bucket. If no path
  * is provided, the returned reference will be the bucket root path. Optional.
- * @returns {Storage.Reference}
+ * @returns {Reference}
  */
 export function ref(storage, path) {
   return storage.ref(path);

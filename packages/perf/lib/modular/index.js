@@ -15,6 +15,14 @@
  *
  */
 
+/**
+ * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
+ * @typedef {import('..').FirebasePerformanceTypes.Module} Performance
+ * @typedef {import('..').FirebasePerformanceTypes.Trace} Trace
+ * @typedef {import('..').FirebasePerformanceTypes.ScreenTrace} ScreenTrace
+ * @typedef {import('..').FirebasePerformanceTypes.HttpMetric} HttpMetric
+ */
+
 import { isBoolean } from '@react-native-firebase/app/lib/common';
 import { firebase } from '..';
 
@@ -73,6 +81,7 @@ export function httpMetric(perf, identifier, httpMethod) {
  * @platform android Android !== 9.0.0 && Android !== 9.1.0
  * @param perf - Performance instance
  * @param identifier Name of the trace, no leading or trailing whitespace allowed, no leading underscore '_' character allowed, max length is 100.
+ * @returns {ScreenTrace}
  */
 export function newScreenTrace(perf, identifier) {
   return perf.newScreenTrace(identifier);
@@ -83,6 +92,7 @@ export function newScreenTrace(perf, identifier) {
  * @platform android Android !== 9.0.0 && Android !== 9.1.0
  * @param perf - Performance instance
  * @param identifier Name of the screen
+ * @returns {Promise<ScreenTrace>}
  */
 export function startScreenTrace(perf, identifier) {
   return perf.startScreenTrace(identifier);

@@ -2,8 +2,8 @@ name: '⚠️ Other Platforms - Bug/Issue report'
 title: "[\U0001F41B] Other Platforms Bug Report Title - CHANGE ME "
 labels:
   - 'Help: Needs Triage'
-  - 'Impact: Bug'
-  - 'Platform: Other'
+  - 'type: bug'
+  - 'platform: macOS (Other)'
 description: Create an issue specific to 'Other' platforms on React Native Firebase (not Android or iOS).
 body:
   - type: checkboxes

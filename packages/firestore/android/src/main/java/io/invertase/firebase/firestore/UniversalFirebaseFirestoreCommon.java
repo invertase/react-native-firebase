@@ -29,8 +29,13 @@ import java.util.WeakHashMap;
 public class UniversalFirebaseFirestoreCommon {
   static WeakHashMap<String, WeakReference<FirebaseFirestore>> instanceCache = new WeakHashMap<>();
 
-  static FirebaseFirestore getFirestoreForApp(String appName) {
-    WeakReference<FirebaseFirestore> cachedInstance = instanceCache.get(appName);
+  static String createFirestoreKey(String appName, String databaseId) {
+    return appName + ":" + databaseId;
+  }
+
+  static FirebaseFirestore getFirestoreForApp(String appName, String databaseId) {
+    String firestoreKey = createFirestoreKey(appName, databaseId);
+    WeakReference<FirebaseFirestore> cachedInstance = instanceCache.get(firestoreKey);
 
     if (cachedInstance != null) {
       return cachedInstance.get();
@@ -38,24 +43,27 @@ public class UniversalFirebaseFirestoreCommon {
 
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
 
-    FirebaseFirestore instance = FirebaseFirestore.getInstance(firebaseApp);
+    FirebaseFirestore instance = FirebaseFirestore.getInstance(firebaseApp, databaseId);
 
-    setFirestoreSettings(instance, appName);
+    setFirestoreSettings(instance, firestoreKey);
 
     instanceCache.put(appName, new WeakReference<FirebaseFirestore>(instance));
 
     return instance;
   }
 
-  private static void setFirestoreSettings(FirebaseFirestore firebaseFirestore, String appName) {
+  private static void setFirestoreSettings(
+      FirebaseFirestore firebaseFirestore, String firestoreKey) {
 
     UniversalFirebasePreferences preferences = UniversalFirebasePreferences.getSharedInstance();
     FirebaseFirestoreSettings.Builder firestoreSettings = new FirebaseFirestoreSettings.Builder();
 
-    String cacheSizeKey = UniversalFirebaseFirestoreStatics.FIRESTORE_CACHE_SIZE + "_" + appName;
-    String hostKey = UniversalFirebaseFirestoreStatics.FIRESTORE_HOST + "_" + appName;
-    String persistenceKey = UniversalFirebaseFirestoreStatics.FIRESTORE_PERSISTENCE + "_" + appName;
-    String sslKey = UniversalFirebaseFirestoreStatics.FIRESTORE_SSL + "_" + appName;
+    String cacheSizeKey =
+        UniversalFirebaseFirestoreStatics.FIRESTORE_CACHE_SIZE + "_" + firestoreKey;
+    String hostKey = UniversalFirebaseFirestoreStatics.FIRESTORE_HOST + "_" + firestoreKey;
+    String persistenceKey =
+        UniversalFirebaseFirestoreStatics.FIRESTORE_PERSISTENCE + "_" + firestoreKey;
+    String sslKey = UniversalFirebaseFirestoreStatics.FIRESTORE_SSL + "_" + firestoreKey;
 
     int cacheSizeBytes =
         preferences.getIntValue(

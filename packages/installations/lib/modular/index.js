@@ -18,9 +18,9 @@
 import { firebase } from '..';
 
 /**
- * @param {import("@react-native-firebase/app").ReactNativeFirebase.FirebaseApp} app
- * @returns {import("..").FirebaseInstallationsTypes.Module}
+ * @typedef {import('..').FirebaseInstallationsTypes.Module} FirebaseInstallation
  */
+
 export function getInstallations(app) {
   if (app) {
     return firebase.app(app.name).installations();
@@ -29,7 +29,7 @@ export function getInstallations(app) {
 }
 
 /**
- * @param {import("..").FirebaseInstallationsTypes.Module} installations
+ * @param {FirebaseInstallation} installations
  * @returns {Promise<void>}
  */
 export function deleteInstallations(installations) {
@@ -37,7 +37,7 @@ export function deleteInstallations(installations) {
 }
 
 /**
- * @param {import("..").FirebaseInstallationsTypes.Module} installations
+ * @param {FirebaseInstallation} installations
  * @returns {Promise<string>}
  */
 export function getId(installations) {
@@ -45,7 +45,7 @@ export function getId(installations) {
 }
 
 /**
- * @param {import("..").FirebaseInstallationsTypes.Module} installations
+ * @param {FirebaseInstallation} installations
  * @param {boolean | undefined} forceRefresh
  * @returns {Promise<string>}
  */
@@ -54,7 +54,7 @@ export function getToken(installations, forceRefresh) {
 }
 
 /**
- * @param {import("..").FirebaseInstallationsTypes.Module} installations
+ * @param {FirebaseInstallation} installations
  * @param {(string) => void} callback
  * @returns {() => void}
  */
