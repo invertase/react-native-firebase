@@ -881,6 +881,14 @@ describe('Analytics', function () {
       expect(initiateOnDeviceConversionMeasurementWithHashedEmailAddress).toBeDefined();
     });
 
+    it('`initiateOnDeviceConversionMeasurementWithHashedPhoneNumber` should throw if the value is in E.164 format', function () {
+      expect(() =>
+        initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(getAnalytics(), '+1234567890'),
+      ).toThrowError(
+        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a sha256-hashed value of a phone number in E.164 format.",
+      );
+    });
+
     it('`initiateOnDeviceConversionMeasurementWithPhoneNumber` function is properly exposed to end user', function () {
       expect(initiateOnDeviceConversionMeasurementWithPhoneNumber).toBeDefined();
     });
