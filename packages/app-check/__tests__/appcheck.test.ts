@@ -1,6 +1,13 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { firebase } from '../lib';
+import {
+  firebase,
+  initializeAppCheck,
+  getToken,
+  getLimitedUseToken,
+  addTokenListener,
+  setTokenAutoRefreshEnabled,
+} from '../lib';
 
 describe('appCheck()', function () {
   describe('namespace', function () {
@@ -24,6 +31,28 @@ describe('appCheck()', function () {
   describe('react-native-firebase provider', function () {
     it('correctly creates a provider instance', function () {
       expect(firebase.appCheck().newReactNativeFirebaseAppCheckProvider()).toBeDefined();
+    });
+  });
+
+  describe('modular', function () {
+    it('`initializeAppCheck` function is properly exposed to end user', function () {
+      expect(initializeAppCheck).toBeDefined();
+    });
+
+    it('`getToken` function is properly exposed to end user', function () {
+      expect(getToken).toBeDefined();
+    });
+
+    it('`getLimitedUseToken` function is properly exposed to end user', function () {
+      expect(getLimitedUseToken).toBeDefined();
+    });
+
+    it('`addTokenListener` function is properly exposed to end user', function () {
+      expect(addTokenListener).toBeDefined();
+    });
+
+    it('`setTokenAutoRefreshEnabled` function is properly exposed to end user', function () {
+      expect(setTokenAutoRefreshEnabled).toBeDefined();
     });
   });
 });

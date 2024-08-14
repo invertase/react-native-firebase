@@ -43,9 +43,13 @@ export function getFunctions(app, regionOrCustomDomain) {
  * @param {Functions} functionsInstance A functions instance.
  * @param {string} host The emulator host. (ex: localhost)
  * @param {number} port The emulator port. (ex: 5001)
+ * @returns {void}
  */
 export function connectFunctionsEmulator(functionsInstance, host, port) {
-  return firebase.app(functionsInstance.app.name).functions().useEmulator(host, port);
+  return firebase
+    .app(functionsInstance.app.name)
+    .functions(functionsInstance._customUrlOrRegion)
+    .useEmulator(host, port);
 }
 
 /**
@@ -56,7 +60,10 @@ export function connectFunctionsEmulator(functionsInstance, host, port) {
  * @returns {HttpsCallable}
  */
 export function httpsCallable(functionsInstance, name, options) {
-  return firebase.app(functionsInstance.app.name).functions().httpsCallable(name, options);
+  return firebase
+    .app(functionsInstance.app.name)
+    .functions(functionsInstance._customUrlOrRegion)
+    .httpsCallable(name, options);
 }
 
 /**
@@ -67,5 +74,8 @@ export function httpsCallable(functionsInstance, name, options) {
  * @returns {HttpsCallable}
  */
 export function httpsCallableFromUrl(functionsInstance, url, options) {
-  return firebase.app(functionsInstance.app.name).functions().httpsCallableFromUrl(url, options);
+  return firebase
+    .app(functionsInstance.app.name)
+    .functions(functionsInstance._customUrlOrRegion)
+    .httpsCallableFromUrl(url, options);
 }

@@ -15,7 +15,15 @@
  *
  */
 
-import { isBoolean, isIOS, isString } from '@react-native-firebase/app/lib/common';
+import {
+  isBoolean,
+  isIOS,
+  isString,
+  isObject,
+  isFunction,
+  isUndefined,
+  isOther,
+} from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
@@ -23,22 +31,34 @@ import {
 } from '@react-native-firebase/app/lib/internal';
 import { Platform } from 'react-native';
 import ReactNativeFirebaseAppCheckProvider from './ReactNativeFirebaseAppCheckProvider';
+import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
+import fallBackModule from './web/RNFBAppCheckModule';
 
 import version from './version';
-
-export {
-  addTokenListener,
-  getToken,
-  getLimitedUseToken,
-  initializeAppCheck,
-  setTokenAutoRefreshEnabled,
-} from './modular/index';
-
-const statics = {};
 
 const namespace = 'appCheck';
 
 const nativeModuleName = 'RNFBAppCheckModule';
+
+export class CustomProvider {
+  constructor(_customProviderOptions) {
+    if (!isObject(_customProviderOptions)) {
+      throw new Error('Invalid configuration: no provider options defined.');
+    }
+    if (!isFunction(_customProviderOptions.getToken)) {
+      throw new Error('Invalid configuration: no getToken function defined.');
+    }
+    this._customProviderOptions = _customProviderOptions;
+  }
+
+  async getToken() {
+    return this._customProviderOptions.getToken();
+  }
+}
+
+const statics = {
+  CustomProvider,
+};
 
 class FirebaseAppCheckModule extends FirebaseModule {
   constructor(...args) {
@@ -63,6 +83,15 @@ class FirebaseAppCheckModule extends FirebaseModule {
   }
 
   initializeAppCheck(options) {
+    if (isOther) {
+      if (!isObject(options)) {
+        throw new Error('Invalid configuration: no options defined.');
+      }
+      if (isUndefined(options.provider)) {
+        throw new Error('Invalid configuration: no provider defined.');
+      }
+      return this.native.initializeAppCheck(options);
+    }
     // determine token refresh setting, if not specified
     if (!isBoolean(options.isTokenAutoRefreshEnabled)) {
       options.isTokenAutoRefreshEnabled = this.firebaseJson.app_check_token_auto_refresh;
@@ -108,6 +137,9 @@ class FirebaseAppCheckModule extends FirebaseModule {
   }
 
   activate(siteKeyOrProvider, isTokenAutoRefreshEnabled) {
+    if (isOther) {
+      throw new Error('firebase.appCheck().activate(*) is not supported on other platforms');
+    }
     if (!isString(siteKeyOrProvider)) {
       throw new Error('siteKeyOrProvider must be a string value to match firebase-js-sdk API');
     }
@@ -130,6 +162,7 @@ class FirebaseAppCheckModule extends FirebaseModule {
     return this.initializeAppCheck({ provider: rnfbProvider, isTokenAutoRefreshEnabled });
   }
 
+  // TODO this is an async call
   setTokenAutoRefreshEnabled(isTokenAutoRefreshEnabled) {
     this.native.setTokenAutoRefreshEnabled(isTokenAutoRefreshEnabled);
   }
@@ -199,7 +232,12 @@ export default createModuleNamespace({
   ModuleClass: FirebaseAppCheckModule,
 });
 
+export * from './modular';
+
 // import appCheck, { firebase } from '@react-native-firebase/app-check';
 // appCheck().X(...);
 // firebase.appCheck().X(...);
 export const firebase = getFirebaseRoot();
+
+// Register the interop module for non-native platforms.
+setReactNativeModule(nativeModuleName, fallBackModule);

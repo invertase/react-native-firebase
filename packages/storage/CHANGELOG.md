@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [20.4.0](https://github.com/invertase/react-native-firebase/compare/v20.3.0...v20.4.0) (2024-08-13)
+
+### Features
+
+- **firestore:** support for second database ([#7949](https://github.com/invertase/react-native-firebase/issues/7949)) ([eec08a0](https://github.com/invertase/react-native-firebase/commit/eec08a06f41dd96d13778fbed2afcaaac238fca4))
+
+## [20.3.0](https://github.com/invertase/react-native-firebase/compare/v20.2.1...v20.3.0) (2024-07-19)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+## [20.2.1](https://github.com/invertase/react-native-firebase/compare/v20.2.0...v20.2.1) (2024-07-17)
+
+### Bug Fixes
+
+- **storage:** ensure emulator is used for different storage buckets ([#7892](https://github.com/invertase/react-native-firebase/issues/7892)) ([3fa3f11](https://github.com/invertase/react-native-firebase/commit/3fa3f110b357ef0dbe2cc0fc12e982edc913b588))
+
+## [20.2.0](https://github.com/invertase/react-native-firebase/compare/v20.1.0...v20.2.0) (2024-07-15)
+
+### Features
+
+- **other:** Add Storage support ([#7888](https://github.com/invertase/react-native-firebase/issues/7888)) ([9b8dda7](https://github.com/invertase/react-native-firebase/commit/9b8dda704a01243039624bfcc7614021e6c3a527))
+
 ## [20.1.0](https://github.com/invertase/react-native-firebase/compare/v20.0.0...v20.1.0) (2024-06-04)
 
 **Note:** Version bump only for package @react-native-firebase/storage

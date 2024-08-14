@@ -11,7 +11,7 @@ buildscript {
   ext.appCompatVersion = '1.7.0' // this maps to androidx.appcompat https://developer.android.com/jetpack/androidx/releases/appcompat
   ext.supportVersion = ext.supportLibVersion
   ext.frescoVersion = '3.2.0' // https://github.com/facebook/fresco/releases
-  ext.fragmentVersion = '1.8.0' // https://developer.android.com/jetpack/androidx/releases/fragment
+  ext.fragmentVersion = '1.8.1' // https://developer.android.com/jetpack/androidx/releases/fragment
   ext.vectordrawableVersion = '1.2.0' // https://developer.android.com/jetpack/androidx/releases/vectordrawable
   ext.androidxAnnotationVersion = '1.8.0' // https://developer.android.com/jetpack/androidx/releases/annotation
   ext.googlePlayServicesLocationVersion = '21.3.0' // https://developers.google.com/android/guides/setup
@@ -36,7 +36,7 @@ buildscript {
     classpath("com.facebook.react:react-native-gradle-plugin")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
     classpath 'com.google.firebase:perf-plugin:1.4.2'
-    classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.1'
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.2'
     classpath 'com.google.firebase:firebase-appdistribution-gradle:5.0.0'
   }
 }

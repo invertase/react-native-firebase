@@ -33,62 +33,12 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
+import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import { isBoolean } from '@react-native-firebase/app/lib/common';
 
+import fallBackModule from './web/RNFBAnalyticsModule';
 import version from './version';
 import * as structs from './structs';
-
-export {
-  getAnalytics,
-  logEvent,
-  setAnalyticsCollectionEnabled,
-  setSessionTimeoutDuration,
-  getAppInstanceId,
-  getSessionId,
-  setUserId,
-  setUserProperty,
-  setUserProperties,
-  resetAnalyticsData,
-  logAddPaymentInfo,
-  logScreenView,
-  logAddShippingInfo,
-  logAddToCart,
-  logAddToWishlist,
-  logAppOpen,
-  logBeginCheckout,
-  logCampaignDetails,
-  logEarnVirtualCurrency,
-  logGenerateLead,
-  logJoinGroup,
-  logLevelEnd,
-  logLevelStart,
-  logLevelUp,
-  logLogin,
-  logPostScore,
-  logSelectContent,
-  logPurchase,
-  logRefund,
-  logRemoveFromCart,
-  logSearch,
-  logSelectItem,
-  logSetCheckoutOption,
-  logSelectPromotion,
-  logShare,
-  logSignUp,
-  logSpendVirtualCurrency,
-  logTutorialBegin,
-  logTutorialComplete,
-  logUnlockAchievement,
-  logViewCart,
-  logViewItem,
-  logViewItemList,
-  logViewPromotion,
-  logViewSearchResults,
-  setDefaultEventParameters,
-  initiateOnDeviceConversionMeasurementWithEmailAddress,
-  initiateOnDeviceConversionMeasurementWithPhoneNumber,
-  setConsent,
-} from './modular/index';
 
 const ReservedEventNames = [
   'ad_activeview',
@@ -824,7 +774,12 @@ export default createModuleNamespace({
   ModuleClass: FirebaseAnalyticsModule,
 });
 
+export * from './modular/index';
+
 // import analytics, { firebase } from '@react-native-firebase/analytics';
 // analytics().logEvent(...);
 // firebase.analytics().logEvent(...);
 export const firebase = getFirebaseRoot();
+
+// Register the interop module for non-native platforms.
+setReactNativeModule(nativeModuleName, fallBackModule);

@@ -3,18 +3,16 @@
   - '/'
 - - TypeScript
   - '/typescript'
+- - Platforms
+  - '/platforms'
 - - Release Notes
   - '/releases'
-- - Migrating to v6
-  - '/migrating-to-v6'
 - - FAQs and Tips
   - '/faqs-and-tips'
 - - Feature Requests
   - 'https://invertase.canny.io/react-native-firebase'
 - - Contributing
   - 'https://github.com/invertase/react-native-firebase/blob/main/CONTRIBUTING.md'
-- - Legacy Docs (<= v5)
-  - 'https://v5.rnfirebase.io/docs/v5.x.x/getting-started'
 - - Analytics
   - - - Usage
       - '/analytics/usage'
@@ -129,3 +127,9 @@
     - - KY Integration
       - '/perf/ky-integration'
   - '//static.invertase.io/assets/firebase/performance-monitoring.svg'
+- - Legacy docs
+  - - - Migrating to v6
+      - '/migrating-to-v6'
+    - - Legacy Docs (<= v5)
+      - 'https://v5.rnfirebase.io/docs/v5.x.x/getting-started'
+  - '//static.invertase.io/assets/social/firebase-logo.png'

@@ -14,6 +14,7 @@ AppCheck
 AppDelegate.m
 aps-environment
 async
+Async
 ATT
 ATT-compatible
 auth
@@ -154,6 +155,7 @@ realtime
 Realtime
 reCAPTCHA
 remarketing
+remote-config
 RN60
 RN61
 RNFB

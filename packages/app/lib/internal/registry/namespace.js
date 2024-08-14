@@ -15,7 +15,7 @@
  *
  */
 
-import { isString } from '@react-native-firebase/app/lib/common';
+import { isString } from '../../common';
 import FirebaseApp from '../../FirebaseApp';
 import SDK_VERSION from '../../version';
 import { DEFAULT_APP_NAME, KNOWN_NAMESPACES } from '../constants';
@@ -25,6 +25,7 @@ import {
   getApps,
   initializeApp,
   setLogLevel,
+  setReactNativeAsyncStorage,
   setOnAppCreate,
   setOnAppDestroy,
 } from './app';
@@ -92,19 +93,21 @@ function getOrCreateModuleForApp(app, moduleNamespace) {
     );
   }
 
-  // e.g. firebase.storage(customUrlOrRegion)
-  function firebaseModuleWithArgs(customUrlOrRegion) {
-    if (customUrlOrRegion !== undefined) {
+  // e.g. firebase.storage(customUrlOrRegion), firebase.functions(customUrlOrRegion), firebase.firestore(databaseId), firebase.database(url)
+  function firebaseModuleWithArgs(customUrlOrRegionOrDatabaseId) {
+    if (customUrlOrRegionOrDatabaseId !== undefined) {
       if (!hasCustomUrlOrRegionSupport) {
         // TODO throw Module does not support arguments error
       }
 
-      if (!isString(customUrlOrRegion)) {
+      if (!isString(customUrlOrRegionOrDatabaseId)) {
         // TODO throw Module first argument must be a string error
       }
     }
 
-    const key = customUrlOrRegion ? `${customUrlOrRegion}:${moduleNamespace}` : moduleNamespace;
+    const key = customUrlOrRegionOrDatabaseId
+      ? `${customUrlOrRegionOrDatabaseId}:${moduleNamespace}`
+      : moduleNamespace;
 
     if (!APP_MODULE_INSTANCE[app.name]) {
       APP_MODULE_INSTANCE[app.name] = {};
@@ -114,7 +117,7 @@ function getOrCreateModuleForApp(app, moduleNamespace) {
       APP_MODULE_INSTANCE[app.name][key] = new ModuleClass(
         app,
         NAMESPACE_REGISTRY[moduleNamespace],
-        customUrlOrRegion,
+        customUrlOrRegionOrDatabaseId,
       );
     }
 
@@ -241,6 +244,7 @@ export function firebaseAppModuleProxy(app, moduleNamespace) {
 export function createFirebaseRoot() {
   FIREBASE_ROOT = {
     initializeApp,
+    setReactNativeAsyncStorage,
     get app() {
       return getApp;
     },

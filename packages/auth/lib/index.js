@@ -22,6 +22,7 @@ import {
   isString,
   isValidUrl,
 } from '@react-native-firebase/app/lib/common';
+import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import {
   FirebaseModule,
   createModuleNamespace,
@@ -44,64 +45,8 @@ import OIDCAuthProvider from './providers/OIDCAuthProvider';
 import PhoneAuthProvider from './providers/PhoneAuthProvider';
 import TwitterAuthProvider from './providers/TwitterAuthProvider';
 import version from './version';
+import fallBackModule from './web/RNFBAuthModule';
 
-export {
-  applyActionCode,
-  beforeAuthStateChanged,
-  checkActionCode,
-  confirmPasswordReset,
-  connectAuthEmulator,
-  createUserWithEmailAndPassword,
-  deleteUser,
-  fetchSignInMethodsForEmail,
-  getAdditionalUserInfo,
-  getAuth,
-  getCustomAuthDomain,
-  getIdToken,
-  getIdTokenResult,
-  getMultiFactorResolver,
-  getRedirectResult,
-  initializeAuth,
-  isSignInWithEmailLink,
-  linkWithCredential,
-  linkWithPhoneNumber,
-  linkWithPopup,
-  linkWithRedirect,
-  multiFactor,
-  onAuthStateChanged,
-  onIdTokenChanged,
-  parseActionCodeURL,
-  reauthenticateWithCredential,
-  reauthenticateWithPhoneNumber,
-  reauthenticateWithPopup,
-  reauthenticateWithRedirect,
-  reload,
-  sendEmailVerification,
-  sendPasswordResetEmail,
-  sendSignInLinkToEmail,
-  setPersistence,
-  signInAnonymously,
-  signInWithCredential,
-  signInWithCustomToken,
-  signInWithEmailAndPassword,
-  signInWithEmailLink,
-  signInWithPhoneNumber,
-  signInWithPopup,
-  signInWithRedirect,
-  signOut,
-  unlink,
-  updateCurrentUser,
-  updateEmail,
-  updatePassword,
-  updatePhoneNumber,
-  updateProfile,
-  useDeviceLanguage,
-  useUserAccessGroup,
-  verifyBeforeUpdateEmail,
-  verifyPasswordResetCode,
-  verifyPhoneNumber,
-} from './modular/index';
-// For modular imports
 export {
   AppleAuthProvider,
   EmailAuthProvider,
@@ -137,7 +82,6 @@ const statics = {
 };
 
 const namespace = 'auth';
-
 const nativeModuleName = 'RNFBAuthModule';
 
 class FirebaseAuthModule extends FirebaseModule {
@@ -184,6 +128,32 @@ class FirebaseAuthModule extends FirebaseModule {
 
   get languageCode() {
     return this._languageCode;
+  }
+
+  set languageCode(code) {
+    // For modular API, not recommended to set languageCode directly as it should be set in the native SDKs first
+    if (!isString(code) && !isNull(code)) {
+      throw new Error(
+        "firebase.auth().languageCode = (*) expected 'languageCode' to be a string or null value",
+      );
+    }
+    // as this is a setter, we can't use async/await. So we set it first so it is available immediately
+    if (code === null) {
+      this._languageCode = this.native.APP_LANGUAGE[this.app._name];
+
+      if (!this.languageCode) {
+        this._languageCode = this.native.APP_LANGUAGE['[DEFAULT]'];
+      }
+    } else {
+      this._languageCode = code;
+    }
+    // This sets it natively
+    this.setLanguageCode(code);
+  }
+
+  get config() {
+    // for modular API, firebase JS SDK has a config object which is not available in native SDKs
+    return {};
   }
 
   get tenantId() {
@@ -529,7 +499,12 @@ export default createModuleNamespace({
   ModuleClass: FirebaseAuthModule,
 });
 
+export * from './modular/index';
+
 // import auth, { firebase } from '@react-native-firebase/auth';
 // auth().X(...);
 // firebase.auth().X(...);
 export const firebase = getFirebaseRoot();
+
+// Register the interop module for non-native platforms.
+setReactNativeModule(nativeModuleName, fallBackModule);

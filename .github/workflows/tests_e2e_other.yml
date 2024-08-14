@@ -1,0 +1,179 @@
+name: Testing E2E Other
+
+on:
+  pull_request:
+    branches:
+      - '**'
+    paths-ignore:
+      - 'docs/**'
+      - 'website/**'
+      - '.spellcheck.dict.txt'
+      - '**/*.md'
+
+  push:
+    branches:
+      - main
+      - v14-release
+    paths-ignore:
+      - 'docs/**'
+      - 'website/**'
+      - '.spellcheck.dict.txt'
+      - '**/*.md'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  other:
+    name: Other
+    runs-on: macos-14-xlarge
+    timeout-minutes: 100
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Configure JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: 'latest-stable'
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+
+      # Set path variables needed for caches
+      - name: Set workflow variables
+        id: workflow-variables
+        run: |
+          echo "metro-cache=$HOME/.metro" >> $GITHUB_OUTPUT
+          echo "xcode-version=$(xcodebuild -version|tail -1|cut -f3 -d' ')" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
+        name: Yarn Cache
+        id: yarn-cache
+        with:
+          path: .yarn/cache
+          key: ${{ runner.os }}-macos-yarn-v1-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.os }}-macos-yarn-v1
+
+      - uses: hendrikmuhs/ccache-action@v1
+        name: Xcode Compile Cache
+        with:
+          key: ${{ runner.os }}-macos-v2
+          create-symlink: true
+          max-size: 1500M
+
+      - name: Yarn Install
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 15
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: DETOX_DISABLE_POSTINSTALL=1 yarn && yarn lerna:prepare
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3
+
+      - name: Update Ruby build tools
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 2
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: gem update cocoapods xcodeproj
+
+      - uses: actions/cache@v4
+        name: Cache Pods
+        id: pods-cache
+        with:
+          path: tests/macos/Pods
+          key: ${{ runner.os }}-macos-pods-v2-${{ hashFiles('tests/macos/Podfile.lock') }}
+          restore-keys: ${{ runner.os }}-macos-pods-v2
+
+      - name: Pod Install
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 20
+          retry_wait_seconds: 30
+          max_attempts: 3
+          command: yarn tests:macos:pod:install
+
+      - name: Cache Firestore Emulator
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/firebase/emulators
+          key: firebase-emulators-v1-${{ github.run_id }}
+          restore-keys: firebase-emulators-v1
+
+      - name: Start Firestore Emulator
+        run: yarn tests:emulator:start-ci
+
+      - name: Install brew utilities
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 5
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew && HOMEBREW_NO_AUTO_UPDATE=1 brew install xcbeautify
+
+      - name: Build macos App
+        run: |
+          export CCACHE_SLOPPINESS=clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
+          export CCACHE_FILECLONE=true
+          export CCACHE_DEPEND=true
+          export CCACHE_INODECACHE=true
+          export CCACHE_LIMIT_MULTIPLE=0.95
+          ccache -s
+          export SKIP_BUNDLING=1
+          export RCT_NO_LAUNCH_PACKAGER=1
+          set -o pipefail
+          echo $PATH
+          which clang
+          yarn tests:macos:build
+          ccache -s
+        shell: bash
+
+      - name: Metro Bundler Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.workflow-variables.outputs.metro-cache }}
+          key: ${{ runner.os }}-macos-metro-v1-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-macos-metro-v1
+
+      - name: Pre-fetch Javascript bundle
+        run: |
+          nohup sh -c "yarn tests:packager:jet-ci > metro.log 2>&1 &"
+          printf 'Waiting for packager to come online'
+          until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
+            printf '.'
+            sleep 2
+          done
+          echo "Packager is online! Preparing bundle..."
+          curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=macos&dev=true&minify=false&inlineSourceMap=true"
+          echo "...javascript bundle ready"
+
+      - name: Jet Test
+        timeout-minutes: 20
+        run: yarn tests:macos:test-cover
+
+      - uses: codecov/codecov-action@v4
+        with:
+          verbose: true
+
+      - name: Upload Metro Log
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: metro_log
+          path: metro.log

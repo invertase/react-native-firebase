@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [20.4.0](https://github.com/invertase/react-native-firebase/compare/v20.3.0...v20.4.0) (2024-08-13)
+
+### Features
+
+- **firestore:** support for `PersistentCacheIndexManager` ([#7910](https://github.com/invertase/react-native-firebase/issues/7910)) ([0b0de45](https://github.com/invertase/react-native-firebase/commit/0b0de45513cd3aab9f7037fd8468a63cf96aa62c))
+- **firestore:** support for second database ([#7949](https://github.com/invertase/react-native-firebase/issues/7949)) ([eec08a0](https://github.com/invertase/react-native-firebase/commit/eec08a06f41dd96d13778fbed2afcaaac238fca4))
+
+### Bug Fixes
+
+- **analytics:** update the typing for Item ([#7919](https://github.com/invertase/react-native-firebase/issues/7919)) ([c2c4576](https://github.com/invertase/react-native-firebase/commit/c2c457608c865f6d25e4b9b6689cbc00721de194))
+- **database:** fixes modular imports exports ([#7916](https://github.com/invertase/react-native-firebase/issues/7916)) ([7022204](https://github.com/invertase/react-native-firebase/commit/7022204616f6149e3327cbf2ab8a469f537a7b61))
+
+## [20.3.0](https://github.com/invertase/react-native-firebase/compare/v20.2.1...v20.3.0) (2024-07-19)
+
+### Features
+
+- **auth,other:** allow optional enabling of Auth session persistence via async storage ([d1ea703](https://github.com/invertase/react-native-firebase/commit/d1ea70319ae95484112a9c09b2d5489810e79c80))
+
+### Bug Fixes
+
+- **analytics,other:** persist analytics client id where possible ([94a8198](https://github.com/invertase/react-native-firebase/commit/94a8198e9d4f5a689bcc9ec879e5d4bec83acd66))
+- **other:** add api for persistence via Async Storage ([030eea9](https://github.com/invertase/react-native-firebase/commit/030eea91f297a4014ab86cfb141ae938f200c5e5))
+
+## [20.2.1](https://github.com/invertase/react-native-firebase/compare/v20.2.0...v20.2.1) (2024-07-17)
+
+### Bug Fixes
+
+- **firestore:** Filter typing. `Filter.or` & `Filter.and` can accept each other ([#7904](https://github.com/invertase/react-native-firebase/issues/7904)) ([f6c12ec](https://github.com/invertase/react-native-firebase/commit/f6c12ec208f15c4a8dd2132810fcfe914b675251))
+- **storage:** ensure emulator is used for different storage buckets ([#7892](https://github.com/invertase/react-native-firebase/issues/7892)) ([3fa3f11](https://github.com/invertase/react-native-firebase/commit/3fa3f110b357ef0dbe2cc0fc12e982edc913b588))
+
+## [20.2.0](https://github.com/invertase/react-native-firebase/compare/v20.1.0...v20.2.0) (2024-07-15)
+
+### Features
+
+Version 20.2.0 introduces support for 'other' platforms, see [documentation for more details](https://rnfirebase.io/platforms):
+
+- **other:** Add Analytics support ([#7899](https://github.com/invertase/react-native-firebase/issues/7899)) ([cbdf9ec](https://github.com/invertase/react-native-firebase/commit/cbdf9ec78452a73751d1afeca428842898f63134))
+- **other:** add App Check support ([#7905](https://github.com/invertase/react-native-firebase/issues/7905)) ([753b16e](https://github.com/invertase/react-native-firebase/commit/753b16e1a06f949c679fb75053c319394dd5ecfe))
+- **other:** add App/Core support ([1b2e247](https://github.com/invertase/react-native-firebase/commit/1b2e2473d526c3356ab8619b226943446fd49452))
+- **other:** Add Auth support ([#7878](https://github.com/invertase/react-native-firebase/issues/7878)) ([54befe7](https://github.com/invertase/react-native-firebase/commit/54befe776353f07eeab9b044d6261eeb76f1f238))
+- **other:** Add Database support ([#7887](https://github.com/invertase/react-native-firebase/issues/7887)) ([fbb773a](https://github.com/invertase/react-native-firebase/commit/fbb773a87c167bdc92265fe261aeb777d4660cd7))
+- **other:** Add Firestore support ([#7882](https://github.com/invertase/react-native-firebase/issues/7882)) ([0ebd1dd](https://github.com/invertase/react-native-firebase/commit/0ebd1ddd221c50dde489bce30ad5ed64037d8439))
+- **other:** add Functions support ([a752075](https://github.com/invertase/react-native-firebase/commit/a7520755fdb858f8c93576c54cef16520ff4f3e8))
+- **other:** Add Remote Config support ([#7895](https://github.com/invertase/react-native-firebase/issues/7895)) ([a41e556](https://github.com/invertase/react-native-firebase/commit/a41e5568869320fb91afc01403ed402e5312e15c))
+- **other:** Add Storage support ([#7888](https://github.com/invertase/react-native-firebase/issues/7888)) ([9b8dda7](https://github.com/invertase/react-native-firebase/commit/9b8dda704a01243039624bfcc7614021e6c3a527))
+
+### Bug Fixes
+
+- **app, android:** adopt firebase-android-sdk 31.1.1 ([dba1beb](https://github.com/invertase/react-native-firebase/commit/dba1beba97d88d1110e0838b6287fd4907cfa8a7))
+- **app, android:** adopt firebase-android-sdk 33.1.2 ([0dfa2af](https://github.com/invertase/react-native-firebase/commit/0dfa2af484cfd12a282490cb82726b29859e30bf))
+- **app, ios:** firebase-ios-sdk 10.28.0 ([91c626d](https://github.com/invertase/react-native-firebase/commit/91c626d0d32435a6305696fb4084553341d99ca9))
+- **crashlytics, ios:** init w/componentsToRegister vs configureWithApp ([ca07cad](https://github.com/invertase/react-native-firebase/commit/ca07cadd592487102b035a24b55f593f065ef4a5))
+- **database:** set priority on child snapshot if available ([#7897](https://github.com/invertase/react-native-firebase/issues/7897)) ([9028ae4](https://github.com/invertase/react-native-firebase/commit/9028ae4785eb17239ae2ab49d343a39c01a349e7))
+- **firestore:** expose modular `Filter` and it's proper types ([#7884](https://github.com/invertase/react-native-firebase/issues/7884)) ([272efe5](https://github.com/invertase/react-native-firebase/commit/272efe56acdd46b8c994789f751d2c097cb8d025))
+- **firestore:** remove exception throw on inequality queries on different fields ([da24246](https://github.com/invertase/react-native-firebase/commit/da242466d80609f61420feb56d72ad2ee20b2410))
+- **functions:** properly pass the custom URL or region to constructor ([#7886](https://github.com/invertase/react-native-firebase/issues/7886)) ([ffaac4f](https://github.com/invertase/react-native-firebase/commit/ffaac4f3d4f4b7849c4ef3af9c81227b94e4759f))
+- **ios:** adopt firebase-ios-sdk 10.29.0 ([1b19cc6](https://github.com/invertase/react-native-firebase/commit/1b19cc697f21ac1e21ab3a7a399c1ef90711800b))
+
+### Reverts
+
+- **ci:** conventional-changelog-cli version bump ([67780f7](https://github.com/invertase/react-native-firebase/commit/67780f7c70c813951fd9dc9d96b0eaa0510a4804))
+
 ## [20.1.0](https://github.com/invertase/react-native-firebase/compare/v20.0.0...v20.1.0) (2024-06-04)
 
 ### Features

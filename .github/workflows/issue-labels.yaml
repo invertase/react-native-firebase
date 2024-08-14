@@ -1,0 +1,36 @@
+name: Update labels on issues with OP response
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  label-op-response:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if the comment is from the OP
+        id: check-op
+        run: |
+          OP=${{ github.event.issue.user.login }}
+          COMMENTER=${{ github.event.comment.user.login }}
+
+          if [ "$OP" = "$COMMENTER" ]; then
+            echo "op_comment=true" >> $GITHUB_ENV
+          else
+            echo "op_comment=false" >> $GITHUB_ENV
+          fi
+
+      - name: Add 'Needs Attention' label if OP responded
+        if: env.op_comment == 'true'
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: 'Needs Attention'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Remove 'blocked customer-response' label if OP responded
+        if: env.op_comment == 'true'
+        uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: 'blocked: customer-response'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

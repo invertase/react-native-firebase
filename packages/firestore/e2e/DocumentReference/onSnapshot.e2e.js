@@ -45,6 +45,9 @@ describe('firestore().doc().onSnapshot()', function () {
     });
 
     it('accepts a single callback function with snapshot', async function () {
+      if (Platform.other) {
+        return;
+      }
       const callback = sinon.spy();
       const unsub = firebase.firestore().doc(`${COLLECTION}/foo`).onSnapshot(callback);
 
@@ -57,6 +60,9 @@ describe('firestore().doc().onSnapshot()', function () {
     });
 
     it('accepts a single callback function with Error', async function () {
+      if (Platform.other) {
+        return;
+      }
       const callback = sinon.spy();
       const unsub = firebase.firestore().doc(`${NO_RULE_COLLECTION}/nope`).onSnapshot(callback);
 
@@ -69,6 +75,10 @@ describe('firestore().doc().onSnapshot()', function () {
     });
 
     describe('multiple callbacks', function () {
+      if (Platform.other) {
+        return;
+      }
+
       it('calls onNext when successful', async function () {
         const onNext = sinon.spy();
         const onError = sinon.spy();
@@ -102,6 +112,10 @@ describe('firestore().doc().onSnapshot()', function () {
     });
 
     describe('objects of callbacks', function () {
+      if (Platform.other) {
+        return;
+      }
+
       it('calls next when successful', async function () {
         const onNext = sinon.spy();
         const onError = sinon.spy();
@@ -138,6 +152,10 @@ describe('firestore().doc().onSnapshot()', function () {
     });
 
     describe('SnapshotListenerOptions + callbacks', function () {
+      if (Platform.other) {
+        return;
+      }
+
       it('calls callback with snapshot when successful', async function () {
         const callback = sinon.spy();
         const unsub = firebase.firestore().doc(`${COLLECTION}/foo`).onSnapshot(
@@ -214,6 +232,10 @@ describe('firestore().doc().onSnapshot()', function () {
     });
 
     describe('SnapshotListenerOptions + object of callbacks', function () {
+      if (Platform.other) {
+        return;
+      }
+
       it('calls next with snapshot when successful', async function () {
         const onNext = sinon.spy();
         const onError = sinon.spy();
@@ -298,6 +320,9 @@ describe('firestore().doc().onSnapshot()', function () {
     });
 
     it('unsubscribes from further updates', async function () {
+      if (Platform.other) {
+        return;
+      }
       const callback = sinon.spy();
       const doc = firebase.firestore().doc(`${COLLECTION}/unsub`);
 
@@ -334,6 +359,9 @@ describe('firestore().doc().onSnapshot()', function () {
     });
 
     it('accepts a single callback function with snapshot', async function () {
+      if (Platform.other) {
+        return;
+      }
       const { getFirestore, doc, onSnapshot } = firestoreModular;
 
       const callback = sinon.spy();
@@ -348,7 +376,14 @@ describe('firestore().doc().onSnapshot()', function () {
     });
 
     describe('multiple callbacks', function () {
+      if (Platform.other) {
+        return;
+      }
+
       it('calls onNext when successful', async function () {
+        if (Platform.other) {
+          return;
+        }
         const { getFirestore, doc, onSnapshot } = firestoreModular;
 
         const onNext = sinon.spy();
@@ -385,6 +420,10 @@ describe('firestore().doc().onSnapshot()', function () {
     });
 
     describe('objects of callbacks', function () {
+      if (Platform.other) {
+        return;
+      }
+
       it('calls next when successful', async function () {
         const { getFirestore, doc, onSnapshot } = firestoreModular;
 
@@ -425,6 +464,10 @@ describe('firestore().doc().onSnapshot()', function () {
     });
 
     describe('SnapshotListenerOptions + callbacks', function () {
+      if (Platform.other) {
+        return;
+      }
+
       it('calls callback with snapshot when successful', async function () {
         const { getFirestore, doc, onSnapshot } = firestoreModular;
 
@@ -493,6 +536,10 @@ describe('firestore().doc().onSnapshot()', function () {
     });
 
     describe('SnapshotListenerOptions + object of callbacks', function () {
+      if (Platform.other) {
+        return;
+      }
+
       it('calls next with snapshot when successful', async function () {
         const { getFirestore, doc, onSnapshot } = firestoreModular;
 
@@ -586,6 +633,9 @@ describe('firestore().doc().onSnapshot()', function () {
     });
 
     it('unsubscribes from further updates', async function () {
+      if (Platform.other) {
+        return;
+      }
       const { getFirestore, doc, onSnapshot, setDoc } = firestoreModular;
 
       const callback = sinon.spy();

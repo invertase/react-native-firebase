@@ -23,18 +23,12 @@ import {
 } from '@react-native-firebase/app/lib/internal';
 import HttpsError from './HttpsError';
 import version from './version';
+import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
+import fallBackModule from './web/RNFBFunctionsModule';
 
 const namespace = 'functions';
 const nativeModuleName = 'RNFBFunctionsModule';
 
-export {
-  getFunctions,
-  httpsCallable,
-  httpsCallableFromUrl,
-  connectFunctionsEmulator,
-} from './modular/index';
-
-// import { HttpsErrorCode } from '@react-native-firebase/functions';
 export const HttpsErrorCode = {
   OK: 'ok',
   CANCELLED: 'cancelled',
@@ -53,6 +47,24 @@ export const HttpsErrorCode = {
   INTERNAL: 'internal',
   UNAVAILABLE: 'unavailable',
   DATA_LOSS: 'data-loss',
+  // Web codes are lowercase dasherized.
+  ok: 'ok',
+  cancelled: 'cancelled',
+  unknown: 'unknown',
+  'invalid-argument': 'invalid-argument',
+  'deadline-exceeded': 'deadline-exceeded',
+  'not-found': 'not-found',
+  'already-exists': 'already-exists',
+  'permission-denied': 'permission-denied',
+  unauthenticated: 'unauthenticated',
+  'resource-exhausted': 'resource-exhausted',
+  'failed-precondition': 'failed-precondition',
+  aborted: 'aborted',
+  'out-of-range': 'out-of-range',
+  unimplemented: 'unimplemented',
+  internal: 'internal',
+  unavailable: 'unavailable',
+  'data-loss': 'data-loss',
 };
 
 const statics = {
@@ -188,7 +200,12 @@ export default createModuleNamespace({
   ModuleClass: FirebaseFunctionsModule,
 });
 
+export * from './modular';
+
 // import functions, { firebase } from '@react-native-firebase/functions';
 // functions().logEvent(...);
 // firebase.functions().logEvent(...);
 export const firebase = getFirebaseRoot();
+
+// Register the interop module for non-native platforms.
+setReactNativeModule(nativeModuleName, fallBackModule);

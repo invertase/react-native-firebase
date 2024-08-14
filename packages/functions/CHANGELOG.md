@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [20.4.0](https://github.com/invertase/react-native-firebase/compare/v20.3.0...v20.4.0) (2024-08-13)
+
+**Note:** Version bump only for package @react-native-firebase/functions
+
+## [20.3.0](https://github.com/invertase/react-native-firebase/compare/v20.2.1...v20.3.0) (2024-07-19)
+
+**Note:** Version bump only for package @react-native-firebase/functions
+
+## [20.2.1](https://github.com/invertase/react-native-firebase/compare/v20.2.0...v20.2.1) (2024-07-17)
+
+**Note:** Version bump only for package @react-native-firebase/functions
+
+## [20.2.0](https://github.com/invertase/react-native-firebase/compare/v20.1.0...v20.2.0) (2024-07-15)
+
+### Features
+
+- **other:** add Functions support ([a752075](https://github.com/invertase/react-native-firebase/commit/a7520755fdb858f8c93576c54cef16520ff4f3e8))
+
+### Bug Fixes
+
+- **functions:** properly pass the custom URL or region to constructor ([#7886](https://github.com/invertase/react-native-firebase/issues/7886)) ([ffaac4f](https://github.com/invertase/react-native-firebase/commit/ffaac4f3d4f4b7849c4ef3af9c81227b94e4759f))
+
 ## [20.1.0](https://github.com/invertase/react-native-firebase/compare/v20.0.0...v20.1.0) (2024-06-04)
 
 **Note:** Version bump only for package @react-native-firebase/functions

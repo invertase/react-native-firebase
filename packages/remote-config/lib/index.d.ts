@@ -567,6 +567,8 @@ type OnConfigUpdatedListenerCallback = (
 
 export default defaultExport;
 
+export * from './modular';
+
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */

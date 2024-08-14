@@ -2156,10 +2156,24 @@ export namespace FirebaseAuthTypes {
      * @param user The user.
      */
     multiFactor(user: User): MultiFactorUser;
+    /**
+     * Returns the custom auth domain for the auth instance.
+     */
+    getCustomAuthDomain(): Promise<string>;
+    /**
+     * Sets the language code on the auth instance. This is to match Firebase JS SDK behavior.
+     * Please use the `setLanguageCode` method for setting the language code.
+     */
+    set languageCode(code: string | null);
+    /**
+     * Gets the config used to initialize this auth instance. This is to match Firebase JS SDK behavior.
+     * It returns an empty map as the config is not available in the native SDK.
+     */
+    get config(): Map<any, any>;
   }
 }
 
-type CallbackOrObserver<T extends (...args: any[]) => any> = T | { next: T };
+export type CallbackOrObserver<T extends (...args: any[]) => any> = T | { next: T };
 
 declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
   FirebaseAuthTypes.Module,
@@ -2188,3 +2202,5 @@ declare module '@react-native-firebase/app' {
     }
   }
 }
+
+export * from './modular';

@@ -69,15 +69,29 @@ export namespace FirebaseAppCheckTypes {
   }
 
   /**
+   * Custom provider class.
+   * @public
+   */
+  export class CustomProvider implements AppCheckProvider {
+    constructor(customProviderOptions: CustomProviderOptions);
+  }
+
+  export interface CustomProviderOptions {
+    /**
+     * Function to get an App Check token through a custom provider
+     * service.
+     */
+    getToken: () => Promise<AppCheckToken>;
+  }
+  /**
    * Options for App Check initialization.
    */
   export interface AppCheckOptions {
     /**
-     * A reCAPTCHA V3 provider, reCAPTCHA Enterprise provider, or custom provider.
-     * Note that in react-native-firebase provider should always be ReactNativeAppCheckCustomProvider, a cross-platform
-     * implementation of an AppCheck CustomProvider
+     * The App Check provider to use. This can be either the built-in reCAPTCHA provider
+     * or a custom provider.
      */
-    provider: CustomProvider | ReCaptchaV3Provider | ReCaptchaEnterpriseProvider;
+    provider: CustomProvider;
 
     /**
      * If true, enables SDK to automatically
@@ -185,6 +199,7 @@ export namespace FirebaseAppCheckTypes {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface Statics {
     // firebase.appCheck.* static props go here
+    CustomProvider: typeof CustomProvider;
   }
 
   /**
@@ -210,18 +225,19 @@ export namespace FirebaseAppCheckTypes {
    */
   export class Module extends FirebaseModule {
     /**
-     * create a ReactNativeFirebaseAppCheckProvider option for use in react-native-firebase
+     * Create a ReactNativeFirebaseAppCheckProvider option for use in react-native-firebase
      */
     newReactNativeFirebaseAppCheckProvider(): ReactNativeFirebaseAppCheckProvider;
 
     /**
-     * initialize the AppCheck module. Note that in react-native-firebase AppCheckOptions must always
+     * Initialize the AppCheck module. Note that in react-native-firebase AppCheckOptions must always
      * be an object with a `provider` member containing `ReactNativeFirebaseAppCheckProvider` that has returned successfully
      * from a call to the `configure` method, with sub-providers for the various platforms configured to meet your project
      * requirements. This must be called prior to interacting with any firebase services protected by AppCheck
      *
      * @param options an AppCheckOptions with a configured ReactNativeFirebaseAppCheckProvider as the provider
      */
+    // TODO wrong types
     initializeAppCheck(options: AppCheckOptions): Promise<void>;
 
     /**
@@ -282,6 +298,7 @@ export namespace FirebaseAppCheckTypes {
      *
      * @returns A function that unsubscribes this listener.
      */
+    // TODO wrong types
     onTokenChanged(observer: PartialObserver<AppCheckListenerResult>): () => void;
 
     /**
@@ -301,6 +318,7 @@ export namespace FirebaseAppCheckTypes {
      *
      * @returns A function that unsubscribes this listener.
      */
+    // TODO wrong types
     onTokenChanged(
       onNext: (tokenResult: AppCheckListenerResult) => void,
       onError?: (error: Error) => void,
@@ -322,6 +340,8 @@ export const firebase: ReactNativeFirebase.Module & {
 };
 
 export default defaultExport;
+
+export * from './modular';
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.

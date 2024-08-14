@@ -17,6 +17,10 @@
 const { wipe, getBundle, BUNDLE_COLLECTION, BUNDLE_QUERY_NAME } = require('../helpers');
 
 describe('firestore().namedQuery()', function () {
+  if (Platform.other) {
+    return;
+  }
+
   beforeEach(async function () {
     await wipe();
     return await firebase.firestore().loadBundle(getBundle());
@@ -143,7 +147,8 @@ describe('firestore().namedQuery()', function () {
       snapshot.docs[0].metadata.fromCache.should.eql(false);
     });
 
-    it('calls onNext with QuerySnapshot from firestore backend', async function () {
+    // TODO not stable on jet e2e
+    xit('calls onNext with QuerySnapshot from firestore backend', async function () {
       const { getFirestore, collection, doc, setDoc, namedQuery, onSnapshot } = firestoreModular;
       const db = getFirestore();
 

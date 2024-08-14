@@ -115,7 +115,7 @@ scenarios, it is first important to establish the various states a device can be
 | State          | Description                                                                                                                                                                                               |
 | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Foreground** | When the application is open and in view.                                                                                                                                                                 |
-| **Background** | When the application is open, however in the background (minimised). This typically occurs when the user has pressed the "home" button on the device or has switched to another app via the app switcher. |
+| **Background** | When the application is open, however in the background (minimized). This typically occurs when the user has pressed the "home" button on the device or has switched to another app via the app switcher. |
 | **Quit**       | When the device is locked or application is not active or running. The user can quit an app by "swiping it away" via the app switcher UI on the device.                                                   |
 
 The user must have opened the app before messages can be received. If the user force quits the app from the device settings, it must be re-opened again before receiving messages.

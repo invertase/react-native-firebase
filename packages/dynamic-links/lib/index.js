@@ -24,12 +24,14 @@ import { isIOS } from '@react-native-firebase/app/lib/common';
 import builder from './builder';
 import version from './version';
 
+export const ShortLinkType = {
+  SHORT: 'SHORT',
+  UNGUESSABLE: 'UNGUESSABLE',
+  DEFAULT: 'DEFAULT',
+};
+
 const statics = {
-  ShortLinkType: {
-    SHORT: 'SHORT',
-    UNGUESSABLE: 'UNGUESSABLE',
-    DEFAULT: 'DEFAULT',
-  },
+  ShortLinkType,
 };
 
 const namespace = 'dynamicLinks';

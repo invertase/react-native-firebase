@@ -17,13 +17,16 @@
 
 import {
   isIOS,
+  isOther,
   isNull,
   isObject,
+  isFunction,
   isString,
   isUndefined,
 } from '@react-native-firebase/app/lib/common';
 import FirebaseApp from '../../FirebaseApp';
 import { DEFAULT_APP_NAME } from '../constants';
+import { setReactNativeAsyncStorageInternal } from '../asyncStorage';
 import { getAppModule } from './nativeModule';
 
 const APP_REGISTRY = {};
@@ -171,7 +174,7 @@ export function initializeApp(options = {}, configOrName) {
     );
   }
 
-  const app = new FirebaseApp(options, { name }, false, deleteApp.bind(null, name, true));
+  const app = new FirebaseApp(options, appConfig, false, deleteApp.bind(null, name, true));
 
   // Note these initialization actions with side effects are performed prior to knowledge of
   // successful initialization in the native code. Native code *may* throw an error.
@@ -179,7 +182,7 @@ export function initializeApp(options = {}, configOrName) {
   onAppCreateFn(APP_REGISTRY[name]);
 
   return getAppModule()
-    .initializeApp(options, { name })
+    .initializeApp(options, appConfig)
     .then(() => {
       app._initialized = true;
       return app;
@@ -201,9 +204,35 @@ export function setLogLevel(logLevel) {
     throw new Error('LogLevel must be one of "error", "warn", "info", "debug", "verbose"');
   }
 
-  if (isIOS) {
+  if (isIOS || isOther) {
     getAppModule().setLogLevel(logLevel);
   }
+}
+
+export function setReactNativeAsyncStorage(asyncStorage) {
+  if (!isObject(asyncStorage)) {
+    throw new Error("firebase.setReactNativeAsyncStorage(*) 'asyncStorage' must be an object.");
+  }
+
+  if (!isFunction(asyncStorage.setItem)) {
+    throw new Error(
+      "firebase.setReactNativeAsyncStorage(*) 'asyncStorage.setItem' must be a function.",
+    );
+  }
+
+  if (!isFunction(asyncStorage.getItem)) {
+    throw new Error(
+      "firebase.setReactNativeAsyncStorage(*) 'asyncStorage.getItem' must be a function.",
+    );
+  }
+
+  if (!isFunction(asyncStorage.removeItem)) {
+    throw new Error(
+      "firebase.setReactNativeAsyncStorage(*) 'asyncStorage.removeItem' must be a function.",
+    );
+  }
+
+  setReactNativeAsyncStorageInternal(asyncStorage);
 }
 
 /**

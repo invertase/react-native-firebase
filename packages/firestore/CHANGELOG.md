@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [20.4.0](https://github.com/invertase/react-native-firebase/compare/v20.3.0...v20.4.0) (2024-08-13)
+
+### Features
+
+- **firestore:** support for `PersistentCacheIndexManager` ([#7910](https://github.com/invertase/react-native-firebase/issues/7910)) ([0b0de45](https://github.com/invertase/react-native-firebase/commit/0b0de45513cd3aab9f7037fd8468a63cf96aa62c))
+- **firestore:** support for second database ([#7949](https://github.com/invertase/react-native-firebase/issues/7949)) ([eec08a0](https://github.com/invertase/react-native-firebase/commit/eec08a06f41dd96d13778fbed2afcaaac238fca4))
+
+## [20.3.0](https://github.com/invertase/react-native-firebase/compare/v20.2.1...v20.3.0) (2024-07-19)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+## [20.2.1](https://github.com/invertase/react-native-firebase/compare/v20.2.0...v20.2.1) (2024-07-17)
+
+### Bug Fixes
+
+- **firestore:** Filter typing. `Filter.or` & `Filter.and` can accept each other ([#7904](https://github.com/invertase/react-native-firebase/issues/7904)) ([f6c12ec](https://github.com/invertase/react-native-firebase/commit/f6c12ec208f15c4a8dd2132810fcfe914b675251))
+
+## [20.2.0](https://github.com/invertase/react-native-firebase/compare/v20.1.0...v20.2.0) (2024-07-15)
+
+### Features
+
+- **other:** Add Firestore support ([#7882](https://github.com/invertase/react-native-firebase/issues/7882)) ([0ebd1dd](https://github.com/invertase/react-native-firebase/commit/0ebd1ddd221c50dde489bce30ad5ed64037d8439))
+
+### Bug Fixes
+
+- **firestore:** expose modular `Filter` and it's proper types ([#7884](https://github.com/invertase/react-native-firebase/issues/7884)) ([272efe5](https://github.com/invertase/react-native-firebase/commit/272efe56acdd46b8c994789f751d2c097cb8d025))
+- **firestore:** remove exception throw on inequality queries on different fields ([da24246](https://github.com/invertase/react-native-firebase/commit/da242466d80609f61420feb56d72ad2ee20b2410))
+
 ## [20.1.0](https://github.com/invertase/react-native-firebase/compare/v20.0.0...v20.1.0) (2024-06-04)
 
 **Note:** Version bump only for package @react-native-firebase/firestore

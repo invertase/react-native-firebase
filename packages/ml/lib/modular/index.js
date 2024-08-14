@@ -1,7 +1,7 @@
 import { firebase } from '..';
 
 /**
- * @typedef {import('@react-native-firebase/app').ReactNativeFirebase.Module} FirebaseApp
+ * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
  * @typedef {import('..').FirebaseMLTypes.Module} FirebaseML
  */
 

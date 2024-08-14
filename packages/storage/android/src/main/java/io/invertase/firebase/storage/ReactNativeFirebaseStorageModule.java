@@ -281,12 +281,16 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
    * @link https://firebase.google.com/docs/reference/js/firebase.storage.Storage#useEmulator
    */
   @ReactMethod
-  public void useEmulator(String appName, String host, int port, Promise promise) {
+  public void useEmulator(
+      String appName, String host, int port, String bucketUrl, Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-    FirebaseStorage firebaseStorage = FirebaseStorage.getInstance(firebaseApp);
-    if (emulatorConfigs.get(appName) == null) {
+
+    FirebaseStorage firebaseStorage = FirebaseStorage.getInstance(firebaseApp, bucketUrl);
+    String emulatorKey = appName + ":" + bucketUrl;
+
+    if (emulatorConfigs.get(emulatorKey) == null) {
       firebaseStorage.useEmulator(host, port);
-      emulatorConfigs.put(appName, "true");
+      emulatorConfigs.put(emulatorKey, "true");
     }
     promise.resolve(null);
   }

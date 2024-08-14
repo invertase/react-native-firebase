@@ -16,6 +16,7 @@
  */
 
 import { isAndroid, isNumber, isString } from '@react-native-firebase/app/lib/common';
+import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import {
   createModuleNamespace,
   FirebaseModule,
@@ -25,31 +26,7 @@ import StorageReference from './StorageReference';
 import StorageStatics from './StorageStatics';
 import { getGsUrlParts, getHttpUrlParts, handleStorageEvent } from './utils';
 import version from './version';
-
-export {
-  getStorage,
-  connectStorageEmulator,
-  ref,
-  deleteObject,
-  getBlob,
-  getBytes,
-  getDownloadURL,
-  getMetadata,
-  getStream,
-  list,
-  listAll,
-  updateMetadata,
-  putFile,
-  writeToFile,
-  toString,
-  child,
-  setMaxDownloadRetryTime,
-  setMaxOperationRetryTime,
-  setMaxUploadRetryTime,
-  refFromURL,
-  uploadString,
-  uploadBytesResumable,
-} from '../modular/index';
+import fallBackModule from './web/RNFBStorageModule';
 
 const namespace = 'storage';
 const nativeEvents = ['storage_event'];
@@ -201,7 +178,7 @@ class FirebaseStorageModule extends FirebaseModule {
     }
     this.emulatorHost = host;
     this.emulatorPort = port;
-    this.native.useEmulator(_host, port);
+    this.native.useEmulator(_host, port, this._customUrlOrRegion);
     return [_host, port]; // undocumented return, just used to unit test android host remapping
   }
 }
@@ -230,3 +207,7 @@ export default createModuleNamespace({
 // storage().X(...);
 // firebase.storage().X(...);
 export const firebase = getFirebaseRoot();
+
+export * from './modular';
+
+setReactNativeModule(nativeModuleName, fallBackModule);

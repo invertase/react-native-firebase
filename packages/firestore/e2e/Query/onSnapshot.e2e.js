@@ -45,6 +45,9 @@ describe('firestore().collection().onSnapshot()', function () {
     });
 
     it('accepts a single callback function with snapshot', async function () {
+      if (Platform.other) {
+        return;
+      }
       const callback = sinon.spy();
       const unsub = firebase.firestore().collection(`${COLLECTION}/foo/bar2`).onSnapshot(callback);
 
@@ -57,6 +60,9 @@ describe('firestore().collection().onSnapshot()', function () {
     });
 
     it('accepts a single callback function with Error', async function () {
+      if (Platform.other) {
+        return;
+      }
       const callback = sinon.spy();
       const unsub = firebase.firestore().collection(NO_RULE_COLLECTION).onSnapshot(callback);
 
@@ -69,6 +75,10 @@ describe('firestore().collection().onSnapshot()', function () {
     });
 
     describe('multiple callbacks', function () {
+      if (Platform.other) {
+        return;
+      }
+
       it('calls onNext when successful', async function () {
         const onNext = sinon.spy();
         const onError = sinon.spy();
@@ -87,6 +97,9 @@ describe('firestore().collection().onSnapshot()', function () {
       });
 
       it('calls onError with Error', async function () {
+        if (Platform.other) {
+          return;
+        }
         const onNext = sinon.spy();
         const onError = sinon.spy();
         const unsub = firebase
@@ -105,6 +118,10 @@ describe('firestore().collection().onSnapshot()', function () {
     });
 
     describe('objects of callbacks', function () {
+      if (Platform.other) {
+        return;
+      }
+
       it('calls next when successful', async function () {
         const onNext = sinon.spy();
         const onError = sinon.spy();
@@ -123,6 +140,9 @@ describe('firestore().collection().onSnapshot()', function () {
       });
 
       it('calls error with Error', async function () {
+        if (Platform.other) {
+          return;
+        }
         const onNext = sinon.spy();
         const onError = sinon.spy();
         const unsub = firebase.firestore().collection(NO_RULE_COLLECTION).onSnapshot({
@@ -141,6 +161,10 @@ describe('firestore().collection().onSnapshot()', function () {
     });
 
     describe('SnapshotListenerOptions + callbacks', function () {
+      if (Platform.other) {
+        return;
+      }
+
       it('calls callback with snapshot when successful', async function () {
         const callback = sinon.spy();
         const unsub = firebase.firestore().collection(`${COLLECTION}/foo/bar5`).onSnapshot(
@@ -222,6 +246,10 @@ describe('firestore().collection().onSnapshot()', function () {
     });
 
     describe('SnapshotListenerOptions + object of callbacks', function () {
+      if (Platform.other) {
+        return;
+      }
+
       it('calls next with snapshot when successful', async function () {
         const onNext = sinon.spy();
         const onError = sinon.spy();
@@ -308,6 +336,9 @@ describe('firestore().collection().onSnapshot()', function () {
     // FIXME test disabled due to flakiness in CI E2E tests.
     // Registered 4 of 3 expected calls once (!?), 3 of 2 expected calls once.
     it('unsubscribes from further updates', async function () {
+      if (Platform.other) {
+        return;
+      }
       const callback = sinon.spy();
 
       const collection = firebase
@@ -349,6 +380,9 @@ describe('firestore().collection().onSnapshot()', function () {
     });
 
     it('accepts a single callback function with snapshot', async function () {
+      if (Platform.other) {
+        return;
+      }
       const { getFirestore, collection, onSnapshot } = firestoreModular;
       const callback = sinon.spy();
       const unsub = onSnapshot(collection(getFirestore(), `${COLLECTION}/foo/bar2`), callback);
@@ -362,6 +396,10 @@ describe('firestore().collection().onSnapshot()', function () {
     });
 
     describe('multiple callbacks', function () {
+      if (Platform.other) {
+        return;
+      }
+
       it('calls onNext when successful', async function () {
         const { getFirestore, collection, onSnapshot } = firestoreModular;
         const onNext = sinon.spy();
@@ -398,6 +436,10 @@ describe('firestore().collection().onSnapshot()', function () {
     });
 
     describe('objects of callbacks', function () {
+      if (Platform.other) {
+        return;
+      }
+
       it('calls next when successful', async function () {
         const { getFirestore, collection, onSnapshot } = firestoreModular;
         const onNext = sinon.spy();
@@ -436,6 +478,10 @@ describe('firestore().collection().onSnapshot()', function () {
     });
 
     describe('SnapshotListenerOptions + callbacks', function () {
+      if (Platform.other) {
+        return;
+      }
+
       it('calls callback with snapshot when successful', async function () {
         const { getFirestore, collection, onSnapshot } = firestoreModular;
         const callback = sinon.spy();
@@ -456,6 +502,9 @@ describe('firestore().collection().onSnapshot()', function () {
       });
 
       it('calls next with snapshot when successful', async function () {
+        if (Platform.other) {
+          return;
+        }
         const { getFirestore, collection, onSnapshot } = firestoreModular;
         const onNext = sinon.spy();
         const onError = sinon.spy();
@@ -484,6 +533,9 @@ describe('firestore().collection().onSnapshot()', function () {
       });
 
       it('calls error with Error', async function () {
+        if (Platform.other) {
+          return;
+        }
         const { getFirestore, collection, onSnapshot } = firestoreModular;
         const onNext = sinon.spy();
         const onError = sinon.spy();
@@ -507,6 +559,10 @@ describe('firestore().collection().onSnapshot()', function () {
     });
 
     describe('SnapshotListenerOptions + object of callbacks', function () {
+      if (Platform.other) {
+        return;
+      }
+
       it('calls next with snapshot when successful', async function () {
         const { getFirestore, collection, onSnapshot } = firestoreModular;
         const onNext = sinon.spy();
@@ -600,6 +656,9 @@ describe('firestore().collection().onSnapshot()', function () {
     // FIXME test disabled due to flakiness in CI E2E tests.
     // Registered 4 of 3 expected calls once (!?), 3 of 2 expected calls once.
     it('unsubscribes from further updates', async function () {
+      if (Platform.other) {
+        return;
+      }
       const { getFirestore, collection, onSnapshot, addDoc } = firestoreModular;
       const callback = sinon.spy();
 

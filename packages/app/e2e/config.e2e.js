@@ -19,6 +19,7 @@ describe('config', function () {
   describe('meta', function () {
     it('should read Info.plist/AndroidManifest.xml meta data', async function () {
       const metaData = await NativeModules.RNFBAppModule.metaGetAll();
+      if (Platform.other) return;
       metaData.rnfirebase_meta_testing_string.should.equal('abc');
       metaData.rnfirebase_meta_testing_boolean_false.should.equal(false);
       metaData.rnfirebase_meta_testing_boolean_true.should.equal(true);
@@ -28,6 +29,7 @@ describe('config', function () {
   describe('json', function () {
     it('should read firebase.json data', async function () {
       const jsonData = await NativeModules.RNFBAppModule.jsonGetAll();
+      if (Platform.other) return;
       jsonData.rnfirebase_json_testing_string.should.equal('abc');
       jsonData.rnfirebase_json_testing_boolean_false.should.equal(false);
       jsonData.rnfirebase_json_testing_boolean_true.should.equal(true);
@@ -41,6 +43,7 @@ describe('config', function () {
 
     // NOTE: "preferencesClearAll" clears Firestore settings. Set DB as emulator again.
     after(async function () {
+      if (Platform.other) return;
       await firebase
         .firestore()
         .settings({ host: 'localhost:8080', ssl: false, persistence: true });

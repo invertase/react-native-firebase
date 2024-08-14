@@ -34,38 +34,6 @@ import { AppRegistry, Platform } from 'react-native';
 import remoteMessageOptions from './remoteMessageOptions';
 import version from './version';
 
-export {
-  getMessaging,
-  deleteToken,
-  getToken,
-  onMessage,
-  onNotificationOpenedApp,
-  onTokenRefresh,
-  requestPermission,
-  isAutoInitEnabled,
-  setAutoInitEnabled,
-  getInitialNotification,
-  getDidOpenSettingsForNotification,
-  getIsHeadless,
-  registerDeviceForRemoteMessages,
-  isDeviceRegisteredForRemoteMessages,
-  unregisterDeviceForRemoteMessages,
-  getAPNSToken,
-  setAPNSToken,
-  hasPermission,
-  onDeletedMessages,
-  onMessageSent,
-  onSendError,
-  setBackgroundMessageHandler,
-  setOpenSettingsForNotificationsHandler,
-  sendMessage,
-  subscribeToTopic,
-  unsubscribeFromTopic,
-  experimentalSetDeliveryMetricsExportedToBigQueryEnabled,
-  isDeliveryMetricsExportToBigQueryEnabled,
-  isSupported,
-} from '../modular/index';
-
 const statics = {
   AuthorizationStatus: {
     NOT_DETERMINED: -1,
@@ -537,6 +505,8 @@ export default createModuleNamespace({
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseMessagingModule,
 });
+
+export * from './modular';
 
 // import messaging, { firebase } from '@react-native-firebase/messaging';
 // messaging().X(...);

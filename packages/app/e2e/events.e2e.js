@@ -31,14 +31,23 @@ describe('Core -> EventEmitter', function () {
       const { resolve, reject, promise } = Promise.defer();
       const emitter = NativeEventEmitter;
 
-      emitter.addListener(eventName, event => {
-        event.foo.should.equal(eventBody.foo);
-        if (!readyToResolve) {
-          return reject(new Error('Event was received before being ready!'));
-        }
-
-        return resolve();
-      });
+      emitter.addListener(
+        eventName,
+        event => {
+          try {
+            should.notEqual(event.foo, null);
+            event.foo.should.equal(eventBody.foo);
+          } catch (e) {
+            return reject(e);
+          }
+          if (!readyToResolve) {
+            return reject(new Error('Event was received before being ready!'));
+          }
+          return resolve();
+        },
+        undefined,
+        true,
+      );
 
       await eventsNotifyReady(false);
       await eventsPing(eventName, eventBody);
@@ -57,24 +66,51 @@ describe('Core -> EventEmitter', function () {
       should.equal(nativeListenersAfter.events.pong, undefined);
     });
 
+    it('can send and receive lots of events', async function () {
+      const { eventsPing, eventsNotifyReady } = NativeModules.RNFBAppModule;
+      await eventsNotifyReady(true);
+      const { resolve, reject, promise } = Promise.defer();
+      const emitter = NativeEventEmitter;
+      let eventCount = 0;
+      emitter.addListener(eventName, event => {
+        try {
+          should.notEqual(event.foo, null);
+          event.foo.should.equal(eventBody.foo);
+        } catch (e) {
+          return reject(e);
+        }
+
+        eventCount++;
+        if (eventCount === 100) {
+          return resolve();
+        }
+      });
+      await Utils.sleep(100);
+      for (let i = 0; i < 100; i++) {
+        eventsPing(eventName, eventBody);
+      }
+
+      await promise;
+      emitter.removeAllListeners(eventName);
+    });
+
     it('queues events before a js listener is registered', async function () {
       const { eventsPing, eventsNotifyReady, eventsGetListeners, eventsRemoveListener } =
         NativeModules.RNFBAppModule;
       await eventsNotifyReady(true);
-      const { resolve, promise } = Promise.defer();
+      const { resolve, reject, promise } = Promise.defer();
       const emitter = NativeEventEmitter;
-
       await eventsPing(eventName2, eventBody);
-      await Utils.sleep(500);
-      // const nativeListenersBefore = await eventsGetListeners();
-      // console.error('we have listeners? ' + JSON.stringify(nativeListenersBefore));
-      // should.equal(nativeListenersBefore.events.ping, undefined);
 
       const subscription = emitter.addListener(eventName2, event => {
-        event.foo.should.equal(eventBody.foo);
+        try {
+          should.notEqual(event.foo, null);
+          event.foo.should.equal(eventBody.foo);
+        } catch (e) {
+          return reject(e);
+        }
         return resolve();
       });
-
       await promise;
       subscription.remove();
 

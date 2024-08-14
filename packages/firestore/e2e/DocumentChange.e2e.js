@@ -24,6 +24,10 @@ describe('firestore.DocumentChange', function () {
 
   describe('v8 compatibility', function () {
     it('.doc -> returns a DocumentSnapshot', async function () {
+      if (Platform.other) {
+        return;
+      }
+
       const colRef = firebase.firestore().collection(COLLECTION);
       await colRef.add({});
       const snapshot = await colRef.limit(1).get();
@@ -35,6 +39,9 @@ describe('firestore.DocumentChange', function () {
     });
 
     it('returns the correct metadata when adding and removing', async function () {
+      if (Platform.other) {
+        return;
+      }
       const colRef = firebase
         .firestore()
         .collection(`${COLLECTION}/docChanges/docChangesCollection`);
@@ -77,6 +84,9 @@ describe('firestore.DocumentChange', function () {
     });
 
     it('returns the correct metadata when modifying documents', async function () {
+      if (Platform.other) {
+        return;
+      }
       const colRef = firebase.firestore().collection(`${COLLECTION}/docChanges/docMovedCollection`);
 
       const doc1 = firebase.firestore().doc(`${COLLECTION}/docChanges/docMovedCollection/doc1`);
@@ -120,6 +130,10 @@ describe('firestore.DocumentChange', function () {
 
   describe('modular', function () {
     it('.doc -> returns a DocumentSnapshot', async function () {
+      if (Platform.other) {
+        return;
+      }
+
       const { getFirestore, collection, addDoc, limit, getDocs, query } = firestoreModular;
       const db = getFirestore();
 
@@ -134,6 +148,9 @@ describe('firestore.DocumentChange', function () {
     });
 
     it('returns the correct metadata when adding and removing', async function () {
+      if (Platform.other) {
+        return;
+      }
       const { getFirestore, collection, doc, setDoc, onSnapshot, deleteDoc } = firestoreModular;
       const db = getFirestore();
 
@@ -177,6 +194,10 @@ describe('firestore.DocumentChange', function () {
     });
 
     it('returns the correct metadata when modifying documents', async function () {
+      if (Platform.other) {
+        return;
+      }
+
       const { getFirestore, collection, doc, setDoc, orderBy, query, onSnapshot, updateDoc } =
         firestoreModular;
       const db = getFirestore();

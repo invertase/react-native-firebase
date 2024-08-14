@@ -85,6 +85,7 @@ export namespace ReactNativeFirebase {
     /**
      * The tracking ID for Google Analytics, e.g. "UA-12345678-1", used to configure Google Analytics.
      */
+    // TODO this should now be measurementId
     gaTrackingId?: string;
 
     /**
@@ -157,6 +158,36 @@ export namespace ReactNativeFirebase {
     utils(): Utils.Module;
   }
 
+  /**
+   * Interface for a supplied `AsyncStorage`.
+   */
+  export interface ReactNativeAsyncStorage {
+    /**
+     * Persist an item in storage.
+     *
+     * @param key - storage key.
+     * @param value - storage value.
+     */
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    setItem: Function;
+    /**
+     * Retrieve an item from storage.
+     *
+     * @param key - storage key.
+     */
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    getItem: Function;
+    /**
+     * Remove an item from storage.
+     *
+     * @param key - storage key.
+     */
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    removeItem: Function;
+
+    [key: string]: any;
+  }
+
   export interface Module {
     /**
      * Create (and initialize) a FirebaseApp.
@@ -199,6 +230,14 @@ export namespace ReactNativeFirebase {
      * @ios
      */
     setLogLevel(logLevel: LogLevelString): void;
+
+    /**
+     * The `AsyncStorage` implementation to use for persisting data on 'Other' platforms.
+     * If not specified, in memory persistence is used.
+     *
+     * This is required if you want to persist things like Auth sessions, Analytics device IDs, etc.
+     */
+    setReactNativeAsyncStorage(asyncStorage: ReactNativeAsyncStorage): void;
 
     /**
      * A (read-only) array of all the initialized Apps.
@@ -571,6 +610,8 @@ export namespace Utils {
  * Add Utils module as a named export for `app`.
  */
 export const utils: ReactNativeFirebase.FirebaseModuleWithStatics<Utils.Module, Utils.Statics>;
+
+export * from './modular';
 
 declare const module: ReactNativeFirebase.Module;
 export default module;
