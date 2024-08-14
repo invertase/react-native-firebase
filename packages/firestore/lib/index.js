@@ -40,6 +40,7 @@ import FirestoreTransactionHandler from './FirestoreTransactionHandler';
 import FirestoreWriteBatch from './FirestoreWriteBatch';
 import version from './version';
 import fallBackModule from './web/RNFBFirestoreModule';
+import FirestorePersistentCacheIndexManager from './FirestorePersistentCacheIndexManager';
 
 const namespace = 'firestore';
 
@@ -57,8 +58,13 @@ const nativeEvents = [
 ];
 
 class FirebaseFirestoreModule extends FirebaseModule {
-  constructor(app, config) {
+  constructor(app, config, databaseId) {
     super(app, config);
+    if (isString(databaseId) || databaseId === undefined) {
+      this._customUrlOrRegion = databaseId || '(default)';
+    } else if (!isString(databaseId)) {
+      throw new Error('firebase.app().firestore(*) database ID must be a string');
+    }
     this._referencePath = new FirestorePath();
     this._transactionHandler = new FirestoreTransactionHandler(this);
 
@@ -79,7 +85,12 @@ class FirebaseFirestoreModule extends FirebaseModule {
 
     this._settings = {
       ignoreUndefinedProperties: false,
+      persistence: true,
     };
+  }
+  // We override the FirebaseModule's `eventNameForApp()` method to include the customUrlOrRegion
+  eventNameForApp(...args) {
+    return `${this.app.name}-${this._customUrlOrRegion}-${args.join('-')}`;
   }
 
   batch() {
@@ -354,7 +365,19 @@ class FirebaseFirestoreModule extends FirebaseModule {
       delete settings.ignoreUndefinedProperties;
     }
 
+    if (settings.persistence === false) {
+      // Required for persistentCacheIndexManager(), if this setting is `false`, it returns `null`
+      this._settings.persistence = false;
+    }
+
     return this.native.settings(settings);
+  }
+
+  persistentCacheIndexManager() {
+    if (this._settings.persistence === false) {
+      return null;
+    }
+    return new FirestorePersistentCacheIndexManager(this);
   }
 }
 
@@ -372,7 +395,7 @@ export default createModuleNamespace({
   nativeModuleName,
   nativeEvents,
   hasMultiAppSupport: true,
-  hasCustomUrlOrRegionSupport: false,
+  hasCustomUrlOrRegionSupport: true,
   ModuleClass: FirebaseFirestoreModule,
 });
 

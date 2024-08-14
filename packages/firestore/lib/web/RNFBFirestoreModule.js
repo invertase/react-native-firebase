@@ -68,19 +68,24 @@ function getCachedAppInstance(appName) {
   return (appInstances[appName] ??= getApp(appName));
 }
 
+function createFirestoreKey(appName, databaseId) {
+  return `${appName}:${databaseId}`;
+}
+
 // Returns a cached Firestore instance.
-function getCachedFirestoreInstance(appName) {
-  let instance = firestoreInstances[appName];
+function getCachedFirestoreInstance(appName, databaseId) {
+  const firestoreKey = createFirestoreKey(appName, databaseId);
+  let instance = firestoreInstances[firestoreKey];
   if (!instance) {
-    instance = getFirestore(getCachedAppInstance(appName));
-    if (emulatorForApp[appName]) {
+    instance = getFirestore(getCachedAppInstance(appName), databaseId);
+    if (emulatorForApp[firestoreKey]) {
       connectFirestoreEmulator(
         instance,
-        emulatorForApp[appName].host,
-        emulatorForApp[appName].port,
+        emulatorForApp[firestoreKey].host,
+        emulatorForApp[firestoreKey].port,
       );
     }
-    firestoreInstances[appName] = instance;
+    firestoreInstances[firestoreKey] = instance;
   }
   return instance;
 }
@@ -126,27 +131,30 @@ export default {
   /**
    * Use the Firestore emulator.
    * @param {string} appName - The app name.
+   * @param {string} databaseId - The database ID.
    * @param {string} host - The emulator host.
    * @param {number} port - The emulator port.
    * @returns {Promise<null>} An empty promise.
    */
-  useEmulator(appName, host, port) {
+  useEmulator(appName, databaseId, host, port) {
     return guard(async () => {
-      const firestore = getCachedFirestoreInstance(appName);
+      const firestore = getCachedFirestoreInstance(appName, databaseId);
       connectFirestoreEmulator(firestore, host, port);
-      emulatorForApp[appName] = { host, port };
+      const firestoreKey = createFirestoreKey(appName, databaseId);
+      emulatorForApp[firestoreKey] = { host, port };
     });
   },
 
   /**
    * Initializes a Firestore instance with settings.
    * @param {string} appName - The app name.
+   * @param {string} databaseId - The database ID.
    * @param {object} settings - The Firestore settings.
    * @returns {Promise<null>} An empty promise.
    */
-  settings(appName, settings) {
+  settings(appName, databaseId, settings) {
     return guard(() => {
-      const instance = initializeFirestore(getCachedAppInstance(appName), settings);
+      const instance = initializeFirestore(getCachedAppInstance(appName), settings, databaseId);
       firestoreInstances[appName] = instance;
     });
   },
@@ -154,11 +162,12 @@ export default {
   /**
    * Terminates a Firestore instance.
    * @param {string} appName - The app name.
+   * @param {string} databaseId - The database ID.
    * @returns {Promise<null>} An empty promise.
    */
-  terminate(appName) {
+  terminate(appName, databaseId) {
     return guard(async () => {
-      const firestore = getCachedFirestoreInstance(appName);
+      const firestore = getCachedFirestoreInstance(appName, databaseId);
       await terminate(firestore);
       return null;
     });
@@ -184,6 +193,7 @@ export default {
   /**
    * Get a collection count from Firestore.
    * @param {string} appName - The app name.
+   * @param {string} databaseId - The database ID.
    * @param {string} path - The collection path.
    * @param {string} type - The collection type (e.g. collectionGroup).
    * @param {object[]} filters - The collection filters.
@@ -191,9 +201,9 @@ export default {
    * @param {object} options - The collection options.
    * @returns {Promise<object>} The collection count object.
    */
-  collectionCount(appName, path, type, filters, orders, options) {
+  collectionCount(appName, databaseId, path, type, filters, orders, options) {
     return guard(async () => {
-      const firestore = getCachedFirestoreInstance(appName);
+      const firestore = getCachedFirestoreInstance(appName, databaseId);
       const queryRef =
         type === 'collectionGroup' ? collectionGroup(firestore, path) : collection(firestore, path);
       const query = buildQuery(queryRef, filters, orders, options);
@@ -208,6 +218,7 @@ export default {
   /**
    * Get a collection from Firestore.
    * @param {string} appName - The app name.
+   * @param {string} databaseId - The database ID.
    * @param {string} path - The collection path.
    * @param {string} type - The collection type (e.g. collectionGroup).
    * @param {object[]} filters - The collection filters.
@@ -216,7 +227,7 @@ export default {
    * @param {object} getOptions - The get options.
    * @returns {Promise<object>} The collection object.
    */
-  collectionGet(appName, path, type, filters, orders, options, getOptions) {
+  collectionGet(appName, databaseId, path, type, filters, orders, options, getOptions) {
     if (getOptions && getOptions.source === 'cache') {
       return rejectWithCodeAndMessage(
         'unsupported',
@@ -225,7 +236,7 @@ export default {
     }
 
     return guard(async () => {
-      const firestore = getCachedFirestoreInstance(appName);
+      const firestore = getCachedFirestoreInstance(appName, databaseId);
       const queryRef =
         type === 'collectionGroup' ? collectionGroup(firestore, path) : collection(firestore, path);
       const query = buildQuery(queryRef, filters, orders, options);
@@ -243,14 +254,19 @@ export default {
     return rejectWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
   },
 
+  persistenceCacheIndexManager() {
+    return rejectWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
+  },
+
   /**
    * Get a document from Firestore.
    * @param {string} appName - The app name.
+   * @param {string} databaseId - The database ID.
    * @param {string} path - The document path.
    * @param {object} getOptions - The get options.
    * @returns {Promise<object>} The document object.
    */
-  documentGet(appName, path, getOptions) {
+  documentGet(appName, databaseId, path, getOptions) {
     return guard(async () => {
       if (getOptions && getOptions.source === 'cache') {
         return rejectWithCodeAndMessage(
@@ -259,7 +275,7 @@ export default {
         );
       }
 
-      const firestore = getCachedFirestoreInstance(appName);
+      const firestore = getCachedFirestoreInstance(appName, databaseId);
       const ref = doc(firestore, path);
       const snapshot = await getDoc(ref);
       return documentSnapshotToObject(snapshot);
@@ -269,12 +285,13 @@ export default {
   /**
    * Delete a document from Firestore.
    * @param {string} appName - The app name.
+   * @param {string} databaseId - The database ID.
    * @param {string} path - The document path.
    * @returns {Promise<null>} An empty promise.
    */
-  documentDelete(appName, path) {
+  documentDelete(appName, databaseId, path) {
     return guard(async () => {
-      const firestore = getCachedFirestoreInstance(appName);
+      const firestore = getCachedFirestoreInstance(appName, databaseId);
       const ref = doc(firestore, path);
       await deleteDoc(ref);
       return null;
@@ -284,14 +301,15 @@ export default {
   /**
    * Set a document in Firestore.
    * @param {string} appName - The app name.
+   * @param {string} databaseId - The database ID.
    * @param {string} path - The document path.
    * @param {object} data - The document data.
    * @param {object} options - The set options.
    * @returns {Promise<null>} An empty promise.
    */
-  documentSet(appName, path, data, options) {
+  documentSet(appName, databaseId, path, data, options) {
     return guard(async () => {
-      const firestore = getCachedFirestoreInstance(appName);
+      const firestore = getCachedFirestoreInstance(appName, databaseId);
       const ref = doc(firestore, path);
       const setOptions = {};
       if ('merge' in options) {
@@ -306,13 +324,14 @@ export default {
   /**
    * Update a document in Firestore.
    * @param {string} appName - The app name.
+   * @param {string} databaseId - The database ID.
    * @param {string} path - The document path.
    * @param {object} data - The document data.
    * @returns {Promise<null>} An empty promise.
    */
-  documentUpdate(appName, path, data) {
+  documentUpdate(appName, databaseId, path, data) {
     return guard(async () => {
-      const firestore = getCachedFirestoreInstance(appName);
+      const firestore = getCachedFirestoreInstance(appName, databaseId);
       const ref = doc(firestore, path);
       await updateDoc(ref, readableToObject(firestore, data));
     });
@@ -321,11 +340,12 @@ export default {
   /**
    * Batch write documents in Firestore.
    * @param {string} appName - The app name.
+   * @param {string} databaseId - The database ID.
    * @param {object[]} writes - The document writes in write batches format.
    */
-  documentBatch(appName, writes) {
+  documentBatch(appName, databaseId, writes) {
     return guard(async () => {
-      const firestore = getCachedFirestoreInstance(appName);
+      const firestore = getCachedFirestoreInstance(appName, databaseId);
       const batch = writeBatch(firestore);
       const writesArray = parseDocumentBatches(firestore, writes);
 
@@ -360,11 +380,12 @@ export default {
   /**
    * Get a document from a Firestore transaction.
    * @param {string} appName - The app name.
+   * @param {string} databaseId - The database ID.
    * @param {string} transactionId - The transaction id.
    * @param {string} path - The document path.
    * @returns {Promise<object>} The document object.
    */
-  transactionGetDocument(appName, transactionId, path) {
+  transactionGetDocument(appName, databaseId, transactionId, path) {
     if (!transactionHandler[transactionId]) {
       return rejectWithCodeAndMessage(
         'internal-error',
@@ -373,7 +394,7 @@ export default {
     }
 
     return guard(async () => {
-      const firestore = getCachedFirestoreInstance(appName);
+      const firestore = getCachedFirestoreInstance(appName, databaseId);
       const docRef = doc(firestore, path);
       const tsx = transactionHandler[transactionId];
       const snapshot = await tsx.get(docRef);
@@ -384,9 +405,10 @@ export default {
   /**
    * Dispose a transaction instance.
    * @param {string} appName - The app name.
+   * @param {string} databaseId - The database ID.
    * @param {string} transactionId - The transaction id.
    */
-  transactionDispose(appName, transactionId) {
+  transactionDispose(appName, databaseId, transactionId) {
     // There's no abort method in the JS SDK, so we just remove the transaction handler.
     delete transactionHandler[transactionId];
   },
@@ -394,10 +416,11 @@ export default {
   /**
    * Applies a buffer of commands to a Firestore transaction.
    * @param {string} appName - The app name.
+   * @param {string} databaseId - The database ID.
    * @param {string} transactionId - The transaction id.
    * @param {object[]} commandBuffer - The readable array of buffer commands.
    */
-  transactionApplyBuffer(appName, transactionId, commandBuffer) {
+  transactionApplyBuffer(appName, databaseId, transactionId, commandBuffer) {
     if (transactionHandler[transactionId]) {
       transactionBuffer[transactionId] = commandBuffer;
     }
@@ -406,12 +429,13 @@ export default {
   /**
    * Begins a Firestore transaction.
    * @param {string} appName - The app name.
+   * @param {string} databaseId - The database ID.
    * @param {string} transactionId - The transaction id.
    * @returns {Promise<null>} An empty promise.
    */
-  transactionBegin(appName, transactionId) {
+  transactionBegin(appName, databaseId, transactionId) {
     return guard(async () => {
-      const firestore = getCachedFirestoreInstance(appName);
+      const firestore = getCachedFirestoreInstance(appName, databaseId);
 
       try {
         await runTransaction(firestore, async tsx => {
@@ -421,6 +445,7 @@ export default {
             eventName: 'firestore_transaction_event',
             body: { type: 'update' },
             appName,
+            databaseId,
             listenerId: transactionId,
           });
 
@@ -468,6 +493,7 @@ export default {
           eventName: 'firestore_transaction_event',
           body: { type: 'complete' },
           appName,
+          databaseId,
           listenerId: transactionId,
         });
       } catch (e) {
@@ -475,6 +501,7 @@ export default {
           eventName: 'firestore_transaction_event',
           body: { type: 'error', error: getWebError(e) },
           appName,
+          databaseId,
           listenerId: transactionId,
         });
       }

@@ -17,6 +17,7 @@ package io.invertase.firebase.firestore;
  *
  */
 
+import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.createFirestoreKey;
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getFirestoreForApp;
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.instanceCache;
 
@@ -40,27 +41,28 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
     super(context, serviceName);
   }
 
-  Task<Void> disableNetwork(String appName) {
-    return getFirestoreForApp(appName).disableNetwork();
+  Task<Void> disableNetwork(String appName, String databaseId) {
+    return getFirestoreForApp(appName, databaseId).disableNetwork();
   }
 
-  Task<Void> enableNetwork(String appName) {
-    return getFirestoreForApp(appName).enableNetwork();
+  Task<Void> enableNetwork(String appName, String databaseId) {
+    return getFirestoreForApp(appName, databaseId).enableNetwork();
   }
 
-  Task<Void> useEmulator(String appName, String host, int port) {
+  Task<Void> useEmulator(String appName, String databaseId, String host, int port) {
     return Tasks.call(
         getExecutor(),
         () -> {
-          if (emulatorConfigs.get(appName) == null) {
-            emulatorConfigs.put(appName, "true");
-            getFirestoreForApp(appName).useEmulator(host, port);
+          String firestoreKey = createFirestoreKey(appName, databaseId);
+          if (emulatorConfigs.get(firestoreKey) == null) {
+            emulatorConfigs.put(firestoreKey, "true");
+            getFirestoreForApp(appName, databaseId).useEmulator(host, port);
           }
           return null;
         });
   }
 
-  Task<Void> settings(String appName, Map<String, Object> settings) {
+  Task<Void> settings(String firestoreKey, Map<String, Object> settings) {
     return Tasks.call(
         getExecutor(),
         () -> {
@@ -70,7 +72,7 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
 
             UniversalFirebasePreferences.getSharedInstance()
                 .setIntValue(
-                    UniversalFirebaseFirestoreStatics.FIRESTORE_CACHE_SIZE + "_" + appName,
+                    UniversalFirebaseFirestoreStatics.FIRESTORE_CACHE_SIZE + "_" + firestoreKey,
                     Objects.requireNonNull(cacheSizeBytesDouble).intValue());
           }
 
@@ -78,7 +80,7 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
           if (settings.containsKey("host")) {
             UniversalFirebasePreferences.getSharedInstance()
                 .setStringValue(
-                    UniversalFirebaseFirestoreStatics.FIRESTORE_HOST + "_" + appName,
+                    UniversalFirebaseFirestoreStatics.FIRESTORE_HOST + "_" + firestoreKey,
                     (String) settings.get("host"));
           }
 
@@ -86,7 +88,7 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
           if (settings.containsKey("persistence")) {
             UniversalFirebasePreferences.getSharedInstance()
                 .setBooleanValue(
-                    UniversalFirebaseFirestoreStatics.FIRESTORE_PERSISTENCE + "_" + appName,
+                    UniversalFirebaseFirestoreStatics.FIRESTORE_PERSISTENCE + "_" + firestoreKey,
                     (boolean) settings.get("persistence"));
           }
 
@@ -94,7 +96,7 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
           if (settings.containsKey("ssl")) {
             UniversalFirebasePreferences.getSharedInstance()
                 .setBooleanValue(
-                    UniversalFirebaseFirestoreStatics.FIRESTORE_SSL + "_" + appName,
+                    UniversalFirebaseFirestoreStatics.FIRESTORE_SSL + "_" + firestoreKey,
                     (boolean) settings.get("ssl"));
           }
 
@@ -104,7 +106,7 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
                 .setStringValue(
                     UniversalFirebaseFirestoreStatics.FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR
                         + "_"
-                        + appName,
+                        + firestoreKey,
                     (String) settings.get("serverTimestampBehavior"));
           }
 
@@ -112,25 +114,25 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
         });
   }
 
-  LoadBundleTask loadBundle(String appName, String bundle) {
+  LoadBundleTask loadBundle(String appName, String databaseId, String bundle) {
     byte[] bundleData = bundle.getBytes(StandardCharsets.UTF_8);
-    return getFirestoreForApp(appName).loadBundle(bundleData);
+    return getFirestoreForApp(appName, databaseId).loadBundle(bundleData);
   }
 
-  Task<Void> clearPersistence(String appName) {
-    return getFirestoreForApp(appName).clearPersistence();
+  Task<Void> clearPersistence(String appName, String databaseId) {
+    return getFirestoreForApp(appName, databaseId).clearPersistence();
   }
 
-  Task<Void> waitForPendingWrites(String appName) {
-    return getFirestoreForApp(appName).waitForPendingWrites();
+  Task<Void> waitForPendingWrites(String appName, String databaseId) {
+    return getFirestoreForApp(appName, databaseId).waitForPendingWrites();
   }
 
-  Task<Void> terminate(String appName) {
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
-
-    if (instanceCache.get(appName) != null) {
-      instanceCache.get(appName).clear();
-      instanceCache.remove(appName);
+  Task<Void> terminate(String appName, String databaseId) {
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
+    String firestoreKey = createFirestoreKey(appName, databaseId);
+    if (instanceCache.get(firestoreKey) != null) {
+      instanceCache.get(firestoreKey).clear();
+      instanceCache.remove(firestoreKey);
     }
 
     return firebaseFirestore.terminate();

@@ -18,7 +18,7 @@ const { getE2eTestProject, getE2eEmulatorHost } = require('../../app/e2e/helpers
  *
  */
 
-exports.wipe = async function wipe(debug = false) {
+exports.wipe = async function wipe(debug = false, databaseId = '(default)') {
   const deleteOptions = {
     method: 'DELETE',
     headers: {
@@ -27,7 +27,7 @@ exports.wipe = async function wipe(debug = false) {
     },
     port: 8080,
     host: getE2eEmulatorHost(),
-    path: '/emulator/v1/projects/' + getE2eTestProject() + '/databases/(default)/documents',
+    path: '/emulator/v1/projects/' + getE2eTestProject() + `/databases/${databaseId}/documents`,
   };
 
   try {

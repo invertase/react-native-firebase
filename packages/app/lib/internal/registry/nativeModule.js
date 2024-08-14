@@ -153,7 +153,10 @@ function initialiseNativeModule(module) {
 function subscribeToNativeModuleEvent(eventName) {
   if (!NATIVE_MODULE_EVENT_SUBSCRIPTIONS[eventName]) {
     RNFBNativeEventEmitter.addListener(eventName, event => {
-      if (event.appName) {
+      if (event.appName && event.databaseId) {
+        // Firestore requires both appName and databaseId to prefix
+        SharedEventEmitter.emit(`${event.appName}-${event.databaseId}-${eventName}`, event);
+      } else if (event.appName) {
         // native event has an appName property - auto prefix and internally emit
         SharedEventEmitter.emit(`${event.appName}-${eventName}`, event);
       } else {
