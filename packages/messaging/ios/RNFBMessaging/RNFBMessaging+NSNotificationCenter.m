@@ -98,7 +98,6 @@
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
       isHeadless = YES;
       if (rctRootView != nil) {
-        
         NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil
                                                      ? [rctRootView.appProperties mutableCopy]
                                                      : [NSMutableDictionary dictionary];
