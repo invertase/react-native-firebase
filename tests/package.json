@@ -31,7 +31,6 @@
     "react": "18.2.0",
     "react-native": "0.74.5",
     "react-native-device-info": "^11.1.0",
-    "react-native-macos": "^0.73.34",
     "util": "^0.12.5"
   },
   "devDependencies": {
