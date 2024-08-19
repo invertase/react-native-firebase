@@ -884,7 +884,7 @@ describe('Analytics', function () {
     it('`initiateOnDeviceConversionMeasurementWithHashedEmailAddress` throws if not a string', function () {
       expect(() =>
         // @ts-ignore
-        firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedEmailAddress(true),
+        initiateOnDeviceConversionMeasurementWithHashedEmailAddress(getAnalytics(), true),
       ).toThrowError(
         "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedEmailAddress(*) 'hashedEmailAddress' expected a string value.",
       );
