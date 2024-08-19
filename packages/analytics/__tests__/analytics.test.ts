@@ -881,6 +881,15 @@ describe('Analytics', function () {
       expect(initiateOnDeviceConversionMeasurementWithHashedEmailAddress).toBeDefined();
     });
 
+    it('`initiateOnDeviceConversionMeasurementWithHashedEmailAddress` throws if not a string', function () {
+      expect(() =>
+        // @ts-ignore
+        firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedEmailAddress(true),
+      ).toThrowError(
+        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedEmailAddress(*) 'hashedEmailAddress' expected a string value.",
+      );
+    });
+
     it('`initiateOnDeviceConversionMeasurementWithHashedPhoneNumber` should throw if the value is in E.164 format', function () {
       expect(() =>
         initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(getAnalytics(), '+1234567890'),
