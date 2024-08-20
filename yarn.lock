@@ -19983,7 +19983,7 @@ __metadata:
     react: "npm:18.2.0"
     react-native: "npm:0.74.1"
     react-native-device-info: "npm:^11.1.0"
-    react-native-macos: "npm:^0.74.1"
+    react-native-macos: "npm:0.74.1"
     should: "npm:^13.2.3"
     should-sinon: "npm:0.0.6"
     sinon: "npm:17.0.0"
@@ -20035,9 +20035,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"react-native-macos@npm:^0.74.1":
-  version: 0.74.3
-  resolution: "react-native-macos@npm:0.74.3"
+"react-native-macos@npm:0.74.1":
+  version: 0.74.1
+  resolution: "react-native-macos@npm:0.74.1"
   dependencies:
     "@jest/create-cache-key-function": "npm:^29.6.3"
     "@react-native-community/cli": "npm:13.6.9"
@@ -20084,7 +20084,7 @@ __metadata:
       optional: true
   bin:
     react-native-macos: cli.js
-  checksum: 10/77a3d6ac5c17de4a03d3d650c5d0ebf9f614426ab0aa2cfaa1f23edcb41eaaab16ccc136269883395ffe8e26d8185acdb76582dee8ced42b5bfc02a5911b5aab
+  checksum: 10/5b15919090fa59f9c5b3efd8c032847b2a099a420ba7fe2c3045d2fd601c73e8a6b5d3259cc48edbf5e19744dd23d82e78e5be0222d9602850fd704cdf21a441
   languageName: node
   linkType: hard
 
