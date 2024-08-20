@@ -25,21 +25,14 @@ const platformSupportedModules = [];
 
 platformSupportedModules.push('app');
 platformSupportedModules.push('functions');
-platformSupportedModules.push('auth');
-platformSupportedModules.push('database');
 platformSupportedModules.push('firestore');
+platformSupportedModules.push('database');
+platformSupportedModules.push('auth');
 platformSupportedModules.push('storage');
-platformSupportedModules.push('messaging');
-platformSupportedModules.push('perf');
-platformSupportedModules.push('analytics');
 platformSupportedModules.push('remoteConfig');
-platformSupportedModules.push('crashlytics');
-platformSupportedModules.push('inAppMessaging');
-platformSupportedModules.push('installations');
+platformSupportedModules.push('analytics');
 platformSupportedModules.push('appCheck');
-platformSupportedModules.push('appDistribution');
-platformSupportedModules.push('dynamicLinks');
-platformSupportedModules.push('ml');
+// TODO add more modules here once they are supported.
 
 // Registering an error handler that always throw unhandled exceptions
 // This is to enable Jet to exit on uncaught errors
@@ -68,10 +61,6 @@ function loadTests(_) {
       if (platformSupportedModules.includes('firestore')) {
         firebase.firestore().useEmulator('localhost', 8080);
         firebase.app().firestore('second-rnfb').useEmulator('localhost', 8080);
-        // Firestore caches documents locally (a great feature!) and that confounds tests
-        // as data from previous runs pollutes following runs until re-install the app. Clear it.
-
-        firebase.firestore().clearPersistence();
       }
       if (platformSupportedModules.includes('storage')) {
         firebase.storage().useEmulator('localhost', 9199);

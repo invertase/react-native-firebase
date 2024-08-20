@@ -47,9 +47,9 @@
     "tests:ios:test-cover": "cd tests && SIMCTL_CHILD_GULGeneratedClassDisposeDisabled=1 yarn detox test --configuration ios.sim.debug --loglevel verbose",
     "tests:ios:test-cover-reuse": "cd tests && SIMCTL_CHILD_GULGeneratedClassDisposeDisabled=1 node_modules/.bin/nyc yarn detox test --configuration ios.sim.debug --reuse --loglevel warn",
     "tests:ios:pod:install": "cd tests && rm -f ios/Podfile.lock && rm -rf ios/ReactNativeFirebaseDemo.xcworkspace && cd ios && pod install",
-    "tests:macos:build": "cd tests && yarn build:macos",
-    "tests:macos:pod:install": "cd tests && rm -f macos/Podfile.lock && cd macos && pod install",
-    "tests:macos:test-cover": "cd tests && npx jet --target=macos --coverage",
+    "tests:macos:build": "cd tests-other && yarn build:macos",
+    "tests:macos:pod:install": "cd tests-other && rm -f macos/Podfile.lock && cd macos && pod install",
+    "tests:macos:test-cover": "cd tests-other && npx jet --target=macos --coverage",
     "format:markdown": "prettier --write \"docs/**/*.md\""
   },
   "devDependencies": {

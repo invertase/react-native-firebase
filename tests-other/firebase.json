@@ -1,0 +1,48 @@
+{
+  "react-native": {
+    "android_background_activity_names": "NotActuallyAnActivity",
+
+    "app_data_collection_default_enabled": false,
+    "app_log_level": "debug",
+
+    "app_check_token_auto_refresh": false,
+
+    "crashlytics_ndk_enabled": true,
+    "crashlytics_debug_enabled": true,
+    "crashlytics_disable_auto_disabler": true,
+    "crashlytics_auto_collection_enabled": true,
+    "crashlytics_is_error_generation_on_js_crash_enabled": true,
+    "crashlytics_javascript_exception_handler_chaining_enabled": false,
+
+    "messaging_auto_init_enabled": false,
+    "messaging_android_headless_task_timeout": 30000,
+    "messaging_android_notification_channel_id": "",
+    "messaging_android_notification_color": "@color/hotpink",
+    "messaging_ios_auto_register_for_remote_messages": false,
+
+    "analytics_auto_collection_enabled": true,
+    "analytics_collection_deactivated": false,
+    "analytics_idfv_collection_enabled": false,
+    "google_analytics_adid_collection_enabled": true,
+    "google_analytics_ssaid_collection_enabled": true,
+    "google_analytics_automatic_screen_reporting_enabled": true,
+    "google_analytics_registration_with_ad_network_enabled": true,
+    "analytics_default_allow_analytics_storage": true,
+    "analytics_default_allow_ad_storage": true,
+    "analytics_default_allow_ad_user_data": true,
+    "analytics_default_allow_ad_personalization_signals": true,
+
+    "perf_auto_collection_enabled": false,
+    "perf_collection_deactivated": false,
+
+    "in_app_messaging_auto_collection_enabled": false,
+
+    "android_task_executor_maximum_pool_size": 10,
+    "android_task_executor_keep_alive_seconds": 3,
+    "android_bypass_emulator_url_remap": false,
+
+    "rnfirebase_json_testing_string": "abc",
+    "rnfirebase_json_testing_boolean_false": false,
+    "rnfirebase_json_testing_boolean_true": true
+  }
+}
