@@ -1,6 +1,6 @@
 {
   "npmClient": "yarn",
-  "packages": ["packages/*", "tests"],
+  "packages": ["packages/*", "tests", "tests-other"],
   "command": {
     "version": {
       "allowBranch": "main",
@@ -75,6 +75,6 @@
     "compareUrlFormat": "{{host}}/{{owner}}/{{repository}}/compare/{{previousTag}}...{{currentTag}}",
     "userUrlFormat": "{{host}}/{{user}}"
   },
-  "ignoreChanges": ["**/docs/**", "**/.github/**", "**/e2e/**", "**/tests/**"],
+  "ignoreChanges": ["**/docs/**", "**/.github/**", "**/e2e/**", "**/tests/**", "**/tests-other/**"],
   "version": "20.4.0"
 }

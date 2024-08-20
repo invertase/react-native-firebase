@@ -97,7 +97,8 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "tests"
+      "tests",
+      "tests-other"
     ]
   },
   "packageManager": "yarn@4.3.1"
