@@ -237,7 +237,7 @@ The following is an example `app.json` to enable the React Native Firebase modul
 
 #### Local app compilation
 
-If you are compiling your app locally, run `npx expo prebuild --clean` to generate the native project directories. Then, follow the local app compilation steps described in [Local app development](https://docs.expo.dev/guides/local-app-development/) guide in Expo docs. If you prefer using a build service, refer to [EAS Build](https://docs.expo.dev/build/setup/).
+If you are compiling your app locally, run [`npx expo prebuild --clean`](https://docs.expo.dev/workflow/prebuild/) to generate the native project directories. Then, follow the local app compilation steps described in [Local app development](https://docs.expo.dev/guides/local-app-development/) guide in Expo docs. If you prefer using a build service, refer to [EAS Build](https://docs.expo.dev/build/setup/).
 
 #### Expo Tools for VSCode
 
