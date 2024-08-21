@@ -120,32 +120,47 @@ const storageInstances = {};
 const tasks = {};
 
 function getBucketFromUrl(url) {
-  const pathWithBucketName = url.substring(5);
-  const bucket = url.substring(0, pathWithBucketName.indexOf('/') + 5);
-  return bucket;
+  // Check if the URL starts with "gs://"
+  if (url.startsWith('gs://')) {
+    // Return the bucket name by extracting everything up to the first slash after "gs://"
+    // and removing the "gs://" prefix
+    return url.substring(5).split('/')[0];
+  } else {
+    // Assume the URL is a path format, strip the leading slash if it exists and extract the bucket name
+    const strippedUrl = url.startsWith('/') ? url.substring(1) : url;
+    // Extract the bucket from the path, assuming it ends at the first slash after the domain
+    return strippedUrl.split('/')[0];
+  }
 }
 
 function getCachedAppInstance(appName) {
   return (appInstances[appName] ??= getApp(appName));
 }
 
+function emulatorKey(appName, url) {
+  const bucket = getBucketFromUrl(url);
+  return `${appName}|${bucket}`;
+}
+
 // Returns a cached Storage instance.
 function getCachedStorageInstance(appName, url) {
   let instance;
+  const bucket = getBucketFromUrl(url);
   if (!url) {
     instance = getCachedStorageInstance(
       appName,
       getCachedAppInstance(appName).options.storageBucket,
     );
   } else {
-    const bucket = getBucketFromUrl(url);
     instance = storageInstances[`${appName}|${bucket}`] ??= getStorage(
       getCachedAppInstance(appName),
       bucket,
     );
   }
-  if (emulatorForApp[appName]) {
-    connectStorageEmulator(instance, emulatorForApp[appName].host, emulatorForApp[appName].port);
+
+  const key = emulatorKey(appName, bucket);
+  if (emulatorForApp[key]) {
+    connectStorageEmulator(instance, emulatorForApp[key].host, emulatorForApp[key].port);
   }
   return instance;
 }
@@ -296,11 +311,12 @@ export default {
    * @param {number} port - The emulator port.
    * @return {Promise<void>}
    */
-  useEmulator(appName, host, port) {
+  useEmulator(appName, host, port, url) {
     return guard(async () => {
-      const instance = getCachedStorageInstance(appName);
+      const instance = getCachedStorageInstance(appName, url);
       connectStorageEmulator(instance, host, port);
-      emulatorForApp[appName] = { host, port };
+      const key = emulatorKey(appName, url);
+      emulatorForApp[key] = { host, port };
     });
   },
 
