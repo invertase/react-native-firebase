@@ -145,7 +145,8 @@ function emulatorKey(appName, url) {
 // Returns a cached Storage instance.
 function getCachedStorageInstance(appName, url) {
   let instance;
-  const bucket = getBucketFromUrl(url);
+  const bucket = url ? getBucketFromUrl(url) : getCachedAppInstance(appName).options.storageBucket;
+
   if (!url) {
     instance = getCachedStorageInstance(
       appName,
