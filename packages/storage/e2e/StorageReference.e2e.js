@@ -20,10 +20,7 @@ const { PATH, seed, WRITE_ONLY_NAME } = require('./helpers');
 describe('storage() -> StorageReference', function () {
   describe('firebase v8 compatibility', function () {
     before(async function () {
-      if (!Platform.other) {
-        // Only for iOS
-        await seed(PATH);
-      }
+      await seed(PATH);
     });
 
     describe('toString()', function () {
@@ -701,10 +698,8 @@ describe('storage() -> StorageReference', function () {
     const secondStorageBucket = 'gs://react-native-firebase-testing';
 
     before(async function () {
-      if (!Platform.other) {
-        // Only for iOS
-        await seed(PATH);
-      }
+      await seed(PATH);
+
       const { getStorage } = storageModular;
       secondStorage = getStorage(firebase.app(), secondStorageBucket);
     });
