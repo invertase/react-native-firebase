@@ -353,11 +353,11 @@ export default {
           break;
       }
 
-      const byteArray = new Uint8Array(base64String ? base64String.length : 0);
+      const byteArray = [];
 
       if (base64String) {
-        for (let i = 0; i < base64String.length; i++) {
-          byteArray[i] = base64String.charCodeAt(i);
+        for (var i = 0; i < base64String.length; ++i) {
+          byteArray.push(base64String.charCodeAt(i));
         }
       }
 
