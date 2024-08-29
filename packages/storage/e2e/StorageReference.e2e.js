@@ -18,6 +18,14 @@
 const { PATH, seed, WRITE_ONLY_NAME } = require('./helpers');
 
 describe('storage() -> StorageReference', function () {
+  if (isCI && Platform.other) {
+    // Skip these tests on CI for other platforms
+    // uploadBytesResumable is pretty flaky. Crashes macOS app.
+    // See: https://github.com/facebook/react-native/issues/32784
+    // and: https://github.com/firebase/firebase-js-sdk/issues/5848
+    this.skip();
+  }
+
   describe('firebase v8 compatibility', function () {
     before(async function () {
       await seed(PATH);
