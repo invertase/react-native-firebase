@@ -76,7 +76,8 @@
     "ios": {
       "firebase": "10.29.0",
       "iosTarget": "11.0",
-      "macosTarget": "10.13"
+      "macosTarget": "10.13",
+      "tvosTarget": "13.4"
     },
     "android": {
       "minSdk": 21,
