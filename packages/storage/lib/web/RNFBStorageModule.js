@@ -357,7 +357,6 @@ export default {
 
       const arrayBuffer = encoder.encode(decodedString).buffer;
 
-      // Start a resumable upload task using the Uint8Array directly.
       const task = uploadBytesResumable(ref, arrayBuffer, {
         ...makeSettableMetadata(metadata),
         md5Hash: metadata.md5Hash,
