@@ -341,28 +341,24 @@ export default {
   putString(appName, url, string, format, metadata = {}, taskId) {
     return guard(async () => {
       const ref = getReferenceFromUrl(appName, url);
+      let decodedString = null;
 
-      let base64String = null;
-
+      // This is always either base64 or base64url
       switch (format) {
         case 'base64':
-          base64String = Base64.atob(string);
+          decodedString = Base64.atob(string);
           break;
         case 'base64url':
-          base64String = Base64.atob(string.replace(/_/g, '/').replace(/-/g, '+'));
+          decodedString = Base64.atob(string.replace(/_/g, '/').replace(/-/g, '+'));
           break;
       }
 
-      const byteArray = [];
+      const encoder = new TextEncoder();
 
-      if (base64String) {
-        for (var i = 0; i < base64String.length; ++i) {
-          byteArray.push(base64String.charCodeAt(i));
-        }
-      }
+      const arrayBuffer = encoder.encode(decodedString).buffer;
 
-      // Start a resumable upload task.
-      const task = uploadBytesResumable(ref, byteArray, {
+      // Start a resumable upload task using the Uint8Array directly.
+      const task = uploadBytesResumable(ref, arrayBuffer, {
         ...makeSettableMetadata(metadata),
         md5Hash: metadata.md5Hash,
       });
