@@ -221,12 +221,12 @@ function loadTests(_) {
       const storageTests = require.context('../packages/storage/e2e', true, /\.e2e\.js$/);
 
       if (Platform.other && global.isCI) {
-        // Skip StorageReference tests on CI for "other" platforms
+        // Skip StorageReference & StorageTask tests on CI for "other" platforms
         // uploadBytesResumable is pretty flaky. Crashes macOS app.
         // See: https://github.com/facebook/react-native/issues/32784
         // and: https://github.com/firebase/firebase-js-sdk/issues/5848
         const filteredTests = storageTests.keys().filter(test => {
-          if (test.includes('StorageReference.e2e')) {
+          if (test.includes('StorageReference.e2e') || test.includes('StorageTask.e2e')) {
             return false;
           }
           return true;
