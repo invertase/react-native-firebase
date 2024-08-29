@@ -18,7 +18,6 @@
 const { PATH, seed, WRITE_ONLY_NAME } = require('./helpers');
 
 describe('storage() -> StorageReference', function () {
-
   describe('firebase v8 compatibility', function () {
     before(async function () {
       await seed(PATH);
