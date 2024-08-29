@@ -10,7 +10,7 @@ if coreVersionDetected != coreVersionRequired
 end
 firebase_ios_target = appPackage['sdkVersions']['ios']['iosTarget']
 firebase_macos_target = appPackage['sdkVersions']['ios']['macosTarget']
-firebase_tvos_target = package['sdkVersions']['ios']['tvosTarget']
+firebase_tvos_target = appPackage['sdkVersions']['ios']['tvosTarget']
 
 Pod::Spec.new do |s|
   s.name                = "RNFBAnalytics"
