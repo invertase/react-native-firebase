@@ -83,6 +83,9 @@ class FirebaseAppCheckModule extends FirebaseModule {
   }
 
   initializeAppCheck(options) {
+    console.warn(
+      'This method is deprecated. Please use `initializeAppCheck()` from the modular API instead.',
+    );
     if (isOther) {
       if (!isObject(options)) {
         throw new Error('Invalid configuration: no options defined.');
@@ -162,12 +165,17 @@ class FirebaseAppCheckModule extends FirebaseModule {
     return this.initializeAppCheck({ provider: rnfbProvider, isTokenAutoRefreshEnabled });
   }
 
-  // TODO this is an async call
   setTokenAutoRefreshEnabled(isTokenAutoRefreshEnabled) {
+    console.warn(
+      'This method is deprecated. Please use `setTokenAutoRefreshEnabled()` from the modular API instead.',
+    );
     this.native.setTokenAutoRefreshEnabled(isTokenAutoRefreshEnabled);
   }
 
   getToken(forceRefresh) {
+    console.warn(
+      'This method is deprecated. Please use `getToken()` from the modular API instead.',
+    );
     if (!forceRefresh) {
       return this.native.getToken(false);
     } else {
@@ -176,6 +184,9 @@ class FirebaseAppCheckModule extends FirebaseModule {
   }
 
   getLimitedUseToken() {
+    console.warn(
+      'This method is deprecated. Please use `getLimitedUseToken()` from the modular API instead.',
+    );
     return this.native.getLimitedUseToken();
   }
 
@@ -185,8 +196,10 @@ class FirebaseAppCheckModule extends FirebaseModule {
       : listenerOrObserver;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onTokenChanged(onNextOrObserver, onError, onCompletion) {
+    console.warn(
+      'This method is deprecated. Please use `addTokenListener()` from the modular API instead.',
+    );
     // iOS does not provide any native listening feature
     if (isIOS) {
       // eslint-disable-next-line no-console
@@ -194,13 +207,6 @@ class FirebaseAppCheckModule extends FirebaseModule {
       return () => {};
     }
     const nextFn = this._parseListener(onNextOrObserver);
-    // let errorFn = function () { };
-    // if (onNextOrObserver.error != null) {
-    //   errorFn = onNextOrObserver.error.bind(onNextOrObserver);
-    // }
-    // else if (onError) {
-    //   errorFn = onError;
-    // }
     const subscription = this.emitter.addListener(
       this.eventNameForApp('onAppCheckTokenChanged'),
       nextFn,
