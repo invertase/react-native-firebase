@@ -120,32 +120,48 @@ const storageInstances = {};
 const tasks = {};
 
 function getBucketFromUrl(url) {
-  const pathWithBucketName = url.substring(5);
-  const bucket = url.substring(0, pathWithBucketName.indexOf('/') + 5);
-  return bucket;
+  // Check if the URL starts with "gs://"
+  if (url.startsWith('gs://')) {
+    // Return the bucket name by extracting everything up to the first slash after "gs://"
+    // and removing the "gs://" prefix
+    return url.substring(5).split('/')[0];
+  } else {
+    // Assume the URL is a path format, strip the leading slash if it exists and extract the bucket name
+    const strippedUrl = url.startsWith('/') ? url.substring(1) : url;
+    // Extract the bucket from the path, assuming it ends at the first slash after the domain
+    return strippedUrl.split('/')[0];
+  }
 }
 
 function getCachedAppInstance(appName) {
   return (appInstances[appName] ??= getApp(appName));
 }
 
+function emulatorKey(appName, url) {
+  const bucket = getBucketFromUrl(url);
+  return `${appName}|${bucket}`;
+}
+
 // Returns a cached Storage instance.
 function getCachedStorageInstance(appName, url) {
   let instance;
+  const bucket = url ? getBucketFromUrl(url) : getCachedAppInstance(appName).options.storageBucket;
+
   if (!url) {
     instance = getCachedStorageInstance(
       appName,
       getCachedAppInstance(appName).options.storageBucket,
     );
   } else {
-    const bucket = getBucketFromUrl(url);
     instance = storageInstances[`${appName}|${bucket}`] ??= getStorage(
       getCachedAppInstance(appName),
       bucket,
     );
   }
-  if (emulatorForApp[appName]) {
-    connectStorageEmulator(instance, emulatorForApp[appName].host, emulatorForApp[appName].port);
+
+  const key = emulatorKey(appName, bucket);
+  if (emulatorForApp[key]) {
+    connectStorageEmulator(instance, emulatorForApp[key].host, emulatorForApp[key].port);
   }
   return instance;
 }
@@ -296,11 +312,12 @@ export default {
    * @param {number} port - The emulator port.
    * @return {Promise<void>}
    */
-  useEmulator(appName, host, port) {
+  useEmulator(appName, host, port, url) {
     return guard(async () => {
-      const instance = getCachedStorageInstance(appName);
+      const instance = getCachedStorageInstance(appName, url);
       connectStorageEmulator(instance, host, port);
-      emulatorForApp[appName] = { host, port };
+      const key = emulatorKey(appName, url);
+      emulatorForApp[key] = { host, port };
     });
   },
 
@@ -324,28 +341,23 @@ export default {
   putString(appName, url, string, format, metadata = {}, taskId) {
     return guard(async () => {
       const ref = getReferenceFromUrl(appName, url);
+      let decodedString = null;
 
-      let base64String = null;
-
+      // This is always either base64 or base64url
       switch (format) {
         case 'base64':
-          base64String = Base64.atob(string);
+          decodedString = Base64.atob(string);
           break;
         case 'base64url':
-          base64String = Base64.atob(string.replace(/_/g, '/').replace(/-/g, '+'));
+          decodedString = Base64.atob(string.replace(/_/g, '/').replace(/-/g, '+'));
           break;
       }
 
-      const byteArray = new Uint8Array(base64String ? base64String.length : 0);
+      const encoder = new TextEncoder();
 
-      if (base64String) {
-        for (let i = 0; i < base64String.length; i++) {
-          byteArray[i] = base64String.charCodeAt(i);
-        }
-      }
+      const arrayBuffer = encoder.encode(decodedString).buffer;
 
-      // Start a resumable upload task.
-      const task = uploadBytesResumable(ref, byteArray, {
+      const task = uploadBytesResumable(ref, arrayBuffer, {
         ...makeSettableMetadata(metadata),
         md5Hash: metadata.md5Hash,
       });

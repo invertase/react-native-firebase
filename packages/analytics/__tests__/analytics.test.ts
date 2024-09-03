@@ -50,7 +50,9 @@ import {
   logViewSearchResults,
   setDefaultEventParameters,
   initiateOnDeviceConversionMeasurementWithEmailAddress,
+  initiateOnDeviceConversionMeasurementWithHashedEmailAddress,
   initiateOnDeviceConversionMeasurementWithPhoneNumber,
+  initiateOnDeviceConversionMeasurementWithHashedPhoneNumber,
   isSupported,
   setConsent,
   settings,
@@ -650,6 +652,38 @@ describe('Analytics', function () {
     });
   });
 
+  describe('initiateOnDeviceConversionMeasurementWithHashedEmailAddress()', function () {
+    it('throws if not a string', function () {
+      expect(() =>
+        // @ts-ignore
+        firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedEmailAddress(true),
+      ).toThrowError(
+        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedEmailAddress(*) 'hashedEmailAddress' expected a string value.",
+      );
+    });
+  });
+
+  describe('initiateOnDeviceConversionMeasurementWithHashedPhoneNumber()', function () {
+    it('throws if not a string', function () {
+      expect(() =>
+        // @ts-ignore
+        firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(1234),
+      ).toThrowError(
+        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a string value.",
+      );
+    });
+
+    it('throws if hashed value is a phone number in E.164 format', function () {
+      expect(() =>
+        firebase
+          .analytics()
+          .initiateOnDeviceConversionMeasurementWithHashedPhoneNumber('+1234567890'),
+      ).toThrowError(
+        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a sha256-hashed value of a phone number in E.164 format.",
+      );
+    });
+  });
+
   describe('modular', function () {
     it('`getAnalytics` function is properly exposed to end user', function () {
       expect(getAnalytics).toBeDefined();
@@ -843,8 +877,33 @@ describe('Analytics', function () {
       expect(initiateOnDeviceConversionMeasurementWithEmailAddress).toBeDefined();
     });
 
+    it('`initiateOnDeviceConversionMeasurementWithHashedEmailAddress` function is properly exposed to end user', function () {
+      expect(initiateOnDeviceConversionMeasurementWithHashedEmailAddress).toBeDefined();
+    });
+
+    it('`initiateOnDeviceConversionMeasurementWithHashedEmailAddress` throws if not a string', function () {
+      expect(() =>
+        // @ts-ignore
+        initiateOnDeviceConversionMeasurementWithHashedEmailAddress(getAnalytics(), true),
+      ).toThrowError(
+        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedEmailAddress(*) 'hashedEmailAddress' expected a string value.",
+      );
+    });
+
+    it('`initiateOnDeviceConversionMeasurementWithHashedPhoneNumber` should throw if the value is in E.164 format', function () {
+      expect(() =>
+        initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(getAnalytics(), '+1234567890'),
+      ).toThrowError(
+        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a sha256-hashed value of a phone number in E.164 format.",
+      );
+    });
+
     it('`initiateOnDeviceConversionMeasurementWithPhoneNumber` function is properly exposed to end user', function () {
       expect(initiateOnDeviceConversionMeasurementWithPhoneNumber).toBeDefined();
+    });
+
+    it('`initiateOnDeviceConversionMeasurementWithHashedPhoneNumber` function is properly exposed to end user', function () {
+      expect(initiateOnDeviceConversionMeasurementWithHashedPhoneNumber).toBeDefined();
     });
 
     it('`isSupported` function is properly exposed to end user', function () {
