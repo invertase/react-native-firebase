@@ -96,8 +96,8 @@
 
   if (notification.userInfo[UIApplicationLaunchOptionsRemoteNotificationKey]) {
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+      isHeadless = YES;
       if (rctRootView != nil) {
-        isHeadless = YES;
         NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil
                                                      ? [rctRootView.appProperties mutableCopy]
                                                      : [NSMutableDictionary dictionary];
@@ -120,8 +120,8 @@
       [[UIApplication sharedApplication] registerForRemoteNotifications];
       // #endif
     } else {
+      isHeadless = NO;
       if (rctRootView != nil) {
-        isHeadless = NO;
         NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil
                                                      ? [rctRootView.appProperties mutableCopy]
                                                      : [NSMutableDictionary dictionary];
@@ -133,8 +133,8 @@
       }
     }
   } else {
+    isHeadless = NO;
     if (rctRootView != nil) {
-      isHeadless = NO;
       NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil
                                                    ? [rctRootView.appProperties mutableCopy]
                                                    : [NSMutableDictionary dictionary];
@@ -148,6 +148,7 @@
 }
 
 - (void)application_onDidEnterForeground {
+  isHeadless = NO;
   if ([UIApplication sharedApplication].delegate != nil &&
       [UIApplication sharedApplication].delegate.window != nil &&
       [UIApplication sharedApplication].delegate.window.rootViewController != nil &&
@@ -160,7 +161,6 @@
     if (rctRootView.appProperties != nil &&
         [rctRootView.appProperties[@"isHeadless"] isEqual:@(YES)]) {
       NSMutableDictionary *appPropertiesDict = [rctRootView.appProperties mutableCopy];
-      isHeadless = NO;
       if ([appPropertiesDict objectForKey:@"isHeadless"] != nil &&
           [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(YES)])]) {
         appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(isHeadless)]);
