@@ -83,6 +83,7 @@ const nativeModuleName = 'RNFBAnalyticsModule';
 
 class FirebaseAnalyticsModule extends FirebaseModule {
   logEvent(name, params = {}, options = {}) {
+    console.warn('This method is deprecated. Please use `logEvent()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isString(name)) {
       throw new Error("firebase.analytics().logEvent(*) 'name' expected a string value.");
     }
@@ -121,6 +122,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   setAnalyticsCollectionEnabled(enabled) {
+    console.warn('This method is deprecated. Please use `setAnalyticsCollectionEnabled()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isBoolean(enabled)) {
       throw new Error(
         "firebase.analytics().setAnalyticsCollectionEnabled(*) 'enabled' expected a boolean value.",
@@ -131,6 +133,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   setSessionTimeoutDuration(milliseconds = 1800000) {
+    console.warn('This method is deprecated. Please use `setSessionTimeoutDuration()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isNumber(milliseconds)) {
       throw new Error(
         "firebase.analytics().setSessionTimeoutDuration(*) 'milliseconds' expected a number value.",
@@ -147,14 +150,17 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   getAppInstanceId() {
+    console.warn('This method is deprecated. Please use `getAppInstanceId()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     return this.native.getAppInstanceId();
   }
 
   getSessionId() {
+    console.warn('This method is deprecated. Please use `getSessionId()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     return this.native.getSessionId();
   }
 
   setUserId(id) {
+    console.warn('This method is deprecated. Please use `setUserId()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isNull(id) && !isString(id)) {
       throw new Error("firebase.analytics().setUserId(*) 'id' expected a string value.");
     }
@@ -163,6 +169,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   setUserProperty(name, value) {
+    console.warn('This method is deprecated. Please use `setUserProperty()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isString(name)) {
       throw new Error("firebase.analytics().setUserProperty(*) 'name' expected a string value.");
     }
@@ -177,6 +184,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   setUserProperties(properties, options = {}) {
+    console.warn('This method is deprecated. Please use `setUserProperties()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isObject(properties)) {
       throw new Error(
         "firebase.analytics().setUserProperties(*) 'properties' expected an object of key/value pairs.",
@@ -209,10 +217,12 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   resetAnalyticsData() {
+    console.warn('This method is deprecated. Please use `resetAnalyticsData()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     return this.native.resetAnalyticsData();
   }
 
   setConsent(consentSettings) {
+    console.warn('This method is deprecated. Please use `setConsent()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isObject(consentSettings)) {
       throw new Error(
         'firebase.analytics().setConsent(*): The supplied arg must be an object of key/values.',
@@ -236,6 +246,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
    *        EVENTS
    * -------------------- */
   logAddPaymentInfo(object = {}) {
+    console.warn('This method is deprecated. Please use `logAddPaymentInfo()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logAddPaymentInfo(*): The supplied arg must be an object of key/values.',
@@ -251,6 +262,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   logScreenView(object) {
+    console.warn('This method is deprecated. Please use `logScreenView()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logScreenView(*): The supplied arg must be an object of key/values.',
@@ -264,6 +276,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   logAddShippingInfo(object = {}) {
+    console.warn('This method is deprecated. Please use `logAddShippingInfo()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logAddShippingInfo(*): The supplied arg must be an object of key/values.',
@@ -283,6 +296,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   logAddToCart(object = {}) {
+    console.warn('This method is deprecated. Please use `logAddToCart()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logAddToCart(*): The supplied arg must be an object of key/values.',
@@ -298,6 +312,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   logAddToWishlist(object = {}) {
+    console.warn('This method is deprecated. Please use `logAddToWishlist()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logAddToWishlist(*): The supplied arg must be an object of key/values.',
@@ -313,10 +328,12 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   logAppOpen() {
+    console.warn('This method is deprecated. Please use `logAppOpen()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     return this.logEvent('app_open');
   }
 
   logBeginCheckout(object = {}) {
+    console.warn('This method is deprecated. Please use `logBeginCheckout()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logBeginCheckout(*): The supplied arg must be an object of key/values.',
@@ -332,6 +349,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   logCampaignDetails(object) {
+    console.warn('This method is deprecated. Please use `logCampaignDetails()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logCampaignDetails(*): The supplied arg must be an object of key/values.',
@@ -349,6 +367,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   logEarnVirtualCurrency(object) {
+    console.warn('This method is deprecated. Please use `logEarnVirtualCurrency()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logEarnVirtualCurrency(*): The supplied arg must be an object of key/values.',
@@ -366,6 +385,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   logGenerateLead(object = {}) {
+    console.warn('This method is deprecated. Please use `logGenerateLead()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logGenerateLead(*): The supplied arg must be an object of key/values.',
@@ -381,6 +401,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   logJoinGroup(object) {
+    console.warn('This method is deprecated. Please use `logJoinGroup()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logJoinGroup(*): The supplied arg must be an object of key/values.',
@@ -394,6 +415,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   logLevelEnd(object) {
+    console.warn('This method is deprecated. Please use `logLevelEnd()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logLevelEnd(*): The supplied arg must be an object of key/values.',
@@ -407,6 +429,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   logLevelStart(object) {
+    console.warn('This method is deprecated. Please use `logLevelStart()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logLevelStart(*): The supplied arg must be an object of key/values.',
@@ -420,6 +443,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   logLevelUp(object) {
+    console.warn('This method is deprecated. Please use `logLevelUp()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logLevelUp(*): The supplied arg must be an object of key/values.',
@@ -433,6 +457,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   logLogin(object) {
+    console.warn('This method is deprecated. Please use `logLogin()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logLogin(*): The supplied arg must be an object of key/values.',
@@ -446,6 +471,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   logPostScore(object) {
+    console.warn('This method is deprecated. Please use `logPostScore()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logPostScore(*): The supplied arg must be an object of key/values.',
@@ -459,6 +485,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   logSelectContent(object) {
+    console.warn('This method is deprecated. Please use `logSelectContent()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logSelectContent(*): The supplied arg must be an object of key/values.',
@@ -472,6 +499,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   logPurchase(object = {}) {
+    console.warn('This method is deprecated. Please use `logPurchase()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logPurchase(*): The supplied arg must be an object of key/values.',
@@ -486,314 +514,335 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logRefund(object = {}) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logRefund(*): The supplied arg must be an object of key/values.',
-      );
-    }
+);
 
-    validateCompound(object, 'value', 'currency', 'firebase.analytics().logRefund(*):');
-
-    return this.logEvent(
-      'refund',
-      validateStruct(object, structs.Refund, 'firebase.analytics().logRefund(*):'),
+logRefund(object = {}) {
+  console.warn('This method is deprecated. Please use `logRefund()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
+  if (!isObject(object)) {
+    throw new Error(
+      'firebase.analytics().logRefund(*): The supplied arg must be an object of key/values.',
     );
   }
 
-  logRemoveFromCart(object = {}) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logRemoveFromCart(*): The supplied arg must be an object of key/values.',
-      );
-    }
+  validateCompound(object, 'value', 'currency', 'firebase.analytics().logRefund(*):');
 
-    validateCompound(object, 'value', 'currency', 'firebase.analytics().logRemoveFromCart(*):');
+  return this.logEvent(
+    'refund',
+    validateStruct(object, structs.Refund, 'firebase.analytics().logRefund(*):'),
+  );
+}
 
-    return this.logEvent(
-      'remove_from_cart',
-      validateStruct(object, structs.RemoveFromCart, 'firebase.analytics().logRemoveFromCart(*):'),
+logRemoveFromCart(object = {}) {
+  console.warn('This method is deprecated. Please use `logRemoveFromCart()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
+  if (!isObject(object)) {
+    throw new Error(
+      'firebase.analytics().logRemoveFromCart(*): The supplied arg must be an object of key/values.',
     );
   }
 
-  logSearch(object) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logSearch(*): The supplied arg must be an object of key/values.',
-      );
-    }
+  validateCompound(object, 'value', 'currency', 'firebase.analytics().logRemoveFromCart(*):');
 
-    return this.logEvent(
-      'search',
-      validateStruct(object, structs.Search, 'firebase.analytics().logSearch(*):'),
+  return this.logEvent(
+    'remove_from_cart',
+    validateStruct(object, structs.RemoveFromCart, 'firebase.analytics().logRemoveFromCart(*):'),
+  );
+}
+
+logSearch(object) {
+  console.warn('This method is deprecated. Please use `logSearch()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
+  if (!isObject(object)) {
+    throw new Error(
+      'firebase.analytics().logSearch(*): The supplied arg must be an object of key/values.',
     );
   }
 
-  logSelectItem(object = {}) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logSelectItem(*): The supplied arg must be an object of key/values.',
-      );
-    }
+  return this.logEvent(
+    'search',
+    validateStruct(object, structs.Search, 'firebase.analytics().logSearch(*):'),
+  );
+}
 
-    return this.logEvent(
-      'select_item',
-      validateStruct(object, structs.SelectItem, 'firebase.analytics().logSelectItem(*):'),
+logSelectItem(object = {}) {
+  console.warn('This method is deprecated. Please use `logSelectItem()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
+  if (!isObject(object)) {
+    throw new Error(
+      'firebase.analytics().logSelectItem(*): The supplied arg must be an object of key/values.',
     );
   }
 
-  logSetCheckoutOption(object) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logSetCheckoutOption(*): The supplied arg must be an object of key/values.',
-      );
-    }
+  return this.logEvent(
+    'select_item',
+    validateStruct(object, structs.SelectItem, 'firebase.analytics().logSelectItem(*):'),
+  );
+}
 
-    return this.logEvent(
-      'set_checkout_option',
-      validateStruct(
-        object,
-        structs.SetCheckoutOption,
-        'firebase.analytics().logSetCheckoutOption(*):',
-      ),
+logSetCheckoutOption(object) {
+  console.warn('This method is deprecated. Please use `logSetCheckoutOption()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
+  if (!isObject(object)) {
+    throw new Error(
+      'firebase.analytics().logSetCheckoutOption(*): The supplied arg must be an object of key/values.',
     );
   }
 
-  logSelectPromotion(object) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logSelectPromotion(*): The supplied arg must be an object of key/values.',
-      );
-    }
+  return this.logEvent(
+    'set_checkout_option',
+    validateStruct(
+      object,
+      structs.SetCheckoutOption,
+      'firebase.analytics().logSetCheckoutOption(*):',
+    ),
+  );
+}
 
-    return this.logEvent(
-      'select_promotion',
-      validateStruct(
-        object,
-        structs.SelectPromotion,
-        'firebase.analytics().logSelectPromotion(*):',
-      ),
+logSelectPromotion(object) {
+  console.warn('This method is deprecated. Please use `logSelectPromotion()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
+  if (!isObject(object)) {
+    throw new Error(
+      'firebase.analytics().logSelectPromotion(*): The supplied arg must be an object of key/values.',
     );
   }
 
-  logShare(object) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logShare(*): The supplied arg must be an object of key/values.',
-      );
-    }
+  return this.logEvent(
+    'select_promotion',
+    validateStruct(
+      object,
+      structs.SelectPromotion,
+      'firebase.analytics().logSelectPromotion(*):',
+    ),
+  );
+}
 
-    return this.logEvent(
-      'share',
-      validateStruct(object, structs.Share, 'firebase.analytics().logShare(*):'),
+logShare(object) {
+  console.warn('This method is deprecated. Please use `logShare()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
+  if (!isObject(object)) {
+    throw new Error(
+      'firebase.analytics().logShare(*): The supplied arg must be an object of key/values.',
     );
   }
 
-  logSignUp(object) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logSignUp(*): The supplied arg must be an object of key/values.',
-      );
-    }
+  return this.logEvent(
+    'share',
+    validateStruct(object, structs.Share, 'firebase.analytics().logShare(*):'),
+  );
+}
 
-    return this.logEvent(
-      'sign_up',
-      validateStruct(object, structs.SignUp, 'firebase.analytics().logSignUp(*):'),
+logSignUp(object) {
+  console.warn('This method is deprecated. Please use `logSignUp()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
+  if (!isObject(object)) {
+    throw new Error(
+      'firebase.analytics().logSignUp(*): The supplied arg must be an object of key/values.',
     );
   }
 
-  logSpendVirtualCurrency(object) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logSpendVirtualCurrency(*): The supplied arg must be an object of key/values.',
-      );
-    }
+  return this.logEvent(
+    'sign_up',
+    validateStruct(object, structs.SignUp, 'firebase.analytics().logSignUp(*):'),
+  );
+}
 
-    return this.logEvent(
-      'spend_virtual_currency',
-      validateStruct(
-        object,
-        structs.SpendVirtualCurrency,
-        'firebase.analytics().logSpendVirtualCurrency(*):',
-      ),
+logSpendVirtualCurrency(object) {
+  console.warn('This method is deprecated. Please use `logSpendVirtualCurrency()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
+  if (!isObject(object)) {
+    throw new Error(
+      'firebase.analytics().logSpendVirtualCurrency(*): The supplied arg must be an object of key/values.',
     );
   }
 
-  logTutorialBegin() {
-    return this.logEvent('tutorial_begin');
-  }
+  return this.logEvent(
+    'spend_virtual_currency',
+    validateStruct(
+      object,
+      structs.SpendVirtualCurrency,
+      'firebase.analytics().logSpendVirtualCurrency(*):',
+    ),
+  );
+}
 
-  logTutorialComplete() {
-    return this.logEvent('tutorial_complete');
-  }
+logTutorialBegin() {
+  console.warn('This method is deprecated. Please use `logTutorialBegin()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
+  return this.logEvent('tutorial_begin');
+}
 
-  logUnlockAchievement(object) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logUnlockAchievement(*): The supplied arg must be an object of key/values.',
-      );
-    }
+logTutorialComplete() {
+  console.warn('This method is deprecated. Please use `logTutorialComplete()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
+  return this.logEvent('tutorial_complete');
+}
 
-    return this.logEvent(
-      'unlock_achievement',
-      validateStruct(
-        object,
-        structs.UnlockAchievement,
-        'firebase.analytics().logUnlockAchievement(*):',
-      ),
+logUnlockAchievement(object) {
+  console.warn('This method is deprecated. Please use `logUnlockAchievement()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
+  if (!isObject(object)) {
+    throw new Error(
+      'firebase.analytics().logUnlockAchievement(*): The supplied arg must be an object of key/values.',
     );
   }
 
-  logViewCart(object = {}) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logViewCart(*): The supplied arg must be an object of key/values.',
-      );
-    }
+  return this.logEvent(
+    'unlock_achievement',
+    validateStruct(
+      object,
+      structs.UnlockAchievement,
+      'firebase.analytics().logUnlockAchievement(*):',
+    ),
+  );
+}
 
-    validateCompound(object, 'value', 'currency', 'firebase.analytics().logViewCart(*):');
-
-    return this.logEvent(
-      'view_cart',
-      validateStruct(object, structs.ViewCart, 'firebase.analytics().logViewCart(*):'),
+logViewCart(object = {}) {
+  console.warn('This method is deprecated. Please use `logViewCart()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
+  if (!isObject(object)) {
+    throw new Error(
+      'firebase.analytics().logViewCart(*): The supplied arg must be an object of key/values.',
     );
   }
 
-  logViewItem(object = {}) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logViewItem(*): The supplied arg must be an object of key/values.',
-      );
-    }
-    validateCompound(object, 'value', 'currency', 'firebase.analytics().logViewItem(*):');
+  validateCompound(object, 'value', 'currency', 'firebase.analytics().logViewCart(*):');
 
-    return this.logEvent(
-      'view_item',
-      validateStruct(object, structs.ViewItem, 'firebase.analytics().logViewItem(*):'),
+  return this.logEvent(
+    'view_cart',
+    validateStruct(object, structs.ViewCart, 'firebase.analytics().logViewCart(*):'),
+  );
+}
+
+logViewItem(object = {}) {
+  console.warn('This method is deprecated. Please use `logViewItem()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
+  if (!isObject(object)) {
+    throw new Error(
+      'firebase.analytics().logViewItem(*): The supplied arg must be an object of key/values.',
+    );
+  }
+  validateCompound(object, 'value', 'currency', 'firebase.analytics().logViewItem(*):');
+
+  return this.logEvent(
+    'view_item',
+    validateStruct(object, structs.ViewItem, 'firebase.analytics().logViewItem(*):'),
+  );
+}
+
+logViewItemList(object = {}) {
+  console.warn('This method is deprecated. Please use `logViewItemList()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
+  if (!isObject(object)) {
+    throw new Error(
+      'firebase.analytics().logViewItemList(*): The supplied arg must be an object of key/values.',
     );
   }
 
-  logViewItemList(object = {}) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logViewItemList(*): The supplied arg must be an object of key/values.',
-      );
-    }
+  return this.logEvent(
+    'view_item_list',
+    validateStruct(object, structs.ViewItemList, 'firebase.analytics().logViewItemList(*):'),
+  );
+}
 
-    return this.logEvent(
-      'view_item_list',
-      validateStruct(object, structs.ViewItemList, 'firebase.analytics().logViewItemList(*):'),
+logViewPromotion(object = {}) {
+  console.warn('This method is deprecated. Please use `logViewPromotion()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
+  if (!isObject(object)) {
+    throw new Error(
+      'firebase.analytics().logViewPromotion(*): The supplied arg must be an object of key/values.',
     );
   }
 
-  logViewPromotion(object = {}) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logViewPromotion(*): The supplied arg must be an object of key/values.',
-      );
-    }
+  return this.logEvent(
+    'view_promotion',
+    validateStruct(object, structs.ViewPromotion, 'firebase.analytics().logViewPromotion(*):'),
+  );
+}
 
-    return this.logEvent(
-      'view_promotion',
-      validateStruct(object, structs.ViewPromotion, 'firebase.analytics().logViewPromotion(*):'),
-    );
-  }
-  /**
-   * Unsupported in "Enhanced Ecommerce reports":
-   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-view_search_results
-   */
-  logViewSearchResults(object) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logViewSearchResults(*): The supplied arg must be an object of key/values.',
-      );
-    }
-
-    return this.logEvent(
-      'view_search_results',
-      validateStruct(
-        object,
-        structs.ViewSearchResults,
-        'firebase.analytics().logViewSearchResults(*):',
-      ),
+logViewSearchResults(object) {
+  console.warn('This method is deprecated. Please use `logViewSearchResults()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
+  if (!isObject(object)) {
+    throw new Error(
+      'firebase.analytics().logViewSearchResults(*): The supplied arg must be an object of key/values.',
     );
   }
 
-  setDefaultEventParameters(params) {
-    if (!isObject(params) && !isNull(params) && !isUndefined(params)) {
-      throw new Error(
-        "firebase.analytics().setDefaultEventParameters(*) 'params' expected an object value when it is defined.",
-      );
-    }
+  return this.logEvent(
+    'view_search_results',
+    validateStruct(
+      object,
+      structs.ViewSearchResults,
+      'firebase.analytics().logViewSearchResults(*):',
+    ),
+  );
+}
 
-    return this.native.setDefaultEventParameters(params);
-  }
-
-  initiateOnDeviceConversionMeasurementWithEmailAddress(emailAddress) {
-    if (!isString(emailAddress)) {
-      throw new Error(
-        "firebase.analytics().initiateOnDeviceConversionMeasurementWithEmailAddress(*) 'emailAddress' expected a string value.",
-      );
-    }
-
-    if (!isIOS) {
-      return;
-    }
-
-    return this.native.initiateOnDeviceConversionMeasurementWithEmailAddress(emailAddress);
-  }
-
-  initiateOnDeviceConversionMeasurementWithHashedEmailAddress(hashedEmailAddress) {
-    if (!isString(hashedEmailAddress)) {
-      throw new Error(
-        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedEmailAddress(*) 'hashedEmailAddress' expected a string value.",
-      );
-    }
-
-    if (!isIOS) {
-      return;
-    }
-
-    return this.native.initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
-      hashedEmailAddress,
+setDefaultEventParameters(params) {
+  console.warn('This method is deprecated. Please use `setDefaultEventParameters()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
+  if (!isObject(params) && !isNull(params) && !isUndefined(params)) {
+    throw new Error(
+      "firebase.analytics().setDefaultEventParameters(*) 'params' expected an object value when it is defined.",
     );
   }
 
-  initiateOnDeviceConversionMeasurementWithPhoneNumber(phoneNumber) {
-    if (!isE164PhoneNumber(phoneNumber)) {
-      throw new Error(
-        "firebase.analytics().initiateOnDeviceConversionMeasurementWithPhoneNumber(*) 'phoneNumber' expected a string value in E.164 format.",
-      );
-    }
+  return this.native.setDefaultEventParameters(params);
+}
 
-    if (!isIOS) {
-      return;
-    }
-
-    return this.native.initiateOnDeviceConversionMeasurementWithPhoneNumber(phoneNumber);
-  }
-
-  initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(hashedPhoneNumber) {
-    if (isE164PhoneNumber(hashedPhoneNumber)) {
-      throw new Error(
-        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a sha256-hashed value of a phone number in E.164 format.",
-      );
-    }
-
-    if (!isString(hashedPhoneNumber)) {
-      throw new Error(
-        "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a string value.",
-      );
-    }
-
-    if (!isIOS) {
-      return;
-    }
-
-    return this.native.initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
-      hashedPhoneNumber,
+initiateOnDeviceConversionMeasurementWithEmailAddress(emailAddress) {
+  console.warn('This method is deprecated. Please use `initiateOnDeviceConversionMeasurementWithEmailAddress()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
+  if (!isString(emailAddress)) {
+    throw new Error(
+      "firebase.analytics().initiateOnDeviceConversionMeasurementWithEmailAddress(*) 'emailAddress' expected a string value.",
     );
   }
+
+  if (!isIOS) {
+    return;
+  }
+
+  return this.native.initiateOnDeviceConversionMeasurementWithEmailAddress(emailAddress);
+}
+
+initiateOnDeviceConversionMeasurementWithHashedEmailAddress(hashedEmailAddress) {
+  console.warn('This method is deprecated. Please use `initiateOnDeviceConversionMeasurementWithHashedEmailAddress()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
+  if (!isString(hashedEmailAddress)) {
+    throw new Error(
+      "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedEmailAddress(*) 'hashedEmailAddress' expected a string value.",
+    );
+  }
+
+  if (!isIOS) {
+    return;
+  }
+
+  return this.native.initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
+    hashedEmailAddress,
+  );
+}
+
+initiateOnDeviceConversionMeasurementWithPhoneNumber(phoneNumber) {
+  console.warn('This method is deprecated. Please use `initiateOnDeviceConversionMeasurementWithPhoneNumber()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
+  if (!isE164PhoneNumber(phoneNumber)) {
+    throw new Error(
+      "firebase.analytics().initiateOnDeviceConversionMeasurementWithPhoneNumber(*) 'phoneNumber' expected a string value in E.164 format.",
+    );
+  }
+
+  if (!isIOS) {
+    return;
+  }
+
+  return this.native.initiateOnDeviceConversionMeasurementWithPhoneNumber(phoneNumber);
+}
+
+initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(hashedPhoneNumber) {
+  console.warn('This method is deprecated. Please use `initiateOnDeviceConversionMeasurementWithHashedPhoneNumber()` instead. This is part of breaking change to match Firebase v9 web JS SDK.');
+  if (isE164PhoneNumber(hashedPhoneNumber)) {
+    throw new Error(
+      "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a sha256-hashed value of a phone number in E.164 format.",
+    );
+  }
+
+  if (!isString(hashedPhoneNumber)) {
+    throw new Error(
+      "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a string value.",
+    );
+  }
+
+  if (!isIOS) {
+    return;
+  }
+
+  return this.native.initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
+    hashedPhoneNumber,
+  );
+}
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/analytics';
@@ -802,14 +851,14 @@ export const SDK_VERSION = version;
 // import analytics from '@react-native-firebase/analytics';
 // analytics().logEvent(...);
 export default createModuleNamespace({
-  statics,
-  version,
-  namespace,
-  nativeModuleName,
-  nativeEvents: false,
-  hasMultiAppSupport: false,
-  hasCustomUrlOrRegionSupport: false,
-  ModuleClass: FirebaseAnalyticsModule,
+statics,
+version,
+namespace,
+nativeModuleName,
+nativeEvents: false,
+hasMultiAppSupport: false,
+hasCustomUrlOrRegionSupport: false,
+ModuleClass: FirebaseAnalyticsModule,
 });
 
 export * from './modular/index';
