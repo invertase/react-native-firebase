@@ -55,6 +55,10 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   }
 
   checkForUnsentReports() {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `checkForUnsentReports()` from the modular API instead.',
+    );
     if (this.isCrashlyticsCollectionEnabled) {
       throw new Error(
         "firebase.crashlytics().setCrashlyticsCollectionEnabled(*) has been set to 'true', all reports are automatically sent.",
@@ -64,22 +68,38 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   }
 
   crash() {
+    // eslint-disable-next-line no-console
+    console.warn('This method is deprecated. Please use `crash()` from the modular API instead.');
     this.native.crash();
   }
 
   async deleteUnsentReports() {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `deleteUnsentReports()` from the modular API instead.',
+    );
     await this.native.deleteUnsentReports();
   }
 
   didCrashOnPreviousExecution() {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `didCrashOnPreviousExecution()` from the modular API instead.',
+    );
     return this.native.didCrashOnPreviousExecution();
   }
 
   log(message) {
+    // eslint-disable-next-line no-console
+    console.warn('This method is deprecated. Please use `log()` from the modular API instead.');
     this.native.log(`${message}`);
   }
 
   setAttribute(name, value) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `setAttribute()` from the modular API instead.',
+    );
     if (!isString(name)) {
       throw new Error(
         'firebase.crashlytics().setAttribute(*, _): The supplied property name must be a string.',
@@ -96,6 +116,10 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   }
 
   setAttributes(object) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `setAttributes()` from the modular API instead.',
+    );
     if (!isObject(object)) {
       throw new Error(
         'firebase.crashlytics().setAttributes(*): The supplied arg must be an object of key value strings.',
@@ -106,6 +130,10 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   }
 
   setUserId(userId) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `setUserId()` from the modular API instead.',
+    );
     if (!isString(userId)) {
       throw new Error(
         'firebase.crashlytics().setUserId(*): The supplied userId must be a string value.',
@@ -116,6 +144,10 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   }
 
   recordError(error, jsErrorName) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `recordError()` from the modular API instead.',
+    );
     if (isError(error)) {
       StackTrace.fromError(error, { offline: true }).then(stackFrames => {
         this.native.recordError(createNativeErrorObj(error, stackFrames, false, jsErrorName));
@@ -128,12 +160,20 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   }
 
   sendUnsentReports() {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `sendUnsentReports()` from the modular API instead.',
+    );
     if (this.isCrashlyticsCollectionEnabled) {
       this.native.sendUnsentReports();
     }
   }
 
   setCrashlyticsCollectionEnabled(enabled) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `setCrashlyticsCollectionEnabled()` from the modular API instead.',
+    );
     if (!isBoolean(enabled)) {
       throw new Error(
         "firebase.crashlytics().setCrashlyticsCollectionEnabled(*) 'enabled' must be a boolean.",
