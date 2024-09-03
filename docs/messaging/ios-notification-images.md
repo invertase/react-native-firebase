@@ -9,6 +9,8 @@ This is a quick guide to display an image in an incoming notification. Android h
 
 > If you want to know more about the specifics of this setup read the [official Firebase docs](https://firebase.google.com/docs/cloud-messaging/ios/send-image).
 
+> If you use Expo, please check this [config plugin](https://github.com/evennit/notifee-expo-plugin) which adds the notification service extension.
+
 **🚨 Before you start**
 Be sure you already have Cloud Messaging installed and set up. In case you don't [get started here](/messaging/usage).
 
