@@ -32,35 +32,51 @@ const nativeModuleName = 'RNFBAppDistributionModule';
 
 class FirebaseAppDistributionModule extends FirebaseModule {
   isTesterSignedIn() {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `isTesterSignedIn()` from the modular API instead.',
+    );
     if (isIOS) {
       return this.native.isTesterSignedIn();
     }
 
-    Promise.reject(new Error('App Distribution is not supported on this platform.'));
+    return Promise.reject(new Error('App Distribution is not supported on this platform.'));
   }
 
   signInTester() {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `signInTester()` from the modular API instead.',
+    );
     if (isIOS) {
       return this.native.signInTester();
     }
 
-    Promise.reject(new Error('App Distribution is not supported on this platform.'));
+    return Promise.reject(new Error('App Distribution is not supported on this platform.'));
   }
 
   checkForUpdate() {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `checkForUpdate()` from the modular API instead.',
+    );
     if (isIOS) {
       return this.native.checkForUpdate();
     }
 
-    Promise.reject(new Error('App Distribution is not supported on this platform.'));
+    return Promise.reject(new Error('App Distribution is not supported on this platform.'));
   }
 
   signOutTester() {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `signOutTester()` from the modular API instead.',
+    );
     if (isIOS) {
       return this.native.signOutTester();
     }
 
-    Promise.reject(new Error('App Distribution is not supported on this platform.'));
+    return Promise.reject(new Error('App Distribution is not supported on this platform.'));
   }
 }
 
