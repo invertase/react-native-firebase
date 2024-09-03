@@ -224,6 +224,10 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   onAuthStateChanged(listenerOrObserver) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `onAuthStateChanged()` from the modular API instead.',
+    );
     const listener = this._parseListener(listenerOrObserver);
     const subscription = this.emitter.addListener(
       this.eventNameForApp('onAuthStateChanged'),
@@ -239,6 +243,10 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   onIdTokenChanged(listenerOrObserver) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `onIdTokenChanged()` from the modular API instead.',
+    );
     const listener = this._parseListener(listenerOrObserver);
     const subscription = this.emitter.addListener(
       this.eventNameForApp('onIdTokenChanged'),
@@ -254,6 +262,10 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   onUserChanged(listenerOrObserver) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `onUserChanged()` from the modular API instead.',
+    );
     const listener = this._parseListener(listenerOrObserver);
     const subscription = this.emitter.addListener(this.eventNameForApp('onUserChanged'), listener);
     if (this._authResult) {
@@ -268,18 +280,28 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   signOut() {
+    // eslint-disable-next-line no-console
+    console.warn('This method is deprecated. Please use `signOut()` from the modular API instead.');
     return this.native.signOut().then(() => {
       this._setUser();
     });
   }
 
   signInAnonymously() {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `signInAnonymously()` from the modular API instead.',
+    );
     return this.native
       .signInAnonymously()
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
   signInWithPhoneNumber(phoneNumber, forceResend) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `signInWithPhoneNumber()` from the modular API instead.',
+    );
     if (isAndroid) {
       return this.native
         .signInWithPhoneNumber(phoneNumber, forceResend || false)
@@ -292,6 +314,10 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   verifyPhoneNumber(phoneNumber, autoVerifyTimeoutOrForceResend, forceResend) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `verifyPhoneNumber()` from the modular API instead.',
+    );
     let _forceResend = forceResend;
     let _autoVerifyTimeout = 60;
 
@@ -305,15 +331,27 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   verifyPhoneNumberWithMultiFactorInfo(multiFactorHint, session) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `verifyPhoneNumberWithMultiFactorInfo()` from the modular API instead.',
+    );
     return this.native.verifyPhoneNumberWithMultiFactorInfo(multiFactorHint.uid, session);
   }
 
   verifyPhoneNumberForMultiFactor(phoneInfoOptions) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `verifyPhoneNumberForMultiFactor()` from the modular API instead.',
+    );
     const { phoneNumber, session } = phoneInfoOptions;
     return this.native.verifyPhoneNumberForMultiFactor(phoneNumber, session);
   }
 
   resolveMultiFactorSignIn(session, verificationId, verificationCode) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `resolveMultiFactorSignIn()` from the modular API instead.',
+    );
     return this.native
       .resolveMultiFactorSignIn(session, verificationId, verificationCode)
       .then(userCredential => {
@@ -322,42 +360,74 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   createUserWithEmailAndPassword(email, password) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `createUserWithEmailAndPassword()` from the modular API instead.',
+    );
     return this.native
       .createUserWithEmailAndPassword(email, password)
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
   signInWithEmailAndPassword(email, password) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `signInWithEmailAndPassword()` from the modular API instead.',
+    );
     return this.native
       .signInWithEmailAndPassword(email, password)
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
   signInWithCustomToken(customToken) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `signInWithCustomToken()` from the modular API instead.',
+    );
     return this.native
       .signInWithCustomToken(customToken)
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
   signInWithCredential(credential) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `signInWithCredential()` from the modular API instead.',
+    );
     return this.native
       .signInWithCredential(credential.providerId, credential.token, credential.secret)
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
   revokeToken(authorizationCode) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `revokeToken()` from the modular API instead.',
+    );
     return this.native.revokeToken(authorizationCode);
   }
 
   sendPasswordResetEmail(email, actionCodeSettings = null) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `sendPasswordResetEmail()` from the modular API instead.',
+    );
     return this.native.sendPasswordResetEmail(email, actionCodeSettings);
   }
 
   sendSignInLinkToEmail(email, actionCodeSettings = {}) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `sendSignInLinkToEmail()` from the modular API instead.',
+    );
     return this.native.sendSignInLinkToEmail(email, actionCodeSettings);
   }
 
   isSignInWithEmailLink(emailLink) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `isSignInWithEmailLink()` from the modular API instead.',
+    );
     return (
       typeof emailLink === 'string' &&
       (emailLink.includes('mode=signIn') || emailLink.includes('mode%3DsignIn')) &&
@@ -366,34 +436,62 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   signInWithEmailLink(email, emailLink) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `signInWithEmailLink()` from the modular API instead.',
+    );
     return this.native
       .signInWithEmailLink(email, emailLink)
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
   confirmPasswordReset(code, newPassword) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `confirmPasswordReset()` from the modular API instead.',
+    );
     return this.native.confirmPasswordReset(code, newPassword);
   }
 
   applyActionCode(code) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `applyActionCode()` from the modular API instead.',
+    );
     return this.native.applyActionCode(code).then(user => {
       this._setUser(user);
     });
   }
 
   checkActionCode(code) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `checkActionCode()` from the modular API instead.',
+    );
     return this.native.checkActionCode(code);
   }
 
   fetchSignInMethodsForEmail(email) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `fetchSignInMethodsForEmail()` from the modular API instead.',
+    );
     return this.native.fetchSignInMethodsForEmail(email);
   }
 
   verifyPasswordResetCode(code) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `verifyPasswordResetCode()` from the modular API instead.',
+    );
     return this.native.verifyPasswordResetCode(code);
   }
 
   useUserAccessGroup(userAccessGroup) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `useUserAccessGroup()` from the modular API instead.',
+    );
     if (isAndroid) {
       return Promise.resolve();
     }
@@ -401,22 +499,38 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   getRedirectResult() {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `getRedirectResult()` from the modular API instead.',
+    );
     throw new Error(
       'firebase.auth().getRedirectResult() is unsupported by the native Firebase SDKs.',
     );
   }
 
   setPersistence() {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `setPersistence()` from the modular API instead.',
+    );
     throw new Error('firebase.auth().setPersistence() is unsupported by the native Firebase SDKs.');
   }
 
   signInWithPopup(provider) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `signInWithPopup()` from the modular API instead.',
+    );
     return this.native
       .signInWithProvider(provider.toObject())
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
   signInWithRedirect(provider) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `signInWithRedirect()` from the modular API instead.',
+    );
     return this.native
       .signInWithProvider(provider.toObject())
       .then(userCredential => this._setUserCredential(userCredential));
@@ -424,12 +538,20 @@ class FirebaseAuthModule extends FirebaseModule {
 
   // firebase issue - https://github.com/invertase/react-native-firebase/pull/655#issuecomment-349904680
   useDeviceLanguage() {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `useDeviceLanguage()` from the modular API instead.',
+    );
     throw new Error(
       'firebase.auth().useDeviceLanguage() is unsupported by the native Firebase SDKs.',
     );
   }
 
   useEmulator(url) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `useEmulator()` from the modular API instead.',
+    );
     if (!url || !isString(url) || !isValidUrl(url)) {
       throw new Error('firebase.auth().useEmulator() takes a non-empty string URL');
     }
@@ -468,10 +590,18 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   getMultiFactorResolver(error) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `getMultiFactorResolver()` from the modular API instead.',
+    );
     return getMultiFactorResolver(this, error);
   }
 
   multiFactor(user) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `multiFactor()` from the modular API instead.',
+    );
     if (user.userId !== this.currentUser.userId) {
       throw new Error('firebase.auth().multiFactor() only operates on currentUser');
     }
@@ -479,6 +609,10 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   getCustomAuthDomain() {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This method is deprecated. Please use `getCustomAuthDomain()` from the modular API instead.',
+    );
     return this.native.getCustomAuthDomain();
   }
 }
