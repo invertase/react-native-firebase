@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [20.5.0](https://github.com/invertase/react-native-firebase/compare/v20.4.0...v20.5.0) (2024-09-11)
+
+### Features
+
+- **analytics:** initiate on device measurement with sha256-hashed values ([#7963](https://github.com/invertase/react-native-firebase/issues/7963)) ([5ce51e1](https://github.com/invertase/react-native-firebase/commit/5ce51e1b8b225bb509b4a0d444f42fa4c5f3effc))
+
+### Bug Fixes
+
+- **docs:** typos ([#7965](https://github.com/invertase/react-native-firebase/issues/7965)) ([f978d86](https://github.com/invertase/react-native-firebase/commit/f978d8665816e5ef7401b10433c2483c6f5fceb1))
+- **messaging, android:** handle nullable broadcast intent ([#7893](https://github.com/invertase/react-native-firebase/issues/7893)) ([#7960](https://github.com/invertase/react-native-firebase/issues/7960)) ([c1ac022](https://github.com/invertase/react-native-firebase/commit/c1ac022e4e9d3effb2f0fb3404ad375d9fcbe4b6))
+- **messaging, ios:** fixed isHeadless for react-native-navigation ([#7868](https://github.com/invertase/react-native-firebase/issues/7868)) ([3875cc6](https://github.com/invertase/react-native-firebase/commit/3875cc6077e5fd6b35e201356aca632e43a2e301))
+
 ## [20.4.0](https://github.com/invertase/react-native-firebase/compare/v20.3.0...v20.4.0) (2024-08-13)
 
 ### Features

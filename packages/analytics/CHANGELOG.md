@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [20.5.0](https://github.com/invertase/react-native-firebase/compare/v20.4.0...v20.5.0) (2024-09-11)
+
+### Features
+
+- **analytics:** initiate on device measurement with sha256-hashed values ([#7963](https://github.com/invertase/react-native-firebase/issues/7963)) ([5ce51e1](https://github.com/invertase/react-native-firebase/commit/5ce51e1b8b225bb509b4a0d444f42fa4c5f3effc))
+
 ## [20.4.0](https://github.com/invertase/react-native-firebase/compare/v20.3.0...v20.4.0) (2024-08-13)
 
 ### Bug Fixes
