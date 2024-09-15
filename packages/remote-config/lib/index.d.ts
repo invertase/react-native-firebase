@@ -242,7 +242,7 @@ export namespace FirebaseRemoteConfigTypes {
      * ```
      * 
      */
-    asJson(): object | null;
+    asJson(): object | any[] | null;
   }
 
   /**
@@ -550,7 +550,7 @@ export namespace FirebaseRemoteConfigTypes {
      * 
      * @param key A key used to retrieve a specific value.
      */
-    getJson(key: string): object | null;
+    getJson(key: string): object | any[] | null;
 
     /**
      * Deletes all activated, fetched and defaults configs and resets all Firebase Remote Config settings.

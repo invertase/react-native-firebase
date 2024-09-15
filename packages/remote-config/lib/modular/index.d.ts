@@ -98,7 +98,7 @@ export function getString(remoteConfig: RemoteConfig, key: string): string;
  * Gets the value for the given key as a JSON object.
  * @param remoteConfig - RemoteConfig instance
  * @param key - key for JSON object value
- * @returns {object | null}
+ * @returns {object | any[] | null}
  */
 export function getJson(remoteConfig: RemoteConfig, key: string): object | null;
 
