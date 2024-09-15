@@ -53,7 +53,7 @@ export default class ConfigValue {
     try {
       return JSON.parse(this._value);
     } catch (error) {
-      console.warn('RemoteConfig Error, Error parsing value as JSON:', error);
+      console.warn('Firebase RemoteConfig: Error parsing value as JSON:', error);
       return null;
     }
   }
