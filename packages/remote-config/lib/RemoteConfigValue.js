@@ -45,6 +45,19 @@ export default class ConfigValue {
     return this._value;
   }
 
+  asJson() {
+    if (this._source === 'static') {
+      return null;
+    }
+
+    try {
+      return JSON.parse(this._value);
+    } catch (error) {
+      console.warn('RemoteConfig Error, Error parsing value as JSON:', error);
+      return null;
+    }
+  }
+
   getSource() {
     return this._source;
   }

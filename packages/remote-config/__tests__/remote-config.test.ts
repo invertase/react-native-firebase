@@ -27,6 +27,7 @@ import {
   getBoolean,
   getNumber,
   getString,
+  getJson,
   getValue,
   setLogLevel,
   isSupported,
@@ -167,6 +168,10 @@ describe('remoteConfig()', function () {
 
     it('`getString` function is properly exposed to end user', function () {
       expect(getString).toBeDefined();
+    });
+
+    it('`getJson` function is properly exposed to end user', function () {
+      expect(getJson).toBeDefined();
     });
 
     it('`getValue` function is properly exposed to end user', function () {

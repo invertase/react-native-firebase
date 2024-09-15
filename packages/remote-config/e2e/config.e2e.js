@@ -189,6 +189,17 @@ describe('remoteConfig()', function () {
         });
       });
 
+      describe('getValue().asJson()', function () {
+        it('returns the value as a JSON object', function () {
+          const config = firebase.remoteConfig().getAll();
+
+          config.locale.asJson().should.deepEqual({
+            countryCode: "DE",
+            languageCode: "de"
+          });
+        });
+      });
+
       describe('getValue().asNumber()', function () {
         it('returns the value as a number if it can be evaluated as a number', function () {
           const config = firebase.remoteConfig().getAll();
@@ -262,15 +273,20 @@ describe('remoteConfig()', function () {
         const config = firebase.remoteConfig().getAll();
 
         config.should.be.a.Object();
-        config.should.have.keys('bool', 'string', 'number');
+        config.should.have.keys('bool', 'string', 'number', 'locale');
 
         const boolValue = config.bool.asBoolean();
         const stringValue = config.string.asString();
         const numberValue = config.number.asNumber();
+        const jsonValue = config.locale.asJson();
 
         boolValue.should.be.equal(true);
         stringValue.should.be.equal('invertase');
         numberValue.should.be.equal(1337);
+        jsonValue.should.be.deepEqual({
+          countryCode: "DE",
+          languageCode: "de"
+        });
       });
     });
 
@@ -470,6 +486,10 @@ describe('remoteConfig()', function () {
         config.float.getSource().should.equal('remote');
         config.prefix_1.asNumber().should.equal(1);
         config.prefix_1.getSource().should.equal('remote');
+        config.locale.asJson().should.deepEqual({
+          countryCode: "DE",
+          languageCode: "de"
+        });
       });
     });
 
@@ -591,6 +611,23 @@ describe('remoteConfig()', function () {
           unknownKey.should.equal(0);
         });
       });
+
+      describe('getValue().asJson()', function () {
+        it('returns the value as a JSON object', function () {
+          const { getRemoteConfig, getValue } = remoteConfigModular;
+          const remoteConfig = getRemoteConfig();
+
+          const config = getValue(remoteConfig, 'locale').asJson();
+
+          config.should.deepEqual({
+            countryCode: "DE",
+            languageCode: "de"
+          });
+
+        });
+      });
+
+          
 
       describe('getValue().getSource()', function () {
         it('returns the correct source as default or remote', async function () {

@@ -231,6 +231,18 @@ export namespace FirebaseRemoteConfigTypes {
      * ```
      */
     asString(): string;
+    /**
+     * The returned value.
+     * 
+     * #### Example
+     * 
+     * ```js
+     * const configValue = firebase.remoteConfig().getValue('config');
+     * console.log('Config: ', configValue.asJson());
+     * ```
+     * 
+     */
+    asJson(): object | null;
   }
 
   /**
@@ -525,6 +537,20 @@ export namespace FirebaseRemoteConfigTypes {
      * @param key A key used to retrieve a specific value.
      */
     getNumber(key: string): number;
+    /**
+     * Gets a config property using the key and converts to a JSON value.
+     * It will be null if the value is not a JSON value.
+     * 
+     * #### Example
+     * 
+     * ```js
+     * // JSON value of 'experiment' property
+     * const configValue = firebase.remoteConfig().getJson('experiment');
+     * ```
+     * 
+     * @param key A key used to retrieve a specific value.
+     */
+    getJson(key: string): object | null;
 
     /**
      * Deletes all activated, fetched and defaults configs and resets all Firebase Remote Config settings.
