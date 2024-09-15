@@ -100,7 +100,7 @@ export function getString(remoteConfig: RemoteConfig, key: string): string;
  * @param key - key for JSON object value
  * @returns {object | any[] | null}
  */
-export function getJson(remoteConfig: RemoteConfig, key: string): object | null;
+export function getJson(remoteConfig: RemoteConfig, key: string): object | any[] | null;
 
 /**
  * Gets the value for the given key
