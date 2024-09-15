@@ -122,7 +122,7 @@ export function getString(remoteConfig, key) {
  * Gets the value for the given key as a JSON object.
  * @param {RemoteConfig} remoteConfig - RemoteConfig instance
  * @param {string} key - key for JSON object value
- * @returns {object | null}
+ * @returns {object | any[] | null}
  */
 export function getJson(remoteConfig, key) {
   return remoteConfig.getJson(key);
