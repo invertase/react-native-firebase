@@ -39,10 +39,6 @@ Pod::Spec.new do |s|
   # Firebase dependencies
   s.dependency          'Firebase/Firestore', firebase_sdk_version
 
-  # required until firestore-ios-sdk-frameworks is updated, otherwise users of that distribution will have compile failures
-  # see https://github.com/invertase/firestore-ios-sdk-frameworks/issues/59
-  s.dependency          'nanopb', '>= 2.30908.0', '< 2.30910.0'
-
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"
     s.static_framework = $RNFirebaseAsStaticFramework
