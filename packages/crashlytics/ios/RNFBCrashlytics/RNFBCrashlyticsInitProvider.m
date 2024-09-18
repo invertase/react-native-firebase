@@ -134,7 +134,6 @@ NSString *const KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED =
   FIRComponent *crashlyticsInitProvider =
       [FIRComponent componentWithProtocol:@protocol(RNFBCrashlyticsInitProviderProtocol)
                       instantiationTiming:FIRInstantiationTimingEagerInDefaultApp
-                             dependencies:@[]  // note this will go away in firebase-ios-sdk v11+
                             creationBlock:creationBlock];
 
   return @[ crashlyticsInitProvider ];
