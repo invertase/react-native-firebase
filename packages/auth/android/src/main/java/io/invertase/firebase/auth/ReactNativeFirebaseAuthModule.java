@@ -88,14 +88,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
-@SuppressWarnings({ "ThrowableResultOfMethodCallIgnored", "JavaDoc" })
+@SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "JavaDoc"})
 class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
-  // Easier to use would be Instant and DateTimeFormatter, but these are only
-  // available in API 26+
-  // According to https://stackoverflow.com/a/2202300 this is not the optimal
-  // solution, but we only
+  // Easier to use would be Instant and DateTimeFormatter, but these are only available in API 26+
+  // According to https://stackoverflow.com/a/2202300 this is not the optimal solution, but we only
   // get a unix timestamp so we can hardcode the timezone.
-  public static final SimpleDateFormat ISO_8601_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+  public static final SimpleDateFormat ISO_8601_FORMATTER =
+      new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
   private static final String TAG = "Auth";
   private static HashMap<String, FirebaseAuth.AuthStateListener> mAuthListeners = new HashMap<>();
@@ -135,7 +134,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       String appName = (String) pair.getKey();
       FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
       FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-      FirebaseAuth.AuthStateListener mAuthListener = (FirebaseAuth.AuthStateListener) pair.getValue();
+      FirebaseAuth.AuthStateListener mAuthListener =
+          (FirebaseAuth.AuthStateListener) pair.getValue();
       firebaseAuth.removeAuthStateListener(mAuthListener);
       authListenerIterator.remove();
     }
@@ -185,21 +185,24 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
     FirebaseAuth.AuthStateListener mAuthListener = mAuthListeners.get(appName);
     if (mAuthListener == null) {
-      FirebaseAuth.AuthStateListener newAuthListener = firebaseAuth1 -> {
-        FirebaseUser user = firebaseAuth1.getCurrentUser();
-        WritableMap eventBody = Arguments.createMap();
-        ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
-        if (user != null) {
-          eventBody.putString("appName", appName); // for js side distribution
-          eventBody.putMap("user", firebaseUserToMap(user));
-        } else {
-          eventBody.putString("appName", appName); // for js side distribution
-        }
-        Log.d(TAG, "addAuthStateListener:eventBody " + eventBody.toString());
+      FirebaseAuth.AuthStateListener newAuthListener =
+          firebaseAuth1 -> {
+            FirebaseUser user = firebaseAuth1.getCurrentUser();
+            WritableMap eventBody = Arguments.createMap();
+            ReactNativeFirebaseEventEmitter emitter =
+                ReactNativeFirebaseEventEmitter.getSharedInstance();
+            if (user != null) {
+              eventBody.putString("appName", appName); // for js side distribution
+              eventBody.putMap("user", firebaseUserToMap(user));
+            } else {
+              eventBody.putString("appName", appName); // for js side distribution
+            }
+            Log.d(TAG, "addAuthStateListener:eventBody " + eventBody.toString());
 
-        ReactNativeFirebaseEvent event = new ReactNativeFirebaseEvent("auth_state_changed", eventBody, appName);
-        emitter.sendEvent(event);
-      };
+            ReactNativeFirebaseEvent event =
+                new ReactNativeFirebaseEvent("auth_state_changed", eventBody, appName);
+            emitter.sendEvent(event);
+          };
 
       firebaseAuth.addAuthStateListener(newAuthListener);
       mAuthListeners.put(appName, newAuthListener);
@@ -231,22 +234,25 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
     if (!mIdTokenListeners.containsKey(appName)) {
-      FirebaseAuth.IdTokenListener newIdTokenListener = firebaseAuth1 -> {
-        FirebaseUser user = firebaseAuth1.getCurrentUser();
-        ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
-        WritableMap eventBody = Arguments.createMap();
-        if (user != null) {
-          eventBody.putBoolean("authenticated", true);
-          eventBody.putString("appName", appName);
-          eventBody.putMap("user", firebaseUserToMap(user));
-        } else {
-          eventBody.putString("appName", appName);
-          eventBody.putBoolean("authenticated", false);
-        }
+      FirebaseAuth.IdTokenListener newIdTokenListener =
+          firebaseAuth1 -> {
+            FirebaseUser user = firebaseAuth1.getCurrentUser();
+            ReactNativeFirebaseEventEmitter emitter =
+                ReactNativeFirebaseEventEmitter.getSharedInstance();
+            WritableMap eventBody = Arguments.createMap();
+            if (user != null) {
+              eventBody.putBoolean("authenticated", true);
+              eventBody.putString("appName", appName);
+              eventBody.putMap("user", firebaseUserToMap(user));
+            } else {
+              eventBody.putString("appName", appName);
+              eventBody.putBoolean("authenticated", false);
+            }
 
-        ReactNativeFirebaseEvent event = new ReactNativeFirebaseEvent("auth_id_token_changed", eventBody, appName);
-        emitter.sendEvent(event);
-      };
+            ReactNativeFirebaseEvent event =
+                new ReactNativeFirebaseEvent("auth_id_token_changed", eventBody, appName);
+            emitter.sendEvent(event);
+          };
 
       firebaseAuth.addIdTokenListener(newIdTokenListener);
       mIdTokenListeners.put(appName, newIdTokenListener);
@@ -270,17 +276,12 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   /**
-   * Forces application verification to use the web reCAPTCHA flow for Phone
-   * Authentication.
+   * Forces application verification to use the web reCAPTCHA flow for Phone Authentication.
    *
-   * <p>
-   * Once this has been called, every call to
-   * PhoneAuthProvider#verifyPhoneNumber() will skip the
+   * <p>Once this has been called, every call to PhoneAuthProvider#verifyPhoneNumber() will skip the
    * Play Integrity API verification flow and use the reCAPTCHA flow instead.
    *
-   * <p>
-   * Calling this method a second time will overwrite the previously passed
-   * parameter.
+   * <p>Calling this method a second time will overwrite the previously passed parameter.
    *
    * @param appName
    * @param forceRecaptchaFlow
@@ -298,13 +299,10 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   /**
-   * The phone number and SMS code here must have been configured in the Firebase
-   * Console
+   * The phone number and SMS code here must have been configured in the Firebase Console
    * (Authentication > Sign In Method > Phone).
    *
-   * <p>
-   * Calling this method a second time will overwrite the previously passed
-   * parameters. Only one
+   * <p>Calling this method a second time will overwrite the previously passed parameters. Only one
    * number can be configured at a given time.
    *
    * @param appName
@@ -509,16 +507,17 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    OnCompleteListener<Void> listener = task -> {
-      if (task.isSuccessful()) {
-        Log.d(TAG, "sendPasswordResetEmail:onComplete:success");
-        promiseNoUser(promise, false);
-      } else {
-        Exception exception = task.getException();
-        Log.e(TAG, "sendPasswordResetEmail:onComplete:failure", exception);
-        promiseRejectAuthException(promise, exception);
-      }
-    };
+    OnCompleteListener<Void> listener =
+        task -> {
+          if (task.isSuccessful()) {
+            Log.d(TAG, "sendPasswordResetEmail:onComplete:success");
+            promiseNoUser(promise, false);
+          } else {
+            Exception exception = task.getException();
+            Log.e(TAG, "sendPasswordResetEmail:onComplete:failure", exception);
+            promiseRejectAuthException(promise, exception);
+          }
+        };
 
     if (actionCodeSettings == null) {
       firebaseAuth.sendPasswordResetEmail(email).addOnCompleteListener(getExecutor(), listener);
@@ -543,16 +542,17 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    OnCompleteListener<Void> listener = task -> {
-      if (task.isSuccessful()) {
-        Log.d(TAG, "sendSignInLinkToEmail:onComplete:success");
-        promiseNoUser(promise, false);
-      } else {
-        Exception exception = task.getException();
-        Log.e(TAG, "sendSignInLinkToEmail:onComplete:failure", exception);
-        promiseRejectAuthException(promise, exception);
-      }
-    };
+    OnCompleteListener<Void> listener =
+        task -> {
+          if (task.isSuccessful()) {
+            Log.d(TAG, "sendSignInLinkToEmail:onComplete:success");
+            promiseNoUser(promise, false);
+          } else {
+            Exception exception = task.getException();
+            Log.e(TAG, "sendSignInLinkToEmail:onComplete:failure", exception);
+            promiseRejectAuthException(promise, exception);
+          }
+        };
 
     ActionCodeSettings settings = buildActionCodeSettings(actionCodeSettings);
     firebaseAuth
@@ -560,11 +560,9 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
         .addOnCompleteListener(getExecutor(), listener);
   }
 
-  /*
-   * ----------------------
-   * .currentUser methods
-   * ----------------------
-   */
+  /* ----------------------
+   *  .currentUser methods
+   * ---------------------- */
 
   /**
    * delete
@@ -649,16 +647,17 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       promiseNoUser(promise, false);
       Log.e(TAG, "sendEmailVerification:failure:noCurrentUser");
     } else {
-      OnCompleteListener<Void> listener = task -> {
-        if (task.isSuccessful()) {
-          Log.d(TAG, "sendEmailVerification:onComplete:success");
-          promiseWithUser(firebaseAuth.getCurrentUser(), promise);
-        } else {
-          Exception exception = task.getException();
-          Log.e(TAG, "sendEmailVerification:onComplete:failure", exception);
-          promiseRejectAuthException(promise, exception);
-        }
-      };
+      OnCompleteListener<Void> listener =
+          task -> {
+            if (task.isSuccessful()) {
+              Log.d(TAG, "sendEmailVerification:onComplete:success");
+              promiseWithUser(firebaseAuth.getCurrentUser(), promise);
+            } else {
+              Exception exception = task.getException();
+              Log.e(TAG, "sendEmailVerification:onComplete:failure", exception);
+              promiseRejectAuthException(promise, exception);
+            }
+          };
 
       if (actionCodeSettings == null) {
         user.sendEmailVerification().addOnCompleteListener(getExecutor(), listener);
@@ -687,16 +686,17 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       promiseNoUser(promise, false);
       Log.e(TAG, "verifyBeforeUpdateEmail:failure:noCurrentUser");
     } else {
-      OnCompleteListener<Void> listener = task -> {
-        if (task.isSuccessful()) {
-          Log.d(TAG, "verifyBeforeUpdateEmail:onComplete:success");
-          promiseWithUser(firebaseAuth.getCurrentUser(), promise);
-        } else {
-          Exception exception = task.getException();
-          Log.e(TAG, "verifyBeforeUpdateEmail:onComplete:failure", exception);
-          promiseRejectAuthException(promise, exception);
-        }
-      };
+      OnCompleteListener<Void> listener =
+          task -> {
+            if (task.isSuccessful()) {
+              Log.d(TAG, "verifyBeforeUpdateEmail:onComplete:success");
+              promiseWithUser(firebaseAuth.getCurrentUser(), promise);
+            } else {
+              Exception exception = task.getException();
+              Log.e(TAG, "verifyBeforeUpdateEmail:onComplete:failure", exception);
+              promiseRejectAuthException(promise, exception);
+            }
+          };
 
       if (actionCodeSettings == null) {
         user.verifyBeforeUpdateEmail(email).addOnCompleteListener(getExecutor(), listener);
@@ -919,7 +919,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       return;
     }
 
-    OAuthProvider.Builder builder = OAuthProvider.newBuilder(provider.getString("providerId"), firebaseAuth);
+    OAuthProvider.Builder builder =
+        OAuthProvider.newBuilder(provider.getString("providerId"), firebaseAuth);
     // Add scopes if present
     if (provider.hasKey("scopes")) {
       ReadableArray scopes = provider.getArray("scopes");
@@ -995,85 +996,85 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     // Reset the verification Id
     mVerificationId = null;
 
-    PhoneAuthProvider.OnVerificationStateChangedCallbacks callbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-      private boolean promiseResolved = false;
+    PhoneAuthProvider.OnVerificationStateChangedCallbacks callbacks =
+        new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+          private boolean promiseResolved = false;
 
-      @Override
-      public void onVerificationCompleted(final PhoneAuthCredential phoneAuthCredential) {
-        // User has been automatically verified, log them in
-        firebaseAuth
-            .signInWithCredential(phoneAuthCredential)
-            .addOnCompleteListener(
-                getExecutor(),
-                task -> {
-                  if (task.isSuccessful()) {
-                    // onAuthStateChanged will pick up the user change
-                    Log.d(
-                        TAG,
-                        "signInWithPhoneNumber:autoVerified:signInWithCredential:onComplete:success");
-                    // To ensure that there is no hanging promise, we resolve it with a null
-                    // verificationId
-                    // as calling ConfirmationResult.confirm(code) is invalid in this case
-                    // anyway
-                    if (!promiseResolved) {
-                      WritableMap verificationMap = Arguments.createMap();
+          @Override
+          public void onVerificationCompleted(final PhoneAuthCredential phoneAuthCredential) {
+            // User has been automatically verified, log them in
+            firebaseAuth
+                .signInWithCredential(phoneAuthCredential)
+                .addOnCompleteListener(
+                    getExecutor(),
+                    task -> {
+                      if (task.isSuccessful()) {
+                        // onAuthStateChanged will pick up the user change
+                        Log.d(
+                            TAG,
+                            "signInWithPhoneNumber:autoVerified:signInWithCredential:onComplete:success");
+                        // To ensure that there is no hanging promise, we resolve it with a null
+                        // verificationId
+                        // as calling ConfirmationResult.confirm(code) is invalid in this case
+                        // anyway
+                        if (!promiseResolved) {
+                          WritableMap verificationMap = Arguments.createMap();
 
-                      Parcel parcel = Parcel.obtain();
-                      phoneAuthCredential.writeToParcel(parcel, 0);
-                      parcel.setDataPosition(16); // verificationId
-                      String verificationId = parcel.readString();
-                      mVerificationId = verificationId;
-                      parcel.recycle();
+                          Parcel parcel = Parcel.obtain();
+                          phoneAuthCredential.writeToParcel(parcel, 0);
+                          parcel.setDataPosition(16); // verificationId
+                          String verificationId = parcel.readString();
+                          mVerificationId = verificationId;
+                          parcel.recycle();
 
-                      verificationMap.putString("verificationId", verificationId);
-                      promise.resolve(verificationMap);
-                    }
-                  } else {
-                    // With phone auth, the credential will only every be rejected if the user
-                    // account linked to the phone number has been disabled
-                    Exception exception = task.getException();
-                    Log.e(
-                        TAG,
-                        "signInWithPhoneNumber:autoVerified:signInWithCredential:onComplete:failure",
-                        exception);
-                    // In the scenario where an SMS code has been sent, we have no way to report
-                    // back to the front-end that as the promise has already been used
-                    if (!promiseResolved) {
-                      promiseRejectAuthException(promise, exception);
-                    }
-                  }
-                });
-      }
+                          verificationMap.putString("verificationId", verificationId);
+                          promise.resolve(verificationMap);
+                        }
+                      } else {
+                        // With phone auth, the credential will only every be rejected if the user
+                        // account linked to the phone number has been disabled
+                        Exception exception = task.getException();
+                        Log.e(
+                            TAG,
+                            "signInWithPhoneNumber:autoVerified:signInWithCredential:onComplete:failure",
+                            exception);
+                        // In the scenario where an SMS code has been sent, we have no way to report
+                        // back to the front-end that as the promise has already been used
+                        if (!promiseResolved) {
+                          promiseRejectAuthException(promise, exception);
+                        }
+                      }
+                    });
+          }
 
-      @Override
-      public void onVerificationFailed(FirebaseException e) {
-        // This callback is invoked in an invalid request for verification is made,
-        // e.g. phone number format is incorrect, or the SMS quota for the project
-        // has been exceeded
-        Log.d(TAG, "signInWithPhoneNumber:verification:failed");
-        promiseRejectAuthException(promise, e);
-      }
+          @Override
+          public void onVerificationFailed(FirebaseException e) {
+            // This callback is invoked in an invalid request for verification is made,
+            // e.g. phone number format is incorrect, or the SMS quota for the project
+            // has been exceeded
+            Log.d(TAG, "signInWithPhoneNumber:verification:failed");
+            promiseRejectAuthException(promise, e);
+          }
 
-      @Override
-      public void onCodeSent(
-          String verificationId, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-        // TODO: This isn't being saved anywhere if the activity gets restarted when
-        // going to
-        // the SMS app
-        mVerificationId = verificationId;
-        mForceResendingToken = forceResendingToken;
-        WritableMap verificationMap = Arguments.createMap();
-        verificationMap.putString("verificationId", verificationId);
-        promise.resolve(verificationMap);
-        promiseResolved = true;
-      }
+          @Override
+          public void onCodeSent(
+              String verificationId, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+            // TODO: This isn't being saved anywhere if the activity gets restarted when going to
+            // the SMS app
+            mVerificationId = verificationId;
+            mForceResendingToken = forceResendingToken;
+            WritableMap verificationMap = Arguments.createMap();
+            verificationMap.putString("verificationId", verificationId);
+            promise.resolve(verificationMap);
+            promiseResolved = true;
+          }
 
-      @Override
-      public void onCodeAutoRetrievalTimeOut(String verificationId) {
-        super.onCodeAutoRetrievalTimeOut(verificationId);
-        // Purposefully not doing anything with this at the moment
-      }
-    };
+          @Override
+          public void onCodeAutoRetrievalTimeOut(String verificationId) {
+            super.onCodeAutoRetrievalTimeOut(verificationId);
+            // Purposefully not doing anything with this at the moment
+          }
+        };
 
     if (activity != null) {
       if (forceResend && mForceResendingToken != null) {
@@ -1115,9 +1116,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       final String appName, final String hintUid, final String sessionKey, final Promise promise) {
     final MultiFactorResolver resolver = mCachedResolvers.get(sessionKey);
     if (resolver == null) {
-      // See
-      // https://firebase.google.com/docs/reference/node/firebase.auth.multifactorresolver
-      // for
+      // See https://firebase.google.com/docs/reference/node/firebase.auth.multifactorresolver for
       // the error code
       rejectPromiseWithCodeAndMessage(
           promise,
@@ -1150,32 +1149,33 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
     final Activity activity = getCurrentActivity();
-    final PhoneAuthOptions phoneAuthOptions = PhoneAuthOptions.newBuilder(firebaseAuth)
-        .setActivity(activity)
-        .setMultiFactorHint((PhoneMultiFactorInfo) selectedHint)
-        .setTimeout(30L, TimeUnit.SECONDS)
-        .setMultiFactorSession(resolver.getSession())
-        .setCallbacks(
-            new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-              @Override
-              public void onCodeSent(
-                  @NonNull String verificationId,
-                  @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-                promise.resolve(verificationId);
-              }
+    final PhoneAuthOptions phoneAuthOptions =
+        PhoneAuthOptions.newBuilder(firebaseAuth)
+            .setActivity(activity)
+            .setMultiFactorHint((PhoneMultiFactorInfo) selectedHint)
+            .setTimeout(30L, TimeUnit.SECONDS)
+            .setMultiFactorSession(resolver.getSession())
+            .setCallbacks(
+                new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                  @Override
+                  public void onCodeSent(
+                      @NonNull String verificationId,
+                      @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+                    promise.resolve(verificationId);
+                  }
 
-              @Override
-              public void onVerificationCompleted(
-                  @NonNull PhoneAuthCredential phoneAuthCredential) {
-                resolveMultiFactorCredential(phoneAuthCredential, sessionKey, promise);
-              }
+                  @Override
+                  public void onVerificationCompleted(
+                      @NonNull PhoneAuthCredential phoneAuthCredential) {
+                    resolveMultiFactorCredential(phoneAuthCredential, sessionKey, promise);
+                  }
 
-              @Override
-              public void onVerificationFailed(@NonNull FirebaseException e) {
-                promiseRejectAuthException(promise, e);
-              }
-            })
-        .build();
+                  @Override
+                  public void onVerificationFailed(@NonNull FirebaseException e) {
+                    promiseRejectAuthException(promise, e);
+                  }
+                })
+            .build();
 
     PhoneAuthProvider.verifyPhoneNumber(phoneAuthOptions);
   }
@@ -1194,37 +1194,38 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     }
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-    final PhoneAuthOptions phoneAuthOptions = PhoneAuthOptions.newBuilder(firebaseAuth)
-        .setPhoneNumber(phoneNumber)
-        .setActivity(getCurrentActivity())
-        .setTimeout(30L, TimeUnit.SECONDS)
-        .setMultiFactorSession(multiFactorSession)
-        .requireSmsValidation(true)
-        .setCallbacks(
-            new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-              @Override
-              public void onVerificationCompleted(
-                  @NonNull PhoneAuthCredential phoneAuthCredential) {
-                // We can't handle this flow in the JS part if we want to be compatible with
-                // the firebase-js-sdk. If we set the requireSmsValidation option to true
-                // this code should not be executed.
-                rejectPromiseWithCodeAndMessage(
-                    promise, "not-implemented", "This is currently not supported.");
-              }
+    final PhoneAuthOptions phoneAuthOptions =
+        PhoneAuthOptions.newBuilder(firebaseAuth)
+            .setPhoneNumber(phoneNumber)
+            .setActivity(getCurrentActivity())
+            .setTimeout(30L, TimeUnit.SECONDS)
+            .setMultiFactorSession(multiFactorSession)
+            .requireSmsValidation(true)
+            .setCallbacks(
+                new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                  @Override
+                  public void onVerificationCompleted(
+                      @NonNull PhoneAuthCredential phoneAuthCredential) {
+                    // We can't handle this flow in the JS part if we want to be compatible with
+                    // the firebase-js-sdk. If we set the requireSmsValidation option to true
+                    // this code should not be executed.
+                    rejectPromiseWithCodeAndMessage(
+                        promise, "not-implemented", "This is currently not supported.");
+                  }
 
-              @Override
-              public void onVerificationFailed(@NonNull FirebaseException e) {
-                promiseRejectAuthException(promise, e);
-              }
+                  @Override
+                  public void onVerificationFailed(@NonNull FirebaseException e) {
+                    promiseRejectAuthException(promise, e);
+                  }
 
-              @Override
-              public void onCodeSent(
-                  @NonNull String verificationId,
-                  @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-                promise.resolve(verificationId);
-              }
-            })
-        .build();
+                  @Override
+                  public void onCodeSent(
+                      @NonNull String verificationId,
+                      @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+                    promise.resolve(verificationId);
+                  }
+                })
+            .build();
 
     PhoneAuthProvider.verifyPhoneNumber(phoneAuthOptions);
   }
@@ -1239,8 +1240,10 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    final PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.getCredential(verificationId, verificationCode);
-    final PhoneMultiFactorAssertion assertion = PhoneMultiFactorGenerator.getAssertion(phoneAuthCredential);
+    final PhoneAuthCredential phoneAuthCredential =
+        PhoneAuthProvider.getCredential(verificationId, verificationCode);
+    final PhoneMultiFactorAssertion assertion =
+        PhoneMultiFactorGenerator.getAssertion(phoneAuthCredential);
     firebaseAuth
         .getCurrentUser()
         .getMultiFactor()
@@ -1259,25 +1262,24 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   /**
-   * This method is intended to resolve a {@link PhoneAuthCredential} obtained
-   * through a
+   * This method is intended to resolve a {@link PhoneAuthCredential} obtained through a
    * multi-factor authentication flow. A credential can either be obtained using:
    *
    * <ul>
-   * <li>{@link PhoneAuthProvider#getCredential(String, String)}
-   * <li>or {@link
-   * com.google.firebase.auth.PhoneAuthProvider.OnVerificationStateChangedCallbacks#onVerificationCompleted(PhoneAuthCredential)}
+   *   <li>{@link PhoneAuthProvider#getCredential(String, String)}
+   *   <li>or {@link
+   *       com.google.firebase.auth.PhoneAuthProvider.OnVerificationStateChangedCallbacks#onVerificationCompleted(PhoneAuthCredential)}
    * </ul>
    *
    * @param authCredential
-   * @param sessionKey     An identifier for the session the flow belongs to. Used
-   *                       to look up the {@link
-   *                       MultiFactorResolver}
+   * @param sessionKey An identifier for the session the flow belongs to. Used to look up the {@link
+   *     MultiFactorResolver}
    * @param promise
    */
   private void resolveMultiFactorCredential(
       final PhoneAuthCredential authCredential, final String sessionKey, final Promise promise) {
-    final MultiFactorAssertion multiFactorAssertion = PhoneMultiFactorGenerator.getAssertion(authCredential);
+    final MultiFactorAssertion multiFactorAssertion =
+        PhoneMultiFactorGenerator.getAssertion(authCredential);
 
     final MultiFactorResolver resolver = mCachedResolvers.get(sessionKey);
     if (resolver == null) {
@@ -1309,7 +1311,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       final String verificationCode,
       final Promise promise) {
 
-    final PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, verificationCode);
+    final PhoneAuthCredential credential =
+        PhoneAuthProvider.getCredential(verificationId, verificationCode);
     resolveMultiFactorCredential(credential, session, promise);
   }
 
@@ -1376,78 +1379,78 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     // Reset the credential
     mCredential = null;
 
-    PhoneAuthProvider.OnVerificationStateChangedCallbacks callbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+    PhoneAuthProvider.OnVerificationStateChangedCallbacks callbacks =
+        new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
-      @Override
-      public void onVerificationCompleted(final PhoneAuthCredential phoneAuthCredential) {
-        // Cache the credential to protect against null verificationId
-        mCredential = phoneAuthCredential;
+          @Override
+          public void onVerificationCompleted(final PhoneAuthCredential phoneAuthCredential) {
+            // Cache the credential to protect against null verificationId
+            mCredential = phoneAuthCredential;
 
-        Log.d(TAG, "verifyPhoneNumber:verification:onVerificationCompleted");
-        WritableMap state = Arguments.createMap();
+            Log.d(TAG, "verifyPhoneNumber:verification:onVerificationCompleted");
+            WritableMap state = Arguments.createMap();
 
-        Parcel parcel = Parcel.obtain();
-        phoneAuthCredential.writeToParcel(parcel, 0);
+            Parcel parcel = Parcel.obtain();
+            phoneAuthCredential.writeToParcel(parcel, 0);
 
-        // verificationId
-        parcel.setDataPosition(16);
-        String verificationId = parcel.readString();
+            // verificationId
+            parcel.setDataPosition(16);
+            String verificationId = parcel.readString();
 
-        // sms Code
-        parcel.setDataPosition(parcel.dataPosition() + 8);
-        String code = parcel.readString();
+            // sms Code
+            parcel.setDataPosition(parcel.dataPosition() + 8);
+            String code = parcel.readString();
 
-        state.putString("code", code);
-        state.putString("verificationId", verificationId);
-        parcel.recycle();
-        sendPhoneStateEvent(appName, requestKey, "onVerificationComplete", state);
-      }
+            state.putString("code", code);
+            state.putString("verificationId", verificationId);
+            parcel.recycle();
+            sendPhoneStateEvent(appName, requestKey, "onVerificationComplete", state);
+          }
 
-      @Override
-      public void onVerificationFailed(FirebaseException e) {
-        // This callback is invoked in an invalid request for verification is made,
-        // e.g. phone number format is incorrect, or the SMS quota for the project
-        // has been exceeded
-        Log.d(TAG, "verifyPhoneNumber:verification:onVerificationFailed");
-        WritableMap state = Arguments.createMap();
-        state.putMap("error", getJSError(e));
-        sendPhoneStateEvent(appName, requestKey, "onVerificationFailed", state);
-      }
+          @Override
+          public void onVerificationFailed(FirebaseException e) {
+            // This callback is invoked in an invalid request for verification is made,
+            // e.g. phone number format is incorrect, or the SMS quota for the project
+            // has been exceeded
+            Log.d(TAG, "verifyPhoneNumber:verification:onVerificationFailed");
+            WritableMap state = Arguments.createMap();
+            state.putMap("error", getJSError(e));
+            sendPhoneStateEvent(appName, requestKey, "onVerificationFailed", state);
+          }
 
-      @Override
-      public void onCodeSent(
-          String verificationId, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-        Log.d(TAG, "verifyPhoneNumber:verification:onCodeSent");
-        mForceResendingToken = forceResendingToken;
-        WritableMap state = Arguments.createMap();
-        state.putString("verificationId", verificationId);
+          @Override
+          public void onCodeSent(
+              String verificationId, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+            Log.d(TAG, "verifyPhoneNumber:verification:onCodeSent");
+            mForceResendingToken = forceResendingToken;
+            WritableMap state = Arguments.createMap();
+            state.putString("verificationId", verificationId);
 
-        // todo forceResendingToken - it's actually just an empty class ... no actual
-        // token >.>
-        // Parcel parcel = Parcel.obtain();
-        // forceResendingToken.writeToParcel(parcel, 0);
-        //
-        // // verificationId
-        // parcel.setDataPosition(0);
-        // int int1 = parcel.readInt();
-        // String token = parcel.readString();
-        //
-        // state.putString("refreshToken", token);
-        // parcel.recycle();
+            // todo forceResendingToken  - it's actually just an empty class ... no actual token >.>
+            // Parcel parcel = Parcel.obtain();
+            // forceResendingToken.writeToParcel(parcel, 0);
+            //
+            // // verificationId
+            // parcel.setDataPosition(0);
+            // int int1 = parcel.readInt();
+            // String token = parcel.readString();
+            //
+            // state.putString("refreshToken", token);
+            // parcel.recycle();
 
-        state.putString("verificationId", verificationId);
-        sendPhoneStateEvent(appName, requestKey, "onCodeSent", state);
-      }
+            state.putString("verificationId", verificationId);
+            sendPhoneStateEvent(appName, requestKey, "onCodeSent", state);
+          }
 
-      @Override
-      public void onCodeAutoRetrievalTimeOut(String verificationId) {
-        super.onCodeAutoRetrievalTimeOut(verificationId);
-        Log.d(TAG, "verifyPhoneNumber:verification:onCodeAutoRetrievalTimeOut");
-        WritableMap state = Arguments.createMap();
-        state.putString("verificationId", verificationId);
-        sendPhoneStateEvent(appName, requestKey, "onCodeAutoRetrievalTimeout", state);
-      }
-    };
+          @Override
+          public void onCodeAutoRetrievalTimeOut(String verificationId) {
+            super.onCodeAutoRetrievalTimeOut(verificationId);
+            Log.d(TAG, "verifyPhoneNumber:verification:onCodeAutoRetrievalTimeOut");
+            WritableMap state = Arguments.createMap();
+            state.putString("verificationId", verificationId);
+            sendPhoneStateEvent(appName, requestKey, "onCodeAutoRetrievalTimeout", state);
+          }
+        };
 
     if (activity != null) {
       if (forceResend && mForceResendingToken != null) {
@@ -1664,7 +1667,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       return;
     }
 
-    OAuthProvider.Builder builder = OAuthProvider.newBuilder(provider.getString("providerId"), firebaseAuth);
+    OAuthProvider.Builder builder =
+        OAuthProvider.newBuilder(provider.getString("providerId"), firebaseAuth);
     // Add scopes if present
     if (provider.hasKey("scopes")) {
       ReadableArray scopes = provider.getArray("scopes");
@@ -1807,7 +1811,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       return;
     }
 
-    OAuthProvider.Builder builder = OAuthProvider.newBuilder(provider.getString("providerId"), firebaseAuth);
+    OAuthProvider.Builder builder =
+        OAuthProvider.newBuilder(provider.getString("providerId"), firebaseAuth);
     // Add scopes if present
     if (provider.hasKey("scopes")) {
       ReadableArray scopes = provider.getArray("scopes");
@@ -1901,10 +1906,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
   /** Returns an instance of PhoneAuthCredential, potentially cached */
   private PhoneAuthCredential getPhoneAuthCredential(String authToken, String authSecret) {
-    // If the phone number is auto-verified quickly, then the verificationId can be
-    // null
-    // We cached the credential as part of the verifyPhoneNumber request to be
-    // re-used here
+    // If the phone number is auto-verified quickly, then the verificationId can be null
+    // We cached the credential as part of the verifyPhoneNumber request to be re-used here
     // if possible
     if (authToken == null && mCredential != null) {
       PhoneAuthCredential credential = mCredential;
@@ -2038,7 +2041,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
             task -> {
               if (task.isSuccessful()) {
                 Log.d(TAG, "fetchProvidersForEmail:onComplete:success");
-                List<String> providers = Objects.requireNonNull(task.getResult()).getSignInMethods();
+                List<String> providers =
+                    Objects.requireNonNull(task.getResult()).getSignInMethods();
                 WritableArray array = Arguments.createArray();
 
                 if (providers != null) {
@@ -2134,11 +2138,9 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     }
   }
 
-  /*
-   * ------------------
+  /* ------------------
    * INTERNAL HELPERS
-   * ----------------
-   */
+   * ---------------- */
 
   /**
    * Resolves or rejects an auth method promise without a user (user was missing)
@@ -2300,15 +2302,18 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
             message = "The password is invalid or the user does not have a password.";
             break;
           case "USER_MISMATCH":
-            message = "The supplied credentials do not correspond to the previously signed in user.";
+            message =
+                "The supplied credentials do not correspond to the previously signed in user.";
             break;
           case "REQUIRES_RECENT_LOGIN":
-            message = "This operation is sensitive and requires recent authentication. Log in again"
-                + " before retrying this request.";
+            message =
+                "This operation is sensitive and requires recent authentication. Log in again"
+                    + " before retrying this request.";
             break;
           case "ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL":
-            message = "An account already exists with the same email address but different sign-in"
-                + " credentials. Sign in using a provider associated with this email address.";
+            message =
+                "An account already exists with the same email address but different sign-in"
+                    + " credentials. Sign in using a provider associated with this email address.";
             break;
           case "EMAIL_ALREADY_IN_USE":
             message = "The email address is already in use by another account.";
@@ -2323,8 +2328,9 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
             message = "The user\'s credential is no longer valid. The user must sign in again.";
             break;
           case "USER_NOT_FOUND":
-            message = "There is no user record corresponding to this identifier. The user may have been"
-                + " deleted.";
+            message =
+                "There is no user record corresponding to this identifier. The user may have been"
+                    + " deleted.";
             break;
           case "INVALID_USER_TOKEN":
             message = "The user\'s credential is no longer valid. The user must sign in again.";
@@ -2344,17 +2350,16 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     }
 
     if (exception instanceof FirebaseAuthMultiFactorException) {
-      final FirebaseAuthMultiFactorException multiFactorException = (FirebaseAuthMultiFactorException) exception;
+      final FirebaseAuthMultiFactorException multiFactorException =
+          (FirebaseAuthMultiFactorException) exception;
       // Make sure the error code conforms to the Web API. See
       // https://firebase.google.com/docs/auth/web/multi-factor#signing_users_in_with_a_second_factor
       code = "MULTI_FACTOR_AUTH_REQUIRED";
       final MultiFactorResolver resolver = multiFactorException.getResolver();
       final String sessionId = Integer.toString(resolver.getSession().hashCode());
       mCachedResolvers.put(sessionId, resolver);
-      // Passing around a resolver ReadableMap leads to issues when trying to send the
-      // data back by
-      // calling Promise#reject. Building the map just before sending solves that
-      // issue.
+      // Passing around a resolver ReadableMap leads to issues when trying to send the data back by
+      // calling Promise#reject. Building the map just before sending solves that issue.
       error.putString("sessionId", sessionId);
     }
 
@@ -2376,13 +2381,15 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
         message = "This operation requires a verified email.";
         break;
       case "ERROR_UNSUPPORTED_FIRST_FACTOR":
-        message = "Enrolling a second factor or signing in with a multi-factor account requires sign-in"
-            + " with a supported first factor.";
+        message =
+            "Enrolling a second factor or signing in with a multi-factor account requires sign-in"
+                + " with a supported first factor.";
         break;
       case "ERROR_INVALID_PHONE_NUMBER":
-        message = "The format of the phone number provided is incorrect. Please enter the phone number in"
-            + " a format that can be parsed into E.164 format. E.164 phone numbers are written"
-            + " in the format [+][country code][subscriber number including area code].";
+        message =
+            "The format of the phone number provided is incorrect. Please enter the phone number in"
+                + " a format that can be parsed into E.164 format. E.164 phone numbers are written"
+                + " in the format [+][country code][subscriber number including area code].";
         break;
     }
 
@@ -2394,8 +2401,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   /**
-   * Converts a List of UserInfo instances into the correct format to match the
-   * web sdk
+   * Converts a List of UserInfo instances into the correct format to match the web sdk
    *
    * @param providerData List<UserInfo> user.getProviderData()
    * @return WritableArray array
@@ -2422,10 +2428,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
         }
 
         final String phoneNumber = userInfo.getPhoneNumber();
-        // The Android SDK is missing the phone number property for the phone provider
-        // when the
-        // user first signs up using their phone number. Use the phone number from the
-        // user
+        // The Android SDK is missing the phone number property for the phone provider when the
+        // user first signs up using their phone number.  Use the phone number from the user
         // object instead
         if (PhoneAuthProvider.PROVIDER_ID.equals(userInfo.getProviderId())
             && (userInfo.getPhoneNumber() == null || "".equals(userInfo.getPhoneNumber()))) {
@@ -2436,8 +2440,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
           userInfoMap.putNull("phoneNumber");
         }
 
-        // The Android SDK is missing the email property for the email provider, so we
-        // use UID
+        // The Android SDK is missing the email property for the email provider, so we use UID
         // instead
         if (EmailAuthProvider.PROVIDER_ID.equals(userInfo.getProviderId())
             && (userInfo.getEmail() == null || "".equals(userInfo.getEmail()))) {
@@ -2576,12 +2579,15 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
     if (actionCodeSettings.hasKey("android")) {
       ReadableMap android = actionCodeSettings.getMap("android");
-      boolean installApp = Objects.requireNonNull(android).hasKey("installApp") && android.getBoolean("installApp");
-      String minimumVersion = android.hasKey("minimumVersion") ? android.getString("minimumVersion") : null;
+      boolean installApp =
+          Objects.requireNonNull(android).hasKey("installApp") && android.getBoolean("installApp");
+      String minimumVersion =
+          android.hasKey("minimumVersion") ? android.getString("minimumVersion") : null;
       String packageName = android.getString("packageName");
 
-      builder = builder.setAndroidPackageName(
-          Objects.requireNonNull(packageName), installApp, minimumVersion);
+      builder =
+          builder.setAndroidPackageName(
+              Objects.requireNonNull(packageName), installApp, minimumVersion);
     }
 
     if (actionCodeSettings.hasKey("iOS")) {
@@ -2606,7 +2612,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     eventBody.putString("requestKey", requestKey);
     eventBody.putString("type", type);
     eventBody.putMap("state", state);
-    ReactNativeFirebaseEvent event = new ReactNativeFirebaseEvent("phone_auth_state_changed", eventBody, appName);
+    ReactNativeFirebaseEvent event =
+        new ReactNativeFirebaseEvent("phone_auth_state_changed", eventBody, appName);
     emitter.sendEvent(event);
   }
 
@@ -2630,7 +2637,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(instance);
       FirebaseUser user = firebaseAuth.getCurrentUser();
 
-      // noinspection ConstantConditions
+      //noinspection ConstantConditions
       appLanguage.put(appName, firebaseAuth.getLanguageCode());
 
       if (user != null) {
