@@ -8,12 +8,15 @@
  */
 
 import * as admin from 'firebase-admin';
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
+import { CallableRequest } from 'firebase-functions/v2/https';
 
 // Note: this will only work in a live environment, not locally via the Firebase emulator.
-export const fetchAppCheckToken = functions.https.onCall(async data => {
-  const { appId } = data;
-  const expireTimeMillis = Math.floor(Date.now() / 1000) + 60 * 60;
-  const result = await admin.appCheck().createToken(appId);
-  return { ...result, expireTimeMillis };
-});
+export const fetchAppCheckTokenV2 = functions.https.onCall(
+  async (req: CallableRequest<{ appId: string }>) => {
+    const { appId } = req.data;
+    const expireTimeMillis = Math.floor(Date.now() / 1000) + 60 * 60;
+    const result = await admin.appCheck().createToken(appId);
+    return { ...result, expireTimeMillis };
+  },
+);

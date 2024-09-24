@@ -1,21 +1,25 @@
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v2';
+import { CallableRequest } from 'firebase-functions/v2/https';
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
 //
-export const helloWorld = functions.https.onRequest((request, response) => {
+export const helloWorldV2 = functions.https.onRequest((_, response) => {
   functions.logger.info('Hello logs!', { structuredData: true });
   response.send('{ "data": "Hello from Firebase!" }');
 });
 
-export const sleeper = functions.https.onCall(async data => {
-  functions.logger.info('Sleeper function starting');
-  return await new Promise(() =>
-    setTimeout(() => functions.logger.info('done sleeping'), data?.delay ?? 3000),
-  );
-});
+export const sleeperV2 = functions.https.onCall(
+  async (req: CallableRequest<{ delay?: number }>) => {
+    functions.logger.info('Sleeper function starting');
+    return await new Promise(() => {
+      functions.logger.info('Sleeping this long: ' + (req.data.delay ?? 3000));
+      setTimeout(() => functions.logger.info('done sleeping'), req.data.delay ?? 3000);
+    });
+  },
+);
 
 export { testFunctionCustomRegion } from './testFunctionCustomRegion';
-export { testFunctionDefaultRegion } from './testFunctionDefaultRegion';
-export { testFunctionRemoteConfigUpdate } from './testFunctionRemoteConfigUpdate';
-export { fetchAppCheckToken } from './fetchAppCheckToken';
+export { testFunctionDefaultRegionV2 } from './testFunctionDefaultRegion';
+export { testFunctionRemoteConfigUpdateV2 } from './testFunctionRemoteConfigUpdate';
+export { fetchAppCheckTokenV2 } from './fetchAppCheckToken';
