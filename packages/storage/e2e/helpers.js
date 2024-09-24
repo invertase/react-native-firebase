@@ -1,6 +1,3 @@
-const testingUtils = require('@firebase/rules-unit-testing');
-const { getE2eTestProject, getE2eEmulatorHost } = require('../../app/e2e/helpers');
-
 // TODO make more unique?
 const ID = Date.now();
 
@@ -11,41 +8,6 @@ const WRITE_ONLY_NAME = 'writeOnly.jpeg';
 exports.seed = async function seed(path) {
   let leakDetectCurrent = global.RNFBDebugInTestLeakDetection;
   global.RNFBDebugInTestLeakDetection = false;
-  // Force the rules for the storage emulator to be what we expect
-  await testingUtils.initializeTestEnvironment({
-    projectId: getE2eTestProject(),
-    storage: {
-      rules: `rules_version = '2';
-      service firebase.storage {
-        match /b/react-native-firebase-testing.appspot.com/o {
-          match /{document=**} {
-            allow read, write: if false;
-          }
-      
-          match /${WRITE_ONLY_NAME} {
-            allow read: if false;
-            allow write: if true;
-          }
-      
-          match /${PATH_ROOT}/{document=**} {
-            allow read, write: if true;
-          }
-
-          match /${getE2eTestProject()}/{document=**} {
-            allow read, write: if true;
-          }
-        }
-        
-        match /b/react-native-firebase-testing/o {
-          match /only-second-bucket/{document=**} {
-            allow read, write: if true;
-          }
-        }
-      }`,
-      host: getE2eEmulatorHost(),
-      port: 9199,
-    },
-  });
 
   try {
     // Add a write only file
