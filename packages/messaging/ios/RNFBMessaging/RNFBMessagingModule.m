@@ -233,78 +233,58 @@ RCT_EXPORT_METHOD(requestPermission
     return;
   }
 
-  if (@available(iOS 10.0, *)) {
-    UNAuthorizationOptions options = UNAuthorizationOptionNone;
+  UNAuthorizationOptions options = UNAuthorizationOptionNone;
 
-    if ([permissions[@"alert"] isEqual:@(YES)]) {
-      options |= UNAuthorizationOptionAlert;
-    }
-
-    if ([permissions[@"badge"] isEqual:@(YES)]) {
-      options |= UNAuthorizationOptionBadge;
-    }
-
-    if ([permissions[@"sound"] isEqual:@(YES)]) {
-      options |= UNAuthorizationOptionSound;
-    }
-
-    if ([permissions[@"criticalAlert"] isEqual:@(YES)]) {
-      if (@available(iOS 12.0, *)) {
-        options |= UNAuthorizationOptionCriticalAlert;
-      }
-    }
-
-    if ([permissions[@"provisional"] isEqual:@(YES)]) {
-      if (@available(iOS 12.0, *)) {
-        options |= UNAuthorizationOptionProvisional;
-      }
-    }
-
-    if ([permissions[@"announcement"] isEqual:@(YES)]) {
-      if (@available(iOS 13.0, *)) {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
-        options |= UNAuthorizationOptionAnnouncement;
-#endif
-      }
-    }
-
-    if ([permissions[@"carPlay"] isEqual:@(YES)]) {
-      options |= UNAuthorizationOptionCarPlay;
-    }
-
-    if ([permissions[@"providesAppNotificationSettings"] isEqual:@(YES)]) {
-      if (@available(iOS 12, macOS 10.14, macCatalyst 13, tvOS 12, watchOS 5, *)) {
-        options |= UNAuthorizationOptionProvidesAppNotificationSettings;
-      }
-    }
-
-    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-    [center requestAuthorizationWithOptions:options
-                          completionHandler:^(BOOL granted, NSError *_Nullable error) {
-                            if (error) {
-                              [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-                            } else {
-                              // if we do not attempt to register immediately, registration fails
-                              // later unknown reason why, but this was the only difference between
-                              // using a react-native-permissions vs built-in permissions request in
-                              // a sequence of "request permissions" --> "register for messages" you
-                              // only want to request permission if you want to register for
-                              // messages, so we register directly now - see #7272
-                              dispatch_async(dispatch_get_main_queue(), ^{
-                                [[UIApplication sharedApplication] registerForRemoteNotifications];
-                              });
-                              [self hasPermission:resolve:reject];
-                            }
-                          }];
-  } else {
-    [RNFBSharedUtils
-        rejectPromiseWithUserInfo:reject
-                         userInfo:[@{
-                           @"code" : @"unsupported-platform-version",
-                           @"message" : @"requestPermission call failed; minimum supported version "
-                                        @"requirement not met (iOS 10)."
-                         } mutableCopy]];
+  if ([permissions[@"alert"] isEqual:@(YES)]) {
+    options |= UNAuthorizationOptionAlert;
   }
+
+  if ([permissions[@"badge"] isEqual:@(YES)]) {
+    options |= UNAuthorizationOptionBadge;
+  }
+
+  if ([permissions[@"sound"] isEqual:@(YES)]) {
+    options |= UNAuthorizationOptionSound;
+  }
+
+  if ([permissions[@"criticalAlert"] isEqual:@(YES)]) {
+    options |= UNAuthorizationOptionCriticalAlert;
+  }
+
+  if ([permissions[@"provisional"] isEqual:@(YES)]) {
+    options |= UNAuthorizationOptionProvisional;
+  }
+
+  if ([permissions[@"announcement"] isEqual:@(YES)]) {
+    options |= UNAuthorizationOptionAnnouncement;
+  }
+
+  if ([permissions[@"carPlay"] isEqual:@(YES)]) {
+    options |= UNAuthorizationOptionCarPlay;
+  }
+
+  if ([permissions[@"providesAppNotificationSettings"] isEqual:@(YES)]) {
+    options |= UNAuthorizationOptionProvidesAppNotificationSettings;
+  }
+
+  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+  [center requestAuthorizationWithOptions:options
+                        completionHandler:^(BOOL granted, NSError *_Nullable error) {
+                          if (error) {
+                            [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+                          } else {
+                            // if we do not attempt to register immediately, registration fails
+                            // later unknown reason why, but this was the only difference between
+                            // using a react-native-permissions vs built-in permissions request in
+                            // a sequence of "request permissions" --> "register for messages" you
+                            // only want to request permission if you want to register for
+                            // messages, so we register directly now - see #7272
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                              [[UIApplication sharedApplication] registerForRemoteNotifications];
+                            });
+                            [self hasPermission:resolve:reject];
+                          }
+                        }];
 }
 
 RCT_EXPORT_METHOD(registerForRemoteNotifications
@@ -320,59 +300,45 @@ RCT_EXPORT_METHOD(registerForRemoteNotifications
   DLog(@"RNFBMessaging registerForRemoteNotifications ARM64 Simulator detected, attempting real "
        @"registration. macOS13+ / iOS16+ / M1 mac required or will timeout.")
 #endif
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunreachable-code"
-      if (@available(iOS 10.0, *)) {
-#pragma pop
-    if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
-      DLog(@"RNFBMessaging registerForRemoteNotifications - already registered.");
-      resolve(@([RCTConvert BOOL:@(YES)]));
-      return;
-    } else {
-      [[RNFBMessagingAppDelegate sharedInstance] setPromiseResolve:resolve andPromiseReject:reject];
-    }
-
-    // Apple docs recommend that registerForRemoteNotifications is always called on app start
-    // regardless of current status
-    dispatch_async(dispatch_get_main_queue(), ^{
-      // Sometimes the registration never completes, which deserves separate attention in other
-      // areas. This area should protect itself against hanging forever regardless. Just in case,
-      // check in after a delay and cleanup if required
-      dispatch_after(
-          dispatch_time(DISPATCH_TIME_NOW, 10.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            if ([RNFBMessagingAppDelegate sharedInstance].registerPromiseResolver != nil) {
-              // if we got here and resolve/reject are still set, unset, log failure, reject
-              DLog(@"RNFBMessaging dispatch_after block: we appear to have timed out. Rejecting");
-              [[RNFBMessagingAppDelegate sharedInstance] setPromiseResolve:nil
-                                                          andPromiseReject:nil];
-
-              [RNFBSharedUtils
-                  rejectPromiseWithUserInfo:reject
-                                   userInfo:[@{
-                                     @"code" : @"unknown-error",
-                                     @"message" :
-                                         @"registerDeviceForRemoteMessages requested but "
-                                         @"system did not respond. Possibly missing permission."
-                                   } mutableCopy]];
-              return;
-            } else {
-              DLog(@"RNFBMessaging dispatch_after: registerDeviceForRemoteMessages handled.");
-              return;
-            }
-          });
-
-      [[UIApplication sharedApplication] registerForRemoteNotifications];
-    });
+      if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
+    DLog(@"RNFBMessaging registerForRemoteNotifications - already registered.");
+    resolve(@([RCTConvert BOOL:@(YES)]));
+    return;
   }
   else {
-    [RNFBSharedUtils
-        rejectPromiseWithUserInfo:reject
-                         userInfo:[@{
-                           @"code" : @"unsupported-platform-version",
-                           @"message" : @"registerDeviceForRemoteMessages call failed; minimum "
-                                        @"supported version requirement not met (iOS 10)."
-                         } mutableCopy]];
+    [[RNFBMessagingAppDelegate sharedInstance] setPromiseResolve:resolve andPromiseReject:reject];
   }
+
+  // Apple docs recommend that registerForRemoteNotifications is always called on app start
+  // regardless of current status
+  dispatch_async(dispatch_get_main_queue(), ^{
+    // Sometimes the registration never completes, which deserves separate attention in other
+    // areas. This area should protect itself against hanging forever regardless. Just in case,
+    // check in after a delay and cleanup if required
+    dispatch_after(
+        dispatch_time(DISPATCH_TIME_NOW, 10.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+          if ([RNFBMessagingAppDelegate sharedInstance].registerPromiseResolver != nil) {
+            // if we got here and resolve/reject are still set, unset, log failure, reject
+            DLog(@"RNFBMessaging dispatch_after block: we appear to have timed out. Rejecting");
+            [[RNFBMessagingAppDelegate sharedInstance] setPromiseResolve:nil andPromiseReject:nil];
+
+            [RNFBSharedUtils
+                rejectPromiseWithUserInfo:reject
+                                 userInfo:[@{
+                                   @"code" : @"unknown-error",
+                                   @"message" :
+                                       @"registerDeviceForRemoteMessages requested but "
+                                       @"system did not respond. Possibly missing permission."
+                                 } mutableCopy]];
+            return;
+          } else {
+            DLog(@"RNFBMessaging dispatch_after: registerDeviceForRemoteMessages handled.");
+            return;
+          }
+        });
+
+    [[UIApplication sharedApplication] registerForRemoteNotifications];
+  });
 }
 
 RCT_EXPORT_METHOD(unregisterForRemoteNotifications
@@ -383,41 +349,27 @@ RCT_EXPORT_METHOD(unregisterForRemoteNotifications
 }
 
 RCT_EXPORT_METHOD(hasPermission : (RCTPromiseResolveBlock)resolve : (RCTPromiseRejectBlock)reject) {
-  if (@available(iOS 10.0, *)) {
-    [[UNUserNotificationCenter currentNotificationCenter]
-        getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *_Nonnull settings) {
-          NSNumber *authorizedStatus = @-1;
-          if (settings.authorizationStatus == UNAuthorizationStatusNotDetermined) {
-            authorizedStatus = @-1;
-          } else if (settings.authorizationStatus == UNAuthorizationStatusDenied) {
-            authorizedStatus = @0;
-          } else if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
-            authorizedStatus = @1;
-          }
+  [[UNUserNotificationCenter currentNotificationCenter]
+      getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *_Nonnull settings) {
+        NSNumber *authorizedStatus = @-1;
+        if (settings.authorizationStatus == UNAuthorizationStatusNotDetermined) {
+          authorizedStatus = @-1;
+        } else if (settings.authorizationStatus == UNAuthorizationStatusDenied) {
+          authorizedStatus = @0;
+        } else if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
+          authorizedStatus = @1;
+        } else if (settings.authorizationStatus == UNAuthorizationStatusProvisional) {
+          authorizedStatus = @2;
+        }
 
-          if (@available(iOS 12.0, *)) {
-            if (settings.authorizationStatus == UNAuthorizationStatusProvisional) {
-              authorizedStatus = @2;
-            }
+        if (@available(iOS 14.0, macCatalyst 14.0, *)) {
+          if (settings.authorizationStatus == UNAuthorizationStatusEphemeral) {
+            authorizedStatus = @3;
           }
+        }
 
-          if (@available(iOS 14.0, macCatalyst 14.0, *)) {
-            if (settings.authorizationStatus == UNAuthorizationStatusEphemeral) {
-              authorizedStatus = @3;
-            }
-          }
-
-          resolve(authorizedStatus);
-        }];
-  } else {
-    [RNFBSharedUtils
-        rejectPromiseWithUserInfo:reject
-                         userInfo:[@{
-                           @"code" : @"unsupported-platform-version",
-                           @"message" : @"hasPermission call failed; minimum supported version "
-                                        @"requirement not met (iOS 10)."
-                         } mutableCopy]];
-  }
+        resolve(authorizedStatus);
+      }];
 }
 
 RCT_EXPORT_METHOD(subscribeToTopic
