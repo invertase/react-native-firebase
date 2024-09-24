@@ -57,20 +57,11 @@ RCT_EXPORT_MODULE();
   if ([localFilePath hasPrefix:@"assets-library://"] || [localFilePath hasPrefix:@"ph://"]) {
     if ([localFilePath hasPrefix:@"assets-library://"]) {
       NSURL *localFile = [[NSURL alloc] initWithString:localFilePath];
-      if (@available(macOS 11, iOS 12, *)) {
-        static BOOL hasWarned = NO;
-        if (!hasWarned) {
-          NSLog(@"'assets-library://' & 'ph://' URLs are not supported in Catalyst-based targets "
-                @"or iOS 12 and higher; returning nil (future warnings will be suppressed)");
-          hasWarned = YES;
-        }
-      } else {
-#if (!TARGET_OS_MACCATALYST)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        asset = [[PHAsset fetchAssetsWithALAssetURLs:@[ localFile ] options:nil] firstObject];
-#pragma clang diagnostic pop
-#endif
+      static BOOL hasWarned = NO;
+      if (!hasWarned) {
+        NSLog(@"'assets-library://' & 'ph://' URLs are not supported in Catalyst-based targets "
+              @"or iOS 12 and higher; returning nil (future warnings will be suppressed)");
+        hasWarned = YES;
       }
     } else {
       NSString *assetId = [localFilePath substringFromIndex:@"ph://".length];

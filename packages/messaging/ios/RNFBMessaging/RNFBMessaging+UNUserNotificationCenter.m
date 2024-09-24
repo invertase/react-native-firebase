@@ -172,9 +172,7 @@ struct {
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
     openSettingsForNotification:(nullable UNNotification *)notification {
   if (_originalDelegate != nil && originalDelegateRespondsTo.openSettingsForNotification) {
-    if (@available(iOS 12.0, *)) {
-      [_originalDelegate userNotificationCenter:center openSettingsForNotification:notification];
-    }
+    [_originalDelegate userNotificationCenter:center openSettingsForNotification:notification];
   } else {
     NSDictionary *notificationDict = [RNFBMessagingSerializer notificationToDict:notification];
     [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_settings_for_notification_opened"
