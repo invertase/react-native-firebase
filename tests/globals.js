@@ -191,7 +191,7 @@ global.FirebaseHelpers = {
   },
   async fetchAppCheckToken() {
     const tokenRequest = await fetch(
-      'https://us-central1-react-native-firebase-testing.cloudfunctions.net/fetchAppCheckToken',
+      'https://us-central1-react-native-firebase-testing.cloudfunctions.net/fetchAppCheckTokenV2',
       {
         method: 'POST',
         headers: {

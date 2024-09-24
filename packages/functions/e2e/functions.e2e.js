@@ -136,7 +136,7 @@ describe('functions() modular', function () {
 
         functionsForCustomUrl._customUrlOrRegion.should.equal(customUrl);
 
-        const functionRunner = functionsForCustomUrl.httpsCallable('testFunctionDefaultRegion');
+        const functionRunner = functionsForCustomUrl.httpsCallable('testFunctionDefaultRegionV2');
 
         const response = await functionRunner();
         response.data.should.equal('null');
@@ -146,7 +146,7 @@ describe('functions() modular', function () {
     describe('emulator', function () {
       it('configures functions emulator via deprecated method with no port', async function () {
         const region = 'us-central1';
-        const fnName = 'helloWorld';
+        const fnName = 'helloWorldV2';
         const functions = firebase.app().functions(region);
         functions.useFunctionsEmulator('http://localhost');
         const response = await functions.httpsCallable(fnName)();
@@ -155,7 +155,7 @@ describe('functions() modular', function () {
 
       it('configures functions emulator via deprecated method with port', async function () {
         const region = 'us-central1';
-        const fnName = 'helloWorld';
+        const fnName = 'helloWorldV2';
         const functions = firebase.app().functions(region);
         functions.useFunctionsEmulator('http://localhost:5001');
         const response = await functions.httpsCallable(fnName)();
@@ -164,7 +164,7 @@ describe('functions() modular', function () {
 
       it('configures functions emulator', async function () {
         const region = 'us-central1';
-        const fnName = 'helloWorld';
+        const fnName = 'helloWorldV2';
         const functions = firebase.app().functions(region);
         functions.useEmulator('localhost', 5001);
         const response = await functions.httpsCallable(fnName)();
@@ -181,7 +181,7 @@ describe('functions() modular', function () {
         const functionRunner = firebase
           .functions()
           .httpsCallableFromUrl(
-            `http://${hostname}:5001/react-native-firebase-testing/us-central1/helloWorld`,
+            `http://${hostname}:5001/react-native-firebase-testing/us-central1/helloWorldV2`,
           );
         const response = await functionRunner();
         response.data.should.equal('Hello from Firebase!');
@@ -190,37 +190,37 @@ describe('functions() modular', function () {
 
     describe('httpsCallable(fnName)(args)', function () {
       it('accepts primitive args: undefined', async function () {
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
+        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
         const response = await functionRunner();
         response.data.should.equal('null');
       });
 
       it('accepts primitive args: string', async function () {
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
+        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
         const response = await functionRunner('hello');
         response.data.should.equal('string');
       });
 
       it('accepts primitive args: number', async function () {
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
+        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
         const response = await functionRunner(123);
         response.data.should.equal('number');
       });
 
       it('accepts primitive args: boolean', async function () {
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
+        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
         const response = await functionRunner(true);
         response.data.should.equal('boolean');
       });
 
       it('accepts primitive args: null', async function () {
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
+        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
         const response = await functionRunner(null);
         response.data.should.equal('null');
       });
 
       it('accepts array args', async function () {
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
+        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
         const response = await functionRunner([1, 2, 3, 4]);
         response.data.should.equal('array');
       });
@@ -228,7 +228,7 @@ describe('functions() modular', function () {
       it('accepts object args', async function () {
         const type = 'object';
         const inputData = SAMPLE_DATA[type];
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
+        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
         const { data: outputData } = await functionRunner({
           type,
           inputData,
@@ -239,7 +239,7 @@ describe('functions() modular', function () {
       it('accepts complex nested objects', async function () {
         const type = 'deepObject';
         const inputData = SAMPLE_DATA[type];
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
+        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
         const { data: outputData } = await functionRunner({
           type,
           inputData,
@@ -250,7 +250,7 @@ describe('functions() modular', function () {
       it('accepts complex nested arrays', async function () {
         const type = 'deepArray';
         const inputData = SAMPLE_DATA[type];
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
+        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
         const { data: outputData } = await functionRunner({
           type,
           inputData,
@@ -261,7 +261,7 @@ describe('functions() modular', function () {
 
     describe('HttpsError', function () {
       it('errors return instance of HttpsError', async function () {
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
+        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
 
         try {
           await functionRunner({});
@@ -278,7 +278,7 @@ describe('functions() modular', function () {
       it('HttpsError.details -> allows returning complex data', async function () {
         let type = 'deepObject';
         let inputData = SAMPLE_DATA[type];
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
+        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
         try {
           await functionRunner({
             type,
@@ -317,7 +317,7 @@ describe('functions() modular', function () {
       it('HttpsError.details -> allows returning primitives', async function () {
         let type = 'number';
         let inputData = SAMPLE_DATA[type];
-        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
+        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
         try {
           await functionRunner({
             type,
@@ -388,7 +388,7 @@ describe('functions() modular', function () {
       });
 
       it('HttpsCallableOptions.timeout will error when timeout is exceeded', async function () {
-        const functionRunner = firebase.functions().httpsCallable('sleeper', { timeout: 1000 });
+        const functionRunner = firebase.functions().httpsCallable('sleeperV2', { timeout: 1000 });
         try {
           await functionRunner({ delay: 3000 });
           return Promise.reject(new Error('Did not throw an Error.'));
@@ -472,7 +472,7 @@ describe('functions() modular', function () {
 
       functionsForCustomUrl._customUrlOrRegion.should.equal(customUrl);
 
-      const functionRunner = functionsForCustomUrl.httpsCallable('testFunctionDefaultRegion');
+      const functionRunner = functionsForCustomUrl.httpsCallable('testFunctionDefaultRegionV2');
 
       const response = await functionRunner();
       response.data.should.equal('null');
@@ -482,7 +482,7 @@ describe('functions() modular', function () {
       it('configures functions emulator via deprecated method with no port', async function () {
         const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
         const region = 'us-central1';
-        const fnName = 'helloWorld';
+        const fnName = 'helloWorldV2';
         // const functions = firebase.app().functions(region);
         const functions = getFunctions(firebase.app(), region);
         connectFunctionsEmulator(functions, 'localhost', 5001);
@@ -493,7 +493,7 @@ describe('functions() modular', function () {
       it('configures functions emulator via deprecated method with port', async function () {
         const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
         const region = 'us-central1';
-        const fnName = 'helloWorld';
+        const fnName = 'helloWorldV2';
         const functions = getFunctions(firebase.app(), region);
         connectFunctionsEmulator(functions, 'localhost', 5001);
         const response = await httpsCallable(functions, fnName)();
@@ -512,7 +512,7 @@ describe('functions() modular', function () {
         const functions = getFunctions(firebase.app());
         const functionRunner = httpsCallableFromUrl(
           functions,
-          `http://${hostname}:5001/react-native-firebase-testing/us-central1/helloWorld`,
+          `http://${hostname}:5001/react-native-firebase-testing/us-central1/helloWorldV2`,
         );
         const response = await functionRunner();
         response.data.should.equal('Hello from Firebase!');
@@ -524,7 +524,7 @@ describe('functions() modular', function () {
         const { getFunctions, httpsCallable } = functionsModular;
         const functionRunner = httpsCallable(
           getFunctions(firebase.app()),
-          'testFunctionDefaultRegion',
+          'testFunctionDefaultRegionV2',
         );
         const response = await functionRunner();
         response.data.should.equal('null');
@@ -534,7 +534,7 @@ describe('functions() modular', function () {
         const { getFunctions, httpsCallable } = functionsModular;
         const functionRunner = httpsCallable(
           getFunctions(firebase.app()),
-          'testFunctionDefaultRegion',
+          'testFunctionDefaultRegionV2',
         );
         const response = await functionRunner('hello');
         response.data.should.equal('string');
@@ -544,7 +544,7 @@ describe('functions() modular', function () {
         const { getFunctions, httpsCallable } = functionsModular;
         const functionRunner = httpsCallable(
           getFunctions(firebase.app()),
-          'testFunctionDefaultRegion',
+          'testFunctionDefaultRegionV2',
         );
         const response = await functionRunner(123);
         response.data.should.equal('number');
@@ -554,7 +554,7 @@ describe('functions() modular', function () {
         const { getFunctions, httpsCallable } = functionsModular;
         const functionRunner = httpsCallable(
           getFunctions(firebase.app()),
-          'testFunctionDefaultRegion',
+          'testFunctionDefaultRegionV2',
         );
         const response = await functionRunner(true);
         response.data.should.equal('boolean');
@@ -564,7 +564,7 @@ describe('functions() modular', function () {
         const { getFunctions, httpsCallable } = functionsModular;
         const functionRunner = httpsCallable(
           getFunctions(firebase.app()),
-          'testFunctionDefaultRegion',
+          'testFunctionDefaultRegionV2',
         );
         const response = await functionRunner(null);
         response.data.should.equal('null');
@@ -574,7 +574,7 @@ describe('functions() modular', function () {
         const { getFunctions, httpsCallable } = functionsModular;
         const functionRunner = httpsCallable(
           getFunctions(firebase.app()),
-          'testFunctionDefaultRegion',
+          'testFunctionDefaultRegionV2',
         );
         const response = await functionRunner([1, 2, 3, 4]);
         response.data.should.equal('array');
@@ -586,7 +586,7 @@ describe('functions() modular', function () {
         const inputData = SAMPLE_DATA[type];
         const functionRunner = httpsCallable(
           getFunctions(firebase.app()),
-          'testFunctionDefaultRegion',
+          'testFunctionDefaultRegionV2',
         );
         const { data: outputData } = await functionRunner({
           type,
@@ -601,7 +601,7 @@ describe('functions() modular', function () {
         const inputData = SAMPLE_DATA[type];
         const functionRunner = httpsCallable(
           getFunctions(firebase.app()),
-          'testFunctionDefaultRegion',
+          'testFunctionDefaultRegionV2',
         );
         const { data: outputData } = await functionRunner({
           type,
@@ -616,7 +616,7 @@ describe('functions() modular', function () {
         const inputData = SAMPLE_DATA[type];
         const functionRunner = httpsCallable(
           getFunctions(firebase.app()),
-          'testFunctionDefaultRegion',
+          'testFunctionDefaultRegionV2',
         );
         const { data: outputData } = await functionRunner({
           type,
@@ -631,7 +631,7 @@ describe('functions() modular', function () {
         const { getFunctions, httpsCallable } = functionsModular;
         const functionRunner = httpsCallable(
           getFunctions(firebase.app()),
-          'testFunctionDefaultRegion',
+          'testFunctionDefaultRegionV2',
         );
 
         try {
@@ -652,7 +652,7 @@ describe('functions() modular', function () {
         const { getFunctions, httpsCallable } = functionsModular;
         const functionRunner = httpsCallable(
           getFunctions(firebase.app()),
-          'testFunctionDefaultRegion',
+          'testFunctionDefaultRegionV2',
         );
         try {
           await functionRunner({
@@ -695,7 +695,7 @@ describe('functions() modular', function () {
         let inputData = SAMPLE_DATA[type];
         const functionRunner = httpsCallable(
           getFunctions(firebase.app()),
-          'testFunctionDefaultRegion',
+          'testFunctionDefaultRegionV2',
         );
         try {
           await functionRunner({
@@ -769,7 +769,7 @@ describe('functions() modular', function () {
       it('HttpsCallableOptions.timeout will error when timeout is exceeded', async function () {
         const { getFunctions, httpsCallable } = functionsModular;
         const functions = getFunctions(firebase.app());
-        const functionRunner = httpsCallable(functions, 'sleeper', { timeout: 1000 });
+        const functionRunner = httpsCallable(functions, 'sleeperV2', { timeout: 1000 });
 
         try {
           await functionRunner({ delay: 3000 });
