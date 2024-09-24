@@ -90,6 +90,7 @@ function loadTests(_) {
       }
       if (platformSupportedModules.includes('storage')) {
         firebase.storage().useEmulator('localhost', 9199);
+        firebase.app('secondaryFromNative').storage().useEmulator('localhost', 9199);
         firebase.app().storage('gs://react-native-firebase-testing').useEmulator('localhost', 9199);
       }
     });
