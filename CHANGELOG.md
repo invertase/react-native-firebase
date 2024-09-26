@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.0.0](https://github.com/invertase/react-native-firebase/compare/v20.5.0...v21.0.0) (2024-09-26)
+
+### ⚠ BREAKING CHANGES
+
+- Update Firebase iOS SDK version to v11
+
+### Features
+
+- Update Firebase iOS SDK version to v11 ([8bad077](https://github.com/invertase/react-native-firebase/commit/8bad0774a8f1a201d19cf8b4a914bfaf7a30c6c7))
+
+### Bug Fixes
+
+- **android, sdk:** adopt firebase-android-sdk 33.3.0 ([37bfd72](https://github.com/invertase/react-native-firebase/commit/37bfd7287dabefbb991a146090b73b7755126f04))
+- **crashlytics, ios:** dependencies init param removed upstream in v11+ ([73b596c](https://github.com/invertase/react-native-firebase/commit/73b596c062d67185868de697732378beab198397))
+- **firestore, ios:** remove nanopb transitive dep from podspec ([fbc9dd7](https://github.com/invertase/react-native-firebase/commit/fbc9dd791ad318c9faa5ac4be6c431d0d67f2daa))
+
 ## [20.5.0](https://github.com/invertase/react-native-firebase/compare/v20.4.0...v20.5.0) (2024-09-11)
 
 ### Features

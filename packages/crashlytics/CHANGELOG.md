@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.0.0](https://github.com/invertase/react-native-firebase/compare/v20.5.0...v21.0.0) (2024-09-26)
+
+### Bug Fixes
+
+- **crashlytics, ios:** dependencies init param removed upstream in v11+ ([73b596c](https://github.com/invertase/react-native-firebase/commit/73b596c062d67185868de697732378beab198397))
+
 ## [20.5.0](https://github.com/invertase/react-native-firebase/compare/v20.4.0...v20.5.0) (2024-09-11)
 
 **Note:** Version bump only for package @react-native-firebase/crashlytics

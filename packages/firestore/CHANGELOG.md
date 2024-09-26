@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.0.0](https://github.com/invertase/react-native-firebase/compare/v20.5.0...v21.0.0) (2024-09-26)
+
+### Bug Fixes
+
+- **firestore, ios:** remove nanopb transitive dep from podspec ([fbc9dd7](https://github.com/invertase/react-native-firebase/commit/fbc9dd791ad318c9faa5ac4be6c431d0d67f2daa))
+
 ## [20.5.0](https://github.com/invertase/react-native-firebase/compare/v20.4.0...v20.5.0) (2024-09-11)
 
 **Note:** Version bump only for package @react-native-firebase/firestore
