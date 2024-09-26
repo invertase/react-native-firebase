@@ -118,6 +118,12 @@ if (awesomeNewFeature.asNumber() === 5) {
 if (awesomeNewFeature.asBoolean() === true) {
   enableAwesomeNewFeature();
 }
+// resolves value to object
+// if the value is not a valid JSON string, the value will be an null
+const awesomeFeatureConfig = awesomeNewFeature.asJson();
+if (awesomeFeatureConfig && awesomeFeatureConfig.enabled === true) {
+  enableAwesomeNewFeature();
+}
 ```
 
 The API also provides a `getAll` method to read all parameters at once rather than by key:

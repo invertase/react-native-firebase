@@ -125,6 +125,10 @@ class FirebaseConfigModule extends FirebaseModule {
     return this.getValue(key).asString();
   }
 
+  getJson(key) {
+    return this.getValue(key).asJson();
+  }
+
   getAll() {
     const values = {};
     Object.keys(this._values).forEach(key => (values[key] = this.getValue(key)));
