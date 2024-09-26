@@ -9,6 +9,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - Update Firebase iOS SDK version to v11
 
+* requires ios minimum target 13.0 (was 11.0)
+* requires macOS minimum target 10.15 (was 10.13)
+
 ### Features
 
 - Update Firebase iOS SDK version to v11 ([8bad077](https://github.com/invertase/react-native-firebase/commit/8bad0774a8f1a201d19cf8b4a914bfaf7a30c6c7))
