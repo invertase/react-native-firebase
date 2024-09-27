@@ -16,20 +16,28 @@
 import struct from '@react-native-firebase/app/lib/common/struct';
 
 const Item = struct({
+  affiliation: 'string?',
+  coupon: 'string?',
+  creative_name: 'string?',
+  creative_name: 'string?',
+  discount: 'string?',
+  index: 'number?',
   item_brand: 'string?',
-  item_id: 'string?',
-  item_name: 'string?',
   item_category: 'string?',
   item_category2: 'string?',
   item_category3: 'string?',
   item_category4: 'string?',
   item_category5: 'string?',
+  item_id: 'string?',
   item_list_id: 'string?',
   item_list_name: 'string?',
-  item_location_id: 'string?',
+  item_name: 'string?',
   item_variant: 'string?',
-  quantity: 'number?',
+  location_id: 'string?',
   price: 'number?',
+  promotion_id: 'string?',
+  promotion_name: 'string?',
+  quantity: 'number?',
 });
 
 export const ScreenView = struct.interface({
@@ -120,7 +128,7 @@ export const PostScore = struct({
   character: 'string?',
 });
 
-export const Refund = struct({
+export const Purchase = struct.interface({
   affiliation: 'string?',
   coupon: 'string?',
   currency: 'string?',
@@ -131,7 +139,7 @@ export const Refund = struct({
   transaction_id: 'string?',
 });
 
-export const Purchase = struct.interface({
+export const Refund = struct({
   affiliation: 'string?',
   coupon: 'string?',
   currency: 'string?',
