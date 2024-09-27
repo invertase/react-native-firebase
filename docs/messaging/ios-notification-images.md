@@ -38,6 +38,11 @@ target 'ImageNotification' do
 end
 ```
 
+Make sure to set this
+```
+ENABLE_USER_SCRIPT_SANDBOXING = NO;
+```
+
 - Make sure to change the version number `VERSION_NUMBER` with the currently installed version (check your Podfile.lock)
 - Install or update your pods using `pod install` from the `ios` folder
 
