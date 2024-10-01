@@ -22,7 +22,7 @@ import perf from '@react-native-firebase/perf';
 
 axios.interceptors.request.use(async function (config) {
   try {
-    const httpMetric = perf().newHttpMetric(config.url, config.method);
+    const httpMetric = perf().newHttpMetric(config.url, config.method.toUpperCase());
     config.metadata = { httpMetric };
 
     // add any extra metric attributes, if required
