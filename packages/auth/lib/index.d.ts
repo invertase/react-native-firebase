@@ -1477,7 +1477,7 @@ export namespace FirebaseAuthTypes {
      * await firebase.auth().currentUser.updatePassword('654321');
      * ```
      *
-     * > This will Promise reject is the user is anonymous.
+     * > This will Promise reject if the user is anonymous.
      *
      * @error auth/weak-password Thrown if the password is not strong enough.
      * @error auth/requires-recent-login Thrown if the user's last sign-in time does not meet the security threshold.
@@ -1502,7 +1502,7 @@ export namespace FirebaseAuthTypes {
      * await firebase.auth().currentUser.updatePhoneNumber(credential);
      * ```
      *
-     * > This will Promise reject is the user is anonymous.
+     * > This will Promise reject if the user is anonymous.
      *
      * @error auth/invalid-verification-code Thrown if the verification code of the credential is not valid.
      * @error auth/invalid-verification-id Thrown if the verification ID of the credential is not valid.
