@@ -183,13 +183,13 @@ jobs:
       - name: Record App Video
         # With a little delay so the detox test below has time to spawn it, missing the first part of boot is fine
         continue-on-error: true
-        run: nohup sh -c "sleep 30 && xcrun simctl io booted recordVideo --codec=h264 -f simulator.mp4 2>&1 &"
+        run: nohup sh -c "sleep 110 && xcrun simctl io booted recordVideo --codec=h264 -f simulator.mp4 2>&1 &"
 
       - name: Create Simulator Log
         # With a little delay so the detox test below has time to spawn it, missing the first part of boot is fine
         # If you boot the simulator separately from detox, some other race fails and detox testee never sends ready to proxy
         continue-on-error: true
-        run: nohup sh -c "sleep 30 && xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &"
+        run: nohup sh -c "sleep 110 && xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &"
 
       - name: Detox Test
         timeout-minutes: 50
@@ -197,6 +197,7 @@ jobs:
 
       - name: Stop App Video
         if: always()
+        continue-on-error: true
         run: killall -INT simctl
 
       - name: Upload App Video
