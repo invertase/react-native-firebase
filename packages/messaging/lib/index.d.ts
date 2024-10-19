@@ -147,6 +147,46 @@ export namespace FirebaseMessagingTypes {
      * Options for features provided by the FCM SDK for Web.
      */
     fcmOptions: FcmOptions;
+
+    /**
+     * Priority - android-specific, undefined on non-android platforms, default PRIORITY_UNKNOWN
+     */
+    priority?: MessagePriority;
+
+    /**
+     * Original priority - android-specific, undefined on non-android platforms, default PRIORITY_UNKNOWN
+     */
+    originalPriority?: MessagePriority;
+  }
+
+  /**
+   * Represents the priority of a RemoteMessage
+   *
+   * Note: this is an android-specific property of RemoteMessages
+   *
+   * See https://github.com/firebase/firebase-android-sdk/blob/b6d01070d246b74f02c42da5691f99f52763e48b/firebase-messaging/src/main/java/com/google/firebase/messaging/RemoteMessage.java#L57-L64
+   *
+   * Example:
+   *
+   * ```js
+   * firebase.messaging.MessagePriority.PRIORITY_NORMAL;
+   * ```
+   */
+  export enum MessagePriority {
+    /**
+     * Unknown priority, this will be returned as the default on non-android platforms
+     */
+    PRIORITY_UNKNOWN = 0,
+
+    /**
+     * High priority - Activities may start foreground services if they receive high priority messages
+     */
+    PRIORITY_HIGH = 1,
+
+    /**
+     * Normal priority - Activities have restrictions and may only perform unobtrusive actions on receipt
+     */
+    PRIORITY_NORMAL = 2,
   }
 
   /**

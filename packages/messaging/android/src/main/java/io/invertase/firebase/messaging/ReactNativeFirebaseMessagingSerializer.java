@@ -21,6 +21,8 @@ public class ReactNativeFirebaseMessagingSerializer {
   private static final String KEY_ERROR = "error";
   private static final String KEY_TO = "to";
   private static final String KEY_TTL = "ttl";
+  private static final String KEY_PRIORITY = "priority";
+  private static final String KEY_ORIGINAL_PRIORITY = "originalPriority";
   private static final String EVENT_MESSAGE_SENT = "messaging_message_sent";
   private static final String EVENT_MESSAGES_DELETED = "messaging_message_deleted";
   private static final String EVENT_MESSAGE_RECEIVED = "messaging_message_received";
@@ -99,6 +101,8 @@ public class ReactNativeFirebaseMessagingSerializer {
     messageMap.putMap(KEY_DATA, dataMap);
     messageMap.putDouble(KEY_TTL, remoteMessage.getTtl());
     messageMap.putDouble(KEY_SENT_TIME, remoteMessage.getSentTime());
+    messageMap.putInt(KEY_PRIORITY, remoteMessage.getPriority());
+    messageMap.putInt(KEY_ORIGINAL_PRIORITY, remoteMessage.getOriginalPriority());
 
     if (remoteMessage.getNotification() != null) {
       messageMap.putMap(
