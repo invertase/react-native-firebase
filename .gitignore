@@ -576,3 +576,6 @@ website/public
 !**/.yarn/releases
 !**/.yarn/sdks
 !**/.yarn/versions
+
+# Typescript items
+*.tsbuildinfo
