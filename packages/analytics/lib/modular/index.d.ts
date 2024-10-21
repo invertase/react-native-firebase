@@ -1179,7 +1179,7 @@ export function initiateOnDeviceConversionMeasurementWithEmailAddress(
 export function initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
   analytics: Analytics,
   hashedEmailAddress: string,
-): Poromise<void>;
+): Promise<void>;
 
 /**
  * Start privacy-sensitive on-device conversion management.

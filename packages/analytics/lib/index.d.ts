@@ -1775,7 +1775,7 @@ export namespace FirebaseAnalyticsTypes {
      */
     initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
       hashedEmailAddress: string,
-    ): Poromise<void>;
+    ): Promise<void>;
 
     /**
      * Start privacy-sensitive on-device conversion management.
