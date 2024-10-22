@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  s.dependency          'Firebase/Storage', firebase_sdk_version
+  s.dependency          'Firebase/Storage', "<= #{firebase_sdk_version}"
 
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"
