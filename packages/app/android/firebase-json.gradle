@@ -4,16 +4,22 @@ import groovy.json.JsonSlurper
 
 String fileName = 'firebase.json'
 String jsonRoot = 'react-native'
+String customFirebaseJsonDir = rootProject.ext.get("react-native")["options"]["firebaseJsonDir"]
 
 File jsonFile = null
-File parentDir = rootProject.projectDir
 
-for (int i = 0; i <= 3; i++) {
-  if (parentDir == null) { break }
-  parentDir = parentDir.parentFile
-  if (parentDir != null) {
-    jsonFile = new File(parentDir, fileName)
-    if (jsonFile.exists()) { break }
+if (customFirebaseJsonDir != null) {
+  jsonFile = new File(customFirebaseJsonDir, fileName)
+} else {
+  File parentDir = rootProject.projectDir
+
+  for (int i = 0; i <= 3; i++) {
+    if (parentDir == null) { break }
+    parentDir = parentDir.parentFile
+    if (parentDir != null) {
+      jsonFile = new File(parentDir, fileName)
+      if (jsonFile.exists()) { break }
+    }
   }
 }
 
