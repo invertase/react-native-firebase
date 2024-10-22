@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.1.1](https://github.com/invertase/react-native-firebase/compare/v21.1.0...v21.1.1) (2024-10-22)
+
+### Bug Fixes
+
+- **ios, sdk:** constrain transitive dependencies more tightly ([d03ab42](https://github.com/invertase/react-native-firebase/commit/d03ab42a163a17268bac344ccd135dc18849e1be))
+
 ## [21.1.0](https://github.com/invertase/react-native-firebase/compare/v21.0.0...v21.1.0) (2024-10-21)
 
 **Note:** Version bump only for package @react-native-firebase/database
