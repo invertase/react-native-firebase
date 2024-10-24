@@ -15,7 +15,7 @@
  */
 import struct from '@react-native-firebase/app/lib/common/struct';
 
-const Item = struct({
+const Item = struct.interface({
   item_brand: 'string?',
   item_id: 'string?',
   item_name: 'string?',
