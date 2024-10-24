@@ -8,8 +8,13 @@ next: /release-notes
 
 By default React Native Firebase supports multiple platforms using the native Firebase SDK for the specific platform:
 
-- Android
-- iOS
+| Platform | Minimum Version                      |
+| -------- | ------------------------------------ |
+| Android  | 5.0 (Lollipop) without Firebase Auth |
+|          | 6.0 (Marshmallow) with Firebase Auth |
+| iOS      | 13.0                                 |
+
+**Important** - To compile your application for Android, you will need a minimum JDK (Java Development Kit) version of `>= 17`.
 
 However, for platforms that we don't provide a Native Module for, React Native Firebase instead implements a fallback Firebase JS SDK implementation to support
 these 'Other' platforms, e.g.;
