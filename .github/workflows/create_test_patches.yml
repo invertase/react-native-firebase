@@ -39,7 +39,7 @@ jobs:
       #        prior version (18.17.1) to see if it stabilizes
       - uses: actions/setup-node@v4
         with:
-          node-version: 18.17.1
+          node-version: 18.18
 
       - uses: actions/cache/restore@v4
         name: Yarn Cache Restore
