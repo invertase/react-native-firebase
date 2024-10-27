@@ -312,10 +312,14 @@ async function onGoogleButtonPress() {
   // Check if your device supports Google Play
   await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
   // Get the users ID token
-  const { idToken } = await GoogleSignin.signIn();
+  const signInResult = await GoogleSignin.signIn();
+
+  if (!signInResult.data?.idToken) {
+    throw new Error("No ID token found");
+  }
 
   // Create a Google credential with the token
-  const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+  const googleCredential = auth.GoogleAuthProvider.credential(signInResult.data.token);
 
   // Sign-in the user with the credential
   return auth().signInWithCredential(googleCredential);
