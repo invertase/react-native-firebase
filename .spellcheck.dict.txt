@@ -101,6 +101,7 @@ IPs
 isTesterSignedIn
 javascript
 Javascript
+JDK
 JS
 JSON
 lastDocument

@@ -1,4 +1,5 @@
 import io.invertase.gradle.common.PackageJson
+import org.gradle.internal.jvm.Jvm
 
 buildscript {
   // The Android Gradle plugin is only required when opening the android folder stand-alone.
@@ -103,6 +104,22 @@ dependencies {
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
   implementation "com.google.firebase:firebase-common"
   implementation "com.google.android.gms:play-services-auth:${ReactNative.ext.getVersion("play", "play-services-auth")}"
+}
+
+def jvmVersion = Jvm.current().javaVersion?.majorVersion
+// if it cannot get version, just allow it to pass. This is just a helper for developers
+if ((jvmVersion?.toInteger() ?: 17) < 17) {
+  println("\n\n\n")
+  println("**************************************************************************************************************")
+  println("\n\n\n")
+  println("ERROR: React Native Firebase builds with a minimum JVM version 17. We test with JVM 17 and 21.")
+  println("  Incompatible major version detected: '" + jvmVersion + "'")
+  println("\n\n\n")
+  println("  If you receive this error because you want to use a different JDK, we may accept PRs to support new versions.")
+  println("\n\n\n")
+  println("**************************************************************************************************************")
+  println("\n\n\n")
+  System.exit(1)
 }
 
 ReactNative.shared.applyPackageVersion()
