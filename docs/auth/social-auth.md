@@ -317,11 +317,11 @@ async function onGoogleButtonPress() {
   // Try the new style of google-sign in result, from v13+ of that module
   idToken = signInResult.data?.idToken;
   if (!idToken) {
-      // if you are using older versions of google-signin, try old style result
-      idToken = signInResult.idToken;
+    // if you are using older versions of google-signin, try old style result
+    idToken = signInResult.idToken;
   }
   if (!idToken) {
-    throw new Error("No ID token found");
+    throw new Error('No ID token found');
   }
 
   // Create a Google credential with the token
