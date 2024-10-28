@@ -314,7 +314,13 @@ async function onGoogleButtonPress() {
   // Get the users ID token
   const signInResult = await GoogleSignin.signIn();
 
-  if (!signInResult.data?.idToken) {
+  // Try the new style of google-sign in result, from v13+ of that module
+  idToken = signInResult.data?.idToken;
+  if (!idToken) {
+      // if you are using older versions of google-signin, try old style result
+      idToken = signInResult.idToken;
+  }
+  if (!idToken) {
     throw new Error("No ID token found");
   }
 
