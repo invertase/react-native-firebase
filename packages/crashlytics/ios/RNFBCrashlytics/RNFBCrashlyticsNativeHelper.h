@@ -22,4 +22,8 @@
 
 + (void)recordNativeError:(NSError *)error;
 
++ (void)log:(nonnull NSString *)msg;
+
++ (void)setCustomValue:(nullable id)value forKey:(nonnull NSString *)key;
+
 @end
