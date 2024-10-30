@@ -25,4 +25,12 @@
   [[FIRCrashlytics crashlytics] recordError:error];
 }
 
++ (void)log:(nonnull NSString *)msg {
+  [[FIRCrashlytics crashlytics] log:msg];
+}
+
++ (void)setCustomValue:(nullable id)value forKey:(nonnull NSString *)key {
+  [[FIRCrashlytics crashlytics] setCustomValue:value forKey:key];
+}
+
 @end
