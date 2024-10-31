@@ -115,7 +115,7 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
     if (isNotModularCall(arguments)) {
       // eslint-disable-next-line no-console
       console.warn(
-        'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API. Please use `log()` instead.',
+        'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API. Please use `setAttribute()` instead.',
       );
     }
     if (!isString(name)) {
