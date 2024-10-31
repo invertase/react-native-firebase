@@ -22,6 +22,7 @@ import {
   isObject,
   isString,
   isOther,
+  isNotModularCall,
 } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
@@ -51,10 +52,17 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   }
 
   get isCrashlyticsCollectionEnabled() {
+    // Purposefully did not deprecate this as I think it should remain a property rather than a method.
     return this._isCrashlyticsCollectionEnabled;
   }
 
   checkForUnsentReports() {
+    if (isNotModularCall(arguments)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API. Please use `checkForUnsentReports()` instead.',
+      );
+    }
     if (this.isCrashlyticsCollectionEnabled) {
       throw new Error(
         "firebase.crashlytics().setCrashlyticsCollectionEnabled(*) has been set to 'true', all reports are automatically sent.",
@@ -64,22 +72,52 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   }
 
   crash() {
+    if (isNotModularCall(arguments)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API. Please use `crash()` instead.',
+      );
+    }
     this.native.crash();
   }
 
   async deleteUnsentReports() {
+    if (isNotModularCall(arguments)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API. Please use `deleteUnsentReports()` instead.',
+      );
+    }
     await this.native.deleteUnsentReports();
   }
 
   didCrashOnPreviousExecution() {
+    if (isNotModularCall(arguments)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API. Please use `didCrashOnPreviousExecution()` instead.',
+      );
+    }
     return this.native.didCrashOnPreviousExecution();
   }
 
   log(message) {
+    if (isNotModularCall(arguments)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API. Please use `log()` instead.',
+      );
+    }
     this.native.log(`${message}`);
   }
 
   setAttribute(name, value) {
+    if (isNotModularCall(arguments)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API. Please use `log()` instead.',
+      );
+    }
     if (!isString(name)) {
       throw new Error(
         'firebase.crashlytics().setAttribute(*, _): The supplied property name must be a string.',
@@ -96,6 +134,12 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   }
 
   setAttributes(object) {
+    if (isNotModularCall(arguments)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API. Please use `setAttributes()` instead.',
+      );
+    }
     if (!isObject(object)) {
       throw new Error(
         'firebase.crashlytics().setAttributes(*): The supplied arg must be an object of key value strings.',
@@ -106,6 +150,12 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   }
 
   setUserId(userId) {
+    if (isNotModularCall(arguments)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API. Please use `setUserId()` instead.',
+      );
+    }
     if (!isString(userId)) {
       throw new Error(
         'firebase.crashlytics().setUserId(*): The supplied userId must be a string value.',
@@ -116,6 +166,12 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   }
 
   recordError(error, jsErrorName) {
+    if (isNotModularCall(arguments)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API. Please use `recordError()` instead.',
+      );
+    }
     if (isError(error)) {
       StackTrace.fromError(error, { offline: true }).then(stackFrames => {
         this.native.recordError(createNativeErrorObj(error, stackFrames, false, jsErrorName));
@@ -128,12 +184,24 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   }
 
   sendUnsentReports() {
+    if (isNotModularCall(arguments)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API. Please use `sendUnsentReports()` instead.',
+      );
+    }
     if (this.isCrashlyticsCollectionEnabled) {
       this.native.sendUnsentReports();
     }
   }
 
   setCrashlyticsCollectionEnabled(enabled) {
+    if (isNotModularCall(arguments)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API. Please use `setCrashlyticsCollectionEnabled()` instead.',
+      );
+    }
     if (!isBoolean(enabled)) {
       throw new Error(
         "firebase.crashlytics().setCrashlyticsCollectionEnabled(*) 'enabled' must be a boolean.",

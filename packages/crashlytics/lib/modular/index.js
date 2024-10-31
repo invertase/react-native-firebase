@@ -1,3 +1,4 @@
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 import { firebase } from '..';
 
 /**
@@ -31,6 +32,12 @@ export function getCrashlytics() {
  * @returns {boolean}
  */
 export function isCrashlyticsCollectionEnabled(crashlytics) {
+  // Deprecating this method and allow it as a property on Crashlytics instance
+  // auth instance has plenty of properties so I think this should also be one: https://firebase.google.com/docs/reference/js/auth.auth
+  // eslint-disable-next-line no-console
+  console.warn(
+    'This method is deprecated and will be removed in the next major release. Please just use `crashlytics.isCrashlyticsCollectionEnabled` property instead.',
+  );
   return crashlytics.isCrashlyticsCollectionEnabled;
 }
 
@@ -53,7 +60,7 @@ export function isCrashlyticsCollectionEnabled(crashlytics) {
  * @returns {Promise<boolean>}
  */
 export function checkForUnsentReports(crashlytics) {
-  return crashlytics.checkForUnsentReports();
+  return crashlytics.checkForUnsentReports.call(crashlytics, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -70,7 +77,7 @@ export function checkForUnsentReports(crashlytics) {
  * @returns {Promise<void>}
  */
 export function deleteUnsentReports(crashlytics) {
-  return crashlytics.deleteUnsentReports();
+  return crashlytics.deleteUnsentReports.call(crashlytics, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -91,7 +98,7 @@ export function deleteUnsentReports(crashlytics) {
  * @returns {Promise<boolean>}
  */
 export function didCrashOnPreviousExecution(crashlytics) {
-  return crashlytics.didCrashOnPreviousExecution();
+  return crashlytics.didCrashOnPreviousExecution.call(crashlytics, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -109,7 +116,7 @@ export function didCrashOnPreviousExecution(crashlytics) {
  * @returns {void}
  */
 export function crash(crashlytics) {
-  return crashlytics.crash();
+  return crashlytics.crash.call(crashlytics, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -127,7 +134,7 @@ export function crash(crashlytics) {
  * @returns {void}
  */
 export function log(crashlytics, message) {
-  return crashlytics.log(message);
+  return crashlytics.log.call(crashlytics, message, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -152,7 +159,7 @@ export function log(crashlytics, message) {
  * @returns {void}
  */
 export function recordError(crashlytics, error, jsErrorName) {
-  return crashlytics.recordError(error, jsErrorName);
+  return crashlytics.recordError.call(crashlytics, error, jsErrorName, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -169,7 +176,7 @@ export function recordError(crashlytics, error, jsErrorName) {
  * @returns {void}
  */
 export function sendUnsentReports(crashlytics) {
-  return crashlytics.sendUnsentReports();
+  return crashlytics.sendUnsentReports.call(crashlytics, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -196,7 +203,7 @@ export function sendUnsentReports(crashlytics) {
  * @returns {Promise<null>}
  */
 export function setUserId(crashlytics, userId) {
-  return crashlytics.setUserId(userId);
+  return crashlytics.setUserId.call(crashlytics, userId, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -214,7 +221,7 @@ export function setUserId(crashlytics, userId) {
  * @returns {Promise<null>}
  */
 export function setAttribute(crashlytics, name, value) {
-  return crashlytics.setAttribute(name, value);
+  return crashlytics.setAttribute.call(crashlytics, name, value, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -234,7 +241,7 @@ export function setAttribute(crashlytics, name, value) {
  * @returns {Promise<null>}
  */
 export function setAttributes(crashlytics, attributes) {
-  return crashlytics.setAttributes(attributes);
+  return crashlytics.setAttributes.call(crashlytics, attributes, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -254,5 +261,9 @@ export function setAttributes(crashlytics, attributes) {
  * @returns {Promise<null>}
  */
 export function setCrashlyticsCollectionEnabled(crashlytics, enabled) {
-  return crashlytics.setCrashlyticsCollectionEnabled(enabled);
+  return crashlytics.setCrashlyticsCollectionEnabled.call(
+    crashlytics,
+    enabled,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
