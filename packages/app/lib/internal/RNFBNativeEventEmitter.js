@@ -20,7 +20,13 @@ import { getReactNativeModule } from './nativeModule';
 
 class RNFBNativeEventEmitter extends NativeEventEmitter {
   constructor() {
-    super(getReactNativeModule('RNFBAppModule'));
+    const RNFBAppModule = getReactNativeModule('RNFBAppModule');
+    if (!RNFBAppModule) {
+      throw new Error(
+        'Native module RNFBAppModule not found. Re-check module install, linking, configuration, build and install steps.',
+      );
+    }
+    super(RNFBAppModule);
     this.ready = false;
   }
 
