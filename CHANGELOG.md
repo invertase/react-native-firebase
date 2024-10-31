@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.3.0](https://github.com/invertase/react-native-firebase/compare/v21.2.0...v21.3.0) (2024-10-31)
+
+### Features
+
+- **analytics:** allow custom event parameters for Item in events ([d55e891](https://github.com/invertase/react-native-firebase/commit/d55e891064d7343788526f688d303dd01c2484c4))
+- **crashlytics, ios:** add native helper log / setCustomValue methods ([da1ac6b](https://github.com/invertase/react-native-firebase/commit/da1ac6b00d4209ca431259e192c91797d3c45cb9))
+
+### Bug Fixes
+
+- **app, sdk:** firebase-android-sdk 33.5.1 ([6c08f13](https://github.com/invertase/react-native-firebase/commit/6c08f13407f9aea6af176d485d919c892449cc16))
+- **app:** add misconfiguration warning for missing native module ([b038dbc](https://github.com/invertase/react-native-firebase/commit/b038dbc669b7f1c679c388e3ef749168df89954f))
+
 ## [21.2.0](https://github.com/invertase/react-native-firebase/compare/v21.1.1...v21.2.0) (2024-10-22)
 
 ### Features

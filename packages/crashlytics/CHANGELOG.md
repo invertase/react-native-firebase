@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.3.0](https://github.com/invertase/react-native-firebase/compare/v21.2.0...v21.3.0) (2024-10-31)
+
+### Features
+
+- **crashlytics, ios:** add native helper log / setCustomValue methods ([da1ac6b](https://github.com/invertase/react-native-firebase/commit/da1ac6b00d4209ca431259e192c91797d3c45cb9))
+
 ## [21.2.0](https://github.com/invertase/react-native-firebase/compare/v21.1.1...v21.2.0) (2024-10-22)
 
 **Note:** Version bump only for package @react-native-firebase/crashlytics
