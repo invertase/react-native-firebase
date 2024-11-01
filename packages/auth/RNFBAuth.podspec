@@ -10,6 +10,7 @@ if coreVersionDetected != coreVersionRequired
 end
 firebase_ios_target = appPackage['sdkVersions']['ios']['iosTarget']
 firebase_macos_target = appPackage['sdkVersions']['ios']['macosTarget']
+firebase_tvos_target = appPackage['sdkVersions']['ios']['tvosTarget']
 
 Pod::Spec.new do |s|
   s.name                = "RNFBAuth"
@@ -25,6 +26,7 @@ Pod::Spec.new do |s|
   s.social_media_url    = 'http://twitter.com/invertaseio'
   s.ios.deployment_target = firebase_ios_target
   s.macos.deployment_target = firebase_macos_target
+  s.tvos.deployment_target = firebase_tvos_target
   s.source_files        = 'ios/**/*.{h,m}'
 
   # React Native dependencies
