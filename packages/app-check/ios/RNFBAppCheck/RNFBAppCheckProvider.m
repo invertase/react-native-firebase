@@ -55,18 +55,18 @@
   }
 
   if ([providerName isEqualToString:@"appAttest"]) {
-    if (@available(iOS 14.0, macCatalyst 14.0, tvOS 15.0, watchOS 9.0, *)) {
+    if (@available(iOS 14.0, macOS 11.0, macCatalyst 14.0, tvOS 15.0, watchOS 9.0, *)) {
       self.delegateProvider = [[FIRAppAttestProvider alloc] initWithApp:app];
     } else {
       // This is not a valid configuration.
-      DLog(@"AppAttest unavailable: it requires iOS14+, macCatalyst14+ or tvOS15+. Installing "
+      DLog(@"AppAttest unavailable: it requires iOS14+, macOS 11+, macCatalyst14+ or tvOS15+. Installing "
            @"debug provider to guarantee invalid tokens in this invalid configuration.");
       self.delegateProvider = [[FIRAppCheckDebugProvider alloc] initWithApp:app];
     }
   }
 
   if ([providerName isEqualToString:@"appAttestWithDeviceCheckFallback"]) {
-    if (@available(iOS 14.0, *)) {
+    if (@available(iOS 14.0, macOS 11.0, macCatalyst 14.0, tvOS 15.0, watchOS 9.0, *)) {
       self.delegateProvider = [[FIRAppAttestProvider alloc] initWithApp:app];
     } else {
       self.delegateProvider = [[FIRDeviceCheckProvider alloc] initWithApp:app];
