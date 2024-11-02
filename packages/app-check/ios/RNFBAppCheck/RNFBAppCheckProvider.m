@@ -59,7 +59,8 @@
       self.delegateProvider = [[FIRAppAttestProvider alloc] initWithApp:app];
     } else {
       // This is not a valid configuration.
-      DLog(@"AppAttest unavailable: it requires iOS14+, macOS 11+, macCatalyst14+ or tvOS15+. Installing "
+      DLog(@"AppAttest unavailable: it requires iOS14+, macOS 11+, macCatalyst14+ or tvOS15+. "
+           @"Installing "
            @"debug provider to guarantee invalid tokens in this invalid configuration.");
       self.delegateProvider = [[FIRAppCheckDebugProvider alloc] initWithApp:app];
     }
