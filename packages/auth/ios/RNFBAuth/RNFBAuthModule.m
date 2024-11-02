@@ -55,7 +55,7 @@ static __strong NSMutableDictionary *idTokenHandlers;
 static __strong NSMutableDictionary *emulatorConfigs;
 // Used for caching credentials between method calls.
 static __strong NSMutableDictionary<NSString *, FIRAuthCredential *> *credentials;
-#if !TARGET_OS_TV
+#if TARGET_OS_IOS
 static __strong NSMutableDictionary<NSString *, FIRMultiFactorResolver *> *cachedResolver;
 static __strong NSMutableDictionary<NSString *, FIRMultiFactorSession *> *cachedSessions;
 #endif
@@ -78,7 +78,7 @@ RCT_EXPORT_MODULE();
     idTokenHandlers = [[NSMutableDictionary alloc] init];
     emulatorConfigs = [[NSMutableDictionary alloc] init];
     credentials = [[NSMutableDictionary alloc] init];
-#if !TARGET_OS_TV
+#if TARGET_OS_IOS
     cachedResolver = [[NSMutableDictionary alloc] init];
     cachedSessions = [[NSMutableDictionary alloc] init];
 #endif
@@ -107,7 +107,7 @@ RCT_EXPORT_MODULE();
   [idTokenHandlers removeAllObjects];
 
   [credentials removeAllObjects];
-#if !TARGET_OS_TV
+#if TARGET_OS_IOS
   [cachedResolver removeAllObjects];
   [cachedSessions removeAllObjects];
 #endif
@@ -421,7 +421,7 @@ RCT_EXPORT_METHOD(updatePassword
   }
 }
 
-#if !TARGET_OS_TV
+#if TARGET_OS_IOS
 RCT_EXPORT_METHOD(updatePhoneNumber
                   : (FIRApp *)firebaseApp
                   : (NSString *)provider
@@ -625,7 +625,7 @@ RCT_EXPORT_METHOD(signInWithProvider
     [builder setCustomParameters:provider[@"customParameters"]];
   }
 
-#if !TARGET_OS_TV
+#if TARGET_OS_IOS
   [builder getCredentialWithUIDelegate:nil
                             completion:^(FIRAuthCredential *_Nullable credential,
                                          NSError *_Nullable error) {
@@ -827,7 +827,7 @@ RCT_EXPORT_METHOD(signInWithCustomToken
                  }];
 }
 
-#if !TARGET_OS_TV
+#if TARGET_OS_IOS
 RCT_EXPORT_METHOD(signInWithPhoneNumber
                   : (FIRApp *)firebaseApp
                   : (NSString *)phoneNumber
@@ -1134,7 +1134,7 @@ RCT_EXPORT_METHOD(linkWithProvider
     [builder setCustomParameters:provider[@"parameters"]];
   }
 
-#if !TARGET_OS_TV
+#if TARGET_OS_IOS
   [builder getCredentialWithUIDelegate:nil
                             completion:^(FIRAuthCredential *_Nullable credential,
                                          NSError *_Nullable error) {
@@ -1262,7 +1262,7 @@ RCT_EXPORT_METHOD(reauthenticateWithProvider
   if (provider[@"parameters"]) {
     [builder setCustomParameters:provider[@"parameters"]];
   }
-#if !TARGET_OS_TV
+#if TARGET_OS_IOS
   [builder getCredentialWithUIDelegate:nil
                             completion:^(FIRAuthCredential *_Nullable credential,
                                          NSError *_Nullable error) {
@@ -1390,7 +1390,7 @@ RCT_EXPORT_METHOD(useEmulator
   } else if ([provider compare:@"github.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIRGitHubAuthProvider credentialWithToken:authToken];
   } else if ([provider compare:@"phone" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-#if !TARGET_OS_TV
+#if TARGET_OS_IOS
     DLog(@"using app credGen: %@", firebaseApp.name) credential =
         [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
             credentialWithVerificationID:authToken
@@ -1440,7 +1440,7 @@ RCT_EXPORT_METHOD(useEmulator
   }
 }
 
-#if !TARGET_OS_TV
+#if TARGET_OS_IOS
 - (NSDictionary *)multiFactorResolverToDict:(FIRMultiFactorResolver *)resolver {
   // Temporarily store the non-serializable session for later
   NSString *sessionHash = [NSString stringWithFormat:@"%@", @([resolver.session hash])];
@@ -1563,7 +1563,7 @@ RCT_EXPORT_METHOD(useEmulator
 
 
   NSDictionary *resolverDict = nil;
-#if !TARGET_OS_TV
+#if TARGET_OS_IOS
   if ([error userInfo][FIRAuthErrorUserInfoMultiFactorResolverKey] != nil) {
     FIRMultiFactorResolver *resolver = error.userInfo[FIRAuthErrorUserInfoMultiFactorResolverKey];
     resolverDict = [self multiFactorResolverToDict:resolver];
@@ -1718,14 +1718,14 @@ RCT_EXPORT_METHOD(useEmulator
     @"refreshToken" : user.refreshToken,
     @"tenantId" : user.tenantID ? (id)user.tenantID : [NSNull null],
     keyUid : user.uid,
-#if !TARGET_OS_TV
+#if TARGET_OS_IOS
     @"multiFactor" :
         @{@"enrolledFactors" : [self convertMultiFactorData:user.multiFactor.enrolledFactors]}
 #endif
   };
 }
 
-#if !TARGET_OS_TV
+#if TARGET_OS_IOS
 - (NSArray<NSMutableDictionary *> *)convertMultiFactorData:(NSArray<FIRMultiFactorInfo *> *)hints {
   NSMutableArray *enrolledFactors = [NSMutableArray array];
 
