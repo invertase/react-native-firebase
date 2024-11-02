@@ -1561,7 +1561,6 @@ RCT_EXPORT_METHOD(useEmulator
     authCredentialDict = [self authCredentialToDict:authCredential];
   }
 
-
   NSDictionary *resolverDict = nil;
 #if TARGET_OS_IOS
   if ([error userInfo][FIRAuthErrorUserInfoMultiFactorResolverKey] != nil) {
