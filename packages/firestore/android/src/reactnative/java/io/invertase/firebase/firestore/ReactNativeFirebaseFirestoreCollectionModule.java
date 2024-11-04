@@ -26,6 +26,9 @@ import android.util.SparseArray;
 import com.facebook.react.bridge.*;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.*;
+
+import java.util.ArrayList;
+
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
@@ -194,6 +197,79 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   }
 
   @ReactMethod
+  public void aggregateQuery(
+    String appName,
+    String databaseId,
+    String path,
+    String type,
+    ReadableArray filters,
+    ReadableArray orders,
+    ReadableMap options,
+    ReadableArray aggregateQueries
+  ){
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
+    ReactNativeFirebaseFirestoreQuery firestoreQuery =
+      new ReactNativeFirebaseFirestoreQuery(
+        appName,
+        databaseId,
+        getQueryForFirestore(firebaseFirestore, path, type),
+        filters,
+        orders,
+        options);
+    ArrayList<AggregateField> aggregateFields = new ArrayList<>();
+
+    for (int i = 0; i < aggregateQueries.size(); i++) {
+      ReadableMap aggregateQuery = aggregateQueries.getMap(i);
+      String aggregateType = aggregateQuery.getString("aggregateType");
+      String fieldPath = aggregateQuery.getString("fieldPath");
+      if (aggregateType && fieldPath) {
+        switch (aggregateType) {
+          case "count":
+            aggregateFields.add(AggregateField.count(fieldPath));
+            break;
+          case "sum":
+            aggregateFields.add(AggregateField.sum(fieldPath));
+            break;
+          case "average":
+            aggregateFields.add(AggregateField.avg(fieldPath));
+            break;
+          default:
+            break;
+        }
+      }
+
+      AggregateQuery aggregateQuery = firestoreQuery.query.aggregate(aggregateFields);
+      aggregateQuery
+        .get(AggregateSource.SERVER)
+        .addOnCompleteListener(
+          task -> {
+            if (task.isSuccessful()) {
+              WritableMap result = Arguments.createMap();
+              AggregateQuerySnapshot snapshot = task.getResult();
+              aggregateFields.forEach(aggregateField -> {
+                switch (aggregateField.getOperator()) {
+                  case "count":
+                    result.putDouble(aggregateField.getFieldPath(), Long.valueOf(snapshot.getCount()).doubleValue());
+                    break;
+                  case "sum":
+                    result.putDouble(aggregateField.getFieldPath(), snapshot.getSum(aggregateField.getFieldPath()));
+                    break;
+                  case "average":
+                    result.putDouble(aggregateField.getFieldPath(), snapshot.getAverage(aggregateField.getFieldPath()));
+                    break;
+                  default:
+                    break;
+                }
+              }
+              promise.resolve(result);
+            } else {
+              rejectPromiseFirestoreException(promise, task.getException());
+            }
+          });
+    }
+  }
+
+  @ReactMethod
   public void collectionGet(
       String appName,
       String databaseId,
@@ -214,6 +290,8 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
             orders,
             options);
     handleQueryGet(firestoreQuery, getSource(getOptions), promise);
+
+
   }
 
   private void handleQueryOnSnapshot(

@@ -15,6 +15,8 @@
  *
  */
 
+import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
+
 export class FirestoreAggregateQuery {
   constructor(firestore, query, collectionPath, modifiers) {
     this._firestore = firestore;
@@ -48,5 +50,38 @@ export class FirestoreAggregateQuerySnapshot {
 
   data() {
     return { count: this._data.count };
+  }
+}
+
+export const AggregateType = {
+  SUM: 'sum',
+  AVG: 'average',
+  COUNT: 'count',
+};
+
+export class AggregateField {
+  /** Indicates the aggregation operation of this AggregateField. */
+  aggregateType;
+  fieldPath;
+
+  /**
+   * Create a new AggregateField<T>
+   * @param aggregateType Specifies the type of aggregation operation to perform.
+   * @param _internalFieldPath Optionally specifies the field that is aggregated.
+   * @internal
+   */
+  constructor(aggregateType, fieldPath) {
+    this.aggregateType = aggregateType;
+    this.fieldPath = fieldPath;
+  }
+}
+
+export function fieldPathFromArgument(path) {
+  if (path instanceof FirestoreFieldPath) {
+    return path;
+  } else if (typeof path === 'string') {
+    return fromDotSeparatedString(methodName, path);
+  } else {
+    throw new Error('Field path arguments must be of type `string` or `FieldPath`');
   }
 }

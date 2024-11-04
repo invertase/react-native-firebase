@@ -13,6 +13,8 @@
  */
 
 import { firebase } from '../index';
+import { AggregateField, AggregateType } from '../FirestoreAggregate';
+import FirestorePath from '../FirestorePath';
 
 /**
  * @param {FirebaseApp?} app
@@ -190,6 +192,69 @@ export function runTransaction(firestore, updateFunction) {
  */
 export function getCountFromServer(query) {
   return query.count().get();
+}
+
+export async function getAggregateFromServer(query, aggregateSpec) {
+  const aggregateQueries = [];
+  for (const key in aggregateSpec) {
+    if (aggregateSpec.hasOwnProperty(key)) {
+      const value = aggregateSpec[key];
+
+      if (value instanceof AggregateField) {
+        switch (value.aggregateType) {
+          case AggregateType.AVG:
+          case AggregateType.SUM:
+          case AggregateType.COUNT:
+            const aggregateQuery = {
+              aggregateType: value.aggregateType,
+              // TODO - how is this sent over the wire? Think it is serialized automatically
+              field: value.fieldPath,
+            };
+            aggregateQueries.push(aggregateQuery);
+            break;
+          default:
+            throw new Error(
+              `"AggregateField" has an an unknown "AggregateType" : ${value.aggregateType}`,
+            );
+        }
+      }
+    }
+  }
+
+  return query._firestore.native.aggregateQuery(
+    query._collectionPath.relativeName,
+    query._modifiers.type,
+    query._modifiers.filters,
+    query._modifiers.orders,
+    query._modifiers.options,
+    aggregateQueries,
+  );
+}
+
+/**
+ * Create an AggregateField object that can be used to compute the sum of
+ * a specified field over a range of documents in the result set of a query.
+ * @param field Specifies the field to sum across the result set.
+ */
+export function sum(field) {
+  return new AggregateField(AggregateType.SUM, FirestorePath.fromName(field));
+}
+
+/**
+ * Create an AggregateField object that can be used to compute the average of
+ * a specified field over a range of documents in the result set of a query.
+ * @param field Specifies the field to average across the result set.
+ */
+export function average(field) {
+  return new AggregateField(AggregateType.AVG, FirestorePath.fromName(field));
+}
+
+/**
+ * Create an AggregateField object that can be used to compute the count of
+ * documents in the result set of a query.
+ */
+export function count() {
+  return new AggregateField(AggregateType.COUNT);
 }
 
 /**
