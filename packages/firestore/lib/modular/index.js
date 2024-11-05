@@ -13,8 +13,12 @@
  */
 
 import { firebase } from '../index';
-import { AggregateField, AggregateType } from '../FirestoreAggregate';
-import FirestorePath from '../FirestorePath';
+import {
+  FirestoreAggregateQuerySnapshot,
+  AggregateField,
+  AggregateType,
+  fieldPathFromArgument,
+} from '../FirestoreAggregate';
 
 /**
  * @param {FirebaseApp?} app
@@ -198,37 +202,39 @@ export async function getAggregateFromServer(query, aggregateSpec) {
   const aggregateQueries = [];
   for (const key in aggregateSpec) {
     if (aggregateSpec.hasOwnProperty(key)) {
-      const value = aggregateSpec[key];
+      const aggregateField = aggregateSpec[key];
 
-      if (value instanceof AggregateField) {
-        switch (value.aggregateType) {
+      if (aggregateField instanceof AggregateField) {
+        switch (aggregateField.aggregateType) {
           case AggregateType.AVG:
           case AggregateType.SUM:
           case AggregateType.COUNT:
             const aggregateQuery = {
-              aggregateType: value.aggregateType,
-              // TODO - how is this sent over the wire? Think it is serialized automatically
-              field: value.fieldPath,
+              aggregateType: aggregateField.aggregateType,
+              field: aggregateField.fieldPath === null ? null : aggregateField.fieldPath._toPath(),
+              key,
             };
             aggregateQueries.push(aggregateQuery);
             break;
           default:
             throw new Error(
-              `"AggregateField" has an an unknown "AggregateType" : ${value.aggregateType}`,
+              `"AggregateField" has an an unknown "AggregateType" : ${aggregateField.aggregateType}`,
             );
         }
       }
     }
   }
 
-  return query._firestore.native.aggregateQuery(
-    query._collectionPath.relativeName,
-    query._modifiers.type,
-    query._modifiers.filters,
-    query._modifiers.orders,
-    query._modifiers.options,
-    aggregateQueries,
-  );
+  return query._firestore.native
+    .aggregateQuery(
+      query._collectionPath.relativeName,
+      query._modifiers.type,
+      query._modifiers.filters,
+      query._modifiers.orders,
+      query._modifiers.options,
+      aggregateQueries,
+    )
+    .then(data => new FirestoreAggregateQuerySnapshot(query, data, false));
 }
 
 /**
@@ -237,7 +243,7 @@ export async function getAggregateFromServer(query, aggregateSpec) {
  * @param field Specifies the field to sum across the result set.
  */
 export function sum(field) {
-  return new AggregateField(AggregateType.SUM, FirestorePath.fromName(field));
+  return new AggregateField(AggregateType.SUM, fieldPathFromArgument(field));
 }
 
 /**
@@ -246,7 +252,7 @@ export function sum(field) {
  * @param field Specifies the field to average across the result set.
  */
 export function average(field) {
-  return new AggregateField(AggregateType.AVG, FirestorePath.fromName(field));
+  return new AggregateField(AggregateType.AVG, fieldPathFromArgument(field));
 }
 
 /**
@@ -254,7 +260,7 @@ export function average(field) {
  * documents in the result set of a query.
  */
 export function count() {
-  return new AggregateField(AggregateType.COUNT);
+  return new AggregateField(AggregateType.COUNT, null);
 }
 
 /**

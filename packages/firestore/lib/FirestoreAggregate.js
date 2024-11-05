@@ -38,18 +38,23 @@ export class FirestoreAggregateQuery {
         this._modifiers.orders,
         this._modifiers.options,
       )
-      .then(data => new FirestoreAggregateQuerySnapshot(this._query, data));
+      .then(data => new FirestoreAggregateQuerySnapshot(this._query, data, true));
   }
 }
 
 export class FirestoreAggregateQuerySnapshot {
-  constructor(query, data) {
+  constructor(query, data, isGetCountFromServer) {
     this._query = query;
     this._data = data;
+    this._isGetCountFromServer = isGetCountFromServer;
   }
 
   data() {
-    return { count: this._data.count };
+    if (this._isGetCountFromServer) {
+      return { count: this._data.count };
+    } else {
+      return { ...this._data };
+    }
   }
 }
 
@@ -80,7 +85,7 @@ export function fieldPathFromArgument(path) {
   if (path instanceof FirestoreFieldPath) {
     return path;
   } else if (typeof path === 'string') {
-    return fromDotSeparatedString(methodName, path);
+    return fromDotSeparatedString(path);
   } else {
     throw new Error('Field path arguments must be of type `string` or `FieldPath`');
   }
