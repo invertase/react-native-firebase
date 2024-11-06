@@ -21,38 +21,40 @@ describe('getAggregateFromServer()', function () {
     return wipe();
   });
 
-  it('throws if incorrect `query` argument', function () {
-    const { getAggregateFromServer, count } = firestoreModular;
-    const aggregateSpec = {
-      count: count(),
-    };
-    try {
-      getAggregateFromServer(null, aggregateSpec);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql(
-        'getAggregateFromServer(*, aggregateSpec)` `query` muse be an instance of `FirestoreQuery`',
-      );
-    }
+  describe('throws exceptions for incorrect inputs', function () {
+    it('throws if incorrect `query` argument', function () {
+      const { getAggregateFromServer, count } = firestoreModular;
+      const aggregateSpec = {
+        count: count(),
+      };
+      try {
+        getAggregateFromServer(null, aggregateSpec);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          'getAggregateFromServer(*, aggregateSpec)` `query` muse be an instance of `FirestoreQuery`',
+        );
+      }
 
-    try {
-      getAggregateFromServer(undefined, aggregateSpec);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql(
-        'getAggregateFromServer(*, aggregateSpec)` `query` muse be an instance of `FirestoreQuery`',
-      );
-    }
+      try {
+        getAggregateFromServer(undefined, aggregateSpec);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          'getAggregateFromServer(*, aggregateSpec)` `query` muse be an instance of `FirestoreQuery`',
+        );
+      }
 
-    try {
-      getAggregateFromServer('some-string', aggregateSpec);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql(
-        'getAggregateFromServer(*, aggregateSpec)` `query` muse be an instance of `FirestoreQuery`',
-      );
-    }
-    return Promise.resolve();
+      try {
+        getAggregateFromServer('some-string', aggregateSpec);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          'getAggregateFromServer(*, aggregateSpec)` `query` muse be an instance of `FirestoreQuery`',
+        );
+      }
+      return Promise.resolve();
+    });
   });
 
   it('throws if incorrect `aggregateSpec` argument', function () {
@@ -106,56 +108,173 @@ describe('getAggregateFromServer()', function () {
     return Promise.resolve();
   });
 
-  it('count(), average() & sum()', async function () {
-    const { getAggregateFromServer, doc, setDoc, collection, getFirestore, count, average, sum } =
-      firestoreModular;
-    const firestore = getFirestore();
+  describe('count(), average() & sum()', function () {
+    it('no existing collection responses for average(), sum() & count()', async function () {
+      const { getAggregateFromServer, collection, getFirestore, count, average, sum } =
+        firestoreModular;
+      const firestore = getFirestore();
 
-    const colRef = collection(firestore, `${COLLECTION}/aggregate-count/collection`);
+      const colRefNoDocs = collection(firestore, `${COLLECTION}/aggregate-count/no-docs`);
 
-    await Promise.all([
-      setDoc(doc(colRef, 'one'), { bar: 5, baz: 4 }),
-      setDoc(doc(colRef, 'two'), { bar: 5, baz: 4 }),
-      setDoc(doc(colRef, 'three'), { bar: 5, baz: 4 }),
-    ]);
+      const aggregateSpecNoDocuments = {
+        countCollection: count(),
+        averageBar: average('bar'),
+        sumBaz: sum('baz'),
+      };
 
-    const aggregateSpec = {
-      ignoreThisProperty: 'not aggregate field',
-      countCollection: count(),
-      averageBar: average('bar'),
-      sumBaz: sum('baz'),
-      averageNonExisting: average('not-a-property'),
-      sumNotExisting: sum('not-a-property'),
-    };
+      const resultNoDocs = await getAggregateFromServer(colRefNoDocs, aggregateSpecNoDocuments);
 
-    const result = await getAggregateFromServer(colRef, aggregateSpec);
+      const dataNoDocs = resultNoDocs.data();
 
-    const data = result.data();
+      // average returns null, whilst sum and count return 0
+      dataNoDocs.countCollection.should.eql(0);
+      dataNoDocs.averageBar.should.eql(null);
+      dataNoDocs.sumBaz.should.eql(0);
+    });
 
-    data.countCollection.should.eql(3);
-    data.averageBar.should.eql(5);
-    data.sumBaz.should.eql(12);
-    // should only return the aggregate field requests
-    data.should.not.have.property('ignoreThisProperty');
-    // average returns null on non-property
-    data.averageNonExisting.should.eql(null);
-    // sum returns 0 on non-property
-    data.sumNotExisting.should.eql(0);
+    it('single path using `string`', async function () {
+      const { getAggregateFromServer, doc, setDoc, collection, getFirestore, count, average, sum } =
+        firestoreModular;
+      const firestore = getFirestore();
 
-    const colRefNoDocs = collection(firestore, `${COLLECTION}/aggregate-count/no-docs`);
+      const colRef = collection(firestore, `${COLLECTION}/aggregate-count/collection`);
 
-    const aggregateSpecNoDocuments = {
-      countCollection: count(),
-      averageBar: average('bar'),
-      sumBaz: sum('baz'),
-    };
+      await Promise.all([
+        setDoc(doc(colRef, 'one'), { bar: 5, baz: 4 }),
+        setDoc(doc(colRef, 'two'), { bar: 5, baz: 4 }),
+        setDoc(doc(colRef, 'three'), { bar: 5, baz: 4 }),
+      ]);
 
-    const resultNoDocs = await getAggregateFromServer(colRefNoDocs, aggregateSpecNoDocuments);
+      const aggregateSpec = {
+        ignoreThisProperty: 'not aggregate field',
+        countCollection: count(),
+        averageBar: average('bar'),
+        sumBaz: sum('baz'),
+      };
 
-    const dataNoDocs = resultNoDocs.data();
+      const result = await getAggregateFromServer(colRef, aggregateSpec);
 
-    dataNoDocs.countCollection.should.eql(0);
-    dataNoDocs.averageBar.should.eql(null);
-    dataNoDocs.sumBaz.should.eql(0);
+      const data = result.data();
+
+      data.countCollection.should.eql(3);
+      data.averageBar.should.eql(5);
+      data.sumBaz.should.eql(12);
+      // should only return the aggregate field requests
+      data.should.not.have.property('ignoreThisProperty');
+    });
+
+    it('single path using `FieldPath`', async function () {
+      const {
+        getAggregateFromServer,
+        doc,
+        setDoc,
+        collection,
+        getFirestore,
+        count,
+        average,
+        sum,
+        FieldPath,
+      } = firestoreModular;
+      const firestore = getFirestore();
+
+      const colRef = collection(firestore, `${COLLECTION}/aggregate-count-field-path/collection`);
+
+      await Promise.all([
+        setDoc(doc(colRef, 'one'), { bar: 5, baz: 4 }),
+        setDoc(doc(colRef, 'two'), { bar: 5, baz: 4 }),
+        setDoc(doc(colRef, 'three'), { bar: 5, baz: 4 }),
+      ]);
+
+      const aggregateSpec = {
+        ignoreThisProperty: 'not aggregate field',
+        countCollection: count(),
+        averageBar: average(new FieldPath('bar')),
+        sumBaz: sum(new FieldPath('baz')),
+      };
+
+      const result = await getAggregateFromServer(colRef, aggregateSpec);
+
+      const data = result.data();
+
+      data.countCollection.should.eql(3);
+      data.averageBar.should.eql(5);
+      data.sumBaz.should.eql(12);
+      // should only return the aggregate field requests
+      data.should.not.have.property('ignoreThisProperty');
+    });
+
+    it('nested object using `string`', async function () {
+      const { getAggregateFromServer, doc, setDoc, collection, getFirestore, count, average, sum } =
+        firestoreModular;
+      const firestore = getFirestore();
+
+      const colRef = collection(firestore, `${COLLECTION}/aggregate-count-nested/collection`);
+
+      await Promise.all([
+        setDoc(doc(colRef, 'one'), { foo: { bar: 5, baz: 4 } }),
+        setDoc(doc(colRef, 'two'), { foo: { bar: 5, baz: 4 } }),
+        setDoc(doc(colRef, 'three'), { foo: { bar: 5, baz: 4 } }),
+      ]);
+
+      const aggregateSpec = {
+        ignoreThisProperty: 'not aggregate field',
+        countCollection: count(),
+        averageBar: average('foo.bar'),
+        sumBaz: sum('foo.baz'),
+      };
+
+      const result = await getAggregateFromServer(colRef, aggregateSpec);
+
+      const data = result.data();
+
+      data.countCollection.should.eql(3);
+      data.averageBar.should.eql(5);
+      data.sumBaz.should.eql(12);
+      // should only return the aggregate field requests
+      data.should.not.have.property('ignoreThisProperty');
+    });
+
+    it('nested object using `FieldPath`', async function () {
+      const {
+        getAggregateFromServer,
+        doc,
+        setDoc,
+        collection,
+        getFirestore,
+        count,
+        average,
+        sum,
+        FieldPath,
+      } = firestoreModular;
+      const firestore = getFirestore();
+
+      const colRef = collection(
+        firestore,
+        `${COLLECTION}/aggregate-count-nested-field-path/collection`,
+      );
+
+      await Promise.all([
+        setDoc(doc(colRef, 'one'), { foo: { bar: 5, baz: 4 } }),
+        setDoc(doc(colRef, 'two'), { foo: { bar: 5, baz: 4 } }),
+        setDoc(doc(colRef, 'three'), { foo: { bar: 5, baz: 4 } }),
+      ]);
+
+      const aggregateSpec = {
+        ignoreThisProperty: 'not aggregate field',
+        countCollection: count(),
+        averageBar: average(new FieldPath('foo.bar')),
+        sumBaz: sum(new FieldPath('foo.baz')),
+      };
+
+      const result = await getAggregateFromServer(colRef, aggregateSpec);
+
+      const data = result.data();
+
+      data.countCollection.should.eql(3);
+      data.averageBar.should.eql(5);
+      data.sumBaz.should.eql(12);
+      // should only return the aggregate field requests
+      data.should.not.have.property('ignoreThisProperty');
+    });
   });
 });
