@@ -55,57 +55,57 @@ describe('getAggregateFromServer()', function () {
       }
       return Promise.resolve();
     });
-  });
 
-  it('throws if incorrect `aggregateSpec` argument', function () {
-    const { getAggregateFromServer, collection, getFirestore, count } = firestoreModular;
+    it('throws if incorrect `aggregateSpec` argument', function () {
+      const { getAggregateFromServer, collection, getFirestore, count } = firestoreModular;
 
-    const colRef = collection(getFirestore(), `firestore`);
+      const colRef = collection(getFirestore(), `firestore`);
 
-    try {
-      getAggregateFromServer(colRef, 'not an object');
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql(
-        '`getAggregateFromServer(query, *)` `aggregateSpec` muse be an object',
-      );
-    }
+      try {
+        getAggregateFromServer(colRef, 'not an object');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          '`getAggregateFromServer(query, *)` `aggregateSpec` muse be an object',
+        );
+      }
 
-    const aggregateSpec = {
-      count: "doesn't contain an aggregate field",
-    };
+      const aggregateSpec = {
+        count: "doesn't contain an aggregate field",
+      };
 
-    try {
-      getAggregateFromServer(colRef, aggregateSpec);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql(
-        '`getAggregateFromServer(query, *)` `aggregateSpec` must contain at least one `AggregateField`',
-      );
-    }
+      try {
+        getAggregateFromServer(colRef, aggregateSpec);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          '`getAggregateFromServer(query, *)` `aggregateSpec` must contain at least one `AggregateField`',
+        );
+      }
 
-    try {
-      getAggregateFromServer(colRef, aggregateSpec);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql(
-        'getAggregateFromServer(*, aggregateSpec)` `query` muse be an instance of `FirestoreQuery`',
-      );
-    }
-    const aggField = count();
-    aggField.aggregateType = 'change underlying type';
+      try {
+        getAggregateFromServer(colRef, aggregateSpec);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          'getAggregateFromServer(*, aggregateSpec)` `query` muse be an instance of `FirestoreQuery`',
+        );
+      }
+      const aggField = count();
+      aggField.aggregateType = 'change underlying type';
 
-    const aggregateSpec2 = {
-      count: aggField,
-    };
+      const aggregateSpec2 = {
+        count: aggField,
+      };
 
-    try {
-      getAggregateFromServer(colRef, aggregateSpec2);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'AggregateField' has an an unknown 'AggregateType'");
-    }
-    return Promise.resolve();
+      try {
+        getAggregateFromServer(colRef, aggregateSpec2);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'AggregateField' has an an unknown 'AggregateType'");
+      }
+      return Promise.resolve();
+    });
   });
 
   describe('count(), average() & sum()', function () {
