@@ -232,7 +232,7 @@ RCT_EXPORT_METHOD(aggregateQuery
   FIRQuery *query = [RNFBFirestoreCommon getQueryForFirestore:firestore path:path type:type];
 
   NSMutableArray<FIRAggregateField *> *aggregateFields =
-        [[NSMutableArray<FIRAggregateField *> alloc] init];
+      [[NSMutableArray<FIRAggregateField *> alloc] init];
 
   for (NSDictionary *aggregateQuery in aggregateQueries) {
     NSString *aggregateType = aggregateQuery[@"aggregateType"];
@@ -240,57 +240,54 @@ RCT_EXPORT_METHOD(aggregateQuery
     assert(aggregateType);
     assert(fieldPath);
 
-    if([aggregateType isEqualToString:@"count"]){
+    if ([aggregateType isEqualToString:@"count"]) {
       [aggregateFields addObject:[FIRAggregateField aggregateFieldForCount]];
-    } else if([aggregateType isEqualToString:@"sum"]){
-      [aggregateFields
-       addObject:[FIRAggregateField aggregateFieldForSumOfField:fieldPath]];
-    } else if([aggregateType isEqualToString:@"average"]){
-      [aggregateFields
-       addObject:[FIRAggregateField aggregateFieldForAverageOfField:fieldPath]];
+    } else if ([aggregateType isEqualToString:@"sum"]) {
+      [aggregateFields addObject:[FIRAggregateField aggregateFieldForSumOfField:fieldPath]];
+    } else if ([aggregateType isEqualToString:@"average"]) {
+      [aggregateFields addObject:[FIRAggregateField aggregateFieldForAverageOfField:fieldPath]];
     } else {
       NSString *reason = [@"Invalid Aggregate Type: " stringByAppendingString:aggregateType];
       @throw [NSException exceptionWithName:@"RNFB Firestore: Invalid Aggregate Type"
-                                           reason:reason
-                                         userInfo:nil];
+                                     reason:reason
+                                   userInfo:nil];
     }
   }
-  
+
   FIRAggregateQuery *aggregateQuery = [query aggregate:aggregateFields];
-  
+
   [aggregateQuery
-        aggregationWithSource:FIRAggregateSourceServer
-                   completion:^(FIRAggregateQuerySnapshot *_Nullable snapshot,
-                                NSError *_Nullable error) {
-    if (error) {
-      [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
-    } else {
-      NSMutableDictionary *snapshotMap = [NSMutableDictionary dictionary];
-      
-      for (NSDictionary *aggregateQuery in aggregateQueries) {
-        NSString *aggregateType = aggregateQuery[@"aggregateType"];
-        NSString *fieldPath = aggregateQuery[@"field"];
-        NSString *key = aggregateQuery[@"key"];
-        assert(key);
-        
-        if([aggregateType isEqualToString:@"count"]){
-          snapshotMap[key] = snapshot.count;
-        } else if([aggregateType isEqualToString:@"sum"]){
-          NSNumber *sum = [snapshot
-                           valueForAggregateField:[FIRAggregateField
-                                                   aggregateFieldForSumOfField:fieldPath]];
-          snapshotMap[key] = sum;
-        } else if([aggregateType isEqualToString:@"average"]){
-          NSNumber *average = [snapshot
-                                      valueForAggregateField:
-                                          [FIRAggregateField
-                                           aggregateFieldForAverageOfField:fieldPath]];
-          snapshotMap[key] = (average == nil ? [NSNull null] : average);
-        }
-      }
-      resolve(snapshotMap);
-    }
-  }];
+      aggregationWithSource:FIRAggregateSourceServer
+                 completion:^(FIRAggregateQuerySnapshot *_Nullable snapshot,
+                              NSError *_Nullable error) {
+                   if (error) {
+                     [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
+                   } else {
+                     NSMutableDictionary *snapshotMap = [NSMutableDictionary dictionary];
+
+                     for (NSDictionary *aggregateQuery in aggregateQueries) {
+                       NSString *aggregateType = aggregateQuery[@"aggregateType"];
+                       NSString *fieldPath = aggregateQuery[@"field"];
+                       NSString *key = aggregateQuery[@"key"];
+                       assert(key);
+
+                       if ([aggregateType isEqualToString:@"count"]) {
+                         snapshotMap[key] = snapshot.count;
+                       } else if ([aggregateType isEqualToString:@"sum"]) {
+                         NSNumber *sum = [snapshot
+                             valueForAggregateField:[FIRAggregateField
+                                                        aggregateFieldForSumOfField:fieldPath]];
+                         snapshotMap[key] = sum;
+                       } else if ([aggregateType isEqualToString:@"average"]) {
+                         NSNumber *average = [snapshot
+                             valueForAggregateField:[FIRAggregateField
+                                                        aggregateFieldForAverageOfField:fieldPath]];
+                         snapshotMap[key] = (average == nil ? [NSNull null] : average);
+                       }
+                     }
+                     resolve(snapshotMap);
+                   }
+                 }];
 }
 
 RCT_EXPORT_METHOD(collectionGet

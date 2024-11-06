@@ -28,11 +28,9 @@ import android.util.SparseArray;
 import com.facebook.react.bridge.*;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.*;
-
-import java.util.ArrayList;
-
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
+import java.util.ArrayList;
 
 public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "FirestoreCollection";
@@ -200,25 +198,24 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
 
   @ReactMethod
   public void aggregateQuery(
-    String appName,
-    String databaseId,
-    String path,
-    String type,
-    ReadableArray filters,
-    ReadableArray orders,
-    ReadableMap options,
-    ReadableArray aggregateQueries,
-    Promise promise
-  ){
+      String appName,
+      String databaseId,
+      String path,
+      String type,
+      ReadableArray filters,
+      ReadableArray orders,
+      ReadableMap options,
+      ReadableArray aggregateQueries,
+      Promise promise) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
     ReactNativeFirebaseFirestoreQuery firestoreQuery =
-      new ReactNativeFirebaseFirestoreQuery(
-        appName,
-        databaseId,
-        getQueryForFirestore(firebaseFirestore, path, type),
-        filters,
-        orders,
-        options);
+        new ReactNativeFirebaseFirestoreQuery(
+            appName,
+            databaseId,
+            getQueryForFirestore(firebaseFirestore, path, type),
+            filters,
+            orders,
+            options);
 
     ArrayList<AggregateField> aggregateFields = new ArrayList<>();
 
@@ -229,66 +226,68 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
       String fieldPath = aggregateQuery.getString("field");
 
       assert aggregateType != null;
-        switch (aggregateType) {
-          case "count":
-            aggregateFields.add(AggregateField.count());
-            break;
-          case "sum":
-            assert fieldPath != null;
-            aggregateFields.add(AggregateField.sum(fieldPath));
-            break;
-          case "average":
-            assert fieldPath != null;
-            aggregateFields.add(AggregateField.average(fieldPath));
-            break;
-          default:
-            throw new Error("Invalid AggregateType: " + aggregateType);
-        }
+      switch (aggregateType) {
+        case "count":
+          aggregateFields.add(AggregateField.count());
+          break;
+        case "sum":
+          assert fieldPath != null;
+          aggregateFields.add(AggregateField.sum(fieldPath));
+          break;
+        case "average":
+          assert fieldPath != null;
+          aggregateFields.add(AggregateField.average(fieldPath));
+          break;
+        default:
+          throw new Error("Invalid AggregateType: " + aggregateType);
+      }
     }
-      AggregateQuery firestoreAggregateQuery = firestoreQuery.query.aggregate(aggregateFields.get(0),
-      aggregateFields.subList(1, aggregateFields.size()).toArray(new AggregateField[0]));
+    AggregateQuery firestoreAggregateQuery =
+        firestoreQuery.query.aggregate(
+            aggregateFields.get(0),
+            aggregateFields.subList(1, aggregateFields.size()).toArray(new AggregateField[0]));
 
-      firestoreAggregateQuery
+    firestoreAggregateQuery
         .get(AggregateSource.SERVER)
         .addOnCompleteListener(
-          task -> {
-            if (task.isSuccessful()) {
-              WritableMap result = Arguments.createMap();
-              AggregateQuerySnapshot snapshot = task.getResult();
+            task -> {
+              if (task.isSuccessful()) {
+                WritableMap result = Arguments.createMap();
+                AggregateQuerySnapshot snapshot = task.getResult();
 
-              for (int k = 0; k < aggregateQueries.size(); k++) {
-                ReadableMap aggQuery = aggregateQueries.getMap(k);
-                String aggType = aggQuery.getString("aggregateType");
-                String field = aggQuery.getString("field");
-                String key = aggQuery.getString("key");
-                assert key != null;
-                assert aggType != null;
-                switch (aggType) {
-                  case "count":
-                    result.putDouble(key, Long.valueOf(snapshot.getCount()).doubleValue());
-                    break;
-                  case "sum":
-                    assert field != null;
-                    Number sum = (Number) snapshot.get(sum(field));
-                    assert sum != null;
-                    result.putDouble(key, sum.doubleValue());
-                    break;
-                  case "average":
-                    assert field != null;
-                    Number average = snapshot.get(average(field));
-                    assert average != null;
-                    result.putDouble(key, average.doubleValue());
-                    break;
-                  default:
-                    throw new Error("Invalid AggregateType: " + aggType);
+                for (int k = 0; k < aggregateQueries.size(); k++) {
+                  ReadableMap aggQuery = aggregateQueries.getMap(k);
+                  String aggType = aggQuery.getString("aggregateType");
+                  String field = aggQuery.getString("field");
+                  String key = aggQuery.getString("key");
+                  assert key != null;
+                  assert aggType != null;
+                  switch (aggType) {
+                    case "count":
+                      result.putDouble(key, Long.valueOf(snapshot.getCount()).doubleValue());
+                      break;
+                    case "sum":
+                      assert field != null;
+                      Number sum = (Number) snapshot.get(sum(field));
+                      assert sum != null;
+                      result.putDouble(key, sum.doubleValue());
+                      break;
+                    case "average":
+                      assert field != null;
+                      Number average = snapshot.get(average(field));
+                      assert average != null;
+                      result.putDouble(key, average.doubleValue());
+                      break;
+                    default:
+                      throw new Error("Invalid AggregateType: " + aggType);
+                  }
                 }
-              }
 
-              promise.resolve(result);
-            } else {
-              rejectPromiseFirestoreException(promise, task.getException());
-            }
-          });
+                promise.resolve(result);
+              } else {
+                rejectPromiseFirestoreException(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod
@@ -312,8 +311,6 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
             orders,
             options);
     handleQueryGet(firestoreQuery, getSource(getOptions), promise);
-
-
   }
 
   private void handleQueryOnSnapshot(
