@@ -260,15 +260,20 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
 
                   switch (Objects.requireNonNull(aggType)) {
                     case "count":
-                      result.putDouble(Objects.requireNonNull(key), Long.valueOf(snapshot.getCount()).doubleValue());
+                      result.putDouble(
+                          Objects.requireNonNull(key),
+                          Long.valueOf(snapshot.getCount()).doubleValue());
                       break;
                     case "sum":
                       Number sum = (Number) snapshot.get(sum(Objects.requireNonNull(field)));
-                      result.putDouble(Objects.requireNonNull(key), Objects.requireNonNull(sum).doubleValue());
+                      result.putDouble(
+                          Objects.requireNonNull(key), Objects.requireNonNull(sum).doubleValue());
                       break;
                     case "average":
                       Number average = snapshot.get(average(Objects.requireNonNull(field)));
-                      result.putDouble(Objects.requireNonNull(key), Objects.requireNonNull(average).doubleValue());
+                      result.putDouble(
+                          Objects.requireNonNull(key),
+                          Objects.requireNonNull(average).doubleValue());
                       break;
                     default:
                       throw new Error("Invalid AggregateType: " + aggType);
