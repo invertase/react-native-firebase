@@ -67,17 +67,17 @@ export const AggregateType = {
 export class AggregateField {
   /** Indicates the aggregation operation of this AggregateField. */
   aggregateType;
-  fieldPath;
+  _fieldPath;
 
   /**
    * Create a new AggregateField<T>
    * @param aggregateType Specifies the type of aggregation operation to perform.
-   * @param _internalFieldPath Optionally specifies the field that is aggregated.
+   * @param _fieldPath Optionally specifies the field that is aggregated.
    * @internal
    */
   constructor(aggregateType, fieldPath) {
     this.aggregateType = aggregateType;
-    this.fieldPath = fieldPath;
+    this._fieldPath = fieldPath;
   }
 }
 

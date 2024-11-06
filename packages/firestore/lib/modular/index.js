@@ -232,7 +232,8 @@ export async function getAggregateFromServer(query, aggregateSpec) {
           case AggregateType.COUNT:
             const aggregateQuery = {
               aggregateType: aggregateField.aggregateType,
-              field: aggregateField.fieldPath === null ? null : aggregateField.fieldPath._toPath(),
+              field:
+                aggregateField._fieldPath === null ? null : aggregateField._fieldPath._toPath(),
               key,
             };
             aggregateQueries.push(aggregateQuery);

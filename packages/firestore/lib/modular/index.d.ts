@@ -10,6 +10,7 @@ import Query = FirebaseFirestoreTypes.Query;
 import FieldValue = FirebaseFirestoreTypes.FieldValue;
 import FieldPath = FirebaseFirestoreTypes.FieldPath;
 import PersistentCacheIndexManager = FirebaseFirestoreTypes.PersistentCacheIndexManager;
+import AggregateQuerySnapshot = FirebaseFirestoreTypes.AggregateQuerySnapshot;
 
 /** Primitive types. */
 export type Primitive = string | number | boolean | undefined | null;
@@ -513,13 +514,11 @@ export type AggregateFieldType =
 export function getAggregateFromServer<
   AggregateSpecType extends AggregateSpec,
   AppModelType,
-  DbModelType extends FirebaseFirestoreTypes.DocumentData,
+  DbModelType extends DocumentData,
 >(
   query: Query<AppModelType, DbModelType>,
   aggregateSpec: AggregateSpecType,
-): Promise<
-  FirebaseFirestoreTypes.AggregateQuerySnapshot<AggregateSpecType, AppModelType, DbModelType>
->;
+): Promise<AggregateQuerySnapshot<AggregateSpecType, AppModelType, DbModelType>>;
 
 /**
  * Create an AggregateField object that can be used to compute the sum of
