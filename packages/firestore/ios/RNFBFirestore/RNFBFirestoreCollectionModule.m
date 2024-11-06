@@ -237,8 +237,6 @@ RCT_EXPORT_METHOD(aggregateQuery
   for (NSDictionary *aggregateQuery in aggregateQueries) {
     NSString *aggregateType = aggregateQuery[@"aggregateType"];
     NSString *fieldPath = aggregateQuery[@"field"];
-    assert(aggregateType);
-    assert(fieldPath);
 
     if ([aggregateType isEqualToString:@"count"]) {
       [aggregateFields addObject:[FIRAggregateField aggregateFieldForCount]];
@@ -269,7 +267,6 @@ RCT_EXPORT_METHOD(aggregateQuery
                        NSString *aggregateType = aggregateQuery[@"aggregateType"];
                        NSString *fieldPath = aggregateQuery[@"field"];
                        NSString *key = aggregateQuery[@"key"];
-                       assert(key);
 
                        if ([aggregateType isEqualToString:@"count"]) {
                          snapshotMap[key] = snapshot.count;

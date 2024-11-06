@@ -31,6 +31,7 @@ import com.google.firebase.firestore.*;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "FirestoreCollection";
@@ -221,22 +222,18 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
 
     for (int i = 0; i < aggregateQueries.size(); i++) {
       ReadableMap aggregateQuery = aggregateQueries.getMap(i);
-
       String aggregateType = aggregateQuery.getString("aggregateType");
       String fieldPath = aggregateQuery.getString("field");
 
-      assert aggregateType != null;
-      switch (aggregateType) {
+      switch (Objects.requireNonNull(aggregateType)) {
         case "count":
           aggregateFields.add(AggregateField.count());
           break;
         case "sum":
-          assert fieldPath != null;
-          aggregateFields.add(AggregateField.sum(fieldPath));
+          aggregateFields.add(AggregateField.sum(Objects.requireNonNull(fieldPath)));
           break;
         case "average":
-          assert fieldPath != null;
-          aggregateFields.add(AggregateField.average(fieldPath));
+          aggregateFields.add(AggregateField.average(Objects.requireNonNull(fieldPath)));
           break;
         default:
           throw new Error("Invalid AggregateType: " + aggregateType);
@@ -260,23 +257,18 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
                   String aggType = aggQuery.getString("aggregateType");
                   String field = aggQuery.getString("field");
                   String key = aggQuery.getString("key");
-                  assert key != null;
-                  assert aggType != null;
-                  switch (aggType) {
+
+                  switch (Objects.requireNonNull(aggType)) {
                     case "count":
-                      result.putDouble(key, Long.valueOf(snapshot.getCount()).doubleValue());
+                      result.putDouble(Objects.requireNonNull(key), Long.valueOf(snapshot.getCount()).doubleValue());
                       break;
                     case "sum":
-                      assert field != null;
-                      Number sum = (Number) snapshot.get(sum(field));
-                      assert sum != null;
-                      result.putDouble(key, sum.doubleValue());
+                      Number sum = (Number) snapshot.get(sum(Objects.requireNonNull(field)));
+                      result.putDouble(Objects.requireNonNull(key), Objects.requireNonNull(sum).doubleValue());
                       break;
                     case "average":
-                      assert field != null;
-                      Number average = snapshot.get(average(field));
-                      assert average != null;
-                      result.putDouble(key, average.doubleValue());
+                      Number average = snapshot.get(average(Objects.requireNonNull(field)));
+                      result.putDouble(Objects.requireNonNull(key), Objects.requireNonNull(average).doubleValue());
                       break;
                     default:
                       throw new Error("Invalid AggregateType: " + aggType);
