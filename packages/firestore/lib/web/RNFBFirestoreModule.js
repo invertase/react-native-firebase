@@ -11,7 +11,7 @@ import {
   getDoc,
   getDocs,
   getCount,
-  getAggregateFromServer,
+  getAggregate,
   count,
   average,
   sum,
@@ -243,7 +243,7 @@ export default {
             break;
         }
       }
-      const result = await getAggregateFromServer(query, aggregateSpec);
+      const result = await getAggregate(query, aggregateSpec);
 
       const data = result.data();
       const response = {};
