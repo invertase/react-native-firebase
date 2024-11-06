@@ -4,6 +4,7 @@ import firestore, {
   firebase,
   Filter,
   getFirestore,
+  getAggregateFromServer,
   addDoc,
   doc,
   collection,
@@ -650,6 +651,10 @@ describe('Firestore', function () {
 
     it('`enablePersistentCacheIndexAutoCreation` is properly exposed to end user', function () {
       expect(enablePersistentCacheIndexAutoCreation).toBeDefined();
+    });
+
+    it('`getAggregateFromServer` is properly exposed to end user', function () {
+      expect(getAggregateFromServer).toBeDefined();
     });
   });
 
