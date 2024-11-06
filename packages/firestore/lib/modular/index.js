@@ -13,12 +13,14 @@
  */
 
 import { firebase } from '../index';
+import { isObject } from '@react-native-firebase/app/lib/common';
 import {
   FirestoreAggregateQuerySnapshot,
   AggregateField,
   AggregateType,
   fieldPathFromArgument,
 } from '../FirestoreAggregate';
+import FirestoreQuery from '../FirestoreQuery';
 
 /**
  * @param {FirebaseApp?} app
@@ -199,11 +201,30 @@ export function getCountFromServer(query) {
 }
 
 export async function getAggregateFromServer(query, aggregateSpec) {
+  if (!(query instanceof FirestoreQuery)) {
+    throw new Error(
+      '`getAggregateFromServer(*, aggregateSpec)` `query` muse be an instance of `FirestoreQuery`',
+    );
+  }
+
+  if (!isObject(aggregateSpec)) {
+    throw new Error('`getAggregateFromServer(query, *)` `aggregateSpec` muse be an object');
+  } else {
+    const containsOneAggregateField = Object.values(aggregateSpec).find(
+      value => value instanceof AggregateField,
+    );
+
+    if (!containsOneAggregateField) {
+      throw new Error(
+        '`getAggregateFromServer(query, *)` `aggregateSpec` must contain at least one `AggregateField`',
+      );
+    }
+  }
   const aggregateQueries = [];
   for (const key in aggregateSpec) {
     if (aggregateSpec.hasOwnProperty(key)) {
       const aggregateField = aggregateSpec[key];
-
+      // we ignore any fields that are not `AggregateField`
       if (aggregateField instanceof AggregateField) {
         switch (aggregateField.aggregateType) {
           case AggregateType.AVG:
@@ -218,7 +239,7 @@ export async function getAggregateFromServer(query, aggregateSpec) {
             break;
           default:
             throw new Error(
-              `"AggregateField" has an an unknown "AggregateType" : ${aggregateField.aggregateType}`,
+              `'AggregateField' has an an unknown 'AggregateType' : ${aggregateField.aggregateType}`,
             );
         }
       }
