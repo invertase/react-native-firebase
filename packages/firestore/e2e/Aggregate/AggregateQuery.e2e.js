@@ -32,7 +32,7 @@ describe('getAggregateFromServer()', function () {
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql(
-          'getAggregateFromServer(*, aggregateSpec)` `query` muse be an instance of `FirestoreQuery`',
+          'getAggregateFromServer(*, aggregateSpec)` `query` must be an instance of `FirestoreQuery`',
         );
       }
 
@@ -41,7 +41,7 @@ describe('getAggregateFromServer()', function () {
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql(
-          'getAggregateFromServer(*, aggregateSpec)` `query` muse be an instance of `FirestoreQuery`',
+          'getAggregateFromServer(*, aggregateSpec)` `query` must be an instance of `FirestoreQuery`',
         );
       }
 
@@ -50,7 +50,7 @@ describe('getAggregateFromServer()', function () {
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql(
-          'getAggregateFromServer(*, aggregateSpec)` `query` muse be an instance of `FirestoreQuery`',
+          'getAggregateFromServer(*, aggregateSpec)` `query` must be an instance of `FirestoreQuery`',
         );
       }
       return Promise.resolve();
@@ -66,7 +66,7 @@ describe('getAggregateFromServer()', function () {
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql(
-          '`getAggregateFromServer(query, *)` `aggregateSpec` muse be an object',
+          '`getAggregateFromServer(query, *)` `aggregateSpec` must be an object',
         );
       }
 

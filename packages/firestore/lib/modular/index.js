@@ -203,12 +203,12 @@ export function getCountFromServer(query) {
 export function getAggregateFromServer(query, aggregateSpec) {
   if (!(query instanceof FirestoreQuery)) {
     throw new Error(
-      '`getAggregateFromServer(*, aggregateSpec)` `query` muse be an instance of `FirestoreQuery`',
+      '`getAggregateFromServer(*, aggregateSpec)` `query` must be an instance of `FirestoreQuery`',
     );
   }
 
   if (!isObject(aggregateSpec)) {
-    throw new Error('`getAggregateFromServer(query, *)` `aggregateSpec` muse be an object');
+    throw new Error('`getAggregateFromServer(query, *)` `aggregateSpec` must be an object');
   } else {
     const containsOneAggregateField = Object.values(aggregateSpec).find(
       value => value instanceof AggregateField,
