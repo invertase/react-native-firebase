@@ -271,9 +271,12 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
                       break;
                     case "average":
                       Number average = snapshot.get(average(Objects.requireNonNull(field)));
-                      result.putDouble(
-                          Objects.requireNonNull(key),
-                          Objects.requireNonNull(average).doubleValue());
+                      String averageKey = Objects.requireNonNull(key);
+                      if (average == null) {
+                        result.putNull(averageKey);
+                      } else {
+                        result.putDouble(averageKey, Objects.requireNonNull(average).doubleValue());
+                      }
                       break;
                     default:
                       throw new Error("Invalid AggregateType: " + aggType);
