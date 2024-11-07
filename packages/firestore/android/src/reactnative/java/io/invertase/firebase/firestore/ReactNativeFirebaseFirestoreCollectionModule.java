@@ -31,7 +31,6 @@ import com.google.firebase.firestore.*;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "FirestoreCollection";
@@ -223,20 +222,26 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
     for (int i = 0; i < aggregateQueries.size(); i++) {
       ReadableMap aggregateQuery = aggregateQueries.getMap(i);
       String aggregateType = aggregateQuery.getString("aggregateType");
+      if (aggregateType == null) aggregateType = "";
       String fieldPath = aggregateQuery.getString("field");
+      if (fieldPath == null) {
+        promise.reject("firestore/invalid-argument", "fieldPath cannot be null");
+        return;
+      }
 
-      switch (Objects.requireNonNull(aggregateType)) {
+      switch (aggregateType) {
         case "count":
           aggregateFields.add(AggregateField.count());
           break;
         case "sum":
-          aggregateFields.add(AggregateField.sum(Objects.requireNonNull(fieldPath)));
+          aggregateFields.add(AggregateField.sum(fieldPath));
           break;
         case "average":
-          aggregateFields.add(AggregateField.average(Objects.requireNonNull(fieldPath)));
+          aggregateFields.add(AggregateField.average(fieldPath));
           break;
         default:
-          throw new Error("Invalid AggregateType: " + aggregateType);
+          promise.reject("firestore/invalid-argument", "Invalid AggregateType: " + aggregateType);
+          return;
       }
     }
     AggregateQuery firestoreAggregateQuery =
@@ -255,31 +260,42 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
                 for (int k = 0; k < aggregateQueries.size(); k++) {
                   ReadableMap aggQuery = aggregateQueries.getMap(k);
                   String aggType = aggQuery.getString("aggregateType");
+                  if (aggType == null) aggType = "";
                   String field = aggQuery.getString("field");
+                  if (field == null) {
+                    promise.reject("firestore/invalid-argument", "field may not be null");
+                    return;
+                  }
                   String key = aggQuery.getString("key");
+                  if (key == null) {
+                    promise.reject("firestore/invalid-argument", "key may not be null");
+                    return;
+                  }
 
-                  switch (Objects.requireNonNull(aggType)) {
+                  switch (aggType) {
                     case "count":
-                      result.putDouble(
-                          Objects.requireNonNull(key),
-                          Long.valueOf(snapshot.getCount()).doubleValue());
+                      result.putDouble(key, Long.valueOf(snapshot.getCount()).doubleValue());
                       break;
                     case "sum":
-                      Number sum = (Number) snapshot.get(sum(Objects.requireNonNull(field)));
-                      result.putDouble(
-                          Objects.requireNonNull(key), Objects.requireNonNull(sum).doubleValue());
+                      Number sum = (Number) snapshot.get(sum(field));
+                      if (sum == null) {
+                        promise.reject("firestore/unknown", "sum unexpectedly null");
+                        return;
+                      }
+                      result.putDouble(key, sum.doubleValue());
                       break;
                     case "average":
-                      Number average = snapshot.get(average(Objects.requireNonNull(field)));
-                      String averageKey = Objects.requireNonNull(key);
+                      Number average = snapshot.get(average(field));
                       if (average == null) {
-                        result.putNull(averageKey);
+                        result.putNull(key);
                       } else {
-                        result.putDouble(averageKey, Objects.requireNonNull(average).doubleValue());
+                        result.putDouble(key, average.doubleValue());
                       }
                       break;
                     default:
-                      throw new Error("Invalid AggregateType: " + aggType);
+                      promise.reject(
+                          "firestore/invalid-argument", "Invalid AggregateType: " + aggType);
+                      return;
                   }
                 }
 
