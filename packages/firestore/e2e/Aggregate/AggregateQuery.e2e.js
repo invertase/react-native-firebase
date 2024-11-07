@@ -83,14 +83,6 @@ describe('getAggregateFromServer()', function () {
         );
       }
 
-      try {
-        getAggregateFromServer(colRef, aggregateSpec);
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql(
-          'getAggregateFromServer(*, aggregateSpec)` `query` muse be an instance of `FirestoreQuery`',
-        );
-      }
       const aggField = count();
       aggField.aggregateType = 'change underlying type';
 
@@ -128,7 +120,7 @@ describe('getAggregateFromServer()', function () {
 
       // average returns null, whilst sum and count return 0
       dataNoDocs.countCollection.should.eql(0);
-      dataNoDocs.averageBar.should.eql(null);
+      should(dataNoDocs.averageBar).be.null();
       dataNoDocs.sumBaz.should.eql(0);
     });
 

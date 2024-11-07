@@ -200,7 +200,7 @@ export function getCountFromServer(query) {
   return query.count().get();
 }
 
-export async function getAggregateFromServer(query, aggregateSpec) {
+export function getAggregateFromServer(query, aggregateSpec) {
   if (!(query instanceof FirestoreQuery)) {
     throw new Error(
       '`getAggregateFromServer(*, aggregateSpec)` `query` muse be an instance of `FirestoreQuery`',
