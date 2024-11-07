@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.4.0](https://github.com/invertase/react-native-firebase/compare/v21.3.0...v21.4.0) (2024-11-07)
+
+### Features
+
+- Add initial tvOS support to some firebase packages ([ca51b51](https://github.com/invertase/react-native-firebase/commit/ca51b51f86edb9a5e293b463491fad40e4189e53))
+- enable tvOS installation on all package with upstream support ([e8e5f7f](https://github.com/invertase/react-native-firebase/commit/e8e5f7f9aab9a58aabf9a7b0cd756584240dbc48))
+
+### Bug Fixes
+
+- **app-check:** fix platform guard for AppAttest to match upstream ([30a79a4](https://github.com/invertase/react-native-firebase/commit/30a79a4cb3777c51a6edfd7399d0710434994932))
+- **app, tvOS:** tvOS minimum target upstream is 13.0, aligning here ([3fa3f07](https://github.com/invertase/react-native-firebase/commit/3fa3f07f00f0444fff3eb864afce3882e855ac41))
+- **auth, tvOS:** guard all phone & MFA with iOS-only compile ifdef ([3691bd0](https://github.com/invertase/react-native-firebase/commit/3691bd0c299fcd78ae58908ed5825e9c190714ed))
+
 ## [21.3.0](https://github.com/invertase/react-native-firebase/compare/v21.2.0...v21.3.0) (2024-10-31)
 
 ### Features

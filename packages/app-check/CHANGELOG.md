@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.4.0](https://github.com/invertase/react-native-firebase/compare/v21.3.0...v21.4.0) (2024-11-07)
+
+### Features
+
+- Add initial tvOS support to some firebase packages ([ca51b51](https://github.com/invertase/react-native-firebase/commit/ca51b51f86edb9a5e293b463491fad40e4189e53))
+
+### Bug Fixes
+
+- **app-check:** fix platform guard for AppAttest to match upstream ([30a79a4](https://github.com/invertase/react-native-firebase/commit/30a79a4cb3777c51a6edfd7399d0710434994932))
+
 ## [21.3.0](https://github.com/invertase/react-native-firebase/compare/v21.2.0...v21.3.0) (2024-10-31)
 
 **Note:** Version bump only for package @react-native-firebase/app-check

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.4.0](https://github.com/invertase/react-native-firebase/compare/v21.3.0...v21.4.0) (2024-11-07)
+
+### Features
+
+- enable tvOS installation on all package with upstream support ([e8e5f7f](https://github.com/invertase/react-native-firebase/commit/e8e5f7f9aab9a58aabf9a7b0cd756584240dbc48))
+
 ## [21.3.0](https://github.com/invertase/react-native-firebase/compare/v21.2.0...v21.3.0) (2024-10-31)
 
 **Note:** Version bump only for package @react-native-firebase/ml
