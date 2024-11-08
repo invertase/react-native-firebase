@@ -17,8 +17,8 @@
 const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
 describe('firestore().collection().count()', function () {
-  before(function () {
-    return wipe();
+  before(async function () {
+    return await wipe();
   });
 
   describe('v8 compatibility', function () {

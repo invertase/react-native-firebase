@@ -17,8 +17,8 @@
 const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
 describe('getAggregateFromServer()', function () {
-  before(function () {
-    return wipe();
+  before(async function () {
+    return await wipe();
   });
 
   describe('throws exceptions for incorrect inputs', function () {
@@ -132,9 +132,9 @@ describe('getAggregateFromServer()', function () {
       const colRef = collection(firestore, `${COLLECTION}/aggregate-count/collection`);
 
       await Promise.all([
-        setDoc(doc(colRef, 'one'), { bar: 5, baz: 4 }),
-        setDoc(doc(colRef, 'two'), { bar: 5, baz: 4 }),
-        setDoc(doc(colRef, 'three'), { bar: 5, baz: 4 }),
+        setDoc(doc(colRef, 'one'), { bar: 0.4, baz: 0.1 }),
+        setDoc(doc(colRef, 'two'), { bar: 0.5, baz: 0.1 }),
+        setDoc(doc(colRef, 'three'), { bar: 0.6, baz: 0.1 }),
       ]);
 
       const aggregateSpec = {
@@ -149,8 +149,8 @@ describe('getAggregateFromServer()', function () {
       const data = result.data();
 
       data.countCollection.should.eql(3);
-      data.averageBar.should.eql(5);
-      data.sumBaz.should.eql(12);
+      data.averageBar.should.eql(0.5);
+      data.sumBaz.should.eql(0.3);
       // should only return the aggregate field requests
       data.should.not.have.property('ignoreThisProperty');
     });
