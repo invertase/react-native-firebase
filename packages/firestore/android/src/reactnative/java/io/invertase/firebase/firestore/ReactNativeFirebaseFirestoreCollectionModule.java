@@ -34,7 +34,6 @@ import java.util.ArrayList;
 
 public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "FirestoreCollection";
-  private final String TAG = "aaaaaaaa";
   private static SparseArray<ListenerRegistration> collectionSnapshotListeners =
       new SparseArray<>();
 
