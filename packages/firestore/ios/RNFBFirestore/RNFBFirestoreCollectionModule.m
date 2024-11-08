@@ -252,6 +252,7 @@ RCT_EXPORT_METHOD(aggregateQuery
                                                            @"RNFB Firestore: Invalid Aggregate Type"
                                                                   reason:reason
                                                                 userInfo:nil]];
+      return;
     }
   }
 
