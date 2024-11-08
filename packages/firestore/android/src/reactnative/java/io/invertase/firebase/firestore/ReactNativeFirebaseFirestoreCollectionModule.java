@@ -34,6 +34,7 @@ import java.util.ArrayList;
 
 public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "FirestoreCollection";
+  private final String TAG = "aaaaaaaa";
   private static SparseArray<ListenerRegistration> collectionSnapshotListeners =
       new SparseArray<>();
 
@@ -224,10 +225,6 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
       String aggregateType = aggregateQuery.getString("aggregateType");
       if (aggregateType == null) aggregateType = "";
       String fieldPath = aggregateQuery.getString("field");
-      if (fieldPath == null) {
-        promise.reject("firestore/invalid-argument", "fieldPath cannot be null");
-        return;
-      }
 
       switch (aggregateType) {
         case "count":
@@ -240,7 +237,8 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
           aggregateFields.add(AggregateField.average(fieldPath));
           break;
         default:
-          promise.reject("firestore/invalid-argument", "Invalid AggregateType: " + aggregateType);
+          rejectPromiseWithCodeAndMessage(
+              promise, "firestore/invalid-argument", "Invalid AggregateType: " + aggregateType);
           return;
       }
     }
@@ -262,13 +260,11 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
                   String aggType = aggQuery.getString("aggregateType");
                   if (aggType == null) aggType = "";
                   String field = aggQuery.getString("field");
-                  if (field == null) {
-                    promise.reject("firestore/invalid-argument", "field may not be null");
-                    return;
-                  }
                   String key = aggQuery.getString("key");
+
                   if (key == null) {
-                    promise.reject("firestore/invalid-argument", "key may not be null");
+                    rejectPromiseWithCodeAndMessage(
+                        promise, "firestore/invalid-argument", "key may not be null");
                     return;
                   }
 
@@ -279,7 +275,8 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
                     case "sum":
                       Number sum = (Number) snapshot.get(sum(field));
                       if (sum == null) {
-                        promise.reject("firestore/unknown", "sum unexpectedly null");
+                        rejectPromiseWithCodeAndMessage(
+                            promise, "firestore/unknown", "sum unexpectedly null");
                         return;
                       }
                       result.putDouble(key, sum.doubleValue());
@@ -293,8 +290,10 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
                       }
                       break;
                     default:
-                      promise.reject(
-                          "firestore/invalid-argument", "Invalid AggregateType: " + aggType);
+                      rejectPromiseWithCodeAndMessage(
+                          promise,
+                          "firestore/invalid-argument",
+                          "Invalid AggregateType: " + aggType);
                       return;
                   }
                 }
