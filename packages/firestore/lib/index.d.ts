@@ -921,12 +921,16 @@ export namespace FirebaseFirestoreTypes {
   /**
    * The results of executing an aggregation query.
    */
-  export interface AggregateQuerySnapshot<T extends AggregateSpec> {
+  export interface AggregateQuerySnapshot<
+    AggregateSpecType extends AggregateSpec,
+    AppModelType = DocumentData,
+    DbModelType extends DocumentData = DocumentData,
+  > {
     /**
      * The underlying query over which the aggregations recorded in this
      * `AggregateQuerySnapshot` were performed.
      */
-    get query(): Query<unknown>;
+    get query(): Query<AppModelType, DbModelType>;
 
     /**
      * Returns the results of the aggregations performed over the underlying
@@ -939,7 +943,7 @@ export namespace FirebaseFirestoreTypes {
      * @returns The results of the aggregations performed over the underlying
      * query.
      */
-    data(): AggregateSpecData<T>;
+    data(): AggregateSpecData<AggregateSpecType>;
   }
 
   /**
