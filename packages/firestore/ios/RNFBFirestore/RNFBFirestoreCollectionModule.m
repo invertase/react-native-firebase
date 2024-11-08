@@ -246,9 +246,12 @@ RCT_EXPORT_METHOD(aggregateQuery
       [aggregateFields addObject:[FIRAggregateField aggregateFieldForAverageOfField:fieldPath]];
     } else {
       NSString *reason = [@"Invalid Aggregate Type: " stringByAppendingString:aggregateType];
-      @throw [NSException exceptionWithName:@"RNFB Firestore: Invalid Aggregate Type"
-                                     reason:reason
-                                   userInfo:nil];
+      [RNFBFirestoreCommon
+          promiseRejectFirestoreException:reject
+                                    error:[NSException exceptionWithName:
+                                                           @"RNFB Firestore: Invalid Aggregate Type"
+                                                                  reason:reason
+                                                                userInfo:nil]];
     }
   }
 
