@@ -1066,7 +1066,7 @@ export namespace FirebaseMessagingTypes {
      * ```
      *
      */
-    setBackgroundMessageHandler(handler: (message: RemoteMessage) => Promise<any>): void;
+    setBackgroundMessageHandler(handler: (message: RemoteMessage) => any): void;
 
     /**
      * Set a handler function which is called when the `${App Name} notifications settings`

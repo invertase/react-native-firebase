@@ -227,7 +227,7 @@ export function onSendError(
  */
 export function setBackgroundMessageHandler(
   messaging: Messaging,
-  handler: (message: FirebaseMessagingTypes.RemoteMessage) => Promise<any>,
+  handler: (message: FirebaseMessagingTypes.RemoteMessage) => any,
 ): void;
 
 /**

@@ -200,7 +200,7 @@ import messaging from '@react-native-firebase/messaging';
 import App from './App';
 
 // Register background handler
-messaging().setBackgroundMessageHandler(async remoteMessage => {
+messaging().setBackgroundMessageHandler(remoteMessage => {
   console.log('Message handled in the background!', remoteMessage);
 });
 
@@ -289,7 +289,7 @@ import { AppRegistry } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 
 // Handle background messages using setBackgroundMessageHandler
-messaging().setBackgroundMessageHandler(async remoteMessage => {
+messaging().setBackgroundMessageHandler(remoteMessage => {
   console.log('Message handled in the background!', remoteMessage);
 });
 
