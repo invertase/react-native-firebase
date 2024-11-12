@@ -536,7 +536,7 @@ describe('getAggregateFromServer()', function () {
         data.averageBaz.should.eql(-2);
       });
 
-      it.only('returns `WHAT` for properties with `-1`, `-2`,`-3` for `average()`', async function () {
+      it('returns `WHAT` for properties with `-1`, `-2`,`-3` for `average()`', async function () {
         const { getAggregateFromServer, doc, setDoc, collection, getFirestore, average } =
           firestoreModular;
         const firestore = getFirestore();
