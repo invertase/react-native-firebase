@@ -367,7 +367,7 @@ describe('getAggregateFromServer()', function () {
         data.sumBaz.should.eql(MAX_NUMBER);
       });
 
-      it('returns `Infinity` for JavaScript max safe number + 1 for `sum()`', async function () {
+      it('returns `MAX_NUMBER` for JavaScript max safe number + 1 for `sum()`', async function () {
         const { getAggregateFromServer, doc, setDoc, collection, getFirestore, sum } =
           firestoreModular;
         const MAX_NUMBER = Number.MAX_VALUE;
@@ -391,7 +391,7 @@ describe('getAggregateFromServer()', function () {
         data.sumBaz.should.eql(MAX_NUMBER);
       });
 
-      it('returns `Infinity` for JavaScript max safe number + 100 for `sum()`', async function () {
+      it('returns `MAX_NUMBER` for JavaScript max safe number + 100 for `sum()`', async function () {
         const { getAggregateFromServer, doc, setDoc, collection, getFirestore, sum } =
           firestoreModular;
         const MAX_NUMBER = Number.MAX_VALUE;
