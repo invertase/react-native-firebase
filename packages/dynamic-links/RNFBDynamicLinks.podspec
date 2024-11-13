@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  s.dependency          'Firebase/DynamicLinks', "<= #{firebase_sdk_version}"
+  s.dependency          'Firebase/DynamicLinks', firebase_sdk_version
   s.dependency          'GoogleUtilities/AppDelegateSwizzler'
 
   if defined?($RNFirebaseAsStaticFramework)

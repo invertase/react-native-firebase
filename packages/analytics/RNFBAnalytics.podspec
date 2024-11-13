@@ -41,13 +41,13 @@ Pod::Spec.new do |s|
   # Firebase dependencies
   if defined?($RNFirebaseAnalyticsWithoutAdIdSupport) && ($RNFirebaseAnalyticsWithoutAdIdSupport == true)
     Pod::UI.puts "#{s.name}: Using Firebase/AnalyticsWithoutAdIdSupport pod in place of default Firebase/Analytics"
-    s.dependency          'Firebase/AnalyticsWithoutAdIdSupport', "<= #{firebase_sdk_version}"
+    s.dependency          'Firebase/AnalyticsWithoutAdIdSupport', firebase_sdk_version
   else
     if !defined?($RNFirebaseAnalyticsWithoutAdIdSupport)
       Pod::UI.puts "#{s.name}: Using default Firebase/Analytics with Ad Ids. May require App Tracking Transparency. Not allowed for Kids apps."
       Pod::UI.puts "#{s.name}: You may set variable `$RNFirebaseAnalyticsWithoutAdIdSupport=true` in Podfile to use analytics without ad ids."
     end
-    s.dependency          'Firebase/Analytics', "<= #{firebase_sdk_version}"
+    s.dependency          'Firebase/Analytics', firebase_sdk_version
 
     # Special pod for on-device conversion
     if defined?($RNFirebaseAnalyticsEnableAdSupport) && ($RNFirebaseAnalyticsEnableAdSupport == true)
@@ -59,7 +59,7 @@ Pod::Spec.new do |s|
   # Special pod for on-device conversion
   if defined?($RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion) && ($RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion == true)
     Pod::UI.puts "#{s.name}: GoogleAppMeasurementOnDeviceConversion pod added"
-    s.dependency          'GoogleAppMeasurementOnDeviceConversion', "<= #{firebase_sdk_version}"
+    s.dependency          'GoogleAppMeasurementOnDeviceConversion', firebase_sdk_version
   end
 
   if defined?($RNFirebaseAsStaticFramework)
