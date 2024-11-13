@@ -90,10 +90,13 @@ describe('crashlytics()', function () {
         let logged = false;
         // eslint-disable-next-line no-console
         console.warn = msg => {
-          msg.should.containEql('expects an instance of Error');
-          logged = true;
-          // eslint-disable-next-line no-console
-          console.warn = orig;
+          // we console.warn for deprecated API, can be removed when we move to v9
+          if (!msg.includes('v8 method is deprecated')) {
+            msg.should.containEql('expects an instance of Error');
+            logged = true;
+            // eslint-disable-next-line no-console
+            console.warn = orig;
+          }
         };
 
         firebase.crashlytics().recordError(1337);
