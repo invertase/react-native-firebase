@@ -5,6 +5,9 @@ import firestore, {
   Filter,
   getFirestore,
   getAggregateFromServer,
+  count,
+  average,
+  sum,
   addDoc,
   doc,
   collection,
@@ -655,6 +658,18 @@ describe('Firestore', function () {
 
     it('`getAggregateFromServer` is properly exposed to end user', function () {
       expect(getAggregateFromServer).toBeDefined();
+    });
+
+    it('`count` is properly exposed to end user', function () {
+      expect(count).toBeDefined();
+    });
+
+    it('`average` is properly exposed to end user', function () {
+      expect(average).toBeDefined();
+    });
+
+    it('`sum` is properly exposed to end user', function () {
+      expect(sum).toBeDefined();
     });
   });
 
