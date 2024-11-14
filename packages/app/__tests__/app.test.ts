@@ -1,5 +1,5 @@
 import { describe, expect, it, jest } from '@jest/globals';
-
+import { checkV9Deprecation } from '../lib/common/unitTestUtils';
 import firebase, {
   deleteApp,
   registerVersion,
@@ -9,16 +9,6 @@ import firebase, {
   getApp,
   setLogLevel,
 } from '../lib';
-
-// this could be extracted to some test utils location
-const checkV9Deprecation = (modularFunction: () => void, nonModularFunction: () => void) => {
-  const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-  modularFunction();
-  expect(consoleWarnSpy).not.toHaveBeenCalled();
-  nonModularFunction();
-  expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
-  consoleWarnSpy.mockRestore();
-};
 
 describe('App', function () {
   describe('modular', function () {
