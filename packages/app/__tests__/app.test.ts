@@ -92,5 +92,27 @@ describe('App', function () {
       // Restore the original console.warn
       consoleWarnSpy.mockRestore();
     });
+
+    it('FirebaseApp.toString()', function () {
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const app = firebase.app();
+      app.toString();
+      // Check that console.warn was called for deprecated method call
+      firebase.setLogLevel('debug');
+      expect(consoleWarnSpy).toHaveBeenCalled();
+      // Restore the original console.warn
+      consoleWarnSpy.mockRestore();
+    });
+
+    it('FirebaseApp.extendApp()', function () {
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const app = firebase.app();
+      // To overcome type assertion
+      (app as any).extendApp({ some: 'property' });
+      // Check that console.warn was called for deprecated method call
+      expect(consoleWarnSpy).toHaveBeenCalled();
+      // Restore the original console.warn
+      consoleWarnSpy.mockRestore();
+    });
   });
 });

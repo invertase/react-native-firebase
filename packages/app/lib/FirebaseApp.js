@@ -61,12 +61,11 @@ export default class FirebaseApp {
   }
 
   extendApp(extendedProps) {
-    if (isNotModularCall(arguments)) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API.',
-      );
-    }
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API.',
+    );
+
     this._checkDestroyed();
     Object.assign(this, extendedProps);
   }
