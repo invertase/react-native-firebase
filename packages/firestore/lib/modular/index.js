@@ -13,6 +13,14 @@
  */
 
 import { firebase } from '../index';
+import { isObject } from '@react-native-firebase/app/lib/common';
+import {
+  FirestoreAggregateQuerySnapshot,
+  AggregateField,
+  AggregateType,
+  fieldPathFromArgument,
+} from '../FirestoreAggregate';
+import FirestoreQuery from '../FirestoreQuery';
 
 /**
  * @param {FirebaseApp?} app
@@ -190,6 +198,91 @@ export function runTransaction(firestore, updateFunction) {
  */
 export function getCountFromServer(query) {
   return query.count().get();
+}
+
+export function getAggregateFromServer(query, aggregateSpec) {
+  if (!(query instanceof FirestoreQuery)) {
+    throw new Error(
+      '`getAggregateFromServer(*, aggregateSpec)` `query` must be an instance of `FirestoreQuery`',
+    );
+  }
+
+  if (!isObject(aggregateSpec)) {
+    throw new Error('`getAggregateFromServer(query, *)` `aggregateSpec` must be an object');
+  } else {
+    const containsOneAggregateField = Object.values(aggregateSpec).find(
+      value => value instanceof AggregateField,
+    );
+
+    if (!containsOneAggregateField) {
+      throw new Error(
+        '`getAggregateFromServer(query, *)` `aggregateSpec` must contain at least one `AggregateField`',
+      );
+    }
+  }
+  const aggregateQueries = [];
+  for (const key in aggregateSpec) {
+    if (aggregateSpec.hasOwnProperty(key)) {
+      const aggregateField = aggregateSpec[key];
+      // we ignore any fields that are not `AggregateField`
+      if (aggregateField instanceof AggregateField) {
+        switch (aggregateField.aggregateType) {
+          case AggregateType.AVG:
+          case AggregateType.SUM:
+          case AggregateType.COUNT:
+            const aggregateQuery = {
+              aggregateType: aggregateField.aggregateType,
+              field:
+                aggregateField._fieldPath === null ? null : aggregateField._fieldPath._toPath(),
+              key,
+            };
+            aggregateQueries.push(aggregateQuery);
+            break;
+          default:
+            throw new Error(
+              `'AggregateField' has an an unknown 'AggregateType' : ${aggregateField.aggregateType}`,
+            );
+        }
+      }
+    }
+  }
+
+  return query._firestore.native
+    .aggregateQuery(
+      query._collectionPath.relativeName,
+      query._modifiers.type,
+      query._modifiers.filters,
+      query._modifiers.orders,
+      query._modifiers.options,
+      aggregateQueries,
+    )
+    .then(data => new FirestoreAggregateQuerySnapshot(query, data, false));
+}
+
+/**
+ * Create an AggregateField object that can be used to compute the sum of
+ * a specified field over a range of documents in the result set of a query.
+ * @param field Specifies the field to sum across the result set.
+ */
+export function sum(field) {
+  return new AggregateField(AggregateType.SUM, fieldPathFromArgument(field));
+}
+
+/**
+ * Create an AggregateField object that can be used to compute the average of
+ * a specified field over a range of documents in the result set of a query.
+ * @param field Specifies the field to average across the result set.
+ */
+export function average(field) {
+  return new AggregateField(AggregateType.AVG, fieldPathFromArgument(field));
+}
+
+/**
+ * Create an AggregateField object that can be used to compute the count of
+ * documents in the result set of a query.
+ */
+export function count() {
+  return new AggregateField(AggregateType.COUNT, null);
 }
 
 /**
