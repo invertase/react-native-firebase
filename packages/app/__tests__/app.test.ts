@@ -10,6 +10,16 @@ import firebase, {
   setLogLevel,
 } from '../lib';
 
+// this could be extracted to some test utils location
+const checkV9Deprecation = (modularFunction: () => void, nonModularFunction: () => void) => {
+  const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  modularFunction();
+  expect(consoleWarnSpy).not.toHaveBeenCalled();
+  nonModularFunction();
+  expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+  consoleWarnSpy.mockRestore();
+};
+
 describe('App', function () {
   describe('modular', function () {
     it('`deleteApp` function is properly exposed to end user', function () {
@@ -41,78 +51,56 @@ describe('App', function () {
     });
   });
 
-  describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
+  describe('`console.warn` only called for non-modular API', function () {
     it('deleteApp', function () {
-      const firebaseApp = firebase.app();
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      // this test has a slightly special setup
       // @ts-ignore test
-      jest.spyOn(firebaseApp, '_deleteApp').mockImplementation(() => Promise.resolve(null));
-      // we don't need to test this because we call underlying deleteApp directly
-      // deleteApp(firebaseApp);
-
-      firebaseApp.delete();
-      // Check that console.warn was called for v8 method call
-      expect(consoleWarnSpy).toHaveBeenCalled();
-      // Restore the original console.warn
-      consoleWarnSpy.mockRestore();
+      jest.spyOn(getApp(), '_deleteApp').mockImplementation(() => Promise.resolve(null));
+      checkV9Deprecation(
+        () => {}, // no modular replacement
+        () => getApp().delete(), // modular getApp(), then non-modular to check
+      );
     });
 
     it('getApps', function () {
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-      // Check that console.warn was not called for v9 method call
-      getApps();
-      expect(consoleWarnSpy).not.toHaveBeenCalled();
-      // Check that console.warn was called for v8 method call
-      firebase.apps;
-      expect(consoleWarnSpy).toHaveBeenCalled();
-      // Restore the original console.warn
-      consoleWarnSpy.mockRestore();
+      checkV9Deprecation(
+        () => getApps(),
+        () => firebase.apps,
+      );
     });
 
     it('getApp', function () {
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-      // Check that console.warn was not called for v9 method call
-      getApp();
-      expect(consoleWarnSpy).not.toHaveBeenCalled();
-      // Check that console.warn was called for v8 method call
-      firebase.app();
-      expect(consoleWarnSpy).toHaveBeenCalled();
-      // Restore the original console.warn
-      consoleWarnSpy.mockRestore();
+      checkV9Deprecation(
+        () => getApp(),
+        () => firebase.app(),
+      );
     });
 
     it('setLogLevel', function () {
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-      // Check that console.warn was not called for v9 method call
-      setLogLevel('debug');
-      expect(consoleWarnSpy).not.toHaveBeenCalled();
-      // Check that console.warn was called for v8 method call
-      firebase.setLogLevel('debug');
-      expect(consoleWarnSpy).toHaveBeenCalled();
-      // Restore the original console.warn
-      consoleWarnSpy.mockRestore();
+      checkV9Deprecation(
+        () => setLogLevel('debug'),
+        () => firebase.setLogLevel('debug'),
+      );
     });
 
     it('FirebaseApp.toString()', function () {
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-      const app = firebase.app();
-      app.toString();
-      // Check that console.warn was called for deprecated method call
-      firebase.setLogLevel('debug');
-      expect(consoleWarnSpy).toHaveBeenCalled();
-      // Restore the original console.warn
-      consoleWarnSpy.mockRestore();
+      checkV9Deprecation(
+        () => {}, // no modular replacement
+        () => getApp().toString(), // modular getApp(), then non-modular to check
+      );
     });
 
     it('FirebaseApp.extendApp()', function () {
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-      const app = firebase.app();
-      // To overcome type assertion
-      (app as any).extendApp({ some: 'property' });
-      // Check that console.warn was called for deprecated method call
-      expect(consoleWarnSpy).toHaveBeenCalled();
-      // Restore the original console.warn
-      consoleWarnSpy.mockRestore();
+      checkV9Deprecation(
+        // no modular replacement for this one so no modular func to send in
+        () => {},
+        // modular getApp(), then non-modular to check
+        () => {
+          const app = getApp();
+          (app as any).extendApp({ some: 'property' });
+          return;
+        },
+      );
     });
   });
 });
