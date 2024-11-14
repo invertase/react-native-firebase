@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import { isNotModularCall } from '@react-native-firebase/app/lib/common';
+import { warnIfNotModularCall } from '@react-native-firebase/app/lib/common';
 import { getAppModule } from './internal/registry/nativeModule';
 
 export default class FirebaseApp {
@@ -61,33 +61,21 @@ export default class FirebaseApp {
   }
 
   extendApp(extendedProps) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API.',
-    );
-
+    // this method has no modular alternative, send true for param 'noAlternative'
+    warnIfNotModularCall(arguments, '', true);
     this._checkDestroyed();
     Object.assign(this, extendedProps);
   }
 
   delete() {
-    if (isNotModularCall(arguments)) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API. Please use `deleteApp()` instead.',
-      );
-    }
+    warnIfNotModularCall(arguments, 'deleteApp()');
     this._checkDestroyed();
     return this._deleteApp();
   }
 
   toString() {
-    if (isNotModularCall(arguments)) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API.',
-      );
-    }
+    // this method has no modular alternative, send true for param 'noAlternative'
+    warnIfNotModularCall(arguments, '', true);
     return this.name;
   }
 }
