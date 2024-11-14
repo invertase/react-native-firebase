@@ -19,6 +19,7 @@ import {
   isIOS,
   isOther,
   isNull,
+  isNotModularCall,
   isObject,
   isFunction,
   isString,
@@ -84,6 +85,12 @@ export function initializeNativeApps() {
  * @param name
  */
 export function getApp(name = DEFAULT_APP_NAME) {
+  if (isNotModularCall(arguments)) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API. Please use `getApp()` instead.',
+    );
+  }
   if (!initializedNativeApps) {
     initializeNativeApps();
   }
@@ -100,6 +107,12 @@ export function getApp(name = DEFAULT_APP_NAME) {
  * Gets all app instances, used for `firebase.apps`
  */
 export function getApps() {
+  if (isNotModularCall(arguments)) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API. Please use `getApps()` instead.',
+    );
+  }
   if (!initializedNativeApps) {
     initializeNativeApps();
   }
@@ -112,6 +125,12 @@ export function getApps() {
  * @param configOrName
  */
 export function initializeApp(options = {}, configOrName) {
+  if (isNotModularCall(arguments)) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API. Please use `initializeApp()` instead.',
+    );
+  }
   let appConfig = configOrName;
 
   if (!isObject(configOrName) || isNull(configOrName)) {
@@ -200,6 +219,12 @@ export function initializeApp(options = {}, configOrName) {
 }
 
 export function setLogLevel(logLevel) {
+  if (isNotModularCall(arguments)) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API. Please use `setLogLevel()` instead.',
+    );
+  }
   if (!['error', 'warn', 'info', 'debug', 'verbose'].includes(logLevel)) {
     throw new Error('LogLevel must be one of "error", "warn", "info", "debug", "verbose"');
   }

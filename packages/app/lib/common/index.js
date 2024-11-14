@@ -102,3 +102,14 @@ export function tryJSONStringify(data) {
     return null;
   }
 }
+
+export const MODULAR_DEPRECATION_ARG = 'react-native-firebase-modular-method-call';
+
+export function isNotModularCall(args) {
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === MODULAR_DEPRECATION_ARG) {
+      return false;
+    }
+  }
+  return true;
+}

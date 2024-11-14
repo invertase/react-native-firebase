@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-
+import { isNotModularCall } from '@react-native-firebase/app/lib/common';
 import { getAppModule } from './internal/registry/nativeModule';
 
 export default class FirebaseApp {
@@ -61,16 +61,34 @@ export default class FirebaseApp {
   }
 
   extendApp(extendedProps) {
+    if (isNotModularCall(arguments)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API.',
+      );
+    }
     this._checkDestroyed();
     Object.assign(this, extendedProps);
   }
 
   delete() {
+    if (isNotModularCall(arguments)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API. Please use `deleteApp()` instead.',
+      );
+    }
     this._checkDestroyed();
     return this._deleteApp();
   }
 
   toString() {
+    if (isNotModularCall(arguments)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'This v8 method is deprecated and will be removed in the next major release as part of move to match Firebase Web modular v9 SDK API.',
+      );
+    }
     return this.name;
   }
 }
