@@ -68,7 +68,7 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'conn
 
     reports {
         xml.required = true
-        html.destination htmlOutDir
+        html.outputLocation = htmlOutDir
     }
 
     def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
@@ -98,7 +98,7 @@ task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) 
 
     reports {
         xml.required = true
-        html.destination htmlOutDir
+        html.outputLocation = htmlOutDir
     }
 
     def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
@@ -123,7 +123,7 @@ task jacocoAndroidTestReport(type: JacocoReport) {
 
     reports {
         xml.required = true
-        html.destination htmlOutDir
+        html.outputLocation = htmlOutDir
     }
 
     def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
