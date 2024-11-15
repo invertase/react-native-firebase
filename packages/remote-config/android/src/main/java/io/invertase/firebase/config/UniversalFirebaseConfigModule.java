@@ -19,6 +19,7 @@ package io.invertase.firebase.config;
 
 import static com.google.firebase.remoteconfig.FirebaseRemoteConfig.*;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
@@ -154,6 +155,7 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
     return configValuesMap;
   }
 
+  @SuppressLint("DiscouragedApi")
   private int getXmlResourceIdByName(String name) {
     String packageName = getApplicationContext().getPackageName();
     return getApplicationContext().getResources().getIdentifier(name, "xml", packageName);
