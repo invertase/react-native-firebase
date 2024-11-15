@@ -36,8 +36,8 @@ public class ReactNativeFirebasePerfModule extends ReactNativeFirebaseModule {
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
-    super.onCatalystInstanceDestroy();
+  public void invalidate() {
+    super.invalidate();
     module.onTearDown();
   }
 

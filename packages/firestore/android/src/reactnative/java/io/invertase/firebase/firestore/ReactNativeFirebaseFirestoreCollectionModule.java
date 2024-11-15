@@ -42,8 +42,8 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
-    super.onCatalystInstanceDestroy();
+  public void invalidate() {
+    super.invalidate();
 
     for (int i = 0, size = collectionSnapshotListeners.size(); i < size; i++) {
       int key = collectionSnapshotListeners.keyAt(i);
