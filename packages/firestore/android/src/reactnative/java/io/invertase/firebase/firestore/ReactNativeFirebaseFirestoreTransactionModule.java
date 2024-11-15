@@ -45,7 +45,7 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
+  public void invalidate() {
     for (int i = 0, size = transactionHandlers.size(); i < size; i++) {
       int key = transactionHandlers.keyAt(i);
       ReactNativeFirebaseFirestoreTransactionHandler transactionHandler =
@@ -57,7 +57,7 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
     }
 
     transactionHandlers.clear();
-    super.onCatalystInstanceDestroy();
+    super.invalidate();
   }
 
   @ReactMethod

@@ -123,8 +123,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
-    super.onCatalystInstanceDestroy();
+  public void invalidate() {
+    super.invalidate();
     Log.d(TAG, "instance-destroyed");
 
     Iterator authListenerIterator = mAuthListeners.entrySet().iterator();

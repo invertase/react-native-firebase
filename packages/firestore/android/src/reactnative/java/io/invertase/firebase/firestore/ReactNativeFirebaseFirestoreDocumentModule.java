@@ -43,8 +43,8 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
-    super.onCatalystInstanceDestroy();
+  public void invalidate() {
+    super.invalidate();
 
     for (int i = 0, size = documentSnapshotListeners.size(); i < size; i++) {
       int key = documentSnapshotListeners.keyAt(i);

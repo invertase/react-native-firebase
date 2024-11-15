@@ -100,8 +100,8 @@ public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
-    super.onCatalystInstanceDestroy();
+  public void invalidate() {
+    super.invalidate();
     Log.d(TAG, "instance-destroyed");
 
     Iterator appCheckListenerIterator = mAppCheckListeners.entrySet().iterator();

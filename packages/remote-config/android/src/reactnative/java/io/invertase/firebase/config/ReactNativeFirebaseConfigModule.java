@@ -45,8 +45,8 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
-    super.onCatalystInstanceDestroy();
+  public void invalidate() {
+    super.invalidate();
 
     Iterator<Map.Entry<String, ConfigUpdateListenerRegistration>> configRegistrationsIterator =
         mConfigUpdateRegistrations.entrySet().iterator();
