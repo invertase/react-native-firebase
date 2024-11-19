@@ -51,7 +51,6 @@ export default class PhoneAuthListener {
     this._subscribeToEvents();
 
     if (isAndroid) {
-      this._auth.
       this._auth.native.verifyPhoneNumber(
         phoneNumber,
         this._phoneAuthRequestId + '',
