@@ -33,7 +33,7 @@ export default class Settings {
     return this._autoOTPVerify;
   }
 
-  set autoOTPVerify(autoOTPVerify) {
+  setAutoOTPVerify(autoOTPVerify) {
     this._autoOTPVerify = autoOTPVerify;
   }
 
