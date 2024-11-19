@@ -102,3 +102,23 @@ export function tryJSONStringify(data) {
     return null;
   }
 }
+
+export const MODULAR_DEPRECATION_ARG = 'react-native-firebase-modular-method-call';
+
+export function warnIfNotModularCall(args, replacementMethodName, noAlternative) {
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === MODULAR_DEPRECATION_ARG) {
+      return;
+    }
+  }
+  let message =
+    'This v8 method is deprecated and will be removed in the next major release ' +
+    'as part of move to match Firebase Web modular v9 SDK API.';
+
+  if (!noAlternative) {
+    message += ` Please use \`${replacementMethodName}\` instead.`;
+  }
+
+  // eslint-disable-next-line no-console
+  console.warn(message);
+}
