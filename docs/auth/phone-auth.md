@@ -227,3 +227,33 @@ export default function PhoneVerification() {
   }
 }
 ```
+
+# Disabling automatic OTP verification on Android devices
+
+Firebase Auth automagically verifies the received OTP code from the SMS and in some certain devices it might throw `The SMS code has expired` error.
+
+Disable auto verify by adding this on `index.js` or `App.tsx`:
+
+```jsx
+await firebase.auth().settings.setAutoOTPVerify(false);
+```
+
+To manually handle OTP verification code:
+
+```jsx
+// set code and phone from textinputs
+const [phone, setPhone] = useState('');
+const [code, setCode] = useState('');
+
+const handlePhoneLogin = async () => {
+  try {
+    const confirmResult = await auth().signInWithPhoneNumber(phone);
+
+    await confirmResult.confirm(code).then(user => {
+      console.log(user);
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};
+```
