@@ -1120,7 +1120,7 @@ export namespace FirebaseAuthTypes {
     /**
      * Flag to disable automatic retrieval of SMS codes for the given phone number.
      * When receiving a verification code Android automagically digests the OTP code,
-     * in some cases this can cause issues like "OTP already used".
+     * in some cases this can cause issues like `The SMS code has expired`.
      * Use it only if absolutely necessary.
      *
      * @android
@@ -1132,11 +1132,18 @@ export namespace FirebaseAuthTypes {
      *
      * This method allows you to control the behavior of OTP verification by disabling the automatic retrieval
      * and verification of SMS codes. This can be useful in testing scenarios or when you want to handle OTP
-     * verification manually if your users encounter "OTP already used" errors on some devices.
+     * verification manually if your users encounter `The SMS code has expired` errors on some devices.
      *
      * @example
      * ```js
-     * await firebase.auth().settings.setAutoOTPVerify(false);
+     * (async function () {
+     *   try {
+     *     await firebase.auth().settings.setAutoOTPVerify(false);
+     *   } catch (error) {
+     *     console.error(error);
+     *   }
+     * })();
+     *
      * ```
      *
      * @android
