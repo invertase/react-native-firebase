@@ -27,7 +27,7 @@ export default class PhoneAuthListener {
     this._resolve = null;
     this._promise = null;
     this._jsStack = new Error().stack;
-    this._autoOTPVerify = autoOTPVerify
+    this._autoOTPVerify = autoOTPVerify;
 
     this._timeout = timeout || 20;
     this._phoneAuthRequestId = REQUEST_ID++;
@@ -56,7 +56,7 @@ export default class PhoneAuthListener {
         this._phoneAuthRequestId + '',
         this._timeout,
         this._forceResending,
-        this._autoOTPVerify
+        this._autoOTPVerify,
       );
     }
 

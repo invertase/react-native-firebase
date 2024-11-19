@@ -981,7 +981,11 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    */
   @ReactMethod
   public void signInWithPhoneNumber(
-      String appName, final String phoneNumber, final boolean forceResend, final Promise promise, final boolean autoOTPVerify) {
+      String appName,
+      final String phoneNumber,
+      final boolean forceResend,
+      final Promise promise,
+      final boolean autoOTPVerify) {
     Log.d(TAG, "signInWithPhoneNumber");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -1080,10 +1084,16 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       if (forceResend && mForceResendingToken != null) {
         PhoneAuthProvider.getInstance(firebaseAuth)
             .verifyPhoneNumber(
-                phoneNumber, autoOTPVerify ? 60 : 0, TimeUnit.SECONDS, activity, callbacks, mForceResendingToken);
+                phoneNumber,
+                autoOTPVerify ? 60 : 0,
+                TimeUnit.SECONDS,
+                activity,
+                callbacks,
+                mForceResendingToken);
       } else {
         PhoneAuthProvider.getInstance(firebaseAuth)
-            .verifyPhoneNumber(phoneNumber, autoOTPVerify ? 60 : 0, TimeUnit.SECONDS, activity, callbacks);
+            .verifyPhoneNumber(
+                phoneNumber, autoOTPVerify ? 60 : 0, TimeUnit.SECONDS, activity, callbacks);
       }
     }
   }
@@ -1113,7 +1123,11 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
   @ReactMethod
   public void verifyPhoneNumberWithMultiFactorInfo(
-      final String appName, final String hintUid, final String sessionKey, final Promise promise, final boolean autoOTPVerify) {
+      final String appName,
+      final String hintUid,
+      final String sessionKey,
+      final Promise promise,
+      final boolean autoOTPVerify) {
     final MultiFactorResolver resolver = mCachedResolvers.get(sessionKey);
     if (resolver == null) {
       // See https://firebase.google.com/docs/reference/node/firebase.auth.multifactorresolver for

@@ -294,7 +294,7 @@ class FirebaseAuthModule extends FirebaseModule {
   verifyPhoneNumber(phoneNumber, autoVerifyTimeoutOrForceResend, forceResend) {
     let _forceResend = forceResend;
     let _autoVerifyTimeout = 60;
-    let _autoOTPVerify = this._settings.autoOTPVerify
+    let _autoOTPVerify = this._settings.autoOTPVerify;
 
     if (isBoolean(autoVerifyTimeoutOrForceResend)) {
       _forceResend = autoVerifyTimeoutOrForceResend;
@@ -302,7 +302,13 @@ class FirebaseAuthModule extends FirebaseModule {
       _autoVerifyTimeout = autoVerifyTimeoutOrForceResend;
     }
 
-    return new PhoneAuthListener(this, phoneNumber, _autoVerifyTimeout, _forceResend, _autoOTPVerify);
+    return new PhoneAuthListener(
+      this,
+      phoneNumber,
+      _autoVerifyTimeout,
+      _forceResend,
+      _autoOTPVerify,
+    );
   }
 
   verifyPhoneNumberWithMultiFactorInfo(multiFactorHint, session) {
