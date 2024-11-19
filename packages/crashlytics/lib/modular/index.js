@@ -1,4 +1,7 @@
-import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
+import {
+  MODULAR_DEPRECATION_ARG,
+  warnIfNotModularCall,
+} from '@react-native-firebase/app/lib/common';
 import { firebase } from '..';
 
 /**
@@ -32,12 +35,8 @@ export function getCrashlytics() {
  * @returns {boolean}
  */
 export function isCrashlyticsCollectionEnabled(crashlytics) {
-  // Deprecating this method and allow it as a property on Crashlytics instance
-  // auth instance has plenty of properties so I think this should also be one: https://firebase.google.com/docs/reference/js/auth.auth
-  // eslint-disable-next-line no-console
-  console.warn(
-    'This method is deprecated and will be removed in the next major release. Please just use `crashlytics.isCrashlyticsCollectionEnabled` property instead.',
-  );
+  // Deprecating this method and allow it as a property on Crashlytics instance.
+  warnIfNotModularCall([], 'crashlytics.isCrashlyticsCollectionEnabled');
   return crashlytics.isCrashlyticsCollectionEnabled;
 }
 

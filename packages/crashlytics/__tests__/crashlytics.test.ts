@@ -1,5 +1,5 @@
 import { describe, expect, it, jest } from '@jest/globals';
-
+import { checkV9Deprecation } from '../../app/lib/common/unitTestUtils';
 import {
   firebase,
   getCrashlytics,
@@ -83,211 +83,145 @@ describe('Crashlytics', function () {
   describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
     it('checkForUnsentReports', function () {
       const crashlytics = getCrashlytics();
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
       // @ts-ignore test
       const nativeMock = { checkForUnsentReports: jest.fn() };
       // @ts-ignore test
       jest.spyOn(crashlytics, 'native', 'get').mockReturnValue(nativeMock);
 
-      checkForUnsentReports(crashlytics);
-      // Check that console.warn was not called for v9 method call
-      expect(consoleWarnSpy).not.toHaveBeenCalled();
-
-      crashlytics.checkForUnsentReports();
-      // Check that console.warn was called for v8 method call
-      expect(consoleWarnSpy).toHaveBeenCalled();
-      // Restore the original console.warn
-      consoleWarnSpy.mockRestore();
+      checkV9Deprecation(
+        () => checkForUnsentReports(crashlytics),
+        () => crashlytics.checkForUnsentReports(),
+      );
     });
 
     it('crash', function () {
       const crashlytics = getCrashlytics();
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
       // @ts-ignore test
       const nativeMock = { crash: jest.fn() };
       // @ts-ignore test
       jest.spyOn(crashlytics, 'native', 'get').mockReturnValue(nativeMock);
 
-      crash(crashlytics);
-      // Check that console.warn was not called for v9 method call
-      expect(consoleWarnSpy).not.toHaveBeenCalled();
-
-      crashlytics.crash();
-      // Check that console.warn was called for v8 method call
-      expect(consoleWarnSpy).toHaveBeenCalled();
-      // Restore the original console.warn
-      consoleWarnSpy.mockRestore();
+      checkV9Deprecation(
+        () => crash(crashlytics),
+        () => crashlytics.crash(),
+      );
     });
 
     it('deleteUnsentReports', function () {
       const crashlytics = getCrashlytics();
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
       // @ts-ignore test
       const nativeMock = { deleteUnsentReports: jest.fn() };
       // @ts-ignore test
       jest.spyOn(crashlytics, 'native', 'get').mockReturnValue(nativeMock);
 
-      deleteUnsentReports(crashlytics);
-      // Check that console.warn was not called for v9 method call
-      expect(consoleWarnSpy).not.toHaveBeenCalled();
-
-      crashlytics.deleteUnsentReports();
-      // Check that console.warn was called for v8 method call
-      expect(consoleWarnSpy).toHaveBeenCalled();
-      // Restore the original console.warn
-      consoleWarnSpy.mockRestore();
+      checkV9Deprecation(
+        () => deleteUnsentReports(crashlytics),
+        () => crashlytics.deleteUnsentReports(),
+      );
     });
 
     it('didCrashOnPreviousExecution', function () {
       const crashlytics = getCrashlytics();
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
       // @ts-ignore test
       const nativeMock = { didCrashOnPreviousExecution: jest.fn() };
       // @ts-ignore test
       jest.spyOn(crashlytics, 'native', 'get').mockReturnValue(nativeMock);
 
-      didCrashOnPreviousExecution(crashlytics);
-      // Check that console.warn was not called for v9 method call
-      expect(consoleWarnSpy).not.toHaveBeenCalled();
-
-      crashlytics.didCrashOnPreviousExecution();
-      // Check that console.warn was called for v8 method call
-      expect(consoleWarnSpy).toHaveBeenCalled();
-      // Restore the original console.warn
-      consoleWarnSpy.mockRestore();
+      checkV9Deprecation(
+        () => didCrashOnPreviousExecution(crashlytics),
+        () => crashlytics.didCrashOnPreviousExecution(),
+      );
     });
 
     it('log', function () {
       const crashlytics = getCrashlytics();
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
       // @ts-ignore test
       const nativeMock = { log: jest.fn() };
       // @ts-ignore test
       jest.spyOn(crashlytics, 'native', 'get').mockReturnValue(nativeMock);
 
-      log(crashlytics, 'message');
-      // Check that console.warn was not called for v9 method call
-      expect(consoleWarnSpy).not.toHaveBeenCalled();
-
-      crashlytics.log('message');
-      // Check that console.warn was called for v8 method call
-      expect(consoleWarnSpy).toHaveBeenCalled();
-      // Restore the original console.warn
-      consoleWarnSpy.mockRestore();
+      checkV9Deprecation(
+        () => log(crashlytics, 'message'),
+        () => crashlytics.log('message'),
+      );
     });
 
     it('setAttribute', function () {
       const crashlytics = getCrashlytics();
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
       // @ts-ignore test
       const nativeMock = { setAttribute: jest.fn() };
       // @ts-ignore test
       jest.spyOn(crashlytics, 'native', 'get').mockReturnValue(nativeMock);
 
-      setAttribute(crashlytics, 'name', 'value');
-      // Check that console.warn was not called for v9 method call
-      expect(consoleWarnSpy).not.toHaveBeenCalled();
-
-      crashlytics.setAttribute('name', 'value');
-      // Check that console.warn was called for v8 method call
-      expect(consoleWarnSpy).toHaveBeenCalled();
-      // Restore the original console.warn
-      consoleWarnSpy.mockRestore();
+      checkV9Deprecation(
+        () => setAttribute(crashlytics, 'name', 'value'),
+        () => crashlytics.setAttribute('name', 'value'),
+      );
     });
 
     it('setAttributes', function () {
       const crashlytics = getCrashlytics();
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
       // @ts-ignore test
       const nativeMock = { setAttributes: jest.fn() };
       // @ts-ignore test
       jest.spyOn(crashlytics, 'native', 'get').mockReturnValue(nativeMock);
 
-      setAttributes(crashlytics, {});
-      // Check that console.warn was not called for v9 method call
-      expect(consoleWarnSpy).not.toHaveBeenCalled();
-
-      crashlytics.setAttributes({});
-      // Check that console.warn was called for v8 method call
-      expect(consoleWarnSpy).toHaveBeenCalled();
-      // Restore the original console.warn
-      consoleWarnSpy.mockRestore();
+      checkV9Deprecation(
+        () => setAttributes(crashlytics, {}),
+        () => crashlytics.setAttributes({}),
+      );
     });
 
     it('setUserId', function () {
       const crashlytics = getCrashlytics();
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
       // @ts-ignore test
       const nativeMock = { setUserId: jest.fn() };
       // @ts-ignore test
       jest.spyOn(crashlytics, 'native', 'get').mockReturnValue(nativeMock);
 
-      setUserId(crashlytics, 'id');
-      // Check that console.warn was not called for v9 method call
-      expect(consoleWarnSpy).not.toHaveBeenCalled();
-
-      crashlytics.setUserId('id');
-      // Check that console.warn was called for v8 method call
-      expect(consoleWarnSpy).toHaveBeenCalled();
-      // Restore the original console.warn
-      consoleWarnSpy.mockRestore();
+      checkV9Deprecation(
+        () => setUserId(crashlytics, 'id'),
+        () => crashlytics.setUserId('id'),
+      );
     });
 
     it('recordError', function () {
       const crashlytics = getCrashlytics();
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
       // @ts-ignore test
       const nativeMock = { recordError: jest.fn() };
       // @ts-ignore test
       jest.spyOn(crashlytics, 'native', 'get').mockReturnValue(nativeMock);
 
-      recordError(crashlytics, new Error(), 'name');
-      // Check that console.warn was not called for v9 method call
-      expect(consoleWarnSpy).not.toHaveBeenCalled();
-
-      crashlytics.recordError(new Error(), 'name');
-      // Check that console.warn was called for v8 method call
-      expect(consoleWarnSpy).toHaveBeenCalled();
-      // Restore the original console.warn
-      consoleWarnSpy.mockRestore();
+      checkV9Deprecation(
+        () => recordError(crashlytics, new Error(), 'name'),
+        () => crashlytics.recordError(new Error(), 'name'),
+      );
     });
 
     it('sendUnsentReports', function () {
       const crashlytics = getCrashlytics();
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
       // @ts-ignore test
       const nativeMock = { sendUnsentReports: jest.fn() };
       // @ts-ignore test
       jest.spyOn(crashlytics, 'native', 'get').mockReturnValue(nativeMock);
 
-      sendUnsentReports(crashlytics);
-      // Check that console.warn was not called for v9 method call
-      expect(consoleWarnSpy).not.toHaveBeenCalled();
-
-      crashlytics.sendUnsentReports();
-      // Check that console.warn was called for v8 method call
-      expect(consoleWarnSpy).toHaveBeenCalled();
-      // Restore the original console.warn
-      consoleWarnSpy.mockRestore();
+      checkV9Deprecation(
+        () => sendUnsentReports(crashlytics),
+        () => crashlytics.sendUnsentReports(),
+      );
     });
 
     it('setCrashlyticsCollectionEnabled', function () {
       const crashlytics = getCrashlytics();
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
       // @ts-ignore test
       const nativeMock = { setCrashlyticsCollectionEnabled: jest.fn() };
       // @ts-ignore test
       jest.spyOn(crashlytics, 'native', 'get').mockReturnValue(nativeMock);
 
-      setCrashlyticsCollectionEnabled(crashlytics, true);
-      // Check that console.warn was not called for v9 method call
-      expect(consoleWarnSpy).not.toHaveBeenCalled();
-
-      crashlytics.setCrashlyticsCollectionEnabled(true);
-      // Check that console.warn was called for v8 method call
-      expect(consoleWarnSpy).toHaveBeenCalled();
-      // Restore the original console.warn
-      consoleWarnSpy.mockRestore();
+      checkV9Deprecation(
+        () => setCrashlyticsCollectionEnabled(crashlytics, true),
+        () => crashlytics.setCrashlyticsCollectionEnabled(true),
+      );
     });
   });
 });
