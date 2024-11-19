@@ -23,3 +23,4 @@ export { testFunctionCustomRegion } from './testFunctionCustomRegion';
 export { testFunctionDefaultRegionV2 } from './testFunctionDefaultRegion';
 export { testFunctionRemoteConfigUpdateV2 } from './testFunctionRemoteConfigUpdate';
 export { fetchAppCheckTokenV2 } from './fetchAppCheckToken';
+export { sendFCM } from './sendFCM';

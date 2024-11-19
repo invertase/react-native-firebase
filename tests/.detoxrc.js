@@ -23,7 +23,7 @@ module.exports = {
     'android.debug': {
       type: 'android.apk',
       binaryPath: 'android/app/build/outputs/apk/debug/app-debug.apk',
-      build: 'cd android && ./gradlew assembleDebug assembleAndroidTest lintDebug -DtestBuildType=debug && cd ..',
+      build: 'cd android && ./gradlew assembleDebug assembleAndroidTest lintDebug -DtestBuildType=debug --warning-mode all && cd ..',
       reversePorts: [
         8080,
         8081,

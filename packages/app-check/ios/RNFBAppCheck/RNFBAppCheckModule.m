@@ -16,12 +16,12 @@
  */
 
 #import <Firebase/Firebase.h>
+#import <FirebaseAppCheck/FIRAppCheck.h>
+
 #import <React/RCTUtils.h>
 
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBAppCheckModule.h"
-
-#import "FirebaseAppCheck/FIRAppCheck.h"
 
 @implementation RNFBAppCheckModule
 #pragma mark -

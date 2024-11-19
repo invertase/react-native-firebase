@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.5.0](https://github.com/invertase/react-native-firebase/compare/v21.4.1...v21.5.0) (2024-11-16)
+
+### Bug Fixes
+
+- **android:** forward-port to non-deprecated data collection API ([2c87eeb](https://github.com/invertase/react-native-firebase/commit/2c87eeb3f0e8053ab02d4f6cce047ad61a6310fa))
+- **android:** rn74 forward-port onCatalystInstanceDestroy -> invalidate ([83696ea](https://github.com/invertase/react-native-firebase/commit/83696ea4c944b2be0b8fd9f2fc1db212800cbcf8))
+
+## [21.4.1](https://github.com/invertase/react-native-firebase/compare/v21.4.0...v21.4.1) (2024-11-13)
+
+### Bug Fixes
+
+- **app, ios:** adopt firebase-ios-sdk 11.5.0 ([c387357](https://github.com/invertase/react-native-firebase/commit/c387357ac8be7a2186aa1872a3d41e370d4ce5e3))
+
+### Reverts
+
+- Revert "fix(ios, sdk): constrain transitive dependencies more tightly" ([1ff247c](https://github.com/invertase/react-native-firebase/commit/1ff247cd73804efbd52eb9490f68087685de814c))
+
+## [21.4.0](https://github.com/invertase/react-native-firebase/compare/v21.3.0...v21.4.0) (2024-11-07)
+
+### Features
+
+- Add initial tvOS support to some firebase packages ([ca51b51](https://github.com/invertase/react-native-firebase/commit/ca51b51f86edb9a5e293b463491fad40e4189e53))
+
+### Bug Fixes
+
+- **app, tvOS:** tvOS minimum target upstream is 13.0, aligning here ([3fa3f07](https://github.com/invertase/react-native-firebase/commit/3fa3f07f00f0444fff3eb864afce3882e855ac41))
+
+## [21.3.0](https://github.com/invertase/react-native-firebase/compare/v21.2.0...v21.3.0) (2024-10-31)
+
+### Bug Fixes
+
+- **app, sdk:** firebase-android-sdk 33.5.1 ([6c08f13](https://github.com/invertase/react-native-firebase/commit/6c08f13407f9aea6af176d485d919c892449cc16))
+- **app:** add misconfiguration warning for missing native module ([b038dbc](https://github.com/invertase/react-native-firebase/commit/b038dbc669b7f1c679c388e3ef749168df89954f))
+
 ## [21.2.0](https://github.com/invertase/react-native-firebase/compare/v21.1.1...v21.2.0) (2024-10-22)
 
 ### Features

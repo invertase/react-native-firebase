@@ -98,7 +98,7 @@ public class RCTConvertFirebase {
 
     if (appConfig.hasKey("automaticDataCollectionEnabled")) {
       firebaseApp.setDataCollectionDefaultEnabled(
-          appConfig.getBoolean("automaticDataCollectionEnabled"));
+          Boolean.valueOf(appConfig.getBoolean("automaticDataCollectionEnabled")));
     }
 
     if (appConfig.hasKey("automaticResourceManagement")) {

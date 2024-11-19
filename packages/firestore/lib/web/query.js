@@ -108,5 +108,5 @@ function getFilterConstraint(filter) {
     throw new Error('Invalid filter operator');
   }
 
-  throw new Error('Invaldi filter.');
+  throw new Error('Invalid filter.');
 }

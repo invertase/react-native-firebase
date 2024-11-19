@@ -15,7 +15,7 @@
  *
  */
 
-#import <FirebaseAppCheck/FIRAppCheck.h>
+#import "RNFBAppCheckProvider.h"
 
 @interface RNFBAppCheckProviderFactory : NSObject <FIRAppCheckProviderFactory>
 

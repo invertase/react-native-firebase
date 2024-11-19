@@ -17,6 +17,7 @@ package io.invertase.firebase.common;
  *
  */
 
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Point;
@@ -181,6 +182,7 @@ public class SharedUtils {
     return false;
   }
 
+  @SuppressLint("DiscouragedApi")
   public static int getResId(Context ctx, String resName) {
     int resourceId = ctx.getResources().getIdentifier(resName, "string", ctx.getPackageName());
 

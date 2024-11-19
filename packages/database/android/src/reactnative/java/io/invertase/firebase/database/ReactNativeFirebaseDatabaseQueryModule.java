@@ -42,8 +42,8 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
-    super.onCatalystInstanceDestroy();
+  public void invalidate() {
+    super.invalidate();
 
     Iterator refIterator = queryMap.entrySet().iterator();
     while (refIterator.hasNext()) {

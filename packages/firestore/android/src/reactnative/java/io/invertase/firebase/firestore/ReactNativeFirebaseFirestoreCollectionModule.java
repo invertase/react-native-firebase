@@ -17,6 +17,8 @@ package io.invertase.firebase.firestore;
  *
  */
 
+import static com.google.firebase.firestore.AggregateField.average;
+import static com.google.firebase.firestore.AggregateField.sum;
 import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreCommon.rejectPromiseFirestoreException;
 import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.snapshotToWritableMap;
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getFirestoreForApp;
@@ -28,6 +30,7 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.*;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
+import java.util.ArrayList;
 
 public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "FirestoreCollection";
@@ -39,8 +42,8 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
-    super.onCatalystInstanceDestroy();
+  public void invalidate() {
+    super.invalidate();
 
     for (int i = 0, size = collectionSnapshotListeners.size(); i < size; i++) {
       int key = collectionSnapshotListeners.keyAt(i);
@@ -186,6 +189,114 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
               if (task.isSuccessful()) {
                 WritableMap result = Arguments.createMap();
                 result.putDouble("count", Long.valueOf(task.getResult().getCount()).doubleValue());
+                promise.resolve(result);
+              } else {
+                rejectPromiseFirestoreException(promise, task.getException());
+              }
+            });
+  }
+
+  @ReactMethod
+  public void aggregateQuery(
+      String appName,
+      String databaseId,
+      String path,
+      String type,
+      ReadableArray filters,
+      ReadableArray orders,
+      ReadableMap options,
+      ReadableArray aggregateQueries,
+      Promise promise) {
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
+    ReactNativeFirebaseFirestoreQuery firestoreQuery =
+        new ReactNativeFirebaseFirestoreQuery(
+            appName,
+            databaseId,
+            getQueryForFirestore(firebaseFirestore, path, type),
+            filters,
+            orders,
+            options);
+
+    ArrayList<AggregateField> aggregateFields = new ArrayList<>();
+
+    for (int i = 0; i < aggregateQueries.size(); i++) {
+      ReadableMap aggregateQuery = aggregateQueries.getMap(i);
+      String aggregateType = aggregateQuery.getString("aggregateType");
+      if (aggregateType == null) aggregateType = "";
+      String fieldPath = aggregateQuery.getString("field");
+
+      switch (aggregateType) {
+        case "count":
+          aggregateFields.add(AggregateField.count());
+          break;
+        case "sum":
+          aggregateFields.add(AggregateField.sum(fieldPath));
+          break;
+        case "average":
+          aggregateFields.add(AggregateField.average(fieldPath));
+          break;
+        default:
+          rejectPromiseWithCodeAndMessage(
+              promise, "firestore/invalid-argument", "Invalid AggregateType: " + aggregateType);
+          return;
+      }
+    }
+    AggregateQuery firestoreAggregateQuery =
+        firestoreQuery.query.aggregate(
+            aggregateFields.get(0),
+            aggregateFields.subList(1, aggregateFields.size()).toArray(new AggregateField[0]));
+
+    firestoreAggregateQuery
+        .get(AggregateSource.SERVER)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                WritableMap result = Arguments.createMap();
+                AggregateQuerySnapshot snapshot = task.getResult();
+
+                for (int k = 0; k < aggregateQueries.size(); k++) {
+                  ReadableMap aggQuery = aggregateQueries.getMap(k);
+                  String aggType = aggQuery.getString("aggregateType");
+                  if (aggType == null) aggType = "";
+                  String field = aggQuery.getString("field");
+                  String key = aggQuery.getString("key");
+
+                  if (key == null) {
+                    rejectPromiseWithCodeAndMessage(
+                        promise, "firestore/invalid-argument", "key may not be null");
+                    return;
+                  }
+
+                  switch (aggType) {
+                    case "count":
+                      result.putDouble(key, Long.valueOf(snapshot.getCount()).doubleValue());
+                      break;
+                    case "sum":
+                      Number sum = (Number) snapshot.get(sum(field));
+                      if (sum == null) {
+                        rejectPromiseWithCodeAndMessage(
+                            promise, "firestore/unknown", "sum unexpectedly null");
+                        return;
+                      }
+                      result.putDouble(key, sum.doubleValue());
+                      break;
+                    case "average":
+                      Number average = snapshot.get(average(field));
+                      if (average == null) {
+                        result.putNull(key);
+                      } else {
+                        result.putDouble(key, average.doubleValue());
+                      }
+                      break;
+                    default:
+                      rejectPromiseWithCodeAndMessage(
+                          promise,
+                          "firestore/invalid-argument",
+                          "Invalid AggregateType: " + aggType);
+                      return;
+                  }
+                }
+
                 promise.resolve(result);
               } else {
                 rejectPromiseFirestoreException(promise, task.getException());

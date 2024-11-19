@@ -20,6 +20,19 @@ This package wraps `firebase-android-sdk` and `firebase-ios-sdk` into a Javascri
 
 - Some of the modules that are both in the web SDK and native SDK have a great deal more functionality when they can harness native APIs, like messaging (with background delivery that can start your app if not running), like App Check where you can tie the attestation to device-level providers, Storage where you can do background downloads, Performance where you can start measurements from boot, etc.
 
+### Does it work with New Architecture / Fabric / TurboModules ?
+
+Mostly yes. We have been testing with react-native 0.76 in bridgeless mode for
+a while, and people have been running react-native-firebase with new architecture enabled for a while, and the module works.
+
+We are not aware of any problems with the react-native-firebase modules themselves. Please let us know if you see anything.
+
+However, there have been ongoing issues upstream in react-native itself with headlessJS on Android. What does that mean for you?
+
+> If you use FCM / firebase cloud messages to receive background messages in react-native-firebase with `setBackgroundMessageHandler`, you will have problems on new architecture.
+
+Current issue tracker is [https://github.com/facebook/react-native/issues/47570](https://github.com/facebook/react-native/issues/47570)
+
 ### I need help with [anything regarding <= v5 of React Native Firebase]. Where could I get help with that?
 
 React Native Firebase v5 is now deprecated and unsupported. There's been over a year's grace period provided to migrate to v6, so moving forward maintainers probably won't pay much attention to issues regarding v5. Understandably, upgrading to v6 can take some effort, but staying on v5 probably isn't a great choice for the long-term health of your project.
@@ -28,7 +41,7 @@ The longer you stay on v5, the more your project will be out of sync with the of
 
 We highly recommend taking the necessary pains to update to v6.
 
-### My CI build hangs at the "Running script '[CP-User] [RNFB] Core Configuration'" step.
+### My CI build hangs at the "Running script '[CP-User] [RNFB] Core Configuration'" step
 
 This may be fixed by creating a `firebase.json` file at the root of your project if it's not there already. If you don't want to change any of the default React Native Firebase configurations, you can leave it empty in the following way:
 

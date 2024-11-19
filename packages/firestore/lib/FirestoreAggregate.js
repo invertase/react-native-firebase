@@ -15,6 +15,8 @@
  *
  */
 
+import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
+
 export class FirestoreAggregateQuery {
   constructor(firestore, query, collectionPath, modifiers) {
     this._firestore = firestore;
@@ -36,17 +38,55 @@ export class FirestoreAggregateQuery {
         this._modifiers.orders,
         this._modifiers.options,
       )
-      .then(data => new FirestoreAggregateQuerySnapshot(this._query, data));
+      .then(data => new FirestoreAggregateQuerySnapshot(this._query, data, true));
   }
 }
 
 export class FirestoreAggregateQuerySnapshot {
-  constructor(query, data) {
+  constructor(query, data, isGetCountFromServer) {
     this._query = query;
     this._data = data;
+    this._isGetCountFromServer = isGetCountFromServer;
   }
 
   data() {
-    return { count: this._data.count };
+    if (this._isGetCountFromServer) {
+      return { count: this._data.count };
+    } else {
+      return { ...this._data };
+    }
+  }
+}
+
+export const AggregateType = {
+  SUM: 'sum',
+  AVG: 'average',
+  COUNT: 'count',
+};
+
+export class AggregateField {
+  /** Indicates the aggregation operation of this AggregateField. */
+  aggregateType;
+  _fieldPath;
+
+  /**
+   * Create a new AggregateField<T>
+   * @param aggregateType Specifies the type of aggregation operation to perform.
+   * @param _fieldPath Optionally specifies the field that is aggregated.
+   * @internal
+   */
+  constructor(aggregateType, fieldPath) {
+    this.aggregateType = aggregateType;
+    this._fieldPath = fieldPath;
+  }
+}
+
+export function fieldPathFromArgument(path) {
+  if (path instanceof FirestoreFieldPath) {
+    return path;
+  } else if (typeof path === 'string') {
+    return fromDotSeparatedString(path);
+  } else {
+    throw new Error('Field path arguments must be of type `string` or `FieldPath`');
   }
 }

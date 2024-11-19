@@ -11,6 +11,10 @@ import {
   getDoc,
   getDocs,
   getCount,
+  getAggregate,
+  count,
+  average,
+  sum,
   deleteDoc,
   setDoc,
   updateDoc,
@@ -212,6 +216,44 @@ export default {
       return {
         count: snapshot.data().count,
       };
+    });
+  },
+
+  aggregateQuery(appName, databaseId, path, type, filters, orders, options, aggregateQueries) {
+    return guard(async () => {
+      const firestore = getCachedFirestoreInstance(appName, databaseId);
+      const queryRef =
+        type === 'collectionGroup' ? collectionGroup(firestore, path) : collection(firestore, path);
+      const query = buildQuery(queryRef, filters, orders, options);
+      const aggregateSpec = {};
+
+      for (let i = 0; i < aggregateQueries.length; i++) {
+        const aggregateQuery = aggregateQueries[i];
+        const { aggregateType, field, key } = aggregateQuery;
+
+        switch (aggregateType) {
+          case 'count':
+            aggregateSpec[key] = count();
+            break;
+          case 'average':
+            aggregateSpec[key] = average(field);
+            break;
+          case 'sum':
+            aggregateSpec[key] = sum(field);
+            break;
+        }
+      }
+      const result = await getAggregate(query, aggregateSpec);
+
+      const data = result.data();
+      const response = {};
+      for (let i = 0; i < aggregateQueries.length; i++) {
+        const aggregateQuery = aggregateQueries[i];
+        const { key } = aggregateQuery;
+        response[key] = data[key];
+      }
+
+      return response;
     });
   },
 

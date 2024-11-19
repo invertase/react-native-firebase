@@ -71,10 +71,10 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
   }
 
   @Override
-  public void onCatalystInstanceDestroy() {
+  public void invalidate() {
     getReactApplicationContext().removeActivityEventListener(this);
     getReactApplicationContext().addLifecycleEventListener(this);
-    super.onCatalystInstanceDestroy();
+    super.invalidate();
   }
 
   @ReactMethod
