@@ -267,10 +267,10 @@ React Native Firebase internally sets the versions of the native SDKs which each
 is tested against a fixed set of SDK versions (e.g. Firebase SDKs), allowing us to be confident that every feature the
 library supports is working as expected.
 
-Sometimes it's required to change these versions to play nicely with other React Native libraries; therefore we allow
+Sometimes it's required to change these versions to play nicely with other React Native libraries or to work around temporary build failures; therefore we allow
 manually overriding these native SDK versions.
 
-> Using your own SDK versions is generally not recommended as it can lead to breaking changes in your application. Proceed with caution.
+> Using your own SDK versions is not recommended and not supported as it can lead to unexpected build failures when new react-native-firebase versions are released that expect to use new SDK versions. Proceed with caution and remove these overrides as soon as possible when no longer needed.
 
 #### Android
 
