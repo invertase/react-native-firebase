@@ -1147,9 +1147,9 @@ export namespace FirebaseAuthTypes {
      * ```
      *
      * @android
-     * @param status whether auto OTP verify should be disabled, defaults to false
+     * @param enabled whether auto OTP verify should be disabled, defaults to false
      */
-    setAutoOTPVerify(status: boolean): Promise<null>;
+    setAutoOTPVerify(enabled: boolean): Promise<null>;
   }
 
   /**
