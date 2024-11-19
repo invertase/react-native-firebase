@@ -1116,6 +1116,33 @@ export namespace FirebaseAuthTypes {
      * @param smsCode The pre-set SMS code.
      */
     setAutoRetrievedSmsCodeForPhoneNumber(phoneNumber: string, smsCode: string): Promise<null>;
+
+    /**
+     * Flag to disable automatic retrieval of SMS codes for the given phone number.
+     * When receiving a verification code Android automagically digests the OTP code,
+     * in some cases this can cause issues like "OTP already used".
+     * Use it only if absolutely necessary.
+     *
+     * @android
+     */
+    autoOTPVerify: boolean;
+
+    /**
+     * Sets whether the automatic OTP (One-Time Password) verification should be disabled on Android devices.
+     *
+     * This method allows you to control the behavior of OTP verification by disabling the automatic retrieval
+     * and verification of SMS codes. This can be useful in testing scenarios or when you want to handle OTP
+     * verification manually if your users encounter "OTP already used" errors on some devices.
+     *
+     * @example
+     * ```js
+     * await firebase.auth().settings.setAutoOTPVerify(false);
+     * ```
+     *
+     * @android
+     * @param status whether auto OTP verify should be disabled, defaults to false
+     */
+    setAutoOTPVerify(status: boolean): Promise<null>;
   }
 
   /**

@@ -21,12 +21,13 @@ import NativeFirebaseError from '@react-native-firebase/app/lib/internal/NativeF
 let REQUEST_ID = 0;
 
 export default class PhoneAuthListener {
-  constructor(auth, phoneNumber, timeout, forceResend) {
+  constructor(auth, phoneNumber, timeout, forceResend, autoOTPVerify) {
     this._auth = auth;
     this._reject = null;
     this._resolve = null;
     this._promise = null;
     this._jsStack = new Error().stack;
+    this._autoOTPVerify = autoOTPVerify
 
     this._timeout = timeout || 20;
     this._phoneAuthRequestId = REQUEST_ID++;
@@ -50,11 +51,13 @@ export default class PhoneAuthListener {
     this._subscribeToEvents();
 
     if (isAndroid) {
+      this._auth.
       this._auth.native.verifyPhoneNumber(
         phoneNumber,
         this._phoneAuthRequestId + '',
         this._timeout,
         this._forceResending,
+        this._autoOTPVerify
       );
     }
 

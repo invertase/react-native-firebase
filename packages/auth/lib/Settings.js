@@ -22,10 +22,19 @@ export default class Settings {
     this._auth = auth;
     this._forceRecaptchaFlowForTesting = false;
     this._appVerificationDisabledForTesting = false;
+    this._autoOTPVerify = true; /* Android only */
   }
 
   get forceRecaptchaFlowForTesting() {
     return this._forceRecaptchaFlowForTesting;
+  }
+
+  get autoOTPVerify() {
+    return this._autoOTPVerify;
+  }
+
+  set autoOTPVerify(autoOTPVerify) {
+    this._autoOTPVerify = autoOTPVerify;
   }
 
   set forceRecaptchaFlowForTesting(forceRecaptchaFlow) {

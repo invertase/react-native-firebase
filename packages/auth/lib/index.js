@@ -282,7 +282,7 @@ class FirebaseAuthModule extends FirebaseModule {
   signInWithPhoneNumber(phoneNumber, forceResend) {
     if (isAndroid) {
       return this.native
-        .signInWithPhoneNumber(phoneNumber, forceResend || false)
+        .signInWithPhoneNumber(phoneNumber, forceResend || false, this._settings.autoOTPVerify)
         .then(result => new ConfirmationResult(this, result.verificationId));
     }
 
@@ -294,6 +294,7 @@ class FirebaseAuthModule extends FirebaseModule {
   verifyPhoneNumber(phoneNumber, autoVerifyTimeoutOrForceResend, forceResend) {
     let _forceResend = forceResend;
     let _autoVerifyTimeout = 60;
+    let _autoOTPVerify = this._settings.autoOTPVerify
 
     if (isBoolean(autoVerifyTimeoutOrForceResend)) {
       _forceResend = autoVerifyTimeoutOrForceResend;
@@ -301,7 +302,7 @@ class FirebaseAuthModule extends FirebaseModule {
       _autoVerifyTimeout = autoVerifyTimeoutOrForceResend;
     }
 
-    return new PhoneAuthListener(this, phoneNumber, _autoVerifyTimeout, _forceResend);
+    return new PhoneAuthListener(this, phoneNumber, _autoVerifyTimeout, _forceResend, _autoOTPVerify);
   }
 
   verifyPhoneNumberWithMultiFactorInfo(multiFactorHint, session) {
