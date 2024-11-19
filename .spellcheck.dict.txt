@@ -32,6 +32,7 @@ backoff
 barcode
 Barcode
 barcodes
+bridgeless
 BUGFIX
 CarPlay
 CDN
@@ -82,6 +83,7 @@ github
 globals
 gradle
 Gradle
+headlessJS
 Hesp
 Homebrew
 HTTP
@@ -191,6 +193,7 @@ thenable
 ThreadPoolExecutor
 timezones
 triaging
+TurboModules
 TypeDoc
 UI
 uid

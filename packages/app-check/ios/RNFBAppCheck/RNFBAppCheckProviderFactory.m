@@ -16,10 +16,7 @@
  */
 
 #import "RNFBAppCheckProviderFactory.h"
-#import <Firebase/Firebase.h>
-#import <FirebaseAppCheck/FIRAppCheck.h>
 #import "RNFBApp/RNFBSharedUtils.h"
-#import "RNFBAppCheckProvider.h"
 
 @implementation RNFBAppCheckProviderFactory
 

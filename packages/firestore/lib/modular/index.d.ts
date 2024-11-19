@@ -10,6 +10,7 @@ import Query = FirebaseFirestoreTypes.Query;
 import FieldValue = FirebaseFirestoreTypes.FieldValue;
 import FieldPath = FirebaseFirestoreTypes.FieldPath;
 import PersistentCacheIndexManager = FirebaseFirestoreTypes.PersistentCacheIndexManager;
+import AggregateQuerySnapshot = FirebaseFirestoreTypes.AggregateQuerySnapshot;
 
 /** Primitive types. */
 export type Primitive = string | number | boolean | undefined | null;
@@ -494,6 +495,75 @@ export function getCountFromServer<AppModelType, DbModelType extends DocumentDat
     DbModelType
   >
 >;
+
+/**
+ * Specifies a set of aggregations and their aliases.
+ */
+interface AggregateSpec {
+  [field: string]: AggregateFieldType;
+}
+
+/**
+ * The union of all `AggregateField` types that are supported by Firestore.
+ */
+export type AggregateFieldType =
+  | ReturnType<typeof sum>
+  | ReturnType<typeof average>
+  | ReturnType<typeof count>;
+
+export function getAggregateFromServer<
+  AggregateSpecType extends AggregateSpec,
+  AppModelType,
+  DbModelType extends DocumentData,
+>(
+  query: Query<AppModelType, DbModelType>,
+  aggregateSpec: AggregateSpecType,
+): Promise<AggregateQuerySnapshot<AggregateSpecType, AppModelType, DbModelType>>;
+
+/**
+ * Create an AggregateField object that can be used to compute the sum of
+ * a specified field over a range of documents in the result set of a query.
+ * @param field Specifies the field to sum across the result set.
+ */
+export function sum(field: string | FieldPath): AggregateField<number>;
+
+/**
+ * Create an AggregateField object that can be used to compute the average of
+ * a specified field over a range of documents in the result set of a query.
+ * @param field Specifies the field to average across the result set.
+ */
+export function average(field: string | FieldPath): AggregateField<number | null>;
+
+/**
+ * Create an AggregateField object that can be used to compute the count of
+ * documents in the result set of a query.
+ */
+export function count(): AggregateField<number>;
+
+/**
+ * Represents an aggregation that can be performed by Firestore.
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class AggregateField<T> {
+  /** A type string to uniquely identify instances of this class. */
+  readonly type = 'AggregateField';
+
+  /** Indicates the aggregation operation of this AggregateField. */
+  readonly aggregateType: AggregateType;
+
+  /**
+   * Create a new AggregateField<T>
+   * @param aggregateType Specifies the type of aggregation operation to perform.
+   * @param _internalFieldPath Optionally specifies the field that is aggregated.
+   * @internal
+   */
+  constructor(
+    aggregateType: AggregateType = 'count',
+    readonly _internalFieldPath?: InternalFieldPath,
+  ) {
+    this.aggregateType = aggregateType;
+  }
+}
 
 /**
  * Represents the task of loading a Firestore bundle.
