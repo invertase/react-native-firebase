@@ -235,7 +235,13 @@ Firebase Auth automagically verifies the received OTP code from the SMS and in s
 Disable auto verify by adding this on `index.js` or `App.tsx`:
 
 ```jsx
-await firebase.auth().settings.setAutoOTPVerify(false);
+(async function () {
+  try {
+    await firebase.auth().settings.setAutoOTPVerify(false);
+  } catch (error) {
+    console.error(error);
+  }
+})();
 ```
 
 To manually handle OTP verification code:
