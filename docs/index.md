@@ -310,6 +310,8 @@ $FirebaseSDKVersion = '11.5.0'
 
 Once changed, reinstall your projects pods via pod install and rebuild your project with `npx react-native run-ios`.
 
+Alternatively, if you cannot edit the Podfile easily (as when using Expo), you may add the environment variable `FIREBASE_SDK_VERSION=11.5.0` (or whatever version you need) to the command line that installs pods. For example `FIREBASE_SDK_VERSION=11.5.0 yarn expo prebuild --clean`
+
 ### Increasing Android build memory
 
 As you add more Firebase modules, there is an incredible demand placed on the Android build system, and the default memory
