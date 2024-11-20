@@ -6195,6 +6195,8 @@ __metadata:
 "@react-native-firebase/analytics@npm:21.5.0, @react-native-firebase/analytics@workspace:packages/analytics":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/analytics@workspace:packages/analytics"
+  dependencies:
+    superstruct: "npm:^2.0.2"
   peerDependencies:
     "@react-native-firebase/app": 21.5.0
   languageName: unknown
@@ -6236,7 +6238,6 @@ __metadata:
     "@react-native-async-storage/async-storage": "npm:^1.24.0"
     expo: "npm:^50.0.21"
     firebase: "npm:10.13.2"
-    superstruct: "npm:^0.6.2"
   peerDependencies:
     expo: ">=47.0.0"
     react: "*"
@@ -9400,18 +9401,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clone-deep@npm:^2.0.1":
-  version: 2.0.2
-  resolution: "clone-deep@npm:2.0.2"
-  dependencies:
-    for-own: "npm:^1.0.0"
-    is-plain-object: "npm:^2.0.4"
-    kind-of: "npm:^6.0.0"
-    shallow-clone: "npm:^1.0.0"
-  checksum: 10/c33ae31e332cdfd477a8115c9d044984eb69bf009fce3e1f0ff002176652f572d8742aa5e6caeaf16cf5d6084e33fe51bfa482fec53f43e767b3518c797955b1
-  languageName: node
-  linkType: hard
-
 "clone@npm:^1.0.2":
   version: 1.0.4
   resolution: "clone@npm:1.0.4"
@@ -12486,29 +12475,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"for-in@npm:^0.1.3":
-  version: 0.1.8
-  resolution: "for-in@npm:0.1.8"
-  checksum: 10/f5bdad7811700ee6a0f96b33d72a1db966aea75a1f03c7245d147f8369305e709f53a55ee7ae8eaddcfa85c7c89bca78472be8f1bc605475ce5bb2c70f77f8da
-  languageName: node
-  linkType: hard
-
-"for-in@npm:^1.0.1":
-  version: 1.0.2
-  resolution: "for-in@npm:1.0.2"
-  checksum: 10/09f4ae93ce785d253ac963d94c7f3432d89398bf25ac7a24ed034ca393bf74380bdeccc40e0f2d721a895e54211b07c8fad7132e8157827f6f7f059b70b4043d
-  languageName: node
-  linkType: hard
-
-"for-own@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "for-own@npm:1.0.0"
-  dependencies:
-    for-in: "npm:^1.0.1"
-  checksum: 10/233238f6e9060f61295a7f7c7e3e9de11aaef57e82a108e7f350dc92ae84fe2189848077ac4b8db47fd8edd45337ed8d9f66bd0b1efa4a6a1b3f38aa21b7ab2e
-  languageName: node
-  linkType: hard
-
 "foreground-child@npm:^2.0.0":
   version: 2.0.0
   resolution: "foreground-child@npm:2.0.0"
@@ -14120,13 +14086,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-extendable@npm:^0.1.1":
-  version: 0.1.1
-  resolution: "is-extendable@npm:0.1.1"
-  checksum: 10/3875571d20a7563772ecc7a5f36cb03167e9be31ad259041b4a8f73f33f885441f778cee1f1fe0085eb4bc71679b9d8c923690003a36a6a5fdf8023e6e3f0672
-  languageName: node
-  linkType: hard
-
 "is-extglob@npm:^1.0.0":
   version: 1.0.0
   resolution: "is-extglob@npm:1.0.0"
@@ -15718,14 +15677,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"kind-of@npm:^5.0.0":
-  version: 5.1.0
-  resolution: "kind-of@npm:5.1.0"
-  checksum: 10/acf7cc73881f27629f700a80de77ff7fe4abc9430eac7ddb09117f75126e578ee8d7e44c4dacb6a9e802d5d881abf007ee6af3cfbe55f8b5cf0a7fdc49a02aa3
-  languageName: node
-  linkType: hard
-
-"kind-of@npm:^6.0.0, kind-of@npm:^6.0.1, kind-of@npm:^6.0.2, kind-of@npm:^6.0.3":
+"kind-of@npm:^6.0.2, kind-of@npm:^6.0.3":
   version: 6.0.3
   resolution: "kind-of@npm:6.0.3"
   checksum: 10/5873d303fb36aad875b7538798867da2ae5c9e328d67194b0162a3659a627d22f742fc9c4ae95cd1704132a24b00cae5041fc00c0f6ef937dc17080dc4dbb962
@@ -17414,16 +17366,6 @@ __metadata:
     minipass: "npm:^3.0.0"
     yallist: "npm:^4.0.0"
   checksum: 10/ae0f45436fb51344dcb87938446a32fbebb540d0e191d63b35e1c773d47512e17307bf54aa88326cc6d176594d00e4423563a091f7266c2f9a6872cdc1e234d1
-  languageName: node
-  linkType: hard
-
-"mixin-object@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "mixin-object@npm:2.0.1"
-  dependencies:
-    for-in: "npm:^0.1.3"
-    is-extendable: "npm:^0.1.1"
-  checksum: 10/7d0eb7c2f06435fcc01d132824b4c973a0df689a117d8199d79911b506363b6f4f86a84458a63f3acfa7388f3052612cfe27105400b4932678452925a9739a4c
   languageName: node
   linkType: hard
 
@@ -21462,17 +21404,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"shallow-clone@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "shallow-clone@npm:1.0.0"
-  dependencies:
-    is-extendable: "npm:^0.1.1"
-    kind-of: "npm:^5.0.0"
-    mixin-object: "npm:^2.0.1"
-  checksum: 10/51e36158d0fd7d9d0ce599a01a0a835d9e0a6ec10d6c69b62dda50ded5284ab92237ce5fa34cb58390e06c83961a17f1c39704e189ce0d7ae6daedae151da734
-  languageName: node
-  linkType: hard
-
 "shallow-clone@npm:^3.0.0":
   version: 3.0.1
   resolution: "shallow-clone@npm:3.0.1"
@@ -22461,13 +22392,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"superstruct@npm:^0.6.2":
-  version: 0.6.2
-  resolution: "superstruct@npm:0.6.2"
-  dependencies:
-    clone-deep: "npm:^2.0.1"
-    kind-of: "npm:^6.0.1"
-  checksum: 10/2377455173450769eaa19381bec851cafb8e356116f5b5fab1fb764b9fbdaff20322cf2f2d3185c3bb856233c9cdb8fb9e6dc03e5132adf902a71acee03822a3
+"superstruct@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "superstruct@npm:2.0.2"
+  checksum: 10/10e1944a9da4baee187fbaa6c5d97d7af266b55786dfe50bce67f0f1e7d93f1a5a42dd51e245a2e16404f8336d07c21c67f1c1fbc4ad0a252d3d2601d6c926da
   languageName: node
   linkType: hard
 
