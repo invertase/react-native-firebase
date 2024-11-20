@@ -223,5 +223,14 @@ describe('Crashlytics', function () {
         () => crashlytics.setCrashlyticsCollectionEnabled(true),
       );
     });
+
+    it('isCrashlyticsCollectionEnabled', function () {
+      const crashlytics = getCrashlytics();
+      checkV9Deprecation(
+        // swapped order here because we're deprecating the modular method and keeping the property on Crashlytics instance
+        () => crashlytics.isCrashlyticsCollectionEnabled,
+        () => isCrashlyticsCollectionEnabled(crashlytics),
+      );
+    });
   });
 });
