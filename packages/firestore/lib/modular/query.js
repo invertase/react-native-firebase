@@ -15,7 +15,7 @@
  * @typedef {import('./query').QueryOrderByConstraint} QueryOrderByConstraint
  * @typedef {import('./query').QueryStartAtConstraint} QueryStartAtConstraint
  */
-
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 import { _Filter, Filter } from '../FirestoreFilter';
 
 /**
@@ -28,7 +28,7 @@ class QueryConstraint {
   }
 
   _apply(query) {
-    return query[this.type].apply(query, this._args);
+    return query[this.type].apply(query, this._args, MODULAR_DEPRECATION_ARG);
   }
 }
 
@@ -174,7 +174,7 @@ export function limitToLast(limit) {
  * @returns {Promise<DocumentSnapshot>}
  */
 export function getDoc(reference) {
-  return reference.get({ source: 'default' });
+  return reference.get.call(reference, { source: 'default' }, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -182,7 +182,7 @@ export function getDoc(reference) {
  * @returns {Promise<DocumentSnapshot>}
  */
 export function getDocFromCache(reference) {
-  return reference.get({ source: 'cache' });
+  return reference.get.call(reference, { source: 'cache' }, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -190,7 +190,7 @@ export function getDocFromCache(reference) {
  * @returns {Promise<DocumentSnapshot>}
  */
 export function getDocFromServer(reference) {
-  return reference.get({ source: 'server' });
+  return reference.get.call(reference, { source: 'server' }, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -198,7 +198,7 @@ export function getDocFromServer(reference) {
  * @returns {Promise<QuerySnapshot>}
  */
 export function getDocs(query) {
-  return query.get({ source: 'default' });
+  return query.get.call(reference, { source: 'default' }, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -206,7 +206,7 @@ export function getDocs(query) {
  * @returns {Promise<QuerySnapshot>}
  */
 export function getDocsFromCache(query) {
-  return query.get({ source: 'cache' });
+  return query.get.call(reference, { source: 'cache' }, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -214,7 +214,7 @@ export function getDocsFromCache(query) {
  * @returns {Promise<QuerySnapshot>}
  */
 export function getDocsFromServer(query) {
-  return query.get({ source: 'server' });
+  return query.get.call(reference, { source: 'server' }, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -222,5 +222,5 @@ export function getDocsFromServer(query) {
  * @returns {Promise<void>}
  */
 export function deleteDoc(reference) {
-  return reference.delete();
+  return reference.delete.call(reference, MODULAR_DEPRECATION_ARG);
 }

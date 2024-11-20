@@ -105,7 +105,11 @@ export function tryJSONStringify(data) {
 
 export const MODULAR_DEPRECATION_ARG = 'react-native-firebase-modular-method-call';
 
-export function warnIfNotModularCall(args, replacementMethodName, noAlternative) {
+export function filterModularArgument(list) {
+  return list.filter(arg => arg !== MODULAR_DEPRECATION_ARG);
+}
+
+export function warnIfNotModularCall(args, replacementMethodName = '') {
   for (let i = 0; i < args.length; i++) {
     if (args[i] === MODULAR_DEPRECATION_ARG) {
       return;
@@ -115,7 +119,7 @@ export function warnIfNotModularCall(args, replacementMethodName, noAlternative)
     'This v8 method is deprecated and will be removed in the next major release ' +
     'as part of move to match Firebase Web modular v9 SDK API.';
 
-  if (!noAlternative) {
+  if (replacementMethodName.length > 0) {
     message += ` Please use \`${replacementMethodName}\` instead.`;
   }
 

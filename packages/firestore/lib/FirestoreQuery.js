@@ -21,6 +21,8 @@ import {
   isObject,
   isString,
   isUndefined,
+  filterModularArgument,
+  warnIfNotModularCall,
 } from '@react-native-firebase/app/lib/common';
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
 import { FirestoreAggregateQuery } from './FirestoreAggregate';
@@ -133,6 +135,7 @@ export default class FirestoreQuery {
   }
 
   count() {
+    warnIfNotModularCall(arguments, 'getCountFromServer()');
     return new FirestoreAggregateQuery(
       this._firestore,
       this,
@@ -142,28 +145,32 @@ export default class FirestoreQuery {
   }
 
   countFromServer() {
+    // deprecation warning called in count()
     return this.count();
   }
 
   endAt(docOrField, ...fields) {
+    warnIfNotModularCall(arguments, 'endAt()');
     return new FirestoreQuery(
       this._firestore,
       this._collectionPath,
-      this._handleQueryCursor('endAt', docOrField, fields),
+      this._handleQueryCursor('endAt', docOrField, filterModularArgument(fields)),
       this._queryName,
     );
   }
 
   endBefore(docOrField, ...fields) {
+    warnIfNotModularCall(arguments, 'endBefore()');
     return new FirestoreQuery(
       this._firestore,
       this._collectionPath,
-      this._handleQueryCursor('endBefore', docOrField, fields),
+      this._handleQueryCursor('endBefore', docOrField, filterModularArgument(fields)),
       this._queryName,
     );
   }
 
   get(options) {
+    warnIfNotModularCall(arguments, 'getDocs()');
     if (!isUndefined(options) && !isObject(options)) {
       throw new Error(
         "firebase.firestore().collection().get(*) 'options' must be an object is provided.",
@@ -210,6 +217,7 @@ export default class FirestoreQuery {
   }
 
   isEqual(other) {
+    warnIfNotModularCall(arguments);
     if (!(other instanceof FirestoreQuery)) {
       throw new Error(
         "firebase.firestore().collection().isEqual(*) 'other' expected a Query instance.",
@@ -242,6 +250,7 @@ export default class FirestoreQuery {
   }
 
   limit(limit) {
+    warnIfNotModularCall(arguments, 'limit()');
     if (this._modifiers.isValidLimit(limit)) {
       throw new Error(
         "firebase.firestore().collection().limit(*) 'limit' must be a positive integer value.",
@@ -254,6 +263,7 @@ export default class FirestoreQuery {
   }
 
   limitToLast(limitToLast) {
+    warnIfNotModularCall(arguments, 'limitToLast()');
     if (this._modifiers.isValidLimitToLast(limitToLast)) {
       throw new Error(
         "firebase.firestore().collection().limitToLast(*) 'limitToLast' must be a positive integer value.",
@@ -266,6 +276,7 @@ export default class FirestoreQuery {
   }
 
   onSnapshot(...args) {
+    warnIfNotModularCall(arguments, 'onSnapshot()');
     let snapshotListenOptions;
     let callback;
     let onNext;
@@ -274,7 +285,7 @@ export default class FirestoreQuery {
     this._modifiers.validatelimitToLast();
 
     try {
-      const options = parseSnapshotArgs(args);
+      const options = parseSnapshotArgs(filterModularArgument(args));
       snapshotListenOptions = options.snapshotListenOptions;
       callback = options.callback;
       onNext = options.onNext;
@@ -342,6 +353,7 @@ export default class FirestoreQuery {
   }
 
   orderBy(fieldPath, directionStr) {
+    warnIfNotModularCall(arguments, 'orderBy()');
     if (!isString(fieldPath) && !(fieldPath instanceof FirestoreFieldPath)) {
       throw new Error(
         "firebase.firestore().collection().orderBy(*) 'fieldPath' must be a string or instance of FieldPath.",
@@ -390,24 +402,27 @@ export default class FirestoreQuery {
   }
 
   startAfter(docOrField, ...fields) {
+    warnIfNotModularCall(arguments, 'startAfter()');
     return new FirestoreQuery(
       this._firestore,
       this._collectionPath,
-      this._handleQueryCursor('startAfter', docOrField, fields),
+      this._handleQueryCursor('startAfter', docOrField, filterModularArgument(fields)),
       this._queryName,
     );
   }
 
   startAt(docOrField, ...fields) {
+    warnIfNotModularCall(arguments, 'startAt()');
     return new FirestoreQuery(
       this._firestore,
       this._collectionPath,
-      this._handleQueryCursor('startAt', docOrField, fields),
+      this._handleQueryCursor('startAt', docOrField, filterModularArgument(fields)),
       this._queryName,
     );
   }
 
   where(fieldPathOrFilter, opStr, value) {
+    warnIfNotModularCall(arguments, 'where()');
     if (
       !isString(fieldPathOrFilter) &&
       !(fieldPathOrFilter instanceof FirestoreFieldPath) &&
