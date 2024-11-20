@@ -245,6 +245,32 @@ If you are using the [Expo Tools](https://marketplace.visualstudio.com/items?ite
 
 ---
 
+## Other / Web
+
+If you are using the firebase-js-sdk fallback support for [web or "other" platforms](platforms#other-platforms) then you must initialize Firebase dynamically by calling [`initializeApp`](/reference/app#initializeApp).
+
+However, you only want to do this for the web platform. For non-web / native apps the "default" firebase app instance will already be configured by the native google-services.json / GoogleServices-Info.plist files as mentioned above.
+
+At some point during your application's bootstrap processes, initialize firebase like this:
+
+```javascript
+import { getApp, initializeApp } from '@react-native-firebase/app';
+
+// web requires dynamic initialization on web prior to using firebase
+if (Platform.OS === 'web') {
+  const firebaseConfig = {
+    // ... config items pasted from firebase console for your web app here
+  };
+
+  initializeApp(firebaseConfig);
+}
+
+// ...now throughout your app, use firebase APIs normally, for example:
+const firebaseApp = getApp();
+```
+
+---
+
 ## Miscellaneous
 
 ### Android Enabling Multidex
