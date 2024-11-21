@@ -1,4 +1,6 @@
-import { describe, expect, it, jest } from '@jest/globals';
+import { describe, expect, it, jest, beforeEach } from '@jest/globals';
+// @ts-ignore test
+import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 import { checkV9Deprecation } from '../../app/lib/common/unitTestUtils';
 import {
   firebase,
@@ -81,12 +83,20 @@ describe('Crashlytics', function () {
   });
 
   describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
+    beforeEach(() => {
+      // @ts-ignore test
+      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
+        return new Proxy(
+          {},
+          {
+            get: () => jest.fn(),
+          },
+        );
+      });
+    });
+
     it('checkForUnsentReports', function () {
       const crashlytics = getCrashlytics();
-      // @ts-ignore test
-      const nativeMock = { checkForUnsentReports: jest.fn() };
-      // @ts-ignore test
-      jest.spyOn(crashlytics, 'native', 'get').mockReturnValue(nativeMock);
 
       checkV9Deprecation(
         () => checkForUnsentReports(crashlytics),
@@ -96,10 +106,6 @@ describe('Crashlytics', function () {
 
     it('crash', function () {
       const crashlytics = getCrashlytics();
-      // @ts-ignore test
-      const nativeMock = { crash: jest.fn() };
-      // @ts-ignore test
-      jest.spyOn(crashlytics, 'native', 'get').mockReturnValue(nativeMock);
 
       checkV9Deprecation(
         () => crash(crashlytics),
@@ -109,11 +115,6 @@ describe('Crashlytics', function () {
 
     it('deleteUnsentReports', function () {
       const crashlytics = getCrashlytics();
-      // @ts-ignore test
-      const nativeMock = { deleteUnsentReports: jest.fn() };
-      // @ts-ignore test
-      jest.spyOn(crashlytics, 'native', 'get').mockReturnValue(nativeMock);
-
       checkV9Deprecation(
         () => deleteUnsentReports(crashlytics),
         () => crashlytics.deleteUnsentReports(),
@@ -122,11 +123,6 @@ describe('Crashlytics', function () {
 
     it('didCrashOnPreviousExecution', function () {
       const crashlytics = getCrashlytics();
-      // @ts-ignore test
-      const nativeMock = { didCrashOnPreviousExecution: jest.fn() };
-      // @ts-ignore test
-      jest.spyOn(crashlytics, 'native', 'get').mockReturnValue(nativeMock);
-
       checkV9Deprecation(
         () => didCrashOnPreviousExecution(crashlytics),
         () => crashlytics.didCrashOnPreviousExecution(),
@@ -135,11 +131,6 @@ describe('Crashlytics', function () {
 
     it('log', function () {
       const crashlytics = getCrashlytics();
-      // @ts-ignore test
-      const nativeMock = { log: jest.fn() };
-      // @ts-ignore test
-      jest.spyOn(crashlytics, 'native', 'get').mockReturnValue(nativeMock);
-
       checkV9Deprecation(
         () => log(crashlytics, 'message'),
         () => crashlytics.log('message'),
@@ -148,11 +139,6 @@ describe('Crashlytics', function () {
 
     it('setAttribute', function () {
       const crashlytics = getCrashlytics();
-      // @ts-ignore test
-      const nativeMock = { setAttribute: jest.fn() };
-      // @ts-ignore test
-      jest.spyOn(crashlytics, 'native', 'get').mockReturnValue(nativeMock);
-
       checkV9Deprecation(
         () => setAttribute(crashlytics, 'name', 'value'),
         () => crashlytics.setAttribute('name', 'value'),
@@ -161,11 +147,6 @@ describe('Crashlytics', function () {
 
     it('setAttributes', function () {
       const crashlytics = getCrashlytics();
-      // @ts-ignore test
-      const nativeMock = { setAttributes: jest.fn() };
-      // @ts-ignore test
-      jest.spyOn(crashlytics, 'native', 'get').mockReturnValue(nativeMock);
-
       checkV9Deprecation(
         () => setAttributes(crashlytics, {}),
         () => crashlytics.setAttributes({}),
@@ -174,11 +155,6 @@ describe('Crashlytics', function () {
 
     it('setUserId', function () {
       const crashlytics = getCrashlytics();
-      // @ts-ignore test
-      const nativeMock = { setUserId: jest.fn() };
-      // @ts-ignore test
-      jest.spyOn(crashlytics, 'native', 'get').mockReturnValue(nativeMock);
-
       checkV9Deprecation(
         () => setUserId(crashlytics, 'id'),
         () => crashlytics.setUserId('id'),
@@ -187,11 +163,6 @@ describe('Crashlytics', function () {
 
     it('recordError', function () {
       const crashlytics = getCrashlytics();
-      // @ts-ignore test
-      const nativeMock = { recordError: jest.fn() };
-      // @ts-ignore test
-      jest.spyOn(crashlytics, 'native', 'get').mockReturnValue(nativeMock);
-
       checkV9Deprecation(
         () => recordError(crashlytics, new Error(), 'name'),
         () => crashlytics.recordError(new Error(), 'name'),
@@ -200,11 +171,6 @@ describe('Crashlytics', function () {
 
     it('sendUnsentReports', function () {
       const crashlytics = getCrashlytics();
-      // @ts-ignore test
-      const nativeMock = { sendUnsentReports: jest.fn() };
-      // @ts-ignore test
-      jest.spyOn(crashlytics, 'native', 'get').mockReturnValue(nativeMock);
-
       checkV9Deprecation(
         () => sendUnsentReports(crashlytics),
         () => crashlytics.sendUnsentReports(),
@@ -213,11 +179,6 @@ describe('Crashlytics', function () {
 
     it('setCrashlyticsCollectionEnabled', function () {
       const crashlytics = getCrashlytics();
-      // @ts-ignore test
-      const nativeMock = { setCrashlyticsCollectionEnabled: jest.fn() };
-      // @ts-ignore test
-      jest.spyOn(crashlytics, 'native', 'get').mockReturnValue(nativeMock);
-
       checkV9Deprecation(
         () => setCrashlyticsCollectionEnabled(crashlytics, true),
         () => crashlytics.setCrashlyticsCollectionEnabled(true),
