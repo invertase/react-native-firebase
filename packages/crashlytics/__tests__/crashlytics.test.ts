@@ -105,7 +105,7 @@ describe('Crashlytics', function () {
     it('checkForUnsentReports', function () {
       const crashlytics = getCrashlytics();
       checkV9Deprecation(
-        () => {},
+        () => checkForUnsentReports(crashlytics),
         () => crashlytics.checkForUnsentReports(),
         'checkForUnsentReports',
       );
