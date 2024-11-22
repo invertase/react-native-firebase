@@ -22,7 +22,6 @@ import {
   isObject,
   isString,
   isOther,
-  warnIfNotModularCall,
 } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
@@ -57,7 +56,6 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   }
 
   checkForUnsentReports() {
-    warnIfNotModularCall(arguments, 'checkForUnsentReports()');
     if (this.isCrashlyticsCollectionEnabled) {
       throw new Error(
         "firebase.crashlytics().setCrashlyticsCollectionEnabled(*) has been set to 'true', all reports are automatically sent.",
@@ -67,27 +65,22 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   }
 
   crash() {
-    warnIfNotModularCall(arguments, 'crash()');
     this.native.crash();
   }
 
   async deleteUnsentReports() {
-    warnIfNotModularCall(arguments, 'deleteUnsentReports()');
     await this.native.deleteUnsentReports();
   }
 
   didCrashOnPreviousExecution() {
-    warnIfNotModularCall(arguments, 'didCrashOnPreviousExecution()');
     return this.native.didCrashOnPreviousExecution();
   }
 
   log(message) {
-    warnIfNotModularCall(arguments, 'log()');
     this.native.log(`${message}`);
   }
 
   setAttribute(name, value) {
-    warnIfNotModularCall(arguments, 'setAttribute()');
     if (!isString(name)) {
       throw new Error(
         'firebase.crashlytics().setAttribute(*, _): The supplied property name must be a string.',
@@ -104,7 +97,6 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   }
 
   setAttributes(object) {
-    warnIfNotModularCall(arguments, 'setAttributes()');
     if (!isObject(object)) {
       throw new Error(
         'firebase.crashlytics().setAttributes(*): The supplied arg must be an object of key value strings.',
@@ -115,7 +107,6 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   }
 
   setUserId(userId) {
-    warnIfNotModularCall(arguments, 'setUserId()');
     if (!isString(userId)) {
       throw new Error(
         'firebase.crashlytics().setUserId(*): The supplied userId must be a string value.',
@@ -126,7 +117,6 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   }
 
   recordError(error, jsErrorName) {
-    warnIfNotModularCall(arguments, 'recordError()');
     if (isError(error)) {
       StackTrace.fromError(error, { offline: true }).then(stackFrames => {
         this.native.recordError(createNativeErrorObj(error, stackFrames, false, jsErrorName));
@@ -139,14 +129,12 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   }
 
   sendUnsentReports() {
-    warnIfNotModularCall(arguments, 'sendUnsentReports()');
     if (this.isCrashlyticsCollectionEnabled) {
       this.native.sendUnsentReports();
     }
   }
 
   setCrashlyticsCollectionEnabled(enabled) {
-    warnIfNotModularCall(arguments, 'setCrashlyticsCollectionEnabled()');
     if (!isBoolean(enabled)) {
       throw new Error(
         "firebase.crashlytics().setCrashlyticsCollectionEnabled(*) 'enabled' must be a boolean.",

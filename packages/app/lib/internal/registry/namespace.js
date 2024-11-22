@@ -15,7 +15,7 @@
  *
  */
 
-import { isString } from '../../common';
+import { isString, MODULAR_DEPRECATION_ARG, deprecationConsoleWarning } from '../../common';
 import FirebaseApp from '../../FirebaseApp';
 import SDK_VERSION from '../../version';
 import { DEFAULT_APP_NAME, KNOWN_NAMESPACES } from '../constants';
@@ -170,10 +170,10 @@ function getOrCreateModuleForRoot(moduleNamespace) {
     }
 
     if (!APP_MODULE_INSTANCE[_app.name][moduleNamespace]) {
-      APP_MODULE_INSTANCE[_app.name][moduleNamespace] = new ModuleClass(
-        _app,
-        NAMESPACE_REGISTRY[moduleNamespace],
+      const module = createDeprecationProxy(
+        new ModuleClass(_app, NAMESPACE_REGISTRY[moduleNamespace]),
       );
+      APP_MODULE_INSTANCE[_app.name][moduleNamespace] = module;
     }
 
     return APP_MODULE_INSTANCE[_app.name][moduleNamespace];
@@ -275,6 +275,28 @@ export function getFirebaseRoot() {
     return FIREBASE_ROOT;
   }
   return createFirebaseRoot();
+}
+
+function createDeprecationProxy(instance) {
+  return new Proxy(instance, {
+    get(target, prop, receiver) {
+      const originalMethod = target[prop];
+      if (prop === 'constructor') {
+        return target.constructor;
+      }
+      if (typeof originalMethod === 'function') {
+        return function (...args) {
+          const isModularMethod = args.includes(MODULAR_DEPRECATION_ARG);
+          const moduleName = receiver._config.namespace;
+
+          deprecationConsoleWarning(moduleName, prop, isModularMethod);
+
+          return originalMethod.apply(target, args);
+        };
+      }
+      return Reflect.get(target, prop, receiver);
+    },
+  });
 }
 
 /**

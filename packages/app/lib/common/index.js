@@ -103,6 +103,64 @@ export function tryJSONStringify(data) {
   }
 }
 
+// Used to indicate if there is no corresponding modular function
+const NO_REPLACEMENT = true;
+
+const mapOfDeprecationReplacements = {
+  crashlytics: {
+    checkForUnsentReports: 'checkForUnsentReports()',
+    crash: 'crash()',
+    deleteUnsentReports: 'deleteUnsentReports()',
+    didCrashOnPreviousExecution: 'didCrashOnPreviousExecution()',
+    log: 'log()',
+    setAttribute: 'setAttribute()',
+    setAttributes: 'setAttributes()',
+    setUserId: 'setUserId()',
+    recordError: 'recordError()',
+    sendUnsentReports: 'sendUnsentReports()',
+    setCrashlyticsCollectionEnabled: 'setCrashlyticsCollectionEnabled()',
+  },
+};
+
+const v8deprecationMessage =
+  'This v8 method is deprecated and will be removed in the next major release ' +
+  'as part of move to match Firebase Web modular v9 SDK API.';
+
+export function deprecationConsoleWarning(moduleName, methodName, isModularMethod) {
+  if (!isModularMethod) {
+    const moduleMap = mapOfDeprecationReplacements[moduleName];
+    if (moduleMap) {
+      const replacementMethodName = moduleMap[methodName];
+      // only warn if it is mapped and purposefully deprecated
+      if (replacementMethodName) {
+        const message = createMessage(moduleName, methodName);
+
+        // eslint-disable-next-line no-console
+        console.warn(message);
+      }
+    }
+  }
+}
+
+export function createMessage(moduleName, methodName, uniqueMessage = '') {
+  if (uniqueMessage.length > 0) {
+    // Unique deprecation message used for testing
+    return uniqueMessage;
+  }
+
+  const moduleMap = mapOfDeprecationReplacements[moduleName];
+  if (moduleMap) {
+    const replacementMethodName = moduleMap[methodName];
+    if (replacementMethodName) {
+      let message;
+      if (replacementMethodName !== NO_REPLACEMENT) {
+        message = v8deprecationMessage + ` Please use \`${replacementMethodName}\` instead.`;
+      }
+      return message;
+    }
+  }
+}
+
 export const MODULAR_DEPRECATION_ARG = 'react-native-firebase-modular-method-call';
 
 export function warnIfNotModularCall(args, replacementMethodName, noAlternative) {
