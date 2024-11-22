@@ -27,6 +27,11 @@ Pod::Spec.new do |s|
   # React Native dependencies
   s.dependency          'React-Core'
 
+  if (ENV.include?('FIREBASE_SDK_VERSION'))
+    Pod::UI.puts "#{s.name}: Found Firebase SDK version in environment '#{ENV['FIREBASE_SDK_VERSION']}'"
+    $FirebaseSDKVersion = ENV['FIREBASE_SDK_VERSION']
+  end
+
   if defined?($FirebaseSDKVersion)
     Pod::UI.puts "#{s.name}: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"
     firebase_sdk_version = $FirebaseSDKVersion

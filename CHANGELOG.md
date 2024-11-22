@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.6.0](https://github.com/invertase/react-native-firebase/compare/v21.5.0...v21.6.0) (2024-11-20)
+
+### Features
+
+- **ios, sdk:** allow FIREBASE_SDK_VERSION override ([8cbe59f](https://github.com/invertase/react-native-firebase/commit/8cbe59fbf771df6ba932832c9d4fd17bf500ea91))
+
+### Bug Fixes
+
+- **analytics:** update superstruct dependency / forward-port to new API ([#8153](https://github.com/invertase/react-native-firebase/issues/8153)) ([6db1fb4](https://github.com/invertase/react-native-firebase/commit/6db1fb471e62e2c7e434719f2616c76349f345be))
+
 ## [21.5.0](https://github.com/invertase/react-native-firebase/compare/v21.4.1...v21.5.0) (2024-11-16)
 
 ### Features
