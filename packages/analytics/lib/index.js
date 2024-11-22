@@ -26,7 +26,6 @@ import {
   isString,
   isUndefined,
 } from '@react-native-firebase/app/lib/common';
-import { validateStruct, validateCompound } from '@react-native-firebase/app/lib/common/struct';
 
 import {
   createModuleNamespace,
@@ -36,6 +35,7 @@ import {
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import { isBoolean } from '@react-native-firebase/app/lib/common';
 
+import { validateStruct, validateCompound } from './struct';
 import fallBackModule from './web/RNFBAnalyticsModule';
 import version from './version';
 import * as structs from './structs';
