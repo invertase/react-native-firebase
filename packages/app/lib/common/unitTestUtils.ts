@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { expect, jest } from '@jest/globals';
-import { createConsoleWarningMessageTest } from './index';
+import { createMessage } from './index';
 
 export const checkV9Deprecation = (modularFunction: () => void, nonModularFunction: () => void) => {
   const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
@@ -35,7 +35,7 @@ export const createCheckV9Deprecation = (moduleName: string): CheckV9Deprecation
     expect(consoleWarnSpy).not.toHaveBeenCalled();
     consoleWarnSpy.mockReset();
     const consoleWarnSpy2 = jest.spyOn(console, 'warn').mockImplementation(warnMessage => {
-      const message = createConsoleWarningMessageTest(moduleName, methodName, uniqueMessage);
+      const message = createMessage(moduleName, methodName, uniqueMessage);
       expect(message).toMatch(warnMessage);
     });
     nonModularFunction();

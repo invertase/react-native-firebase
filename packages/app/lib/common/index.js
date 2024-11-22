@@ -132,10 +132,8 @@ export function deprecationConsoleWarning(moduleName, methodName, isModularMetho
       const replacementMethodName = moduleMap[methodName];
       // only warn if it is mapped and purposefully deprecated
       if (replacementMethodName) {
-        let message;
-        if (replacementMethodName !== NO_REPLACEMENT) {
-          message = v8deprecationMessage + ` Please use \`${replacementMethodName}\` instead.`;
-        }
+        const message = createMessage(moduleName, methodName);
+
         // eslint-disable-next-line no-console
         console.warn(message);
       }
@@ -143,16 +141,15 @@ export function deprecationConsoleWarning(moduleName, methodName, isModularMetho
   }
 }
 
-export function createConsoleWarningMessageTest(moduleName, methodName, uniqueMessage = '') {
+export function createMessage(moduleName, methodName, uniqueMessage = '') {
   if (uniqueMessage.length > 0) {
-    // Unique deprecation message
+    // Unique deprecation message used for testing
     return uniqueMessage;
   }
-  // use this to generate message for unit tests
+
   const moduleMap = mapOfDeprecationReplacements[moduleName];
   if (moduleMap) {
     const replacementMethodName = moduleMap[methodName];
-    // only warn if it is mapped and purposefully deprecated
     if (replacementMethodName) {
       let message;
       if (replacementMethodName !== NO_REPLACEMENT) {
