@@ -163,9 +163,9 @@
       // If app is in background state, register background task to guarantee async queues aren't
       // frozen.
       sharedInstance.backgroundTaskId = [application beginBackgroundTaskWithExpirationHandler:^{
-        if (backgroundTaskId != UIBackgroundTaskInvalid) {
-          [application endBackgroundTask:backgroundTaskId];
-          backgroundTaskId = UIBackgroundTaskInvalid;
+        if (sharedInstance.backgroundTaskId != UIBackgroundTaskInvalid) {
+          [application endBackgroundTask:sharedInstance.backgroundTaskId];
+          sharedInstance.backgroundTaskId = UIBackgroundTaskInvalid;
         }
       }];
 
