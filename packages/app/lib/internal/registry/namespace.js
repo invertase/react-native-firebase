@@ -281,6 +281,9 @@ function createDeprecationProxy(instance) {
   return new Proxy(instance, {
     get(target, prop, receiver) {
       const originalMethod = target[prop];
+      if (prop === 'constructor') {
+        return target.constructor;
+      }
       if (typeof originalMethod === 'function') {
         return function (...args) {
           const isModularMethod = args.includes(MODULAR_DEPRECATION_ARG);
