@@ -152,11 +152,11 @@ export function createMessage(moduleName, methodName, uniqueMessage = '') {
   if (moduleMap) {
     const replacementMethodName = moduleMap[methodName];
     if (replacementMethodName) {
-      let message;
       if (replacementMethodName !== NO_REPLACEMENT) {
-        message = v8deprecationMessage + ` Please use \`${replacementMethodName}\` instead.`;
+        return v8deprecationMessage + ` Please use \`${replacementMethodName}\` instead.`;
+      } else {
+        return v8deprecationMessage;
       }
-      return message;
     }
   }
 }
