@@ -1,7 +1,4 @@
-import {
-  MODULAR_DEPRECATION_ARG,
-  warnIfNotModularCall,
-} from '@react-native-firebase/app/lib/common';
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 import { firebase } from '..';
 
 /**
@@ -35,8 +32,11 @@ export function getCrashlytics() {
  * @returns {boolean}
  */
 export function isCrashlyticsCollectionEnabled(crashlytics) {
-  // Deprecating this method and allow it as a property on Crashlytics instance.
-  warnIfNotModularCall([], 'crashlytics.isCrashlyticsCollectionEnabled');
+  // Unique. Deprecating modular method and allow it as a property on Crashlytics instance.
+  // eslint-disable-next-line no-console
+  console.warn(
+    '`isCrashlyticsCollectionEnabled()` is deprecated, please use `Crashlytics.isCrashlyticsCollectionEnabled` property instead',
+  );
   return crashlytics.isCrashlyticsCollectionEnabled;
 }
 

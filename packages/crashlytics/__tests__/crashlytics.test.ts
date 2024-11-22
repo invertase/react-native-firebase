@@ -1,7 +1,10 @@
 import { describe, expect, it, jest, beforeEach } from '@jest/globals';
 // @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
-import { checkV9Deprecation } from '../../app/lib/common/unitTestUtils';
+import {
+  createCheckV9Deprecation,
+  CheckV9DeprecationFunction,
+} from '../../app/lib/common/unitTestUtils';
 import {
   firebase,
   getCrashlytics,
@@ -83,7 +86,11 @@ describe('Crashlytics', function () {
   });
 
   describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
-    beforeEach(() => {
+    let checkV9Deprecation: CheckV9DeprecationFunction;
+
+    beforeEach(function () {
+      checkV9Deprecation = createCheckV9Deprecation('crashlytics');
+
       // @ts-ignore test
       jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
         return new Proxy(
@@ -97,19 +104,19 @@ describe('Crashlytics', function () {
 
     it('checkForUnsentReports', function () {
       const crashlytics = getCrashlytics();
-
       checkV9Deprecation(
-        () => checkForUnsentReports(crashlytics),
+        () => {},
         () => crashlytics.checkForUnsentReports(),
+        'checkForUnsentReports',
       );
     });
 
     it('crash', function () {
       const crashlytics = getCrashlytics();
-
       checkV9Deprecation(
         () => crash(crashlytics),
         () => crashlytics.crash(),
+        'crash',
       );
     });
 
@@ -118,6 +125,7 @@ describe('Crashlytics', function () {
       checkV9Deprecation(
         () => deleteUnsentReports(crashlytics),
         () => crashlytics.deleteUnsentReports(),
+        'deleteUnsentReports',
       );
     });
 
@@ -126,6 +134,7 @@ describe('Crashlytics', function () {
       checkV9Deprecation(
         () => didCrashOnPreviousExecution(crashlytics),
         () => crashlytics.didCrashOnPreviousExecution(),
+        'didCrashOnPreviousExecution',
       );
     });
 
@@ -134,6 +143,7 @@ describe('Crashlytics', function () {
       checkV9Deprecation(
         () => log(crashlytics, 'message'),
         () => crashlytics.log('message'),
+        'log',
       );
     });
 
@@ -142,6 +152,7 @@ describe('Crashlytics', function () {
       checkV9Deprecation(
         () => setAttribute(crashlytics, 'name', 'value'),
         () => crashlytics.setAttribute('name', 'value'),
+        'setAttribute',
       );
     });
 
@@ -150,6 +161,7 @@ describe('Crashlytics', function () {
       checkV9Deprecation(
         () => setAttributes(crashlytics, {}),
         () => crashlytics.setAttributes({}),
+        'setAttributes',
       );
     });
 
@@ -158,6 +170,7 @@ describe('Crashlytics', function () {
       checkV9Deprecation(
         () => setUserId(crashlytics, 'id'),
         () => crashlytics.setUserId('id'),
+        'setUserId',
       );
     });
 
@@ -166,6 +179,7 @@ describe('Crashlytics', function () {
       checkV9Deprecation(
         () => recordError(crashlytics, new Error(), 'name'),
         () => crashlytics.recordError(new Error(), 'name'),
+        'recordError',
       );
     });
 
@@ -174,6 +188,7 @@ describe('Crashlytics', function () {
       checkV9Deprecation(
         () => sendUnsentReports(crashlytics),
         () => crashlytics.sendUnsentReports(),
+        'sendUnsentReports',
       );
     });
 
@@ -182,6 +197,7 @@ describe('Crashlytics', function () {
       checkV9Deprecation(
         () => setCrashlyticsCollectionEnabled(crashlytics, true),
         () => crashlytics.setCrashlyticsCollectionEnabled(true),
+        'setCrashlyticsCollectionEnabled',
       );
     });
 
@@ -191,6 +207,8 @@ describe('Crashlytics', function () {
         // swapped order here because we're deprecating the modular method and keeping the property on Crashlytics instance
         () => crashlytics.isCrashlyticsCollectionEnabled,
         () => isCrashlyticsCollectionEnabled(crashlytics),
+        '',
+        '`isCrashlyticsCollectionEnabled()` is deprecated, please use `Crashlytics.isCrashlyticsCollectionEnabled` property instead',
       );
     });
   });
