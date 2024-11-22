@@ -103,6 +103,7 @@ export function tryJSONStringify(data) {
   }
 }
 
+// Used to indicate if there is no corresponding modular function
 const NO_REPLACEMENT = true;
 
 const mapOfDeprecationReplacements = {
