@@ -201,21 +201,11 @@ export function createMessage(
 }
 
 function getNamespace(className) {
-  if (
-    [
-      'FirestoreAggregateQuery',
-      'FirebaseFirestoreModule',
-      'FirestoreCollectionReference',
-      'FirestoreQuery',
-      'FirestoreDocumentReference',
-      'FirestoreDocumentSnapshot',
-    ].includes(className)
-  ) {
-    return 'firestore';
-  }
-  if (['FirebaseCrashlyticsModule'].includes(className)) {
-    return 'crashlytics';
-  }
+  return Object.keys(mapOfDeprecationReplacements).find(key => {
+    if (mapOfDeprecationReplacements[key][className]) {
+      return key;
+    }
+  });
 }
 
 export function createDeprecationProxy(instance) {
@@ -230,7 +220,10 @@ export function createDeprecationProxy(instance) {
       if (typeof originalMethod === 'function') {
         return function (...args) {
           const isModularMethod = args.includes(MODULAR_DEPRECATION_ARG);
-          const nameSpace = getNamespace(target.constructor.name);
+          const nameSpace = receiver._config
+            ? receiver._config.namespace
+            : getNamespace(target.constructor.name);
+
           const instanceName = !receiver._config ? target.constructor.name : 'default';
 
           deprecationConsoleWarning(nameSpace, prop, instanceName, isModularMethod);
