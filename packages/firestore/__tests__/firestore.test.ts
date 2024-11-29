@@ -1,4 +1,17 @@
-import { describe, expect, it } from '@jest/globals';
+import { describe, expect, it, jest, beforeEach } from '@jest/globals';
+// @ts-ignore test
+import { createDeprecationProxy } from '../../app/lib/common';
+// @ts-ignore test
+import FirebaseModule from '../../app/lib/internal/FirebaseModule';
+// @ts-ignore test
+import FirestoreQuery from '../lib/FirestoreQuery';
+// @ts-ignore test
+import FirestoreDocumentSnapshot from '../lib/FirestoreDocumentSnapshot';
+
+import {
+  createCheckV9Deprecation,
+  CheckV9DeprecationFunction,
+} from '../../app/lib/common/unitTestUtils';
 
 import firestore, {
   firebase,
@@ -694,6 +707,381 @@ describe('Firestore', function () {
 
       const nullIndexManagerModular = getPersistentCacheIndexManager(firestore2);
       expect(nullIndexManagerModular).toBeNull();
+    });
+  });
+
+  describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
+    // let firestoreV9Deprecation: CheckV9DeprecationFunction;
+    let collectionRefV9Deprecation: CheckV9DeprecationFunction;
+    let docRefV9Deprecation: CheckV9DeprecationFunction;
+    let fieldValueV9Deprecation: CheckV9DeprecationFunction;
+
+    beforeEach(function () {
+      // firestoreV9Deprecation = createCheckV9Deprecation(['firestore']);
+      collectionRefV9Deprecation = createCheckV9Deprecation([
+        'firestore',
+        'FirestoreCollectionReference',
+      ]);
+
+      docRefV9Deprecation = createCheckV9Deprecation(['firestore', 'FirestoreDocumentReference']);
+
+      fieldValueV9Deprecation = createCheckV9Deprecation(['firestore', 'FirestoreFieldValue']);
+
+      // @ts-ignore test
+      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
+        return new Proxy(
+          {},
+          {
+            get: () =>
+              jest.fn().mockResolvedValue({
+                source: 'cache',
+                changes: [],
+                documents: [],
+                metadata: {},
+                path: 'foo',
+              } as never),
+          },
+        );
+      });
+
+      jest
+        .spyOn(FirestoreQuery.prototype, '_handleQueryCursor')
+        // @ts-ignore test
+        .mockImplementation((cursor, docOrField, fields) => {
+          // Mock implementation returning an empty array or any other desired value
+          return []; // or any other mock value you want to return
+        });
+
+      // jest.spyOn(FirestoreQuerySnapshot.prototype, 'constructor');
+      // @ts-ignore test
+    });
+
+    it('CollectionReference.count()', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => getCountFromServer(query),
+        () => query.count(),
+        'count',
+      );
+    });
+
+    it('CollectionReference.countFromServer()', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => getCountFromServer(query),
+        () => query.countFromServer(),
+        'count',
+      );
+    });
+
+    it('CollectionReference.endAt()', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => endAt('foo'),
+        () => query.endAt('foo'),
+        'endAt',
+      );
+    });
+
+    it('CollectionReference.endBefore()', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => endBefore('foo'),
+        () => query.endBefore('foo'),
+        'endBefore',
+      );
+    });
+
+    it('CollectionReference.get()', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => getDocs(query),
+        () => query.get(),
+        'get',
+      );
+    });
+
+    it('CollectionReference.isEqual()', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        // no equivalent method
+        () => {},
+        () => query.isEqual(query),
+        'isEqual',
+      );
+    });
+
+    it('CollectionReference.limit()', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => limit(9),
+        () => query.limit(9),
+        'limit',
+      );
+    });
+
+    it('CollectionReference.limitToLast()', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => limitToLast(9),
+        () => query.limitToLast(9),
+        'limitToLast',
+      );
+    });
+
+    it('CollectionReference.onSnapshot()', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => onSnapshot(query, () => {}),
+        () => query.onSnapshot(() => {}),
+        'onSnapshot',
+      );
+    });
+
+    it('CollectionReference.orderBy()', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => orderBy('foo', 'asc'),
+        () => query.orderBy('foo', 'asc'),
+        'orderBy',
+      );
+    });
+
+    it('CollectionReference.startAfter()', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => startAfter('foo'),
+        () => query.startAfter('foo'),
+        'startAfter',
+      );
+    });
+
+    it('CollectionReference.startAt()', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => startAt('foo'),
+        () => query.startAt('foo'),
+        'startAt',
+      );
+    });
+
+    it('CollectionReference.where()', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => where('foo', '==', 'bar'),
+        () => query.where('foo', '==', 'bar'),
+        'where',
+      );
+    });
+
+    it('CollectionReference.add()', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => addDoc(query, { foo: 'bar' }),
+        () => query.add({ foo: 'bar' }),
+        'add',
+      );
+    });
+
+    it('CollectionReference.doc()', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => doc(query, 'bar'),
+        () => query.doc('foo'),
+        'doc',
+      );
+    });
+
+    it('DocumentReference.collection()', function () {
+      const firestore = getFirestore();
+
+      const docRef = firestore.doc('some/foo');
+
+      docRefV9Deprecation(
+        () => collection(firestore, 'bar'),
+        () => docRef.collection('bar'),
+        'collection',
+      );
+    });
+
+    it('DocumentReference.delete()', function () {
+      const firestore = getFirestore();
+
+      const docRef = firestore.doc('some/foo');
+
+      docRefV9Deprecation(
+        () => deleteDoc(docRef),
+        () => docRef.delete(),
+        'delete',
+      );
+    });
+
+    it('DocumentReference.get()', function () {
+      const firestore = getFirestore();
+
+      const docRef = firestore.doc('some/foo');
+
+      docRefV9Deprecation(
+        () => getDoc(docRef),
+        () => docRef.get(),
+        'get',
+      );
+    });
+
+    it('DocumentReference.isEqual()', function () {
+      const firestore = getFirestore();
+
+      const docRef = firestore.doc('some/foo');
+
+      docRefV9Deprecation(
+        // no equivalent method
+        () => {},
+        () => docRef.isEqual(docRef),
+        'isEqual',
+      );
+    });
+
+    it('DocumentReference.onSnapshot()', function () {
+      const firestore = getFirestore();
+
+      const docRef = firestore.doc('some/foo');
+
+      docRefV9Deprecation(
+        () => onSnapshot(docRef, () => {}),
+        () => docRef.onSnapshot(() => {}),
+        'onSnapshot',
+      );
+    });
+
+    it('DocumentReference.set()', function () {
+      const firestore = getFirestore();
+
+      const docRef = firestore.doc('some/foo');
+
+      docRefV9Deprecation(
+        () => setDoc(docRef, { foo: 'bar' }),
+        () => docRef.set({ foo: 'bar' }),
+        'set',
+      );
+    });
+
+    it('DocumentReference.update()', function () {
+      const firestore = getFirestore();
+
+      const docRef = firestore.doc('some/foo');
+
+      docRefV9Deprecation(
+        () => updateDoc(docRef, { foo: 'bar' }),
+        () => docRef.update({ foo: 'bar' }),
+        'update',
+      );
+    });
+
+    it('FirestoreDocumentSnapshot.isEqual()', function () {
+      const firestore = getFirestore();
+      // Every `FirestoreDocumentSnapshot` has been wrapped in deprecation proxy, so we use constructor directly
+      // for ease of mocking
+      const snapshot = createDeprecationProxy(
+        new FirestoreDocumentSnapshot(firestore, {
+          source: 'cache',
+          changes: [],
+          documents: [],
+          metadata: {},
+          path: 'foo',
+        }),
+      );
+
+      docRefV9Deprecation(
+        // no equivalent method
+        () => {},
+        () => snapshot.isEqual(snapshot),
+        'isEqual',
+      );
+    });
+
+    it('FirestoreFieldValue.delete()', function () {
+      fieldValueV9Deprecation(
+        () => deleteField(),
+        () => firestore.FieldValue.delete(),
+        'delete',
+      );
+    });
+
+    it('FirestoreFieldValue.increment()', function () {
+      fieldValueV9Deprecation(
+        () => increment(3),
+        () => firestore.FieldValue.increment(4),
+        'increment',
+      );
+    });
+
+    it('FirestoreFieldValue.serverTimestamp()', function () {
+      fieldValueV9Deprecation(
+        () => serverTimestamp(),
+        () => firestore.FieldValue.serverTimestamp(),
+        'serverTimestamp',
+      );
+    });
+
+    it('FirestoreFieldValue.arrayUnion()', function () {
+      fieldValueV9Deprecation(
+        () => arrayUnion('foo'),
+        () => firestore.FieldValue.arrayUnion('bar'),
+        'arrayUnion',
+      );
+    });
+
+    it('FirestoreFieldValue.arrayRemove()', function () {
+      fieldValueV9Deprecation(
+        () => arrayRemove('foo'),
+        () => firestore.FieldValue.arrayRemove('bar'),
+        'arrayRemove',
+      );
     });
   });
 });

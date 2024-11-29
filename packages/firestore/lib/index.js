@@ -23,6 +23,7 @@ import {
   isString,
   isUndefined,
   isAndroid,
+  createDeprecationProxy,
 } from '@react-native-firebase/app/lib/common';
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import {
@@ -175,7 +176,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
       );
     }
 
-    return new FirestoreCollectionReference(this, path);
+    return createDeprecationProxy(new FirestoreCollectionReference(this, path));
   }
 
   collectionGroup(collectionId) {
@@ -197,11 +198,13 @@ class FirebaseFirestoreModule extends FirebaseModule {
       );
     }
 
-    return new FirestoreQuery(
-      this,
-      this._referencePath.child(collectionId),
-      new FirestoreQueryModifiers().asCollectionGroupQuery(),
-      undefined,
+    return createDeprecationProxy(
+      new FirestoreQuery(
+        this,
+        this._referencePath.child(collectionId),
+        new FirestoreQueryModifiers().asCollectionGroupQuery(),
+        undefined,
+      ),
     );
   }
 
@@ -224,7 +227,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
       throw new Error("firebase.firestore().doc(*) 'documentPath' must point to a document.");
     }
 
-    return new FirestoreDocumentReference(this, path);
+    return createDeprecationProxy(new FirestoreDocumentReference(this, path));
   }
 
   async enableNetwork() {
@@ -377,7 +380,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
     if (this._settings.persistence === false) {
       return null;
     }
-    return new FirestorePersistentCacheIndexManager(this);
+    return createDeprecationProxy(new FirestorePersistentCacheIndexManager(this));
   }
 }
 

@@ -15,7 +15,12 @@
  *
  */
 
-import { isObject, isString, isUndefined } from '@react-native-firebase/app/lib/common';
+import {
+  isObject,
+  isString,
+  isUndefined,
+  createDeprecationProxy,
+} from '@react-native-firebase/app/lib/common';
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
 import { parseSetOptions, parseSnapshotArgs, parseUpdateArgs } from './utils';
 import { buildNativeMap, provideDocumentReferenceClass } from './utils/serialize';
@@ -103,7 +108,7 @@ export default class FirestoreDocumentReference {
 
     return this._firestore.native
       .documentGet(this.path, options)
-      .then(data => new FirestoreDocumentSnapshot(this._firestore, data));
+      .then(data => createDeprecationProxy(new FirestoreDocumentSnapshot(this._firestore, data)));
   }
 
   isEqual(other) {
@@ -154,9 +159,8 @@ export default class FirestoreDocumentReference {
         if (event.body.error) {
           handleError(NativeError.fromEvent(event.body.error, 'firestore'));
         } else {
-          const documentSnapshot = new FirestoreDocumentSnapshot(
-            this._firestore,
-            event.body.snapshot,
+          const documentSnapshot = createDeprecationProxy(
+            new FirestoreDocumentSnapshot(this._firestore, event.body.snapshot),
           );
           handleSuccess(documentSnapshot);
         }
