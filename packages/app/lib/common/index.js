@@ -152,6 +152,13 @@ const mapOfDeprecationReplacements = {
     FirestoreDocumentSnapshot: {
       isEqual: NO_REPLACEMENT,
     },
+    FirestoreFieldValue: {
+      arrayRemove: 'arrayRemove()',
+      arrayUnion: 'arrayUnion()',
+      delete: 'deleteField()',
+      increment: 'increment()',
+      serverTimestamp: 'serverTimestamp()',
+    },
   },
 };
 
@@ -208,6 +215,19 @@ function getNamespace(className) {
   });
 }
 
+function getInstanceName(target) {
+  if (target._config) {
+    // module class instance, we use default to store map of deprecated methods
+    return 'default';
+  }
+  if (target.name) {
+    // It's a function which has a name property unlike classes
+    return target.name;
+  }
+  // It's a class instance
+  return target.constructor.name;
+}
+
 export function createDeprecationProxy(instance) {
   return new Proxy(instance, {
     get(target, prop, receiver) {
@@ -220,11 +240,9 @@ export function createDeprecationProxy(instance) {
       if (typeof originalMethod === 'function') {
         return function (...args) {
           const isModularMethod = args.includes(MODULAR_DEPRECATION_ARG);
-          const nameSpace = receiver._config
-            ? receiver._config.namespace
-            : getNamespace(target.constructor.name);
+          const instanceName = getInstanceName(target);
+          const nameSpace = getNamespace(instanceName);
 
-          const instanceName = !receiver._config ? target.constructor.name : 'default';
 
           deprecationConsoleWarning(nameSpace, prop, instanceName, isModularMethod);
 

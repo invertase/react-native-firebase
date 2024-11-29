@@ -714,6 +714,7 @@ describe('Firestore', function () {
     // let firestoreV9Deprecation: CheckV9DeprecationFunction;
     let collectionRefV9Deprecation: CheckV9DeprecationFunction;
     let docRefV9Deprecation: CheckV9DeprecationFunction;
+    let fieldValueV9Deprecation: CheckV9DeprecationFunction;
 
     beforeEach(function () {
       // firestoreV9Deprecation = createCheckV9Deprecation(['firestore']);
@@ -724,7 +725,7 @@ describe('Firestore', function () {
 
       docRefV9Deprecation = createCheckV9Deprecation(['firestore', 'FirestoreDocumentReference']);
 
-      // queryV9Deprecation = createCheckV9Deprecation(['firestore', 'FirestoreQuery']);
+      fieldValueV9Deprecation = createCheckV9Deprecation(['firestore', 'FirestoreFieldValue']);
 
       // @ts-ignore test
       jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
@@ -1040,6 +1041,46 @@ describe('Firestore', function () {
         () => {},
         () => snapshot.isEqual(snapshot),
         'isEqual',
+      );
+    });
+
+    it('FirestoreFieldValue.delete()', function () {
+      fieldValueV9Deprecation(
+        () => deleteField(),
+        () => firestore.FieldValue.delete(),
+        'delete',
+      );
+    });
+
+    it('FirestoreFieldValue.increment()', function () {
+      fieldValueV9Deprecation(
+        () => increment(3),
+        () => firestore.FieldValue.increment(4),
+        'increment',
+      );
+    });
+
+    it('FirestoreFieldValue.serverTimestamp()', function () {
+      fieldValueV9Deprecation(
+        () => serverTimestamp(),
+        () => firestore.FieldValue.serverTimestamp(),
+        'serverTimestamp',
+      );
+    });
+
+    it('FirestoreFieldValue.arrayUnion()', function () {
+      fieldValueV9Deprecation(
+        () => arrayUnion('foo'),
+        () => firestore.FieldValue.arrayUnion('bar'),
+        'arrayUnion',
+      );
+    });
+
+    it('FirestoreFieldValue.arrayRemove()', function () {
+      fieldValueV9Deprecation(
+        () => arrayRemove('foo'),
+        () => firestore.FieldValue.arrayRemove('bar'),
+        'arrayRemove',
       );
     });
   });
