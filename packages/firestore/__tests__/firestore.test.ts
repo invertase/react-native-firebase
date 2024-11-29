@@ -719,7 +719,7 @@ describe('Firestore', function () {
         return new Proxy(
           {},
           {
-            get: () => jest.fn(),
+            get: () => jest.fn().mockResolvedValue(null as never),
           },
         );
       });
