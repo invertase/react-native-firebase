@@ -351,7 +351,6 @@ export default class FirestoreQuery {
   }
 
   orderBy(fieldPath, directionStr) {
-    warnIfNotModularCall(arguments, 'orderBy()');
     if (!isString(fieldPath) && !(fieldPath instanceof FirestoreFieldPath)) {
       throw new Error(
         "firebase.firestore().collection().orderBy(*) 'fieldPath' must be a string or instance of FieldPath.",
@@ -402,7 +401,6 @@ export default class FirestoreQuery {
   }
 
   startAfter(docOrField, ...fields) {
-    warnIfNotModularCall(arguments, 'startAfter()');
     return createDeprecationProxy(
       new FirestoreQuery(
         this._firestore,
