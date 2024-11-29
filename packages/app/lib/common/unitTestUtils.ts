@@ -18,7 +18,7 @@ export const checkV9Deprecation = (modularFunction: () => void, nonModularFuncti
 export type CheckV9DeprecationFunction = (
   modularFunction: () => void,
   nonModularFunction: () => void,
-  methodName: string,
+  methodNameKey: string,
   uniqueMessage: string = '',
 ) => void;
 
@@ -26,7 +26,7 @@ export const createCheckV9Deprecation = (moduleNames: string[]): CheckV9Deprecat
   return (
     modularFunction: () => void,
     nonModularFunction: () => void,
-    methodName: string,
+    methodNameKey: string,
     uniqueMessage: string?,
   ) => {
     const moduleName = moduleNames[0]; // firestore, database, etc
@@ -39,7 +39,7 @@ export const createCheckV9Deprecation = (moduleNames: string[]): CheckV9Deprecat
     consoleWarnSpy.mockReset();
     consoleWarnSpy.mockRestore();
     const consoleWarnSpy2 = jest.spyOn(console, 'warn').mockImplementation(warnMessage => {
-      const message = createMessage(moduleName, methodName, instanceName, uniqueMessage);
+      const message = createMessage(moduleName, methodNameKey, instanceName, uniqueMessage);
       expect(message).toMatch(warnMessage);
     });
     nonModularFunction();
