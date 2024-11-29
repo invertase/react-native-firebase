@@ -807,5 +807,102 @@ describe('Firestore', function () {
         'get',
       );
     });
+
+    it('isEqual', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        // no equivalent method
+        () => {},
+        () => query.isEqual(query),
+        'isEqual',
+      );
+    });
+
+    it('limit', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => limit(9),
+        () => query.limit(9),
+        'limit',
+      );
+    });
+
+    it('limitToLast', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => limitToLast(9),
+        () => query.limitToLast(9),
+        'limitToLast',
+      );
+    });
+
+    it('onSnapshot', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => onSnapshot(query, () => {}),
+        () => query.onSnapshot(() => {}),
+        'onSnapshot',
+      );
+    });
+
+    it('orderBy', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => orderBy('foo', 'asc'),
+        () => query.orderBy('foo', 'asc'),
+        'orderBy',
+      );
+    });
+
+    it('startAfter', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => startAfter('foo'),
+        () => query.startAfter('foo'),
+        'startAfter',
+      );
+    });
+
+    it('startAt', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => startAt('foo'),
+        () => query.startAt('foo'),
+        'startAt',
+      );
+    });
+
+    it('where', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => where('foo', '==', 'bar'),
+        () => query.where('foo', '==', 'bar'),
+        'where',
+      );
+    });
   });
 });
