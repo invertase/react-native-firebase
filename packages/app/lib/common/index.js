@@ -108,17 +108,25 @@ const NO_REPLACEMENT = true;
 
 const mapOfDeprecationReplacements = {
   crashlytics: {
-    checkForUnsentReports: 'checkForUnsentReports()',
-    crash: 'crash()',
-    deleteUnsentReports: 'deleteUnsentReports()',
-    didCrashOnPreviousExecution: 'didCrashOnPreviousExecution()',
-    log: 'log()',
-    setAttribute: 'setAttribute()',
-    setAttributes: 'setAttributes()',
-    setUserId: 'setUserId()',
-    recordError: 'recordError()',
-    sendUnsentReports: 'sendUnsentReports()',
-    setCrashlyticsCollectionEnabled: 'setCrashlyticsCollectionEnabled()',
+    default: {
+      checkForUnsentReports: 'checkForUnsentReports()',
+      crash: 'crash()',
+      deleteUnsentReports: 'deleteUnsentReports()',
+      didCrashOnPreviousExecution: 'didCrashOnPreviousExecution()',
+      log: 'log()',
+      setAttribute: 'setAttribute()',
+      setAttributes: 'setAttributes()',
+      setUserId: 'setUserId()',
+      recordError: 'recordError()',
+      sendUnsentReports: 'sendUnsentReports()',
+      setCrashlyticsCollectionEnabled: 'setCrashlyticsCollectionEnabled()',
+    },
+  },
+  firestore: {
+    FirestoreCollectionReference: {
+      count: 'getCountFromServer()',
+      countFromServer: 'getCountFromServer()',
+    },
   },
 };
 
@@ -126,15 +134,14 @@ const v8deprecationMessage =
   'This v8 method is deprecated and will be removed in the next major release ' +
   'as part of move to match Firebase Web modular v9 SDK API.';
 
-export function deprecationConsoleWarning(moduleName, methodName, isModularMethod) {
+export function deprecationConsoleWarning(nameSpace, methodName, instanceName, isModularMethod) {
   if (!isModularMethod) {
-    const moduleMap = mapOfDeprecationReplacements[moduleName];
+    const moduleMap = mapOfDeprecationReplacements[nameSpace];
     if (moduleMap) {
-      const replacementMethodName = moduleMap[methodName];
-      // only warn if it is mapped and purposefully deprecated
-      if (replacementMethodName) {
-        const message = createMessage(moduleName, methodName);
-
+      const instanceMap = moduleMap[instanceName];
+      const deprecatedMethod = instanceMap[methodName];
+      if (instanceMap && deprecatedMethod) {
+        const message = createMessage(nameSpace, methodName, instanceName);
         // eslint-disable-next-line no-console
         console.warn(message);
       }
@@ -142,16 +149,23 @@ export function deprecationConsoleWarning(moduleName, methodName, isModularMetho
   }
 }
 
-export function createMessage(moduleName, methodName, uniqueMessage = '') {
-  if (uniqueMessage.length > 0) {
+export function createMessage(
+  nameSpace,
+  methodName,
+  instanceName = 'default',
+  uniqueMessage = null,
+) {
+  if (uniqueMessage) {
     // Unique deprecation message used for testing
     return uniqueMessage;
   }
 
-  const moduleMap = mapOfDeprecationReplacements[moduleName];
+  const moduleMap = mapOfDeprecationReplacements[nameSpace];
   if (moduleMap) {
-    const replacementMethodName = moduleMap[methodName];
-    if (replacementMethodName) {
+    const instance = moduleMap[instanceName];
+    if (instance) {
+      const replacementMethodName = instance[methodName];
+
       if (replacementMethodName !== NO_REPLACEMENT) {
         return v8deprecationMessage + ` Please use \`${replacementMethodName}\` instead.`;
       } else {
@@ -159,6 +173,44 @@ export function createMessage(moduleName, methodName, uniqueMessage = '') {
       }
     }
   }
+}
+
+function getNamespace(className) {
+  if (
+    ['FirestoreAggregateQuery', 'FirebaseFirestoreModule', 'FirestoreCollectionReference'].includes(
+      className,
+    )
+  ) {
+    return 'firestore';
+  }
+  if (['FirebaseCrashlyticsModule'].includes(className)) {
+    return 'crashlytics';
+  }
+}
+
+export function createDeprecationProxy(instance) {
+  return new Proxy(instance, {
+    get(target, prop, receiver) {
+      const originalMethod = target[prop];
+
+      if (prop === 'constructor') {
+        return target.constructor;
+      }
+
+      if (typeof originalMethod === 'function') {
+        return function (...args) {
+          const isModularMethod = args.includes(MODULAR_DEPRECATION_ARG);
+          const nameSpace = getNamespace(target.constructor.name);
+          const instanceName = !receiver._config ? target.constructor.name : 'default';
+
+          deprecationConsoleWarning(nameSpace, prop, instanceName, isModularMethod);
+
+          return originalMethod.apply(target, args);
+        };
+      }
+      return Reflect.get(target, prop, receiver);
+    },
+  });
 }
 
 export const MODULAR_DEPRECATION_ARG = 'react-native-firebase-modular-method-call';

@@ -22,6 +22,7 @@ import {
   isString,
   isUndefined,
   filterModularArgument,
+  createDeprecationProxy,
   warnIfNotModularCall,
 } from '@react-native-firebase/app/lib/common';
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
@@ -135,12 +136,8 @@ export default class FirestoreQuery {
   }
 
   count() {
-    warnIfNotModularCall(arguments, 'getCountFromServer()');
-    return new FirestoreAggregateQuery(
-      this._firestore,
-      this,
-      this._collectionPath,
-      this._modifiers,
+    return createDeprecationProxy(
+      new FirestoreAggregateQuery(this._firestore, this, this._collectionPath, this._modifiers),
     );
   }
 
@@ -150,27 +147,28 @@ export default class FirestoreQuery {
   }
 
   endAt(docOrField, ...fields) {
-    warnIfNotModularCall(arguments, 'endAt()');
-    return new FirestoreQuery(
-      this._firestore,
-      this._collectionPath,
-      this._handleQueryCursor('endAt', docOrField, filterModularArgument(fields)),
-      this._queryName,
+    return createDeprecationProxy(
+      new FirestoreQuery(
+        this._firestore,
+        this._collectionPath,
+        this._handleQueryCursor('endAt', docOrField, filterModularArgument(fields)),
+        this._queryName,
+      ),
     );
   }
 
   endBefore(docOrField, ...fields) {
-    warnIfNotModularCall(arguments, 'endBefore()');
-    return new FirestoreQuery(
-      this._firestore,
-      this._collectionPath,
-      this._handleQueryCursor('endBefore', docOrField, filterModularArgument(fields)),
-      this._queryName,
+    return createDeprecationProxy(
+      new FirestoreQuery(
+        this._firestore,
+        this._collectionPath,
+        this._handleQueryCursor('endBefore', docOrField, filterModularArgument(fields)),
+        this._queryName,
+      ),
     );
   }
 
   get(options) {
-    warnIfNotModularCall(arguments, 'getDocs()');
     if (!isUndefined(options) && !isObject(options)) {
       throw new Error(
         "firebase.firestore().collection().get(*) 'options' must be an object is provided.",
@@ -217,7 +215,6 @@ export default class FirestoreQuery {
   }
 
   isEqual(other) {
-    warnIfNotModularCall(arguments);
     if (!(other instanceof FirestoreQuery)) {
       throw new Error(
         "firebase.firestore().collection().isEqual(*) 'other' expected a Query instance.",
@@ -250,7 +247,6 @@ export default class FirestoreQuery {
   }
 
   limit(limit) {
-    warnIfNotModularCall(arguments, 'limit()');
     if (this._modifiers.isValidLimit(limit)) {
       throw new Error(
         "firebase.firestore().collection().limit(*) 'limit' must be a positive integer value.",
@@ -259,11 +255,12 @@ export default class FirestoreQuery {
 
     const modifiers = this._modifiers._copy().limit(limit);
 
-    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers, this._queryName);
+    return createDeprecationProxy(
+      new FirestoreQuery(this._firestore, this._collectionPath, modifiers, this._queryName),
+    );
   }
 
   limitToLast(limitToLast) {
-    warnIfNotModularCall(arguments, 'limitToLast()');
     if (this._modifiers.isValidLimitToLast(limitToLast)) {
       throw new Error(
         "firebase.firestore().collection().limitToLast(*) 'limitToLast' must be a positive integer value.",
@@ -272,11 +269,12 @@ export default class FirestoreQuery {
 
     const modifiers = this._modifiers._copy().limitToLast(limitToLast);
 
-    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers, this._queryName);
+    return createDeprecationProxy(
+      new FirestoreQuery(this._firestore, this._collectionPath, modifiers, this._queryName),
+    );
   }
 
   onSnapshot(...args) {
-    warnIfNotModularCall(arguments, 'onSnapshot()');
     let snapshotListenOptions;
     let callback;
     let onNext;
@@ -398,31 +396,35 @@ export default class FirestoreQuery {
       throw new Error(`firebase.firestore().collection().orderBy() ${e.message}`);
     }
 
-    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers, this._queryName);
+    return createDeprecationProxy(
+      new FirestoreQuery(this._firestore, this._collectionPath, modifiers, this._queryName),
+    );
   }
 
   startAfter(docOrField, ...fields) {
     warnIfNotModularCall(arguments, 'startAfter()');
-    return new FirestoreQuery(
-      this._firestore,
-      this._collectionPath,
-      this._handleQueryCursor('startAfter', docOrField, filterModularArgument(fields)),
-      this._queryName,
+    return createDeprecationProxy(
+      new FirestoreQuery(
+        this._firestore,
+        this._collectionPath,
+        this._handleQueryCursor('startAfter', docOrField, filterModularArgument(fields)),
+        this._queryName,
+      ),
     );
   }
 
   startAt(docOrField, ...fields) {
-    warnIfNotModularCall(arguments, 'startAt()');
-    return new FirestoreQuery(
-      this._firestore,
-      this._collectionPath,
-      this._handleQueryCursor('startAt', docOrField, filterModularArgument(fields)),
-      this._queryName,
+    return createDeprecationProxy(
+      new FirestoreQuery(
+        this._firestore,
+        this._collectionPath,
+        this._handleQueryCursor('startAt', docOrField, filterModularArgument(fields)),
+        this._queryName,
+      ),
     );
   }
 
   where(fieldPathOrFilter, opStr, value) {
-    warnIfNotModularCall(arguments, 'where()');
     if (
       !isString(fieldPathOrFilter) &&
       !(fieldPathOrFilter instanceof FirestoreFieldPath) &&
@@ -502,6 +504,8 @@ export default class FirestoreQuery {
       throw new Error(`firebase.firestore().collection().where() ${e.message}`);
     }
 
-    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers, this._queryName);
+    return createDeprecationProxy(
+      new FirestoreQuery(this._firestore, this._collectionPath, modifiers, this._queryName),
+    );
   }
 }

@@ -1,4 +1,10 @@
-import { describe, expect, it } from '@jest/globals';
+import { describe, expect, it, jest, beforeEach } from '@jest/globals';
+// @ts-ignore test
+import FirebaseModule from '../../app/lib/internal/FirebaseModule';
+import {
+  createCheckV9Deprecation,
+  CheckV9DeprecationFunction,
+} from '../../app/lib/common/unitTestUtils';
 
 import firestore, {
   firebase,
@@ -694,6 +700,53 @@ describe('Firestore', function () {
 
       const nullIndexManagerModular = getPersistentCacheIndexManager(firestore2);
       expect(nullIndexManagerModular).toBeNull();
+    });
+  });
+
+  describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
+    // let firestoreV9Deprecation: CheckV9DeprecationFunction;
+    let collectionRefV9Deprecation: CheckV9DeprecationFunction;
+
+    beforeEach(function () {
+      // firestoreV9Deprecation = createCheckV9Deprecation(['firestore']);
+      collectionRefV9Deprecation = createCheckV9Deprecation([
+        'firestore',
+        'FirestoreCollectionReference',
+      ]);
+
+      // @ts-ignore test
+      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
+        return new Proxy(
+          {},
+          {
+            get: () => jest.fn(),
+          },
+        );
+      });
+    });
+
+    it('count', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => getCountFromServer(query),
+        () => query.count(),
+        'count',
+      );
+    });
+
+    it('countFromServer', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => getCountFromServer(query),
+        () => query.countFromServer(),
+        'count',
+      );
     });
   });
 });

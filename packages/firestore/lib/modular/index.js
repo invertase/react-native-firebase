@@ -21,6 +21,7 @@ import {
   fieldPathFromArgument,
 } from '../FirestoreAggregate';
 import FirestoreQuery from '../FirestoreQuery';
+import { MODULAR_DEPRECATION_ARG } from '../../../app/lib/common';
 
 /**
  * @param {FirebaseApp?} app
@@ -197,7 +198,7 @@ export function runTransaction(firestore, updateFunction) {
  * @returns {Promise<FirebaseFirestoreTypes.AggregateQuerySnapshot>}
  */
 export function getCountFromServer(query) {
-  return query.count().get();
+  return query.count().get.call(query, MODULAR_DEPRECATION_ARG);
 }
 
 export function getAggregateFromServer(query, aggregateSpec) {
