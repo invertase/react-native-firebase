@@ -1,6 +1,9 @@
 import { describe, expect, it, jest, beforeEach } from '@jest/globals';
 // @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
+// @ts-ignore test
+import FirestoreQuery from '../lib/FirestoreQuery';
+
 import {
   createCheckV9Deprecation,
   CheckV9DeprecationFunction,
@@ -706,6 +709,7 @@ describe('Firestore', function () {
   describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
     // let firestoreV9Deprecation: CheckV9DeprecationFunction;
     let collectionRefV9Deprecation: CheckV9DeprecationFunction;
+    // let queryV9Deprecation: CheckV9DeprecationFunction;
 
     beforeEach(function () {
       // firestoreV9Deprecation = createCheckV9Deprecation(['firestore']);
@@ -714,15 +718,34 @@ describe('Firestore', function () {
         'FirestoreCollectionReference',
       ]);
 
+      // queryV9Deprecation = createCheckV9Deprecation(['firestore', 'FirestoreQuery']);
+
       // @ts-ignore test
       jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
         return new Proxy(
           {},
           {
-            get: () => jest.fn().mockResolvedValue(null as never),
+            get: () =>
+              jest.fn().mockResolvedValue({
+                source: 'cache',
+                changes: [],
+                documents: [],
+                metadata: {},
+              } as never),
           },
         );
       });
+
+      jest
+        .spyOn(FirestoreQuery.prototype, '_handleQueryCursor')
+        // @ts-ignore test
+        .mockImplementation((cursor, docOrField, fields) => {
+          // Mock implementation returning an empty array or any other desired value
+          return []; // or any other mock value you want to return
+        });
+
+      // jest.spyOn(FirestoreQuerySnapshot.prototype, 'constructor');
+      // @ts-ignore test
     });
 
     it('count', function () {
@@ -746,6 +769,42 @@ describe('Firestore', function () {
         () => getCountFromServer(query),
         () => query.countFromServer(),
         'count',
+      );
+    });
+
+    it('endAt', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => endAt('foo'),
+        () => query.endAt('foo'),
+        'endAt',
+      );
+    });
+
+    it('endBefore', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => endBefore('foo'),
+        () => query.endBefore('foo'),
+        'endBefore',
+      );
+    });
+
+    it('get', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => getDocs(query),
+        () => query.get(),
+        'get',
       );
     });
   });

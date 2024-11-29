@@ -198,7 +198,7 @@ export function getDocFromServer(reference) {
  * @returns {Promise<QuerySnapshot>}
  */
 export function getDocs(query) {
-  return query.get.call(reference, { source: 'default' }, MODULAR_DEPRECATION_ARG);
+  return query.get.call(query, { source: 'default' }, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -206,7 +206,7 @@ export function getDocs(query) {
  * @returns {Promise<QuerySnapshot>}
  */
 export function getDocsFromCache(query) {
-  return query.get.call(reference, { source: 'cache' }, MODULAR_DEPRECATION_ARG);
+  return query.get.call(query, { source: 'cache' }, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -214,7 +214,7 @@ export function getDocsFromCache(query) {
  * @returns {Promise<QuerySnapshot>}
  */
 export function getDocsFromServer(query) {
-  return query.get.call(reference, { source: 'server' }, MODULAR_DEPRECATION_ARG);
+  return query.get.call(query, { source: 'server' }, MODULAR_DEPRECATION_ARG);
 }
 
 /**
