@@ -23,7 +23,6 @@ import {
   isUndefined,
   filterModularArgument,
   createDeprecationProxy,
-  warnIfNotModularCall,
 } from '@react-native-firebase/app/lib/common';
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
 import { FirestoreAggregateQuery } from './FirestoreAggregate';

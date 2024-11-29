@@ -1,8 +1,12 @@
 import { describe, expect, it, jest, beforeEach } from '@jest/globals';
 // @ts-ignore test
+import { createDeprecationProxy } from '../../app/lib/common';
+// @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 // @ts-ignore test
 import FirestoreQuery from '../lib/FirestoreQuery';
+// @ts-ignore test
+import FirestoreDocumentSnapshot from '../lib/FirestoreDocumentSnapshot';
 
 import {
   createCheckV9Deprecation,
@@ -709,7 +713,7 @@ describe('Firestore', function () {
   describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
     // let firestoreV9Deprecation: CheckV9DeprecationFunction;
     let collectionRefV9Deprecation: CheckV9DeprecationFunction;
-    // let queryV9Deprecation: CheckV9DeprecationFunction;
+    let docRefV9Deprecation: CheckV9DeprecationFunction;
 
     beforeEach(function () {
       // firestoreV9Deprecation = createCheckV9Deprecation(['firestore']);
@@ -717,6 +721,8 @@ describe('Firestore', function () {
         'firestore',
         'FirestoreCollectionReference',
       ]);
+
+      docRefV9Deprecation = createCheckV9Deprecation(['firestore', 'FirestoreDocumentReference']);
 
       // queryV9Deprecation = createCheckV9Deprecation(['firestore', 'FirestoreQuery']);
 
@@ -731,6 +737,7 @@ describe('Firestore', function () {
                 changes: [],
                 documents: [],
                 metadata: {},
+                path: 'foo',
               } as never),
           },
         );
@@ -748,7 +755,7 @@ describe('Firestore', function () {
       // @ts-ignore test
     });
 
-    it('count', function () {
+    it('CollectionReference.count()', function () {
       const firestore = getFirestore();
 
       const query = collection(firestore, 'test');
@@ -760,7 +767,7 @@ describe('Firestore', function () {
       );
     });
 
-    it('countFromServer', function () {
+    it('CollectionReference.countFromServer()', function () {
       const firestore = getFirestore();
 
       const query = collection(firestore, 'test');
@@ -772,7 +779,7 @@ describe('Firestore', function () {
       );
     });
 
-    it('endAt', function () {
+    it('CollectionReference.endAt()', function () {
       const firestore = getFirestore();
 
       const query = collection(firestore, 'test');
@@ -784,7 +791,7 @@ describe('Firestore', function () {
       );
     });
 
-    it('endBefore', function () {
+    it('CollectionReference.endBefore()', function () {
       const firestore = getFirestore();
 
       const query = collection(firestore, 'test');
@@ -796,7 +803,7 @@ describe('Firestore', function () {
       );
     });
 
-    it('get', function () {
+    it('CollectionReference.get()', function () {
       const firestore = getFirestore();
 
       const query = collection(firestore, 'test');
@@ -808,7 +815,7 @@ describe('Firestore', function () {
       );
     });
 
-    it('isEqual', function () {
+    it('CollectionReference.isEqual()', function () {
       const firestore = getFirestore();
 
       const query = collection(firestore, 'test');
@@ -821,7 +828,7 @@ describe('Firestore', function () {
       );
     });
 
-    it('limit', function () {
+    it('CollectionReference.limit()', function () {
       const firestore = getFirestore();
 
       const query = collection(firestore, 'test');
@@ -833,7 +840,7 @@ describe('Firestore', function () {
       );
     });
 
-    it('limitToLast', function () {
+    it('CollectionReference.limitToLast()', function () {
       const firestore = getFirestore();
 
       const query = collection(firestore, 'test');
@@ -845,7 +852,7 @@ describe('Firestore', function () {
       );
     });
 
-    it('onSnapshot', function () {
+    it('CollectionReference.onSnapshot()', function () {
       const firestore = getFirestore();
 
       const query = collection(firestore, 'test');
@@ -857,7 +864,7 @@ describe('Firestore', function () {
       );
     });
 
-    it('orderBy', function () {
+    it('CollectionReference.orderBy()', function () {
       const firestore = getFirestore();
 
       const query = collection(firestore, 'test');
@@ -869,7 +876,7 @@ describe('Firestore', function () {
       );
     });
 
-    it('startAfter', function () {
+    it('CollectionReference.startAfter()', function () {
       const firestore = getFirestore();
 
       const query = collection(firestore, 'test');
@@ -881,7 +888,7 @@ describe('Firestore', function () {
       );
     });
 
-    it('startAt', function () {
+    it('CollectionReference.startAt()', function () {
       const firestore = getFirestore();
 
       const query = collection(firestore, 'test');
@@ -893,7 +900,7 @@ describe('Firestore', function () {
       );
     });
 
-    it('where', function () {
+    it('CollectionReference.where()', function () {
       const firestore = getFirestore();
 
       const query = collection(firestore, 'test');
@@ -902,6 +909,137 @@ describe('Firestore', function () {
         () => where('foo', '==', 'bar'),
         () => query.where('foo', '==', 'bar'),
         'where',
+      );
+    });
+
+    it('CollectionReference.add()', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => addDoc(query, { foo: 'bar' }),
+        () => query.add({ foo: 'bar' }),
+        'add',
+      );
+    });
+
+    it('CollectionReference.doc()', function () {
+      const firestore = getFirestore();
+
+      const query = collection(firestore, 'test');
+
+      collectionRefV9Deprecation(
+        () => doc(query, 'bar'),
+        () => query.doc('foo'),
+        'doc',
+      );
+    });
+
+    it('DocumentReference.collection()', function () {
+      const firestore = getFirestore();
+
+      const docRef = firestore.doc('some/foo');
+
+      docRefV9Deprecation(
+        () => collection(firestore, 'bar'),
+        () => docRef.collection('bar'),
+        'collection',
+      );
+    });
+
+    it('DocumentReference.delete()', function () {
+      const firestore = getFirestore();
+
+      const docRef = firestore.doc('some/foo');
+
+      docRefV9Deprecation(
+        () => deleteDoc(docRef),
+        () => docRef.delete(),
+        'delete',
+      );
+    });
+
+    it('DocumentReference.get()', function () {
+      const firestore = getFirestore();
+
+      const docRef = firestore.doc('some/foo');
+
+      docRefV9Deprecation(
+        () => getDoc(docRef),
+        () => docRef.get(),
+        'get',
+      );
+    });
+
+    it('DocumentReference.isEqual()', function () {
+      const firestore = getFirestore();
+
+      const docRef = firestore.doc('some/foo');
+
+      docRefV9Deprecation(
+        // no equivalent method
+        () => {},
+        () => docRef.isEqual(docRef),
+        'isEqual',
+      );
+    });
+
+    it('DocumentReference.onSnapshot()', function () {
+      const firestore = getFirestore();
+
+      const docRef = firestore.doc('some/foo');
+
+      docRefV9Deprecation(
+        () => onSnapshot(docRef, () => {}),
+        () => docRef.onSnapshot(() => {}),
+        'onSnapshot',
+      );
+    });
+
+    it('DocumentReference.set()', function () {
+      const firestore = getFirestore();
+
+      const docRef = firestore.doc('some/foo');
+
+      docRefV9Deprecation(
+        () => setDoc(docRef, { foo: 'bar' }),
+        () => docRef.set({ foo: 'bar' }),
+        'set',
+      );
+    });
+
+    it('DocumentReference.update()', function () {
+      const firestore = getFirestore();
+
+      const docRef = firestore.doc('some/foo');
+
+      docRefV9Deprecation(
+        () => updateDoc(docRef, { foo: 'bar' }),
+        () => docRef.update({ foo: 'bar' }),
+        'update',
+      );
+    });
+
+    it('FirestoreDocumentSnapshot.isEqual()', function () {
+      const firestore = getFirestore();
+      // Every `FirestoreDocumentSnapshot` has been wrapped in deprecation proxy, so we use constructor directly
+      // for ease of mocking
+      const snapshot = createDeprecationProxy(
+        new FirestoreDocumentSnapshot(firestore, {
+          source: 'cache',
+          changes: [],
+          documents: [],
+          metadata: {},
+          path: 'foo',
+        }),
+      );
+
+      docRefV9Deprecation(
+        // no equivalent method
+        () => {},
+        () => snapshot.isEqual(snapshot),
+        'isEqual',
       );
     });
   });

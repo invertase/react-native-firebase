@@ -137,8 +137,21 @@ const mapOfDeprecationReplacements = {
       startAfter: 'startAfter()',
       startAt: 'startAt()',
       where: 'where()',
+      add: 'addDoc()',
+      doc: 'doc()',
     },
-    FirestoreQuery: {},
+    FirestoreDocumentReference: {
+      collection: 'collection()',
+      delete: 'deleteDoc()',
+      get: 'getDoc()',
+      isEqual: NO_REPLACEMENT,
+      onSnapshot: 'onSnapshot()',
+      set: 'setDoc()',
+      update: 'updateDoc()',
+    },
+    FirestoreDocumentSnapshot: {
+      isEqual: NO_REPLACEMENT,
+    },
   },
 };
 
@@ -194,6 +207,8 @@ function getNamespace(className) {
       'FirebaseFirestoreModule',
       'FirestoreCollectionReference',
       'FirestoreQuery',
+      'FirestoreDocumentReference',
+      'FirestoreDocumentSnapshot',
     ].includes(className)
   ) {
     return 'firestore';
