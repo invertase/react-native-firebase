@@ -126,7 +126,11 @@ const mapOfDeprecationReplacements = {
     FirestoreCollectionReference: {
       count: 'getCountFromServer()',
       countFromServer: 'getCountFromServer()',
+      endAt: 'endAt()',
+      endBefore: 'endBefore()',
+      get: 'getDocs()',
     },
+    FirestoreQuery: {},
   },
 };
 
@@ -177,9 +181,12 @@ export function createMessage(
 
 function getNamespace(className) {
   if (
-    ['FirestoreAggregateQuery', 'FirebaseFirestoreModule', 'FirestoreCollectionReference'].includes(
-      className,
-    )
+    [
+      'FirestoreAggregateQuery',
+      'FirebaseFirestoreModule',
+      'FirestoreCollectionReference',
+      'FirestoreQuery',
+    ].includes(className)
   ) {
     return 'firestore';
   }
