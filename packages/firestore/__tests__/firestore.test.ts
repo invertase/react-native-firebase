@@ -1082,7 +1082,7 @@ describe('Firestore', function () {
 
     it('Filter.or()', function () {
       filterV9Deprecation(
-        () => {},
+        () => or(where('foo.bar', '==', null), where('foo.bar', '==', null)),
         () =>
           firestore.Filter.or(
             firestore.Filter('foo', '==', 'bar'),
@@ -1094,7 +1094,7 @@ describe('Firestore', function () {
 
     it('Filter.and()', function () {
       filterV9Deprecation(
-        () => {},
+        () => and(where('foo.bar', '==', null), where('foo.bar', '==', null)),
         () =>
           firestore.Filter.and(
             firestore.Filter('foo', '==', 'bar'),
@@ -1103,5 +1103,17 @@ describe('Firestore', function () {
         'and',
       );
     });
+
+    // it('FirestoreGeoPoint.and()', function () {
+    //   filterV9Deprecation(
+    //     () => or(firestore.Filter('foo.bar', '==', null), firestore.Filter('foo.bar', '==', null)),
+    //     () =>
+    //       firestore.Filter.and(
+    //         firestore.Filter('foo', '==', 'bar'),
+    //         firestore.Filter('baz', '==', 'qux'),
+    //       ),
+    //     'and',
+    //   );
+    // });
   });
 });
