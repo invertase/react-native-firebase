@@ -711,13 +711,11 @@ describe('Firestore', function () {
   });
 
   describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
-    // let firestoreV9Deprecation: CheckV9DeprecationFunction;
     let collectionRefV9Deprecation: CheckV9DeprecationFunction;
     let docRefV9Deprecation: CheckV9DeprecationFunction;
     let fieldValueV9Deprecation: CheckV9DeprecationFunction;
 
     beforeEach(function () {
-      // firestoreV9Deprecation = createCheckV9Deprecation(['firestore']);
       collectionRefV9Deprecation = createCheckV9Deprecation([
         'firestore',
         'FirestoreCollectionReference',
@@ -748,12 +746,8 @@ describe('Firestore', function () {
         .spyOn(FirestoreQuery.prototype, '_handleQueryCursor')
         // @ts-ignore test
         .mockImplementation((cursor, docOrField, fields) => {
-          // Mock implementation returning an empty array or any other desired value
-          return []; // or any other mock value you want to return
+          return [];
         });
-
-      // jest.spyOn(FirestoreQuerySnapshot.prototype, 'constructor');
-      // @ts-ignore test
     });
 
     it('CollectionReference.count()', function () {
