@@ -159,6 +159,10 @@ const mapOfDeprecationReplacements = {
       increment: 'increment()',
       serverTimestamp: 'serverTimestamp()',
     },
+    Filter: {
+      or: 'or()',
+      and: 'and()',
+    },
   },
 };
 
@@ -243,6 +247,10 @@ export function createDeprecationProxy(instance) {
           const instanceName = getInstanceName(target);
           const nameSpace = getNamespace(instanceName);
 
+          console.log('Prop', prop);
+          console.log('modularMethod', isModularMethod);
+          console.log('nameSpace', nameSpace);
+          console.log('instanceName', instanceName);
 
           deprecationConsoleWarning(nameSpace, prop, instanceName, isModularMethod);
 

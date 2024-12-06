@@ -714,6 +714,7 @@ describe('Firestore', function () {
     let collectionRefV9Deprecation: CheckV9DeprecationFunction;
     let docRefV9Deprecation: CheckV9DeprecationFunction;
     let fieldValueV9Deprecation: CheckV9DeprecationFunction;
+    let filterV9Deprecation: CheckV9DeprecationFunction;
 
     beforeEach(function () {
       collectionRefV9Deprecation = createCheckV9Deprecation([
@@ -724,6 +725,7 @@ describe('Firestore', function () {
       docRefV9Deprecation = createCheckV9Deprecation(['firestore', 'FirestoreDocumentReference']);
 
       fieldValueV9Deprecation = createCheckV9Deprecation(['firestore', 'FirestoreFieldValue']);
+      filterV9Deprecation = createCheckV9Deprecation(['firestore', 'Filter']);
 
       // @ts-ignore test
       jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
@@ -1075,6 +1077,30 @@ describe('Firestore', function () {
         () => arrayRemove('foo'),
         () => firestore.FieldValue.arrayRemove('bar'),
         'arrayRemove',
+      );
+    });
+
+    it('Filter.or()', function () {
+      filterV9Deprecation(
+        () => {},
+        () =>
+          firestore.Filter.or(
+            firestore.Filter('foo', '==', 'bar'),
+            firestore.Filter('baz', '==', 'qux'),
+          ),
+        'or',
+      );
+    });
+
+    it('Filter.and()', function () {
+      filterV9Deprecation(
+        () => {},
+        () =>
+          firestore.Filter.and(
+            firestore.Filter('foo', '==', 'bar'),
+            firestore.Filter('baz', '==', 'qux'),
+          ),
+        'and',
       );
     });
   });
