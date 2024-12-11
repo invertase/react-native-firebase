@@ -94,7 +94,7 @@ class NotificationService: UNNotificationServiceExtension {
 -            
 -            contentHandler(bestAttemptContent)
 +            Messaging.serviceExtension()
-                .populateNotificationContent(bestAttemptContent, withContentHandler: contentHandler)
++               .populateNotificationContent(bestAttemptContent, withContentHandler: contentHandler)
         }
 ```
 
