@@ -34,7 +34,7 @@ Ensure that your new extension has access to Firebase/Messaging pod by adding it
 ```Ruby
 target 'ImageNotification' do
   use_frameworks! :linkage => :static
-  pod 'Firebase/Messaging'
+  pod 'Firebase/Messaging', '~> VERSION_NUMBER'
 end
 ```
 
