@@ -30,6 +30,7 @@ import firestore, {
   enableNetwork,
   disableNetwork,
   clearPersistence,
+  clearIndexedDbPersistence,
   terminate,
   waitForPendingWrites,
   initializeFirestore,
@@ -765,6 +766,39 @@ describe('Firestore', function () {
         () => writeBatch(firestore),
         () => firestore.batch(),
         'batch',
+      );
+    });
+
+    it('firestore.loadBundle()', function () {
+      const firestore = getFirestore();
+      firestoreRefV9Deprecation(
+        () => loadBundle(firestore, 'some bundle'),
+        () => firestore.loadBundle('some bundle'),
+        'loadBundle',
+      );
+    });
+
+    it('firestore.namedQuery()', function () {
+      const firestore = getFirestore();
+      firestoreRefV9Deprecation(
+        () => namedQuery(firestore, 'some name'),
+        () => firestore.namedQuery('some name'),
+        'namedQuery',
+      );
+    });
+
+    it('firestore.clearPersistence()', function () {
+      const firestore = getFirestore();
+      firestoreRefV9Deprecation(
+        () => clearIndexedDbPersistence(firestore),
+        () => firestore.clearPersistence(),
+        'clearPersistence',
+      );
+      // Deprecating the modular method clearPersistence() as it doesn't exist on firebase-js-sdk
+      firestoreRefV9Deprecation(
+        () => clearIndexedDbPersistence(firestore),
+        () => clearPersistence(firestore),
+        'clearPersistence',
       );
     });
 

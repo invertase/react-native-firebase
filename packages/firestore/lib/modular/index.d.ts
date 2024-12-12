@@ -373,9 +373,18 @@ export function disableNetwork(firestore: Firestore): Promise<void>;
  * Aimed primarily at clearing up any data cached from running tests. Needs to be executed before any database calls
  * are made.
  *
+ * Deprecated, please use `clearIndexedDbPersistence` instead.
  * @param firestore - A reference to the root `Firestore` instance.
  */
 export function clearPersistence(firestore: Firestore): Promise<void>;
+
+/**
+ * Aimed primarily at clearing up any data cached from running tests. Needs to be executed before any database calls
+ * are made.
+ *
+ * @param firestore - A reference to the root `Firestore` instance.
+ */
+export function clearIndexedDbPersistence(firestore: Firestore): Promise<void>;
 
 /**
  * Terminates the provided {@link Firestore} instance.

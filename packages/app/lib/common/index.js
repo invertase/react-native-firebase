@@ -125,6 +125,9 @@ const mapOfDeprecationReplacements = {
   firestore: {
     default: {
       batch: 'writeBatch()',
+      loadBundle: 'loadBundle()',
+      namedQuery: 'namedQuery()',
+      clearPersistence: 'clearIndexedDbPersistence()',
     },
     FirestoreCollectionReference: {
       count: 'getCountFromServer()',

@@ -150,7 +150,15 @@ export function disableNetwork(firestore) {
  * @returns {Promise<void>}
  */
 export function clearPersistence(firestore) {
+  // this will call deprecation warning as it isn't part of firebase-js-sdk API
   return firestore.clearPersistence();
+}
+/**
+ * @param {Firestore} firestore
+ * @returns {Promise<void>}
+ */
+export function clearIndexedDbPersistence(firestore) {
+  return firestore.clearPersistence.call(firestore, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -298,7 +306,7 @@ export function count() {
  * @returns {import('.').LoadBundleTask}
  */
 export function loadBundle(firestore, bundleData) {
-  return firestore.loadBundle(bundleData);
+  return firestore.loadBundle.call(firestore, bundleData, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -307,7 +315,7 @@ export function loadBundle(firestore, bundleData) {
  * @returns {Query<DocumentData>}
  */
 export function namedQuery(firestore, name) {
-  return firestore.namedQuery(name);
+  return firestore.namedQuery.call(firestore, name, MODULAR_DEPRECATION_ARG);
 }
 
 /**
