@@ -15,6 +15,7 @@ import {
 
 import firestore, {
   firebase,
+  connectFirestoreEmulator,
   Filter,
   getFirestore,
   getAggregateFromServer,
@@ -799,6 +800,33 @@ describe('Firestore', function () {
         () => clearIndexedDbPersistence(firestore),
         () => clearPersistence(firestore),
         'clearPersistence',
+      );
+    });
+
+    it('firestore.waitForPendingWrites()', function () {
+      const firestore = getFirestore();
+      firestoreRefV9Deprecation(
+        () => waitForPendingWrites(firestore),
+        () => firestore.waitForPendingWrites(),
+        'waitForPendingWrites',
+      );
+    });
+
+    it('firestore.terminate()', function () {
+      const firestore = getFirestore();
+      firestoreRefV9Deprecation(
+        () => terminate(firestore),
+        () => firestore.terminate(),
+        'terminate',
+      );
+    });
+
+    it('firestore.useEmulator()', function () {
+      const firestore = getFirestore();
+      firestoreRefV9Deprecation(
+        () => connectFirestoreEmulator(firestore, 'localhost', 8080),
+        () => firestore.useEmulator('localhost', 8080),
+        'useEmulator',
       );
     });
 

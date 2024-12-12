@@ -128,6 +128,9 @@ const mapOfDeprecationReplacements = {
       loadBundle: 'loadBundle()',
       namedQuery: 'namedQuery()',
       clearPersistence: 'clearIndexedDbPersistence()',
+      waitForPendingWrites: 'waitForPendingWrites()',
+      terminate: 'terminate()',
+      useEmulator: 'connectFirestoreEmulator()',
     },
     FirestoreCollectionReference: {
       count: 'getCountFromServer()',

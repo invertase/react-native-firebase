@@ -166,7 +166,7 @@ export function clearIndexedDbPersistence(firestore) {
  * @returns {Promise<void>}
  */
 export function terminate(firestore) {
-  return firestore.terminate();
+  return firestore.terminate.call(firestore, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -174,7 +174,7 @@ export function terminate(firestore) {
  * @returns {Promise<void>}
  */
 export function waitForPendingWrites(firestore) {
-  return firestore.waitForPendingWrites();
+  return firestore.waitForPendingWrites.call(firestore, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -188,6 +188,10 @@ export async function initializeFirestore(app, settings /* databaseId */) {
   const firestore = firebase.firestore(app);
   await firestore.settings(settings);
   return firestore;
+}
+
+export function connectFirestoreEmulator(firestore, host, port, options) {
+  return firestore.useEmulator.call(firestore, host, port, options, MODULAR_DEPRECATION_ARG);
 }
 
 /**

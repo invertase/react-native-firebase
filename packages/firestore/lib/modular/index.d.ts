@@ -96,6 +96,9 @@ export type WithFieldValue<T> =
         ? { [K in keyof T]: WithFieldValue<T[K]> | FieldValue }
         : never);
 
+export type EmulatorMockTokenOptions = ({ user_id: string } | { sub: string }) &
+  Partial<FirebaseIdToken>;
+
 /**
  * Returns the existing default {@link Firestore} instance that is associated with the
  * default {@link @firebase/app#FirebaseApp}. If no instance exists, initializes a new
@@ -131,6 +134,24 @@ export function getFirestore(app?: FirebaseApp): Firestore;
  */
 export declare function getFirestore(app?: FirebaseApp, databaseId?: string): Firestore;
 
+/**
+ * Modify this instance to communicate with the Cloud Firestore emulator.
+ *
+ * @param firestore - A reference to the root `Firestore` instance.
+ * instance is associated with.
+ * @param host: emulator host (eg, 'localhost')
+ * @param port: emulator port (eg, 8080)
+ * @param options.mockUserToken - the mock auth token to use for unit testing
+ * @returns void.
+ */
+export declare function connectFirestoreEmulator(
+  firestore: Firestore,
+  host: string,
+  port: number,
+  options?: {
+    mockUserToken?: EmulatorMockTokenOptions | string;
+  },
+): void;
 /**
  * Gets a `DocumentReference` instance that refers to the document at the
  * specified absolute path.
@@ -510,6 +531,62 @@ export function getCountFromServer<AppModelType, DbModelType extends DocumentDat
  */
 interface AggregateSpec {
   [field: string]: AggregateFieldType;
+}
+
+interface FirebaseIdToken {
+  // Always set to https://securetoken.google.com/PROJECT_ID
+  iss: string;
+
+  // Always set to PROJECT_ID
+  aud: string;
+
+  // The user's unique ID
+  sub: string;
+
+  // The token issue time, in seconds since epoch
+  iat: number;
+
+  // The token expiry time, normally 'iat' + 3600
+  exp: number;
+
+  // The user's unique ID. Must be equal to 'sub'
+  user_id: string;
+
+  // The time the user authenticated, normally 'iat'
+  auth_time: number;
+
+  // The sign in provider, only set when the provider is 'anonymous'
+  provider_id?: 'anonymous';
+
+  // The user's primary email
+  email?: string;
+
+  // The user's email verification status
+  email_verified?: boolean;
+
+  // The user's primary phone number
+  phone_number?: string;
+
+  // The user's display name
+  name?: string;
+
+  // The user's profile photo URL
+  picture?: string;
+
+  // Information on all identities linked to this user
+  firebase: {
+    // The primary sign-in provider
+    sign_in_provider: FirebaseSignInProvider;
+
+    // A map of providers to the user's list of unique identifiers from
+    // each provider
+    identities?: { [provider in FirebaseSignInProvider]?: string[] };
+  };
+
+  // Custom claims set by the developer
+  [claim: string]: unknown;
+
+  uid?: never; // Try to catch a common mistake of "uid" (should be "sub" instead).
 }
 
 /**
