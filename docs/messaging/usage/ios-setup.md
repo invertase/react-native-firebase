@@ -155,7 +155,7 @@ testing and production. To rebuild your app, run the following command:
 ```bash
 npx react-native run-ios
 ```
-### Note.
+### Note
 Check the `aps-environment` Key
 1. Open the .entitlements file in Xcode or a text editor.
 2. Look for the aps-environment key. It should appear like this:
