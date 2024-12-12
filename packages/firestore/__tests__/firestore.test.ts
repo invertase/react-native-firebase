@@ -717,7 +717,7 @@ describe('Firestore', function () {
     let docRefV9Deprecation: CheckV9DeprecationFunction;
     let fieldValueV9Deprecation: CheckV9DeprecationFunction;
     let filterV9Deprecation: CheckV9DeprecationFunction;
-    // let persistentCacheIndexManagerV9Deprecation: CheckV9DeprecationFunction;
+    let persistentCacheIndexManagerV9Deprecation: CheckV9DeprecationFunction;
     let firestoreRefV9Deprecation: CheckV9DeprecationFunction;
 
     beforeEach(function () {
@@ -731,10 +731,10 @@ describe('Firestore', function () {
 
       fieldValueV9Deprecation = createCheckV9Deprecation(['firestore', 'FirestoreFieldValue']);
       filterV9Deprecation = createCheckV9Deprecation(['firestore', 'Filter']);
-      // persistentCacheIndexManagerV9Deprecation = createCheckV9Deprecation([
-      //   'firestore',
-      //   'FirestorePersistentCacheIndexManager',
-      // ]);
+      persistentCacheIndexManagerV9Deprecation = createCheckV9Deprecation([
+        'firestore',
+        'FirestorePersistentCacheIndexManager',
+      ]);
 
       // @ts-ignore test
       jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
@@ -1257,13 +1257,34 @@ describe('Firestore', function () {
       );
     });
 
-    // it.only('FirestorePersistentCacheIndexManager.enableIndexAutoCreation()', function () {
-    //   const firestore = getFirestore();
-    //   persistentCacheIndexManagerV9Deprecation(
-    //     () => firestore.persistentCacheIndexManager(),
-    //     () => firestore.GeoPoint,
-    //     'and',
-    //   );
-    // });
+    it('FirestorePersistentCacheIndexManager.enableIndexAutoCreation()', function () {
+      const firestore = getFirestore();
+      const indexManager = firestore.persistentCacheIndexManager();
+      persistentCacheIndexManagerV9Deprecation(
+        () => enablePersistentCacheIndexAutoCreation(indexManager!),
+        () => indexManager!.enableIndexAutoCreation(),
+        'enableIndexAutoCreation',
+      );
+    });
+
+    it('FirestorePersistentCacheIndexManager.disableIndexAutoCreation()', function () {
+      const firestore = getFirestore();
+      const indexManager = firestore.persistentCacheIndexManager();
+      persistentCacheIndexManagerV9Deprecation(
+        () => disablePersistentCacheIndexAutoCreation(indexManager!),
+        () => indexManager!.disableIndexAutoCreation(),
+        'disableIndexAutoCreation',
+      );
+    });
+
+    it('FirestorePersistentCacheIndexManager.deleteAllIndexes()', function () {
+      const firestore = getFirestore();
+      const indexManager = firestore.persistentCacheIndexManager();
+      persistentCacheIndexManagerV9Deprecation(
+        () => deleteAllPersistentCacheIndexes(indexManager!),
+        () => indexManager!.deleteAllIndexes(),
+        'deleteAllIndexes',
+      );
+    });
   });
 });

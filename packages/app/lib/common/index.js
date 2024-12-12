@@ -180,6 +180,11 @@ const mapOfDeprecationReplacements = {
       or: 'or()',
       and: 'and()',
     },
+    FirestorePersistentCacheIndexManager: {
+      enableIndexAutoCreation: 'enablePersistentCacheIndexAutoCreation()',
+      disableIndexAutoCreation: 'disablePersistentCacheIndexAutoCreation()',
+      deleteAllIndexes: 'deleteAllPersistentCacheIndexes()',
+    },
   },
 };
 
