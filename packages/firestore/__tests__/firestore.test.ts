@@ -875,6 +875,36 @@ describe('Firestore', function () {
       );
     });
 
+    it('firestore.runTransaction()', function () {
+      const firestore = getFirestore();
+      firestoreRefV9Deprecation(
+        () => runTransaction(firestore, async () => {}),
+        () => firestore.runTransaction(async () => {}),
+        'runTransaction',
+      );
+    });
+
+    it('firestore.settings()', function () {
+      const firestore = getFirestore();
+      const app = firebase.app();
+      firestoreRefV9Deprecation(
+        // no equivalent settings method for firebase-js-sdk
+        () => initializeFirestore(app, {}),
+        () => firestore.settings({}),
+        'settings',
+      );
+    });
+
+    it('firestore.persistentCacheIndexManager()', function () {
+      const firestore = getFirestore();
+
+      firestoreRefV9Deprecation(
+        () => getPersistentCacheIndexManager(firestore),
+        () => firestore.persistentCacheIndexManager(),
+        'persistentCacheIndexManager',
+      );
+    });
+
     it('CollectionReference.count()', function () {
       const firestore = getFirestore();
 

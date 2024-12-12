@@ -136,6 +136,9 @@ const mapOfDeprecationReplacements = {
       disableNetwork: 'disableNetwork()',
       doc: 'doc()',
       enableNetwork: 'enableNetwork()',
+      runTransaction: 'runTransaction()',
+      settings: 'settings()',
+      persistentCacheIndexManager: 'getPersistentCacheIndexManager()',
     },
     FirestoreCollectionReference: {
       count: 'getCountFromServer()',

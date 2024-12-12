@@ -186,7 +186,7 @@ export function waitForPendingWrites(firestore) {
 export async function initializeFirestore(app, settings /* databaseId */) {
   // TODO(exaby73): implement 2nd database once it's supported
   const firestore = firebase.firestore(app);
-  await firestore.settings(settings);
+  await firestore.settings.call(firestore, settings, MODULAR_DEPRECATION_ARG);
   return firestore;
 }
 
@@ -208,7 +208,7 @@ export function setLogLevel(logLevel) {
  * @returns {Promise}
  */
 export function runTransaction(firestore, updateFunction) {
-  return firestore.runTransaction(updateFunction);
+  return firestore.runTransaction.call(firestore, updateFunction, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -339,7 +339,7 @@ export function writeBatch(firestore) {
  * @returns {PersistentCacheIndexManager | null}
  */
 export function getPersistentCacheIndexManager(firestore) {
-  return firestore.persistentCacheIndexManager();
+  return firestore.persistentCacheIndexManager.call(firestore, MODULAR_DEPRECATION_ARG);
 }
 
 /**
