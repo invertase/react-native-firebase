@@ -68,7 +68,7 @@ export function collection(parent, path, ...pathSegments) {
     path = path + '/' + pathSegments.map(e => e.replace(/^\/|\/$/g, '')).join('/');
   }
 
-  return parent.collection(path);
+  return parent.collection.call(parent, path, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -77,7 +77,7 @@ export function collection(parent, path, ...pathSegments) {
  * @returns {Query<DocumentData>}
  */
 export function collectionGroup(firestore, collectionId) {
-  return firestore.collectionGroup(collectionId);
+  return firestore.collectionGroup.call(firestore, collectionId, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -134,7 +134,7 @@ export function addDoc(reference, data) {
  * @returns {Promise<void>}
  */
 export function enableNetwork(firestore) {
-  return firestore.enableNetwork();
+  return firestore.enableNetwork.call(firestore, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -142,7 +142,7 @@ export function enableNetwork(firestore) {
  * @returns {Promise<void>}
  */
 export function disableNetwork(firestore) {
-  return firestore.disableNetwork();
+  return firestore.disableNetwork.call(firestore, MODULAR_DEPRECATION_ARG);
 }
 
 /**

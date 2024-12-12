@@ -830,6 +830,51 @@ describe('Firestore', function () {
       );
     });
 
+    it('firestore.collection()', function () {
+      const firestore = getFirestore();
+      firestoreRefV9Deprecation(
+        () => collection(firestore, 'collection'),
+        () => firestore.collection('collection'),
+        'collection',
+      );
+    });
+
+    it('firestore.collectionGroup()', function () {
+      const firestore = getFirestore();
+      firestoreRefV9Deprecation(
+        () => collectionGroup(firestore, 'collection'),
+        () => firestore.collectionGroup('collection'),
+        'collectionGroup',
+      );
+    });
+
+    it('firestore.disableNetwork()', function () {
+      const firestore = getFirestore();
+      firestoreRefV9Deprecation(
+        () => disableNetwork(firestore),
+        () => firestore.disableNetwork(),
+        'disableNetwork',
+      );
+    });
+
+    it('firestore.doc()', function () {
+      const firestore = getFirestore();
+      firestoreRefV9Deprecation(
+        () => doc(firestore, 'collection/path'),
+        () => firestore.doc('collection/path'),
+        'doc',
+      );
+    });
+
+    it('firestore.enableNetwork()', function () {
+      const firestore = getFirestore();
+      firestoreRefV9Deprecation(
+        () => enableNetwork(firestore),
+        () => firestore.enableNetwork(),
+        'enableNetwork',
+      );
+    });
+
     it('CollectionReference.count()', function () {
       const firestore = getFirestore();
 

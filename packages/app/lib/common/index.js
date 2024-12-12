@@ -131,6 +131,11 @@ const mapOfDeprecationReplacements = {
       waitForPendingWrites: 'waitForPendingWrites()',
       terminate: 'terminate()',
       useEmulator: 'connectFirestoreEmulator()',
+      collection: 'collection()',
+      collectionGroup: 'collectionGroup()',
+      disableNetwork: 'disableNetwork()',
+      doc: 'doc()',
+      enableNetwork: 'enableNetwork()',
     },
     FirestoreCollectionReference: {
       count: 'getCountFromServer()',
