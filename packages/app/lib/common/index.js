@@ -123,6 +123,9 @@ const mapOfDeprecationReplacements = {
     },
   },
   firestore: {
+    default: {
+      batch: 'writeBatch()',
+    },
     FirestoreCollectionReference: {
       count: 'getCountFromServer()',
       countFromServer: 'getCountFromServer()',
@@ -211,7 +214,11 @@ export function createMessage(
   }
 }
 
-function getNamespace(className) {
+function getNamespace(target) {
+  if (target._config && target._config.namespace) {
+    return target._config.namespace;
+  }
+  const className = target.name ? target.name : target.constructor.name;
   return Object.keys(mapOfDeprecationReplacements).find(key => {
     if (mapOfDeprecationReplacements[key][className]) {
       return key;
@@ -245,12 +252,7 @@ export function createDeprecationProxy(instance) {
         return function (...args) {
           const isModularMethod = args.includes(MODULAR_DEPRECATION_ARG);
           const instanceName = getInstanceName(target);
-          const nameSpace = getNamespace(instanceName);
-
-          console.log('Prop', prop);
-          console.log('modularMethod', isModularMethod);
-          console.log('nameSpace', nameSpace);
-          console.log('instanceName', instanceName);
+          const nameSpace = getNamespace(target);
 
           deprecationConsoleWarning(nameSpace, prop, instanceName, isModularMethod);
 

@@ -114,11 +114,11 @@ function getOrCreateModuleForApp(app, moduleNamespace) {
     }
 
     if (!APP_MODULE_INSTANCE[app.name][key]) {
-      APP_MODULE_INSTANCE[app.name][key] = new ModuleClass(
-        app,
-        NAMESPACE_REGISTRY[moduleNamespace],
-        customUrlOrRegionOrDatabaseId,
+      const module = createDeprecationProxy(
+        new ModuleClass(app, NAMESPACE_REGISTRY[moduleNamespace], customUrlOrRegionOrDatabaseId),
       );
+
+      APP_MODULE_INSTANCE[app.name][key] = module;
     }
 
     return APP_MODULE_INSTANCE[app.name][key];
