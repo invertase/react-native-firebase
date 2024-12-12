@@ -256,7 +256,11 @@ export function createDeprecationProxy(instance) {
 
           deprecationConsoleWarning(nameSpace, prop, instanceName, isModularMethod);
 
-          return originalMethod.apply(target, args);
+          return originalMethod.apply(
+            target,
+            // Remove the modular deprecation argument from the arguments list
+            args.filter(arg => arg !== MODULAR_DEPRECATION_ARG),
+          );
         };
       }
       return Reflect.get(target, prop, receiver);

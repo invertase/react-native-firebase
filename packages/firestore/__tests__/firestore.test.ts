@@ -715,8 +715,11 @@ describe('Firestore', function () {
     let docRefV9Deprecation: CheckV9DeprecationFunction;
     let fieldValueV9Deprecation: CheckV9DeprecationFunction;
     let filterV9Deprecation: CheckV9DeprecationFunction;
+    // let persistentCacheIndexManagerV9Deprecation: CheckV9DeprecationFunction;
+    let firestoreRefV9Deprecation: CheckV9DeprecationFunction;
 
     beforeEach(function () {
+      firestoreRefV9Deprecation = createCheckV9Deprecation(['firestore']);
       collectionRefV9Deprecation = createCheckV9Deprecation([
         'firestore',
         'FirestoreCollectionReference',
@@ -726,6 +729,10 @@ describe('Firestore', function () {
 
       fieldValueV9Deprecation = createCheckV9Deprecation(['firestore', 'FirestoreFieldValue']);
       filterV9Deprecation = createCheckV9Deprecation(['firestore', 'Filter']);
+      // persistentCacheIndexManagerV9Deprecation = createCheckV9Deprecation([
+      //   'firestore',
+      //   'FirestorePersistentCacheIndexManager',
+      // ]);
 
       // @ts-ignore test
       jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
@@ -750,6 +757,15 @@ describe('Firestore', function () {
         .mockImplementation((cursor, docOrField, fields) => {
           return [];
         });
+    });
+
+    it('firestore.batch()', function () {
+      const firestore = getFirestore();
+      firestoreRefV9Deprecation(
+        () => writeBatch(firestore),
+        () => firestore.batch(),
+        'batch',
+      );
     });
 
     it('CollectionReference.count()', function () {
@@ -1104,14 +1120,11 @@ describe('Firestore', function () {
       );
     });
 
-    // it('FirestoreGeoPoint.and()', function () {
-    //   filterV9Deprecation(
-    //     () => or(firestore.Filter('foo.bar', '==', null), firestore.Filter('foo.bar', '==', null)),
-    //     () =>
-    //       firestore.Filter.and(
-    //         firestore.Filter('foo', '==', 'bar'),
-    //         firestore.Filter('baz', '==', 'qux'),
-    //       ),
+    // it.only('FirestorePersistentCacheIndexManager.enableIndexAutoCreation()', function () {
+    //   const firestore = getFirestore();
+    //   persistentCacheIndexManagerV9Deprecation(
+    //     () => firestore.persistentCacheIndexManager(),
+    //     () => firestore.GeoPoint,
     //     'and',
     //   );
     // });

@@ -32,8 +32,8 @@ export const createCheckV9Deprecation = (moduleNames: string[]): CheckV9Deprecat
     const moduleName = moduleNames[0]; // firestore, database, etc
     const instanceName = moduleNames[1] || 'default'; // default, FirestoreCollectionReference, etc
     const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    // Do not call `mockRestore()` as it removes the spy
     consoleWarnSpy.mockReset();
-    consoleWarnSpy.mockRestore();
     modularFunction();
     expect(consoleWarnSpy).not.toHaveBeenCalled();
     consoleWarnSpy.mockReset();

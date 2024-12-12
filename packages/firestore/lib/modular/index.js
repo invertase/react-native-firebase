@@ -54,7 +54,7 @@ export function doc(parent, path, ...pathSegments) {
     path = path + '/' + pathSegments.map(e => e.replace(/^\/|\/$/g, '')).join('/');
   }
 
-  return parent.doc(path);
+  return parent.doc.call(parent, path, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -87,7 +87,7 @@ export function collectionGroup(firestore, collectionId) {
  * @returns {Promise<void>}
  */
 export function setDoc(reference, data, options) {
-  return reference.set(data, options);
+  return reference.set.call(reference, data, options, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -100,18 +100,24 @@ export function setDoc(reference, data, options) {
 export function updateDoc(reference, fieldOrUpdateData, value, ...moreFieldsAndValues) {
   if (!fieldOrUpdateData) {
     // @ts-ignore
-    return reference.update();
+    return reference.update.call(reference, MODULAR_DEPRECATION_ARG);
   }
 
   if (!value) {
-    return reference.update(fieldOrUpdateData);
+    return reference.update.call(reference, fieldOrUpdateData, MODULAR_DEPRECATION_ARG);
   }
 
   if (!moreFieldsAndValues || !Array.isArray(moreFieldsAndValues)) {
-    return reference.update(fieldOrUpdateData, value);
+    return reference.update.call(reference, fieldOrUpdateData, value, MODULAR_DEPRECATION_ARG);
   }
 
-  return reference.update(fieldOrUpdateData, value, ...moreFieldsAndValues);
+  return reference.update.call(
+    reference,
+    fieldOrUpdateData,
+    value,
+    ...moreFieldsAndValues,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -120,7 +126,7 @@ export function updateDoc(reference, fieldOrUpdateData, value, ...moreFieldsAndV
  * @returns {Promise<DocumentReference>}
  */
 export function addDoc(reference, data) {
-  return reference.add(data);
+  return reference.add.call(reference, data, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -198,7 +204,7 @@ export function runTransaction(firestore, updateFunction) {
  * @returns {Promise<FirebaseFirestoreTypes.AggregateQuerySnapshot>}
  */
 export function getCountFromServer(query) {
-  return query.count().get.call(query, MODULAR_DEPRECATION_ARG);
+  return query.count.call(query, MODULAR_DEPRECATION_ARG).get();
 }
 
 export function getAggregateFromServer(query, aggregateSpec) {
@@ -309,7 +315,7 @@ export function namedQuery(firestore, name) {
  * @returns {FirebaseFirestoreTypes.WriteBatch}
  */
 export function writeBatch(firestore) {
-  return firestore.batch();
+  return firestore.batch.call(firestore, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -332,7 +338,7 @@ export function getPersistentCacheIndexManager(firestore) {
  * @returns {Promise<void}
  */
 export function enablePersistentCacheIndexAutoCreation(indexManager) {
-  return indexManager.enableIndexAutoCreation();
+  return indexManager.enableIndexAutoCreation.call(indexManager, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -342,7 +348,7 @@ export function enablePersistentCacheIndexAutoCreation(indexManager) {
  * @returns {Promise<void}
  */
 export function disablePersistentCacheIndexAutoCreation(indexManager) {
-  return indexManager.disableIndexAutoCreation();
+  return indexManager.disableIndexAutoCreation.call(indexManager, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -352,7 +358,7 @@ export function disablePersistentCacheIndexAutoCreation(indexManager) {
  * @returns {Promise<void}
  */
 export function deleteAllPersistentCacheIndexes(indexManager) {
-  return indexManager.deleteAllIndexes();
+  return indexManager.deleteAllIndexes.call(indexManager, MODULAR_DEPRECATION_ARG);
 }
 
 export * from './query';
