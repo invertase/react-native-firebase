@@ -199,7 +199,7 @@ export function connectFirestoreEmulator(firestore, host, port, options) {
  * @returns {void}
  */
 export function setLogLevel(logLevel) {
-  return firebase.firestore.setLogLevel(logLevel);
+  return firebase.firestore.setLogLevel.call(null, logLevel, MODULAR_DEPRECATION_ARG);
 }
 
 /**

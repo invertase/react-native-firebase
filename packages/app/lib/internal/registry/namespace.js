@@ -180,8 +180,9 @@ function getOrCreateModuleForRoot(moduleNamespace) {
   }
 
   Object.assign(firebaseModuleWithApp, statics || {});
-  Object.freeze(firebaseModuleWithApp);
-  MODULE_GETTER_FOR_ROOT[moduleNamespace] = firebaseModuleWithApp;
+  // Object.freeze(firebaseModuleWithApp);
+  // Wrap around statics, e.g. firebase.firestore.FieldValue, removed freeze as it stops proxy working. it is deprecated anyway
+  MODULE_GETTER_FOR_ROOT[moduleNamespace] = createDeprecationProxy(firebaseModuleWithApp);
 
   return MODULE_GETTER_FOR_ROOT[moduleNamespace];
 }

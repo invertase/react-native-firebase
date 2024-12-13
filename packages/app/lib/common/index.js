@@ -123,6 +123,15 @@ const mapOfDeprecationReplacements = {
     },
   },
   firestore: {
+    statics: {
+      setLogLevel: 'setLogLevel()',
+      Filter: 'where()',
+      FieldValue: 'FieldValue',
+      Timestamp: 'Timestamp',
+      GeoPoint: 'GeoPoint',
+      Blob: 'Bytes',
+      FieldPath: 'FieldPath',
+    },
     default: {
       batch: 'writeBatch()',
       loadBundle: 'loadBundle()',
@@ -234,6 +243,10 @@ export function createMessage(
 }
 
 function getNamespace(target) {
+  if (target.GeoPoint) {
+    // target is statics. GeoPoint is a static class on Firestore
+    return 'firestore';
+  }
   if (target._config && target._config.namespace) {
     return target._config.namespace;
   }
@@ -246,6 +259,10 @@ function getNamespace(target) {
 }
 
 function getInstanceName(target) {
+  if (target.GeoPoint) {
+    // target is statics. GeoPoint is a static class on Firestore
+    return 'statics';
+  }
   if (target._config) {
     // module class instance, we use default to store map of deprecated methods
     return 'default';
@@ -265,6 +282,19 @@ export function createDeprecationProxy(instance) {
 
       if (prop === 'constructor') {
         return target.constructor;
+      }
+
+      if (
+        prop === 'Filter' ||
+        prop === 'FieldValue' ||
+        prop === 'Timestamp' ||
+        prop === 'GeoPoint' ||
+        prop === 'Blob' ||
+        prop === 'FieldPath'
+      ) {
+        // Firestore statics
+        deprecationConsoleWarning('firestore', prop, 'statics', false);
+        return target[prop];
       }
 
       if (typeof originalMethod === 'function') {
