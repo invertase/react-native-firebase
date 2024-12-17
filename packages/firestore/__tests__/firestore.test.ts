@@ -764,7 +764,7 @@ describe('Firestore', function () {
       jest
         .spyOn(FirestoreQuery.prototype, '_handleQueryCursor')
         // @ts-ignore test
-        .mockImplementation((cursor, docOrField, fields) => {
+        .mockImplementation(() => {
           return [];
         });
     });
