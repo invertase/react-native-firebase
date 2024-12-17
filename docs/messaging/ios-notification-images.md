@@ -46,7 +46,7 @@ end
 ### Step 3 - Use the extension helper (Objective-C)
 
 > If you selected to create your extension as a Swift project, jump to the next section.
- 
+
 At this point everything should still be running normally. This is the final step which is invoking the extension helper.
 
 - From the navigator select your `ImageNotification` extension
@@ -91,7 +91,7 @@ class NotificationService: UNNotificationServiceExtension {
         if let bestAttemptContent = bestAttemptContent {
 -            // Modify the notification content here...
 -            bestAttemptContent.title = "\(bestAttemptContent.title) [modified]"
--            
+-
 -            contentHandler(bestAttemptContent)
 +            Messaging.serviceExtension()
 +               .populateNotificationContent(bestAttemptContent, withContentHandler: contentHandler)
