@@ -194,6 +194,10 @@ const mapOfDeprecationReplacements = {
       disableIndexAutoCreation: 'disablePersistentCacheIndexAutoCreation()',
       deleteAllIndexes: 'deleteAllPersistentCacheIndexes()',
     },
+    FirestoreTimestamp: {
+      seconds: NO_REPLACEMENT,
+      nanoseconds: NO_REPLACEMENT,
+    },
   },
 };
 
@@ -277,6 +281,10 @@ function getInstanceName(target) {
 
 export function createDeprecationProxy(instance) {
   return new Proxy(instance, {
+    construct(target, args) {
+      // needed for Timestamp which we pass as static, when we construct new instance, we need to wrap it in proxy again.
+      return createDeprecationProxy(new target(...args));
+    },
     get(target, prop, receiver) {
       const originalMethod = target[prop];
 
@@ -284,13 +292,19 @@ export function createDeprecationProxy(instance) {
         return target.constructor;
       }
 
+      if (target && target.constructor && target.constructor.name === 'FirestoreTimestamp') {
+        deprecationConsoleWarning('firestore', prop, 'FirestoreTimestamp', false);
+      }
+
       if (
-        prop === 'Filter' ||
-        prop === 'FieldValue' ||
-        prop === 'Timestamp' ||
-        prop === 'GeoPoint' ||
-        prop === 'Blob' ||
-        prop === 'FieldPath'
+        target &&
+        target.name === 'firebaseModuleWithApp' &&
+        (prop === 'Filter' ||
+          prop === 'FieldValue' ||
+          prop === 'Timestamp' ||
+          prop === 'GeoPoint' ||
+          prop === 'Blob' ||
+          prop === 'FieldPath')
       ) {
         // Firestore statics
         deprecationConsoleWarning('firestore', prop, 'statics', false);

@@ -722,6 +722,7 @@ describe('Firestore', function () {
     let persistentCacheIndexManagerV9Deprecation: CheckV9DeprecationFunction;
     let firestoreRefV9Deprecation: CheckV9DeprecationFunction;
     let staticsV9Deprecation: CheckV9DeprecationFunction;
+    let timestampV9Deprecation: CheckV9DeprecationFunction;
 
     beforeEach(function () {
       firestoreRefV9Deprecation = createCheckV9Deprecation(['firestore']);
@@ -740,6 +741,8 @@ describe('Firestore', function () {
       ]);
 
       staticsV9Deprecation = createCheckV9Deprecation(['firestore', 'statics']);
+
+      timestampV9Deprecation = createCheckV9Deprecation(['firestore', 'FirestoreTimestamp']);
 
       // @ts-ignore test
       jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
@@ -1369,6 +1372,28 @@ describe('Firestore', function () {
           () => deleteAllPersistentCacheIndexes(indexManager!),
           () => indexManager!.deleteAllIndexes(),
           'deleteAllIndexes',
+        );
+      });
+    });
+
+    describe('Timestamp', function () {
+      it('Timestamp.seconds', function () {
+        const timestamp = new firestore.Timestamp(2, 3);
+        timestampV9Deprecation(
+          // no corresponding method
+          () => {},
+          () => timestamp.seconds,
+          'seconds',
+        );
+      });
+
+      it('Timestamp.nanoseconds', function () {
+        const timestamp = new firestore.Timestamp(2000, 3000000);
+        timestampV9Deprecation(
+          // no corresponding method
+          () => {},
+          () => timestamp.nanoseconds,
+          'nanoseconds',
         );
       });
     });

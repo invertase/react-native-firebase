@@ -28,7 +28,7 @@ export default {
   FieldPath: FirestoreFieldPath,
   FieldValue: createDeprecationProxy(FirestoreFieldValue),
   GeoPoint: FirestoreGeoPoint,
-  Timestamp: FirestoreTimestamp,
+  Timestamp: createDeprecationProxy(FirestoreTimestamp),
   Filter: createDeprecationProxy(Filter),
 
   CACHE_SIZE_UNLIMITED: -1,
