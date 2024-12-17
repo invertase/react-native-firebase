@@ -123,15 +123,6 @@ const mapOfDeprecationReplacements = {
     },
   },
   firestore: {
-    statics: {
-      setLogLevel: 'setLogLevel()',
-      Filter: 'where()',
-      FieldValue: 'FieldValue',
-      Timestamp: 'Timestamp',
-      GeoPoint: 'GeoPoint',
-      Blob: 'Bytes',
-      FieldPath: 'FieldPath',
-    },
     default: {
       batch: 'writeBatch()',
       loadBundle: 'loadBundle()',
@@ -148,6 +139,15 @@ const mapOfDeprecationReplacements = {
       runTransaction: 'runTransaction()',
       settings: 'settings()',
       persistentCacheIndexManager: 'getPersistentCacheIndexManager()',
+    },
+    statics: {
+      setLogLevel: 'setLogLevel()',
+      Filter: 'where()',
+      FieldValue: 'FieldValue',
+      Timestamp: 'Timestamp',
+      GeoPoint: 'GeoPoint',
+      Blob: 'Bytes',
+      FieldPath: 'FieldPath',
     },
     FirestoreCollectionReference: {
       count: 'getCountFromServer()',
@@ -248,7 +248,7 @@ export function createMessage(
 
 function getNamespace(target) {
   if (target.GeoPoint) {
-    // target is statics. GeoPoint is a static class on Firestore
+    // target is statics object. GeoPoint is a static class on Firestore
     return 'firestore';
   }
   if (target._config && target._config.namespace) {
@@ -264,7 +264,7 @@ function getNamespace(target) {
 
 function getInstanceName(target) {
   if (target.GeoPoint) {
-    // target is statics. GeoPoint is a static class on Firestore
+    // target is statics object. GeoPoint is a static class on Firestore
     return 'statics';
   }
   if (target._config) {
@@ -319,11 +319,7 @@ export function createDeprecationProxy(instance) {
 
           deprecationConsoleWarning(nameSpace, prop, instanceName, isModularMethod);
 
-          return originalMethod.apply(
-            target,
-            // Remove the modular deprecation argument from the arguments list
-            args.filter(arg => arg !== MODULAR_DEPRECATION_ARG),
-          );
+          return originalMethod.apply(target, filterModularArgument(args));
         };
       }
       return Reflect.get(target, prop, receiver);
