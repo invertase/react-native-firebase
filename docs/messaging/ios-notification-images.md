@@ -43,7 +43,9 @@ end
 
 ![step-2](/assets/docs/messaging/ios-notification-images-step-2.gif)
 
-### Step 3 - Use the extension helper
+### Step 3 - Use the extension helper (Objective-C)
+
+> If you selected to create your extension as a Swift project, jump to the next section.
 
 At this point everything should still be running normally. This is the final step which is invoking the extension helper.
 
@@ -67,6 +69,34 @@ At this point everything should still be running normally. This is the final ste
 ```
 
 ![step-3](/assets/docs/messaging/ios-notification-images-step-3.gif)
+
+### Step 3 - Use the extension helper (Swift)
+
+At this point everything should still be running normally. This is the final step which is invoking the extension helper.
+
+- From the navigator select your `ImageNotification` extension
+- Open the `NotificationService.swift` file
+- At the top of the file import `Firebase` right after the `NotificationService` as shown below
+
+```diff
+import UserNotifications
++ import Firebase
+
+class NotificationService: UNNotificationServiceExtension {
+```
+
+- then replace everything from line 19 to 23 with the extension helper
+
+```diff
+        if let bestAttemptContent = bestAttemptContent {
+-            // Modify the notification content here...
+-            bestAttemptContent.title = "\(bestAttemptContent.title) [modified]"
+-
+-            contentHandler(bestAttemptContent)
++            Messaging.serviceExtension()
++               .populateNotificationContent(bestAttemptContent, withContentHandler: contentHandler)
+        }
+```
 
 ## All done
 
