@@ -296,18 +296,18 @@ export function createDeprecationProxy(instance) {
         deprecationConsoleWarning('firestore', prop, 'FirestoreTimestamp', false);
       }
 
-      if (
-        target &&
-        target.name === 'firebaseModuleWithApp' &&
-        (prop === 'Filter' ||
+      if (target && target.name === 'firebaseModuleWithApp') {
+        // statics
+        if (
+          prop === 'Filter' ||
           prop === 'FieldValue' ||
           prop === 'Timestamp' ||
           prop === 'GeoPoint' ||
           prop === 'Blob' ||
-          prop === 'FieldPath')
-      ) {
-        // Firestore statics
-        deprecationConsoleWarning('firestore', prop, 'statics', false);
+          prop === 'FieldPath'
+        ) {
+          deprecationConsoleWarning('firestore', prop, 'statics', false);
+        }
         return target[prop];
       }
 
