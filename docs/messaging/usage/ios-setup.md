@@ -155,3 +155,12 @@ testing and production. To rebuild your app, run the following command:
 ```bash
 npx react-native run-ios
 ```
+### Aps Environment
+Check the `aps-environment` Key
+1. Open the .entitlements file in Xcode or a text editor.
+2. Look for the aps-environment key. It should appear like this:
+```
+<key>aps-environment</key>
+<string>development</string>
+```
+3. Make sure it should be set to `production` for the release build. If it's missing or set to `development`, push notifications will not work in production.
