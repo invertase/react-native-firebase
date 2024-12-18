@@ -98,7 +98,13 @@ class FirebaseMessagingModule extends FirebaseModule {
           return Promise.resolve();
         }
 
-        return backgroundMessageHandler(remoteMessage);
+        // Ensure the handler is a promise
+        const handlerPromise = Promise.resolve(backgroundMessageHandler(remoteMessage));
+        handlerPromise.finally(() => {
+          this.native.completeNotificationProcessing();
+        });
+
+        return handlerPromise;
       });
 
       this.emitter.addListener('messaging_settings_for_notification_opened', remoteMessage => {

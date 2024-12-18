@@ -156,30 +156,34 @@
     DLog(@"didReceiveRemoteNotification gcm.message_id was present %@", userInfo);
 
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+      // Store the completion handler to call later when the JS code finishes
+      RNFBMessagingAppDelegate *sharedInstance = [RNFBMessagingAppDelegate sharedInstance];
+      sharedInstance.completionHandler = completionHandler;
+
       // If app is in background state, register background task to guarantee async queues aren't
       // frozen.
-      UIBackgroundTaskIdentifier __block backgroundTaskId =
-          [application beginBackgroundTaskWithExpirationHandler:^{
-            if (backgroundTaskId != UIBackgroundTaskInvalid) {
-              [application endBackgroundTask:backgroundTaskId];
-              backgroundTaskId = UIBackgroundTaskInvalid;
-            }
-          }];
-      // TODO add support in a later version for calling completion handler directly from JS when
-      // user JS code complete
+      sharedInstance.backgroundTaskId = [application beginBackgroundTaskWithExpirationHandler:^{
+        if (sharedInstance.backgroundTaskId != UIBackgroundTaskInvalid) {
+          [application endBackgroundTask:sharedInstance.backgroundTaskId];
+          sharedInstance.backgroundTaskId = UIBackgroundTaskInvalid;
+        }
+      }];
+
       dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(25 * NSEC_PER_SEC)),
                      dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                       completionHandler(UIBackgroundFetchResultNewData);
+                       if (sharedInstance.completionHandler) {
+                         sharedInstance.completionHandler(UIBackgroundFetchResultNewData);
+                         sharedInstance.completionHandler = nil;
+                       }
 
                        // Stop background task after the longest timeout, async queue is okay to
                        // freeze again after handling period
-                       if (backgroundTaskId != UIBackgroundTaskInvalid) {
-                         [application endBackgroundTask:backgroundTaskId];
-                         backgroundTaskId = UIBackgroundTaskInvalid;
+                       if (sharedInstance.backgroundTaskId != UIBackgroundTaskInvalid) {
+                         [application endBackgroundTask:sharedInstance.backgroundTaskId];
+                         sharedInstance.backgroundTaskId = UIBackgroundTaskInvalid;
                        }
                      });
 
-      RNFBMessagingAppDelegate *sharedInstance = [RNFBMessagingAppDelegate sharedInstance];
       [sharedInstance.conditionBackgroundMessageHandlerSet lock];
       @try {
         DLog(@"didReceiveRemoteNotification sharedInstance.backgroundMessageHandlerSet = %@",
