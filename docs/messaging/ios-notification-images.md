@@ -38,7 +38,6 @@ target 'ImageNotification' do
 end
 ```
 
-- Make sure to change the version number `VERSION_NUMBER` with the currently installed version (check your Podfile.lock)
 - Install or update your pods using `pod install` from the `ios` folder
 
 ![step-2](/assets/docs/messaging/ios-notification-images-step-2.gif)
