@@ -84,6 +84,26 @@ describe('database().ref().update()', function () {
       );
     });
 
+    it('removes property if set to `null`', async function () {
+      const value = Date.now();
+      const ref = firebase.database().ref(TEST_PATH);
+      await ref.update({
+        foo: value,
+      });
+      const snapshot = await ref.once('value');
+      snapshot.val().should.eql(
+        jet.contextify({
+          foo: value,
+        }),
+      );
+      await ref.update({
+        foo: null,
+      });
+      const snapshot2 = await ref.once('value');
+      // Removes key/value
+      should(snapshot2.val()).be.null();
+    });
+
     it('callback if function is passed', async function () {
       const value = Date.now();
       return new Promise(async resolve => {
