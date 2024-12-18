@@ -20,6 +20,7 @@ import {
   isString,
   isUndefined,
   createDeprecationProxy,
+  filterModularArgument,
 } from '@react-native-firebase/app/lib/common';
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
 import { parseSetOptions, parseSnapshotArgs, parseUpdateArgs } from './utils';
@@ -197,7 +198,8 @@ export default class FirestoreDocumentReference {
   }
 
   update(...args) {
-    if (args.length === 0) {
+    const updatedArgs = filterModularArgument(args);
+    if (updatedArgs.length === 0) {
       throw new Error(
         'firebase.firestore().doc().update(*) expected at least 1 argument but was called with 0 arguments.',
       );
@@ -205,7 +207,7 @@ export default class FirestoreDocumentReference {
 
     let data;
     try {
-      data = parseUpdateArgs(args);
+      data = parseUpdateArgs(updatedArgs);
     } catch (e) {
       throw new Error(`firebase.firestore().doc().update(*) ${e.message}`);
     }
