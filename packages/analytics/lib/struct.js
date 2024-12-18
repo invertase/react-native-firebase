@@ -14,26 +14,20 @@
  *  limitations under the License.
  */
 
-import { superstruct } from 'superstruct/lib/index';
-import { isUndefined } from './validate';
-
-export default superstruct({
-  types: {
-    shortDate: value => typeof value === 'string' && !!value.match(/^\d{4}-\d{2}-\d{2}$/),
-  },
-});
+import { isUndefined } from '@react-native-firebase/app/lib/common/validate';
+import { create } from 'superstruct';
 
 export const validateStruct = (value = {}, struct, prefix = '') => {
   try {
-    return struct(value);
+    return create(value, struct);
   } catch (e) {
-    const { path, reason } = e;
+    const { path, message } = e;
+
     const key = path[0];
 
-    if (reason === undefined) {
+    if (message === undefined) {
       throw new Error(`${prefix} unknown property '${key}'.`);
     }
-
     e.message = `${prefix} ${e.message}`;
 
     throw e;

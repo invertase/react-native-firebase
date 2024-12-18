@@ -245,6 +245,32 @@ If you are using the [Expo Tools](https://marketplace.visualstudio.com/items?ite
 
 ---
 
+## Other / Web
+
+If you are using the firebase-js-sdk fallback support for [web or "other" platforms](platforms#other-platforms) then you must initialize Firebase dynamically by calling [`initializeApp`](/reference/app#initializeApp).
+
+However, you only want to do this for the web platform. For non-web / native apps the "default" firebase app instance will already be configured by the native google-services.json / GoogleServices-Info.plist files as mentioned above.
+
+At some point during your application's bootstrap processes, initialize firebase like this:
+
+```javascript
+import { getApp, initializeApp } from '@react-native-firebase/app';
+
+// web requires dynamic initialization on web prior to using firebase
+if (Platform.OS === 'web') {
+  const firebaseConfig = {
+    // ... config items pasted from firebase console for your web app here
+  };
+
+  initializeApp(firebaseConfig);
+}
+
+// ...now throughout your app, use firebase APIs normally, for example:
+const firebaseApp = getApp();
+```
+
+---
+
 ## Miscellaneous
 
 ### Android Enabling Multidex
@@ -267,10 +293,10 @@ React Native Firebase internally sets the versions of the native SDKs which each
 is tested against a fixed set of SDK versions (e.g. Firebase SDKs), allowing us to be confident that every feature the
 library supports is working as expected.
 
-Sometimes it's required to change these versions to play nicely with other React Native libraries; therefore we allow
+Sometimes it's required to change these versions to play nicely with other React Native libraries or to work around temporary build failures; therefore we allow
 manually overriding these native SDK versions.
 
-> Using your own SDK versions is generally not recommended as it can lead to breaking changes in your application. Proceed with caution.
+> Using your own SDK versions is not recommended and not supported as it can lead to unexpected build failures when new react-native-firebase versions are released that expect to use new SDK versions. Proceed with caution and remove these overrides as soon as possible when no longer needed.
 
 #### Android
 
@@ -305,10 +331,12 @@ Open your projects `/ios/Podfile` and add any of the globals shown below to the 
 
 ```ruby
 # Override Firebase SDK Version
-$FirebaseSDKVersion = '11.4.0'
+$FirebaseSDKVersion = '11.5.0'
 ```
 
 Once changed, reinstall your projects pods via pod install and rebuild your project with `npx react-native run-ios`.
+
+Alternatively, if you cannot edit the Podfile easily (as when using Expo), you may add the environment variable `FIREBASE_SDK_VERSION=11.5.0` (or whatever version you need) to the command line that installs pods. For example `FIREBASE_SDK_VERSION=11.5.0 yarn expo prebuild --clean`
 
 ### Increasing Android build memory
 

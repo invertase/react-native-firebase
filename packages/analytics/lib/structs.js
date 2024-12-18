@@ -13,226 +13,232 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import struct from '@react-native-firebase/app/lib/common/struct';
 
-const Item = struct.interface({
-  item_brand: 'string?',
-  item_id: 'string?',
-  item_name: 'string?',
-  item_category: 'string?',
-  item_category2: 'string?',
-  item_category3: 'string?',
-  item_category4: 'string?',
-  item_category5: 'string?',
-  item_list_id: 'string?',
-  item_list_name: 'string?',
-  item_location_id: 'string?',
-  item_variant: 'string?',
-  quantity: 'number?',
-  price: 'number?',
+import { object, string, number, array, optional, define, type } from 'superstruct';
+
+const ShortDate = define(
+  'ShortDate',
+  value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value),
+);
+
+const Item = type({
+  item_brand: optional(string()),
+  item_id: optional(string()),
+  item_name: optional(string()),
+  item_category: optional(string()),
+  item_category2: optional(string()),
+  item_category3: optional(string()),
+  item_category4: optional(string()),
+  item_category5: optional(string()),
+  item_list_id: optional(string()),
+  item_list_name: optional(string()),
+  item_location_id: optional(string()),
+  item_variant: optional(string()),
+  quantity: optional(number()),
+  price: optional(number()),
 });
 
-export const ScreenView = struct.interface({
-  screen_class: 'string?',
-  screen_name: 'string?',
+export const ScreenView = type({
+  screen_class: optional(string()),
+  screen_name: optional(string()),
 });
 
-export const AddPaymentInfo = struct({
-  items: struct.optional([Item]),
-  value: 'number?',
-  currency: 'string?',
-  coupon: 'string?',
-  payment_type: 'string?',
+export const AddPaymentInfo = object({
+  items: optional(array(Item)),
+  value: optional(number()),
+  currency: optional(string()),
+  coupon: optional(string()),
+  payment_type: optional(string()),
 });
 
-export const AddShippingInfo = struct({
-  items: struct.optional([Item]),
-  value: 'number?',
-  currency: 'string?',
-  coupon: 'string?',
-  shipping_tier: 'string?',
+export const AddShippingInfo = object({
+  items: optional(array(Item)),
+  value: optional(number()),
+  currency: optional(string()),
+  coupon: optional(string()),
+  shipping_tier: optional(string()),
 });
 
-export const AddToCart = struct({
-  items: struct.optional([Item]),
-  value: 'number?',
-  currency: 'string?',
+export const AddToCart = object({
+  items: optional(array(Item)),
+  value: optional(number()),
+  currency: optional(string()),
 });
 
-export const AddToWishlist = struct({
-  items: struct.optional([Item]),
-  value: 'number?',
-  currency: 'string?',
+export const AddToWishlist = object({
+  items: optional(array(Item)),
+  value: optional(number()),
+  currency: optional(string()),
 });
 
-export const BeginCheckout = struct.interface({
-  items: struct.optional([Item]),
-  value: 'number?',
-  currency: 'string?',
-  coupon: 'string?',
+export const BeginCheckout = type({
+  items: optional(array(Item)),
+  value: optional(number()),
+  currency: optional(string()),
+  coupon: optional(string()),
 });
 
-export const CampaignDetails = struct({
-  source: 'string',
-  medium: 'string',
-  campaign: 'string',
-  term: 'string?',
-  content: 'string?',
-  aclid: 'string?',
-  cp1: 'string?',
+export const CampaignDetails = object({
+  source: string(),
+  medium: string(),
+  campaign: string(),
+  term: optional(string()),
+  content: optional(string()),
+  aclid: optional(string()),
+  cp1: optional(string()),
 });
 
-export const EarnVirtualCurrency = struct({
-  virtual_currency_name: 'string',
-  value: 'number',
+export const EarnVirtualCurrency = object({
+  virtual_currency_name: string(),
+  value: number(),
 });
 
-export const GenerateLead = struct({
-  currency: 'string?',
-  value: 'number?',
+export const GenerateLead = object({
+  currency: optional(string()),
+  value: optional(number()),
 });
 
-export const JoinGroup = struct({
-  group_id: 'string',
+export const JoinGroup = object({
+  group_id: string(),
 });
 
-export const LevelEnd = struct({
-  level: 'number',
-  success: 'string?',
+export const LevelEnd = object({
+  level: number(),
+  success: optional(string()),
 });
 
-export const LevelStart = struct({
-  level: 'number',
+export const LevelStart = object({
+  level: number(),
 });
 
-export const LevelUp = struct({
-  level: 'number',
-  character: 'string?',
+export const LevelUp = object({
+  level: number(),
+  character: optional(string()),
 });
 
-export const Login = struct({
-  method: 'string',
+export const Login = object({
+  method: string(),
 });
 
-export const PostScore = struct({
-  score: 'number',
-  level: 'number?',
-  character: 'string?',
+export const PostScore = object({
+  score: number(),
+  level: optional(number()),
+  character: optional(string()),
 });
 
-export const Refund = struct({
-  affiliation: 'string?',
-  coupon: 'string?',
-  currency: 'string?',
-  items: struct.optional([Item]),
-  shipping: 'number?',
-  tax: 'number?',
-  value: 'number?',
-  transaction_id: 'string?',
+export const Refund = object({
+  affiliation: optional(string()),
+  coupon: optional(string()),
+  currency: optional(string()),
+  items: optional(array(Item)),
+  shipping: optional(number()),
+  tax: optional(number()),
+  value: optional(number()),
+  transaction_id: optional(string()),
 });
 
-export const Purchase = struct.interface({
-  affiliation: 'string?',
-  coupon: 'string?',
-  currency: 'string?',
-  items: struct.optional([Item]),
-  shipping: 'number?',
-  tax: 'number?',
-  value: 'number?',
-  transaction_id: 'string?',
+export const Purchase = type({
+  affiliation: optional(string()),
+  coupon: optional(string()),
+  currency: optional(string()),
+  items: optional(array(Item)),
+  shipping: optional(number()),
+  tax: optional(number()),
+  value: optional(number()),
+  transaction_id: optional(string()),
 });
 
-export const RemoveFromCart = struct({
-  currency: 'string?',
-  items: struct.optional([Item]),
-  value: 'number?',
+export const RemoveFromCart = object({
+  currency: optional(string()),
+  items: optional(array(Item)),
+  value: optional(number()),
 });
 
-export const Search = struct({
-  search_term: 'string',
-  number_of_nights: 'number?',
-  number_of_rooms: 'number?',
-  number_of_passengers: 'number?',
-  origin: 'string?',
-  destination: 'string?',
-  start_date: 'shortDate?',
-  end_date: 'shortDate?',
-  travel_class: 'string?',
+export const Search = object({
+  search_term: string(),
+  number_of_nights: optional(number()),
+  number_of_rooms: optional(number()),
+  number_of_passengers: optional(number()),
+  origin: optional(string()),
+  destination: optional(string()),
+  start_date: optional(ShortDate),
+  end_date: optional(ShortDate),
+  travel_class: optional(string()),
 });
 
-export const SelectContent = struct({
-  content_type: 'string',
-  item_id: 'string',
+export const SelectContent = object({
+  content_type: string(),
+  item_id: string(),
 });
 
-export const SelectItem = struct({
-  items: struct.optional([Item]),
-  item_list_id: 'string?',
-  item_list_name: 'string?',
-  content_type: 'string?',
+export const SelectItem = object({
+  items: optional(array(Item)),
+  item_list_id: optional(string()),
+  item_list_name: optional(string()),
+  content_type: optional(string()),
 });
 
-export const SelectPromotion = struct({
-  creative_name: 'string',
-  creative_slot: 'string',
-  items: struct.optional([Item]),
-  location_id: 'string',
-  promotion_id: 'string',
-  promotion_name: 'string',
+export const SelectPromotion = object({
+  creative_name: string(),
+  creative_slot: string(),
+  items: optional(array(Item)),
+  location_id: string(),
+  promotion_id: string(),
+  promotion_name: string(),
 });
 
-export const SetCheckoutOption = struct({
-  checkout_step: 'number',
-  checkout_option: 'string',
+export const SetCheckoutOption = object({
+  checkout_step: number(),
+  checkout_option: string(),
 });
 
-export const Share = struct({
-  content_type: 'string',
-  item_id: 'string',
-  method: 'string',
+export const Share = object({
+  content_type: string(),
+  item_id: string(),
+  method: string(),
 });
 
-export const SignUp = struct({
-  method: 'string',
+export const SignUp = object({
+  method: string(),
 });
 
-export const SpendVirtualCurrency = struct({
-  item_name: 'string',
-  virtual_currency_name: 'string',
-  value: 'number',
+export const SpendVirtualCurrency = object({
+  item_name: string(),
+  virtual_currency_name: string(),
+  value: number(),
 });
 
-export const UnlockAchievement = struct({
-  achievement_id: 'string',
+export const UnlockAchievement = object({
+  achievement_id: string(),
 });
 
-export const ViewCart = struct({
-  currency: 'string?',
-  items: struct.optional([Item]),
-  value: 'number?',
+export const ViewCart = object({
+  currency: optional(string()),
+  items: optional(array(Item)),
+  value: optional(number()),
 });
 
-export const ViewItem = struct({
-  currency: 'string?',
-  items: struct.optional([Item]),
-  value: 'number?',
+export const ViewItem = object({
+  currency: optional(string()),
+  items: optional(array(Item)),
+  value: optional(number()),
 });
 
-export const ViewItemList = struct({
-  items: struct.optional([Item]),
-  item_list_id: 'string?',
-  item_list_name: 'string?',
+export const ViewItemList = object({
+  items: optional(array(Item)),
+  item_list_id: optional(string()),
+  item_list_name: optional(string()),
 });
 
-export const ViewPromotion = struct({
-  items: struct.optional([Item]),
-  location_id: 'string?',
-  creative_name: 'string?',
-  creative_slot: 'string?',
-  promotion_id: 'string?',
-  promotion_name: 'string?',
+export const ViewPromotion = object({
+  items: optional(array(Item)),
+  location_id: optional(string()),
+  creative_name: optional(string()),
+  creative_slot: optional(string()),
+  promotion_id: optional(string()),
+  promotion_name: optional(string()),
 });
 
-export const ViewSearchResults = struct({
-  search_term: 'string',
+export const ViewSearchResults = object({
+  search_term: string(),
 });

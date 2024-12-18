@@ -92,12 +92,13 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule
     return executorService.getTransactionalExecutor(identifier);
   }
 
-
-  // This is no longer called as of react-native 0.74 and is only here for
-  // compatibility with older versions. It delegates to thew new `invalidate`
+  // On react-native 0.73 this is called, but simply calls `invalidate()`
+  // https://github.com/facebook/react-native/blob/0.73-stable/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/bridge/BaseJavaModule.java#L65-L72
+  // This is no longer called ever for react-native >= 0.74 and is only here for
+  // compatibility with older versions. We delegate to the new `invalidate`
   // method, which all modules should implement now
   // Remove this method when minimum supported react-native is 0.74
-  /** @noinspection removal*/
+  // @noinspection removal
   @SuppressWarnings({"deprecation", "removal"})
   @Deprecated
   public void onCatalystInstanceDestroy() {
@@ -107,11 +108,14 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule
   }
 
   // This should have an @Override annotation but we cannot do
-  // that until our minimum supported react-native version is 0.74, since the
-  // method did not exist before then
+  // that until our minimum supported react-native version is 0.74
+  //
+  // No need to call super.invalidate and in fact it is dangerous to do so:
+  // - did not exist before react-native 0.73
+  // - on 0.74 it calls onCatalystInstanceDestroy which would infinite loop here
+  // - on 0.75+ it is empty - meant as sub-class hook only
   @CallSuper
   public void invalidate() {
-    super.invalidate();
     executorService.shutdown();
   }
 
