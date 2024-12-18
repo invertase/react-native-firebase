@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-
+import { createDeprecationProxy } from '@react-native-firebase/app/lib/common';
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 
 const TYPE_MAP = {
@@ -31,7 +31,9 @@ export default class FirestoreDocumentChange {
   }
 
   get doc() {
-    return new FirestoreDocumentSnapshot(this._firestore, this._nativeData.doc);
+    return createDeprecationProxy(
+      new FirestoreDocumentSnapshot(this._firestore, this._nativeData.doc),
+    );
   }
 
   get newIndex() {

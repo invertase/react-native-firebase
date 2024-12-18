@@ -254,17 +254,17 @@ describe('firestore.WriteBatch.commit()', function () {
     });
 
     it('should set & commit', async function () {
-      const { getFirestore, writeBatch, doc, setDoc, getDoc, deleteDoc } = firestoreModular;
+      const { getFirestore, writeBatch, doc, getDoc, deleteDoc } = firestoreModular;
       const db = getFirestore();
       const lRef = doc(db, `${COLLECTION}/LON`);
       const nycRef = doc(db, `${COLLECTION}/NYC`);
       const sfRef = doc(db, `${COLLECTION}/SF`);
 
       const batch = writeBatch(db);
-
-      setDoc(batch, lRef, { name: 'London' });
-      setDoc(batch, nycRef, { name: 'New York' });
-      setDoc(batch, sfRef, { name: 'San Francisco' });
+      // This is the correct way of setting batch for modular API
+      batch.set(lRef, { name: 'London' });
+      batch.set(nycRef, { name: 'New York' });
+      batch.set(sfRef, { name: 'San Francisco' });
 
       await batch.commit();
 
