@@ -289,11 +289,12 @@ export function createDeprecationProxy(instance) {
       const originalMethod = target[prop];
 
       if (prop === 'constructor') {
-        return target.constructor;
+        return Reflect.get(target, prop, receiver);
       }
 
       if (target && target.constructor && target.constructor.name === 'FirestoreTimestamp') {
         deprecationConsoleWarning('firestore', prop, 'FirestoreTimestamp', false);
+        return Reflect.get(target, prop, receiver);
       }
 
       if (target && target.name === 'firebaseModuleWithApp') {
@@ -308,7 +309,10 @@ export function createDeprecationProxy(instance) {
         ) {
           deprecationConsoleWarning('firestore', prop, 'statics', false);
         }
-        return target[prop];
+        if (prop !== 'setLogLevel') {
+          // we want to capture setLogLevel function call which we do below
+          return Reflect.get(target, prop, receiver);
+        }
       }
 
       if (typeof originalMethod === 'function') {
