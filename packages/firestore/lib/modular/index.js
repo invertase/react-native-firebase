@@ -21,6 +21,7 @@ import {
   fieldPathFromArgument,
 } from '../FirestoreAggregate';
 import FirestoreQuery from '../FirestoreQuery';
+import { MODULAR_DEPRECATION_ARG } from '../../../app/lib/common';
 
 /**
  * @param {FirebaseApp?} app
@@ -53,7 +54,7 @@ export function doc(parent, path, ...pathSegments) {
     path = path + '/' + pathSegments.map(e => e.replace(/^\/|\/$/g, '')).join('/');
   }
 
-  return parent.doc(path);
+  return parent.doc.call(parent, path, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -67,7 +68,7 @@ export function collection(parent, path, ...pathSegments) {
     path = path + '/' + pathSegments.map(e => e.replace(/^\/|\/$/g, '')).join('/');
   }
 
-  return parent.collection(path);
+  return parent.collection.call(parent, path, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -76,7 +77,7 @@ export function collection(parent, path, ...pathSegments) {
  * @returns {Query<DocumentData>}
  */
 export function collectionGroup(firestore, collectionId) {
-  return firestore.collectionGroup(collectionId);
+  return firestore.collectionGroup.call(firestore, collectionId, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -86,7 +87,7 @@ export function collectionGroup(firestore, collectionId) {
  * @returns {Promise<void>}
  */
 export function setDoc(reference, data, options) {
-  return reference.set(data, options);
+  return reference.set.call(reference, data, options, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -99,18 +100,24 @@ export function setDoc(reference, data, options) {
 export function updateDoc(reference, fieldOrUpdateData, value, ...moreFieldsAndValues) {
   if (!fieldOrUpdateData) {
     // @ts-ignore
-    return reference.update();
+    return reference.update.call(reference, MODULAR_DEPRECATION_ARG);
   }
 
   if (!value) {
-    return reference.update(fieldOrUpdateData);
+    return reference.update.call(reference, fieldOrUpdateData, MODULAR_DEPRECATION_ARG);
   }
 
   if (!moreFieldsAndValues || !Array.isArray(moreFieldsAndValues)) {
-    return reference.update(fieldOrUpdateData, value);
+    return reference.update.call(reference, fieldOrUpdateData, value, MODULAR_DEPRECATION_ARG);
   }
 
-  return reference.update(fieldOrUpdateData, value, ...moreFieldsAndValues);
+  return reference.update.call(
+    reference,
+    fieldOrUpdateData,
+    value,
+    ...moreFieldsAndValues,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -119,7 +126,7 @@ export function updateDoc(reference, fieldOrUpdateData, value, ...moreFieldsAndV
  * @returns {Promise<DocumentReference>}
  */
 export function addDoc(reference, data) {
-  return reference.add(data);
+  return reference.add.call(reference, data, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -127,7 +134,7 @@ export function addDoc(reference, data) {
  * @returns {Promise<void>}
  */
 export function enableNetwork(firestore) {
-  return firestore.enableNetwork();
+  return firestore.enableNetwork.call(firestore, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -135,7 +142,7 @@ export function enableNetwork(firestore) {
  * @returns {Promise<void>}
  */
 export function disableNetwork(firestore) {
-  return firestore.disableNetwork();
+  return firestore.disableNetwork.call(firestore, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -143,7 +150,15 @@ export function disableNetwork(firestore) {
  * @returns {Promise<void>}
  */
 export function clearPersistence(firestore) {
+  // this will call deprecation warning as it isn't part of firebase-js-sdk API
   return firestore.clearPersistence();
+}
+/**
+ * @param {Firestore} firestore
+ * @returns {Promise<void>}
+ */
+export function clearIndexedDbPersistence(firestore) {
+  return firestore.clearPersistence.call(firestore, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -151,7 +166,7 @@ export function clearPersistence(firestore) {
  * @returns {Promise<void>}
  */
 export function terminate(firestore) {
-  return firestore.terminate();
+  return firestore.terminate.call(firestore, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -159,7 +174,7 @@ export function terminate(firestore) {
  * @returns {Promise<void>}
  */
 export function waitForPendingWrites(firestore) {
-  return firestore.waitForPendingWrites();
+  return firestore.waitForPendingWrites.call(firestore, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -171,8 +186,12 @@ export function waitForPendingWrites(firestore) {
 export async function initializeFirestore(app, settings /* databaseId */) {
   // TODO(exaby73): implement 2nd database once it's supported
   const firestore = firebase.firestore(app);
-  await firestore.settings(settings);
+  await firestore.settings.call(firestore, settings, MODULAR_DEPRECATION_ARG);
   return firestore;
+}
+
+export function connectFirestoreEmulator(firestore, host, port, options) {
+  return firestore.useEmulator.call(firestore, host, port, options, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -180,7 +199,7 @@ export async function initializeFirestore(app, settings /* databaseId */) {
  * @returns {void}
  */
 export function setLogLevel(logLevel) {
-  return firebase.firestore.setLogLevel(logLevel);
+  return firebase.firestore.setLogLevel.call(null, logLevel, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -189,7 +208,7 @@ export function setLogLevel(logLevel) {
  * @returns {Promise}
  */
 export function runTransaction(firestore, updateFunction) {
-  return firestore.runTransaction(updateFunction);
+  return firestore.runTransaction.call(firestore, updateFunction, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -197,7 +216,7 @@ export function runTransaction(firestore, updateFunction) {
  * @returns {Promise<FirebaseFirestoreTypes.AggregateQuerySnapshot>}
  */
 export function getCountFromServer(query) {
-  return query.count().get();
+  return query.count.call(query, MODULAR_DEPRECATION_ARG).get();
 }
 
 export function getAggregateFromServer(query, aggregateSpec) {
@@ -291,7 +310,7 @@ export function count() {
  * @returns {import('.').LoadBundleTask}
  */
 export function loadBundle(firestore, bundleData) {
-  return firestore.loadBundle(bundleData);
+  return firestore.loadBundle.call(firestore, bundleData, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -300,7 +319,7 @@ export function loadBundle(firestore, bundleData) {
  * @returns {Query<DocumentData>}
  */
 export function namedQuery(firestore, name) {
-  return firestore.namedQuery(name);
+  return firestore.namedQuery.call(firestore, name, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -308,7 +327,7 @@ export function namedQuery(firestore, name) {
  * @returns {FirebaseFirestoreTypes.WriteBatch}
  */
 export function writeBatch(firestore) {
-  return firestore.batch();
+  return firestore.batch.call(firestore, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -320,7 +339,7 @@ export function writeBatch(firestore) {
  * @returns {PersistentCacheIndexManager | null}
  */
 export function getPersistentCacheIndexManager(firestore) {
-  return firestore.persistentCacheIndexManager();
+  return firestore.persistentCacheIndexManager.call(firestore, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -331,7 +350,7 @@ export function getPersistentCacheIndexManager(firestore) {
  * @returns {Promise<void}
  */
 export function enablePersistentCacheIndexAutoCreation(indexManager) {
-  return indexManager.enableIndexAutoCreation();
+  return indexManager.enableIndexAutoCreation.call(indexManager, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -341,7 +360,7 @@ export function enablePersistentCacheIndexAutoCreation(indexManager) {
  * @returns {Promise<void}
  */
 export function disablePersistentCacheIndexAutoCreation(indexManager) {
-  return indexManager.disableIndexAutoCreation();
+  return indexManager.disableIndexAutoCreation.call(indexManager, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -351,7 +370,7 @@ export function disablePersistentCacheIndexAutoCreation(indexManager) {
  * @returns {Promise<void}
  */
 export function deleteAllPersistentCacheIndexes(indexManager) {
-  return indexManager.deleteAllIndexes();
+  return indexManager.deleteAllIndexes.call(indexManager, MODULAR_DEPRECATION_ARG);
 }
 
 export * from './query';

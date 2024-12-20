@@ -15,7 +15,7 @@
  *
  */
 
-import { isString, MODULAR_DEPRECATION_ARG, deprecationConsoleWarning } from '../../common';
+import { isString, createDeprecationProxy } from '../../common';
 import FirebaseApp from '../../FirebaseApp';
 import SDK_VERSION from '../../version';
 import { DEFAULT_APP_NAME, KNOWN_NAMESPACES } from '../constants';
@@ -114,11 +114,11 @@ function getOrCreateModuleForApp(app, moduleNamespace) {
     }
 
     if (!APP_MODULE_INSTANCE[app.name][key]) {
-      APP_MODULE_INSTANCE[app.name][key] = new ModuleClass(
-        app,
-        NAMESPACE_REGISTRY[moduleNamespace],
-        customUrlOrRegionOrDatabaseId,
+      const module = createDeprecationProxy(
+        new ModuleClass(app, NAMESPACE_REGISTRY[moduleNamespace], customUrlOrRegionOrDatabaseId),
       );
+
+      APP_MODULE_INSTANCE[app.name][key] = module;
     }
 
     return APP_MODULE_INSTANCE[app.name][key];
@@ -180,8 +180,9 @@ function getOrCreateModuleForRoot(moduleNamespace) {
   }
 
   Object.assign(firebaseModuleWithApp, statics || {});
-  Object.freeze(firebaseModuleWithApp);
-  MODULE_GETTER_FOR_ROOT[moduleNamespace] = firebaseModuleWithApp;
+  // Object.freeze(firebaseModuleWithApp);
+  // Wrap around statics, e.g. firebase.firestore.FieldValue, removed freeze as it stops proxy working. it is deprecated anyway
+  MODULE_GETTER_FOR_ROOT[moduleNamespace] = createDeprecationProxy(firebaseModuleWithApp);
 
   return MODULE_GETTER_FOR_ROOT[moduleNamespace];
 }
@@ -275,28 +276,6 @@ export function getFirebaseRoot() {
     return FIREBASE_ROOT;
   }
   return createFirebaseRoot();
-}
-
-function createDeprecationProxy(instance) {
-  return new Proxy(instance, {
-    get(target, prop, receiver) {
-      const originalMethod = target[prop];
-      if (prop === 'constructor') {
-        return target.constructor;
-      }
-      if (typeof originalMethod === 'function') {
-        return function (...args) {
-          const isModularMethod = args.includes(MODULAR_DEPRECATION_ARG);
-          const moduleName = receiver._config.namespace;
-
-          deprecationConsoleWarning(moduleName, prop, isModularMethod);
-
-          return originalMethod.apply(target, args);
-        };
-      }
-      return Reflect.get(target, prop, receiver);
-    },
-  });
 }
 
 /**

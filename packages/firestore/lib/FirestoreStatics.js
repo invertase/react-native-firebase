@@ -15,6 +15,7 @@
  *
  */
 
+import { createDeprecationProxy } from '@react-native-firebase/app/lib/common';
 import { getReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import FirestoreBlob from './FirestoreBlob';
 import FirestoreFieldPath from './FirestoreFieldPath';
@@ -25,10 +26,10 @@ import { Filter } from './FirestoreFilter';
 export default {
   Blob: FirestoreBlob,
   FieldPath: FirestoreFieldPath,
-  FieldValue: FirestoreFieldValue,
+  FieldValue: createDeprecationProxy(FirestoreFieldValue),
   GeoPoint: FirestoreGeoPoint,
-  Timestamp: FirestoreTimestamp,
-  Filter: Filter,
+  Timestamp: createDeprecationProxy(FirestoreTimestamp),
+  Filter: createDeprecationProxy(Filter),
 
   CACHE_SIZE_UNLIMITED: -1,
 
