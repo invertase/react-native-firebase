@@ -1,4 +1,7 @@
-import { describe, expect, it, xit } from '@jest/globals';
+import { jest, describe, expect, it, xit, beforeEach } from '@jest/globals';
+
+// @ts-ignore test
+import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 
 import {
   firebase,
@@ -57,6 +60,11 @@ import {
   setConsent,
   settings,
 } from '../lib';
+
+import {
+  createCheckV9Deprecation,
+  CheckV9DeprecationFunction,
+} from '../../app/lib/common/unitTestUtils';
 
 describe('Analytics', function () {
   describe('namespace', function () {
@@ -922,6 +930,133 @@ describe('Analytics', function () {
 
     it('`settings` function is properly exposed to end user', function () {
       expect(settings).toBeDefined();
+    });
+  });
+
+  describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
+    let analyticsRefV9Deprecation: CheckV9DeprecationFunction;
+
+    beforeEach(function () {
+      analyticsRefV9Deprecation = createCheckV9Deprecation(['analytics']);
+
+      // @ts-ignore test
+      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
+        return new Proxy(
+          {},
+          {
+            get: () =>
+              jest.fn().mockResolvedValue({
+                source: 'cache',
+                changes: [],
+                documents: [],
+                metadata: {},
+                path: 'foo',
+              } as never),
+          },
+        );
+      });
+    });
+
+    describe('Analytics', function () {
+      it('analytics.logEvent()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          () => logEvent(analytics, 'invertase_event'),
+          () => analytics.logEvent('invertase_event'),
+          'logEvent',
+        );
+      });
+
+      it('analytics.setAnalyticsCollectionEnabled()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          () => setAnalyticsCollectionEnabled(analytics, true),
+          () => analytics.setAnalyticsCollectionEnabled(true),
+          'setAnalyticsCollectionEnabled',
+        );
+      });
+
+      it('analytics.setSessionTimeoutDuration()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          () => setSessionTimeoutDuration(analytics, 180000),
+          () => analytics.setSessionTimeoutDuration(180000),
+          'setSessionTimeoutDuration',
+        );
+      });
+
+      it('analytics.getAppInstanceId()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          () => getAppInstanceId(analytics),
+          () => analytics.getAppInstanceId(),
+          'getAppInstanceId',
+        );
+      });
+
+      it('analytics.getSessionId()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          () => getSessionId(analytics),
+          () => analytics.getSessionId(),
+          'getSessionId',
+        );
+      });
+
+      it('analytics.setUserId()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          () => setUserId(analytics, 'id'),
+          () => analytics.setUserId('id'),
+          'setUserId',
+        );
+      });
+
+      it('analytics.setUserProperty()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          () => setUserProperty(analytics, 'prop', 'value'),
+          () => analytics.setUserProperty('prop', 'value'),
+          'setUserProperty',
+        );
+      });
+
+      it('analytics.setUserProperties()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          () => setUserProperties(analytics, { prop: 'value' }),
+          () => analytics.setUserProperties({ prop: 'value' }),
+          'setUserProperties',
+        );
+      });
+
+      it('analytics.resetAnalyticsData()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          () => resetAnalyticsData(analytics),
+          () => analytics.resetAnalyticsData(),
+          'resetAnalyticsData',
+        );
+      });
+
+      it('analytics.setConsent()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          () => setConsent(analytics, { ad_storage: true }),
+          () => analytics.setConsent({ ad_storage: true }),
+          'setConsent',
+        );
+      });
+
+      it('analytics.logAddPaymentInfo()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // no corresponding method
+          () => {},
+          () => analytics.logAddPaymentInfo({ value: 1, currency: 'usd' }),
+          'logAddPaymentInfo',
+        );
+      });
     });
   });
 });
