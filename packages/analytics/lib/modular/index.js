@@ -1,4 +1,5 @@
 import { firebase } from '..';
+import { MODULAR_DEPRECATION_ARG } from '../../../app/lib/common';
 
 /**
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
@@ -73,7 +74,7 @@ export function initializeAnalytics(app, options) {
  * @returns {Promise<void>}
  */
 export function logEvent(analytics, name, params = {}, options = {}) {
-  return analytics.logEvent(name, params, options);
+  return analytics.logEvent.call(analytics, name, params, options, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -83,7 +84,7 @@ export function logEvent(analytics, name, params = {}, options = {}) {
  * @returns {Promise<void>}
  */
 export function setAnalyticsCollectionEnabled(analytics, enabled) {
-  return analytics.setAnalyticsCollectionEnabled(enabled);
+  return analytics.setAnalyticsCollectionEnabled.call(analytics, enabled, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -93,7 +94,8 @@ export function setAnalyticsCollectionEnabled(analytics, enabled) {
  * @returns {Promise<void>}
  */
 export function setSessionTimeoutDuration(analytics, milliseconds = 1800000) {
-  return analytics.setSessionTimeoutDuration(milliseconds);
+  // This doesn't exist on firebase-js-sdk, but probably should keep this for android & iOS
+  return analytics.setSessionTimeoutDuration.call(analytics, milliseconds, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -102,7 +104,8 @@ export function setSessionTimeoutDuration(analytics, milliseconds = 1800000) {
  * @returns {Promise<string|null>} Returns the app instance id or null on android if FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE has been set to FirebaseAnalytics.ConsentStatus.DENIED and null on iOS if ConsentType.analyticsStorage has been set to ConsentStatus.denied.
  */
 export function getAppInstanceId(analytics) {
-  return analytics.getAppInstanceId();
+  // This doesn't exist on firebase-js-sdk, but probably should keep this for android & iOS
+  return analytics.getAppInstanceId.call(analytics, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -112,7 +115,8 @@ export function getAppInstanceId(analytics) {
  * @returns {Promise<string|null>} Returns the session id or null if session is expired, null on android if FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE has been set to FirebaseAnalytics.ConsentStatus.DENIED and null on iOS if ConsentType.analyticsStorage has been set to ConsentStatus.denied.
  */
 export function getSessionId(analytics) {
-  return analytics.getSessionId();
+  // This doesn't exist on firebase-js-sdk, but probably should keep this for android & iOS
+  return analytics.getSessionId.call(analytics, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -122,7 +126,7 @@ export function getSessionId(analytics) {
  * @returns {Promise<void>}
  */
 export function setUserId(analytics, id) {
-  return analytics.setUserId(id);
+  return analytics.setUserId.call(analytics, id, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -133,7 +137,8 @@ export function setUserId(analytics, id) {
  * @returns {Promise<void>}
  */
 export function setUserProperty(analytics, name, value) {
-  return analytics.setUserProperty(name, value);
+  // This doesn't exist on firebase-js-sdk, but probably should keep this for android & iOS
+  return analytics.setUserProperty.call(analytics, name, value, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -144,7 +149,7 @@ export function setUserProperty(analytics, name, value) {
  * @returns {Promise<void>}
  */
 export function setUserProperties(analytics, properties, options = {}) {
-  return analytics.setUserProperties(properties, options);
+  return analytics.setUserProperties.call(analytics, properties, options, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -153,7 +158,8 @@ export function setUserProperties(analytics, properties, options = {}) {
  * @returns {Promise<void>}
  */
 export function resetAnalyticsData(analytics) {
-  return analytics.resetAnalyticsData();
+  // This doesn't exist on firebase-js-sdk, but probably should keep this for android & iOS
+  return analytics.resetAnalyticsData.call(analytics, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -163,6 +169,7 @@ export function resetAnalyticsData(analytics) {
  * @returns {Promise<void>}
  */
 export function logAddPaymentInfo(analytics, params) {
+  // TODO - not sure if this should be deprecated. up to this point.
   return analytics.logAddPaymentInfo(params);
 }
 
@@ -586,7 +593,7 @@ export function isSupported() {
  * @returns {Promise<void>}
  */
 export function setConsent(analytics, consentSettings) {
-  return analytics.setConsent(consentSettings);
+  return analytics.setConsent.call(analytics, consentSettings, MODULAR_DEPRECATION_ARG);
 }
 
 /**

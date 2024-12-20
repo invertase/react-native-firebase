@@ -107,6 +107,22 @@ export function tryJSONStringify(data) {
 const NO_REPLACEMENT = true;
 
 const mapOfDeprecationReplacements = {
+  analytics: {
+    default: {
+      logEvent: 'logEvent()',
+      setAnalyticsCollectionEnabled: 'setAnalyticsCollectionEnabled()',
+      setSessionTimeoutDuration: 'setSessionTimeoutDuration()',
+      getAppInstanceId: 'getAppInstanceId()',
+      getSessionId: 'getSessionId()',
+      setUserId: 'setUserId()',
+      setUserProperty: 'setUserProperty()',
+      setUserProperties: 'setUserProperties()',
+      resetAnalyticsData: 'resetAnalyticsData()',
+      setConsent: 'setConsent()',
+      // TODO are we deprecating all modular methods for each specific event. e.g. `logAddPaymentInfo()`
+      logAddPaymentInfo: 'logEvent()',
+    },
+  },
   crashlytics: {
     default: {
       checkForUnsentReports: 'checkForUnsentReports()',
