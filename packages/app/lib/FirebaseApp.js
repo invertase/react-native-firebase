@@ -61,7 +61,6 @@ export default class FirebaseApp {
   }
 
   extendApp(extendedProps) {
-    // this method has no modular alternative, send true for param 'noAlternative'
     warnIfNotModularCall(arguments);
     this._checkDestroyed();
     Object.assign(this, extendedProps);
@@ -74,7 +73,6 @@ export default class FirebaseApp {
   }
 
   toString() {
-    // this method has no modular alternative, send true for param 'noAlternative'
     warnIfNotModularCall(arguments);
     return this.name;
   }
