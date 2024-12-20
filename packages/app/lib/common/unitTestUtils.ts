@@ -19,7 +19,8 @@ export type CheckV9DeprecationFunction = (
   modularFunction: () => void,
   nonModularFunction: () => void,
   methodNameKey: string,
-  uniqueMessage: string = '',
+  uniqueMessage?: string | null,
+  ignoreFirebaseAppDeprecationWarning?: boolean,
 ) => void;
 
 export const createCheckV9Deprecation = (moduleNames: string[]): CheckV9DeprecationFunction => {
@@ -28,14 +29,26 @@ export const createCheckV9Deprecation = (moduleNames: string[]): CheckV9Deprecat
     nonModularFunction: () => void,
     methodNameKey: string,
     uniqueMessage: string?,
+    checkFirebaseAppDeprecationWarning: boolean = false,
   ) => {
     const moduleName = moduleNames[0]; // firestore, database, etc
     const instanceName = moduleNames[1] || 'default'; // default, FirestoreCollectionReference, etc
-    const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    // Do not call `mockRestore()` as it removes the spy
+    const consoleWarnSpy = jest.spyOn(console, 'warn');
     consoleWarnSpy.mockReset();
+
+    consoleWarnSpy.mockImplementation(warnMessage => {
+      const firebaseAppDeprecationMessage = warnMessage.includes('Please use `getApp()` instead.');
+      if (checkFirebaseAppDeprecationWarning) {
+        throw new Error(`Console warn was called unexpectedly with: ${warnMessage}`);
+      } else {
+        if (!firebaseAppDeprecationMessage) {
+          // we want to ignore all firebase app deprecation warnings (e.g. "Please use `getApp()` instead.") unless actually testing for it which we do above
+          throw new Error(`Console warn was called unexpectedly with: ${warnMessage}`);
+        }
+      }
+    });
+    // Do not call `mockRestore()` unless removing the spy
     modularFunction();
-    expect(consoleWarnSpy).not.toHaveBeenCalled();
     consoleWarnSpy.mockReset();
     consoleWarnSpy.mockRestore();
     const consoleWarnSpy2 = jest.spyOn(console, 'warn').mockImplementation(warnMessage => {

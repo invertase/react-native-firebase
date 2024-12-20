@@ -107,6 +107,18 @@ export function tryJSONStringify(data) {
 const NO_REPLACEMENT = true;
 
 const mapOfDeprecationReplacements = {
+  appCheck: {
+    default: {
+      activate: 'initializeAppCheck()',
+      setTokenAutoRefreshEnabled: 'setTokenAutoRefreshEnabled()',
+      getToken: 'getToken()',
+      getLimitedUseToken: 'getLimitedUseToken()',
+      onTokenChanged: 'onTokenChanged()',
+    },
+    statics: {
+      CustomProvider: 'CustomProvider',
+    },
+  },
   crashlytics: {
     default: {
       checkForUnsentReports: 'checkForUnsentReports()',
@@ -247,8 +259,8 @@ export function createMessage(
 }
 
 function getNamespace(target) {
-  if (target.GeoPoint) {
-    // target is statics object. GeoPoint is a static class on Firestore
+  if (target.GeoPoint || target.CustomProvider) {
+    // target is statics object. GeoPoint - Firestore, CustomProvider - AppCheck
     return 'firestore';
   }
   if (target._config && target._config.namespace) {
@@ -263,8 +275,8 @@ function getNamespace(target) {
 }
 
 function getInstanceName(target) {
-  if (target.GeoPoint) {
-    // target is statics object. GeoPoint is a static class on Firestore
+  if (target.GeoPoint || target.CustomProvider) {
+    // target is statics object. GeoPoint - Firestore, CustomProvider - AppCheck
     return 'statics';
   }
   if (target._config) {
@@ -309,6 +321,10 @@ export function createDeprecationProxy(instance) {
         ) {
           deprecationConsoleWarning('firestore', prop, 'statics', false);
         }
+        if (prop === 'CustomProvider') {
+          deprecationConsoleWarning('appCheck', prop, 'statics', false);
+        }
+
         if (prop !== 'setLogLevel') {
           // we want to capture setLogLevel function call which we do below
           return Reflect.get(target, prop, receiver);
