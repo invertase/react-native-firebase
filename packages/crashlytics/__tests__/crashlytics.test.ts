@@ -89,7 +89,7 @@ describe('Crashlytics', function () {
     let checkV9Deprecation: CheckV9DeprecationFunction;
 
     beforeEach(function () {
-      checkV9Deprecation = createCheckV9Deprecation('crashlytics');
+      checkV9Deprecation = createCheckV9Deprecation(['crashlytics']);
 
       // @ts-ignore test
       jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
