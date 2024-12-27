@@ -18,6 +18,12 @@ describe('Config Plugin iOS Tests - openUrlFix', () => {
     expect(
       shouldApplyIosOpenUrlFix({
         config,
+      }),
+    ).toBe(false);
+
+    expect(
+      shouldApplyIosOpenUrlFix({
+        config,
         props: {},
       }),
     ).toBe(false);
@@ -153,6 +159,23 @@ describe('Config Plugin iOS Tests - openUrlFix', () => {
         }),
       ).toBe(true);
     }
+  });
+
+  it('throws an error for invalid config', () => {
+    expect(() =>
+      shouldApplyIosOpenUrlFix({
+        config: {
+          name: 'TestName',
+          slug: 'TestSlug',
+        },
+        props: {
+          ios: {
+            // @ts-ignore testing invalid argument
+            captchaOpenUrlFix: Math.PI,
+          },
+        },
+      }),
+    ).toThrow("Unexpected value for 'captchaOpenUrlFix' config option");
   });
 
   const appDelegateFixtures = [

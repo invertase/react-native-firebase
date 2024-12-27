@@ -4,7 +4,10 @@ import type { AppDelegateProjectFile } from '@expo/config-plugins/build/ios/Path
 import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
 import { PluginConfigType } from '../pluginConfig';
 
-export const withIosCaptchaOpenUrlFix: ConfigPlugin<PluginConfigType> = (config, props) => {
+export const withIosCaptchaOpenUrlFix: ConfigPlugin<PluginConfigType> = (
+  config: ExpoConfig,
+  props?: PluginConfigType,
+) => {
   if (shouldApplyIosOpenUrlFix({ config, props })) {
     config = withAppDelegate(config, config => {
       return withOpenUrlFixForCaptcha({ config });
@@ -19,9 +22,9 @@ export function shouldApplyIosOpenUrlFix({
   props,
 }: {
   config: ExpoConfig;
-  props: PluginConfigType;
+  props?: PluginConfigType;
 }): boolean {
-  const flag = props.ios?.captchaOpenUrlFix;
+  const flag = props?.ios?.captchaOpenUrlFix;
   if (flag === undefined || flag === 'default') {
     // by default, apply the fix whenever 'expo-router' is detected in the same project
     return isPluginEnabled(config, 'expo-router');
