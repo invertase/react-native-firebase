@@ -190,7 +190,8 @@ describe('Config Plugin iOS Tests - openUrlFix', () => {
   ];
   appDelegateFixturesPatch.forEach(fixtureName => {
     it(`munges AppDelegate correctly - ${fixtureName}`, async () => {
-      const appDelegate = await readFixtureAsText(fixtureName);
+      const fixturePath = path.join(__dirname, 'fixtures', fixtureName);
+      const appDelegate = await fs.readFile(fixturePath, { encoding: 'utf-8' });
       const result = modifyObjcAppDelegate(appDelegate);
       expect(result).toMatchSnapshot();
     });
@@ -247,6 +248,3 @@ describe('Config Plugin iOS Tests - openUrlFix', () => {
     });
   });
 });
-
-const readFixtureAsText = async (filepath: string): Promise<string> =>
-  fs.readFile(path.join(__dirname, 'fixtures', filepath), { encoding: 'utf8' });
