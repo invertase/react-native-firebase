@@ -5,7 +5,7 @@ import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
 import { PluginConfigType } from '../pluginConfig';
 
 export const withIosCaptchaOpenUrlFix: ConfigPlugin<PluginConfigType> = (config, props) => {
-  if (shouldApplyIosOpenUrlFix(config, props)) {
+  if (shouldApplyIosOpenUrlFix({ config, props })) {
     config = withAppDelegate(config, config => {
       return patchOpenUrlForCaptcha({ config });
     });
@@ -14,7 +14,13 @@ export const withIosCaptchaOpenUrlFix: ConfigPlugin<PluginConfigType> = (config,
 };
 
 // Interpret the plugin config to determine whether this fix should be applied
-function shouldApplyIosOpenUrlFix(config: ExpoConfig, props: PluginConfigType): boolean {
+export function shouldApplyIosOpenUrlFix({
+  config,
+  props,
+}: {
+  config: ExpoConfig;
+  props: PluginConfigType;
+}): boolean {
   const flag = props.ios?.captchaOpenUrlFix;
   if (flag === undefined || flag === 'default') {
     // by default, apply the fix whenever 'expo-router' is detected in the same project
@@ -38,7 +44,7 @@ const skipOpenUrlForFirebaseAuthBlock = `\
 const appDelegateOpenUrlInsertionPointAfter =
   /-\s*\(\s*BOOL\s*\)\s*application\s*:\s*\(\s*UIApplication\s*\*\s*\)\s*application\s+openURL\s*:\s*\(\s*NSURL\s*\*\s*\)\s*url\s+options\s*:\s*\(\s*NSDictionary\s*<\s*UIApplicationOpenURLOptionsKey\s*,\s*id\s*>\s*\*\s*\)\s*options\s*/; // 🙈
 
-function patchOpenUrlForCaptcha({
+export function patchOpenUrlForCaptcha({
   config,
 }: {
   config: ExportedConfigWithProps<AppDelegateProjectFile>;
@@ -76,12 +82,14 @@ function patchOpenUrlForCaptcha({
   return newConfig;
 }
 
+export type ExpoConfigPluginEntry = string | [] | [string] | [string, any];
+
 // Search the ExpoConfig plugins array to see if `pluginName` is present
 function isPluginEnabled(config: ExpoConfig, pluginName: string): boolean {
   if (config.plugins === undefined) {
     return false;
   }
-  return config.plugins.some((plugin: string | [] | [string] | [string, any]) => {
+  return config.plugins.some((plugin: ExpoConfigPluginEntry) => {
     if (plugin === pluginName) {
       return true;
     } else if (Array.isArray(plugin) && plugin.length >= 1 && plugin[0] === pluginName) {
