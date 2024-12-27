@@ -7,7 +7,7 @@ import { PluginConfigType } from '../pluginConfig';
 export const withIosCaptchaOpenUrlFix: ConfigPlugin<PluginConfigType> = (config, props) => {
   if (shouldApplyIosOpenUrlFix({ config, props })) {
     config = withAppDelegate(config, config => {
-      return patchOpenUrlForCaptcha({ config });
+      return withOpenUrlFixForCaptcha({ config });
     });
   }
   return config;
@@ -44,12 +44,29 @@ const skipOpenUrlForFirebaseAuthBlock = `\
 const appDelegateOpenUrlInsertionPointAfter =
   /-\s*\(\s*BOOL\s*\)\s*application\s*:\s*\(\s*UIApplication\s*\*\s*\)\s*application\s+openURL\s*:\s*\(\s*NSURL\s*\*\s*\)\s*url\s+options\s*:\s*\(\s*NSDictionary\s*<\s*UIApplicationOpenURLOptionsKey\s*,\s*id\s*>\s*\*\s*\)\s*options\s*/; // 🙈
 
-export function patchOpenUrlForCaptcha({
+export function withOpenUrlFixForCaptcha({
   config,
 }: {
   config: ExportedConfigWithProps<AppDelegateProjectFile>;
 }) {
-  const { contents } = config.modResults;
+  const { language, contents } = config.modResults;
+
+  if (['objc', 'objcpp'].includes(language)) {
+    const newContents = modifyObjcAppDelegate(contents);
+    return {
+      ...config,
+      modResults: {
+        ...config.modResults,
+        contents: newContents,
+      },
+    };
+  } else {
+    // TODO: Support Swift
+    throw new Error(`Don't know how to apply openUrlFix to AppDelegate of language "${language}"`);
+  }
+}
+
+export function modifyObjcAppDelegate(contents: string): string {
   const multilineMatcher = new RegExp(
     appDelegateOpenUrlInsertionPointAfter.source + '\\s*{\\s*\\n',
   );
@@ -62,8 +79,7 @@ export function patchOpenUrlForCaptcha({
   if (offset < 0) {
     throw new Error(`Failed to find insertion point; fullMatchNumLines=${fullMatchNumLines}`);
   }
-
-  const newContents = mergeContents({
+  return mergeContents({
     tag: '@react-native-firebase/auth-openURL',
     src: contents,
     newSrc: skipOpenUrlForFirebaseAuthBlock,
@@ -71,15 +87,6 @@ export function patchOpenUrlForCaptcha({
     offset,
     comment: '//',
   }).contents;
-
-  const newConfig = {
-    ...config,
-    modResults: {
-      ...config.modResults,
-      contents: newContents,
-    },
-  };
-  return newConfig;
 }
 
 export type ExpoConfigPluginEntry = string | [] | [string] | [string, any];
