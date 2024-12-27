@@ -178,18 +178,29 @@ describe('Config Plugin iOS Tests - openUrlFix', () => {
     ).toThrow("Unexpected value for 'captchaOpenUrlFix' config option");
   });
 
-  const appDelegateFixtures = [
-    'AppDelegate_sdk42.m',
+  const appDelegateFixturesPatch = [
     'AppDelegate_bare_sdk43.m',
     'AppDelegate_sdk44.m',
-    'AppDelegate_fallback.m',
     'AppDelegate_sdk45.mm',
   ];
-  appDelegateFixtures.forEach(fixtureName => {
+  appDelegateFixturesPatch.forEach(fixtureName => {
     it(`munges AppDelegate correctly - ${fixtureName}`, async () => {
       const appDelegate = await readFixtureAsText(fixtureName);
       const result = modifyObjcAppDelegate(appDelegate);
       expect(result).toMatchSnapshot();
+    });
+  });
+
+  const appDelegateFixturesNoop = ['AppDelegate_sdk42.m', 'AppDelegate_fallback.m'];
+  appDelegateFixturesNoop.forEach(fixtureName => {
+    it(`skips AppDelegate without openURL - ${fixtureName}`, async () => {
+      const appDelegate = await readFixtureAsText(fixtureName);
+      const spy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const result = modifyObjcAppDelegate(appDelegate);
+      expect(result).toBe(null);
+      expect(spy).toHaveBeenCalledWith(
+        "Skipping iOS openURL fix for captcha because no 'openURL' method was found",
+      );
     });
   });
 });

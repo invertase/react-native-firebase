@@ -45,13 +45,17 @@ export function withOpenUrlFixForCaptcha({
 
   if (['objc', 'objcpp'].includes(language)) {
     const newContents = modifyObjcAppDelegate(contents);
-    return {
-      ...config,
-      modResults: {
-        ...config.modResults,
-        contents: newContents,
-      },
-    };
+    if (newContents === null) {
+      return config;
+    } else {
+      return {
+        ...config,
+        modResults: {
+          ...config.modResults,
+          contents: newContents,
+        },
+      };
+    }
   } else {
     // TODO: Support Swift
     throw new Error(`Don't know how to apply openUrlFix to AppDelegate of language "${language}"`);
@@ -69,13 +73,22 @@ const skipOpenUrlForFirebaseAuthBlock: string = `\
 const appDelegateOpenUrlInsertionPointAfter: RegExp =
   /-\s*\(\s*BOOL\s*\)\s*application\s*:\s*\(\s*UIApplication\s*\*\s*\)\s*application\s+openURL\s*:\s*\(\s*NSURL\s*\*\s*\)\s*url\s+options\s*:\s*\(\s*NSDictionary\s*<\s*UIApplicationOpenURLOptionsKey\s*,\s*id\s*>\s*\*\s*\)\s*options\s*/; // 🙈
 
-export function modifyObjcAppDelegate(contents: string): string {
-  const multilineMatcher = new RegExp(
+// Returns AppDelegate with modification applied, or null if no change needed.
+export function modifyObjcAppDelegate(contents: string): string | null {
+  const pattern = appDelegateOpenUrlInsertionPointAfter;
+  const multilinePattern = new RegExp(
     appDelegateOpenUrlInsertionPointAfter.source + '\\s*{\\s*\\n',
   );
-  const fullMatch = contents.match(multilineMatcher);
+  const fullMatch = contents.match(multilinePattern);
   if (!fullMatch) {
-    throw new Error("Failed to find insertion point; expected newline after '{'");
+    if (contents.match(pattern)) {
+      throw new Error("Failed to find insertion point; expected newline after '{'");
+    } else if (contents.match(/openURL\s*:/)) {
+      throw new Error("Failed to find insertion point but detected 'openURL' method");
+    } else {
+      console.warn("Skipping iOS captcha openURL fix because no 'openURL' method was found");
+      return null;
+    }
   }
   const fullMatchNumLines = fullMatch[0].split('\n').length;
   const offset = fullMatchNumLines - 1;
