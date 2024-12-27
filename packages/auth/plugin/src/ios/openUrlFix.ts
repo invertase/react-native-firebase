@@ -8,6 +8,10 @@ export const withIosCaptchaOpenUrlFix: ConfigPlugin<PluginConfigType> = (
   config: ExpoConfig,
   props?: PluginConfigType,
 ) => {
+  if (!shouldApplyIosOpenUrlFix({ config, props })) {
+    return config;
+  }
+
   return withAppDelegate(config, config => {
     return withOpenUrlFixForCaptcha({ config, props });
   });
@@ -41,10 +45,6 @@ export function withOpenUrlFixForCaptcha({
   props?: PluginConfigType;
 }) {
   const { language, contents } = config.modResults;
-
-  if (!shouldApplyIosOpenUrlFix({ config, props })) {
-    return config;
-  }
 
   if (['objc', 'objcpp'].includes(language)) {
     const newContents = modifyObjcAppDelegate(contents);
