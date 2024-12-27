@@ -5,6 +5,7 @@ import {
   withAppDelegate,
   ExportedConfigWithProps,
 } from '@expo/config-plugins';
+import type { ExpoConfig } from '@expo/config/build/Config.types';
 import type { AppDelegateProjectFile } from '@expo/config-plugins/build/ios/Paths';
 import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
 import fs from 'fs';
@@ -16,9 +17,13 @@ export const withIosCaptchaUrlTypes: ConfigPlugin = config => {
   config = withInfoPlist(config, config => {
     return setUrlTypesForCaptcha({ config });
   });
-  config = withAppDelegate(config, config => {
-    return patchOpenUrlForCaptcha({ config });
-  });
+
+  if(isPluginEnabled(config, "expo-router")) {
+    config = withAppDelegate(config, config => {
+      return patchOpenUrlForCaptcha({ config });
+    });
+  }
+
   return config;
 };
 
@@ -139,4 +144,20 @@ function patchOpenUrlForCaptcha({ config }: {
     },
   };
   return newConfig;
+}
+
+// Search the ExpoConfig plugins array to see if `pluginName` is present
+function isPluginEnabled(config: ExpoConfig, pluginName: string): boolean {
+  if(config.plugins === undefined) {
+    return false;
+  }
+  return config.plugins.some((plugin: string | [] | [string] | [string, any]) => {
+    if(plugin === pluginName) {
+      return true;
+    } else if(Array.isArray(plugin) && plugin.length >= 1 && plugin[0] === pluginName) {
+      return true;
+    } else {
+      return false;
+    }
+  });
 }
