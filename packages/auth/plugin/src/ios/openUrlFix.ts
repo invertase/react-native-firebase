@@ -36,17 +36,6 @@ export function shouldApplyIosOpenUrlFix({
   }
 }
 
-const skipOpenUrlForFirebaseAuthBlock = `\
-  if ([url.host caseInsensitiveCompare:@"firebaseauth"] == NSOrderedSame) {
-    // invocations for Firebase Auth are handled elsewhere and should not be forwarded to Expo Router
-    return NO;
-  }\
-`;
-
-// NOTE: `mergeContents()` requires that this pattern not match newlines
-const appDelegateOpenUrlInsertionPointAfter =
-  /-\s*\(\s*BOOL\s*\)\s*application\s*:\s*\(\s*UIApplication\s*\*\s*\)\s*application\s+openURL\s*:\s*\(\s*NSURL\s*\*\s*\)\s*url\s+options\s*:\s*\(\s*NSDictionary\s*<\s*UIApplicationOpenURLOptionsKey\s*,\s*id\s*>\s*\*\s*\)\s*options\s*/; // 🙈
-
 export function withOpenUrlFixForCaptcha({
   config,
 }: {
@@ -68,6 +57,17 @@ export function withOpenUrlFixForCaptcha({
     throw new Error(`Don't know how to apply openUrlFix to AppDelegate of language "${language}"`);
   }
 }
+
+const skipOpenUrlForFirebaseAuthBlock: string = `\
+  if ([url.host caseInsensitiveCompare:@"firebaseauth"] == NSOrderedSame) {
+    // invocations for Firebase Auth are handled elsewhere and should not be forwarded to Expo Router
+    return NO;
+  }\
+`;
+
+// NOTE: `mergeContents()` requires that this pattern not match newlines
+const appDelegateOpenUrlInsertionPointAfter: RegExp =
+  /-\s*\(\s*BOOL\s*\)\s*application\s*:\s*\(\s*UIApplication\s*\*\s*\)\s*application\s+openURL\s*:\s*\(\s*NSURL\s*\*\s*\)\s*url\s+options\s*:\s*\(\s*NSDictionary\s*<\s*UIApplicationOpenURLOptionsKey\s*,\s*id\s*>\s*\*\s*\)\s*options\s*/; // 🙈
 
 export function modifyObjcAppDelegate(contents: string): string {
   const multilineMatcher = new RegExp(
