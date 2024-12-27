@@ -1,7 +1,12 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
-import { shouldApplyIosOpenUrlFix, modifyObjcAppDelegate } from '../src/ios/openUrlFix';
+import type { AppDelegateProjectFile } from '@expo/config-plugins/build/ios/Paths';
+import {
+  shouldApplyIosOpenUrlFix,
+  modifyObjcAppDelegate,
+  withOpenUrlFixForCaptcha,
+} from '../src/ios/openUrlFix';
 import type { ExpoConfigPluginEntry } from '../src/ios/openUrlFix';
 
 describe('Config Plugin iOS Tests - openUrlFix', () => {
@@ -194,12 +199,50 @@ describe('Config Plugin iOS Tests - openUrlFix', () => {
   const appDelegateFixturesNoop = ['AppDelegate_sdk42.m', 'AppDelegate_fallback.m'];
   appDelegateFixturesNoop.forEach(fixtureName => {
     it(`skips AppDelegate without openURL - ${fixtureName}`, async () => {
-      const appDelegate = await readFixtureAsText(fixtureName);
+      const fixturePath = path.join(__dirname, 'fixtures', fixtureName);
+      const appDelegate = await fs.readFile(fixturePath, { encoding: 'utf-8' });
+      const config = {
+        name: 'TestName',
+        slug: 'TestSlug',
+        plugins: ['expo-router'],
+        modRequest: { projectRoot: path.join(__dirname, 'fixtures') } as any,
+        modResults: {
+          path: fixturePath,
+          language: 'objc',
+          contents: appDelegate,
+        } as AppDelegateProjectFile,
+        modRawConfig: { name: 'TestName', slug: 'TestSlug' },
+      };
+      const props = undefined;
       const spy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
-      const result = modifyObjcAppDelegate(appDelegate);
-      expect(result).toBe(null);
+      const result = withOpenUrlFixForCaptcha({ config, props });
+      expect(result.modResults.contents).toBe(appDelegate);
       expect(spy).toHaveBeenCalledWith(
-        "Skipping iOS openURL fix for captcha because no 'openURL' method was found",
+        "Skipping iOS openURL fix because no 'openURL' method was found",
+      );
+    });
+
+    it(`errors when enabled but openURL not found - ${fixtureName}`, async () => {
+      const fixturePath = path.join(__dirname, 'fixtures', fixtureName);
+      const appDelegate = await fs.readFile(fixturePath, { encoding: 'utf-8' });
+      const config = {
+        name: 'TestName',
+        slug: 'TestSlug',
+        modRequest: { projectRoot: path.join(__dirname, 'fixtures') } as any,
+        modResults: {
+          path: fixturePath,
+          language: 'objc',
+          contents: appDelegate,
+        } as AppDelegateProjectFile,
+        modRawConfig: { name: 'TestName', slug: 'TestSlug' },
+      };
+      const props = {
+        ios: {
+          captchaOpenUrlFix: true,
+        },
+      };
+      expect(() => withOpenUrlFixForCaptcha({ config, props })).toThrow(
+        "Failed to apply iOS openURL fix because no 'openURL' method was found",
       );
     });
   });

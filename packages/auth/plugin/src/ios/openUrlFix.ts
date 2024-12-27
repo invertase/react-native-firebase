@@ -8,12 +8,9 @@ export const withIosCaptchaOpenUrlFix: ConfigPlugin<PluginConfigType> = (
   config: ExpoConfig,
   props?: PluginConfigType,
 ) => {
-  if (shouldApplyIosOpenUrlFix({ config, props })) {
-    config = withAppDelegate(config, config => {
-      return withOpenUrlFixForCaptcha({ config });
-    });
-  }
-  return config;
+  return withAppDelegate(config, config => {
+    return withOpenUrlFixForCaptcha({ config, props });
+  });
 };
 
 // Interpret the plugin config to determine whether this fix should be applied
@@ -38,15 +35,27 @@ export function shouldApplyIosOpenUrlFix({
 
 export function withOpenUrlFixForCaptcha({
   config,
+  props,
 }: {
   config: ExportedConfigWithProps<AppDelegateProjectFile>;
+  props?: PluginConfigType;
 }) {
   const { language, contents } = config.modResults;
+
+  if (!shouldApplyIosOpenUrlFix({ config, props })) {
+    return config;
+  }
 
   if (['objc', 'objcpp'].includes(language)) {
     const newContents = modifyObjcAppDelegate(contents);
     if (newContents === null) {
-      return config;
+      if (props?.ios?.captchaOpenUrlFix === true) {
+        throw new Error("Failed to apply iOS openURL fix because no 'openURL' method was found");
+      } else {
+        // eslint-disable-next-line no-console
+        console.warn("Skipping iOS openURL fix because no 'openURL' method was found");
+        return config;
+      }
     } else {
       return {
         ...config,
@@ -86,7 +95,6 @@ export function modifyObjcAppDelegate(contents: string): string | null {
     } else if (contents.match(/openURL\s*:/)) {
       throw new Error("Failed to find insertion point but detected 'openURL' method");
     } else {
-      console.warn("Skipping iOS captcha openURL fix because no 'openURL' method was found");
       return null;
     }
   }
