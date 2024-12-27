@@ -2,15 +2,30 @@ import { ConfigPlugin, withAppDelegate, ExportedConfigWithProps } from '@expo/co
 import type { ExpoConfig } from '@expo/config/build/Config.types';
 import type { AppDelegateProjectFile } from '@expo/config-plugins/build/ios/Paths';
 import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
+import { PluginConfigType } from '../pluginConfig';
 
-export const withIosCaptchaOpenUrlFix: ConfigPlugin = config => {
-  if (isPluginEnabled(config, 'expo-router')) {
+export const withIosCaptchaOpenUrlFix: ConfigPlugin<PluginConfigType> = (config, props) => {
+  if (shouldApplyIosOpenUrlFix(config, props)) {
     config = withAppDelegate(config, config => {
       return patchOpenUrlForCaptcha({ config });
     });
   }
   return config;
 };
+
+// Interpret the plugin config to determine whether this fix should be applied
+function shouldApplyIosOpenUrlFix(config: ExpoConfig, props: PluginConfigType): boolean {
+  const flag = props.ios?.captchaOpenUrlFix;
+  if (flag === undefined || flag === 'default') {
+    // by default, apply the fix whenever 'expo-router' is detected in the same project
+    return isPluginEnabled(config, 'expo-router');
+  } else if (flag === true || flag === false) {
+    const isEnabled: boolean = flag;
+    return isEnabled;
+  } else {
+    throw new Error(`Unexpected value for 'captchaOpenUrlFix' config option`);
+  }
+}
 
 const skipOpenUrlForFirebaseAuthBlock = `\
   if ([url.host caseInsensitiveCompare:@"firebaseauth"] == NSOrderedSame) {
