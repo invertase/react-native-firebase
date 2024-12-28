@@ -21,17 +21,8 @@ export const withIosCaptchaOpenUrlFix: ConfigPlugin<PluginConfigType> = (
 
   // check that swizzling is enabled; otherwise patch must be customized and applied manually
   withInfoPlist(config, config => {
-    if (isFirebaseSwizzlingDisabled(config)) {
-      throw new Error(
-        [
-          'Your app has disabled swizzling by setting FirebaseAppDelegateProxyEnabled=false in its Info.plist.',
-          "Please update your app.config.json to configure the '@react-native-firebase/auth' plugin to set `captchaOpenUrlFix: false`",
-          'and see https://firebase.google.com/docs/auth/ios/phone-auth#appendix:-using-phone-sign-in-without-swizzling for instructions.',
-        ].join(' '),
-      );
-    } else {
-      return config;
-    }
+    ensureFirebaseSwizzlingIsEnabled(config);
+    return config;
   });
 
   // apply patch
@@ -165,4 +156,20 @@ function isPluginEnabled(config: ExpoConfig, pluginName: string): boolean {
 
 export function isFirebaseSwizzlingDisabled(config: ExportedConfigWithProps<InfoPlist>): boolean {
   return config.ios?.infoPlist?.['FirebaseAppDelegateProxyEnabled'] === false;
+}
+
+export function ensureFirebaseSwizzlingIsEnabled(
+  config: ExportedConfigWithProps<InfoPlist>,
+): boolean {
+  if (isFirebaseSwizzlingDisabled(config)) {
+    throw new Error(
+      [
+        'Your app has disabled swizzling by setting FirebaseAppDelegateProxyEnabled=false in its Info.plist.',
+        "Please update your app.config.json to configure the '@react-native-firebase/auth' plugin to set `captchaOpenUrlFix: false`",
+        'and see https://firebase.google.com/docs/auth/ios/phone-auth#appendix:-using-phone-sign-in-without-swizzling for instructions.',
+      ].join(' '),
+    );
+  } else {
+    return true;
+  }
 }

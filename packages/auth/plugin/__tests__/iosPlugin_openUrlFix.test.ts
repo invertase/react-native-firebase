@@ -6,6 +6,7 @@ import {
   shouldApplyIosOpenUrlFix,
   modifyObjcAppDelegate,
   withOpenUrlFixForAppDelegate,
+  ensureFirebaseSwizzlingIsEnabled,
   appDelegateOpenUrlInsertionPointAfter,
   multiline_appDelegateOpenUrlInsertionPointAfter,
 } from '../src/ios/openUrlFix';
@@ -286,5 +287,28 @@ describe('Config Plugin iOS Tests - openUrlFix', () => {
     it(`must not match negativeTemplateCases[${caseIdx}]`, () => {
       expect(appDelegateOpenUrlInsertionPointAfter.test(snippet)).toBe(false);
     });
+  });
+
+  it(`rejects projects with swizzling disabled`, () => {
+    const config = {
+      name: 'TestName',
+      slug: 'TestSlug',
+      plugins: ['expo-router'],
+      modRequest: { projectRoot: path.join(__dirname, 'fixtures') } as any,
+      modResults: {
+        path: path.join(__dirname, 'fixtures', '/path/to/Info.plist'),
+        language: 'plist',
+        contents: '',
+      },
+      modRawConfig: { name: 'TestName', slug: 'TestSlug' },
+      ios: {
+        infoPlist: {
+          FirebaseAppDelegateProxyEnabled: false,
+        },
+      },
+    };
+    expect(() => ensureFirebaseSwizzlingIsEnabled(config)).toThrow(
+      'Your app has disabled swizzling by setting FirebaseAppDelegateProxyEnabled=false in its Info.plist.',
+    );
   });
 });
