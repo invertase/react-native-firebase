@@ -323,3 +323,28 @@ exports[`Config Plugin iOS Tests - openUrlFix munges AppDelegate correctly - App
 @end
 "
 `;
+
+exports[`Config Plugin iOS Tests - openUrlFix must match positiveTemplateCases[0] 1`] = `
+"- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+// @generated begin @react-native-firebase/auth-openURL - expo prebuild (DO NOT MODIFY) sync-5e029a87ac71df3ca5665387eb712d1b32274c6a
+  if ([url.host caseInsensitiveCompare:@"firebaseauth"] == NSOrderedSame) {
+    // invocations for Firebase Auth are handled elsewhere and should not be forwarded to Expo Router
+    return NO;
+  }
+// @generated end @react-native-firebase/auth-openURL
+	int x=3;"
+`;
+
+exports[`Config Plugin iOS Tests - openUrlFix must match positiveTemplateCases[3] 1`] = `
+"  - ( BOOL ) application : ( UIApplication*	)   application openURL : ( NSURL*) url   options :  (  NSDictionary < UIApplicationOpenURLOptionsKey , id > *)	options
+
+{
+
+// @generated begin @react-native-firebase/auth-openURL - expo prebuild (DO NOT MODIFY) sync-5e029a87ac71df3ca5665387eb712d1b32274c6a
+  if ([url.host caseInsensitiveCompare:@"firebaseauth"] == NSOrderedSame) {
+    // invocations for Firebase Auth are handled elsewhere and should not be forwarded to Expo Router
+    return NO;
+  }
+// @generated end @react-native-firebase/auth-openURL
+"
+`;

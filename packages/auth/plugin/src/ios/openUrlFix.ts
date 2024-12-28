@@ -102,21 +102,30 @@ const skipOpenUrlForFirebaseAuthBlock: string = `\
 `;
 
 // NOTE: `mergeContents()` requires that this pattern not match newlines
-const appDelegateOpenUrlInsertionPointAfter: RegExp =
+export const appDelegateOpenUrlInsertionPointAfter: RegExp =
   /-\s*\(\s*BOOL\s*\)\s*application\s*:\s*\(\s*UIApplication\s*\*\s*\)\s*application\s+openURL\s*:\s*\(\s*NSURL\s*\*\s*\)\s*url\s+options\s*:\s*\(\s*NSDictionary\s*<\s*UIApplicationOpenURLOptionsKey\s*,\s*id\s*>\s*\*\s*\)\s*options\s*/; // 🙈
+
+export const multiline_appDelegateOpenUrlInsertionPointAfter = new RegExp(
+  appDelegateOpenUrlInsertionPointAfter.source + '\\s*{\\s*\\n',
+);
 
 // Returns AppDelegate with modification applied, or null if no change needed.
 export function modifyObjcAppDelegate(contents: string): string | null {
   const pattern = appDelegateOpenUrlInsertionPointAfter;
-  const multilinePattern = new RegExp(
-    appDelegateOpenUrlInsertionPointAfter.source + '\\s*{\\s*\\n',
-  );
+  const multilinePattern = multiline_appDelegateOpenUrlInsertionPointAfter;
   const fullMatch = contents.match(multilinePattern);
   if (!fullMatch) {
     if (contents.match(pattern)) {
       throw new Error("Failed to find insertion point; expected newline after '{'");
     } else if (contents.match(/openURL\s*:/)) {
-      throw new Error("Failed to find insertion point but detected 'openURL' method");
+      throw new Error(
+        [
+          "Failed to apply 'captchaOpenUrlFix' but detected 'openURL' method.",
+          "Please manually apply the fix to your AppDelegate's openURL method,",
+          "then update your app.config.json by configuring the '@react-native-firebase/auth' plugin",
+          'to set `captchaOpenUrlFix: false`.',
+        ].join(' '),
+      );
     } else {
       return null;
     }

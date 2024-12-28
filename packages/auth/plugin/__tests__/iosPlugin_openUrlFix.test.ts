@@ -6,6 +6,8 @@ import {
   shouldApplyIosOpenUrlFix,
   modifyObjcAppDelegate,
   withOpenUrlFixForCaptcha,
+  appDelegateOpenUrlInsertionPointAfter,
+  multiline_appDelegateOpenUrlInsertionPointAfter,
 } from '../src/ios/openUrlFix';
 import type { ExpoConfigPluginEntry } from '../src/ios/openUrlFix';
 
@@ -245,6 +247,44 @@ describe('Config Plugin iOS Tests - openUrlFix', () => {
       expect(() => withOpenUrlFixForCaptcha({ config, props })).toThrow(
         "Failed to apply iOS openURL fix because no 'openURL' method was found",
       );
+    });
+  });
+
+  it(`should issue error when openURL is found but patching fails`, () => {
+    const snippet = [
+      '// preamble goes here\nint theAnswer()\n{\n\treturn 42;\n}',
+      '- (BOOL)application:(UIApplication *)application options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options openURL:(NSURL *)url\n{',
+      'int x = theAnswer();\n',
+    ].join('');
+    expect(() => modifyObjcAppDelegate(snippet)).toThrow(
+      "Failed to apply 'captchaOpenUrlFix' but detected 'openURL' method.",
+    );
+  });
+
+  const positiveTemplateCases = [
+    '- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {\n\tint x=3;',
+    '- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options',
+    '\t- (\tBOOL ) application : ( UIApplication*\t)   application openURL : ( NSURL*) url   options :  (  NSDictionary < UIApplicationOpenURLOptionsKey , id > *)\toptions',
+    '  - ( BOOL ) application : ( UIApplication*\t)   application openURL : ( NSURL*) url   options :  (  NSDictionary < UIApplicationOpenURLOptionsKey , id > *)\toptions\n\n{\n\n',
+  ];
+  positiveTemplateCases.forEach((snippet, caseIdx) => {
+    it(`must match positiveTemplateCases[${caseIdx}]`, () => {
+      expect(appDelegateOpenUrlInsertionPointAfter.test(snippet)).toBe(true);
+      if (snippet.match(/{/)) {
+        expect(multiline_appDelegateOpenUrlInsertionPointAfter.test(snippet)).toBe(true);
+        expect(modifyObjcAppDelegate(snippet)).toMatchSnapshot();
+      }
+    });
+  });
+
+  const negativeTemplateCases = [
+    '- (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity {',
+    '- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url',
+    '\t( BOOL ) application : ( UIApplication*\t)   application openURL : ( NSURL*) url   options :  (  NSDictionary < UIApplicationOpenURLOptionsKey , id > *)\toptions',
+  ];
+  negativeTemplateCases.forEach((snippet, caseIdx) => {
+    it(`must not match negativeTemplateCases[${caseIdx}]`, () => {
+      expect(appDelegateOpenUrlInsertionPointAfter.test(snippet)).toBe(false);
     });
   });
 });
