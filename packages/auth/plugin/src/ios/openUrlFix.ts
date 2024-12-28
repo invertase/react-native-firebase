@@ -103,7 +103,7 @@ export const multiline_appDelegateOpenUrlInsertionPointAfter = new RegExp(
   appDelegateOpenUrlInsertionPointAfter.source + '\\s*{\\s*\\n',
 );
 
-// Returns AppDelegate with modification applied, or null if no change needed.
+// Returns contents of new AppDelegate with modification applied, or returns null if this patch is not applicable because the AppDelegate doesn't have an 'openURL' method to handle deep links.
 export function modifyObjcAppDelegate(contents: string): string | null {
   const pattern = appDelegateOpenUrlInsertionPointAfter;
   const multilinePattern = multiline_appDelegateOpenUrlInsertionPointAfter;
@@ -121,6 +121,7 @@ export function modifyObjcAppDelegate(contents: string): string | null {
         ].join(' '),
       );
     } else {
+      // openURL method was not found in AppDelegate
       return null;
     }
   }
