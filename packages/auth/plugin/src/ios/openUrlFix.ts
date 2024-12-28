@@ -3,6 +3,7 @@ import {
   withAppDelegate,
   withInfoPlist,
   ExportedConfigWithProps,
+  WarningAggregator,
 } from '@expo/config-plugins';
 import type { ExpoConfig } from '@expo/config/build/Config.types';
 import type { AppDelegateProjectFile } from '@expo/config-plugins/build/ios/Paths';
@@ -66,8 +67,10 @@ export function withOpenUrlFixForAppDelegate({
       if (props?.ios?.captchaOpenUrlFix === true) {
         throw new Error("Failed to apply iOS openURL fix because no 'openURL' method was found");
       } else {
-        // eslint-disable-next-line no-console
-        console.warn("Skipping iOS openURL fix because no 'openURL' method was found");
+        WarningAggregator.addWarningIOS(
+          '@react-native-firebase/auth',
+          "Skipping iOS openURL fix because no 'openURL' method was found",
+        );
         return config;
       }
     } else {

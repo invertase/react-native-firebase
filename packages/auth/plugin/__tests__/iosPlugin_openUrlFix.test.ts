@@ -1,6 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { WarningAggregator } from '@expo/config-plugins';
 import type { AppDelegateProjectFile } from '@expo/config-plugins/build/ios/Paths';
 import {
   shouldApplyIosOpenUrlFix,
@@ -218,10 +219,11 @@ describe('Config Plugin iOS Tests - openUrlFix', () => {
         modRawConfig: { name: 'TestName', slug: 'TestSlug' },
       };
       const props = undefined;
-      const spy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const spy = jest.spyOn(WarningAggregator, 'addWarningIOS');
       const result = withOpenUrlFixForAppDelegate({ config, props });
       expect(result.modResults.contents).toBe(appDelegate);
       expect(spy).toHaveBeenCalledWith(
+        '@react-native-firebase/auth',
         "Skipping iOS openURL fix because no 'openURL' method was found",
       );
     });
