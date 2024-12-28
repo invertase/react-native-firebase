@@ -5,7 +5,7 @@ import type { AppDelegateProjectFile } from '@expo/config-plugins/build/ios/Path
 import {
   shouldApplyIosOpenUrlFix,
   modifyObjcAppDelegate,
-  withOpenUrlFixForCaptcha,
+  withOpenUrlFixForAppDelegate,
   appDelegateOpenUrlInsertionPointAfter,
   multiline_appDelegateOpenUrlInsertionPointAfter,
 } from '../src/ios/openUrlFix';
@@ -218,7 +218,7 @@ describe('Config Plugin iOS Tests - openUrlFix', () => {
       };
       const props = undefined;
       const spy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
-      const result = withOpenUrlFixForCaptcha({ config, props });
+      const result = withOpenUrlFixForAppDelegate({ config, props });
       expect(result.modResults.contents).toBe(appDelegate);
       expect(spy).toHaveBeenCalledWith(
         "Skipping iOS openURL fix because no 'openURL' method was found",
@@ -244,7 +244,7 @@ describe('Config Plugin iOS Tests - openUrlFix', () => {
           captchaOpenUrlFix: true,
         },
       };
-      expect(() => withOpenUrlFixForCaptcha({ config, props })).toThrow(
+      expect(() => withOpenUrlFixForAppDelegate({ config, props })).toThrow(
         "Failed to apply iOS openURL fix because no 'openURL' method was found",
       );
     });

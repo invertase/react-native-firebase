@@ -36,7 +36,7 @@ export const withIosCaptchaOpenUrlFix: ConfigPlugin<PluginConfigType> = (
 
   // apply patch
   return withAppDelegate(config, config => {
-    return withOpenUrlFixForCaptcha({ config, props });
+    return withOpenUrlFixForAppDelegate({ config, props });
   });
 };
 
@@ -60,7 +60,7 @@ export function shouldApplyIosOpenUrlFix({
   }
 }
 
-export function withOpenUrlFixForCaptcha({
+export function withOpenUrlFixForAppDelegate({
   config,
   props,
 }: {
