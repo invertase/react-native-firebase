@@ -50,12 +50,12 @@ export namespace ReactNativeFirebase {
     /**
      * The native sdks returned error code, different per platform
      */
-    readonly nativeErrorCode: string | number;
+    readonly nativeErrorCode: string | number | null;
 
     /**
      * The native sdks returned error message, different per platform
      */
-    readonly nativeErrorMessage: string;
+    readonly nativeErrorMessage: string | null;
   }
 
   export type LogLevelString = 'debug' | 'verbose' | 'info' | 'warn' | 'error' | 'silent';
