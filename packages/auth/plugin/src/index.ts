@@ -1,14 +1,16 @@
 import { ConfigPlugin, withPlugins, createRunOncePlugin } from '@expo/config-plugins';
 
-import { withIosCaptchaUrlTypes } from './ios';
+import { withIosCaptchaUrlTypes, withIosCaptchaOpenUrlFix } from './ios';
+import { PluginConfigType } from './pluginConfig';
 
 /**
  * A config plugin for configuring `@react-native-firebase/auth`
  */
-const withRnFirebaseAuth: ConfigPlugin = config => {
+const withRnFirebaseAuth: ConfigPlugin<PluginConfigType> = (config, props) => {
   return withPlugins(config, [
     // iOS
-    withIosCaptchaUrlTypes,
+    [withIosCaptchaUrlTypes, props],
+    [withIosCaptchaOpenUrlFix, props],
   ]);
 };
 
