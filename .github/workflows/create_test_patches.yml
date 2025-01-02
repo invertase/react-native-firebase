@@ -74,7 +74,7 @@ jobs:
           done
           ls -la $HOME/packages/
           cd $HOME
-          npx react-native init template --skip-install --skip-git-init
+          npx @react-native-community/cli init template --skip-install --skip-git-init
           cd template
           yarn
           yarn add patch-package --dev
