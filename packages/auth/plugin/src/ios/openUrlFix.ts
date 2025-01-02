@@ -60,11 +60,12 @@ export function withOpenUrlFixForAppDelegate({
   props?: PluginConfigType;
 }) {
   const { language, contents } = config.modResults;
+  const configValue = props?.ios?.captchaOpenUrlFix || 'default';
 
   if (['objc', 'objcpp'].includes(language)) {
     const newContents = modifyObjcAppDelegate(contents);
     if (newContents === null) {
-      if (props?.ios?.captchaOpenUrlFix === true) {
+      if (configValue === true) {
         throw new Error("Failed to apply iOS openURL fix because no 'openURL' method was found");
       } else {
         WarningAggregator.addWarningIOS(
@@ -74,6 +75,12 @@ export function withOpenUrlFixForAppDelegate({
         return config;
       }
     } else {
+      if (configValue === 'default') {
+        WarningAggregator.addWarningIOS(
+          '@react-native-firebase/auth',
+          'modifying iOS AppDelegate openURL method to ignore firebaseauth reCAPTCHA redirect URLs',
+        );
+      }
       return {
         ...config,
         modResults: {

@@ -199,6 +199,31 @@ describe('Config Plugin iOS Tests - openUrlFix', () => {
       const result = modifyObjcAppDelegate(appDelegate);
       expect(result).toMatchSnapshot();
     });
+
+    it(`prints warning message when configured to default and AppDelegate is modified`, async () => {
+      const fixturePath = path.join(__dirname, 'fixtures', fixtureName);
+      const appDelegate = await fs.readFile(fixturePath, { encoding: 'utf-8' });
+      const config = {
+        name: 'TestName',
+        slug: 'TestSlug',
+        modRequest: { projectRoot: path.join(__dirname, 'fixtures') } as any,
+        modResults: {
+          path: fixturePath,
+          language: 'objc',
+          contents: appDelegate,
+        } as AppDelegateProjectFile,
+        modRawConfig: { name: 'TestName', slug: 'TestSlug' },
+      };
+      const props = undefined;
+      const spy = jest
+        .spyOn(WarningAggregator, 'addWarningIOS')
+        .mockImplementation(() => undefined);
+      withOpenUrlFixForAppDelegate({ config, props });
+      expect(spy).toHaveBeenCalledWith(
+        '@react-native-firebase/auth',
+        'modifying iOS AppDelegate openURL method to ignore firebaseauth reCAPTCHA redirect URLs',
+      );
+    });
   });
 
   const appDelegateFixturesNoop = ['AppDelegate_sdk42.m', 'AppDelegate_fallback.m'];
@@ -219,7 +244,9 @@ describe('Config Plugin iOS Tests - openUrlFix', () => {
         modRawConfig: { name: 'TestName', slug: 'TestSlug' },
       };
       const props = undefined;
-      const spy = jest.spyOn(WarningAggregator, 'addWarningIOS');
+      const spy = jest
+        .spyOn(WarningAggregator, 'addWarningIOS')
+        .mockImplementation(() => undefined);
       const result = withOpenUrlFixForAppDelegate({ config, props });
       expect(result.modResults.contents).toBe(appDelegate);
       expect(spy).toHaveBeenCalledWith(
