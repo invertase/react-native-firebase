@@ -311,7 +311,7 @@ to current versions and access newer Xcode versions
   will need to update your error handling code
 - **app, sdks:** firebase-ios-sdk 10.21.0 requires cocoapods 1.12+
   in order to support the new Apple-mandated privacy manifests. Please
-  ensure you are using verson 1.12 or greater of cocoapods
+  ensure you are using version 1.12 or greater of cocoapods
 
 ### Features
 
@@ -1274,7 +1274,7 @@ Sorry for the inconvenience.
 
 - **database:** call cancellation callback when using ref.on ([#5371](https://github.com/invertase/react-native-firebase/issues/5371)) ([26b59db](https://github.com/invertase/react-native-firebase/commit/26b59dbe06bedc64ed83923ecf132b47fe0eb05b))
 - **messaging:** Refactor code to avoid bugs ([5039759](https://github.com/invertase/react-native-firebase/commit/503975909383582d8850470455eeef8f18194ba8))
-- **storage, ios:** dont enumerate on dictionary being mutated ([#5455](https://github.com/invertase/react-native-firebase/issues/5455)) ([daaa72d](https://github.com/invertase/react-native-firebase/commit/daaa72d82df6b9e5e2c1247c10792d4b12683541))
+- **storage, ios:** don't enumerate on dictionary being mutated ([#5455](https://github.com/invertase/react-native-firebase/issues/5455)) ([daaa72d](https://github.com/invertase/react-native-firebase/commit/daaa72d82df6b9e5e2c1247c10792d4b12683541))
 
 ### Features
 
