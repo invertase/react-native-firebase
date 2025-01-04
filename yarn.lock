@@ -6219,8 +6219,14 @@ __metadata:
 "@react-native-firebase/app-distribution@npm:21.6.2, @react-native-firebase/app-distribution@workspace:packages/app-distribution":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/app-distribution@workspace:packages/app-distribution"
+  dependencies:
+    expo: "npm:^50.0.21"
   peerDependencies:
     "@react-native-firebase/app": 21.6.2
+    expo: ">=47.0.0"
+  peerDependenciesMeta:
+    expo:
+      optional: true
   languageName: unknown
   linkType: soft
 

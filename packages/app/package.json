@@ -86,7 +86,8 @@
       "firebaseCrashlyticsGradle": "3.0.2",
       "firebasePerfGradle": "1.4.2",
       "gmsGoogleServicesGradle": "4.4.2",
-      "playServicesAuth": "21.2.0"
+      "playServicesAuth": "21.2.0",
+      "firebaseAppDistributionGradle": "5.0.0"
     }
   }
 }

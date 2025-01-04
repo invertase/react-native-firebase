@@ -8,7 +8,9 @@
   "scripts": {
     "build": "genversion --semi lib/version.js",
     "build:clean": "rimraf android/build && rimraf ios/build",
-    "prepare": "yarn run build"
+    "build:plugin": "rimraf plugin/build && tsc --build plugin",
+    "lint:plugin": "eslint plugin/src/*",
+    "prepare": "yarn run build && yarn run build:plugin"
   },
   "repository": {
     "type": "git",
@@ -22,7 +24,16 @@
     "app-distribution"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "21.6.2"
+    "@react-native-firebase/app": "21.6.2",
+    "expo": ">=47.0.0"
+  },
+  "devDependencies": {
+    "expo": "^50.0.21"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
   },
   "publishConfig": {
     "access": "public"
