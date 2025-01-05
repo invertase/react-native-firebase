@@ -47,6 +47,21 @@ Since Expo SDK51, Notifications entitlement is no longer always added to iOS pro
   }
 }
 ```
+## iOS - Remote notification
+
+If you require `remote notification` on Expo, you can also add this to your Expo `app.json` or `app.config.js`
+
+```json
+{
+  "expo": {
+    "ios": {
+       "infoPlist": {
+         "UIBackgroundModes": ["remote-notification"]
+       },
+    }
+  }
+}
+```
 
 # What does it do
 
