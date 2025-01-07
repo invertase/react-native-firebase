@@ -24,7 +24,7 @@ cd ios/ && pod install
 
 ## Add the App Distribution Plugin
 
-> This module does not handle Expo config plugins yet but does require a native integration similar to the perf module. If you want to add support for Expo to the App Distribution module we would welcome a PR!
+> If you're using Expo, make sure to add the `@react-native-firebase/app-distribution` config plugin to your `app.json` or `app.config.js`. It handles the below installation steps for you. For instructions on how to do that, view the [Expo](/#expo) installation section.
 
 On Android, you need to install the Google App Distribution Plugin.
 

@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.6.2](https://github.com/invertase/react-native-firebase/compare/v21.6.1...v21.6.2) (2025-01-02)
+
+**Note:** Version bump only for package @react-native-firebase/app
+
+## [21.6.1](https://github.com/invertase/react-native-firebase/compare/v21.6.0...v21.6.1) (2024-11-25)
+
+### Bug Fixes
+
+- **android, app:** fix hot-reload on react-native <= 0.73 ([81e5fc2](https://github.com/invertase/react-native-firebase/commit/81e5fc2b6c89fdb4aa5f0f5aa95e1e90dae5f2e4))
+
 ## [21.6.0](https://github.com/invertase/react-native-firebase/compare/v21.5.0...v21.6.0) (2024-11-20)
 
 ### Features

@@ -2,7 +2,7 @@ import path from 'path';
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { setUrlTypesForCaptcha } from '../src/ios/urlTypes';
 
-describe('Config Plugin iOS Tests', () => {
+describe('Config Plugin iOS Tests - urlTypes', () => {
   beforeEach(function () {
     jest.resetAllMocks();
   });

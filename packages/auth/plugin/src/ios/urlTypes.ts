@@ -7,9 +7,10 @@ import {
 import fs from 'fs';
 import path from 'path';
 import plist from 'plist';
+import { PluginConfigType } from '../pluginConfig';
 
 // does this for you: https://firebase.google.com/docs/auth/ios/phone-auth#enable-phone-number-sign-in-for-your-firebase-project
-export const withIosCaptchaUrlTypes: ConfigPlugin = config => {
+export const withIosCaptchaUrlTypes: ConfigPlugin<PluginConfigType> = config => {
   return withInfoPlist(config, config => {
     return setUrlTypesForCaptcha({ config });
   });
