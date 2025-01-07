@@ -2,13 +2,13 @@
   <a href="https://rnfirebase.io">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
-  <h2 align="center">React Native Firebase - Cloud Storage</h2>
+  <h2 align="center">React Native Firebase - Vertex AI</h2>
 </p>
 
 <p align="center">
-  <a href="https://api.rnfirebase.io/coverage/storage/detail"><img src="https://api.rnfirebase.io/coverage/storage/badge?style=flat-square" alt="Coverage"></a>
-  <a href="https://www.npmjs.com/package/@react-native-firebase/storage"><img src="https://img.shields.io/npm/dm/@react-native-firebase/storage.svg?style=flat-square" alt="NPM downloads"></a>
-  <a href="https://www.npmjs.com/package/@react-native-firebase/storage"><img src="https://img.shields.io/npm/v/@react-native-firebase/storage.svg?style=flat-square" alt="NPM version"></a>
+  <a href="https://api.rnfirebase.io/coverage/vertexai/detail"><img src="https://api.rnfirebase.io/coverage/vertexai/badge?style=flat-square" alt="Coverage"></a>
+  <a href="https://www.npmjs.com/package/@react-native-firebase/vertexai"><img src="https://img.shields.io/npm/dm/@react-native-firebase/vertexai.svg?style=flat-square" alt="NPM downloads"></a>
+  <a href="https://www.npmjs.com/package/@react-native-firebase/vertexai"><img src="https://img.shields.io/npm/v/@react-native-firebase/vertexai.svg?style=flat-square" alt="NPM version"></a>
   <a href="/LICENSE"><img src="https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square" alt="License"></a>
   <a href="https://lerna.js.org/"><img src="https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg?style=flat-square" alt="Maintained with Lerna"></a>
 </p>
@@ -21,22 +21,22 @@
 
 ---
 
-Cloud Storage for Firebase is a powerful, simple, and cost-effective object storage service built for Google scale. The Firebase SDKs for Cloud Storage add Google security to file uploads and downloads for your Firebase apps, regardless of network quality. You can use our SDKs to store images, audio, video, or other user-generated content. On the server, you can use [Google Cloud Storage](https://cloud.google.com/storage), to access the same files.
+Vertex AI is a fully-managed, unified AI development platform for building and using generative AI. Access and utilize Vertex AI Studio, Agent Builder, and 150+ foundation models including Gemini 1.5 Pro and Gemini 1.5 Flash.
 
-[> Learn More](https://firebase.google.com/products/storage/)
+[> Learn More](https://firebase.google.com/docs/vertex-ai/)
 
 ## Installation
 
 Requires `@react-native-firebase/app` to be installed.
 
 ```bash
-yarn add @react-native-firebase/storage
+yarn add @react-native-firebase/vertexai
 ```
 
 ## Documentation
 
-- [Quick Start](https://rnfirebase.io/storage/usage)
-- [Reference](https://rnfirebase.io/reference/storage)
+- [Quick Start](https://rnfirebase.io/vertexai/usage)
+- [Reference](https://rnfirebase.io/reference/vertexai)
 
 ## License
 
