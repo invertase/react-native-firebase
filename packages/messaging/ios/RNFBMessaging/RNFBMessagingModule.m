@@ -220,16 +220,17 @@ RCT_EXPORT_METHOD(getIsHeadless : (RCTPromiseResolveBlock)resolve : (RCTPromiseR
 }
 
 RCT_EXPORT_METHOD(completeNotificationProcessing) {
-  RNFBMessagingAppDelegate *appDelegate = [RNFBMessagingAppDelegate sharedInstance];
-  if (appDelegate.completionHandler) {
-    appDelegate.completionHandler(UIBackgroundFetchResultNewData);
-    appDelegate.completionHandler = nil;
-  }
-
-  if (appDelegate.backgroundTaskId != UIBackgroundTaskInvalid) {
-    [[UIApplication sharedApplication] endBackgroundTask:appDelegate.backgroundTaskId];
-    appDelegate.backgroundTaskId = UIBackgroundTaskInvalid;
-  }
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+    RNFBMessagingAppDelegate *appDelegate = [RNFBMessagingAppDelegate sharedInstance];
+    if (appDelegate.completionHandler) {
+      appDelegate.completionHandler(UIBackgroundFetchResultNewData);
+      appDelegate.completionHandler = nil;
+    }
+    if (appDelegate.backgroundTaskId != UIBackgroundTaskInvalid) {
+      [[UIApplication sharedApplication] endBackgroundTask:appDelegate.backgroundTaskId];
+      appDelegate.backgroundTaskId = UIBackgroundTaskInvalid;
+    }
+  });
 }
 
 RCT_EXPORT_METHOD(requestPermission
