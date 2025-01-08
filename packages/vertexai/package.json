@@ -3,12 +3,12 @@
   "version": "0.0.1",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Vertex AI is a fully-managed, unified AI development platform for building and using generative AI",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "./dist/commonjs/index.js",
+  "types": "./dist/typescript/commonjs/lib/index.d.ts",
   "scripts": {
     "build": "genversion --semi lib/version.js",
     "build:clean": "rimraf android/build && rimraf ios/build",
-    "prepare": "yarn run build"
+    "prepare": "yarn run build && bob build"
   },
   "repository": {
     "type": "git",
@@ -28,5 +28,57 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "devDependencies": {
+    "react-native-builder-bob": "^0.35.2"
+  },
+  "source": "./lib/index.ts",
+  "module": "./dist/module/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/typescript/module/lib/index.d.ts",
+        "default": "./dist/module/index.js"
+      },
+      "require": {
+        "types": "./dist/typescript/commonjs/lib/index.d.ts",
+        "default": "./dist/commonjs/index.js"
+      }
+    }
+  },
+  "files": [
+    "lib",
+    "dist",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__"
+  ],
+  "react-native-builder-bob": {
+    "source": "lib",
+    "output": "dist",
+    "targets": [
+      [
+        "commonjs",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "esm": true
+        }
+      ]
+    ]
+  },
+  "eslintIgnore": [
+    "node_modules/",
+    "dist/"
+  ]
 }
