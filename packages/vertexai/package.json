@@ -30,7 +30,8 @@
     "access": "public"
   },
   "devDependencies": {
-    "react-native-builder-bob": "^0.35.2"
+    "react-native-builder-bob": "^0.35.2",
+    "typescript": "^5.7.2"
   },
   "source": "./lib/index.ts",
   "module": "./dist/module/index.js",

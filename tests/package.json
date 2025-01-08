@@ -27,6 +27,7 @@
     "@react-native-firebase/perf": "21.6.2",
     "@react-native-firebase/remote-config": "21.6.2",
     "@react-native-firebase/storage": "21.6.2",
+    "@react-native-firebase/vertexai": "0.0.1",
     "postinstall-postinstall": "2.1.0",
     "react": "18.3.1",
     "react-native": "0.74.5",
