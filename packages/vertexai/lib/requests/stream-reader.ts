@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import { ReadableStream } from 'web-streams-polyfill';
 import {
   EnhancedGenerateContentResponse,
   GenerateContentCandidate,
@@ -37,7 +38,21 @@ const responseLineRE = /^data\: (.*)(?:\n\n|\r\r|\r\n\r\n)/;
  * @param response - Response from a fetch call
  */
 export function processStream(response: Response): GenerateContentStreamResult {
-  const inputStream = response.body!.pipeThrough(new TextDecoderStream('utf8', { fatal: true }));
+  const inputStream = new ReadableStream<string>({
+    async start(controller) {
+      const reader = response.body!.getReader();
+      const decoder = new TextDecoder('utf-8');
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          controller.close();
+          break;
+        }
+        const decodedValue = decoder.decode(value, { stream: true });
+        controller.enqueue(decodedValue);
+      }
+    },
+  });
   const responseStream = getResponseStream<GenerateContentResponse>(inputStream);
   const [stream1, stream2] = responseStream.tee();
   return {
@@ -86,7 +101,7 @@ export function getResponseStream<T>(inputStream: ReadableStream<string>): Reada
   const stream = new ReadableStream<T>({
     start(controller) {
       let currentText = '';
-      return pump();
+      return pump().then(() => undefined);
       function pump(): Promise<(() => Promise<void>) | undefined> {
         return reader.read().then(({ value, done }) => {
           if (done) {
@@ -105,7 +120,7 @@ export function getResponseStream<T>(inputStream: ReadableStream<string>): Reada
           let parsedResponse: T;
           while (match) {
             try {
-              parsedResponse = JSON.parse(match[1]);
+              parsedResponse = JSON.parse(match[1]!);
             } catch (e) {
               controller.error(
                 new VertexAIError(
