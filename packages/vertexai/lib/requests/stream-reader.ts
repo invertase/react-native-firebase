@@ -21,7 +21,7 @@ import {
   GenerateContentResponse,
   GenerateContentStreamResult,
   Part,
-  VertexAIErrorCode
+  VertexAIErrorCode,
 } from '../types';
 import { VertexAIError } from '../errors';
 import { createEnhancedContentResponse } from './response-helpers';
@@ -37,29 +37,24 @@ const responseLineRE = /^data\: (.*)(?:\n\n|\r\r|\r\n\r\n)/;
  * @param response - Response from a fetch call
  */
 export function processStream(response: Response): GenerateContentStreamResult {
-  const inputStream = response.body!.pipeThrough(
-    new TextDecoderStream('utf8', { fatal: true })
-  );
-  const responseStream =
-    getResponseStream<GenerateContentResponse>(inputStream);
+  const inputStream = response.body!.pipeThrough(new TextDecoderStream('utf8', { fatal: true }));
+  const responseStream = getResponseStream<GenerateContentResponse>(inputStream);
   const [stream1, stream2] = responseStream.tee();
   return {
     stream: generateResponseSequence(stream1),
-    response: getResponsePromise(stream2)
+    response: getResponsePromise(stream2),
   };
 }
 
 async function getResponsePromise(
-  stream: ReadableStream<GenerateContentResponse>
+  stream: ReadableStream<GenerateContentResponse>,
 ): Promise<EnhancedGenerateContentResponse> {
   const allResponses: GenerateContentResponse[] = [];
   const reader = stream.getReader();
   while (true) {
     const { done, value } = await reader.read();
     if (done) {
-      const enhancedResponse = createEnhancedContentResponse(
-        aggregateResponses(allResponses)
-      );
+      const enhancedResponse = createEnhancedContentResponse(aggregateResponses(allResponses));
       return enhancedResponse;
     }
     allResponses.push(value);
@@ -67,7 +62,7 @@ async function getResponsePromise(
 }
 
 async function* generateResponseSequence(
-  stream: ReadableStream<GenerateContentResponse>
+  stream: ReadableStream<GenerateContentResponse>,
 ): AsyncGenerator<EnhancedGenerateContentResponse> {
   const reader = stream.getReader();
   while (true) {
@@ -86,9 +81,7 @@ async function* generateResponseSequence(
  * chunks, returning a new stream that provides a single complete
  * GenerateContentResponse in each iteration.
  */
-export function getResponseStream<T>(
-  inputStream: ReadableStream<string>
-): ReadableStream<T> {
+export function getResponseStream<T>(inputStream: ReadableStream<string>): ReadableStream<T> {
   const reader = inputStream.getReader();
   const stream = new ReadableStream<T>({
     start(controller) {
@@ -99,10 +92,7 @@ export function getResponseStream<T>(
           if (done) {
             if (currentText.trim()) {
               controller.error(
-                new VertexAIError(
-                  VertexAIErrorCode.PARSE_FAILED,
-                  'Failed to parse stream'
-                )
+                new VertexAIError(VertexAIErrorCode.PARSE_FAILED, 'Failed to parse stream'),
               );
               return;
             }
@@ -120,8 +110,8 @@ export function getResponseStream<T>(
               controller.error(
                 new VertexAIError(
                   VertexAIErrorCode.PARSE_FAILED,
-                  `Error parsing JSON response: "${match[1]}`
-                )
+                  `Error parsing JSON response: "${match[1]}`,
+                ),
               );
               return;
             }
@@ -132,7 +122,7 @@ export function getResponseStream<T>(
           return pump();
         });
       }
-    }
+    },
   });
   return stream;
 }
@@ -141,12 +131,10 @@ export function getResponseStream<T>(
  * Aggregates an array of `GenerateContentResponse`s into a single
  * GenerateContentResponse.
  */
-export function aggregateResponses(
-  responses: GenerateContentResponse[]
-): GenerateContentResponse {
+export function aggregateResponses(responses: GenerateContentResponse[]): GenerateContentResponse {
   const lastResponse = responses[responses.length - 1];
   const aggregatedResponse: GenerateContentResponse = {
-    promptFeedback: lastResponse?.promptFeedback
+    promptFeedback: lastResponse?.promptFeedback,
   };
   for (const response of responses) {
     if (response.candidates) {
@@ -159,17 +147,14 @@ export function aggregateResponses(
         }
         if (!aggregatedResponse.candidates[i]) {
           aggregatedResponse.candidates[i] = {
-            index: candidate.index
+            index: candidate.index,
           } as GenerateContentCandidate;
         }
         // Keep overwriting, the last one will be final
-        aggregatedResponse.candidates[i].citationMetadata =
-          candidate.citationMetadata;
+        aggregatedResponse.candidates[i].citationMetadata = candidate.citationMetadata;
         aggregatedResponse.candidates[i].finishReason = candidate.finishReason;
-        aggregatedResponse.candidates[i].finishMessage =
-          candidate.finishMessage;
-        aggregatedResponse.candidates[i].safetyRatings =
-          candidate.safetyRatings;
+        aggregatedResponse.candidates[i].finishMessage = candidate.finishMessage;
+        aggregatedResponse.candidates[i].safetyRatings = candidate.safetyRatings;
 
         /**
          * Candidates should always have content and parts, but this handles
@@ -179,7 +164,7 @@ export function aggregateResponses(
           if (!aggregatedResponse.candidates[i].content) {
             aggregatedResponse.candidates[i].content = {
               role: candidate.content.role || 'user',
-              parts: []
+              parts: [],
             };
           }
           const newPart: Partial<Part> = {};
@@ -193,9 +178,7 @@ export function aggregateResponses(
             if (Object.keys(newPart).length === 0) {
               newPart.text = '';
             }
-            aggregatedResponse.candidates[i].content.parts.push(
-              newPart as Part
-            );
+            aggregatedResponse.candidates[i].content.parts.push(newPart as Part);
           }
         }
       }
