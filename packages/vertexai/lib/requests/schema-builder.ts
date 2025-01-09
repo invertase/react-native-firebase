@@ -22,7 +22,7 @@ import {
   SchemaType,
   SchemaParams,
   SchemaRequest,
-  ObjectSchemaInterface
+  ObjectSchemaInterface,
 } from '../types/schema';
 
 /**
@@ -66,9 +66,7 @@ export abstract class Schema implements SchemaInterface {
     }
     // Ensure these are explicitly set to avoid TS errors.
     this.type = schemaParams.type;
-    this.nullable = schemaParams.hasOwnProperty('nullable')
-      ? !!schemaParams.nullable
-      : false;
+    this.nullable = schemaParams.hasOwnProperty('nullable') ? !!schemaParams.nullable : false;
   }
 
   /**
@@ -78,7 +76,7 @@ export abstract class Schema implements SchemaInterface {
    */
   toJSON(): SchemaRequest {
     const obj: { type: SchemaType; [key: string]: unknown } = {
-      type: this.type
+      type: this.type,
     };
     for (const prop in this) {
       if (this.hasOwnProperty(prop) && this[prop] !== undefined) {
@@ -100,13 +98,9 @@ export abstract class Schema implements SchemaInterface {
         [k: string]: Schema;
       };
       optionalProperties?: string[];
-    }
+    },
   ): ObjectSchema {
-    return new ObjectSchema(
-      objectParams,
-      objectParams.properties,
-      objectParams.optionalProperties
-    );
+    return new ObjectSchema(objectParams, objectParams.properties, objectParams.optionalProperties);
   }
 
   // eslint-disable-next-line id-blacklist
@@ -114,9 +108,7 @@ export abstract class Schema implements SchemaInterface {
     return new StringSchema(stringParams);
   }
 
-  static enumString(
-    stringParams: SchemaParams & { enum: string[] }
-  ): StringSchema {
+  static enumString(stringParams: SchemaParams & { enum: string[] }): StringSchema {
     return new StringSchema(stringParams, stringParams.enum);
   }
 
@@ -155,7 +147,7 @@ export class IntegerSchema extends Schema {
   constructor(schemaParams?: SchemaParams) {
     super({
       type: SchemaType.INTEGER,
-      ...schemaParams
+      ...schemaParams,
     });
   }
 }
@@ -168,7 +160,7 @@ export class NumberSchema extends Schema {
   constructor(schemaParams?: SchemaParams) {
     super({
       type: SchemaType.NUMBER,
-      ...schemaParams
+      ...schemaParams,
     });
   }
 }
@@ -181,7 +173,7 @@ export class BooleanSchema extends Schema {
   constructor(schemaParams?: SchemaParams) {
     super({
       type: SchemaType.BOOLEAN,
-      ...schemaParams
+      ...schemaParams,
     });
   }
 }
@@ -196,7 +188,7 @@ export class StringSchema extends Schema {
   constructor(schemaParams?: SchemaParams, enumValues?: string[]) {
     super({
       type: SchemaType.STRING,
-      ...schemaParams
+      ...schemaParams,
     });
     this.enum = enumValues;
   }
@@ -220,10 +212,13 @@ export class StringSchema extends Schema {
  * @public
  */
 export class ArraySchema extends Schema {
-  constructor(schemaParams: SchemaParams, public items: TypedSchema) {
+  constructor(
+    schemaParams: SchemaParams,
+    public items: TypedSchema,
+  ) {
     super({
       type: SchemaType.ARRAY,
-      ...schemaParams
+      ...schemaParams,
     });
   }
 
@@ -248,11 +243,11 @@ export class ObjectSchema extends Schema {
     public properties: {
       [k: string]: TypedSchema;
     },
-    public optionalProperties: string[] = []
+    public optionalProperties: string[] = [],
   ) {
     super({
       type: SchemaType.OBJECT,
-      ...schemaParams
+      ...schemaParams,
     });
   }
 
@@ -268,16 +263,14 @@ export class ObjectSchema extends Schema {
         if (!this.properties.hasOwnProperty(propertyKey)) {
           throw new VertexAIError(
             VertexAIErrorCode.INVALID_SCHEMA,
-            `Property "${propertyKey}" specified in "optionalProperties" does not exist.`
+            `Property "${propertyKey}" specified in "optionalProperties" does not exist.`,
           );
         }
       }
     }
     for (const propertyKey in this.properties) {
       if (this.properties.hasOwnProperty(propertyKey)) {
-        obj.properties[propertyKey] = this.properties[
-          propertyKey
-        ].toJSON() as SchemaRequest;
+        obj.properties[propertyKey] = this.properties[propertyKey]!.toJSON() as SchemaRequest;
         if (!this.optionalProperties.includes(propertyKey)) {
           required.push(propertyKey);
         }

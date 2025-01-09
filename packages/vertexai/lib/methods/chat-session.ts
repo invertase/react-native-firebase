@@ -23,6 +23,7 @@ import {
   Part,
   RequestOptions,
   StartChatParams,
+  EnhancedGenerateContentResponse,
 } from '../types';
 import { formatNewContent } from '../requests/request-helpers';
 import { formatBlockErrorMessage } from '../requests/response-helpers';
@@ -91,13 +92,13 @@ export class ChatSession {
       .then(() =>
         generateContent(this._apiSettings, this.model, generateContentRequest, this.requestOptions),
       )
-      .then(result => {
+      .then((result: GenerateContentResult) => {
         if (result.response.candidates && result.response.candidates.length > 0) {
           this._history.push(newContent);
           const responseContent: Content = {
-            parts: result.response.candidates?.[0].content.parts || [],
+            parts: result.response.candidates?.[0]?.content.parts || [],
             // Response seems to come back without a role set.
-            role: result.response.candidates?.[0].content.role || 'model',
+            role: result.response.candidates?.[0]?.content.role || 'model',
           };
           this._history.push(responseContent);
         } else {
@@ -149,15 +150,15 @@ export class ChatSession {
         throw new Error(SILENT_ERROR);
       })
       .then(streamResult => streamResult.response)
-      .then(response => {
+      .then((response: EnhancedGenerateContentResponse) => {
         if (response.candidates && response.candidates.length > 0) {
           this._history.push(newContent);
-          const responseContent = { ...response.candidates[0].content };
+          const responseContent = { ...response.candidates[0]?.content };
           // Response seems to come back without a role set.
           if (!responseContent.role) {
             responseContent.role = 'model';
           }
-          this._history.push(responseContent);
+          this._history.push(responseContent as Content);
         } else {
           const blockErrorMessage = formatBlockErrorMessage(response);
           if (blockErrorMessage) {

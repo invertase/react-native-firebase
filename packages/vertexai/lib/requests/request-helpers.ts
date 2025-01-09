@@ -33,6 +33,8 @@ export function formatSystemInstruction(input?: string | Part | Content): Conten
       return input as Content;
     }
   }
+
+  return undefined;
 }
 
 export function formatNewContent(request: string | Array<string | Part>): Content {

@@ -23,14 +23,14 @@ import {
   DEFAULT_BASE_URL,
   DEFAULT_FETCH_TIMEOUT_MS,
   LANGUAGE_TAG,
-  PACKAGE_VERSION
+  PACKAGE_VERSION,
 } from '../constants';
 import { logger } from '../logger';
 
 export enum Task {
   GENERATE_CONTENT = 'generateContent',
   STREAM_GENERATE_CONTENT = 'streamGenerateContent',
-  COUNT_TOKENS = 'countTokens'
+  COUNT_TOKENS = 'countTokens',
 }
 
 export class RequestUrl {
@@ -39,7 +39,7 @@ export class RequestUrl {
     public task: Task,
     public apiSettings: ApiSettings,
     public stream: boolean,
-    public requestOptions?: RequestOptions
+    public requestOptions?: RequestOptions,
   ) {}
   toString(): string {
     // TODO: allow user-set option if that feature becomes available
@@ -88,9 +88,7 @@ export async function getHeaders(url: RequestUrl): Promise<Headers> {
     if (appCheckToken) {
       headers.append('X-Firebase-AppCheck', appCheckToken.token);
       if (appCheckToken.error) {
-        logger.warn(
-          `Unable to obtain a valid App Check token: ${appCheckToken.error.message}`
-        );
+        logger.warn(`Unable to obtain a valid App Check token: ${appCheckToken.error.message}`);
       }
     }
   }
@@ -111,7 +109,7 @@ export async function constructRequest(
   apiSettings: ApiSettings,
   stream: boolean,
   body: string,
-  requestOptions?: RequestOptions
+  requestOptions?: RequestOptions,
 ): Promise<{ url: string; fetchOptions: RequestInit }> {
   const url = new RequestUrl(model, task, apiSettings, stream, requestOptions);
   return {
@@ -119,8 +117,8 @@ export async function constructRequest(
     fetchOptions: {
       method: 'POST',
       headers: await getHeaders(url),
-      body
-    }
+      body,
+    },
   };
 }
 
@@ -130,20 +128,13 @@ export async function makeRequest(
   apiSettings: ApiSettings,
   stream: boolean,
   body: string,
-  requestOptions?: RequestOptions
+  requestOptions?: RequestOptions,
 ): Promise<Response> {
   const url = new RequestUrl(model, task, apiSettings, stream, requestOptions);
   let response;
   let fetchTimeoutId: string | number | NodeJS.Timeout | undefined;
   try {
-    const request = await constructRequest(
-      model,
-      task,
-      apiSettings,
-      stream,
-      body,
-      requestOptions
-    );
+    const request = await constructRequest(model, task, apiSettings, stream, body, requestOptions);
     // Timeout is 180s by default
     const timeoutMillis =
       requestOptions?.timeout != null && requestOptions.timeout >= 0
@@ -169,15 +160,11 @@ export async function makeRequest(
       }
       if (
         response.status === 403 &&
-        errorDetails.some(
-          (detail: ErrorDetails) => detail.reason === 'SERVICE_DISABLED'
-        ) &&
+        errorDetails.some((detail: ErrorDetails) => detail.reason === 'SERVICE_DISABLED') &&
         errorDetails.some((detail: ErrorDetails) =>
-          (
-            detail.links as Array<Record<string, string>>
-          )?.[0]?.description.includes(
-            'Google developers console API activation'
-          )
+          (detail.links as Array<Record<string, string>>)?.[0]?.description?.includes(
+            'Google developers console API activation',
+          ),
         )
       ) {
         throw new VertexAIError(
@@ -192,8 +179,8 @@ export async function makeRequest(
           {
             status: response.status,
             statusText: response.statusText,
-            errorDetails
-          }
+            errorDetails,
+          },
         );
       }
       throw new VertexAIError(
@@ -202,8 +189,8 @@ export async function makeRequest(
         {
           status: response.status,
           statusText: response.statusText,
-          errorDetails
-        }
+          errorDetails,
+        },
       );
     }
   } catch (e) {
@@ -215,7 +202,7 @@ export async function makeRequest(
     ) {
       err = new VertexAIError(
         VertexAIErrorCode.ERROR,
-        `Error fetching from ${url.toString()}: ${e.message}`
+        `Error fetching from ${url.toString()}: ${e.message}`,
       );
       err.stack = e.stack;
     }

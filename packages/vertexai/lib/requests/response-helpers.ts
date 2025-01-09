@@ -21,7 +21,7 @@ import {
   FunctionCall,
   GenerateContentCandidate,
   GenerateContentResponse,
-  VertexAIErrorCode
+  VertexAIErrorCode,
 } from '../types';
 import { VertexAIError } from '../errors';
 import { logger } from '../logger';
@@ -31,7 +31,7 @@ import { logger } from '../logger';
  * other modifications that improve usability.
  */
 export function createEnhancedContentResponse(
-  response: GenerateContentResponse
+  response: GenerateContentResponse,
 ): EnhancedGenerateContentResponse {
   /**
    * The Vertex AI backend omits default values.
@@ -39,8 +39,8 @@ export function createEnhancedContentResponse(
    * response, since it has index 0, and 0 is a default value.
    * See: https://github.com/firebase/firebase-js-sdk/issues/8566
    */
-  if (response.candidates && !response.candidates[0].hasOwnProperty('index')) {
-    response.candidates[0].index = 0;
+  if (response.candidates && !response.candidates[0]?.hasOwnProperty('index')) {
+    response.candidates[0]!.index = 0;
   }
 
   const responseWithHelpers = addHelpers(response);
@@ -51,27 +51,25 @@ export function createEnhancedContentResponse(
  * Adds convenience helper methods to a response object, including stream
  * chunks (as long as each chunk is a complete GenerateContentResponse JSON).
  */
-export function addHelpers(
-  response: GenerateContentResponse
-): EnhancedGenerateContentResponse {
+export function addHelpers(response: GenerateContentResponse): EnhancedGenerateContentResponse {
   (response as EnhancedGenerateContentResponse).text = () => {
     if (response.candidates && response.candidates.length > 0) {
       if (response.candidates.length > 1) {
         logger.warn(
           `This response had ${response.candidates.length} ` +
             `candidates. Returning text from the first candidate only. ` +
-            `Access response.candidates directly to use the other candidates.`
+            `Access response.candidates directly to use the other candidates.`,
         );
       }
-      if (hadBadFinishReason(response.candidates[0])) {
+      if (hadBadFinishReason(response.candidates[0]!)) {
         throw new VertexAIError(
           VertexAIErrorCode.RESPONSE_ERROR,
           `Response error: ${formatBlockErrorMessage(
-            response
+            response,
           )}. Response body stored in error.response`,
           {
-            response
-          }
+            response,
+          },
         );
       }
       return getText(response);
@@ -80,8 +78,8 @@ export function addHelpers(
         VertexAIErrorCode.RESPONSE_ERROR,
         `Text not available. ${formatBlockErrorMessage(response)}`,
         {
-          response
-        }
+          response,
+        },
       );
     }
     return '';
@@ -92,18 +90,18 @@ export function addHelpers(
         logger.warn(
           `This response had ${response.candidates.length} ` +
             `candidates. Returning function calls from the first candidate only. ` +
-            `Access response.candidates directly to use the other candidates.`
+            `Access response.candidates directly to use the other candidates.`,
         );
       }
-      if (hadBadFinishReason(response.candidates[0])) {
+      if (hadBadFinishReason(response.candidates[0]!)) {
         throw new VertexAIError(
           VertexAIErrorCode.RESPONSE_ERROR,
           `Response error: ${formatBlockErrorMessage(
-            response
+            response,
           )}. Response body stored in error.response`,
           {
-            response
-          }
+            response,
+          },
         );
       }
       return getFunctionCalls(response);
@@ -112,8 +110,8 @@ export function addHelpers(
         VertexAIErrorCode.RESPONSE_ERROR,
         `Function call not available. ${formatBlockErrorMessage(response)}`,
         {
-          response
-        }
+          response,
+        },
       );
     }
     return undefined;
@@ -126,7 +124,7 @@ export function addHelpers(
  */
 export function getText(response: GenerateContentResponse): string {
   const textStrings = [];
-  if (response.candidates?.[0].content?.parts) {
+  if (response.candidates?.[0]?.content?.parts) {
     for (const part of response.candidates?.[0].content?.parts) {
       if (part.text) {
         textStrings.push(part.text);
@@ -143,11 +141,9 @@ export function getText(response: GenerateContentResponse): string {
 /**
  * Returns <code>{@link FunctionCall}</code>s associated with first candidate.
  */
-export function getFunctionCalls(
-  response: GenerateContentResponse
-): FunctionCall[] | undefined {
+export function getFunctionCalls(response: GenerateContentResponse): FunctionCall[] | undefined {
   const functionCalls: FunctionCall[] = [];
-  if (response.candidates?.[0].content?.parts) {
+  if (response.candidates?.[0]?.content?.parts) {
     for (const part of response.candidates?.[0].content?.parts) {
       if (part.functionCall) {
         functionCalls.push(part.functionCall);
@@ -164,20 +160,12 @@ export function getFunctionCalls(
 const badFinishReasons = [FinishReason.RECITATION, FinishReason.SAFETY];
 
 function hadBadFinishReason(candidate: GenerateContentCandidate): boolean {
-  return (
-    !!candidate.finishReason &&
-    badFinishReasons.includes(candidate.finishReason)
-  );
+  return !!candidate.finishReason && badFinishReasons.includes(candidate.finishReason);
 }
 
-export function formatBlockErrorMessage(
-  response: GenerateContentResponse
-): string {
+export function formatBlockErrorMessage(response: GenerateContentResponse): string {
   let message = '';
-  if (
-    (!response.candidates || response.candidates.length === 0) &&
-    response.promptFeedback
-  ) {
+  if ((!response.candidates || response.candidates.length === 0) && response.promptFeedback) {
     message += 'Response was blocked';
     if (response.promptFeedback?.blockReason) {
       message += ` due to ${response.promptFeedback.blockReason}`;
