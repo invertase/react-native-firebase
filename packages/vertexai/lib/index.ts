@@ -15,6 +15,7 @@
  *
  */
 
+import './polyfills';
 import { getApp, FirebaseApp } from '@firebase/app';
 import { ModelParams, RequestOptions, VertexAIErrorCode } from './types';
 import { DEFAULT_LOCATION } from './constants';
@@ -22,7 +23,6 @@ import { VertexAI, VertexAIOptions } from './public-types';
 // import { ModelParams, RequestOptions, VertexAIErrorCode } from './types';
 import { VertexAIError } from './errors';
 import { GenerativeModel } from './models/generative-model';
-
 export { ChatSession } from './methods/chat-session';
 export * from './requests/schema-builder';
 
@@ -43,6 +43,7 @@ export function getVertexAI(app: FirebaseApp = getApp(), options?: VertexAIOptio
   // const vertexProvider: Provider<'vertexAI'> = _getProvider(app, VERTEX_TYPE);
 
   // TODO - app used to get location and later the projectId
+  // TODO - get all types from node_modules/@firebase
   // return vertexProvider.getImmediate({
   //   identifier: options?.location || DEFAULT_LOCATION,
   // });
