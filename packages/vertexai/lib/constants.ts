@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { version } from '../package.json';
+import { version } from './version';
 
 export const VERTEX_TYPE = 'vertexAI';
 
