@@ -143,8 +143,15 @@ export async function makeRequest(
     const abortController = new AbortController();
     fetchTimeoutId = setTimeout(() => abortController.abort(), timeoutMillis);
     request.fetchOptions.signal = abortController.signal;
-
-    response = await fetch(request.url, request.fetchOptions);
+    const fetchOptions = stream
+      ? {
+          ...request.fetchOptions,
+          reactNative: {
+            textStreaming: true,
+          },
+        }
+      : request.fetchOptions;
+    response = await fetch(request.url, fetchOptions);
     if (!response.ok) {
       let message = '';
       let errorDetails;
