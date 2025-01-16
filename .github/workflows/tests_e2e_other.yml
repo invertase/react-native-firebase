@@ -27,7 +27,7 @@ concurrency:
 jobs:
   other:
     name: Other
-    runs-on: macos-14-xlarge
+    runs-on: macos-15-xlarge
     timeout-minutes: 100
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
