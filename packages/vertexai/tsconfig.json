@@ -10,6 +10,7 @@
       "ESNext"
     ],
     "module": "ESNext",
+    "target": "ESNext",
     "moduleResolution": "Bundler",
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
@@ -21,6 +22,5 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "ESNext"
   }
 }
