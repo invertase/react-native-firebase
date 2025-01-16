@@ -112,13 +112,13 @@ export namespace FirebaseAuthTypes {
   /**
    * Interface that represents an OAuth provider. Implemented by other providers.
    */
-  export interface OAuthProvider {
+  export interface OAuthProvider extends AuthProvider {
     /**
      * The provider ID of the provider.
      * @param providerId
      */
     // eslint-disable-next-line @typescript-eslint/no-misused-new
-    new (providerId: string): AuthProvider;
+    new (providerId: string): OAuthProvider;
     /**
      * Creates a new `AuthCredential`.
      *
