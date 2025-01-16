@@ -17,28 +17,20 @@
 
 import { FirebaseApp } from '@firebase/app';
 import { VertexAI, VertexAIOptions } from './public-types';
-import {
-  AppCheckInternalComponentName,
-  FirebaseAppCheckInternal,
-} from '@firebase/app-check-interop-types';
-import { Provider } from '@firebase/component';
-import { FirebaseAuthInternal, FirebaseAuthInternalName } from '@firebase/auth-interop-types';
 import { DEFAULT_LOCATION } from './constants';
-import { _FirebaseService } from './types/internal';
+import { _FirebaseService, InternalAppCheck, InternalAuth } from './types/internal';
 
 export class VertexAIService implements VertexAI, _FirebaseService {
-  auth: FirebaseAuthInternal | null;
-  appCheck: FirebaseAppCheckInternal | null;
+  auth: InternalAuth | null;
+  appCheck: InternalAppCheck | null;
   location: string;
 
   constructor(
     public app: FirebaseApp,
-    authProvider?: Provider<FirebaseAuthInternalName>,
-    appCheckProvider?: Provider<AppCheckInternalComponentName>,
+    auth?: InternalAuth,
+    appCheck?: InternalAppCheck,
     public options?: VertexAIOptions,
   ) {
-    const appCheck = appCheckProvider?.getImmediate({ optional: true });
-    const auth = authProvider?.getImmediate({ optional: true });
     this.auth = auth || null;
     this.appCheck = appCheck || null;
     this.location = this.options?.location || DEFAULT_LOCATION;

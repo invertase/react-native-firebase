@@ -77,8 +77,9 @@ export class GenerativeModel {
           (vertexAI as VertexAIService).appCheck!.getToken();
       }
 
-      if ((vertexAI as VertexAIService).auth) {
-        this._apiSettings.getAuthToken = () => (vertexAI as VertexAIService).auth!.getToken();
+      if ((vertexAI as VertexAIService).auth?.currentUser) {
+        this._apiSettings.getAuthToken = () =>
+          (vertexAI as VertexAIService).auth!.currentUser!.getIdToken();
       }
     }
     if (modelParams.model.includes('/')) {

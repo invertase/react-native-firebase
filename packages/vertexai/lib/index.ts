@@ -17,12 +17,15 @@
 
 import './polyfills';
 import { getApp, FirebaseApp } from '@firebase/app';
+import { AppCheck } from '@firebase/app-check';
+import { Auth } from '@firebase/auth';
 import { ModelParams, RequestOptions, VertexAIErrorCode } from './types';
 import { DEFAULT_LOCATION } from './constants';
 import { VertexAI, VertexAIOptions } from './public-types';
 // import { ModelParams, RequestOptions, VertexAIErrorCode } from './types';
 import { VertexAIError } from './errors';
 import { GenerativeModel } from './models/generative-model';
+import { VertexAIService } from './service';
 export { ChatSession } from './methods/chat-session';
 export * from './requests/schema-builder';
 
@@ -36,21 +39,22 @@ export { VertexAIError };
  * @public
  *
  * @param app - The {@link @firebase/app#FirebaseApp} to use.
+ * @param options - The {@link VertexAIOptions} to use.
+ * @param appCheck - The {@link @firebase/app-check#AppCheck} to use.
+ * @param auth - The {@link @firebase/auth#Auth} to use.
  */
-export function getVertexAI(app: FirebaseApp = getApp(), options?: VertexAIOptions): VertexAI {
-  // app = getModularInstance(app);
-  // Dependencies
-  // const vertexProvider: Provider<'vertexAI'> = _getProvider(app, VERTEX_TYPE);
-
-  // TODO - app used to get location and later the projectId
-  // TODO - get all types from node_modules/@firebase
-  // return vertexProvider.getImmediate({
-  //   identifier: options?.location || DEFAULT_LOCATION,
-  // });
+export function getVertexAI(
+  app: FirebaseApp = getApp(),
+  options?: VertexAIOptions,
+  appCheck?: AppCheck,
+  auth?: Auth,
+): VertexAI {
   return {
     app,
     location: options?.location || DEFAULT_LOCATION,
-  };
+    appCheck: appCheck || null,
+    auth: auth || null,
+  } as VertexAIService;
 }
 
 /**

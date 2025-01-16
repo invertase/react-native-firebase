@@ -84,19 +84,22 @@ export async function getHeaders(url: RequestUrl): Promise<Headers> {
   headers.append('x-goog-api-client', getClientHeaders());
   headers.append('x-goog-api-key', url.apiSettings.apiKey);
   if (url.apiSettings.getAppCheckToken) {
-    const appCheckToken = await url.apiSettings.getAppCheckToken();
+    let appCheckToken;
+
+    try {
+      appCheckToken = await url.apiSettings.getAppCheckToken();
+    } catch (e) {
+      logger.warn(`Unable to obtain a valid App Check token: ${e}`);
+    }
     if (appCheckToken) {
       headers.append('X-Firebase-AppCheck', appCheckToken.token);
-      if (appCheckToken.error) {
-        logger.warn(`Unable to obtain a valid App Check token: ${appCheckToken.error.message}`);
-      }
     }
   }
 
   if (url.apiSettings.getAuthToken) {
     const authToken = await url.apiSettings.getAuthToken();
     if (authToken) {
-      headers.append('Authorization', `Firebase ${authToken.accessToken}`);
+      headers.append('Authorization', `Firebase ${authToken}`);
     }
   }
 
