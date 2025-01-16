@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.7.0](https://github.com/invertase/react-native-firebase/compare/v21.6.2...v21.7.0) (2025-01-16)
+
+### Bug Fixes
+
+- **auth, types:** instantiating OAuthProvider returns OAuthProvider ([e068e12](https://github.com/invertase/react-native-firebase/commit/e068e1210b053d05f5b76b763de3dff91d874969))
+
 ## [21.6.2](https://github.com/invertase/react-native-firebase/compare/v21.6.1...v21.6.2) (2025-01-02)
 
 ### Bug Fixes

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.7.0](https://github.com/invertase/react-native-firebase/compare/v21.6.2...v21.7.0) (2025-01-16)
+
+### Features
+
+- **app-distribution:** add Android app distribution plugin and configuration ([9b5c405](https://github.com/invertase/react-native-firebase/commit/9b5c405b2933c84daad561117a3eebacc65cbb7e))
+
+### Bug Fixes
+
+- adopt firebase-ios-sdk 11.7.0 / firebase-android-sdk 33.7.0 ([9da251d](https://github.com/invertase/react-native-firebase/commit/9da251d081a71ec03e5e909627002598456657a2))
+- **auth, types:** instantiating OAuthProvider returns OAuthProvider ([e068e12](https://github.com/invertase/react-native-firebase/commit/e068e1210b053d05f5b76b763de3dff91d874969))
+
 ## [21.6.2](https://github.com/invertase/react-native-firebase/compare/v21.6.1...v21.6.2) (2025-01-02)
 
 ### Bug Fixes
