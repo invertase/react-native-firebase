@@ -21,38 +21,32 @@ import { mocksLookup } from './mocks-lookup';
  * Mock native Response.body
  * Streams contents of json file in 20 character chunks
  */
-export function getChunkedStream(
-  input: string,
-  chunkLength = 20
-): ReadableStream<Uint8Array> {
+export function getChunkedStream(input: string, chunkLength = 20): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
   let currentChunkStart = 0;
 
   const stream = new ReadableStream<Uint8Array>({
     start(controller) {
       while (currentChunkStart < input.length) {
-        const substring = input.slice(
-          currentChunkStart,
-          currentChunkStart + chunkLength
-        );
+        const substring = input.slice(currentChunkStart, currentChunkStart + chunkLength);
         currentChunkStart += chunkLength;
         const chunk = encoder.encode(substring);
         controller.enqueue(chunk);
       }
       controller.close();
-    }
+    },
   });
 
   return stream;
 }
 export function getMockResponseStreaming(
   filename: string,
-  chunkLength: number = 20
+  chunkLength: number = 20,
 ): Partial<Response> {
   const fullText = mocksLookup[filename];
 
   return {
-    body: getChunkedStream(fullText, chunkLength)
+    body: getChunkedStream(fullText, chunkLength),
   };
 }
 
@@ -60,6 +54,6 @@ export function getMockResponse(filename: string): Partial<Response> {
   const fullText = mocksLookup[filename];
   return {
     ok: true,
-    json: () => Promise.resolve(JSON.parse(fullText))
+    json: () => Promise.resolve(JSON.parse(fullText)),
   };
 }
