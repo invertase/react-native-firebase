@@ -14,93 +14,75 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { expect, use } from 'chai';
-import { match, restore, stub } from 'sinon';
-import sinonChai from 'sinon-chai';
-import chaiAsPromised from 'chai-as-promised';
-import { getMockResponse } from '../../test-utils/mock-response';
-import * as request from '../requests/request';
-import { countTokens } from './count-tokens';
-import { CountTokensRequest } from '../types';
-import { ApiSettings } from '../types/internal';
-import { Task } from '../requests/request';
-
-use(sinonChai);
-use(chaiAsPromised);
+import { describe, expect, it, afterEach, jest } from '@jest/globals';
+import { getMockResponse } from './test-utils/mock-response';
+import * as request from '../lib/requests/request';
+import { countTokens } from '../lib/methods/count-tokens';
+import { CountTokensRequest } from '../lib/types';
+import { ApiSettings } from '../lib/types/internal';
+import { Task } from '../lib/requests/request';
 
 const fakeApiSettings: ApiSettings = {
   apiKey: 'key',
   project: 'my-project',
-  location: 'us-central1'
+  location: 'us-central1',
 };
 
 const fakeRequestParams: CountTokensRequest = {
-  contents: [{ parts: [{ text: 'hello' }], role: 'user' }]
+  contents: [{ parts: [{ text: 'hello' }], role: 'user' }],
 };
 
 describe('countTokens()', () => {
   afterEach(() => {
-    restore();
+    jest.restoreAllMocks();
   });
+
   it('total tokens', async () => {
     const mockResponse = getMockResponse('unary-success-total-tokens.json');
-    const makeRequestStub = stub(request, 'makeRequest').resolves(
-      mockResponse as Response
-    );
-    const result = await countTokens(
-      fakeApiSettings,
-      'model',
-      fakeRequestParams
-    );
-    expect(result.totalTokens).to.equal(6);
-    expect(result.totalBillableCharacters).to.equal(16);
-    expect(makeRequestStub).to.be.calledWith(
+    const makeRequestStub = jest
+      .spyOn(request, 'makeRequest')
+      .mockResolvedValue(mockResponse as Response);
+    const result = await countTokens(fakeApiSettings, 'model', fakeRequestParams);
+    expect(result.totalTokens).toBe(6);
+    expect(result.totalBillableCharacters).toBe(16);
+    expect(makeRequestStub).toHaveBeenCalledWith(
       'model',
       Task.COUNT_TOKENS,
       fakeApiSettings,
       false,
-      match((value: string) => {
-        return value.includes('contents');
-      }),
-      undefined
+      expect.stringContaining('contents'),
+      undefined,
     );
   });
+
   it('total tokens no billable characters', async () => {
-    const mockResponse = getMockResponse(
-      'unary-success-no-billable-characters.json'
-    );
-    const makeRequestStub = stub(request, 'makeRequest').resolves(
-      mockResponse as Response
-    );
-    const result = await countTokens(
-      fakeApiSettings,
-      'model',
-      fakeRequestParams
-    );
-    expect(result.totalTokens).to.equal(258);
-    expect(result).to.not.have.property('totalBillableCharacters');
-    expect(makeRequestStub).to.be.calledWith(
+    const mockResponse = getMockResponse('unary-success-no-billable-characters.json');
+    const makeRequestStub = jest
+      .spyOn(request, 'makeRequest')
+      .mockResolvedValue(mockResponse as Response);
+    const result = await countTokens(fakeApiSettings, 'model', fakeRequestParams);
+    expect(result.totalTokens).toBe(258);
+    expect(result).not.toHaveProperty('totalBillableCharacters');
+    expect(makeRequestStub).toHaveBeenCalledWith(
       'model',
       Task.COUNT_TOKENS,
       fakeApiSettings,
       false,
-      match((value: string) => {
-        return value.includes('contents');
-      }),
-      undefined
+      expect.stringContaining('contents'),
+      undefined,
     );
   });
+
   it('model not found', async () => {
     const mockResponse = getMockResponse('unary-failure-model-not-found.json');
-    const mockFetch = stub(globalThis, 'fetch').resolves({
+    const mockFetch = jest.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: false,
       status: 404,
-      json: mockResponse.json
+      json: mockResponse.json,
     } as Response);
-    await expect(
-      countTokens(fakeApiSettings, 'model', fakeRequestParams)
-    ).to.be.rejectedWith(/404.*not found/);
-    expect(mockFetch).to.be.called;
+    await expect(countTokens(fakeApiSettings, 'model', fakeRequestParams)).rejects.toThrow(
+      /404.*not found/,
+    );
+    expect(mockFetch).toHaveBeenCalled();
   });
 });
