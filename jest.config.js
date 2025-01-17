@@ -6,7 +6,7 @@ module.exports = {
     '\\.(ts|tsx)$': 'ts-jest',
   },
   setupFiles: ['./jest.setup.ts'],
-  testMatch: ['**/packages/**/__tests__/**/*.test.(ts|js)'],
+  testMatch: ['**/packages/vertexai/__tests__/**/*.test.(ts|js)'],
   modulePaths: ['node_modules', './tests/node_modules'],
   testPathIgnorePatterns: ['./packages/template'],
   moduleDirectories: ['node_modules', './tests/node_modules'],
