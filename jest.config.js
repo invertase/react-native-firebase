@@ -11,4 +11,7 @@ module.exports = {
   testPathIgnorePatterns: ['./packages/template'],
   moduleDirectories: ['node_modules', './tests/node_modules'],
   moduleFileExtensions: ['ts', 'tsx', 'js'],
+  transformIgnorePatterns: [
+    'node_modules/(?!((jest-)?react-native|@firebase|@react-native(-community)?))',
+  ],
 };
