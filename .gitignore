@@ -579,3 +579,7 @@ website/public
 
 # Typescript items
 *.tsbuildinfo
+
+# vertexai test data
+vertexai-sdk-test-data
+mocks-lookup.ts
