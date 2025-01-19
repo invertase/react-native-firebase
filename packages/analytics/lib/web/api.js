@@ -315,7 +315,6 @@ For example, to use React Native Async Storage:
             origin: 'firebase',
             pragma: 'no-cache',
             'sec-fetch-dest': 'empty',
-            'sec-fetch-mode': 'no-cors',
             'sec-fetch-site': 'cross-site',
             'user-agent': 'react-native-firebase',
           },
