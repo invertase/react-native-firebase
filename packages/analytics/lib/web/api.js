@@ -304,6 +304,7 @@ For example, to use React Native Async Storage:
         }
         const response = await fetch(url, {
           method: 'POST',
+          mode: 'no-cors',
           headers: {
             accept: '*/*',
             'accept-encoding': 'gzip, deflate, br',
