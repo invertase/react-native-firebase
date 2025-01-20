@@ -23,6 +23,8 @@ export const DEFAULT_LOCATION = 'us-central1';
 
 export const DEFAULT_BASE_URL = 'https://firebasevertexai.googleapis.com';
 
+// This is the default API version for the VertexAI API. At some point, should be able to change when the feature becomes available.
+// `v1beta` & `stable` available: https://cloud.google.com/vertex-ai/docs/reference#versions
 export const DEFAULT_API_VERSION = 'v1beta';
 
 export const PACKAGE_VERSION = version;
