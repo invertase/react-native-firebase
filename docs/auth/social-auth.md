@@ -325,7 +325,7 @@ async function onGoogleButtonPress() {
   }
 
   // Create a Google credential with the token
-  const googleCredential = auth.GoogleAuthProvider.credential(signInResult.data.token);
+  const googleCredential = auth.GoogleAuthProvider.credential(signInResult.data.idToken);
 
   // Sign-in the user with the credential
   return auth().signInWithCredential(googleCredential);
