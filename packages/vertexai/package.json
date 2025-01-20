@@ -87,6 +87,6 @@
     "react-native-fetch-api": "^3.0.0",
     "react-native-polyfill-globals": "^3.1.0",
     "text-encoding": "^0.7.0",
-    "web-streams-polyfill": "^4.1.0"
+    "web-streams-polyfill": "^3.3.2"
   }
 }
