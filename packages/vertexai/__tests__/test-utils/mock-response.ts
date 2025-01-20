@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-
+import { ReadableStream } from 'web-streams-polyfill';
 import { mocksLookup } from './mocks-lookup';
 
 /**
@@ -46,7 +46,7 @@ export function getMockResponseStreaming(
   const fullText = mocksLookup[filename];
 
   return {
-    body: getChunkedStream(fullText, chunkLength),
+    body: getChunkedStream(fullText!, chunkLength),
   };
 }
 
@@ -54,6 +54,6 @@ export function getMockResponse(filename: string): Partial<Response> {
   const fullText = mocksLookup[filename];
   return {
     ok: true,
-    json: () => Promise.resolve(JSON.parse(fullText)),
+    json: () => Promise.resolve(JSON.parse(fullText!)),
   };
 }
