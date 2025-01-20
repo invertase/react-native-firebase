@@ -6,7 +6,7 @@
   "main": "./dist/module/index.js",
   "types": "./dist/typescript/module/lib/index.d.ts",
   "scripts": {
-    "build": "genversion --semi lib/version.js && genversion --esm --semi lib/version.ts",
+    "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
     "prepare": "yarn run build && bob build"
   },
