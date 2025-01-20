@@ -1,9 +1,8 @@
-/**
- * @license
- * Copyright 2024 Google LLC
+/*
+ * Copyright (c) 2016-present Invertase Limited & Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * you may not use this library except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
@@ -13,13 +12,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
+import { describe, expect, it } from '@jest/globals';
 import { ModelParams, VertexAIErrorCode } from '../lib/types';
 import { VertexAIError } from '../lib/errors';
 import { getGenerativeModel } from '../lib/index';
-import { expect } from 'chai';
-import { VertexAI } from './public-types';
-import { GenerativeModel } from './models/generative-model';
+
+import { VertexAI } from '../lib/public-types';
+import { GenerativeModel } from '../lib/models/generative-model';
 
 const fakeVertexAI: VertexAI = {
   app: {
@@ -27,10 +28,10 @@ const fakeVertexAI: VertexAI = {
     automaticDataCollectionEnabled: true,
     options: {
       apiKey: 'key',
-      projectId: 'my-project'
-    }
+      projectId: 'my-project',
+    },
   },
-  location: 'us-central1'
+  location: 'us-central1',
 };
 
 describe('Top level API', () => {
@@ -38,50 +39,51 @@ describe('Top level API', () => {
     try {
       getGenerativeModel(fakeVertexAI, {} as ModelParams);
     } catch (e) {
-      expect((e as VertexAIError).code).includes(VertexAIErrorCode.NO_MODEL);
-      expect((e as VertexAIError).message).includes(
+      expect((e as VertexAIError).code).toContain(VertexAIErrorCode.NO_MODEL);
+      expect((e as VertexAIError).message).toContain(
         `VertexAI: Must provide a model name. Example: ` +
-          `getGenerativeModel({ model: 'my-model-name' }) (vertexAI/${VertexAIErrorCode.NO_MODEL})`
+          `getGenerativeModel({ model: 'my-model-name' }) (vertexAI/${VertexAIErrorCode.NO_MODEL})`,
       );
     }
   });
+
   it('getGenerativeModel throws if no apiKey is provided', () => {
     const fakeVertexNoApiKey = {
       ...fakeVertexAI,
-      app: { options: { projectId: 'my-project' } }
+      app: { options: { projectId: 'my-project' } },
     } as VertexAI;
     try {
       getGenerativeModel(fakeVertexNoApiKey, { model: 'my-model' });
     } catch (e) {
-      expect((e as VertexAIError).code).includes(VertexAIErrorCode.NO_API_KEY);
-      expect((e as VertexAIError).message).equals(
+      expect((e as VertexAIError).code).toContain(VertexAIErrorCode.NO_API_KEY);
+      expect((e as VertexAIError).message).toBe(
         `VertexAI: The "apiKey" field is empty in the local ` +
           `Firebase config. Firebase VertexAI requires this field to` +
-          ` contain a valid API key. (vertexAI/${VertexAIErrorCode.NO_API_KEY})`
+          ` contain a valid API key. (vertexAI/${VertexAIErrorCode.NO_API_KEY})`,
       );
     }
   });
+
   it('getGenerativeModel throws if no projectId is provided', () => {
     const fakeVertexNoProject = {
       ...fakeVertexAI,
-      app: { options: { apiKey: 'my-key' } }
+      app: { options: { apiKey: 'my-key' } },
     } as VertexAI;
     try {
       getGenerativeModel(fakeVertexNoProject, { model: 'my-model' });
     } catch (e) {
-      expect((e as VertexAIError).code).includes(
-        VertexAIErrorCode.NO_PROJECT_ID
-      );
-      expect((e as VertexAIError).message).equals(
+      expect((e as VertexAIError).code).toContain(VertexAIErrorCode.NO_PROJECT_ID);
+      expect((e as VertexAIError).message).toBe(
         `VertexAI: The "projectId" field is empty in the local` +
           ` Firebase config. Firebase VertexAI requires this field ` +
-          `to contain a valid project ID. (vertexAI/${VertexAIErrorCode.NO_PROJECT_ID})`
+          `to contain a valid project ID. (vertexAI/${VertexAIErrorCode.NO_PROJECT_ID})`,
       );
     }
   });
+
   it('getGenerativeModel gets a GenerativeModel', () => {
     const genModel = getGenerativeModel(fakeVertexAI, { model: 'my-model' });
-    expect(genModel).to.be.an.instanceOf(GenerativeModel);
-    expect(genModel.model).to.equal('publishers/google/models/my-model');
+    expect(genModel).toBeInstanceOf(GenerativeModel);
+    expect(genModel.model).toBe('publishers/google/models/my-model');
   });
 });
