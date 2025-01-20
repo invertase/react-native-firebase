@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.7.1](https://github.com/invertase/react-native-firebase/compare/v21.7.0...v21.7.1) (2025-01-20)
+
+### Bug Fixes
+
+- **analytics,web:** use no-cors mode vs no-cors header for web analytics ([#8238](https://github.com/invertase/react-native-firebase/issues/8238)) ([17e8e49](https://github.com/invertase/react-native-firebase/commit/17e8e498d0cae2212e127f2e7faccebf8de3f64b))
+
 ## [21.7.0](https://github.com/invertase/react-native-firebase/compare/v21.6.2...v21.7.0) (2025-01-16)
 
 **Note:** Version bump only for package @react-native-firebase/analytics
