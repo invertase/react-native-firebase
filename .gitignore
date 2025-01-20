@@ -535,6 +535,7 @@ Pods/*
 **/Pods/**
 **/dist/
 packages/**/version.js
+packages/**/version.ts
 typedoc.raw.json
 tests/ios/Firebase
 tests/ios/resetXcode.sh
