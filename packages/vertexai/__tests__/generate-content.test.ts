@@ -34,10 +34,6 @@ const fakeApiSettings: ApiSettings = {
   location: 'us-central1',
 };
 
-// const requestOptions: RequestOptions = {
-//   timeout: 1000,
-// };
-
 const fakeRequestParams: GenerateContentRequest = {
   contents: [{ parts: [{ text: 'hello' }], role: 'user' }],
   generationConfig: {
