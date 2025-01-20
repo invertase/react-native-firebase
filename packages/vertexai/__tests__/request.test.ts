@@ -175,15 +175,17 @@ describe('request methods', () => {
           apiKey: 'key',
           project: 'myproject',
           location: 'moon',
-          getAppCheckToken: () => Promise.resolve({ token: 'dummytoken', error: Error('oops') }),
+          getAppCheckToken: () => Promise.reject(new Error('oops')),
         },
         true,
         {},
       );
-      
+
       const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-      const headers = await getHeaders(fakeUrl);
-      expect(headers.get('X-Firebase-AppCheck')).toBe('dummytoken');
+      await getHeaders(fakeUrl);
+      // NOTE - no app check header if there is no token, this is different to firebase-js-sdk
+      // See: https://github.com/firebase/firebase-js-sdk/blob/main/packages/vertexai/src/requests/request.test.ts#L172
+      // expect(headers.get('X-Firebase-AppCheck')).toBe('dummytoken');
       expect(warnSpy).toHaveBeenCalledWith(
         expect.stringMatching(/vertexai/),
         expect.stringMatching(/App Check.*oops/),
