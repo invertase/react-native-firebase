@@ -611,6 +611,10 @@ export namespace Utils {
  */
 export const utils: ReactNativeFirebase.FirebaseModuleWithStatics<Utils.Module, Utils.Statics>;
 
+declare module '@react-native-firebase/app/lib/internal';
+export * from './internal/logger';
+declare const Logger: Logger;
+
 export * from './modular';
 
 declare const module: ReactNativeFirebase.Module;
