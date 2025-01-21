@@ -18,9 +18,9 @@
 import { FirebaseApp } from '@firebase/app';
 import { VertexAI, VertexAIOptions } from './public-types';
 import { DEFAULT_LOCATION } from './constants';
-import { _FirebaseService, InternalAppCheck, InternalAuth } from './types/internal';
+import { InternalAppCheck, InternalAuth } from './types/internal';
 
-export class VertexAIService implements VertexAI, _FirebaseService {
+export class VertexAIService implements VertexAI {
   auth: InternalAuth | null;
   appCheck: InternalAppCheck | null;
   location: string;
@@ -34,9 +34,5 @@ export class VertexAIService implements VertexAI, _FirebaseService {
     this.auth = auth || null;
     this.appCheck = appCheck || null;
     this.location = this.options?.location || DEFAULT_LOCATION;
-  }
-
-  _delete(): Promise<void> {
-    return Promise.resolve();
   }
 }

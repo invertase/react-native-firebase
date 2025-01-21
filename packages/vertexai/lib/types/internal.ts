@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-import { FirebaseApp } from '@firebase/app';
 
 export interface ApiSettings {
   apiKey: string;
@@ -22,19 +21,6 @@ export interface ApiSettings {
   location: string;
   getAuthToken?: () => Promise<string>;
   getAppCheckToken?: () => Promise<AppCheckTokenResult>;
-}
-
-/**
- * @internal
- */
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export interface _FirebaseService {
-  app: FirebaseApp;
-  /**
-   * Delete the service and free it's resources - called from
-   * {@link @firebase/app#deleteApp | deleteApp()}
-   */
-  _delete(): Promise<void>;
 }
 
 export interface InternalAppCheck {
