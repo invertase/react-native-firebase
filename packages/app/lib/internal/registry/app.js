@@ -28,6 +28,7 @@ import FirebaseApp from '../../FirebaseApp';
 import { DEFAULT_APP_NAME } from '../constants';
 import { setReactNativeAsyncStorageInternal } from '../asyncStorage';
 import { getAppModule } from './nativeModule';
+import { setLogLevel as setLogLevelInternal } from '../logger';
 
 const APP_REGISTRY = {};
 let onAppCreateFn = null;
@@ -203,6 +204,8 @@ export function setLogLevel(logLevel) {
   if (!['error', 'warn', 'info', 'debug', 'verbose'].includes(logLevel)) {
     throw new Error('LogLevel must be one of "error", "warn", "info", "debug", "verbose"');
   }
+  // This is setting LogLevel for VertexAI which does not wrap around native SDK
+  setLogLevelInternal(logLevel);
 
   if (isIOS || isOther) {
     getAppModule().setLogLevel(logLevel);
