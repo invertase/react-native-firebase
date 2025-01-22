@@ -34,6 +34,17 @@ const LogLevel = {
   SILENT: 5,
 };
 
+// mimic the LogLevel in firebase-js-sdk TS
+const reverseLogLevel = obj => {
+  const reversed = {};
+  for (const [key, value] of Object.entries(obj)) {
+    reversed[value] = key;
+  }
+  return reversed;
+};
+
+const LogLevelReversed = reverseLogLevel(LogLevel);
+
 /**
  * By default, `console.debug` is not displayed in the developer console (in
  * chrome). To avoid forcing users to have to opt-in to these logs twice
@@ -208,7 +219,7 @@ export function setUserLogHandler(logCallback, options) {
           .join(' ');
         if (level >= (customLogLevel ?? instance.logLevel)) {
           logCallback({
-            level: LogLevel[level].toLowerCase(),
+            level: LogLevelReversed[level].toLowerCase(),
             message,
             args,
             type: instance.name,

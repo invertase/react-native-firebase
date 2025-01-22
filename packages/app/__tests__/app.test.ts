@@ -1,4 +1,4 @@
-import { describe, expect, it } from '@jest/globals';
+import { jest, describe, expect, it } from '@jest/globals';
 
 import {
   deleteApp,
@@ -9,6 +9,7 @@ import {
   getApp,
   setLogLevel,
 } from '../lib';
+import { Logger } from '../lib/internal/logger';
 
 describe('App', function () {
   describe('modular', function () {
@@ -38,6 +39,23 @@ describe('App', function () {
 
     it('`setLogLevel` function is properly exposed to end user', function () {
       expect(setLogLevel).toBeDefined();
+    });
+
+    it('`onLog()` is called when using Logger (currently only VertexAI uses `onLog()`)', function () {
+      const logger = new Logger('@firebase/vertexai');
+      const spy2 = jest.fn();
+
+      onLog(spy2);
+      logger.info('test');
+
+      expect(spy2).toHaveBeenCalledWith(
+        expect.objectContaining({
+          args: ['test'],
+          level: 'info',
+          message: 'test',
+          type: '@firebase/vertexai',
+        }),
+      );
     });
   });
 });
