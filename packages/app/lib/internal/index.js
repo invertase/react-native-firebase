@@ -23,4 +23,4 @@ export * from './registry/app';
 export * from './registry/namespace';
 export * from './registry/nativeModule';
 export { default as SharedEventEmitter } from './SharedEventEmitter';
-export * from './logger';
+export { Logger } from './logger';

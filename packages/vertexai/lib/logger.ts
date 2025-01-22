@@ -15,6 +15,6 @@
  *
  */
 
-import { Logger } from '@react-native-firebase/app';
+import { Logger } from '@react-native-firebase/app/lib/internal/logger';
 
 export const logger = new Logger('@firebase/vertexai');

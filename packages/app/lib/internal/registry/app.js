@@ -28,7 +28,7 @@ import FirebaseApp from '../../FirebaseApp';
 import { DEFAULT_APP_NAME } from '../constants';
 import { setReactNativeAsyncStorageInternal } from '../asyncStorage';
 import { getAppModule } from './nativeModule';
-import { setLogLevel as setLogLevelInternal } from '../logger';
+import { setLogLevelInternal } from '../logger';
 
 const APP_REGISTRY = {};
 let onAppCreateFn = null;

@@ -25,6 +25,15 @@
  * @typedef {import('./logger').DefaultLogLevel} DefaultLogLevel
  */
 
+const LogLevel = {
+  DEBUG: 0,
+  VERBOSE: 1,
+  INFO: 2,
+  WARN: 3,
+  ERROR: 4,
+  SILENT: 5,
+};
+
 /**
  * By default, `console.debug` is not displayed in the developer console (in
  * chrome). To avoid forcing users to have to opt-in to these logs twice
@@ -60,6 +69,8 @@ const defaultLogHandler = (instance, logType, ...args) => {
 };
 
 const defaultLogLevel = LogLevel.INFO;
+
+export const instances = [];
 
 /**
  * @type {Logger}
@@ -156,7 +167,7 @@ export class Logger {
 /**
  * @type {setLogLevel}
  */
-export function setLogLevel(level) {
+export function setLogLevelInternal(level) {
   instances.forEach(inst => {
     inst.setLogLevel(level);
   });
@@ -207,5 +218,3 @@ export function setUserLogHandler(logCallback, options) {
     }
   }
 }
-
-export const Logger = Logger;
