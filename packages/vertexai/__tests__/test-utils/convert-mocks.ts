@@ -15,19 +15,32 @@
  *
  */
 
-/**
- * Converts mock text files into a js file that karma can read without
- * using fs.
- */
-
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const fs = require('fs');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { join } = require('path');
 
-const mockResponseDir = join(__dirname, 'vertexai-sdk-test-data/mock-responses');
+function findMockResponseDir(): string {
+  const directories = fs
+    .readdirSync(__dirname, { withFileTypes: true })
+    .filter(
+      (dirent: any) => dirent.isDirectory() && dirent.name.startsWith('vertexai-sdk-test-data'),
+    )
+    .map((dirent: any) => dirent.name);
+
+  if (directories.length === 0) {
+    throw new Error('No directory starting with "vertexai-sdk-test-data*" found.');
+  }
+
+  if (directories.length > 1) {
+    throw new Error('Multiple directories starting with "vertexai-sdk-test-data*" found');
+  }
+
+  return join(__dirname, directories[0], 'mock-responses');
+}
 
 async function main(): Promise<void> {
+  const mockResponseDir = findMockResponseDir();
   const list = fs.readdirSync(mockResponseDir);
   const lookup: Record<string, string> = {};
   // eslint-disable-next-line guard-for-in

@@ -17,19 +17,36 @@
 # This script replaces mock response files for Vertex AI unit tests with a fresh
 # clone of the shared repository of Vertex AI test data.
 
-RESPONSES_VERSION='v5.*' # The major version of mock responses to use
 REPO_NAME="vertexai-sdk-test-data"
 REPO_LINK="https://github.com/FirebaseExtended/$REPO_NAME.git"
+# Get the latest tag from the remote repository
+LATEST_TAG=$(git ls-remote --tags "$REPO_LINK" | \
+awk -F'/' '{print $3}' | \
+sort -V | \
+tail -n1)
+
+
+# Define the directory name using REPO_NAME and LATEST_TAG.
+CLONE_DIR="${REPO_NAME}_${LATEST_TAG//./_}"
 
 cd "$(dirname "$0")/../packages/vertexai/__tests__/test-utils" || exit
-rm -rf "$REPO_NAME"
-git clone "$REPO_LINK" --quiet || exit
-cd "$REPO_NAME" || exit
 
-# Find and checkout latest tag matching major version
-TAG=$(git tag -l "$RESPONSES_VERSION" --sort=v:refname | tail -n1)
-if [ -z "$TAG" ]; then
-  echo "Error: No tag matching '$RESPONSES_VERSION' found in $REPO_NAME"
-  exit
+# Remove any directories that start with REPO_NAME but are not CLONE_DIR
+for dir in "${REPO_NAME}"*; do
+  if [ "$dir" != "$CLONE_DIR" ] && [ -d "$dir" ]; then
+    echo "Removing old directory: $dir"
+    rm -rf "$dir"
+  fi
+done
+
+# Check if CLONE_DIR exists, exit if it does
+if [ -d "$CLONE_DIR" ]; then
+  echo "Exiting vertex_mock_responses script as repo exists locally already."
+  exit 0
 fi
-git checkout "$TAG" --quiet
+
+
+git clone "$REPO_LINK" "$CLONE_DIR" --quiet || exit
+cd "$CLONE_DIR" || exit
+
+git checkout "$LATEST_TAG" --quiet
