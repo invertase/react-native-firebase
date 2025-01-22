@@ -1,3 +1,3 @@
 ---
-redirect: /dynamic-links/usage
+redirect: /app/usage
 ---
