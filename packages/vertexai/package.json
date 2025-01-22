@@ -8,7 +8,7 @@
   "scripts": {
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
-    "prepare": "yarn run build && bob build && yarn tests:vertex:mocks"
+    "prepare": "yarn tests:vertex:mocks && yarn run build && bob build"
   },
   "repository": {
     "type": "git",
