@@ -40,6 +40,17 @@ Analytics automatically logs some [events](https://support.google.com/analytics/
 
 Analytics offers a wealth of [Predefined Events](#predefined-events) to track user behavior. Analytics also offers folks the ability to log [Custom Events](#custom-events) . If you're already familiar with Google Analytics, this method is equivalent to using the event command in [gtag.js](https://developers.google.com/gtagjs/).
 
+## Event Parameters
+
+Please pay very special attention to what parameters you send in for _any_ events - custom, predefined or otherwise.
+
+> **WARNING**
+> Parameters are _not_ validated and incorrect parameters will _silently_ be accepted but then _fail to log an event_ in the Analytics console.
+
+It is the developer's responsibility to verify that their parameters are correct and are being logged correctly.
+
+Different event types require different parameters (some require no parameters, some require an array of strings, most require just a string, etc). The developer must examine the reference for each type of event and send the correct parameters. You may watch device logs and the Analytics console to make sure the events are correctly sent to Google Analytics.
+
 ## Custom Events
 
 Below is an example showing how a custom event can be logged. Please be aware that primitive data types or arrays of primitive data types are logged in your Firebase Analytics console.
