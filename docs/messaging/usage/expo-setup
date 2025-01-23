@@ -1,0 +1,57 @@
+---
+title: Expo iOS Messaging Setup
+description: iOS requires a couple of configurations to be set in Expo's `app.json`.
+next: /messaging/ios-permissions
+previous: /messaging/ios-setup
+---
+Integrating the Cloud Messaging module on iOS devices requires additional setup before your devices receive messages.
+There are also a number of prerequisites which are required to enable messaging:
+
+- You must have an active [Apple Developer Account](https://developer.apple.com/membercenter/index.action).
+- You may use a physical iOS device to receive messages _or_ an iOS Simulator if you are on macOS 13+ on Apple Silicon using a Simulator running iOS 16+
+  - Firebase Cloud Messaging integrates with the [Apple Push Notification service (APNs)](https://developer.apple.com/notifications/),
+    however APNs only works with real devices or Apple Silicon macs running relatively new versions
+
+
+## Prerequisites
+Before your application can start to receive messages, you need to do have followed the steps in the [Installation for React Native CLI projects](https://rnfirebase.io/#installation-for-react-native-cli-projects) 
+to generate and download `google-services.json` (for Android) and `GoogleService-Info.plist` (for iOS) files. 
+
+## Configuration
+- Place `google-services.json` and `GoogleService-Info.plist` in your project root directory.
+- Set the following in `app.json` (_remember to change `android.package` and `ios.bundleIdentifier`_)
+
+```json
+{
+  "expo": {
+    "android": {
+      "googleServicesFile": "./google-services.json",
+      "package": "com.mycorp.myapp"
+    },
+    "ios": {
+      "googleServicesFile": "./GoogleService-Info.plist",      
+      "entitlements": {
+        "aps-environment": "development"
+      },
+      "bundleIdentifier": "com.mycorp.myapp",
+      "infoPlist": {        
+        "UIBackgroundModes": ["fetch", "remote-notification"]
+      }
+    },
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/messaging",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+- Finally, run `npx expo prebuild`
+
