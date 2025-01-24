@@ -611,7 +611,6 @@ export namespace Utils {
  */
 export const utils: ReactNativeFirebase.FirebaseModuleWithStatics<Utils.Module, Utils.Statics>;
 
-
 export * from './modular';
 
 declare const module: ReactNativeFirebase.Module;

@@ -73,6 +73,7 @@ const defaultLogHandler = (instance, logType, ...args) => {
   const method = ConsoleMethod[logType];
   if (method) {
     // 'log' | 'info' | 'warn' | 'error'
+    // eslint-disable-next-line no-console
     console[method](`[${now}]  ${instance.name}:`, ...args);
   } else {
     throw new Error(`Attempted to log a message with an invalid logType (value: ${logType})`);
