@@ -6,8 +6,7 @@ next: /in-app-messaging/usage
 previous: /database/presence-detection
 ---
 
-> [!WARNING]
-> Deprecated: Firebase Dynamic Links is deprecated and should not be adopted in projects that don't already use it. Functionality for the primary use cases of store/web routing and deferred/regular deep-linking will shut down on August 25, 2025. Firebase Authentication currently uses Firebase Dynamic Links to customize Authentication links, but the Firebase team will provide an update to ensure that this functionality continues working after the Firebase Dynamic Links service is shut down. See the [Dynamic Links Deprecation FAQ](https://firebase.google.com/support/dynamic-links-faq) for more information.
+> **Deprecated:** Firebase Dynamic Links is deprecated and should not be adopted in projects that don't already use it. Functionality for the primary use cases of store/web routing and deferred/regular deep-linking will shut down on August 25, 2025. Firebase Authentication currently uses Firebase Dynamic Links to customize Authentication links, but the Firebase team will provide an update to ensure that this functionality continues working after the Firebase Dynamic Links service is shut down. See the [Dynamic Links Deprecation FAQ](https://firebase.google.com/support/dynamic-links-faq) for more information.
 
 # Installation
 
