@@ -108,6 +108,28 @@ Select the downloaded `GoogleService-Info.plist` file from your computer, and en
 
 To allow Firebase on iOS to use the credentials, the Firebase iOS SDK must be configured during the bootstrap phase of your application.
 
+- For RN version 0.77+
+
+Open your `/ios/{projectName}/AppDelegate.swift` file and add the following:
+
+At the top of the file, import the Firebase SDK right after `'import ReactAppDependencyProvider'`:
+
+```
+#import Firebase
+```
+
+Add to the top of the `application` function
+
+```
+override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+    FirebaseApp.configure()   <- Add this
+
+    ...
+}
+```
+
+- For RN version 0.77-
+
 To do this, open your `/ios/{projectName}/AppDelegate.mm` file (or `AppDelegate.m` if on older react-native), and add the following:
 
 At the top of the file, import the Firebase SDK right after `'#import "AppDelegate.h"'`:
