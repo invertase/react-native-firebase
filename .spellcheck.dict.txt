@@ -76,6 +76,7 @@ firebase-js-sdk
 FirebaseApp
 firestore
 Firestore
+freeform
 GDPR
 GDPR-compliant
 getIdToken
@@ -214,6 +215,7 @@ v6
 v7
 v9
 Ventura
+VertexAI
 VPN
 VSCode
 Wix
