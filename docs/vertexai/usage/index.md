@@ -21,7 +21,7 @@ yarn add @react-native-firebase/vertexai
 
 # What does it do
 
-The Vertex AI Gemini API gives you access to the latest generative AI models from Google. If you need to call the Vertex AI Gemini API directly from your mobile or web app – rather than server-side — you can use the Vertex AI in Firebase SDKs. See the [VertexAI documentation on the  firebase website](https://firebase.google.com/docs/vertex-ai) for further information.
+The Vertex AI Gemini API gives you access to the latest generative AI models from Google. If you need to call the Vertex AI Gemini API directly from your mobile or web app – rather than server-side — you can use the Vertex AI in Firebase SDKs. See the [VertexAI documentation on the firebase website](https://firebase.google.com/docs/vertex-ai) for further information.
 
 # Usage
 
@@ -243,6 +243,7 @@ function App() {
 ## Function calling
 
 Generative models are powerful at solving many types of problems. However, they are constrained by limitations like:
+
 - They are frozen after training, leading to stale knowledge.
 - They can't query or modify external data.
 
@@ -343,7 +344,6 @@ function App() {
 }
 ```
 
-
 ## Count tokens & billable characters
 
 Generative AI models break down data into units called tokens for processing. Each Gemini model has a [maximum number of tokens](https://firebase.google.com/docs/vertex-ai/gemini-models) that it can handle in a prompt and response.
@@ -363,16 +363,25 @@ function App() {
         title="count tokens and billable characters"
         onPress={async () => {
           // Count tokens & billable character for text input
-          const { totalTokens, totalBillableCharacters } = await model.countTokens("Write a story about a magic backpack.");
-          console.log(`Total tokens: ${totalTokens}, total billable characters: ${totalBillableCharacters}`);
+          const { totalTokens, totalBillableCharacters } = await model.countTokens(
+            'Write a story about a magic backpack.',
+          );
+          console.log(
+            `Total tokens: ${totalTokens}, total billable characters: ${totalBillableCharacters}`,
+          );
 
           // Count tokens & billable character for multi-modal input
           const prompt = "What's in this picture?";
           const imageAsBase64 = '...base64 string image';
-          const imagePart = { inlineData: { mimeType: 'image/jpeg', data: imageAsBase64 }};
+          const imagePart = { inlineData: { mimeType: 'image/jpeg', data: imageAsBase64 } };
 
-          const { totalTokens, totalBillableCharacters } = await model.countTokens([prompt, imagePart]);
-          console.log(`Total tokens: ${totalTokens}, total billable characters: ${totalBillableCharacters}`);
+          const { totalTokens, totalBillableCharacters } = await model.countTokens([
+            prompt,
+            imagePart,
+          ]);
+          console.log(
+            `Total tokens: ${totalTokens}, total billable characters: ${totalBillableCharacters}`,
+          );
         }}
       />
     </View>
