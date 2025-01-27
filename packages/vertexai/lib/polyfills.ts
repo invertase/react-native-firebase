@@ -15,8 +15,21 @@
  *
  */
 // @ts-ignore
-import { ReadableStream as ReadableStreamPolyfill } from 'web-streams-polyfill/dist/ponyfill';
+import { polyfillGlobal } from 'react-native/Libraries/Utilities/PolyfillFunctions';
 // @ts-ignore
-globalThis.ReadableStream = ReadableStreamPolyfill;
+import { ReadableStream } from 'web-streams-polyfill/dist/ponyfill';
+// @ts-ignore
+import { fetch, Headers, Request, Response } from 'react-native-fetch-api';
+
+polyfillGlobal(
+  'fetch',
+  () =>
+    (...args: any[]) =>
+      fetch(args[0], { ...args[1], reactNative: { textStreaming: true } }),
+);
+polyfillGlobal('Headers', () => Headers);
+polyfillGlobal('Request', () => Request);
+polyfillGlobal('Response', () => Response);
+polyfillGlobal('ReadableStream', () => ReadableStream);
 
 import 'text-encoding';
