@@ -29,7 +29,7 @@ The Vertex AI Gemini API gives you access to the latest generative AI models fro
 
 You can call the Gemini API with input that includes only text. For these calls, you need to use a model that supports text-only prompts (like Gemini 1.5 Pro).
 
-Use `generateContent()` which waits for the entire response before returning:
+Use `generateContent()` which waits for the entire response before returning.
 
 ```js
 import React from 'react';
@@ -57,7 +57,7 @@ function App() {
 }
 ```
 
-Use `generateContentStream()` which will stream the response:
+Use `generateContentStream()` if you wish to stream the response.
 
 ```js
 import React from 'react';
@@ -93,7 +93,7 @@ function App() {
 
 ## Generate text from multi-modal input
 
-You can also pass in different input types to generate text responses. **important** - React Native does not have native support for `Blob` and `Buffer` types which might be used to facilitate different modal inputs. You may have to use third party libraries for this functionality.
+You can pass in different input types to generate text responses. **important** - React Native does not have native support for `Blob` and `Buffer` types which might be used to facilitate different modal inputs. You may have to use third party libraries for this functionality.
 
 ```js
 import React from 'react';
@@ -134,6 +134,7 @@ function App() {
 
 ## Generate structured output (e.g. JSON)
 
+The VertexAI SDK returns responses as unstructured text by default. However, some use cases require structured text, like JSON. For example, you might be using the response for other downstream tasks that require an established data schema.
 
 ```js
 import React from 'react';
@@ -184,6 +185,8 @@ function App() {
 ```
 
 ## Multi-turn conversations
+
+You can build freeform conversations across multiple turns. The Vertex AI in Firebase SDK simplifies the process by managing the state of the conversation, so unlike with `generateContentStream()` or `generateContent()`, you don't have to store the conversation history yourself.
 
 ```js
 import React from 'react';
@@ -237,8 +240,13 @@ function App() {
 }
 ```
 
-
 ## Function calling
+
+Generative models are powerful at solving many types of problems. However, they are constrained by limitations like:
+- They are frozen after training, leading to stale knowledge.
+- They can't query or modify external data.
+
+Function calling can help you overcome some of these limitations. Function calling is sometimes referred to as tool use because it allows a model to use external tools such as APIs and functions to generate its final response.
 
 ```js
 import React from 'react';
@@ -337,6 +345,10 @@ function App() {
 
 
 ## Count tokens & billable characters
+
+Generative AI models break down data into units called tokens for processing. Each Gemini model has a [maximum number of tokens](https://firebase.google.com/docs/vertex-ai/gemini-models) that it can handle in a prompt and response.
+
+The below shows you how to get an estimate of token count and the number of billable characters for a request.
 
 ```js
 import React from 'react';
