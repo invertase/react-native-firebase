@@ -7595,7 +7595,6 @@ __metadata:
     "@types/text-encoding": "npm:^0"
     react-native-builder-bob: "npm:^0.35.2"
     react-native-fetch-api: "npm:^3.0.0"
-    react-native-polyfill-globals: "npm:^3.1.0"
     text-encoding: "npm:^0.7.0"
     typescript: "npm:^5.7.2"
     web-streams-polyfill: "npm:^3.3.2"
@@ -21917,20 +21916,6 @@ __metadata:
   bin:
     react-native-macos: cli.js
   checksum: 10/65e697ec7da8b3ecf348b38ce0310145c1f6eb3163f06aeee4e93ed4efecb047ade43dc82f7cd9dd5bbf8ef80f8252e07fb35bd408b08f792e0adb1d9a27c63e
-  languageName: node
-  linkType: hard
-
-"react-native-polyfill-globals@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "react-native-polyfill-globals@npm:3.1.0"
-  peerDependencies:
-    base-64: "*"
-    react-native-fetch-api: "*"
-    react-native-get-random-values: "*"
-    react-native-url-polyfill: "*"
-    text-encoding: "*"
-    web-streams-polyfill: "*"
-  checksum: 10/1385de6de67bf65842a3c4549f22a91ba39de576f8ccdd3e3ad79d67defc9953f8d6a2a53aedfbcd04344b8c8359b1c92242de4624066d680f40ca0310f2f7d6
   languageName: node
   linkType: hard
 
