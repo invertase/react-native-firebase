@@ -127,6 +127,10 @@
     - - KY Integration
       - '/perf/ky-integration'
   - '//static.invertase.io/assets/firebase/performance-monitoring.svg'
+- - VertexAi
+  - - - Usage
+      - '/vertex-ai/usage'
+  - '//static.invertase.io/assets/social/firebase-logo.png'
 - - Legacy docs
   - - - Migrating to v6
       - '/migrating-to-v6'
