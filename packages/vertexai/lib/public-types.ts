@@ -15,7 +15,7 @@
  *
  */
 
-import { FirebaseApp } from '@firebase/app';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 export * from './types';
 
@@ -27,7 +27,7 @@ export interface VertexAI {
   /**
    * The {@link @firebase/app#FirebaseApp} this <code>{@link VertexAI}</code> instance is associated with.
    */
-  app: FirebaseApp;
+  app: ReactNativeFirebase.FirebaseApp;
   location: string;
 }
 

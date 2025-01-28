@@ -15,7 +15,7 @@
  *
  */
 
-import { FirebaseApp } from '@firebase/app';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { VertexAI, VertexAIOptions } from './public-types';
 import { DEFAULT_LOCATION } from './constants';
 import { InternalAppCheck, InternalAuth } from './types/internal';
@@ -26,7 +26,7 @@ export class VertexAIService implements VertexAI {
   location: string;
 
   constructor(
-    public app: FirebaseApp,
+    public app: ReactNativeFirebase.FirebaseApp,
     auth?: InternalAuth,
     appCheck?: InternalAppCheck,
     public options?: VertexAIOptions,

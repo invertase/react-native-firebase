@@ -76,8 +76,8 @@ describe('generateContent()', () => {
       .spyOn(request, 'makeRequest')
       .mockResolvedValue(mockResponse as Response);
     const result = await generateContent(fakeApiSettings, 'model', fakeRequestParams);
-    expect(await result.response.text()).toContain('Use Freshly Ground Coffee');
-    expect(await result.response.text()).toContain('30 minutes of brewing');
+    expect(result.response.text()).toContain('Use Freshly Ground Coffee');
+    expect(result.response.text()).toContain('30 minutes of brewing');
     expect(makeRequestStub).toHaveBeenCalledWith(
       'model',
       Task.GENERATE_CONTENT,
@@ -94,9 +94,7 @@ describe('generateContent()', () => {
       .spyOn(request, 'makeRequest')
       .mockResolvedValue(mockResponse as Response);
     const result = await generateContent(fakeApiSettings, 'model', fakeRequestParams);
-    expect(await result.response.text()).toContain(
-      'Some information cited from an external source',
-    );
+    expect(result.response.text()).toContain('Some information cited from an external source');
     expect(result.response.candidates?.[0]!.citationMetadata?.citations.length).toBe(3);
     expect(makeRequestStub).toHaveBeenCalledWith(
       'model',
@@ -150,7 +148,7 @@ describe('generateContent()', () => {
       .spyOn(request, 'makeRequest')
       .mockResolvedValue(mockResponse as Response);
     const result = await generateContent(fakeApiSettings, 'model', fakeRequestParams);
-    expect(await result.response.text()).toBe('');
+    expect(result.response.text()).toBe('');
     expect(makeRequestStub).toHaveBeenCalledWith(
       'model',
       Task.GENERATE_CONTENT,
@@ -167,7 +165,7 @@ describe('generateContent()', () => {
       .spyOn(request, 'makeRequest')
       .mockResolvedValue(mockResponse as Response);
     const result = await generateContent(fakeApiSettings, 'model', fakeRequestParams);
-    expect(await result.response.text()).toContain('Some text');
+    expect(result.response.text()).toContain('Some text');
     expect(makeRequestStub).toHaveBeenCalledWith(
       'model',
       Task.GENERATE_CONTENT,

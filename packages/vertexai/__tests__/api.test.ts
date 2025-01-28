@@ -15,6 +15,7 @@
  *
  */
 import { describe, expect, it } from '@jest/globals';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { ModelParams, VertexAIErrorCode } from '../lib/types';
 import { VertexAIError } from '../lib/errors';
 import { getGenerativeModel } from '../lib/index';
@@ -25,12 +26,11 @@ import { GenerativeModel } from '../lib/models/generative-model';
 const fakeVertexAI: VertexAI = {
   app: {
     name: 'DEFAULT',
-    automaticDataCollectionEnabled: true,
     options: {
-      apiKey: 'key',
+      appId: 'appId',
       projectId: 'my-project',
     },
-  },
+  } as ReactNativeFirebase.FirebaseApp,
   location: 'us-central1',
 };
 

@@ -15,17 +15,17 @@
  *
  */
 import { describe, expect, it } from '@jest/globals';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { DEFAULT_LOCATION } from '../lib/constants';
 import { VertexAIService } from '../lib/service';
 
 const fakeApp = {
   name: 'DEFAULT',
-  automaticDataCollectionEnabled: true,
   options: {
     apiKey: 'key',
     projectId: 'my-project',
   },
-};
+} as ReactNativeFirebase.FirebaseApp;
 
 describe('VertexAIService', () => {
   it('uses default location if not specified', () => {

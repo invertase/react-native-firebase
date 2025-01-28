@@ -16,13 +16,13 @@
  */
 
 import './polyfills';
-import { getApp, FirebaseApp } from '@firebase/app';
+import { getApp, ReactNativeFirebase } from '@react-native-firebase/app';
+
 import { AppCheck } from '@firebase/app-check';
 import { Auth } from '@firebase/auth';
 import { ModelParams, RequestOptions, VertexAIErrorCode } from './types';
 import { DEFAULT_LOCATION } from './constants';
 import { VertexAI, VertexAIOptions } from './public-types';
-// import { ModelParams, RequestOptions, VertexAIErrorCode } from './types';
 import { VertexAIError } from './errors';
 import { GenerativeModel } from './models/generative-model';
 import { VertexAIService } from './service';
@@ -44,7 +44,7 @@ export { VertexAIError };
  * @param auth - The {@link @firebase/auth#Auth} to use.
  */
 export function getVertexAI(
-  app: FirebaseApp = getApp(),
+  app: ReactNativeFirebase.FirebaseApp = getApp(),
   options?: VertexAIOptions,
   appCheck?: AppCheck,
   auth?: Auth,
