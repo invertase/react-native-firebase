@@ -87,6 +87,6 @@
   "dependencies": {
     "react-native-fetch-api": "^3.0.0",
     "text-encoding": "^0.7.0",
-    "web-streams-polyfill": "^3.3.2"
+    "web-streams-polyfill": "^4.1.0"
   }
 }
