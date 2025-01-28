@@ -7597,7 +7597,7 @@ __metadata:
     react-native-fetch-api: "npm:^3.0.0"
     text-encoding: "npm:^0.7.0"
     typescript: "npm:^5.7.2"
-    web-streams-polyfill: "npm:^3.3.2"
+    web-streams-polyfill: "npm:^4.1.0"
   peerDependencies:
     "@react-native-firebase/app": 21.6.2
   languageName: unknown
@@ -25802,10 +25802,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-streams-polyfill@npm:^3.3.2":
-  version: 3.3.3
-  resolution: "web-streams-polyfill@npm:3.3.3"
-  checksum: 10/8e7e13501b3834094a50abe7c0b6456155a55d7571312b89570012ef47ec2a46d766934768c50aabad10a9c30dd764a407623e8bfcc74fcb58495c29130edea9
+"web-streams-polyfill@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "web-streams-polyfill@npm:4.1.0"
+  checksum: 10/c6e802e6b83a8dc72acee8ec14b3a4af46d5ea4a15d0260303d7e4cab3c600716ff998b70457bc3ac0998073c0e73344c89400bfcc5f49a9bc0b10bb263c2f5f
   languageName: node
   linkType: hard
 
