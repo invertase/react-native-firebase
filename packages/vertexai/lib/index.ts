@@ -17,9 +17,7 @@
 
 import './polyfills';
 import { getApp, ReactNativeFirebase } from '@react-native-firebase/app';
-
-import { AppCheck } from '@firebase/app-check';
-import { Auth } from '@firebase/auth';
+import { InternalAppCheck, InternalAuth } from './types/internal';
 import { ModelParams, RequestOptions, VertexAIErrorCode } from './types';
 import { DEFAULT_LOCATION } from './constants';
 import { VertexAI, VertexAIOptions } from './public-types';
@@ -32,6 +30,10 @@ export * from './requests/schema-builder';
 export { GenerativeModel };
 
 export { VertexAIError };
+
+// We don't have access to RNFB auth and appCheck so we use only types for what we need (i.e get tokens)
+type AppCheck = InternalAppCheck;
+type Auth = InternalAuth;
 
 /**
  * Returns a <code>{@link VertexAI}</code> instance for the given app.

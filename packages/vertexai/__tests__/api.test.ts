@@ -15,13 +15,17 @@
  *
  */
 import { describe, expect, it } from '@jest/globals';
-import { ReactNativeFirebase } from '@react-native-firebase/app';
+import firebase, { ReactNativeFirebase } from '@react-native-firebase/app';
+
 import { ModelParams, VertexAIErrorCode } from '../lib/types';
 import { VertexAIError } from '../lib/errors';
-import { getGenerativeModel } from '../lib/index';
+import { getGenerativeModel, getVertexAI } from '../lib/index';
 
 import { VertexAI } from '../lib/public-types';
 import { GenerativeModel } from '../lib/models/generative-model';
+
+import '../../auth/lib';
+import '../../app-check/lib';
 
 const fakeVertexAI: VertexAI = {
   app: {
@@ -35,6 +39,14 @@ const fakeVertexAI: VertexAI = {
 };
 
 describe('Top level API', () => {
+  it('should allow auth and app check instances to be passed in', () => {
+    const app = firebase.app();
+    const auth = app.auth();
+    const appCheck = app.appCheck();
+    // proves our limited internal auth and app check types are correct and allow them to be passed in
+    getVertexAI(app, undefined, appCheck, auth);
+  });
+
   it('getGenerativeModel throws if no model is provided', () => {
     try {
       getGenerativeModel(fakeVertexAI, {} as ModelParams);
