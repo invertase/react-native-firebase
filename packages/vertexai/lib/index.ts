@@ -16,7 +16,7 @@
  */
 
 import './polyfills';
-import { getApp, ReactNativeFirebase } from '@react-native-firebase/app';
+import { getApp, type ReactNativeFirebase } from '@react-native-firebase/app';
 import { InternalAppCheck, InternalAuth } from './types/internal';
 import { ModelParams, RequestOptions, VertexAIErrorCode } from './types';
 import { DEFAULT_LOCATION } from './constants';
