@@ -388,3 +388,42 @@ function App() {
   );
 }
 ```
+
+## Getting ready for production
+
+For mobile and web apps, you need to protect the Gemini API and your project resources (like tuned models) from abuse by unauthorized clients. You can use Firebase App Check to verify that all API calls are from your actual app. See [Firebase docs for further information](https://firebase.google.com/docs/vertex-ai/app-check).
+
+- Ensure you have setup [App Check for React Native Firebase](/app-check/usage/index)
+- Pass in an instance of App Check to VertexAI which, under the hood, will call `appCheck.getToken()` and use it as part of VertexAI API requests to the server.
+
+```js
+import React from 'react';
+import { AppRegistry, Button, Text, View } from 'react-native';
+import { getApp } from '@react-native-firebase/app';
+import auth from '@react-native-firebase/auth';
+import appCheck from '@react-native-firebase/app-check';
+import { getVertexAI, getGenerativeModel } from '@react-native-firebase/vertexai';
+
+function App() {
+  return (
+    <View>
+      <Button
+        title="use App Check and pass into getVertexAI()"
+        onPress={async () => {
+          const app = getApp();
+          // Can also pass an instance of auth which will pass in an auth token if a user is signed-in
+          const authInstance = auth(app);
+          const appCheckInstance = appCheck(app);
+          // Configure appCheck instance as per docs....
+          const vertexai = getVertexAI(app, undefined, appCheckInstance, authInstance);
+          const model = getGenerativeModel(vertexai, { model: 'gemini-1.5-flash' });
+
+          const result = await model.generateContent('What is 2 + 2?');
+
+          console.log('result', result.response.text());
+        }}
+      />
+    </View>
+  );
+}
+```
