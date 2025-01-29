@@ -40,10 +40,10 @@ type Auth = InternalAuth;
  *
  * @public
  *
- * @param app - The {@link @firebase/app#FirebaseApp} to use.
+ * @param app - The {@link @FirebaseApp} to use.
  * @param options - The {@link VertexAIOptions} to use.
- * @param appCheck - The {@link @firebase/app-check#AppCheck} to use.
- * @param auth - The {@link @firebase/auth#Auth} to use.
+ * @param appCheck - The {@link @AppCheck} to use.
+ * @param auth - The {@link @Auth} to use.
  */
 export function getVertexAI(
   app: ReactNativeFirebase.FirebaseApp = getApp(),
