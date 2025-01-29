@@ -52,7 +52,7 @@ export const testFetchStream = functions.https.onRequest(async (req, res) => {
   for (let i = 0; i < poem.length; i++) {
     updatedResponse.candidates[0].content.parts[0].text = poem[i];
     res.write(`data: ${JSON.stringify(updatedResponse)}\n\n`);
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 100));
   }
   res.end();
 });
