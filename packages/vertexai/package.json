@@ -7,7 +7,7 @@
   "types": "./dist/typescript/module/lib/index.d.ts",
   "scripts": {
     "build": "genversion --esm --semi lib/version.ts",
-    "build:clean": "rimraf android/build && rimraf ios/build",
+    "build:clean": "rimraf dist",
     "compile": "bob build",
     "prepare": "yarn tests:vertex:mocks && yarn run build && yarn compile"
   },
