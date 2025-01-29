@@ -15,7 +15,7 @@
  *
  */
 import { describe, expect, it } from '@jest/globals';
-import firebase, { ReactNativeFirebase } from '@react-native-firebase/app';
+import firebase, { type ReactNativeFirebase } from '../../app/lib';
 
 import { ModelParams, VertexAIErrorCode } from '../lib/types';
 import { VertexAIError } from '../lib/errors';
@@ -31,6 +31,7 @@ const fakeVertexAI: VertexAI = {
   app: {
     name: 'DEFAULT',
     options: {
+      apiKey: 'key',
       appId: 'appId',
       projectId: 'my-project',
     },

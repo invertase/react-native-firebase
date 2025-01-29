@@ -15,7 +15,7 @@
  *
  */
 import { describe, expect, it } from '@jest/globals';
-import { ReactNativeFirebase } from '@react-native-firebase/app';
+import { type ReactNativeFirebase } from '@react-native-firebase/app';
 import { DEFAULT_LOCATION } from '../lib/constants';
 import { VertexAIService } from '../lib/service';
 

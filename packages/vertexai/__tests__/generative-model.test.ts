@@ -15,7 +15,7 @@
  *
  */
 import { describe, expect, it, jest } from '@jest/globals';
-import { ReactNativeFirebase } from '@react-native-firebase/app';
+import { type ReactNativeFirebase } from '@react-native-firebase/app';
 import { GenerativeModel } from '../lib/models/generative-model';
 import { FunctionCallingMode, VertexAI } from '../lib/public-types';
 import * as request from '../lib/requests/request';
