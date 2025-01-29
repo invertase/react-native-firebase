@@ -42,6 +42,20 @@ export class RequestUrl {
     public requestOptions?: RequestOptions,
   ) {}
   toString(): string {
+    const isTestEnvironment = process.env.RNFB_VERTEXAI_EMULATOR_URL;
+    if (isTestEnvironment) {
+      let emulatorUrl;
+      logger.debug(
+        'Running VertexAI in test environment, pointing to Firebase Functions emulator URL',
+      );
+      if (this.stream) {
+        emulatorUrl =
+          'http://127.0.0.1:5001/react-native-firebase-testing/us-central1/testFetchStream';
+      } else {
+        emulatorUrl = 'http://127.0.0.1:5001/react-native-firebase-testing/us-central1/testFetch';
+      }
+      return emulatorUrl;
+    }
     // TODO: allow user-set option if that feature becomes available
     const apiVersion = DEFAULT_API_VERSION;
     const baseUrl = this.requestOptions?.baseUrl || DEFAULT_BASE_URL;
