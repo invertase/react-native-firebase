@@ -22,5 +22,9 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@react-native-firebase/app": ["../app/lib"]
+    }
   }
 }
