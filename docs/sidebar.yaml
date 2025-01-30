@@ -129,7 +129,7 @@
   - '//static.invertase.io/assets/firebase/performance-monitoring.svg'
 - - VertexAi
   - - - Usage
-      - '/vertex-ai/usage'
+      - '/vertexai/usage'
   - '//static.invertase.io/assets/social/firebase-logo.png'
 - - Legacy docs
   - - - Migrating to v6
