@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@react-native-firebase/app": ["packages/app/lib"]
+    }
+  }
+}

@@ -18,11 +18,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
-    "lib": ["es2015", "es2016", "esnext", "dom"],
-    "baseUrl": ".",
-      "paths": {
-        "@react-native-firebase/app": ["packages/app/lib"]
-      }
+    "lib": ["es2015", "es2016", "esnext", "dom"]
   },
-  "exclude": ["node_modules", "**/*.spec.ts"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
 }
