@@ -229,7 +229,7 @@ RCT_EXPORT_METHOD(aggregateQuery
                   : (RCTPromiseRejectBlock)reject) {
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
                                                          databaseId:databaseId];
-  // FIRQuery *query = [RNFBFirestoreCommon getQueryForFirestore:firestore path:path type:type];
+
   FIRQuery *firestoreBaseQuery = [RNFBFirestoreCommon getQueryForFirestore:firestore 
                                                                 path:path type:type];
   RNFBFirestoreQuery *firestoreQuery =
