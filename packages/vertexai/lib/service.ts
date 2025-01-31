@@ -18,17 +18,18 @@
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { VertexAI, VertexAIOptions } from './public-types';
 import { DEFAULT_LOCATION } from './constants';
-import { InternalAppCheck, InternalAuth } from './types/internal';
+import { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import { FirebaseAppCheckTypes } from '@react-native-firebase/app-check';
 
 export class VertexAIService implements VertexAI {
-  auth: InternalAuth | null;
-  appCheck: InternalAppCheck | null;
+  auth: FirebaseAuthTypes.Module | null;
+  appCheck: FirebaseAppCheckTypes.Module | null;
   location: string;
 
   constructor(
     public app: ReactNativeFirebase.FirebaseApp,
-    auth?: InternalAuth,
-    appCheck?: InternalAppCheck,
+    auth?: FirebaseAuthTypes.Module,
+    appCheck?: FirebaseAppCheckTypes.Module,
     public options?: VertexAIOptions,
   ) {
     this.auth = auth || null;

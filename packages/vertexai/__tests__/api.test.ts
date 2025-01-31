@@ -44,7 +44,7 @@ describe('Top level API', () => {
     const app = firebase.app();
     const auth = app.auth();
     const appCheck = app.appCheck();
-    // proves our limited internal auth and app check types are correct and allow them to be passed in
+
     getVertexAI(app, undefined, appCheck, auth);
   });
 
