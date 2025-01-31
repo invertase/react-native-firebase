@@ -563,5 +563,51 @@ describe('getAggregateFromServer()', function () {
         data.averageBaz.should.eql(-0.19999999999999998);
       });
     });
+
+    describe('collectionGroup()', function () {
+
+      it('test count, sum, average with collectionGroup', async function () {
+        const {
+          getAggregateFromServer,
+          doc,
+          setDoc,
+          collection,
+          getFirestore,
+          count,
+          average,
+          collectionGroup,
+          sum,
+          FieldPath,
+        } = firestoreModular;
+        const firestore = getFirestore();
+
+
+        const colRef = collection(firestore,  'collectionGroup');
+
+        await Promise.all([
+          setDoc(doc(colRef, 'one'), { docId: "123", status: "paid", amount: 100, }),
+          setDoc(doc(colRef, 'two'), { docId: "123", status: "paid", amount: 200, }),
+          setDoc(doc(colRef, 'three'), { docId: "123", status: "unpaid", amount: 400 }),
+        ]);
+
+        const query = collectionGroup(firestore, 'collectionGroup')
+        .where("docId", '==', "123")
+        .where("status", '==', "paid");
+
+        const aggregateSpec = {
+          countCollection: count(),
+          averageAmount: average(new FieldPath('amount')),
+          sumAmount: sum(new FieldPath('amount')),
+        };
+
+        const result = await getAggregateFromServer(query, aggregateSpec);
+
+        const data = result.data();
+
+        data.countCollection.should.eql(2);
+        data.averageAmount.should.eql(150);
+        data.sumAmount.should.eql(300);
+      });
+    })
   });
 });
