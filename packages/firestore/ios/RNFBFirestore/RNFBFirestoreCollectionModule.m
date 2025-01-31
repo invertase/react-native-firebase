@@ -229,7 +229,17 @@ RCT_EXPORT_METHOD(aggregateQuery
                   : (RCTPromiseRejectBlock)reject) {
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
                                                          databaseId:databaseId];
-  FIRQuery *query = [RNFBFirestoreCommon getQueryForFirestore:firestore path:path type:type];
+  // FIRQuery *query = [RNFBFirestoreCommon getQueryForFirestore:firestore path:path type:type];
+  FIRQuery *firestoreBaseQuery = [RNFBFirestoreCommon getQueryForFirestore:firestore 
+                                                                path:path type:type];
+  RNFBFirestoreQuery *firestoreQuery =
+   [[RNFBFirestoreQuery alloc] initWithModifiers:firestore
+                                         query:firestoreBaseQuery
+                                        filters:filters
+                                        orders:orders
+                                        options:options];
+  
+  FIRQuery *query = [firestoreQuery instance];
 
   NSMutableArray<FIRAggregateField *> *aggregateFields =
       [[NSMutableArray<FIRAggregateField *> alloc] init];
