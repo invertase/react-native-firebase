@@ -679,11 +679,11 @@ describe('Firestore', function () {
       firestore1.settings({ persistence: true });
       const indexManager = firestore1.persistentCacheIndexManager();
       expect(indexManager).toBeDefined();
-      expect(indexManager.constructor.name).toEqual('FirestorePersistentCacheIndexManager');
+      expect(indexManager!.constructor.name).toEqual('FirestorePersistentCacheIndexManager');
 
-      expect(indexManager.enableIndexAutoCreation).toBeInstanceOf(Function);
-      expect(indexManager.disableIndexAutoCreation).toBeInstanceOf(Function);
-      expect(indexManager.deleteAllIndexes).toBeInstanceOf(Function);
+      expect(indexManager!.enableIndexAutoCreation).toBeInstanceOf(Function);
+      expect(indexManager!.disableIndexAutoCreation).toBeInstanceOf(Function);
+      expect(indexManager!.deleteAllIndexes).toBeInstanceOf(Function);
 
       const firestore2 = firebase.firestore();
       firestore2.settings({ persistence: false });
