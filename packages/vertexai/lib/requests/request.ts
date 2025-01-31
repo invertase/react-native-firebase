@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-
+import { Platform } from 'react-native';
 import { ErrorDetails, RequestOptions, VertexAIErrorCode } from '../types';
 import { VertexAIError } from '../errors';
 import { ApiSettings } from '../types/internal';
@@ -45,14 +45,15 @@ export class RequestUrl {
     const isTestEnvironment = process.env.RNFB_VERTEXAI_EMULATOR_URL;
     if (isTestEnvironment) {
       let emulatorUrl;
-      logger.debug(
+      logger.info(
         'Running VertexAI in test environment, pointing to Firebase Functions emulator URL',
       );
+      const isAndroid = Platform.OS === 'android';
+
       if (this.stream) {
-        emulatorUrl =
-          'http://127.0.0.1:5001/react-native-firebase-testing/us-central1/testFetchStream';
+        emulatorUrl = `http://${isAndroid ? '10.0.2.2' : '127.0.0.1'}:5001/react-native-firebase-testing/us-central1/testFetchStream`;
       } else {
-        emulatorUrl = 'http://127.0.0.1:5001/react-native-firebase-testing/us-central1/testFetch';
+        emulatorUrl = `http://${isAndroid ? '10.0.2.2' : '127.0.0.1'}:5001/react-native-firebase-testing/us-central1/testFetch`;
       }
       return emulatorUrl;
     }
