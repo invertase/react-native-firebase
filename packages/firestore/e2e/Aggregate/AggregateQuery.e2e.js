@@ -565,7 +565,6 @@ describe('getAggregateFromServer()', function () {
     });
 
     describe('collectionGroup()', function () {
-
       it('test count, sum, average with collectionGroup', async function () {
         const {
           getAggregateFromServer,
@@ -581,18 +580,17 @@ describe('getAggregateFromServer()', function () {
         } = firestoreModular;
         const firestore = getFirestore();
 
-
-        const colRef = collection(firestore,  'collectionGroup');
+        const colRef = collection(firestore, 'collectionGroup');
 
         await Promise.all([
-          setDoc(doc(colRef, 'one'), { docId: "123", status: "paid", amount: 100, }),
-          setDoc(doc(colRef, 'two'), { docId: "123", status: "paid", amount: 200, }),
-          setDoc(doc(colRef, 'three'), { docId: "123", status: "unpaid", amount: 400 }),
+          setDoc(doc(colRef, 'one'), { docId: '123', status: 'paid', amount: 100 }),
+          setDoc(doc(colRef, 'two'), { docId: '123', status: 'paid', amount: 200 }),
+          setDoc(doc(colRef, 'three'), { docId: '123', status: 'unpaid', amount: 400 }),
         ]);
 
         const query = collectionGroup(firestore, 'collectionGroup')
-        .where("docId", '==', "123")
-        .where("status", '==', "paid");
+          .where('docId', '==', '123')
+          .where('status', '==', 'paid');
 
         const aggregateSpec = {
           countCollection: count(),
@@ -608,6 +606,6 @@ describe('getAggregateFromServer()', function () {
         data.averageAmount.should.eql(150);
         data.sumAmount.should.eql(300);
       });
-    })
+    });
   });
 });
