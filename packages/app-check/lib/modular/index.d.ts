@@ -1,6 +1,7 @@
-import { FirebaseApp } from '@firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { FirebaseAppCheckTypes } from '..';
 
+import FirebaseApp = ReactNativeFirebase.FirebaseApp;
 import AppCheck = FirebaseAppCheckTypes.Module;
 import AppCheckOptions = FirebaseAppCheckTypes.AppCheckOptions;
 import AppCheckTokenResult = FirebaseAppCheckTypes.AppCheckTokenResult;
