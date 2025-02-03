@@ -41,20 +41,6 @@ export function getToken(
 export function getLimitedUseToken(appCheckInstance: AppCheck): Promise<AppCheckTokenResult>;
 
 /**
- * Registers a listener to changes in the token state.
- * There can be more than one listener registered at the same time for one or more App Check instances.
- * The listeners call back on the UI thread whenever the current
- * token associated with this App Check instance changes.
- * @param appCheckInstance - AppCheck
- * @param listener - PartialObserver<AppCheckTokenResult>
- * @returns {Unsubscribe}
- */
-export function addTokenListener(
-  appCheckInstance: AppCheck,
-  listener: PartialObserver<AppCheckTokenResult>,
-): Unsubscribe;
-
-/**
  * Registers a listener to changes in the token state. There can be more
  * than one listener registered at the same time for one or more
  * App Check instances. The listeners call back on the UI thread whenever

@@ -70,21 +70,6 @@ export function getLimitedUseToken(appCheckInstance) {
 }
 
 /**
- * Registers a listener to changes in the token state.
- * There can be more than one listener registered at the same time for one or more App Check instances.
- * The listeners call back on the UI thread whenever the current
- * token associated with this App Check instance changes.
- * @param {AppCheck} appCheckInstance - The App Check instance.
- * @param {PartialObserver<AppCheckTokenResult>} listener - The listener to register.
- * @returns {Unsubscribe}
- */
-export function addTokenListener(appCheckInstance, listener) {
-  // Not implemented on React Native
-  // See packages/app-check/lib/index.js:127
-  throw new Error('addTokenListener is not implemented on React Native');
-}
-
-/**
  * Set whether App Check will automatically refresh tokens as needed.
  * @param {AppCheck} appCheckInstance - The App Check instance.
  * @param {boolean} isAutoRefreshEnabled - Whether to enable auto-refresh.
