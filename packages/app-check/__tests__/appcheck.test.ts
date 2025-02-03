@@ -1,5 +1,4 @@
 import { jest, beforeEach, describe, expect, it } from '@jest/globals';
-
 // @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 
@@ -13,7 +12,6 @@ import {
   initializeAppCheck,
   getToken,
   getLimitedUseToken,
-  addTokenListener,
   setTokenAutoRefreshEnabled,
   onTokenChanged,
   CustomProvider,
@@ -55,10 +53,6 @@ describe('appCheck()', function () {
 
     it('`getLimitedUseToken` function is properly exposed to end user', function () {
       expect(getLimitedUseToken).toBeDefined();
-    });
-
-    it('`addTokenListener` function is properly exposed to end user', function () {
-      expect(addTokenListener).toBeDefined();
     });
 
     it('`setTokenAutoRefreshEnabled` function is properly exposed to end user', function () {
