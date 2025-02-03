@@ -1,11 +1,14 @@
-import { FirebaseApp } from '@firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { FirebaseAppCheckTypes } from '..';
 
+import FirebaseApp = ReactNativeFirebase.FirebaseApp;
 import AppCheck = FirebaseAppCheckTypes.Module;
 import AppCheckOptions = FirebaseAppCheckTypes.AppCheckOptions;
 import AppCheckTokenResult = FirebaseAppCheckTypes.AppCheckTokenResult;
 import PartialObserver = FirebaseAppCheckTypes.PartialObserver;
 import Unsubscribe = FirebaseAppCheckTypes.Unsubscribe;
+import AppCheckProvider = FirebaseAppCheckTypes.AppCheckProvider;
+import CustomProviderOptions = FirebaseAppCheckTypes.CustomProviderOptions;
 
 /**
  * Activate App Check for the given app. Can be called only once per app.
@@ -39,18 +42,41 @@ export function getToken(
 export function getLimitedUseToken(appCheckInstance: AppCheck): Promise<AppCheckTokenResult>;
 
 /**
- * Registers a listener to changes in the token state.
- * There can be more than one listener registered at the same time for one or more App Check instances.
- * The listeners call back on the UI thread whenever the current
- * token associated with this App Check instance changes.
- * @param appCheckInstance - AppCheck
- * @param listener - PartialObserver<AppCheckTokenResult>
- * @returns {Unsubscribe}
+ * Registers a listener to changes in the token state. There can be more
+ * than one listener registered at the same time for one or more
+ * App Check instances. The listeners call back on the UI thread whenever
+ * the current token associated with this App Check instance changes.
+ *
+ * @returns A function that unsubscribes this listener.
  */
-export function addTokenListener(
+export function onTokenChanged(
   appCheckInstance: AppCheck,
   listener: PartialObserver<AppCheckTokenResult>,
 ): Unsubscribe;
+
+/**
+ * Registers a listener to changes in the token state. There can be more
+ * than one listener registered at the same time for one or more
+ * App Check instances. The listeners call back on the UI thread whenever
+ * the current token associated with this App Check instance changes.
+ *
+ * Token listeners do not exist in the native SDK for iOS, no token change events will be emitted on that platform.
+ * This is not yet implemented on Android, no token change events will be emitted until implemented.
+ *
+ * NOTE: Although an `onError` callback can be provided, it will
+ * never be called, Android sdk code doesn't provide handling for onError function
+ *
+ * NOTE: Although an `onCompletion` callback can be provided, it will
+ * never be called because the token stream is never-ending.
+ *
+ * @returns A function that unsubscribes this listener.
+ */
+export function onTokenChanged(
+  appCheckInstance: AppCheck,
+  onNext: (tokenResult: AppCheckListenerResult) => void,
+  onError?: (error: Error) => void,
+  onCompletion?: () => void,
+): () => void;
 
 /**
  * Set whether App Check will automatically refresh tokens as needed.
@@ -61,3 +87,11 @@ export function setTokenAutoRefreshEnabled(
   appCheckInstance: AppCheck,
   isAutoRefreshEnabled: boolean,
 ): void;
+
+/**
+ * Custom provider class.
+ * @public
+ */
+export class CustomProvider implements AppCheckProvider {
+  constructor(customProviderOptions: CustomProviderOptions);
+}
