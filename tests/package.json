@@ -8,7 +8,7 @@
     "prepare": "patch-package"
   },
   "dependencies": {
-    "@react-native-async-storage/async-storage": "^1.24.0",
+    "@react-native-async-storage/async-storage": "^2.1.1",
     "@react-native-firebase/analytics": "21.7.1",
     "@react-native-firebase/app": "21.7.1",
     "@react-native-firebase/app-check": "21.7.1",
@@ -35,18 +35,18 @@
     "util": "^0.12.5"
   },
   "devDependencies": {
-    "@firebase/rules-unit-testing": "^3.0.4",
+    "@firebase/rules-unit-testing": "^4.0.1",
     "@react-native/babel-preset": "^0.74.89",
     "@react-native/metro-config": "^0.74.89",
     "axios": "^1.7.9",
     "detox": "20.32.0",
-    "firebase": "^10.14.1",
+    "firebase": "^11.2.0",
     "firebase-tools": "^13.29.3",
     "jest-circus": "^29.7.0",
     "jest-environment-node": "^29.7.0",
     "jet": "0.9.0-dev.12",
-    "mocha": "^10.7.3",
-    "nyc": "^15.1.0",
+    "mocha": "^11.1.0",
+    "nyc": "^17.1.0",
     "patch-package": "^8.0.0",
     "should": "^13.2.3",
     "should-sinon": "0.0.6",

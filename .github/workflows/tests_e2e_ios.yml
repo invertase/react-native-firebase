@@ -36,7 +36,7 @@ jobs:
       # Set up tool versions
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Configure JDK
         uses: actions/setup-java@v4

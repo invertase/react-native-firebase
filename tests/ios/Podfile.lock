@@ -1433,7 +1433,7 @@ PODS:
     - React-perflogger (= 0.74.7)
     - React-utils (= 0.74.7)
   - RecaptchaInterop (100.0.0)
-  - RNCAsyncStorage (1.24.0):
+  - RNCAsyncStorage (2.1.1):
     - React-Core
   - RNDeviceInfo (14.0.4):
     - React-Core
@@ -1888,7 +1888,7 @@ SPEC CHECKSUMS:
   React-utils: e45cd7466d8fd9f1a88611fb8e9d38b92ef05b76
   ReactCommon: 82c202f4ec2759b2e8461a5a524e3d0e9ec14b1e
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
-  RNCAsyncStorage: b6410dead2732b5c72a7fdb1ecb5651bbcf4674b
+  RNCAsyncStorage: af7b591318005069c3795076addc83a4dd5c0a2e
   RNDeviceInfo: d863506092aef7e7af3a1c350c913d867d795047
   RNFBAnalytics: 7ef64bdada55644caf743dbaf69e8839ab1a721d
   RNFBApp: 6ea10ef8a45c43cd75d580599484c0931e6c3683
