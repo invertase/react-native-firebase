@@ -13,13 +13,13 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "firebase-admin": "^13.0.0",
-    "firebase-functions": "^6.1.0"
+    "firebase-admin": "^13.0.2",
+    "firebase-functions": "^6.3.1"
   },
   "devDependencies": {
-    "firebase-functions-test": "^3.3.0",
-    "firebase-tools": "^13.25.0",
-    "typescript": "^5.6.3"
+    "firebase-functions-test": "^3.4.0",
+    "firebase-tools": "^13.29.3",
+    "typescript": "^5.7.3"
   },
   "private": true
 }
