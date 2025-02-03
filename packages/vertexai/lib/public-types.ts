@@ -16,6 +16,8 @@
  */
 
 import { ReactNativeFirebase } from '@react-native-firebase/app';
+import { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import { FirebaseAppCheckTypes } from '@react-native-firebase/app-check';
 
 export * from './types';
 
@@ -29,6 +31,8 @@ export interface VertexAI {
    */
   app: ReactNativeFirebase.FirebaseApp;
   location: string;
+  appCheck?: FirebaseAppCheckTypes.Module | null;
+  auth?: FirebaseAuthTypes.Module | null;
 }
 
 /**
@@ -37,4 +41,6 @@ export interface VertexAI {
  */
 export interface VertexAIOptions {
   location?: string;
+  appCheck?: FirebaseAppCheckTypes.Module | null;
+  auth?: FirebaseAuthTypes.Module | null;
 }

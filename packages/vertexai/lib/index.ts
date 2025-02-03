@@ -25,8 +25,6 @@ import { GenerativeModel } from './models/generative-model';
 import { VertexAIService } from './service';
 export { ChatSession } from './methods/chat-session';
 export * from './requests/schema-builder';
-import { FirebaseAuthTypes } from '@react-native-firebase/auth';
-import { FirebaseAppCheckTypes } from '@react-native-firebase/app-check';
 
 export { GenerativeModel };
 
@@ -45,14 +43,12 @@ export { VertexAIError };
 export function getVertexAI(
   app: ReactNativeFirebase.FirebaseApp = getApp(),
   options?: VertexAIOptions,
-  appCheck?: FirebaseAppCheckTypes.Module,
-  auth?: FirebaseAuthTypes.Module,
 ): VertexAI {
   return {
     app,
     location: options?.location || DEFAULT_LOCATION,
-    appCheck: appCheck || null,
-    auth: auth || null,
+    appCheck: options?.appCheck || null,
+    auth: options?.auth || null,
   } as VertexAIService;
 }
 

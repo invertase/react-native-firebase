@@ -45,7 +45,7 @@ describe('Top level API', () => {
     const auth = app.auth();
     const appCheck = app.appCheck();
 
-    getVertexAI(app, undefined, appCheck, auth);
+    getVertexAI(app, { appCheck, auth });
   });
 
   it('getGenerativeModel throws if no model is provided', () => {
