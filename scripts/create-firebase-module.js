@@ -19,7 +19,7 @@ const { join, resolve } = require('path');
 const { readdirSync, renameSync, statSync } = require('fs');
 
 const shelljs = require('shelljs');
-const inquirer = require('inquirer');
+const {input} = require('@inquirer/prompts');
 const { version } = require('./../lerna');
 
 function walkDir(dir) {
@@ -37,17 +37,13 @@ function walkDir(dir) {
   return results;
 }
 
-inquirer
-  .prompt([
+input(
     {
-      type: 'input',
-      name: 'name',
       message: 'What is the name of this module, e.g. analytics:',
       default: 'iid',
     },
-  ])
-  .then(answers => {
-    const { name } = answers;
+  )
+  .then(name => {
     const packageDir = `packages/${name}`;
     const nameUpper = name.charAt(0).toUpperCase() + name.slice(1);
 
