@@ -45,6 +45,15 @@ const reverseLogLevel = obj => {
 
 const LogLevelReversed = reverseLogLevel(LogLevel);
 
+const levelStringToEnum = {
+  debug: LogLevel.DEBUG,
+  verbose: LogLevel.VERBOSE,
+  info: LogLevel.INFO,
+  warn: LogLevel.WARN,
+  error: LogLevel.ERROR,
+  silent: LogLevel.SILENT,
+};
+
 /**
  * By default, `console.debug` is not displayed in the developer console (in
  * chrome). To avoid forcing users to have to opt-in to these logs twice
