@@ -179,7 +179,7 @@ Ensure the following exists as a debugging option.
 ---
 
 <p>
-  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png">
+  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase/invertase-rounded.png">
   <p align="left">
     Built and maintained with 💛 by <a href="https://invertase.io">Invertase</a>.
   </p>
