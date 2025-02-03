@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - name: Yarn Install
         uses: nick-fields/retry@v3
         with:
