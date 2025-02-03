@@ -66,7 +66,7 @@ function Footer(): JSX.Element {
       </div>
       <div className="mx-auto flex flex-col items-center text-center mt-20">
         <img
-          src="https://static.invertase.io/assets/invertase-white.png"
+          src="https://static.invertase.io/assets/invertase/invertase-rounded.png"
           alt="Invertase Logo"
           className="w-8 h-8 mb-4"
         />
