@@ -51,6 +51,7 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   }
 
   get isCrashlyticsCollectionEnabled() {
+    // Purposefully did not deprecate this as I think it should remain a property rather than a method.
     return this._isCrashlyticsCollectionEnabled;
   }
 

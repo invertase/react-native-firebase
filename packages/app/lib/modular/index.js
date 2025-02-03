@@ -1,3 +1,4 @@
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   deleteApp as deleteAppCompat,
@@ -7,6 +8,7 @@ import {
   setLogLevel as setLogLevelCompat,
 } from '../internal';
 import { setUserLogHandler } from '../internal/logger';
+import sdkVersion from '../version';
 
 /**
  * @typedef {import('..').ReactNativeFirebase.FirebaseApp} FirebaseApp
@@ -22,7 +24,7 @@ import { setUserLogHandler } from '../internal/logger';
  * @returns {Promise<void>}
  */
 export function deleteApp(app) {
-  return deleteAppCompat(app.name, app._nativeInitialized);
+  return deleteAppCompat.call(null, app.name, app._nativeInitialized, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -51,7 +53,7 @@ export function onLog(logCallback, options) {
  * @returns {FirebaseApp[]} - An array of all initialized Firebase apps.
  */
 export function getApps() {
-  return getAppsCompat();
+  return getAppsCompat.call(null, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -61,7 +63,7 @@ export function getApps() {
  * @returns {FirebaseApp} - The initialized Firebase app.
  */
 export function initializeApp(options, name) {
-  return initializeAppCompat(options, name);
+  return initializeAppCompat.call(null, options, name, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -70,7 +72,7 @@ export function initializeApp(options, name) {
  * @returns {FirebaseApp} - The requested Firebase app instance.
  */
 export function getApp(name) {
-  return getAppCompat(name);
+  return getAppCompat.call(null, name, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -79,5 +81,7 @@ export function getApp(name) {
  * @returns {void}
  */
 export function setLogLevel(logLevel) {
-  return setLogLevelCompat(logLevel);
+  return setLogLevelCompat.call(null, logLevel, MODULAR_DEPRECATION_ARG);
 }
+
+export const SDK_VERSION = sdkVersion;

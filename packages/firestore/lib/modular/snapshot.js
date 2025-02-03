@@ -4,11 +4,13 @@
  * @typedef {import('snapshot').Unsubscribe} Unsubscribe
  */
 
+import { MODULAR_DEPRECATION_ARG } from '../../../app/lib/common';
+
 /**
  * @param {Query | DocumentReference} reference
  * @param {unknown} args
  * @returns {Promise<unknown>}
  */
 export function onSnapshot(reference, ...args) {
-  return reference.onSnapshot(...args);
+  return reference.onSnapshot.call(reference, ...args, MODULAR_DEPRECATION_ARG);
 }

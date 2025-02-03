@@ -20,6 +20,7 @@ import {
   isFunction,
   isObject,
   isUndefined,
+  createDeprecationProxy,
 } from '@react-native-firebase/app/lib/common';
 import FirestoreDocumentChange from './FirestoreDocumentChange';
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
@@ -31,7 +32,9 @@ export default class FirestoreQuerySnapshot {
     this._source = nativeData.source;
     this._excludesMetadataChanges = nativeData.excludesMetadataChanges;
     this._changes = nativeData.changes.map($ => new FirestoreDocumentChange(firestore, $));
-    this._docs = nativeData.documents.map($ => new FirestoreDocumentSnapshot(firestore, $));
+    this._docs = nativeData.documents.map($ =>
+      createDeprecationProxy(new FirestoreDocumentSnapshot(firestore, $)),
+    );
     this._metadata = new FirestoreSnapshotMetadata(nativeData.metadata);
   }
 

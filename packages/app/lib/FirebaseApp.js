@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-
+import { warnIfNotModularCall } from '@react-native-firebase/app/lib/common';
 import { getAppModule } from './internal/registry/nativeModule';
 
 export default class FirebaseApp {
@@ -61,16 +61,19 @@ export default class FirebaseApp {
   }
 
   extendApp(extendedProps) {
+    warnIfNotModularCall(arguments);
     this._checkDestroyed();
     Object.assign(this, extendedProps);
   }
 
   delete() {
+    warnIfNotModularCall(arguments, 'deleteApp()');
     this._checkDestroyed();
     return this._deleteApp();
   }
 
   toString() {
+    warnIfNotModularCall(arguments);
     return this.name;
   }
 }

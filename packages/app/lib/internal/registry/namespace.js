@@ -15,7 +15,7 @@
  *
  */
 
-import { isString } from '../../common';
+import { isString, createDeprecationProxy } from '../../common';
 import FirebaseApp from '../../FirebaseApp';
 import SDK_VERSION from '../../version';
 import { DEFAULT_APP_NAME, KNOWN_NAMESPACES } from '../constants';
@@ -114,11 +114,11 @@ function getOrCreateModuleForApp(app, moduleNamespace) {
     }
 
     if (!APP_MODULE_INSTANCE[app.name][key]) {
-      APP_MODULE_INSTANCE[app.name][key] = new ModuleClass(
-        app,
-        NAMESPACE_REGISTRY[moduleNamespace],
-        customUrlOrRegionOrDatabaseId,
+      const module = createDeprecationProxy(
+        new ModuleClass(app, NAMESPACE_REGISTRY[moduleNamespace], customUrlOrRegionOrDatabaseId),
       );
+
+      APP_MODULE_INSTANCE[app.name][key] = module;
     }
 
     return APP_MODULE_INSTANCE[app.name][key];
@@ -170,18 +170,19 @@ function getOrCreateModuleForRoot(moduleNamespace) {
     }
 
     if (!APP_MODULE_INSTANCE[_app.name][moduleNamespace]) {
-      APP_MODULE_INSTANCE[_app.name][moduleNamespace] = new ModuleClass(
-        _app,
-        NAMESPACE_REGISTRY[moduleNamespace],
+      const module = createDeprecationProxy(
+        new ModuleClass(_app, NAMESPACE_REGISTRY[moduleNamespace]),
       );
+      APP_MODULE_INSTANCE[_app.name][moduleNamespace] = module;
     }
 
     return APP_MODULE_INSTANCE[_app.name][moduleNamespace];
   }
 
   Object.assign(firebaseModuleWithApp, statics || {});
-  Object.freeze(firebaseModuleWithApp);
-  MODULE_GETTER_FOR_ROOT[moduleNamespace] = firebaseModuleWithApp;
+  // Object.freeze(firebaseModuleWithApp);
+  // Wrap around statics, e.g. firebase.firestore.FieldValue, removed freeze as it stops proxy working. it is deprecated anyway
+  MODULE_GETTER_FOR_ROOT[moduleNamespace] = createDeprecationProxy(firebaseModuleWithApp);
 
   return MODULE_GETTER_FOR_ROOT[moduleNamespace];
 }

@@ -102,3 +102,255 @@ export function tryJSONStringify(data) {
     return null;
   }
 }
+
+// Used to indicate if there is no corresponding modular function
+const NO_REPLACEMENT = true;
+
+const mapOfDeprecationReplacements = {
+  crashlytics: {
+    default: {
+      checkForUnsentReports: 'checkForUnsentReports()',
+      crash: 'crash()',
+      deleteUnsentReports: 'deleteUnsentReports()',
+      didCrashOnPreviousExecution: 'didCrashOnPreviousExecution()',
+      log: 'log()',
+      setAttribute: 'setAttribute()',
+      setAttributes: 'setAttributes()',
+      setUserId: 'setUserId()',
+      recordError: 'recordError()',
+      sendUnsentReports: 'sendUnsentReports()',
+      setCrashlyticsCollectionEnabled: 'setCrashlyticsCollectionEnabled()',
+    },
+  },
+  firestore: {
+    default: {
+      batch: 'writeBatch()',
+      loadBundle: 'loadBundle()',
+      namedQuery: 'namedQuery()',
+      clearPersistence: 'clearIndexedDbPersistence()',
+      waitForPendingWrites: 'waitForPendingWrites()',
+      terminate: 'terminate()',
+      useEmulator: 'connectFirestoreEmulator()',
+      collection: 'collection()',
+      collectionGroup: 'collectionGroup()',
+      disableNetwork: 'disableNetwork()',
+      doc: 'doc()',
+      enableNetwork: 'enableNetwork()',
+      runTransaction: 'runTransaction()',
+      settings: 'settings()',
+      persistentCacheIndexManager: 'getPersistentCacheIndexManager()',
+    },
+    statics: {
+      setLogLevel: 'setLogLevel()',
+      Filter: 'where()',
+      FieldValue: 'FieldValue',
+      Timestamp: 'Timestamp',
+      GeoPoint: 'GeoPoint',
+      Blob: 'Bytes',
+      FieldPath: 'FieldPath',
+    },
+    FirestoreCollectionReference: {
+      count: 'getCountFromServer()',
+      countFromServer: 'getCountFromServer()',
+      endAt: 'endAt()',
+      endBefore: 'endBefore()',
+      get: 'getDocs()',
+      isEqual: NO_REPLACEMENT,
+      limit: 'limit()',
+      limitToLast: 'limitToLast()',
+      onSnapshot: 'onSnapshot()',
+      orderBy: 'orderBy()',
+      startAfter: 'startAfter()',
+      startAt: 'startAt()',
+      where: 'where()',
+      add: 'addDoc()',
+      doc: 'doc()',
+    },
+    FirestoreDocumentReference: {
+      collection: 'collection()',
+      delete: 'deleteDoc()',
+      get: 'getDoc()',
+      isEqual: NO_REPLACEMENT,
+      onSnapshot: 'onSnapshot()',
+      set: 'setDoc()',
+      update: 'updateDoc()',
+    },
+    FirestoreDocumentSnapshot: {
+      isEqual: NO_REPLACEMENT,
+    },
+    FirestoreFieldValue: {
+      arrayRemove: 'arrayRemove()',
+      arrayUnion: 'arrayUnion()',
+      delete: 'deleteField()',
+      increment: 'increment()',
+      serverTimestamp: 'serverTimestamp()',
+    },
+    Filter: {
+      or: 'or()',
+      and: 'and()',
+    },
+    FirestorePersistentCacheIndexManager: {
+      enableIndexAutoCreation: 'enablePersistentCacheIndexAutoCreation()',
+      disableIndexAutoCreation: 'disablePersistentCacheIndexAutoCreation()',
+      deleteAllIndexes: 'deleteAllPersistentCacheIndexes()',
+    },
+    FirestoreTimestamp: {
+      seconds: NO_REPLACEMENT,
+      nanoseconds: NO_REPLACEMENT,
+    },
+  },
+};
+
+const v8deprecationMessage =
+  'This v8 method is deprecated and will be removed in the next major release ' +
+  'as part of move to match Firebase Web modular v9 SDK API.';
+
+export function deprecationConsoleWarning(nameSpace, methodName, instanceName, isModularMethod) {
+  if (!isModularMethod) {
+    const moduleMap = mapOfDeprecationReplacements[nameSpace];
+    if (moduleMap) {
+      const instanceMap = moduleMap[instanceName];
+      const deprecatedMethod = instanceMap[methodName];
+      if (instanceMap && deprecatedMethod) {
+        const message = createMessage(nameSpace, methodName, instanceName);
+        // eslint-disable-next-line no-console
+        console.warn(message);
+      }
+    }
+  }
+}
+
+export function createMessage(
+  nameSpace,
+  methodName,
+  instanceName = 'default',
+  uniqueMessage = null,
+) {
+  if (uniqueMessage) {
+    // Unique deprecation message used for testing
+    return uniqueMessage;
+  }
+
+  const moduleMap = mapOfDeprecationReplacements[nameSpace];
+  if (moduleMap) {
+    const instance = moduleMap[instanceName];
+    if (instance) {
+      const replacementMethodName = instance[methodName];
+
+      if (replacementMethodName !== NO_REPLACEMENT) {
+        return v8deprecationMessage + ` Please use \`${replacementMethodName}\` instead.`;
+      } else {
+        return v8deprecationMessage;
+      }
+    }
+  }
+}
+
+function getNamespace(target) {
+  if (target.GeoPoint) {
+    // target is statics object. GeoPoint is a static class on Firestore
+    return 'firestore';
+  }
+  if (target._config && target._config.namespace) {
+    return target._config.namespace;
+  }
+  const className = target.name ? target.name : target.constructor.name;
+  return Object.keys(mapOfDeprecationReplacements).find(key => {
+    if (mapOfDeprecationReplacements[key][className]) {
+      return key;
+    }
+  });
+}
+
+function getInstanceName(target) {
+  if (target.GeoPoint) {
+    // target is statics object. GeoPoint is a static class on Firestore
+    return 'statics';
+  }
+  if (target._config) {
+    // module class instance, we use default to store map of deprecated methods
+    return 'default';
+  }
+  if (target.name) {
+    // It's a function which has a name property unlike classes
+    return target.name;
+  }
+  // It's a class instance
+  return target.constructor.name;
+}
+
+export function createDeprecationProxy(instance) {
+  return new Proxy(instance, {
+    construct(target, args) {
+      // needed for Timestamp which we pass as static, when we construct new instance, we need to wrap it in proxy again.
+      return createDeprecationProxy(new target(...args));
+    },
+    get(target, prop, receiver) {
+      const originalMethod = target[prop];
+
+      if (prop === 'constructor') {
+        return Reflect.get(target, prop, receiver);
+      }
+
+      if (target && target.constructor && target.constructor.name === 'FirestoreTimestamp') {
+        deprecationConsoleWarning('firestore', prop, 'FirestoreTimestamp', false);
+        return Reflect.get(target, prop, receiver);
+      }
+
+      if (target && target.name === 'firebaseModuleWithApp') {
+        // statics
+        if (
+          prop === 'Filter' ||
+          prop === 'FieldValue' ||
+          prop === 'Timestamp' ||
+          prop === 'GeoPoint' ||
+          prop === 'Blob' ||
+          prop === 'FieldPath'
+        ) {
+          deprecationConsoleWarning('firestore', prop, 'statics', false);
+        }
+        if (prop !== 'setLogLevel') {
+          // we want to capture setLogLevel function call which we do below
+          return Reflect.get(target, prop, receiver);
+        }
+      }
+
+      if (typeof originalMethod === 'function') {
+        return function (...args) {
+          const isModularMethod = args.includes(MODULAR_DEPRECATION_ARG);
+          const instanceName = getInstanceName(target);
+          const nameSpace = getNamespace(target);
+
+          deprecationConsoleWarning(nameSpace, prop, instanceName, isModularMethod);
+
+          return originalMethod.apply(target, filterModularArgument(args));
+        };
+      }
+      return Reflect.get(target, prop, receiver);
+    },
+  });
+}
+
+export const MODULAR_DEPRECATION_ARG = 'react-native-firebase-modular-method-call';
+
+export function filterModularArgument(list) {
+  return list.filter(arg => arg !== MODULAR_DEPRECATION_ARG);
+}
+
+export function warnIfNotModularCall(args, replacementMethodName = '') {
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === MODULAR_DEPRECATION_ARG) {
+      return;
+    }
+  }
+  let message =
+    'This v8 method is deprecated and will be removed in the next major release ' +
+    'as part of move to match Firebase Web modular v9 SDK API.';
+
+  if (replacementMethodName.length > 0) {
+    message += ` Please use \`${replacementMethodName}\` instead.`;
+  }
+
+  // eslint-disable-next-line no-console
+  console.warn(message);
+}
