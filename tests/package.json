@@ -38,6 +38,7 @@
     "@firebase/rules-unit-testing": "^4.0.1",
     "@react-native/babel-preset": "^0.74.89",
     "@react-native/metro-config": "^0.74.89",
+    "assert": "^2.1.0",
     "axios": "^1.7.9",
     "detox": "20.32.0",
     "firebase": "^11.2.0",
@@ -50,6 +51,6 @@
     "patch-package": "^8.0.0",
     "should": "^13.2.3",
     "should-sinon": "0.0.6",
-    "sinon": "17.0.0"
+    "sinon": "19.0.2"
   }
 }
