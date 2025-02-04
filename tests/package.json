@@ -48,7 +48,7 @@
     "firebase-tools": "^13.29.3",
     "jest-circus": "^29.7.0",
     "jest-environment-node": "^29.7.0",
-    "jet": "0.9.0-dev.12",
+    "jet": "0.9.0-dev.13",
     "mocha": "^11.1.0",
     "nyc": "^17.1.0",
     "patch-package": "^8.0.0",
