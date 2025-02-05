@@ -75,7 +75,7 @@ class Index {
     if (!this.multiEntry || !Array.isArray(indexKey)) {
       try {
         valueToKey(indexKey);
-      } catch (e) {
+      } catch (_) {
         return;
       }
     } else {
@@ -86,7 +86,7 @@ class Index {
         if (keep.indexOf(part) < 0) {
           try {
             keep.push(valueToKey(part));
-          } catch (err) {
+          } catch (_) {
             /* Do nothing */
           }
         }

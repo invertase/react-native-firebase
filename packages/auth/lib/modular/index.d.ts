@@ -147,6 +147,7 @@ export function getMultiFactorResolver(
  * @param resolver - Optional. The popup redirect resolver.
  * @returns A promise that resolves with the user credentials or null.
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface PopupRedirectResolver {}
 
 export function getRedirectResult(

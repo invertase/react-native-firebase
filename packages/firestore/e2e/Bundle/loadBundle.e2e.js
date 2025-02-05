@@ -42,7 +42,7 @@ describe('firestore().loadBundle()', function () {
       try {
         await firebase.firestore().loadBundle('not-a-bundle');
         return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
+      } catch (_) {
         /*
          * Due to inconsistent error throws between Android and iOS Firebase SDK,
          * it is not able to test a specific error message.
@@ -74,7 +74,7 @@ describe('firestore().loadBundle()', function () {
       try {
         await loadBundle(getFirestore(), 'not-a-bundle');
         return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
+      } catch (_) {
         /*
          * Due to inconsistent error throws between Android and iOS Firebase SDK,
          * it is not able to test a specific error message.

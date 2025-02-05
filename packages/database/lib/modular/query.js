@@ -20,6 +20,7 @@ class QueryConstraint {
   }
 
   _apply(query) {
+    // eslint-disable-next-line prefer-spread
     return query[this._type].apply(query, this._args);
   }
 }

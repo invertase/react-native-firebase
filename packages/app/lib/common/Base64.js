@@ -1,4 +1,3 @@
-/* eslint-disable no-bitwise */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *

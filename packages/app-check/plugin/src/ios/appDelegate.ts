@@ -49,7 +49,7 @@ export function modifyObjcAppDelegate(contents: string): string {
       offset: 0, // new line will be inserted right above matched anchor
       comment: '//',
     }).contents;
-  } catch (e: any) {
+  } catch (_: any) {
     // tests if the opening `{` is in the new line
     const multilineMatcher = new RegExp(fallbackInvocationLineMatcher.source + '.+\\n*{');
     const isHeaderMultiline = multilineMatcher.test(contents);

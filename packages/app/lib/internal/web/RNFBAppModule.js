@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { initializeApp, setLogLevel, getApp, getApps, deleteApp } from './firebaseApp';
 
 import { DeviceEventEmitter } from 'react-native';

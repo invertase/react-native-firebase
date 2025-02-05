@@ -113,7 +113,7 @@ function userToObject(user) {
  * @param {string|null} secret - The secret to use for the credential.
  * @returns {AuthCredential|null} - The AuthCredential object.
  */
-function getAuthCredential(auth, provider, token, secret) {
+function getAuthCredential(_auth, provider, token, secret) {
   if (provider.startsWith('oidc.')) {
     return new OAuthProvider(provider).credential({
       idToken: token,

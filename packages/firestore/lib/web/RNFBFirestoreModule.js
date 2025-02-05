@@ -450,7 +450,7 @@ export default {
    * @param {string} databaseId - The database ID.
    * @param {string} transactionId - The transaction id.
    */
-  transactionDispose(appName, databaseId, transactionId) {
+  transactionDispose(_appName, _databaseId, transactionId) {
     // There's no abort method in the JS SDK, so we just remove the transaction handler.
     delete transactionHandler[transactionId];
   },
@@ -462,7 +462,7 @@ export default {
    * @param {string} transactionId - The transaction id.
    * @param {object[]} commandBuffer - The readable array of buffer commands.
    */
-  transactionApplyBuffer(appName, databaseId, transactionId, commandBuffer) {
+  transactionApplyBuffer(_appName, _databaseId, transactionId, commandBuffer) {
     if (transactionHandler[transactionId]) {
       transactionBuffer[transactionId] = commandBuffer;
     }

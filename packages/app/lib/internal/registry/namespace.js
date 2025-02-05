@@ -193,7 +193,7 @@ function getOrCreateModuleForRoot(moduleNamespace) {
  * @param moduleNamespace
  * @returns {*}
  */
-function firebaseRootModuleProxy(firebaseNamespace, moduleNamespace) {
+function firebaseRootModuleProxy(_firebaseNamespace, moduleNamespace) {
   if (NAMESPACE_REGISTRY[moduleNamespace]) {
     return getOrCreateModuleForRoot(moduleNamespace);
   }

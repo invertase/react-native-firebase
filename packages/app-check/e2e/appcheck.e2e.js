@@ -127,7 +127,6 @@ describe('appCheck()', function () {
       });
 
       await firebase.appCheck().initializeAppCheck({ provider, isTokenAutoRefreshEnabled: false });
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const unsubscribe = firebase.appCheck().onTokenChanged(_ => {
         // TODO - improve testing cloud function to allow us to return tokens with low expiry
       });
@@ -345,7 +344,7 @@ describe('appCheck()', function () {
   });
 
   describe('modular', function () {
-    var appCheckInstance;
+    let appCheckInstance;
 
     before(async function () {
       const { initializeAppCheck } = appCheckModular;
