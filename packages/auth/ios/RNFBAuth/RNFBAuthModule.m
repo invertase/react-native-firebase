@@ -1381,8 +1381,26 @@ RCT_EXPORT_METHOD(useEmulator
                                                   accessToken:authTokenSecret];
   } else if ([provider compare:@"apple.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIROAuthProvider credentialWithProviderID:provider
-                                                    IDToken:authToken
-                                                   rawNonce:authTokenSecret];
+                                                   IDToken:authToken
+                                                  rawNonce:authTokenSecret];
+
+    [[FIRAuth auth] signInWithCredential:credential completion:^(FIRAuthDataResult * _Nullable authResult, NSError * _Nullable error) {
+        if (error == nil && authResult != nil) {
+            NSDictionary *profile = authResult.additionalUserInfo.profile;
+            NSString *fullName = profile[@"name"];
+
+            if (fullName != nil && fullName.length > 0) {
+                FIRUserProfileChangeRequest *changeRequest = [authResult.user profileChangeRequest];
+                changeRequest.displayName = fullName;
+                [changeRequest commitChangesWithCompletion:^(NSError *_Nullable error) {
+                    if (error != nil) {
+                        NSLog(@"Error updating display name: %@", error.localizedDescription);
+                    }
+                }];
+            }
+        }
+    }];
+
   } else if ([provider compare:@"password" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIREmailAuthProvider credentialWithEmail:authToken password:authTokenSecret];
   } else if ([provider compare:@"emailLink" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
