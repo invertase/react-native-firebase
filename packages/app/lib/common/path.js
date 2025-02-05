@@ -88,7 +88,6 @@ export function pathToUrlEncodedString(path) {
   return pathString || '/';
 }
 
-// eslint-disable-next-line no-control-regex
 export const INVALID_PATH_REGEX = /[[\].#$\u0000-\u001F\u007F]/;
 
 /**
@@ -100,7 +99,6 @@ export function isValidPath(path) {
   return typeof path === 'string' && path.length !== 0 && !INVALID_PATH_REGEX.test(path);
 }
 
-// eslint-disable-next-line no-control-regex
 export const INVALID_KEY_REGEX = /[\[\].#$\/\u0000-\u001F\u007F]/;
 
 /**

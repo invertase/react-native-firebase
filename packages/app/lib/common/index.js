@@ -90,7 +90,7 @@ export const isOther = Platform.OS !== 'ios' && Platform.OS !== 'android';
 export function tryJSONParse(string) {
   try {
     return string && JSON.parse(string);
-  } catch (jsonError) {
+  } catch (_) {
     return string;
   }
 }
@@ -98,7 +98,7 @@ export function tryJSONParse(string) {
 export function tryJSONStringify(data) {
   try {
     return JSON.stringify(data);
-  } catch (jsonError) {
+  } catch (_) {
     return null;
   }
 }

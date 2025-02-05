@@ -86,7 +86,7 @@ export namespace FirebaseAppDistributionTypes {
     isExpired: boolean;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export interface Statics {
     // firebase.appDistribution.* static props go here
   }

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 const { getE2eTestProject } = require('../../app/e2e/helpers');
 
 exports.updateTemplate = async function updateTemplate(operations) {

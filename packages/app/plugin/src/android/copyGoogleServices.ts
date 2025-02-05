@@ -25,7 +25,7 @@ export const withCopyAndroidGoogleServices: ConfigPlugin = config => {
 
       try {
         await fs.promises.copyFile(srcPath, destPath);
-      } catch (e) {
+      } catch (_) {
         throw new Error(
           `Cannot copy google-services.json, because the file ${srcPath} doesn't exist. Please provide a valid path in \`app.json\`.`,
         );

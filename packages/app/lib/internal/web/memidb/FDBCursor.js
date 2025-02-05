@@ -314,7 +314,7 @@ class FDBCursor {
       let tempKey;
       try {
         tempKey = extractKey(effectiveObjectStore.keyPath, clone);
-      } catch (err) {
+      } catch (_) {
         /* Handled immediately below */
       }
       if (cmp(tempKey, effectiveKey) !== 0) {

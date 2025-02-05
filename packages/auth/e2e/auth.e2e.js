@@ -1851,7 +1851,7 @@ describe('auth() modular', function () {
             const providers = await fetchSignInMethodsForEmail(defaultAuth, TEST_EMAIL);
             providers.should.be.a.Array();
             providers.should.containEql('password');
-          } catch (error) {
+          } catch (_) {
             throw new Error('Should not have an error.');
           }
         });
@@ -1867,7 +1867,7 @@ describe('auth() modular', function () {
             );
             providers.should.be.a.Array();
             providers.should.be.empty();
-          } catch (error) {
+          } catch (_) {
             throw new Error('Should not have an error.');
           }
         });

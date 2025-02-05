@@ -188,7 +188,7 @@ describe('firestore()', function () {
         //if we sign in as a different user then it should reject the promise
         try {
           await firebase.auth().signOut();
-        } catch (e) {}
+        } catch (_) {}
         await firebase.auth().signInAnonymously();
         should(rejected).equal(true);
 
@@ -615,7 +615,7 @@ describe('firestore()', function () {
         //if we sign in as a different user then it should reject the promise
         try {
           await firebase.auth().signOut();
-        } catch (e) {}
+        } catch (_) {}
         await firebase.auth().signInAnonymously();
         should(rejected).equal(true);
 

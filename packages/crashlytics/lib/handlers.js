@@ -103,7 +103,7 @@ export const setGlobalErrorHandler = once(nativeModule => {
               timestamp: fatalTime,
             },
           );
-        } catch (e) {
+        } catch (_) {
           // This just means analytics was not present, so we could not log the analytics event
           // console.log('error logging analytics app_exception: ' + e);
         }
@@ -114,7 +114,7 @@ export const setGlobalErrorHandler = once(nativeModule => {
         } else {
           await nativeModule.crashWithStackPromise(createNativeErrorObj(error, stackFrames, false));
         }
-      } catch (e) {
+      } catch (_) {
         // do nothing
         // console.log('error logging handling the exception: ' + e);
       }
@@ -131,7 +131,7 @@ export const setGlobalErrorHandler = once(nativeModule => {
 });
 
 export const setOnUnhandledPromiseRejectionHandler = once(nativeModule => {
-  async function onUnhandled(id, error) {
+  async function onUnhandled(_id, error) {
     if (!__DEV__) {
       // TODO(salakar): Option to disable
       try {

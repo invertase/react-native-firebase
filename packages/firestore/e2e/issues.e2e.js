@@ -282,7 +282,7 @@ describe('firestore()', function () {
             getE2eEmulatorHost(),
             8080,
           );
-        } catch (e) {}
+        } catch (_e) {}
 
         // Put one example of each number in our collection using JS SDK
         await Promise.all(

@@ -168,21 +168,21 @@ export namespace ReactNativeFirebase {
      * @param key - storage key.
      * @param value - storage value.
      */
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     setItem: Function;
     /**
      * Retrieve an item from storage.
      *
      * @param key - storage key.
      */
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     getItem: Function;
     /**
      * Remove an item from storage.
      *
      * @param key - storage key.
      */
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     removeItem: Function;
 
     [key: string]: any;
@@ -277,7 +277,7 @@ export namespace ReactNativeFirebase {
     private emitter: any;
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export type FirebaseModuleWithStatics<M, S = {}> = {
     (): M;
 
@@ -287,7 +287,7 @@ export namespace ReactNativeFirebase {
     readonly SDK_VERSION: string;
   } & S;
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export type FirebaseModuleWithStaticsAndApp<M, S = {}> = {
     (app?: FirebaseApp): M;
 
