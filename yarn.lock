@@ -9312,9 +9312,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"detox@npm:20.32.0":
-  version: 20.32.0
-  resolution: "detox@npm:20.32.0"
+"detox@npm:20.33.0-prerelease.0":
+  version: 20.33.0-prerelease.0
+  resolution: "detox@npm:20.33.0-prerelease.0"
   dependencies:
     ajv: "npm:^8.6.3"
     bunyan: "npm:^1.8.12"
@@ -9359,7 +9359,7 @@ __metadata:
       optional: true
   bin:
     detox: local-cli/cli.js
-  checksum: 10/738feb08c11a2546b1d5e3f2be79a4d889956c5042c50bedccd6c0f1e695f877e957ffb2d5c22c4f78cb1486ce5a4464f9fa790c0ddef3dac8715992376a763d
+  checksum: 10/e76616ccf69964a133c527544e44383818c85e3541c885b3976eb7fa734d7fae88f6d9dcf534828bd96241e12df9f776bd661b35d76106e26c6804196df1beb1
   languageName: node
   linkType: hard
 
@@ -18691,7 +18691,7 @@ __metadata:
     "@react-native/metro-config": "npm:^0.76.6"
     assert: "npm:^2.1.0"
     axios: "npm:^1.7.9"
-    detox: "npm:20.32.0"
+    detox: "npm:20.33.0-prerelease.0"
     firebase: "npm:^11.2.0"
     firebase-tools: "npm:^13.29.3"
     jest-circus: "npm:^29.7.0"

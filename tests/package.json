@@ -43,7 +43,7 @@
     "@react-native/metro-config": "^0.76.6",
     "assert": "^2.1.0",
     "axios": "^1.7.9",
-    "detox": "20.32.0",
+    "detox": "20.33.0-prerelease.0",
     "firebase": "^11.2.0",
     "firebase-tools": "^13.29.3",
     "jest-circus": "^29.7.0",
