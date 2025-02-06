@@ -252,6 +252,12 @@ export function onConfigUpdated(remoteConfig, callback) {
  * @returns {Promise<void>}
  */
 export function setCustomSignals(remoteConfig, customSignals) {
+  for (const [key, value] of Object.entries(customSignals)) {
+    if (typeof value !== 'string' && typeof value !== 'number' && value !== null) {
+      throw new Error(
+        `firebase.remoteConfig().setCustomSignals(): Invalid type for custom signal '${key}': ${typeof value}. Expected 'string', 'number', or 'null'.`,
+      );
+    }
+  }
   return remoteConfig.native.setCustomSignals(customSignals);
 }
-
