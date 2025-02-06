@@ -251,7 +251,7 @@ export function onConfigUpdated(remoteConfig, callback) {
  * @param {CustomSignals} customSignals - CustomSignals
  * @returns {Promise<void>}
  */
-export function setCustomSignals(remoteConfig, customSignals) {
+export async function setCustomSignals(remoteConfig, customSignals) {
   for (const [key, value] of Object.entries(customSignals)) {
     if (typeof value !== 'string' && typeof value !== 'number' && value !== null) {
       throw new Error(
@@ -259,5 +259,5 @@ export function setCustomSignals(remoteConfig, customSignals) {
       );
     }
   }
-  return remoteConfig.native.setCustomSignals(customSignals);
+  return remoteConfig._promiseWithConstants(remoteConfig.native.setCustomSignals(customSignals));
 }
