@@ -210,7 +210,9 @@ export function onConfigUpdated(
 /**
  * Defines the type for representing custom signals and their values.
  * The values in CustomSignals must be one of the following types: string, number, or null.
- */
+  * There are additional limitations on key and value length, for a full description see https://firebase.google.com/docs/remote-config/parameters?template_type=client#custom_signal_conditions
+  * Failing to stay within these limitations will result in a silent API failure with only a warning in device logs
+  */
 
 export interface CustomSignals {
   [key: string]: string | number | null;
