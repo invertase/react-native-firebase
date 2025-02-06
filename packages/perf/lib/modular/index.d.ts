@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import { FirebaseApp } from '@firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { FirebasePerformanceTypes } from '..';
 
 import Performance = FirebasePerformanceTypes.Module;
@@ -23,6 +23,7 @@ import Trace = FirebasePerformanceTypes.Module.Trace;
 import HttpMethod = FirebasePerformanceTypes.HttpMethod;
 import HttpMetric = FirebasePerformanceTypes.HttpMetric;
 import ScreenTrace = FirebasePerformanceTypes.ScreenTrace;
+import FirebaseApp = ReactNativeFirebase.FirebaseApp
 
 /**
  * Returns a Performance instance for the given app.
@@ -42,7 +43,7 @@ type PerformanceSettings = {
  * @returns {Promise<Performance>}
  */
 export function initializePerformance(
-  app: FirebaseApp,
+  app: ReactNativeFirebase,
   settings: PerformanceSettings,
 ): Promise<Performance>;
 

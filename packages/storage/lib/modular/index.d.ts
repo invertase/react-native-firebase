@@ -15,7 +15,7 @@
  *
  */
 
-import { FirebaseApp } from '@firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { FirebaseStorageTypes } from '../index';
 
 import Storage = FirebaseStorageTypes.Module;
@@ -27,6 +27,7 @@ import Task = FirebaseStorageTypes.Task;
 import ListOptions = FirebaseStorageTypes.ListOptions;
 import SettableMetadata = FirebaseStorageTypes.SettableMetadata;
 import EmulatorMockTokenOptions = FirebaseStorageTypes.EmulatorMockTokenOptions;
+import FirebaseApp = ReactNativeFirebase.FirebaseApp
 
 /**
  * Returns the existing default {@link Storage} instance that is associated with the

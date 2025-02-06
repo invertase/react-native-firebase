@@ -1,7 +1,8 @@
 import { FirebaseMessagingTypes } from '..';
-import { FirebaseApp } from '@firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 import Messaging = FirebaseStorageTypes.Module;
+import FirebaseApp = ReactNativeFirebase.FirebaseApp
 
 /**
  * Returns a Messaging instance for the given app.
