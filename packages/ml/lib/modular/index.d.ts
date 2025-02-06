@@ -2,7 +2,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { FirebaseMLTypes } from '..';
 
 type FirebaseML = FirebaseMLTypes.Module;
-import FirebaseApp = ReactNativeFirebase.FirebaseApp
+import FirebaseApp = ReactNativeFirebase.FirebaseApp;
 
 /**
  * Returns the existing default {@link FirebaseML} instance that is associated with the

@@ -27,7 +27,7 @@ import Task = FirebaseStorageTypes.Task;
 import ListOptions = FirebaseStorageTypes.ListOptions;
 import SettableMetadata = FirebaseStorageTypes.SettableMetadata;
 import EmulatorMockTokenOptions = FirebaseStorageTypes.EmulatorMockTokenOptions;
-import FirebaseApp = ReactNativeFirebase.FirebaseApp
+import FirebaseApp = ReactNativeFirebase.FirebaseApp;
 
 /**
  * Returns the existing default {@link Storage} instance that is associated with the

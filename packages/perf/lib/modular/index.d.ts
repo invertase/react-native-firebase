@@ -23,7 +23,7 @@ import Trace = FirebasePerformanceTypes.Module.Trace;
 import HttpMethod = FirebasePerformanceTypes.HttpMethod;
 import HttpMetric = FirebasePerformanceTypes.HttpMetric;
 import ScreenTrace = FirebasePerformanceTypes.ScreenTrace;
-import FirebaseApp = ReactNativeFirebase.FirebaseApp
+import FirebaseApp = ReactNativeFirebase.FirebaseApp;
 
 /**
  * Returns a Performance instance for the given app.

@@ -20,7 +20,7 @@ import { FirebaseAuthTypes, CallbackOrObserver, AuthListenerCallback } from '../
 import { firebase } from '..';
 
 import Auth = FirebaseAuthTypes.Module;
-import FirebaseApp = ReactNativeFirebase.FirebaseApp
+import FirebaseApp = ReactNativeFirebase.FirebaseApp;
 
 /**
  * Returns the Auth instance associated with the provided FirebaseApp.
