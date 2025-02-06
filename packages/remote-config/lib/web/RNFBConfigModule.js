@@ -7,6 +7,7 @@ import {
   fetchConfig,
   getAll,
   makeIDBAvailable,
+  setCustomSignals,
 } from '@react-native-firebase/app/lib/internal/web/firebaseRemoteConfig';
 import { guard } from '@react-native-firebase/app/lib/internal/web/utils';
 
@@ -110,6 +111,13 @@ export default {
     return guard(async () => {
       defaultConfigForInstance[appName] = defaults;
       const remoteConfig = getRemoteConfigInstanceForApp(appName);
+      return resultAndConstants(remoteConfig, null);
+    });
+  },
+  setCustomSignals(appName, customSignals) {
+    return guard(async () => {
+      const remoteConfig = getRemoteConfigInstanceForApp(appName);
+      await setCustomSignals(remoteConfig, customSignals);
       return resultAndConstants(remoteConfig, null);
     });
   },
