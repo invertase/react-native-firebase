@@ -26,6 +26,7 @@ import { firebase } from '..';
  * @typedef {import('..').FirebaseRemoteConfigTypes.ConfigValues} ConfigValues
  * @typedef {import('..').FirebaseRemoteConfigTypes.LastFetchStatusType} LastFetchStatusType
  * @typedef {import('..').FirebaseRemoteConfigTypes.RemoteConfigLogLevel} RemoteConfigLogLevel
+ * @typedef {import('.').CustomSignals} CustomSignals
  */
 
 /**
@@ -243,3 +244,14 @@ export function setDefaultsFromResource(remoteConfig, resourceName) {
 export function onConfigUpdated(remoteConfig, callback) {
   return remoteConfig.onConfigUpdated(callback);
 }
+
+/**
+ * Sets the custom signals for the app instance.
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
+ * @param {CustomSignals} customSignals - CustomSignals
+ * @returns {Promise<void>}
+ */
+export function setCustomSignals(remoteConfig, customSignals) {
+  return remoteConfig.native.setCustomSignals(customSignals);
+}
+

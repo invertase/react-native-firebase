@@ -206,3 +206,24 @@ export function onConfigUpdated(
   remoteConfig: RemoteConfig,
   callback: (config: ConfigValues) => void,
 ): () => void;
+
+/**
+ * Defines the type for representing custom signals and their values.
+ * The values in CustomSignals must be one of the following types: string, number, or null.
+ */
+
+export interface CustomSignals {
+  [key: string]: string | number | null;
+}
+
+/**
+ * Sets the custom signals for the app instance.
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
+ * @param {CustomSignals} customSignals - CustomSignals
+ * @returns {Promise<void>}
+ */
+
+export declare function setCustomSignals(
+  remoteConfig: RemoteConfig,
+  customSignals: CustomSignals,
+): Promise<void>;
