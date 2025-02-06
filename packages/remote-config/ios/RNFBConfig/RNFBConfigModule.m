@@ -310,14 +310,15 @@ RCT_EXPORT_METHOD(setCustomSignals
                   : (NSDictionary *)customSignals
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] setCustomSignals:customSignals
-                    withCompletion:^(NSError *_Nullable error) {
-                      if (error != nil) {
-                        [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-                      } else {
-                        resolve(nil);
-                      }
-                    }];
+  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp]
+      setCustomSignals:customSignals
+        withCompletion:^(NSError *_Nullable error) {
+          if (error != nil) {
+            [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+          } else {
+            resolve(nil);
+          }
+        }];
 
   resolve([self resultWithConstants:[NSNull null] firebaseApp:firebaseApp]);
 }
