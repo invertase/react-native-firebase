@@ -43,7 +43,7 @@ type PerformanceSettings = {
  * @returns {Promise<Performance>}
  */
 export function initializePerformance(
-  app: ReactNativeFirebase,
+  app: FirebaseApp,
   settings: PerformanceSettings,
 ): Promise<Performance>;
 
