@@ -983,13 +983,16 @@ describe('remoteConfig()', function () {
         ];
 
         for (const signals of invalidSignals) {
-          await should(setCustomSignals(remoteConfig, signals))
-            .be.rejectedWith(Error)
-            .and.have.property('message')
-            .that.includes(
+          try {
+            await setCustomSignals(remoteConfig, signals);
+            throw new Error('Expected setCustomSignals to throw an error');
+          } catch (error) {
+            error.message.should.containEql(
               'firebase.remoteConfig().setCustomSignals(): Invalid type for custom signal',
             );
+          }
         }
+        return Promise.resolve();
       });
     });
   });
