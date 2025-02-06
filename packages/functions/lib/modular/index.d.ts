@@ -1,7 +1,7 @@
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { FirebaseFunctionsTypes } from '..';
 
-import FirebaseApp = ReactNativeFirebase.FirebaseApp
+import FirebaseApp = ReactNativeFirebase.FirebaseApp;
 import Functions = FirebaseFunctionsTypes.Module;
 import HttpsCallable = FirebaseFunctionsTypes.HttpsCallable;
 import HttpsCallableOptions = FirebaseFunctionsTypes.HttpsCallableOptions;
