@@ -7,7 +7,7 @@ previous: /
 
 # Switching off warning logs
 
-You may notice an influx of console warning logs as we continue deprecating all existing namespaced API. If you would like to switch these logs off, you may set the following global property to `true`:
+You may notice an influx of console warning logs as we continue deprecating all existing namespaced API. If you would like to switch these logs off, you may set the following global property to `true` anywhere before you initialise Firebase.
 
 ```js
 globalThis.RNFB_SILENCE_V8_DEPRECATION_WARNINGS = true;
