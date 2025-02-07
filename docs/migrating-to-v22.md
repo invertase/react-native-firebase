@@ -1,6 +1,6 @@
 ---
 title: Migrating to v22
-description: Migrate to React Native Firebase v22
+description: Migrate to React Native Firebase v22.
 previous: /
 next: /typescript
 ---
