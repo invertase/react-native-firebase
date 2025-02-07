@@ -1,6 +1,8 @@
 ---
 - - Getting Started
   - '/'
+- - Migration Guide to v22
+  - '/migrating-to-v22'
 - - TypeScript
   - '/typescript'
 - - Platforms
