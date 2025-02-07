@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-import { FirebaseApp } from '@firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { FirebaseAuthTypes, CallbackOrObserver, AuthListenerCallback } from '../index';
 import { firebase } from '..';
 
 import Auth = FirebaseAuthTypes.Module;
+import FirebaseApp = ReactNativeFirebase.FirebaseApp;
 
 /**
  * Returns the Auth instance associated with the provided FirebaseApp.

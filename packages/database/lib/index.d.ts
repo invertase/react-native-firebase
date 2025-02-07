@@ -17,8 +17,6 @@
 
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 
-export type FirebaseApp = ReactNativeFirebase.FirebaseApp;
-
 /**
  * Firebase Database package for React Native.
  *
