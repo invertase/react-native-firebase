@@ -1,0 +1,141 @@
+diff --git a/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTInteropTurboModule.mm b/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTInteropTurboModule.mm
+index ad267de..680ca63 100644
+--- a/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTInteropTurboModule.mm
++++ b/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTInteropTurboModule.mm
+@@ -337,7 +337,7 @@ void ObjCInteropTurboModule::setInvocationArg(
+   SEL selector = selectorForType(argumentType);
+ 
+   if ([RCTConvert respondsToSelector:selector]) {
+-    id objCArg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_);
++    id objCArg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_, YES);
+ 
+     if (objCArgType == @encode(char)) {
+       char arg = RCTConvertTo<char>(selector, objCArg);
+@@ -491,7 +491,7 @@ void ObjCInteropTurboModule::setInvocationArg(
+     }
+ 
+     RCTResponseSenderBlock arg =
+-        (RCTResponseSenderBlock)TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_);
++        (RCTResponseSenderBlock)TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_, YES);
+     if (arg) {
+       [retainedObjectsForInvocation addObject:arg];
+     }
+@@ -506,7 +506,7 @@ void ObjCInteropTurboModule::setInvocationArg(
+     }
+ 
+     RCTResponseSenderBlock senderBlock =
+-        (RCTResponseSenderBlock)TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_);
++        (RCTResponseSenderBlock)TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_, YES);
+     RCTResponseErrorBlock arg = ^(NSError *error) {
+       senderBlock(@[ RCTJSErrorFromNSError(error) ]);
+     };
+@@ -536,7 +536,7 @@ void ObjCInteropTurboModule::setInvocationArg(
+           runtime, errorPrefix + "JavaScript argument must be a plain object. Got " + getType(runtime, jsiArg));
+     }
+ 
+-    id arg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_);
++    id arg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_, YES);
+ 
+     RCTManagedPointer *(*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
+     RCTManagedPointer *box = convert([RCTCxxConvert class], selector, arg);
+diff --git a/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTTurboModule.h b/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTTurboModule.h
+index f54e175..8196ff9 100644
+--- a/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTTurboModule.h
++++ b/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTTurboModule.h
+@@ -32,6 +32,11 @@ using EventEmitterCallback = std::function<void(const std::string &, id)>;
+ namespace TurboModuleConvertUtils {
+ jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value);
+ id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker);
++id convertJSIValueToObjCObject(
++    jsi::Runtime &runtime,
++    const jsi::Value &value,
++    std::shared_ptr<CallInvoker> jsInvoker,
++    BOOL useNSNull);
+ } // namespace TurboModuleConvertUtils
+ 
+ template <>
+diff --git a/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTTurboModule.mm b/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTTurboModule.mm
+index 2678b19..42067c0 100644
+--- a/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTTurboModule.mm
++++ b/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTTurboModule.mm
+@@ -111,21 +111,27 @@ static NSString *convertJSIStringToNSString(jsi::Runtime &runtime, const jsi::St
+   return [NSString stringWithUTF8String:value.utf8(runtime).c_str()];
+ }
+ 
+-static NSArray *
+-convertJSIArrayToNSArray(jsi::Runtime &runtime, const jsi::Array &value, std::shared_ptr<CallInvoker> jsInvoker)
++static NSArray *convertJSIArrayToNSArray(
++    jsi::Runtime &runtime,
++    const jsi::Array &value,
++    std::shared_ptr<CallInvoker> jsInvoker,
++    BOOL useNSNull)
+ {
+   size_t size = value.size(runtime);
+   NSMutableArray *result = [NSMutableArray new];
+   for (size_t i = 0; i < size; i++) {
+     // Insert kCFNull when it's `undefined` value to preserve the indices.
+-    [result
+-        addObject:convertJSIValueToObjCObject(runtime, value.getValueAtIndex(runtime, i), jsInvoker) ?: (id)kCFNull];
++    id convertedObject = convertJSIValueToObjCObject(runtime, value.getValueAtIndex(runtime, i), jsInvoker, useNSNull);
++    [result addObject:convertedObject ? convertedObject : (id)kCFNull];
+   }
+   return [result copy];
+ }
+ 
+-static NSDictionary *
+-convertJSIObjectToNSDictionary(jsi::Runtime &runtime, const jsi::Object &value, std::shared_ptr<CallInvoker> jsInvoker)
++static NSDictionary *convertJSIObjectToNSDictionary(
++    jsi::Runtime &runtime,
++    const jsi::Object &value,
++    std::shared_ptr<CallInvoker> jsInvoker,
++    BOOL useNSNull)
+ {
+   jsi::Array propertyNames = value.getPropertyNames(runtime);
+   size_t size = propertyNames.size(runtime);
+@@ -133,7 +139,7 @@ convertJSIObjectToNSDictionary(jsi::Runtime &runtime, const jsi::Object &value,
+   for (size_t i = 0; i < size; i++) {
+     jsi::String name = propertyNames.getValueAtIndex(runtime, i).getString(runtime);
+     NSString *k = convertJSIStringToNSString(runtime, name);
+-    id v = convertJSIValueToObjCObject(runtime, value.getProperty(runtime, name), jsInvoker);
++    id v = convertJSIValueToObjCObject(runtime, value.getProperty(runtime, name), jsInvoker, useNSNull);
+     if (v) {
+       result[k] = v;
+     }
+@@ -161,9 +167,21 @@ convertJSIFunctionToCallback(jsi::Runtime &rt, jsi::Function &&function, std::sh
+ 
+ id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker)
+ {
+-  if (value.isUndefined() || value.isNull()) {
++  return convertJSIValueToObjCObject(runtime, value, jsInvoker, NO);
++}
++
++id convertJSIValueToObjCObject(
++    jsi::Runtime &runtime,
++    const jsi::Value &value,
++    std::shared_ptr<CallInvoker> jsInvoker,
++    BOOL useNSNull)
++{
++  if (value.isUndefined() || (value.isNull() && !useNSNull)) {
+     return nil;
+   }
++  if (value.isNull() && useNSNull) {
++    return [NSNull null];
++  }
+   if (value.isBool()) {
+     return @(value.getBool());
+   }
+@@ -176,12 +194,12 @@ id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, s
+   if (value.isObject()) {
+     jsi::Object o = value.getObject(runtime);
+     if (o.isArray(runtime)) {
+-      return convertJSIArrayToNSArray(runtime, o.getArray(runtime), jsInvoker);
++      return convertJSIArrayToNSArray(runtime, o.getArray(runtime), jsInvoker, useNSNull);
+     }
+     if (o.isFunction(runtime)) {
+       return convertJSIFunctionToCallback(runtime, o.getFunction(runtime), jsInvoker);
+     }
+-    return convertJSIObjectToNSDictionary(runtime, o, jsInvoker);
++    return convertJSIObjectToNSDictionary(runtime, o, jsInvoker, useNSNull);
+   }
+ 
+   throw std::runtime_error("Unsupported jsi::Value kind");
