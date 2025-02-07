@@ -6,7 +6,6 @@ next: /migrating-to-v22
 
 > React Native Firebase has begun to deprecate the namespaced API (i.e firebase-js-sdk `< v9` chaining API). React Native Firebase will be moving to the modular API (i.e. firebase-js-sdk `>= v9`) in the next major release. See [migration guide](/migrating-to-v22) for more information.
 
-
 React Native Firebase is the officially recommended collection of packages that brings React Native support for all Firebase services on both Android and iOS apps.
 
 React Native Firebase fully supports React Native apps built using [React Native CLI](https://reactnative.dev/docs/environment-setup?guide=native) or using [Expo](https://docs.expo.dev/).
