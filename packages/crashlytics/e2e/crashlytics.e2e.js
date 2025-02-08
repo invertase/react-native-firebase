@@ -91,14 +91,13 @@ describe('crashlytics()', function () {
         // eslint-disable-next-line no-console
         console.warn = msg => {
           // we console.warn for deprecated API, can be removed when we move to v9
-          if (!msg.includes('v8 method is deprecated')) {
+          if (!msg.includes('method is deprecated')) {
             msg.should.containEql('expects an instance of Error');
             logged = true;
             // eslint-disable-next-line no-console
             console.warn = orig;
           }
         };
-
         firebase.crashlytics().recordError(1337);
         should.equal(logged, true);
       });
@@ -265,7 +264,7 @@ describe('crashlytics()', function () {
         // eslint-disable-next-line no-console
         console.warn = msg => {
           // we console.warn for deprecated API, can be removed when we move to v9
-          if (!msg.includes('v8 method is deprecated')) {
+          if (!msg.includes('method is deprecated')) {
             msg.should.containEql('expects an instance of Error');
             logged = true;
             // eslint-disable-next-line no-console

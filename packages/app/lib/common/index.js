@@ -362,10 +362,8 @@ export function warnIfNotModularCall(args, replacementMethodName = '') {
       return;
     }
   }
-  let message =
-    'This v8 method is deprecated and will be removed in the next major release ' +
-    'as part of move to match Firebase Web modular v9 SDK API.';
 
+  let message = v8deprecationMessage;
   if (replacementMethodName.length > 0) {
     message += ` Please use \`${replacementMethodName}\` instead.`;
   }
