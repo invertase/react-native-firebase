@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.7.3](https://github.com/invertase/react-native-firebase/compare/v21.7.2...v21.7.3) (2025-02-08)
+
+### Bug Fixes
+
+- use same deprecation message everywhere, correct tests for new message ([684081b](https://github.com/invertase/react-native-firebase/commit/684081b7bdc17bc314fce827972dca5b1a58e01b))
+
 ## [21.7.2](https://github.com/invertase/react-native-firebase/compare/v21.7.1...v21.7.2) (2025-02-05)
 
 ### Bug Fixes
