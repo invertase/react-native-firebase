@@ -145,7 +145,6 @@ export class ChatSession {
       .then(() => streamPromise)
       // This must be handled to avoid unhandled rejection, but jump
       // to the final catch block with a label to not log this error.
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .catch(_ignored => {
         throw new Error(SILENT_ERROR);
       })

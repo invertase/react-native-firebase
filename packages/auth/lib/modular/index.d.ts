@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-import { FirebaseApp } from '@firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { FirebaseAuthTypes, CallbackOrObserver, AuthListenerCallback } from '../index';
 import { firebase } from '..';
 
 import Auth = FirebaseAuthTypes.Module;
+import FirebaseApp = ReactNativeFirebase.FirebaseApp;
 
 /**
  * Returns the Auth instance associated with the provided FirebaseApp.
@@ -147,6 +148,7 @@ export function getMultiFactorResolver(
  * @param resolver - Optional. The popup redirect resolver.
  * @returns A promise that resolves with the user credentials or null.
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface PopupRedirectResolver {}
 
 export function getRedirectResult(

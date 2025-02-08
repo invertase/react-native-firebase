@@ -65,6 +65,7 @@ export interface SchemaShared<T> {
  * <code>{@link Schema}</code> classes.
  * @public
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface SchemaParams extends SchemaShared<SchemaInterface> {}
 
 /**

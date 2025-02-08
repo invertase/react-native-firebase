@@ -180,7 +180,7 @@ export async function makeRequest(
           message += ` ${JSON.stringify(json.error.details)}`;
           errorDetails = json.error.details;
         }
-      } catch (e) {
+      } catch (_) {
         // ignored
       }
       if (

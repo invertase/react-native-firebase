@@ -50,7 +50,7 @@ yarn add @react-native-firebase/database
 ---
 
 <p>
-  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png">
+  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase/invertase-rounded.png">
   <p align="left">
     Built and maintained with 💛 by <a href="https://invertase.io">Invertase</a>.
   </p>

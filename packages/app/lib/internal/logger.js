@@ -220,7 +220,7 @@ export function setUserLogHandler(logCallback, options) {
             } else {
               try {
                 return JSON.stringify(arg);
-              } catch (ignored) {
+              } catch (_ignored) {
                 return null;
               }
             }

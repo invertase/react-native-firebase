@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.7.3](https://github.com/invertase/react-native-firebase/compare/v21.7.2...v21.7.3) (2025-02-08)
+
+### Bug Fixes
+
+- **auth:** resolve type issue when migrating to v9 ([#8277](https://github.com/invertase/react-native-firebase/issues/8277)) ([f4e44ad](https://github.com/invertase/react-native-firebase/commit/f4e44ad50ec85604b7ba0ea835490f473ed5447c))
+- use same deprecation message everywhere, correct tests for new message ([684081b](https://github.com/invertase/react-native-firebase/commit/684081b7bdc17bc314fce827972dca5b1a58e01b))
+
+## [21.7.2](https://github.com/invertase/react-native-firebase/compare/v21.7.1...v21.7.2) (2025-02-05)
+
+### Bug Fixes
+
+- **android, auth:** adopt play-services-auth 21.3.0 ([5506164](https://github.com/invertase/react-native-firebase/commit/55061640f55312b1df2315df6d0fa053c19d25e5)), closes [/developers.google.com/android/guides/releases#december_09_2024](https://github.com/invertase//developers.google.com/android/guides/releases/issues/december_09_2024)
+- **app, android:** adopt firebase-android-sdk 33.8.0 ([14f3dd5](https://github.com/invertase/react-native-firebase/commit/14f3dd51d466d04fa92416d44035bf10194bfbee))
+- **firestore, ios:** account for filters in getAggregateFromServer with collection groups ([#8259](https://github.com/invertase/react-native-firebase/issues/8259)) ([c78dfe9](https://github.com/invertase/react-native-firebase/commit/c78dfe93bfa42922c4248a5fbe55afd8d491068f))
+
 ## [21.7.1](https://github.com/invertase/react-native-firebase/compare/v21.7.0...v21.7.1) (2025-01-20)
 
 ### Bug Fixes

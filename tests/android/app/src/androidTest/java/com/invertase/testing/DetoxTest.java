@@ -11,6 +11,7 @@ import androidx.test.rule.ActivityTestRule;
 import com.google.firebase.appcheck.debug.testing.DebugAppCheckTestHelper;
 
 import com.wix.detox.Detox;
+import com.wix.detox.config.DetoxConfig;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,7 +29,13 @@ public class DetoxTest {
 
   @Test
   public void runDetoxTests() {
-    Detox.runTests(mActivityRule);
+
+    DetoxConfig detoxConfig = new DetoxConfig();
+    detoxConfig.idlePolicyConfig.masterTimeoutSec = 90;
+    detoxConfig.idlePolicyConfig.idleResourceTimeoutSec = 60;
+    detoxConfig.rnContextLoadTimeoutSec = 2400;
+
+    Detox.runTests(mActivityRule, detoxConfig);
     dumpCoverageData();
   }
 

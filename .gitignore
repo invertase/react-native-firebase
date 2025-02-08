@@ -15,6 +15,7 @@
 bin/
 gen/
 out/
+tests/android/app/.cxx
 
 # Gradle files
 .gradle/

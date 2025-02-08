@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import { FirebaseApp } from '@firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { FirebaseRemoteConfigTypes } from '..';
 
 import RemoteConfig = FirebaseRemoteConfigTypes.Module;
@@ -24,6 +24,7 @@ import ConfigDefaults = FirebaseRemoteConfigTypes.ConfigDefaults;
 import ConfigSettings = FirebaseRemoteConfigTypes.ConfigSettings;
 import LastFetchStatusType = FirebaseRemoteConfigTypes.LastFetchStatusType;
 import RemoteConfigLogLevel = FirebaseRemoteConfigTypes.RemoteConfigLogLevel;
+import FirebaseApp = ReactNativeFirebase.FirebaseApp;
 
 /**
  * Returns a RemoteConfig instance for the given app.

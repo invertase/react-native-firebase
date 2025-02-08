@@ -121,7 +121,7 @@ export function getResponseStream<T>(inputStream: ReadableStream<string>): Reada
           while (match) {
             try {
               parsedResponse = JSON.parse(match[1]!);
-            } catch (e) {
+            } catch (_) {
               controller.error(
                 new VertexAIError(
                   VertexAIErrorCode.PARSE_FAILED,

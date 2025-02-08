@@ -120,6 +120,7 @@ mono-repo
 multidex
 Multidex
 namespace
+Namespaced
 namespaced
 natively
 NDK
@@ -134,6 +135,7 @@ OAuth
 onboarding
 onwards
 OpenID
+Perf
 perf
 performant
 personalization
@@ -164,6 +166,7 @@ RN60
 RN61
 RNFB
 RNFirebase
+RTDB
 SafetyNet
 Salakar
 scalable
@@ -214,6 +217,7 @@ v5
 v6
 v7
 v9
+v22
 Ventura
 VertexAI
 VPN

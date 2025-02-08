@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.7.3](https://github.com/invertase/react-native-firebase/compare/v21.7.2...v21.7.3) (2025-02-08)
+
+**Note:** Version bump only for package @react-native-firebase/dynamic-links
+
+## [21.7.2](https://github.com/invertase/react-native-firebase/compare/v21.7.1...v21.7.2) (2025-02-05)
+
+**Note:** Version bump only for package @react-native-firebase/dynamic-links
+
 ## [21.7.1](https://github.com/invertase/react-native-firebase/compare/v21.7.0...v21.7.1) (2025-01-20)
 
 **Note:** Version bump only for package @react-native-firebase/dynamic-links

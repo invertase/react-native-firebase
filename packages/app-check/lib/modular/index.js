@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -17,6 +16,8 @@
  */
 
 import { firebase } from '..';
+import { MODULAR_DEPRECATION_ARG } from '../../../app/lib/common';
+import CustomProvider from '../ReactNativeFirebaseAppCheckProvider';
 
 /**
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
@@ -35,11 +36,12 @@ import { firebase } from '..';
  */
 export async function initializeAppCheck(app, options) {
   if (app) {
-    await firebase.app(app.name).appCheck().initializeAppCheck(options);
+    const appCheck = firebase.app(app.name).appCheck();
+    await appCheck.initializeAppCheck.call(appCheck, options, MODULAR_DEPRECATION_ARG);
     return { app: firebase.app(app.name) };
   }
-
-  await firebase.app().appCheck().initializeAppCheck(options);
+  const appCheck = firebase.app().appCheck();
+  await appCheck.initializeAppCheck.call(appCheck, options, MODULAR_DEPRECATION_ARG);
   return { app: firebase.app() };
 }
 
@@ -51,7 +53,8 @@ export async function initializeAppCheck(app, options) {
  * @returns {Promise<AppCheckTokenResult>}
  */
 export function getToken(appCheckInstance, forceRefresh) {
-  return appCheckInstance.app.appCheck().getToken(forceRefresh);
+  const appCheck = appCheckInstance.app.appCheck();
+  return appCheck.getToken.call(appCheck, forceRefresh, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -61,22 +64,8 @@ export function getToken(appCheckInstance, forceRefresh) {
  * @returns {Promise<AppCheckTokenResult>}
  */
 export function getLimitedUseToken(appCheckInstance) {
-  return appCheckInstance.app.appCheck().getLimitedUseToken();
-}
-
-/**
- * Registers a listener to changes in the token state.
- * There can be more than one listener registered at the same time for one or more App Check instances.
- * The listeners call back on the UI thread whenever the current
- * token associated with this App Check instance changes.
- * @param {AppCheck} appCheckInstance - The App Check instance.
- * @param {PartialObserver<AppCheckTokenResult>} listener - The listener to register.
- * @returns {Unsubscribe}
- */
-export function addTokenListener(appCheckInstance, listener) {
-  // Not implemented on React Native
-  // See packages/app-check/lib/index.js:127
-  throw new Error('addTokenListener is not implemented on React Native');
+  const appCheck = appCheckInstance.app.appCheck();
+  return appCheck.getLimitedUseToken.call(appCheck, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -85,5 +74,33 @@ export function addTokenListener(appCheckInstance, listener) {
  * @param {boolean} isAutoRefreshEnabled - Whether to enable auto-refresh.
  */
 export function setTokenAutoRefreshEnabled(appCheckInstance, isAutoRefreshEnabled) {
-  return appCheckInstance.app.appCheck().setTokenAutoRefreshEnabled(isAutoRefreshEnabled);
+  const appCheck = appCheckInstance.app.appCheck();
+  return appCheck.setTokenAutoRefreshEnabled.call(
+    appCheck,
+    isAutoRefreshEnabled,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
+
+/**
+ * Registers a listener to changes in the token state. There can be more
+ * than one listener registered at the same time for one or more
+ * App Check instances. The listeners call back on the UI thread whenever
+ * the current token associated with this App Check instance changes.
+ *
+ * @param {AppCheck} appCheckInstance - The App Check instance.
+ * @param {PartialObserver<AppCheckTokenResult>} listener - The listener to register.
+ * @returns {Unsubscribe}
+ */
+export function onTokenChanged(appCheckInstance, onNextOrObserver, onError, onCompletion) {
+  const appCheck = appCheckInstance.app.appCheck();
+  return appCheck.onTokenChanged.call(
+    appCheck,
+    onNextOrObserver,
+    onError,
+    onCompletion,
+    MODULAR_DEPRECATION_ARG,
+  );
+}
+
+export { CustomProvider };

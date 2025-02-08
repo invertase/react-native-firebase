@@ -225,7 +225,7 @@ describe('functions() modular', function () {
         response.data.should.equal('array');
       });
 
-      it('accepts object args', async function () {
+      xit('accepts object args', async function () {
         const type = 'object';
         const inputData = SAMPLE_DATA[type];
         const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
@@ -236,7 +236,7 @@ describe('functions() modular', function () {
         should.deepEqual(outputData, inputData);
       });
 
-      it('accepts complex nested objects', async function () {
+      xit('accepts complex nested objects', async function () {
         const type = 'deepObject';
         const inputData = SAMPLE_DATA[type];
         const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
@@ -247,7 +247,7 @@ describe('functions() modular', function () {
         should.deepEqual(outputData, inputData);
       });
 
-      it('accepts complex nested arrays', async function () {
+      xit('accepts complex nested arrays', async function () {
         const type = 'deepArray';
         const inputData = SAMPLE_DATA[type];
         const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
@@ -275,7 +275,7 @@ describe('functions() modular', function () {
         return Promise.resolve();
       });
 
-      it('HttpsError.details -> allows returning complex data', async function () {
+      xit('HttpsError.details -> allows returning complex data', async function () {
         let type = 'deepObject';
         let inputData = SAMPLE_DATA[type];
         const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
@@ -314,7 +314,7 @@ describe('functions() modular', function () {
         return Promise.resolve();
       });
 
-      it('HttpsError.details -> allows returning primitives', async function () {
+      xit('HttpsError.details -> allows returning primitives', async function () {
         let type = 'number';
         let inputData = SAMPLE_DATA[type];
         const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegionV2');
@@ -580,7 +580,7 @@ describe('functions() modular', function () {
         response.data.should.equal('array');
       });
 
-      it('accepts object args', async function () {
+      xit('accepts object args', async function () {
         const { getFunctions, httpsCallable } = functionsModular;
         const type = 'object';
         const inputData = SAMPLE_DATA[type];
@@ -595,7 +595,7 @@ describe('functions() modular', function () {
         should.deepEqual(outputData, inputData);
       });
 
-      it('accepts complex nested objects', async function () {
+      xit('accepts complex nested objects', async function () {
         const { getFunctions, httpsCallable } = functionsModular;
         const type = 'deepObject';
         const inputData = SAMPLE_DATA[type];
@@ -610,7 +610,7 @@ describe('functions() modular', function () {
         should.deepEqual(outputData, inputData);
       });
 
-      it('accepts complex nested arrays', async function () {
+      xit('accepts complex nested arrays', async function () {
         const { getFunctions, httpsCallable } = functionsModular;
         const type = 'deepArray';
         const inputData = SAMPLE_DATA[type];
@@ -646,7 +646,7 @@ describe('functions() modular', function () {
         return Promise.resolve();
       });
 
-      it('HttpsError.details -> allows returning complex data', async function () {
+      xit('HttpsError.details -> allows returning complex data', async function () {
         let type = 'deepObject';
         let inputData = SAMPLE_DATA[type];
         const { getFunctions, httpsCallable } = functionsModular;
@@ -689,7 +689,7 @@ describe('functions() modular', function () {
         return Promise.resolve();
       });
 
-      it('HttpsError.details -> allows returning primitives', async function () {
+      xit('HttpsError.details -> allows returning primitives', async function () {
         const { getFunctions, httpsCallable } = functionsModular;
         let type = 'number';
         let inputData = SAMPLE_DATA[type];

@@ -196,7 +196,6 @@ export namespace FirebaseAppCheckTypes {
    */
   export type AppCheckListenerResult = AppCheckToken & { readonly appName: string };
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface Statics {
     // firebase.appCheck.* static props go here
     CustomProvider: typeof CustomProvider;

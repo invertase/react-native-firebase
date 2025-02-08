@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.7.3](https://github.com/invertase/react-native-firebase/compare/v21.7.2...v21.7.3) (2025-02-08)
+
+### Bug Fixes
+
+- **auth:** resolve type issue when migrating to v9 ([#8277](https://github.com/invertase/react-native-firebase/issues/8277)) ([f4e44ad](https://github.com/invertase/react-native-firebase/commit/f4e44ad50ec85604b7ba0ea835490f473ed5447c))
+
+## [21.7.2](https://github.com/invertase/react-native-firebase/compare/v21.7.1...v21.7.2) (2025-02-05)
+
+**Note:** Version bump only for package @react-native-firebase/perf
+
 ## [21.7.1](https://github.com/invertase/react-native-firebase/compare/v21.7.0...v21.7.1) (2025-01-20)
 
 **Note:** Version bump only for package @react-native-firebase/perf

@@ -60,7 +60,6 @@ export abstract class Schema implements SchemaInterface {
   [key: string]: unknown;
 
   constructor(schemaParams: SchemaInterface) {
-    // eslint-disable-next-line guard-for-in
     for (const paramKey in schemaParams) {
       this[paramKey] = schemaParams[paramKey];
     }
@@ -103,7 +102,6 @@ export abstract class Schema implements SchemaInterface {
     return new ObjectSchema(objectParams, objectParams.properties, objectParams.optionalProperties);
   }
 
-  // eslint-disable-next-line id-blacklist
   static string(stringParams?: SchemaParams): StringSchema {
     return new StringSchema(stringParams);
   }
@@ -116,12 +114,10 @@ export abstract class Schema implements SchemaInterface {
     return new IntegerSchema(integerParams);
   }
 
-  // eslint-disable-next-line id-blacklist
   static number(numberParams?: SchemaParams): NumberSchema {
     return new NumberSchema(numberParams);
   }
 
-  // eslint-disable-next-line id-blacklist
   static boolean(booleanParams?: SchemaParams): BooleanSchema {
     return new BooleanSchema(booleanParams);
   }
