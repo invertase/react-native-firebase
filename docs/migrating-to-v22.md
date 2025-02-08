@@ -15,9 +15,19 @@ globalThis.RNFB_SILENCE_V8_DEPRECATION_WARNINGS = true;
 
 # Migrating to React Native modular API
 
-React Native Firebase does not currently have documentation for modular API. A refresh of the React Native Firebase documentation is something we will be aiming to achieve in the near future. We're keen to move the project to TypeScript which will then allow us to generate reference documentation from those types.
+If you are familiar with the Firebase JS SDK, the upgrade will be a familiar process, following similar steps to [the migration guide](https://firebase.google.com/docs/web/modular-upgrade#refactor_to_the_modular_style) for firebase-js-sdk.
 
-However, if you are familiar with the Firebase JS SDK, it will be a much smoother process. React Native Firebase is using the same API as can be found on the official [Firebase JS SDK modular API documentation](https://firebase.google.com/docs/reference/js).
+React Native Firebase uses the same API as the official [Firebase JS SDK modular API documentation](https://firebase.google.com/docs/reference/js) so the same migration steps apply here, except there is no need for special "compat" imports as an intermediate step.
+
+The process will always follow the same steps for every API you use:
+
+- determine the new modular API function for the old namespaced API you are using
+- import that new modular API function
+- change the call from using the firebase module to access the API and passing parameters, to the new style of using the modular API function, passing in the firebase module object(s) required for it to work and then the parameters.
+
+ In the end, it should be a very mechanical process and can be done incrementally, one API call at a time.
+ 
+ There are concrete examples below to show the process 
 
 ## Firestore Deprecation Example
 

@@ -215,7 +215,7 @@ const mapOfDeprecationReplacements = {
 
 const v8deprecationMessage =
   'This method is deprecated (as well as all React Native Firebase namespaced API) and will be removed in the next major release ' +
-  'as part of move to match Firebase Web modular v9 SDK API. Please see migration guide for more details: https://rnfirebase.io/migrating-to-v22';
+  'as part of move to match Firebase Web modular SDK API. Please see migration guide for more details: https://rnfirebase.io/migrating-to-v22';
 
 export function deprecationConsoleWarning(nameSpace, methodName, instanceName, isModularMethod) {
   if (!isModularMethod) {
