@@ -213,7 +213,7 @@ const mapOfDeprecationReplacements = {
   },
 };
 
-const v8deprecationMessage =
+const modularDeprecationMessage =
   'This method is deprecated (as well as all React Native Firebase namespaced API) and will be removed in the next major release ' +
   'as part of move to match Firebase Web modular SDK API. Please see migration guide for more details: https://rnfirebase.io/migrating-to-v22';
 
@@ -226,7 +226,7 @@ export function deprecationConsoleWarning(nameSpace, methodName, instanceName, i
       if (instanceMap && deprecatedMethod) {
         const message = createMessage(nameSpace, methodName, instanceName);
 
-        if (!globalThis.RNFB_SILENCE_V8_DEPRECATION_WARNINGS) {
+        if (!globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS) {
           // eslint-disable-next-line no-console
           console.warn(message);
         }
@@ -253,9 +253,9 @@ export function createMessage(
       const replacementMethodName = instance[methodName];
 
       if (replacementMethodName !== NO_REPLACEMENT) {
-        return v8deprecationMessage + ` Please use \`${replacementMethodName}\` instead.`;
+        return modularDeprecationMessage + ` Please use \`${replacementMethodName}\` instead.`;
       } else {
-        return v8deprecationMessage;
+        return modularDeprecationMessage;
       }
     }
   }
@@ -363,12 +363,12 @@ export function warnIfNotModularCall(args, replacementMethodName = '') {
     }
   }
 
-  let message = v8deprecationMessage;
+  let message = modularDeprecationMessage;
   if (replacementMethodName.length > 0) {
     message += ` Please use \`${replacementMethodName}\` instead.`;
   }
 
-  if (!globalThis.RNFB_SILENCE_V8_DEPRECATION_WARNINGS) {
+  if (!globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS) {
     // eslint-disable-next-line no-console
     console.warn(message);
   }

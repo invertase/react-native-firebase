@@ -7,10 +7,10 @@ next: /typescript
 
 # Switching off warning logs
 
-You may notice an influx of console warning logs as we continue deprecating all existing namespaced API. If you would like to switch these logs off, you may set the following global property to `true` anywhere before you initialize Firebase.
+You may notice a lot of console warning logs as we deprecate the existing namespaced API. If you would like to switch these logs off, you may set the following global property to `true` anywhere before you initialize Firebase.
 
 ```js
-globalThis.RNFB_SILENCE_V8_DEPRECATION_WARNINGS = true;
+globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
 ```
 
 # Migrating to React Native modular API
