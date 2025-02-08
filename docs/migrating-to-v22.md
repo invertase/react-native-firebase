@@ -25,9 +25,9 @@ The process will always follow the same steps for every API you use:
 - import that new modular API function
 - change the call from using the firebase module to access the API and passing parameters, to the new style of using the modular API function, passing in the firebase module object(s) required for it to work and then the parameters.
 
- In the end, it should be a very mechanical process and can be done incrementally, one API call at a time.
- 
- There are concrete examples below to show the process 
+In the end, it should be a very mechanical process and can be done incrementally, one API call at a time.
+
+There are concrete examples below to show the process
 
 ## Firestore Deprecation Example
 
