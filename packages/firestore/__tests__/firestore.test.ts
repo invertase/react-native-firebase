@@ -15,6 +15,7 @@ import {
   CheckV9DeprecationFunction,
 } from '../../app/lib/common/unitTestUtils';
 
+import { getApp } from '../../app/lib/modular';
 import firestore, {
   firebase,
   connectFirestoreEmulator,
@@ -895,10 +896,9 @@ describe('Firestore', function () {
 
       it('firestore.settings()', function () {
         const firestore = getFirestore();
-        const app = firebase.app();
         firestoreRefV9Deprecation(
           // no equivalent settings method for firebase-js-sdk
-          () => initializeFirestore(app, {}),
+          () => initializeFirestore(getApp(), {}),
           () => firestore.settings({}),
           'settings',
         );

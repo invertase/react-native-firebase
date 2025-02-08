@@ -1,4 +1,4 @@
-import { firebase } from '..';
+import { getApp } from '@react-native-firebase/app';
 
 /**
  * @typedef {import("..").FirebaseApp} FirebaseApp
@@ -12,10 +12,10 @@ import { firebase } from '..';
  */
 export function getDatabase(app, url) {
   if (app) {
-    return firebase.app(app.name).database(url);
+    return getApp(app.name).database(url);
   }
 
-  return firebase.app().database(url);
+  return getApp().database(url);
 }
 
 /**

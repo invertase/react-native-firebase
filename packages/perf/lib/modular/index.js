@@ -24,7 +24,7 @@
  */
 
 import { isBoolean } from '@react-native-firebase/app/lib/common';
-import { firebase } from '..';
+import { getApp } from '@react-native-firebase/app';
 
 /**
  * Returns a Performance instance for the given app.
@@ -33,10 +33,10 @@ import { firebase } from '..';
  */
 export function getPerformance(app) {
   if (app) {
-    return firebase.app(app.name).perf();
+    return getApp(app.name).perf();
   }
 
-  return firebase.app().perf();
+  return getApp().perf();
 }
 
 /**
@@ -46,7 +46,7 @@ export function getPerformance(app) {
  * @returns {Performance}
  */
 export async function initializePerformance(app, settings) {
-  const perf = firebase.app(app.name).perf();
+  const perf = getApp(app.name).perf();
 
   if (settings && isBoolean(settings.dataCollectionEnabled)) {
     await perf.setPerformanceCollectionEnabled(settings.dataCollectionEnabled);

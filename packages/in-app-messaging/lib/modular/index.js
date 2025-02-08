@@ -1,4 +1,4 @@
-import { firebase } from '..';
+import { getApp } from '@react-native-firebase/app';
 
 /**
  * @typedef {import("..").FirebaseApp} FirebaseApp
@@ -9,7 +9,7 @@ import { firebase } from '..';
  * @returns {FirebaseInAppMessaging}
  */
 export function getInAppMessaging() {
-  return firebase.inAppMessaging();
+  return getApp().inAppMessaging();
 }
 
 /**
