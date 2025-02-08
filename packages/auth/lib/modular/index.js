@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { firebase } from '..';
+import { getApp } from '@react-native-firebase/app';
 
 /**
  * @typedef {import('@firebase/app-types').FirebaseApp} FirebaseApp
@@ -47,9 +47,9 @@ import { firebase } from '..';
  */
 export function getAuth(app) {
   if (app) {
-    return firebase.app(app.name).auth();
+    return getApp(app.name).auth();
   }
-  return firebase.app().auth();
+  return getApp().auth();
 }
 
 /**
@@ -60,9 +60,9 @@ export function getAuth(app) {
  */
 export function initializeAuth(app, deps) {
   if (app) {
-    return firebase.app(app.name).auth();
+    return getApp(app.name).auth();
   }
-  return firebase.app().auth();
+  return getApp().auth();
 }
 
 /**

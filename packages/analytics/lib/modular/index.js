@@ -1,4 +1,4 @@
-import { firebase } from '..';
+import { getApp } from '@react-native-firebase/app';
 
 /**
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
@@ -48,9 +48,9 @@ import { firebase } from '..';
  */
 export function getAnalytics(app) {
   if (app) {
-    return firebase.app(app.name).analytics();
+    return getApp(app.name).analytics();
   }
-  return firebase.app().analytics();
+  return getApp().analytics();
 }
 
 /**
@@ -61,7 +61,7 @@ export function getAnalytics(app) {
  */
 // eslint-disable-next-line
 export function initializeAnalytics(app, options) {
-  return firebase.app(app.name).analytics();
+  return getApp(app.name).analytics();
 }
 
 /**

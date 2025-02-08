@@ -15,7 +15,7 @@
  *
  */
 
-import { firebase } from '..';
+import { getApp } from '@react-native-firebase/app';
 
 /**
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
@@ -35,10 +35,10 @@ import { firebase } from '..';
  */
 export function getRemoteConfig(app) {
   if (app) {
-    return firebase.app(app.name).remoteConfig();
+    return getApp(app.name).remoteConfig();
   }
 
-  return firebase.app().remoteConfig();
+  return getApp().remoteConfig();
 }
 
 /**

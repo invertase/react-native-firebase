@@ -15,7 +15,7 @@
  *
  */
 
-import { firebase } from '..';
+import { getApp } from '@react-native-firebase/app';
 
 /**
  * @typedef {import('..').FirebaseInstallationsTypes.Module} FirebaseInstallation
@@ -23,9 +23,9 @@ import { firebase } from '..';
 
 export function getInstallations(app) {
   if (app) {
-    return firebase.app(app.name).installations();
+    return getApp(app.name).installations();
   }
-  return firebase.app().installations();
+  return getApp().installations();
 }
 
 /**
@@ -33,7 +33,7 @@ export function getInstallations(app) {
  * @returns {Promise<void>}
  */
 export function deleteInstallations(installations) {
-  return firebase.app(installations.app.name).installations().delete();
+  return installations.delete();
 }
 
 /**
@@ -41,7 +41,7 @@ export function deleteInstallations(installations) {
  * @returns {Promise<string>}
  */
 export function getId(installations) {
-  return firebase.app(installations.app.name).installations().getId();
+  return installations.getId();
 }
 
 /**
@@ -50,7 +50,7 @@ export function getId(installations) {
  * @returns {Promise<string>}
  */
 export function getToken(installations, forceRefresh) {
-  return firebase.app(installations.app.name).installations().getToken(forceRefresh);
+  return installations.getToken(forceRefresh);
 }
 
 /**
@@ -58,7 +58,6 @@ export function getToken(installations, forceRefresh) {
  * @param {(string) => void} callback
  * @returns {() => void}
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function onIdChange(installations, callback) {
+export function onIdChange(_installations, _callback) {
   throw new Error('onIdChange() is unsupported by the React Native Firebase SDK.');
 }
