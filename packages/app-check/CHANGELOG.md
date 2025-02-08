@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.7.4](https://github.com/invertase/react-native-firebase/compare/v21.7.3...v21.7.4) (2025-02-08)
+
+### Bug Fixes
+
+- the init calls for modular should use modular getApp() ([79da98b](https://github.com/invertase/react-native-firebase/commit/79da98bf4ecf7860db61b2813b87673f1cd0adfd))
+
 ## [21.7.3](https://github.com/invertase/react-native-firebase/compare/v21.7.2...v21.7.3) (2025-02-08)
 
 **Note:** Version bump only for package @react-native-firebase/app-check
