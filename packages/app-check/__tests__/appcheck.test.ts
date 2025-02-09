@@ -1,4 +1,4 @@
-import { jest, beforeEach, describe, expect, it } from '@jest/globals';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
 // @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 
@@ -19,6 +19,16 @@ import {
 
 describe('appCheck()', function () {
   describe('namespace', function () {
+    beforeAll(async function () {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterAll(async function () {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('accessible from firebase.app()', function () {
       const app = firebase.app();
       expect(app.appCheck).toBeDefined();
