@@ -39,6 +39,7 @@ import {
   setDefaults,
   setDefaultsFromResource,
   onConfigUpdated,
+  setCustomSignals,
 } from '../lib';
 
 describe('remoteConfig()', function () {
@@ -215,6 +216,10 @@ describe('remoteConfig()', function () {
 
     it('`onConfigUpdated` function is properly exposed to end user', function () {
       expect(onConfigUpdated).toBeDefined();
+    });
+
+    it('`setCustomSignals` function is properly exposed to end user', function () {
+      expect(setCustomSignals).toBeDefined();
     });
   });
 });

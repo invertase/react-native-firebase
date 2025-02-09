@@ -954,5 +954,46 @@ describe('remoteConfig()', function () {
         // console.log('checking listener functionality across javascript layer reload');
       });
     });
+
+    describe('setCustomSignals()', function () {
+      it('should resolve with valid signal value; `string`, `number` or `null`', async function () {
+        const { setCustomSignals, getRemoteConfig } = remoteConfigModular;
+        const remoteConfig = getRemoteConfig(firebase.app());
+        // native SDKs just ignore invalid key/values (e.g. too long) and just log warning
+        const signals = {
+          string: 'string',
+          number: 123,
+          double: 123.456,
+          null: null,
+        };
+
+        const result = await setCustomSignals(remoteConfig, signals);
+        should(result).equal(null);
+      });
+
+      it('should reject with invalid signal value', async function () {
+        const { setCustomSignals, getRemoteConfig } = remoteConfigModular;
+        const remoteConfig = getRemoteConfig(firebase.app());
+
+        const invalidSignals = [
+          { signal1: true },
+          { signal1: [1, 2, 3] },
+          { signal1: { key: 'value' } },
+          { signal1: false },
+        ];
+
+        for (const signals of invalidSignals) {
+          try {
+            await setCustomSignals(remoteConfig, signals);
+            throw new Error('Expected setCustomSignals to throw an error');
+          } catch (error) {
+            error.message.should.containEql(
+              'firebase.remoteConfig().setCustomSignals(): Invalid type for custom signal',
+            );
+          }
+        }
+        return Promise.resolve();
+      });
+    });
   });
 });

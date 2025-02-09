@@ -25,8 +25,10 @@ import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.remoteconfig.CustomSignals;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigInfo;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
@@ -197,6 +199,40 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
     }
 
     return convertedConfigBundle;
+  }
+
+  Task<Void> setCustomSignals(String appName, HashMap<String, Object> customSignalsMap) {
+    TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
+
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+
+    getExecutor().execute(
+      () -> {
+        try {
+          CustomSignals.Builder customSignals = new CustomSignals.Builder();
+          for (Map.Entry<String, Object> entry : customSignalsMap.entrySet()) {
+            Object value = entry.getValue();
+            if (value instanceof String) {
+              customSignals.put(entry.getKey(), (String) value);
+            } else if (value instanceof Long) {
+              customSignals.put(entry.getKey(), (Long) value);
+            } else if (value instanceof Integer) {
+              customSignals.put(entry.getKey(), ((Integer) value).longValue());
+            } else if (value instanceof Double) {
+              customSignals.put(entry.getKey(), (Double) value);
+            } else if (value == null) {
+              customSignals.put(entry.getKey(), null);
+            }
+          }
+
+          Tasks.await(FirebaseRemoteConfig.getInstance(firebaseApp).setCustomSignals(customSignals.build()));
+          taskCompletionSource.setResult(null);
+        } catch (Exception e) {
+          taskCompletionSource.setException(e);
+        }
+      });
+
+    return taskCompletionSource.getTask();
   }
 
   public Map<String, Object> getConstantsForApp(String appName) {
