@@ -1,6 +1,21 @@
 import * as ReactNative from 'react-native';
 import { jest } from '@jest/globals';
 
+// Avoid log pollution with emulator URL remap messages during testing
+// eslint-disable-next-line no-console
+const logOrig = console.log;
+const logWithRemapMessageRemoved = (message?: any, ...optionalParams: any[]): void => {
+  if (
+    // Make sure it is a string before attempting to filter it out
+    (typeof message !== 'string' && !(message instanceof String)) ||
+    !message.includes('android_bypass_emulator_url_remap')
+  ) {
+    logOrig(message, ...optionalParams);
+  }
+};
+// eslint-disable-next-line no-console
+console.log = logWithRemapMessageRemoved;
+
 jest.doMock('react-native', () => {
   // @ts-ignore - react-native empty bridge config so native modules at least default init
   global.__fbBatchedBridgeConfig = {};
