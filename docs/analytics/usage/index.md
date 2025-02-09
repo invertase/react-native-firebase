@@ -146,6 +146,12 @@ import analytics from '@react-native-firebase/analytics';
 const appInstanceId = await analytics().getAppInstanceId();
 ```
 
+### Web / Other platform instance id
+
+Ensure you have installed an Async Storage provider for Firebase to preserve the instance id. Failure to do so means the instance id will be reset every time the application terminates.
+
+The main documentation for "other platform" support contains [an example.](/platforms#async-storage)
+
 # Disable Ad Id usage on iOS
 
 Apple has a strict ban on the usage of Ad Ids ("IDFA") in Kids Category apps. They will not accept any app
