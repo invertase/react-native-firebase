@@ -153,21 +153,35 @@ describe('Firestore', function () {
       });
 
       it('throws if host is not a string', async function () {
+        // eslint-disable-next-line no-console
+        const warnOrig = console.warn;
+        // eslint-disable-next-line no-console
+        console.warn = (_: string) => {};
         try {
           // @ts-ignore the type is incorrect *on purpose* to test type checking in javascript
           await firebase.firestore().settings({ host: 123 });
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (e: any) {
           return expect(e.message).toContain("'settings.host' must be a string value");
+        } finally {
+          // eslint-disable-next-line no-console
+          console.warn = warnOrig;
         }
       });
 
       it('throws if host is an empty string', async function () {
+        // eslint-disable-next-line no-console
+        const warnOrig = console.warn;
+        // eslint-disable-next-line no-console
+        console.warn = (_: string) => {};
         try {
           await firebase.firestore().settings({ host: '' });
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (e: any) {
           return expect(e.message).toContain("'settings.host' must not be an empty string");
+        } finally {
+          // eslint-disable-next-line no-console
+          console.warn = warnOrig;
         }
       });
 
