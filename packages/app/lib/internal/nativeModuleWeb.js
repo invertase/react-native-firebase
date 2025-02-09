@@ -10,11 +10,12 @@ export function getReactNativeModule(moduleName) {
   if (!nativeModule) {
     throw new Error(`Native module ${moduleName} is not registered.`);
   }
-  if (!global.RNFBDebug) {
+  if (!globalThis.RNFBDebug) {
     return nativeModule;
   }
   return new Proxy(nativeModule, {
     ownKeys(target) {
+      // FIXME - test in new arch context - I don't think Object.keys works
       return Object.keys(target);
     },
     get: (_, name) => {

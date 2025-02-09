@@ -66,7 +66,7 @@ ErrorUtils.setGlobalHandler((err, isFatal) => {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function loadTests(_) {
   describe('React Native Firebase', function () {
-    if (!global.RNFBDebug) {
+    if (!globalThis.RNFBDebug) {
       // Only retry tests if not debugging locally,
       // otherwise it gets annoying to debug.
       this.retries(4);
@@ -96,8 +96,8 @@ function loadTests(_) {
     });
 
     afterEach(async function afterEachTest() {
-      global.RNFBDebugLastTest = this.currentTest.title;
-      global.RNFBDebugInTestLeakDetection = false;
+      globalThis.RNFBDebugLastTest = this.currentTest.title;
+      globalThis.RNFBDebugInTestLeakDetection = false;
       if (RNFBDebug) {
         const emoji = this.currentTest.state === 'passed' ? '✅' : '❌';
         console.debug(`[TEST->Finish][${emoji}] ${this.currentTest.title}`);
@@ -129,7 +129,7 @@ function loadTests(_) {
         // Allow time for things to settle between tests.
         await Utils.sleep(50);
       }
-      global.RNFBDebugInTestLeakDetection = true;
+      globalThis.RNFBDebugInTestLeakDetection = true;
     });
 
     // Load tests for each Firebase module.

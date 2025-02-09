@@ -6,8 +6,8 @@ const PATH = `${PATH_ROOT}/${ID}`;
 const WRITE_ONLY_NAME = 'writeOnly.jpeg';
 
 exports.seed = async function seed(path) {
-  let leakDetectCurrent = global.RNFBDebugInTestLeakDetection;
-  global.RNFBDebugInTestLeakDetection = false;
+  let leakDetectCurrent = globalThis.RNFBDebugInTestLeakDetection;
+  globalThis.RNFBDebugInTestLeakDetection = false;
 
   try {
     // Add a write only file
@@ -27,7 +27,7 @@ exports.seed = async function seed(path) {
     console.error('unable to seed storage service with test fixtures');
     throw e;
   } finally {
-    global.RNFBDebugInTestLeakDetection = leakDetectCurrent;
+    globalThis.RNFBDebugInTestLeakDetection = leakDetectCurrent;
   }
 };
 

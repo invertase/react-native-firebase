@@ -47,7 +47,7 @@ import shouldMatchers from 'should';
 //            [RNFB<--Event][📣] storage_event <- {...}
 //            [RNFB<-Native][🟢] RNFBStorageModule.putString <- {...}
 //            [TEST->Finish][✅] uploads a base64url string
-global.RNFBDebug = false;
+globalThis.RNFBDebug = false;
 
 // RNFB packages.
 import '@react-native-firebase/analytics';
@@ -465,4 +465,4 @@ global.jet = {
 // TODO toggle this correct in CI only.
 global.isCI = true;
 // Used to tell our internals that we are running tests.
-global.RNFBTest = true;
+globalThis.RNFBTest = true;
