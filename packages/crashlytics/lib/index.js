@@ -16,12 +16,14 @@
  *
  */
 
+import { getApp } from '@react-native-firebase/app';
 import {
   isBoolean,
   isError,
   isObject,
   isString,
   isOther,
+  MODULAR_DEPRECATION_ARG,
 } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
@@ -171,5 +173,5 @@ export const firebase = getFirebaseRoot();
 
 // This will throw with 'Default App Not initialized' if the default app is not configured.
 if (!isOther) {
-  firebase.crashlytics();
+  firebase.crashlytics.call(null, getApp(), MODULAR_DEPRECATION_ARG);
 }
