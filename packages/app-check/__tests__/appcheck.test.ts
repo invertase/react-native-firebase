@@ -34,11 +34,11 @@ describe('appCheck()', function () {
         'secondaryFromNative',
       );
     });
-  });
 
-  describe('react-native-firebase provider', function () {
-    it('correctly creates a provider instance', function () {
-      expect(firebase.appCheck().newReactNativeFirebaseAppCheckProvider()).toBeDefined();
+    describe('react-native-firebase provider', function () {
+      it('correctly creates a provider instance', function () {
+        expect(firebase.appCheck().newReactNativeFirebaseAppCheckProvider()).toBeDefined();
+      });
     });
   });
 
