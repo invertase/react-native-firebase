@@ -1,4 +1,4 @@
-import { describe, expect, it, jest, beforeEach } from '@jest/globals';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
 // @ts-ignore test
 import { createDeprecationProxy } from '../../app/lib/common';
 // @ts-ignore test
@@ -83,6 +83,16 @@ const COLLECTION = 'firestore';
 
 describe('Firestore', function () {
   describe('namespace', function () {
+    beforeAll(async function () {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterAll(async function () {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('accessible from firebase.app()', function () {
       const app = firebase.app();
       expect(app.firestore).toBeDefined();
