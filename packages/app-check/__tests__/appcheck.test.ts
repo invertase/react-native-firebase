@@ -7,6 +7,11 @@ import {
   CheckV9DeprecationFunction,
 } from '../../app/lib/common/unitTestUtils';
 
+// @ts-ignore
+import { MODULAR_DEPRECATION_ARG } from '../../app/lib/common';
+
+import { getApp } from '../../app/lib';
+
 import {
   firebase,
   initializeAppCheck,
@@ -102,11 +107,10 @@ describe('appCheck()', function () {
 
     describe('AppCheck', function () {
       it('appCheck.activate()', function () {
-        const app = firebase.app();
-        const appCheck = firebase.appCheck();
+        const appCheck = firebase.appCheck.call(null, getApp(), MODULAR_DEPRECATION_ARG);
         appCheckRefV9Deprecation(
           () =>
-            initializeAppCheck(app, {
+            initializeAppCheck(getApp(), {
               provider: {
                 providerOptions: {
                   android: {
@@ -122,7 +126,7 @@ describe('appCheck()', function () {
       });
 
       it('appCheck.setTokenAutoRefreshEnabled()', function () {
-        const appCheck = firebase.appCheck();
+        const appCheck = firebase.appCheck.call(null, getApp(), MODULAR_DEPRECATION_ARG);
         appCheckRefV9Deprecation(
           () => setTokenAutoRefreshEnabled(appCheck, true),
           () => appCheck.setTokenAutoRefreshEnabled(true),
@@ -131,7 +135,7 @@ describe('appCheck()', function () {
       });
 
       it('appCheck.getToken()', function () {
-        const appCheck = firebase.appCheck();
+        const appCheck = firebase.appCheck.call(null, getApp(), MODULAR_DEPRECATION_ARG);
         appCheckRefV9Deprecation(
           () => getToken(appCheck, true),
           () => appCheck.getToken(true),
@@ -140,7 +144,7 @@ describe('appCheck()', function () {
       });
 
       it('appCheck.getLimitedUseToken()', function () {
-        const appCheck = firebase.appCheck();
+        const appCheck = firebase.appCheck.call(null, getApp(), MODULAR_DEPRECATION_ARG);
         appCheckRefV9Deprecation(
           () => getLimitedUseToken(appCheck),
           () => appCheck.getLimitedUseToken(),
@@ -149,7 +153,7 @@ describe('appCheck()', function () {
       });
 
       it('appCheck.onTokenChanged()', function () {
-        const appCheck = firebase.appCheck();
+        const appCheck = firebase.appCheck.call(null, getApp(), MODULAR_DEPRECATION_ARG);
         appCheckRefV9Deprecation(
           () =>
             onTokenChanged(
@@ -169,7 +173,11 @@ describe('appCheck()', function () {
       });
 
       it('CustomProvider', function () {
+        // @ts-ignore
+        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
         const appCheck = firebase.appCheck;
+        // @ts-ignore
+        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
         staticsRefV9Deprecation(
           () => CustomProvider,
           () => appCheck.CustomProvider,
