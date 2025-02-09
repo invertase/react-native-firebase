@@ -241,6 +241,8 @@ The following is an example `app.json` to enable the React Native Firebase modul
 
 If you are compiling your app locally, run [`npx expo prebuild --clean`](https://docs.expo.dev/workflow/prebuild/) to generate the native project directories. Then, follow the local app compilation steps described in [Local app development](https://docs.expo.dev/guides/local-app-development/) guide in Expo docs. If you prefer using a build service, refer to [EAS Build](https://docs.expo.dev/build/setup/).
 
+Note that if you have already installed the `Expo Go` app (using something like `npx expo run` instead of doing the `--prebuild` local development steps...) then you must uninstall it first. The `Expo Go` app does not contain most non-Expo native modules like react-native-firebase, and you will see errors related to the native modules not being loaded if you try to use it.
+
 #### Expo Tools for VSCode
 
 If you are using the [Expo Tools](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools) VSCode extension, the IntelliSense will display a list of available plugins when editing the `plugins` section of `app.json`.
