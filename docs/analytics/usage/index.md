@@ -254,7 +254,7 @@ When running on Android in debug, events won't be logged by default. If you want
 
 ## Other / Web
 
-To mark your events as "Debug" events for platforms using react-native-firebase "other" platform support, you need to set the global debug flag `global.RNFBDebug` to `true` then reload the app.
+To mark your events as "Debug" events for platforms using react-native-firebase "other" platform support, you need to set the global debug flag `globalThis.RNFBDebug` to `true` then reload the app.
 
 This toggle must be set to the value you want before accessing the analytics instance for the first time, so you should do it as early in your app's bootstrap sequence as possible.
 
@@ -271,7 +271,7 @@ import { name as appName } from './app.json';
 
 //    \/  Add these lines below
 // Enable debug mode for react-native-firebase:
-if (__DEV__) global.RNFBDebug = true;
+if (__DEV__) globalThis.RNFBDebug = true;
 //    /\  Add these lines above
 
 AppRegistry.registerComponent(appName, () => App);

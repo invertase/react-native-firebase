@@ -54,7 +54,7 @@ class AnalyticsApi {
     this.currentScreen = null;
 
     this._getInstallationId().catch(error => {
-      if (global.RNFBDebug) {
+      if (globalThis.RNFBDebug) {
         console.debug('[RNFB->Analytics][🔴] Error getting Firebase Installation Id:', error);
       } else {
         // No-op. This is a non-critical error.
@@ -128,7 +128,7 @@ class AnalyticsApi {
     const app = getApp(this.appName);
     const installations = getInstallations(app);
     const id = await getId(installations);
-    if (global.RNFBDebug) {
+    if (globalThis.RNFBDebug) {
       console.debug('[RNFB->Analytics][📊] Firebase Installation Id:', id);
     }
     this.installationId = id;
@@ -299,7 +299,7 @@ For example, to use React Native Async Storage:
 
       try {
         const url = `https://www.google-analytics.com/g/collect?${queryParams.toString()}`;
-        if (global.RNFBDebug) {
+        if (globalThis.RNFBDebug) {
           console.debug(`[RNFB-->Fetch][📊] Sending analytics call: ${url}`);
         }
         const response = await fetch(url, {
@@ -319,11 +319,11 @@ For example, to use React Native Async Storage:
             'user-agent': 'react-native-firebase',
           },
         });
-        if (global.RNFBDebug) {
+        if (globalThis.RNFBDebug) {
           console.debug(`[RNFB<--Fetch][📊] Response: ${response.status}`);
         }
       } catch (error) {
-        if (global.RNFBDebug) {
+        if (globalThis.RNFBDebug) {
           console.debug('[RNFB<--Fetch][🔴] Error sending Analytics event:', error);
         }
       }
