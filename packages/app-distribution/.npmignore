@@ -63,3 +63,4 @@ android/.settings
 *.coverage.json
 .circleci
 .eslintignore
+__tests__

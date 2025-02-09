@@ -67,3 +67,4 @@ android/.settings
 .eslintignore
 type-test.ts
 scripts
+__tests__
