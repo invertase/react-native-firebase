@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.8.0](https://github.com/invertase/react-native-firebase/compare/v21.7.4...v21.8.0) (2025-02-10)
+
+### Features
+
+- **remote-config:** support for custom signals ([#8274](https://github.com/invertase/react-native-firebase/issues/8274)) ([94c6a27](https://github.com/invertase/react-native-firebase/commit/94c6a27e6692138cd32394218a492d17d68de0f0))
+
+### Bug Fixes
+
+- **crashlytics:** internally use modular APIs during initialization ([140507f](https://github.com/invertase/react-native-firebase/commit/140507f4ddc09d004ba6f4f9c83ea1364c536c65))
+- **database:** database emulator config respects android_bypass_emulator_url_remap flag ([7bac573](https://github.com/invertase/react-native-firebase/commit/7bac5732d51e11f2d5c466f3064719e6b4f7a267))
+- do not ship types tests with released packages ([a870cf7](https://github.com/invertase/react-native-firebase/commit/a870cf749687ad2bd6a7a027540bdf29beeaffaa))
+- do not ship unit tests in released packages ([e71dadf](https://github.com/invertase/react-native-firebase/commit/e71dadfc1c0cad2e89c94100913af31ddf7d9c91))
+
 ## [21.7.4](https://github.com/invertase/react-native-firebase/compare/v21.7.3...v21.7.4) (2025-02-08)
 
 ### Bug Fixes
