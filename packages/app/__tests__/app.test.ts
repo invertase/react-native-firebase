@@ -44,18 +44,28 @@ describe('App', function () {
     it('`onLog()` is called when using Logger (currently only VertexAI uses `onLog()`)', function () {
       const logger = new Logger('@firebase/vertexai');
       const spy2 = jest.fn();
+      // eat the log messages that actually go through so we don't pollute test logs
+      // eslint-disable-next-line no-console
+      const origInfo = console.info;
+      // eslint-disable-next-line no-console
+      console.info = (_: string) => {};
 
-      onLog(spy2);
-      logger.info('test');
+      try {
+        onLog(spy2);
+        logger.info('test');
 
-      expect(spy2).toHaveBeenCalledWith(
-        expect.objectContaining({
-          args: ['test'],
-          level: 'info',
-          message: 'test',
-          type: '@firebase/vertexai',
-        }),
-      );
+        expect(spy2).toHaveBeenCalledWith(
+          expect.objectContaining({
+            args: ['test'],
+            level: 'info',
+            message: 'test',
+            type: '@firebase/vertexai',
+          }),
+        );
+      } finally {
+        // eslint-disable-next-line no-console
+        console.info = origInfo;
+      }
     });
   });
 
