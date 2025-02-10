@@ -17,9 +17,15 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, StatusBar, AppRegistry } from 'react-native';
+import { StyleSheet, View, StatusBar, AppRegistry, LogBox } from 'react-native';
 
 import { JetProvider, ConnectionText, StatusEmoji, StatusText } from 'jet';
+
+// react-native-macos 0.77.0 - pops an empty, non-dismissable logbox
+if (Platform.other) {
+  // ...unless you ignore all logs in logbox
+  LogBox.ignoreAllLogs();
+}
 
 const platformSupportedModules = [];
 
@@ -63,7 +69,6 @@ ErrorUtils.setGlobalHandler((err, isFatal) => {
   throw err;
 });
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function loadTests(_) {
   describe('React Native Firebase', function () {
     if (!globalThis.RNFBDebug) {
