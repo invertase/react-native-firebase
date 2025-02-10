@@ -57,11 +57,11 @@
     "react-native": "*"
   },
   "dependencies": {
-    "firebase": "11.2.0"
+    "firebase": "11.3.0"
   },
   "devDependencies": {
     "@react-native-async-storage/async-storage": "^2.1.1",
-    "expo": "^52.0.30"
+    "expo": "^52.0.32"
   },
   "peerDependenciesMeta": {
     "expo": {

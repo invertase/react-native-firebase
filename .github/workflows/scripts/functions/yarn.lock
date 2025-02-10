@@ -2310,9 +2310,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase-admin@npm:^13.0.2":
-  version: 13.0.2
-  resolution: "firebase-admin@npm:13.0.2"
+"firebase-admin@npm:^13.1.0":
+  version: 13.1.0
+  resolution: "firebase-admin@npm:13.1.0"
   dependencies:
     "@fastify/busboy": "npm:^3.0.0"
     "@firebase/database-compat": "npm:^2.0.0"
@@ -2331,7 +2331,7 @@ __metadata:
       optional: true
     "@google-cloud/storage":
       optional: true
-  checksum: 10/152251443263af6f32aa03e18949aaa0f1fdd702bbe00d833346c455df59260df3994e905b925058050c0a57772ced303cdf1aa6c0ede9b3ce42d6f6eb0499cf
+  checksum: 10/703de42f0f26e1368b00bebc7d148fbc149e8b0444b9688b103c6bcdc723e15b86fc52716087f37d0da5e89d4ddb9ea10b91b1fe27b01a9a56f7c8dfe73d8714
   languageName: node
   linkType: hard
 
@@ -2367,9 +2367,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase-tools@npm:^13.29.3":
-  version: 13.29.3
-  resolution: "firebase-tools@npm:13.29.3"
+"firebase-tools@npm:^13.30.0":
+  version: 13.30.0
+  resolution: "firebase-tools@npm:13.30.0"
   dependencies:
     "@electric-sql/pglite": "npm:^0.2.16"
     "@google-cloud/cloud-sql-connector": "npm:^1.3.3"
@@ -2441,7 +2441,7 @@ __metadata:
     yaml: "npm:^2.4.1"
   bin:
     firebase: lib/bin/firebase.js
-  checksum: 10/6da0c0a1eb7ebca0d94290b5ccaeac1be38a8862984ba78faca43bb4159d49ed1e5a11f2c07d7362f9363a2ebdf818cff4b6f9c6fd47280cfde3f7a36dc2e057
+  checksum: 10/5a33ad26843ed883de6ae1dc8f65de47938c2f21cb280eaf56c46fb225353d9a84c637d859c674d09d2afa3ea45665a36721d6864f6de10dd074165138ecea3f
   languageName: node
   linkType: hard
 
@@ -2575,10 +2575,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "functions@workspace:."
   dependencies:
-    firebase-admin: "npm:^13.0.2"
+    firebase-admin: "npm:^13.1.0"
     firebase-functions: "npm:^6.3.1"
     firebase-functions-test: "npm:^3.4.0"
-    firebase-tools: "npm:^13.29.3"
+    firebase-tools: "npm:^13.30.0"
     typescript: "npm:^5.7.3"
   languageName: unknown
   linkType: soft
