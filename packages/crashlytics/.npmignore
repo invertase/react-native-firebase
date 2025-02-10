@@ -67,3 +67,4 @@ android/.settings
 .circleci
 .eslintignore
 type-test.ts
+__tests__

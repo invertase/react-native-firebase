@@ -146,6 +146,12 @@ import analytics from '@react-native-firebase/analytics';
 const appInstanceId = await analytics().getAppInstanceId();
 ```
 
+### Web / Other platform instance id
+
+Ensure you have installed an Async Storage provider for Firebase to preserve the instance id. Failure to do so means the instance id will be reset every time the application terminates.
+
+The main documentation for "other platform" support contains [an example.](/platforms#async-storage)
+
 # Disable Ad Id usage on iOS
 
 Apple has a strict ban on the usage of Ad Ids ("IDFA") in Kids Category apps. They will not accept any app
@@ -232,7 +238,15 @@ Automatic screenview reporting can be turned off/on through `google_analytics_au
 }
 ```
 
-# Seeing Events in Firebase Console's DebugView
+# Seeing Events in Firebase Console Realtime View or Analytics DebugView
+
+Events show in the Firebase Console Realtime View within a few seconds of your app sending the events. This is an easy way to verify your events implementation as you develop your application.
+
+However, the Realtime View on Firebase Console offers no way to filter to a specific stream of events so after your app launches your development events will be mixed with all events from your app.
+
+To examine just your development events you will need to use the Analytics DebugView available on the main Google Analytics site for your app as documented in the "Monitor the events in DebugView" section of the [Google Analytics documentation](https://support.google.com/analytics/answer/7201382)
+
+Analytics events only show up in DebugView if marked correctly. Follow the instructions below for each platform to mark your events as Debug events.
 
 ## iOS
 
@@ -243,3 +257,28 @@ To always set the flag when running debug builds of your app, you can [edit your
 ## Android
 
 When running on Android in debug, events won't be logged by default. If you want to see events in DebugView in the Firebase Console when running debug builds, you'll need to run the following command on the terminal `adb shell setprop debug.firebase.analytics.app <package-name>` - where `<package-name>` should be replaced with your app's package name.
+
+## Other / Web
+
+To mark your events as "Debug" events for platforms using react-native-firebase "other" platform support, you need to set the global debug flag `globalThis.RNFBDebug` to `true` then reload the app.
+
+This toggle must be set to the value you want before accessing the analytics instance for the first time, so you should do it as early in your app's bootstrap sequence as possible.
+
+For example, you might modify your index.js file like so:
+
+```javascript
+/**
+ * @format
+ */
+
+import { AppRegistry } from 'react-native';
+import App from './App';
+import { name as appName } from './app.json';
+
+//    \/  Add these lines below
+// Enable debug mode for react-native-firebase:
+if (__DEV__) globalThis.RNFBDebug = true;
+//    /\  Add these lines above
+
+AppRegistry.registerComponent(appName, () => App);
+```

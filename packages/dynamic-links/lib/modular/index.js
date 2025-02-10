@@ -15,7 +15,7 @@
  *
  */
 
-import { firebase } from '..';
+import { getApp } from '@react-native-firebase/app';
 
 /**
  * @typedef {import("..").FirebaseApp} FirebaseApp
@@ -32,7 +32,7 @@ export { ShortLinkType } from '..';
  * @returns {FirebaseDynamicLinks}
  */
 export function getDynamicLinks() {
-  return firebase.dynamicLinks();
+  return getApp().dynamicLinks();
 }
 
 /**

@@ -172,7 +172,7 @@ class FirebaseStorageModule extends FirebaseModule {
         _host = '10.0.2.2';
         // eslint-disable-next-line no-console
         console.log(
-          'Mapping storage host to "10.0.2.2" for android emulators. Use real IP on real devices.',
+          'Mapping storage host to "10.0.2.2" for android emulators. Use real IP on real devices. You can bypass this behaviour with "android_bypass_emulator_url_remap" flag.',
         );
       }
     }

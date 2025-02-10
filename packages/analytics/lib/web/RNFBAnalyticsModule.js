@@ -16,7 +16,7 @@ function getAnalyticsApi() {
   }
   if (!analyticsInstances[measurementId]) {
     analyticsInstances[measurementId] = new AnalyticsApi('[DEFAULT]', measurementId);
-    if (global.RNFBDebug) {
+    if (globalThis.RNFBDebug) {
       analyticsInstances[measurementId].setDebug(true);
     }
   }

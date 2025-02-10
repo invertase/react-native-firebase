@@ -91,7 +91,7 @@ await firebase.initializeApp({ ... });
 
 If you do not provide an Async Storage implementation, we use an in memory implementation
 which will result in resetting the data every time your app is restarted, in the case of
-Firebase Auth this means your users have to sign in again.
+Firebase Auth this means your users have to sign in again and for Firebase Analytics the app will generate a new instance id and look like a new installation every time.
 
 ### Analytics
 

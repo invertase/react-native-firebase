@@ -1,4 +1,4 @@
-import { firebase } from '..';
+import { getApp } from '@react-native-firebase/app';
 
 /**
  * @typedef {import('..').FirebaseMessagingTypes} FirebaseMessagingTypes
@@ -19,10 +19,10 @@ import { firebase } from '..';
  */
 export function getMessaging(app) {
   if (app) {
-    return firebase.app(app.name).messaging();
+    return getApp(app.name).messaging();
   }
 
-  return firebase.app().messaging();
+  return getApp().messaging();
 }
 
 /**

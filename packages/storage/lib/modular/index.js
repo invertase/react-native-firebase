@@ -28,7 +28,7 @@
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
  */
 
-import { firebase } from '..';
+import { getApp } from '@react-native-firebase/app';
 
 /**
  * Returns a Storage instance for the given app.
@@ -39,17 +39,17 @@ import { firebase } from '..';
 export function getStorage(app, bucketUrl) {
   if (app) {
     if (bucketUrl != null) {
-      return firebase.app(app.name).storage(bucketUrl);
+      return getApp(app.name).storage(bucketUrl);
     }
 
-    return firebase.app(app.name).storage();
+    return getApp(app.name).storage();
   }
 
   if (bucketUrl != null) {
-    return firebase.app().storage(bucketUrl);
+    return getApp().storage(bucketUrl);
   }
 
-  return firebase.app().storage();
+  return getApp().storage();
 }
 
 /**

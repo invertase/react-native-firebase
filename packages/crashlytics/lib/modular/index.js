@@ -1,5 +1,5 @@
+import { getApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
-import { firebase } from '..';
 
 /**
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
@@ -16,7 +16,7 @@ import { firebase } from '..';
  * @returns {FirebaseCrashlytics}
  */
 export function getCrashlytics() {
-  return firebase.crashlytics();
+  return getApp().crashlytics();
 }
 
 /**

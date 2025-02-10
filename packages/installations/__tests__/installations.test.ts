@@ -1,4 +1,4 @@
-import { describe, expect, it } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
 
 import {
   firebase,
@@ -11,6 +11,16 @@ import {
 
 describe('installations()', function () {
   describe('namespace', function () {
+    beforeAll(async function () {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterAll(async function () {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('accessible from firebase.app()', function () {
       const app = firebase.app();
       expect(app.installations).toBeDefined();

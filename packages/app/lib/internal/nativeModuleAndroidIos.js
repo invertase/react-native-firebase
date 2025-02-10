@@ -9,7 +9,7 @@ import { NativeModules } from 'react-native';
  */
 export function getReactNativeModule(moduleName) {
   const nativeModule = NativeModules[moduleName];
-  if (!global.RNFBDebug) {
+  if (!globalThis.RNFBDebug) {
     return nativeModule;
   }
   return new Proxy(nativeModule, {

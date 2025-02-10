@@ -15,7 +15,7 @@
  *
  */
 
-import { firebase } from '..';
+import { getApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '../../../app/lib/common';
 import CustomProvider from '../ReactNativeFirebaseAppCheckProvider';
 
@@ -36,13 +36,13 @@ import CustomProvider from '../ReactNativeFirebaseAppCheckProvider';
  */
 export async function initializeAppCheck(app, options) {
   if (app) {
-    const appCheck = firebase.app(app.name).appCheck();
+    const appCheck = getApp(app.name).appCheck();
     await appCheck.initializeAppCheck.call(appCheck, options, MODULAR_DEPRECATION_ARG);
-    return { app: firebase.app(app.name) };
+    return { app: getApp(app.name) };
   }
-  const appCheck = firebase.app().appCheck();
+  const appCheck = getApp().appCheck();
   await appCheck.initializeAppCheck.call(appCheck, options, MODULAR_DEPRECATION_ARG);
-  return { app: firebase.app() };
+  return { app: getApp() };
 }
 
 /**

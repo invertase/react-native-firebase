@@ -1,4 +1,4 @@
-import { jest, beforeEach, describe, expect, it } from '@jest/globals';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
 // @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 
@@ -6,6 +6,11 @@ import {
   createCheckV9Deprecation,
   CheckV9DeprecationFunction,
 } from '../../app/lib/common/unitTestUtils';
+
+// @ts-ignore
+import { MODULAR_DEPRECATION_ARG } from '../../app/lib/common';
+
+import { getApp } from '../../app/lib';
 
 import {
   firebase,
@@ -19,6 +24,16 @@ import {
 
 describe('appCheck()', function () {
   describe('namespace', function () {
+    beforeAll(async function () {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterAll(async function () {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('accessible from firebase.app()', function () {
       const app = firebase.app();
       expect(app.appCheck).toBeDefined();
@@ -34,11 +49,11 @@ describe('appCheck()', function () {
         'secondaryFromNative',
       );
     });
-  });
 
-  describe('react-native-firebase provider', function () {
-    it('correctly creates a provider instance', function () {
-      expect(firebase.appCheck().newReactNativeFirebaseAppCheckProvider()).toBeDefined();
+    describe('react-native-firebase provider', function () {
+      it('correctly creates a provider instance', function () {
+        expect(firebase.appCheck().newReactNativeFirebaseAppCheckProvider()).toBeDefined();
+      });
     });
   });
 
@@ -92,11 +107,10 @@ describe('appCheck()', function () {
 
     describe('AppCheck', function () {
       it('appCheck.activate()', function () {
-        const app = firebase.app();
-        const appCheck = firebase.appCheck();
+        const appCheck = firebase.appCheck.call(null, getApp(), MODULAR_DEPRECATION_ARG);
         appCheckRefV9Deprecation(
           () =>
-            initializeAppCheck(app, {
+            initializeAppCheck(getApp(), {
               provider: {
                 providerOptions: {
                   android: {
@@ -112,7 +126,7 @@ describe('appCheck()', function () {
       });
 
       it('appCheck.setTokenAutoRefreshEnabled()', function () {
-        const appCheck = firebase.appCheck();
+        const appCheck = firebase.appCheck.call(null, getApp(), MODULAR_DEPRECATION_ARG);
         appCheckRefV9Deprecation(
           () => setTokenAutoRefreshEnabled(appCheck, true),
           () => appCheck.setTokenAutoRefreshEnabled(true),
@@ -121,7 +135,7 @@ describe('appCheck()', function () {
       });
 
       it('appCheck.getToken()', function () {
-        const appCheck = firebase.appCheck();
+        const appCheck = firebase.appCheck.call(null, getApp(), MODULAR_DEPRECATION_ARG);
         appCheckRefV9Deprecation(
           () => getToken(appCheck, true),
           () => appCheck.getToken(true),
@@ -130,7 +144,7 @@ describe('appCheck()', function () {
       });
 
       it('appCheck.getLimitedUseToken()', function () {
-        const appCheck = firebase.appCheck();
+        const appCheck = firebase.appCheck.call(null, getApp(), MODULAR_DEPRECATION_ARG);
         appCheckRefV9Deprecation(
           () => getLimitedUseToken(appCheck),
           () => appCheck.getLimitedUseToken(),
@@ -139,7 +153,7 @@ describe('appCheck()', function () {
       });
 
       it('appCheck.onTokenChanged()', function () {
-        const appCheck = firebase.appCheck();
+        const appCheck = firebase.appCheck.call(null, getApp(), MODULAR_DEPRECATION_ARG);
         appCheckRefV9Deprecation(
           () =>
             onTokenChanged(
@@ -159,7 +173,11 @@ describe('appCheck()', function () {
       });
 
       it('CustomProvider', function () {
+        // @ts-ignore
+        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
         const appCheck = firebase.appCheck;
+        // @ts-ignore
+        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
         staticsRefV9Deprecation(
           () => CustomProvider,
           () => appCheck.CustomProvider,

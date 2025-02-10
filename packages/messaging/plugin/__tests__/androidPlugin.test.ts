@@ -1,4 +1,4 @@
-import { describe, expect, it, jest } from '@jest/globals';
+import { describe, expect, it } from '@jest/globals';
 import { setFireBaseMessagingAndroidManifest } from '../src/android/setupFirebaseNotifationIcon';
 import { ExpoConfig } from '@expo/config-types';
 import expoConfigExample from './fixtures/expo-config-example';
@@ -50,14 +50,21 @@ describe('Config Plugin Android Tests', function () {
   });
 
   it('applies changes to app/src/main/AndroidManifest.xml without notification', async function () {
-    const warnSpy = jest.spyOn(console, 'warn');
+    // eslint-disable-next-line no-console
+    const warnOrig = console.warn;
+    let called = false;
+    // eslint-disable-next-line no-console
+    console.warn = (_: string) => {
+      called = true;
+    };
     const config: ExpoConfig = JSON.parse(JSON.stringify(expoConfigExample));
     const manifestApplication: ManifestApplication = JSON.parse(
       JSON.stringify(manifestApplicationExample),
     );
     config.notification = undefined;
     setFireBaseMessagingAndroidManifest(config, manifestApplication);
-    expect(warnSpy).toHaveBeenCalled();
-    warnSpy.mockRestore();
+    expect(called).toBeTruthy();
+    // eslint-disable-next-line no-console
+    console.warn = warnOrig;
   });
 });
