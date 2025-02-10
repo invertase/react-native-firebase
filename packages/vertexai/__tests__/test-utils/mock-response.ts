@@ -46,6 +46,16 @@ export function getMockResponseStreaming(
   const fullText = mocksLookup[filename];
 
   return {
+
+    // Really tangled typescript error here from our transitive dependencies.
+    // Ignoring it now, but uncomment and run `yarn lerna:prepare` in top-level
+    // of the repo to see if you get it or if it has gone away.
+    //
+    // last stack frame of the error is from node_modules/undici-types/fetch.d.ts
+    //
+    // > Property 'value' is optional in type 'ReadableStreamReadDoneResult<T>' but required in type '{ done: true; value: T | undefined; }'.
+    //
+    // @ts-ignore
     body: getChunkedStream(fullText!, chunkLength),
   };
 }
