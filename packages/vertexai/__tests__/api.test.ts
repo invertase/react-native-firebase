@@ -15,7 +15,7 @@
  *
  */
 import { describe, expect, it } from '@jest/globals';
-import firebase, { type ReactNativeFirebase } from '../../app/lib';
+import { getApp, type ReactNativeFirebase } from '../../app/lib';
 
 import { ModelParams, VertexAIErrorCode } from '../lib/types';
 import { VertexAIError } from '../lib/errors';
@@ -26,6 +26,7 @@ import { GenerativeModel } from '../lib/models/generative-model';
 
 import '../../auth/lib';
 import '../../app-check/lib';
+import { getAuth } from '../../auth/lib';
 
 const fakeVertexAI: VertexAI = {
   app: {
@@ -41,8 +42,8 @@ const fakeVertexAI: VertexAI = {
 
 describe('Top level API', () => {
   it('should allow auth and app check instances to be passed in', () => {
-    const app = firebase.app();
-    const auth = app.auth();
+    const app = getApp();
+    const auth = getAuth();
     const appCheck = app.appCheck();
 
     getVertexAI(app, { appCheck, auth });
