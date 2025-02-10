@@ -16,6 +16,8 @@
  */
 
 import { getApp } from '@react-native-firebase/app';
+import FacebookAuthProvider from '../providers/FacebookAuthProvider';
+export { FacebookAuthProvider };
 
 /**
  * @typedef {import('@firebase/app-types').FirebaseApp} FirebaseApp

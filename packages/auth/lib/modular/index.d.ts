@@ -300,7 +300,7 @@ export function signInWithEmailLink(
  * Interface representing an application verifier.
  */
 export interface ApplicationVerifier {
-  type: string;
+  readonly type: string;
   verify(): Promise<string>;
 }
 
@@ -315,7 +315,7 @@ export interface ApplicationVerifier {
 export function signInWithPhoneNumber(
   auth: Auth,
   phoneNumber: string,
-  appVerifier: ApplicationVerifier,
+  appVerifier?: ApplicationVerifier,
 ): Promise<FirebaseAuthTypes.ConfirmationResult>;
 
 /**
@@ -662,3 +662,18 @@ export function getAdditionalUserInfo(
  * @returns A promise that resolves with the custom auth domain.
  */
 export function getCustomAuthDomain(auth: Auth): Promise<string>;
+
+export interface FacebookAuthProvider {
+  /**
+   * The provider ID of the provider.
+   */
+  PROVIDER_ID: string;
+  /**
+   * Creates a new `AuthCredential`.
+   *
+   * @returns {@link auth.AuthCredential}.
+   * @param token A provider token.
+   * @param secret A provider secret.
+   */
+  credential: (token: string | null, secret?: string) => AuthCredential;
+}
