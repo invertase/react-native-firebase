@@ -190,6 +190,15 @@ export function onIdTokenChanged(auth, nextOrObserver) {
 }
 
 /**
+ * Revoke the given access token, Currently only supports Apple OAuth access tokens.
+ * @param auth 
+ * @param token 
+ */
+export async function revokeAccessToken(auth, token){
+  throw new Error('revokeAccessToken() is only supported on Web');
+} //TO DO: Add Support
+
+/**
  * Sends a password reset email to the given email address.
  * @param {Auth} auth - The Auth instance.
  * @param {string} email - The user's email address.
@@ -343,6 +352,17 @@ export async function updateCurrentUser(auth, user) {
 export function useDeviceLanguage(auth) {
   throw new Error('useDeviceLanguage is unsupported by the native Firebase SDKs');
 }
+
+/**
+ * Validates the password against the password policy configured for the project or tenant. 
+ * 
+ * @param auth - The Auth instance.
+ * @param password - The password to validate.
+ * 
+ */
+export function validatePassword(auth, password){
+  throw new Error('validatePassword is only supported on Web');
+}//TO DO: ADD support.
 
 /**
  * Sets the current language to the default device/browser preference.

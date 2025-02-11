@@ -58,6 +58,8 @@ export function applyActionCode(auth: Auth, oobCode: string): Promise<void>;
  * @param auth - The Auth instance.
  * @param callback - A callback function to run before the auth state changes.
  * @param onAbort - Optional. A callback function to run if the operation is aborted.
+ *
+ *
  */
 export function beforeAuthStateChanged(
   auth: Auth,
@@ -148,13 +150,20 @@ export function getMultiFactorResolver(
  * @param resolver - Optional. The popup redirect resolver.
  * @returns A promise that resolves with the user credentials or null.
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface PopupRedirectResolver {}
-
 export function getRedirectResult(
   auth: Auth,
   resolver?: PopupRedirectResolver,
 ): Promise<FirebaseAuthTypes.UserCredential | null>;
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface PopupRedirectResolver {}
+
+/** FROM JS DOCS
+ * Loads the reCAPTCHA configuration into the Auth instance.
+ * Does not work in a Node.js environment
+ * @param auth - The Auth instance.
+ */
+export function initializeRecaptchaConfig(auth: Auth): Promise<void>;
 
 /**
  * Checks if an incoming link is a sign-in with email link suitable for signInWithEmailLink().
@@ -190,6 +199,13 @@ export function onIdTokenChanged(
 ): () => void;
 
 /**
+ * Revoke the given access token, Currently only supports Apple OAuth access tokens.
+ * @param auth
+ * @param token
+ */
+export declare function revokeAccessToken(auth: Auth, token: string): Promise<void>; //TO DO: Add Support
+
+/**
  * Sends a password reset email to the given email address.
  *
  * @param auth - The Auth instance.
@@ -208,13 +224,13 @@ export function sendPasswordResetEmail(
  *
  * @param auth - The Auth instance.
  * @param email - The user's email address.
- * @param actionCodeSettings - Optional. Action code settings.
+ * @param actionCodeSettings - No longer optional from JS Docs. Action code settings.
  * @returns A promise that resolves when the email is sent.
  */
 export function sendSignInLinkToEmail(
   auth: Auth,
   email: string,
-  actionCodeSettings?: FirebaseAuthTypes.ActionCodeSettings,
+  actionCodeSettings: FirebaseAuthTypes.ActionCodeSettings,
 ): Promise<void>;
 
 /**
@@ -309,12 +325,14 @@ export interface ApplicationVerifier {
  *
  * @param auth - The Auth instance.
  * @param phoneNumber - The user's phone number.
+ * @param forceResend - Forces a new message to be sent if it was already recently sent.
  * @param appVerifier - The application verifier.
  * @returns A promise that resolves with the confirmation result.
  */
 export function signInWithPhoneNumber(
   auth: Auth,
   phoneNumber: string,
+  forceResend?: boolean,
   appVerifier?: ApplicationVerifier,
 ): Promise<FirebaseAuthTypes.ConfirmationResult>;
 
@@ -360,7 +378,7 @@ export function signInWithRedirect(
   auth: Auth,
   provider: FirebaseAuthTypes.AuthProvider,
   resolver?: PopupRedirectResolver,
-): Promise<void>;
+): Promise<never>; // In JS Docs
 
 /**
  * Signs out the current user.
@@ -377,7 +395,10 @@ export function signOut(auth: Auth): Promise<void>;
  * @param user - The user to set as the current user.
  * @returns A promise that resolves when the user is set.
  */
-export function updateCurrentUser(auth: Auth, user: FirebaseAuthTypes.User): Promise<void>;
+export function updateCurrentUser(
+  auth: Auth,
+  user: FirebaseAuthTypes.User | null, // in JS Docs
+): Promise<void>;
 
 /**
  * Sets the current language to the default device/browser preference.
@@ -385,6 +406,15 @@ export function updateCurrentUser(auth: Auth, user: FirebaseAuthTypes.User): Pro
  * @param auth - The Auth instance.
  */
 export function useDeviceLanguage(auth: Auth): void;
+
+/**
+ * Validates the password against the password policy configured for the project or tenant.
+ *
+ * @param auth - The Auth instance.
+ * @param password - The password to validate.
+ *
+ */
+export function validatePassword(auth: Auth, password: string): Promise<PasswordValidationStatus>; //TO DO: ADD support.
 
 /**
  * Sets the current language to the default device/browser preference.
@@ -464,7 +494,7 @@ export function linkWithCredential(
 export function linkWithPhoneNumber(
   user: FirebaseAuthTypes.User,
   phoneNumber: string,
-  appVerifier: ApplicationVerifier,
+  appVerifier?: ApplicationVerifier, // In JS Docs
 ): Promise<FirebaseAuthTypes.ConfirmationResult>;
 
 /**
@@ -526,7 +556,7 @@ export function reauthenticateWithCredential(
 export function reauthenticateWithPhoneNumber(
   user: FirebaseAuthTypes.User,
   phoneNumber: string,
-  appVerifier: ApplicationVerifier,
+  appVerifier?: ApplicationVerifier, // in JS Docs
 ): Promise<FirebaseAuthTypes.ConfirmationResult>;
 
 /**
@@ -642,7 +672,7 @@ export function updateProfile(
 export function verifyBeforeUpdateEmail(
   user: FirebaseAuthTypes.User,
   newEmail: string,
-  actionCodeSettings?: FirebaseAuthTypes.ActionCodeSettings,
+  actionCodeSettings?: FirebaseAuthTypes.ActionCodeSettings | null,
 ): Promise<void>;
 
 /**
@@ -663,17 +693,269 @@ export function getAdditionalUserInfo(
  */
 export function getCustomAuthDomain(auth: Auth): Promise<string>;
 
-export interface FacebookAuthProvider {
-  /**
-   * The provider ID of the provider.
-   */
+/**
+ * Apple Authentication Provider.
+ * Not in JS Docs
+ *
+ */
+export class AppleAuthProvider {
+  APPLE_SIGN_IN_METHOD: string;
   PROVIDER_ID: string;
   /**
    * Creates a new `AuthCredential`.
    *
    * @returns {@link auth.AuthCredential}.
-   * @param token A provider token.
-   * @param secret A provider secret.
+   * @param token - A provider token.
+   * @param secret - A provider secret.
    */
   credential: (token: string | null, secret?: string) => AuthCredential;
 }
+
+/**
+ * Apple Authentication Provider.
+ * Not in JS Docs
+ *
+ */
+export class EmailAuthProvider {
+  EMAIL_LINK_SIGN_IN_METHOD: string;
+  EMAIL_PASSWORD_SIGN_IN_METHOD: string;
+  PROVIDER_ID: string;
+  /**
+   * Creates a new `AuthCredential`.
+   *
+   * @returns {@link auth.AuthCredential}.
+   * @param token - A provider token.
+   * @param secret - A provider secret.
+   */
+  credential: (token: string, secret: string) => AuthCredential;
+  /**
+   * Initialize an AuthCredential using an email and
+   * an email link after a sign in with email link operation.
+   *
+   * @returns {@link auth.AuthCredential}.
+   * @param token - A provider token.
+   * @param secret - A provider secret.
+   */
+  credentialWithlink: (token: string, secret: string) => AuthCredential;
+}
+
+/**
+ * Facebook Authentication Provider.
+ * Defined as a class in JS Docs.
+ *
+ */
+export class FacebookAuthProvider {
+  FACEBOOK_SIGN_IN_METHOD: string;
+  PROVIDER_ID: string;
+  /**
+   * Creates a new `AuthCredential`.
+   *
+   * @returns {@link auth.AuthCredential}.
+   * @param token - A provider token.
+   * @param secret - A provider secret.
+   */
+  credential: (token: string | null, secret?: string) => AuthCredential;
+  /**
+   * Used to extract the underlying OAuthCredential from a
+   * AuthError which was thrown during a sign-in, link, or reauthenticate operation.
+   *
+   * @returns {@link auth.AuthCredential or null}.
+   * @param error - A Firebase error.
+   */
+  credentialFromError: (error: FirebaseAuthTypes.NativeFirebaseAuthError) => AuthCredential | null;
+  /**
+   * Used to extract the underlying OAuthCredential from a UserCredential.
+   *
+   * @returns {@link auth.AuthCredential or null}.
+   * @param userCredential - The user credential.
+   */
+  credentialFromResult: (userCredential: FirebaseAuthTypes.UserCredential) => AuthCredential | null;
+}
+
+/**
+ * Github Authentication Provider.
+ * In JS Docs
+ *
+ */
+export class GithubAuthProvider {
+  GITHUB_SIGN_IN_METHOD: string;
+  PROVIDER_ID: string;
+  /**
+   * Creates a new `AuthCredential`.
+   *
+   * @returns {@link auth.AuthCredential}.
+   * @param token - A provider token.
+   * @param secret - A provider secret.
+   */
+  credential: (token: string | null, secret?: string) => AuthCredential;
+}
+
+/**
+ * Google Authentication Provider.
+ * In JS Docs
+ *
+ */
+export class GoogleAuthProvider {
+  GOOGLE_SIGN_IN_METHOD: string;
+  PROVIDER_ID: string;
+  /**
+   * Creates a new `AuthCredential`.
+   *
+   * @returns {@link auth.AuthCredential}.
+   * @param token - A provider token.
+   * @param secret - A provider secret.
+   */
+  credential: (token: string | null, secret?: string) => AuthCredential;
+  /**
+   * Used to extract the underlying OAuthCredential from a
+   * AuthError which was thrown during a sign-in, link, or reauthenticate operation.
+   *
+   * @returns {@link auth.AuthCredential or null}.
+   * @param error - A Firebase error.
+   */
+  credentialFromError: (error: FirebaseAuthTypes.NativeFirebaseAuthError) => AuthCredential | null;
+  /**
+   * Used to extract the underlying OAuthCredential from a UserCredential.
+   *
+   * @returns {@link auth.AuthCredential or null}.
+   * @param userCredential - The user credential.
+   */
+  credentialFromResult: (userCredential: FirebaseAuthTypes.UserCredential) => AuthCredential | null;
+}
+
+/**
+ * OAuth Authentication Provider.
+ * In JS Docs.
+ *
+ */
+export class OAuthProvider {
+  GITHUB_SIGN_IN_METHOD: string;
+  PROVIDER_ID: string;
+  /**
+   * Creates a new `AuthCredential`.
+   *
+   * @returns {@link auth.AuthCredential}.
+   * @param token - A provider token.
+   * @param secret - A provider secret.
+   */
+  credential: (token: string | null, secret?: string) => AuthCredential;
+   /**
+   * Creates an OAuthCredential from a JSON string or a plain object.
+   *
+   * @returns {@link auth.AuthCredential or null}.
+   * @param error - A Firebase error.
+   */
+   credentialFromJSON: (json: object | string) => AuthCredential;
+  /**
+   * Used to extract the underlying OAuthCredential from a
+   * AuthError which was thrown during a sign-in, link, or reauthenticate operation.
+   *
+   * @returns {@link auth.AuthCredential or null}.
+   * @param error - A Firebase error.
+   */
+  credentialFromError: (error: FirebaseAuthTypes.NativeFirebaseAuthError) => AuthCredential | null;
+  /**
+   * Used to extract the underlying OAuthCredential from a UserCredential.
+   *
+   * @returns {@link auth.AuthCredential or null}.
+   * @param userCredential - The user credential.
+   */
+  credentialFromResult: (userCredential: FirebaseAuthTypes.UserCredential) => AuthCredential | null;
+}
+
+/**
+ * OIDC Authentication Provider.
+ * Not in JS Docs.
+ *
+ */
+export class OIDCAuthProvider {
+  OIDC_SIGN_IN_METHOD: string;
+  PROVIDER_ID: string;
+  /**
+   * Creates a new `AuthCredential`.
+   *
+   * @returns {@link auth.AuthCredential}.
+   * @param oidcSuffix - OIDC Suffix
+   * @param token - A provider token.
+   * @param secret - A provider secret.
+   */
+  credential: (oidcSuffix: string, token: string | null, secret?: string) => AuthCredential;
+}
+
+/**
+ * Phone Authentication Provider.
+ * Defined as a class in JS Docs.
+ *
+ */
+export class PhoneAuthProvider {
+  PHONE_SIGN_IN_METHOD: string;
+  PROVIDER_ID: string;
+  /**
+   * Creates a new `AuthCredential`.
+   *
+   * @returns {@link auth.AuthCredential}.
+   * @param token - A provider token.
+   * @param secret - A provider secret.
+   */
+  credential: (token: string | null, secret?: string) => AuthCredential;
+  /**
+   * Used to extract the underlying OAuthCredential from a
+   * AuthError which was thrown during a sign-in, link, or reauthenticate operation.
+   *
+   * @returns {@link auth.AuthCredential or null}.
+   * @param error - A Firebase error.
+   */
+  credentialFromError: (error: FirebaseAuthTypes.NativeFirebaseAuthError) => AuthCredential | null;
+  /**
+   * Used to extract the underlying OAuthCredential from a UserCredential.
+   *
+   * @returns {@link auth.AuthCredential or null}.
+   * @param userCredential - The user credential.
+   */
+  credentialFromResult: (userCredential: FirebaseAuthTypes.UserCredential) => AuthCredential | null;
+  /**
+   * Used to extract the underlying OAuthCredential from a UserCredential.
+   *
+   * @returns {string}. A Promise for a verification ID that can be passed to 
+   * PhoneAuthProvider.credential() to identify this flow.
+   * @param userCredential - The user credential.
+   */
+  verifyPhoneNumber(phoneOptions: PhoneInfoOptions | string, applicationVerifier?: ApplicationVerifier): Promise<string>;
+}
+
+/**
+ * Twitter Authentication Provider.
+ * In JS Docs
+ *
+ */
+export class TwitterAuthProvider {
+  GOOGLE_SIGN_IN_METHOD: string;
+  PROVIDER_ID: string;
+  /**
+   * Creates a new `AuthCredential`.
+   *
+   * @returns {@link auth.AuthCredential}.
+   * @param token - A provider token.
+   * @param secret - A provider secret.
+   */
+  credential: (token: string | null, secret?: string) => AuthCredential;
+  /**
+   * Used to extract the underlying OAuthCredential from a
+   * AuthError which was thrown during a sign-in, link, or reauthenticate operation.
+   *
+   * @returns {@link auth.AuthCredential or null}.
+   * @param error - A Firebase error.
+   */
+  credentialFromError: (error: FirebaseAuthTypes.NativeFirebaseAuthError) => AuthCredential | null;
+  /**
+   * Used to extract the underlying OAuthCredential from a UserCredential.
+   *
+   * @returns {@link auth.AuthCredential or null}.
+   * @param userCredential - The user credential.
+   */
+  credentialFromResult: (userCredential: FirebaseAuthTypes.UserCredential) => AuthCredential | null;
+}
+
+
+
+
