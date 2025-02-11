@@ -29,7 +29,6 @@
  */
 
 import { getApp } from '@react-native-firebase/app';
-
 /**
  * Returns a Storage instance for the given app.
  * @param app - FirebaseApp. Optional.
@@ -279,3 +278,5 @@ export function child(storageRef, path) {
 export function setMaxDownloadRetryTime(storage, time) {
   return storage.setMaxDownloadRetryTime(time);
 }
+
+export { StringFormat, TaskEvent, TaskState } from '../StorageStatics';

@@ -23,10 +23,16 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 import StorageReference from './StorageReference';
-import StorageStatics from './StorageStatics';
+import { StringFormat, TaskEvent, TaskState } from './StorageStatics';
 import { getGsUrlParts, getHttpUrlParts, handleStorageEvent } from './utils';
 import version from './version';
 import fallBackModule from './web/RNFBStorageModule';
+
+const statics = {
+  StringFormat,
+  TaskEvent,
+  TaskState,
+};
 
 const namespace = 'storage';
 const nativeEvents = ['storage_event'];
@@ -192,7 +198,7 @@ export const STATICS = StorageStatics;
 // import storage from '@react-native-firebase/storage';
 // storage().X(...);
 export default createModuleNamespace({
-  statics: StorageStatics,
+  statics,
   version,
   namespace,
   nativeEvents,
