@@ -17,7 +17,7 @@
 
 const providerId = 'facebook.com';
 
-export default class FacebookAuthProvider{
+export default class FacebookAuthProvider {
   constructor() {
     throw new Error('`new FacebookAuthProvider()` is not supported on the native Firebase SDKs.');
   }
