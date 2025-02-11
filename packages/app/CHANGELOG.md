@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.9.0](https://github.com/invertase/react-native-firebase/compare/v21.8.0...v21.9.0) (2025-02-11)
+
+### Features
+
+- **app, expo:** support rn77 AppDelegate.swift in config plugin ([#8324](https://github.com/invertase/react-native-firebase/issues/8324)) ([6a7867c](https://github.com/invertase/react-native-firebase/commit/6a7867c9366b851a6de62cc37b7834090caad98b))
+
+### Bug Fixes
+
+- firebase-ios-sdk 11.8.0 / firebase-android-sdk 33.9.0 ([67aba08](https://github.com/invertase/react-native-firebase/commit/67aba08c00aa46b72fcb1353bd428fa552b6686a))
+
 ## [21.8.0](https://github.com/invertase/react-native-firebase/compare/v21.7.4...v21.8.0) (2025-02-10)
 
 ### Bug Fixes

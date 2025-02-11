@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.9.0](https://github.com/invertase/react-native-firebase/compare/v21.8.0...v21.9.0) (2025-02-11)
+
+### Bug Fixes
+
+- **remote-config, ios:** avoid double-resolve when setting custom signals ([#8312](https://github.com/invertase/react-native-firebase/issues/8312)) ([16bad75](https://github.com/invertase/react-native-firebase/commit/16bad757c15fec5ccec35ce06195d661a60556a8))
+
 ## [21.8.0](https://github.com/invertase/react-native-firebase/compare/v21.7.4...v21.8.0) (2025-02-10)
 
 ### Features

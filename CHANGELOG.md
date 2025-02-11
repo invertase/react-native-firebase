@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.9.0](https://github.com/invertase/react-native-firebase/compare/v21.8.0...v21.9.0) (2025-02-11)
+
+### Features
+
+- **app, expo:** support rn77 AppDelegate.swift in config plugin ([#8324](https://github.com/invertase/react-native-firebase/issues/8324)) ([6a7867c](https://github.com/invertase/react-native-firebase/commit/6a7867c9366b851a6de62cc37b7834090caad98b))
+
+### Bug Fixes
+
+- firebase-ios-sdk 11.8.0 / firebase-android-sdk 33.9.0 ([67aba08](https://github.com/invertase/react-native-firebase/commit/67aba08c00aa46b72fcb1353bd428fa552b6686a))
+- **functions:** expose `HttpsErrorCode` for modular API ([bfb9296](https://github.com/invertase/react-native-firebase/commit/bfb929671a38e61a19d4e136fc22bb0552d22dba))
+- **ios:** patch containing upstream null handling fix for rn 0.76 ([fa0b28a](https://github.com/invertase/react-native-firebase/commit/fa0b28a7b86661524bc5dd701698478a43ec8998))
+- **remote-config, ios:** avoid double-resolve when setting custom signals ([#8312](https://github.com/invertase/react-native-firebase/issues/8312)) ([16bad75](https://github.com/invertase/react-native-firebase/commit/16bad757c15fec5ccec35ce06195d661a60556a8))
+
+### Reverts
+
+- Revert "test: temporarily disable some functions test - new arch data passing issues" ([1238be4](https://github.com/invertase/react-native-firebase/commit/1238be49d8007ccf5557194a68c95993b8b7e870))
+
 ## [21.8.0](https://github.com/invertase/react-native-firebase/compare/v21.7.4...v21.8.0) (2025-02-10)
 
 ### Features
