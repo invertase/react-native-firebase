@@ -44,5 +44,5 @@ jobs:
           yarn lerna version --yes --force-publish=*
           yarn lerna publish from-package --yes
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.MKEHARDY_NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
