@@ -17,6 +17,7 @@ jobs:
         with:
           ref: 'main'
           fetch-depth: 0
+          # Repository admin required to evade PR+checks branch protection
           token: ${{ secrets.GH_TOKEN }}
       - uses: actions/setup-node@v4
         with:
@@ -29,10 +30,12 @@ jobs:
           max_attempts: 3
           command: yarn && yarn lerna:prepare
       - name: GIT Setup
+        # Alter branding of release commit, despite GITHUB_TOKEN having real owner
         run: |
           git config --global user.name 'Invertase Publisher'
           git config --global user.email 'oss@invertase.io'
       - name: Publish Packages
+        # for lerna, you must write the token out to .npmrc like this
         run: |
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
           git diff --exit-code
@@ -40,5 +43,7 @@ jobs:
           yarn lerna version --yes --force-publish=*
           yarn lerna publish from-package --yes
         env:
+          # new style token w/scope for `@react-native-firebase` required
+          # to work with npmjs.com 2FA-or-automation-token package requirement
           NPM_TOKEN: ${{ secrets.MIKEHARDY_NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
