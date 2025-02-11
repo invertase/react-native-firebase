@@ -223,13 +223,13 @@ export function sendPasswordResetEmail(
  *
  * @param auth - The Auth instance.
  * @param email - The user's email address.
- * @param actionCodeSettings - No longer optional, Action code settings.
+ * @param actionCodeSettings - Optional, Action code settings.
  * @returns A promise that resolves when the email is sent.
  */
 export function sendSignInLinkToEmail(
   auth: Auth,
   email: string,
-  actionCodeSettings: FirebaseAuthTypes.ActionCodeSettings,
+  actionCodeSettings?: FirebaseAuthTypes.ActionCodeSettings,
 ): Promise<void>;
 
 /**
