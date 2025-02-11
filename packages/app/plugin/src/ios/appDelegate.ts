@@ -70,8 +70,7 @@ export function modifyObjcAppDelegate(contents: string): string {
 
 export function modifySwiftAppDelegate(contents: string): string {
   const methodInvocationBlock = `FirebaseApp.configure()`;
-  const methodInvocationLineMatcher =
-  /(?:self\.moduleName\s*=\s*"([^"]*)")/g;
+  const methodInvocationLineMatcher = /(?:self\.moduleName\s*=\s*"([^"]*)")/g;
 
   // Add import
   if (!contents.includes('import FirebaseCore')) {
@@ -87,9 +86,7 @@ import FirebaseCore`,
     return contents;
   }
 
-  if (
-    !methodInvocationLineMatcher.test(contents)
-  ) {
+  if (!methodInvocationLineMatcher.test(contents)) {
     WarningAggregator.addWarningIOS(
       '@react-native-firebase/app',
       'Unable to determine correct Firebase insertion point in AppDelegate.swift. Skipping Firebase addition.',
@@ -123,7 +120,8 @@ export async function modifyAppDelegateAsync(appDelegateFileInfo: AppDelegatePro
       newContents = modifySwiftAppDelegate(contents);
       break;
     }
-    default: throw new Error(`Cannot add Firebase code to AppDelegate of language "${language}"`);
+    default:
+      throw new Error(`Cannot add Firebase code to AppDelegate of language "${language}"`);
   }
 
   await fs.promises.writeFile(path, newContents);
