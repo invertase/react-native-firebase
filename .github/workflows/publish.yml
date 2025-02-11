@@ -34,14 +34,11 @@ jobs:
           git config --global user.email 'oss@invertase.io'
       - name: Publish Packages
         run: |
-          echo "@react-native-firebase:registry=https://registry.npmjs.org/" > ~/.npmrc
-          echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-          npm whoami
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
           git diff --exit-code
           yarn lerna changed
           yarn lerna version --yes --force-publish=*
           yarn lerna publish from-package --yes
         env:
-          NPM_TOKEN: ${{ secrets.MKEHARDY_NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.MIKEHARDY_NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
