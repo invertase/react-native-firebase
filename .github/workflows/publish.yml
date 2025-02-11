@@ -34,7 +34,6 @@ jobs:
           git config --global user.email 'oss@invertase.io'
       - name: Publish Packages
         run: |
-          yarn npm logout
           echo "@react-native-firebase:registry=https://registry.npmjs.org/" > ~/.npmrc
           echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
