@@ -6,6 +6,7 @@ import functions, {
   connectFunctionsEmulator,
   httpsCallable,
   httpsCallableFromUrl,
+  HttpsErrorCode,
 } from '../lib';
 
 describe('Cloud Functions', function () {
@@ -78,6 +79,10 @@ describe('Cloud Functions', function () {
 
     it('`httpsCallableFromUrl` function is properly exposed to end user', function () {
       expect(httpsCallableFromUrl).toBeDefined();
+    });
+
+    it('`HttpsErrorCode` function is properly exposed to end user', function () {
+      expect(HttpsErrorCode).toBeDefined();
     });
   });
 });
