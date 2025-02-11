@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.10.0](https://github.com/invertase/react-native-firebase/compare/v21.9.0...v21.10.0) (2025-02-11)
+
+### Features
+
+- **messaging, ios:** background completion handler from JS ([#8128](https://github.com/invertase/react-native-firebase/issues/8128)) ([f00fa8d](https://github.com/invertase/react-native-firebase/commit/f00fa8d26071c33b30a3d0a155e19a90a221a828))
+
 ## [21.9.0](https://github.com/invertase/react-native-firebase/compare/v21.8.0...v21.9.0) (2025-02-11)
 
 **Note:** Version bump only for package @react-native-firebase/messaging

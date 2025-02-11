@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.10.0](https://github.com/invertase/react-native-firebase/compare/v21.9.0...v21.10.0) (2025-02-11)
+
+### Features
+
+- **messaging, ios:** background completion handler from JS ([#8128](https://github.com/invertase/react-native-firebase/issues/8128)) ([f00fa8d](https://github.com/invertase/react-native-firebase/commit/f00fa8d26071c33b30a3d0a155e19a90a221a828))
+
+### Bug Fixes
+
+- explicit npm pre-logout not needed ([e7c7457](https://github.com/invertase/react-native-firebase/commit/e7c7457bdabe8524a7d9df54cba21093f46b3312))
+- further cleanup of npmjs registry / token publish interaction ([9f2a244](https://github.com/invertase/react-native-firebase/commit/9f2a244fa9a4a02b61afc8948c42300c1f05551d))
+- update npm publish token to work in concert with 2FA for publish ([a5ad380](https://github.com/invertase/react-native-firebase/commit/a5ad380359fa291e77e7e030f97a5ae4cfc8ae9c))
+
 ## [21.9.0](https://github.com/invertase/react-native-firebase/compare/v21.8.0...v21.9.0) (2025-02-11)
 
 ### Features
