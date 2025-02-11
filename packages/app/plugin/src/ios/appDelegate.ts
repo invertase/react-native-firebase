@@ -73,9 +73,6 @@ export function modifySwiftAppDelegate(contents: string): string {
   const methodInvocationLineMatcher =
   /(?:self\.moduleName\s*=\s*"([^"]*)")/g;
 
-  const fallbackInvocationLineMatcher =
-    /\s*override\s+func\s+application\(_ application:\s*UIApplication,\s*didFinishLaunchingWithOptions\s+launchOptions:.+\s*\{/g;
-
   // Add import
   if (!contents.includes('import FirebaseCore')) {
     contents = contents.replace(
@@ -91,8 +88,7 @@ import FirebaseCore`,
   }
 
   if (
-    !methodInvocationLineMatcher.test(contents) &&
-    !fallbackInvocationLineMatcher.test(contents)
+    !methodInvocationLineMatcher.test(contents)
   ) {
     WarningAggregator.addWarningIOS(
       '@react-native-firebase/app',
@@ -102,27 +98,14 @@ import FirebaseCore`,
   }
 
   // Add invocation
-  try {
-    return mergeContents({
-      tag: '@react-native-firebase/app-didFinishLaunchingWithOptions',
-      src: contents,
-      newSrc: methodInvocationBlock,
-      anchor: methodInvocationLineMatcher,
-      offset: 0, // new line will be inserted right above matched anchor
-      comment: '//',
-    }).contents;
-  } catch (_: any) {
-    // we fallback to another regex if the first one fails
-    return mergeContents({
-      tag: '@react-native-firebase/app-didFinishLaunchingWithOptions-fallback',
-      src: contents,
-      newSrc: methodInvocationBlock,
-      anchor: fallbackInvocationLineMatcher,
-      // new line will be inserted right below matched anchor
-      offset: 1,
-      comment: '//',
-    }).contents;
-  }
+  return mergeContents({
+    tag: '@react-native-firebase/app-didFinishLaunchingWithOptions',
+    src: contents,
+    newSrc: methodInvocationBlock,
+    anchor: methodInvocationLineMatcher,
+    offset: 0, // new line will be inserted right above matched anchor
+    comment: '//',
+  }).contents;
 }
 
 export async function modifyAppDelegateAsync(appDelegateFileInfo: AppDelegateProjectFile) {
