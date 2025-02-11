@@ -29,12 +29,8 @@ jobs:
           command: yarn && yarn lerna:prepare
       - name: GIT Setup
         run: |
-          git config --global user.name '@Salakar'
-          git config --global user.email 'Salakar@users.noreply.github.com'
-          git remote set-url origin git@github.com:$GITHUB_REPOSITORY
-      - uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          git config --global user.name 'Invertase Publisher'
+          git config --global user.email 'oss@invertase.io'
       - name: Publish Packages
         run: |
           yarn npm logout
@@ -48,5 +44,4 @@ jobs:
           yarn lerna publish from-package --yes
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
