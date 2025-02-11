@@ -30,6 +30,9 @@ import {
   isDeliveryMetricsExportToBigQueryEnabled,
   isSupported,
   experimentalSetDeliveryMetricsExportedToBigQueryEnabled,
+  AuthorizationStatus,
+  NotificationAndroidPriority,
+  NotificationAndroidVisibility,
 } from '../lib';
 
 describe('Firestore', function () {
@@ -148,6 +151,18 @@ describe('Firestore', function () {
 
     it('`experimentalSetDeliveryMetricsExportedToBigQueryEnabled` function is properly exposed to end user', function () {
       expect(experimentalSetDeliveryMetricsExportedToBigQueryEnabled).toBeDefined();
+    });
+
+    it('`AuthorizationStatus` static is exposed to end user', function () {
+      expect(AuthorizationStatus).toBeDefined();
+    });
+
+    it('`NotificationAndroidPriority` static is exposed to end user', function () {
+      expect(NotificationAndroidPriority).toBeDefined();
+    });
+
+    it('`NotificationAndroidVisibility` static is exposed to end user', function () {
+      expect(NotificationAndroidVisibility).toBeDefined();
     });
   });
 });
