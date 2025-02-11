@@ -40,6 +40,8 @@ import {
   setDefaultsFromResource,
   onConfigUpdated,
   setCustomSignals,
+  LastFetchStatus,
+  ValueSource,
 } from '../lib';
 
 describe('remoteConfig()', function () {
@@ -230,6 +232,14 @@ describe('remoteConfig()', function () {
 
     it('`setCustomSignals` function is properly exposed to end user', function () {
       expect(setCustomSignals).toBeDefined();
+    });
+
+    it('`LastFetchStatus` is properly exposed to end user', function () {
+      expect(LastFetchStatus).toBeDefined();
+    });
+
+    it('`ValueSource` is properly exposed to end user', function () {
+      expect(ValueSource).toBeDefined();
     });
   });
 });

@@ -25,6 +25,11 @@ import ConfigSettings = FirebaseRemoteConfigTypes.ConfigSettings;
 import LastFetchStatusType = FirebaseRemoteConfigTypes.LastFetchStatusType;
 import RemoteConfigLogLevel = FirebaseRemoteConfigTypes.RemoteConfigLogLevel;
 import FirebaseApp = ReactNativeFirebase.FirebaseApp;
+import LastFetchStatusInterface = FirebaseRemoteConfigTypes.LastFetchStatus;
+import ValueSourceInterface = FirebaseRemoteConfigTypes.ValueSource;
+
+export const LastFetchStatus: LastFetchStatusInterface;
+export const ValueSource: ValueSourceInterface;
 
 /**
  * Returns a RemoteConfig instance for the given app.

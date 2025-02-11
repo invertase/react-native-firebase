@@ -261,3 +261,5 @@ export async function setCustomSignals(remoteConfig, customSignals) {
   }
   return remoteConfig._promiseWithConstants(remoteConfig.native.setCustomSignals(customSignals));
 }
+
+export { LastFetchStatus, ValueSource } from '../statics';
