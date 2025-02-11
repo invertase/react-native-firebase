@@ -42,7 +42,8 @@ export class RequestUrl {
     public requestOptions?: RequestOptions,
   ) {}
   toString(): string {
-    const isTestEnvironment = process.env.RNFB_VERTEXAI_EMULATOR_URL;
+    // @ts-ignore
+    const isTestEnvironment = globalThis.RNFB_VERTEXAI_EMULATOR_URL;
     if (isTestEnvironment) {
       let emulatorUrl;
       logger.info(

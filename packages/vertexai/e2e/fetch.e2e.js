@@ -28,7 +28,7 @@ const fakeVertexAI = {
   location: 'us-central1',
 };
 // See emulator setup: packages/vertexai/lib/requests/request.ts
-process.env.RNFB_VERTEXAI_EMULATOR_URL = true;
+globalThis.RNFB_VERTEXAI_EMULATOR_URL = true;
 
 // It calls firebase functions emulator that mimics responses from VertexAI server
 describe('fetch requests()', function () {
