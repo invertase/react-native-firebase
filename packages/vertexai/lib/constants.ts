@@ -29,6 +29,6 @@ export const DEFAULT_API_VERSION = 'v1beta';
 
 export const PACKAGE_VERSION = version;
 
-export const LANGUAGE_TAG = 'gl-js';
+export const LANGUAGE_TAG = 'gl-rn';
 
 export const DEFAULT_FETCH_TIMEOUT_MS = 180 * 1000;
