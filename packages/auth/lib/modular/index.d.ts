@@ -59,7 +59,6 @@ export function applyActionCode(auth: Auth, oobCode: string): Promise<void>;
  * @param callback - A callback function to run before the auth state changes.
  * @param onAbort - Optional. A callback function to run if the operation is aborted.
  *
- *
  */
 export function beforeAuthStateChanged(
   auth: Auth,
@@ -158,7 +157,7 @@ export function getRedirectResult(
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface PopupRedirectResolver {}
 
-/** FROM JS DOCS
+/**
  * Loads the reCAPTCHA configuration into the Auth instance.
  * Does not work in a Node.js environment
  * @param auth - The Auth instance.
@@ -203,7 +202,7 @@ export function onIdTokenChanged(
  * @param auth
  * @param token
  */
-export declare function revokeAccessToken(auth: Auth, token: string): Promise<void>; //TO DO: Add Support
+export declare function revokeAccessToken(auth: Auth, token: string): Promise<void>;
 
 /**
  * Sends a password reset email to the given email address.
@@ -224,7 +223,7 @@ export function sendPasswordResetEmail(
  *
  * @param auth - The Auth instance.
  * @param email - The user's email address.
- * @param actionCodeSettings - No longer optional from JS Docs. Action code settings.
+ * @param actionCodeSettings - No longer optional, Action code settings.
  * @returns A promise that resolves when the email is sent.
  */
 export function sendSignInLinkToEmail(
@@ -378,7 +377,7 @@ export function signInWithRedirect(
   auth: Auth,
   provider: FirebaseAuthTypes.AuthProvider,
   resolver?: PopupRedirectResolver,
-): Promise<never>; // In JS Docs
+): Promise<never>;
 
 /**
  * Signs out the current user.
@@ -395,10 +394,7 @@ export function signOut(auth: Auth): Promise<void>;
  * @param user - The user to set as the current user.
  * @returns A promise that resolves when the user is set.
  */
-export function updateCurrentUser(
-  auth: Auth,
-  user: FirebaseAuthTypes.User | null, // in JS Docs
-): Promise<void>;
+export function updateCurrentUser(auth: Auth, user: FirebaseAuthTypes.User | null): Promise<void>;
 
 /**
  * Sets the current language to the default device/browser preference.
@@ -414,7 +410,7 @@ export function useDeviceLanguage(auth: Auth): void;
  * @param password - The password to validate.
  *
  */
-export function validatePassword(auth: Auth, password: string): Promise<PasswordValidationStatus>; //TO DO: ADD support.
+export function validatePassword(auth: Auth, password: string): Promise<PasswordValidationStatus>;
 
 /**
  * Sets the current language to the default device/browser preference.
@@ -494,7 +490,7 @@ export function linkWithCredential(
 export function linkWithPhoneNumber(
   user: FirebaseAuthTypes.User,
   phoneNumber: string,
-  appVerifier?: ApplicationVerifier, // In JS Docs
+  appVerifier?: ApplicationVerifier,
 ): Promise<FirebaseAuthTypes.ConfirmationResult>;
 
 /**
@@ -556,7 +552,7 @@ export function reauthenticateWithCredential(
 export function reauthenticateWithPhoneNumber(
   user: FirebaseAuthTypes.User,
   phoneNumber: string,
-  appVerifier?: ApplicationVerifier, // in JS Docs
+  appVerifier?: ApplicationVerifier,
 ): Promise<FirebaseAuthTypes.ConfirmationResult>;
 
 /**
@@ -695,7 +691,7 @@ export function getCustomAuthDomain(auth: Auth): Promise<string>;
 
 /**
  * Apple Authentication Provider.
- * Not in JS Docs
+ *
  *
  */
 export class AppleAuthProvider {
@@ -713,7 +709,7 @@ export class AppleAuthProvider {
 
 /**
  * Apple Authentication Provider.
- * Not in JS Docs
+ *
  *
  */
 export class EmailAuthProvider {
@@ -741,7 +737,7 @@ export class EmailAuthProvider {
 
 /**
  * Facebook Authentication Provider.
- * Defined as a class in JS Docs.
+ *
  *
  */
 export class FacebookAuthProvider {
@@ -774,7 +770,7 @@ export class FacebookAuthProvider {
 
 /**
  * Github Authentication Provider.
- * In JS Docs
+ *
  *
  */
 export class GithubAuthProvider {
@@ -792,7 +788,7 @@ export class GithubAuthProvider {
 
 /**
  * Google Authentication Provider.
- * In JS Docs
+ *
  *
  */
 export class GoogleAuthProvider {
@@ -825,7 +821,7 @@ export class GoogleAuthProvider {
 
 /**
  * OAuth Authentication Provider.
- * In JS Docs.
+ *
  *
  */
 export class OAuthProvider {
@@ -839,13 +835,13 @@ export class OAuthProvider {
    * @param secret - A provider secret.
    */
   credential: (token: string | null, secret?: string) => AuthCredential;
-   /**
+  /**
    * Creates an OAuthCredential from a JSON string or a plain object.
    *
    * @returns {@link auth.AuthCredential or null}
    * @param error - A Firebase error.
    */
-   credentialFromJSON: (json: object | string) => AuthCredential;
+  credentialFromJSON: (json: object | string) => AuthCredential;
   /**
    * Used to extract the underlying OAuthCredential from a
    * AuthError which was thrown during a sign-in, link, or reauthenticate operation.
@@ -865,7 +861,7 @@ export class OAuthProvider {
 
 /**
  * OIDC Authentication Provider.
- * Not in JS Docs.
+ *
  *
  */
 export class OIDCAuthProvider {
@@ -884,7 +880,7 @@ export class OIDCAuthProvider {
 
 /**
  * Phone Authentication Provider.
- * Defined as a class in JS Docs.
+ *
  *
  */
 export class PhoneAuthProvider {
@@ -916,16 +912,19 @@ export class PhoneAuthProvider {
   /**
    * Used to extract the underlying OAuthCredential from a UserCredential.
    *
-   * @returns {string} A Promise for a verification ID that can be passed to 
+   * @returns {string} A Promise for a verification ID that can be passed to
    * PhoneAuthProvider.credential() to identify this flow.
    * @param userCredential - The user credential.
    */
-  verifyPhoneNumber(phoneOptions: PhoneInfoOptions | string, applicationVerifier?: ApplicationVerifier): Promise<string>;
+  verifyPhoneNumber(
+    phoneOptions: PhoneInfoOptions | string,
+    applicationVerifier?: ApplicationVerifier,
+  ): Promise<string>;
 }
 
 /**
  * Twitter Authentication Provider.
- * In JS Docs
+ *
  *
  */
 export class TwitterAuthProvider {
@@ -955,7 +954,3 @@ export class TwitterAuthProvider {
    */
   credentialFromResult: (userCredential: FirebaseAuthTypes.UserCredential) => AuthCredential | null;
 }
-
-
-
-

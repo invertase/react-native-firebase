@@ -191,10 +191,10 @@ export function onIdTokenChanged(auth, nextOrObserver) {
 
 /**
  * Revoke the given access token, Currently only supports Apple OAuth access tokens.
- * @param auth 
- * @param token 
+ * @param auth - The Auth Instance.
+ * @param token - The Access Token
  */
-export async function revokeAccessToken(auth, token){
+export async function revokeAccessToken(auth, token) {
   throw new Error('revokeAccessToken() is only supported on Web');
 } //TO DO: Add Support
 
@@ -354,15 +354,15 @@ export function useDeviceLanguage(auth) {
 }
 
 /**
- * Validates the password against the password policy configured for the project or tenant. 
- * 
+ * Validates the password against the password policy configured for the project or tenant.
+ *
  * @param auth - The Auth instance.
  * @param password - The password to validate.
- * 
+ *
  */
-export function validatePassword(auth, password){
+export function validatePassword(auth, password) {
   throw new Error('validatePassword is only supported on Web');
-}//TO DO: ADD support.
+} //TO DO: ADD support.
 
 /**
  * Sets the current language to the default device/browser preference.
