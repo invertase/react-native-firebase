@@ -57,11 +57,11 @@
     "react-native": "*"
   },
   "dependencies": {
-    "firebase": "11.2.0"
+    "firebase": "11.3.0"
   },
   "devDependencies": {
     "@react-native-async-storage/async-storage": "^2.1.1",
-    "expo": "^52.0.30"
+    "expo": "^52.0.32"
   },
   "peerDependenciesMeta": {
     "expo": {
@@ -73,7 +73,7 @@
   },
   "sdkVersions": {
     "ios": {
-      "firebase": "11.7.0",
+      "firebase": "11.8.0",
       "iosTarget": "13.0",
       "macosTarget": "10.15",
       "tvosTarget": "13.0"
@@ -82,12 +82,12 @@
       "minSdk": 21,
       "targetSdk": 34,
       "compileSdk": 34,
-      "firebase": "33.8.0",
-      "firebaseCrashlyticsGradle": "3.0.2",
+      "firebase": "33.9.0",
+      "firebaseCrashlyticsGradle": "3.0.3",
       "firebasePerfGradle": "1.4.2",
       "gmsGoogleServicesGradle": "4.4.2",
       "playServicesAuth": "21.3.0",
-      "firebaseAppDistributionGradle": "5.1.0"
+      "firebaseAppDistributionGradle": "5.1.1"
     }
   }
 }

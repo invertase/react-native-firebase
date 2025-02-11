@@ -316,11 +316,9 @@ RCT_EXPORT_METHOD(setCustomSignals
           if (error != nil) {
             [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
           } else {
-            resolve(nil);
+            resolve([self resultWithConstants:[NSNull null] firebaseApp:firebaseApp]);
           }
         }];
-
-  resolve([self resultWithConstants:[NSNull null] firebaseApp:firebaseApp]);
 }
 
 #pragma mark -
