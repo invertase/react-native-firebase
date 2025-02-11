@@ -1,4 +1,4 @@
-import firebase from '.';
+import firebase, { getInitialLink } from '.';
 
 console.log(firebase.default().getInitialLink);
 
@@ -38,3 +38,6 @@ console.log(
 );
 
 console.log(firebase.dynamicLinks.ShortLinkType.SHORT);
+
+
+getInitialLink(firebase.dynamicLinks());
