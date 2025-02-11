@@ -481,3 +481,41 @@ exports[`Config Plugin iOS Tests works with AppDelegate.mm (RN 0.68+) 1`] = `
 @end
 "
 `;
+
+exports[`Config Plugin iOS Tests works with Swift AppDelegate (RN 0.77+) 1`] = `
+"import UIKit
+import React
+import React_RCTAppDelegate
+import ReactAppDependencyProvider
+import FirebaseCore
+
+@main
+class AppDelegate: RCTAppDelegate {
+  override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+// @generated begin @react-native-firebase/app-didFinishLaunchingWithOptions - expo prebuild (DO NOT MODIFY) sync-10e8520570672fd76b2403b7e1e27f5198a6349a
+FirebaseApp.configure()
+// @generated end @react-native-firebase/app-didFinishLaunchingWithOptions
+    self.moduleName = "HelloWorld"
+    self.dependencyProvider = RCTAppDependencyProvider()
+
+    // You can add your custom initial props in the dictionary below.
+    // They will be passed down to the ViewController used by React Native.
+    self.initialProps = [:]
+
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  override func sourceURL(for bridge: RCTBridge) -> URL? {
+    self.bundleURL()
+  }
+
+  override func bundleURL() -> URL? {
+#if DEBUG
+    RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
+#else
+    Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+#endif
+  }
+}
+"
+`;
