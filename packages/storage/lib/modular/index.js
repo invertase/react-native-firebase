@@ -29,6 +29,7 @@
  */
 
 import { getApp } from '@react-native-firebase/app';
+
 /**
  * Returns a Storage instance for the given app.
  * @param app - FirebaseApp. Optional.
