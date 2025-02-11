@@ -28,7 +28,8 @@ import { getGsUrlParts, getHttpUrlParts, handleStorageEvent } from './utils';
 import version from './version';
 import fallBackModule from './web/RNFBStorageModule';
 
-const statics = {
+// import { STATICS } from '@react-native-firebase/storage';
+export const statics = {
   StringFormat,
   TaskEvent,
   TaskState,
@@ -191,9 +192,6 @@ class FirebaseStorageModule extends FirebaseModule {
 
 // import { SDK_VERSION } from '@react-native-firebase/storage';
 export const SDK_VERSION = version;
-
-// import { STATICS } from '@react-native-firebase/storage';
-export const STATICS = StorageStatics;
 
 // import storage from '@react-native-firebase/storage';
 // storage().X(...);
