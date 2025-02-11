@@ -17,6 +17,7 @@ jobs:
         with:
           ref: 'main'
           fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN }}
       - uses: actions/setup-node@v4
         with:
           node-version: 20
