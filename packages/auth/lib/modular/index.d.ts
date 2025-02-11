@@ -689,7 +689,7 @@ export function getAdditionalUserInfo(
  * Returns the custom auth domain for the auth instance.
  *
  * @param auth - The Auth instance.
- * @returns A promise that resolves with the custom auth domain.
+ * @returns {string} A promise that resolves with the custom auth domain.
  */
 export function getCustomAuthDomain(auth: Auth): Promise<string>;
 
@@ -704,7 +704,7 @@ export class AppleAuthProvider {
   /**
    * Creates a new `AuthCredential`.
    *
-   * @returns {@link auth.AuthCredential}.
+   * @returns {@link auth.AuthCredential}
    * @param token - A provider token.
    * @param secret - A provider secret.
    */
@@ -723,7 +723,7 @@ export class EmailAuthProvider {
   /**
    * Creates a new `AuthCredential`.
    *
-   * @returns {@link auth.AuthCredential}.
+   * @returns {@link auth.AuthCredential}
    * @param token - A provider token.
    * @param secret - A provider secret.
    */
@@ -732,7 +732,7 @@ export class EmailAuthProvider {
    * Initialize an AuthCredential using an email and
    * an email link after a sign in with email link operation.
    *
-   * @returns {@link auth.AuthCredential}.
+   * @returns {@link auth.AuthCredential}
    * @param token - A provider token.
    * @param secret - A provider secret.
    */
@@ -750,7 +750,7 @@ export class FacebookAuthProvider {
   /**
    * Creates a new `AuthCredential`.
    *
-   * @returns {@link auth.AuthCredential}.
+   * @returns {@link auth.AuthCredential}
    * @param token - A provider token.
    * @param secret - A provider secret.
    */
@@ -759,14 +759,14 @@ export class FacebookAuthProvider {
    * Used to extract the underlying OAuthCredential from a
    * AuthError which was thrown during a sign-in, link, or reauthenticate operation.
    *
-   * @returns {@link auth.AuthCredential or null}.
+   * @returns {@link auth.AuthCredential or null}
    * @param error - A Firebase error.
    */
   credentialFromError: (error: FirebaseAuthTypes.NativeFirebaseAuthError) => AuthCredential | null;
   /**
    * Used to extract the underlying OAuthCredential from a UserCredential.
    *
-   * @returns {@link auth.AuthCredential or null}.
+   * @returns {@link auth.AuthCredential or null}
    * @param userCredential - The user credential.
    */
   credentialFromResult: (userCredential: FirebaseAuthTypes.UserCredential) => AuthCredential | null;
@@ -783,7 +783,7 @@ export class GithubAuthProvider {
   /**
    * Creates a new `AuthCredential`.
    *
-   * @returns {@link auth.AuthCredential}.
+   * @returns {@link auth.AuthCredential}
    * @param token - A provider token.
    * @param secret - A provider secret.
    */
@@ -801,7 +801,7 @@ export class GoogleAuthProvider {
   /**
    * Creates a new `AuthCredential`.
    *
-   * @returns {@link auth.AuthCredential}.
+   * @returns {@link auth.AuthCredential}
    * @param token - A provider token.
    * @param secret - A provider secret.
    */
@@ -810,14 +810,14 @@ export class GoogleAuthProvider {
    * Used to extract the underlying OAuthCredential from a
    * AuthError which was thrown during a sign-in, link, or reauthenticate operation.
    *
-   * @returns {@link auth.AuthCredential or null}.
+   * @returns {@link auth.AuthCredential or null}
    * @param error - A Firebase error.
    */
   credentialFromError: (error: FirebaseAuthTypes.NativeFirebaseAuthError) => AuthCredential | null;
   /**
    * Used to extract the underlying OAuthCredential from a UserCredential.
    *
-   * @returns {@link auth.AuthCredential or null}.
+   * @returns {@link auth.AuthCredential or null}
    * @param userCredential - The user credential.
    */
   credentialFromResult: (userCredential: FirebaseAuthTypes.UserCredential) => AuthCredential | null;
@@ -834,7 +834,7 @@ export class OAuthProvider {
   /**
    * Creates a new `AuthCredential`.
    *
-   * @returns {@link auth.AuthCredential}.
+   * @returns {@link auth.AuthCredential}
    * @param token - A provider token.
    * @param secret - A provider secret.
    */
@@ -842,7 +842,7 @@ export class OAuthProvider {
    /**
    * Creates an OAuthCredential from a JSON string or a plain object.
    *
-   * @returns {@link auth.AuthCredential or null}.
+   * @returns {@link auth.AuthCredential or null}
    * @param error - A Firebase error.
    */
    credentialFromJSON: (json: object | string) => AuthCredential;
@@ -850,14 +850,14 @@ export class OAuthProvider {
    * Used to extract the underlying OAuthCredential from a
    * AuthError which was thrown during a sign-in, link, or reauthenticate operation.
    *
-   * @returns {@link auth.AuthCredential or null}.
+   * @returns {@link auth.AuthCredential or null}
    * @param error - A Firebase error.
    */
   credentialFromError: (error: FirebaseAuthTypes.NativeFirebaseAuthError) => AuthCredential | null;
   /**
    * Used to extract the underlying OAuthCredential from a UserCredential.
    *
-   * @returns {@link auth.AuthCredential or null}.
+   * @returns {@link auth.AuthCredential or null}
    * @param userCredential - The user credential.
    */
   credentialFromResult: (userCredential: FirebaseAuthTypes.UserCredential) => AuthCredential | null;
@@ -874,7 +874,7 @@ export class OIDCAuthProvider {
   /**
    * Creates a new `AuthCredential`.
    *
-   * @returns {@link auth.AuthCredential}.
+   * @returns {@link auth.AuthCredential}
    * @param oidcSuffix - OIDC Suffix
    * @param token - A provider token.
    * @param secret - A provider secret.
@@ -893,7 +893,7 @@ export class PhoneAuthProvider {
   /**
    * Creates a new `AuthCredential`.
    *
-   * @returns {@link auth.AuthCredential}.
+   * @returns {@link auth.AuthCredential}
    * @param token - A provider token.
    * @param secret - A provider secret.
    */
@@ -902,21 +902,21 @@ export class PhoneAuthProvider {
    * Used to extract the underlying OAuthCredential from a
    * AuthError which was thrown during a sign-in, link, or reauthenticate operation.
    *
-   * @returns {@link auth.AuthCredential or null}.
+   * @returns {@link auth.AuthCredential or null}
    * @param error - A Firebase error.
    */
   credentialFromError: (error: FirebaseAuthTypes.NativeFirebaseAuthError) => AuthCredential | null;
   /**
    * Used to extract the underlying OAuthCredential from a UserCredential.
    *
-   * @returns {@link auth.AuthCredential or null}.
+   * @returns {@link auth.AuthCredential or null}
    * @param userCredential - The user credential.
    */
   credentialFromResult: (userCredential: FirebaseAuthTypes.UserCredential) => AuthCredential | null;
   /**
    * Used to extract the underlying OAuthCredential from a UserCredential.
    *
-   * @returns {string}. A Promise for a verification ID that can be passed to 
+   * @returns {string} A Promise for a verification ID that can be passed to 
    * PhoneAuthProvider.credential() to identify this flow.
    * @param userCredential - The user credential.
    */
@@ -934,7 +934,7 @@ export class TwitterAuthProvider {
   /**
    * Creates a new `AuthCredential`.
    *
-   * @returns {@link auth.AuthCredential}.
+   * @returns {@link auth.AuthCredential}
    * @param token - A provider token.
    * @param secret - A provider secret.
    */
@@ -943,14 +943,14 @@ export class TwitterAuthProvider {
    * Used to extract the underlying OAuthCredential from a
    * AuthError which was thrown during a sign-in, link, or reauthenticate operation.
    *
-   * @returns {@link auth.AuthCredential or null}.
+   * @returns {@link auth.AuthCredential or null}
    * @param error - A Firebase error.
    */
   credentialFromError: (error: FirebaseAuthTypes.NativeFirebaseAuthError) => AuthCredential | null;
   /**
    * Used to extract the underlying OAuthCredential from a UserCredential.
    *
-   * @returns {@link auth.AuthCredential or null}.
+   * @returns {@link auth.AuthCredential or null}
    * @param userCredential - The user credential.
    */
   credentialFromResult: (userCredential: FirebaseAuthTypes.UserCredential) => AuthCredential | null;
