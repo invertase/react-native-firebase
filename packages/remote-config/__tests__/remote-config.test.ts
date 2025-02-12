@@ -235,11 +235,16 @@ describe('remoteConfig()', function () {
     });
 
     it('`LastFetchStatus` is properly exposed to end user', function () {
-      expect(LastFetchStatus).toBeDefined();
+      expect(LastFetchStatus.FAILURE).toBeDefined();
+      expect(LastFetchStatus.NO_FETCH_YET).toBeDefined();
+      expect(LastFetchStatus.SUCCESS).toBeDefined();
+      expect(LastFetchStatus.THROTTLED).toBeDefined();
     });
 
     it('`ValueSource` is properly exposed to end user', function () {
-      expect(ValueSource).toBeDefined();
+      expect(ValueSource.DEFAULT).toBeDefined();
+      expect(ValueSource.REMOTE).toBeDefined();
+      expect(ValueSource.STATIC).toBeDefined();
     });
   });
 });
