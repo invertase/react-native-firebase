@@ -104,6 +104,15 @@
     }
     data[key] = userInfo[key];
   }
+      // Append apsDict[@"data"] if it exists
+    if (userInfo[@"aps"] != nil) {
+      NSDictionary *apsDict = userInfo[@"aps"];
+      
+      if (apsDict[@"data"] != nil && [apsDict[@"data"] isKindOfClass:[NSDictionary class]]) {
+        [data addEntriesFromDictionary:apsDict[@"data"]];
+      }
+    }
+    
   message[@"data"] = data;
 
   if (userInfo[@"aps"] != nil) {

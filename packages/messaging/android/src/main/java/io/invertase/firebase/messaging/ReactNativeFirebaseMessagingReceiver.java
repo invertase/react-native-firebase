@@ -29,8 +29,8 @@ public class ReactNativeFirebaseMessagingReceiver extends BroadcastReceiver {
     RemoteMessage remoteMessage = new RemoteMessage(intent.getExtras());
     ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
 
-    // Add a RemoteMessage if the message contains a notification payload
-    if (remoteMessage.getNotification() != null) {
+    // Add a RemoteMessage if the message contains a data payload
+    if (!remoteMessage.getData().isEmpty()) {
       notifications.put(remoteMessage.getMessageId(), remoteMessage);
       ReactNativeFirebaseMessagingStoreHelper.getInstance()
           .getMessagingStore()
