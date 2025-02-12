@@ -29,7 +29,7 @@ import version from './version';
 import fallBackModule from './web/RNFBStorageModule';
 
 // import { STATICS } from '@react-native-firebase/storage';
-export const statics = {
+const statics = {
   StringFormat,
   TaskEvent,
   TaskState,

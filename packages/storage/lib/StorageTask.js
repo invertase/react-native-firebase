@@ -16,7 +16,7 @@
  */
 
 import { isFunction, isNull, isObject } from '@react-native-firebase/app/lib/common';
-import StorageStatics from './StorageStatics';
+import { TaskEvent } from './StorageStatics';
 
 let TASK_ID = 0;
 
@@ -69,7 +69,7 @@ function wrapSnapshotEventListener(task, listenerFn, unsubscribe) {
 
 function addTaskEventListener(task, eventName, listener) {
   let _eventName = eventName;
-  if (_eventName !== StorageStatics.TaskEvent.STATE_CHANGED) {
+  if (_eventName !== TaskEvent.STATE_CHANGED) {
     _eventName = `${task._type}_${eventName}`;
   }
 
@@ -119,7 +119,7 @@ function subscribeToEvents(task, nextOrObserver, error, complete) {
   }
 
   if (_next) {
-    _nextSubscription = addTaskEventListener(task, StorageStatics.TaskEvent.STATE_CHANGED, _next);
+    _nextSubscription = addTaskEventListener(task, TaskEvent.STATE_CHANGED, _next);
   }
 
   if (_error) {
@@ -191,9 +191,9 @@ export default class StorageTask {
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask#on
    */
   on(event, nextOrObserver, error, complete) {
-    if (event !== StorageStatics.TaskEvent.STATE_CHANGED) {
+    if (event !== TaskEvent.STATE_CHANGED) {
       throw new Error(
-        `firebase.storage.StorageTask.on event argument must be a string with a value of '${StorageStatics.TaskEvent.STATE_CHANGED}'`,
+        `firebase.storage.StorageTask.on event argument must be a string with a value of '${TaskEvent.STATE_CHANGED}'`,
       );
     }
 
