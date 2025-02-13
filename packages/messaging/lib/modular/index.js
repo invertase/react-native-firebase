@@ -336,3 +336,9 @@ export function isSupported(messaging) {
 export function experimentalSetDeliveryMetricsExportedToBigQueryEnabled(messaging, enabled) {
   return messaging.setDeliveryMetricsExportToBigQuery(enabled);
 }
+
+export {
+  AuthorizationStatus,
+  NotificationAndroidPriority,
+  NotificationAndroidVisibility,
+} from '../statics';

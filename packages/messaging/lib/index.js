@@ -33,29 +33,13 @@ import {
 import { AppRegistry, Platform } from 'react-native';
 import remoteMessageOptions from './remoteMessageOptions';
 import version from './version';
+import {
+  AuthorizationStatus,
+  NotificationAndroidPriority,
+  NotificationAndroidVisibility,
+} from './statics';
 
-const statics = {
-  AuthorizationStatus: {
-    NOT_DETERMINED: -1,
-    DENIED: 0,
-    AUTHORIZED: 1,
-    PROVISIONAL: 2,
-    EPHEMERAL: 3,
-  },
-  NotificationAndroidPriority: {
-    PRIORITY_MIN: -2,
-    PRIORITY_LOW: -1,
-    PRIORITY_DEFAULT: 0,
-    PRIORITY_HIGH: 1,
-    PRIORITY_MAX: 2,
-  },
-  NotificationAndroidVisibility: {
-    VISIBILITY_SECRET: -1,
-    VISIBILITY_PRIVATE: 0,
-    VISIBILITY_PUBLIC: 1,
-  },
-};
-
+const statics = { AuthorizationStatus, NotificationAndroidPriority, NotificationAndroidVisibility };
 const namespace = 'messaging';
 
 const nativeModuleName = 'RNFBMessagingModule';
