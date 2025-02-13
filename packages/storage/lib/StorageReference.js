@@ -303,7 +303,7 @@ export default class StorageReference extends ReferenceBase {
         }
         _metadata.contentType = mediaType;
         _string = base64String;
-        _format = StorageStatics.StringFormat.BASE64;
+        _format = StringFormat.BASE64;
       }
     }
     return { _string, _metadata, _format };
