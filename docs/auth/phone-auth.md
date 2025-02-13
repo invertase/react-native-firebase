@@ -58,7 +58,7 @@ The example below demonstrates how you could setup such a flow within your own a
 ```jsx
 import React, { useState, useEffect } from 'react';
 import { Button, TextInput } from 'react-native';
-import auth from '@react-native-firebase/auth';
+import { getAuth } from '@react-native-firebase/auth';
 
 function PhoneSignIn() {
   // If null, no SMS has been sent
@@ -78,13 +78,13 @@ function PhoneSignIn() {
   }
 
   useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    const subscriber = getAuth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);
 
   // Handle the button press
   async function signInWithPhoneNumber(phoneNumber) {
-    const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
+    const confirmation = await getAuth().signInWithPhoneNumber(phoneNumber);
     setConfirm(confirmation);
   }
 
@@ -138,7 +138,7 @@ After successfully creating a user with an email and password (see Authenticatio
 ```jsx
 import React, { useState, useEffect } from 'react';
 import { Button, TextInput, Text } from 'react-native';
-import auth from '@react-native-firebase/auth';
+import auth, { getAuth } from '@react-native-firebase/auth';
 
 export default function PhoneVerification() {
   // Set an initializing state whilst Firebase connects
@@ -157,14 +157,17 @@ export default function PhoneVerification() {
   }
 
   useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    const subscriber = getAuth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);
 
   // Handle create account button press
   async function createAccount() {
     try {
-      await auth().createUserWithEmailAndPassword('jane.doe@example.com', 'SuperSecretPassword!');
+      await getAuth().createUserWithEmailAndPassword(
+        'jane.doe@example.com',
+        'SuperSecretPassword!',
+      );
       console.log('User account created & signed in!');
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {
@@ -180,7 +183,7 @@ export default function PhoneVerification() {
 
   // Handle the verify phone button press
   async function verifyPhoneNumber(phoneNumber) {
-    const confirmation = await auth().verifyPhoneNumber(phoneNumber);
+    const confirmation = await getAuth().verifyPhoneNumber(phoneNumber);
     setConfirm(confirmation);
   }
 
@@ -188,7 +191,7 @@ export default function PhoneVerification() {
   async function confirmCode() {
     try {
       const credential = auth.PhoneAuthProvider.credential(confirm.verificationId, code);
-      let userData = await auth().currentUser.linkWithCredential(credential);
+      let userData = await getAuth().currentUser.linkWithCredential(credential);
       setUser(userData.user);
     } catch (error) {
       if (error.code == 'auth/invalid-verification-code') {
