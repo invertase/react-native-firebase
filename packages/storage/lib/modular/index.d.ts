@@ -29,6 +29,10 @@ import SettableMetadata = FirebaseStorageTypes.SettableMetadata;
 import EmulatorMockTokenOptions = FirebaseStorageTypes.EmulatorMockTokenOptions;
 import FirebaseApp = ReactNativeFirebase.FirebaseApp;
 
+export const StringFormat: FirebaseStorageTypes.StringFormat;
+export const TaskEvent: FirebaseStorageTypes.TaskEvent;
+export const TaskState: FirebaseStorageTypes.TaskState;
+
 /**
  * Returns the existing default {@link Storage} instance that is associated with the
  * default {@link FirebaseApp}. The default storage bucket is used. If no instance exists, initializes a new
