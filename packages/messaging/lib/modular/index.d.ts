@@ -1,7 +1,7 @@
 import { FirebaseMessagingTypes } from '..';
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 
-import Messaging = FirebaseStorageTypes.Module;
+import Messaging = FirebaseMessagingTypes.Module;
 import FirebaseApp = ReactNativeFirebase.FirebaseApp;
 
 export const AuthorizationStatus = FirebaseMessagingTypes.AuthorizationStatus;
