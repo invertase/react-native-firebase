@@ -1768,7 +1768,7 @@ RCT_EXPORT_METHOD(useEmulator
 
   if (actionCodeSettings[keyLinkDomain]) {
     NSString *linkDomain = actionCodeSettings[keyLinkDomain];
-    settings.linkDomain = linkDomain;
+    [settings setLinkDomain:linkDomain];
   }
 
   if (actionCodeSettings[keyHandleCodeInApp]) {
