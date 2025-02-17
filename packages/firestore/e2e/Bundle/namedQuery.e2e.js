@@ -23,7 +23,8 @@ describe('firestore().namedQuery()', function () {
 
   beforeEach(async function () {
     await wipe();
-    return await firebase.firestore().loadBundle(getBundle());
+    const { getFirestore, loadBundle } = firestoreModular;
+    return await loadBundle(getFirestore(), getBundle());
   });
 
   // FIXME named query functionality appears to have an android-only issue

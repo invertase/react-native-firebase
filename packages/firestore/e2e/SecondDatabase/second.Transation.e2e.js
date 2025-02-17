@@ -699,7 +699,7 @@ describe('Second Database', function () {
         });
 
         it('should set data with merge fields', async function () {
-          const { runTransaction, doc, getDoc, setDoc } = firestoreModular;
+          const { runTransaction, doc, getDoc, setDoc, FieldPath } = firestoreModular;
           const db = firestore;
 
           const docRef = doc(db, `${COLLECTION}/transactions/transaction/set-mergefields`);
@@ -722,7 +722,7 @@ describe('Second Database', function () {
                 baz: 'foo',
               },
               {
-                mergeFields: ['bar', new firebase.firestore.FieldPath('baz')],
+                mergeFields: ['bar', new FieldPath('baz')],
               },
             );
           });
