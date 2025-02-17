@@ -17,6 +17,16 @@ const COLLECTION = 'firestore';
 
 describe('FirestoreQuery/FirestoreQueryModifiers', function () {
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('should not mutate previous queries (#2691)', async function () {
       const queryBefore = firebase.firestore().collection(COLLECTION).where('age', '>', 30);
       const queryAfter = queryBefore.orderBy('age');

@@ -18,6 +18,16 @@ const COLLECTION = 'firestore';
 
 describe('firestore.doc().isEqual()', function () {
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('throws if other is not a DocumentReference', function () {
       try {
         firebase.firestore().doc('bar/baz').isEqual(123);

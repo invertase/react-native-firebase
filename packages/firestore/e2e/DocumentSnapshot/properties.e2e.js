@@ -23,6 +23,16 @@ describe('firestore().doc() -> snapshot', function () {
   });
 
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('.exists -> returns a boolean for exists', async function () {
       const ref1 = firebase.firestore().doc(`${COLLECTION}/exists`);
       const ref2 = firebase.firestore().doc(`${COLLECTION}/idonotexist`);

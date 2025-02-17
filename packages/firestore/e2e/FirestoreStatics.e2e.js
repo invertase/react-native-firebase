@@ -17,6 +17,16 @@
 
 describe('firestore.X', function () {
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     describe('setLogLevel', function () {
       it('throws if invalid level', function () {
         try {
