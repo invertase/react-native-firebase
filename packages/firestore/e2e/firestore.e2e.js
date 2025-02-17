@@ -219,7 +219,8 @@ describe('firestore()', function () {
 
     describe('settings', function () {
       describe('serverTimestampBehavior', function () {
-        it("handles 'estimate'", async function () {
+        // TODO flakey in new Jet setup since it conflicts with the modular tests
+        xit("handles 'estimate'", async function () {
           // TODO(ehesp): Figure out how to call settings on other.
           if (Platform.other) {
             // Not supported on web lite sdk
@@ -246,7 +247,8 @@ describe('firestore()', function () {
           await ref.delete();
         });
 
-        it("handles 'previous'", async function () {
+        // TODO flakey in new Jet setup since it conflicts with the modular tests
+        xit("handles 'previous'", async function () {
           // TODO(ehesp): Figure out how to call settings on other.
           if (Platform.other) {
             // Not supported on web lite sdk
@@ -303,7 +305,8 @@ describe('firestore()', function () {
           await ref.delete();
         });
 
-        it("handles 'none'", async function () {
+        // works in isolation but not in suite
+        xit("handles 'none'", async function () {
           // TODO(ehesp): Figure out how to call settings on other.
           if (Platform.other) {
             return;
@@ -644,8 +647,12 @@ describe('firestore()', function () {
 
     describe('settings', function () {
       describe('serverTimestampBehavior', function () {
-        // TODO flakey in new Jet setup since it conflicts with the v8 tests
-        xit("handles 'estimate'", async function () {
+        it("handles 'estimate'", async function () {
+          // TODO(ehesp): Figure out how to call settings on other.
+          if (Platform.other) {
+            // Not supported on web lite sdk
+            return;
+          }
           const { initializeFirestore, doc, onSnapshot, setDoc, deleteDoc } = firestoreModular;
 
           const db = await initializeFirestore(firebase.app(), {
@@ -675,6 +682,11 @@ describe('firestore()', function () {
         });
 
         it("handles 'previous'", async function () {
+          // TODO(ehesp): Figure out how to call settings on other.
+          if (Platform.other) {
+            // Not supported on web lite sdk
+            return;
+          }
           const { initializeFirestore, doc, onSnapshot, setDoc, deleteDoc, snapshotEqual } =
             firestoreModular;
 
@@ -734,8 +746,12 @@ describe('firestore()', function () {
           await deleteDoc(ref);
         });
 
-        // FIXME: works in isolation but not in suite
-        xit("handles 'none'", async function () {
+        it("handles 'none'", async function () {
+          // TODO(ehesp): Figure out how to call settings on other.
+          if (Platform.other) {
+            // Not supported on web lite sdk
+            return;
+          }
           const { initializeFirestore, doc, onSnapshot, setDoc, deleteDoc } = firestoreModular;
 
           const db = await initializeFirestore(firebase.app(), {
