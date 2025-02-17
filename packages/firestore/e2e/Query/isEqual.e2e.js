@@ -152,7 +152,8 @@ describe('firestore().collection().isEqual()', function () {
 
     it('returns false when not equal (simple checks)', function () {
       const { getApp } = modular;
-      const { getFirestore, collection, query, where, orderBy, limit } = firestoreModular;
+      const { getFirestore, collection, query, where, orderBy, limit, queryEqual } =
+        firestoreModular;
       const db = getFirestore();
       const secondaryDb = getFirestore(getApp('secondaryFromNative'));
 
@@ -167,11 +168,11 @@ describe('firestore().collection().isEqual()', function () {
       const ref1 = query(collection(db, subCol), where('bar', '==', true));
       const ref2 = query(collection(db, subCol), where('bar', '==', true));
 
-      const eql1 = queryRef.isEqual(q1);
-      const eql2 = queryRef.isEqual(q2);
-      const eql3 = queryRef.isEqual(q3);
-      const eql4 = queryRef.isEqual(q4);
-      const eql5 = ref1.isEqual(ref2);
+      const eql1 = queryEqual(queryRef, q1);
+      const eql2 = queryEqual(queryRef, q2);
+      const eql3 = queryEqual(queryRef, q3);
+      const eql4 = queryEqual(queryRef, q4);
+      const eql5 = queryEqual(ref1, ref2);
 
       eql1.should.be.False();
       eql2.should.be.False();

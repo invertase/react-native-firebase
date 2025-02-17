@@ -224,3 +224,12 @@ export function getDocsFromServer(query) {
 export function deleteDoc(reference) {
   return reference.delete.call(reference, MODULAR_DEPRECATION_ARG);
 }
+
+/**
+ * @param {Query} left
+ * @param {Query} right
+ * @returns boolean true if left equals right
+ */
+export function queryEqual(left, right) {
+  return left.isEqual.call(left, right, MODULAR_DEPRECATION_ARG);
+}
