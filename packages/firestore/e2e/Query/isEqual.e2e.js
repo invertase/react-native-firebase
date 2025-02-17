@@ -140,9 +140,9 @@ describe('firestore().collection().isEqual()', function () {
 
   describe('modular', function () {
     it('throws if other is not a Query', function () {
-      const { getFirestore, collection } = firestoreModular;
+      const { getFirestore, collection, refEqual } = firestoreModular;
       try {
-        collection(getFirestore(), COLLECTION).isEqual(123);
+        refEqual(collection(getFirestore(), COLLECTION), 123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("'other' expected a Query instance");
