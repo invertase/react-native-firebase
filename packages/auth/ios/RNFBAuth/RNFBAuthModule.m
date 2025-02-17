@@ -1765,11 +1765,11 @@ RCT_EXPORT_METHOD(useEmulator
 
   NSString *url = actionCodeSettings[keyUrl];
   [settings setURL:[NSURL URLWithString:url]];
-  
-//  if(actionCodeSettings[keyLinkDomain]){
-//    NSString *LinkDomain = actionCodeSettings[keyLinkDomain];
-//    settings.link
-//  }
+
+  if (actionCodeSettings[keyLinkDomain]) {
+    NSString *linkDomain = actionCodeSettings[keyLinkDomain];
+    settings.linkDomain = linkDomain;
+  }
 
   if (actionCodeSettings[keyHandleCodeInApp]) {
     BOOL handleCodeInApp = [actionCodeSettings[keyHandleCodeInApp] boolValue];
