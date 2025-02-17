@@ -701,7 +701,7 @@ describe('firestore.Transaction', function () {
       });
 
       it('should set data with merge fields', async function () {
-        const { getFirestore, runTransaction, doc, getDoc, setDoc } = firestoreModular;
+        const { getFirestore, runTransaction, doc, getDoc, setDoc, FieldPath } = firestoreModular;
         const db = getFirestore();
 
         const docRef = doc(db, `${COLLECTION}/transactions/transaction/set-mergefields`);
@@ -724,7 +724,7 @@ describe('firestore.Transaction', function () {
               baz: 'foo',
             },
             {
-              mergeFields: ['bar', new firebase.firestore.FieldPath('baz')],
+              mergeFields: ['bar', new FieldPath('baz')],
             },
           );
         });

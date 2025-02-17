@@ -91,7 +91,7 @@ describe('firestore.doc() -> snapshot.isEqual()', function () {
       await setDoc(docRef, { foo: 'bar' });
 
       const docSnapshot1 = await getDoc(docRef);
-      const docSnapshot2 = await doc(db, `${COLLECTION}/idonotexist`).get();
+      const docSnapshot2 = await getDoc(doc(db, `${COLLECTION}/idonotexist`));
       await setDoc(docRef, { foo: 'baz' });
       const docSnapshot3 = await getDoc(docRef);
 

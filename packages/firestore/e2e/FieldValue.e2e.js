@@ -392,8 +392,8 @@ describe('firestore.FieldValue', function () {
         snapshot1.data().foo.nanoseconds.should.be.a.Number();
         const current = snapshot1.data().foo.nanoseconds;
         await Utils.sleep(100);
-        await updateDoc(ref, { foo: firebase.firestore.FieldValue.serverTimestamp() });
-        const snapshot2 = await ref.get();
+        await updateDoc(ref, { foo: serverTimestamp() });
+        const snapshot2 = await getDoc(ref);
         snapshot2.data().foo.nanoseconds.should.be.a.Number();
         should.equal(current === snapshot2.data().foo.nanoseconds, false);
         await deleteDoc(ref);

@@ -151,9 +151,10 @@ describe('firestore().collection().isEqual()', function () {
     });
 
     it('returns false when not equal (simple checks)', function () {
+      const { getApp } = modular;
       const { getFirestore, collection, query, where, orderBy, limit } = firestoreModular;
       const db = getFirestore();
-      const secondaryDb = getFirestore(firebase.app('secondaryFromNative'));
+      const secondaryDb = getFirestore(getApp('secondaryFromNative'));
 
       const subCol = `${COLLECTION}/isequal/simplechecks`;
       const queryRef = collection(db, subCol);

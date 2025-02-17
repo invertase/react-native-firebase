@@ -113,12 +113,12 @@ describe('FirestoreQuery/FirestoreQueryModifiers', function () {
 
       try {
         query(
-          collection(db, COLLECTION)
-            .where('foo', '==', 'bar')
-            .orderBy('bar')
-            .orderBy('foo')
-            .limit(1)
-            .endAt(2),
+          collection(db, COLLECTION),
+          where('foo', '==', 'bar'),
+          orderBy('bar'),
+          orderBy('foo'),
+          limit(1),
+          endAt(2),
         );
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {

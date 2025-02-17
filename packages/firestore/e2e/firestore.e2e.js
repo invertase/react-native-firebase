@@ -653,9 +653,18 @@ describe('firestore()', function () {
             // Not supported on web lite sdk
             return;
           }
-          const { initializeFirestore, doc, onSnapshot, setDoc, deleteDoc } = firestoreModular;
+          const { getApp } = modular;
+          const {
+            initializeFirestore,
+            doc,
+            onSnapshot,
+            setDoc,
+            deleteDoc,
+            serverTimestamp,
+            Timestamp,
+          } = firestoreModular;
 
-          const db = await initializeFirestore(firebase.app(), {
+          const db = await initializeFirestore(getApp(), {
             serverTimestampBehavior: 'estimate',
           });
           const ref = doc(db, `${COLLECTION}/serverTimestampEstimate`);
@@ -665,7 +674,7 @@ describe('firestore()', function () {
               ref,
               snapshot => {
                 try {
-                  should(snapshot.get('timestamp')).be.an.instanceOf(firebase.firestore.Timestamp);
+                  should(snapshot.get('timestamp')).be.an.instanceOf(Timestamp);
                   subscription();
                   resolve();
                 } catch (e) {
@@ -676,7 +685,7 @@ describe('firestore()', function () {
             );
           });
 
-          await setDoc(ref, { timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+          await setDoc(ref, { timestamp: serverTimestamp() });
           await promise;
           await deleteDoc(ref);
         });
@@ -687,10 +696,19 @@ describe('firestore()', function () {
             // Not supported on web lite sdk
             return;
           }
-          const { initializeFirestore, doc, onSnapshot, setDoc, deleteDoc, snapshotEqual } =
-            firestoreModular;
+          const { getApp } = modular;
+          const {
+            initializeFirestore,
+            doc,
+            onSnapshot,
+            setDoc,
+            deleteDoc,
+            snapshotEqual,
+            serverTimestamp,
+            Timestamp,
+          } = firestoreModular;
 
-          const db = await initializeFirestore(firebase.app(), {
+          const db = await initializeFirestore(getApp(), {
             serverTimestampBehavior: 'previous',
           });
           const ref = doc(db, `${COLLECTION}/serverTimestampPrevious`);
@@ -707,22 +725,16 @@ describe('firestore()', function () {
                       should(snapshot.get('timestamp')).equal(null);
                       break;
                     case 1:
-                      should(snapshot.get('timestamp')).be.an.instanceOf(
-                        firebase.firestore.Timestamp,
-                      );
+                      should(snapshot.get('timestamp')).be.an.instanceOf(Timestamp);
                       break;
                     case 2:
-                      should(snapshot.get('timestamp')).be.an.instanceOf(
-                        firebase.firestore.Timestamp,
-                      );
+                      should(snapshot.get('timestamp')).be.an.instanceOf(Timestamp);
                       should(
                         snapshotEqual(snapshot.get('timestamp'), previous.get('timestamp')),
                       ).equal(true);
                       break;
                     case 3:
-                      should(snapshot.get('timestamp')).be.an.instanceOf(
-                        firebase.firestore.Timestamp,
-                      );
+                      should(snapshot.get('timestamp')).be.an.instanceOf(Timestamp);
                       should(
                         snapshotEqual(snapshot.get('timestamp'), previous.get('timestamp')),
                       ).equal(false);
@@ -739,9 +751,9 @@ describe('firestore()', function () {
             );
           });
 
-          await setDoc(ref, { timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+          await setDoc(ref, { timestamp: serverTimestamp() });
           await new Promise(resolve => setTimeout(resolve, 100));
-          await setDoc(ref, { timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+          await setDoc(ref, { timestamp: serverTimestamp() });
           await promise;
           await deleteDoc(ref);
         });
@@ -752,9 +764,18 @@ describe('firestore()', function () {
             // Not supported on web lite sdk
             return;
           }
-          const { initializeFirestore, doc, onSnapshot, setDoc, deleteDoc } = firestoreModular;
+          const { getApp } = modular;
+          const {
+            initializeFirestore,
+            doc,
+            onSnapshot,
+            setDoc,
+            deleteDoc,
+            serverTimestamp,
+            Timestamp,
+          } = firestoreModular;
 
-          const db = await initializeFirestore(firebase.app(), {
+          const db = await initializeFirestore(getApp(), {
             serverTimestampBehavior: 'none',
           });
           const ref = doc(db, `${COLLECTION}/serverTimestampNone`);
@@ -771,9 +792,7 @@ describe('firestore()', function () {
                       should(snapshot.get('timestamp')).equal(null);
                       break;
                     case 1:
-                      should(snapshot.get('timestamp')).be.an.instanceOf(
-                        firebase.firestore.Timestamp,
-                      );
+                      should(snapshot.get('timestamp')).be.an.instanceOf(Timestamp);
                       subscription();
                       resolve();
                       break;
@@ -789,7 +808,7 @@ describe('firestore()', function () {
             );
           });
 
-          await setDoc(ref, { timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+          await setDoc(ref, { timestamp: serverTimestamp() });
           await promise;
           await deleteDoc(ref);
         });

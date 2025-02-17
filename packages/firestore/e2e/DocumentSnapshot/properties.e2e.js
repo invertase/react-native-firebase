@@ -79,7 +79,7 @@ describe('firestore().doc() -> snapshot', function () {
   describe('modular', function () {
     it('.exists -> returns a boolean for exists', async function () {
       const { getFirestore, doc, setDoc, getDoc, deleteDoc } = firestoreModular;
-      const db = getFirestore(firebase.app());
+      const db = getFirestore();
 
       const ref1 = doc(db, `${COLLECTION}/exists`);
       const ref2 = doc(db, `${COLLECTION}/idonotexist`);
@@ -94,7 +94,7 @@ describe('firestore().doc() -> snapshot', function () {
 
     it('.id -> returns the correct id', async function () {
       const { getFirestore, doc, setDoc, getDoc, deleteDoc } = firestoreModular;
-      const db = getFirestore(firebase.app());
+      const db = getFirestore();
 
       const ref1 = doc(db, `${COLLECTION}/exists`);
       const ref2 = doc(db, `${COLLECTION}/idonotexist`);
@@ -116,7 +116,7 @@ describe('firestore().doc() -> snapshot', function () {
 
     it('.ref -> returns the correct document ref', async function () {
       const { getFirestore, doc, setDoc, getDoc, deleteDoc } = firestoreModular;
-      const db = getFirestore(firebase.app());
+      const db = getFirestore();
       const ref1 = doc(db, `${COLLECTION}/exists`);
       const ref2 = doc(db, `${COLLECTION}/idonotexist`);
       await setDoc(ref1, { foo: ' bar' });
