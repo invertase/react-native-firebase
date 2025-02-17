@@ -25,12 +25,16 @@ describe('Second Database', function () {
     describe('v8 compatibility', function () {
       let firestore;
 
-      before(function () {
+      beforeEach(async function () {
+        // @ts-ignore
+        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
         firestore = firebase.app().firestore(SECOND_DATABASE_ID);
+        return await wipe(false, SECOND_DATABASE_ID);
       });
 
-      beforeEach(async function () {
-        return await wipe(false, SECOND_DATABASE_ID);
+      afterEach(async function afterEachTest() {
+        // @ts-ignore
+        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
       });
 
       it('throws if fieldPath is invalid', function () {

@@ -26,8 +26,15 @@ describe('Second Database', function () {
     describe('v8 compatibility', function () {
       let firestore;
 
-      before(function () {
+      beforeEach(async function beforeEachTest() {
+        // @ts-ignore
+        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
         firestore = firebase.app().firestore(SECOND_DATABASE_ID);
+      });
+
+      afterEach(async function afterEachTest() {
+        // @ts-ignore
+        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
       });
 
       it('should throw if updateFunction is not a Promise', async function () {

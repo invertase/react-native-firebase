@@ -21,6 +21,16 @@ const testBuffer = [123, 34, 104, 101, 108, 108, 111, 34, 58, 34, 119, 111, 114,
 const testBase64 = 'eyJoZWxsbyI6IndvcmxkIn0=';
 
 describe('firestore.Blob', function () {
+  beforeEach(async function beforeEachTest() {
+    // @ts-ignore
+    globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+  });
+
+  afterEach(async function afterEachTest() {
+    // @ts-ignore
+    globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+  });
+
   it('should throw if constructed manually', function () {
     try {
       new firebase.firestore.Blob();
