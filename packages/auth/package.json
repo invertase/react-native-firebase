@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@types/plist": "^3.0.5",
-    "expo": "^52.0.32"
+    "expo": "^52.0.35"
   },
   "peerDependenciesMeta": {
     "expo": {
