@@ -72,6 +72,15 @@ export function collection(parent, path, ...pathSegments) {
 }
 
 /**
+ * @param {DocumentReference<AppModelType, DbModelType> | CollectionReference<AppModelType, DbModelType>} left
+ * @param {DocumentReference<AppModelType, DbModelType> | CollectionReference<AppModelType, DbModelType>} right
+ * @return boolean true if the two references are equal
+ */
+export function refEqual(left, right) {
+  return left.isEqual.call(left, right, MODULAR_DEPRECATION_ARG);
+}
+
+/**
  * @param {Firestore} firestore
  * @param {string} collectionId
  * @returns {Query<DocumentData>}
