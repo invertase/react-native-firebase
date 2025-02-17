@@ -28,7 +28,7 @@ class QueryConstraint {
   }
 
   _apply(query) {
-    return query[this.type].apply(query, this._args, MODULAR_DEPRECATION_ARG);
+    return query[this.type].call(query, ...this._args, MODULAR_DEPRECATION_ARG);
   }
 }
 
