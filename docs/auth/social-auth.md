@@ -204,76 +204,18 @@ async function onFacebookButtonPress() {
 Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger
 with the new authentication state of the user.
 
-## Twitter
-
-Using the external [`@react-native-twitter-signin/twitter-signin`](https://github.com/react-native-twitter-signin/twitter-signin) library,
-we can sign-in the user with Twitter and generate a credential which can be used to sign-in with Firebase.
-
-To get started, install the library and ensure you have completed setup, following the required [prerequisites](https://github.com/react-native-twitter-signin/twitter-signin#prerequisites) list.
-
-Ensure the "Twitter" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
-
-Before triggering a sign-in request, you must initialize the Twitter SDK using your accounts consumer key & secret:
-
-```js
-import { NativeModules } from 'react-native';
-const { RNTwitterSignIn } = NativeModules;
-
-RNTwitterSignIn.init('TWITTER_CONSUMER_KEY', 'TWITTER_CONSUMER_SECRET').then(() =>
-  console.log('Twitter SDK initialized'),
-);
-```
-
-Once initialized, setup your application to trigger a sign-in request with Twitter using the `login` method.
-
-```jsx
-import React from 'react';
-import { Button } from 'react-native';
-
-function TwitterSignIn() {
-  return (
-    <Button
-      title="Twitter Sign-In"
-      onPress={() => onTwitterButtonPress().then(() => console.log('Signed in with Twitter!'))}
-    />
-  );
-}
-```
-
-The `onTwitterButtonPress` can then be implemented as follows:
-
-```js
-import auth from '@react-native-firebase/auth';
-import { NativeModules } from 'react-native';
-const { RNTwitterSignIn } = NativeModules;
-
-async function onTwitterButtonPress() {
-  // Perform the login request
-  const { authToken, authTokenSecret } = await RNTwitterSignIn.logIn();
-
-  // Create a Twitter credential with the tokens
-  const twitterCredential = auth.TwitterAuthProvider.credential(authToken, authTokenSecret);
-
-  // Sign-in the user with the credential
-  return auth().signInWithCredential(twitterCredential);
-}
-```
-
-Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger
-with the new authentication state of the user.
-
 ## Google
 
 The [`google-signin`](https://github.com/react-native-google-signin/google-signin) library provides a wrapper around the official Google login library,
 allowing you to create a credential and sign-in to Firebase.
 
-Most configuration is already setup when using Google Sign-In with Firebase, however you need to ensure your machines
-SHA1 key has been configured for use with Android. You can see how to generate the key on the [Getting Started](/)
-documentation.
-
 Ensure the "Google" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
 
-Follow [these](https://github.com/react-native-google-signin/google-signin#project-setup-and-initialization) instructions to install and setup `google-signin`
+### Configure an Expo project
+For Expo projects, follow [the setup instructions for Expo](https://react-native-google-signin.github.io/docs/category/setting-up) from `react-native-google-signin`.
+
+### Configure a React-Native (non-Expo) project
+For bare React-Native projects, most configuration is already setup when using Google Sign-In with React-Native-Firebase's configuration, however you need to ensure your machines SHA1 key has been configured for use with Android. You can see how to generate the key on the [Getting Started](/) documentation.
 
 Before triggering a sign-in request, you must initialize the Google SDK using your any required scopes and the
 `webClientId`, which can be found in the `android/app/google-services.json` file as the `client/oauth_client/client_id` property (the id ends with `.apps.googleusercontent.com`). Make sure to pick the `client_id` with `client_type: 3`
@@ -286,10 +228,10 @@ GoogleSignin.configure({
 });
 ```
 
+### Using Google Sign-In
 Once initialized, setup your application to trigger a sign-in request with Google using the `signIn` method.
 
 ```jsx
-import React from 'react';
 import { Button } from 'react-native';
 
 function GoogleSignIn() {
@@ -387,6 +329,64 @@ const onMicrosoftButtonPress = async () => {
 ```
 
 Additionally, the similar `linkWithRedirect` and `linkWithPopup` methods may be used in the same way to link an existing user account with the Microsoft account after it is authenticated.
+
+Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger
+with the new authentication state of the user.
+
+## Twitter
+
+Using the external [`@react-native-twitter-signin/twitter-signin`](https://github.com/react-native-twitter-signin/twitter-signin) library,
+we can sign-in the user with Twitter and generate a credential which can be used to sign-in with Firebase.
+
+To get started, install the library and ensure you have completed setup, following the required [prerequisites](https://github.com/react-native-twitter-signin/twitter-signin#prerequisites) list.
+
+Ensure the "Twitter" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
+
+Before triggering a sign-in request, you must initialize the Twitter SDK using your accounts consumer key & secret:
+
+```js
+import { NativeModules } from 'react-native';
+const { RNTwitterSignIn } = NativeModules;
+
+RNTwitterSignIn.init('TWITTER_CONSUMER_KEY', 'TWITTER_CONSUMER_SECRET').then(() =>
+  console.log('Twitter SDK initialized'),
+);
+```
+
+Once initialized, setup your application to trigger a sign-in request with Twitter using the `login` method.
+
+```jsx
+import React from 'react';
+import { Button } from 'react-native';
+
+function TwitterSignIn() {
+  return (
+    <Button
+      title="Twitter Sign-In"
+      onPress={() => onTwitterButtonPress().then(() => console.log('Signed in with Twitter!'))}
+    />
+  );
+}
+```
+
+The `onTwitterButtonPress` can then be implemented as follows:
+
+```js
+import auth from '@react-native-firebase/auth';
+import { NativeModules } from 'react-native';
+const { RNTwitterSignIn } = NativeModules;
+
+async function onTwitterButtonPress() {
+  // Perform the login request
+  const { authToken, authTokenSecret } = await RNTwitterSignIn.logIn();
+
+  // Create a Twitter credential with the tokens
+  const twitterCredential = auth.TwitterAuthProvider.credential(authToken, authTokenSecret);
+
+  // Sign-in the user with the credential
+  return auth().signInWithCredential(twitterCredential);
+}
+```
 
 Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger
 with the new authentication state of the user.
