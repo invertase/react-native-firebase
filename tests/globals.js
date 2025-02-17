@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -462,7 +461,7 @@ global.jet = {
   },
 };
 
-// TODO toggle this correct in CI only.
-global.isCI = true;
+// some tests flake in CI but we still run them locally
+global.isCI = process.env.CI === true;
 // Used to tell our internals that we are running tests.
 globalThis.RNFBTest = true;
