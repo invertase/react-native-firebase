@@ -1366,7 +1366,7 @@ export namespace FirebaseAuthTypes {
      * @error auth/invalid-verification-id Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid.
      * @param provider A created {@link auth.AuthProvider}.
      */
-    reauthenticateWithProvider(provider: AuthProvider): Promise<UserCredential>;
+    reauthenticateWithRedirect(provider: AuthProvider): Promise<UserCredential>;
 
     /**
      * Refreshes the current user.

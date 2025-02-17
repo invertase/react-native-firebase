@@ -1,5 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { FirebaseAuthTypes } from '../lib/index';
+// @ts-ignore
+import User from '../lib/User';
 import auth, {
   firebase,
   getAuth,
@@ -431,6 +433,13 @@ describe('Auth', function () {
         auth.sendPasswordResetEmail(email, actionCodeSettings);
         sendPasswordResetEmail(auth, email, actionCodeSettings);
         sendSignInLinkToEmail(auth, email, actionCodeSettings);
+
+        const user: FirebaseAuthTypes.User = new User(auth, {});
+
+        user.sendEmailVerification(actionCodeSettings);
+        user.verifyBeforeUpdateEmail(email, actionCodeSettings);
+        sendEmailVerification(user, actionCodeSettings);
+        verifyBeforeUpdateEmail(user, email, actionCodeSettings);
       });
 
       it('should warn using `ActionCodeSettings.dynamicLinkDomain`', function () {
@@ -462,6 +471,16 @@ describe('Auth', function () {
         expect(warnings).toBe(3);
         sendSignInLinkToEmail(auth, email, actionCodeSettings);
         expect(warnings).toBe(4);
+        const user: FirebaseAuthTypes.User = new User(auth, {});
+
+        user.sendEmailVerification(actionCodeSettings);
+        expect(warnings).toBe(5);
+        user.verifyBeforeUpdateEmail(email, actionCodeSettings);
+        expect(warnings).toBe(6);
+        sendEmailVerification(user, actionCodeSettings);
+        expect(warnings).toBe(7);
+        verifyBeforeUpdateEmail(user, email, actionCodeSettings);
+        expect(warnings).toBe(8);
         consoleWarnSpy.mockReset();
         consoleWarnSpy.mockRestore();
       });
