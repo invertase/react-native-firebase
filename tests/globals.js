@@ -354,8 +354,9 @@ Object.defineProperty(global, 'modular', {
 });
 
 if (global.Platform.other) {
-  firebase.initializeApp(global.FirebaseHelpers.app.config());
-  firebase.initializeApp(global.FirebaseHelpers.app.config(), 'secondaryFromNative');
+  const { initializeApp } = modular;
+  initializeApp(global.FirebaseHelpers.app.config());
+  initializeApp(global.FirebaseHelpers.app.config(), 'secondaryFromNative');
 }
 
 Object.defineProperty(global, 'functionsModular', {
