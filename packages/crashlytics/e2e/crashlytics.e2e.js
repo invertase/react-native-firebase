@@ -17,6 +17,16 @@
 
 describe('crashlytics()', function () {
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     describe('log()', function () {
       it('accepts any value', async function () {
         firebase.crashlytics().log('invertase');
@@ -251,7 +261,8 @@ describe('crashlytics()', function () {
       });
 
       it('accepts string values', async function () {
-        await firebase.crashlytics().setAttributes({ invertase: '1337' });
+        const { getCrashlytics, setAttributes } = crashlyticsModular;
+        await setAttributes(getCrashlytics(), { invertase: '1337' });
       });
     });
 
@@ -263,13 +274,10 @@ describe('crashlytics()', function () {
         let logged = false;
         // eslint-disable-next-line no-console
         console.warn = msg => {
-          // we console.warn for deprecated API, can be removed when we move to v9
-          if (!msg.includes('method is deprecated')) {
-            msg.should.containEql('expects an instance of Error');
-            logged = true;
-            // eslint-disable-next-line no-console
-            console.warn = orig;
-          }
+          msg.should.containEql('expects an instance of Error');
+          logged = true;
+          // eslint-disable-next-line no-console
+          console.warn = orig;
         };
 
         recordError(getCrashlytics(), 1337);
@@ -344,19 +352,17 @@ describe('crashlytics()', function () {
 
     describe('setCrashlyticsCollectionEnabled()', function () {
       it('false', async function () {
-        const { getCrashlytics, setCrashlyticsCollectionEnabled, isCrashlyticsCollectionEnabled } =
-          crashlyticsModular;
+        const { getCrashlytics, setCrashlyticsCollectionEnabled } = crashlyticsModular;
         const crashlytics = getCrashlytics();
         await setCrashlyticsCollectionEnabled(crashlytics, false);
-        should.equal(isCrashlyticsCollectionEnabled(crashlytics), false);
+        should.equal(crashlytics.isCrashlyticsCollectionEnabled, false);
       });
 
       it('true', async function () {
-        const { getCrashlytics, setCrashlyticsCollectionEnabled, isCrashlyticsCollectionEnabled } =
-          crashlyticsModular;
+        const { getCrashlytics, setCrashlyticsCollectionEnabled } = crashlyticsModular;
         const crashlytics = getCrashlytics();
         await setCrashlyticsCollectionEnabled(crashlytics, true);
-        should.equal(isCrashlyticsCollectionEnabled(crashlytics), true);
+        should.equal(crashlytics.isCrashlyticsCollectionEnabled, true);
       });
 
       it('errors if not boolean', async function () {
