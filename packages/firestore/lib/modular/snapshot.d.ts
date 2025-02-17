@@ -201,3 +201,16 @@ export function onSnapshot<T>(
   onError?: (error: FirestoreError) => void,
   onCompletion?: () => void,
 ): Unsubscribe;
+
+/**
+ * Returns true if the provided snapshots are equal.
+ *
+ * @param left	DocumentSnapshot<AppModelType, DbModelType> | QuerySnapshot<AppModelType, DbModelType>	A snapshot to compare.
+ * @param right	DocumentSnapshot<AppModelType, DbModelType> | QuerySnapshot<AppModelType, DbModelType>	A snapshot to compare.
+ *
+ * @returns boolean true if the snapshots are equal.
+ */
+export function snapshotEqual<AppModelType, DbModelType extends DocumentData>(
+  left: DocumentSnapshot<AppModelType, DbModelType> | QuerySnapshot<AppModelType, DbModelType>,
+  right: DocumentSnapshot<AppModelType, DbModelType> | QuerySnapshot<AppModelType, DbModelType>,
+): boolean;

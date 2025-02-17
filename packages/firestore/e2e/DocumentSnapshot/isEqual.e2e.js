@@ -61,12 +61,12 @@ describe('firestore.doc() -> snapshot.isEqual()', function () {
 
   describe('modular', function () {
     it('throws if other is not a DocumentSnapshot', async function () {
-      const { getFirestore, doc, getDoc } = firestoreModular;
+      const { getFirestore, doc, getDoc, snapshotEqual } = firestoreModular;
       try {
         const docRef = doc(getFirestore(), `${COLLECTION}/baz`);
 
         const docSnapshot = await getDoc(docRef);
-        docSnapshot.isEqual(123);
+        snapshotEqual(docSnapshot, 123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("'other' expected a DocumentSnapshot instance");
@@ -75,7 +75,7 @@ describe('firestore.doc() -> snapshot.isEqual()', function () {
     });
 
     it('returns false when not equal', async function () {
-      const { getFirestore, doc, setDoc, getDoc } = firestoreModular;
+      const { getFirestore, doc, setDoc, getDoc, snapshotEqual } = firestoreModular;
       const db = getFirestore();
       const docRef = doc(db, `${COLLECTION}/isEqual-false-exists`);
       await setDoc(docRef, { foo: 'bar' });
@@ -85,21 +85,21 @@ describe('firestore.doc() -> snapshot.isEqual()', function () {
       await setDoc(docRef, { foo: 'baz' });
       const docSnapshot3 = await getDoc(docRef);
 
-      const eql1 = docSnapshot1.isEqual(docSnapshot2);
-      const eql2 = docSnapshot1.isEqual(docSnapshot3);
+      const eql1 = snapshotEqual(docSnapshot1, docSnapshot2);
+      const eql2 = snapshotEqual(docSnapshot1, docSnapshot3);
 
       eql1.should.be.False();
       eql2.should.be.False();
     });
 
     it('returns true when equal', async function () {
-      const { getFirestore, doc, setDoc, getDoc } = firestoreModular;
+      const { getFirestore, doc, setDoc, getDoc, snapshotEqual } = firestoreModular;
       const docRef = doc(getFirestore(), `${COLLECTION}/isEqual-true-exists`);
       await setDoc(docRef, { foo: 'bar' });
 
       const docSnapshot = await getDoc(docRef);
 
-      const eql1 = docSnapshot.isEqual(docSnapshot);
+      const eql1 = snapshotEqual(docSnapshot, docSnapshot);
 
       eql1.should.be.True();
     });
