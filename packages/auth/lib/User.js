@@ -149,6 +149,12 @@ export default class User {
         );
       }
 
+      if (!isUndefined(actionCodeSettings.linkDomain) && !isString(actionCodeSettings.linkDomain)) {
+        throw new Error(
+          "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.linkDomain' expected a string value.",
+        );
+      }
+
       if (
         !isUndefined(actionCodeSettings.handleCodeInApp) &&
         !isBoolean(actionCodeSettings.handleCodeInApp)
@@ -263,6 +269,12 @@ export default class User {
       ) {
         throw new Error(
           "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.dynamicLinkDomain' expected a string value.",
+        );
+      }
+
+      if (!isUndefined(actionCodeSettings.linkDomain) && !isString(actionCodeSettings.linkDomain)) {
+        throw new Error(
+          "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.linkDomain' expected a string value.",
         );
       }
 
