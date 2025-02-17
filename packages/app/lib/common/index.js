@@ -251,9 +251,12 @@ export function createMessage(
       const replacementMethodName = instance[methodName];
 
       if (replacementMethodName !== NO_REPLACEMENT) {
-        return modularDeprecationMessage + ` Please use \`${replacementMethodName}\` instead.`;
+        return (
+          modularDeprecationMessage +
+          `. Method called was \`${methodName}\`. Please use \`${replacementMethodName}\` instead.`
+        );
       } else {
-        return modularDeprecationMessage;
+        return modularDeprecationMessage + `. Method called was \`${methodName}\``;
       }
     }
   }
