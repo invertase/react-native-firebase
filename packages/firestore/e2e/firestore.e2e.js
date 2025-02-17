@@ -19,6 +19,16 @@ const COLLECTION_GROUP = 'collectionGroup';
 
 describe('firestore()', function () {
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     describe('namespace', function () {
       // removing as pending if module.options.hasMultiAppSupport = true
       it('supports multiple apps', async function () {
@@ -422,9 +432,10 @@ describe('firestore()', function () {
     describe('getFirestore', function () {
       // removing as pending if module.options.hasMultiAppSupport = true
       it('supports multiple apps', async function () {
+        const { getApp } = modular;
         const { getFirestore } = firestoreModular;
         const db1 = await getFirestore();
-        const db2 = await getFirestore(firebase.app('secondaryFromNative'));
+        const db2 = await getFirestore(getApp('secondaryFromNative'));
 
         db1.app.name.should.equal('[DEFAULT]');
         db2.app.name.should.equal('secondaryFromNative');
@@ -663,9 +674,9 @@ describe('firestore()', function () {
           await deleteDoc(ref);
         });
 
-        // FIXME: works in isolation but not in suite
-        xit("handles 'previous'", async function () {
-          const { initializeFirestore, doc, onSnapshot, setDoc, deleteDoc } = firestoreModular;
+        it("handles 'previous'", async function () {
+          const { initializeFirestore, doc, onSnapshot, setDoc, deleteDoc, snapshotEqual } =
+            firestoreModular;
 
           const db = await initializeFirestore(firebase.app(), {
             serverTimestampBehavior: 'previous',
@@ -692,17 +703,17 @@ describe('firestore()', function () {
                       should(snapshot.get('timestamp')).be.an.instanceOf(
                         firebase.firestore.Timestamp,
                       );
-                      should(snapshot.get('timestamp').isEqual(previous.get('timestamp'))).equal(
-                        true,
-                      );
+                      should(
+                        snapshotEqual(snapshot.get('timestamp'), previous.get('timestamp')),
+                      ).equal(true);
                       break;
                     case 3:
                       should(snapshot.get('timestamp')).be.an.instanceOf(
                         firebase.firestore.Timestamp,
                       );
-                      should(snapshot.get('timestamp').isEqual(previous.get('timestamp'))).equal(
-                        false,
-                      );
+                      should(
+                        snapshotEqual(snapshot.get('timestamp'), previous.get('timestamp')),
+                      ).equal(false);
                       subscription();
                       resolve();
                       break;
