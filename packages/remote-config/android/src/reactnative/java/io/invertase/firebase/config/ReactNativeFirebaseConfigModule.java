@@ -258,15 +258,15 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   @ReactMethod
   public void setCustomSignals(String appName, ReadableMap customSignals, Promise promise) {
     module
-      .setCustomSignals(appName, customSignals.toHashMap())
-      .addOnCompleteListener(
-        task -> {
-          if (task.isSuccessful()) {
-            promise.resolve(resultWithConstants(task.getResult()));
-          } else {
-            rejectPromiseWithExceptionMap(promise, task.getException());
-          }
-        });
+        .setCustomSignals(appName, customSignals.toHashMap())
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(resultWithConstants(task.getResult()));
+              } else {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
   }
 
   private WritableMap resultWithConstants(Object result) {
