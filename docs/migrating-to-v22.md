@@ -13,6 +13,18 @@ You may notice a lot of console warning logs as we deprecate the existing namesp
 globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
 ```
 
+# Enabling deprecation strict modes
+
+You may enable a feature for the API migration which will throw a javascript error immediately when any namespaced API usage is detected.
+
+This is useful to help you quickly locate any remaining usage of the deprecated namespace API via examination of the line numbers in the stack trace.
+
+Note that there may be modular API implementation errors within the react-native-firebase modules, this may still be useful as a troubleshooting aid when collaborating with the maintainers to correct these errors.
+
+```js
+globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE === true;
+```
+
 # Migrating to React Native modular API
 
 If you are familiar with the Firebase JS SDK, the upgrade will be a familiar process, following similar steps to [the migration guide](https://firebase.google.com/docs/web/modular-upgrade#refactor_to_the_modular_style) for firebase-js-sdk.

@@ -227,6 +227,10 @@ export function deprecationConsoleWarning(nameSpace, methodName, instanceName, i
         if (!globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS) {
           // eslint-disable-next-line no-console
           console.warn(createMessage(nameSpace, methodName, instanceName));
+
+          if (globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE === true) {
+            throw new Error('Deprecated API usage detected while in strict mode.');
+          }
         }
       }
     }
@@ -372,5 +376,9 @@ export function warnIfNotModularCall(args, replacementMethodName = '') {
   if (!globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS) {
     // eslint-disable-next-line no-console
     console.warn(message);
+
+    if (globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE === true) {
+      throw new Error('Deprecated API usage detected while in strict mode.');
+    }
   }
 }

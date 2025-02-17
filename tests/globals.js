@@ -48,6 +48,9 @@ import shouldMatchers from 'should';
 //            [TEST->Finish][✅] uploads a base64url string
 globalThis.RNFBDebug = false;
 
+// this may be used to locate modular API errors quickly
+globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE = false;
+
 // RNFB packages.
 import '@react-native-firebase/analytics';
 import '@react-native-firebase/app-check';
