@@ -15,6 +15,8 @@
  *
  */
 
+import FirestoreBlob from '../lib/FirestoreBlob';
+
 const testObject = { hello: 'world' };
 const testString = JSON.stringify(testObject);
 const testBuffer = [123, 34, 104, 101, 108, 108, 111, 34, 58, 34, 119, 111, 114, 108, 100, 34, 125];
@@ -25,12 +27,12 @@ describe('Bytes modular', function () {
     const { Bytes } = firestoreModular;
     const myBytes = Bytes.fromBase64String(testBase64);
     myBytes.should.be.instanceOf(Bytes);
-    myBytes._blob.should.be.instanceOf(firebase.firestore.Blob);
-    myBytes._blob._binaryString.should.equal(testString);
+    myBytes.should.be.instanceOf(FirestoreBlob);
+    myBytes._binaryString.should.equal(testString);
     should.deepEqual(
-      JSON.parse(myBytes._blob._binaryString),
+      JSON.parse(myBytes._binaryString),
       testObject,
-      'Expected Blob _binaryString internals to serialize to json and match test object',
+      'Expected Bytes _binaryString internals to serialize to json and match test object',
     );
   });
 
@@ -47,7 +49,7 @@ describe('Bytes modular', function () {
     const { Bytes } = firestoreModular;
     const myBytes = Bytes.fromUint8Array(testUInt8Array);
     myBytes.should.be.instanceOf(Bytes);
-    const json = JSON.parse(myBytes._blob._binaryString);
+    const json = JSON.parse(myBytes._binaryString);
     json.hello.should.equal('world');
   });
 
