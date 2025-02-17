@@ -881,6 +881,7 @@ export namespace FirebaseAuthTypes {
 
     /**
      * Sets the dynamic link domain (or subdomain) to use for the current link if it is to be opened using Firebase Dynamic Links. As multiple dynamic link domains can be configured per project, this field provides the ability to explicitly choose one. If none is provided, the first domain is used by default.
+     * Deprecated - use {@link ActionCodeSettings.linkDomain} instead.
      */
     dynamicLinkDomain?: string;
 
@@ -888,6 +889,11 @@ export namespace FirebaseAuthTypes {
      * This URL represents the state/Continue URL in the form of a universal link. This URL can should be constructed as a universal link that would either directly open the app where the action code would be handled or continue to the app after the action code is handled by Firebase.
      */
     url: string;
+    /**
+     * Firebase Dynamic Links is deprecated and will be shut down as early as August * 2025.
+     * Instead, use ActionCodeSettings.linkDomain to set a a custom domain. Learn more at: https://firebase.google.com/support/dynamic-links-faq
+     */
+    linkDomain?: string;
   }
 
   /**
