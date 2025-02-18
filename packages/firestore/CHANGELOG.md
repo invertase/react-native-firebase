@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.10.1](https://github.com/invertase/react-native-firebase/compare/v21.10.0...v21.10.1) (2025-02-18)
+
+### Bug Fixes
+
+- **firestore:** implement queryEqual modular API ([2f855a6](https://github.com/invertase/react-native-firebase/commit/2f855a6150cc02d9d55873e63320c01424ce6434))
+- **firestore:** implement refEqual modular API ([f30a4fb](https://github.com/invertase/react-native-firebase/commit/f30a4fb87e8d65ed2ad94bf40d6f83c6bd271580))
+- **firestore:** implement snapshotEqual in modular API ([6da740f](https://github.com/invertase/react-native-firebase/commit/6da740f4b4fca988dcfcad52206af0695f3efe4f))
+- **firestore:** spread args into query to quiet deprecation ([1cf9f50](https://github.com/invertase/react-native-firebase/commit/1cf9f508832b2907e13f31d1a2fa2204ba75996c))
+
 ## [21.10.0](https://github.com/invertase/react-native-firebase/compare/v21.9.0...v21.10.0) (2025-02-11)
 
 **Note:** Version bump only for package @react-native-firebase/firestore
