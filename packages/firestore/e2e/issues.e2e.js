@@ -39,6 +39,16 @@ const testNumbers = {
 
 describe('firestore()', function () {
   describe('v8 compatibility', function () {
+    before(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    after(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     describe('issues', function () {
       before(async function () {
         await Promise.all([

@@ -22,6 +22,16 @@ describe('firestore().collection().where()', function () {
   });
 
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('throws if fieldPath is invalid', function () {
       try {
         firebase.firestore().collection(COLLECTION).where(123);
@@ -649,16 +659,14 @@ describe('firestore().collection().where()', function () {
     });
 
     it('allows multiple inequalities (excluding `!=`) on different paths provided', async function () {
-      const { query, where } = firestoreModular;
+      const { getFirestore, addDoc, collection, query, where } = firestoreModular;
 
-      const colRef = firebase
-        .firestore()
-        .collection(`${COLLECTION}/filter/different-path-inequality`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/different-path-inequality`);
       const expected = { foo: { bar: 300 }, bar: 200 };
       await Promise.all([
-        colRef.add({ foo: { bar: 1 }, bar: 1 }),
-        colRef.add(expected),
-        colRef.add(expected),
+        addDoc(colRef, { foo: { bar: 1 }, bar: 1 }),
+        addDoc(colRef, expected),
+        addDoc(colRef, expected),
       ]);
 
       const snapshot = await query(
@@ -1122,16 +1130,16 @@ describe('firestore().collection().where()', function () {
     });
 
     it("should allow query when combining '!=' operator with any other inequality operator on a different field", async function () {
-      const { getFirestore, collection, query, where } = firestoreModular;
+      const { getFirestore, addDoc, collection, query, where } = firestoreModular;
       const colRef = collection(
         getFirestore(),
         `${COLLECTION}/filter/inequality-combine-not-equal`,
       );
       const expected = { foo: { bar: 300 }, bar: 200 };
       await Promise.all([
-        colRef.add({ foo: { bar: 1 }, bar: 1 }),
-        colRef.add(expected),
-        colRef.add(expected),
+        addDoc(colRef, { foo: { bar: 1 }, bar: 1 }),
+        addDoc(colRef, expected),
+        addDoc(colRef, expected),
       ]);
 
       const snapshot = await query(colRef, where('foo.bar', '>', 123), where('bar', '!=', 1)).get();

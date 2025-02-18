@@ -23,6 +23,16 @@ describe('firestore.SnapshotMetadata', function () {
   });
 
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('.fromCache -> returns a boolean', async function () {
       const ref1 = firebase.firestore().collection(COLLECTION);
       const ref2 = firebase.firestore().doc(`${COLLECTION}/idonotexist`);

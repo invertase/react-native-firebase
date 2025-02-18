@@ -26,8 +26,15 @@ describe('Second Database', function () {
     describe('v8 compatibility', function () {
       let firestore;
 
-      before(function () {
+      beforeEach(async function beforeEachTest() {
+        // @ts-ignore
+        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
         firestore = firebase.app().firestore(SECOND_DATABASE_ID);
+      });
+
+      afterEach(async function afterEachTest() {
+        // @ts-ignore
+        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
       });
 
       it('should throw if updateFunction is not a Promise', async function () {
@@ -692,7 +699,7 @@ describe('Second Database', function () {
         });
 
         it('should set data with merge fields', async function () {
-          const { runTransaction, doc, getDoc, setDoc } = firestoreModular;
+          const { runTransaction, doc, getDoc, setDoc, FieldPath } = firestoreModular;
           const db = firestore;
 
           const docRef = doc(db, `${COLLECTION}/transactions/transaction/set-mergefields`);
@@ -715,7 +722,7 @@ describe('Second Database', function () {
                 baz: 'foo',
               },
               {
-                mergeFields: ['bar', new firebase.firestore.FieldPath('baz')],
+                mergeFields: ['bar', new FieldPath('baz')],
               },
             );
           });

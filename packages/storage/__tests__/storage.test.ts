@@ -25,6 +25,9 @@ import storage, {
   toString,
   child,
   setMaxDownloadRetryTime,
+  StringFormat,
+  TaskEvent,
+  TaskState,
 } from '../lib';
 
 describe('Storage', function () {
@@ -172,6 +175,25 @@ describe('Storage', function () {
 
     it('`setMaxDownloadRetryTime` function is properly exposed to end user', function () {
       expect(setMaxDownloadRetryTime).toBeDefined();
+    });
+
+    it('`StringFormat` is properly exposed to end user', function () {
+      expect(StringFormat.BASE64).toBeDefined();
+      expect(StringFormat.BASE64URL).toBeDefined();
+      expect(StringFormat.DATA_URL).toBeDefined();
+      expect(StringFormat.RAW).toBeDefined();
+    });
+
+    it('`TaskEvent` is properly exposed to end user', function () {
+      expect(TaskEvent.STATE_CHANGED).toBeDefined();
+    });
+
+    it('`TaskState` is properly exposed to end user', function () {
+      expect(TaskState.CANCELLED).toBeDefined();
+      expect(TaskState.ERROR).toBeDefined();
+      expect(TaskState.PAUSED).toBeDefined();
+      expect(TaskState.RUNNING).toBeDefined();
+      expect(TaskState.SUCCESS).toBeDefined();
     });
   });
 });

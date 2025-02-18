@@ -26,6 +26,16 @@ describe('firestore().doc() -> snapshot.data()', function () {
   });
 
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('returns undefined if document does not exist', async function () {
       const ref = firebase.firestore().doc(`${COLLECTION}/idonotexist`);
       const snapshot = await ref.get();

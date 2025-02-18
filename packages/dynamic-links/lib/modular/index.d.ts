@@ -80,7 +80,9 @@ export declare function buildShortLink(
  * }
  * ```
  */
-export declare function getInitialLink(): Promise<FirebaseDynamicLinksTypes.DynamicLink | null>;
+export declare function getInitialLink(
+  dynamicLinks: FirebaseDynamicLinks,
+): Promise<FirebaseDynamicLinksTypes.DynamicLink | null>;
 
 /**
  * Subscribe to Dynamic Link open events while the app is still running.

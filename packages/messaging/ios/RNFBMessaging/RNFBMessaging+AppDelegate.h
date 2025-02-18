@@ -27,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property _Nullable RCTPromiseResolveBlock registerPromiseResolver;
 @property(nonatomic, strong) NSCondition *conditionBackgroundMessageHandlerSet;
 @property(nonatomic) BOOL backgroundMessageHandlerSet;
+@property(nonatomic, copy) void (^completionHandler)(UIBackgroundFetchResult);
+@property(nonatomic, assign) UIBackgroundTaskIdentifier backgroundTaskId;
 
 + (_Nonnull instancetype)sharedInstance;
 

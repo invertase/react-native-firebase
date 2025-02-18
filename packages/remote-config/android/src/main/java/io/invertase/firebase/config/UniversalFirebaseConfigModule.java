@@ -206,31 +206,34 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
 
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
 
-    getExecutor().execute(
-      () -> {
-        try {
-          CustomSignals.Builder customSignals = new CustomSignals.Builder();
-          for (Map.Entry<String, Object> entry : customSignalsMap.entrySet()) {
-            Object value = entry.getValue();
-            if (value instanceof String) {
-              customSignals.put(entry.getKey(), (String) value);
-            } else if (value instanceof Long) {
-              customSignals.put(entry.getKey(), (Long) value);
-            } else if (value instanceof Integer) {
-              customSignals.put(entry.getKey(), ((Integer) value).longValue());
-            } else if (value instanceof Double) {
-              customSignals.put(entry.getKey(), (Double) value);
-            } else if (value == null) {
-              customSignals.put(entry.getKey(), null);
-            }
-          }
+    getExecutor()
+        .execute(
+            () -> {
+              try {
+                CustomSignals.Builder customSignals = new CustomSignals.Builder();
+                for (Map.Entry<String, Object> entry : customSignalsMap.entrySet()) {
+                  Object value = entry.getValue();
+                  if (value instanceof String) {
+                    customSignals.put(entry.getKey(), (String) value);
+                  } else if (value instanceof Long) {
+                    customSignals.put(entry.getKey(), (Long) value);
+                  } else if (value instanceof Integer) {
+                    customSignals.put(entry.getKey(), ((Integer) value).longValue());
+                  } else if (value instanceof Double) {
+                    customSignals.put(entry.getKey(), (Double) value);
+                  } else if (value == null) {
+                    customSignals.put(entry.getKey(), null);
+                  }
+                }
 
-          Tasks.await(FirebaseRemoteConfig.getInstance(firebaseApp).setCustomSignals(customSignals.build()));
-          taskCompletionSource.setResult(null);
-        } catch (Exception e) {
-          taskCompletionSource.setException(e);
-        }
-      });
+                Tasks.await(
+                    FirebaseRemoteConfig.getInstance(firebaseApp)
+                        .setCustomSignals(customSignals.build()));
+                taskCompletionSource.setResult(null);
+              } catch (Exception e) {
+                taskCompletionSource.setException(e);
+              }
+            });
 
     return taskCompletionSource.getTask();
   }

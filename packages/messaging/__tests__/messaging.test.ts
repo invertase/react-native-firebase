@@ -30,6 +30,9 @@ import {
   isDeliveryMetricsExportToBigQueryEnabled,
   isSupported,
   experimentalSetDeliveryMetricsExportedToBigQueryEnabled,
+  AuthorizationStatus,
+  NotificationAndroidPriority,
+  NotificationAndroidVisibility,
 } from '../lib';
 
 describe('Firestore', function () {
@@ -148,6 +151,28 @@ describe('Firestore', function () {
 
     it('`experimentalSetDeliveryMetricsExportedToBigQueryEnabled` function is properly exposed to end user', function () {
       expect(experimentalSetDeliveryMetricsExportedToBigQueryEnabled).toBeDefined();
+    });
+
+    it('`AuthorizationStatus` static is exposed to end user', function () {
+      expect(AuthorizationStatus.AUTHORIZED).toBeDefined();
+      expect(AuthorizationStatus.DENIED).toBeDefined();
+      expect(AuthorizationStatus.EPHEMERAL).toBeDefined();
+      expect(AuthorizationStatus.NOT_DETERMINED).toBeDefined();
+      expect(AuthorizationStatus.PROVISIONAL).toBeDefined();
+    });
+
+    it('`NotificationAndroidPriority` static is exposed to end user', function () {
+      expect(NotificationAndroidPriority.PRIORITY_DEFAULT).toBeDefined();
+      expect(NotificationAndroidPriority.PRIORITY_HIGH).toBeDefined();
+      expect(NotificationAndroidPriority.PRIORITY_LOW).toBeDefined();
+      expect(NotificationAndroidPriority.PRIORITY_MAX).toBeDefined();
+      expect(NotificationAndroidPriority.PRIORITY_MIN).toBeDefined();
+    });
+
+    it('`NotificationAndroidVisibility` static is exposed to end user', function () {
+      expect(NotificationAndroidVisibility.VISIBILITY_PRIVATE).toBeDefined();
+      expect(NotificationAndroidVisibility.VISIBILITY_PUBLIC).toBeDefined();
+      expect(NotificationAndroidVisibility.VISIBILITY_SECRET).toBeDefined();
     });
   });
 });

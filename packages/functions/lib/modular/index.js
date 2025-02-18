@@ -70,3 +70,5 @@ export function httpsCallable(functionsInstance, name, options) {
 export function httpsCallableFromUrl(functionsInstance, url, options) {
   return functionsInstance.httpsCallableFromUrl(url, options);
 }
+
+export { HttpsErrorCode } from '../index';

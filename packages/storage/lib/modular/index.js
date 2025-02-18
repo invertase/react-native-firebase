@@ -279,3 +279,5 @@ export function child(storageRef, path) {
 export function setMaxDownloadRetryTime(storage, time) {
   return storage.setMaxDownloadRetryTime(time);
 }
+
+export { StringFormat, TaskEvent, TaskState } from '../StorageStatics';

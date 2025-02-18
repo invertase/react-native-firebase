@@ -23,6 +23,16 @@ describe('firestore.doc().set()', function () {
   });
 
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('throws if data is not an object', function () {
       try {
         firebase.firestore().doc(`${COLLECTION}/baz`).set('foo');
@@ -343,18 +353,13 @@ describe('firestore.doc().set()', function () {
     });
 
     it('throws if mergeFields contains invalid data', function () {
-      const { getFirestore, doc, setDoc } = firestoreModular;
+      const { getFirestore, doc, setDoc, FieldPath } = firestoreModular;
       try {
         setDoc(
           doc(getFirestore(), `${COLLECTION}/baz`),
           {},
           {
-            mergeFields: [
-              'foo',
-              'foo.bar',
-              new firebase.firestore.FieldPath(COLLECTION, 'baz'),
-              123,
-            ],
+            mergeFields: ['foo', 'foo.bar', new FieldPath(COLLECTION, 'baz'), 123],
           },
         );
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -398,7 +403,7 @@ describe('firestore.doc().set()', function () {
     });
 
     it('merges specific fields', async function () {
-      const { getFirestore, doc, setDoc, getDoc, deleteDoc } = firestoreModular;
+      const { getFirestore, doc, setDoc, getDoc, deleteDoc, FieldPath } = firestoreModular;
       const ref = doc(getFirestore(), `${COLLECTION}/merge`);
       const data1 = { foo: '123', bar: 123, baz: '456' };
       const data2 = { foo: '234', bar: 234, baz: '678' };
@@ -407,7 +412,7 @@ describe('firestore.doc().set()', function () {
       const snapshot1 = await getDoc(ref);
       snapshot1.data().should.eql(jet.contextify(data1));
       await setDoc(ref, data2, {
-        mergeFields: ['bar', new firebase.firestore.FieldPath('baz')],
+        mergeFields: ['bar', new FieldPath('baz')],
       });
       const snapshot2 = await getDoc(ref);
       snapshot2.data().should.eql(jet.contextify(merged));

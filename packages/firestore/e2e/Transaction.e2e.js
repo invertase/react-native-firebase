@@ -19,6 +19,16 @@ const NO_RULE_COLLECTION = 'no_rules';
 
 describe('firestore.Transaction', function () {
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('should throw if updateFunction is not a Promise', async function () {
       try {
         await firebase.firestore().runTransaction(() => 123);
@@ -691,7 +701,7 @@ describe('firestore.Transaction', function () {
       });
 
       it('should set data with merge fields', async function () {
-        const { getFirestore, runTransaction, doc, getDoc, setDoc } = firestoreModular;
+        const { getFirestore, runTransaction, doc, getDoc, setDoc, FieldPath } = firestoreModular;
         const db = getFirestore();
 
         const docRef = doc(db, `${COLLECTION}/transactions/transaction/set-mergefields`);
@@ -714,7 +724,7 @@ describe('firestore.Transaction', function () {
               baz: 'foo',
             },
             {
-              mergeFields: ['bar', new firebase.firestore.FieldPath('baz')],
+              mergeFields: ['bar', new FieldPath('baz')],
             },
           );
         });

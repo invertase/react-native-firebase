@@ -19,6 +19,16 @@ const COLLECTION = 'firestore';
 
 describe('firestore.doc()', function () {
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('returns a Firestore instance', function () {
       const instance = firebase.firestore().doc(`${COLLECTION}/bar`);
       should.equal(instance.firestore.constructor.name, 'FirebaseFirestoreModule');

@@ -18,6 +18,16 @@ const COLLECTION = 'firestore';
 
 describe('firestore().collection().isEqual()', function () {
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('throws if other is not a Query', function () {
       try {
         firebase.firestore().collection(COLLECTION).isEqual(123);
@@ -130,9 +140,9 @@ describe('firestore().collection().isEqual()', function () {
 
   describe('modular', function () {
     it('throws if other is not a Query', function () {
-      const { getFirestore, collection } = firestoreModular;
+      const { getFirestore, collection, refEqual } = firestoreModular;
       try {
-        collection(getFirestore(), COLLECTION).isEqual(123);
+        refEqual(collection(getFirestore(), COLLECTION), 123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("'other' expected a Query instance");
@@ -141,9 +151,11 @@ describe('firestore().collection().isEqual()', function () {
     });
 
     it('returns false when not equal (simple checks)', function () {
-      const { getFirestore, collection, query, where, orderBy, limit } = firestoreModular;
+      const { getApp } = modular;
+      const { getFirestore, collection, query, where, orderBy, limit, queryEqual } =
+        firestoreModular;
       const db = getFirestore();
-      const secondaryDb = getFirestore(firebase.app('secondaryFromNative'));
+      const secondaryDb = getFirestore(getApp('secondaryFromNative'));
 
       const subCol = `${COLLECTION}/isequal/simplechecks`;
       const queryRef = collection(db, subCol);
@@ -156,11 +168,11 @@ describe('firestore().collection().isEqual()', function () {
       const ref1 = query(collection(db, subCol), where('bar', '==', true));
       const ref2 = query(collection(db, subCol), where('bar', '==', true));
 
-      const eql1 = queryRef.isEqual(q1);
-      const eql2 = queryRef.isEqual(q2);
-      const eql3 = queryRef.isEqual(q3);
-      const eql4 = queryRef.isEqual(q4);
-      const eql5 = ref1.isEqual(ref2);
+      const eql1 = queryEqual(queryRef, q1);
+      const eql2 = queryEqual(queryRef, q2);
+      const eql3 = queryEqual(queryRef, q3);
+      const eql4 = queryEqual(queryRef, q4);
+      const eql5 = queryEqual(ref1, ref2);
 
       eql1.should.be.False();
       eql2.should.be.False();

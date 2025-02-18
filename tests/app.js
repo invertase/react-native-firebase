@@ -22,6 +22,7 @@ import { StyleSheet, View, StatusBar, AppRegistry, LogBox } from 'react-native';
 import { JetProvider, ConnectionText, StatusEmoji, StatusText } from 'jet';
 
 // react-native-macos 0.77.0 - pops an empty, non-dismissable logbox
+// logged as https://github.com/microsoft/react-native-macos/issues/2376
 if (Platform.other) {
   // ...unless you ignore all logs in logbox
   LogBox.ignoreAllLogs();
@@ -73,32 +74,47 @@ ErrorUtils.setGlobalHandler((err, isFatal) => {
 
 function loadTests(_) {
   describe('React Native Firebase', function () {
-    if (!globalThis.RNFBDebug) {
-      // Only retry tests if not debugging locally,
+    if (!globalThis.RNFBDebug && !globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE) {
+      // Only retry tests if not debugging or hunting deprecated API usage locally,
       // otherwise it gets annoying to debug.
       this.retries(4);
     }
 
     before(async function () {
-      if (platformSupportedModules.includes('functions'))
-        firebase.functions().useEmulator('localhost', 5001);
-      if (platformSupportedModules.includes('database'))
-        firebase.database().useEmulator('localhost', 9000);
-      if (platformSupportedModules.includes('auth'))
-        firebase.auth().useEmulator('http://localhost:9099');
+      if (platformSupportedModules.includes('functions')) {
+        const { connectFunctionsEmulator, getFunctions } = functionsModular;
+        connectFunctionsEmulator(getFunctions(), 'localhost', 5001);
+      }
+      if (platformSupportedModules.includes('database')) {
+        const { connectDatabaseEmulator, getDatabase } = databaseModular;
+        connectDatabaseEmulator(getDatabase(), 'localhost', 9000);
+      }
+      if (platformSupportedModules.includes('auth')) {
+        const { connectAuthEmulator, getAuth } = authModular;
+        connectAuthEmulator(getAuth(), 'http://localhost:9099');
+      }
       if (platformSupportedModules.includes('firestore')) {
-        firebase.firestore().useEmulator('localhost', 8080);
-        firebase.app().firestore('second-rnfb').useEmulator('localhost', 8080);
+        const { getApp } = modular;
+        const { connectFirestoreEmulator, clearIndexedDbPersistence, getFirestore } =
+          firestoreModular;
+        connectFirestoreEmulator(getFirestore(), 'localhost', 8080);
+        connectFirestoreEmulator(getFirestore(getApp(), 'second-rnfb'), 'localhost', 8080);
         // Firestore caches documents locally (a great feature!) and that confounds tests
         // as data from previous runs pollutes following runs until re-install the app. Clear it.
         if (!Platform.other) {
-          firebase.firestore().clearPersistence();
+          clearIndexedDbPersistence(getFirestore());
         }
       }
       if (platformSupportedModules.includes('storage')) {
-        firebase.storage().useEmulator('localhost', 9199);
-        firebase.app('secondaryFromNative').storage().useEmulator('localhost', 9199);
-        firebase.app().storage('gs://react-native-firebase-testing').useEmulator('localhost', 9199);
+        const { getApp } = modular;
+        const { getStorage, connectStorageEmulator } = storageModular;
+        connectStorageEmulator(getStorage(), 'localhost', 9199);
+        connectStorageEmulator(getStorage(getApp('secondaryFromNative')), 'localhost', 9199);
+        connectStorageEmulator(
+          getStorage(getApp(), 'gs://react-native-firebase-testing'),
+          'localhost',
+          9199,
+        );
       }
     });
 

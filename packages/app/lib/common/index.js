@@ -224,11 +224,13 @@ export function deprecationConsoleWarning(nameSpace, methodName, instanceName, i
       const instanceMap = moduleMap[instanceName];
       const deprecatedMethod = instanceMap[methodName];
       if (instanceMap && deprecatedMethod) {
-        const message = createMessage(nameSpace, methodName, instanceName);
-
         if (!globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS) {
           // eslint-disable-next-line no-console
-          console.warn(message);
+          console.warn(createMessage(nameSpace, methodName, instanceName));
+
+          if (globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE === true) {
+            throw new Error('Deprecated API usage detected while in strict mode.');
+          }
         }
       }
     }
@@ -253,9 +255,12 @@ export function createMessage(
       const replacementMethodName = instance[methodName];
 
       if (replacementMethodName !== NO_REPLACEMENT) {
-        return modularDeprecationMessage + ` Please use \`${replacementMethodName}\` instead.`;
+        return (
+          modularDeprecationMessage +
+          `. Method called was \`${methodName}\`. Please use \`${replacementMethodName}\` instead.`
+        );
       } else {
-        return modularDeprecationMessage;
+        return modularDeprecationMessage + `. Method called was \`${methodName}\``;
       }
     }
   }
@@ -371,5 +376,9 @@ export function warnIfNotModularCall(args, replacementMethodName = '') {
   if (!globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS) {
     // eslint-disable-next-line no-console
     console.warn(message);
+
+    if (globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE === true) {
+      throw new Error('Deprecated API usage detected while in strict mode.');
+    }
   }
 }

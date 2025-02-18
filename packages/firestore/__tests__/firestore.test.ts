@@ -949,7 +949,7 @@ describe('Firestore', function () {
         collectionRefV9Deprecation(
           () => getCountFromServer(query),
           () => query.countFromServer(),
-          'count',
+          'countFromServer',
         );
       });
 

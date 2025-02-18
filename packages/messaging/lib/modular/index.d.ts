@@ -1,8 +1,12 @@
 import { FirebaseMessagingTypes } from '..';
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 
-import Messaging = FirebaseStorageTypes.Module;
+import Messaging = FirebaseMessagingTypes.Module;
 import FirebaseApp = ReactNativeFirebase.FirebaseApp;
+
+export const AuthorizationStatus = FirebaseMessagingTypes.AuthorizationStatus;
+export const NotificationAndroidPriority = FirebaseMessagingTypes.NotificationAndroidPriority;
+export const NotificationAndroidVisibility = FirebaseMessagingTypes.NotificationAndroidVisibility;
 
 /**
  * Returns a Messaging instance for the given app.

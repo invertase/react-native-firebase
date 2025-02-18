@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.10.1](https://github.com/invertase/react-native-firebase/compare/v21.10.0...v21.10.1) (2025-02-18)
+
+**Note:** Version bump only for package @react-native-firebase/functions
+
+## [21.10.0](https://github.com/invertase/react-native-firebase/compare/v21.9.0...v21.10.0) (2025-02-11)
+
+**Note:** Version bump only for package @react-native-firebase/functions
+
+## [21.9.0](https://github.com/invertase/react-native-firebase/compare/v21.8.0...v21.9.0) (2025-02-11)
+
+### Bug Fixes
+
+- **functions:** expose `HttpsErrorCode` for modular API ([bfb9296](https://github.com/invertase/react-native-firebase/commit/bfb929671a38e61a19d4e136fc22bb0552d22dba))
+
+### Reverts
+
+- Revert "test: temporarily disable some functions test - new arch data passing issues" ([1238be4](https://github.com/invertase/react-native-firebase/commit/1238be49d8007ccf5557194a68c95993b8b7e870))
+
 ## [21.8.0](https://github.com/invertase/react-native-firebase/compare/v21.7.4...v21.8.0) (2025-02-10)
 
 ### Bug Fixes

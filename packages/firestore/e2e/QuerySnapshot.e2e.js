@@ -23,6 +23,16 @@ describe('firestore.QuerySnapshot', function () {
   });
 
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('is returned from a collection get()', async function () {
       const snapshot = await firebase.firestore().collection(COLLECTION).get();
 
@@ -564,11 +574,11 @@ describe('firestore.QuerySnapshot', function () {
 
     describe('isEqual()', function () {
       it('throws if other is not a QuerySnapshot', async function () {
-        const { getFirestore, collection, getDocs } = firestoreModular;
+        const { getFirestore, collection, getDocs, snapshotEqual } = firestoreModular;
 
         try {
           const qs = await getDocs(collection(getFirestore(), COLLECTION));
-          qs.isEqual(123);
+          snapshotEqual(qs, 123);
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.message.should.containEql("'other' expected a QuerySnapshot instance");
@@ -577,7 +587,7 @@ describe('firestore.QuerySnapshot', function () {
       });
 
       it('returns false if not equal (simple checks)', async function () {
-        const { getFirestore, collection, addDoc, getDocs } = firestoreModular;
+        const { getFirestore, collection, addDoc, getDocs, snapshotEqual } = firestoreModular;
         const db = getFirestore();
 
         const colRef = collection(db, COLLECTION);
@@ -590,13 +600,23 @@ describe('firestore.QuerySnapshot', function () {
           collection(db, `${COLLECTION}/querysnapshot/querySnapshotIsEqual`),
         );
 
-        const eq1 = qs.isEqual(querySnap1);
+        const eq1 = snapshotEqual(qs, querySnap1);
 
         eq1.should.be.False();
       });
 
       it('returns false if not equal (expensive checks)', async function () {
-        const { getFirestore, collection, doc, setDoc, getDoc, updateDoc } = firestoreModular;
+        const {
+          getFirestore,
+          collection,
+          doc,
+          setDoc,
+          getDoc,
+          getDocs,
+          updateDoc,
+          query,
+          snapshotEqual,
+        } = firestoreModular;
 
         const colRef = collection(
           getFirestore(),
@@ -621,15 +641,15 @@ describe('firestore.QuerySnapshot', function () {
           },
         });
 
-        const qs2 = await colRef.get();
+        const qs2 = await getDocs(query(colRef));
 
-        const eq1 = qs1.isEqual(qs2);
+        const eq1 = snapshotEqual(qs1, qs2);
 
         eq1.should.be.False();
       });
 
       it('returns true when equal', async function () {
-        const { getFirestore, collection, addDoc, getDocs } = firestoreModular;
+        const { getFirestore, collection, addDoc, getDocs, snapshotEqual } = firestoreModular;
 
         const colRef = collection(
           getFirestore(),
@@ -649,7 +669,7 @@ describe('firestore.QuerySnapshot', function () {
         const qs1 = await getDocs(colRef);
         const qs2 = await getDocs(colRef);
 
-        const eq = qs1.isEqual(qs2);
+        const eq = snapshotEqual(qs1, qs2);
 
         eq.should.be.True();
       });
