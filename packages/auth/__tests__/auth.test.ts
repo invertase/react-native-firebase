@@ -1,5 +1,7 @@
-import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
-
+import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
+import { FirebaseAuthTypes } from '../lib/index';
+// @ts-ignore
+import User from '../lib/User';
 import auth, {
   firebase,
   getAuth,
@@ -58,6 +60,8 @@ import auth, {
   getCustomAuthDomain,
 } from '../lib';
 
+// @ts-ignore test
+import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 // @ts-ignore - We don't mind missing types here
 import { NativeFirebaseError } from '../../app/lib/internal';
 
@@ -402,6 +406,84 @@ describe('Auth', function () {
 
     it('`getCustomAuthDomain` function is properly exposed to end user', function () {
       expect(getCustomAuthDomain).toBeDefined();
+    });
+
+    describe('ActionCodeSettings', function () {
+      beforeAll(function () {
+        // @ts-ignore test
+        jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
+          return new Proxy(
+            {},
+            {
+              get: () => jest.fn().mockResolvedValue({} as never),
+            },
+          );
+        });
+      });
+
+      it('should allow linkDomain as `ActionCodeSettings.linkDomain`', function () {
+        const auth = firebase.app().auth();
+        const actionCodeSettings: FirebaseAuthTypes.ActionCodeSettings = {
+          url: 'https://example.com',
+          handleCodeInApp: true,
+          linkDomain: 'example.com',
+        };
+        const email = 'fake@example.com';
+        auth.sendSignInLinkToEmail(email, actionCodeSettings);
+        auth.sendPasswordResetEmail(email, actionCodeSettings);
+        sendPasswordResetEmail(auth, email, actionCodeSettings);
+        sendSignInLinkToEmail(auth, email, actionCodeSettings);
+
+        const user: FirebaseAuthTypes.User = new User(auth, {});
+
+        user.sendEmailVerification(actionCodeSettings);
+        user.verifyBeforeUpdateEmail(email, actionCodeSettings);
+        sendEmailVerification(user, actionCodeSettings);
+        verifyBeforeUpdateEmail(user, email, actionCodeSettings);
+      });
+
+      it('should warn using `ActionCodeSettings.dynamicLinkDomain`', function () {
+        const auth = firebase.app().auth();
+        const actionCodeSettings: FirebaseAuthTypes.ActionCodeSettings = {
+          url: 'https://example.com',
+          handleCodeInApp: true,
+          linkDomain: 'example.com',
+          dynamicLinkDomain: 'example.com',
+        };
+        const email = 'fake@example.com';
+        let warnings = 0;
+        const consoleWarnSpy = jest.spyOn(console, 'warn');
+        consoleWarnSpy.mockReset();
+        consoleWarnSpy.mockImplementation(warnMessage => {
+          if (
+            warnMessage.includes(
+              'Instead, use ActionCodeSettings.linkDomain to set up a custom domain',
+            )
+          ) {
+            warnings++;
+          }
+        });
+        auth.sendSignInLinkToEmail(email, actionCodeSettings);
+        expect(warnings).toBe(1);
+        auth.sendPasswordResetEmail(email, actionCodeSettings);
+        expect(warnings).toBe(2);
+        sendPasswordResetEmail(auth, email, actionCodeSettings);
+        expect(warnings).toBe(3);
+        sendSignInLinkToEmail(auth, email, actionCodeSettings);
+        expect(warnings).toBe(4);
+        const user: FirebaseAuthTypes.User = new User(auth, {});
+
+        user.sendEmailVerification(actionCodeSettings);
+        expect(warnings).toBe(5);
+        user.verifyBeforeUpdateEmail(email, actionCodeSettings);
+        expect(warnings).toBe(6);
+        sendEmailVerification(user, actionCodeSettings);
+        expect(warnings).toBe(7);
+        verifyBeforeUpdateEmail(user, email, actionCodeSettings);
+        expect(warnings).toBe(8);
+        consoleWarnSpy.mockReset();
+        consoleWarnSpy.mockRestore();
+      });
     });
   });
 });

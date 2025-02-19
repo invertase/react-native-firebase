@@ -46,6 +46,7 @@ import PhoneAuthProvider from './providers/PhoneAuthProvider';
 import TwitterAuthProvider from './providers/TwitterAuthProvider';
 import version from './version';
 import fallBackModule from './web/RNFBAuthModule';
+import { warnDynamicLink } from './utils';
 
 export {
   AppleAuthProvider,
@@ -350,10 +351,12 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   sendPasswordResetEmail(email, actionCodeSettings = null) {
+    warnDynamicLink(actionCodeSettings);
     return this.native.sendPasswordResetEmail(email, actionCodeSettings);
   }
 
   sendSignInLinkToEmail(email, actionCodeSettings = {}) {
+    warnDynamicLink(actionCodeSettings);
     return this.native.sendSignInLinkToEmail(email, actionCodeSettings);
   }
 

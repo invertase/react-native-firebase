@@ -474,10 +474,10 @@ export async function reauthenticateWithPhoneNumber(user, phoneNumber, appVerifi
 }
 
 /**
- * Reauthenticates the current user with the specified OAuthProvider using a pop-up based OAuth flow.
+ * Re-authenticate a user with a federated authentication provider (Microsoft, Yahoo). For native platforms, this will open a browser window.
  * @param {User} user - The user to re-authenticate.
  * @param {AuthProvider} provider - The auth provider.
- * @param {PopupRedirectResolver} [resolver] - Optional. The popup redirect resolver.
+ * @param {PopupRedirectResolver} [resolver] - Optional. The popup redirect resolver. Web only.
  * @returns {Promise<UserCredential>}
  */
 export async function reauthenticateWithPopup(user, provider, resolver) {
@@ -485,11 +485,11 @@ export async function reauthenticateWithPopup(user, provider, resolver) {
 }
 
 /**
- * Reauthenticates the current user with the specified OAuthProvider using a full-page redirect flow.
+ * Re-authenticate a user with a federated authentication provider (Microsoft, Yahoo). For native platforms, this will open a browser window.
  * @param {User} user - The user to re-authenticate.
  * @param {AuthProvider} provider - The auth provider.
- * @param {PopupRedirectResolver} [resolver] - Optional. The popup redirect resolver.
- * @returns {Promise<void>}
+ * @param {PopupRedirectResolver} [resolver] - Optional. The popup redirect resolver. Web only.
+ * @returns {Promise<UserCredential>}
  */
 export async function reauthenticateWithRedirect(user, provider, resolver) {
   return user.reauthenticateWithRedirect(provider, resolver);
