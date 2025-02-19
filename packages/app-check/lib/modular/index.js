@@ -17,7 +17,7 @@
 
 import { getApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '../../../app/lib/common';
-import CustomProvider from '../ReactNativeFirebaseAppCheckProvider';
+import ReactNativeFirebaseAppCheckProvider from '../ReactNativeFirebaseAppCheckProvider';
 
 /**
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
@@ -103,4 +103,4 @@ export function onTokenChanged(appCheckInstance, onNextOrObserver, onError, onCo
   );
 }
 
-export { CustomProvider };
+export { ReactNativeFirebaseAppCheckProvider };
