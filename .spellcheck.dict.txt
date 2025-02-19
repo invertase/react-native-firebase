@@ -74,6 +74,7 @@ firebase-admin
 firebase-ios-sdk
 firebase-js-sdk
 FirebaseApp
+FirebaseCore
 firestore
 Firestore
 GDPR
