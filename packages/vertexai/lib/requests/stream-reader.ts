@@ -184,14 +184,24 @@ export function aggregateResponses(responses: GenerateContentResponse[]): Genera
           }
           const newPart: Partial<Part> = {};
           for (const part of candidate.content.parts) {
-            if (part.text) {
+            if (part.text !== undefined) {
+              // The backend can send empty text parts. If these are sent back
+              // (e.g. in chat history), the backend will respond with an error.
+              // To prevent this, ignore empty text parts.
+              if (part.text === '') {
+                continue;
+              }
               newPart.text = part.text;
             }
             if (part.functionCall) {
               newPart.functionCall = part.functionCall;
             }
             if (Object.keys(newPart).length === 0) {
-              newPart.text = '';
+              throw new VertexAIError(
+                VertexAIErrorCode.INVALID_CONTENT,
+                'Part should have at least one property, but there are none. This is likely caused ' +
+                  'by a malformed response from the backend.',
+              );
             }
             aggregatedResponse.candidates[i].content.parts.push(newPart as Part);
           }

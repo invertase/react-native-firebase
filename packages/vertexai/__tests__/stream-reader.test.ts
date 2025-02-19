@@ -30,7 +30,9 @@ import {
   HarmCategory,
   HarmProbability,
   SafetyRating,
+  VertexAIErrorCode,
 } from '../lib/types';
+import { VertexAIError } from '../lib/errors';
 
 describe('stream-reader', () => {
   describe('getResponseStream', () => {
@@ -128,6 +130,22 @@ describe('stream-reader', () => {
         }
       }
       expect(foundCitationMetadata).toBe(true);
+    });
+
+    it('removes empty text parts', async () => {
+      const fakeResponse = getMockResponseStreaming('streaming-success-empty-text-part.txt');
+      const result = processStream(fakeResponse as Response);
+      const aggregatedResponse = await result.response;
+      expect(aggregatedResponse.text()).toBe('1');
+      expect(aggregatedResponse.candidates?.length).toBe(1);
+      expect(aggregatedResponse.candidates?.[0]?.content.parts.length).toBe(1);
+
+      // The chunk with the empty text part will still go through the stream
+      let numChunks = 0;
+      for await (const _ of result.stream) {
+        numChunks++;
+      }
+      expect(numChunks).toBe(2);
     });
   });
 
@@ -303,6 +321,49 @@ describe('stream-reader', () => {
         expect(response.candidates?.[0]!.citationMetadata?.citations.length).toBe(2);
         expect(response.candidates?.[0]!.citationMetadata?.citations[0]!.startIndex).toBe(0);
         expect(response.candidates?.[0]!.citationMetadata?.citations[1]!.startIndex).toBe(150);
+      });
+
+      it('throws if a part has no properties', () => {
+        const responsesToAggregate: GenerateContentResponse[] = [
+          {
+            candidates: [
+              {
+                index: 0,
+                content: {
+                  role: 'user',
+                  parts: [{} as any], // Empty
+                },
+                finishReason: FinishReason.STOP,
+                finishMessage: 'something',
+                safetyRatings: [
+                  {
+                    category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+                    probability: HarmProbability.NEGLIGIBLE,
+                  } as SafetyRating,
+                ],
+              },
+            ],
+            promptFeedback: {
+              blockReason: BlockReason.SAFETY,
+              safetyRatings: [
+                {
+                  category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                  probability: HarmProbability.LOW,
+                } as SafetyRating,
+              ],
+            },
+          },
+        ];
+
+        try {
+          aggregateResponses(responsesToAggregate);
+        } catch (e) {
+          expect((e as VertexAIError).code).toBe(VertexAIErrorCode.INVALID_CONTENT);
+          expect((e as VertexAIError).message).toContain(
+            'Part should have at least one property, but there are none. This is likely caused ' +
+              'by a malformed response from the backend.',
+          );
+        }
       });
     });
   });
