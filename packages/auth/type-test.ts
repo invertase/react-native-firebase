@@ -1,5 +1,5 @@
 // import firebase from '@react-native-firebase/app';
-import firebase, { FirebaseAuthTypes } from '.';
+import firebase, { FirebaseAuthTypes, signInWithPhoneNumber } from '.';
 
 console.log(firebase.default().currentUser);
 
@@ -53,3 +53,6 @@ console.log(u ? u.toJSON() : '');
 firebase.auth().signInAnonymously().then();
 
 firebase.auth().signInWithEmailAndPassword('', '').then();
+
+// Verify Modular API
+signInWithPhoneNumber(firebase.auth(), '+1234567890');
