@@ -149,7 +149,9 @@ So AppCheck module initialization is done in two steps in react-native-firebase 
 To configure the react-native-firebase custom provider, first obtain one, then configure it according to the providers you want to use on each platform.
 
 ```javascript
-rnfbProvider = firebase.appCheck().newReactNativeFirebaseAppCheckProvider();
+import { ReactNativeFirebaseAppCheckProvider } from `@react-native-firebase/app-check`;
+
+rnfbProvider = new ReactNativeFirebaseAppCheckProvider();
 rnfbProvider.configure({
   android: {
     provider: __DEV__ ? 'debug' : 'playIntegrity',
@@ -168,10 +170,12 @@ rnfbProvider.configure({
 
 ### Install the Custom Provider
 
-Once you have the custom provider configured, install it in app-check using the firebase-js-sdk compatible API:
+Once you have the custom provider configured, install it in app-check using the firebase-js-sdk compatible API, while saving the returned instance for usage:
 
 ```javascript
-firebase.appCheck().initializeAppCheck({ provider: rnfbProvider, isTokenAutoRefreshEnabled: true });
+import { initializeAppCheck  } from `@react-native-firebase/app-check`;
+
+const appCheck = initializeAppCheck({ provider: rnfbProvider, isTokenAutoRefreshEnabled: true });
 ```
 
 ### Verify AppCheck was initialized correctly
@@ -179,8 +183,11 @@ firebase.appCheck().initializeAppCheck({ provider: rnfbProvider, isTokenAutoRefr
 After initializing the custom provider, you can verify AppCheck is working by logging a response from the token server:
 
 ```javascript
+import { getToken  } from `@react-native-firebase/app-check`;
+
 try {
-  const { token } = await firebase.appCheck().getToken(true);
+  // `appCheckInstance` is the saved return value from initializeAppCheck
+  const { token } = await appCheckInstance.getToken( true);
 
   if (token.length > 0) {
     console.log('AppCheck verification passed');
