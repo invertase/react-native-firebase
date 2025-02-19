@@ -1349,7 +1349,8 @@ export namespace FirebaseAuthTypes {
 
     /**
      * Re-authenticate a user with a federated authentication provider (Microsoft, Yahoo)
-     *
+     * This differs from firebase-js-sdk which returns void, but we return `UserCredential` as this is how it has been implemented
+     * and we don't have a native equivalent of pop-up re-authentication (i.e. `reauthenticateWithPopup()`).
      * #### Example
      *
      * ```js
@@ -1365,9 +1366,17 @@ export namespace FirebaseAuthTypes {
      * @error auth/invalid-verification-code Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification code of the credential is not valid.
      * @error auth/invalid-verification-id Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid.
      * @param provider A created {@link auth.AuthProvider}.
+     * @returns A promise that resolves with the user credentials.
      */
     reauthenticateWithRedirect(provider: AuthProvider): Promise<UserCredential>;
-
+    /**
+     * Re-authenticates the current user. Internally calls `reauthenticateWithRedirect()` as there is no
+     * pop-up equivalent on native platforms.
+     *
+     * @param provider - The auth provider.
+     * @returns A promise that resolves with the user credentials.
+     */
+    reauthenticateWithPopup(provider: AuthProvider): Promise<UserCredential>;
     /**
      * Refreshes the current user.
      *

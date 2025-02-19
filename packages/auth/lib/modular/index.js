@@ -474,10 +474,10 @@ export async function reauthenticateWithPhoneNumber(user, phoneNumber, appVerifi
 }
 
 /**
- * Reauthenticates the current user with the specified OAuthProvider using a pop-up based OAuth flow.
+ * This wraps around `reauthenticateWithRedirect()` as we do not have a native equivalent of pop-up re-authentication.
  * @param {User} user - The user to re-authenticate.
  * @param {AuthProvider} provider - The auth provider.
- * @param {PopupRedirectResolver} [resolver] - Optional. The popup redirect resolver.
+ * @param {PopupRedirectResolver} [resolver] - Optional. The popup redirect resolver. Web onl.y
  * @returns {Promise<UserCredential>}
  */
 export async function reauthenticateWithPopup(user, provider, resolver) {
@@ -488,10 +488,12 @@ export async function reauthenticateWithPopup(user, provider, resolver) {
  * Reauthenticates the current user with the specified OAuthProvider using a full-page redirect flow.
  * @param {User} user - The user to re-authenticate.
  * @param {AuthProvider} provider - The auth provider.
- * @param {PopupRedirectResolver} [resolver] - Optional. The popup redirect resolver.
- * @returns {Promise<void>}
+ * @param {PopupRedirectResolver} [resolver] - Optional. The popup redirect resolver. Web only.
+ * @returns {Promise<UserCredential>}
  */
 export async function reauthenticateWithRedirect(user, provider, resolver) {
+  // This differs from firebase-js-sdk which returns void, but we return `UserCredential` as this is how it has been implemented
+  // already, and we don't have a native equivalent of pop-up re-authentication (i.e. `reauthenticateWithPopup()`).
   return user.reauthenticateWithRedirect(provider, resolver);
 }
 

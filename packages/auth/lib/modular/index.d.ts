@@ -530,11 +530,12 @@ export function reauthenticateWithPhoneNumber(
 ): Promise<FirebaseAuthTypes.ConfirmationResult>;
 
 /**
- * Reauthenticates the current user with the specified OAuthProvider using a pop-up based OAuth flow.
+ * Re-authenticates the current user. Internally calls `reauthenticateWithRedirect()` as there is no
+ * pop-up equivalent on native platforms.
  *
  * @param user - The user to re-authenticate.
  * @param provider - The auth provider.
- * @param resolver - Optional. The popup redirect resolver.
+ * @param resolver - Optional. The popup redirect resolver. Web only.
  * @returns A promise that resolves with the user credentials.
  */
 export function reauthenticateWithPopup(
@@ -544,18 +545,20 @@ export function reauthenticateWithPopup(
 ): Promise<FirebaseAuthTypes.UserCredential>;
 
 /**
- * Reauthenticates the current user with the specified OAuthProvider using a full-page redirect flow.
+ * Re-authenticate a user with a federated authentication provider (Microsoft, Yahoo)
+ * This differs from firebase-js-sdk which returns void, but we return `UserCredential` as this is how it has been implemented
+ * and we don't have a native equivalent of pop-up re-authentication (i.e. `reauthenticateWithPopup()`).
  *
  * @param user - The user to re-authenticate.
  * @param provider - The auth provider.
- * @param resolver - Optional. The popup redirect resolver.
- * @returns A promise that resolves when the redirect is complete.
+ * @param resolver - Optional. The popup redirect resolver. Web only.
+ * @returns A promise that resolves with the user credentials.
  */
 export function reauthenticateWithRedirect(
   user: FirebaseAuthTypes.User,
   provider: FirebaseAuthTypes.AuthProvider,
   resolver?: PopupRedirectResolver,
-): Promise<void>;
+): Promise<FirebaseAuthTypes.UserCredential>;
 
 /**
  * Reloads user account data, if signed in.
