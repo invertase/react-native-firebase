@@ -19,7 +19,6 @@ import { Content, GenerateContentRequest, Part, VertexAIErrorCode } from '../typ
 import { VertexAIError } from '../errors';
 
 export function formatSystemInstruction(input?: string | Part | Content): Content | undefined {
-  // null or undefined
   if (input == null) {
     return undefined;
   } else if (typeof input === 'string') {

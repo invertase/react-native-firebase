@@ -31,4 +31,5 @@ export const PACKAGE_VERSION = version;
 
 export const LANGUAGE_TAG = 'gl-rn';
 
+// Timeout is 180s by default
 export const DEFAULT_FETCH_TIMEOUT_MS = 180 * 1000;

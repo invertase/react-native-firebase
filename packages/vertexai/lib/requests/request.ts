@@ -58,7 +58,7 @@ export class RequestUrl {
       }
       return emulatorUrl;
     }
-    // TODO: allow user-set option if that feature becomes available
+
     const apiVersion = DEFAULT_API_VERSION;
     const baseUrl = this.requestOptions?.baseUrl || DEFAULT_BASE_URL;
     let url = `${baseUrl}/${apiVersion}`;
@@ -154,7 +154,6 @@ export async function makeRequest(
   let fetchTimeoutId: string | number | NodeJS.Timeout | undefined;
   try {
     const request = await constructRequest(model, task, apiSettings, stream, body, requestOptions);
-    // Timeout is 180s by default
     const timeoutMillis =
       requestOptions?.timeout != null && requestOptions.timeout >= 0
         ? requestOptions.timeout
