@@ -2576,8 +2576,9 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       builder = builder.setDynamicLinkDomain(actionCodeSettings.getString("dynamicLinkDomain"));
     }
 
-    if(actionCodeSettings.hasKey("linkDomain")) {
-      builder = builder.setLinkDomain(Objects.requireNonNull(actionCodeSettings.getString("linkDomain")));
+    if (actionCodeSettings.hasKey("linkDomain")) {
+      builder =
+          builder.setLinkDomain(Objects.requireNonNull(actionCodeSettings.getString("linkDomain")));
     }
 
     if (actionCodeSettings.hasKey("android")) {
