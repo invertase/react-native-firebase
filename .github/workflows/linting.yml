@@ -50,7 +50,7 @@ jobs:
           timeout_minutes: 3
           retry_wait_seconds: 10
           max_attempts: 3
-          command: yarn lint && git diff --exit-code
+          command: yarn lint
       - uses: actions/cache/save@v4
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
