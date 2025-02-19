@@ -89,6 +89,30 @@ For instructions on how to generate required keys and register an app for the de
 
 You must call initialize the AppCheck module prior to calling any firebase back-end services for App Check to function.
 
+#### Configure AppCheck with iOS credentials (react-native 0.77+)
+
+To do that, edit your `ios/ProjectName/AppDelegate.swift` and add the following two lines:
+
+At the top of the file, import the FirebaseCore SDK right after `import UIKit`:
+And within your existing `didFinishLaunchingWithOptions` method, add the following to the top of the method:
+
+```diff
+import UIKit
++ import RNFBAppCheck  // <-- This is the import for AppCheck to work
++ import FirebaseCore  // <-- From App/Core integration, no other Firebase items needed
+import React
+import React_RCTAppDelegate
+import ReactAppDependencyProvider
+
+@main
+class AppDelegate: RCTAppDelegate {
+  override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
++   RNFBAppCheckModule.sharedInstance()  // <-- new for AppCheck to work
++   FirebaseApp.configure()              // <-- From App/Core integration
+```
+
+#### Configure Firebase with iOS credentials (react-native < 0.77)
+
 To do that, edit your `ios/ProjectName/AppDelegate.mm` and add the following two lines:
 
 ```objectivec
