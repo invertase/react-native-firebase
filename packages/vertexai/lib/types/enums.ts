@@ -98,6 +98,10 @@ export enum HarmSeverity {
  * @public
  */
 export enum BlockReason {
+  // The prompt was blocked because it contained terms from the terminology blocklist.
+  BLOCKLIST = 'BLOCKLIST',
+  // The prompt was blocked due to prohibited content.
+  PROHIBITED_CONTENT = 'PROHIBITED_CONTENT',
   // Content was blocked by safety settings.
   SAFETY = 'SAFETY',
   // Content was blocked, but the reason is uncategorized.
@@ -109,6 +113,12 @@ export enum BlockReason {
  * @public
  */
 export enum FinishReason {
+  // Token generation was stopped because the response contained forbidden terms.
+  BLOCKLIST = 'BLOCKLIST',
+  // Token generation was stopped because the response contained potentially prohibited content.
+  PROHIBITED_CONTENT = 'PROHIBITED_CONTENT',
+  // Token generation was stopped because of Sensitive Personally Identifiable Information (SPII).
+  SPII = 'SPII',
   // Natural stop point of the model or provided stop sequence.
   STOP = 'STOP',
   // The maximum number of tokens as specified in the request was reached.
