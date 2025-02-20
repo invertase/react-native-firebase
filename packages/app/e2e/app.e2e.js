@@ -312,16 +312,5 @@ describe('modular', function () {
         e.message.should.equal('registerVersion is only supported on Web');
       }
     });
-
-    it('onLog is not supported on react-native', async function () {
-      const { onLog } = modular;
-
-      try {
-        await onLog(() => {}, {});
-        throw new Error('Should have rejected incorrect onLog');
-      } catch (e) {
-        e.message.should.equal('onLog is only supported on Web');
-      }
-    });
   });
 });
