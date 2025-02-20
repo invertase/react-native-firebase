@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.11.0](https://github.com/invertase/react-native-firebase/compare/v21.10.1...v21.11.0) (2025-02-20)
+
+### Bug Fixes
+
+- **firestore, bytes:** return Bytes for modular API usage, fix deprecation ([5a29425](https://github.com/invertase/react-native-firebase/commit/5a2942517b071141306d675a8501f7d23d87af55))
+
 ## [21.10.1](https://github.com/invertase/react-native-firebase/compare/v21.10.0...v21.10.1) (2025-02-18)
 
 ### Bug Fixes

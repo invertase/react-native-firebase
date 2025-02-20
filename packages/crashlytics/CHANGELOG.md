@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.11.0](https://github.com/invertase/react-native-firebase/compare/v21.10.1...v21.11.0) (2025-02-20)
+
+### Bug Fixes
+
+- **crashlytics:** convert internal API usage to modular ([b462330](https://github.com/invertase/react-native-firebase/commit/b46233049396764b68c6108e5b886628613f2620))
+
 ## [21.10.1](https://github.com/invertase/react-native-firebase/compare/v21.10.0...v21.10.1) (2025-02-18)
 
 **Note:** Version bump only for package @react-native-firebase/crashlytics
