@@ -403,6 +403,20 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   /**
+   * isSignInWithEmailLink
+   *
+   * @param email
+   * @param promise
+   */
+  @ReactMethod
+  public void isSignInWithEmailLink(String appName, String emailLink, final Promise promise) {
+    Log.d(TAG, "isSignInWithEmailLink");
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    promise.resolve(firebaseAuth.isSignInWithEmailLink(emailLink));
+  }
+
+  /**
    * signInWithEmailAndPassword
    *
    * @param email

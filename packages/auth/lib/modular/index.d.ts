@@ -169,9 +169,9 @@ export function initializeRecaptchaConfig(auth: Auth): Promise<void>;
  *
  * @param auth - The Auth instance.
  * @param emailLink - The email link to check.
- * @returns True if the link is a sign-in with email link.
+ * @returns A promise that resolves if the link is a sign-in with email link.
  */
-export function isSignInWithEmailLink(auth: Auth, emailLink: string): boolean;
+export function isSignInWithEmailLink(auth: Auth, emailLink: string): Promise<boolean>;
 
 /**
  * Adds an observer for changes to the user's sign-in state.

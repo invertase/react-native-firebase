@@ -2013,12 +2013,12 @@ export namespace FirebaseAuthTypes {
      * #### Example
      *
      * ```js
-     * const signedInWithLink = firebase.auth().isSignInWithEmailLink(link);
+     * const signedInWithLink = await firebase.auth().isSignInWithEmailLink(link);
      * ```
      *
      * @param emailLink The email link to check whether the user signed in with it.
      */
-    isSignInWithEmailLink(emailLink: string): boolean;
+    isSignInWithEmailLink(emailLink: string): Promise<boolean>;
 
     /**
      * Signs the user in with an email link.
