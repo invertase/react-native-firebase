@@ -72,7 +72,7 @@ export function initializeAnalytics(app, options) {
  */
 export function getGoogleAnalyticsClientId(analytics) {
   throw new Error('getGoogleAnalyticsClientId is web-only and not yet supported.');
-  return analytics
+  return analytics;
 }
 /**
  * Log a custom event with optional params.
