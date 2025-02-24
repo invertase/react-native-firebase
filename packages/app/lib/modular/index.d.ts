@@ -15,13 +15,13 @@ export function deleteApp(app: FirebaseApp): Promise<void>;
  * Registers a library's name and version for platform logging purposes.
  * @param libraryKeyOrName - Library name or key.
  * @param version - Library version.
- * @param variant - Library variant.
+ * @param variant - Library variant. Optional.
  * @returns Promise<void>
  */
 export function registerVersion(
   libraryKeyOrName: string,
   version: string,
-  variant: string | null,
+  variant?: string,
 ): Promise<void>;
 
 /**
