@@ -65,6 +65,16 @@ export function initializeAnalytics(app, options) {
 }
 
 /**
+ * Retrieves a unique Google Analytics identifier for the web client.
+ *
+ * @param {FirebaseAnalytics} analytics - Instance of analytics (web - only)
+ * @returns {string}
+ */
+export function getGoogleAnalyticsClientId(analytics) {
+  throw new Error('getGoogleAnalyticsClientId is web-only and not yet supported.');
+  return analytics;
+}
+/**
  * Log a custom event with optional params.
  * @param {FirebaseAnalytics} analytics - Analytics instance.
  * @param {string} name - Event name must not conflict with any Reserved Events.
