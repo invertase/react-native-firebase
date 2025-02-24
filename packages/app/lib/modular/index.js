@@ -28,7 +28,7 @@ export function deleteApp(app) {
  * Registers a library's name and version for platform logging purposes.
   @param {string} libraryKeyOrName - library name or key.
   @param {string} version - library version.
-  @param {string | null} variant - library variant.
+  @param {string | null} variant - library variant. Optional.
  * @returns {Promise<void>}
  */
 export function registerVersion(libraryKeyOrName, version, variant) {
