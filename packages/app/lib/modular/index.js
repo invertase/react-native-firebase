@@ -7,12 +7,15 @@ import {
   initializeApp as initializeAppCompat,
   setLogLevel as setLogLevelCompat,
 } from '../internal';
+import { setUserLogHandler } from '../internal/logger';
 import sdkVersion from '../version';
 
 /**
  * @typedef {import('..').ReactNativeFirebase.FirebaseApp} FirebaseApp
  * @typedef {import('..').ReactNativeFirebase.FirebaseAppOptions} FirebaseAppOptions
  * @typedef {import('..').ReactNativeFirebase.LogLevelString} LogLevelString
+ * @typedef {import('../internal/logger').LogCallback} LogCallback
+ * @typedef {import('../internal/logger').LogOptions} LogOptions
  */
 
 /**
@@ -36,13 +39,13 @@ export function registerVersion(libraryKeyOrName, version, variant) {
 }
 
 /**
- * Sets log handler for all Firebase SDKs.
- * @param {Function} logCallback - The callback function to handle logs.
- * @param {Object} [options] - Optional settings for log handling.
- * @returns {Promise<void>}
+ * Sets log handler for VertexAI only currently.
+ * @param {LogCallback | null} logCallback - The callback function to handle logs.
+ * @param {LogOptions} [options] - Optional settings for log handling.
+ * @returns {void}
  */
 export function onLog(logCallback, options) {
-  throw new Error('onLog is only supported on Web');
+  setUserLogHandler(logCallback, options);
 }
 
 /**
