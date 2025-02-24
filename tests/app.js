@@ -21,13 +21,6 @@ import { StyleSheet, View, StatusBar, AppRegistry, LogBox } from 'react-native';
 
 import { JetProvider, ConnectionText, StatusEmoji, StatusText } from 'jet';
 
-// react-native-macos 0.77.0 - pops an empty, non-dismissable logbox
-// logged as https://github.com/microsoft/react-native-macos/issues/2376
-if (Platform.other) {
-  // ...unless you ignore all logs in logbox
-  LogBox.ignoreAllLogs();
-}
-
 const platformSupportedModules = [];
 
 if (Platform.other) {
