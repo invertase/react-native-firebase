@@ -18,6 +18,7 @@
 - My change supports the following platforms;
   - [ ] `Android`
   - [ ] `iOS`
+  - [ ] `Other` (macOS, web)
 - My change includes tests;
   - [ ] `e2e` tests added or updated in `packages/\*\*/e2e`
   - [ ] `jest` tests added or updated in `packages/\*\*/__tests__`
