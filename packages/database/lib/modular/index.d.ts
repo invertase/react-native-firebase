@@ -220,5 +220,13 @@ export function getServerTime(db: Database): Promise<number>;
  */
 export function increment(delta: number): object;
 
+/**
+ * Logs debugging information to the console.
+ *
+ * @param enabled
+ * @param persistent
+ */
+export declare function enableLogging(enabled: boolean, persistent?: boolean): any;
+
 export * from './query';
 export * from './transaction';
