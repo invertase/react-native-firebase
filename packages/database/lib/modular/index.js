@@ -24,8 +24,8 @@ export function getDatabase(app, url) {
  * @param {number} port
  * @returns {void}
  */
-export function connectDatabaseEmulator(db, host, port) {
-  db.useEmulator(host, port);
+export function connectDatabaseEmulator(db, host, port, options) {
+  db.useEmulator(host, port, options);
 }
 
 /**

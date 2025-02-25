@@ -1,5 +1,5 @@
 import { ReactNativeFirebase } from '@react-native-firebase/app';
-import { FirebaseDatabaseTypes } from '..';
+import { DataSnapshot, FirebaseDatabaseTypes, Query, QueryConstraint } from '..';
 
 import FirebaseApp = ReactNativeFirebase.FirebaseApp;
 import Database = FirebaseDatabaseTypes.Module;
@@ -208,6 +208,25 @@ export declare function forceWebSockets(): void;
 export function serverTimestamp(): object;
 
 /**
+ * Creates a new QueryConstraint that orders by the key.
+ * Sorts the results of a query by their (ascending) key values.
+ */
+export function orderByKey(): QueryConstraint;
+
+/**
+ * Creates a new QueryConstraint that orders by priority.
+ * Applications need not use priority but can order collections by ordinary properties
+ */
+export function orderByPriority(): QueryConstraint;
+
+/**
+ * Creates a new QueryConstraint that orders by value.
+ * If the children of a query are all scalar values (string, number, or boolean),
+ * you can order the results by their (ascending) values.
+ */
+export function orderByValue(): QueryConstraint;
+
+/**
  * Returns the current Firebase Database server time as a JavaScript Date object.
  */
 export function getServerTime(db: Database): Promise<number>;
@@ -219,6 +238,342 @@ export function getServerTime(db: Database): Promise<number>;
  * @returns A placeholder value for modifying data atomically server-side.
  */
 export function increment(delta: number): object;
+
+/**
+ * Logs debugging information to the console.
+ *
+ * @param enabled
+ * @param persistent
+ */
+export declare function enableLogging(enabled: boolean, persistent?: boolean): any;
+
+/**
+ * Creates a new QueryConstraint that if limited to the first specific number of children.
+ * The limitToFirst() method is used to set a maximum number of children to be synced for a given callback.
+ *
+ * @param limit
+ */
+export declare function limitToFirst(limit: number): QueryConstraint;
+
+/**
+ * Creates a new QueryConstraint that is limited to return only the last specified number of children.
+ * The limitToLast() method is used to set a maximum number of children to be synced for a given callback.
+ *
+ * @param limit
+ */
+export declare function limitToLast(limit: number): QueryConstraint;
+
+/**
+ * Gets a Reference for the location at the specified relative path.
+ * The relative path can either be a simple child name (for example, "ada")
+ * or a deeper slash-separated path (for example, "ada/name/first").
+ *
+ * @param parent
+ * @param path
+ */
+export declare function child(parent: DatabaseReference, path: string): DatabaseReference;
+
+/**
+ * Generates a new child location using a unique key and returns its Reference.
+ * This is the most common pattern for adding data to a collection of items.
+ *
+ * @param parent
+ * @param value
+ */
+export declare function push(parent: DatabaseReference, value?: unknown): DatabaseReference;
+
+/**
+ * Creates a new QueryConstraint that orders by the specified child key.
+ * Queries can only order by one key at a time. Calling orderByChild() multiple times on the same query is an error.
+ * @param path
+ */
+export declare function orderByChild(path: string): QueryConstraint;
+
+/**
+ * Gets the most up-to-date result for this query.
+ * 
+ * @param query 
+ */
+export declare function get(query: Query): Promise<DataSnapshot>;
+
+/**
+ * Detaches a callback previously attached with the corresponding on*() (onValue, onChildAdded) listener. 
+ * Note: This is not the recommended way to remove a listener. 
+ * Instead, please use the returned callback function from the respective on* callbacks.
+ * 
+ * @param query 
+ * @param eventType 
+ * @param callback 
+ */
+export declare function off(query: Query, eventType?: EventType, callback?: (snapshot: DataSnapshot, previousChildName?: string | null) => unknown): void;
+
+/**
+ * Listens for data changes at a particular location.
+ * This is the primary way to read data from a Database.
+ * 
+ * @param query 
+ * @param callback 
+ * @param cancelCallback 
+ */
+export declare function onChildAdded(query: Query, callback: (snapshot: DataSnapshot, previousChildName?: string | null) => unknown, cancelCallback?: (error: Error) => unknown): Unsubscribe;
+
+/**
+ * Listens for data changes at a particular location.
+ * This is the primary way to read data from a Database.
+ * 
+ * @param query 
+ * @param callback 
+ * @param options 
+ */
+export declare function onChildAdded(query: Query, callback: (snapshot: DataSnapshot, previousChildName: string | null) => unknown, options: ListenOptions): Unsubscribe;
+
+/**
+ * Listens for data changes at a particular location.
+ * This is the primary way to read data from a Database.
+ * 
+ * @param query 
+ * @param callback 
+ * @param cancelCallback 
+ * @param options 
+ */
+export declare function onChildAdded(query: Query, callback: (snapshot: DataSnapshot, previousChildName: string | null) => unknown, cancelCallback: (error: Error) => unknown, options: ListenOptions): Unsubscribe;
+
+/**
+ * Listens for data changes at a particular location.
+ * This is the primary way to read data from a Database.
+ * 
+ * @param query 
+ * @param callback 
+ * @param cancelCallback 
+ */
+export declare function onChildChanged(query: Query, callback: (snapshot: DataSnapshot, previousChildName: string | null) => unknown, cancelCallback?: (error: Error) => unknown): Unsubscribe;
+
+/**
+ * Listens for data changes at a particular location.
+ * This is the primary way to read data from a Database.
+ * 
+ * @param query 
+ * @param callback 
+ * @param options 
+ */
+export declare function onChildChanged(query: Query, callback: (snapshot: DataSnapshot, previousChildName: string | null) => unknown, options: ListenOptions): Unsubscribe;
+
+/**
+ * Listens for data changes at a particular location.
+ * This is the primary way to read data from a Database.
+ * 
+ * @param query 
+ * @param callback 
+ * @param cancelCallback 
+ * @param options 
+ */
+export declare function onChildChanged(query: Query, callback: (snapshot: DataSnapshot, previousChildName: string | null) => unknown, cancelCallback: (error: Error) => unknown, options: ListenOptions): Unsubscribe;
+
+/**
+ * Listens for data changes at a particular location.
+ * This is the primary way to read data from a Database.
+ * 
+ * @param query 
+ * @param callback 
+ * @param cancelCallback 
+ */
+export declare function onChildMoved(query: Query, callback: (snapshot: DataSnapshot, previousChildName: string | null) => unknown, cancelCallback?: (error: Error) => unknown): Unsubscribe;
+
+/**
+ * Listens for data changes at a particular location.
+ * This is the primary way to read data from a Database.
+ * 
+ * @param query 
+ * @param callback 
+ * @param options 
+ */
+export declare function onChildMoved(query: Query, callback: (snapshot: DataSnapshot, previousChildName: string | null) => unknown, options: ListenOptions): Unsubscribe;
+
+/**
+ * Listens for data changes at a particular location.
+ * This is the primary way to read data from a Database.
+ * 
+ * @param query 
+ * @param callback 
+ * @param cancelCallback 
+ * @param options 
+ */
+export declare function onChildMoved(query: Query, callback: (snapshot: DataSnapshot, previousChildName: string | null) => unknown, cancelCallback: (error: Error) => unknown, options: ListenOptions): Unsubscribe;
+
+/**
+ * Listens for data changes at a particular location.
+ * This is the primary way to read data from a Database.
+ * 
+ * @param query 
+ * @param callback 
+ * @param cancelCallback 
+ */
+export declare function onChildRemoved(query: Query, callback: (snapshot: DataSnapshot) => unknown, cancelCallback?: (error: Error) => unknown): Unsubscribe;
+
+/**
+ * Listens for data changes at a particular location.
+ * This is the primary way to read data from a Database.
+ * 
+ * @param query 
+ * @param callback 
+ * @param options 
+ */
+export declare function onChildRemoved(query: Query, callback: (snapshot: DataSnapshot) => unknown, options: ListenOptions): Unsubscribe;
+
+/**
+ * Listens for data changes at a particular location.
+ * This is the primary way to read data from a Database.
+ * 
+ * @param query 
+ * @param callback 
+ * @param cancelCallback 
+ * @param options 
+ */
+export declare function onChildRemoved(query: Query, callback: (snapshot: DataSnapshot) => unknown, cancelCallback: (error: Error) => unknown, options: ListenOptions): Unsubscribe;
+
+/**
+ * Listens for data changes at a particular location.
+ * This is the primary way to read data from a Database.
+ * 
+ * @param query 
+ * @param callback 
+ * @param cancelCallback 
+ */
+export declare function onValue(query: Query, callback: (snapshot: DataSnapshot) => unknown, cancelCallback?: (error: Error) => unknown): Unsubscribe;
+
+/**
+ * Listens for data changes at a particular location.
+ * This is the primary way to read data from a Database.
+ * 
+ * @param query 
+ * @param callback 
+ * @param options 
+ */
+export declare function onValue(query: Query, callback: (snapshot: DataSnapshot) => unknown, options: ListenOptions): Unsubscribe;
+
+/**
+ * Listens for data changes at a particular location.
+ * This is the primary way to read data from a Database.
+ * 
+ * @param query 
+ * @param callback 
+ * @param cancelCallback 
+ * @param options 
+ */
+export declare function onValue(query: Query, callback: (snapshot: DataSnapshot) => unknown, cancelCallback: (error: Error) => unknown, options: ListenOptions): Unsubscribe;
+
+/**
+ * Creates a new immutable instance of Query that is extended to also include additional query constraints.
+ * 
+ * @param query 
+ * @param queryConstraints 
+ */
+export declare function query(query: Query, ...queryConstraints: QueryConstraint[]): Query;
+
+/**
+ * Returns an OnDisconnect object - see Enabling Offline Capabilities in JavaScript for more information on how to use it.
+ * 
+ * @param ref 
+ */
+export declare function onDisconnect(ref: DatabaseReference): OnDisconnect;
+
+/**
+ * Removes the data at this Database location.
+ * Any data at child locations will also be deleted.
+ * @param ref 
+ */
+export declare function remove(ref: DatabaseReference): Promise<void>;
+
+/**
+ * Atomically modifies the data at this location.
+ * Atomically modify the data at this location. 
+ * Unlike a normal set(), which just overwrites the data regardless of its previous value, 
+ * runTransaction() is used to modify the existing value to a new value, ensuring there are no 
+ * conflicts with other clients writing to the same location at the same time.
+ * 
+ * @param ref 
+ * @param transactionUpdate 
+ * @param options 
+ */
+export declare function runTransaction(ref: DatabaseReference, transactionUpdate: (currentData: any) => unknown, options?: TransactionOptions): Promise<TransactionResult>;
+
+/**
+ * Writes data to this Database location.
+ * This will overwrite any data at this location and all child locations.
+ * @param ref 
+ * @param value 
+ */
+export declare function set(ref: DatabaseReference, value: unknown): Promise<void>;
+
+/**
+ * 
+ * Sets a priority for the data at this Database location.
+ * @param ref 
+ * @param priority 
+ */
+export declare function setPriority(ref: DatabaseReference, priority: string | number | null): Promise<void>;
+
+/**
+ * Writes data the Database location. Like set() but also specifies the priority for that data.
+ * 
+ * @param ref 
+ * @param value 
+ * @param priority 
+ */
+export declare function setWithPriority(ref: DatabaseReference, value: unknown, priority: string | number | null): Promise<void>;
+
+/**
+ * Writes multiple values to the Database at once.
+ * The values argument contains multiple property-value pairs that will be written to the Database together. 
+ * Each child property can either be a simple property (for example, "name") or a relative path 
+ * (for example, "name/first") from the current location to the data to update.
+ * 
+ * @param ref 
+ * @param values 
+ */
+export declare function update(ref: DatabaseReference, values: object): Promise<void>;
+
+/**
+ * Creates a QueryConstraint with the specified ending point.
+ * Using startAt(), startAfter(), endBefore(), endAt() and equalTo() allows you to choose arbitrary 
+ * starting and ending points for your queries.
+ * 
+ * @param value 
+ * @param key 
+ */
+export declare function endAt(value: number | string | boolean | null, key?: string): QueryConstraint;
+
+/**
+ * Creates a QueryConstraint with the specified ending point (exclusive).
+ * 
+ * @param value 
+ * @param key 
+ */
+export declare function endBefore(value: number | string | boolean | null, key?: string): QueryConstraint;
+
+/**
+ * Creates a QueryConstraint that includes children that match the specified value.
+ * 
+ * @param value 
+ * @param key 
+ */
+export declare function equalTo(value: number | string | boolean | null, key?: string): QueryConstraint;
+
+/**
+ * Creates a QueryConstraint with the specified starting point (exclusive).
+ * 
+ * @param value 
+ * @param key 
+ */
+export declare function startAfter(value: number | string | boolean | null, key?: string): QueryConstraint;
+
+/**
+ * Creates a QueryConstraint with the specified starting point.
+ * 
+ * @param value 
+ * @param key 
+ */
+export declare function startAt(value?: number | string | boolean | null, key?: string): QueryConstraint;
 
 export * from './query';
 export * from './transaction';
