@@ -42,6 +42,7 @@
     "tests:ios:build": "cd tests && yarn detox build --configuration ios.sim.debug",
     "tests:ios:build-release": "cd tests && yarn detox build --configuration ios.sim.release",
     "tests:ios:test": "cd tests && SIMCTL_CHILD_GULGeneratedClassDisposeDisabled=1 yarn detox test --configuration ios.sim.debug --loglevel warn",
+    "tests:ios:test-release": "cd tests && SIMCTL_CHILD_GULGeneratedClassDisposeDisabled=1 yarn detox test --configuration ios.sim.release --loglevel warn",
     "tests:ios:test:debug": "cd tests && SIMCTL_CHILD_GULGeneratedClassDisposeDisabled=1 yarn detox test --configuration ios.sim.debug --loglevel warn --inspect",
     "tests:ios:test-reuse": "cd tests && SIMCTL_CHILD_GULGeneratedClassDisposeDisabled=1 yarn detox test --configuration ios.sim.debug --reuse --loglevel warn",
     "tests:ios:test-cover": "cd tests && SIMCTL_CHILD_GULGeneratedClassDisposeDisabled=1 yarn detox test --configuration ios.sim.debug --loglevel verbose",
