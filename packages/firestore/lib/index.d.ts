@@ -253,7 +253,10 @@ export namespace FirebaseFirestoreTypes {
    * to the location. The document at the referenced location may or may not exist. A `DocumentReference` can also be used
    * to create a `CollectionReference` to a subcollection.
    */
-  export interface DocumentReference<T extends DocumentData = DocumentData> {
+  export interface DocumentReference<
+    T extends DocumentData = DocumentData,
+    C extends DocumentData = DocumentData,
+  > {
     /**
      * The Firestore instance the document is in. This is useful for performing transactions, for example.
      */
@@ -285,7 +288,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param collectionPath A slash-separated path to a collection.
      */
-    collection(collectionPath: string): CollectionReference;
+    collection(collectionPath: string): CollectionReference<C>;
 
     /**
      * Deletes the document referred to by this DocumentReference.
