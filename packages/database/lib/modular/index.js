@@ -1,5 +1,5 @@
 import { getApp } from '@react-native-firebase/app';
-import { firebase } from "..";
+import { firebase } from ".."; // Needed for increment() method
 
 /**
  * @typedef {import("..").FirebaseApp} FirebaseApp
