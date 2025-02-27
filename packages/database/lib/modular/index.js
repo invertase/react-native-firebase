@@ -1,4 +1,5 @@
 import { getApp } from '@react-native-firebase/app';
+import { firebase } from "..";
 
 /**
  * @typedef {import("..").FirebaseApp} FirebaseApp
