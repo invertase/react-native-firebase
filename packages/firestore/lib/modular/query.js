@@ -136,8 +136,8 @@ export function startAfter(...docOrFields) {
  * @param {*} fieldValues
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function endAt(fieldValues) {
-  throw new Error('endAt is not implemented');
+export function endAt(...fieldValues) {
+  return new QueryConstraint('endAt', ...fieldValues);
 }
 
 /**
@@ -147,8 +147,8 @@ export function endAt(fieldValues) {
  * @param {*} fieldValues
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function endBefore(fieldValues) {
-  throw new Error('endBefore is not implemented');
+export function endBefore(...fieldValues) {
+  return new QueryConstraint('endBefore', ...fieldValues);
 }
 
 /**

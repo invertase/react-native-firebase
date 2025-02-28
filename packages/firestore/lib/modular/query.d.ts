@@ -176,7 +176,7 @@ export type OrderByDirection = 'desc' | 'asc';
  */
 export function orderBy(
   fieldPath: string | FieldPath,
-  directionStr?: OrderByDirection,
+  directionStr: OrderByDirection = 'asc',
 ): QueryOrderByConstraint;
 
 /**
@@ -331,6 +331,10 @@ export declare function deleteDoc<AppModelType, DbModelType extends DocumentData
  * @param fieldValues
  */
 export declare function endAt(...fieldValues: unknown[]): QueryEndAtConstraint;
+
+export function endAt<AppModelType, DbModelType extends DocumentData>(
+  snapshot: DocumentSnapshot<AppModelType, DbModelType>
+): QueryEndAtConstraint;
 
 /**
  * Creates a QueryEndAtConstraint that modifies the result set to end before the provided fields relative to the order of the query.
