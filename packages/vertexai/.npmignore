@@ -1,0 +1,27 @@
+
+# OS-specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.dbandroid/gradle
+android/gradlew
+android/build
+android/gradlew.bat
+android/gradle/
+
+.idea
+coverage
+yarn.lock
+e2e/
+.github
+.vscode
+.nyc_output
+android/.settings
+*.coverage.json
+.circleci
+.eslintignore
+type-test.ts
+__tests__
