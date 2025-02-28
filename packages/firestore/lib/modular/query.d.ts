@@ -333,7 +333,7 @@ export declare function deleteDoc<AppModelType, DbModelType extends DocumentData
 export declare function endAt(...fieldValues: unknown[]): QueryEndAtConstraint;
 
 export function endAt<AppModelType, DbModelType extends DocumentData>(
-  snapshot: DocumentSnapshot<AppModelType, DbModelType>
+  snapshot: DocumentSnapshot<AppModelType, DbModelType>,
 ): QueryEndAtConstraint;
 
 /**
