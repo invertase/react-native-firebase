@@ -100,11 +100,11 @@ export type QueryNonFilterConstraint =
  * @throws if any of the provided query constraints cannot be combined with the
  * existing or new constraints.
  */
-export function query<T>(
-  query: Query<T>,
+export declare function query<AppModelType, DbModelType extends DocumentData>(
+  query: Query<AppModelType, DbModelType>,
   compositeFilter: QueryCompositeFilterConstraint,
   ...queryConstraints: QueryNonFilterConstraint[]
-): Query<T>;
+): Query<AppModelType, DbModelType>;
 
 /**
  * Creates a new immutable instance of {@link Query} that is extended to also
@@ -116,7 +116,10 @@ export function query<T>(
  * @throws if any of the provided query constraints cannot be combined with the
  * existing or new constraints.
  */
-export function query<T>(query: Query<T>, ...queryConstraints: IQueryConstraint[]): Query<T>;
+export declare function query<AppModelType, DbModelType extends DocumentData>(
+  query: Query<AppModelType, DbModelType>,
+  ...queryConstraints: QueryConstraint[]
+): Query<AppModelType, DbModelType>;
 
 export function query<T>(
   query: Query<T>,
@@ -173,7 +176,7 @@ export type OrderByDirection = 'desc' | 'asc';
  */
 export function orderBy(
   fieldPath: string | FieldPath,
-  directionStr: OrderByDirection = 'asc',
+  directionStr?: OrderByDirection,
 ): QueryOrderByConstraint;
 
 /**
@@ -285,7 +288,9 @@ export declare function getDocFromServer<T>(
  *
  * @returns A `Promise` that will be resolved with the results of the query.
  */
-export function getDocs<T>(query: Query<T>): Promise<QuerySnapshot<T>>;
+export declare function getDocs<AppModelType, DbModelType extends DocumentData>(
+  query: Query<AppModelType, DbModelType>,
+): Promise<QuerySnapshot<AppModelType, DbModelType>>;
 
 /**
  * Executes the query and returns the results as a `QuerySnapshot` from cache.
@@ -294,7 +299,9 @@ export function getDocs<T>(query: Query<T>): Promise<QuerySnapshot<T>>;
  *
  * @returns A `Promise` that will be resolved with the results of the query.
  */
-export function getDocsFromCache<T>(query: Query<T>): Promise<QuerySnapshot<T>>;
+export declare function getDocsFromCache<AppModelType, DbModelType extends DocumentData>(
+  query: Query<AppModelType, DbModelType>,
+): Promise<QuerySnapshot<AppModelType, DbModelType>>;
 
 /**
  * Executes the query and returns the results as a `QuerySnapshot` from the
@@ -302,7 +309,9 @@ export function getDocsFromCache<T>(query: Query<T>): Promise<QuerySnapshot<T>>;
  *
  * @returns A `Promise` that will be resolved with the results of the query.
  */
-export function getDocsFromServer<T>(query: Query<T>): Promise<QuerySnapshot<T>>;
+export declare function getDocsFromServer<AppModelType, DbModelType extends DocumentData>(
+  query: Query<AppModelType, DbModelType>,
+): Promise<QuerySnapshot<AppModelType, DbModelType>>;
 
 /**
  * Deletes the document referred to by the specified `DocumentReference`.
@@ -311,53 +320,25 @@ export function getDocsFromServer<T>(query: Query<T>): Promise<QuerySnapshot<T>>
  * @returns A Promise resolved once the document has been successfully
  * deleted from the backend (note that it won't resolve while you're offline).
  */
-export function deleteDoc(reference: DocumentReference<unknown>): Promise<void>;
+export declare function deleteDoc<AppModelType, DbModelType extends DocumentData>(
+  reference: DocumentReference<AppModelType, DbModelType>,
+): Promise<void>;
 
 /**
- * Creates a `QueryConstraint` with the specified ending point.
+ * Creates a QueryEndAtConstraint that modifies the result set to end at the provided fields relative to the order of the query.
+ * The order of the field values must match the order of the order by clauses of the query.
  *
- * Using `startAt()`, `startAfter()`, `endBefore()`, `endAt()` and `equalTo()`
- * allows you to choose arbitrary starting and ending points for your queries.
- *
- * The ending point is inclusive, so children with exactly the specified value
- * will be included in the query. The optional key argument can be used to
- * further limit the range of the query. If it is specified, then children that
- * have exactly the specified value must also have a key name less than or equal
- * to the specified key.
- *
- * You can read more about `endAt()` in
- * {@link https://firebase.google.com/docs/database/web/lists-of-data#filtering_data | Filtering data}.
- *
- * @param value - The value to end at. The argument type depends on which
- * `orderBy*()` function was used in this query. Specify a value that matches
- * the `orderBy*()` type. When used in combination with `orderByKey()`, the
- * value must be a string.
- * @param key - The child key to end at, among the children with the previously
- * specified priority. This argument is only allowed if ordering by child,
- * value, or priority.
+ * @param fieldValues
  */
-export function endAt(value: number | string | boolean | null, key?: string): QueryConstraint;
+export declare function endAt(...fieldValues: unknown[]): QueryEndAtConstraint;
 
 /**
- * Creates a `QueryConstraint` with the specified ending point (exclusive).
+ * Creates a QueryEndAtConstraint that modifies the result set to end before the provided fields relative to the order of the query.
+ * The order of the field values must match the order of the order by clauses of the query.
  *
- * Using `startAt()`, `startAfter()`, `endBefore()`, `endAt()` and `equalTo()`
- * allows you to choose arbitrary starting and ending points for your queries.
- *
- * The ending point is exclusive. If only a value is provided, children
- * with a value less than the specified value will be included in the query.
- * If a key is specified, then children must have a value less than or equal
- * to the specified value and a key name less than the specified key.
- *
- * @param value - The value to end before. The argument type depends on which
- * `orderBy*()` function was used in this query. Specify a value that matches
- * the `orderBy*()` type. When used in combination with `orderByKey()`, the
- * value must be a string.
- * @param key - The child key to end before, among the children with the
- * previously specified priority. This argument is only allowed if ordering by
- * child, value, or priority.
+ * @param fieldValues
  */
-export function endBefore(value: number | string | boolean | null, key?: string): QueryConstraint;
+export declare function endBefore(...fieldValues: unknown[]): QueryEndAtConstraint;
 
 /**
  * Creates a new `QueryConstraint` that is limited to return only the last

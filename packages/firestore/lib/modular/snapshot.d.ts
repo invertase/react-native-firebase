@@ -117,10 +117,10 @@ export function onSnapshot<T>(
  * @returns An unsubscribe function that can be called to cancel
  * the snapshot listener.
  */
-export function onSnapshot<T>(
-  query: Query<T>,
+export declare function onSnapshot<AppModelType, DbModelType extends DocumentData>(
+  query: Query<AppModelType, DbModelType>,
   observer: {
-    next?: (snapshot: QuerySnapshot<T>) => void;
+    next?: (snapshot: QuerySnapshot<AppModelType, DbModelType>) => void;
     error?: (error: FirestoreError) => void;
     complete?: () => void;
   },
@@ -140,11 +140,11 @@ export function onSnapshot<T>(
  * @returns An unsubscribe function that can be called to cancel
  * the snapshot listener.
  */
-export function onSnapshot<T>(
-  query: Query<T>,
+export declare function onSnapshot<AppModelType, DbModelType extends DocumentData>(
+  query: Query<AppModelType, DbModelType>,
   options: SnapshotListenOptions,
   observer: {
-    next?: (snapshot: QuerySnapshot<T>) => void;
+    next?: (snapshot: QuerySnapshot<AppModelType, DbModelType>) => void;
     error?: (error: FirestoreError) => void;
     complete?: () => void;
   },
@@ -168,9 +168,9 @@ export function onSnapshot<T>(
  * @returns An unsubscribe function that can be called to cancel
  * the snapshot listener.
  */
-export function onSnapshot<T>(
-  query: Query<T>,
-  onNext: (snapshot: QuerySnapshot<T>) => void,
+export declare function onSnapshot<AppModelType, DbModelType extends DocumentData>(
+  query: Query<AppModelType, DbModelType>,
+  onNext: (snapshot: QuerySnapshot<AppModelType, DbModelType>) => void,
   onError?: (error: FirestoreError) => void,
   onCompletion?: () => void,
 ): Unsubscribe;
@@ -194,10 +194,10 @@ export function onSnapshot<T>(
  * @returns An unsubscribe function that can be called to cancel
  * the snapshot listener.
  */
-export function onSnapshot<T>(
-  query: Query<T>,
+export declare function onSnapshot<AppModelType, DbModelType extends DocumentData>(
+  query: Query<AppModelType, DbModelType>,
   options: SnapshotListenOptions,
-  onNext: (snapshot: QuerySnapshot<T>) => void,
+  onNext: (snapshot: QuerySnapshot<AppModelType, DbModelType>) => void,
   onError?: (error: FirestoreError) => void,
   onCompletion?: () => void,
 ): Unsubscribe;
@@ -227,3 +227,30 @@ export declare function queryEqual<AppModelType, DbModelType extends DocumentDat
   left: Query<AppModelType, DbModelType>,
   right: Query<AppModelType, DbModelType>,
 ): boolean;
+
+/**
+ * Attaches a listener for a snapshots-in-sync event.
+ * The snapshots-in-sync event indicates that all listeners affected by a given change have fired, even if
+ * a single server-generated change affects multiple listeners.
+ *
+ * @param firestore
+ * @param observer
+ */
+export declare function onSnapshotsInSync(
+  firestore: Firestore,
+  observer: {
+    next?: (value: void) => void;
+    error?: (error: FirestoreError) => void;
+    complete?: () => void;
+  },
+): Unsubscribe;
+
+/**
+ * Attaches a listener for a snapshots-in-sync event.
+ * The snapshots-in-sync event indicates that all listeners affected by a given change have fired, even if
+ * a single server-generated change affects multiple listeners.
+ *
+ * @param firestore
+ * @param onSync
+ */
+export declare function onSnapshotsInSync(firestore: Firestore, onSync: () => void): Unsubscribe;
