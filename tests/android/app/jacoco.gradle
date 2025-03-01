@@ -58,8 +58,46 @@ tasks.withType(Test) {
     jacoco.excludes = ['jdk.internal.*']
 }
 
+// source: https://medium.com/jamf-engineering/android-kotlin-code-coverage-with-jacoco-sonar-and-gradle-plugin-6-x-3933ed503a6e
+def fileFilter = [
+  // android
+  '**/R.class',
+  '**/R$*.class',
+  '**/BuildConfig.*',
+  '**/Manifest*.*',
+  '**/*Test*.*',
+  'android/**/*.*',
+  // kotlin
+  '**/*MapperImpl*.*',
+  '**/*$ViewInjector*.*',
+  '**/*$ViewBinder*.*',
+  '**/BuildConfig.*',
+  '**/*Component*.*',
+  '**/*BR*.*',
+  '**/Manifest*.*',
+  '**/*$Lambda$*.*',
+  '**/*Companion*.*',
+  '**/*Module*.*',
+  '**/*Dagger*.*',
+  '**/*Hilt*.*',
+  '**/*MembersInjector*.*',
+  '**/*_MembersInjector.class',
+  '**/*_Factory*.*',
+  '**/*_Provide*Factory*.*',
+  '**/*Extensions*.*',
+  // sealed and data classes
+  '**/*$Result.*',
+  '**/*$Result$*.*'
+]
+
+def classDir = 'javac'
+if (rootProject.testReleaseBuild)
+  classDir += "/release/classes"
+else
+  classDir += "/debug/classes"
+
 // Our merge report task
-task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'connectedDebugAndroidTest']) {
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', rootProject.ext.androidTestName]) {
     def htmlOutDir = layout.buildDirectory.dir("reports/jacoco/$name/html").get().asFile
 
     doLast {
@@ -71,9 +109,8 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'conn
         html.outputLocation = htmlOutDir
     }
 
-    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
-    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug/classes", excludes: fileFilter)
-    def debugTree2 = fileTree(dir: "$project.buildDir/../../node_modules/@react-native-firebase/android/build/intermediates/javac/debug/classes", excludes: fileFilter)
+    def debugTree = fileTree(dir: "$project.buildDir/intermediates/$classDir", excludes: fileFilter)
+    def debugTree2 = fileTree(dir: "$project.buildDir/../../node_modules/@react-native-firebase/android/build/intermediates/$classDir", excludes: fileFilter)
     def mainSrc = "$project.projectDir/src/main/java"
     def mainSrc2 = "$project.projectDir/../../node_modules/@react-native-firebase/android/src/main/java"
 
@@ -101,8 +138,7 @@ task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) 
         html.outputLocation = htmlOutDir
     }
 
-    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
-    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug/classes", excludes: fileFilter)
+    def debugTree = fileTree(dir: "$project.buildDir/intermediates/$classDir", excludes: fileFilter)
     def mainSrc = "$project.projectDir/src/main/java"
 
     sourceDirectories.from = files([mainSrc])
@@ -126,13 +162,11 @@ task jacocoAndroidTestReport(type: JacocoReport) {
         html.outputLocation = htmlOutDir
     }
 
-    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
-
     // use our collected firebase module names to aggregate source / class files for reporting
     def classFiles = []
     def srcFiles = []
     rootProject.ext.firebaseModulePaths.forEach { projectPath ->
-      classFiles << fileTree(dir: "$projectPath/build/intermediates/javac/debug/classes", excludes: fileFilter)
+      classFiles << fileTree(dir: "$projectPath/build/intermediates/$classDir", excludes: fileFilter)
       srcFiles << "$projectPath/src/main/java"
     }
 

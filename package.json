@@ -33,6 +33,7 @@
     "tests:android:build:windows": "cd tests && yarn detox build --configuration android.emu.debug.windows",
     "tests:android:build-release": "cd tests && yarn detox build --configuration android.emu.release",
     "tests:android:test": "cd tests && yarn detox test --configuration android.emu.debug",
+    "tests:android:test-release": "cd tests && yarn detox test --configuration android.emu.release",
     "tests:android:test:windows": "cd tests && yarn detox test --configuration android.emu.debug",
     "tests:android:test:debug": "cd tests && yarn detox test --configuration android.emu.debug --inspect",
     "tests:android:test-reuse": "cd tests && yarn detox test --configuration android.emu.debug --reuse",

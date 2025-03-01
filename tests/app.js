@@ -17,7 +17,7 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, StatusBar, AppRegistry, LogBox } from 'react-native';
+import { StyleSheet, View, StatusBar, AppRegistry } from 'react-native';
 
 import { JetProvider, ConnectionText, StatusEmoji, StatusText } from 'jet';
 

@@ -1,3 +1,5 @@
+import com.android.build.api.extension.impl.AndroidComponentsExtensionImpl
+
 buildscript {
   ext.buildToolsVersion = "35.0.0"
   ext.minSdkVersion = 24
@@ -5,7 +7,7 @@ buildscript {
   ext.targetSdkVersion = 34
 
  ext.ndkVersion = "27.1.12297006"
- 
+
   ext.kotlinVersion = '2.0.21' // https://kotlinlang.org/releases.html
   ext.supportLibVersion = '1.13.1' // this maps to androidx.core https://developer.android.com/jetpack/androidx/releases/core
   ext.appCompatVersion = '1.7.0' // this maps to androidx.appcompat https://developer.android.com/jetpack/androidx/releases/appcompat
@@ -26,6 +28,9 @@ buildscript {
   // used to aggregate all modules for later reporting
   ext.firebaseModulePaths = []
 
+  ext.testReleaseBuild = System.getProperty("testBuildType", "debug") == "release"
+  ext.androidTestName = testReleaseBuild ? "connectedReleaseAndroidTest" : "connectedDebugAndroidTest"
+
   repositories {
     google()
     mavenCentral()
@@ -38,6 +43,7 @@ buildscript {
     classpath 'com.google.firebase:perf-plugin:1.4.2'
     classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.2'
     classpath 'com.google.firebase:firebase-appdistribution-gradle:5.0.0'
+    classpath 'com.slack.keeper:keeper:0.16.1'
   }
 }
 

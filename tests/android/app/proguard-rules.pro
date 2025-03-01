@@ -18,7 +18,7 @@
 
 # Disabling obfuscation is useful if you collect stack traces from production crashes
 # (unless you are using a system that supports de-obfuscate the stack traces).
--dontobfuscate
+#-dontobfuscate
 
 # React Native
 
@@ -61,3 +61,15 @@
 -dontwarn java.nio.file.*
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 -dontwarn okio.**
+
+# Helps with debugging
+-keepattributes SourceFile,LineNumberTable
+
+# Used through Reflection
+-keep class * extends com.google.protobuf.GeneratedMessageLite { *; }
+-keep class androidx.core.app.ActivityCompat$* { *; }
+-keep class androidx.concurrent.futures.** { *; }
+
+# Ignore unused packages
+-dontwarn javax.naming.**
+-dontwarn org.ietf.jgss.**

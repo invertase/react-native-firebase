@@ -2,6 +2,8 @@
   xmlns:tools="http://schemas.android.com/tools">
 
   <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+
 
   <application
     android:name=".MainApplication"
@@ -11,6 +13,7 @@
     android:launchMode="singleTask"
     android:theme="@style/AppTheme"
     android:supportsRtl="true"
+    android:usesCleartextTraffic="true"
     tools:targetApi="m">
     <meta-data android:name="rnfirebase_meta_testing_string" android:value="abc" />
     <meta-data android:name="rnfirebase_meta_testing_boolean_false" android:value="false" />
