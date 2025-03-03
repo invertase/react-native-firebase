@@ -15,8 +15,8 @@
  *
  */
 
-import { firebase } from '@react-native-firebase/app';
 import { isError, once } from '@react-native-firebase/app/lib/common';
+import { getAnalytics, logEvent } from '@react-native-firebase/analytics';
 import tracking from 'promise/setimmediate/rejection-tracking';
 import StackTrace from 'stacktrace-js';
 
@@ -96,7 +96,8 @@ export const setGlobalErrorHandler = once(nativeModule => {
 
         // Notify analytics, if it exists - throws error if not
         try {
-          await firebase.app().analytics().logEvent(
+          await logEvent(
+            getAnalytics(),
             'app_exception', // 'app_exception' is reserved but we make an exception for JS->fatal transforms
             {
               fatal: 1, // as in firebase-android-sdk

@@ -163,14 +163,16 @@
       // If app is in background state, register background task to guarantee async queues aren't
       // frozen.
       sharedInstance.backgroundTaskId = [application beginBackgroundTaskWithExpirationHandler:^{
-        if (sharedInstance.backgroundTaskId != UIBackgroundTaskInvalid) {
-          [application endBackgroundTask:sharedInstance.backgroundTaskId];
-          sharedInstance.backgroundTaskId = UIBackgroundTaskInvalid;
-        }
+        dispatch_get_main_queue(), ^{
+          if (sharedInstance.backgroundTaskId != UIBackgroundTaskInvalid) {
+            [application endBackgroundTask:sharedInstance.backgroundTaskId];
+            sharedInstance.backgroundTaskId = UIBackgroundTaskInvalid;
+          }
+        };
       }];
 
       dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(25 * NSEC_PER_SEC)),
-                     dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                     dispatch_get_main_queue(), ^{
                        if (sharedInstance.completionHandler) {
                          sharedInstance.completionHandler(UIBackgroundFetchResultNewData);
                          sharedInstance.completionHandler = nil;

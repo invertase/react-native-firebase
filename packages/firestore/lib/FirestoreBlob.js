@@ -18,7 +18,7 @@
 import { Base64, isString } from '@react-native-firebase/app/lib/common';
 
 export default class FirestoreBlob {
-  constructor(internal = false, binaryString) {
+  constructor(internal = false, binaryString = undefined) {
     if (internal === false) {
       throw new Error(
         'firebase.firestore.Blob constructor is private, use Blob.<field>() instead.',

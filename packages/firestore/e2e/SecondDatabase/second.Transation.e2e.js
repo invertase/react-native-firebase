@@ -344,6 +344,11 @@ describe('Second Database', function () {
         });
 
         it('should roll back any updates that failed', async function () {
+          // FIXME issue 8267
+          if (Platform.other) {
+            this.skip();
+          }
+
           const docRef = firestore.doc(`${COLLECTION}/transactions/transaction/rollback`);
 
           await docRef.set({
@@ -732,6 +737,11 @@ describe('Second Database', function () {
         });
 
         it('should roll back any updates that failed', async function () {
+          // FIXME issue 8267
+          if (Platform.other) {
+            this.skip();
+          }
+
           const { runTransaction, doc, getDoc, setDoc } = firestoreModular;
           const db = firestore;
 

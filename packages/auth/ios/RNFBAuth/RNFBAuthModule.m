@@ -44,6 +44,7 @@ static NSString *const keyMinVersion = @"minimumVersion";
 static NSString *const constAppLanguage = @"APP_LANGUAGE";
 static NSString *const constAppUser = @"APP_USER";
 static NSString *const keyHandleCodeInApp = @"handleCodeInApp";
+static NSString *const keyLinkDomain = @"linkDomain";
 static NSString *const keyDynamicLinkDomain = @"dynamicLinkDomain";
 static NSString *const keyAdditionalUserInfo = @"additionalUserInfo";
 static NSString *const AUTH_STATE_CHANGED_EVENT = @"auth_state_changed";
@@ -1764,6 +1765,11 @@ RCT_EXPORT_METHOD(useEmulator
 
   NSString *url = actionCodeSettings[keyUrl];
   [settings setURL:[NSURL URLWithString:url]];
+
+  if (actionCodeSettings[keyLinkDomain]) {
+    NSString *linkDomain = actionCodeSettings[keyLinkDomain];
+    [settings setLinkDomain:linkDomain];
+  }
 
   if (actionCodeSettings[keyHandleCodeInApp]) {
     BOOL handleCodeInApp = [actionCodeSettings[keyHandleCodeInApp] boolValue];

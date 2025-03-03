@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.11.0](https://github.com/invertase/react-native-firebase/compare/v21.10.1...v21.11.0) (2025-02-20)
+
+### Features
+
+- **auth:** `linkDomain` support for `ActionCodeSettings` ([#8335](https://github.com/invertase/react-native-firebase/issues/8335)) ([77af6b2](https://github.com/invertase/react-native-firebase/commit/77af6b2c444084f232254db79a667930cb4fa770))
+
+### Bug Fixes
+
+- **app-check:** export ReactNativeFirebaseAppCheckProvider in modular ([f7de375](https://github.com/invertase/react-native-firebase/commit/f7de37510c6b29b30db002e1ba8e36d6f07f461b))
+- **crashlytics:** convert internal API usage to modular ([b462330](https://github.com/invertase/react-native-firebase/commit/b46233049396764b68c6108e5b886628613f2620))
+- **firestore, bytes:** return Bytes for modular API usage, fix deprecation ([5a29425](https://github.com/invertase/react-native-firebase/commit/5a2942517b071141306d675a8501f7d23d87af55))
+- **messaging, ios:** serialize access to background handler state ([4d166ca](https://github.com/invertase/react-native-firebase/commit/4d166ca77bcc1a6c53b4a7e652654eb000d7f0fe))
+
 ## [21.10.1](https://github.com/invertase/react-native-firebase/compare/v21.10.0...v21.10.1) (2025-02-18)
 
 ### Bug Fixes

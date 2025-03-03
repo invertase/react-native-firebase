@@ -26,3 +26,16 @@ index f4c5ed3..7628f81 100644
        }
        if (part instanceof Blob) {
          return {
+diff --git a/node_modules/react-native-macos/Libraries/Utilities/Platform.macos.js b/node_modules/react-native-macos/Libraries/Utilities/Platform.macos.js
+index 3b1e7cd..e5a1274 100644
+--- a/node_modules/react-native-macos/Libraries/Utilities/Platform.macos.js
++++ b/node_modules/react-native-macos/Libraries/Utilities/Platform.macos.js
+@@ -84,7 +84,7 @@ const Platform: PlatformType = {
+   },
+   select: <T>(spec: PlatformSelectSpec<T>): T =>
+     // $FlowFixMe[incompatible-return]
+-    'ios' in spec ? spec.macos : 'native' in spec ? spec.native : spec.default,
++    'macos' in spec ? spec.macos : 'native' in spec ? spec.native : spec.default,
+ };
+ 
+ module.exports = Platform;

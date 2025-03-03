@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.11.0](https://github.com/invertase/react-native-firebase/compare/v21.10.1...v21.11.0) (2025-02-20)
+
+### Bug Fixes
+
+- **app-check:** export ReactNativeFirebaseAppCheckProvider in modular ([f7de375](https://github.com/invertase/react-native-firebase/commit/f7de37510c6b29b30db002e1ba8e36d6f07f461b))
+
 ## [21.10.1](https://github.com/invertase/react-native-firebase/compare/v21.10.0...v21.10.1) (2025-02-18)
 
 **Note:** Version bump only for package @react-native-firebase/app-check

@@ -89,6 +89,30 @@ For instructions on how to generate required keys and register an app for the de
 
 You must call initialize the AppCheck module prior to calling any firebase back-end services for App Check to function.
 
+#### Configure AppCheck with iOS credentials (react-native 0.77+)
+
+To do that, edit your `ios/ProjectName/AppDelegate.swift` and add the following two lines:
+
+At the top of the file, import the FirebaseCore SDK right after `import UIKit`:
+And within your existing `didFinishLaunchingWithOptions` method, add the following to the top of the method:
+
+```diff
+import UIKit
++ import RNFBAppCheck  // <-- This is the import for AppCheck to work
++ import FirebaseCore  // <-- From App/Core integration, no other Firebase items needed
+import React
+import React_RCTAppDelegate
+import ReactAppDependencyProvider
+
+@main
+class AppDelegate: RCTAppDelegate {
+  override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
++   RNFBAppCheckModule.sharedInstance()  // <-- new for AppCheck to work
++   FirebaseApp.configure()              // <-- From App/Core integration
+```
+
+#### Configure Firebase with iOS credentials (react-native < 0.77)
+
 To do that, edit your `ios/ProjectName/AppDelegate.mm` and add the following two lines:
 
 ```objectivec
@@ -125,7 +149,9 @@ So AppCheck module initialization is done in two steps in react-native-firebase 
 To configure the react-native-firebase custom provider, first obtain one, then configure it according to the providers you want to use on each platform.
 
 ```javascript
-rnfbProvider = firebase.appCheck().newReactNativeFirebaseAppCheckProvider();
+import { ReactNativeFirebaseAppCheckProvider } from `@react-native-firebase/app-check`;
+
+rnfbProvider = new ReactNativeFirebaseAppCheckProvider();
 rnfbProvider.configure({
   android: {
     provider: __DEV__ ? 'debug' : 'playIntegrity',
@@ -144,10 +170,12 @@ rnfbProvider.configure({
 
 ### Install the Custom Provider
 
-Once you have the custom provider configured, install it in app-check using the firebase-js-sdk compatible API:
+Once you have the custom provider configured, install it in app-check using the firebase-js-sdk compatible API, while saving the returned instance for usage:
 
 ```javascript
-firebase.appCheck().initializeAppCheck({ provider: rnfbProvider, isTokenAutoRefreshEnabled: true });
+import { initializeAppCheck  } from `@react-native-firebase/app-check`;
+
+const appCheck = initializeAppCheck({ provider: rnfbProvider, isTokenAutoRefreshEnabled: true });
 ```
 
 ### Verify AppCheck was initialized correctly
@@ -155,8 +183,11 @@ firebase.appCheck().initializeAppCheck({ provider: rnfbProvider, isTokenAutoRefr
 After initializing the custom provider, you can verify AppCheck is working by logging a response from the token server:
 
 ```javascript
+import { getToken  } from `@react-native-firebase/app-check`;
+
 try {
-  const { token } = await firebase.appCheck().getToken(true);
+  // `appCheckInstance` is the saved return value from initializeAppCheck
+  const { token } = await appCheckInstance.getToken( true);
 
   if (token.length > 0) {
     console.log('AppCheck verification passed');
