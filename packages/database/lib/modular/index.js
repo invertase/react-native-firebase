@@ -98,6 +98,13 @@ export function forceWebSockets() {
 }
 
 /**
+ * @returns {object}
+ */
+export function serverTimestamp() {
+  return firebase.database.ServerValue.TIMESTAMP;
+}
+
+/**
  * @param {Database} db
  * @returns {Date}
  */
@@ -106,18 +113,15 @@ export function getServerTime(db) {
 }
 
 /**
- * @returns {object}
- */
-export function serverTimestamp() {
-  return firebase.database.ServerValue.TIMESTAMP;
-}
-
-/**
  * @param {number} delta
  * @returns {object}
  */
 export function increment(delta) {
   return firebase.database.ServerValue.increment(delta);
+}
+
+export function enableLogging(enabled, persistent) {
+  throw new Error('enableLogging() is not implemented');
 }
 
 export * from './query';

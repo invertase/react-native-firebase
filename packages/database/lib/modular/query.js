@@ -239,6 +239,10 @@ export function get(query) {
   return query.once('value');
 }
 
+export function off(query, eventType, callback) {
+  throw new Error("off() is not implemented");
+}
+
 /**
  * @param {DatabaseReference} parent
  * @param {string} path

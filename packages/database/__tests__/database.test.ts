@@ -17,6 +17,7 @@ import database, {
   getServerTime,
   serverTimestamp,
   increment,
+  enableLogging,
   endAt,
   endBefore,
   startAt,
@@ -38,6 +39,7 @@ import database, {
   setPriority,
   setWithPriority,
   get,
+  off,
   child,
   onDisconnect,
   keepSynced,
@@ -165,6 +167,10 @@ describe('Database', function () {
       expect(increment).toBeDefined();
     });
 
+    it('`enableLogging` function is properly exposed to end user', function () {
+      expect(enableLogging).toBeDefined();
+    });
+
     it('`endAt` function is properly exposed to end user', function () {
       expect(endAt).toBeDefined();
     });
@@ -243,6 +249,10 @@ describe('Database', function () {
 
     it('`setWithPriority` function is properly exposed to end user', function () {
       expect(setWithPriority).toBeDefined();
+    });
+
+    it('`off` function is properly exposed to end user', function () {
+      expect(off).toBeDefined();
     });
 
     it('`get` function is properly exposed to end user', function () {
