@@ -25,13 +25,23 @@ export function registerVersion(
 ): Promise<void>;
 
 /**
- * Sets log handler for all Firebase SDKs.
+ * Sets log handler for all Firebase SDKs. Currently only supported on VertexAI.
  * @param logCallback - The callback function to handle logs.
  * @param options - Optional settings for log handling.
- * @returns Promise<void>
- * @throws Error - onLog is only supported on Web
+ * @returns <void>
  */
-export function onLog(logCallback: (logData: any) => void, options?: any): Promise<void>;
+
+interface LogCallbackParams {
+  level: LogLevelString;
+  message: string;
+  args: unknown[];
+  type: string;
+}
+
+export function onLog(
+  logCallback: (callbackParams: LogCallbackParams) => void,
+  options?: any,
+): void;
 
 /**
  * Gets the list of all initialized apps.
