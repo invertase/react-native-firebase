@@ -36,8 +36,8 @@ buildscript {
     classpath("com.facebook.react:react-native-gradle-plugin")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
     classpath 'com.google.firebase:perf-plugin:1.4.2'
-    classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.2'
-    classpath 'com.google.firebase:firebase-appdistribution-gradle:5.0.0'
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.3'
+    classpath 'com.google.firebase:firebase-appdistribution-gradle:5.1.1'
   }
 }
 
