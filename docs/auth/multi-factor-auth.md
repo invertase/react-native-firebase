@@ -21,8 +21,8 @@ instance for the current user. This is the entry point for most multi-factor
 operations:
 
 ```js
-import auth from '@react-native-firebase/auth';
-const multiFactorUser = await auth().multiFactor(auth().currentUser);
+import auth, { getAuth } from '@react-native-firebase/auth';
+const multiFactorUser = await getAuth().multiFactor(getAuth().currentUser);
 ```
 
 Request the session identifier and use the phone number obtained from the user
@@ -36,7 +36,7 @@ const phoneOptions = {
 };
 
 // Sends a text message to the user
-const verificationId = await auth().verifyPhoneNumberForMultiFactor(phoneOptions);
+const verificationId = await getAuth().verifyPhoneNumberForMultiFactor(phoneOptions);
 ```
 
 Once the user has provided the verification code received by text message, you
@@ -58,9 +58,9 @@ default sign-in methods, for example email and password. If the account requires
 a second factor to complete login, an exception will be raised:
 
 ```js
-import auth from '@react-native-firebase/auth';
+import auth, { getAuth } from '@react-native-firebase/auth';
 
-auth()
+getAuth()
   .signInWithEmailAndPassword(email, password)
   .then(() => {
     // User has not enrolled a second factor
@@ -81,7 +81,7 @@ Using the error object you can obtain a
 continue the flow:
 
 ```js
-const resolver = auth().getMultiFactorResolver(error);
+const resolver = getAuth().getMultiFactorResolver(error);
 ```
 
 The resolver object has all the required information to prompt the user for a
@@ -105,7 +105,7 @@ verification code to the user:
 const hint = resolver.hints[0];
 const sessionId = resolver.session;
 
-auth()
+getAuth()
   .verifyPhoneNumberWithMultiFactorInfo(hint, sessionId) // triggers the message to the user
   .then(verificationId => setVerificationId(verificationId));
 ```
@@ -130,9 +130,9 @@ will trigger with the new authentication state of the user.
 To put the example together:
 
 ```js
-import auth from '@react-native-firebase/auth';
+import auth, { getAuth } from '@react-native-firebase/auth';
 
-const authInstance = auth();
+const authInstance = getAuth();
 
 authInstance
   .signInWithEmailAndPassword(email, password)
@@ -143,7 +143,7 @@ authInstance
     const { code } = error;
     // Make sure to check if multi factor authentication is required
     if (code === 'auth/multi-factor-auth-required') {
-      const resolver = auth.getMultiFactorResolver(error);
+      const resolver = authInstance.getMultiFactorResolver(error);
 
       if (resolver.hints.length > 1) {
         // Use resolver.hints to display a list of second factors to the user
