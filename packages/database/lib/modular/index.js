@@ -1,5 +1,7 @@
 import { getApp } from '@react-native-firebase/app';
-import { firebase } from '..'; // Needed for increment() method
+import DatabaseStatics from '../DatabaseStatics';
+
+const { ServerValue } = DatabaseStatics;
 
 /**
  * @typedef {import("..").FirebaseApp} FirebaseApp
@@ -110,7 +112,7 @@ export function getServerTime(db) {
  * @returns {object}
  */
 export function serverTimestamp() {
-  return firebase.database.ServerValue.TIMESTAMP;
+  return ServerValue.TIMESTAMP;
 }
 
 /**
@@ -118,7 +120,7 @@ export function serverTimestamp() {
  * @returns {object}
  */
 export function increment(delta) {
-  return firebase.database.ServerValue.increment(delta);
+  return ServerValue.increment(delta);
 }
 
 export * from './query';
