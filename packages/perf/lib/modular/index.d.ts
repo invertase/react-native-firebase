@@ -44,7 +44,7 @@ type PerformanceSettings = {
  */
 export function initializePerformance(
   app: FirebaseApp,
-  settings: PerformanceSettings,
+  settings?: PerformanceSettings,
 ): Promise<Performance>;
 
 /**
