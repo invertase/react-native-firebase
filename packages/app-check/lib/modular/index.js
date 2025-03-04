@@ -49,7 +49,7 @@ export async function initializeAppCheck(app, options) {
  * Get the current App Check token. Attaches to the most recent in-flight request if one is present.
  * Returns null if no token is present and no token requests are in-flight.
  * @param {AppCheck} appCheckInstance - The App Check instance.
- * @param {boolean} forceRefresh - Whether to force refresh the token.
+ * @param {boolean} forceRefresh - Whether to force refresh the token. Optional
  * @returns {Promise<AppCheckTokenResult>}
  */
 export function getToken(appCheckInstance, forceRefresh) {
