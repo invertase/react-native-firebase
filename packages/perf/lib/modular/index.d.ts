@@ -39,12 +39,12 @@ type PerformanceSettings = {
 /**
  * Returns a Performance instance for the given app.
  * @param app - FirebaseApp. Required.
- * @param settings - PerformanceSettings. Set "dataCollectionEnabled" which will enable/disable Performance collection.
+ * @param settings - Optional PerformanceSettings. Set "dataCollectionEnabled" which will enable/disable Performance collection.
  * @returns {Promise<Performance>}
  */
 export function initializePerformance(
   app: FirebaseApp,
-  settings: PerformanceSettings,
+  settings?: PerformanceSettings,
 ): Promise<Performance>;
 
 /**
