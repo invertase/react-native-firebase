@@ -195,7 +195,6 @@ export function reset(remoteConfig) {
 /**
  * Set the Remote RemoteConfig settings, currently able to set
  * `fetchTimeMillis` & `minimumFetchIntervalMillis`
- * Android only. iOS does not reset anything.
  * @param {RemoteConfig} remoteConfig - RemoteConfig instance
  * @param {ConfigSettings} settings - ConfigSettings instance
  * @returns {Promise<void>}
