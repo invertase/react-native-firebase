@@ -113,7 +113,10 @@ export function getBlob(storageRef: Reference, maxDownloadSizeBytes?: number): P
  * @param maxDownloadSizeBytes - Optional. Maximum size in bytes to retrieve.
  * @returns A promise resolving to an ArrayBuffer.
  */
-export function getBytes(storageRef: Reference, maxDownloadSizeBytes?: number): Promise<ArrayBuffer>;
+export function getBytes(
+  storageRef: Reference,
+  maxDownloadSizeBytes?: number,
+): Promise<ArrayBuffer>;
 
 /**
  * Retrieves a long-lived download URL for the object at the given reference's location.
