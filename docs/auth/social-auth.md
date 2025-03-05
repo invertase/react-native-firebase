@@ -215,7 +215,6 @@ Ensure the "Google" sign-in provider is enabled on the [Firebase Console](https:
 
 For Expo projects, follow [the setup instructions for Expo](https://react-native-google-signin.github.io/docs/category/setting-up) from `react-native-google-signin`.
 
-
 Before triggering a sign-in request, you must initialize the Google SDK.
 
 ```js
