@@ -101,7 +101,7 @@ export function deleteObject(storageRef: Reference): Promise<void>;
 /**
  * Retrieves the blob at the given reference's location. Throws an error if the object is not found.
  * @param storageRef - The {@link Reference} to the object.
- * @param maxDownloadSizeBytes - Optional. If set, the maximum allowed size in bytes to retrieve.
+ * @param maxDownloadSizeBytes - Optional. Maximum size in bytes to retrieve.
  * @returns A promise resolving to the Blob.
  */
 export function getBlob(storageRef: Reference, maxDownloadSizeBytes?: number): Promise<Blob>;
