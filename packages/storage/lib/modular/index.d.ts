@@ -27,6 +27,7 @@ import Task = FirebaseStorageTypes.Task;
 import ListOptions = FirebaseStorageTypes.ListOptions;
 import SettableMetadata = FirebaseStorageTypes.SettableMetadata;
 import EmulatorMockTokenOptions = FirebaseStorageTypes.EmulatorMockTokenOptions;
+import StringFormat = FirebaseStorageTypes.StringFormat;
 import FirebaseApp = ReactNativeFirebase.FirebaseApp;
 
 export const StringFormat: FirebaseStorageTypes.StringFormat;
@@ -37,10 +38,11 @@ export const TaskState: FirebaseStorageTypes.TaskState;
  * Returns the existing default {@link Storage} instance that is associated with the
  * default {@link FirebaseApp}. The default storage bucket is used. If no instance exists, initializes a new
  * instance with default settings.
- *
+ * @param app -	Firebase app to get FirebaseStorage instance for.
+ * @param bucketUrl - The gs:// url to your Firebase Storage Bucket. If not passed, uses the app's default Storage Bucket.
  * @returns The {@link Storage} instance of the provided app.
  */
-export declare function getStorage(): Storage;
+export declare function getStorage(app?: FirebaseApp, bucketUrl?: string): Storage;
 
 /**
  * Returns the existing default {@link Storage} instance that is associated with the
@@ -99,18 +101,19 @@ export function deleteObject(storageRef: Reference): Promise<void>;
 /**
  * Retrieves the blob at the given reference's location. Throws an error if the object is not found.
  * @param storageRef - The {@link Reference} to the object.
+ * @param maxDownloadSizeBytes - Optional. If set, the maximum allowed size in bytes to retrieve.
  * @returns A promise resolving to the Blob.
  */
-export function getBlob(storageRef: Reference): Promise<Blob>;
+export function getBlob(storageRef: Reference, maxDownloadSizeBytes?: number): Promise<Blob>;
 
 /**
  * Retrieves bytes (up to the specified max size) from an object at the given reference's location.
  * Throws an error if the object is not found or if the size exceeds the maximum allowed.
  * @param storageRef - The {@link Reference} to the object.
- * @param maxDownloadSizeBytes - Maximum size in bytes to retrieve.
+ * @param maxDownloadSizeBytes - Optional. Maximum size in bytes to retrieve.
  * @returns A promise resolving to an ArrayBuffer.
  */
-export function getBytes(storageRef: Reference, maxDownloadSizeBytes: number): Promise<ArrayBuffer>;
+export function getBytes(storageRef: Reference, maxDownloadSizeBytes?: number): Promise<ArrayBuffer>;
 
 /**
  * Retrieves a long-lived download URL for the object at the given reference's location.
@@ -129,12 +132,12 @@ export function getMetadata(storageRef: Reference): Promise<FullMetadata>;
 /**
  * Retrieves a readable stream for the object at the given reference's location. This API is only available in Node.js.
  * @param storageRef - The {@link Reference} to the object.
- * @param maxDownloadSizeBytes - Maximum size in bytes to retrieve.
+ * @param maxDownloadSizeBytes - Optional. Maximum size in bytes to retrieve.
  * @returns A NodeJS ReadableStream.
  */
 export function getStream(
   storageRef: Reference,
-  maxDownloadSizeBytes: number,
+  maxDownloadSizeBytes?: number,
 ): NodeJS.ReadableStream;
 
 /**
@@ -200,7 +203,7 @@ export function uploadBytesResumable(
 export function uploadString(
   storageRef: Reference,
   data: string,
-  format?: 'raw' | 'base64' | 'base64url' | 'data_url',
+  format?: StringFormat,
   metadata?: SettableMetadata,
 ): Task;
 
