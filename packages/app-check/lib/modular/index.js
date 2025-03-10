@@ -32,17 +32,17 @@ import CustomProvider from '../ReactNativeFirebaseAppCheckProvider';
  * Activate App Check for the given app. Can be called only once per app.
  * @param {FirebaseApp} [app] - The app to initialize App Check for. Optional.
  * @param {AppCheckOptions} options - App Check options.
- * @returns {Promise<{ app: FirebaseApp }>}
+ * @returns {Promise<AppCheck>}
  */
 export async function initializeAppCheck(app, options) {
   if (app) {
     const appCheck = getApp(app.name).appCheck();
     await appCheck.initializeAppCheck.call(appCheck, options, MODULAR_DEPRECATION_ARG);
-    return { app: getApp(app.name) };
+    return { appCheck };
   }
   const appCheck = getApp().appCheck();
   await appCheck.initializeAppCheck.call(appCheck, options, MODULAR_DEPRECATION_ARG);
-  return { app: getApp() };
+  return { appCheck };
 }
 
 /**
