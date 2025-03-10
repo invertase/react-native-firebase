@@ -14,12 +14,12 @@ import CustomProviderOptions = FirebaseAppCheckTypes.CustomProviderOptions;
  * Activate App Check for the given app. Can be called only once per app.
  * @param app - FirebaseApp. Optional.
  * @param options - AppCheckOptions
- * @returns {Promise<{ app: FirebaseApp }>}
+ * @returns {Promise<AppCheck>}
  */
 export function initializeAppCheck(
   app?: FirebaseApp,
   options?: AppCheckOptions,
-): Promise<{ app: FirebaseApp }>;
+): Promise<AppCheck>;
 
 /**
  * Get the current App Check token. Attaches to the most recent in-flight request if one is present.
