@@ -328,6 +328,12 @@ describe('Analytics', function () {
           firebase.analytics().logAddToWishlist({ items: [{ foo: 'bar' }] }),
         ).not.toThrow();
       });
+
+      it('items accept arbitrary custom event parameters that can be undefined', function () {
+        expect(() =>
+          firebase.analytics().logAddToWishlist({ items: [{ foo: undefined }] }),
+        ).not.toThrow();
+      });
     });
 
     describe('logBeginCheckout()', function () {

@@ -145,7 +145,7 @@ export namespace FirebaseAnalyticsTypes {
      * Custom event parameters. The parameter names can be up to 40 characters long and must start with an alphabetic character and contain only alphanumeric characters and underscores. String parameter values can be up to 100 characters long.
      * The "firebase_", "google_" and "ga_" prefixes are reserved and should not be used for parameter names.
      */
-    [key: string]: string | number;
+    [key: string]: string | number | undefined;
   }
 
   export interface AddPaymentInfoEventParameters {
