@@ -16,10 +16,7 @@ import CustomProviderOptions = FirebaseAppCheckTypes.CustomProviderOptions;
  * @param options - AppCheckOptions
  * @returns {Promise<AppCheck>}
  */
-export function initializeAppCheck(
-  app?: FirebaseApp,
-  options?: AppCheckOptions,
-): Promise<AppCheck>;
+export function initializeAppCheck(app?: FirebaseApp, options?: AppCheckOptions): Promise<AppCheck>;
 
 /**
  * Get the current App Check token. Attaches to the most recent in-flight request if one is present.
