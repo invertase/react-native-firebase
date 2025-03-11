@@ -592,3 +592,13 @@ export function getAdditionalUserInfo(userCredential) {
 export function getCustomAuthDomain(auth) {
   return auth.getCustomAuthDomain();
 }
+
+/**
+ * Returns a password validation status
+ * @param {Auth} auth - The Auth instance.
+ * @param {string} password - The password to validate.
+ * @returns {Promise<PasswordValidationStatus>}
+ */
+export function validatePassword(auth, password) {
+  
+}
