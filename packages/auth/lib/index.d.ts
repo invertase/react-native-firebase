@@ -1537,48 +1537,6 @@ export namespace FirebaseAuthTypes {
   }
 
   /**
-  * A structure indicating which password policy requirements were met or violated and what the
-  * requirements are.
-  *
-  * @public
-  */
-  export interface PasswordValidationStatus {
-    /**
-     * Whether the password meets all requirements.
-     */
-    readonly isValid: boolean;
-    /**
-     * Whether the password meets the minimum password length, or undefined if not required.
-     */
-    readonly meetsMinPasswordLength?: boolean;
-    /**
-     * Whether the password meets the maximum password length, or undefined if not required.
-     */
-    readonly meetsMaxPasswordLength?: boolean;
-    /**
-     * Whether the password contains a lowercase letter, or undefined if not required.
-     */
-    readonly containsLowercaseLetter?: boolean;
-    /**
-     * Whether the password contains an uppercase letter, or undefined if not required.
-     */
-    readonly containsUppercaseLetter?: boolean;
-    /**
-     * Whether the password contains a numeric character, or undefined if not required.
-     */
-    readonly containsNumericCharacter?: boolean;
-    /**
-     * Whether the password contains a non-alphanumeric character, or undefined if not required.
-     */
-    readonly containsNonAlphanumericCharacter?: boolean;
-    /**
-     * The policy used to validate the password.
-     */
-    readonly passwordPolicy: PasswordPolicy;
-  }
-  
-
-  /**
    * The Firebase Authentication service is available for the default app or a given app.
    *
    * #### Example 1
