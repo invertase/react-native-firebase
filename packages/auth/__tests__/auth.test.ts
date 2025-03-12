@@ -58,6 +58,7 @@ import auth, {
   verifyBeforeUpdateEmail,
   getAdditionalUserInfo,
   getCustomAuthDomain,
+  validatePassword,
 } from '../lib';
 
 // @ts-ignore test
@@ -406,6 +407,10 @@ describe('Auth', function () {
 
     it('`getCustomAuthDomain` function is properly exposed to end user', function () {
       expect(getCustomAuthDomain).toBeDefined();
+    });
+
+    it('`validatePassword` function is properly exposed to end user', function () {
+      expect(validatePassword).toBeDefined();
     });
 
     describe('ActionCodeSettings', function () {

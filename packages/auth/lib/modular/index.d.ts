@@ -686,7 +686,4 @@ export function getCustomAuthDomain(auth: Auth): Promise<string>;
  *
  * @public
  */
-export function validatePassword(
-  auth: Auth,
-  password: string
-): Promise<PasswordValidationStatus>
+export function validatePassword(auth: Auth, password: string): Promise<PasswordValidationStatus>;
