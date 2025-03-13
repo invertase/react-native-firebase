@@ -47,7 +47,7 @@ NSMutableDictionary *instanceCache;
                      appName:[RNFBSharedUtils getAppJavaScriptName:app.name]
                   databaseId:databaseId];
 
-  instanceCache[[app name]] = instance;
+  instanceCache[firestoreKey] = instance;
 
   return instance;
 }
