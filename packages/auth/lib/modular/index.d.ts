@@ -662,3 +662,118 @@ export function getAdditionalUserInfo(
  * @returns A promise that resolves with the custom auth domain.
  */
 export function getCustomAuthDomain(auth: Auth): Promise<string>;
+
+/**
+ * Validates the password against the password policy configured for the project or tenant.
+ *
+ * @remarks
+ * If no tenant ID is set on the `Auth` instance, then this method will use the password
+ * policy configured for the project. Otherwise, this method will use the policy configured
+ * for the tenant. If a password policy has not been configured, then the default policy
+ * configured for all projects will be used.
+ *
+ * If an auth flow fails because a submitted password does not meet the password policy
+ * requirements and this method has previously been called, then this method will use the
+ * most recent policy available when called again.
+ *
+ * @example
+ * ```javascript
+ * validatePassword(auth, 'some-password');
+ * ```
+ *
+ * @param auth The {@link Auth} instance.
+ * @param password The password to validate.
+ *
+ * @public
+ */
+export function validatePassword(auth: Auth, password: string): Promise<PasswordValidationStatus>;
+
+/**
+ * A structure indicating which password policy requirements were met or violated and what the
+ * requirements are.
+ *
+ * @public
+ */
+export interface PasswordValidationStatus {
+  /**
+   * Whether the password meets all requirements.
+   */
+  readonly isValid: boolean;
+  /**
+   * Whether the password meets the minimum password length, or undefined if not required.
+   */
+  readonly meetsMinPasswordLength?: boolean;
+  /**
+   * Whether the password meets the maximum password length, or undefined if not required.
+   */
+  readonly meetsMaxPasswordLength?: boolean;
+  /**
+   * Whether the password contains a lowercase letter, or undefined if not required.
+   */
+  readonly containsLowercaseLetter?: boolean;
+  /**
+   * Whether the password contains an uppercase letter, or undefined if not required.
+   */
+  readonly containsUppercaseLetter?: boolean;
+  /**
+   * Whether the password contains a numeric character, or undefined if not required.
+   */
+  readonly containsNumericCharacter?: boolean;
+  /**
+   * Whether the password contains a non-alphanumeric character, or undefined if not required.
+   */
+  readonly containsNonAlphanumericCharacter?: boolean;
+  /**
+   * The policy used to validate the password.
+   */
+  readonly passwordPolicy: PasswordPolicy;
+}
+
+/**
+ * A structure specifying password policy requirements.
+ *
+ * @public
+ */
+export interface PasswordPolicy {
+  /**
+   * Requirements enforced by this password policy.
+   */
+  readonly customStrengthOptions: {
+    /**
+     * Minimum password length, or undefined if not configured.
+     */
+    readonly minPasswordLength?: number;
+    /**
+     * Maximum password length, or undefined if not configured.
+     */
+    readonly maxPasswordLength?: number;
+    /**
+     * Whether the password should contain a lowercase letter, or undefined if not configured.
+     */
+    readonly containsLowercaseLetter?: boolean;
+    /**
+     * Whether the password should contain an uppercase letter, or undefined if not configured.
+     */
+    readonly containsUppercaseLetter?: boolean;
+    /**
+     * Whether the password should contain a numeric character, or undefined if not configured.
+     */
+    readonly containsNumericCharacter?: boolean;
+    /**
+     * Whether the password should contain a non-alphanumeric character, or undefined if not configured.
+     */
+    readonly containsNonAlphanumericCharacter?: boolean;
+  };
+  /**
+   * List of characters that are considered non-alphanumeric during validation.
+   */
+  readonly allowedNonAlphanumericCharacters: string;
+  /**
+   * The enforcement state of the policy. Can be 'OFF' or 'ENFORCE'.
+   */
+  readonly enforcementState: string;
+  /**
+   * Whether existing passwords must meet the policy.
+   */
+  readonly forceUpgradeOnSignin: boolean;
+}
