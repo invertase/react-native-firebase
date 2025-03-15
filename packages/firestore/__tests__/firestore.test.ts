@@ -77,6 +77,8 @@ import firestore, {
   deleteAllPersistentCacheIndexes,
   disablePersistentCacheIndexAutoCreation,
   enablePersistentCacheIndexAutoCreation,
+  onSnapshotsInSync,
+  documentId,
 } from '../lib';
 
 const COLLECTION = 'firestore';
@@ -735,6 +737,14 @@ describe('Firestore', function () {
 
     it('`sum` is properly exposed to end user', function () {
       expect(sum).toBeDefined();
+    });
+
+    it('`onSnapshotsInSync` is properly exposed to end user', function () {
+      expect(onSnapshotsInSync).toBeDefined();
+    });
+
+    it('`documentId` is properly exposed to end user', function () {
+      expect(documentId).toBeDefined();
     });
   });
 
