@@ -219,7 +219,9 @@ For Expo projects, follow [the setup instructions for Expo](https://react-native
 
 For bare React-Native projects, most configuration is already setup when using Google Sign-In with React-Native-Firebase's configuration, however you need to ensure your machines SHA1 key has been configured for use with Android. You can see how to generate the key on the [Getting Started](/) documentation.
 
-Before triggering a sign-in request, you must initialize the Google SDK using your any required scopes and the
+### Using Google Sign-In
+
+Before triggering a sign-in request, you must initialize the Google SDK with any required scopes and the
 `webClientId`, which can be found in the `android/app/google-services.json` file as the `client/oauth_client/client_id` property (the id ends with `.apps.googleusercontent.com`). Make sure to pick the `client_id` with `client_type: 3`
 
 ```js
@@ -229,8 +231,6 @@ GoogleSignin.configure({
   webClientId: '',
 });
 ```
-
-### Using Google Sign-In
 
 Once initialized, setup your application to trigger a sign-in request with Google using the `signIn` method.
 
