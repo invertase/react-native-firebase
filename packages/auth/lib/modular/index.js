@@ -599,9 +599,24 @@ export function getCustomAuthDomain(auth) {
  * @param {string} password - The password to validate.
  * @returns {Promise<PasswordValidationStatus>}
  */
-export function validatePassword(auth, password) {
-  if (auth) {
-    return auth.validatePassword(password);
+export async function validatePassword(auth, password) {
+  if (!this._getPasswordPolicyInternal()) {
+    await this._updatePasswordPolicy();
   }
-  return getApp().auth().validatePassword(password);
+
+  // Password policy will be defined after fetching.
+  const passwordPolicy = this._getPasswordPolicyInternal();
+  if (!passwordPolicy) {
+    throw new Error('Password policy is not defined.');
+  }
+
+  // Check that the policy schema version is supported by the SDK.
+  // TODO: Update this logic to use a max supported policy schema version once we have multiple schema versions.
+  if (passwordPolicy.schemaVersion !== this.EXPECTED_PASSWORD_POLICY_SCHEMA_VERSION) {
+    return Promise.reject(
+      this._errorFactory.create(AuthErrorCode.UNSUPPORTED_PASSWORD_POLICY_SCHEMA_VERSION, {}),
+    );
+  }
+
+  return passwordPolicy.validatePassword(password);
 }
