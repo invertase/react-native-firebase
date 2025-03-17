@@ -600,5 +600,8 @@ export function getCustomAuthDomain(auth) {
  * @returns {Promise<PasswordValidationStatus>}
  */
 export function validatePassword(auth, password) {
-  
+  if (auth) {
+    return auth.validatePassword(password);
+  }
+  return getApp().auth().validatePassword(password);
 }
