@@ -15,12 +15,34 @@
  *
  */
 
-import { _performApiRequest,
-    Endpoint,
-    HttpMethod,
-    _addTidIfNecessary
-} from '../index';
+import {
+  _performApiRequest,
+  Endpoint,
+  HttpMethod,
+  _addTidIfNecessary,
+} from './passwordPolicyApi.js';
 
+export const GetPasswordPolicyRequest = {
+  tenantId: '',
+};
+
+/**
+ * Response object for fetching the password policy.
+ */
+export const GetPasswordPolicyResponse = {
+  customStrengthOptions: {
+    minPasswordLength: 0,
+    maxPasswordLength: 0,
+    containsLowercaseCharacter: false,
+    containsUppercaseCharacter: false,
+    containsNumericCharacter: false,
+    containsNonAlphanumericCharacter: false,
+  },
+  allowedNonAlphanumericCharacters: [],
+  enforcementState: '',
+  forceUpgradeOnSignin: false,
+  schemaVersion: 0,
+};
 
 /**
  * Fetches the password policy for the currently set tenant or the project if no tenant is set.
@@ -31,10 +53,10 @@ import { _performApiRequest,
  * @returns {Promise<object>} Password policy response.
  */
 export async function _getPasswordPolicy(auth, request = {}) {
-    return _performApiRequest(
-        auth,
-        HttpMethod.GET,
-        Endpoint.GET_PASSWORD_POLICY,
-        _addTidIfNecessary(auth, request)
-    );
+  return _performApiRequest(
+    auth,
+    HttpMethod.GET,
+    Endpoint.GET_PASSWORD_POLICY,
+    _addTidIfNecessary(auth, request),
+  );
 }

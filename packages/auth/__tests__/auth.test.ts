@@ -65,6 +65,9 @@ import auth, {
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 // @ts-ignore - We don't mind missing types here
 import { NativeFirebaseError } from '../../app/lib/internal';
+import { mockEndpoint } from '../lib/password-policy/passwordPolicyHelpers';
+import { Endpoint, HttpHeader } from '../lib/password-policy/passwordPolicyApi';
+import { _getPasswordPolicy } from '../lib/password-policy/getPasswordPolicy';
 
 describe('Auth', function () {
   describe('namespace', function () {
@@ -490,113 +493,48 @@ describe('Auth', function () {
         consoleWarnSpy.mockRestore();
       });
     });
-    describe('validatePassword()' , function() {
-      context('#validatePassword', () => {
-        const PASSWORD_POLICY_IMPL = new PasswordPolicyImpl(
-          PASSWORD_POLICY_RESPONSE
-        );
-        const PASSWORD_POLICY_IMPL_REQUIRE_NUMERIC = new PasswordPolicyImpl(
-          PASSWORD_POLICY_RESPONSE_REQUIRE_NUMERIC
-        );
-        const TEST_BASIC_PASSWORD = 'password';
-  
-        it('password meeting the policy for the project should be considered valid', async () => {
-          const expectedValidationStatus: PasswordValidationStatus = {
-            isValid: true,
-            meetsMinPasswordLength: true,
-            passwordPolicy: PASSWORD_POLICY_IMPL
-          };
-  
-          auth = await testAuth();
-          const status = await auth.validatePassword(TEST_BASIC_PASSWORD);
-          expect(status).to.eql(expectedValidationStatus);
-        });
-  
-        it('password not meeting the policy for the project should be considered invalid', async () => {
-          const expectedValidationStatus: PasswordValidationStatus = {
-            isValid: false,
-            meetsMinPasswordLength: false,
-            passwordPolicy: PASSWORD_POLICY_IMPL
-          };
-  
-          auth = await testAuth();
-          const status = await auth.validatePassword('pass');
-          expect(status).to.eql(expectedValidationStatus);
-        });
-  
-        it('password meeting the policy for the tenant should be considered valid', async () => {
-          const expectedValidationStatus: PasswordValidationStatus = {
-            isValid: true,
-            meetsMinPasswordLength: true,
-            containsNumericCharacter: true,
-            passwordPolicy: PASSWORD_POLICY_IMPL_REQUIRE_NUMERIC
-          };
-  
-          auth = await testAuth();
-          auth.tenantId = TEST_TENANT_ID;
-          const status = await auth.validatePassword('passw0rd');
-          expect(status).to.eql(expectedValidationStatus);
-        });
-  
-        it('password not meeting the policy for the tenant should be considered invalid', async () => {
-          const expectedValidationStatus: PasswordValidationStatus = {
-            isValid: false,
-            meetsMinPasswordLength: false,
-            containsNumericCharacter: false,
-            passwordPolicy: PASSWORD_POLICY_IMPL_REQUIRE_NUMERIC
-          };
-  
-          auth = await testAuth();
-          auth.tenantId = TEST_TENANT_ID;
-          const status = await auth.validatePassword('pass');
-          expect(status).to.eql(expectedValidationStatus);
-        });
-  
-        it('should use the password policy associated with the tenant ID when the tenant ID switches', async () => {
-          let expectedValidationStatus: PasswordValidationStatus = {
-            isValid: true,
-            meetsMinPasswordLength: true,
-            passwordPolicy: PASSWORD_POLICY_IMPL
-          };
-  
-          auth = await testAuth();
-  
-          let status = await auth.validatePassword(TEST_BASIC_PASSWORD);
-          expect(status).to.eql(expectedValidationStatus);
-  
-          expectedValidationStatus = {
-            isValid: false,
-            meetsMinPasswordLength: true,
-            containsNumericCharacter: false,
-            passwordPolicy: PASSWORD_POLICY_IMPL_REQUIRE_NUMERIC
-          };
-  
-          auth.tenantId = TEST_TENANT_ID;
-          status = await auth.validatePassword(TEST_BASIC_PASSWORD);
-          expect(status).to.eql(expectedValidationStatus);
-        });
-  
-        it('should throw an error when a password policy with an unsupported schema version is received', async () => {
-          auth = await testAuth();
-          auth.tenantId = TEST_TENANT_ID_UNSUPPORTED_POLICY_VERSION;
-          await expect(
-            auth.validatePassword(TEST_BASIC_PASSWORD)
-          ).to.be.rejectedWith(
-            AuthErrorCode.UNSUPPORTED_PASSWORD_POLICY_SCHEMA_VERSION
-          );
-        });
-  
-        it('should throw an error when a password policy with an unsupported schema version is already cached', async () => {
-          auth = await testAuth();
-          auth.tenantId = TEST_TENANT_ID_UNSUPPORTED_POLICY_VERSION;
-          await auth._updatePasswordPolicy();
-          await expect(
-            auth.validatePassword(TEST_BASIC_PASSWORD)
-          ).to.be.rejectedWith(
-            AuthErrorCode.UNSUPPORTED_PASSWORD_POLICY_SCHEMA_VERSION
-          );
-        });
+    describe('passwordPolicyAPI', function () {
+      const TEST_MIN_PASSWORD_LENGTH = 6;
+      const TEST_ALLOWED_NON_ALPHANUMERIC_CHARS = ['!'];
+      const TEST_SCHEMA_VERSION = 1;
+
+      beforeAll(function () {
+        // Initialize a new instance each time.
+        const auth = firebase.app().auth();
       });
+
+      it('should GET to the correct endpoint', async () => {
+        const mock = mockEndpoint(Endpoint.GET_PASSWORD_POLICY, {
+          customStrengthOptions: {
+            minPasswordLength: TEST_MIN_PASSWORD_LENGTH
+          },
+          allowedNonAlphanumericCharacters: TEST_ALLOWED_NON_ALPHANUMERIC_CHARS,
+          schemaVersion: TEST_SCHEMA_VERSION
+        });
+    expect(mock.calls[0].url).toEqual('/v1/accounts:getPasswordPolicy');
+        const response = await _getPasswordPolicy(auth);
+        expect(response.customStrengthOptions.minPasswordLength).toEqual(
+          TEST_MIN_PASSWORD_LENGTH
+        );
+        expect(response.allowedNonAlphanumericCharacters).toEqual(
+          TEST_ALLOWED_NON_ALPHANUMERIC_CHARS
+        );
+        expect(response.schemaVersion).toEqual(TEST_SCHEMA_VERSION);
+        expect(mock.calls[0].method).toEqual('GET');
+        expect(mock.calls[0].headers!.get(HttpHeader.X_CLIENT_VERSION)).toEqual(
+          'testSDK/0.0.0'
+        );
+      });
+    })
+    describe('validatePassword', function () {
+      const TEST_MIN_PASSWORD_LENGTH = 6;
+      const TEST_ALLOWED_NON_ALPHANUMERIC_CHARS = ['!'];
+      const TEST_SCHEMA_VERSION = 1;
+      
+      beforeAll(function () {
+        // Initialize a new instance each time.
+        const auth = firebase.app().auth();
+      })
     });
   });
 });
