@@ -1,0 +1,20 @@
+diff --git a/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTInteropTurboModule.mm b/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTInteropTurboModule.mm
+index 9ff5638..740a202 100644
+--- a/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTInteropTurboModule.mm
++++ b/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTInteropTurboModule.mm
+@@ -446,6 +446,15 @@ void ObjCInteropTurboModule::setInvocationArg(
+ 
+     if (objCArgType == @encode(id)) {
+       id arg = RCTConvertTo<id>(selector, objCArg);
++
++      // Handle the special case where there is an argument and it must be nil
++      // Without this check, the JS side will receive an object.
++      // See: discussion at
++      // https://github.com/facebook/react-native/pull/49250#issuecomment-2668465893
++      if (arg == [NSNull null]) {
++        return;
++      }
++
+       if (arg) {
+         [retainedObjectsForInvocation addObject:arg];
+       }
