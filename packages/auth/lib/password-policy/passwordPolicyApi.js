@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2016-present Invertase Limited & Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this library except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 /**
  * Enum for HTTP methods.
  * @enum {string}
@@ -5,6 +22,12 @@
 export const HttpMethod = {
   POST: 'POST',
   GET: 'GET',
+};
+
+export const DefaultConfig = {
+  TOKEN_API_HOST: 'securetoken.googleapis.com',
+  API_HOST: 'identitytoolkit.googleapis.com',
+  API_SCHEME: 'https',
 };
 
 /**
@@ -93,4 +116,28 @@ export async function _performApiRequest(auth, method, path, request, customErro
       fetchArgs,
     );
   });
+}
+
+/**
+ * Constructs the final target URL based on the provided authentication configuration,
+ * host, path, and query parameters. If the emulator is being used, it generates
+ * the URL for the emulator; otherwise, it constructs the URL using the API scheme.
+ *
+ * @param {Object} auth - The authentication object containing configuration details.
+ * @param {Object} auth.config - The configuration object for authentication.
+ * @param {boolean} auth.config.emulator - Indicates whether the emulator is being used.
+ * @param {string} auth.config.apiScheme - The scheme to use for the API (e.g., "https").
+ * @param {string} host - The host of the API.
+ * @param {string} path - The path of the API endpoint.
+ * @param {string} query - The query string to append to the URL.
+ * @returns {string} The constructed target URL.
+ */
+export function _getFinalTarget(auth, host, path, query) {
+  const base = `${host}${path}?${query}`;
+
+  if (!auth.config.emulator) {
+    return `${auth.config.apiScheme}://${base}`;
+  }
+
+  return _emulatorUrl(auth.config, base);
 }
