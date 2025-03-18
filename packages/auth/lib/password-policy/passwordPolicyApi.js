@@ -26,7 +26,6 @@ export async function fetchPasswordPolicy(auth) {
   try {
     const baseURL = 'https://identitytoolkit.googleapis.com/v2/passwordPolicy?key=';
     const apiKey = auth.app.config.apiKey;
-    //const apiKey = 'AIzaSyAgUhHU8wSJgO5MVNy95tMT07NEjzMOfz0';
 
     const response = await fetch(`${baseURL}${apiKey}`);
     if (!response.ok) {
