@@ -15,14 +15,6 @@
  *
  */
 
-import { GetPasswordPolicyResponse } from '../../api/password_policy/get_password_policy';
-import {
-  PasswordPolicyCustomStrengthOptions,
-  PasswordPolicyInternal,
-  PasswordValidationStatusInternal,
-} from '../../model/password_policy';
-import { PasswordValidationStatus } from '../../model/public_types';
-
 // Minimum min password length enforced by the backend, even if no minimum length is set.
 const MINIMUM_MIN_PASSWORD_LENGTH = 6;
 

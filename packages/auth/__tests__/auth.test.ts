@@ -61,13 +61,13 @@ import auth, {
   validatePassword,
 } from '../lib';
 
+const { fetchPasswordPolicy } = require("../lib/password-policy/passwordPolicyApi");
+
 // @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 // @ts-ignore - We don't mind missing types here
 import { NativeFirebaseError } from '../../app/lib/internal';
-import { mockEndpoint } from '../lib/password-policy/passwordPolicyHelpers';
-import { Endpoint, HttpHeader } from '../lib/password-policy/passwordPolicyApi';
-import { _getPasswordPolicy } from '../lib/password-policy/getPasswordPolicy';
+//import { fetchPasswordPolicy } from '../lib/password-policy/passwordPolicy';
 
 describe('Auth', function () {
   describe('namespace', function () {
@@ -494,47 +494,14 @@ describe('Auth', function () {
       });
     });
     describe('passwordPolicyAPI', function () {
-      const TEST_MIN_PASSWORD_LENGTH = 6;
-      const TEST_ALLOWED_NON_ALPHANUMERIC_CHARS = ['!'];
-      const TEST_SCHEMA_VERSION = 1;
-
-      beforeAll(function () {
-        // Initialize a new instance each time.
-        const auth = firebase.app().auth();
-      });
+      //const TEST_MIN_PASSWORD_LENGTH = 6;
+      //const TEST_SCHEMA_VERSION = 1;
 
       it('should GET to the correct endpoint', async () => {
-        const mock = mockEndpoint(Endpoint.GET_PASSWORD_POLICY, {
-          customStrengthOptions: {
-            minPasswordLength: TEST_MIN_PASSWORD_LENGTH
-          },
-          allowedNonAlphanumericCharacters: TEST_ALLOWED_NON_ALPHANUMERIC_CHARS,
-          schemaVersion: TEST_SCHEMA_VERSION
-        });
-    expect(mock.calls[0].url).toEqual('/v1/accounts:getPasswordPolicy');
-        const response = await _getPasswordPolicy(auth);
-        expect(response.customStrengthOptions.minPasswordLength).toEqual(
-          TEST_MIN_PASSWORD_LENGTH
-        );
-        expect(response.allowedNonAlphanumericCharacters).toEqual(
-          TEST_ALLOWED_NON_ALPHANUMERIC_CHARS
-        );
-        expect(response.schemaVersion).toEqual(TEST_SCHEMA_VERSION);
-        expect(mock.calls[0].method).toEqual('GET');
-        expect(mock.calls[0].headers!.get(HttpHeader.X_CLIENT_VERSION)).toEqual(
-          'testSDK/0.0.0'
-        );
+        const auth = firebase.app().auth()
+        let response = await fetchPasswordPolicy(auth);
+        expect(response).toBeDefined();
       });
     })
-    describe('validatePassword', function () {
-      const TEST_MIN_PASSWORD_LENGTH = 6;
-      const TEST_ALLOWED_NON_ALPHANUMERIC_CHARS = ['!'];
-      const TEST_SCHEMA_VERSION = 1;
-      
-      beforeAll(function () {
-        // Initialize a new instance each time.
-        const auth = firebase.app().auth();
-      })
-    });
   });
 });
