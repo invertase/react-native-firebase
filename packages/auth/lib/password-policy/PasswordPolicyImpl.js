@@ -25,6 +25,7 @@ const MINIMUM_MIN_PASSWORD_LENGTH = 6;
  */
 export class PasswordPolicyImpl {
   constructor(response) {
+    // Only include custom strength options defined in the response.
     const responseOptions = response.customStrengthOptions;
     this.customStrengthOptions = {};
     this.customStrengthOptions.minPasswordLength =
@@ -54,6 +55,7 @@ export class PasswordPolicyImpl {
         ? 'OFF'
         : response.enforcementState;
 
+    // Use an empty string if no non-alphanumeric characters are specified in the response.
     this.allowedNonAlphanumericCharacters =
       response.allowedNonAlphanumericCharacters?.join('') ?? '';
 
