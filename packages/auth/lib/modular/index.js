@@ -16,6 +16,8 @@
  */
 
 import { getApp } from '@react-native-firebase/app';
+import { fetchPasswordPolicy } from '../password-policy/passwordPolicyApi';
+import { PasswordPolicyImpl } from '../password-policy/PasswordPolicyImpl';
 
 /**
  * @typedef {import('@firebase/app-types').FirebaseApp} FirebaseApp
@@ -600,23 +602,12 @@ export function getCustomAuthDomain(auth) {
  * @returns {Promise<PasswordValidationStatus>}
  */
 export async function validatePassword(auth, password) {
-  if (!this._getPasswordPolicyInternal()) {
-    await this._updatePasswordPolicy();
-  }
+  
+  let passwordPolicy = fetchPasswordPolicy(auth);
 
-  // Password policy will be defined after fetching.
-  const passwordPolicy = this._getPasswordPolicyInternal();
-  if (!passwordPolicy) {
-    throw new Error('Password policy is not defined.');
-  }
+  const enforcer = PasswordPolicyImpl(passwordPolicy);
+  enforcer.validatePassword(password);
 
-  // Check that the policy schema version is supported by the SDK.
-  // TODO: Update this logic to use a max supported policy schema version once we have multiple schema versions.
-  if (passwordPolicy.schemaVersion !== this.EXPECTED_PASSWORD_POLICY_SCHEMA_VERSION) {
-    return Promise.reject(
-      this._errorFactory.create(AuthErrorCode.UNSUPPORTED_PASSWORD_POLICY_SCHEMA_VERSION, {}),
-    );
-  }
 
   return passwordPolicy.validatePassword(password);
 }

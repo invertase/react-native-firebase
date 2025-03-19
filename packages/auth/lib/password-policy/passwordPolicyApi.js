@@ -23,6 +23,7 @@
  * @throws {Error} Throws an error if the request fails or encounters an issue.
  */
 export async function fetchPasswordPolicy(auth) {
+  let schemaVersion = "1";
   try {
     const baseURL = 'https://identitytoolkit.googleapis.com/v2/passwordPolicy?key=';
     const apiKey = auth.app.config.apiKey;
@@ -32,6 +33,11 @@ export async function fetchPasswordPolicy(auth) {
       throw new Error(`Failed to fetch password policy: ${response.statusText}`);
     }
     const passwordPolicy = await response.json();
+    if (passwordPolicy.schemaVersion !== schemaVersion) {
+      throw new Error(
+        `Password policy schema version mismatch. Expected: ${schemaVersion}, received: ${passwordPolicy.schemaVersion}`,
+      );
+    }
     return passwordPolicy;
   } catch (error) {
     throw new Error(`Failed to fetch password policy: ${error.message}`);
