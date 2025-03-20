@@ -604,8 +604,7 @@ export function getCustomAuthDomain(auth) {
 export async function validatePassword(auth, password) {
   let passwordPolicy = fetchPasswordPolicy(auth);
 
-  const enforcer = PasswordPolicyImpl(passwordPolicy);
-  enforcer.validatePassword(password);
+  const passwordPolicyImpl = PasswordPolicyImpl(passwordPolicy);
 
-  return passwordPolicy.validatePassword(password);
+  return passwordPolicyImpl.validatePassword(password);
 }
