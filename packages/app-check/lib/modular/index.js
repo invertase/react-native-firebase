@@ -32,24 +32,24 @@ import ReactNativeFirebaseAppCheckProvider from '../ReactNativeFirebaseAppCheckP
  * Activate App Check for the given app. Can be called only once per app.
  * @param {FirebaseApp} [app] - The app to initialize App Check for. Optional.
  * @param {AppCheckOptions} options - App Check options.
- * @returns {Promise<{ app: FirebaseApp }>}
+ * @returns {Promise<AppCheck>}
  */
 export async function initializeAppCheck(app, options) {
   if (app) {
     const appCheck = getApp(app.name).appCheck();
     await appCheck.initializeAppCheck.call(appCheck, options, MODULAR_DEPRECATION_ARG);
-    return { app: getApp(app.name) };
+    return { appCheck };
   }
   const appCheck = getApp().appCheck();
   await appCheck.initializeAppCheck.call(appCheck, options, MODULAR_DEPRECATION_ARG);
-  return { app: getApp() };
+  return { appCheck };
 }
 
 /**
  * Get the current App Check token. Attaches to the most recent in-flight request if one is present.
  * Returns null if no token is present and no token requests are in-flight.
  * @param {AppCheck} appCheckInstance - The App Check instance.
- * @param {boolean} forceRefresh - Whether to force refresh the token.
+ * @param {boolean} forceRefresh - Whether to force refresh the token. Optional
  * @returns {Promise<AppCheckTokenResult>}
  */
 export function getToken(appCheckInstance, forceRefresh) {
