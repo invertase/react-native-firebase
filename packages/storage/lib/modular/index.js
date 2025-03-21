@@ -90,7 +90,7 @@ export function deleteObject(storageRef) {
  * @returns {Promise<Blob>}
  */
 // eslint-disable-next-line
-export function getBlob(storageRef) {
+export function getBlob(storageRef, maxDownloadSizeBytes) {
   throw new Error('`getBlob()` is not implemented');
 }
 
