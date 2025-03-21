@@ -16,6 +16,8 @@
  */
 
 import { getApp } from '@react-native-firebase/app';
+import { fetchPasswordPolicy } from '../password-policy/passwordPolicyApi';
+import { PasswordPolicyImpl } from '../password-policy/PasswordPolicyImpl';
 
 /**
  * @typedef {import('@firebase/app-types').FirebaseApp} FirebaseApp
@@ -591,4 +593,18 @@ export function getAdditionalUserInfo(userCredential) {
  */
 export function getCustomAuthDomain(auth) {
   return auth.getCustomAuthDomain();
+}
+
+/**
+ * Returns a password validation status
+ * @param {Auth} auth - The Auth instance.
+ * @param {string} password - The password to validate.
+ * @returns {Promise<PasswordValidationStatus>}
+ */
+export async function validatePassword(auth, password) {
+  let passwordPolicy = fetchPasswordPolicy(auth);
+
+  const passwordPolicyImpl = PasswordPolicyImpl(passwordPolicy);
+
+  return passwordPolicyImpl.validatePassword(password);
 }
