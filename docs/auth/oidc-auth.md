@@ -44,7 +44,7 @@ Before you use `react-native-app-auth` you have to complete the setup in their [
 The example below demonstrates how you could setup such a flow within your own application:
 
 ```jsx
-import auth from '@react-native-firebase/auth';
+import auth, { getAuth } from '@react-native-firebase/auth';
 import { authorize } from 'react-native-app-auth';
 
 // using react-native-app-auth to get oauth token from Azure AD
@@ -64,5 +64,5 @@ const credential = auth.OIDCAuthProvider.credential(
   authState.idToken,
 );
 
-await auth().signInWithCredential(credential);
+await getAuth().signInWithCredential(credential);
 ```

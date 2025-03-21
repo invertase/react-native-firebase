@@ -52,7 +52,7 @@ When the user presses the pre-rendered button, we can trigger the initial sign-i
 passing in the scope required for our application:
 
 ```js
-import auth from '@react-native-firebase/auth';
+import auth, { getAuth } from '@react-native-firebase/auth';
 import { appleAuth } from '@invertase/react-native-apple-authentication';
 
 async function onAppleButtonPress() {
@@ -74,7 +74,7 @@ async function onAppleButtonPress() {
   const appleCredential = auth.AppleAuthProvider.credential(identityToken, nonce);
 
   // Sign the user in with the credential
-  return auth().signInWithCredential(appleCredential);
+  return getAuth().signInWithCredential(appleCredential);
 }
 ```
 
@@ -84,7 +84,7 @@ with the new authentication state of the user.
 Apple also requires that the app revoke the `Sign in with Apple` token when the user chooses to delete their account. This can be accomplished with the `revokeToken` API.
 
 ```js
-import auth from '@react-native-firebase/auth';
+import { getAuth } from '@react-native-firebase/auth';
 import { appleAuth } from '@invertase/react-native-apple-authentication';
 
 async function revokeSignInWithAppleToken() {
@@ -99,7 +99,7 @@ async function revokeSignInWithAppleToken() {
   }
 
   // Revoke the token
-  return auth().revokeToken(authorizationCode);
+  return getAuth().revokeToken(authorizationCode);
 }
 ```
 
@@ -134,7 +134,7 @@ function FacebookSignIn() {
 The `onFacebookButtonPress` can then be implemented as follows:
 
 ```js
-import auth from '@react-native-firebase/auth';
+import auth, { getAuth } from '@react-native-firebase/auth';
 import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
 
 async function onFacebookButtonPress() {
@@ -156,7 +156,7 @@ async function onFacebookButtonPress() {
   const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
 
   // Sign-in the user with the credential
-  return auth().signInWithCredential(facebookCredential);
+  return getAuth().signInWithCredential(facebookCredential);
 }
 ```
 
@@ -165,7 +165,7 @@ async function onFacebookButtonPress() {
 To use Facebook Limited Login instead of "classic" Facebook Login, the `onFacebookButtonPress` can then be implemented as follows:
 
 ```js
-import auth from '@react-native-firebase/auth';
+import auth, { getAuth } from '@react-native-firebase/auth';
 import { LoginManager, AuthenticationToken } from 'react-native-fbsdk-next';
 import { sha256 } from 'react-native-sha256';
 
@@ -197,7 +197,7 @@ async function onFacebookButtonPress() {
   const facebookCredential = auth.FacebookAuthProvider.credential(data.authenticationToken, nonce);
 
   // Sign-in the user with the credential
-  return auth().signInWithCredential(facebookCredential);
+  return getAuth().signInWithCredential(facebookCredential);
 }
 ```
 
@@ -235,6 +235,7 @@ GoogleSignin.configure({
 Once initialized, setup your application to trigger a sign-in request with Google using the `signIn` method.
 
 ```jsx
+import React from 'react';
 import { Button } from 'react-native';
 
 function GoogleSignIn() {
@@ -250,7 +251,7 @@ function GoogleSignIn() {
 The `onGoogleButtonPress` can then be implemented as follows:
 
 ```js
-import auth from '@react-native-firebase/auth';
+import auth, { getAuth } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 async function onGoogleButtonPress() {
@@ -273,7 +274,7 @@ async function onGoogleButtonPress() {
   const googleCredential = auth.GoogleAuthProvider.credential(signInResult.data.idToken);
 
   // Sign-in the user with the credential
-  return auth().signInWithCredential(googleCredential);
+  return getAuth().signInWithCredential(googleCredential);
 }
 ```
 
@@ -310,7 +311,7 @@ function MicrosoftSignIn() {
 `onMicrosoftButtonPress` can be implemented as the following:
 
 ```js
-import auth from '@react-native-firebase/auth';
+import auth, { getAuth } from '@react-native-firebase/auth';
 
 const onMicrosoftButtonPress = async () => {
   // Generate the provider object
@@ -327,7 +328,7 @@ const onMicrosoftButtonPress = async () => {
   });
 
   // Sign-in the user with the provider
-  return auth().signInWithRedirect(provider);
+  return getAuth().signInWithRedirect(provider);
 };
 ```
 
@@ -375,7 +376,7 @@ function TwitterSignIn() {
 The `onTwitterButtonPress` can then be implemented as follows:
 
 ```js
-import auth from '@react-native-firebase/auth';
+import auth, { getAuth } from '@react-native-firebase/auth';
 import { NativeModules } from 'react-native';
 const { RNTwitterSignIn } = NativeModules;
 
@@ -387,7 +388,7 @@ async function onTwitterButtonPress() {
   const twitterCredential = auth.TwitterAuthProvider.credential(authToken, authTokenSecret);
 
   // Sign-in the user with the credential
-  return auth().signInWithCredential(twitterCredential);
+  return getAuth().signInWithCredential(twitterCredential);
 }
 ```
 
@@ -400,13 +401,13 @@ with the new authentication state of the user.
 
 > If you enabled the **One account per email address** setting in the Firebase console, when a user tries to sign in a to a provider (such as Google) with an email that already exists for another Firebase user's provider (such as Facebook), the error `auth/account-exists-with-different-credential` is thrown along with an `AuthCredential` object (Google ID token). To complete the sign in to the intended provider, the user has to sign first to the existing provider (Facebook) and then link to the former `AuthCredential` (Google ID token).
 
-To provide users with an additional login method, you can link their social media account (or an email & password) with their Firebase account. This is possible for any social provider that uses `auth().signInWithCredential()`.
-To achieve this, you should replace sign-in method in any of the supported social sign-in code snippets with `auth().currentUser.linkWithCredential()`.
+To provide users with an additional login method, you can link their social media account (or an email & password) with their Firebase account. This is possible for any social provider that uses `getAuth().signInWithCredential()`.
+To achieve this, you should replace sign-in method in any of the supported social sign-in code snippets with `getAuth().currentUser.linkWithCredential()`.
 
 This code demonstrates linking a Google provider to an account that is already signed in using Firebase authentication.
 
 ```js
-import auth from '@react-native-firebase/auth';
+import auth, { getAuth } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 async function onGoogleLinkButtonPress() {
@@ -419,7 +420,7 @@ async function onGoogleLinkButtonPress() {
   const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 
   // Link the user's account with the Google credential
-  const firebaseUserCredential = await auth().currentUser.linkWithCredential(googleCredential);
+  const firebaseUserCredential = await getAuth().currentUser.linkWithCredential(googleCredential);
   //  Handle the linked account as needed in your app
   return;
 }
