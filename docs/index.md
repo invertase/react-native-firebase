@@ -175,6 +175,7 @@ Select the downloaded `GoogleService-Info.plist` file from your computer, and en
 ![Select 'Copy Items if needed'](https://prismic-io.s3.amazonaws.com/invertase%2F7d37e0ce-3e79-468d-930c-b7dc7bc2e291_unknown+%282%29.png)
 
 #### Configure Firebase with iOS credentials (react-native 0.77+)
+
 To allow Firebase on iOS to use the credentials, the Firebase iOS SDK must be configured during the bootstrap phase of your application.
 
 To do this, open your `/ios/{projectName}/AppDelegate.swift` file and add the following:
