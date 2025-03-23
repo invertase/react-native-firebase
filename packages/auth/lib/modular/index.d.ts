@@ -58,6 +58,7 @@ export function applyActionCode(auth: Auth, oobCode: string): Promise<void>;
  * @param auth - The Auth instance.
  * @param callback - A callback function to run before the auth state changes.
  * @param onAbort - Optional. A callback function to run if the operation is aborted.
+ *
  */
 export function beforeAuthStateChanged(
   auth: Auth,
@@ -148,13 +149,20 @@ export function getMultiFactorResolver(
  * @param resolver - Optional. The popup redirect resolver.
  * @returns A promise that resolves with the user credentials or null.
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface PopupRedirectResolver {}
-
 export function getRedirectResult(
   auth: Auth,
   resolver?: PopupRedirectResolver,
 ): Promise<FirebaseAuthTypes.UserCredential | null>;
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface PopupRedirectResolver {}
+
+/**
+ * Loads the reCAPTCHA configuration into the Auth instance.
+ * Does not work in a Node.js environment
+ * @param auth - The Auth instance.
+ */
+export function initializeRecaptchaConfig(auth: Auth): Promise<void>;
 
 /**
  * Checks if an incoming link is a sign-in with email link suitable for signInWithEmailLink().
@@ -190,6 +198,13 @@ export function onIdTokenChanged(
 ): () => void;
 
 /**
+ * Revoke the given access token, Currently only supports Apple OAuth access tokens.
+ * @param auth
+ * @param token
+ */
+export declare function revokeAccessToken(auth: Auth, token: string): Promise<void>;
+
+/**
  * Sends a password reset email to the given email address.
  *
  * @param auth - The Auth instance.
@@ -208,7 +223,7 @@ export function sendPasswordResetEmail(
  *
  * @param auth - The Auth instance.
  * @param email - The user's email address.
- * @param actionCodeSettings - Optional. Action code settings.
+ * @param actionCodeSettings - Optional, Action code settings.
  * @returns A promise that resolves when the email is sent.
  */
 export function sendSignInLinkToEmail(
@@ -300,7 +315,7 @@ export function signInWithEmailLink(
  * Interface representing an application verifier.
  */
 export interface ApplicationVerifier {
-  type: string;
+  readonly type: string;
   verify(): Promise<string>;
 }
 
@@ -309,13 +324,15 @@ export interface ApplicationVerifier {
  *
  * @param auth - The Auth instance.
  * @param phoneNumber - The user's phone number.
- * @param appVerifier - The application verifier.
+ * @param appVerifier - Optional. The application verifier.
+ * @param forceResend - Optional. (Native only) Forces a new message to be sent if it was already recently sent.
  * @returns A promise that resolves with the confirmation result.
  */
 export function signInWithPhoneNumber(
   auth: Auth,
   phoneNumber: string,
-  appVerifier: ApplicationVerifier,
+  appVerifier?: ApplicationVerifier,
+  forceResend?: boolean,
 ): Promise<FirebaseAuthTypes.ConfirmationResult>;
 
 /**
@@ -360,7 +377,7 @@ export function signInWithRedirect(
   auth: Auth,
   provider: FirebaseAuthTypes.AuthProvider,
   resolver?: PopupRedirectResolver,
-): Promise<void>;
+): Promise<never>;
 
 /**
  * Signs out the current user.
@@ -377,7 +394,7 @@ export function signOut(auth: Auth): Promise<void>;
  * @param user - The user to set as the current user.
  * @returns A promise that resolves when the user is set.
  */
-export function updateCurrentUser(auth: Auth, user: FirebaseAuthTypes.User): Promise<void>;
+export function updateCurrentUser(auth: Auth, user: FirebaseAuthTypes.User | null): Promise<void>;
 
 /**
  * Sets the current language to the default device/browser preference.
@@ -385,6 +402,15 @@ export function updateCurrentUser(auth: Auth, user: FirebaseAuthTypes.User): Pro
  * @param auth - The Auth instance.
  */
 export function useDeviceLanguage(auth: Auth): void;
+
+/**
+ * Validates the password against the password policy configured for the project or tenant.
+ *
+ * @param auth - The Auth instance.
+ * @param password - The password to validate.
+ *
+ */
+export function validatePassword(auth: Auth, password: string): Promise<PasswordValidationStatus>;
 
 /**
  * Sets the current language to the default device/browser preference.
@@ -464,7 +490,7 @@ export function linkWithCredential(
 export function linkWithPhoneNumber(
   user: FirebaseAuthTypes.User,
   phoneNumber: string,
-  appVerifier: ApplicationVerifier,
+  appVerifier?: ApplicationVerifier,
 ): Promise<FirebaseAuthTypes.ConfirmationResult>;
 
 /**
@@ -526,7 +552,7 @@ export function reauthenticateWithCredential(
 export function reauthenticateWithPhoneNumber(
   user: FirebaseAuthTypes.User,
   phoneNumber: string,
-  appVerifier: ApplicationVerifier,
+  appVerifier?: ApplicationVerifier,
 ): Promise<FirebaseAuthTypes.ConfirmationResult>;
 
 /**
@@ -642,7 +668,7 @@ export function updateProfile(
 export function verifyBeforeUpdateEmail(
   user: FirebaseAuthTypes.User,
   newEmail: string,
-  actionCodeSettings?: FirebaseAuthTypes.ActionCodeSettings,
+  actionCodeSettings?: FirebaseAuthTypes.ActionCodeSettings | null,
 ): Promise<void>;
 
 /**
@@ -659,6 +685,23 @@ export function getAdditionalUserInfo(
  * Returns the custom auth domain for the auth instance.
  *
  * @param auth - The Auth instance.
- * @returns A promise that resolves with the custom auth domain.
+ * @returns {Promise<string>} A promise that resolves with the custom auth domain.
  */
 export function getCustomAuthDomain(auth: Auth): Promise<string>;
+
+/**
+ * Various Providers.
+ *
+ *
+ */
+export {
+  AppleAuthProvider,
+  EmailAuthProvider,
+  FacebookAuthProvider,
+  GithubAuthProvider,
+  GoogleAuthProvider,
+  OAuthProvider,
+  OIDCAuthProvider,
+  PhoneAuthProvider,
+  TwitterAuthProvider,
+} from '../index';

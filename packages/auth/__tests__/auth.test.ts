@@ -2,6 +2,9 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { FirebaseAuthTypes } from '../lib/index';
 // @ts-ignore
 import User from '../lib/User';
+// @ts-ignore test
+import FirebaseModule from '../../app/lib/internal/FirebaseModule';
+
 import auth, {
   firebase,
   getAuth,
@@ -58,6 +61,15 @@ import auth, {
   verifyBeforeUpdateEmail,
   getAdditionalUserInfo,
   getCustomAuthDomain,
+  AppleAuthProvider,
+  EmailAuthProvider,
+  FacebookAuthProvider,
+  GithubAuthProvider,
+  GoogleAuthProvider,
+  OAuthProvider,
+  OIDCAuthProvider,
+  PhoneAuthProvider,
+  TwitterAuthProvider,
 } from '../lib';
 
 // @ts-ignore test
@@ -406,6 +418,42 @@ describe('Auth', function () {
 
     it('`getCustomAuthDomain` function is properly exposed to end user', function () {
       expect(getCustomAuthDomain).toBeDefined();
+    });
+
+    it('`AppleAuthProvider` class is properly exposed to end user', function () {
+      expect(AppleAuthProvider).toBeDefined();
+    });
+
+    it('`EmailAuthProvider` class is properly exposed to end user', function () {
+      expect(EmailAuthProvider).toBeDefined();
+    });
+
+    it('`FacebookAuthProvider` class is properly exposed to end user', function () {
+      expect(FacebookAuthProvider).toBeDefined();
+    });
+
+    it('`GithubAuthProvider` class is properly exposed to end user', function () {
+      expect(GithubAuthProvider).toBeDefined();
+    });
+
+    it('`GoogleAuthProvider` class is properly exposed to end user', function () {
+      expect(GoogleAuthProvider).toBeDefined();
+    });
+
+    it('`OAuthProvider` class is properly exposed to end user', function () {
+      expect(OAuthProvider).toBeDefined();
+    });
+
+    it('`OIDCProvider` class is properly exposed to end user', function () {
+      expect(OIDCAuthProvider).toBeDefined();
+    });
+
+    it('`PhoneAuthProvider` class is properly exposed to end user', function () {
+      expect(PhoneAuthProvider).toBeDefined();
+    });
+
+    it('`TwitterAuthProvider` class is properly exposed to end user', function () {
+      expect(TwitterAuthProvider).toBeDefined();
     });
 
     describe('ActionCodeSettings', function () {
