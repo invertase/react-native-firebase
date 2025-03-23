@@ -685,7 +685,7 @@ export function getAdditionalUserInfo(
  * Returns the custom auth domain for the auth instance.
  *
  * @param auth - The Auth instance.
- * @returns {string} A promise that resolves with the custom auth domain.
+ * @returns {Promise<string>} A promise that resolves with the custom auth domain.
  */
 export function getCustomAuthDomain(auth: Auth): Promise<string>;
 
