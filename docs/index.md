@@ -26,21 +26,19 @@ Integration with Expo is possible when using a [development build](https://docs.
 
 _NOTE:_ React Native Firebase cannot be used in the pre-compiled [Expo Go app](https://docs.expo.dev/workflow/overview/#expo-go-an-optional-tool-for-learning) because React Native Firebase uses native code that is not compiled into Expo Go.
 
-#### Your Expo project
-
 To create a new Expo project, see the [Get started](https://docs.expo.dev/get-started/create-a-project/) guide in Expo documentation.
 
-#### Install React Native Firebase modules
+### Install React Native Firebase modules
 
 To install React Native Firebase's base `app` module, use the command `npx expo install @react-native-firebase/app`.
 
 Similarly you can install other React Native Firebase modules such as for Authentication and Crashlytics: `npx expo install @react-native-firebase/auth @react-native-firebase/crashlytics`.
 
-#### Configure React Native Firebase modules
+### Configure React Native Firebase modules
 
 The recommended approach to configure React Native Firebase is to use [Expo Config Plugins](https://docs.expo.dev/config-plugins/introduction/). You will add React Native Firebase modules to the [`plugins`](https://docs.expo.io/versions/latest/config/app/#plugins) array of your `app.json` or `app.config.js`. See the note below to determine which modules require Config Plugin configurations.
 
-If you are instead manually adjusting your Android and iOS projects (this is not recommended), follow the same instructions as [React Native CLI projects](#installation-for-react-native-cli-projects).
+If you are instead manually adjusting your Android and iOS projects (this is not recommended), follow the same instructions as [React Native CLI projects](#Installation for React Native CLI (non-Expo) projects).
 
 To enable Firebase on the native Android and iOS platforms, create and download Service Account files for each platform from your Firebase project. Then provide paths to the downloaded `google-services.json` and `GoogleService-Info.plist` files in the following `app.json` fields: [`expo.android.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile-1) and [`expo.ios.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile). See the example configuration below.
 
@@ -78,13 +76,13 @@ The following is an example `app.json` to enable the React Native Firebase modul
 
 > Listing a module in the Config Plugins (the `"plugins"` array in the JSON above) is only required for React Native Firebase modules that involve _native installation steps_ - e.g. modifying the Xcode project, `Podfile`, `build.gradle`, `AndroidManifest.xml` etc. React Native Firebase modules without native steps will work out of the box; no `"plugins"` entry is required. Not all modules have Expo Config Plugins provided yet. A React Native Firebase module has Config Plugin support if it contains an `app.plugin.js` file in its package directory (e.g.`node_modules/@react-native-firebase/app/app.plugin.js`).
 
-#### Local app compilation
+### Local app compilation
 
 If you are compiling your app locally, run [`npx expo prebuild --clean`](https://docs.expo.dev/workflow/prebuild/) to generate the native project directories. Then, follow the local app compilation steps described in [Local app development](https://docs.expo.dev/guides/local-app-development/) guide in Expo docs. If you prefer using a build service, refer to [EAS Build](https://docs.expo.dev/build/setup/).
 
 Note that if you have already installed the `Expo Go` app (using something like `npx expo run` instead of doing the `--prebuild` local development steps...) then you must uninstall it first. The `Expo Go` app does not contain most non-Expo native modules like react-native-firebase, and you will see errors related to the native modules not being loaded if you try to use it.
 
-#### Expo Tools for VSCode
+### Expo Tools for VSCode
 
 If you are using the [Expo Tools](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools) VSCode extension, the IntelliSense will display a list of available plugins when editing the `plugins` section of `app.json`.
 
