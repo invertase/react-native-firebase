@@ -23,10 +23,11 @@
  * @throws {Error} Throws an error if the request fails or encounters an issue.
  */
 export async function fetchPasswordPolicy(auth) {
-  let schemaVersion = '1';
+  let schemaVersion = 1;
+
   try {
     const baseURL = 'https://identitytoolkit.googleapis.com/v2/passwordPolicy?key=';
-    const apiKey = auth.app.config.apiKey;
+    const apiKey = auth.app.options.apiKey;
 
     const response = await fetch(`${baseURL}${apiKey}`);
     if (!response.ok) {

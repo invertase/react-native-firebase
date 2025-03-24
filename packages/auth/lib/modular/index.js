@@ -602,9 +602,10 @@ export function getCustomAuthDomain(auth) {
  * @returns {Promise<PasswordValidationStatus>}
  */
 export async function validatePassword(auth, password) {
-  let passwordPolicy = fetchPasswordPolicy(auth);
+  let passwordPolicy = await fetchPasswordPolicy(auth);
 
-  const passwordPolicyImpl = PasswordPolicyImpl(passwordPolicy);
+  const passwordPolicyImpl = await new PasswordPolicyImpl(passwordPolicy);
+  let status = passwordPolicyImpl.validatePassword(password);
 
-  return passwordPolicyImpl.validatePassword(password);
+  return status;
 }
