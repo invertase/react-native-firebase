@@ -17,9 +17,11 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, StatusBar, AppRegistry } from 'react-native';
+import { StyleSheet, View, StatusBar, AppRegistry, Text } from 'react-native';
 
 import { JetProvider, ConnectionText, StatusEmoji, StatusText } from 'jet';
+
+import { LocalTests } from './local-test-component';
 
 const platformSupportedModules = [];
 
@@ -266,6 +268,11 @@ function App() {
     <>
       <StatusBar hidden />
       <View style={styles.container}>
+        <View style={styles.hardRule} />
+        <Text>Local Manual Tests:</Text>
+        <LocalTests />
+        <View style={styles.hardRule} />
+        <Text>Automated Tests:</Text>
         <JetProvider tests={loadTests}>
           <ConnectionText style={styles.connectionText} />
           <View style={styles.statusContainer}>
@@ -307,6 +314,11 @@ const styles = StyleSheet.create({
   connectionText: {
     textAlign: 'center',
     color: 'black',
+  },
+  hardRule: {
+    height: 1,
+    backgroundColor: 'black',
+    width: '100%',
   },
 });
 
