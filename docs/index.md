@@ -136,8 +136,6 @@ First, add the `google-services` plugin as a dependency inside of your `/android
 buildscript {
   dependencies {
     // ... other dependencies
-    // NOTE: if you are on react-native 0.71 or below, you must not update
-    //       the google-services plugin past version 4.3.15 as it requires gradle >= 7.3.0
     classpath 'com.google.gms:google-services:4.4.2'
     // Add me --- /\
   }
@@ -261,11 +259,6 @@ npx react-native run-ios
 
 Once successfully linked and rebuilt, your application will be connected to Firebase using the `@react-native-firebase/app` module. This module does not provide much functionality, therefore to use other Firebase services, each of the modules for the individual Firebase services need installing separately.
 
-#### Manual Linking
-
-If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
-you can follow the manual installation steps for [iOS](/install-ios) and [Android](/install-android).
-
 ---
 
 ## Other / Web
@@ -295,20 +288,6 @@ const firebaseApp = getApp();
 ---
 
 ## Miscellaneous
-
-### Android Enabling Multidex
-
-As your application starts to grow with more native dependencies, your builds may start to fail with the common
-`Execution failed for task ':app:mergeDexDebug'` error. This error occurs when Android reaches the
-[64k methods](https://developer.android.com/studio/build/multidex) limit.
-
-One common solution is to [enable multidex](/enabling-multidex) support for Android. This is a common solution to solving
-the problem, however it is recommended you read the Android documentation to understand how it may impact your application.
-
-### Hermes Support
-
-To support the [Hermes](https://hermesengine.dev/) JavaScript engine, React Native 0.64.0 or newer is required.
-However, we cannot guarantee that React Native Firebase works perfectly on it, so please test your project carefully.
 
 ### Overriding Native SDK Versions
 
@@ -360,19 +339,6 @@ $FirebaseSDKVersion = '11.10.0'
 Once changed, reinstall your projects pods via pod install and rebuild your project with `npx react-native run-ios`.
 
 Alternatively, if you cannot edit the Podfile easily (as when using Expo), you may add the environment variable `FIREBASE_SDK_VERSION=11.10.0` (or whatever version you need) to the command line that installs pods. For example `FIREBASE_SDK_VERSION=11.10.0 yarn expo prebuild --clean`
-
-### Increasing Android build memory
-
-As you add more Firebase modules, there is an incredible demand placed on the Android build system, and the default memory
-settings will not work. To avoid `OutOfMemory` errors during Android builds, you should uncomment the alternate Gradle memory
-setting present in `/android/gradle.properties`:
-
-```
-# Specifies the JVM arguments used for the daemon process.
-# The setting is particularly useful for tweaking memory settings.
-# Default value: -Xmx10248m -XX:MaxPermSize=256m
-org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
-```
 
 ### Android Performance
 
