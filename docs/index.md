@@ -178,13 +178,13 @@ To do this, open your `/ios/{projectName}/AppDelegate.swift` file and add the fo
 
 At the top of the file, import the Firebase SDK right after `'import ReactAppDependencyProvider'`:
 
-```
+```swift
 import Firebase
 ```
 
 Within your existing `didFinishLaunchingWithOptions` method, add the following to the top of the method:
 
-```
+```swift
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
   // Add me --- \/
   FirebaseApp.configure()
@@ -201,13 +201,13 @@ To do this, open your `/ios/{projectName}/AppDelegate.mm` file (or `AppDelegate.
 
 At the top of the file, import the Firebase SDK right after `'#import "AppDelegate.h"'`:
 
-```
+```objectivec
 #import <Firebase.h>
 ```
 
 Within your existing `didFinishLaunchingWithOptions` method, add the following to the top of the method:
 
-```
+```objectivec
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
   // Add me --- \/
   [FIRApp configure];
