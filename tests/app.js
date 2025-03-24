@@ -17,7 +17,7 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, StatusBar, AppRegistry, LogBox } from 'react-native';
+import { StyleSheet, View, StatusBar, AppRegistry } from 'react-native';
 
 import { JetProvider, ConnectionText, StatusEmoji, StatusText } from 'jet';
 
@@ -263,16 +263,18 @@ function loadTests(_) {
 
 function App() {
   return (
-    <JetProvider tests={loadTests}>
+    <>
       <StatusBar hidden />
       <View style={styles.container}>
-        <ConnectionText style={styles.connectionText} />
-        <View style={styles.statusContainer}>
-          <StatusEmoji style={styles.statusEmoji} />
-          <StatusText style={styles.statusText} />
-        </View>
+        <JetProvider tests={loadTests}>
+          <ConnectionText style={styles.connectionText} />
+          <View style={styles.statusContainer}>
+            <StatusEmoji style={styles.statusEmoji} />
+            <StatusText style={styles.statusText} />
+          </View>
+        </JetProvider>
       </View>
-    </JetProvider>
+    </>
   );
 }
 
@@ -280,6 +282,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    // instead of depending on react-native-safe-area-context to avoid
+    // colliding with system UI we are just going to pad things out for simplicity
+    marginTop: 60,
+    paddingHorizontal: '5%',
+    paddingBottom: '5%',
   },
   statusContainer: {
     flex: 1,
