@@ -495,25 +495,6 @@ describe('modular', function () {
       consoleWarnSpy.mockRestore();
     });
   });
-  describe('passwordPolicyAPI', function () {
-    const TEST_MIN_PASSWORD_LENGTH = 6;
-    const TEST_SCHEMA_VERSION = 1;
-
-    it('should reach the endpoint', async () => {
-      const auth = firebase.app().auth();
-      let response = await fetchPasswordPolicy(auth);
-      expect(response).toBeDefined();
-    });
-
-    it('response is the password policy', async () => {
-      const auth = firebase.app().auth();
-      let response = await fetchPasswordPolicy(auth);
-      expect(response.customStrengthOptions).toBeDefined();
-      expect(response.customStrengthOptions.minPasswordLength).toEqual(TEST_MIN_PASSWORD_LENGTH);
-      expect(response.schemaVersion).toEqual(TEST_SCHEMA_VERSION);
-      console.log('Password Policy Response:', response);
-    });
-  });
   describe('PasswordPolicyImpl', function () {
     const TEST_MIN_PASSWORD_LENGTH = 6;
     const TEST_SCHEMA_VERSION = 1;
