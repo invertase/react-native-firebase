@@ -22,16 +22,11 @@ This package wraps `firebase-android-sdk` and `firebase-ios-sdk` into a Javascri
 
 ### Does it work with New Architecture / Fabric / TurboModules ?
 
-Mostly yes. We have been testing with react-native 0.76 in bridgeless mode for
-a while, and people have been running react-native-firebase with new architecture enabled for a while, and the module works.
+As far as we know, yes. We test with new architecture enabled now, and many of our users are using react-native 0.76+ with new architecture enabled.
 
 We are not aware of any problems with the react-native-firebase modules themselves. Please let us know if you see anything.
 
-However, there have been ongoing issues upstream in react-native itself with headlessJS on Android. What does that mean for you?
-
-> If you use FCM / firebase cloud messages to receive background messages in react-native-firebase with `setBackgroundMessageHandler`, you will have problems on new architecture.
-
-Current issue tracker is [https://github.com/facebook/react-native/issues/47570](https://github.com/facebook/react-native/issues/47570)
+However, we are still running in the TurboModule interoperability mode as we have not directly ported to Fabric internally yet. Migration is planned in the future but may still be a while.
 
 ### I need help with [anything regarding <= v5 of React Native Firebase]. Where could I get help with that?
 
