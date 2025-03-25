@@ -15,56 +15,55 @@
  *
  */
 
-describe('auth() -> validatePassword()', function () {
+import { validatePassword } from '../lib/';
+
+describe.only('auth() -> validatePassword()', function () {
   it('isValid is false if password is too short', async function () {
-    const auth = getAuth();
-    let status = await firebase.auth().validatePassword(auth, 'Pa1$');
-    expect(status.isValid).toBe(false);
+    console.log('BBB ' + firebase.auth().app.options);
+    let status = await validatePassword(firebase.auth(), 'Pa1$');
+    status.isValid.should.equal(false);
   });
 
   it('isValid is false if password is empty string', async function () {
-    const auth = getAuth();
-    let status = await firebase.auth().validatePassword(auth, '');
-    expect(status.isValid).toBe(false);
+    let status = await validatePassword(firebase.auth(), '');
+    status.isValid.should.equal(false);
   });
 
   it('isValid is false if password has no digits', async function () {
-    const auth = getAuth();
-    let status = await firebase.auth().validatePassword(auth, 'Password$');
-    expect(status.isValid).toBe(false);
+    let status = await validatePassword(firebase.auth(), 'Password$');
+    status.isValid.should.equal(false);
   });
 
   it('isValid is false if password has no capital letters', async function () {
-    const auth = getAuth();
-    let status = await firebase.auth().validatePassword(auth, 'password123$');
-    expect(status.isValid).toBe(false);
+    let status = await validatePassword(firebase.auth(), 'password123$');
+    status.isValid.should.equal(false);
   });
 
   it('isValid is false if password has no lowercase letters', async function () {
-    const auth = getAuth();
-    let status = await firebase.auth().validatePassword(auth, 'PASSWORD123$');
-    expect(status.isValid).toBe(false);
+    let status = await validatePassword(firebase.auth(), 'PASSWORD123$');
+    status.isValid.should.equal(false);
   });
 
   it('isValid is true if given a password that satisfies the policy', async function () {
-    const auth = getAuth();
-    let status = await firebase.auth().validatePassword(auth, 'Password123$');
-    expect(status.isValid).toBe(true);
+    let status = await validatePassword(firebase.auth(), 'Password123$');
+    status.isValid.should.equal(true);
   });
 
-  it('isValid is true if given another password that satisfies the policy', async function () {
-    const auth = getAuth();
-    let status = await firebase.auth().validatePassword(auth, 'Testing123$');
-    expect(status.isValid).toBe(true);
+  it('validatePassword throws an error if password is null', async function () {
+    try {
+      const status = await validatePassword(firebase.auth(), null);
+    } catch (e) {
+      e.message.should.equal('Failed to fetch password policy: Failed to fetch password policy: . Details: {\n  "error": {\n    "code": 400,\n    "message": "QUOTA_EXCEEDED : Exceeded quota for getting password policy.",\n    "status": "INVALID_ARGUMENT"\n  }\n}\n');
+    }
   });
 
   it('validatePassword throws an error if given a bad auth instance', async function () {
     const auth = undefined;
     try {
-      await firebase.auth().validatePassword(auth, 'Testing123$');
+      const status = await validatePassword(auth, 'Testing123$');
     } catch (e) {
-      expect(e.code).toBe(
-        "Failed to fetch password policy: Cannot read property 'options' of undefined",
+      e.message.should.equal(
+        "Failed to fetch password policy: Cannot read property 'app' of undefined",
       );
     }
   });

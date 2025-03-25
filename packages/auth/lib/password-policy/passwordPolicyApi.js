@@ -26,12 +26,14 @@ export async function fetchPasswordPolicy(auth) {
   let schemaVersion = 1;
 
   try {
+    // Identity toolkit API endpoint for password policy. Ensure this is enabled on Google cloud.
     const baseURL = 'https://identitytoolkit.googleapis.com/v2/passwordPolicy?key=';
     const apiKey = auth.app.options.apiKey;
 
     const response = await fetch(`${baseURL}${apiKey}`);
     if (!response.ok) {
-      throw new Error(`Failed to fetch password policy: ${response.statusText}`);
+      const errorDetails = await response.text();
+      throw new Error(`Failed to fetch password policy: ${response.statusText}. Details: ${errorDetails}`);
     }
     const passwordPolicy = await response.json();
 
