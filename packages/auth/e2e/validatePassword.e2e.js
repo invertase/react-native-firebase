@@ -16,73 +16,56 @@
  */
 
 describe('auth() -> validatePassword()', function () {
-    it('throws if password is not a string', async function () {
-        try {
-        await firebase.auth().validatePassword(123456);
-        return Promise.reject(new Error('Did not throw Error.'));
-        } catch (error) {
-        error.message.should.containEql("'password' expected a string value");
-        return Promise.resolve();
-        }
-    });
-    
-    it('throws if password is an empty string', async function () {
-        try {
-        await firebase.auth().validatePassword('');
-        return Promise.reject(new Error('Did not throw Error.'));
-        } catch (error) {
-        error.message.should.containEql("'password' expected a non-empty string value");
-        return Promise.resolve();
-        }
-    });
-    
-    it('throws if password is less than 6 characters', async function () {
-        try {
-        await firebase.auth().validatePassword('12345');
-        return Promise.reject(new Error('Did not throw Error.'));
-        } catch (error) {
-        error.message.should.containEql("'password' expected a string value of at least 6 characters in length");
-        return Promise.resolve();
-        }
-    });
-    
-    it('throws if password is greater than 128 characters', async function () {
-        try {
-        await firebase.auth().validatePassword('123456'.repeat(22));
-        return Promise.reject(new Error('Did not throw Error.'));
-        } catch (error) {
-        error.message.should.containEql("'password' expected a string value of at most 128 characters in length");
-        return Promise.resolve();
-        }
-    });
-    
-    it('throws if password does not contain at least one lowercase character', async function () {
-        try {
-        await firebase.auth().validatePassword('PASSWORD123');
-        return Promise.reject(new Error('Did not throw Error.'));
-        } catch (error) {
-        error.message.should.containEql("'password' expected a string value containing at least one lowercase character");
-        return Promise.resolve();
-        }
-    });
-    
-    it('throws if password does not contain at least one uppercase character', async function () {
-        try {
-        await firebase.auth().validatePassword('password123');
-        return Promise.reject(new Error('Did not throw Error.'));
-        } catch (error) {
-        error.message.should.containEql("'password' expected a string value containing at least one uppercase character");
-        return Promise.resolve();
-        }
-    });
-    
-    it('throws if password does not contain at least one numeric character', async function () {
-        try {
-        await firebase.auth().validatePassword('Password');
-        return Promise.reject(new Error('Did not throw Error.'));
-        } catch (error) {
-        error.message.should.containEql("'password' expected a string value containing at least one numeric character");
-        return Promise.resolve();
-        }
-    });
+  it('isValid is false if password is too short', async function () {
+    const auth = getAuth();
+    let status = await firebase.auth().validatePassword(auth, 'Pa1$');
+    expect(status.isValid).toBe(false);
+  });
+
+  it('isValid is false if password is empty string', async function () {
+    const auth = getAuth();
+    let status = await firebase.auth().validatePassword(auth, '');
+    expect(status.isValid).toBe(false);
+  });
+
+  it('isValid is false if password has no digits', async function () {
+    const auth = getAuth();
+    let status = await firebase.auth().validatePassword(auth, 'Password$');
+    expect(status.isValid).toBe(false);
+  });
+
+  it('isValid is false if password has no capital letters', async function () {
+    const auth = getAuth();
+    let status = await firebase.auth().validatePassword(auth, 'password123$');
+    expect(status.isValid).toBe(false);
+  });
+
+  it('isValid is false if password has no lowercase letters', async function () {
+    const auth = getAuth();
+    let status = await firebase.auth().validatePassword(auth, 'PASSWORD123$');
+    expect(status.isValid).toBe(false);
+  });
+
+  it('isValid is true if given a password that satisfies the policy', async function () {
+    const auth = getAuth();
+    let status = await firebase.auth().validatePassword(auth, 'Password123$');
+    expect(status.isValid).toBe(true);
+  });
+
+  it('isValid is true if given another password that satisfies the policy', async function () {
+    const auth = getAuth();
+    let status = await firebase.auth().validatePassword(auth, 'Testing123$');
+    expect(status.isValid).toBe(true);
+  });
+
+  it('validatePassword throws an error if given a bad auth instance', async function () {
+    const auth = undefined;
+    try {
+      await firebase.auth().validatePassword(auth, 'Testing123$');
+    } catch (e) {
+      expect(e.code).toBe(
+        "Failed to fetch password policy: Cannot read property 'options' of undefined",
+      );
+    }
+  });
 });
