@@ -425,6 +425,7 @@ describe('modular', function () {
   it('`validatePassword` function is properly exposed to end user', function () {
     expect(validatePassword).toBeDefined();
   });
+
   it('`AppleAuthProvider` class is properly exposed to end user', function () {
     expect(AppleAuthProvider).toBeDefined();
   });
@@ -551,6 +552,7 @@ describe('modular', function () {
         consoleWarnSpy.mockRestore();
       });
     });
+    
     describe('PasswordPolicyImpl', function () {
       const TEST_MIN_PASSWORD_LENGTH = 6;
       const TEST_SCHEMA_VERSION = 1;
