@@ -87,6 +87,7 @@ describe('Auth', function () {
     beforeAll(async function () {
       // @ts-ignore
       globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+      });
     });
 
     afterAll(async function () {
@@ -137,7 +138,6 @@ describe('Auth', function () {
       it('useEmulator allows hyphens in the hostname', function () {
         const result = auth().useEmulator('http://my-host:9099');
         expect(result).toEqual(['my-host', 9099]);
-      });
     });
 
     describe('tenantId', function () {
@@ -145,6 +145,7 @@ describe('Auth', function () {
         const auth = firebase.app().auth();
         auth.setTenantId('test-id').then(() => {
           expect(auth.tenantId).toBe('test-id');
+          });
         });
       });
 
@@ -207,7 +208,6 @@ describe('Auth', function () {
       });
     });
   });
-});
 
 describe('modular', function () {
   it('`getAuth` function is properly exposed to end user', function () {
@@ -628,6 +628,7 @@ describe('modular', function () {
       let status = passwordPolicy.validatePassword(password);
       expect(status).toBeDefined();
       expect(status.isValid).toEqual(false);
+      });
     });
   });
 });
