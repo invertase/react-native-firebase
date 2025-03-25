@@ -17,9 +17,8 @@
 
 import { validatePassword } from '../lib/';
 
-describe.only('auth() -> validatePassword()', function () {
+describe('auth() -> validatePassword()', function () {
   it('isValid is false if password is too short', async function () {
-    console.log('BBB ' + firebase.auth().app.options);
     let status = await validatePassword(firebase.auth(), 'Pa1$');
     status.isValid.should.equal(false);
   });
@@ -52,8 +51,11 @@ describe.only('auth() -> validatePassword()', function () {
   it('validatePassword throws an error if password is null', async function () {
     try {
       const status = await validatePassword(firebase.auth(), null);
+      console.log(status);
     } catch (e) {
-      e.message.should.equal('Failed to fetch password policy: Failed to fetch password policy: . Details: {\n  "error": {\n    "code": 400,\n    "message": "QUOTA_EXCEEDED : Exceeded quota for getting password policy.",\n    "status": "INVALID_ARGUMENT"\n  }\n}\n');
+      e.message.should.equal(
+        'Failed to fetch password policy: Failed to fetch password policy: . Details: {\n  "error": {\n    "code": 400,\n    "message": "QUOTA_EXCEEDED : Exceeded quota for getting password policy.",\n    "status": "INVALID_ARGUMENT"\n  }\n}\n',
+      );
     }
   });
 
@@ -61,6 +63,7 @@ describe.only('auth() -> validatePassword()', function () {
     const auth = undefined;
     try {
       const status = await validatePassword(auth, 'Testing123$');
+      console.log(status);
     } catch (e) {
       e.message.should.equal(
         "Failed to fetch password policy: Cannot read property 'app' of undefined",
