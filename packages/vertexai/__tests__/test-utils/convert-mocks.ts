@@ -36,7 +36,7 @@ function findMockResponseDir(): string {
     throw new Error('Multiple directories starting with "vertexai-sdk-test-data*" found');
   }
 
-  return join(__dirname, directories[0], 'mock-responses');
+  return join(__dirname, directories[0], 'mock-responses', 'vertexai');
 }
 
 async function main(): Promise<void> {
@@ -45,6 +45,7 @@ async function main(): Promise<void> {
   const lookup: Record<string, string> = {};
   // eslint-disable-next-line guard-for-in
   for (const fileName of list) {
+    console.log(`attempting to read ${mockResponseDir}/${fileName}`)
     const fullText = fs.readFileSync(join(mockResponseDir, fileName), 'utf-8');
     lookup[fileName] = fullText;
   }

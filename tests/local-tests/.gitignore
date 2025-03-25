@@ -1,0 +1,9 @@
+# To start with, we want nothing in this directory in general
+*
+
+# ... except our template index file (copied during prepare)
+!index.example.js
+# ... our example component
+!crash-test.jsx
+# ... and this gitignore file
+!.gitignore
