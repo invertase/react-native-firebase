@@ -199,6 +199,7 @@ thenable
 ThreadPoolExecutor
 timezones
 triaging
+TurboModule
 TurboModules
 TypeDoc
 UI
