@@ -173,9 +173,10 @@ rnfbProvider.configure({
 Once you have the custom provider configured, install it in app-check using the firebase-js-sdk compatible API, while saving the returned instance for usage:
 
 ```javascript
+import { getApp } from `@react-native-firebase/app`;
 import { initializeAppCheck  } from `@react-native-firebase/app-check`;
 
-const appCheck = initializeAppCheck(undefined, { provider: rnfbProvider, isTokenAutoRefreshEnabled: true });
+const appCheck = initializeAppCheck(getApp(), { provider: rnfbProvider, isTokenAutoRefreshEnabled: true });
 ```
 
 ### Verify AppCheck was initialized correctly
