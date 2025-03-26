@@ -33,7 +33,9 @@ export async function fetchPasswordPolicy(auth) {
     const response = await fetch(`${baseURL}${apiKey}`);
     if (!response.ok) {
       const errorDetails = await response.text();
-      throw new Error(`Failed to fetch password policy: ${response.statusText}. Details: ${errorDetails}`);
+      throw new Error(
+        `firebase.auth().validatePassword(*) failed to fetch password policy from Firebase Console: ${response.statusText}. Details: ${errorDetails}`,
+      );
     }
     const passwordPolicy = await response.json();
 
@@ -44,7 +46,7 @@ export async function fetchPasswordPolicy(auth) {
     }
     return passwordPolicy;
   } catch (error) {
-    throw new Error(`Failed to fetch password policy: ${error.message}`);
+    throw new Error(`firebase.auth().validatePassword(*) Failed to fetch password policy: ${error.message}`);
   }
 }
 

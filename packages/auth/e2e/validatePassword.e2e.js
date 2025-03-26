@@ -51,10 +51,21 @@ describe('auth() -> validatePassword()', function () {
   it('validatePassword throws an error if password is null', async function () {
     try {
       const status = await validatePassword(firebase.auth(), null);
-      console.log(status);
+      status = null;
     } catch (e) {
       e.message.should.equal(
-        'Failed to fetch password policy: Failed to fetch password policy: . Details: {\n  "error": {\n    "code": 400,\n    "message": "QUOTA_EXCEEDED : Exceeded quota for getting password policy.",\n    "status": "INVALID_ARGUMENT"\n  }\n}\n',
+        "firebase.auth().validatePassword(*) expected 'password' to be a non-null or a defined value.",
+      );
+    }
+  });
+
+  it('validatePassword throws an error if password is undefined', async function () {
+    try {
+      const status = await validatePassword(firebase.auth(), undefined);
+      status = null;
+    } catch (e) {
+      e.message.should.equal(
+        "firebase.auth().validatePassword(*) expected 'password' to be a non-null or a defined value.",
       );
     }
   });
@@ -63,10 +74,10 @@ describe('auth() -> validatePassword()', function () {
     const auth = undefined;
     try {
       const status = await validatePassword(auth, 'Testing123$');
-      console.log(status);
+      status = null;
     } catch (e) {
       e.message.should.equal(
-        "Failed to fetch password policy: Cannot read property 'app' of undefined",
+        "firebase.auth().validatePassword(*) Failed to fetch password policy:  Cannot read property 'app' of undefined",
       );
     }
   });

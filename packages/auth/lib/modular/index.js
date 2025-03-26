@@ -624,6 +624,9 @@ export function getCustomAuthDomain(auth) {
  * @returns {Promise<PasswordValidationStatus>}
  */
 export async function validatePassword(auth, password) {
+  if (password === null || password === undefined) {
+    throw new Error("firebase.auth().validatePassword(*) expected 'password' to be a non-null or a defined value.");
+  }
   let passwordPolicy = await fetchPasswordPolicy(auth);
 
   const passwordPolicyImpl = await new PasswordPolicyImpl(passwordPolicy);

@@ -755,11 +755,6 @@ export interface PasswordValidationStatus {
   readonly passwordPolicy: PasswordPolicy;
 }
 
-/**
-* Various Providers.
-*
-*
-*/
 export {
   AppleAuthProvider,
   EmailAuthProvider,
