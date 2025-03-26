@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.12.3](https://github.com/invertase/react-native-firebase/compare/v21.12.2...v21.12.3) (2025-03-26)
+
+### Bug Fixes
+
+- **crashlytics): Revert "fix(crashlytics:** convert internal API usage to modular" ([4f7fb2e](https://github.com/invertase/react-native-firebase/commit/4f7fb2e383a803de6963dbd01cf2c623e431d1da))
+- **crashlytics:** disable deprecation warnings for analytics in crashlytics ([b600a20](https://github.com/invertase/react-native-firebase/commit/b600a2099c2076689510193b74ac29c057d27d2a))
+
 ## [21.12.2](https://github.com/invertase/react-native-firebase/compare/v21.12.1...v21.12.2) (2025-03-23)
 
 ### Bug Fixes
