@@ -50,9 +50,7 @@ describe('auth() -> validatePassword()', function () {
 
   it('validatePassword throws an error if password is null', async function () {
     try {
-      const status = await validatePassword(firebase.auth(), null);
-      // eslint-disable-next-line no-unused-vars
-      status = null;
+      await validatePassword(firebase.auth(), null);
     } catch (e) {
       e.message.should.equal(
         "firebase.auth().validatePassword(*) expected 'password' to be a non-null or a defined value.",
@@ -62,9 +60,7 @@ describe('auth() -> validatePassword()', function () {
 
   it('validatePassword throws an error if password is undefined', async function () {
     try {
-      const status = await validatePassword(firebase.auth(), undefined);
-      // eslint-disable-next-line no-unused-vars
-      status = null;
+      await validatePassword(firebase.auth(), undefined);
     } catch (e) {
       e.message.should.equal(
         "firebase.auth().validatePassword(*) expected 'password' to be a non-null or a defined value.",
@@ -75,9 +71,7 @@ describe('auth() -> validatePassword()', function () {
   it('validatePassword throws an error if given a bad auth instance', async function () {
     const auth = undefined;
     try {
-      const status = await validatePassword(auth, 'Testing123$');
-      // eslint-disable-next-line no-unused-vars
-      status = null;
+      await validatePassword(auth, 'Testing123$');
     } catch (e) {
       e.message.should.equal(
         "firebase.auth().validatePassword(*)·Failed·to·fetch·password·policy:·Cannot·read·property·'app'·of·undefined",
