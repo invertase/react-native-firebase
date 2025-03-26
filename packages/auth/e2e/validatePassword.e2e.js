@@ -74,7 +74,7 @@ describe('auth() -> validatePassword()', function () {
       await validatePassword(auth, 'Testing123$');
     } catch (e) {
       e.message.should.equal(
-        "firebase.auth().validatePassword(*)·Failed·to·fetch·password·policy:·Cannot·read·property·'app'·of·undefined",
+        "firebase.auth().validatePassword(*) Failed to fetch password policy: undefined is not an object (evaluating 'auth.app')",
       );
     }
   });
