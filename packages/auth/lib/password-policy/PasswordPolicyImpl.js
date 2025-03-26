@@ -129,3 +129,4 @@ export class PasswordPolicyImpl {
     }
   }
 }
+export default PasswordPolicyImpl;

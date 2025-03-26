@@ -73,7 +73,7 @@ import auth, {
   TwitterAuthProvider,
 } from '../lib';
 
-const { PasswordPolicyImpl } = require('../lib/password-policy/passwordPolicyImpl');
+const PasswordPolicyImpl = require('../lib/password-policy/PasswordPolicyImpl').default;
 
 // @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
@@ -85,6 +85,10 @@ describe('Auth', function () {
     beforeAll(async function () {
       // @ts-ignore
       globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    it('dummy test to avoid empty describe block', function () {
+      expect(true).toBe(true);
     });
   });
 
