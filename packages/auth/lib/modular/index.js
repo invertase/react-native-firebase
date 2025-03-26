@@ -356,17 +356,6 @@ export function useDeviceLanguage(auth) {
 }
 
 /**
- * Validates the password against the password policy configured for the project or tenant.
- *
- * @param auth - The Auth instance.
- * @param password - The password to validate.
- *
- */
-export function validatePassword(auth, password) {
-  throw new Error('validatePassword is only supported on Web');
-} //TO DO: ADD support.
-
-/**
  * Sets the current language to the default device/browser preference.
  * @param {Auth} auth - The Auth instance.
  * @param {string} userAccessGroup - The user access group.

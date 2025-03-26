@@ -77,7 +77,7 @@ describe('auth() -> validatePassword()', function () {
       status = null;
     } catch (e) {
       e.message.should.equal(
-        "firebase.auth().validatePassword(*) Failed to fetch password policy:  Cannot read property 'app' of undefined",
+        'firebase.auth().validatePassword(*) Failed to fetch password policy: Cannot read property \'app\' of undefined',
       );
     }
   });
