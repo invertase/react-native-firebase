@@ -46,7 +46,9 @@ export async function fetchPasswordPolicy(auth) {
     }
     return passwordPolicy;
   } catch (error) {
-    throw new Error(`firebase.auth().validatePassword(*) Failed to fetch password policy: ${error.message}`);
+    throw new Error(
+      `firebase.auth().validatePassword(*) Failed to fetch password policy: ${error.message}`,
+    );
   }
 }
 

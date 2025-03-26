@@ -51,6 +51,7 @@ describe('auth() -> validatePassword()', function () {
   it('validatePassword throws an error if password is null', async function () {
     try {
       const status = await validatePassword(firebase.auth(), null);
+      // eslint-disable-next-line no-unused-vars
       status = null;
     } catch (e) {
       e.message.should.equal(
@@ -62,6 +63,7 @@ describe('auth() -> validatePassword()', function () {
   it('validatePassword throws an error if password is undefined', async function () {
     try {
       const status = await validatePassword(firebase.auth(), undefined);
+      // eslint-disable-next-line no-unused-vars
       status = null;
     } catch (e) {
       e.message.should.equal(
@@ -74,10 +76,11 @@ describe('auth() -> validatePassword()', function () {
     const auth = undefined;
     try {
       const status = await validatePassword(auth, 'Testing123$');
+      // eslint-disable-next-line no-unused-vars
       status = null;
     } catch (e) {
       e.message.should.equal(
-        'firebase.auth().validatePassword(*) Failed to fetch password policy: Cannot read property \'app\' of undefined',
+        "firebase.auth().validatePassword(*)·Failed·to·fetch·password·policy:·Cannot·read·property·'app'·of·undefined",
       );
     }
   });
