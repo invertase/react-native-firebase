@@ -16,6 +16,8 @@
  */
 
 import { getApp } from '@react-native-firebase/app';
+import { fetchPasswordPolicy } from '../password-policy/passwordPolicyApi';
+import { PasswordPolicyImpl } from '../password-policy/PasswordPolicyImpl';
 import FacebookAuthProvider from '../providers/FacebookAuthProvider';
 export { FacebookAuthProvider };
 
@@ -354,17 +356,6 @@ export function useDeviceLanguage(auth) {
 }
 
 /**
- * Validates the password against the password policy configured for the project or tenant.
- *
- * @param auth - The Auth instance.
- * @param password - The password to validate.
- *
- */
-export function validatePassword(auth, password) {
-  throw new Error('validatePassword is only supported on Web');
-} //TO DO: ADD support.
-
-/**
  * Sets the current language to the default device/browser preference.
  * @param {Auth} auth - The Auth instance.
  * @param {string} userAccessGroup - The user access group.
@@ -613,4 +604,24 @@ export function getAdditionalUserInfo(userCredential) {
  */
 export function getCustomAuthDomain(auth) {
   return auth.getCustomAuthDomain();
+}
+
+/**
+ * Returns a password validation status
+ * @param {Auth} auth - The Auth instance.
+ * @param {string} password - The password to validate.
+ * @returns {Promise<PasswordValidationStatus>}
+ */
+export async function validatePassword(auth, password) {
+  if (password === null || password === undefined) {
+    throw new Error(
+      "firebase.auth().validatePassword(*) expected 'password' to be a non-null or a defined value.",
+    );
+  }
+  let passwordPolicy = await fetchPasswordPolicy(auth);
+
+  const passwordPolicyImpl = await new PasswordPolicyImpl(passwordPolicy);
+  let status = passwordPolicyImpl.validatePassword(password);
+
+  return status;
 }
