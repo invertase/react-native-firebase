@@ -239,8 +239,8 @@ export function get(query) {
   return query.once('value');
 }
 
-export function off(query, eventType, callback) {
-  throw new Error("off() is not implemented");
+export function off(_query, _eventType, _callback) {
+  throw new Error('off() is not implemented');
 }
 
 /**
