@@ -42,8 +42,8 @@ export function _Filter(fieldPath, operator, value, filterOperator, queries) {
 }
 
 Filter.and = function and(...queries) {
-  if (queries.length > 10 || queries.length < 2) {
-    throw new Error(`Expected 2-10 instances of Filter, but got ${queries.length} Filters`);
+  if (queries.length > 10 || queries.length < 1) {
+    throw new Error(`Expected 1-10 instances of Filter, but got ${queries.length} Filters`);
   }
 
   const validateFilters = queries.every(filter => filter instanceof _Filter);
@@ -60,8 +60,8 @@ function hasOrOperator(obj) {
 }
 
 Filter.or = function or(...queries) {
-  if (queries.length > 10 || queries.length < 2) {
-    throw new Error(`Expected 2-10 instances of Filter, but got ${queries.length} Filters`);
+  if (queries.length > 10 || queries.length < 1) {
+    throw new Error(`Expected 1-10 instances of Filter, but got ${queries.length} Filters`);
   }
 
   const validateFilters = queries.every(filter => filter instanceof _Filter);
