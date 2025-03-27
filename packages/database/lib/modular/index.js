@@ -123,5 +123,9 @@ export function increment(delta) {
   return ServerValue.increment(delta);
 }
 
+export function enableLogging(_enabled, _persistent) {
+  throw new Error('enableLogging() is not implemented');
+}
+
 export * from './query';
 export * from './transaction';

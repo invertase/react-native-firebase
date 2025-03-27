@@ -125,28 +125,6 @@ export declare function equalTo(
 ): QueryConstraint;
 
 /**
- * Creates a `QueryConstraint` that includes children that match the specified
- * value.
- *
- * Using `startAt()`, `startAfter()`, `endBefore()`, `endAt()` and `equalTo()`
- * allows you to choose arbitrary starting and ending points for your queries.
- *
- * The optional key argument can be used to further limit the range of the
- * query. If it is specified, then children that have exactly the specified
- * value must also have exactly the specified key as their key name. This can be
- * used to filter result sets with many matches for the same value.
- *
- * @param value - The value to match for. The argument type depends on which
- * `orderBy*()` function was used in this query. Specify a value that matches
- * the `orderBy*()` type. When used in combination with `orderByKey()`, the
- * value must be a string.
- * @param key - The child key to start at, among the children with the
- * previously specified priority. This argument is only allowed if ordering by
- * child, value, or priority.
- */
-export function equalTo(value: number | string | boolean | null, key?: string): QueryConstraint;
-
-/**
  * Creates a QueryConstraint with the specified starting point.
  *
  * Using `startAt()`, `startAfter()`, `endBefore()`, `endAt()` and `equalTo()`
@@ -171,30 +149,6 @@ export declare function startAt(
 ): QueryConstraint;
 
 /**
- * Creates a `QueryConstraint` with the specified starting point.
- *
- * Using `startAt()`, `startAfter()`, `endBefore()`, `endAt()` and `equalTo()`
- * allows you to choose arbitrary starting and ending points for your queries.
- *
- * The starting point is inclusive, so children with exactly the specified value
- * will be included in the query. The optional key argument can be used to
- * further limit the range of the query. If it is specified, then children that
- * have exactly the specified value must also have a key name greater than or
- * equal to the specified key.
- *
- * @param value - The value to start at. The argument type depends on which
- * `orderBy*()` function was used in this query. Specify a value that matches
- * the `orderBy*()` type. When used in combination with `orderByKey()`, the
- * value must be a string.
- * @param key - The child key to start at. This argument is only allowed if
- * ordering by child, value, or priority.
- */
-export function startAt(
-  value: number | string | boolean | null = null,
-  key?: string,
-): QueryConstraint;
-
-/**
  * Creates a `QueryConstraint` with the specified starting point (exclusive).
  *
  * Using `startAt()`, `startAfter()`, `endBefore()`, `endAt()` and `equalTo()`
@@ -204,26 +158,6 @@ export function startAt(
  * with a value greater than the specified value will be included in the query.
  * If a key is specified, then children must have a value greater than or equal
  * to the specified value and a a key name greater than the specified key.
- *
- * @param value - The value to start after. The argument type depends on which
- * `orderBy*()` function was used in this query. Specify a value that matches
- * the `orderBy*()` type. When used in combination with `orderByKey()`, the
- * value must be a string.
- * @param key - The child key to start after. This argument is only allowed if
- * ordering by child, value, or priority.
- */
-export function startAfter(value: number | string | boolean | null, key?: string): QueryConstraint;
-
-/**
- * Creates a `QueryConstraint` with the specified starting point (exclusive).
- *
- * Using `startAt()`, `startAfter()`, `endBefore()`, `endAt()` and `equalTo()`
- * allows you to choose arbitrary starting and ending points for your queries.
- *
- * The starting point is exclusive. If only a value is provided, children
- * with a value greater than the specified value will be included in the query.
- * If a key is specified, then children must have a value greater than or equal
- * to the specified value and a key name greater than the specified key.
  *
  * @param value - The value to start after. The argument type depends on which
  * `orderBy*()` function was used in this query. Specify a value that matches
@@ -902,6 +836,25 @@ export function setWithPriority(
  * server is unreachable and there is nothing cached).
  */
 export function get(query: Query): Promise<DataSnapshot>;
+
+/**
+ * Detaches a callback previously attached with the corresponding on*() (onValue, onChildAdded) listener.
+ * Note: This is not the recommended way to remove a listener. Instead, please use the returned callback function from the respective on* callbacks.
+ * Detach a callback previously attached with on*(). Calling off() on a parent listener will not automatically remove listeners registered on child nodes, off() must also be called on any child listeners to remove the callback.
+ * If a callback is not specified, all callbacks for the specified eventType will be removed.
+ * Similarly, if no eventType is specified, all callbacks for the Reference will be removed.
+ * Individual listeners can also be removed by invoking their unsubscribe callbacks.
+ * Note: Not implemented on native
+ *
+ * @param query - The query to run
+ * @param eventType One of the following strings: "value", "child_added", "child_changed", "child_removed", or "child_moved.
+ * @param callback
+ */
+export declare function off(
+  query: Query,
+  eventType?: EventType,
+  callback?: (snapshot: DataSnapshot, previousChildName?: string | null) => unknown,
+): void;
 
 /**
  * Gets a `Reference` for the location at the specified relative path.
