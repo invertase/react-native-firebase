@@ -1056,6 +1056,46 @@ describe(' firestore().collection().where(AND Filters)', function () {
       });
     });
 
+    it('returns with single where "==" in or filter', async function () {
+      const { getFirestore, collection, addDoc, getDocs, query, where, and } = firestoreModular;
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/single-or`);
+
+      const expected = { foo: 'bar', baz: 'baz' };
+      const notExpected = { foo: 'bar', baz: 'something' };
+      await Promise.all([
+        addDoc(colRef, notExpected),
+        addDoc(colRef, expected),
+        addDoc(colRef, expected),
+      ]);
+
+      const snapshot = await getDocs(query(colRef, and(where('baz', '==', 'baz'))));
+
+      snapshot.size.should.eql(2);
+      snapshot.forEach(s => {
+        s.data().should.eql(jet.contextify(expected));
+      });
+    });
+
+    it('returns with single where "==" in and filter', async function () {
+      const { getFirestore, collection, addDoc, getDocs, query, where, or } = firestoreModular;
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/single-and`);
+
+      const expected = { foo: 'bar', baz: 'baz' };
+      const notExpected = { foo: 'bar', baz: 'something' };
+      await Promise.all([
+        addDoc(colRef, notExpected),
+        addDoc(colRef, expected),
+        addDoc(colRef, expected),
+      ]);
+
+      const snapshot = await getDocs(query(colRef, or(where('baz', '==', 'baz'))));
+
+      snapshot.size.should.eql(2);
+      snapshot.forEach(s => {
+        s.data().should.eql(jet.contextify(expected));
+      });
+    });
+
     it('returns with where "==" & ">" filter', async function () {
       const { getFirestore, collection, addDoc, getDocs, query, where, and } = firestoreModular;
       const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals`);
