@@ -15,42 +15,42 @@
  *
  */
 
-import { validatePassword } from '../lib/';
+import { validatePassword, getAuth } from '../lib/';
 
 describe('auth() -> validatePassword()', function () {
   it('isValid is false if password is too short', async function () {
-    let status = await validatePassword(firebase.auth(), 'Pa1$');
+    let status = await validatePassword(getAuth(), 'Pa1$');
     status.isValid.should.equal(false);
   });
 
   it('isValid is false if password is empty string', async function () {
-    let status = await validatePassword(firebase.auth(), '');
+    let status = await validatePassword(getAuth(), '');
     status.isValid.should.equal(false);
   });
 
   it('isValid is false if password has no digits', async function () {
-    let status = await validatePassword(firebase.auth(), 'Password$');
+    let status = await validatePassword(getAuth(), 'Password$');
     status.isValid.should.equal(false);
   });
 
   it('isValid is false if password has no capital letters', async function () {
-    let status = await validatePassword(firebase.auth(), 'password123$');
+    let status = await validatePassword(getAuth(), 'password123$');
     status.isValid.should.equal(false);
   });
 
   it('isValid is false if password has no lowercase letters', async function () {
-    let status = await validatePassword(firebase.auth(), 'PASSWORD123$');
+    let status = await validatePassword(getAuth(), 'PASSWORD123$');
     status.isValid.should.equal(false);
   });
 
   it('isValid is true if given a password that satisfies the policy', async function () {
-    let status = await validatePassword(firebase.auth(), 'Password123$');
+    let status = await validatePassword(getAuth(), 'Password123$');
     status.isValid.should.equal(true);
   });
 
   it('validatePassword throws an error if password is null', async function () {
     try {
-      await validatePassword(firebase.auth(), null);
+      await validatePassword(getAuth(), null);
     } catch (e) {
       e.message.should.equal(
         "firebase.auth().validatePassword(*) expected 'password' to be a non-null or a defined value.",
@@ -60,7 +60,7 @@ describe('auth() -> validatePassword()', function () {
 
   it('validatePassword throws an error if password is undefined', async function () {
     try {
-      await validatePassword(firebase.auth(), undefined);
+      await validatePassword(getAuth(), undefined);
     } catch (e) {
       e.message.should.equal(
         "firebase.auth().validatePassword(*) expected 'password' to be a non-null or a defined value.",
@@ -69,9 +69,8 @@ describe('auth() -> validatePassword()', function () {
   });
 
   it('validatePassword throws an error if given a bad auth instance', async function () {
-    const auth = undefined;
     try {
-      await validatePassword(auth, 'Testing123$');
+      await validatePassword(undefined, 'Testing123$');
     } catch (e) {
       e.message.should.containEql('app');
       e.message.should.containEql('undefined');
