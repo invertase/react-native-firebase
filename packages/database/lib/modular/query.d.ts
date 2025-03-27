@@ -844,6 +844,7 @@ export function get(query: Query): Promise<DataSnapshot>;
  * If a callback is not specified, all callbacks for the specified eventType will be removed.
  * Similarly, if no eventType is specified, all callbacks for the Reference will be removed.
  * Individual listeners can also be removed by invoking their unsubscribe callbacks.
+ * Note: Not implemented on native
  *
  * @param query - The query to run
  * @param eventType One of the following strings: "value", "child_added", "child_changed", "child_removed", or "child_moved.

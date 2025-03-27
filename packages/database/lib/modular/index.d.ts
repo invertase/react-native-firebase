@@ -221,7 +221,7 @@ export function getServerTime(db: Database): Promise<number>;
 export function increment(delta: number): object;
 
 /**
- * Logs debugging information to the console.
+ * Logs debugging information to the console. Not implemented on native.
  *
  * @param enabled
  * @param persistent
