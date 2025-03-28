@@ -16,7 +16,7 @@
  */
 
 import { ReactNativeFirebase } from '@react-native-firebase/app';
-import { FirebaseAuthTypes, CallbackOrObserver, AuthListenerCallback } from '../index';
+import { FirebaseAuthTypes, CallbackOrObserver } from '../index';
 import { firebase } from '..';
 
 import Auth = FirebaseAuthTypes.Module;
@@ -182,7 +182,7 @@ export function isSignInWithEmailLink(auth: Auth, emailLink: string): boolean;
  */
 export function onAuthStateChanged(
   auth: Auth,
-  nextOrObserver: CallbackOrObserver<AuthListenerCallback>,
+  nextOrObserver: CallbackOrObserver<FirebaseAuthTypes.AuthListenerCallback>,
 ): () => void;
 
 /**
@@ -194,7 +194,7 @@ export function onAuthStateChanged(
  */
 export function onIdTokenChanged(
   auth: Auth,
-  nextOrObserver: CallbackOrObserver<AuthListenerCallback>,
+  nextOrObserver: CallbackOrObserver<FirebaseAuthTypes.AuthListenerCallback>,
 ): () => void;
 
 /**
