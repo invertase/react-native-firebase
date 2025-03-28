@@ -58,7 +58,9 @@ The example below demonstrates how you could setup such a flow within your own a
 ```jsx
 import React, { useState, useEffect } from 'react';
 import { Button, TextInput } from 'react-native';
-import auth from '@react-native-firebase/auth';
+import { getAuth, onAuthStateChanged, signInWithPhoneNumber } from '@react-native-firebase/auth';
+
+const auth = getAuth();
 
 function PhoneSignIn() {
   // If null, no SMS has been sent
@@ -68,7 +70,7 @@ function PhoneSignIn() {
   const [code, setCode] = useState('');
 
   // Handle login
-  function onAuthStateChanged(user) {
+  function handleAuthStateChanged(user) {
     if (user) {
       // Some Android devices can automatically process the verification code (OTP) message, and the user would NOT need to enter the code.
       // Actually, if he/she tries to enter it, he/she will get an error message because the code was already used in the background.
@@ -78,13 +80,13 @@ function PhoneSignIn() {
   }
 
   useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    const subscriber = onAuthStateChanged(auth, handleAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);
 
   // Handle the button press
-  async function signInWithPhoneNumber(phoneNumber) {
-    const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
+  async function handleSignInWithPhoneNumber(phoneNumber) {
+    const confirmation = await signInWithPhoneNumber(auth, phoneNumber);
     setConfirm(confirmation);
   }
 
@@ -100,7 +102,7 @@ function PhoneSignIn() {
     return (
       <Button
         title="Phone Number Sign In"
-        onPress={() => signInWithPhoneNumber('+1 650-555-3434')}
+        onPress={() => handleSignInWithPhoneNumber('+1 650-555-3434')}
       />
     );
   }
@@ -138,7 +140,15 @@ After successfully creating a user with an email and password (see Authenticatio
 ```jsx
 import React, { useState, useEffect } from 'react';
 import { Button, TextInput, Text } from 'react-native';
-import auth from '@react-native-firebase/auth';
+import {
+  PhoneAuthProvider,
+  getAuth,
+  onAuthStateChanged,
+  createUserWithEmailAndPassword,
+  verifyPhoneNumber,
+} from '@react-native-firebase/auth';
+
+const auth = getAuth();
 
 export default function PhoneVerification() {
   // Set an initializing state whilst Firebase connects
@@ -151,20 +161,20 @@ export default function PhoneVerification() {
   const [code, setCode] = useState('');
 
   // Handle user state changes
-  function onAuthStateChanged(user) {
+  function handleAuthStateChanged(user) {
     setUser(user);
     if (initializing) setInitializing(false);
   }
 
   useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    const subscriber = onAuthStateChanged(auth, handleAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);
 
   // Handle create account button press
   async function createAccount() {
     try {
-      await auth().createUserWithEmailAndPassword('jane.doe@example.com', 'SuperSecretPassword!');
+      await createUserWithEmailAndPassword(auth, 'jane.doe@example.com', 'SuperSecretPassword!');
       console.log('User account created & signed in!');
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {
@@ -179,16 +189,16 @@ export default function PhoneVerification() {
   }
 
   // Handle the verify phone button press
-  async function verifyPhoneNumber(phoneNumber) {
-    const confirmation = await auth().verifyPhoneNumber(phoneNumber);
+  async function handlePhoneNumberVerification(phoneNumber) {
+    const confirmation = await verifyPhoneNumber(auth, phoneNumber);
     setConfirm(confirmation);
   }
 
   // Handle confirm code button press
   async function confirmCode() {
     try {
-      const credential = auth.PhoneAuthProvider.credential(confirm.verificationId, code);
-      let userData = await auth().currentUser.linkWithCredential(credential);
+      const credential = PhoneAuthProvider.credential(confirm.verificationId, code);
+      let userData = await auth.currentUser.linkWithCredential(credential);
       setUser(userData.user);
     } catch (error) {
       if (error.code == 'auth/invalid-verification-code') {
@@ -208,7 +218,9 @@ export default function PhoneVerification() {
       return (
         <Button
           title="Verify Phone Number"
-          onPress={() => verifyPhoneNumber('ENTER A VALID TESTING OR REAL PHONE NUMBER HERE')}
+          onPress={() =>
+            handlePhoneNumberVerification('ENTER A VALID TESTING OR REAL PHONE NUMBER HERE')
+          }
         />
       );
     }
