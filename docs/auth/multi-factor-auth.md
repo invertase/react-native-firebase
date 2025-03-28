@@ -21,8 +21,10 @@ instance for the current user. This is the entry point for most multi-factor
 operations:
 
 ```js
-import auth from '@react-native-firebase/auth';
-const multiFactorUser = await auth().multiFactor(auth().currentUser);
+import authModule, { PhoneAuthProvider, getAuth, multiFactor } from '@react-native-firebase/auth';
+
+const auth = getAuth();
+const multiFactorUser = await multiFactor(auth.currentUser);
 ```
 
 Request the session identifier and use the phone number obtained from the user
@@ -36,15 +38,15 @@ const phoneOptions = {
 };
 
 // Sends a text message to the user
-const verificationId = await auth().verifyPhoneNumberForMultiFactor(phoneOptions);
+const verificationId = await auth.verifyPhoneNumberForMultiFactor(phoneOptions);
 ```
 
 Once the user has provided the verification code received by text message, you
 can complete the process:
 
 ```js
-const cred = auth.PhoneAuthProvider.credential(verificationId, verificationCode);
-const multiFactorAssertion = auth.PhoneMultiFactorGenerator.assertion(cred);
+const cred = PhoneAuthProvider.credential(verificationId, verificationCode);
+const multiFactorAssertion = authModule.PhoneMultiFactorGenerator.assertion(cred);
 await multiFactorUser.enroll(multiFactorAssertion, 'Optional display name for the user');
 ```
 
@@ -58,10 +60,16 @@ default sign-in methods, for example email and password. If the account requires
 a second factor to complete login, an exception will be raised:
 
 ```js
-import auth from '@react-native-firebase/auth';
+import authModule, {
+  PhoneAuthProvider,
+  getAuth,
+  signInWithEmailAndPassword,
+  getMultiFactorResolver,
+} from '@react-native-firebase/auth';
 
-auth()
-  .signInWithEmailAndPassword(email, password)
+const auth = getAuth();
+
+signInWithEmailAndPassword(auth, email, password)
   .then(() => {
     // User has not enrolled a second factor
   })
@@ -81,7 +89,7 @@ Using the error object you can obtain a
 continue the flow:
 
 ```js
-const resolver = auth().getMultiFactorResolver(error);
+const resolver = getMultiFactorResolver(auth, error);
 ```
 
 The resolver object has all the required information to prompt the user for a
@@ -93,7 +101,7 @@ if (resolver.hints.length > 1) {
 }
 
 // Currently only phone based factors are supported
-if (resolver.hints[0].factorId === auth.PhoneMultiFactorGenerator.FACTOR_ID) {
+if (resolver.hints[0].factorId === authModule.PhoneMultiFactorGenerator.FACTOR_ID) {
   // Continue with the sign-in flow
 }
 ```
@@ -105,7 +113,7 @@ verification code to the user:
 const hint = resolver.hints[0];
 const sessionId = resolver.session;
 
-auth()
+auth
   .verifyPhoneNumberWithMultiFactorInfo(hint, sessionId) // triggers the message to the user
   .then(verificationId => setVerificationId(verificationId));
 ```
@@ -114,9 +122,9 @@ Once the user has entered the verification code you can create a multi-factor
 assertion and finish the flow:
 
 ```js
-const credential = auth.PhoneAuthProvider.credential(verificationId, verificationCode);
+const credential = PhoneAuthProvider.credential(verificationId, verificationCode);
 
-const multiFactorAssertion = auth.PhoneMultiFactorGenerator.assertion(credential);
+const multiFactorAssertion = authModule.PhoneMultiFactorGenerator.assertion(credential);
 
 resolver.resolveSignIn(multiFactorAssertion).then(userCredential => {
   // additionally onAuthStateChanged will be triggered as well
@@ -130,12 +138,16 @@ will trigger with the new authentication state of the user.
 To put the example together:
 
 ```js
-import auth from '@react-native-firebase/auth';
+import authModule, {
+  PhoneAuthProvider,
+  getAuth,
+  signInWithEmailAndPassword,
+  getMultiFactorResolver,
+} from '@react-native-firebase/auth';
 
-const authInstance = auth();
+const auth = getAuth();
 
-authInstance
-  .signInWithEmailAndPassword(email, password)
+signInWithEmailAndPassword(auth, email, password)
   .then(() => {
     // User has not enrolled a second factor
   })
@@ -143,26 +155,26 @@ authInstance
     const { code } = error;
     // Make sure to check if multi factor authentication is required
     if (code === 'auth/multi-factor-auth-required') {
-      const resolver = auth.getMultiFactorResolver(error);
+      const resolver = getMultiFactorResolver(error);
 
       if (resolver.hints.length > 1) {
         // Use resolver.hints to display a list of second factors to the user
       }
 
       // Currently only phone based factors are supported
-      if (resolver.hints[0].factorId === auth.PhoneMultiFactorGenerator.FACTOR_ID) {
+      if (resolver.hints[0].factorId === authModule.PhoneMultiFactorGenerator.FACTOR_ID) {
         const hint = resolver.hints[0];
         const sessionId = resolver.session;
 
-        authInstance
+        auth
           .verifyPhoneNumberWithMultiFactorInfo(hint, sessionId) // triggers the message to the user
           .then(verificationId => setVerificationId(verificationId));
 
         // Request verificationCode from user
 
-        const credential = auth.PhoneAuthProvider.credential(verificationId, verificationCode);
+        const credential = PhoneAuthProvider.credential(verificationId, verificationCode);
 
-        const multiFactorAssertion = auth.PhoneMultiFactorGenerator.assertion(credential);
+        const multiFactorAssertion = authModule.PhoneMultiFactorGenerator.assertion(credential);
 
         resolver.resolveSignIn(multiFactorAssertion).then(userCredential => {
           // additionally onAuthStateChanged will be triggered as well
