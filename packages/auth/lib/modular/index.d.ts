@@ -701,10 +701,24 @@ export function getCustomAuthDomain(auth: Auth): Promise<string>;
  * If an auth flow fails because a submitted password does not meet the password policy
  * requirements and this method has previously been called, then this method will use the
  * most recent policy available when called again.
+ * 
+ * When using this method, ensure you have the Identity Toolkit enabled on the 
+ * Google Cloud Platform with the API Key for your application permitted to use it.
  *
  * @example
- * ```javascript
- * validatePassword(auth, 'some-password');
+ * ``` js
+ * import { getAuth, validatePassword } from "firebase/auth";
+ *
+ * const status = await validatePassword(getAuth(), passwordFromUser);
+ * if (!status.isValid) {
+ * // Password could not be validated. Use the status to show what
+ * // requirements are met and which are missing.
+ *
+ * // If a criterion is undefined, it is not required by policy. If the
+ * // criterion is defined but false, it is required but not fulfilled by
+ * // the given password. For example:
+ *   const needsLowerCase = status.containsLowercaseLetter !== true;
+ * }
  * ```
  *
  * @param auth The {@link Auth} instance.
