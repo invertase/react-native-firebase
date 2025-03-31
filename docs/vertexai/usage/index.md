@@ -415,7 +415,12 @@ function App() {
           const authInstance = auth(app);
           const appCheckInstance = appCheck(app);
           // Configure appCheck instance as per docs....
-          const vertexai = getVertexAI(app, undefined, appCheckInstance, authInstance);
+          const options = {
+            appCheck: appCheckInstance,
+            auth: authInstance,
+          };
+
+          const vertexai = getVertexAI(app, options);
           const model = getGenerativeModel(vertexai, { model: 'gemini-1.5-flash' });
 
           const result = await model.generateContent('What is 2 + 2?');
