@@ -701,8 +701,8 @@ export function getCustomAuthDomain(auth: Auth): Promise<string>;
  * If an auth flow fails because a submitted password does not meet the password policy
  * requirements and this method has previously been called, then this method will use the
  * most recent policy available when called again.
- * 
- * When using this method, ensure you have the Identity Toolkit enabled on the 
+ *
+ * When using this method, ensure you have the Identity Toolkit enabled on the
  * Google Cloud Platform with the API Key for your application permitted to use it.
  *
  * @example
