@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.13.0](https://github.com/invertase/react-native-firebase/compare/v21.12.3...v21.13.0) (2025-03-31)
+
+### Features
+
+- **auth:** validatePassword method implementation ([#8400](https://github.com/invertase/react-native-firebase/issues/8400)) ([1ec33f5](https://github.com/invertase/react-native-firebase/commit/1ec33f5020664fe32aa8132a170a83ec865aa95d))
+
 ## [21.12.3](https://github.com/invertase/react-native-firebase/compare/v21.12.2...v21.12.3) (2025-03-26)
 
 **Note:** Version bump only for package @react-native-firebase/auth

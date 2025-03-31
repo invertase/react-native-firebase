@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.13.0](https://github.com/invertase/react-native-firebase/compare/v21.12.3...v21.13.0) (2025-03-31)
+
+### Bug Fixes
+
+- **database:** improve type definitions ([#8373](https://github.com/invertase/react-native-firebase/issues/8373)) ([95050c0](https://github.com/invertase/react-native-firebase/commit/95050c05ca88a7e22a9a55302f80240d1401bda8))
+
 ## [21.12.3](https://github.com/invertase/react-native-firebase/compare/v21.12.2...v21.12.3) (2025-03-26)
 
 **Note:** Version bump only for package @react-native-firebase/database
