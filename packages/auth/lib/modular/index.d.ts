@@ -690,10 +690,85 @@ export function getAdditionalUserInfo(
 export function getCustomAuthDomain(auth: Auth): Promise<string>;
 
 /**
- * Various Providers.
+ * Validates the password against the password policy configured for the project or tenant.
  *
+ * @remarks
+ * If no tenant ID is set on the `Auth` instance, then this method will use the password
+ * policy configured for the project. Otherwise, this method will use the policy configured
+ * for the tenant. If a password policy has not been configured, then the default policy
+ * configured for all projects will be used.
  *
+ * If an auth flow fails because a submitted password does not meet the password policy
+ * requirements and this method has previously been called, then this method will use the
+ * most recent policy available when called again.
+ *
+ * When using this method, ensure you have the Identity Toolkit enabled on the
+ * Google Cloud Platform with the API Key for your application permitted to use it.
+ *
+ * @example
+ * ``` js
+ * import { getAuth, validatePassword } from "firebase/auth";
+ *
+ * const status = await validatePassword(getAuth(), passwordFromUser);
+ * if (!status.isValid) {
+ * // Password could not be validated. Use the status to show what
+ * // requirements are met and which are missing.
+ *
+ * // If a criterion is undefined, it is not required by policy. If the
+ * // criterion is defined but false, it is required but not fulfilled by
+ * // the given password. For example:
+ *   const needsLowerCase = status.containsLowercaseLetter !== true;
+ * }
+ * ```
+ *
+ * @param auth The {@link Auth} instance.
+ * @param password The password to validate.
+ *
+ * @public
  */
+export function validatePassword(auth: Auth, password: string): Promise<PasswordValidationStatus>;
+
+/**
+ * A structure indicating which password policy requirements were met or violated and what the
+ * requirements are.
+ *
+ * @public
+ */
+export interface PasswordValidationStatus {
+  /**
+   * Whether the password meets all requirements.
+   */
+  readonly isValid: boolean;
+  /**
+   * Whether the password meets the minimum password length, or undefined if not required.
+   */
+  readonly meetsMinPasswordLength?: boolean;
+  /**
+   * Whether the password meets the maximum password length, or undefined if not required.
+   */
+  readonly meetsMaxPasswordLength?: boolean;
+  /**
+   * Whether the password contains a lowercase letter, or undefined if not required.
+   */
+  readonly containsLowercaseLetter?: boolean;
+  /**
+   * Whether the password contains an uppercase letter, or undefined if not required.
+   */
+  readonly containsUppercaseLetter?: boolean;
+  /**
+   * Whether the password contains a numeric character, or undefined if not required.
+   */
+  readonly containsNumericCharacter?: boolean;
+  /**
+   * Whether the password contains a non-alphanumeric character, or undefined if not required.
+   */
+  readonly containsNonAlphanumericCharacter?: boolean;
+  /**
+   * The policy used to validate the password.
+   */
+  readonly passwordPolicy: PasswordPolicy;
+}
+
 export {
   AppleAuthProvider,
   EmailAuthProvider,
