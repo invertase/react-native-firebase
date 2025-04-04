@@ -18,3 +18,8 @@ export function onSnapshot(reference, ...args) {
 export function snapshotEqual(left, right) {
   return left.isEqual.call(left, right, MODULAR_DEPRECATION_ARG);
 }
+
+
+export function onSnapshotsInSync(firestore, ...args) {
+  return firestore.onSnapshotsInSync.call(firestore, ...args, MODULAR_DEPRECATION_ARG);
+}
