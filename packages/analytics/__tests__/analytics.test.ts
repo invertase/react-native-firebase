@@ -4,6 +4,7 @@ import {
   firebase,
   getAnalytics,
   initializeAnalytics,
+  getGoogleAnalyticsClientId,
   logEvent,
   setAnalyticsCollectionEnabled,
   setSessionTimeoutDuration,
@@ -709,6 +710,10 @@ describe('Analytics', function () {
 
     it('`initializeAnalytics` function is properly exposed to end user', function () {
       expect(initializeAnalytics).toBeDefined();
+    });
+
+    it('`getGoogleAnalyticsClientId` function is properly exposed to end user', function () {
+      expect(getGoogleAnalyticsClientId).toBeDefined();
     });
 
     it('`logEvent` function is properly exposed to end user', function () {
