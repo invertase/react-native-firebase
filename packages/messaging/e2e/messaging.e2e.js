@@ -895,14 +895,14 @@ describe('messaging()', function () {
         await experimentalSetDeliveryMetricsExportedToBigQueryEnabled(getMessaging(), true);
         should.equal(isDeliveryMetricsExportToBigQueryEnabled(getMessaging()), true);
       });
+    });
 
-      describe('isSupported()', function () {
-        it('should return "true" if the device or browser supports Firebase Messaging', async function () {
-          const { isSupported, getMessaging } = messagingModular;
-          // For android, when the play services are available, it will return "true"
-          // iOS & web always return "true". Web can be fully implemented when the platform is supported
-          should.equal(await isSupported(getMessaging()), true);
-        });
+    describe('isSupported()', function () {
+      it('should return "true" if the device or browser supports Firebase Messaging', async function () {
+        const { isSupported, getMessaging } = messagingModular;
+        // For android, when the play services are available, it will return "true"
+        // iOS & web always return "true". Web can be fully implemented when the platform is supported
+        should.equal(await isSupported(getMessaging()), true);
       });
     });
   });
