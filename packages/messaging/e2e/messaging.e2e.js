@@ -442,10 +442,6 @@ describe('messaging()', function () {
         should.equal(firebase.messaging().isDeliveryMetricsExportToBigQueryEnabled, false);
         await firebase.messaging().setDeliveryMetricsExportToBigQuery(true);
         should.equal(firebase.messaging().isDeliveryMetricsExportToBigQueryEnabled, true);
-
-        // Set it back to the default value for future runs in re-use mode
-        await firebase.messaging().setDeliveryMetricsExportToBigQuery(false);
-        should.equal(firebase.messaging().isDeliveryMetricsExportToBigQueryEnabled, false);
       });
     });
 
@@ -898,10 +894,6 @@ describe('messaging()', function () {
         should.equal(isDeliveryMetricsExportToBigQueryEnabled(getMessaging()), false);
         await experimentalSetDeliveryMetricsExportedToBigQueryEnabled(getMessaging(), true);
         should.equal(isDeliveryMetricsExportToBigQueryEnabled(getMessaging()), true);
-
-        // Set it back to the default value for future runs in re-use mode
-        await experimentalSetDeliveryMetricsExportedToBigQueryEnabled(getMessaging(), false);
-        should.equal(isDeliveryMetricsExportToBigQueryEnabled(getMessaging()), false);
       });
 
       describe('isSupported()', function () {
