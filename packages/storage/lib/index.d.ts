@@ -267,7 +267,7 @@ export namespace FirebaseStorageTypes {
      * }
      * ```
      *
-     * [Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)
+     * [Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control)
      */
     cacheControl?: string | null;
 
