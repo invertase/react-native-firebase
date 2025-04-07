@@ -121,6 +121,42 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
+  public void isNotificationDelegationEnabled(Promise promise) {
+    Tasks.call(
+            getExecutor(),
+            () -> {
+              FirebaseMessaging.getInstance().isNotificationDelegationEnabled();
+              return null;
+            })
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(task.getResult());
+              } else {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
+  }
+
+  @ReactMethod
+  public void setNotificationDelegationEnabled(Boolean enabled, Promise promise) {
+    Tasks.call(
+            getExecutor(),
+            () -> {
+              FirebaseMessaging.getInstance().setNotificationDelegationEnabled(enabled);
+              return null;
+            })
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(FirebaseMessaging.getInstance().isNotificationDelegationEnabled());
+              } else {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
+  }
+
+  @ReactMethod
   public void getToken(String appName, String senderId, Promise promise) {
     FirebaseMessaging messagingInstance =
         FirebaseApp.getInstance(appName).get(FirebaseMessaging.class);
@@ -247,6 +283,9 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
     constants.put(
         "isDeliveryMetricsExportToBigQueryEnabled",
         FirebaseMessaging.getInstance().deliveryMetricsExportToBigQueryEnabled());
+    constants.put(
+        "isNotificationDelegationEnabled",
+        FirebaseMessaging.getInstance().isNotificationDelegationEnabled());
     return constants;
   }
 

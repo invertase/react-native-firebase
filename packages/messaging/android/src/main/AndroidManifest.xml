@@ -31,6 +31,9 @@
       android:name="firebase_messaging_auto_init_enabled"
       android:value="${firebaseJsonAutoInitEnabled}"/>
     <meta-data
+      android:name="firebase_messaging_notification_delegation_enabled"
+      android:value="${firebaseJsonNotificationDelegationEnabled}"/>
+    <meta-data
       android:name="com.google.firebase.messaging.default_notification_channel_id"
       android:value="${firebaseJsonNotificationChannelId}" />
     <meta-data

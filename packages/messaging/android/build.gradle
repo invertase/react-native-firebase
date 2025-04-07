@@ -71,6 +71,8 @@ String deliveryMetricsExportEnabled = 'false'
 // If nothing is defined, data collection defaults to true
 String dataCollectionEnabled = 'true'
 
+String notificationDelegationEnabled = 'false'
+
 if (rootProject.ext && rootProject.ext.firebaseJson) {
   /* groovylint-disable-next-line NoDef, VariableTypeRequired */
   def rnfbConfig = rootProject.ext.firebaseJson
@@ -92,6 +94,10 @@ if (rootProject.ext && rootProject.ext.firebaseJson) {
   }
   notificationChannelId = rnfbConfig.getStringValue('messaging_android_notification_channel_id', defaultNotificationChannelId)
   notificationColor = rnfbConfig.getStringValue('messaging_android_notification_color', defaultNotificationColor)
+
+  if (rnfbConfig.isFlagEnabled('messaging_android_notification_delegation_enabled', false)) {
+    notificationDelegationEnabled = 'true'
+  }
 }
 
 android {
@@ -106,7 +112,8 @@ android {
       firebaseJsonDeliveryMetricsExportEnabled: deliveryMetricsExportEnabled,
       firebaseJsonAutoInitEnabled: dataCollectionEnabled,
       firebaseJsonNotificationChannelId: notificationChannelId,
-      firebaseJsonNotificationColor: notificationColor
+      firebaseJsonNotificationColor: notificationColor,
+      firebaseJsonNotificationDelegationEnabled: notificationDelegationEnabled
     ]
   }
 

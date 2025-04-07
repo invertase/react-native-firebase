@@ -100,6 +100,29 @@ export function isAutoInitEnabled(messaging: Messaging): boolean;
 export function setAutoInitEnabled(messaging: Messaging, enabled: boolean): Promise<void>;
 
 /**
+ * Sets whether remote notification delegation to Google Play Services is enabled or disabled.
+ *
+ * The value is false by default. Set this to true to allow remote notification delegation.
+ *
+ * Warning: this will disable notification handlers on Android, and on iOS it has no effect
+ *
+ * @param messaging - Messaging instance.
+ * @param enabled A boolean value to enable or disable remote notification delegation to Google Play Services.
+ */
+export function setNotificationDelegationEnabled(
+  messaging: Messaging,
+  enabled: boolean,
+): Promise<void>;
+
+/**
+ * Gets whether remote notification delegation to Google Play Services is enabled or disabled.
+ *
+ * @param messaging - Messaging instance.
+ * @returns enabled A boolean value indicatign if remote notification delegation to Google Play Services is enabled.
+ */
+export function istNotificationDelegationEnabled(messaging: Messaging): Promise<boolean>;
+
+/**
  * When a notification from FCM has triggered the application to open from a quit state,
  * this method will return a `RemoteMessage` containing the notification data, or `null` if
  * the app was opened via another method.
