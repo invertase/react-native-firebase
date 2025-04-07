@@ -25,6 +25,9 @@
     </receiver>
 
     <meta-data
+      android:name= "delivery_metrics_exported_to_big_query_enabled"
+      android:value="${firebaseJsonDeliveryMetricsExportEnabled}"/>
+    <meta-data
       android:name="firebase_messaging_auto_init_enabled"
       android:value="${firebaseJsonAutoInitEnabled}"/>
     <meta-data
