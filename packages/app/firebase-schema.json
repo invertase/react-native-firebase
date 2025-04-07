@@ -104,6 +104,10 @@
           "description": "On Android, any message which displays a Notification use a default Notification Channel (created by FCM called `Miscellaneous`). This channel contains basic notification settings which may not be appropriate for your application. You can change what Channel is used by updating the `messaging_android_notification_channel_id` property.",
           "type": "string"
         },
+        "messaging_android_notification_delivery_metrics_export_enabled": {
+          "description": "Determines whether Firebase Cloud Messaging exports message delivery metrics to BigQuery. Defaults to disabled.",
+          "type": "boolean"
+        },
         "messaging_android_notification_color": {
           "description": "On Android, any messages which display a Notification do not use a color to tint the content (such as the small icon, title etc). To provide a custom tint color, update the messaging_android_notification_color property with a Android color resource name. \n The library provides a set of predefined colors corresponding to the HTML colors for convenience",
           "type": "string"

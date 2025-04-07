@@ -61,9 +61,12 @@ project.ext {
 
 apply from: file('./../../app/android/firebase-json.gradle')
 
-String notificationChannelId = ''
+String defaultNotificationChannelId = ''
+String notificationChannelId = defaultNotificationChannelId
 String defaultNotificationColor = '@color/white'
 String notificationColor = defaultNotificationColor
+
+String deliveryMetricsExportEnabled = 'false'
 
 // If nothing is defined, data collection defaults to true
 String dataCollectionEnabled = 'true'
@@ -84,7 +87,10 @@ if (rootProject.ext && rootProject.ext.firebaseJson) {
     }
   }
 
-  notificationChannelId = rnfbConfig.getStringValue('messaging_android_notification_channel_id', '')
+  if (rnfbConfig.isFlagEnabled('messaging_android_notification_delivery_metrics_export_enabled', false)) {
+    deliveryMetricsExportEnabled = 'true'
+  }
+  notificationChannelId = rnfbConfig.getStringValue('messaging_android_notification_channel_id', defaultNotificationChannelId)
   notificationColor = rnfbConfig.getStringValue('messaging_android_notification_color', defaultNotificationColor)
 }
 
@@ -97,6 +103,7 @@ android {
   defaultConfig {
     multiDexEnabled true
     manifestPlaceholders = [
+      firebaseJsonDeliveryMetricsExportEnabled: deliveryMetricsExportEnabled,
       firebaseJsonAutoInitEnabled: dataCollectionEnabled,
       firebaseJsonNotificationChannelId: notificationChannelId,
       firebaseJsonNotificationColor: notificationColor
