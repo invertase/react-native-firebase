@@ -445,6 +445,28 @@ describe('messaging()', function () {
       });
     });
 
+    describe('setNotificationDelegationEnabled()', function () {
+      afterEach(async function () {
+        await firebase.messaging().setNotificationDelegationEnabled(false);
+      });
+
+      it('throws if enabled is not a boolean', function () {
+        try {
+          firebase.messaging().setNotificationDelegationEnabled(123);
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql("'enabled' expected a boolean value");
+          return Promise.resolve();
+        }
+      });
+
+      it('sets the value', async function () {
+        should.equal(firebase.messaging().isNotificationDelegationEnabled, false);
+        await firebase.messaging().setNotificationDelegationEnabled(true);
+        should.equal(firebase.messaging().isNotificationDelegationEnabled, true);
+      });
+    });
+
     describe('isSupported()', function () {
       it('should return "true" if the device or browser supports Firebase Messaging', async function () {
         // For android, when the play services are available, it will return "true"
@@ -894,6 +916,33 @@ describe('messaging()', function () {
         should.equal(isDeliveryMetricsExportToBigQueryEnabled(getMessaging()), false);
         await experimentalSetDeliveryMetricsExportedToBigQueryEnabled(getMessaging(), true);
         should.equal(isDeliveryMetricsExportToBigQueryEnabled(getMessaging()), true);
+      });
+    });
+
+    describe('setNotificationDelegationEnabled()', function () {
+      afterEach(async function () {
+        const { getMessaging, setNotificationDelegationEnabled } = messagingModular;
+        await setNotificationDelegationEnabled(getMessaging(), false);
+      });
+
+      it('throws if enabled is not a boolean', function () {
+        const { getMessaging, setNotificationDelegationEnabled } = messagingModular;
+        try {
+          setNotificationDelegationEnabled(getMessaging(), 123);
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql("'enabled' expected a boolean value");
+          return Promise.resolve();
+        }
+      });
+
+      it('sets the value', async function () {
+        const { getMessaging, setNotificationDelegationEnabled, isNotificationDelegationEnabled } =
+          messagingModular;
+
+        should.equal(isNotificationDelegationEnabled(getMessaging()), false);
+        await setNotificationDelegationEnabled(getMessaging(), true);
+        should.equal(isNotificationDelegationEnabled(getMessaging()), true);
       });
     });
 

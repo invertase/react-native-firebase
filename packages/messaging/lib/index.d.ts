@@ -1145,6 +1145,40 @@ export namespace FirebaseMessagingTypes {
      * @param enabled A boolean value to enable or disable exporting of message delivery metrics to BigQuery.
      */
     setDeliveryMetricsExportToBigQuery(enabled: boolean): Promise<void>;
+
+    /**
+     * Sets whether remote notification delegation to Google Play Services is enabled or disabled.
+     *
+     * The value is false by default. Set this to true to allow remote notification delegation.
+     *
+     * Warning: this will disable notification handlers on Android, and on iOS it has no effect
+     *
+     *
+     * #### Example
+     *
+     * ```js
+     * // Enable delegation of remote notifications to Google Play Services
+     * await firebase.messaging().setNotificationDelegationEnabled(true);
+     * ```
+     *
+     * @param enabled A boolean value to enable or disable remote notification delegation to Google Play Services.
+     */
+    setNotificationDelegationEnabled(enabled: boolean): Promise<void>;
+
+    /**
+     * Gets whether remote notification delegation to Google Play Services is enabled or disabled.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Determine if delegation of remote notifications to Google Play Services is enabled
+     * const delegationEnabled = await firebase.messaging().isNotificationDelegationEnabled();
+     * ```
+     *
+     * @returns enabled A boolean value indicatign if remote notification delegation to Google Play Services is enabled.
+     */
+    istNotificationDelegationEnabled(): Promise<boolean>;
+
     /**
      * Checks if all required APIs exist in the browser.
      *

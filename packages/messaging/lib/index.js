@@ -60,6 +60,10 @@ class FirebaseMessagingModule extends FirebaseModule {
       this.native.isRegisteredForRemoteNotifications != null
         ? this.native.isRegisteredForRemoteNotifications
         : true;
+    this._isNotificationDelegationEnabled =
+      this.native.isNotificationDelegationEnabled != null
+        ? this.native.isNotificationDelegationEnabled
+        : false;
 
     AppRegistry.registerHeadlessTask('ReactNativeFirebaseMessagingHeadlessTask', () => {
       if (!backgroundMessageHandler) {
@@ -119,6 +123,10 @@ class FirebaseMessagingModule extends FirebaseModule {
     }
 
     return this._isRegisteredForRemoteNotifications;
+  }
+
+  get isNotificationDelegationEnabled() {
+    return this._isNotificationDelegationEnabled;
   }
 
   get isDeliveryMetricsExportToBigQueryEnabled() {
@@ -458,6 +466,21 @@ class FirebaseMessagingModule extends FirebaseModule {
 
     this._isDeliveryMetricsExportToBigQueryEnabled = enabled;
     return this.native.setDeliveryMetricsExportToBigQuery(enabled);
+  }
+
+  setNotificationDelegationEnabled(enabled) {
+    if (!isBoolean(enabled)) {
+      throw new Error(
+        "firebase.messaging().setNotificationDelegationEnabled(*) 'enabled' expected a boolean value.",
+      );
+    }
+
+    this._isNotificationDelegationEnabled = enabled;
+    if (isIOS) {
+      return;
+    }
+
+    return this.native.setNotificationDelegationEnabled(enabled);
   }
 
   async isSupported() {

@@ -64,6 +64,16 @@ If you require `remote notification` on Expo, you can also add this to your Expo
 }
 ```
 
+## Android - Google Play Notification Delegation
+
+If you use the REST v1 APIs (used by the Firebase admin SDKs) and your app is running on Android Q+ with current Google Play services, Google implemented "Notification Delegation" for messages. Notification delegation is not currently compatible with react-native-firebase. Specifically, if your notifications are delegated via proxy to Play Services, then your messaging listeners will not be called.
+
+To work around this incompatibility, react-native-firebase disables notification delegation by default currently, using the `AndroidManifest.xml` method listed as one of the options described here: <https://firebase.google.com/docs/cloud-messaging/android/message-priority#proxy>.
+
+You may re-enable notification delegation if your use case requires it and you can accept the messaging listener methods not executing for delegated messages by altering the firebase.json setting `messaging_android_notification_delegation_enabled` to `true`.
+
+You may also use the new messaging APIs to get and set the notification delegation state for the app, as desired.
+
 # What does it do
 
 React Native Firebase provides native integration of Firebase Cloud Messaging (FCM) for both Android & iOS. FCM is a cost
