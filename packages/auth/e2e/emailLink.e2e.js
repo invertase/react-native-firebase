@@ -81,11 +81,18 @@ describe('auth() -> emailLink Provider', function () {
       const emailLink3 = 'https://www.example.com/action?mode=signIn';
       const emailLink4 =
         'https://x59dg.app.goo.gl/?link=https://rnfirebase-b9ad4.firebaseapp.com/__/auth/action?apiKey%3Dfoo%26mode%3DsignIn%26oobCode%3Dbar';
+      const emailLink5 = 'https://www.example.com/action?mode=signIn&oobCode=oobCode&apiKey=foo';
 
-      should.equal(true, isSignInWithEmailLink(auth, emailLink1));
-      should.equal(false, isSignInWithEmailLink(auth, emailLink2));
-      should.equal(false, isSignInWithEmailLink(auth, emailLink3));
-      should.equal(true, isSignInWithEmailLink(auth, emailLink4));
+      // ios does not require apiKey, but android and web/other do
+      if (!Platform.ios) {
+        should.equal(false, await isSignInWithEmailLink(auth, emailLink1));
+      } else {
+        should.equal(true, await isSignInWithEmailLink(auth, emailLink1));
+      }
+      should.equal(false, await isSignInWithEmailLink(auth, emailLink2));
+      should.equal(false, await isSignInWithEmailLink(auth, emailLink3));
+      should.equal(true, await isSignInWithEmailLink(auth, emailLink4));
+      should.equal(true, await isSignInWithEmailLink(auth, emailLink5));
     });
   });
 

@@ -165,7 +165,7 @@ export async function getRedirectResult(auth, resolver) {
  * Checks if an incoming link is a sign-in with email link suitable for signInWithEmailLink().
  * @param {Auth} auth - The Auth instance.
  * @param {string} emailLink - The email link to check.
- * @returns {boolean}
+ * @returns {Promise<boolean>}
  */
 export function isSignInWithEmailLink(auth, emailLink) {
   return auth.isSignInWithEmailLink(emailLink);
