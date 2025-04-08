@@ -53,7 +53,7 @@ export async function initializeAppCheck(app, options) {
  * @returns {Promise<AppCheckTokenResult>}
  */
 export function getToken(appCheckInstance, forceRefresh) {
-  const appCheck = appCheckInstance;
+  const appCheck = appCheckInstance.appCheck;
   return appCheck.getToken.call(appCheck, forceRefresh, MODULAR_DEPRECATION_ARG);
 }
 
@@ -64,7 +64,7 @@ export function getToken(appCheckInstance, forceRefresh) {
  * @returns {Promise<AppCheckTokenResult>}
  */
 export function getLimitedUseToken(appCheckInstance) {
-  const appCheck = appCheckInstance;
+  const appCheck = appCheckInstance.appCheck;
   return appCheck.getLimitedUseToken.call(appCheck, MODULAR_DEPRECATION_ARG);
 }
 
@@ -74,7 +74,7 @@ export function getLimitedUseToken(appCheckInstance) {
  * @param {boolean} isAutoRefreshEnabled - Whether to enable auto-refresh.
  */
 export function setTokenAutoRefreshEnabled(appCheckInstance, isAutoRefreshEnabled) {
-  const appCheck = appCheckInstance;
+  const appCheck = appCheckInstance.appCheck;
   return appCheck.setTokenAutoRefreshEnabled.call(
     appCheck,
     isAutoRefreshEnabled,
