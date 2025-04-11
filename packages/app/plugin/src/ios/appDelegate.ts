@@ -75,8 +75,8 @@ export function modifySwiftAppDelegate(contents: string): string {
   // Add import
   if (!contents.includes('import FirebaseCore')) {
     contents = contents.replace(
-      /import ReactAppDependencyProvider/g,
-      `import ReactAppDependencyProvider
+      /import Expo/g,
+      `import Expo
 import FirebaseCore`,
     );
   }

@@ -78,9 +78,9 @@ describe('Config Plugin iOS Tests', function () {
     );
   });
 
-  it('works with Swift AppDelegate (RN 0.77+)', async function () {
+  it('works with Swift AppDelegate (SDK 53+)', async function () {
     const appDelegate = await fs.readFile(
-      path.join(__dirname, './fixtures/AppDelegate_sdk45.swift'),
+      path.join(__dirname, './fixtures/AppDelegate_sdk53.swift'),
       {
         encoding: 'utf8',
       },
