@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.14.0](https://github.com/invertase/react-native-firebase/compare/v21.13.0...v21.14.0) (2025-04-14)
+
+### Bug Fixes
+
+- **auth:** correct modular AuthListenerCallback type ([#8436](https://github.com/invertase/react-native-firebase/issues/8436)) ([d94a2d8](https://github.com/invertase/react-native-firebase/commit/d94a2d8e3786b69eb43d18eb0f329e5492ceaeb1))
+
 ## [21.13.0](https://github.com/invertase/react-native-firebase/compare/v21.12.3...v21.13.0) (2025-03-31)
 
 ### Features

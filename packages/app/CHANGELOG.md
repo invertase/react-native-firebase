@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [21.14.0](https://github.com/invertase/react-native-firebase/compare/v21.13.0...v21.14.0) (2025-04-14)
+
+### Features
+
+- **messaging, android:** notification delegation APIs, firebase.json feature toggle ([c0c5054](https://github.com/invertase/react-native-firebase/commit/c0c505432e95c85fa6621b548b24e755e2894c37))
+- **messaging, android:** support BigQuery export setting in firebase.json ([fa0e967](https://github.com/invertase/react-native-firebase/commit/fa0e967f9a06719c159a4980749f80c5ff2e2c39))
+
+### Bug Fixes
+
+- **app, expo:** update iOS AppDelegate for SDK 53 support ([a3d82c7](https://github.com/invertase/react-native-firebase/commit/a3d82c73e746fe3d2ac4513b15696ced98ecf2ca))
+- **app:** annotate initializeApp return as a promise ([#8366](https://github.com/invertase/react-native-firebase/issues/8366)) ([5189c32](https://github.com/invertase/react-native-firebase/commit/5189c328e2643cdaf9c96059ce139b34c7651466))
+- **app:** firebase-ios-sdk 11.11.0 / firebase-android-sdk 33.12.0 ([1bfd3eb](https://github.com/invertase/react-native-firebase/commit/1bfd3eb5558296deff7a368a607163019b1d4d11))
+
 ## [21.13.0](https://github.com/invertase/react-native-firebase/compare/v21.12.3...v21.13.0) (2025-03-31)
 
 **Note:** Version bump only for package @react-native-firebase/app
