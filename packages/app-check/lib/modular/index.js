@@ -38,11 +38,11 @@ export async function initializeAppCheck(app, options) {
   if (app) {
     const appCheck = getApp(app.name).appCheck();
     await appCheck.initializeAppCheck.call(appCheck, options, MODULAR_DEPRECATION_ARG);
-    return { appCheck };
+    return appCheck;
   }
   const appCheck = getApp().appCheck();
   await appCheck.initializeAppCheck.call(appCheck, options, MODULAR_DEPRECATION_ARG);
-  return { appCheck };
+  return appCheck;
 }
 
 /**
@@ -53,8 +53,7 @@ export async function initializeAppCheck(app, options) {
  * @returns {Promise<AppCheckTokenResult>}
  */
 export function getToken(appCheckInstance, forceRefresh) {
-  const appCheck = appCheckInstance.appCheck;
-  return appCheck.getToken.call(appCheck, forceRefresh, MODULAR_DEPRECATION_ARG);
+  return appCheckInstance.getToken.call(appCheckInstance, forceRefresh, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -64,8 +63,7 @@ export function getToken(appCheckInstance, forceRefresh) {
  * @returns {Promise<AppCheckTokenResult>}
  */
 export function getLimitedUseToken(appCheckInstance) {
-  const appCheck = appCheckInstance.appCheck;
-  return appCheck.getLimitedUseToken.call(appCheck, MODULAR_DEPRECATION_ARG);
+  return appCheckInstance.getLimitedUseToken.call(appCheckInstance, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -74,9 +72,8 @@ export function getLimitedUseToken(appCheckInstance) {
  * @param {boolean} isAutoRefreshEnabled - Whether to enable auto-refresh.
  */
 export function setTokenAutoRefreshEnabled(appCheckInstance, isAutoRefreshEnabled) {
-  const appCheck = appCheckInstance.appCheck;
-  return appCheck.setTokenAutoRefreshEnabled.call(
-    appCheck,
+  return appCheckInstance.setTokenAutoRefreshEnabled.call(
+    appCheckInstance,
     isAutoRefreshEnabled,
     MODULAR_DEPRECATION_ARG,
   );
@@ -93,9 +90,8 @@ export function setTokenAutoRefreshEnabled(appCheckInstance, isAutoRefreshEnable
  * @returns {Unsubscribe}
  */
 export function onTokenChanged(appCheckInstance, onNextOrObserver, onError, onCompletion) {
-  const appCheck = appCheckInstance.app.appCheck();
-  return appCheck.onTokenChanged.call(
-    appCheck,
+  return appCheckInstance.onTokenChanged.call(
+    appCheckInstance,
     onNextOrObserver,
     onError,
     onCompletion,
