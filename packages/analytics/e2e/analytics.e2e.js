@@ -1134,25 +1134,25 @@ describe('analytics() modular', function () {
         const { getAnalytics, setConsent } = analyticsModular;
         await setConsent(getAnalytics(), consentSettings);
       });
+    });
 
-      describe('getGoogleAnalyticsClientId()', function () {
-        it('Error when trying to use getGoogleAnalyticsClientId() on non-web platforms', async function () {
-          if (Platform.other) {
-            try {
-              const { getAnalytics } = analyticsModular;
-              getGoogleAnalyticsClientId(getAnalytics());
-            } catch (e) {
-              expect(e.message).to.equal('getGoogleAnalyticsClientId is web-only.');
-            }
+    describe('getGoogleAnalyticsClientId()', function () {
+      it('Error when trying to use getGoogleAnalyticsClientId() on non-web platforms', async function () {
+        if (Platform.other) {
+          try {
+            const { getAnalytics } = analyticsModular;
+            getGoogleAnalyticsClientId(getAnalytics());
+          } catch (e) {
+            expect(e.message).to.equal('getGoogleAnalyticsClientId is web-only.');
           }
-          this.skip();
-        });
-        it('A response is received from getGoogleAnalyticsClientId() on web platforms', async function () {
-          const { getAnalytics } = analyticsModular;
-          if (!Platform.other) {
-            expect(!!getGoogleAnalyticsClientId(getAnalytics())).to.be(true);
-          }
-        });
+        }
+        this.skip();
+      });
+      it('A response is received from getGoogleAnalyticsClientId() on web platforms', async function () {
+        const { getAnalytics } = analyticsModular;
+        if (!Platform.other) {
+          expect(!!getGoogleAnalyticsClientId(getAnalytics())).to.be(true);
+        }
       });
     });
   });
