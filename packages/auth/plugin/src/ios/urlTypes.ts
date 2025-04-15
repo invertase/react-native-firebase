@@ -95,6 +95,7 @@ export function setUrlTypesForCaptcha({
     const reversedClientId = getReversedClientId(googleServiceFilePath);
     addUriScheme(config, reversedClientId);
   } else {
+    // eslint-disable-next-line no-console
     console.warn(
       '[@react-native-firebase/auth] No REVERSED_CLIENT_ID found in GoogleService-Info.plist. Skipping URL scheme configuration.',
     );
