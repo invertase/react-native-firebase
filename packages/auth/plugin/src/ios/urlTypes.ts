@@ -97,7 +97,7 @@ export function setUrlTypesForCaptcha({
   } else {
     // eslint-disable-next-line no-console
     console.warn(
-      '[@react-native-firebase/auth] No REVERSED_CLIENT_ID found in GoogleService-Info.plist. Skipping URL scheme configuration.',
+      '[@react-native-firebase/auth] REVERSED_CLIENT_ID field not found in GoogleServices-Info.plist. Google Sign-In requires this is - if you need Google Sign-In, enable it and re-download your plist file',
     );
   }
 
