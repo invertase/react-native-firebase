@@ -1148,6 +1148,7 @@ describe('analytics() modular', function () {
         }
         this.skip();
       });
+      
       it('A response is received from getGoogleAnalyticsClientId() on web platforms', async function () {
         const { getAnalytics } = analyticsModular;
         if (!Platform.other) {
