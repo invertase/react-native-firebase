@@ -23,15 +23,22 @@ function getReversedClientId(googleServiceFilePath: string): string {
     const googleServiceJson = plist.parse(googleServicePlist) as { REVERSED_CLIENT_ID: string };
     const REVERSED_CLIENT_ID = googleServiceJson.REVERSED_CLIENT_ID;
 
-    if (!REVERSED_CLIENT_ID) {
-      throw new TypeError('REVERSED_CLIENT_ID missing');
-    }
-
     return REVERSED_CLIENT_ID;
   } catch {
     throw new Error(
       '[@react-native-firebase/auth] Failed to parse your GoogleService-Info.plist. Are you sure it is a valid Info.Plist file with a REVERSE_CLIENT_ID field?',
     );
+  }
+}
+
+// Utility function to make REVERSED_CLIENT_ID optional by only proceeding if it exists in Google-Services.plist
+function reversedClientIDExists(googleServiceFilePath: string): boolean {
+  try {
+    const googleServicePlist = fs.readFileSync(googleServiceFilePath, 'utf8');
+    const googleServiceJson = plist.parse(googleServicePlist) as { REVERSED_CLIENT_ID: string };
+    return !!googleServiceJson.REVERSED_CLIENT_ID;
+  } catch {
+    return false;
   }
 }
 
@@ -84,8 +91,15 @@ export function setUrlTypesForCaptcha({
     );
   }
 
-  const reversedClientId = getReversedClientId(googleServiceFilePath);
-  addUriScheme(config, reversedClientId);
+  if (reversedClientIDExists(googleServiceFilePath)) {
+    const reversedClientId = getReversedClientId(googleServiceFilePath);
+    addUriScheme(config, reversedClientId);
+  } else {
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[@react-native-firebase/auth] REVERSED_CLIENT_ID field not found in GoogleServices-Info.plist. Google Sign-In requires this is - if you need Google Sign-In, enable it and re-download your plist file',
+    );
+  }
 
   return config;
 }
