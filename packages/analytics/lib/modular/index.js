@@ -1,4 +1,5 @@
 import { getApp } from '@react-native-firebase/app';
+import { getCid } from '../web/api';
 
 /**
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
@@ -71,9 +72,13 @@ export function initializeAnalytics(app, options) {
  * @returns {string}
  */
 export function getGoogleAnalyticsClientId(analytics) {
-  throw new Error('getGoogleAnalyticsClientId is web-only and not yet supported.');
-  return analytics;
+  if (!Platform.other) {
+    throw new Error('getGoogleAnalyticsClientId is web-only.');
+  } else {
+    return getCid(analytics);
+  }
 }
+
 /**
  * Log a custom event with optional params.
  * @param {FirebaseAnalytics} analytics - Analytics instance.
