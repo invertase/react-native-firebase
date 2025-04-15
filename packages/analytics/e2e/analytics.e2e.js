@@ -15,6 +15,8 @@
  *
  */
 
+import { getGoogleAnalyticsClientId } from '../lib/modular';
+
 describe('analytics() modular', function () {
   beforeEach(async function () {
     await firebase.analytics().logEvent('screen_view');
@@ -1131,6 +1133,26 @@ describe('analytics() modular', function () {
         };
         const { getAnalytics, setConsent } = analyticsModular;
         await setConsent(getAnalytics(), consentSettings);
+      });
+
+      describe('getGoogleAnalyticsClientId()', function () {
+        it('Error when trying to use getGoogleAnalyticsClientId() on non-web platforms', async function () {
+          if (Platform.other) {
+            try {
+              const { getAnalytics } = analyticsModular;
+              getGoogleAnalyticsClientId(getAnalytics());
+            } catch (e) {
+              expect(e.message).to.equal('getGoogleAnalyticsClientId is web-only.');
+            }
+          }
+          this.skip();
+        });
+        it('A response is received from getGoogleAnalyticsClientId() on web platforms', async function () {
+          const { getAnalytics } = analyticsModular;
+          if (!Platform.other) {
+            expect(!!getGoogleAnalyticsClientId(getAnalytics())).to.be(true);
+          }
+        });
       });
     });
   });
