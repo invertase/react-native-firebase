@@ -1,5 +1,10 @@
 import { getApp } from '@react-native-firebase/app';
-import { getCid } from '../web/api';
+let getCid;
+// Check global window object in browsers.
+if (typeof window === 'undefined') {
+  // Conditionally import getCid for non-web environments as this is file is already imported in web which results in an error
+  ({ getCid } = require('../web/api'));
+}
 
 /**
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
