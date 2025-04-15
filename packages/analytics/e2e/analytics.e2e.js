@@ -1144,9 +1144,7 @@ describe('analytics() modular', function () {
             await getGoogleAnalyticsClientId(getAnalytics());
             fail('Should have thrown an error');
           } catch (e) {
-            e.message.should.equal(
-              'getGoogleAnalyticsClientId is web-only.',
-            );
+            e.message.should.equal('getGoogleAnalyticsClientId is web-only.');
           }
         }
         this.skip();
