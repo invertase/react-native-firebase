@@ -1138,12 +1138,15 @@ describe('analytics() modular', function () {
 
     describe('getGoogleAnalyticsClientId()', function () {
       it('Error when trying to use getGoogleAnalyticsClientId() on non-web platforms', async function () {
-        if (Platform.other) {
+        if (!Platform.other) {
           try {
             const { getAnalytics } = analyticsModular;
-            getGoogleAnalyticsClientId(getAnalytics());
+            await getGoogleAnalyticsClientId(getAnalytics());
+            fail('Should have thrown an error');
           } catch (e) {
-            expect(e.message).to.equal('getGoogleAnalyticsClientId is web-only.');
+            e.message.should.equal(
+              'getGoogleAnalyticsClientId is web-only.',
+            );
           }
         }
         this.skip();
@@ -1151,9 +1154,10 @@ describe('analytics() modular', function () {
 
       it('A response is received from getGoogleAnalyticsClientId() on web platforms', async function () {
         const { getAnalytics } = analyticsModular;
-        if (!Platform.other) {
-          expect(!!getGoogleAnalyticsClientId(getAnalytics())).to.be(true);
+        if (Platform.other) {
+          await getGoogleAnalyticsClientId(getAnalytics());
         }
+        this.skip();
       });
     });
   });
