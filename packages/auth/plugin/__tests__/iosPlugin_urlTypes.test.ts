@@ -42,21 +42,22 @@ describe('Config Plugin iOS Tests - urlTypes', () => {
     );
   });
 
-  it('throws if GoogleServer-Info.plist has no reversed client id', async () => {
-    expect(() => {
-      setUrlTypesForCaptcha({
-        config: {
-          name: 'TestName',
-          slug: 'TestSlug',
-          modRequest: { projectRoot: path.join(__dirname, 'fixtures') } as any,
-          modResults: {},
-          modRawConfig: { name: 'TestName', slug: 'TestSlug' },
-          ios: { googleServicesFile: 'TestGoogleService-Info.incomplete.plist' },
-        },
-      });
-    }).toThrow(
-      '[@react-native-firebase/auth] Failed to parse your GoogleService-Info.plist. Are you sure it is a valid Info.Plist file with a REVERSE_CLIENT_ID field?',
+  it('warns if GoogleServer-Info.plist has no reversed client id', async () => {
+    const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    setUrlTypesForCaptcha({
+      config: {
+        name: 'TestName',
+        slug: 'TestSlug',
+        modRequest: { projectRoot: path.join(__dirname, 'fixtures') } as any,
+        modResults: {},
+        modRawConfig: { name: 'TestName', slug: 'TestSlug' },
+        ios: { googleServicesFile: 'TestGoogleService-Info.incomplete.plist' },
+      },
+    });
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      '[@react-native-firebase/auth] No REVERSED_CLIENT_ID found in GoogleService-Info.plist. Skipping URL scheme configuration.',
     );
+    consoleWarnSpy.mockRestore();
   });
 
   it('adds url types to the Info.plist', async () => {
