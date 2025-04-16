@@ -9,7 +9,7 @@ function App() {
     <View>
       <View style={{ height: 90 }} />
       <Button
-        title="generateContent"
+        title="Generate Content"
         onPress={async () => {
           try {
             const app = getApp();
@@ -25,7 +25,7 @@ function App() {
         }}
       />
       <Button
-        title="generateContentStream"
+        title="Generate Content Stream"
         onPress={async () => {
           try {
             const app = getApp();
@@ -49,7 +49,7 @@ function App() {
         }}
       />
       <Button
-        title="generateContentStream multi-modal"
+        title="Generate Content Stream multi-modal"
         onPress={async () => {
           try {
             const app = getApp();
@@ -77,7 +77,7 @@ function App() {
         }}
       />
       <Button
-        title="generate JSON response"
+        title="Generate JSON Response"
         onPress={async () => {
           try {
             const app = getApp();
@@ -115,7 +115,7 @@ function App() {
         }}
       />
       <Button
-        title="startChat"
+        title="Start Chat"
         onPress={async () => {
           try {
             const app = getApp();
@@ -154,7 +154,7 @@ function App() {
         }}
       />
       <Button
-        title="countTokens"
+        title="Count Tokens"
         onPress={async () => {
           try {
             const app = getApp();
@@ -172,7 +172,7 @@ function App() {
       />
 
       <Button
-        title="function calling"
+        title="Function Calling"
         onPress={async () => {
           // This function calls a hypothetical external API that returns
           // a collection of weather information for a given location on a given date.
