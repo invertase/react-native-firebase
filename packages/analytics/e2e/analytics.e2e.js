@@ -1155,7 +1155,7 @@ describe('analytics() modular', function () {
         const { getAnalytics } = analyticsModular;
         if (Platform.OS === 'web') {
           let cid = getGoogleAnalyticsClientId(getAnalytics());
-            cid.should.not.be.empty;
+          cid.should.not.be.empty;
         } else {
           this.skip();
         }
