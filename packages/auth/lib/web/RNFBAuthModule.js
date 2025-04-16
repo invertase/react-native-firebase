@@ -10,6 +10,7 @@ import {
   multiFactor,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  isSignInWithEmailLink,
   signInWithEmailLink,
   signInWithCustomToken,
   sendPasswordResetEmail,
@@ -446,6 +447,19 @@ export default {
       const auth = getCachedAuthInstance(appName);
       const credential = await signInWithEmailAndPassword(auth, email, password);
       return authResultToObject(credential);
+    });
+  },
+
+  /**
+   * Check if a sign in with email link is valid
+   * @param {string} appName - The name of the app to get the auth instance for.
+   * @param {string} emailLink - The email link to sign in with.
+   * @returns {Promise<boolean>} - Whether the link is a valid sign in with email link.
+   */
+  async isSignInWithEmailLink(appName, emailLink) {
+    return guard(async () => {
+      const auth = getCachedAuthInstance(appName);
+      return await isSignInWithEmailLink(auth, emailLink);
     });
   },
 

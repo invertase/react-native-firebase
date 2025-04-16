@@ -361,11 +361,7 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   isSignInWithEmailLink(emailLink) {
-    return (
-      typeof emailLink === 'string' &&
-      (emailLink.includes('mode=signIn') || emailLink.includes('mode%3DsignIn')) &&
-      (emailLink.includes('oobCode=') || emailLink.includes('oobCode%3D'))
-    );
+    return this.native.isSignInWithEmailLink(emailLink);
   }
 
   signInWithEmailLink(email, emailLink) {
