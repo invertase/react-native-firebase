@@ -54,7 +54,7 @@
     "tests:macos:test-cover": "cd tests && npx jet --target=macos --coverage",
     "format:markdown": "prettier --write \"docs/**/*.md\"",
     "example:app:bundler": "cd tests && yarn react-native start --config ./test-app/metro.config.js --reset-cache",
-    "example:app:run:ios": "cd tests && yarn react-native run-ios",
+    "example:app:run:ios": "cd tests && SIMCTL_CHILD_GULGeneratedClassDisposeDisabled=1 CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ yarn react-native run-ios",
     "example:app:run:android": "cd tests && yarn react-native run-android"
   },
   "devDependencies": {
