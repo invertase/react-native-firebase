@@ -15,6 +15,7 @@
  *
  */
 import { Platform } from 'react-native';
+import { getGoogleAnalyticsClientId } from '../lib/modular';
 
 describe('analytics() modular', function () {
   beforeEach(async function () {
@@ -1140,21 +1141,24 @@ describe('analytics() modular', function () {
         if (!Platform.other) {
           try {
             const { getAnalytics } = analyticsModular;
-            await firebase.analytics.getGoogleAnalyticsClientId(getAnalytics());
+            await getGoogleAnalyticsClientId(getAnalytics());
             fail('Should have thrown an error');
           } catch (e) {
             e.message.should.equal('getGoogleAnalyticsClientId is web-only.');
           }
+        } else {
+          this.skip();
         }
-        this.skip();
       });
 
       it('A response is received from getGoogleAnalyticsClientId() on web platforms', async function () {
         const { getAnalytics } = analyticsModular;
         if (Platform.OS === 'web') {
-          await firebase.analytics.getGoogleAnalyticsClientId(getAnalytics());
+          let cid = getGoogleAnalyticsClientId(getAnalytics());
+            cid.should.not.be.empty;
+        } else {
+          this.skip();
         }
-        this.skip();
       });
     });
   });
