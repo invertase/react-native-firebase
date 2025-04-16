@@ -227,3 +227,13 @@ export declare function queryEqual<AppModelType, DbModelType extends DocumentDat
   left: Query<AppModelType, DbModelType>,
   right: Query<AppModelType, DbModelType>,
 ): boolean;
+
+/**
+ * Attaches a listener for a snapshots-in-sync event.
+ * The snapshots-in-sync event indicates that all listeners affected by a given change have fired, even if
+ * a single server-generated change affects multiple listeners.
+ *
+ * @param firestore
+ * @param onSync
+ */
+export declare function onSnapshotsInSync(firestore: Firestore, onSync: () => void): Unsubscribe;
