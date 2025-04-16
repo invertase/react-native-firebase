@@ -14,8 +14,7 @@
  * limitations under the License.
  *
  */
-
-import { getGoogleAnalyticsClientId } from '../lib/modular';
+import { Platform } from 'react-native';
 
 describe('analytics() modular', function () {
   beforeEach(async function () {
@@ -1141,7 +1140,7 @@ describe('analytics() modular', function () {
         if (!Platform.other) {
           try {
             const { getAnalytics } = analyticsModular;
-            await getGoogleAnalyticsClientId(getAnalytics());
+            await firebase.analytics.getGoogleAnalyticsClientId(getAnalytics());
             fail('Should have thrown an error');
           } catch (e) {
             e.message.should.equal('getGoogleAnalyticsClientId is web-only.');
@@ -1152,8 +1151,8 @@ describe('analytics() modular', function () {
 
       it('A response is received from getGoogleAnalyticsClientId() on web platforms', async function () {
         const { getAnalytics } = analyticsModular;
-        if (Platform.other) {
-          await getGoogleAnalyticsClientId(getAnalytics());
+        if (Platform.OS === 'web') {
+          await firebase.analytics.getGoogleAnalyticsClientId(getAnalytics());
         }
         this.skip();
       });
