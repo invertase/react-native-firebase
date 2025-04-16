@@ -21,7 +21,7 @@ Open a new terminal and run:
 yarn example:app:run:android
 ```
 
-## Run and build app for iOS
+## Run and build app for iOS
 
 Open a new terminal and run:
 
