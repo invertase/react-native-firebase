@@ -171,24 +171,22 @@ class AnalyticsApi {
     await setItem('analytics:cid', this.cid);
     if (isMemoryStorage()) {
       console.warn(
-        ```
-Firebase Analytics is using in memory persistence. This means that the analytics
-client ID is reset every time your app is restarted which may result in 
-inaccurate data being shown on the Firebase Analytics dashboard.
-
-To enable persistence, provide an Async Storage implementation.
-
-For example, to use React Native Async Storage:
-
-  import AsyncStorage from '@react-native-async-storage/async-storage';
-
-  // Before initializing Firebase set the Async Storage implementation
-  // that will be used to persist user sessions.
-  firebase.setReactNativeAsyncStorage(AsyncStorage);
-
-  // Then initialize Firebase as normal.
-  await firebase.initializeApp({ ... });
-```,
+        'Firebase Analytics is using in memory persistence. This means that the analytics\n' +
+          'client ID is reset every time your app is restarted which may result in\n' +
+          'inaccurate data being shown on the Firebase Analytics dashboard.\n' +
+          '\n' +
+          'To enable persistence, provide an Async Storage implementation.\n' +
+          '\n' +
+          'For example, to use React Native Async Storage:\n' +
+          '\n' +
+          "  import AsyncStorage from '@react-native-async-storage/async-storage';\n" +
+          '\n' +
+          '  // Before initializing Firebase set the Async Storage implementation\n' +
+          '  // that will be used to persist user sessions.\n' +
+          '  firebase.setReactNativeAsyncStorage(AsyncStorage);\n' +
+          '\n' +
+          '  // Then initialize Firebase as normal.\n' +
+          '  await firebase.initializeApp({ ... });\n',
       );
     }
     return this.cid;
