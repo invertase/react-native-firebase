@@ -16,10 +16,21 @@
  */
 describe('analytics()', function () {
   beforeEach(async function () {
-    await firebase.analytics().logEvent('screen_view');
+    const { getAnalytics, logEvent } = analyticsModular;
+    await logEvent(getAnalytics(), 'screen_view');
   });
 
   describe('firebase v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     describe('logEvent()', function () {
       it('log an event without parameters', async function () {
         await firebase.analytics().logEvent('invertase_event');
@@ -548,9 +559,10 @@ describe('analytics()', function () {
   describe('modular', function () {
     describe('getAnalytics', function () {
       it('pass app as argument', function () {
+        const { getApp } = modular;
         const { getAnalytics } = analyticsModular;
 
-        const analytics = getAnalytics(firebase.app());
+        const analytics = getAnalytics(getApp());
 
         analytics.constructor.name.should.be.equal('FirebaseAnalyticsModule');
       });
