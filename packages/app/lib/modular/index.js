@@ -6,6 +6,7 @@ import {
   getApps as getAppsCompat,
   initializeApp as initializeAppCompat,
   setLogLevel as setLogLevelCompat,
+  setReactNativeAsyncStorage as setReactNativeAsyncStorageCompat,
 } from '../internal';
 import { setUserLogHandler } from '../internal/logger';
 import sdkVersion from '../version';
@@ -82,6 +83,16 @@ export function getApp(name) {
  */
 export function setLogLevel(logLevel) {
   return setLogLevelCompat.call(null, logLevel, MODULAR_DEPRECATION_ARG);
+}
+
+/**
+ * The `AsyncStorage` implementation to use for persisting data on 'Other' platforms.
+ * If not specified, in memory persistence is used.
+ *
+ * This is required if you want to persist things like Auth sessions, Analytics device IDs, etc.
+ */
+export function setReactNativeAsyncStorage(asyncStorage) {
+  return setReactNativeAsyncStorageCompat.call(null, asyncStorage, MODULAR_DEPRECATION_ARG);
 }
 
 export const SDK_VERSION = sdkVersion;

@@ -218,26 +218,22 @@ export function setLogLevel(logLevel) {
 }
 
 export function setReactNativeAsyncStorage(asyncStorage) {
+  warnIfNotModularCall(arguments, 'setReactNativeAsyncStorage()');
+
   if (!isObject(asyncStorage)) {
-    throw new Error("firebase.setReactNativeAsyncStorage(*) 'asyncStorage' must be an object.");
+    throw new Error("setReactNativeAsyncStorage(*) 'asyncStorage' must be an object.");
   }
 
   if (!isFunction(asyncStorage.setItem)) {
-    throw new Error(
-      "firebase.setReactNativeAsyncStorage(*) 'asyncStorage.setItem' must be a function.",
-    );
+    throw new Error("setReactNativeAsyncStorage(*) 'asyncStorage.setItem' must be a function.");
   }
 
   if (!isFunction(asyncStorage.getItem)) {
-    throw new Error(
-      "firebase.setReactNativeAsyncStorage(*) 'asyncStorage.getItem' must be a function.",
-    );
+    throw new Error("setReactNativeAsyncStorage(*) 'asyncStorage.getItem' must be a function.");
   }
 
   if (!isFunction(asyncStorage.removeItem)) {
-    throw new Error(
-      "firebase.setReactNativeAsyncStorage(*) 'asyncStorage.removeItem' must be a function.",
-    );
+    throw new Error("setReactNativeAsyncStorage(*) 'asyncStorage.removeItem' must be a function.");
   }
 
   setReactNativeAsyncStorageInternal(asyncStorage);
