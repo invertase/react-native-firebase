@@ -1,11 +1,5 @@
 import { getApp } from '@react-native-firebase/app';
 import { Platform } from 'react-native';
-let getCid;
-// Check global window object in browsers.
-if (Platform.OS === 'web') {
-  // Conditionally import getCid for non-web environments as this is file is already imported in web which results in an error
-  ({ _getCid } = require('../web/api'));
-}
 
 /**
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
@@ -75,13 +69,13 @@ export function initializeAnalytics(app, options) {
  * Retrieves a unique Google Analytics identifier for the web client.
  *
  * @param {FirebaseAnalytics} analytics - Instance of analytics (web - only)
- * @returns {string}
+ * @returns {Promise<string>}
  */
-export function getGoogleAnalyticsClientId(analytics) {
-  if (!Platform.other) {
+export async function getGoogleAnalyticsClientId(analytics) {
+  if (Platform.OS === 'android' || Platform.OS === 'ios') {
     throw new Error('getGoogleAnalyticsClientId is web-only.');
   } else {
-    return getCid(analytics);
+    return getAppInstanceId(analytics);
   }
 }
 

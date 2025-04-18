@@ -14,10 +14,7 @@
  * limitations under the License.
  *
  */
-import { Platform } from 'react-native';
-import { getGoogleAnalyticsClientId } from '../lib/modular';
-
-describe('analytics() modular', function () {
+describe('analytics()', function () {
   beforeEach(async function () {
     await firebase.analytics().logEvent('screen_view');
   });
@@ -1137,28 +1134,26 @@ describe('analytics() modular', function () {
     });
 
     describe('getGoogleAnalyticsClientId()', function () {
-      it('Error when trying to use getGoogleAnalyticsClientId() on non-web platforms', async function () {
-        if (!Platform.other) {
-          try {
-            const { getAnalytics } = analyticsModular;
-            await getGoogleAnalyticsClientId(getAnalytics());
-            fail('Should have thrown an error');
-          } catch (e) {
-            e.message.should.equal('getGoogleAnalyticsClientId is web-only.');
-          }
-        } else {
+      it('Error for getGoogleAnalyticsClientId() on non-other platforms', async function () {
+        if (Platform.other) {
           this.skip();
+        }
+        try {
+          const { getAnalytics, getGoogleAnalyticsClientId } = analyticsModular;
+          await getGoogleAnalyticsClientId(getAnalytics());
+          fail('Should have thrown an error');
+        } catch (e) {
+          e.message.should.equal('getGoogleAnalyticsClientId is web-only.');
         }
       });
 
-      it('A response is received from getGoogleAnalyticsClientId() on web platforms', async function () {
-        const { getAnalytics } = analyticsModular;
-        if (Platform.OS === 'web') {
-          let cid = getGoogleAnalyticsClientId(getAnalytics());
-          cid.should.not.be.empty;
-        } else {
+      it('getGoogleAnalyticsClientId() works on other platform', async function () {
+        const { getAnalytics, getGoogleAnalyticsClientId } = analyticsModular;
+        if (!Platform.other) {
           this.skip();
         }
+        let cid = await getGoogleAnalyticsClientId(getAnalytics());
+        cid.should.not.be.empty;
       });
     });
   });
