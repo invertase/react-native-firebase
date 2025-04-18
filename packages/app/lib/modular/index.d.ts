@@ -70,3 +70,11 @@ export function getApp(name?: string): FirebaseApp;
  * @returns void
  */
 export function setLogLevel(logLevel: LogLevelString): void;
+
+/**
+ * The `AsyncStorage` implementation to use for persisting data on 'Other' platforms.
+ * If not specified, in memory persistence is used.
+ *
+ * This is required if you want to persist things like Auth sessions, Analytics device IDs, etc.
+ */
+export function setReactNativeAsyncStorage(asyncStorage: ReactNativeAsyncStorage): void;

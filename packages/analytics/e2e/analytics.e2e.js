@@ -14,13 +14,23 @@
  * limitations under the License.
  *
  */
-
-describe('analytics() modular', function () {
+describe('analytics()', function () {
   beforeEach(async function () {
-    await firebase.analytics().logEvent('screen_view');
+    const { getAnalytics, logEvent } = analyticsModular;
+    await logEvent(getAnalytics(), 'screen_view');
   });
 
   describe('firebase v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     describe('logEvent()', function () {
       it('log an event without parameters', async function () {
         await firebase.analytics().logEvent('invertase_event');
@@ -549,9 +559,10 @@ describe('analytics() modular', function () {
   describe('modular', function () {
     describe('getAnalytics', function () {
       it('pass app as argument', function () {
+        const { getApp } = modular;
         const { getAnalytics } = analyticsModular;
 
-        const analytics = getAnalytics(firebase.app());
+        const analytics = getAnalytics(getApp());
 
         analytics.constructor.name.should.be.equal('FirebaseAnalyticsModule');
       });
@@ -1131,6 +1142,30 @@ describe('analytics() modular', function () {
         };
         const { getAnalytics, setConsent } = analyticsModular;
         await setConsent(getAnalytics(), consentSettings);
+      });
+    });
+
+    describe('getGoogleAnalyticsClientId()', function () {
+      it('Error for getGoogleAnalyticsClientId() on non-other platforms', async function () {
+        if (Platform.other) {
+          this.skip();
+        }
+        try {
+          const { getAnalytics, getGoogleAnalyticsClientId } = analyticsModular;
+          await getGoogleAnalyticsClientId(getAnalytics());
+          fail('Should have thrown an error');
+        } catch (e) {
+          e.message.should.equal('getGoogleAnalyticsClientId is web-only.');
+        }
+      });
+
+      it('getGoogleAnalyticsClientId() works on other platform', async function () {
+        const { getAnalytics, getGoogleAnalyticsClientId } = analyticsModular;
+        if (!Platform.other) {
+          this.skip();
+        }
+        let cid = await getGoogleAnalyticsClientId(getAnalytics());
+        cid.should.not.be.empty;
       });
     });
   });

@@ -230,20 +230,18 @@ function getCachedAuthInstance(appName) {
       // Warn auth persistence is is disabled unless Async Storage implementation is provided.
       // eslint-disable-next-line no-console
       console.warn(
-        ```
-Firebase Auth persistence is disabled. To enable persistence, provide an Async Storage implementation.
-
-For example, to use React Native Async Storage:
-
-  import AsyncStorage from '@react-native-async-storage/async-storage';
-
-  // Before initializing Firebase set the Async Storage implementation
-  // that will be used to persist user sessions.
-  firebase.setReactNativeAsyncStorage(AsyncStorage);
-
-  // Then initialize Firebase as normal.
-  await firebase.initializeApp({ ... });
-```,
+        'Firebase Auth persistence is disabled. To enable persistence, provide an Async Storage implementation.\n' +
+          '\n' +
+          'For example, to use React Native Async Storage:\n' +
+          '\n' +
+          "  import AsyncStorage from '@react-native-async-storage/async-storage';\n" +
+          '\n' +
+          '  // Before initializing Firebase set the Async Storage implementation\n' +
+          '  // that will be used to persist user sessions.\n' +
+          '  firebase.setReactNativeAsyncStorage(AsyncStorage);\n' +
+          '\n' +
+          '  // Then initialize Firebase as normal.\n' +
+          '  await firebase.initializeApp({ ... });\n',
       );
     }
     instances[appName] = initializeAuth(getApp(appName), {

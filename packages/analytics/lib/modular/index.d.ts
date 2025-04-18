@@ -24,6 +24,14 @@ export declare function initializeAnalytics(
 ): Analytics;
 
 /**
+ * Retrieves a unique Google Analytics identifier for the web client.
+ *
+ * @param analyticsInstance - Instance of analytics (web - only)
+ *
+ */
+export declare function getGoogleAnalyticsClientId(analyticsInstance: Analytics): Promise<string>;
+
+/**
  * Log a custom event with optional params. Note that there are various limits that applied
  * to event parameters (total parameter count, etc), but analytics applies the limits during
  * cloud processing, the errors will not be seen as Promise rejections when you call logEvent.
@@ -605,10 +613,14 @@ export function getAppInstanceId(analytics: Analytics): Promise<string | null>;
  * Gives a user a unique identification.
  *
  * @param analytics Analytics instance.
- * @param id Set to null to remove a previously assigned ID from analytics
- * events
+ * @param id Set to null to remove a previously assigned ID from analytics events
+ * @param options Additional options that can be passed to Analytics method calls such as logEvent, etc.
  */
-export function setUserId(analytics: Analytics, id: string | null): Promise<void>;
+export function setUserId(
+  analytics: Analytics,
+  id: string | null,
+  options?: AnalyticsCallOptions,
+): Promise<void>;
 
 /**
  * Sets a key/value pair of data on the current user. Each Firebase project can have up to 25 uniquely named (case-sensitive) user properties.
