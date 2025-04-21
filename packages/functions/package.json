@@ -30,6 +30,7 @@
     "@react-native-firebase/private-tests-firebase-functions": "^0.0.1"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   }
 }
