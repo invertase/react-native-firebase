@@ -28,7 +28,7 @@ concurrency:
 jobs:
   android:
     name: Android
-    runs-on: ubuntu-latest-l
+    runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -47,6 +47,17 @@ jobs:
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: AdityaGarg8/remove-unwanted-software@v5
+        with:
+          remove-dotnet: true
+          remove-haskell: true
+          remove-codeql: true
+          remove-docker-images: true
+
+      - name: Post Free Disk Space (Ubuntu)
+        run: df -h
+
       - name: Enable KVM group perms
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
