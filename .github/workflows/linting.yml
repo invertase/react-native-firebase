@@ -127,7 +127,7 @@ jobs:
           max_attempts: 3
           command: cd website && yarn
       - name: Generate TypeDoc
-        run: node -e "require('./website/scripts/generate-typedoc').generateTypedoc()"
+        run: cd website && yarn typedoc
       - uses: actions/cache/save@v4
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
