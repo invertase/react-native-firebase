@@ -31,6 +31,11 @@ jobs:
     timeout-minutes: 100
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
+      CCACHE_FILECLONE: true
+      CCACHE_DEPEND: true
+      CCACHE_INODECACHE: true
+      CCACHE_LIMIT_MULTIPLE: 0.95
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -129,11 +134,6 @@ jobs:
 
       - name: Build macos App
         run: |
-          export CCACHE_SLOPPINESS=clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
-          export CCACHE_FILECLONE=true
-          export CCACHE_DEPEND=true
-          export CCACHE_INODECACHE=true
-          export CCACHE_LIMIT_MULTIPLE=0.95
           ccache -s
           export SKIP_BUNDLING=1
           export RCT_NO_LAUNCH_PACKAGER=1
