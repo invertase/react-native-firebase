@@ -53,7 +53,7 @@ jobs:
           command: yarn && yarn lerna:prepare
       - name: Jest
         run: yarn tests:jest-coverage
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v5
         with:
           verbose: true
       - uses: actions/cache/save@v4

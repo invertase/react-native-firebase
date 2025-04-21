@@ -167,7 +167,7 @@ jobs:
         timeout-minutes: 20
         run: yarn tests:macos:test-cover
 
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v5
         with:
           verbose: true
 
