@@ -25,6 +25,7 @@
     "@react-native-firebase/app": "_VERSION_"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   }
 }

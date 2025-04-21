@@ -28,7 +28,8 @@
     "@react-native-firebase/app": "21.14.0"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "devDependencies": {
     "@types/text-encoding": "^0",
