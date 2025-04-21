@@ -21,7 +21,7 @@ jobs:
           token: ${{ secrets.GH_TOKEN }}
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - name: Yarn Install
         uses: nick-fields/retry@v3
         with:

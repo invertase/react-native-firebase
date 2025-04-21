@@ -33,13 +33,9 @@ jobs:
       # Future ideas:
       # - make into an action, parameterize directories to pack, and package names to install
       # - name patches w/PR as "semver prerelease" and SHA as "semver build info". Needs patch-package enhancement.
-
-      # FIXME: when github runner bumped from 18.17.1 to 18.18+ we started seeing template copy errors
-      #        different files, could reproduce locally on linux with v18.18+ and v20.8.0. Pinning to
-      #        prior version (18.17.1) to see if it stabilizes
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - uses: actions/cache/restore@v4
         name: Yarn Cache Restore
