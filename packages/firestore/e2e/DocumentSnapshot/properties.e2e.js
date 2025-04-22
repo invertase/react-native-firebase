@@ -40,8 +40,8 @@ describe('firestore().doc() -> snapshot', function () {
       const snapshot1 = await ref1.get();
       const snapshot2 = await ref2.get();
 
-      snapshot1.exists.should.equal(true);
-      snapshot2.exists.should.equal(false);
+      snapshot1.exists().should.equal(true);
+      snapshot2.exists().should.equal(false);
       await ref1.delete();
     });
 
@@ -87,8 +87,8 @@ describe('firestore().doc() -> snapshot', function () {
       const snapshot1 = await getDoc(ref1);
       const snapshot2 = await getDoc(ref2);
 
-      snapshot1.exists.should.equal(true);
-      snapshot2.exists.should.equal(false);
+      snapshot1.exists().should.equal(true);
+      snapshot2.exists().should.equal(false);
       await deleteDoc(ref1);
     });
 
