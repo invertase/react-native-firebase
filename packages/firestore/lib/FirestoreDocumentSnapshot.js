@@ -46,7 +46,7 @@ export default class FirestoreDocumentSnapshot {
   }
 
   exists() {
-    return this._data !== null && this._data !== undefined;
+    return this._exists;
   }
 
   data() {
