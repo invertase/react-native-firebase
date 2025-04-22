@@ -61,10 +61,10 @@ subprojects {
     if (!project.name.equalsIgnoreCase('app')
       && project.hasProperty('android')) {
       android {
-        compileSdkVersion compileSdk
+        compileSdkVersion = compileSdk
         defaultConfig {
-          minSdkVersion minSdk
-          targetSdkVersion targetSdk
+          minSdkVersion = minSdk
+          targetSdkVersion = targetSdk
         }
       }
     }
@@ -74,22 +74,22 @@ subprojects {
       && project.hasProperty('android')) {
       android {
         // Instrument all our modules for coverage generation
-        buildTypes.debug.testCoverageEnabled true
-        jacoco.version '0.8.12'
+        buildTypes.debug.testCoverageEnabled = true
+        jacoco.version = '0.8.12'
         testOptions.unitTests.includeAndroidResources = true
 
         // Make sure our project are run through basic lint checks
         lintOptions {
           abortOnError = true
-          warningsAsErrors false
-          lintConfig file('./lint.xml')
+          warningsAsErrors = false
+          lintConfig = file('./lint.xml')
           ignore 'UnknownNullness', 'SyntheticAccessor', 'LogConditional'
           checkReleaseBuilds = true
-          checkAllWarnings true
-          showAll true
-          textReport true
+          checkAllWarnings = true
+          showAll = true
+          textReport = true
           textOutput 'stdout'
-          htmlReport true
+          htmlReport = true
         }
       }
     }

@@ -62,11 +62,11 @@ project.ext {
 android {
   def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger()
   if (agpVersion >= 7) {
-    namespace 'io.invertase.firebase.appcheck'
+    namespace = 'io.invertase.firebase.appcheck'
   }
 
   defaultConfig {
-    multiDexEnabled true
+    multiDexEnabled = true
     // Here we add a build config field to allow devs to provide a
     // FIREBASE_APP_CHECK_DEBUG_TOKEN to be used in debug mode.
     buildConfigField "String", "FIREBASE_APP_CHECK_DEBUG_TOKEN", "\"${System.env.FIREBASE_APP_CHECK_DEBUG_TOKEN}\""
@@ -74,17 +74,17 @@ android {
 
   buildFeatures {
     // AGP 8 no longer builds config by default
-    buildConfig true
+    buildConfig = true
   }
 
   lintOptions {
     disable 'GradleCompatible'
-    abortOnError false
+    abortOnError = false
   }
   if (agpVersion < 8) {
     compileOptions {
-      sourceCompatibility JavaVersion.VERSION_11
-      targetCompatibility JavaVersion.VERSION_11
+      sourceCompatibility = JavaVersion.VERSION_11
+      targetCompatibility = JavaVersion.VERSION_11
     }
   }
   sourceSets {

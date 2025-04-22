@@ -72,56 +72,56 @@ def enableProguardInReleaseBuilds = true
 def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
 android {
-  ndkVersion rootProject.ext.ndkVersion
-  buildToolsVersion rootProject.ext.buildToolsVersion
-  compileSdk rootProject.ext.compileSdkVersion
+  ndkVersion = rootProject.ext.ndkVersion
+  buildToolsVersion = rootProject.ext.buildToolsVersion
+  compileSdk = rootProject.ext.compileSdkVersion
 
-  namespace "com.invertase.testing"
+  namespace = "com.invertase.testing"
   aaptOptions {
     // https://firebase.google.com/docs/ml/android/use-custom-models#local_model
-    noCompress 'tflite'
+    noCompress = 'tflite'
   }
   defaultConfig {
-    applicationId 'com.invertase.testing'
-    minSdkVersion rootProject.ext.minSdkVersion
-    targetSdkVersion rootProject.ext.targetSdkVersion
-    versionCode 200
-    versionName '1.0'
+    applicationId = 'com.invertase.testing'
+    minSdkVersion = rootProject.ext.minSdkVersion
+    targetSdkVersion = rootProject.ext.targetSdkVersion
+    versionCode = 200
+    versionName = '1.0'
 
     // detox items
-    testBuildType System.getProperty('testBuildType', 'debug')
-    testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    testBuildType = System.getProperty('testBuildType', 'debug')
+    testInstrumentationRunner = 'androidx.test.runner.AndroidJUnitRunner'
     missingDimensionStrategy 'detox', 'full'
   }
 
   buildFeatures {
     // AGP 8 no longer builds config by default
-    buildConfig true
+    buildConfig = true
   }
 
   signingConfigs {
     release {
       storeFile file('keystore.jks')
-      storePassword '12345678'
-      keyAlias 'key0'
-      keyPassword '12345678'
+      storePassword = '12345678'
+      keyAlias = 'key0'
+      keyPassword = '12345678'
     }
   }
 
   buildTypes {
     debug {
-      debuggable true
-      testCoverageEnabled true
-      signingConfig signingConfigs.release // sign with shared SHA256; configured in firebase dynamic-links
+      debuggable = true
+      testCoverageEnabled = true
+      signingConfig = signingConfigs.release // sign with shared SHA256; configured in firebase dynamic-links
     }
     release {
-      minifyEnabled enableProguardInReleaseBuilds
+      minifyEnabled = enableProguardInReleaseBuilds
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
       proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
-      signingConfig signingConfigs.release
+      signingConfig = signingConfigs.release
       firebaseCrashlytics {
-        nativeSymbolUploadEnabled true
-          unstrippedNativeLibsDir 'build/intermediates/merged_native_libs/release/out/lib'
+        nativeSymbolUploadEnabled = true
+          unstrippedNativeLibsDir = 'build/intermediates/merged_native_libs/release/out/lib'
       }
     }
   }
@@ -159,7 +159,7 @@ dependencies {
   implementation("androidx.vectordrawable:vectordrawable-animated:${rootProject.ext.vectordrawableVersion}")
   implementation("androidx.vectordrawable:vectordrawable:${rootProject.ext.vectordrawableVersion}")
   // Workaround build error relating to "barrierMargin" attribute not found
-  implementation "androidx.constraintlayout:constraintlayout:2.2.0-alpha13"
+  // implementation "androidx.constraintlayout:constraintlayout:2.2.0-alpha13"
 
   if (hermesEnabled.toBoolean()) {
     implementation("com.facebook.react:hermes-android")

@@ -91,11 +91,11 @@ if (rootProject.ext && rootProject.ext.firebaseJson) {
 android {
   def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger()
   if (agpVersion >= 7) {
-    namespace 'io.invertase.firebase.perf'
+    namespace = 'io.invertase.firebase.perf'
   }
 
   defaultConfig {
-    multiDexEnabled true
+    multiDexEnabled = true
     manifestPlaceholders = [
       firebaseJsonAutoCollectionEnabled: dataCollectionEnabled,
       firebaseJsonCollectionDeactivated: collectionDeactivated
@@ -104,18 +104,18 @@ android {
 
   buildFeatures {
     // AGP 8 no longer builds config by default
-    buildConfig true
+    buildConfig = true
   }
 
   lintOptions {
     disable 'GradleCompatible'
-    abortOnError false
+    abortOnError = false
   }
 
   if (agpVersion < 8) {
     compileOptions {
-      sourceCompatibility JavaVersion.VERSION_11
-      targetCompatibility JavaVersion.VERSION_11
+      sourceCompatibility = JavaVersion.VERSION_11
+      targetCompatibility = JavaVersion.VERSION_11
     }
   }
 
