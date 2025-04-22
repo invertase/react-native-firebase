@@ -70,7 +70,7 @@
     "@inquirer/prompts": "^7.4.1",
     "@octokit/core": "^6.1.5",
     "@tsconfig/node-lts": "^22.0.1",
-    "@types/react": "^18.3.20",
+    "@types/react": "^19.0.0",
     "@types/react-native": "^0.73.0",
     "@typescript-eslint/eslint-plugin": "^8.31.0",
     "@typescript-eslint/parser": "^8.31.0",
@@ -100,7 +100,7 @@
     "typescript": "^5.8.3"
   },
   "resolutions": {
-    "@types/react": "^18.3.18"
+    "@types/react": "^19.0.0"
   },
   "workspaces": {
     "packages": [
