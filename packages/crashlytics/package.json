@@ -36,7 +36,7 @@
     "stacktrace-js": "^2.0.2"
   },
   "devDependencies": {
-    "expo": "^52.0.35"
+    "expo": "^52.0.46"
   },
   "peerDependenciesMeta": {
     "expo": {
