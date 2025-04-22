@@ -108,7 +108,7 @@ describe('firestore.Transaction', function () {
         await firebase.firestore().runTransaction(async t => {
           const docSnapshot = await t.get(docRef);
           docSnapshot.constructor.name.should.eql('FirestoreDocumentSnapshot');
-          docSnapshot.exists.should.eql(true);
+          docSnapshot.exists().should.eql(true);
           docSnapshot.id.should.eql('get-delete');
 
           t.delete(docRef);
