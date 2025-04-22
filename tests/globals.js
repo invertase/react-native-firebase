@@ -51,6 +51,9 @@ globalThis.RNFBDebug = false;
 // this may be used to locate modular API errors quickly
 globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE = false;
 
+// Needed for Platform.Other session storage
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 // RNFB packages.
 import '@react-native-firebase/analytics';
 import '@react-native-firebase/app-check';
@@ -357,7 +360,12 @@ Object.defineProperty(global, 'modular', {
 });
 
 if (global.Platform.other) {
-  const { initializeApp } = modular;
+  const { initializeApp, setReactNativeAsyncStorage } = modular;
+
+  // Before initializing Firebase set the Async Storage implementation
+  // that will be used to persist user sessions.
+  setReactNativeAsyncStorage(AsyncStorage);
+
   initializeApp(global.FirebaseHelpers.app.config());
   initializeApp(global.FirebaseHelpers.app.config(), 'secondaryFromNative');
 }
