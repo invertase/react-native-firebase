@@ -1453,7 +1453,7 @@ PODS:
     - React-logger (= 0.77.0)
     - React-perflogger (= 0.77.0)
     - React-utils (= 0.77.0)
-  - RNCAsyncStorage (2.1.1):
+  - RNCAsyncStorage (2.1.2):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.11.18.00)
@@ -1746,7 +1746,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 3e6f8f8cbc3007646e918776e149f9d279ea2e2d
   ReactCodegen: a7189cc1883add0e18c1794e139cae4f3539c928
   ReactCommon: 699cc59ecdc5cc39e10ddb49fc29cefe16d8ab9f
-  RNCAsyncStorage: 33ea5b655fa91b4000c004ecb1b2fa697a836881
+  RNCAsyncStorage: f87e7905ae8a3ee95a69f4bd7046fcaaf8e46f13
   SocketRocket: 03f7111df1a343b162bf5b06ead333be808e1e0a
   Yoga: 21dd9d47026f46578fd67d9d5a2fc0bb8197096a
 

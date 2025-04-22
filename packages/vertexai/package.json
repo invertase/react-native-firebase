@@ -32,9 +32,9 @@
     "provenance": true
   },
   "devDependencies": {
-    "@types/text-encoding": "^0",
-    "react-native-builder-bob": "^0.35.2",
-    "typescript": "^5.7.2"
+    "@types/text-encoding": "^0.0.40",
+    "react-native-builder-bob": "^0.35.3",
+    "typescript": "^5.8.3"
   },
   "source": "./lib/index.ts",
   "module": "./dist/module/index.js",

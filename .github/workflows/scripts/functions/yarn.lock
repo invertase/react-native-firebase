@@ -2334,9 +2334,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase-admin@npm:^13.1.0":
-  version: 13.1.0
-  resolution: "firebase-admin@npm:13.1.0"
+"firebase-admin@npm:^13.2.0":
+  version: 13.2.0
+  resolution: "firebase-admin@npm:13.2.0"
   dependencies:
     "@fastify/busboy": "npm:^3.0.0"
     "@firebase/database-compat": "npm:^2.0.0"
@@ -2355,13 +2355,13 @@ __metadata:
       optional: true
     "@google-cloud/storage":
       optional: true
-  checksum: 10/703de42f0f26e1368b00bebc7d148fbc149e8b0444b9688b103c6bcdc723e15b86fc52716087f37d0da5e89d4ddb9ea10b91b1fe27b01a9a56f7c8dfe73d8714
+  checksum: 10/0903627950ec5c9dc9f5bdb28c6f92bfb142b0e22feed198d21cb572b2a915f08ed90a5efc0b094c5fd5d3d15658e1cd055637b902882176508ea317f9753ca8
   languageName: node
   linkType: hard
 
-"firebase-functions-test@npm:^3.4.0":
-  version: 3.4.0
-  resolution: "firebase-functions-test@npm:3.4.0"
+"firebase-functions-test@npm:^3.4.1":
+  version: 3.4.1
+  resolution: "firebase-functions-test@npm:3.4.1"
   dependencies:
     "@types/lodash": "npm:^4.14.104"
     lodash: "npm:^4.17.5"
@@ -2370,7 +2370,7 @@ __metadata:
     firebase-admin: ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0 || ^12.0.0 || ^13.0.0
     firebase-functions: ">=4.9.0"
     jest: ">=28.0.0"
-  checksum: 10/96e47c007ab04c5cbeaa4ba98d331ae981fb29c8cdddfb66f9728c935d98708f1d21a0c6d77aee927cd59c0ecc829fada3fafde4b50494fcc07aaedcc59cdd27
+  checksum: 10/ba762992a8f5b95fc043c530011c0527018d8edd85270ab6a63d3a58964b5784f1d063d9f3a4377237c7a5eb8ff41bd7b5dc2cd8d1c3d66cbd8aace6e0d5487e
   languageName: node
   linkType: hard
 
@@ -2391,9 +2391,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase-tools@npm:^13.31.1":
-  version: 13.31.1
-  resolution: "firebase-tools@npm:13.31.1"
+"firebase-tools@npm:^14.2.0":
+  version: 14.2.0
+  resolution: "firebase-tools@npm:14.2.0"
   dependencies:
     "@electric-sql/pglite": "npm:^0.2.16"
     "@google-cloud/cloud-sql-connector": "npm:^1.3.3"
@@ -2465,7 +2465,7 @@ __metadata:
     yaml: "npm:^2.4.1"
   bin:
     firebase: lib/bin/firebase.js
-  checksum: 10/c632752a003ba10c02d74feb1861f421d11c3c8ac7b8ac02f9155dc5fb0ffc81bdfe0f6cc10efaa2b424cdd26868ace7b57394c123f0e4110953405bb8472b04
+  checksum: 10/262a9ecd4de62f0cd323b96b57c6fdd677f2d2868da6f12d50085124d15460532157e41795f5c99b541990dde120599fd437cf18d66536119fa0ab3e9feed3df
   languageName: node
   linkType: hard
 
@@ -2600,11 +2600,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "functions@workspace:."
   dependencies:
-    firebase-admin: "npm:^13.1.0"
+    firebase-admin: "npm:^13.2.0"
     firebase-functions: "npm:^6.3.2"
-    firebase-functions-test: "npm:^3.4.0"
-    firebase-tools: "npm:^13.31.1"
-    typescript: "npm:^5.7.3"
+    firebase-functions-test: "npm:^3.4.1"
+    firebase-tools: "npm:^14.2.0"
+    typescript: "npm:^5.8.3"
   languageName: unknown
   linkType: soft
 
@@ -5768,23 +5768,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.7.3":
-  version: 5.7.3
-  resolution: "typescript@npm:5.7.3"
+"typescript@npm:^5.8.3":
+  version: 5.8.3
+  resolution: "typescript@npm:5.8.3"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10/6a7e556de91db3d34dc51cd2600e8e91f4c312acd8e52792f243c7818dfadb27bae677175fad6947f9c81efb6c57eb6b2d0c736f196a6ee2f1f7d57b74fc92fa
+  checksum: 10/65c40944c51b513b0172c6710ee62e951b70af6f75d5a5da745cb7fab132c09ae27ffdf7838996e3ed603bb015dadd099006658046941bd0ba30340cc563ae92
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^5.7.3#optional!builtin<compat/typescript>":
-  version: 5.7.3
-  resolution: "typescript@patch:typescript@npm%3A5.7.3#optional!builtin<compat/typescript>::version=5.7.3&hash=5786d5"
+"typescript@patch:typescript@npm%3A^5.8.3#optional!builtin<compat/typescript>":
+  version: 5.8.3
+  resolution: "typescript@patch:typescript@npm%3A5.8.3#optional!builtin<compat/typescript>::version=5.8.3&hash=5786d5"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10/dc58d777eb4c01973f7fbf1fd808aad49a0efdf545528dab9b07d94fdcb65b8751742804c3057e9619a4627f2d9cc85547fdd49d9f4326992ad0181b49e61d81
+  checksum: 10/b9b1e73dabac5dc730c041325dbd9c99467c1b0d239f1b74ec3b90d831384af3e2ba973946232df670519147eb51a2c20f6f96163cea2b359f03de1e2091cc4f
   languageName: node
   linkType: hard
 
