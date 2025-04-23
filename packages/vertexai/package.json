@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@types/text-encoding": "^0.0.40",
-    "react-native-builder-bob": "^0.35.3",
+    "react-native-builder-bob": "^0.40.6",
     "typescript": "^5.8.3"
   },
   "source": "./lib/index.ts",
@@ -73,12 +73,7 @@
           "esm": true
         }
       ],
-      [
-        "typescript",
-        {
-          "esm": true
-        }
-      ]
+      "typescript"
     ]
   },
   "eslintIgnore": [
