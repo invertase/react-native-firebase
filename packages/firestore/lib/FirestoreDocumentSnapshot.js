@@ -114,7 +114,7 @@ export default class FirestoreDocumentSnapshot {
     }
 
     if (
-      this.exists !== other.exists ||
+      this.exists() !== other.exists() ||
       !this.metadata.isEqual(other.metadata) ||
       !this.ref.isEqual(other.ref)
     ) {
