@@ -6,17 +6,17 @@ buildscript {
 
  ext.ndkVersion = "27.1.12297006"
  
-  ext.kotlinVersion = '2.0.21' // https://kotlinlang.org/releases.html
-  ext.supportLibVersion = '1.13.1' // this maps to androidx.core https://developer.android.com/jetpack/androidx/releases/core
+  ext.kotlinVersion = '2.1.20' // https://kotlinlang.org/releases.html
+  ext.supportLibVersion = '1.16.0' // this maps to androidx.core https://developer.android.com/jetpack/androidx/releases/core
   ext.appCompatVersion = '1.7.0' // this maps to androidx.appcompat https://developer.android.com/jetpack/androidx/releases/appcompat
   ext.supportVersion = ext.supportLibVersion
-  ext.frescoVersion = '3.2.0' // https://github.com/facebook/fresco/releases
-  ext.fragmentVersion = '1.8.1' // https://developer.android.com/jetpack/androidx/releases/fragment
+  ext.frescoVersion = '3.6.0' // https://github.com/facebook/fresco/releases
+  ext.fragmentVersion = '1.8.6' // https://developer.android.com/jetpack/androidx/releases/fragment
   ext.vectordrawableVersion = '1.2.0' // https://developer.android.com/jetpack/androidx/releases/vectordrawable
-  ext.androidxAnnotationVersion = '1.8.0' // https://developer.android.com/jetpack/androidx/releases/annotation
+  ext.androidxAnnotationVersion = '1.9.1' // https://developer.android.com/jetpack/androidx/releases/annotation
   ext.googlePlayServicesLocationVersion = '21.3.0' // https://developers.google.com/android/guides/setup
-  ext.googlePlayServicesVersion = '18.5.0' // play-services-base
-  ext.googlePlayServicesAuthVersion = '21.2.0' // play-services-auth
+  ext.googlePlayServicesVersion = '18.7.0' // play-services-base
+  ext.googlePlayServicesAuthVersion = '21.3.0' // play-services-auth
   ext.googlePlayServicesVisionVersion = '20.1.3' // play-services-vision
   ext.googlePlayServicesIidVersion = '17.0.0' // play-services-iid - deprecated, device-info only
   ext.mediaCompatVersion = '1.7.0' // https://developer.android.com/jetpack/androidx/releases/media
@@ -32,7 +32,7 @@ buildscript {
   }
   dependencies {
     classpath 'com.google.gms:google-services:4.4.2' // https://developers.google.com/android/guides/google-services-plugin
-    classpath 'com.android.tools.build:gradle:8.5.0' // https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
+    classpath 'com.android.tools.build:gradle:8.9.2' // https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
     classpath("com.facebook.react:react-native-gradle-plugin")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
     classpath 'com.google.firebase:perf-plugin:1.4.2'
@@ -75,7 +75,7 @@ subprojects {
       android {
         // Instrument all our modules for coverage generation
         buildTypes.debug.testCoverageEnabled = true
-        jacoco.version = '0.8.12'
+        jacoco.version = '0.8.13'
         testOptions.unitTests.includeAndroidResources = true
 
         // Make sure our project are run through basic lint checks
