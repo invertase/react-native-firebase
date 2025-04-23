@@ -2334,9 +2334,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase-admin@npm:^13.2.0":
-  version: 13.2.0
-  resolution: "firebase-admin@npm:13.2.0"
+"firebase-admin@npm:^13.3.0":
+  version: 13.3.0
+  resolution: "firebase-admin@npm:13.3.0"
   dependencies:
     "@fastify/busboy": "npm:^3.0.0"
     "@firebase/database-compat": "npm:^2.0.0"
@@ -2355,7 +2355,7 @@ __metadata:
       optional: true
     "@google-cloud/storage":
       optional: true
-  checksum: 10/0903627950ec5c9dc9f5bdb28c6f92bfb142b0e22feed198d21cb572b2a915f08ed90a5efc0b094c5fd5d3d15658e1cd055637b902882176508ea317f9753ca8
+  checksum: 10/c1ac0872aafcd2e5014aebf84571b86907cae5e80b6cb83c575a05eeac338f3d0e308ecf7d99be8bfde7558d50b9d05edbbfa59069b1e78e57ba191f3edc322b
   languageName: node
   linkType: hard
 
@@ -2600,7 +2600,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "functions@workspace:."
   dependencies:
-    firebase-admin: "npm:^13.2.0"
+    firebase-admin: "npm:^13.3.0"
     firebase-functions: "npm:^6.3.2"
     firebase-functions-test: "npm:^3.4.1"
     firebase-tools: "npm:^14.2.0"
