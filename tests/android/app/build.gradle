@@ -158,8 +158,6 @@ dependencies {
   implementation("androidx.swiperefreshlayout:swiperefreshlayout:${rootProject.ext.swiperefreshlayoutVersion}")
   implementation("androidx.vectordrawable:vectordrawable-animated:${rootProject.ext.vectordrawableVersion}")
   implementation("androidx.vectordrawable:vectordrawable:${rootProject.ext.vectordrawableVersion}")
-  // Workaround build error relating to "barrierMargin" attribute not found
-  // implementation "androidx.constraintlayout:constraintlayout:2.2.0-alpha13"
 
   if (hermesEnabled.toBoolean()) {
     implementation("com.facebook.react:hermes-android")
