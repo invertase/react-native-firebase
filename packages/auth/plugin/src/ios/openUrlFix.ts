@@ -62,35 +62,40 @@ export function withOpenUrlFixForAppDelegate({
   const { language, contents } = config.modResults;
   const configValue = props?.ios?.captchaOpenUrlFix || 'default';
 
-  if (['objc', 'objcpp'].includes(language)) {
-    const newContents = modifyObjcAppDelegate(contents);
-    if (newContents === null) {
-      if (configValue === true) {
-        throw new Error("Failed to apply iOS openURL fix because no 'openURL' method was found");
-      } else {
-        WarningAggregator.addWarningIOS(
-          '@react-native-firebase/auth',
-          "Skipping iOS openURL fix because no 'openURL' method was found",
-        );
-        return config;
-      }
+  const newContents = modifyAppDelegate(contents, language);
+  if (newContents === null) {
+    if (configValue === true) {
+      throw new Error("Failed to apply iOS openURL fix because no 'openURL' method was found");
     } else {
-      if (configValue === 'default') {
-        WarningAggregator.addWarningIOS(
-          '@react-native-firebase/auth',
-          'modifying iOS AppDelegate openURL method to ignore firebaseauth reCAPTCHA redirect URLs',
-        );
-      }
-      return {
-        ...config,
-        modResults: {
-          ...config.modResults,
-          contents: newContents,
-        },
-      };
+      WarningAggregator.addWarningIOS(
+        '@react-native-firebase/auth',
+        "Skipping iOS openURL fix because no 'openURL' method was found",
+      );
+      return config;
     }
   } else {
-    // TODO: Support Swift
+    if (configValue === 'default') {
+      WarningAggregator.addWarningIOS(
+        '@react-native-firebase/auth',
+        'modifying iOS AppDelegate openURL method to ignore firebaseauth reCAPTCHA redirect URLs',
+      );
+    }
+    return {
+      ...config,
+      modResults: {
+        ...config.modResults,
+        contents: newContents,
+      },
+    };
+  }
+}
+
+export function modifyAppDelegate(contents: string, language: string): string | null {
+  if (language === 'objc' || language === 'objcpp') {
+    return modifyObjcAppDelegate(contents);
+  } else if (language === 'swift') {
+    return modifySwiftAppDelegate(contents);
+  } else {
     throw new Error(`Don't know how to apply openUrlFix to AppDelegate of language "${language}"`);
   }
 }
@@ -145,6 +150,40 @@ export function modifyObjcAppDelegate(contents: string): string | null {
     offset,
     comment: '//',
   }).contents;
+}
+
+// NOTE: `mergeContents()` doesn't support newlines for the `anchor` regex, so we have to replace it manually
+const skipOpenUrlForFirebaseAuthBlockSwift: string = `\
+// @generated begin @react-native-firebase/auth-openURL - expo prebuild (DO NOT MODIFY)
+    if url.host.toLowerCase() == "firebaseauth" {
+      // invocations for Firebase Auth are handled elsewhere and should not be forwarded to Expo Router
+      return false
+    }
+// @generated end @react-native-firebase/auth-openURL\
+`;
+
+export const appDelegateSwiftOpenUrlInsertionPointAfter: RegExp =
+  /public\s*override\s*func\s*application\s*\(\n\s*_\s*app\s*:\s*UIApplication,\n\s*open\s*url\s*:\s*URL,\n\s*options\s*:\s*\[UIApplication\.OpenURLOptionsKey\s*:\s*Any\]\s*=\s*\[:\]\n\s*\)\s*->\s*Bool\s*{\n/;
+
+export function modifySwiftAppDelegate(contents: string): string | null {
+  const pattern = appDelegateSwiftOpenUrlInsertionPointAfter;
+  const fullMatch = contents.match(pattern);
+  if (!fullMatch) {
+    if (contents.match(/open url\s*:/)) {
+      throw new Error(
+        [
+          "Failed to apply 'captchaOpenUrlFix' but detected 'openURL' method.",
+          "Please manually apply the fix to your AppDelegate's openURL method,",
+          "then update your app.config.json by configuring the '@react-native-firebase/auth' plugin",
+          'to set `captchaOpenUrlFix: false`.',
+        ].join(' '),
+      );
+    } else {
+      // openURL method was not found in AppDelegate
+      return null;
+    }
+  }
+  return contents.replace(pattern, `${fullMatch[0]}${skipOpenUrlForFirebaseAuthBlockSwift}\n`);
 }
 
 export type ExpoConfigPluginEntry = string | [] | [string] | [string, any];
