@@ -26,7 +26,7 @@ function getReversedClientId(googleServiceFilePath: string): string {
     return REVERSED_CLIENT_ID;
   } catch {
     throw new Error(
-      '[@react-native-firebase/auth] Failed to parse your GoogleService-Info.plist. Are you sure it is a valid Info.Plist file with a REVERSE_CLIENT_ID field?',
+      '[@react-native-firebase/auth] Failed to parse your GoogleService-Info.plist. Are you sure it is a valid Info.Plist file with a REVERSED_CLIENT_ID field?',
     );
   }
 }
