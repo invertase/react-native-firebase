@@ -8,7 +8,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### ⚠ BREAKING CHANGES
 
 - **firestore:** alter all use of DocumentSnapshot `exists` to `exists()` - should be a method not a property
-- **auth:** return type of auth isSignInWithEmailLink changed from boolean to Promise<boolean>
+- **auth:** return type of auth isSignInWithEmailLink changed from `boolean` to `Promise<boolean>`
 - **app, sdks:** firebase-ios-sdk 11.12.0 requires Xcode 16.2+
 
 ### Features
