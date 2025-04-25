@@ -181,9 +181,9 @@ describe('firestore.WriteBatch.commit()', function () {
 
       const [lDoc, nycDoc, sDoc] = await Promise.all([lRef.get(), nycRef.get(), sfRef.get()]);
 
-      lDoc.exists.should.be.False();
-      nycDoc.exists.should.be.False();
-      sDoc.exists.should.be.False();
+      lDoc.exists().should.be.False();
+      nycDoc.exists().should.be.False();
+      sDoc.exists().should.be.False();
     });
 
     it('should update & commit', async function () {
@@ -376,9 +376,9 @@ describe('firestore.WriteBatch.commit()', function () {
 
       const [lDoc, nycDoc, sDoc] = await Promise.all([getDoc(lRef), getDoc(nycRef), getDoc(sfRef)]);
 
-      lDoc.exists.should.be.False();
-      nycDoc.exists.should.be.False();
-      sDoc.exists.should.be.False();
+      lDoc.exists().should.be.False();
+      nycDoc.exists().should.be.False();
+      sDoc.exists().should.be.False();
     });
 
     it('should update & commit', async function () {

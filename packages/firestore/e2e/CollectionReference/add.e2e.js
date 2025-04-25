@@ -49,7 +49,7 @@ describe('firestore.collection().add()', function () {
       should.equal(docRef.constructor.name, 'FirestoreDocumentReference');
       const docSnap = await docRef.get();
       docSnap.data().should.eql(jet.contextify(data));
-      docSnap.exists.should.eql(true);
+      docSnap.exists().should.eql(true);
       await docRef.delete();
     });
   });
@@ -75,7 +75,7 @@ describe('firestore.collection().add()', function () {
       should.equal(docRef.constructor.name, 'FirestoreDocumentReference');
       const docSnap = await getDoc(docRef);
       docSnap.data().should.eql(jet.contextify(data));
-      docSnap.exists.should.eql(true);
+      docSnap.exists().should.eql(true);
       await deleteDoc(docRef);
     });
   });

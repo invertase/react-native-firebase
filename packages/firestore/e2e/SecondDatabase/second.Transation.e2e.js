@@ -114,7 +114,7 @@ describe('Second Database', function () {
           await firestore.runTransaction(async t => {
             const docSnapshot = await t.get(docRef);
             docSnapshot.constructor.name.should.eql('FirestoreDocumentSnapshot');
-            docSnapshot.exists.should.eql(true);
+            docSnapshot.exists().should.eql(true);
             docSnapshot.id.should.eql('get-delete');
 
             t.delete(docRef);
@@ -148,10 +148,10 @@ describe('Second Database', function () {
           });
 
           const snapshot1 = await docRef1.get();
-          snapshot1.exists.should.eql(false);
+          snapshot1.exists().should.eql(false);
 
           const snapshot2 = await docRef2.get();
-          snapshot2.exists.should.eql(false);
+          snapshot2.exists().should.eql(false);
         });
       });
 
@@ -210,11 +210,11 @@ describe('Second Database', function () {
           };
 
           const snapshot1 = await docRef1.get();
-          snapshot1.exists.should.eql(true);
+          snapshot1.exists().should.eql(true);
           snapshot1.data().should.eql(jet.contextify(expected));
 
           const snapshot2 = await docRef2.get();
-          snapshot2.exists.should.eql(true);
+          snapshot2.exists().should.eql(true);
           snapshot2.data().should.eql(jet.contextify(expected));
         });
       });
@@ -487,7 +487,7 @@ describe('Second Database', function () {
           await runTransaction(db, async t => {
             const docSnapshot = await t.get(docRef);
             docSnapshot.constructor.name.should.eql('FirestoreDocumentSnapshot');
-            docSnapshot.exists.should.eql(true);
+            docSnapshot.exists().should.eql(true);
             docSnapshot.id.should.eql('get-delete');
 
             t.delete(docRef);
@@ -524,10 +524,10 @@ describe('Second Database', function () {
           });
 
           const snapshot1 = await getDoc(docRef1);
-          snapshot1.exists.should.eql(false);
+          snapshot1.exists().should.eql(false);
 
           const snapshot2 = await getDoc(docRef2);
-          snapshot2.exists.should.eql(false);
+          snapshot2.exists().should.eql(false);
         });
       });
 
@@ -591,11 +591,11 @@ describe('Second Database', function () {
           };
 
           const snapshot1 = await getDoc(docRef1);
-          snapshot1.exists.should.eql(true);
+          snapshot1.exists().should.eql(true);
           snapshot1.data().should.eql(jet.contextify(expected));
 
           const snapshot2 = await getDoc(docRef2);
-          snapshot2.exists.should.eql(true);
+          snapshot2.exists().should.eql(true);
           snapshot2.data().should.eql(jet.contextify(expected));
         });
       });

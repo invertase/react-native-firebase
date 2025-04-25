@@ -65,7 +65,7 @@ export default class FirestoreQuery {
 
       const documentSnapshot = docOrField;
 
-      if (!documentSnapshot.exists) {
+      if (!documentSnapshot.exists()) {
         throw new Error(
           `firebase.firestore().collection().${cursor}(*) Can't use a DocumentSnapshot that doesn't exist.`,
         );
