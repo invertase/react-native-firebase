@@ -254,6 +254,15 @@ RCT_EXPORT_METHOD(signInWithEmailAndPassword
            }];
 }
 
+RCT_EXPORT_METHOD(isSignInWithEmailLink
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)emailLink
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  resolve(
+      @([RCTConvert BOOL:@([[FIRAuth authWithApp:firebaseApp] isSignInWithEmailLink:emailLink])]));
+}
+
 RCT_EXPORT_METHOD(signInWithEmailLink
                   : (FIRApp *)firebaseApp
                   : (NSString *)email
