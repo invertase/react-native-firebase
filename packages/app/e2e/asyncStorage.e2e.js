@@ -16,8 +16,9 @@ describe('firebase.setReactNativeAsyncStorage()', function () {
   });
 
   it('throws if asyncStorage is not an object', function () {
+    const { setReactNativeAsyncStorage } = modular;
     try {
-      firebase.setReactNativeAsyncStorage(123);
+      setReactNativeAsyncStorage(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'asyncStorage' must be an object");
@@ -26,8 +27,9 @@ describe('firebase.setReactNativeAsyncStorage()', function () {
   });
 
   it('throws if asyncStorage.setItem is not a function', function () {
+    const { setReactNativeAsyncStorage } = modular;
     try {
-      firebase.setReactNativeAsyncStorage({ setItem: 123 });
+      setReactNativeAsyncStorage({ setItem: 123 });
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'asyncStorage.setItem' must be a function");
@@ -36,8 +38,9 @@ describe('firebase.setReactNativeAsyncStorage()', function () {
   });
 
   it('throws if asyncStorage.getItem is not a function', function () {
+    const { setReactNativeAsyncStorage } = modular;
     try {
-      firebase.setReactNativeAsyncStorage({ setItem: sinon.spy(), getItem: 123 });
+      setReactNativeAsyncStorage({ setItem: sinon.spy(), getItem: 123 });
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'asyncStorage.getItem' must be a function");
@@ -46,8 +49,9 @@ describe('firebase.setReactNativeAsyncStorage()', function () {
   });
 
   it('throws if asyncStorage.removeItem is not a function', function () {
+    const { setReactNativeAsyncStorage } = modular;
     try {
-      firebase.setReactNativeAsyncStorage({
+      setReactNativeAsyncStorage({
         setItem: sinon.spy(),
         getItem: sinon.spy(),
         removeItem: 123,
@@ -60,13 +64,14 @@ describe('firebase.setReactNativeAsyncStorage()', function () {
   });
 
   it('sets the async storage instance', async function () {
+    const { setReactNativeAsyncStorage } = modular;
     isMemoryStorage().should.equal(true);
 
     const setItemSpy = sinon.spy();
     const getItemSpy = sinon.spy();
     const removeItemSpy = sinon.spy();
 
-    firebase.setReactNativeAsyncStorage({
+    setReactNativeAsyncStorage({
       setItem: setItemSpy,
       getItem: getItemSpy,
       removeItem: removeItemSpy,
@@ -84,10 +89,11 @@ describe('firebase.setReactNativeAsyncStorage()', function () {
   });
 
   it('works with @react-native-async-storage/async-storage', async function () {
+    const { setReactNativeAsyncStorage } = modular;
     isMemoryStorage().should.equal(true);
     const key = Date.now().toString();
     const value = 'bar';
-    firebase.setReactNativeAsyncStorage(asyncStorage);
+    setReactNativeAsyncStorage(asyncStorage);
     isMemoryStorage().should.equal(false);
 
     // Through our internals,
