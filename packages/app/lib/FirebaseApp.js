@@ -73,7 +73,7 @@ export default class FirebaseApp {
   }
 
   toString() {
-    warnIfNotModularCall(arguments);
+    warnIfNotModularCall(arguments, '.name property');
     return this.name;
   }
 }
