@@ -90,6 +90,16 @@ const SAMPLE_DATA = {
 
 describe('functions() modular', function () {
   describe('firebase v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     describe('namespace', function () {
       it('accepts passing in an FirebaseApp instance as first arg', async function () {
         const appName = `functionsApp${FirebaseHelpers.id}2`;
@@ -407,27 +417,25 @@ describe('functions() modular', function () {
   describe('modular', function () {
     describe('getFunctions', function () {
       it('pass app as argument', function () {
+        const { getApp } = modular;
         const { getFunctions } = functionsModular;
-
-        const functions = getFunctions(firebase.app());
-
+        const functions = getFunctions(getApp());
         functions.constructor.name.should.be.equal('FirebaseFunctionsModule');
       });
 
       it('no app as argument', function () {
         const { getFunctions } = functionsModular;
-
         const functions = getFunctions();
-
         functions.constructor.name.should.be.equal('FirebaseFunctionsModule');
       });
     });
 
     it('accepts passing in an FirebaseApp instance as first arg', async function () {
+      const { initializeApp } = modular;
       const { getFunctions } = functionsModular;
       const appName = `functionsApp${FirebaseHelpers.id}3`;
       const platformAppConfig = FirebaseHelpers.app.config();
-      const app = await firebase.initializeApp(platformAppConfig, appName);
+      const app = await initializeApp(platformAppConfig, appName);
       const functions = getFunctions(app);
 
       functions.app.should.equal(app);
@@ -439,18 +447,19 @@ describe('functions() modular', function () {
     });
 
     it('accepts passing in a region string as first arg to an app', async function () {
+      const { getApp } = modular;
       const { getFunctions } = functionsModular;
       const region = 'europe-west1';
 
-      const functionsForRegion = getFunctions(firebase.app(), region);
+      const functionsForRegion = getFunctions(getApp(), region);
 
       functionsForRegion._customUrlOrRegion.should.equal(region);
-      functionsForRegion.app.should.equal(firebase.app());
-      functionsForRegion.app.name.should.equal(firebase.app().name);
+      functionsForRegion.app.should.equal(getApp());
+      functionsForRegion.app.name.should.equal(getApp().name);
 
-      firebase.app().functions(region).app.should.equal(firebase.app());
+      getApp().functions(region).app.should.equal(getApp());
 
-      firebase.app().functions(region)._customUrlOrRegion.should.equal(region);
+      getApp().functions(region)._customUrlOrRegion.should.equal(region);
 
       const functionRunner = functionsForRegion.httpsCallable('testFunctionCustomRegion');
 
@@ -459,16 +468,17 @@ describe('functions() modular', function () {
     });
 
     it('accepts passing in a custom url string as first arg to an app', async function () {
+      const { getApp } = modular;
       const { getFunctions } = functionsModular;
       const customUrl = 'https://us-central1-react-native-firebase-testing.cloudfunctions.net';
 
-      const functionsForCustomUrl = getFunctions(firebase.app(), customUrl);
+      const functionsForCustomUrl = getFunctions(getApp(), customUrl);
 
       functionsForCustomUrl._customUrlOrRegion.should.equal(customUrl);
-      functionsForCustomUrl.app.should.equal(firebase.app());
-      functionsForCustomUrl.app.name.should.equal(firebase.app().name);
+      functionsForCustomUrl.app.should.equal(getApp());
+      functionsForCustomUrl.app.name.should.equal(getApp().name);
 
-      functionsForCustomUrl.app.should.equal(firebase.app());
+      functionsForCustomUrl.app.should.equal(getApp());
 
       functionsForCustomUrl._customUrlOrRegion.should.equal(customUrl);
 
@@ -480,21 +490,23 @@ describe('functions() modular', function () {
 
     describe('emulator', function () {
       it('configures functions emulator via deprecated method with no port', async function () {
+        const { getApp } = modular;
         const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
         const region = 'us-central1';
         const fnName = 'helloWorldV2';
         // const functions = firebase.app().functions(region);
-        const functions = getFunctions(firebase.app(), region);
+        const functions = getFunctions(getApp(), region);
         connectFunctionsEmulator(functions, 'localhost', 5001);
         const response = await httpsCallable(functions, fnName)();
         response.data.should.equal('Hello from Firebase!');
       });
 
       it('configures functions emulator via deprecated method with port', async function () {
+        const { getApp } = modular;
         const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
         const region = 'us-central1';
         const fnName = 'helloWorldV2';
-        const functions = getFunctions(firebase.app(), region);
+        const functions = getFunctions(getApp(), region);
         connectFunctionsEmulator(functions, 'localhost', 5001);
         const response = await httpsCallable(functions, fnName)();
         response.data.should.equal('Hello from Firebase!');
@@ -503,13 +515,14 @@ describe('functions() modular', function () {
 
     describe('httpsCallableFromUrl()', function () {
       it('Calls a function by URL', async function () {
+        const { getApp } = modular;
         const { getFunctions, httpsCallableFromUrl } = functionsModular;
 
         let hostname = 'localhost';
         if (Platform.android) {
           hostname = '10.0.2.2';
         }
-        const functions = getFunctions(firebase.app());
+        const functions = getFunctions(getApp());
         const functionRunner = httpsCallableFromUrl(
           functions,
           `http://${hostname}:5001/react-native-firebase-testing/us-central1/helloWorldV2`,
@@ -521,73 +534,59 @@ describe('functions() modular', function () {
 
     describe('httpsCallable(fnName)(args)', function () {
       it('accepts primitive args: undefined', async function () {
+        const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(
-          getFunctions(firebase.app()),
-          'testFunctionDefaultRegionV2',
-        );
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
         const response = await functionRunner();
         response.data.should.equal('null');
       });
 
       it('accepts primitive args: string', async function () {
+        const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(
-          getFunctions(firebase.app()),
-          'testFunctionDefaultRegionV2',
-        );
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
         const response = await functionRunner('hello');
         response.data.should.equal('string');
       });
 
       it('accepts primitive args: number', async function () {
+        const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(
-          getFunctions(firebase.app()),
-          'testFunctionDefaultRegionV2',
-        );
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
         const response = await functionRunner(123);
         response.data.should.equal('number');
       });
 
       it('accepts primitive args: boolean', async function () {
+        const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(
-          getFunctions(firebase.app()),
-          'testFunctionDefaultRegionV2',
-        );
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
         const response = await functionRunner(true);
         response.data.should.equal('boolean');
       });
 
       it('accepts primitive args: null', async function () {
+        const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(
-          getFunctions(firebase.app()),
-          'testFunctionDefaultRegionV2',
-        );
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
         const response = await functionRunner(null);
         response.data.should.equal('null');
       });
 
       it('accepts array args', async function () {
+        const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(
-          getFunctions(firebase.app()),
-          'testFunctionDefaultRegionV2',
-        );
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
         const response = await functionRunner([1, 2, 3, 4]);
         response.data.should.equal('array');
       });
 
       it('accepts object args', async function () {
+        const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
         const type = 'object';
         const inputData = SAMPLE_DATA[type];
-        const functionRunner = httpsCallable(
-          getFunctions(firebase.app()),
-          'testFunctionDefaultRegionV2',
-        );
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
         const { data: outputData } = await functionRunner({
           type,
           inputData,
@@ -596,13 +595,11 @@ describe('functions() modular', function () {
       });
 
       it('accepts complex nested objects', async function () {
+        const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
         const type = 'deepObject';
         const inputData = SAMPLE_DATA[type];
-        const functionRunner = httpsCallable(
-          getFunctions(firebase.app()),
-          'testFunctionDefaultRegionV2',
-        );
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
         const { data: outputData } = await functionRunner({
           type,
           inputData,
@@ -611,13 +608,11 @@ describe('functions() modular', function () {
       });
 
       it('accepts complex nested arrays', async function () {
+        const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
         const type = 'deepArray';
         const inputData = SAMPLE_DATA[type];
-        const functionRunner = httpsCallable(
-          getFunctions(firebase.app()),
-          'testFunctionDefaultRegionV2',
-        );
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
         const { data: outputData } = await functionRunner({
           type,
           inputData,
@@ -628,11 +623,9 @@ describe('functions() modular', function () {
 
     describe('HttpsError', function () {
       it('errors return instance of HttpsError', async function () {
+        const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(
-          getFunctions(firebase.app()),
-          'testFunctionDefaultRegionV2',
-        );
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
 
         try {
           await functionRunner({});
@@ -649,11 +642,9 @@ describe('functions() modular', function () {
       it('HttpsError.details -> allows returning complex data', async function () {
         let type = 'deepObject';
         let inputData = SAMPLE_DATA[type];
+        const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functionRunner = httpsCallable(
-          getFunctions(firebase.app()),
-          'testFunctionDefaultRegionV2',
-        );
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
         try {
           await functionRunner({
             type,
@@ -690,13 +681,11 @@ describe('functions() modular', function () {
       });
 
       it('HttpsError.details -> allows returning primitives', async function () {
+        const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
         let type = 'number';
         let inputData = SAMPLE_DATA[type];
-        const functionRunner = httpsCallable(
-          getFunctions(firebase.app()),
-          'testFunctionDefaultRegionV2',
-        );
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testFunctionDefaultRegionV2');
         try {
           await functionRunner({
             type,
@@ -767,8 +756,9 @@ describe('functions() modular', function () {
       });
 
       it('HttpsCallableOptions.timeout will error when timeout is exceeded', async function () {
+        const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
-        const functions = getFunctions(firebase.app());
+        const functions = getFunctions(getApp());
         const functionRunner = httpsCallable(functions, 'sleeperV2', { timeout: 1000 });
 
         try {
