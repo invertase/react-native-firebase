@@ -1,10 +1,18 @@
 describe('auth() -> Providers', function () {
   describe('firebase v8 compatibility', function () {
-    beforeEach(async function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+
       if (firebase.auth().currentUser) {
         await firebase.auth().signOut();
         await Utils.sleep(50);
       }
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
     });
 
     describe('EmailAuthProvider', function () {
@@ -263,9 +271,10 @@ describe('auth() -> Providers', function () {
 
   describe('modular', function () {
     beforeEach(async function () {
+      const { getApp } = modular;
       const { signOut, getAuth } = authModular;
 
-      const defaultApp = firebase.app();
+      const defaultApp = getApp();
       const defaultAuth = getAuth(defaultApp);
 
       if (defaultAuth.currentUser) {

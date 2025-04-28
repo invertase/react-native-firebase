@@ -178,34 +178,39 @@ exports.signInUser = async function signInUser(oobUrl) {
 };
 
 async function createVerifiedUser(email, password) {
-  await firebase.auth().createUserWithEmailAndPassword(email, password);
-  await firebase.auth().currentUser.sendEmailVerification();
+  const { getAuth, createUserWithEmailAndPassword } = authModular;
+  const credential = await createUserWithEmailAndPassword(getAuth(), email, password);
+  await credential.user.sendEmailVerification();
   const { oobCode } = await getLastOob(email);
   await verifyEmail(oobCode);
-  await firebase.auth().currentUser.reload();
+  await credential.user.reload();
+  return credential.user;
 }
 exports.createVerifiedUser = createVerifiedUser;
 
 /**
  * Create a new user with a second factor enrolled. Returns phoneNumber, email and password
  * for testing purposes. The session used to enroll the factor is terminated. You'll have to
- * sign in using `firebase.auth().signInWithEmailAndPassword()`.
+ * sign in using `signInWithEmailAndPassword(getAuth())`.
  */
 exports.createUserWithMultiFactor = async function createUserWithMultiFactor() {
+  const { getAuth, multiFactor, signOut, PhoneAuthProvider, PhoneMultiFactorGenerator } =
+    authModular;
   const email = 'verified@example.com';
   const password = 'test123';
-  await createVerifiedUser(email, password);
-  const multiFactorUser = await firebase.auth().multiFactor(firebase.auth().currentUser);
+  const user = await createVerifiedUser(email, password);
+  const multiFactorUser = await multiFactor(user);
   const session = await multiFactorUser.getSession();
   const phoneNumber = getRandomPhoneNumber();
-  const verificationId = await firebase
-    .auth()
-    .verifyPhoneNumberForMultiFactor({ phoneNumber, session });
+  const verificationId = await new PhoneAuthProvider(getAuth()).verifyPhoneNumber({
+    phoneNumber,
+    session,
+  });
   const verificationCode = await getLastSmsCode(phoneNumber);
-  const cred = firebase.auth.PhoneAuthProvider.credential(verificationId, verificationCode);
-  const multiFactorAssertion = firebase.auth.PhoneMultiFactorGenerator.assertion(cred);
+  const cred = PhoneAuthProvider.credential(verificationId, verificationCode);
+  const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
   await multiFactorUser.enroll(multiFactorAssertion, 'Hint displayName');
-  await firebase.auth().signOut();
+  await signOut(getAuth());
 
   return Promise.resolve({
     phoneNumber,
@@ -219,19 +224,27 @@ exports.signInUserWithMultiFactor = async function signInUserWithMultiFactor(
   password,
   phoneNumber,
 ) {
+  const {
+    getAuth,
+    getMultiFactorResolver,
+    signInWithEmailAndPassword,
+    PhoneAuthProvider,
+    PhoneMultiFactorGenerator,
+  } = authModular;
   try {
-    await firebase.auth().signInWithEmailAndPassword(email, password);
+    await signInWithEmailAndPassword(getAuth(), email, password);
   } catch (e) {
     e.message.should.equal(
       '[auth/multi-factor-auth-required] Please complete a second factor challenge to finish signing into this account.',
     );
-    const resolver = firebase.auth().getMultiFactorResolver(e);
-    let verificationId = await firebase
-      .auth()
-      .verifyPhoneNumberWithMultiFactorInfo(resolver.hints[0], resolver.session);
+    const resolver = getMultiFactorResolver(getAuth(), e);
+    let verificationId = await new PhoneAuthProvider(getAuth()).verifyPhoneNumber({
+      multiFactorHint: resolver.hints[0],
+      session: resolver.session,
+    });
     let verificationCode = await getLastSmsCode(phoneNumber);
-    const credential = firebase.auth.PhoneAuthProvider.credential(verificationId, verificationCode);
-    let multiFactorAssertion = firebase.auth.PhoneMultiFactorGenerator.assertion(credential);
+    const credential = PhoneAuthProvider.credential(verificationId, verificationCode);
+    let multiFactorAssertion = PhoneMultiFactorGenerator.assertion(credential);
     return resolver.resolveSignIn(multiFactorAssertion);
   }
 };
