@@ -21,6 +21,14 @@ describe('storage() -> StorageReference', function () {
   describe('firebase v8 compatibility', function () {
     before(async function () {
       await seed(PATH);
+
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    after(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
     });
 
     describe('toString()', function () {
@@ -671,24 +679,24 @@ describe('storage() -> StorageReference', function () {
         });
       });
     });
-  });
 
-  describe('put secondaryApp', function () {
-    it('allows valid metadata properties for upload', async function () {
-      const storageReference = firebase
-        .storage(firebase.app('secondaryFromNative'))
-        // .storage()
-        .ref(`${PATH}/metadataTest.jpeg`);
-      await storageReference.put(new ArrayBuffer(), {
-        contentType: 'image/jpg',
-        md5hash: '123412341234',
-        cacheControl: 'true',
-        contentDisposition: 'disposed',
-        contentEncoding: 'application/octet-stream',
-        contentLanguage: 'de',
-        customMetadata: {
-          customMetadata1: 'metadata1value',
-        },
+    describe('put secondaryApp', function () {
+      it('allows valid metadata properties for upload', async function () {
+        const storageReference = firebase
+          .storage(firebase.app('secondaryFromNative'))
+          // .storage()
+          .ref(`${PATH}/metadataTest.jpeg`);
+        await storageReference.put(new ArrayBuffer(), {
+          contentType: 'image/jpg',
+          md5hash: '123412341234',
+          cacheControl: 'true',
+          contentDisposition: 'disposed',
+          contentEncoding: 'application/octet-stream',
+          contentLanguage: 'de',
+          customMetadata: {
+            customMetadata1: 'metadata1value',
+          },
+        });
       });
     });
   });
@@ -700,8 +708,9 @@ describe('storage() -> StorageReference', function () {
     before(async function () {
       await seed(PATH);
 
+      const { getApp } = modular;
       const { getStorage } = storageModular;
-      secondStorage = getStorage(firebase.app(), secondStorageBucket);
+      secondStorage = getStorage(getApp(), secondStorageBucket);
     });
 
     describe('second storage bucket writes to Storage emulator', function () {
@@ -737,12 +746,12 @@ describe('storage() -> StorageReference', function () {
 
     describe('toString()', function () {
       it('returns the correct bucket path to the file', function () {
+        const { getApp } = modular;
         const { getStorage, ref, toString } = storageModular;
         const storageReference = ref(getStorage(), `/uploadNope.jpeg`);
-        const app = firebase.app();
 
         toString(storageReference).should.equal(
-          `gs://${app.options.storageBucket}/uploadNope.jpeg`,
+          `gs://${getApp().options.storageBucket}/uploadNope.jpeg`,
         );
       });
     });
@@ -768,10 +777,10 @@ describe('storage() -> StorageReference', function () {
 
       describe('bucket', function () {
         it('returns the storage bucket as a string', function () {
+          const { getApp } = modular;
           const { getStorage, ref } = storageModular;
           const storageReference = ref(getStorage(), '/foo/uploadNope.jpeg');
-          const app = firebase.app();
-          storageReference.bucket.should.equal(app.options.storageBucket);
+          storageReference.bucket.should.equal(getApp().options.storageBucket);
         });
       });
 
@@ -879,6 +888,7 @@ describe('storage() -> StorageReference', function () {
 
     describe('getDownloadURL', function () {
       it('should return a download url for a file', async function () {
+        const { getApp } = modular;
         const { getStorage, ref, getDownloadURL } = storageModular;
         // This is frequently flaky in CI - but works sometimes. Skipping only in CI for now.
         if (!isCI) {
@@ -886,7 +896,7 @@ describe('storage() -> StorageReference', function () {
           const downloadUrl = await getDownloadURL(storageReference);
           downloadUrl.should.be.a.String();
           downloadUrl.should.containEql('file1.txt');
-          downloadUrl.should.containEql(firebase.app().options.projectId);
+          downloadUrl.should.containEql(getApp().options.projectId);
         } else {
           this.skip();
         }
@@ -931,6 +941,7 @@ describe('storage() -> StorageReference', function () {
 
     describe('getMetadata', function () {
       it('should return a metadata for a file', async function () {
+        const { getApp } = modular;
         const { getStorage, ref, getMetadata } = storageModular;
         const storageReference = ref(getStorage(), `${PATH}/list/file1.txt`);
         const metadata = await getMetadata(storageReference);
@@ -950,7 +961,7 @@ describe('storage() -> StorageReference', function () {
         metadata.contentEncoding.should.be.a.String();
         metadata.contentDisposition.should.be.a.String();
         metadata.contentType.should.equal('text/plain');
-        metadata.bucket.should.equal(`${firebase.app().options.projectId}.appspot.com`);
+        metadata.bucket.should.equal(`${getApp().options.projectId}.appspot.com`);
         metadata.metageneration.should.be.a.String();
         metadata.md5Hash.should.be.a.String();
         // TODO against cloud storage cacheControl comes back null/undefined by default. Emulator has a difference
@@ -1119,6 +1130,7 @@ describe('storage() -> StorageReference', function () {
 
     describe('updateMetadata', function () {
       it('should return the updated metadata for a file', async function () {
+        const { getApp } = modular;
         const { getStorage, ref, updateMetadata } = storageModular;
         const storageReference = ref(getStorage(), `${PATH}/list/file1.txt`);
 
@@ -1150,7 +1162,7 @@ describe('storage() -> StorageReference', function () {
         metadata.timeCreated.should.be.a.String();
         metadata.metageneration.should.be.a.String();
         metadata.md5Hash.should.be.a.String();
-        metadata.bucket.should.equal(`${firebase.app().options.projectId}.appspot.com`);
+        metadata.bucket.should.equal(`${getApp().options.projectId}.appspot.com`);
 
         // Things we just updated
         metadata.cacheControl.should.equals('cache-control');
@@ -1189,7 +1201,7 @@ describe('storage() -> StorageReference', function () {
         metadata.timeCreated.should.be.a.String();
         metadata.metageneration.should.be.a.String();
         metadata.md5Hash.should.be.a.String();
-        metadata.bucket.should.equal(`${firebase.app().options.projectId}.appspot.com`);
+        metadata.bucket.should.equal(`${getApp().options.projectId}.appspot.com`);
 
         // Things that we may set (or remove)
         should.equal(metadata.cacheControl, undefined);
