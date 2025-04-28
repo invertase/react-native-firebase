@@ -12,24 +12,25 @@ const {
 describe('auth().currentUser', function () {
   describe('firebase v8 compatibility', function () {
     before(async function () {
-      try {
-        await clearAllUsers();
-      } catch (e) {
-        throw e;
-      }
-      firebase.auth().settings.appVerificationDisabledForTesting = true;
-      try {
-        await firebase.auth().createUserWithEmailAndPassword(TEST_EMAIL, TEST_PASS);
-      } catch (_) {
-        // they may already exist, that's fine
-      }
+      const { getAuth, createUserWithEmailAndPassword } = authModular;
+      await clearAllUsers();
+      getAuth().settings.appVerificationDisabledForTesting = true;
+      await createUserWithEmailAndPassword(getAuth(), TEST_EMAIL, TEST_PASS);
     });
 
-    beforeEach(async function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+
       if (firebase.auth().currentUser) {
         await firebase.auth().signOut();
         await Utils.sleep(50);
       }
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
     });
 
     describe('getIdToken()', function () {

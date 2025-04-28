@@ -18,12 +18,20 @@ describe('multi-factor modular', function () {
 
   describe('firebase v8 compatibility', function () {
     beforeEach(async function () {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+
       await clearAllUsers();
       await firebase.auth().createUserWithEmailAndPassword(TEST_EMAIL, TEST_PASS);
       if (firebase.auth().currentUser) {
         await firebase.auth().signOut();
         await Utils.sleep(50);
       }
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
     });
 
     it('has no multi-factor information if not enrolled', async function () {
@@ -520,10 +528,10 @@ describe('multi-factor modular', function () {
 
   describe('modular', function () {
     beforeEach(async function () {
+      const { getApp } = modular;
       const { createUserWithEmailAndPassword, getAuth, signOut } = authModular;
+      const defaultAuth = getAuth(getApp());
 
-      const defaultApp = firebase.app();
-      const defaultAuth = getAuth(defaultApp);
       await clearAllUsers();
       await createUserWithEmailAndPassword(defaultAuth, TEST_EMAIL, TEST_PASS);
       if (defaultAuth.currentUser) {
@@ -533,13 +541,13 @@ describe('multi-factor modular', function () {
     });
 
     it('has no multi-factor information if not enrolled', async function () {
+      const { getApp } = modular;
       const { signInWithEmailAndPassword, getAuth } = authModular;
 
-      const defaultApp = firebase.app();
-      const defaultAuth = getAuth(defaultApp);
+      const defaultAuth = getAuth(getApp());
 
-      await signInWithEmailAndPassword(defaultAuth, TEST_EMAIL, TEST_PASS);
-      const multiFactorUser = defaultAuth.currentUser.multiFactor;
+      const credential = await signInWithEmailAndPassword(defaultAuth, TEST_EMAIL, TEST_PASS);
+      const multiFactorUser = credential.user.multiFactor;
       multiFactorUser.should.be.an.Object();
       multiFactorUser.enrolledFactors.should.be.an.Array();
       multiFactorUser.enrolledFactors.length.should.equal(0);
@@ -554,10 +562,16 @@ describe('multi-factor modular', function () {
         const { phoneNumber, email, password } = await createUserWithMultiFactor();
         const maskedNumber = '+********' + phoneNumber.substring(phoneNumber.length - 4);
 
-        const { signInWithEmailAndPassword, getAuth, getMultiFactorResolver } = authModular;
+        const { getApp } = modular;
+        const {
+          signInWithEmailAndPassword,
+          getAuth,
+          getMultiFactorResolver,
+          PhoneAuthProvider,
+          PhoneMultiFactorGenerator,
+        } = authModular;
 
-        const defaultApp = firebase.app();
-        const defaultAuth = getAuth(defaultApp);
+        const defaultAuth = getAuth(getApp());
 
         try {
           await signInWithEmailAndPassword(defaultAuth, email, password);
@@ -573,9 +587,7 @@ describe('multi-factor modular', function () {
 
           multiFactorResolver.session.should.be.a.String();
 
-          const verificationId = await new firebase.auth.PhoneAuthProvider(
-            defaultAuth,
-          ).verifyPhoneNumber({
+          const verificationId = await new PhoneAuthProvider(defaultAuth).verifyPhoneNumber({
             multiFactorHint: multiFactorResolver.hints[0],
             session: multiFactorResolver.session,
           });
@@ -586,11 +598,11 @@ describe('multi-factor modular', function () {
             // iOS simulator uses a masked phone number
             verificationCode = await getLastSmsCode(maskedNumber);
           }
-          const phoneAuthCredential = new firebase.auth.PhoneAuthProvider.credential(
+          const phoneAuthCredential = new PhoneAuthProvider.credential(
             verificationId,
             verificationCode,
           );
-          const assertion = firebase.auth.PhoneMultiFactorGenerator.assertion(phoneAuthCredential);
+          const assertion = PhoneMultiFactorGenerator.assertion(phoneAuthCredential);
           return multiFactorResolver
             .resolveSignIn(assertion)
             .then(userCredential => {
@@ -620,15 +632,16 @@ describe('multi-factor modular', function () {
 
         const { phoneNumber, email, password } = await createUserWithMultiFactor();
 
+        const { getApp } = modular;
         const {
           signInWithEmailAndPassword,
           getAuth,
-          // authPhoneMultiFactor,
           getMultiFactorResolver,
+          PhoneAuthProvider,
+          PhoneMultiFactorGenerator,
         } = authModular;
 
-        const defaultApp = firebase.app();
-        const defaultAuth = getAuth(defaultApp);
+        const defaultAuth = getAuth(getApp());
 
         try {
           await signInWithEmailAndPassword(defaultAuth, email, password);
@@ -637,39 +650,30 @@ describe('multi-factor modular', function () {
 
           const multiFactorResolver = getMultiFactorResolver(defaultAuth, e);
 
-          const verificationId = await new firebase.auth.PhoneAuthProvider(
-            defaultAuth,
-          ).verifyPhoneNumber({
+          const verificationId = await new PhoneAuthProvider(defaultAuth).verifyPhoneNumber({
             multiFactorHint: multiFactorResolver.hints[0],
             session: multiFactorResolver.session,
           });
 
-          const phoneAuthCredential = firebase.auth.PhoneAuthProvider.credential(
-            verificationId,
-            'incorrect',
-          );
-          const assertion = firebase.auth.PhoneMultiFactorGenerator.assertion(phoneAuthCredential);
+          const phoneAuthCredential = PhoneAuthProvider.credential(verificationId, 'incorrect');
+          const assertion = PhoneMultiFactorGenerator.assertion(phoneAuthCredential);
           try {
             await multiFactorResolver.resolveSignIn(assertion);
           } catch (e) {
             e.code.should.equal('auth/invalid-verification-code');
 
-            const newVerificationId = await new firebase.auth.PhoneAuthProvider(
-              defaultAuth,
-            ).verifyPhoneNumber({
+            const newVerificationId = await new PhoneAuthProvider(defaultAuth).verifyPhoneNumber({
               multiFactorHint: multiFactorResolver.hints[0],
               session: multiFactorResolver.session,
             });
             const verificationCode = await getLastSmsCode(phoneNumber);
-            const newPhoneAuthCredential = firebase.auth.PhoneAuthProvider.credential(
+            const newPhoneAuthCredential = PhoneAuthProvider.credential(
               newVerificationId,
               verificationCode,
             );
-            const newAssertion =
-              firebase.auth.PhoneMultiFactorGenerator.assertion(newPhoneAuthCredential);
-            await multiFactorResolver.resolveSignIn(newAssertion);
-            const currentUser = defaultAuth.currentUser;
-            currentUser.email.should.equal(email);
+            const newAssertion = PhoneMultiFactorGenerator.assertion(newPhoneAuthCredential);
+            const credential = await multiFactorResolver.resolveSignIn(newAssertion);
+            credential.user.email.should.equal(email);
             return Promise.resolve();
           }
         }
@@ -683,10 +687,16 @@ describe('multi-factor modular', function () {
 
         const { phoneNumber, email, password } = await createUserWithMultiFactor();
 
-        const { signInWithEmailAndPassword, getAuth, getMultiFactorResolver } = authModular;
+        const { getApp } = modular;
+        const {
+          signInWithEmailAndPassword,
+          getAuth,
+          getMultiFactorResolver,
+          PhoneAuthProvider,
+          PhoneMultiFactorGenerator,
+        } = authModular;
 
-        const defaultApp = firebase.app();
-        const defaultAuth = getAuth(defaultApp);
+        const defaultAuth = getAuth(getApp());
 
         try {
           await signInWithEmailAndPassword(defaultAuth, email, password);
@@ -695,17 +705,14 @@ describe('multi-factor modular', function () {
 
           const multiFactorResolver = getMultiFactorResolver(defaultAuth, e);
 
-          await new firebase.auth.PhoneAuthProvider(defaultAuth).verifyPhoneNumber({
+          await new PhoneAuthProvider(defaultAuth).verifyPhoneNumber({
             multiFactorHint: multiFactorResolver.hints[0],
             session: multiFactorResolver.session,
           });
           const verificationCode = await getLastSmsCode(phoneNumber);
 
-          const phoneAuthCredential = firebase.auth.PhoneAuthProvider.credential(
-            'incorrect',
-            verificationCode,
-          );
-          const assertion = firebase.auth.PhoneMultiFactorGenerator.assertion(phoneAuthCredential);
+          const phoneAuthCredential = PhoneAuthProvider.credential('incorrect', verificationCode);
+          const assertion = PhoneMultiFactorGenerator.assertion(phoneAuthCredential);
           try {
             await multiFactorResolver.resolveSignIn(assertion);
           } catch (e) {
@@ -720,10 +727,11 @@ describe('multi-factor modular', function () {
       it('reports an error when using an unknown factor', async function () {
         const { email, password } = await createUserWithMultiFactor();
 
-        const { signInWithEmailAndPassword, getAuth, getMultiFactorResolver } = authModular;
+        const { getApp } = modular;
+        const { signInWithEmailAndPassword, getAuth, getMultiFactorResolver, PhoneAuthProvider } =
+          authModular;
 
-        const defaultApp = firebase.app();
-        const defaultAuth = getAuth(defaultApp);
+        const defaultAuth = getAuth(getApp());
 
         try {
           await signInWithEmailAndPassword(defaultAuth, email, password);
@@ -736,7 +744,7 @@ describe('multi-factor modular', function () {
             uid: 'notknown',
           };
           try {
-            await new firebase.auth.PhoneAuthProvider(defaultAuth).verifyPhoneNumber({
+            await new PhoneAuthProvider(defaultAuth).verifyPhoneNumber({
               multiFactorHint: unknownFactor,
               session: multiFactorResolver.session,
             });
@@ -759,10 +767,10 @@ describe('multi-factor modular', function () {
           this.skip();
         }
 
+        const { getApp } = modular;
         const { signInWithEmailAndPassword, getAuth, multiFactor } = authModular;
 
-        const defaultApp = firebase.app();
-        const defaultAuth = getAuth(defaultApp);
+        const defaultAuth = getAuth(getApp());
 
         await signInWithEmailAndPassword(defaultAuth, TEST_EMAIL, TEST_PASS);
 
@@ -789,32 +797,30 @@ describe('multi-factor modular', function () {
           this.skip();
         }
 
-        const { getAuth, multiFactor } = authModular;
+        const { getApp } = modular;
+        const { getAuth, multiFactor, PhoneAuthProvider, PhoneMultiFactorGenerator } = authModular;
 
-        const defaultApp = firebase.app();
-        const defaultAuth = getAuth(defaultApp);
+        const defaultAuth = getAuth(getApp());
 
         try {
-          await createVerifiedUser('verified@example.com', 'test123');
+          const user = await createVerifiedUser('verified@example.com', 'test123');
           const phoneNumber = getRandomPhoneNumber();
 
-          should.deepEqual(defaultAuth.currentUser.multiFactor.enrolledFactors, []);
+          should.deepEqual(user.multiFactor.enrolledFactors, []);
           const multiFactorUser = await multiFactor(defaultAuth.currentUser);
 
           const session = await multiFactorUser.getSession();
 
-          const verificationId = await new firebase.auth.PhoneAuthProvider(
-            defaultAuth,
-          ).verifyPhoneNumber({
+          const verificationId = await new PhoneAuthProvider(defaultAuth).verifyPhoneNumber({
             phoneNumber: phoneNumber,
             session,
           });
           const verificationCode = await getLastSmsCode(phoneNumber);
-          const cred = firebase.auth.PhoneAuthProvider.credential(verificationId, verificationCode);
-          const multiFactorAssertion = firebase.auth.PhoneMultiFactorGenerator.assertion(cred);
+          const cred = PhoneAuthProvider.credential(verificationId, verificationCode);
+          const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
           await multiFactorUser.enroll(multiFactorAssertion, 'Hint displayName');
 
-          const enrolledFactors = firebase.auth().currentUser.multiFactor.enrolledFactors;
+          const enrolledFactors = getAuth().currentUser.multiFactor.enrolledFactors;
           enrolledFactors.length.should.equal(1);
           enrolledFactors[0].displayName.should.equal('Hint displayName');
           enrolledFactors[0].factorId.should.equal('phone');
@@ -831,32 +837,30 @@ describe('multi-factor modular', function () {
           this.skip();
         }
 
-        const { getAuth, multiFactor } = authModular;
+        const { getApp } = modular;
+        const { getAuth, multiFactor, PhoneAuthProvider, PhoneMultiFactorGenerator } = authModular;
 
-        const defaultApp = firebase.app();
-        const defaultAuth = getAuth(defaultApp);
+        const defaultAuth = getAuth(getApp());
 
         try {
-          await createVerifiedUser('verified@example.com', 'test123');
+          const user = await createVerifiedUser('verified@example.com', 'test123');
           const phoneNumber = getRandomPhoneNumber();
 
-          should.deepEqual(defaultAuth.currentUser.multiFactor.enrolledFactors, []);
-          const multiFactorUser = await multiFactor(defaultAuth.currentUser);
+          should.deepEqual(user.multiFactor.enrolledFactors, []);
+          const multiFactorUser = await multiFactor(user);
 
           const session = await multiFactorUser.getSession();
 
-          const verificationId = await new firebase.auth.PhoneAuthProvider(
-            defaultAuth,
-          ).verifyPhoneNumber({
+          const verificationId = await new PhoneAuthProvider(defaultAuth).verifyPhoneNumber({
             phoneNumber: phoneNumber,
             session: session,
           });
           const verificationCode = await getLastSmsCode(phoneNumber);
-          const cred = firebase.auth.PhoneAuthProvider.credential(verificationId, verificationCode);
-          const multiFactorAssertion = firebase.auth.PhoneMultiFactorGenerator.assertion(cred);
+          const cred = PhoneAuthProvider.credential(verificationId, verificationCode);
+          const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
           await multiFactorUser.enroll(multiFactorAssertion);
 
-          const enrolledFactors = defaultAuth.currentUser.multiFactor.enrolledFactors;
+          const enrolledFactors = getAuth().currentUser.multiFactor.enrolledFactors;
           enrolledFactors.length.should.equal(1);
           should.equal(enrolledFactors[0].displayName, null);
         } catch (e) {
@@ -870,31 +874,29 @@ describe('multi-factor modular', function () {
           this.skip();
         }
 
-        const { getAuth, multiFactor } = authModular;
+        const { getApp } = modular;
+        const { getAuth, multiFactor, PhoneAuthProvider, PhoneMultiFactorGenerator } = authModular;
 
-        const defaultApp = firebase.app();
-        const defaultAuth = getAuth(defaultApp);
+        const defaultAuth = getAuth(getApp());
 
         const { email, password, phoneNumber } = await createUserWithMultiFactor();
-        await signInUserWithMultiFactor(email, password, phoneNumber);
+        const credential = await signInUserWithMultiFactor(email, password, phoneNumber);
 
         const anotherNumber = getRandomPhoneNumber();
-        const multiFactorUser = await multiFactor(defaultAuth.currentUser);
+        const multiFactorUser = await multiFactor(credential.user);
 
         const session = await multiFactorUser.getSession();
-        const verificationId = await new firebase.auth.PhoneAuthProvider(
-          defaultAuth,
-        ).verifyPhoneNumber({
+        const verificationId = await new PhoneAuthProvider(defaultAuth).verifyPhoneNumber({
           phoneNumber: anotherNumber,
           session: session,
         });
         const verificationCode = await getLastSmsCode(anotherNumber);
-        const cred = firebase.auth.PhoneAuthProvider.credential(verificationId, verificationCode);
-        const multiFactorAssertion = firebase.auth.PhoneMultiFactorGenerator.assertion(cred);
+        const cred = PhoneAuthProvider.credential(verificationId, verificationCode);
+        const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
         const displayName = 'Another displayName';
         await multiFactorUser.enroll(multiFactorAssertion, displayName);
 
-        const enrolledFactors = firebase.auth().currentUser.multiFactor.enrolledFactors;
+        const enrolledFactors = getAuth().currentUser.multiFactor.enrolledFactors;
         enrolledFactors.length.should.equal(2);
         const matchingFactor = enrolledFactors.find(factor => factor.displayName === displayName);
         matchingFactor.should.be.an.Object();
@@ -942,10 +944,16 @@ describe('multi-factor modular', function () {
           this.skip();
         }
 
-        const { getAuth, signInWithEmailAndPassword, getMultiFactorResolver } = authModular;
+        const { getApp } = modular;
+        const {
+          getAuth,
+          signInWithEmailAndPassword,
+          getMultiFactorResolver,
+          PhoneAuthProvider,
+          PhoneMultiFactorGenerator,
+        } = authModular;
 
-        const defaultApp = firebase.app();
-        const defaultAuth = getAuth(defaultApp);
+        const defaultAuth = getAuth(getApp());
 
         const { phoneNumber, email, password } = await createUserWithMultiFactor();
 
@@ -960,7 +968,7 @@ describe('multi-factor modular', function () {
           );
           resolver = getMultiFactorResolver(defaultAuth, e);
         }
-        await new firebase.auth.PhoneAuthProvider(defaultAuth).verifyPhoneNumber({
+        await new PhoneAuthProvider(defaultAuth).verifyPhoneNumber({
           multiFactorHint: resolver.hints[0],
           session: resolver.session,
         });
@@ -968,11 +976,8 @@ describe('multi-factor modular', function () {
         // AND I request a verification code
         const verificationCode = await getLastSmsCode(phoneNumber);
         // AND I use an incorrect verificationId
-        const credential = firebase.auth.PhoneAuthProvider.credential(
-          'wrongVerificationId',
-          verificationCode,
-        );
-        const multiFactorAssertion = firebase.auth.PhoneMultiFactorGenerator.assertion(credential);
+        const credential = PhoneAuthProvider.credential('wrongVerificationId', verificationCode);
+        const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(credential);
 
         try {
           // WHEN I try to resolve the sign-in
@@ -988,10 +993,11 @@ describe('multi-factor modular', function () {
       });
 
       it('throws an error for unknown sessions', async function () {
-        const { getAuth, signInWithEmailAndPassword, getMultiFactorResolver } = authModular;
+        const { getApp } = modular;
+        const { getAuth, signInWithEmailAndPassword, getMultiFactorResolver, PhoneAuthProvider } =
+          authModular;
 
-        const defaultApp = firebase.app();
-        const defaultAuth = getAuth(defaultApp);
+        const defaultAuth = getAuth(getApp());
 
         const { email, password } = await createUserWithMultiFactor();
         let resolver = null;
@@ -1006,7 +1012,7 @@ describe('multi-factor modular', function () {
         }
 
         try {
-          await new firebase.auth.PhoneAuthProvider(defaultAuth).verifyPhoneNumber({
+          await new PhoneAuthProvider(defaultAuth).verifyPhoneNumber({
             multiFactorHint: resolver.hints[0],
             session: 'unknown-session',
           });
@@ -1021,10 +1027,16 @@ describe('multi-factor modular', function () {
       });
 
       it('throws an error for unknown verification code', async function () {
-        const { getAuth, signInWithEmailAndPassword, getMultiFactorResolver } = authModular;
+        const { getApp } = modular;
+        const {
+          getAuth,
+          signInWithEmailAndPassword,
+          getMultiFactorResolver,
+          PhoneAuthProvider,
+          PhoneMultiFactorGenerator,
+        } = authModular;
 
-        const defaultApp = firebase.app();
-        const defaultAuth = getAuth(defaultApp);
+        const defaultAuth = getAuth(getApp());
 
         const { email, password } = await createUserWithMultiFactor();
 
@@ -1039,19 +1051,14 @@ describe('multi-factor modular', function () {
           );
           resolver = getMultiFactorResolver(defaultAuth, e);
         }
-        const verificationId = await new firebase.auth.PhoneAuthProvider(
-          defaultAuth,
-        ).verifyPhoneNumber({
+        const verificationId = await new PhoneAuthProvider(defaultAuth).verifyPhoneNumber({
           multiFactorHint: resolver.hints[0],
           session: resolver.session,
         });
 
         // AND I use an incorrect verificationId
-        const credential = firebase.auth.PhoneAuthProvider.credential(
-          verificationId,
-          'wrong-verification-code',
-        );
-        const multiFactorAssertion = firebase.auth.PhoneMultiFactorGenerator.assertion(credential);
+        const credential = PhoneAuthProvider.credential(verificationId, 'wrong-verification-code');
+        const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(credential);
 
         try {
           // WHEN I try to resolve the sign-in
@@ -1072,22 +1079,22 @@ describe('multi-factor modular', function () {
           this.skip();
         }
 
-        const { getAuth, signInWithPhoneNumber, multiFactor } = authModular;
+        const { getApp } = modular;
+        const { getAuth, signInWithPhoneNumber, multiFactor, PhoneAuthProvider } = authModular;
 
-        const defaultApp = firebase.app();
-        const defaultAuth = getAuth(defaultApp);
+        const defaultAuth = getAuth(getApp());
 
         // GIVEN a user that only signs in with phone
         const testPhone = getRandomPhoneNumber();
         const confirmResult = await signInWithPhoneNumber(defaultAuth, testPhone);
         const lastSmsCode = await getLastSmsCode(testPhone);
-        await confirmResult.confirm(lastSmsCode);
+        const credential = await confirmResult.confirm(lastSmsCode);
 
         // WHEN they attempt to enroll a second factor
-        const multiFactorUser = await multiFactor(defaultAuth.currentUser);
+        const multiFactorUser = await multiFactor(credential.user);
         const session = await multiFactorUser.getSession();
         try {
-          await new firebase.auth.PhoneAuthProvider(defaultAuth).verifyPhoneNumber({
+          await new PhoneAuthProvider(defaultAuth).verifyPhoneNumber({
             phoneNumber: '+1123123',
             session,
           });
@@ -1103,16 +1110,16 @@ describe('multi-factor modular', function () {
       });
 
       it('can not enroll when phone number is missing + sign', async function () {
-        const { getAuth, multiFactor } = authModular;
+        const { getApp } = modular;
+        const { getAuth, multiFactor, PhoneAuthProvider } = authModular;
 
-        const defaultApp = firebase.app();
-        const defaultAuth = getAuth(defaultApp);
+        const defaultAuth = getAuth(getApp());
 
-        await createVerifiedUser('verified@example.com', 'test123');
-        const multiFactorUser = multiFactor(defaultAuth.currentUser);
+        const user = await createVerifiedUser('verified@example.com', 'test123');
+        const multiFactorUser = multiFactor(user);
         const session = await multiFactorUser.getSession();
         try {
-          await new firebase.auth.PhoneAuthProvider(defaultAuth).verifyPhoneNumber({
+          await new PhoneAuthProvider(defaultAuth).verifyPhoneNumber({
             phoneNumber: '491575',
             session,
           });

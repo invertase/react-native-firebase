@@ -26,6 +26,9 @@ const { clearAllUsers, disableUser, getLastOob, resetPassword } = require('./hel
 describe('auth() modular', function () {
   describe('firebase v8 compatibility', function () {
     before(async function () {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+
       await clearAllUsers();
       await firebase.auth().createUserWithEmailAndPassword(TEST_EMAIL, TEST_PASS);
       const disabledUserCredential = await firebase
@@ -39,6 +42,11 @@ describe('auth() modular', function () {
         await firebase.auth().signOut();
         await Utils.sleep(50);
       }
+    });
+
+    after(async function afterTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
     });
 
     describe('namespace', function () {
@@ -1081,10 +1089,10 @@ describe('auth() modular', function () {
 
   describe('modular', function () {
     before(async function () {
+      const { getApp } = modular;
       const { createUserWithEmailAndPassword, getAuth } = authModular;
+      const defaultAuth = getAuth(getApp());
 
-      const defaultApp = firebase.app();
-      const defaultAuth = getAuth(defaultApp);
       await clearAllUsers();
       await createUserWithEmailAndPassword(defaultAuth, TEST_EMAIL, TEST_PASS);
       const disabledUserCredential = await createUserWithEmailAndPassword(
@@ -1096,9 +1104,10 @@ describe('auth() modular', function () {
     });
 
     beforeEach(async function () {
+      const { getApp } = modular;
       const { signOut, getAuth } = authModular;
 
-      const defaultAuth = getAuth(firebase.app());
+      const defaultAuth = getAuth(getApp());
       if (defaultAuth.currentUser) {
         await signOut(defaultAuth);
         await Utils.sleep(50);
@@ -1107,23 +1116,22 @@ describe('auth() modular', function () {
 
     describe('namespace', function () {
       it('accessible from firebase.app()', function () {
+        const { getApp } = modular;
         const { getAuth } = authModular;
 
-        const app = firebase.app();
-        const auth = getAuth(app);
+        const auth = getAuth(getApp());
         should.exist(auth);
-        auth.app.should.equal(app);
       });
 
       // removing as pending if module.options.hasMultiAppSupport = true
       it('supports multiple apps', async function () {
+        const { getApp } = modular;
         const { getAuth } = authModular;
 
-        const defaultApp = firebase.app();
-        const defaultAuth = getAuth(defaultApp);
+        const defaultAuth = getAuth(getApp());
         defaultAuth.app.name.should.equal('[DEFAULT]');
 
-        const secondaryApp = firebase.app('secondaryFromNative');
+        const secondaryApp = getApp('secondaryFromNative');
         const secondaryAuth = getAuth(secondaryApp);
         secondaryAuth.app.name.should.equal('secondaryFromNative');
 
@@ -1134,33 +1142,35 @@ describe('auth() modular', function () {
         if (Platform.other) return;
 
         const { getAuth, getCustomAuthDomain } = authModular;
-        const { initializeApp } = modular;
+        const { getApp, initializeApp, deleteApp } = modular;
 
         const name = `testscoreapp${FirebaseHelpers.id}`;
         const platformAppConfig = FirebaseHelpers.app.config();
         platformAppConfig.authDomain = 'example.com';
         const newApp = await initializeApp(platformAppConfig, name);
-        const secondaryApp = firebase.app(name);
+        const secondaryApp = getApp(name);
         const secondaryAuth = getAuth(secondaryApp);
         secondaryAuth.app.name.should.equal(name);
-        secondaryApp.auth().app.name.should.equal(name);
+        getAuth(secondaryApp).app.name.should.equal(name);
         const customAuthDomain = await getCustomAuthDomain(secondaryAuth);
         customAuthDomain.should.equal(platformAppConfig.authDomain);
-        return newApp.delete();
+        return deleteApp(newApp);
       });
     });
 
     describe('applyActionCode()', function () {
       // Needs a different setup to work against the auth emulator
       xit('works as expected', async function () {
+        const { getApp } = modular;
         const { applyActionCode, getAuth } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
         await applyActionCode(defaultAuth, 'fooby shooby dooby').then($ => $);
       });
 
       it('errors on invalid code', async function () {
+        const { getApp } = modular;
         const { applyActionCode, getAuth } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
         let didError = false;
         try {
           await applyActionCode(defaultAuth, 'fooby shooby dooby').then($ => $);
@@ -1174,8 +1184,9 @@ describe('auth() modular', function () {
 
     describe('checkActionCode()', function () {
       it('errors on invalid code', async function () {
+        const { getApp } = modular;
         const { checkActionCode, getAuth } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
         let didError = false;
         try {
           await checkActionCode(defaultAuth, 'fooby shooby dooby');
@@ -1192,33 +1203,35 @@ describe('auth() modular', function () {
         // Reload doesn't seem to update metadata on the user object.
         if (Platform.other) return;
 
+        const { getApp } = modular;
         const { signInAnonymously, signOut, getAuth } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
 
-        await signInAnonymously(defaultAuth);
+        const firstCredential = await signInAnonymously(defaultAuth);
         await Utils.sleep(500);
-        const firstUser = defaultAuth.currentUser;
+        const firstUser = firstCredential.user;
         await firstUser.reload();
 
         await signOut(defaultAuth);
 
-        await signInAnonymously(defaultAuth);
+        const secondCredential = await signInAnonymously(defaultAuth);
         await Utils.sleep(500);
-        const secondUser = defaultAuth.currentUser;
+        const secondUser = secondCredential.user;
         await secondUser.reload();
 
         firstUser.metadata.creationTime.should.not.equal(secondUser.metadata.creationTime);
       });
 
       it('Meta data returns as expected with email and password sign in', async function () {
+        const { getApp } = modular;
         const { createUserWithEmailAndPassword, signOut, getAuth } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
         const random = Utils.randString(12, '#aA');
         const email1 = `${random}@${random}.com`;
         const pass = random;
 
-        await createUserWithEmailAndPassword(defaultAuth, email1, pass);
-        const firstUser = defaultAuth.currentUser;
+        const firstCredential = await createUserWithEmailAndPassword(defaultAuth, email1, pass);
+        const firstUser = firstCredential.user;
         await firstUser.reload();
         await Utils.sleep(500);
         await signOut(defaultAuth);
@@ -1226,8 +1239,8 @@ describe('auth() modular', function () {
         const anotherRandom = Utils.randString(12, '#aA');
         const email2 = `${anotherRandom}@${anotherRandom}.com`;
 
-        await createUserWithEmailAndPassword(defaultAuth, email2, pass);
-        const secondUser = defaultAuth.currentUser;
+        const secondCredential = await createUserWithEmailAndPassword(defaultAuth, email2, pass);
+        const secondUser = secondCredential.user;
         await secondUser.reload();
 
         firstUser.metadata.creationTime.should.not.equal(secondUser.metadata.creationTime);
@@ -1236,8 +1249,9 @@ describe('auth() modular', function () {
 
     describe('confirmPasswordReset()', function () {
       it('errors on invalid code via API', async function () {
+        const { getApp } = modular;
         const { confirmPasswordReset, getAuth } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
 
         try {
           await confirmPasswordReset(defaultAuth, 'fooby shooby dooby', 'passwordthing');
@@ -1250,8 +1264,9 @@ describe('auth() modular', function () {
     describe('signInWithCustomToken()', function () {
       // Needs a different setup when running against the emulator
       xit('signs in with an admin SDK created custom auth token', async function () {
+        const { getApp } = modular;
         const { signInWithEmailAndPassword, signOut, signInWithCustomToken, getAuth } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
 
         const successCb = currentUserCredential => {
           const currentUser = currentUserCredential.user;
@@ -1289,10 +1304,11 @@ describe('auth() modular', function () {
 
     describe('onAuthStateChanged()', function () {
       it('calls callback with the current user and when auth state changes', async function () {
+        const { getApp } = modular;
         const { signInAnonymously, signOut, onAuthStateChanged, getAuth } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
 
-        await signInAnonymously(defaultAuth);
+        const credential = await signInAnonymously(defaultAuth);
         await Utils.sleep(50);
 
         // Test
@@ -1306,7 +1322,7 @@ describe('auth() modular', function () {
           });
         });
 
-        callback.should.be.calledWith(defaultAuth.currentUser);
+        callback.should.be.calledWith(credential.user);
         callback.should.be.calledOnce();
 
         // Sign out
@@ -1323,8 +1339,9 @@ describe('auth() modular', function () {
       });
 
       it('accepts observer instead of callback as well', async function () {
+        const { getApp } = modular;
         const { signInAnonymously, signOut, onAuthStateChanged, getAuth } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
 
         await signInAnonymously(defaultAuth);
         await Utils.sleep(200);
@@ -1358,10 +1375,11 @@ describe('auth() modular', function () {
       });
 
       it('stops listening when unsubscribed', async function () {
+        const { getApp } = modular;
         const { signInAnonymously, signOut, onAuthStateChanged, getAuth } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
 
-        await signInAnonymously(defaultAuth);
+        const credential = await signInAnonymously(defaultAuth);
         await Utils.sleep(200);
 
         // Test
@@ -1375,7 +1393,7 @@ describe('auth() modular', function () {
           });
         });
 
-        callback.should.be.calledWith(defaultAuth.currentUser);
+        callback.should.be.calledWith(credential.user);
         callback.should.be.calledOnce();
 
         // Sign out
@@ -1401,8 +1419,9 @@ describe('auth() modular', function () {
       });
 
       it('returns the same user with multiple subscribers #1815', async function () {
+        const { getApp } = modular;
         const { signInAnonymously, signOut, onAuthStateChanged, getAuth } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
 
         const callback = sinon.spy();
 
@@ -1455,10 +1474,11 @@ describe('auth() modular', function () {
 
     describe('onIdTokenChanged()', function () {
       it('calls callback with the current user and when auth state changes', async function () {
+        const { getApp } = modular;
         const { signInAnonymously, signOut, onIdTokenChanged, getAuth } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
 
-        await signInAnonymously(defaultAuth);
+        const credential = await signInAnonymously(defaultAuth);
         await Utils.sleep(200);
 
         // Test
@@ -1472,7 +1492,7 @@ describe('auth() modular', function () {
           });
         });
 
-        callback.should.be.calledWith(defaultAuth.currentUser);
+        callback.should.be.calledWith(credential.user);
         callback.should.be.calledOnce();
 
         // Sign out
@@ -1488,10 +1508,11 @@ describe('auth() modular', function () {
       });
 
       it('stops listening when unsubscribed', async function () {
+        const { getApp } = modular;
         const { signInAnonymously, signOut, onIdTokenChanged, getAuth } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
 
-        await signInAnonymously(defaultAuth);
+        const credential = await signInAnonymously(defaultAuth);
         await Utils.sleep(200);
 
         // Test
@@ -1505,7 +1526,7 @@ describe('auth() modular', function () {
           });
         });
 
-        callback.should.be.calledWith(defaultAuth.currentUser);
+        callback.should.be.calledWith(credential.user);
         callback.should.be.calledOnce();
 
         // Sign out
@@ -1531,8 +1552,9 @@ describe('auth() modular', function () {
       });
 
       it('listens to a null user when auth result is not defined', async function () {
+        const { getApp } = modular;
         const { onIdTokenChanged, getAuth } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
 
         let unsubscribe;
 
@@ -1551,8 +1573,9 @@ describe('auth() modular', function () {
 
     describe('signInAnonymously()', function () {
       it('it should sign in anonymously', async function () {
+        const { getApp } = modular;
         const { signInAnonymously, signOut, getAuth } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
 
         const successCb = currentUserCredential => {
           const currentUser = currentUserCredential.user;
@@ -1577,8 +1600,9 @@ describe('auth() modular', function () {
 
     describe('signInWithEmailAndPassword()', function () {
       it('it should login with email and password', async function () {
+        const { getApp } = modular;
         const { signInWithEmailAndPassword, signOut, getAuth } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
 
         const successCb = currentUserCredential => {
           const currentUser = currentUserCredential.user;
@@ -1606,8 +1630,9 @@ describe('auth() modular', function () {
       });
 
       it('it should error on login if user is disabled', async function () {
+        const { getApp } = modular;
         const { signInWithEmailAndPassword, getAuth } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
 
         const successCb = () => Promise.reject(new Error('Did not error.'));
 
@@ -1625,8 +1650,9 @@ describe('auth() modular', function () {
       });
 
       it('it should error on login if password incorrect', async function () {
+        const { getApp } = modular;
         const { signInWithEmailAndPassword, getAuth } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
 
         const successCb = () => Promise.reject(new Error('Did not error.'));
 
@@ -1644,8 +1670,9 @@ describe('auth() modular', function () {
       });
 
       it('it should error on login if user not found', async function () {
+        const { getApp } = modular;
         const { signInWithEmailAndPassword, getAuth } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
 
         const random = Utils.randString(12, '#aA');
         const email = `${random}@${random}.com`;
@@ -1669,8 +1696,9 @@ describe('auth() modular', function () {
 
     describe('signInWithCredential()', function () {
       it('it should login with email and password', async function () {
+        const { getApp } = modular;
         const { signInWithCredential, getAuth, signOut } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
         const credential = firebase.auth.EmailAuthProvider.credential(TEST_EMAIL, TEST_PASS);
 
         const successCb = currentUserCredential => {
@@ -1695,8 +1723,9 @@ describe('auth() modular', function () {
       });
 
       it('it should error on login if user is disabled', async function () {
+        const { getApp } = modular;
         const { signInWithCredential, getAuth } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
         const credential = firebase.auth.EmailAuthProvider.credential(
           DISABLED_EMAIL,
           DISABLED_PASS,
@@ -1718,8 +1747,9 @@ describe('auth() modular', function () {
       });
 
       it('it should error on login if password incorrect', async function () {
+        const { getApp } = modular;
         const { signInWithCredential, getAuth } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
         const credential = firebase.auth.EmailAuthProvider.credential(
           TEST_EMAIL,
           TEST_PASS + '666',
@@ -1741,8 +1771,9 @@ describe('auth() modular', function () {
       });
 
       it('it should error on login if user not found', async function () {
+        const { getApp } = modular;
         const { signInWithCredential, getAuth } = authModular;
-        const defaultAuth = getAuth(firebase.app());
+        const defaultAuth = getAuth(getApp());
         const random = Utils.randString(12, '#aA');
         const email = `${random}@${random}.com`;
         const pass = random;
@@ -1766,8 +1797,9 @@ describe('auth() modular', function () {
 
       describe('createUserWithEmailAndPassword()', function () {
         it('it should create a user with an email and password', async function () {
+          const { getApp } = modular;
           const { createUserWithEmailAndPassword, getAuth } = authModular;
-          const defaultAuth = getAuth(firebase.app());
+          const defaultAuth = getAuth(getApp());
 
           const random = Utils.randString(12, '#aA');
           const email = `${random}@${random}.com`;
@@ -1797,8 +1829,9 @@ describe('auth() modular', function () {
         });
 
         it('it should error on create with invalid email', async function () {
+          const { getApp } = modular;
           const { createUserWithEmailAndPassword, getAuth } = authModular;
-          const defaultAuth = getAuth(firebase.app());
+          const defaultAuth = getAuth(getApp());
 
           const random = Utils.randString(12, '#aA');
           const email = `${random}${random}.com.boop.shoop`;
@@ -1813,8 +1846,9 @@ describe('auth() modular', function () {
         });
 
         it('it should error on create if email in use', async function () {
+          const { getApp } = modular;
           const { createUserWithEmailAndPassword, getAuth } = authModular;
-          const defaultAuth = getAuth(firebase.app());
+          const defaultAuth = getAuth(getApp());
 
           try {
             await createUserWithEmailAndPassword(defaultAuth, TEST_EMAIL, TEST_PASS);
@@ -1825,8 +1859,9 @@ describe('auth() modular', function () {
         });
 
         it('it should error on create if password weak', async function () {
+          const { getApp } = modular;
           const { createUserWithEmailAndPassword, getAuth } = authModular;
-          const defaultAuth = getAuth(firebase.app());
+          const defaultAuth = getAuth(getApp());
 
           const email = 'testy@testy.com';
           const pass = '123';
@@ -1844,8 +1879,9 @@ describe('auth() modular', function () {
 
       describe('fetchSignInMethodsForEmail()', function () {
         it('it should return password provider for an email address', async function () {
+          const { getApp } = modular;
           const { fetchSignInMethodsForEmail, getAuth } = authModular;
-          const defaultAuth = getAuth(firebase.app());
+          const defaultAuth = getAuth(getApp());
 
           try {
             const providers = await fetchSignInMethodsForEmail(defaultAuth, TEST_EMAIL);
@@ -1857,8 +1893,9 @@ describe('auth() modular', function () {
         });
 
         it('it should return an empty array for a not found email', async function () {
+          const { getApp } = modular;
           const { fetchSignInMethodsForEmail, getAuth } = authModular;
-          const defaultAuth = getAuth(firebase.app());
+          const defaultAuth = getAuth(getApp());
 
           try {
             const providers = await fetchSignInMethodsForEmail(
@@ -1873,8 +1910,9 @@ describe('auth() modular', function () {
         });
 
         it('it should return an error for a bad email address', async function () {
+          const { getApp } = modular;
           const { fetchSignInMethodsForEmail, getAuth } = authModular;
-          const defaultAuth = getAuth(firebase.app());
+          const defaultAuth = getAuth(getApp());
 
           try {
             await fetchSignInMethodsForEmail(defaultAuth, 'foobar');
@@ -1887,8 +1925,9 @@ describe('auth() modular', function () {
 
       describe('signOut()', function () {
         it('it should reject signOut if no currentUser', async function () {
+          const { getApp } = modular;
           const { signOut, getAuth } = authModular;
-          const defaultAuth = getAuth(firebase.app());
+          const defaultAuth = getAuth(getApp());
 
           if (defaultAuth.currentUser) {
             throw new Error(`A user is currently signed in. ${defaultAuth.currentUser.uid}`);
@@ -1906,8 +1945,9 @@ describe('auth() modular', function () {
 
       describe('delete()', function () {
         it('should delete a user', async function () {
+          const { getApp } = modular;
           const { createUserWithEmailAndPassword, getAuth } = authModular;
-          const defaultAuth = getAuth(firebase.app());
+          const defaultAuth = getAuth(getApp());
 
           const random = Utils.randString(12, '#aA');
           const email = `${random}@${random}.com`;
@@ -1930,8 +1970,9 @@ describe('auth() modular', function () {
 
       describe('languageCode', function () {
         it('it should change the language code', async function () {
+          const { getApp } = modular;
           const { getAuth } = authModular;
-          const defaultAuth = getAuth(firebase.app());
+          const defaultAuth = getAuth(getApp());
 
           defaultAuth.languageCode = 'en';
 
@@ -1959,8 +2000,9 @@ describe('auth() modular', function () {
 
       describe('getRedirectResult()', function () {
         it('should throw an unsupported error', function () {
+          const { getApp } = modular;
           const { getRedirectResult, getAuth } = authModular;
-          const defaultAuth = getAuth(firebase.app());
+          const defaultAuth = getAuth(getApp());
 
           try {
             getRedirectResult(defaultAuth);
@@ -1974,8 +2016,9 @@ describe('auth() modular', function () {
 
       describe('setPersistence()', function () {
         it('should throw an unsupported error', function () {
+          const { getApp } = modular;
           const { setPersistence, getAuth } = authModular;
-          const defaultAuth = getAuth(firebase.app());
+          const defaultAuth = getAuth(getApp());
 
           try {
             setPersistence(defaultAuth);
@@ -1989,18 +2032,22 @@ describe('auth() modular', function () {
 
       describe('sendPasswordResetEmail()', function () {
         it('should not error', async function () {
+          const { getApp } = modular;
           const { createUserWithEmailAndPassword, sendPasswordResetEmail, getAuth } = authModular;
-          const defaultAuth = getAuth(firebase.app());
+          const defaultAuth = getAuth(getApp());
           const random = Utils.randString(12, '#aA');
           const email = `${random}@${random}.com`;
 
+          let credential = undefined;
           try {
-            await createUserWithEmailAndPassword(defaultAuth, email, random);
+            credential = await createUserWithEmailAndPassword(defaultAuth, email, random);
             await sendPasswordResetEmail(defaultAuth, email);
           } catch (error) {
             throw new Error('sendPasswordResetEmail() caused an error', error);
           } finally {
-            await defaultAuth.currentUser.delete();
+            if (credential) {
+              await credential.user.delete();
+            }
           }
         });
 
@@ -2008,42 +2055,48 @@ describe('auth() modular', function () {
           // FIXME Fails on android against auth emulator with:
           // com.google.firebase.FirebaseException: An internal error has occurred.
           if (Platform.ios) {
+            const { getApp } = modular;
             const {
               createUserWithEmailAndPassword,
               sendPasswordResetEmail,
               getAuth,
               verifyPasswordResetCode,
             } = authModular;
-            const defaultAuth = getAuth(firebase.app());
+            const defaultAuth = getAuth(getApp());
             const random = Utils.randString(12, '#a');
             const email = `${random}@${random}.com`;
 
+            let credential = undefined;
             try {
-              await createUserWithEmailAndPassword(defaultAuth, email, random);
+              credential = await createUserWithEmailAndPassword(defaultAuth, email, random);
               await sendPasswordResetEmail(defaultAuth, email);
               const { oobCode } = await getLastOob(email);
               await verifyPasswordResetCode(defaultAuth, oobCode);
             } catch (error) {
               throw new Error('sendPasswordResetEmail() caused an error', error);
             } finally {
-              await defaultAuth.currentUser.delete();
+              if (credential) {
+                await credential.user.delete();
+              }
             }
           }
         });
 
         it('should fail to verify with invalid code', async function () {
+          const { getApp } = modular;
           const {
             createUserWithEmailAndPassword,
             sendPasswordResetEmail,
             getAuth,
             verifyPasswordResetCode,
           } = authModular;
-          const defaultAuth = getAuth(firebase.app());
+          const defaultAuth = getAuth(getApp());
           const random = Utils.randString(12, '#a');
           const email = `${random}@${random}.com`;
 
+          let credential = undefined;
           try {
-            await createUserWithEmailAndPassword(defaultAuth, email, random);
+            credential = await createUserWithEmailAndPassword(defaultAuth, email, random);
             await sendPasswordResetEmail(defaultAuth, email);
             const { oobCode } = await getLastOob(email);
             await verifyPasswordResetCode(defaultAuth, oobCode + 'badcode');
@@ -2051,11 +2104,14 @@ describe('auth() modular', function () {
           } catch (error) {
             error.message.should.containEql('[auth/invalid-action-code]');
           } finally {
-            await defaultAuth.currentUser.delete();
+            if (credential) {
+              await credential.user.delete();
+            }
           }
         });
 
         it('should change password correctly OOB', async function () {
+          const { getApp } = modular;
           const {
             createUserWithEmailAndPassword,
             sendPasswordResetEmail,
@@ -2063,12 +2119,13 @@ describe('auth() modular', function () {
             signOut,
             signInWithEmailAndPassword,
           } = authModular;
-          const defaultAuth = getAuth(firebase.app());
+          const defaultAuth = getAuth(getApp());
           const random = Utils.randString(12, '#a');
           const email = `${random}@${random}.com`;
 
+          let credential = undefined;
           try {
-            await createUserWithEmailAndPassword(defaultAuth, email, random);
+            credential = await createUserWithEmailAndPassword(defaultAuth, email, random);
             await sendPasswordResetEmail(defaultAuth, email);
             const { oobCode } = await getLastOob(email);
             await resetPassword(oobCode, 'testNewPassword');
@@ -2078,11 +2135,14 @@ describe('auth() modular', function () {
           } catch (error) {
             throw new Error('sendPasswordResetEmail() caused an error', error);
           } finally {
-            await defaultAuth.currentUser.delete();
+            if (credential) {
+              await defaultAuth.currentUser.delete();
+            }
           }
         });
 
         it('should change password correctly via API', async function () {
+          const { getApp } = modular;
           const {
             createUserWithEmailAndPassword,
             sendPasswordResetEmail,
@@ -2091,10 +2151,11 @@ describe('auth() modular', function () {
             signOut,
             signInWithEmailAndPassword,
           } = authModular;
-          const defaultAuth = getAuth(firebase.app());
+          const defaultAuth = getAuth(getApp());
           const random = Utils.randString(12, '#a');
           const email = `${random}@${random}.com`;
 
+          let credential = undefined;
           try {
             await createUserWithEmailAndPassword(defaultAuth, email, random);
             await sendPasswordResetEmail(defaultAuth, email);
@@ -2102,19 +2163,22 @@ describe('auth() modular', function () {
             await confirmPasswordReset(defaultAuth, oobCode, 'testNewPassword');
             await signOut(defaultAuth);
             await Utils.sleep(50);
-            await signInWithEmailAndPassword(defaultAuth, email, 'testNewPassword');
+            credential = await signInWithEmailAndPassword(defaultAuth, email, 'testNewPassword');
           } catch (error) {
             throw new Error('sendPasswordResetEmail() caused an error', error);
           } finally {
-            await defaultAuth.currentUser.delete();
+            if (credential) {
+              await credential.user.delete();
+            }
           }
         });
       });
 
       describe('useDeviceLanguage()', function () {
         it('should throw an unsupported error', function () {
+          const { getApp } = modular;
           const { getAuth, useDeviceLanguage } = authModular;
-          const defaultAuth = getAuth(firebase.app());
+          const defaultAuth = getAuth(getApp());
 
           try {
             useDeviceLanguage(defaultAuth);
@@ -2129,8 +2193,9 @@ describe('auth() modular', function () {
       describe('useUserAccessGroup()', function () {
         // Android simply does Promise.resolve, that is sufficient for this test multi-platform
         it('should return "null" when accessing a group that exists', async function () {
+          const { getApp } = modular;
           const { getAuth, useUserAccessGroup } = authModular;
-          const defaultAuth = getAuth(firebase.app());
+          const defaultAuth = getAuth(getApp());
 
           const successfulKeychain = await useUserAccessGroup(
             defaultAuth,
@@ -2146,8 +2211,9 @@ describe('auth() modular', function () {
         });
 
         it('should throw when requesting an inaccessible group', async function () {
+          const { getApp } = modular;
           const { getAuth, useUserAccessGroup } = authModular;
-          const defaultAuth = getAuth(firebase.app());
+          const defaultAuth = getAuth(getApp());
 
           // Android will never throw, so this test is iOS only
           if (Platform.ios) {
@@ -2163,8 +2229,9 @@ describe('auth() modular', function () {
 
       describe('setTenantId()', function () {
         it('should return null if tenantId unset', function () {
+          const { getApp } = modular;
           const { getAuth } = authModular;
-          const defaultAuth = getAuth(firebase.app());
+          const defaultAuth = getAuth(getApp());
 
           should.not.exist(defaultAuth.tenantId);
         });
