@@ -33,10 +33,6 @@ export function getMessaging(app) {
  * @returns {Promise<void>}
  */
 export function deleteToken(messaging, tokenOptions) {
-  if (tokenOptions != null) {
-    return messaging.deleteToken();
-  }
-
   return messaging.deleteToken(tokenOptions);
 }
 
@@ -47,10 +43,6 @@ export function deleteToken(messaging, tokenOptions) {
  * @returns {Promise<string>}
  */
 export function getToken(messaging, options) {
-  if (options != null) {
-    return messaging.getToken();
-  }
-
   return messaging.getToken(options);
 }
 
