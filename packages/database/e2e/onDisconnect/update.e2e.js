@@ -25,9 +25,17 @@ describe('database().ref().onDisconnect().update()', function () {
   });
 
   describe('v8 compatibility', function () {
-    afterEach(async function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
       // Ensures the db is online before running each test
       await firebase.database().goOnline();
+
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
     });
 
     it('throws if values is not an object', async function () {

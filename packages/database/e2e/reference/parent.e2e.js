@@ -17,6 +17,16 @@
 
 describe('database().ref().parent', function () {
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('returns null when no reference path is provides', function () {
       const ref = firebase.database().ref();
       should.equal(ref.parent, null);

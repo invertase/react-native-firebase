@@ -19,13 +19,19 @@ const { PATH } = require('../helpers');
 const TEST_PATH = `${PATH}/connected`;
 
 describe("database().ref('.info/connected')", function () {
-  before(async function () {
-    await firebase.database().goOnline();
-  });
-
   describe('v8 compatibility', function () {
-    after(async function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
       await firebase.database().goOnline();
+    });
+
+    afterEach(async function afterEachTest() {
+      // Ensures the db is online before running each test
+      await firebase.database().goOnline();
+
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
     });
 
     xit('returns true when used with once', async function () {
@@ -61,6 +67,12 @@ describe("database().ref('.info/connected')", function () {
   });
 
   describe('modular', function () {
+    before(async function () {
+      const { getDatabase, goOnline } = databaseModular;
+
+      await goOnline(getDatabase());
+    });
+
     after(async function () {
       const { getDatabase, goOnline } = databaseModular;
 
