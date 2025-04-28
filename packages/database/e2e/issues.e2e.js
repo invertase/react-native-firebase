@@ -29,6 +29,16 @@ describe('database issues', function () {
   });
 
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     // FIXME requires a second database set up locally, full app initialization etc
     xit('#2813 should return a null snapshot key if path is root', async function () {
       firebase.database('https://react-native-firebase-testing-db2.firebaseio.com');

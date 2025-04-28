@@ -21,10 +21,21 @@ const TEST_PATH = `${PATH}/update`;
 
 describe('database().ref().update()', function () {
   after(async function () {
-    await firebase.database().ref(TEST_PATH).remove();
+    const { getDatabase, ref } = databaseModular;
+    await ref(getDatabase(), TEST_PATH).remove();
   });
 
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('throws if values is not an object', async function () {
       try {
         await firebase.database().ref(TEST_PATH).update('foo');

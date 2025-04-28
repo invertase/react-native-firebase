@@ -17,6 +17,16 @@
 
 describe('database()', function () {
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     describe('namespace', function () {
       it('accessible from firebase.app()', function () {
         const app = firebase.app();
@@ -204,24 +214,22 @@ describe('database()', function () {
   describe('modular', function () {
     describe('namespace', function () {
       it('accessible from getDatabase', function () {
+        const { getApp } = modular;
         const { getDatabase } = databaseModular;
 
-        const app = firebase.app();
-        const database = getDatabase(app);
-        should.exist(app.database);
-        database.app.should.eql(app);
+        const database = getDatabase(getApp());
+        database.app.should.eql(getApp());
       });
 
       it('supports multiple apps', async function () {
+        const { getApp } = modular;
         const { getDatabase } = databaseModular;
         const database = getDatabase();
-        const secondaryDatabase = getDatabase(firebase.app('secondaryFromNative'));
+        const secondaryDatabase = getDatabase(getApp('secondaryFromNative'));
 
         database.app.name.should.eql('[DEFAULT]');
 
         secondaryDatabase.app.name.should.eql('secondaryFromNative');
-
-        firebase.app('secondaryFromNative').database().app.name.should.eql('secondaryFromNative');
       });
     });
 

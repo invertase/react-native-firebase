@@ -21,6 +21,16 @@ const TEST_PATH = `${PATH}/push`;
 
 describe('database().ref().push()', function () {
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('throws if on complete callback is not a function', function () {
       try {
         firebase.database().ref(TEST_PATH).push('foo', 'bar');
