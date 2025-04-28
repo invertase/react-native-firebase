@@ -17,6 +17,16 @@
 
 describe('perf() modular', function () {
   describe('firebase v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     describe('setPerformanceCollectionEnabled()', function () {
       // These depend on `tests/firebase.json` having `perf_auto_collection_enabled` set to false the first time
       // The setting is persisted across restarts, reset to false after for local runs where prefs are sticky
@@ -119,9 +129,10 @@ describe('perf() modular', function () {
   describe('modular', function () {
     describe('getPerformance', function () {
       it('pass app as argument', function () {
+        const { getApp } = modular;
         const { getPerformance } = perfModular;
 
-        const perf = getPerformance(firebase.app());
+        const perf = getPerformance(getApp());
 
         perf.constructor.name.should.be.equal('FirebasePerfModule');
       });
@@ -137,9 +148,10 @@ describe('perf() modular', function () {
 
     describe('initializePerformance()', function () {
       it('call and set "dataCollectionEnabled" to `false`', async function () {
+        const { getApp } = modular;
         const { initializePerformance } = perfModular;
 
-        const perf = await initializePerformance(firebase.app(), { dataCollectionEnabled: false });
+        const perf = await initializePerformance(getApp(), { dataCollectionEnabled: false });
 
         const enabled = perf.dataCollectionEnabled;
 
@@ -147,9 +159,10 @@ describe('perf() modular', function () {
       });
 
       it('call and set "dataCollectionEnabled" to `true`', async function () {
+        const { getApp } = modular;
         const { initializePerformance } = perfModular;
 
-        const perf = await initializePerformance(firebase.app(), { dataCollectionEnabled: true });
+        const perf = await initializePerformance(getApp(), { dataCollectionEnabled: true });
 
         const enabled = perf.dataCollectionEnabled;
 
