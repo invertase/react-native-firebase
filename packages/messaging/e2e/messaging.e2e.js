@@ -40,7 +40,8 @@ async function isAPNSCapableSimulator() {
 describe('messaging()', function () {
   before(async function () {
     // our device registration tests require permissions. Set them up
-    await firebase.messaging().requestPermission({
+    const { getMessaging, requestPermission } = messagingModular;
+    await requestPermission(getMessaging(), {
       alert: true,
       badge: true,
       sound: true,
@@ -49,6 +50,16 @@ describe('messaging()', function () {
   });
 
   describe('firebase v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     describe('namespace', function () {
       it('accessible from firebase.app()', function () {
         const app = firebase.app();
@@ -479,9 +490,10 @@ describe('messaging()', function () {
   describe('firebase v9 modular API', function () {
     describe('getMessaging', function () {
       it('pass app as argument', function () {
+        const { getApp } = modular;
         const { getMessaging } = messagingModular;
 
-        const messaging = getMessaging(firebase.app());
+        const messaging = getMessaging(getApp());
 
         messaging.constructor.name.should.be.equal('FirebaseMessagingModule');
       });
@@ -518,12 +530,12 @@ describe('messaging()', function () {
       it('sets the value', async function () {
         const { getMessaging, isAutoInitEnabled, setAutoInitEnabled } = messagingModular;
         should.equal(isAutoInitEnabled(getMessaging()), false);
-        await firebase.messaging().setAutoInitEnabled(true);
+        await setAutoInitEnabled(getMessaging(), true);
         should.equal(isAutoInitEnabled(getMessaging()), true);
 
         // Set it back to the default value for future runs in re-use mode
         await setAutoInitEnabled(getMessaging(), false);
-        should.equal(firebase.messaging().isAutoInitEnabled, false);
+        should.equal(isAutoInitEnabled(getMessaging()), false);
       });
     });
 
@@ -722,15 +734,16 @@ describe('messaging()', function () {
       });
 
       it('should throw Error with wrong parameter types', async function () {
+        const { getMessaging, getToken, deleteToken } = messagingModular;
         try {
-          await firebase.messaging().deleteToken({ appName: 33 });
+          await deleteToken(getMessaging(), { appName: 33 });
           return Promise.reject(new Error('Did not throw Error.'));
         } catch (e) {
           e.message.should.containEql("'appName' expected a string");
         }
 
         try {
-          await firebase.messaging().getToken({ senderId: 33 });
+          await getToken(getMessaging(), { senderId: 33 });
           return Promise.reject(new Error('Did not throw Error.'));
         } catch (e) {
           e.message.should.containEql("'senderId' expected a string.");
