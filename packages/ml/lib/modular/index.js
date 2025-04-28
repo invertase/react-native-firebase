@@ -11,7 +11,7 @@ import { getApp } from '@react-native-firebase/app';
  */
 export function getML(app) {
   if (app) {
-    return getApp(app).ml();
+    return getApp(app.name).ml();
   }
   return getApp().ml();
 }

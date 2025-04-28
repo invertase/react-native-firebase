@@ -17,6 +17,16 @@
 
 describe('ml()', function () {
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     describe('namespace', function () {
       it('accessible from firebase.app()', function () {
         const app = firebase.app();
@@ -38,9 +48,10 @@ describe('ml()', function () {
 
   describe('modular', function () {
     it('supports multiple apps', function () {
+      const { getApp } = modular;
       const { getML } = mlModular;
       const ml = getML();
-      const secondaryML = getML(firebase.app('secondaryFromNative'));
+      const secondaryML = getML(getApp('secondaryFromNative'));
 
       ml.app.name.should.equal('[DEFAULT]');
 
