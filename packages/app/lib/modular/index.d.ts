@@ -72,6 +72,46 @@ export function getApp(name?: string): FirebaseApp;
 export function setLogLevel(logLevel: LogLevelString): void;
 
 /**
+ * Gets react-native-firebase specific "meta" data from native Info.plist / AndroidManifest.xml
+ * @returns map of key / value pairs containing native meta data
+ */
+export function metaGetAll(): Promise<{ [keyof: string]: string | boolean }>;
+
+/**
+ * Gets react-native-firebase specific "firebase.json" data
+ * @returns map of key / value pairs containing native firebase.json constants
+ */
+export function jsonGetAll(): Promise<{ [keyof: string]: string | boolean }>;
+
+/**
+ * Clears react-native-firebase specific native preferences
+ * @returns Promise<void>
+ */
+export function preferencesClearAll(): Promise<void>;
+
+/**
+ * Gets react-native-firebase specific native preferences
+ * @returns map of key / value pairs containing native preferences data
+ */
+export function preferencesGetAll(): Promise<{ [keyof: string]: string | boolean }>;
+
+/**
+ * Sets react-native-firebase specific native boolean preference
+ * @param key the name of the native preference to set
+ * @param value the value of the native preference to set
+ * @returns Promise<void>
+ */
+export function preferencesSetBool(key: string, value: boolean): Promise<void>;
+
+/**
+ * Sets react-native-firebase specific native string preference
+ * @param key the name of the native preference to set
+ * @param value the value of the native preference to set
+ * @returns Promise<void>
+ */
+export function preferencesSetString(key: string, value: string): Promise<void>;
+
+/**
  * The `AsyncStorage` implementation to use for persisting data on 'Other' platforms.
  * If not specified, in memory persistence is used.
  *

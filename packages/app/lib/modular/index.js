@@ -95,4 +95,56 @@ export function setReactNativeAsyncStorage(asyncStorage) {
   return setReactNativeAsyncStorageCompat.call(null, asyncStorage, MODULAR_DEPRECATION_ARG);
 }
 
+/**
+ * Gets react-native-firebase specific "meta" data from native Info.plist / AndroidManifest.xml
+ * @returns map of key / value pairs containing native meta data
+ */
+export function metaGetAll() {
+  return NativeModules.RNFBAppModule.metaGetAll();
+}
+
+/**
+ * Gets react-native-firebase specific "firebase.json" data
+ * @returns map of key / value pairs containing native firebase.json constants
+ */
+export function jsonGetAll() {
+  return NativeModules.RNFBAppModule.jsonGetAll();
+}
+
+/**
+ * Clears react-native-firebase specific native preferences
+ * @returns Promise<void>
+ */
+export function preferencesClearAll() {
+  return NativeModules.RNFBAppModule.preferencesClearAll();
+}
+
+/**
+ * Gets react-native-firebase specific native preferences
+ * @returns map of key / value pairs containing native preferences data
+ */
+export function preferencesGetAll() {
+  return NativeModules.RNFBAppModule.preferencesGetAll();
+}
+
+/**
+ * Sets react-native-firebase specific native boolean preference
+ * @param key the name of the native preference to set
+ * @param value the value of the native preference to set
+ * @returns Promise<void>
+ */
+export function preferencesSetBool(key, value) {
+  return NativeModules.RNFBAppModule.preferencesSetBool(key, value);
+}
+
+/**
+ * Sets react-native-firebase specific native string preference
+ * @param key the name of the native preference to set
+ * @param value the value of the native preference to set
+ * @returns Promise<void>
+ */
+export function preferencesSetString(key, value) {
+  return NativeModules.RNFBAppModule.preferencesSetString(key, value);
+}
+
 export const SDK_VERSION = sdkVersion;
