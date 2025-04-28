@@ -17,6 +17,16 @@
 
 describe('modular', function () {
   describe('firebase v8 compat', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('it should allow read the default app from native', function () {
       if (Platform.other) return; // Not supported on non-native platforms.
       // app is created in tests app before all hook
@@ -201,21 +211,20 @@ describe('modular', function () {
     });
 
     it('it should initialize dynamic apps', async function () {
-      const { initializeApp, getApps, getApp } = modular;
+      const { initializeApp, getApps, getApp, deleteApp } = modular;
 
-      const appCount = firebase.apps.length;
+      const appCount = getApps().length;
       const name = `testscoreapp${FirebaseHelpers.id}`;
       const platformAppConfig = FirebaseHelpers.app.config();
       const newApp = await initializeApp(platformAppConfig, name);
       newApp.name.should.equal(name);
-      newApp.toString().should.equal(name);
       newApp.options.apiKey.should.equal(platformAppConfig.apiKey);
 
       const apps = getApps();
 
       should.equal(apps.includes(getApp(name)), true);
       should.equal(apps.length, appCount + 1);
-      return newApp.delete();
+      return deleteApp(newApp);
     });
 
     it('should error if dynamic app initialization values are incorrect', async function () {
@@ -257,8 +266,8 @@ describe('modular', function () {
       } catch (e) {
         e.code.should.containEql('app/unknown');
         e.message.should.containEql('Configuration fails');
-        should.equal(firebase.apps.length, appCount);
-        should.equal(firebase.apps.includes('myname'), false);
+        should.equal(getApps().length, appCount);
+        should.equal(getApps().includes('myname'), false);
       }
     });
 
@@ -270,7 +279,6 @@ describe('modular', function () {
       const newApp = await initializeApp(platformAppConfig, name);
 
       newApp.name.should.equal(name);
-      newApp.toString().should.equal(name);
       newApp.options.apiKey.should.equal(platformAppConfig.apiKey);
 
       await deleteApp(newApp);
