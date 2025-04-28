@@ -70,7 +70,7 @@ export function modifyObjcAppDelegate(contents: string): string {
 
 export function modifySwiftAppDelegate(contents: string): string {
   const methodInvocationBlock = `FirebaseApp.configure()`;
-  const methodInvocationLineMatcher = /(?:self\.moduleName\s*=\s*"([^"]*)")/g;
+  const methodInvocationLineMatcher = /(?:self\.moduleName\s*=\s*"([^"]*)")|(?:reactNativeFactory\?\.\s*startReactNative)/;
 
   // Add import
   if (!contents.includes('import FirebaseCore')) {
