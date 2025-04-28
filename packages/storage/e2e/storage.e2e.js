@@ -18,6 +18,16 @@ const { PATH } = require('./helpers');
 
 describe('storage() modular', function () {
   describe('firebase v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     describe('storage()', function () {
       describe('namespace', function () {
         it('accessible from firebase.app()', function () {
@@ -241,9 +251,10 @@ describe('storage() modular', function () {
   describe('modular', function () {
     describe('getStorage', function () {
       it('pass app as argument', function () {
+        const { getApp } = modular;
         const { getStorage } = storageModular;
 
-        const storage = getStorage(firebase.app());
+        const storage = getStorage(getApp());
 
         storage.constructor.name.should.be.equal('FirebaseStorageModule');
       });
