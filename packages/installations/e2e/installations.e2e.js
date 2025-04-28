@@ -62,6 +62,16 @@ const PROJECT_ID = 448618578101; // this is "magic", it's the react-native-fireb
 
 describe('installations() modular', function () {
   describe('firebase v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     describe('getId()', function () {
       it('returns a valid installation id', async function () {
         const id = await firebase.installations().getId();
