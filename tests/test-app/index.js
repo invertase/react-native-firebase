@@ -3,4 +3,4 @@
  *
  * comment out all imports but the one you wish to run
  */
-require('./examples/vertexai');
+require('./examples/vertexai/vertexai');
