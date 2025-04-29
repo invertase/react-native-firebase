@@ -3,7 +3,8 @@
   "version": "22.0.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Vertex AI is a fully-managed, unified AI development platform for building and using generative AI",
-  "main": "./dist/module/index.js",
+  "main": "./dist/commonjs/index.js",
+  "module": "./dist/module/index.js",
   "types": "./dist/typescript/module/lib/index.d.ts",
   "scripts": {
     "build": "genversion --esm --semi lib/version.ts",
@@ -37,7 +38,6 @@
     "typescript": "^5.8.3"
   },
   "source": "./lib/index.ts",
-  "module": "./dist/module/index.js",
   "exports": {
     ".": {
       "import": {
