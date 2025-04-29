@@ -2008,15 +2008,16 @@ export namespace FirebaseAuthTypes {
     sendSignInLinkToEmail(email: string, actionCodeSettings?: ActionCodeSettings): Promise<void>;
 
     /**
-     * Returns whether the user signed in with a given email link.
+     * Checks if an incoming link is a sign-in with email link suitable for signInWithEmailLink.
+     * Note that android and other platforms require `apiKey` link parameter for signInWithEmailLink
      *
      * #### Example
      *
      * ```js
-     * const signedInWithLink = await firebase.auth().isSignInWithEmailLink(link);
+     * const valid = await firebase.auth().isSignInWithEmailLink(link);
      * ```
      *
-     * @param emailLink The email link to check whether the user signed in with it.
+     * @param emailLink The email link to verify prior to using signInWithEmailLink
      */
     isSignInWithEmailLink(emailLink: string): Promise<boolean>;
 
