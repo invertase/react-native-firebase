@@ -144,7 +144,7 @@ export function endAt(...fieldValues) {
  * @param {DocumentSnapshot} snapshot
  * @returns {QueryEndAtConstraint}
  */
-export function endAt(snapshot){
+export function endAt(snapshot) {
   return new QueryConstraint('endAt', snapshot);
 }
 
