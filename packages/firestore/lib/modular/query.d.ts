@@ -332,6 +332,11 @@ export declare function deleteDoc<AppModelType, DbModelType extends DocumentData
  */
 export declare function endAt(...fieldValues: unknown[]): QueryEndAtConstraint;
 
+/**
+ * reates a QueryEndAtConstraint that modifies the result set to end at the provided document (inclusive).
+ * The end position is relative to the order of the query. The document must contain all of the fields provided in the orderBy of the query.
+ * @param snapshot
+ */
 export function endAt<AppModelType, DbModelType extends DocumentData>(
   snapshot: DocumentSnapshot<AppModelType, DbModelType>,
 ): QueryEndAtConstraint;

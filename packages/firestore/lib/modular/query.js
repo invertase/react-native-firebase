@@ -133,19 +133,11 @@ export function startAfter(...docOrFields) {
  * Creates a QueryEndAtConstraint that modifies the result set to end at the provided fields relative to the order of the query.
  * The order of the field values must match the order of the order by clauses of the query.
  *
- * @param {*} fieldValues
+ * @param {*} ...args Can be either a DocumentSnapshot or an array of field values.
  */
 
-export function endAt(...fieldValues) {
-  return new QueryConstraint('endAt', ...fieldValues);
-}
-
-/**
- * @param {DocumentSnapshot} snapshot
- * @returns {QueryEndAtConstraint}
- */
-export function endAt(snapshot) {
-  return new QueryConstraint('endAt', snapshot);
+export function endAt(...args) {
+  return new QueryConstraint('endAt', ...args);
 }
 
 /**
