@@ -236,4 +236,6 @@ export declare function queryEqual<AppModelType, DbModelType extends DocumentDat
  * @param firestore
  * @param onSync
  */
-export declare function onSnapshotsInSync(firestore: Firestore, onSync: () => void): Unsubscribe;
+export declare function onSnapshotsInSync(
+  firestore: Firestore, onSync: () => void
+): Unsubscribe;
