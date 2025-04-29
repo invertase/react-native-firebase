@@ -20,5 +20,5 @@ export function snapshotEqual(left, right) {
 }
 
 export function onSnapshotsInSync(firestore, ...args) {
-  return firestore.onSnapshotsInSync.call(firestore, ...args, MODULAR_DEPRECATION_ARG);
+  return firestore.addSnapshotsInSyncListener.call(firestore, ...args, MODULAR_DEPRECATION_ARG);
 }
