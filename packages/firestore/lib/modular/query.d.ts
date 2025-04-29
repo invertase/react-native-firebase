@@ -176,7 +176,7 @@ export type OrderByDirection = 'desc' | 'asc';
  */
 export function orderBy(
   fieldPath: string | FieldPath,
-  directionStr: OrderByDirection = 'asc',
+  directionStr?: OrderByDirection = 'asc',
 ): QueryOrderByConstraint;
 
 /**
