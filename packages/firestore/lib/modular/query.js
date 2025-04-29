@@ -141,6 +141,14 @@ export function endAt(...fieldValues) {
 }
 
 /**
+ * @param {DocumentSnapshot} snapshot
+ * @returns {QueryEndAtConstraint}
+ */
+export function endAt(snapshot){
+  return new QueryConstraint('endAt', snapshot);
+}
+
+/**
  * Creates a QueryEndAtConstraint that modifies the result set to end before the provided fields relative to the order of the query.
  * The order of the field values must match the order of the order by clauses of the query.
  *
