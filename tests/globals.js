@@ -49,7 +49,7 @@ import shouldMatchers from 'should';
 globalThis.RNFBDebug = false;
 
 // this may be used to locate modular API errors quickly
-globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE = false;
+globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE = true;
 
 // Needed for Platform.Other session storage
 import AsyncStorage from '@react-native-async-storage/async-storage';

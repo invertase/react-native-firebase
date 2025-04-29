@@ -69,7 +69,7 @@ ErrorUtils.setGlobalHandler((err, isFatal) => {
 
 function loadTests(_) {
   describe('React Native Firebase', function () {
-    if (!globalThis.RNFBDebug && !globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE) {
+    if (!globalThis.RNFBDebug) {
       // Only retry tests if not debugging or hunting deprecated API usage locally,
       // otherwise it gets annoying to debug.
       this.retries(4);
