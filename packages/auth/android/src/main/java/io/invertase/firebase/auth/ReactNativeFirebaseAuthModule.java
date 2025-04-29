@@ -459,18 +459,23 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    firebaseAuth
-        .signInWithEmailLink(email, emailLink)
-        .addOnSuccessListener(
-            authResult -> {
-              Log.d(TAG, "signInWithEmailLink:onComplete:success");
-              promiseWithAuthResult(authResult, promise);
-            })
-        .addOnFailureListener(
-            exception -> {
-              Log.e(TAG, "signInWithEmailLink:onComplete:failure", exception);
-              promiseRejectAuthException(promise, exception);
-            });
+    try {
+      firebaseAuth
+          .signInWithEmailLink(email, emailLink)
+          .addOnSuccessListener(
+              authResult -> {
+                Log.d(TAG, "signInWithEmailLink:onComplete:success");
+                promiseWithAuthResult(authResult, promise);
+              })
+          .addOnFailureListener(
+              exception -> {
+                Log.e(TAG, "signInWithEmailLink:onComplete:failure", exception);
+                promiseRejectAuthException(promise, exception);
+              });
+    } catch (Exception exception) {
+      Log.e(TAG, "signInWithEmailLink:onComplete:totalfailure", exception);
+      promiseRejectAuthException(promise, exception);
+    }
   }
 
   @ReactMethod
