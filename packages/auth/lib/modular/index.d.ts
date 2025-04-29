@@ -165,7 +165,8 @@ export interface PopupRedirectResolver {}
 export function initializeRecaptchaConfig(auth: Auth): Promise<void>;
 
 /**
- * Checks if an incoming link is a sign-in with email link suitable for signInWithEmailLink().
+ * Checks if an incoming link is a sign-in with email link suitable for signInWithEmailLink.
+ * Note that android and other platforms require `apiKey` link parameter for signInWithEmailLink
  *
  * @param auth - The Auth instance.
  * @param emailLink - The email link to check.
