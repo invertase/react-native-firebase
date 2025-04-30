@@ -48,11 +48,8 @@ You can reach out to us directly via Discord direct messages or Twitter if you'd
 
 #### Project Owners
 
-- [Salakar](https://github.com/Salakar)
-  - Twitter: [@mikediarmid](https://twitter.com/mikediarmid)
-  - Discord: `Salakar#1337`
 - [Ehesp](https://github.com/Ehesp)
-  - Twitter: [@elliothesp](https://twitter.com/elliothesp)
+  - Twitter: [@elliothesp](https://x.com/elliothesp)
   - Discord: `Alias#3980`
 
 ---
@@ -81,7 +78,7 @@ Working on your first Pull Request? You can learn how from this _free_ series, [
   ```
   - If a method works on both platforms then there's no need to annotate it
 - Name your native code methods the same as the JS method name
-  - e.g. the Android (`@ReactMethod`) implementation of `firebase.auth().signInWithEmailAndPassword()` is named `signInWithEmailAndPassword`
+  - e.g. the Android (`@ReactMethod`) implementation of `signInWithEmailAndPassword()` is named `signInWithEmailAndPassword`
 
 ---
 
@@ -100,8 +97,7 @@ cd react-native-firebase
 
 ```bash
 yarn
-yarn lerna:prepare
-yarn tests:ios:pod:install
+yarn lerna:prepare  # Note, requires very current node, e.g., node v22.19.1+
 brew tap wix/brew
 brew install applesimutils xcbeautify
 ```
@@ -134,10 +130,19 @@ To run end-to-end tests for `Android`, please run:
 
 To run end-to-end tests for `iOS`, please run:
 
+- `yarn tests:ios:pod:install`
 - `yarn tests:ios:build` - builds `iOS` test application.
 - `yarn tests:packager:jet-reset-cache` - runs JavaScript bundler.
 - `yarn tests:emulator:start` - runs Firestore emulator for Firestore tests.
 - `yarn tests:ios:test` - runs tests using Detox library. Tests for each package can be found in the `e2e` directory (i.e. `[PACKAGE]/e2e/*.e2e.js`)
+
+To run end-to-end tests for `Other`, please run:
+
+- `yarn tests:macos:pod:install`
+- `yarn tests:macos:build` - builds `iOS` test application.
+- `yarn tests:packager:jet-reset-cache` - runs JavaScript bundler.
+- `yarn tests:emulator:start` - runs Firestore emulator for Firestore tests.
+- `yarn tests:macos:test-cover` - runs tests using Detox library. Tests for each package can be found in the `e2e` directory (i.e. `[PACKAGE]/e2e/*.e2e.js`)
 
 See its local testing guide [here](https://github.com/invertase/react-native-firebase/blob/main/tests/README.md) to get started
 with `e2e` testing this project.
