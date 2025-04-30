@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [22.1.0](https://github.com/invertase/react-native-firebase/compare/v22.0.0...v22.1.0) (2025-04-30)
+
+### Features
+
+- **auth, expo:** add support for AppDelegate.swift ([e4966ef](https://github.com/invertase/react-native-firebase/commit/e4966ef3b692b3b8a3b89fbf54a0a0d59ca06ab6))
+
+### Bug Fixes
+
+- **auth, android:** catch native error in signWithEmailLink ([a08580e](https://github.com/invertase/react-native-firebase/commit/a08580e29d672af99e890a60dbef8aba094b697c))
+- **auth:** delegate modular `multiFactor` to MultiFactorUser constructor ([0937c77](https://github.com/invertase/react-native-firebase/commit/0937c77c9642da082de34de39cbf6a1847ae065c))
+
 ## [22.0.0](https://github.com/invertase/react-native-firebase/compare/v21.14.0...v22.0.0) (2025-04-25)
 
 ### ⚠ BREAKING CHANGES

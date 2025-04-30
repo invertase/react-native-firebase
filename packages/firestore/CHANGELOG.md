@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [22.1.0](https://github.com/invertase/react-native-firebase/compare/v22.0.0...v22.1.0) (2025-04-30)
+
+### Bug Fixes
+
+- **firestore, types:** exist -> exists() change reflected in types ([339834d](https://github.com/invertase/react-native-firebase/commit/339834d940f1260ddd9a142cc17def1e876ff0fa))
+
 ## [22.0.0](https://github.com/invertase/react-native-firebase/compare/v21.14.0...v22.0.0) (2025-04-25)
 
 ### ⚠ BREAKING CHANGES

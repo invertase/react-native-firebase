@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [22.1.0](https://github.com/invertase/react-native-firebase/compare/v22.0.0...v22.1.0) (2025-04-30)
+
+### Bug Fixes
+
+- **vertexai:** package.json main needs updating to commonjs path ([abe6c19](https://github.com/invertase/react-native-firebase/commit/abe6c190e6a22676fc58a4c5c7740ddeba2efd93))
+
 ## [22.0.0](https://github.com/invertase/react-native-firebase/compare/v21.14.0...v22.0.0) (2025-04-25)
 
 ### Bug Fixes
