@@ -5,6 +5,9 @@
  */
 
 import { MODULAR_DEPRECATION_ARG } from '../../../app/lib/common';
+import { NativeEventEmitter, NativeModules } from 'react-native';
+
+const emitter = new NativeEventEmitter(NativeModules.RNFBFirestoreModule);
 
 /**
  * @param {Query | DocumentReference} reference
@@ -19,6 +22,16 @@ export function snapshotEqual(left, right) {
   return left.isEqual.call(left, right, MODULAR_DEPRECATION_ARG);
 }
 
-export function onSnapshotsInSync(firestore, ...args) {
-  return firestore.addSnapshotsInSyncListener.call(firestore, ...args, MODULAR_DEPRECATION_ARG);
+// export function onSnapshotsInSync(firestore, ...args) {
+//   return firestore.addSnapshotsInSyncListener.call(firestore, ...args, MODULAR_DEPRECATION_ARG);
+// }
+
+export function onSnapshotsInSync(_firestore, callback) {
+  console.log('Registering onSnapshotsInSync');
+  if (typeof firestoreInstance.onSnapshotsInSync === 'function') {
+    return firestoreInstance.onSnapshotsInSync(callback);
+  }
+
+  console.warn('onSnapshotsInSync is not implemented');
+  return () => {};
 }

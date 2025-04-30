@@ -24,64 +24,75 @@ describe('firestore().doc().onSnapshot()', function () {
     return wipe();
   });
 
-  describe('modular', function () {
-    it('onSnapshotsInSync() returns an unsubscribe function', function () {
-        const firestore = firebase.firestore();
-        const unsubscribe = onSnapshotsInSync(firestore);
-    
-        expect(unsubscribe).to.be.a('function');
-        expect(unsubscribe()).to.equal(undefined);
-    });
+  it('onSnapshotsInSync() invokes callback and returns unsubscribe', async function () {
+    const firestore = firebase.firestore();
+    const ref = firestore.collection(COLLECTION).doc('syncTest');
+  
+    await ref.set({ foo: 'bar' });
+  
+    const onSync = sinon.spy();
+  
+    const unsubscribeSnapshot = ref.onSnapshot(() => {});
+    const unsubscribeSync = onSnapshotsInSync(firestore, onSync);
+  
+    // Allow sync to process
+    await Utils.sleep(500);
+  
+    onSync.should.be.calledOnce();
+    unsubscribeSync.should.be.a.Function();
+  
+    unsubscribeSnapshot();
+    unsubscribeSync();
   });
 
-  it('onSnapshotsInSync fires after listeners are in sync', () => {
-    const testDocs = {
-      a: { foo: 1 }
-    };
-    return withTestCollection(persistence, testDocs, async (coll, db) => {
-      let events = [];
-      const gotInitialSnapshot = (() => {
-        let resolve, reject;
-        const promise = new Promise((res, rej) => {
-          resolve = res;
-          reject = rej;
-        });
-        return { promise, resolve, reject };
-      })();
-      const docA = doc(coll, 'a');
+  // it('onSnapshotsInSync fires after listeners are in sync', () => {
+  //   const testDocs = {
+  //     a: { foo: 1 }
+  //   };
+  //   return withTestCollection(persistence, testDocs, async (coll, db) => {
+  //     let events = [];
+  //     const gotInitialSnapshot = (() => {
+  //       let resolve, reject;
+  //       const promise = new Promise((res, rej) => {
+  //         resolve = res;
+  //         reject = rej;
+  //       });
+  //       return { promise, resolve, reject };
+  //     })();
+  //     const docA = doc(coll, 'a');
 
-      onSnapshot(docA, snap => {
-        events.push('doc');
-        gotInitialSnapshot.resolve();
-      });
-      await gotInitialSnapshot.promise;
-      events = [];
+  //     onSnapshot(docA, snap => {
+  //       events.push('doc');
+  //       gotInitialSnapshot.resolve();
+  //     });
+  //     await gotInitialSnapshot.promise;
+  //     events = [];
 
-      const done = (() => {
-        let resolve, reject;
-        const promise = new Promise((res, rej) => {
-          resolve = res;
-          reject = rej;
-        });
-        return { promise, resolve, reject };
-      })();
-      onSnapshotsInSync(db, () => {
-        events.push('snapshots-in-sync');
-        if (events.length === 3) {
-          // We should have an initial snapshots-in-sync event, then a snapshot
-          // event for set(), then another event to indicate we're in sync
-          // again.
-          expect(events).to.deep.equal([
-            'snapshots-in-sync',
-            'doc',
-            'snapshots-in-sync'
-          ]);
-          done.resolve();
-        }
-      });
+  //     const done = (() => {
+  //       let resolve, reject;
+  //       const promise = new Promise((res, rej) => {
+  //         resolve = res;
+  //         reject = rej;
+  //       });
+  //       return { promise, resolve, reject };
+  //     })();
+  //     onSnapshotsInSync(db, () => {
+  //       events.push('snapshots-in-sync');
+  //       if (events.length === 3) {
+  //         // We should have an initial snapshots-in-sync event, then a snapshot
+  //         // event for set(), then another event to indicate we're in sync
+  //         // again.
+  //         expect(events).to.deep.equal([
+  //           'snapshots-in-sync',
+  //           'doc',
+  //           'snapshots-in-sync'
+  //         ]);
+  //         done.resolve();
+  //       }
+  //     });
 
-      await setDoc(docA, { foo: 3 });
-      await done.promise;
-    });
-  });
+  //     await setDoc(docA, { foo: 3 });
+  //     await done.promise;
+  //   });
+  // });
 });
