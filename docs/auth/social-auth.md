@@ -74,8 +74,7 @@ async function onAppleButtonPress() {
   const appleCredential = AppleAuthProvider.credential(identityToken, nonce);
 
   // Sign the user in with the credential
-  const auth = getAuth();
-  return signInWithCredential(auth, appleCredential);
+  return signInWithCredential(getAuth(), appleCredential);
 }
 ```
 
@@ -85,7 +84,7 @@ with the new authentication state of the user.
 Apple also requires that the app revoke the `Sign in with Apple` token when the user chooses to delete their account. This can be accomplished with the `revokeToken` API.
 
 ```js
-import { getAuth } from '@react-native-firebase/auth';
+import { getAuth, revokeToken } from '@react-native-firebase/auth';
 import { appleAuth } from '@invertase/react-native-apple-authentication';
 
 async function revokeSignInWithAppleToken() {
@@ -100,8 +99,7 @@ async function revokeSignInWithAppleToken() {
   }
 
   // Revoke the token
-  const auth = getAuth();
-  return auth.revokeToken(auth, authorizationCode);
+  return revokeToken(getAuth(), authorizationCode);
 }
 ```
 
@@ -158,8 +156,7 @@ async function onFacebookButtonPress() {
   const facebookCredential = FacebookAuthProvider.credential(data.accessToken);
 
   // Sign-in the user with the credential
-  const auth = getAuth();
-  return signInWithCredential(auth, facebookCredential);
+  return signInWithCredential(getAuth(), facebookCredential);
 }
 ```
 
@@ -200,8 +197,7 @@ async function onFacebookButtonPress() {
   const facebookCredential = FacebookAuthProvider.credential(data.authenticationToken, nonce);
 
   // Sign-in the user with the credential
-  const auth = getAuth();
-  return signInWithCredential(auth, facebookCredential);
+  return signInWithCredential(getAuth(), facebookCredential);
 }
 ```
 
@@ -277,8 +273,7 @@ async function onGoogleButtonPress() {
   const googleCredential = GoogleAuthProvider.credential(signInResult.data.idToken);
 
   // Sign-in the user with the credential
-  const auth = getAuth();
-  return signInWithCredential(auth, googleCredential);
+  return signInWithCredential(getAuth(), googleCredential);
 }
 ```
 
@@ -332,8 +327,7 @@ const onMicrosoftButtonPress = async () => {
   });
 
   // Sign-in the user with the provider
-  const auth = getAuth();
-  return signInWithRedirect(auth, provider);
+  return signInWithRedirect(getAuth(), provider);
 };
 ```
 
@@ -393,8 +387,7 @@ async function onTwitterButtonPress() {
   const twitterCredential = TwitterAuthProvider.credential(authToken, authTokenSecret);
 
   // Sign-in the user with the credential
-  const auth = getAuth();
-  return signInWithCredential(auth, twitterCredential);
+  return signInWithCredential(getAuth(), twitterCredential);
 }
 ```
 
@@ -417,8 +410,6 @@ This code demonstrates linking a Google provider to an account that is already s
 import { GoogleAuthProvider, getAuth } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
-const auth = getAuth();
-
 async function onGoogleLinkButtonPress() {
   // Ensure the device supports Google Play services
   await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
@@ -429,7 +420,7 @@ async function onGoogleLinkButtonPress() {
   const googleCredential = GoogleAuthProvider.credential(idToken);
 
   // Link the user's account with the Google credential
-  const firebaseUserCredential = await auth.currentUser.linkWithCredential(googleCredential);
+  const firebaseUserCredential = await getAuth().currentUser.linkWithCredential(googleCredential);
   //  Handle the linked account as needed in your app
   return;
 }

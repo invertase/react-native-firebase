@@ -64,6 +64,5 @@ const credential = OIDCAuthProvider.credential(
   authState.idToken,
 );
 
-const auth = getAuth();
-await signInWithCredential(auth, credential);
+await signInWithCredential(getAuth(), credential);
 ```

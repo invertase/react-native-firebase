@@ -52,8 +52,6 @@ import React, { useState, useEffect } from 'react';
 import { View, Text } from 'react-native';
 import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
 
-const auth = getAuth();
-
 function App() {
   // Set an initializing state whilst Firebase connects
   const [initializing, setInitializing] = useState(true);
@@ -66,7 +64,7 @@ function App() {
   }
 
   useEffect(() => {
-    const subscriber = onAuthStateChanged(auth, onAuthStateChanged);
+    const subscriber = onAuthStateChanged(getAuth(), onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);
 
@@ -114,9 +112,7 @@ Ensure the "Anonymous" sign-in provider is enabled on the [Firebase Console](htt
 ```js
 import { getAuth, signInAnonymously } from '@react-native-firebase/auth';
 
-const auth = getAuth();
-
-signInAnonymously()
+signInAnonymously(getAuth())
   .then(() => {
     console.log('User signed in anonymously');
   })
@@ -149,9 +145,7 @@ then signing them in.
 ```js
 import { getAuth, createUserWithEmailAndPassword } from '@react-native-firebase/auth';
 
-const auth = getAuth();
-
-createUserWithEmailAndPassword(auth, 'jane.doe@example.com', 'SuperSecretPassword!')
+createUserWithEmailAndPassword(getAuth(), 'jane.doe@example.com', 'SuperSecretPassword!')
   .then(() => {
     console.log('User account created & signed in!');
   })
@@ -185,9 +179,7 @@ If you'd like to sign the user out of their current authentication state, call t
 ```js
 import { getAuth, signOut } from '@react-native-firebase/auth';
 
-const auth = getAuth();
-
-signOut(auth).then(() => console.log('User signed out!'));
+signOut(getAuth()).then(() => console.log('User signed out!'));
 ```
 
 Once successfully signed out, any [`onAuthStateChanged`](#listening-to-authentication-state) listeners will trigger an event

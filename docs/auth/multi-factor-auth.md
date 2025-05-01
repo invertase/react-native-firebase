@@ -23,8 +23,7 @@ operations:
 ```js
 import authModule, { PhoneAuthProvider, getAuth, multiFactor } from '@react-native-firebase/auth';
 
-const auth = getAuth();
-const multiFactorUser = await multiFactor(auth.currentUser);
+const multiFactorUser = await multiFactor(getAuth().currentUser);
 ```
 
 Request the session identifier and use the phone number obtained from the user
@@ -38,7 +37,7 @@ const phoneOptions = {
 };
 
 // Sends a text message to the user
-const verificationId = await auth.verifyPhoneNumberForMultiFactor(phoneOptions);
+const verificationId = await getAuth().verifyPhoneNumberForMultiFactor(phoneOptions);
 ```
 
 Once the user has provided the verification code received by text message, you
@@ -67,9 +66,7 @@ import authModule, {
   getMultiFactorResolver,
 } from '@react-native-firebase/auth';
 
-const auth = getAuth();
-
-signInWithEmailAndPassword(auth, email, password)
+signInWithEmailAndPassword(getAuth(), email, password)
   .then(() => {
     // User has not enrolled a second factor
   })
@@ -89,7 +86,7 @@ Using the error object you can obtain a
 continue the flow:
 
 ```js
-const resolver = getMultiFactorResolver(auth, error);
+const resolver = getMultiFactorResolver(getAuth(), error);
 ```
 
 The resolver object has all the required information to prompt the user for a
@@ -113,7 +110,7 @@ verification code to the user:
 const hint = resolver.hints[0];
 const sessionId = resolver.session;
 
-auth
+getAuth()
   .verifyPhoneNumberWithMultiFactorInfo(hint, sessionId) // triggers the message to the user
   .then(verificationId => setVerificationId(verificationId));
 ```
@@ -145,9 +142,7 @@ import authModule, {
   getMultiFactorResolver,
 } from '@react-native-firebase/auth';
 
-const auth = getAuth();
-
-signInWithEmailAndPassword(auth, email, password)
+signInWithEmailAndPassword(getAuth(), email, password)
   .then(() => {
     // User has not enrolled a second factor
   })
@@ -166,7 +161,7 @@ signInWithEmailAndPassword(auth, email, password)
         const hint = resolver.hints[0];
         const sessionId = resolver.session;
 
-        auth
+        getAuth()
           .verifyPhoneNumberWithMultiFactorInfo(hint, sessionId) // triggers the message to the user
           .then(verificationId => setVerificationId(verificationId));
 
