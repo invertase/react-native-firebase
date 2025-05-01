@@ -70,6 +70,7 @@ import auth, {
   OAuthProvider,
   OIDCAuthProvider,
   PhoneAuthProvider,
+  PhoneMultiFactorGenerator,
   TwitterAuthProvider,
 } from '../lib';
 
@@ -535,6 +536,10 @@ describe('Auth', function () {
 
     it('`PhoneAuthProvider` class is properly exposed to end user', function () {
       expect(PhoneAuthProvider).toBeDefined();
+    });
+
+    it('`PhoneMultiFactorGenerator` class is properly exposed to end user', function () {
+      expect(PhoneMultiFactorGenerator).toBeDefined();
     });
 
     it('`TwitterAuthProvider` class is properly exposed to end user', function () {

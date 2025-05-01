@@ -779,5 +779,6 @@ export {
   OAuthProvider,
   OIDCAuthProvider,
   PhoneAuthProvider,
+  PhoneMultiFactorGenerator,
   TwitterAuthProvider,
 } from '../index';
