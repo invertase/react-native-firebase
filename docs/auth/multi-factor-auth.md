@@ -37,7 +37,7 @@ const phoneOptions = {
 };
 
 // Sends a text message to the user
-const verificationId = await getAuth().verifyPhoneNumberForMultiFactor(phoneOptions);
+const verificationId = await new PhoneAuthProvider(getAuth()).verifyPhoneNumber(phoneOptions);
 ```
 
 Once the user has provided the verification code received by text message, you
@@ -111,8 +111,8 @@ verification code to the user:
 const hint = resolver.hints[0];
 const sessionId = resolver.session;
 
-getAuth()
-  .verifyPhoneNumberWithMultiFactorInfo(hint, sessionId) // triggers the message to the user
+new PhoneAuthProvider(getAuth())
+  .verifyPhoneNumber(hint, sessionId) // triggers the message to the user
   .then(verificationId => setVerificationId(verificationId));
 ```
 
@@ -163,8 +163,8 @@ signInWithEmailAndPassword(getAuth(), email, password)
         const hint = resolver.hints[0];
         const sessionId = resolver.session;
 
-        getAuth()
-          .verifyPhoneNumberWithMultiFactorInfo(hint, sessionId) // triggers the message to the user
+        new PhoneAuthProvider(getAuth())
+          .verifyPhoneNumber(hint, sessionId) // triggers the message to the user
           .then(verificationId => setVerificationId(verificationId));
 
         // Request verificationCode from user
