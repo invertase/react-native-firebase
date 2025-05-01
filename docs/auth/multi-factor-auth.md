@@ -21,7 +21,7 @@ instance for the current user. This is the entry point for most multi-factor
 operations:
 
 ```js
-import authModule, { PhoneAuthProvider, getAuth, multiFactor } from '@react-native-firebase/auth';
+import { PhoneAuthProvider, PhoneMultiFactorGenerator, getAuth, multiFactor } from '@react-native-firebase/auth';
 
 const multiFactorUser = await multiFactor(getAuth().currentUser);
 ```
@@ -45,7 +45,7 @@ can complete the process:
 
 ```js
 const cred = PhoneAuthProvider.credential(verificationId, verificationCode);
-const multiFactorAssertion = authModule.PhoneMultiFactorGenerator.assertion(cred);
+const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
 await multiFactorUser.enroll(multiFactorAssertion, 'Optional display name for the user');
 ```
 
@@ -59,8 +59,9 @@ default sign-in methods, for example email and password. If the account requires
 a second factor to complete login, an exception will be raised:
 
 ```js
-import authModule, {
+import {
   PhoneAuthProvider,
+  PhoneMultiFactorGenerator,
   getAuth,
   signInWithEmailAndPassword,
   getMultiFactorResolver,
@@ -98,7 +99,7 @@ if (resolver.hints.length > 1) {
 }
 
 // Currently only phone based factors are supported
-if (resolver.hints[0].factorId === authModule.PhoneMultiFactorGenerator.FACTOR_ID) {
+if (resolver.hints[0].factorId === PhoneMultiFactorGenerator.FACTOR_ID) {
   // Continue with the sign-in flow
 }
 ```
@@ -121,7 +122,7 @@ assertion and finish the flow:
 ```js
 const credential = PhoneAuthProvider.credential(verificationId, verificationCode);
 
-const multiFactorAssertion = authModule.PhoneMultiFactorGenerator.assertion(credential);
+const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(credential);
 
 resolver.resolveSignIn(multiFactorAssertion).then(userCredential => {
   // additionally onAuthStateChanged will be triggered as well
@@ -135,8 +136,9 @@ will trigger with the new authentication state of the user.
 To put the example together:
 
 ```js
-import authModule, {
+import {
   PhoneAuthProvider,
+  PhoneMultiFactorGenerator,
   getAuth,
   signInWithEmailAndPassword,
   getMultiFactorResolver,
@@ -157,7 +159,7 @@ signInWithEmailAndPassword(getAuth(), email, password)
       }
 
       // Currently only phone based factors are supported
-      if (resolver.hints[0].factorId === authModule.PhoneMultiFactorGenerator.FACTOR_ID) {
+      if (resolver.hints[0].factorId === PhoneMultiFactorGenerator.FACTOR_ID) {
         const hint = resolver.hints[0];
         const sessionId = resolver.session;
 
@@ -169,7 +171,7 @@ signInWithEmailAndPassword(getAuth(), email, password)
 
         const credential = PhoneAuthProvider.credential(verificationId, verificationCode);
 
-        const multiFactorAssertion = authModule.PhoneMultiFactorGenerator.assertion(credential);
+        const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(credential);
 
         resolver.resolveSignIn(multiFactorAssertion).then(userCredential => {
           // additionally onAuthStateChanged will be triggered as well
