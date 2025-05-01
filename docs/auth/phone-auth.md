@@ -170,7 +170,11 @@ export default function PhoneVerification() {
   // Handle create account button press
   async function createAccount() {
     try {
-      await createUserWithEmailAndPassword(getAuth(), 'jane.doe@example.com', 'SuperSecretPassword!');
+      await createUserWithEmailAndPassword(
+        getAuth(),
+        'jane.doe@example.com',
+        'SuperSecretPassword!',
+      );
       console.log('User account created & signed in!');
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {

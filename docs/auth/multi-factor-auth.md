@@ -21,7 +21,12 @@ instance for the current user. This is the entry point for most multi-factor
 operations:
 
 ```js
-import { PhoneAuthProvider, PhoneMultiFactorGenerator, getAuth, multiFactor } from '@react-native-firebase/auth';
+import {
+  PhoneAuthProvider,
+  PhoneMultiFactorGenerator,
+  getAuth,
+  multiFactor,
+} from '@react-native-firebase/auth';
 
 const multiFactorUser = await multiFactor(getAuth().currentUser);
 ```
