@@ -155,7 +155,7 @@ export function modifyObjcAppDelegate(contents: string): string | null {
 // NOTE: `mergeContents()` doesn't support newlines for the `anchor` regex, so we have to replace it manually
 const skipOpenUrlForFirebaseAuthBlockSwift: string = `\
 // @generated begin @react-native-firebase/auth-openURL - expo prebuild (DO NOT MODIFY)
-    if url.host.toLowerCase() == "firebaseauth" {
+    if url.host?.lowercased() == "firebaseauth" {
       // invocations for Firebase Auth are handled elsewhere and should not be forwarded to Expo Router
       return false
     }
