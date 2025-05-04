@@ -50,7 +50,7 @@ render of our main application whilst the connection is established:
 ```jsx
 import React, { useState, useEffect } from 'react';
 import { View, Text } from 'react-native';
-import auth from '@react-native-firebase/auth';
+import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
 
 function App() {
   // Set an initializing state whilst Firebase connects
@@ -64,7 +64,7 @@ function App() {
   }
 
   useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    const subscriber = onAuthStateChanged(getAuth(), onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);
 
@@ -110,10 +110,9 @@ allowing you to integrate with other services such as Analytics by providing a u
 Ensure the "Anonymous" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
 
 ```js
-import auth from '@react-native-firebase/auth';
+import { getAuth, signInAnonymously } from '@react-native-firebase/auth';
 
-auth()
-  .signInAnonymously()
+signInAnonymously(getAuth())
   .then(() => {
     console.log('User signed in anonymously');
   })
@@ -144,10 +143,9 @@ The `createUserWithEmailAndPassword` performs two operations; first creating the
 then signing them in.
 
 ```js
-import auth from '@react-native-firebase/auth';
+import { getAuth, createUserWithEmailAndPassword } from '@react-native-firebase/auth';
 
-auth()
-  .createUserWithEmailAndPassword('jane.doe@example.com', 'SuperSecretPassword!')
+createUserWithEmailAndPassword(getAuth(), 'jane.doe@example.com', 'SuperSecretPassword!')
   .then(() => {
     console.log('User account created & signed in!');
   })
@@ -179,11 +177,9 @@ The user's token should be used for authentication with your backend systems. Th
 If you'd like to sign the user out of their current authentication state, call the `signOut` method:
 
 ```js
-import auth from '@react-native-firebase/auth';
+import { getAuth, signOut } from '@react-native-firebase/auth';
 
-auth()
-  .signOut()
-  .then(() => console.log('User signed out!'));
+signOut(getAuth()).then(() => console.log('User signed out!'));
 ```
 
 Once successfully signed out, any [`onAuthStateChanged`](#listening-to-authentication-state) listeners will trigger an event
