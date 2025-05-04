@@ -182,7 +182,7 @@ At the top of the file, import the Firebase SDK right after `'import ReactAppDep
 import Firebase
 ```
 
-Within your existing `didFinishLaunchingWithOptions` method, add the following to the top of the method:
+Within your existing `application` method, add the following to the top of the method:
 
 ```swift
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
