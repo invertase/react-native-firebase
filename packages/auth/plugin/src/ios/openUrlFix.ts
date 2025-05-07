@@ -101,7 +101,7 @@ export function modifyAppDelegate(contents: string, language: string): string | 
 }
 
 const skipOpenUrlForFirebaseAuthBlock: string = `\
-  if ([url.host caseInsensitiveCompare:@"firebaseauth"] == NSOrderedSame) {
+  if (url.host && [url.host caseInsensitiveCompare:@"firebaseauth"] == NSOrderedSame) {
     // invocations for Firebase Auth are handled elsewhere and should not be forwarded to Expo Router
     return NO;
   }\
