@@ -240,6 +240,14 @@ RCT_EXPORT_METHOD(persistenceCacheIndexManager
   resolve(nil);
 }
 
+RCT_EXPORT_METHOD(addSnapshotsInSyncListener:(RCTResponseSenderBlock)callback) {
+  FIRListenerRegistration *registration = [[FIRFirestore firestore]
+    addSnapshotsInSyncListener:^{
+      callback(@[]);
+    }];
+}
+
+
 - (NSMutableDictionary *)taskProgressToDictionary:(FIRLoadBundleTaskProgress *)progress {
   NSMutableDictionary *progressMap = [[NSMutableDictionary alloc] init];
   progressMap[@"bytesLoaded"] = @(progress.bytesLoaded);
