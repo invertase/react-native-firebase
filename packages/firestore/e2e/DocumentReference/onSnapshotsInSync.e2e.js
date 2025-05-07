@@ -14,85 +14,55 @@
  * limitations under the License.
  *
  */
-const COLLECTION = 'firestore';
-const NO_RULE_COLLECTION = 'no_rules';
-const { wipe } = require('../helpers');
-import { onSnapshotsInSync } from '../../lib/modular/snapshot';
 
-describe('firestore().doc().onSnapshot()', function () {
-  before(function () {
-    return wipe();
+describe('firestore().onSnapshotsInSync() modular', function () {
+  if (Platform.other) return;
+
+  const { getFirestore, doc, onSnapshot, onSnapshotsInSync, setDoc } = firestoreModular;
+  const TEST_DOC = `${COLLECTION}/modular_sync_test`;
+
+  it('calls onSnapshotsInSync after a snapshot is delivered', async function () {
+    const db = getFirestore();
+    const docRef = doc(db, TEST_DOC);
+
+    const snapshotSpy = sinon.spy();
+    const syncSpy = sinon.spy();
+
+    // Set initial data
+    await setDoc(docRef, { foo: 'initial' });
+
+    // Subscribe to snapshot and sync
+    const unsubSnapshot = onSnapshot(docRef, snapshotSpy);
+    const unsubSync = onSnapshotsInSync(db, syncSpy);
+
+    // Trigger change
+    await setDoc(docRef, { foo: 'updated' });
+
+    // Wait for both
+    await Utils.spyToBeCalledOnceAsync(snapshotSpy);
+    await Utils.spyToBeCalledOnceAsync(syncSpy);
+
+    snapshotSpy.should.be.calledOnce();
+    syncSpy.should.be.calledOnce();
+
+    unsubSnapshot();
+    unsubSync();
   });
 
-  it('onSnapshotsInSync() invokes callback and returns unsubscribe', async function () {
-    const firestore = firebase.firestore();
-    const ref = firestore.collection(COLLECTION).doc('syncTest');
-  
-    await ref.set({ foo: 'bar' });
-  
-    const onSync = sinon.spy();
-  
-    const unsubscribeSnapshot = ref.onSnapshot(() => {});
-    const unsubscribeSync = onSnapshotsInSync(firestore, onSync);
-  
-    // Allow sync to process
-    await Utils.sleep(500);
-  
-    onSync.should.be.calledOnce();
-    unsubscribeSync.should.be.a.Function();
-  
-    unsubscribeSnapshot();
-    unsubscribeSync();
+  it('should not fire sync after unsubscribe', async function () {
+    const db = getFirestore();
+    const syncSpy = sinon.spy();
+
+    const unsubSync = onSnapshotsInSync(db, syncSpy);
+    unsubSync();
+
+    await Utils.sleep(1000);
+
+    await setDoc(doc(db, `${COLLECTION}/modular_sync_test_unsub`), { foo: 'change' });
+
+    await Utils.sleep(1000);
+
+    syncSpy.should.not.be.called();
   });
-
-  // it('onSnapshotsInSync fires after listeners are in sync', () => {
-  //   const testDocs = {
-  //     a: { foo: 1 }
-  //   };
-  //   return withTestCollection(persistence, testDocs, async (coll, db) => {
-  //     let events = [];
-  //     const gotInitialSnapshot = (() => {
-  //       let resolve, reject;
-  //       const promise = new Promise((res, rej) => {
-  //         resolve = res;
-  //         reject = rej;
-  //       });
-  //       return { promise, resolve, reject };
-  //     })();
-  //     const docA = doc(coll, 'a');
-
-  //     onSnapshot(docA, snap => {
-  //       events.push('doc');
-  //       gotInitialSnapshot.resolve();
-  //     });
-  //     await gotInitialSnapshot.promise;
-  //     events = [];
-
-  //     const done = (() => {
-  //       let resolve, reject;
-  //       const promise = new Promise((res, rej) => {
-  //         resolve = res;
-  //         reject = rej;
-  //       });
-  //       return { promise, resolve, reject };
-  //     })();
-  //     onSnapshotsInSync(db, () => {
-  //       events.push('snapshots-in-sync');
-  //       if (events.length === 3) {
-  //         // We should have an initial snapshots-in-sync event, then a snapshot
-  //         // event for set(), then another event to indicate we're in sync
-  //         // again.
-  //         expect(events).to.deep.equal([
-  //           'snapshots-in-sync',
-  //           'doc',
-  //           'snapshots-in-sync'
-  //         ]);
-  //         done.resolve();
-  //       }
-  //     });
-
-  //     await setDoc(docA, { foo: 3 });
-  //     await done.promise;
-  //   });
-  // });
 });
+

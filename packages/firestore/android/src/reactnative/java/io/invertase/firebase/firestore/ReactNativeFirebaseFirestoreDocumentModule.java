@@ -341,17 +341,4 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
             databaseId,
             listenerId));
   }
-
-  @ReactMethod
-  public void onSnapshotsInSync(Promise promise) {
-    ListenerRegistration registration = FirebaseFirestore.getInstance()
-        .addSnapshotsInSyncListener(() -> {
-          WritableMap result = Arguments.createMap();
-          getReactApplicationContext()
-            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-            .emit("onSnapshotsInSync", result);
-        });
-
-    promise.resolve(null);
-  }
 }

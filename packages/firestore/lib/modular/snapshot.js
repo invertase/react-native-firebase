@@ -21,17 +21,3 @@ export function onSnapshot(reference, ...args) {
 export function snapshotEqual(left, right) {
   return left.isEqual.call(left, right, MODULAR_DEPRECATION_ARG);
 }
-
-// export function onSnapshotsInSync(firestore, ...args) {
-//   return firestore.addSnapshotsInSyncListener.call(firestore, ...args, MODULAR_DEPRECATION_ARG);
-// }
-
-export function onSnapshotsInSync(_firestore, callback) {
-  console.log('Registering onSnapshotsInSync');
-  if (typeof firestoreInstance.onSnapshotsInSync === 'function') {
-    return firestoreInstance.onSnapshotsInSync(callback);
-  }
-
-  console.warn('onSnapshotsInSync is not implemented');
-  return () => {};
-}

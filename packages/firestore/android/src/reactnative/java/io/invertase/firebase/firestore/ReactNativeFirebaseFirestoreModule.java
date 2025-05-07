@@ -21,6 +21,7 @@ import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
 import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreCommon.rejectPromiseFirestoreException;
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.createFirestoreKey;
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getFirestoreForApp;
+import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getQueryForFirestore;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -191,6 +192,63 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
       return;
     }
     promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void snapshotsInSyncListener(
+    String appName,
+    String databaseId,
+    int listenerId
+    ) {
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
+    ReactNativeFirebaseFirestoreQuery firestoreQuery =
+      new ReactNativeFirebaseFirestoreQuery(
+        appName,
+        databaseId,
+        getQueryForFirestore(firebaseFirestore)
+        );
+
+    handleSnapshotsInSync(appName, databaseId);
+  }
+
+  @ReactMethod
+  public void onSnapshotsInSync(String appName, String databaseId, Promise promise) {
+    ListenerRegistration registration = FirebaseFirestore.getInstance()
+      .addSnapshotsInSyncListener(() -> {
+        WritableMap result = Arguments.createMap();
+        getReactApplicationContext()
+          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+          .emit("firestore_onSnapshotsInSync", result);
+      });
+
+    promise.resolve(null);
+  }
+
+  private void handleSnapshotsInSync(
+    ReactNativeFirebaseFirestoreQuery firestoreQuery,
+    String appName,
+    String databaseId,
+    int listenerId
+    ) {
+
+    final EventListener<QuerySnapshot> listener =
+      (querySnapshot, exception) -> {
+        if (exception != null) {
+          ListenerRegistration listenerRegistration = collectionSnapshotListeners.get(listenerId);
+          if (listenerRegistration != null) {
+            listenerRegistration.remove();
+            collectionSnapshotListeners.remove(listenerId);
+          }
+          sendOnSnapshotError(appName, databaseId, listenerId, exception);
+        } else {
+          sendOnSnapshotEvent(appName, databaseId, listenerId, querySnapshot, metadataChanges);
+        }
+      };
+
+    ListenerRegistration listenerRegistration =
+      firestoreQuery.query.addSnapshotListener(metadataChanges, listener);
+
+    collectionSnapshotListeners.put(listenerId, listenerRegistration);
   }
 
   private WritableMap taskProgressToWritableMap(LoadBundleTaskProgress progress) {
