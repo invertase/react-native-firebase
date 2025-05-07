@@ -1806,17 +1806,27 @@ export namespace FirebaseAuthTypes {
     /**
      * Signs a user in with an email and password.
      *
+     * ⚠️ Note:
+     * If "Email Enumeration Protection" is enabled in your Firebase Authentication settings (enabled by default),
+     * Firebase may return a generic `auth/invalid-login-credentials` error instead of more specific ones like
+     * `auth/user-not-found` or `auth/wrong-password`. This behavior is intended to prevent leaking information
+     * about whether an account with the given email exists.
+     *
+     * To receive detailed error codes, you must disable "Email Enumeration Protection", which may increase
+     * security risks if not properly handled on the frontend.
+     *
      * #### Example
      *
      * ```js
      * const userCredential = await firebase.auth().signInWithEmailAndPassword('joe.bloggs@example.com', '123456');
-     * ````
+     * ```
+     *
      * @error auth/invalid-email Thrown if the email address is not valid.
      * @error auth/user-disabled Thrown if the user corresponding to the given email has been disabled.
-     * @error auth/user-not-found Thrown if there is no user corresponding to the given email.
-     * @error auth/wrong-password Thrown if the password is invalid for the given email, or the account corresponding to the email does not have a password set.
-     * @param email The users email address.
-     * @param password The users password.
+     * @error auth/user-not-found Thrown if there is no user corresponding to the given email. (May be suppressed if email enumeration protection is enabled.)
+     * @error auth/wrong-password Thrown if the password is invalid or missing. (May be suppressed if email enumeration protection is enabled.)
+     * @param email The user's email address.
+     * @param password The user's password.
      */
     signInWithEmailAndPassword(email: string, password: string): Promise<UserCredential>;
 
