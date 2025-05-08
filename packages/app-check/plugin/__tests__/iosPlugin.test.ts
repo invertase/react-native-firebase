@@ -4,7 +4,11 @@ import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import fs from 'fs/promises';
 import path from 'path';
 
-import { modifyAppDelegateAsync, modifyObjcAppDelegate } from '../src/ios/appDelegate';
+import {
+  modifyAppDelegateAsync,
+  modifyObjcAppDelegate,
+  modifySwiftAppDelegate,
+} from '../src/ios/appDelegate';
 
 describe('Config Plugin iOS Tests', function () {
   beforeEach(function () {
@@ -74,17 +78,52 @@ describe('Config Plugin iOS Tests', function () {
     );
   });
 
-  it("doesn't support Swift AppDelegate", async function () {
-    jest.spyOn(fs, 'writeFile').mockImplementation(async () => {});
+  it('supports Swift AppDelegate', async function () {
+    // Use MockedFunction to properly type the mock
+    const writeFileMock = jest
+      .spyOn(fs, 'writeFile')
+      .mockImplementation(async () => {}) as jest.MockedFunction<typeof fs.writeFile>;
+
+    const swiftContents = `import Expo
+import React
+
+@UIApplicationMain
+class AppDelegate: ExpoAppDelegate {
+  override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    // Initialize the factory
+    let factory = ExpoReactNativeFactory(delegate: delegate)
+    factory.startReactNative(withModuleName: "main", in: window, launchOptions: launchOptions)
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+}`;
 
     const appDelegateFileInfo: AppDelegateProjectFile = {
-      path: '.',
+      path: '/app/ios/App/AppDelegate.swift',
       language: 'swift',
-      contents: 'some dummy content',
+      contents: swiftContents,
     };
 
-    await expect(modifyAppDelegateAsync(appDelegateFileInfo)).rejects.toThrow();
-    expect(fs.writeFile).not.toHaveBeenCalled();
+    await modifyAppDelegateAsync(appDelegateFileInfo);
+
+    // Check if writeFile was called
+    expect(writeFileMock).toHaveBeenCalled();
+
+    // Get the modified content with explicit string type assertion
+    const modifiedContents = writeFileMock.mock.calls[0][1] as string;
+
+    // Verify import was added
+    expect(modifiedContents).toContain('import RNFBAppCheck');
+
+    // Verify initialization code was added
+    expect(modifiedContents).toContain('RNFBAppCheckModule.sharedInstance()');
+
+    // Verify Firebase.configure() was added
+    expect(modifiedContents).toContain('FirebaseApp.configure()');
+
+    // Verify the code was added before startReactNative (with explicit type assertion)
+    const codeIndex = (modifiedContents as string).indexOf('RNFBAppCheckModule.sharedInstance()');
+    const startReactNativeIndex = (modifiedContents as string).indexOf('factory.startReactNative');
+    expect(codeIndex).toBeLessThan(startReactNativeIndex);
   });
 
   it('does not add the firebase import multiple times', async function () {
@@ -103,5 +142,31 @@ describe('Config Plugin iOS Tests', function () {
     const twiceModifiedAppDelegate = modifyObjcAppDelegate(onceModifiedAppDelegate);
     expect(twiceModifiedAppDelegate).toContain(singleImport);
     expect(twiceModifiedAppDelegate).not.toContain(doubleImport);
+  });
+
+  it('does not add the swift import multiple times', async function () {
+    const swiftContents = `import Expo
+import React
+
+@UIApplicationMain
+class AppDelegate: ExpoAppDelegate {
+  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    let factory = ExpoReactNativeFactory(delegate: delegate)
+    factory.startReactNative(withModuleName: "main", in: window, launchOptions: launchOptions)
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+}`;
+
+    const onceModifiedContents = modifySwiftAppDelegate(swiftContents);
+    expect(onceModifiedContents).toContain('import RNFBAppCheck');
+
+    // Count occurrences of the import
+    const importCount = (onceModifiedContents.match(/import RNFBAppCheck/g) || []).length;
+    expect(importCount).toBe(1);
+
+    // Modify a second time and ensure imports aren't duplicated
+    const twiceModifiedContents = modifySwiftAppDelegate(onceModifiedContents);
+    const secondImportCount = (twiceModifiedContents.match(/import RNFBAppCheck/g) || []).length;
+    expect(secondImportCount).toBe(1);
   });
 });
