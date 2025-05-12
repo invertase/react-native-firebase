@@ -2096,18 +2096,27 @@ export namespace FirebaseAuthTypes {
     /**
      * Returns a list of authentication methods that can be used to sign in a given user (identified by its main email address).
      *
+     * ⚠️ Note:
+     * If "Email Enumeration Protection" is enabled in your Firebase Authentication settings (which is the default),
+     * this method may return an empty array even if the email is registered, especially when called from an unauthenticated context.
+     *
+     * This is a security measure to prevent leaking account existence via email enumeration attacks.
+     * Do not use the result of this method to directly inform the user whether an email is registered.
+     *
      * #### Example
      *
      * ```js
      * const methods = await firebase.auth().fetchSignInMethodsForEmail('joe.bloggs@example.com');
      *
-     * methods.forEach((method) => {
-     *   console.log(method);
-     * });
+     * if (methods.length > 0) {
+     *   // Likely a registered user — offer sign-in
+     * } else {
+     *   // Could be unregistered OR email enumeration protection is active — offer registration
+     * }
      * ```
      *
      * @error auth/invalid-email Thrown if the email address is not valid.
-     * @param email The users email address.
+     * @param email The user's email address.
      */
     fetchSignInMethodsForEmail(email: string): Promise<string[]>;
 
