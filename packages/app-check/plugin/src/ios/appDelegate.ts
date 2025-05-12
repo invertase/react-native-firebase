@@ -131,7 +131,7 @@ import RNFBAppCheck`,
       offset: 0,
       comment: '//',
     }).contents;
-  } catch (e) {
+  } catch (_e) {
     WarningAggregator.addWarningIOS(
       '@react-native-firebase/app-check',
       'Failed to insert App Check initialization code.',
