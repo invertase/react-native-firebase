@@ -2117,7 +2117,7 @@ export namespace FirebaseAuthTypes {
      *
      * @error auth/invalid-email Thrown if the email address is not valid.
      * @param email The user's email address.
-    */
+     */
     fetchSignInMethodsForEmail(email: string): Promise<string[]>;
 
     /**
