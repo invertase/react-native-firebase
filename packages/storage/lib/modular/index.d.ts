@@ -27,12 +27,16 @@ import Task = FirebaseStorageTypes.Task;
 import ListOptions = FirebaseStorageTypes.ListOptions;
 import SettableMetadata = FirebaseStorageTypes.SettableMetadata;
 import EmulatorMockTokenOptions = FirebaseStorageTypes.EmulatorMockTokenOptions;
-import StringFormat = FirebaseStorageTypes.StringFormat;
 import FirebaseApp = ReactNativeFirebase.FirebaseApp;
 
 export const StringFormat: FirebaseStorageTypes.StringFormat;
 export const TaskEvent: FirebaseStorageTypes.TaskEvent;
 export const TaskState: FirebaseStorageTypes.TaskState;
+
+/**
+ * Union of literal string values in StringFormat "enum" object
+ */
+export type StringFormat = (typeof StringFormat)[keyof typeof StringFormat];
 
 /**
  * Returns the existing default {@link Storage} instance that is associated with the
