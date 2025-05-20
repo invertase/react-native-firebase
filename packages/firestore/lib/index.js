@@ -190,15 +190,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
     };
 
     this.firestore.native.snapshotsInSyncListener(listenerId);
-    
     return unsubscribe;
-  }
-
-  async onSnapshotsInSync(firestore, callback) {
-    this.native.onSnapshotsInSync(firestore, callback, MODULAR_DEPRECATION_ARG);
-    return () => {
-      firestoreEmitter.removeListener('onSnapshotsInSync', callback);
-    };
   }
 
   useEmulator(host, port) {
