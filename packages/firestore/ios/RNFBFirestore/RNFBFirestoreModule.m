@@ -22,6 +22,8 @@
 #import "RNFBPreferences.h"
 
 NSMutableDictionary *emulatorConfigs;
+static __strong NSMutableDictionary *snapshotsInSyncListeners;
+static NSString *const RNFB_FIRESTORE_DOCUMENTS_IN_SYNC = @"firestore_snapshots_in_sync_event";
 
 @implementation RNFBFirestoreModule
 #pragma mark -
@@ -240,11 +242,39 @@ RCT_EXPORT_METHOD(persistenceCacheIndexManager
   resolve(nil);
 }
 
-RCT_EXPORT_METHOD(addSnapshotsInSyncListener:(RCTResponseSenderBlock)callback) {
-  FIRListenerRegistration *registration = [[FIRFirestore firestore]
-    addSnapshotsInSyncListener:^{
-      callback(@[]);
+RCT_EXPORT_METHOD(addSnapshotsInSyncListener
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)databaseId
+                  : (nonnull NSNumber *)listenerId
+                  : (RCTResponseSenderBlock)callback)
+{
+  NSString *appName = [RNFBSharedUtils getAppJavaScriptName:firApp.name];
+  NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName
+                                                    databaseId:databaseId];
+  NSDictionary *serialized = [RNFBFirestoreSerialize documentSnapshotToDictionary:snapshot
+                                                      firestoreKey:firestoreKey];
+  [[RNFBRCTEventEmitter shared]
+  sendEventWithName:RNFB_FIRESTORE_DOCUMENTS_IN_SYNC
+    body:@{
+      @"appName" : [RNFBSharedUtils getAppJavaScriptName:firApp.name],
+      @"databaseId" : databaseId,
+      @"listenerId" : listenerId,
+      @"body" : @{
+      }
     }];
+}
+
+RCT_EXPORT_METHOD(removeSnapshotsInSynclistener
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)databaseId
+                  : (nonnull NSNumber *)listenerId
+                  : (RCTResponseSenderBlock)callback)
+{
+  id<FIRListenerRegistration> listener = collectionSnapshotListeners[listenerId];
+  if (listener) {
+  [listener remove];
+  [collectionSnapshotListeners removeObjectForKey:listenerId];
+  }
 }
 
 
