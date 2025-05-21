@@ -23,7 +23,7 @@
 
 NSMutableDictionary *emulatorConfigs;
 static __strong NSMutableDictionary *snapshotsInSyncListeners;
-static NSString *const RNFB_FIRESTORE_DOCUMENTS_IN_SYNC = @"firestore_snapshots_in_sync_event";
+static NSString *const RNFB_FIRESTORE_SNAPSHOTS_IN_SYNC = @"firestore_snapshots_in_sync_event";
 
 @implementation RNFBFirestoreModule
 #pragma mark -
@@ -242,7 +242,7 @@ RCT_EXPORT_METHOD(persistenceCacheIndexManager
   resolve(nil);
 }
 
-RCT_EXPORT_METHOD(addSnapshotsInSyncListener
+RCT_EXPORT_METHOD(addSnapshotsInSync
                   : (FIRApp *)firebaseApp
                   : (NSString *)databaseId
                   : (nonnull NSNumber *)listenerId
@@ -251,10 +251,10 @@ RCT_EXPORT_METHOD(addSnapshotsInSyncListener
   NSString *appName = [RNFBSharedUtils getAppJavaScriptName:firApp.name];
   NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName
                                                     databaseId:databaseId];
-  NSDictionary *serialized = [RNFBFirestoreSerialize documentSnapshotToDictionary:snapshot
-                                                      firestoreKey:firestoreKey];
-  [[RNFBRCTEventEmitter shared]
-  sendEventWithName:RNFB_FIRESTORE_DOCUMENTS_IN_SYNC
+  FIRAddSnapshotsInSync *addSnapshotsInSync =
+  [RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId].addSnapshotsInSync
+  [[RNFBRCTEventEmitter shared]]
+  sendEventWithName:RNFB_FIRESTORE_SNAPSHOTS_IN_SYNC
     body:@{
       @"appName" : [RNFBSharedUtils getAppJavaScriptName:firApp.name],
       @"databaseId" : databaseId,
