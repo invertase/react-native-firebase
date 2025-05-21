@@ -250,6 +250,9 @@ RCT_EXPORT_METHOD(addSnapshotsInSync
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject)
 {
+  FIRaddSnapshotsInSyncListener *addSnapshotsInSyncListener =
+  [RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId listenerId:listenerId]
+          .addSnapshotsInSyncListener;
   NSString *appName = [RNFBSharedUtils getAppJavaScriptName:firApp.name];
   NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName
                                                     databaseId:databaseId];
