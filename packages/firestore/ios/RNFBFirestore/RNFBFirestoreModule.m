@@ -268,7 +268,7 @@ RCT_EXPORT_METHOD(removeSnapshotsInSynclistener
                   : (FIRApp *)firebaseApp
                   : (NSString *)databaseId
                   : (nonnull NSNumber *)listenerId
-                  : (RCTResponseSenderBlock)callback)
+                  : (RCTResponseSenderBlock)callback
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject)
 {
