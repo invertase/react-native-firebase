@@ -246,14 +246,14 @@ RCT_EXPORT_METHOD(addSnapshotsInSync
                   : (FIRApp *)firebaseApp
                   : (NSString *)databaseId
                   : (nonnull NSNumber *)listenerId
-                  : (RCTResponseSenderBlock)callback)
+                  : (RCTResponseSenderBlock)callback
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject)
 {
   NSString *appName = [RNFBSharedUtils getAppJavaScriptName:firApp.name];
   NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName
                                                     databaseId:databaseId];
-  FIRAddSnapshotsInSync *addSnapshotsInSync =
-  [RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId].addSnapshotsInSync
-  [[RNFBRCTEventEmitter shared]]
+  
   sendEventWithName:RNFB_FIRESTORE_SNAPSHOTS_IN_SYNC
     body:@{
       @"appName" : [RNFBSharedUtils getAppJavaScriptName:firApp.name],
@@ -269,8 +269,10 @@ RCT_EXPORT_METHOD(removeSnapshotsInSynclistener
                   : (NSString *)databaseId
                   : (nonnull NSNumber *)listenerId
                   : (RCTResponseSenderBlock)callback)
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject)
 {
-  id<FIRListenerRegistration> listener = collectionSnapshotListeners[listenerId];
+  id<FIRListenerRegistration> listener = snapshotsInSyncListeners[listenerId];
   if (listener) {
   [listener remove];
   [collectionSnapshotListeners removeObjectForKey:listenerId];
