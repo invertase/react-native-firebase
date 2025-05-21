@@ -245,7 +245,7 @@ RCT_EXPORT_METHOD(persistenceCacheIndexManager
 RCT_EXPORT_METHOD(addSnapshotsInSync
                   : (FIRApp *)firebaseApp
                   : (NSString *)databaseId
-                  : (nonnull NSNumber *)listenerId
+                  : (NSInteger)listenerId
                   : (RCTResponseSenderBlock)callback
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject)
@@ -253,19 +253,18 @@ RCT_EXPORT_METHOD(addSnapshotsInSync
   FIRaddSnapshotsInSyncListener *addSnapshotsInSyncListener =
   [RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId listenerId:listenerId]
           .addSnapshotsInSyncListener;
+  
   NSString *appName = [RNFBSharedUtils getAppJavaScriptName:firApp.name];
   NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName
                                                     databaseId:databaseId];
-  NSDictionary *serialized = [RNFBFirestoreSerialize documentSnapshotToDictionary:snapshot
-                                                                     firestoreKey:firestoreKey];
+
   [[RNFBRCTEventEmitter shared]
-      sendEventWithName:RNFB_FIRESTORE_DOCUMENT_SYNC
+      sendEventWithName:RNFB_FIRESTORE_SNAPSHOTS_IN_SYNC
                    body:@{
                      @"appName" : [RNFBSharedUtils getAppJavaScriptName:firApp.name],
                      @"databaseId" : databaseId,
                      @"listenerId" : listenerId,
                      @"body" : @{
-                       @"snapshot" : serialized,
                      }
                    }];
 }
