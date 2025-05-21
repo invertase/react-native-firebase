@@ -256,15 +256,18 @@ RCT_EXPORT_METHOD(addSnapshotsInSync
   NSString *appName = [RNFBSharedUtils getAppJavaScriptName:firApp.name];
   NSString *firestoreKey = [RNFBFirestoreCommon createFirestoreKeyWithAppName:appName
                                                     databaseId:databaseId];
-  
-  sendEventWithName:RNFB_FIRESTORE_SNAPSHOTS_IN_SYNC
-    body:@{
-      @"appName" : [RNFBSharedUtils getAppJavaScriptName:firApp.name],
-      @"databaseId" : databaseId,
-      @"listenerId" : listenerId,
-      @"body" : @{
-      }
-    }];
+  NSDictionary *serialized = [RNFBFirestoreSerialize documentSnapshotToDictionary:snapshot
+                                                                     firestoreKey:firestoreKey];
+  [[RNFBRCTEventEmitter shared]
+      sendEventWithName:RNFB_FIRESTORE_DOCUMENT_SYNC
+                   body:@{
+                     @"appName" : [RNFBSharedUtils getAppJavaScriptName:firApp.name],
+                     @"databaseId" : databaseId,
+                     @"listenerId" : listenerId,
+                     @"body" : @{
+                       @"snapshot" : serialized,
+                     }
+                   }];
 }
 
 RCT_EXPORT_METHOD(removeSnapshotsInSynclistener
