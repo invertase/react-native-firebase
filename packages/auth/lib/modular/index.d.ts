@@ -414,7 +414,7 @@ export function useDeviceLanguage(auth: Auth): void;
 export function validatePassword(auth: Auth, password: string): Promise<PasswordValidationStatus>;
 
 /**
- * Sets the current language to the default device/browser preference.
+ * Configures a shared user access group to sync auth state across multiple apps via the Keychain.
  *
  * @param auth - The Auth instance.
  * @param userAccessGroup - The user access group.
