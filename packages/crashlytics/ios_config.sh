@@ -14,12 +14,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-set -e
-
-if [[ ${PODS_ROOT} ]]; then
-  echo "info: Exec FirebaseCrashlytics Run from Pods"
-  "${PODS_ROOT}/FirebaseCrashlytics/run"
-else
-  echo "info: Exec FirebaseCrashlytics Run from framework"
-  "${PROJECT_DIR}/FirebaseCrashlytics.framework/run"
-fi
+"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run"
