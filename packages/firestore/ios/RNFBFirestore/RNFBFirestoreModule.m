@@ -250,6 +250,9 @@ RCT_EXPORT_METHOD(addSnapshotsInSync
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject)
 {
+  if (snapshotsInSyncListeners[listenerId]) {
+    return;
+  }
   [[RNFBRCTEventEmitter shared]
       sendEventWithName:RNFB_FIRESTORE_SNAPSHOTS_IN_SYNC
                    body:@{
