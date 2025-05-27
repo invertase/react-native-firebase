@@ -264,7 +264,7 @@ RCT_EXPORT_METHOD(addSnapshotsInSync
                    }];
 }
 
-RCT_EXPORT_METHOD(removeSnapshotsInSynclistener
+RCT_EXPORT_METHOD(removeSnapshotsInSync
                   : (FIRApp *)firebaseApp
                   : (NSString *)databaseId
                   : (nonnull NSNumber *)listenerId

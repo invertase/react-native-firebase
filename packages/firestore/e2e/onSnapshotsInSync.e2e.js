@@ -21,7 +21,7 @@ describe('firestore().onSnapshotsInSync() modular', function () {
   const { getFirestore, doc, onSnapshot, onSnapshotsInSync, setDoc } = firestoreModular;
   const TEST_DOC = `${COLLECTION}/modular_sync_test`;
 
-  it('calls onSnapshotsInSync after a snapshot is delivered', async function () {
+  it('onSnapshotsInSync after a snapshot is delivered', async function () {
     const db = getFirestore();
     const docRef = doc(db, TEST_DOC);
 
