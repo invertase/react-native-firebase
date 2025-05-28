@@ -251,17 +251,30 @@ RCT_EXPORT_METHOD(addSnapshotsInSync
                   : (RCTPromiseRejectBlock)reject)
 {
   if (snapshotsInSyncListeners[listenerId]) {
+    resolve(@{});
     return;
   }
-  [[RNFBRCTEventEmitter shared]
-      sendEventWithName:RNFB_FIRESTORE_SNAPSHOTS_IN_SYNC
-                   body:@{
-                     @"appName" : [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name],
-                     @"databaseId" : databaseId,
-                     @"listenerId" : listenerId,
-                     @"body" : @{
-                     }
-                   }];
+
+  FIRFirestore *firestore = [FIRFirestore firestoreForApp:firebaseApp];
+  if (!firestore) {
+    reject(@"firestore/not-found", @"Firestore instance not found.", nil);
+    return;
+  }
+
+  id<FIRListenerRegistration> listener = [firestore addSnapshotsInSyncListener:^{
+    [[RNFBRCTEventEmitter shared]
+        sendEventWithName:RNFB_FIRESTORE_SNAPSHOTS_IN_SYNC
+                     body:@{
+                       @"appName" : [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name],
+                       @"databaseId" : databaseId,
+                       @"listenerId" : listenerId,
+                       @"body" : @{}
+                     }];
+  }];
+
+  snapshotsInSyncListeners[listenerId] = listener;
+
+  resolve(@{});
 }
 
 RCT_EXPORT_METHOD(removeSnapshotsInSync
@@ -273,9 +286,11 @@ RCT_EXPORT_METHOD(removeSnapshotsInSync
 {
   id<FIRListenerRegistration> listener = snapshotsInSyncListeners[listenerId];
   if (listener) {
-  [listener remove];
-  [snapshotsInSyncListeners removeObjectForKey:listenerId];
+    [listener remove];
+    [snapshotsInSyncListeners removeObjectForKey:listenerId];
   }
+
+  resolve(@{});
 }
 
 - (NSMutableDictionary *)taskProgressToDictionary:(FIRLoadBundleTaskProgress *)progress {
