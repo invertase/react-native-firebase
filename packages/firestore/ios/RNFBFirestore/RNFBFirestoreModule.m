@@ -20,8 +20,11 @@
 #import "FirebaseFirestoreInternal/FIRPersistentCacheIndexManager.h"
 #import "RNFBFirestoreCommon.h"
 #import "RNFBPreferences.h"
+#import <RNFBApp/RNFBRCTEventEmitter.h>
 
 NSMutableDictionary *emulatorConfigs;
+static __strong NSMutableDictionary *snapshotsInSyncListeners;
+static NSString *const RNFB_FIRESTORE_SNAPSHOTS_IN_SYNC = @"firestore_snapshots_in_sync_event";
 
 @implementation RNFBFirestoreModule
 #pragma mark -
@@ -238,6 +241,56 @@ RCT_EXPORT_METHOD(persistenceCacheIndexManager
     return;
   }
   resolve(nil);
+}
+
+RCT_EXPORT_METHOD(addSnapshotsInSync
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)databaseId
+                  : (nonnull NSNumber *)listenerId
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject)
+{
+  if (snapshotsInSyncListeners[listenerId]) {
+    resolve(@{});
+    return;
+  }
+
+  FIRFirestore *firestore = [FIRFirestore firestoreForApp:firebaseApp];
+  if (!firestore) {
+    reject(@"firestore/not-found", @"Firestore instance not found.", nil);
+    return;
+  }
+
+  id<FIRListenerRegistration> listener = [firestore addSnapshotsInSyncListener:^{
+    [[RNFBRCTEventEmitter shared]
+        sendEventWithName:RNFB_FIRESTORE_SNAPSHOTS_IN_SYNC
+                     body:@{
+                       @"appName" : [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name],
+                       @"databaseId" : databaseId,
+                       @"listenerId" : listenerId,
+                       @"body" : @{}
+                     }];
+  }];
+
+  snapshotsInSyncListeners[listenerId] = listener;
+
+  resolve(@{});
+}
+
+RCT_EXPORT_METHOD(removeSnapshotsInSync
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)databaseId
+                  : (nonnull NSNumber *)listenerId
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject)
+{
+  id<FIRListenerRegistration> listener = snapshotsInSyncListeners[listenerId];
+  if (listener) {
+    [listener remove];
+    [snapshotsInSyncListeners removeObjectForKey:listenerId];
+  }
+
+  resolve(@{});
 }
 
 - (NSMutableDictionary *)taskProgressToDictionary:(FIRLoadBundleTaskProgress *)progress {
