@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -16,9 +15,9 @@
  *
  */
 
-import { firebase } from '..';
+import { getApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '../../../app/lib/common';
-import CustomProvider from '../ReactNativeFirebaseAppCheckProvider';
+import ReactNativeFirebaseAppCheckProvider from '../ReactNativeFirebaseAppCheckProvider';
 
 /**
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
@@ -33,29 +32,28 @@ import CustomProvider from '../ReactNativeFirebaseAppCheckProvider';
  * Activate App Check for the given app. Can be called only once per app.
  * @param {FirebaseApp} [app] - The app to initialize App Check for. Optional.
  * @param {AppCheckOptions} options - App Check options.
- * @returns {Promise<{ app: FirebaseApp }>}
+ * @returns {Promise<AppCheck>}
  */
 export async function initializeAppCheck(app, options) {
   if (app) {
-    const appCheck = firebase.app(app.name).appCheck();
+    const appCheck = getApp(app.name).appCheck();
     await appCheck.initializeAppCheck.call(appCheck, options, MODULAR_DEPRECATION_ARG);
-    return { app: firebase.app(app.name) };
+    return appCheck;
   }
-  const appCheck = firebase.app().appCheck();
+  const appCheck = getApp().appCheck();
   await appCheck.initializeAppCheck.call(appCheck, options, MODULAR_DEPRECATION_ARG);
-  return { app: firebase.app() };
+  return appCheck;
 }
 
 /**
  * Get the current App Check token. Attaches to the most recent in-flight request if one is present.
  * Returns null if no token is present and no token requests are in-flight.
  * @param {AppCheck} appCheckInstance - The App Check instance.
- * @param {boolean} forceRefresh - Whether to force refresh the token.
+ * @param {boolean} forceRefresh - Whether to force refresh the token. Optional
  * @returns {Promise<AppCheckTokenResult>}
  */
 export function getToken(appCheckInstance, forceRefresh) {
-  const appCheck = appCheckInstance.app.appCheck();
-  return appCheck.getToken.call(appCheck, forceRefresh, MODULAR_DEPRECATION_ARG);
+  return appCheckInstance.getToken.call(appCheckInstance, forceRefresh, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -65,8 +63,7 @@ export function getToken(appCheckInstance, forceRefresh) {
  * @returns {Promise<AppCheckTokenResult>}
  */
 export function getLimitedUseToken(appCheckInstance) {
-  const appCheck = appCheckInstance.app.appCheck();
-  return appCheck.getLimitedUseToken.call(appCheck, MODULAR_DEPRECATION_ARG);
+  return appCheckInstance.getLimitedUseToken.call(appCheckInstance, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -75,9 +72,8 @@ export function getLimitedUseToken(appCheckInstance) {
  * @param {boolean} isAutoRefreshEnabled - Whether to enable auto-refresh.
  */
 export function setTokenAutoRefreshEnabled(appCheckInstance, isAutoRefreshEnabled) {
-  const appCheck = appCheckInstance.app.appCheck();
-  return appCheck.setTokenAutoRefreshEnabled.call(
-    appCheck,
+  return appCheckInstance.setTokenAutoRefreshEnabled.call(
+    appCheckInstance,
     isAutoRefreshEnabled,
     MODULAR_DEPRECATION_ARG,
   );
@@ -94,9 +90,8 @@ export function setTokenAutoRefreshEnabled(appCheckInstance, isAutoRefreshEnable
  * @returns {Unsubscribe}
  */
 export function onTokenChanged(appCheckInstance, onNextOrObserver, onError, onCompletion) {
-  const appCheck = appCheckInstance.app.appCheck();
-  return appCheck.onTokenChanged.call(
-    appCheck,
+  return appCheckInstance.onTokenChanged.call(
+    appCheckInstance,
     onNextOrObserver,
     onError,
     onCompletion,
@@ -104,4 +99,4 @@ export function onTokenChanged(appCheckInstance, onNextOrObserver, onError, onCo
   );
 }
 
-export { CustomProvider };
+export { ReactNativeFirebaseAppCheckProvider };

@@ -3,6 +3,91 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [22.2.0](https://github.com/invertase/react-native-firebase/compare/v22.1.0...v22.2.0) (2025-05-12)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [22.1.0](https://github.com/invertase/react-native-firebase/compare/v22.0.0...v22.1.0) (2025-04-30)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [22.0.0](https://github.com/invertase/react-native-firebase/compare/v21.14.0...v22.0.0) (2025-04-25)
+
+### Bug Fixes
+
+- **android:** use `=` assignment vs deprecated space-assignment ([39c2ecb](https://github.com/invertase/react-native-firebase/commit/39c2ecb0069a8a5a65b04fb7f86ccecf83273868))
+- enable provenance signing during publish ([4535f0d](https://github.com/invertase/react-native-firebase/commit/4535f0d5756c89aeb8f8e772348c71d8176348be))
+
+## [21.14.0](https://github.com/invertase/react-native-firebase/compare/v21.13.0...v21.14.0) (2025-04-14)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [21.13.0](https://github.com/invertase/react-native-firebase/compare/v21.12.3...v21.13.0) (2025-03-31)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [21.12.3](https://github.com/invertase/react-native-firebase/compare/v21.12.2...v21.12.3) (2025-03-26)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [21.12.2](https://github.com/invertase/react-native-firebase/compare/v21.12.1...v21.12.2) (2025-03-23)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [21.12.1](https://github.com/invertase/react-native-firebase/compare/v21.12.0...v21.12.1) (2025-03-22)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [21.12.0](https://github.com/invertase/react-native-firebase/compare/v21.11.0...v21.12.0) (2025-03-03)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [21.11.0](https://github.com/invertase/react-native-firebase/compare/v21.10.1...v21.11.0) (2025-02-20)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [21.10.1](https://github.com/invertase/react-native-firebase/compare/v21.10.0...v21.10.1) (2025-02-18)
+
+### Bug Fixes
+
+- **remote-config:** ensure static objects are exposed for modular API ([#8321](https://github.com/invertase/react-native-firebase/issues/8321)) ([ee033c0](https://github.com/invertase/react-native-firebase/commit/ee033c0f78a8b2d2aa530641931504fe2c10403a))
+
+## [21.10.0](https://github.com/invertase/react-native-firebase/compare/v21.9.0...v21.10.0) (2025-02-11)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [21.9.0](https://github.com/invertase/react-native-firebase/compare/v21.8.0...v21.9.0) (2025-02-11)
+
+### Bug Fixes
+
+- **remote-config, ios:** avoid double-resolve when setting custom signals ([#8312](https://github.com/invertase/react-native-firebase/issues/8312)) ([16bad75](https://github.com/invertase/react-native-firebase/commit/16bad757c15fec5ccec35ce06195d661a60556a8))
+
+## [21.8.0](https://github.com/invertase/react-native-firebase/compare/v21.7.4...v21.8.0) (2025-02-10)
+
+### Features
+
+- **remote-config:** support for custom signals ([#8274](https://github.com/invertase/react-native-firebase/issues/8274)) ([94c6a27](https://github.com/invertase/react-native-firebase/commit/94c6a27e6692138cd32394218a492d17d68de0f0))
+
+### Bug Fixes
+
+- do not ship unit tests in released packages ([e71dadf](https://github.com/invertase/react-native-firebase/commit/e71dadfc1c0cad2e89c94100913af31ddf7d9c91))
+
+## [21.7.4](https://github.com/invertase/react-native-firebase/compare/v21.7.3...v21.7.4) (2025-02-08)
+
+### Bug Fixes
+
+- the init calls for modular should use modular getApp() ([79da98b](https://github.com/invertase/react-native-firebase/commit/79da98bf4ecf7860db61b2813b87673f1cd0adfd))
+
+## [21.7.3](https://github.com/invertase/react-native-firebase/compare/v21.7.2...v21.7.3) (2025-02-08)
+
+### Bug Fixes
+
+- **auth:** resolve type issue when migrating to v9 ([#8277](https://github.com/invertase/react-native-firebase/issues/8277)) ([f4e44ad](https://github.com/invertase/react-native-firebase/commit/f4e44ad50ec85604b7ba0ea835490f473ed5447c))
+
+## [21.7.2](https://github.com/invertase/react-native-firebase/compare/v21.7.1...v21.7.2) (2025-02-05)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
 ## [21.7.1](https://github.com/invertase/react-native-firebase/compare/v21.7.0...v21.7.1) (2025-01-20)
 
 **Note:** Version bump only for package @react-native-firebase/remote-config

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -47,7 +46,13 @@ import shouldMatchers from 'should';
 //            [RNFB<--Event][📣] storage_event <- {...}
 //            [RNFB<-Native][🟢] RNFBStorageModule.putString <- {...}
 //            [TEST->Finish][✅] uploads a base64url string
-global.RNFBDebug = false;
+globalThis.RNFBDebug = false;
+
+// this may be used to locate modular API errors quickly
+globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE = true;
+
+// Needed for Platform.Other session storage
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // RNFB packages.
 import '@react-native-firebase/analytics';
@@ -355,8 +360,14 @@ Object.defineProperty(global, 'modular', {
 });
 
 if (global.Platform.other) {
-  firebase.initializeApp(global.FirebaseHelpers.app.config());
-  firebase.initializeApp(global.FirebaseHelpers.app.config(), 'secondaryFromNative');
+  const { initializeApp, setReactNativeAsyncStorage } = modular;
+
+  // Before initializing Firebase set the Async Storage implementation
+  // that will be used to persist user sessions.
+  setReactNativeAsyncStorage(AsyncStorage);
+
+  initializeApp(global.FirebaseHelpers.app.config());
+  initializeApp(global.FirebaseHelpers.app.config(), 'secondaryFromNative');
 }
 
 Object.defineProperty(global, 'functionsModular', {
@@ -462,7 +473,7 @@ global.jet = {
   },
 };
 
-// TODO toggle this correct in CI only.
-global.isCI = true;
+// some tests flake in CI but we still run them locally
+global.isCI = process.env.CI === true;
 // Used to tell our internals that we are running tests.
-global.RNFBTest = true;
+globalThis.RNFBTest = true;

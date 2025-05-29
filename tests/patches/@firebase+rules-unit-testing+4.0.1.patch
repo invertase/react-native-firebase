@@ -1,0 +1,15 @@
+diff --git a/node_modules/@firebase/rules-unit-testing/dist/index.cjs.js b/node_modules/@firebase/rules-unit-testing/dist/index.cjs.js
+index dd6426f..d053c39 100644
+--- a/node_modules/@firebase/rules-unit-testing/dist/index.cjs.js
++++ b/node_modules/@firebase/rules-unit-testing/dist/index.cjs.js
+@@ -60,9 +60,7 @@ function makeUrl(hostAndPort, path) {
+             hostAndPort = `${host}:${port}`;
+         }
+     }
+-    const url = new URL(`http://${hostAndPort}/`);
+-    url.pathname = path;
+-    return url;
++    return new URL(`http://${hostAndPort}/${path}`);
+ }
+ 
+ /**

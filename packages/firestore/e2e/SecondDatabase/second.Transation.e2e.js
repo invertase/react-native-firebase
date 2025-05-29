@@ -26,8 +26,15 @@ describe('Second Database', function () {
     describe('v8 compatibility', function () {
       let firestore;
 
-      before(function () {
+      beforeEach(async function beforeEachTest() {
+        // @ts-ignore
+        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
         firestore = firebase.app().firestore(SECOND_DATABASE_ID);
+      });
+
+      afterEach(async function afterEachTest() {
+        // @ts-ignore
+        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
       });
 
       it('should throw if updateFunction is not a Promise', async function () {
@@ -107,7 +114,7 @@ describe('Second Database', function () {
           await firestore.runTransaction(async t => {
             const docSnapshot = await t.get(docRef);
             docSnapshot.constructor.name.should.eql('FirestoreDocumentSnapshot');
-            docSnapshot.exists.should.eql(true);
+            docSnapshot.exists().should.eql(true);
             docSnapshot.id.should.eql('get-delete');
 
             t.delete(docRef);
@@ -141,10 +148,10 @@ describe('Second Database', function () {
           });
 
           const snapshot1 = await docRef1.get();
-          snapshot1.exists.should.eql(false);
+          snapshot1.exists().should.eql(false);
 
           const snapshot2 = await docRef2.get();
-          snapshot2.exists.should.eql(false);
+          snapshot2.exists().should.eql(false);
         });
       });
 
@@ -203,11 +210,11 @@ describe('Second Database', function () {
           };
 
           const snapshot1 = await docRef1.get();
-          snapshot1.exists.should.eql(true);
+          snapshot1.exists().should.eql(true);
           snapshot1.data().should.eql(jet.contextify(expected));
 
           const snapshot2 = await docRef2.get();
-          snapshot2.exists.should.eql(true);
+          snapshot2.exists().should.eql(true);
           snapshot2.data().should.eql(jet.contextify(expected));
         });
       });
@@ -337,6 +344,11 @@ describe('Second Database', function () {
         });
 
         it('should roll back any updates that failed', async function () {
+          // FIXME issue 8267
+          if (Platform.other) {
+            this.skip();
+          }
+
           const docRef = firestore.doc(`${COLLECTION}/transactions/transaction/rollback`);
 
           await docRef.set({
@@ -475,7 +487,7 @@ describe('Second Database', function () {
           await runTransaction(db, async t => {
             const docSnapshot = await t.get(docRef);
             docSnapshot.constructor.name.should.eql('FirestoreDocumentSnapshot');
-            docSnapshot.exists.should.eql(true);
+            docSnapshot.exists().should.eql(true);
             docSnapshot.id.should.eql('get-delete');
 
             t.delete(docRef);
@@ -512,10 +524,10 @@ describe('Second Database', function () {
           });
 
           const snapshot1 = await getDoc(docRef1);
-          snapshot1.exists.should.eql(false);
+          snapshot1.exists().should.eql(false);
 
           const snapshot2 = await getDoc(docRef2);
-          snapshot2.exists.should.eql(false);
+          snapshot2.exists().should.eql(false);
         });
       });
 
@@ -579,11 +591,11 @@ describe('Second Database', function () {
           };
 
           const snapshot1 = await getDoc(docRef1);
-          snapshot1.exists.should.eql(true);
+          snapshot1.exists().should.eql(true);
           snapshot1.data().should.eql(jet.contextify(expected));
 
           const snapshot2 = await getDoc(docRef2);
-          snapshot2.exists.should.eql(true);
+          snapshot2.exists().should.eql(true);
           snapshot2.data().should.eql(jet.contextify(expected));
         });
       });
@@ -692,7 +704,7 @@ describe('Second Database', function () {
         });
 
         it('should set data with merge fields', async function () {
-          const { runTransaction, doc, getDoc, setDoc } = firestoreModular;
+          const { runTransaction, doc, getDoc, setDoc, FieldPath } = firestoreModular;
           const db = firestore;
 
           const docRef = doc(db, `${COLLECTION}/transactions/transaction/set-mergefields`);
@@ -715,7 +727,7 @@ describe('Second Database', function () {
                 baz: 'foo',
               },
               {
-                mergeFields: ['bar', new firebase.firestore.FieldPath('baz')],
+                mergeFields: ['bar', new FieldPath('baz')],
               },
             );
           });
@@ -725,6 +737,11 @@ describe('Second Database', function () {
         });
 
         it('should roll back any updates that failed', async function () {
+          // FIXME issue 8267
+          if (Platform.other) {
+            this.skip();
+          }
+
           const { runTransaction, doc, getDoc, setDoc } = firestoreModular;
           const db = firestore;
 

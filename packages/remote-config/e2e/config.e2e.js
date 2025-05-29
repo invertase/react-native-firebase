@@ -19,6 +19,16 @@ const { updateTemplate } = require('./helpers');
 
 describe('remoteConfig()', function () {
   describe('firebase v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     describe('fetch()', function () {
       it('with expiration provided', async function () {
         const date = Date.now() - 30000;
@@ -349,17 +359,19 @@ describe('remoteConfig()', function () {
   describe('modular', function () {
     describe('getRemoteConfig', function () {
       it('pass app as argument', function () {
+        const { getApp } = modular;
         const { getRemoteConfig } = remoteConfigModular;
 
-        const remoteConfig = getRemoteConfig(firebase.app());
+        const remoteConfig = getRemoteConfig(getApp());
 
         remoteConfig.constructor.name.should.be.equal('FirebaseConfigModule');
       });
 
       it('no app as argument', function () {
+        const { getApp } = modular;
         const { getRemoteConfig } = remoteConfigModular;
 
-        const remoteConfig = getRemoteConfig(firebase.app());
+        const remoteConfig = getRemoteConfig(getApp());
 
         remoteConfig.constructor.name.should.be.equal('FirebaseConfigModule');
       });
@@ -379,7 +391,7 @@ describe('remoteConfig()', function () {
 
         await fetch(remoteConfig, 0);
         remoteConfig.lastFetchStatus.should.equal(firebase.remoteConfig.LastFetchStatus.SUCCESS);
-        should.equal(firebase.remoteConfig().fetchTimeMillis >= date, true);
+        should.equal(getRemoteConfig().fetchTimeMillis >= date, true);
       });
 
       it('without expiration provided', function () {
@@ -952,6 +964,49 @@ describe('remoteConfig()', function () {
       it('handles react-native reload', async function () {
         // TODO implement rnReload test
         // console.log('checking listener functionality across javascript layer reload');
+      });
+    });
+
+    describe('setCustomSignals()', function () {
+      it('should resolve with valid signal value; `string`, `number` or `null`', async function () {
+        const { getApp } = modular;
+        const { setCustomSignals, getRemoteConfig } = remoteConfigModular;
+        const remoteConfig = getRemoteConfig(getApp());
+        // native SDKs just ignore invalid key/values (e.g. too long) and just log warning
+        const signals = {
+          string: 'string',
+          number: 123,
+          double: 123.456,
+          null: null,
+        };
+
+        const result = await setCustomSignals(remoteConfig, signals);
+        should(result).equal(null);
+      });
+
+      it('should reject with invalid signal value', async function () {
+        const { getApp } = modular;
+        const { setCustomSignals, getRemoteConfig } = remoteConfigModular;
+        const remoteConfig = getRemoteConfig(getApp());
+
+        const invalidSignals = [
+          { signal1: true },
+          { signal1: [1, 2, 3] },
+          { signal1: { key: 'value' } },
+          { signal1: false },
+        ];
+
+        for (const signals of invalidSignals) {
+          try {
+            await setCustomSignals(remoteConfig, signals);
+            throw new Error('Expected setCustomSignals to throw an error');
+          } catch (error) {
+            error.message.should.containEql(
+              'firebase.remoteConfig().setCustomSignals(): Invalid type for custom signal',
+            );
+          }
+        }
+        return Promise.resolve();
       });
     });
   });

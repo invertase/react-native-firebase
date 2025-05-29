@@ -49,7 +49,7 @@ export function modifyObjcAppDelegate(contents: string): string {
       offset: 0, // new line will be inserted right above matched anchor
       comment: '//',
     }).contents;
-  } catch (e: any) {
+  } catch (_: any) {
     // tests if the opening `{` is in the new line
     const multilineMatcher = new RegExp(fallbackInvocationLineMatcher.source + '.+\\n*{');
     const isHeaderMultiline = multilineMatcher.test(contents);
@@ -68,16 +68,91 @@ export function modifyObjcAppDelegate(contents: string): string {
   }
 }
 
+export function modifySwiftAppDelegate(contents: string): string {
+  // Add imports for Swift
+  if (!contents.includes('import RNFBAppCheck')) {
+    // Try to add after FirebaseCore if it exists
+    if (contents.includes('import FirebaseCore')) {
+      contents = contents.replace(
+        /import FirebaseCore/g,
+        `import FirebaseCore
+import RNFBAppCheck`,
+      );
+    } else {
+      // Otherwise add after Expo
+      contents = contents.replace(
+        /import Expo/g,
+        `import Expo
+import RNFBAppCheck`,
+      );
+    }
+  }
+
+  // Check if App Check code is already added to avoid duplication
+  if (contents.includes('RNFBAppCheckModule.sharedInstance()')) {
+    return contents;
+  }
+
+  // Find the Firebase initialization end line to insert after
+  const firebaseLine = '// @generated end @react-native-firebase/app-didFinishLaunchingWithOptions';
+
+  if (contents.includes(firebaseLine)) {
+    // Insert right after Firebase initialization
+    return contents.replace(
+      firebaseLine,
+      `${firebaseLine}
+        FirebaseApp.configure()
+        RNFBAppCheckModule.sharedInstance()
+      `,
+    );
+  }
+
+  // If Firebase initialization block not found, add both Firebase and App Check initialization
+  // This is to make sure Firebase is initialized before App Check
+  const methodInvocationBlock = `FirebaseApp.configure()
+    RNFBAppCheckModule.sharedInstance()`;
+
+  const methodInvocationLineMatcher = /(?:factory\.startReactNative\()/;
+
+  if (!methodInvocationLineMatcher.test(contents)) {
+    WarningAggregator.addWarningIOS(
+      '@react-native-firebase/app-check',
+      'Unable to determine correct insertion point in AppDelegate.swift. Skipping App Check addition.',
+    );
+    return contents;
+  }
+
+  try {
+    return mergeContents({
+      tag: '@react-native-firebase/app-check',
+      src: contents,
+      newSrc: methodInvocationBlock,
+      anchor: methodInvocationLineMatcher,
+      offset: 0,
+      comment: '//',
+    }).contents;
+  } catch (_e) {
+    WarningAggregator.addWarningIOS(
+      '@react-native-firebase/app-check',
+      'Failed to insert App Check initialization code.',
+    );
+    return contents;
+  }
+}
+
 export async function modifyAppDelegateAsync(appDelegateFileInfo: AppDelegateProjectFile) {
   const { language, path, contents } = appDelegateFileInfo;
 
+  let newContents;
   if (['objc', 'objcpp'].includes(language)) {
-    const newContents = modifyObjcAppDelegate(contents);
-    await fs.promises.writeFile(path, newContents);
+    newContents = modifyObjcAppDelegate(contents);
+  } else if (language === 'swift') {
+    newContents = modifySwiftAppDelegate(contents);
   } else {
-    // TODO: Support Swift
     throw new Error(`Cannot add Firebase code to AppDelegate of language "${language}"`);
   }
+
+  await fs.promises.writeFile(path, newContents);
 }
 
 export const withFirebaseAppDelegate: ConfigPlugin = config => {

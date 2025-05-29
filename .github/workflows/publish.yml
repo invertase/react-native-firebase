@@ -12,14 +12,18 @@ jobs:
     name: 'NPM'
     timeout-minutes: 30
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write # to enable use of OIDC for npm provenance
     steps:
       - uses: actions/checkout@v4
         with:
           ref: 'main'
           fetch-depth: 0
+          # Repository admin required to evade PR+checks branch protection
+          token: ${{ secrets.GH_TOKEN }}
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
       - name: Yarn Install
         uses: nick-fields/retry@v3
         with:
@@ -28,25 +32,20 @@ jobs:
           max_attempts: 3
           command: yarn && yarn lerna:prepare
       - name: GIT Setup
+        # Alter branding of release commit, despite GITHUB_TOKEN having real owner
         run: |
-          git config --global user.name '@Salakar'
-          git config --global user.email 'Salakar@users.noreply.github.com'
-          git remote set-url origin git@github.com:$GITHUB_REPOSITORY
-      - uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          git config --global user.name 'Invertase Publisher'
+          git config --global user.email 'oss@invertase.io'
       - name: Publish Packages
+        # for lerna, you must write the token out to .npmrc like this
         run: |
-          yarn npm logout
-          echo "@react-native-firebase:registry=https://registry.npmjs.org/" > ~/.npmrc
-          echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-          npm whoami
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
           git diff --exit-code
           yarn lerna changed
           yarn lerna version --yes --force-publish=*
           yarn lerna publish from-package --yes
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          # new style token w/scope for `@react-native-firebase` required
+          # to work with npmjs.com 2FA-or-automation-token package requirement
+          NPM_TOKEN: ${{ secrets.MIKEHARDY_NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

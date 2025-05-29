@@ -4,7 +4,11 @@ import fs from 'fs/promises';
 import path from 'path';
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 
-import { modifyAppDelegateAsync, modifyObjcAppDelegate } from '../src/ios/appDelegate';
+import {
+  modifyAppDelegateAsync,
+  modifyObjcAppDelegate,
+  modifySwiftAppDelegate,
+} from '../src/ios/appDelegate';
 
 describe('Config Plugin iOS Tests', function () {
   beforeEach(function () {
@@ -74,17 +78,15 @@ describe('Config Plugin iOS Tests', function () {
     );
   });
 
-  it("doesn't support Swift AppDelegate", async function () {
-    jest.spyOn(fs, 'writeFile').mockImplementation(async () => {});
-
-    const appDelegateFileInfo: AppDelegateProjectFile = {
-      path: '.',
-      language: 'swift',
-      contents: 'some dummy content',
-    };
-
-    await expect(modifyAppDelegateAsync(appDelegateFileInfo)).rejects.toThrow();
-    expect(fs.writeFile).not.toHaveBeenCalled();
+  it('works with Swift AppDelegate (SDK 53+)', async function () {
+    const appDelegate = await fs.readFile(
+      path.join(__dirname, './fixtures/AppDelegate_sdk53.swift'),
+      {
+        encoding: 'utf8',
+      },
+    );
+    const result = modifySwiftAppDelegate(appDelegate);
+    expect(result).toMatchSnapshot();
   });
 
   it('does not add the firebase import multiple times', async function () {

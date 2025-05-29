@@ -56,7 +56,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
 export namespace FirebaseInstallationsTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export interface Statics {
     // firebase.installations.* static props go here
   }

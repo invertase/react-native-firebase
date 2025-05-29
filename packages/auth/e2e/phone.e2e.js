@@ -11,20 +11,30 @@ describe('auth() => Phone', function () {
 
   describe('firebase v8 compatibility', function () {
     before(async function () {
+      const { getApp } = modular;
+      const { getAuth } = authModular;
       try {
         await clearAllUsers();
       } catch (e) {
         throw e;
       }
-      firebase.auth().settings.appVerificationDisabledForTesting = true;
+      getAuth(getApp()).settings.appVerificationDisabledForTesting = true;
       await Utils.sleep(50);
     });
 
-    beforeEach(async function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+
       if (firebase.auth().currentUser) {
         await firebase.auth().signOut();
         await Utils.sleep(50);
       }
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
     });
 
     describe('signInWithPhoneNumber', function () {
@@ -189,10 +199,9 @@ describe('auth() => Phone', function () {
 
   describe('modular', function () {
     before(async function () {
+      const { getApp } = modular;
       const { getAuth } = authModular;
-
-      const defaultApp = firebase.app();
-      const defaultAuth = getAuth(defaultApp);
+      const defaultAuth = getAuth(getApp());
 
       try {
         await clearAllUsers();
@@ -204,10 +213,9 @@ describe('auth() => Phone', function () {
     });
 
     beforeEach(async function () {
+      const { getApp } = modular;
       const { getAuth, signOut } = authModular;
-
-      const defaultApp = firebase.app();
-      const defaultAuth = getAuth(defaultApp);
+      const defaultAuth = getAuth(getApp());
 
       if (defaultAuth.currentUser) {
         await signOut(defaultAuth);
@@ -217,10 +225,10 @@ describe('auth() => Phone', function () {
 
     describe('signInWithPhoneNumber', function () {
       it('signs in with a valid code', async function () {
+        const { getApp } = modular;
         const { getAuth, signInWithPhoneNumber } = authModular;
 
-        const defaultApp = firebase.app();
-        const defaultAuth = getAuth(defaultApp);
+        const defaultAuth = getAuth(getApp());
 
         const testPhone = getRandomPhoneNumber();
         const confirmResult = await signInWithPhoneNumber(defaultAuth, testPhone);
@@ -238,10 +246,10 @@ describe('auth() => Phone', function () {
       });
 
       it('errors on invalid code', async function () {
+        const { getApp } = modular;
         const { getAuth, signInWithPhoneNumber } = authModular;
 
-        const defaultApp = firebase.app();
-        const defaultAuth = getAuth(defaultApp);
+        const defaultAuth = getAuth(getApp());
 
         const testPhone = getRandomPhoneNumber();
         const confirmResult = await signInWithPhoneNumber(defaultAuth, testPhone);

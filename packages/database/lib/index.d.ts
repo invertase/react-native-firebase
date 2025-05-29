@@ -17,8 +17,6 @@
 
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 
-export type FirebaseApp = ReactNativeFirebase.FirebaseApp;
-
 /**
  * Firebase Database package for React Native.
  *
@@ -74,7 +72,6 @@ export namespace FirebaseDatabaseTypes {
      * });
      * ```
      */
-    // eslint-disable-next-line @typescript-eslint/ban-types
     TIMESTAMP: object;
 
     /**
@@ -90,7 +87,6 @@ export namespace FirebaseDatabaseTypes {
      *
      * @param delta The amount to modify the current value atomically.
      */
-    // eslint-disable-next-line @typescript-eslint/ban-types
     increment(delta: number): object;
   }
 
@@ -381,7 +377,6 @@ export namespace FirebaseDatabaseTypes {
      * @param applyLocally By default, events are raised each time the transaction update function runs. So if it is run multiple times, you may see intermediate states. You can set this to false to suppress these intermediate states and instead wait until the transaction has completed before events are raised.
      */
     transaction(
-      // eslint-disable-next-line @typescript-eslint/ban-types
       transactionUpdate: (currentData: any) => any | undefined,
       onComplete?: (error: Error | null, committed: boolean, finalResult: DataSnapshot) => void,
       applyLocally?: boolean,
@@ -787,7 +782,6 @@ export namespace FirebaseDatabaseTypes {
     /**
      * Returns a JSON-serializable representation of this object.
      */
-    // eslint-disable-next-line @typescript-eslint/ban-types
     toJSON(): object;
 
     /**
@@ -1077,7 +1071,6 @@ export namespace FirebaseDatabaseTypes {
     /**
      * Returns a JSON-serializable representation of this object.
      */
-    // eslint-disable-next-line @typescript-eslint/ban-types
     toJSON(): object | null;
 
     /**
@@ -1303,7 +1296,6 @@ export default defaultExport;
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
 declare module '@react-native-firebase/app' {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {

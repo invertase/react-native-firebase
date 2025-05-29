@@ -27,6 +27,16 @@ describe('firestore().loadBundle()', function () {
   });
 
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('loads the bundle contents', async function () {
       const bundle = getBundle();
       const progress = await firebase.firestore().loadBundle(bundle);
@@ -42,7 +52,7 @@ describe('firestore().loadBundle()', function () {
       try {
         await firebase.firestore().loadBundle('not-a-bundle');
         return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
+      } catch (_) {
         /*
          * Due to inconsistent error throws between Android and iOS Firebase SDK,
          * it is not able to test a specific error message.
@@ -74,7 +84,7 @@ describe('firestore().loadBundle()', function () {
       try {
         await loadBundle(getFirestore(), 'not-a-bundle');
         return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
+      } catch (_) {
         /*
          * Due to inconsistent error throws between Android and iOS Firebase SDK,
          * it is not able to test a specific error message.

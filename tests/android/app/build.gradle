@@ -10,14 +10,14 @@ import groovy.json.JsonSlurper
 
 react {
     /* Folders */
-    //   The root of your project, i.e. where "package.json" lives. Default is '..'
-    // root = file("../")
-    //   The folder where the react-native NPM package is. Default is ../node_modules/react-native
-    // reactNativeDir = file("../node_modules/react-native")
-    //   The folder where the react-native Codegen package is. Default is ../node_modules/@react-native/codegen
-    // codegenDir = file("../node_modules/@react-native/codegen")
-    //   The cli.js file which is the React Native CLI entrypoint. Default is ../node_modules/react-native/cli.js
-    // cliFile = file("../node_modules/react-native/cli.js")
+    //   The root of your project, i.e. where "package.json" lives. Default is '../..'
+    // root = file("../../")
+    //   The folder where the react-native NPM package is. Default is ../../node_modules/react-native
+    // reactNativeDir = file("../../node_modules/react-native")
+    //   The folder where the react-native Codegen package is. Default is ../../node_modules/@react-native/codegen
+    // codegenDir = file("../../node_modules/@react-native/codegen")
+    //   The cli.js file which is the React Native CLI entrypoint. Default is ../../node_modules/react-native/cli.js
+    // cliFile = file("../../node_modules/react-native/cli.js")
     /* Variants */
     //   The list of variants to that are debuggable. For those we're going to
     //   skip the bundling of the JS bundle and the assets. By default is just 'debug'.
@@ -48,6 +48,9 @@ react {
     //
     //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
     // hermesFlags = ["-O", "-output-source-map"]
+
+    /* Autolinking */
+    autolinkLibrariesWithApp()
 }
 
 /**
@@ -59,66 +62,66 @@ def enableProguardInReleaseBuilds = true
  * The preferred build flavor of JavaScriptCore (JSC)
  *
  * For example, to use the international variant, you can use:
- * `def jscFlavor = 'org.webkit:android-jsc-intl:+'`
+ * `def jscFlavor = io.github.react-native-community:jsc-android-intl:2026004.+`
  *
  * The international variant includes ICU i18n library and necessary data
  * allowing to use e.g. `Date.toLocaleString` and `String.localeCompare` that
  * give correct results when using with locales other than en-US. Note that
  * this variant is about 6MiB larger per architecture than default.
  */
-def jscFlavor = 'org.webkit:android-jsc:+'
+def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
 android {
-  ndkVersion rootProject.ext.ndkVersion
-  buildToolsVersion rootProject.ext.buildToolsVersion
-  compileSdk rootProject.ext.compileSdkVersion
+  ndkVersion = rootProject.ext.ndkVersion
+  buildToolsVersion = rootProject.ext.buildToolsVersion
+  compileSdk = rootProject.ext.compileSdkVersion
 
-  namespace "com.invertase.testing"
+  namespace = "com.invertase.testing"
   aaptOptions {
     // https://firebase.google.com/docs/ml/android/use-custom-models#local_model
-    noCompress 'tflite'
+    noCompress = 'tflite'
   }
   defaultConfig {
-    applicationId 'com.invertase.testing'
-    minSdkVersion rootProject.ext.minSdkVersion
-    targetSdkVersion rootProject.ext.targetSdkVersion
-    versionCode 200
-    versionName '1.0'
+    applicationId = 'com.invertase.testing'
+    minSdkVersion = rootProject.ext.minSdkVersion
+    targetSdkVersion = rootProject.ext.targetSdkVersion
+    versionCode = 200
+    versionName = '1.0'
 
     // detox items
-    testBuildType System.getProperty('testBuildType', 'debug')
-    testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    testBuildType = System.getProperty('testBuildType', 'debug')
+    testInstrumentationRunner = 'androidx.test.runner.AndroidJUnitRunner'
     missingDimensionStrategy 'detox', 'full'
   }
 
   buildFeatures {
     // AGP 8 no longer builds config by default
-    buildConfig true
+    buildConfig = true
   }
 
   signingConfigs {
     release {
       storeFile file('keystore.jks')
-      storePassword '12345678'
-      keyAlias 'key0'
-      keyPassword '12345678'
+      storePassword = '12345678'
+      keyAlias = 'key0'
+      keyPassword = '12345678'
     }
   }
 
   buildTypes {
     debug {
-      debuggable true
-      testCoverageEnabled true
-      signingConfig signingConfigs.release // sign with shared SHA256; configured in firebase dynamic-links
+      debuggable = true
+      testCoverageEnabled = true
+      signingConfig = signingConfigs.release // sign with shared SHA256; configured in firebase dynamic-links
     }
     release {
-      minifyEnabled enableProguardInReleaseBuilds
+      minifyEnabled = enableProguardInReleaseBuilds
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
       proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
-      signingConfig signingConfigs.release
+      signingConfig = signingConfigs.release
       firebaseCrashlytics {
-        nativeSymbolUploadEnabled true
-          unstrippedNativeLibsDir 'build/intermediates/merged_native_libs/release/out/lib'
+        nativeSymbolUploadEnabled = true
+          unstrippedNativeLibsDir = 'build/intermediates/merged_native_libs/release/out/lib'
       }
     }
   }
@@ -155,8 +158,6 @@ dependencies {
   implementation("androidx.swiperefreshlayout:swiperefreshlayout:${rootProject.ext.swiperefreshlayoutVersion}")
   implementation("androidx.vectordrawable:vectordrawable-animated:${rootProject.ext.vectordrawableVersion}")
   implementation("androidx.vectordrawable:vectordrawable:${rootProject.ext.vectordrawableVersion}")
-  // Workaround build error relating to "barrierMargin" attribute not found
-  implementation "androidx.constraintlayout:constraintlayout:2.2.0-alpha13"
 
   if (hermesEnabled.toBoolean()) {
     implementation("com.facebook.react:hermes-android")
@@ -176,5 +177,3 @@ dependencies {
   androidTestImplementation platform("com.google.firebase:firebase-bom:${firebaseBomVersion}")
   androidTestImplementation "com.google.firebase:firebase-appcheck-debug-testing"
 }
-
-apply from: file('../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle'); applyNativeModulesAppBuildGradle(project)

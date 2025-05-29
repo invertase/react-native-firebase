@@ -90,7 +90,7 @@ export const isOther = Platform.OS !== 'ios' && Platform.OS !== 'android';
 export function tryJSONParse(string) {
   try {
     return string && JSON.parse(string);
-  } catch (jsonError) {
+  } catch (_) {
     return string;
   }
 }
@@ -98,7 +98,7 @@ export function tryJSONParse(string) {
 export function tryJSONStringify(data) {
   try {
     return JSON.stringify(data);
-  } catch (jsonError) {
+  } catch (_) {
     return null;
   }
 }
@@ -229,9 +229,9 @@ const mapOfDeprecationReplacements = {
   },
 };
 
-const v8deprecationMessage =
-  'This v8 method is deprecated and will be removed in the next major release ' +
-  'as part of move to match Firebase Web modular v9 SDK API.';
+const modularDeprecationMessage =
+  'This method is deprecated (as well as all React Native Firebase namespaced API) and will be removed in the next major release ' +
+  'as part of move to match Firebase Web modular SDK API. Please see migration guide for more details: https://rnfirebase.io/migrating-to-v22';
 
 export function deprecationConsoleWarning(nameSpace, methodName, instanceName, isModularMethod) {
   if (!isModularMethod) {
@@ -240,9 +240,14 @@ export function deprecationConsoleWarning(nameSpace, methodName, instanceName, i
       const instanceMap = moduleMap[instanceName];
       const deprecatedMethod = instanceMap[methodName];
       if (instanceMap && deprecatedMethod) {
-        const message = createMessage(nameSpace, methodName, instanceName);
-        // eslint-disable-next-line no-console
-        console.warn(message);
+        if (!globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS) {
+          // eslint-disable-next-line no-console
+          console.warn(createMessage(nameSpace, methodName, instanceName));
+
+          if (globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE === true) {
+            throw new Error('Deprecated API usage detected while in strict mode.');
+          }
+        }
       }
     }
   }
@@ -266,9 +271,12 @@ export function createMessage(
       const replacementMethodName = instance[methodName];
 
       if (replacementMethodName !== NO_REPLACEMENT) {
-        return v8deprecationMessage + ` Please use \`${replacementMethodName}\` instead.`;
+        return (
+          modularDeprecationMessage +
+          `. Method called was \`${methodName}\`. Please use \`${replacementMethodName}\` instead.`
+        );
       } else {
-        return v8deprecationMessage;
+        return modularDeprecationMessage + `. Method called was \`${methodName}\``;
       }
     }
   }
@@ -375,14 +383,18 @@ export function warnIfNotModularCall(args, replacementMethodName = '') {
       return;
     }
   }
-  let message =
-    'This v8 method is deprecated and will be removed in the next major release ' +
-    'as part of move to match Firebase Web modular v9 SDK API.';
 
+  let message = modularDeprecationMessage;
   if (replacementMethodName.length > 0) {
     message += ` Please use \`${replacementMethodName}\` instead.`;
   }
 
-  // eslint-disable-next-line no-console
-  console.warn(message);
+  if (!globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS) {
+    // eslint-disable-next-line no-console
+    console.warn(message);
+
+    if (globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE === true) {
+      throw new Error('Deprecated API usage detected while in strict mode.');
+    }
+  }
 }

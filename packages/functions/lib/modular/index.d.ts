@@ -1,9 +1,14 @@
-import { FirebaseApp } from '@firebase/app';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { FirebaseFunctionsTypes } from '..';
 
+import FirebaseApp = ReactNativeFirebase.FirebaseApp;
 import Functions = FirebaseFunctionsTypes.Module;
 import HttpsCallable = FirebaseFunctionsTypes.HttpsCallable;
 import HttpsCallableOptions = FirebaseFunctionsTypes.HttpsCallableOptions;
+import HttpsErrorCodeType = FirebaseFunctionsTypes.HttpsErrorCode;
+
+export const HttpsErrorCode: HttpsErrorCodeType;
+
 /**
  * Get a {@link Functions} instance for the given app.
  * @param {FirebaseApp | undefined} app - The FirebaseApp to use. Optional.

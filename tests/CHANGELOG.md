@@ -3,6 +3,94 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [22.2.0](https://github.com/invertase/react-native-firebase/compare/v22.1.0...v22.2.0) (2025-05-12)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+## [22.1.0](https://github.com/invertase/react-native-firebase/compare/v22.0.0...v22.1.0) (2025-04-30)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+## [22.0.0](https://github.com/invertase/react-native-firebase/compare/v21.14.0...v22.0.0) (2025-04-25)
+
+### Bug Fixes
+
+- **analytics:** Type defs ([#8363](https://github.com/invertase/react-native-firebase/issues/8363)) ([74efc84](https://github.com/invertase/react-native-firebase/commit/74efc848e3ecda47b5c7cdf79e5e72370cd10b7d))
+- **android:** use `=` assignment vs deprecated space-assignment ([39c2ecb](https://github.com/invertase/react-native-firebase/commit/39c2ecb0069a8a5a65b04fb7f86ccecf83273868))
+
+## [21.14.0](https://github.com/invertase/react-native-firebase/compare/v21.13.0...v21.14.0) (2025-04-14)
+
+### Features
+
+- **messaging, android:** notification delegation APIs, firebase.json feature toggle ([c0c5054](https://github.com/invertase/react-native-firebase/commit/c0c505432e95c85fa6621b548b24e755e2894c37))
+- **messaging, android:** support BigQuery export setting in firebase.json ([fa0e967](https://github.com/invertase/react-native-firebase/commit/fa0e967f9a06719c159a4980749f80c5ff2e2c39))
+
+### Bug Fixes
+
+- **app:** firebase-ios-sdk 11.11.0 / firebase-android-sdk 33.12.0 ([1bfd3eb](https://github.com/invertase/react-native-firebase/commit/1bfd3eb5558296deff7a368a607163019b1d4d11))
+
+## [21.13.0](https://github.com/invertase/react-native-firebase/compare/v21.12.3...v21.13.0) (2025-03-31)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+## [21.12.3](https://github.com/invertase/react-native-firebase/compare/v21.12.2...v21.12.3) (2025-03-26)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+## [21.12.2](https://github.com/invertase/react-native-firebase/compare/v21.12.1...v21.12.2) (2025-03-23)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+## [21.12.1](https://github.com/invertase/react-native-firebase/compare/v21.12.0...v21.12.1) (2025-03-22)
+
+### Bug Fixes
+
+- **app, sdks:** firebase-ios-sdk 11.9.0 / firebase-android-sdk 33.10.0 ([df24ed6](https://github.com/invertase/react-native-firebase/commit/df24ed63e5434c84dc167f23287446647457e8e5))
+- **ios:** adopt firebase-ios-sdk 11.10.0 ([ffc7b4c](https://github.com/invertase/react-native-firebase/commit/ffc7b4c7d603dcb27b730f82c523c91b4a5882a8))
+
+## [21.12.0](https://github.com/invertase/react-native-firebase/compare/v21.11.0...v21.12.0) (2025-03-03)
+
+### Features
+
+- vertexAI package support ([#8236](https://github.com/invertase/react-native-firebase/issues/8236)) ([a1d1361](https://github.com/invertase/react-native-firebase/commit/a1d13610f443a96a7195b3f769f77d9676c0e577))
+
+## [21.11.0](https://github.com/invertase/react-native-firebase/compare/v21.10.1...v21.11.0) (2025-02-20)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+## [21.10.1](https://github.com/invertase/react-native-firebase/compare/v21.10.0...v21.10.1) (2025-02-18)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+## [21.10.0](https://github.com/invertase/react-native-firebase/compare/v21.9.0...v21.10.0) (2025-02-11)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+## [21.9.0](https://github.com/invertase/react-native-firebase/compare/v21.8.0...v21.9.0) (2025-02-11)
+
+### Bug Fixes
+
+- firebase-ios-sdk 11.8.0 / firebase-android-sdk 33.9.0 ([67aba08](https://github.com/invertase/react-native-firebase/commit/67aba08c00aa46b72fcb1353bd428fa552b6686a))
+- **ios:** patch containing upstream null handling fix for rn 0.76 ([fa0b28a](https://github.com/invertase/react-native-firebase/commit/fa0b28a7b86661524bc5dd701698478a43ec8998))
+
+## [21.8.0](https://github.com/invertase/react-native-firebase/compare/v21.7.4...v21.8.0) (2025-02-10)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+## [21.7.4](https://github.com/invertase/react-native-firebase/compare/v21.7.3...v21.7.4) (2025-02-08)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+## [21.7.3](https://github.com/invertase/react-native-firebase/compare/v21.7.2...v21.7.3) (2025-02-08)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+## [21.7.2](https://github.com/invertase/react-native-firebase/compare/v21.7.1...v21.7.2) (2025-02-05)
+
+### Bug Fixes
+
+- **firestore, ios:** account for filters in getAggregateFromServer with collection groups ([#8259](https://github.com/invertase/react-native-firebase/issues/8259)) ([c78dfe9](https://github.com/invertase/react-native-firebase/commit/c78dfe93bfa42922c4248a5fbe55afd8d491068f))
+
 ## [21.7.1](https://github.com/invertase/react-native-firebase/compare/v21.7.0...v21.7.1) (2025-01-20)
 
 **Note:** Version bump only for package react-native-firebase-tests

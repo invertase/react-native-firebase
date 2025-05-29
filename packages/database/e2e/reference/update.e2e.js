@@ -21,10 +21,21 @@ const TEST_PATH = `${PATH}/update`;
 
 describe('database().ref().update()', function () {
   after(async function () {
-    await firebase.database().ref(TEST_PATH).remove();
+    const { getDatabase, ref } = databaseModular;
+    await ref(getDatabase(), TEST_PATH).remove();
   });
 
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('throws if values is not an object', async function () {
       try {
         await firebase.database().ref(TEST_PATH).update('foo');
@@ -82,6 +93,26 @@ describe('database().ref().update()', function () {
           foo: value,
         }),
       );
+    });
+
+    it('removes property if set to `null`', async function () {
+      const value = Date.now();
+      const ref = firebase.database().ref(TEST_PATH);
+      await ref.update({
+        foo: value,
+      });
+      const snapshot = await ref.once('value');
+      snapshot.val().should.eql(
+        jet.contextify({
+          foo: value,
+        }),
+      );
+      await ref.update({
+        foo: null,
+      });
+      const snapshot2 = await ref.once('value');
+      // Removes key/value
+      should(snapshot2.val()).be.null();
     });
 
     it('callback if function is passed', async function () {

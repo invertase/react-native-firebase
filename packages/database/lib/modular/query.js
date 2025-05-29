@@ -20,6 +20,7 @@ class QueryConstraint {
   }
 
   _apply(query) {
+    // eslint-disable-next-line prefer-spread
     return query[this._type].apply(query, this._args);
   }
 }
@@ -236,6 +237,10 @@ export function setWithPriority(ref, value, priority) {
  */
 export function get(query) {
   return query.once('value');
+}
+
+export function off(_query, _eventType, _callback) {
+  throw new Error('off() is not implemented');
 }
 
 /**

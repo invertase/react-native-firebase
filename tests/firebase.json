@@ -16,9 +16,11 @@
 
     "messaging_auto_init_enabled": false,
     "messaging_android_headless_task_timeout": 30000,
+    "messaging_android_notification_delivery_metrics_export_enabled": true,
     "messaging_android_notification_channel_id": "",
     "messaging_android_notification_color": "@color/hotpink",
     "messaging_ios_auto_register_for_remote_messages": false,
+    "messaging_android_notification_delegation_enabled": true,
 
     "analytics_auto_collection_enabled": true,
     "analytics_collection_deactivated": false,

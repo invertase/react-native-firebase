@@ -1,7 +1,12 @@
 import { FirebaseMessagingTypes } from '..';
-import { FirebaseApp } from '@firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
-import Messaging = FirebaseStorageTypes.Module;
+import Messaging = FirebaseMessagingTypes.Module;
+import FirebaseApp = ReactNativeFirebase.FirebaseApp;
+
+export const AuthorizationStatus = FirebaseMessagingTypes.AuthorizationStatus;
+export const NotificationAndroidPriority = FirebaseMessagingTypes.NotificationAndroidPriority;
+export const NotificationAndroidVisibility = FirebaseMessagingTypes.NotificationAndroidVisibility;
 
 /**
  * Returns a Messaging instance for the given app.
@@ -93,6 +98,29 @@ export function isAutoInitEnabled(messaging: Messaging): boolean;
  * @returns A promise that resolves when the setting is updated.
  */
 export function setAutoInitEnabled(messaging: Messaging, enabled: boolean): Promise<void>;
+
+/**
+ * Sets whether remote notification delegation to Google Play Services is enabled or disabled.
+ *
+ * The value is false by default. Set this to true to allow remote notification delegation.
+ *
+ * Warning: this will disable notification handlers on Android, and on iOS it has no effect
+ *
+ * @param messaging - Messaging instance.
+ * @param enabled A boolean value to enable or disable remote notification delegation to Google Play Services.
+ */
+export function setNotificationDelegationEnabled(
+  messaging: Messaging,
+  enabled: boolean,
+): Promise<void>;
+
+/**
+ * Gets whether remote notification delegation to Google Play Services is enabled or disabled.
+ *
+ * @param messaging - Messaging instance.
+ * @returns enabled A boolean value indicatign if remote notification delegation to Google Play Services is enabled.
+ */
+export function istNotificationDelegationEnabled(messaging: Messaging): Promise<boolean>;
 
 /**
  * When a notification from FCM has triggered the application to open from a quit state,

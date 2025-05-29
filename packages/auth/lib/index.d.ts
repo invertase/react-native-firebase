@@ -258,7 +258,7 @@ export namespace FirebaseAuthTypes {
     ERROR: 'error';
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export interface MultiFactorSession {
     // this is has no documented contents, it is simply returned from some APIs and passed to others
   }
@@ -881,6 +881,7 @@ export namespace FirebaseAuthTypes {
 
     /**
      * Sets the dynamic link domain (or subdomain) to use for the current link if it is to be opened using Firebase Dynamic Links. As multiple dynamic link domains can be configured per project, this field provides the ability to explicitly choose one. If none is provided, the first domain is used by default.
+     * Deprecated - use {@link ActionCodeSettings.linkDomain} instead.
      */
     dynamicLinkDomain?: string;
 
@@ -888,6 +889,11 @@ export namespace FirebaseAuthTypes {
      * This URL represents the state/Continue URL in the form of a universal link. This URL can should be constructed as a universal link that would either directly open the app where the action code would be handled or continue to the app after the action code is handled by Firebase.
      */
     url: string;
+    /**
+     * Firebase Dynamic Links is deprecated and will be shut down as early as August * 2025.
+     * Instead, use ActionCodeSettings.linkDomain to set a a custom domain. Learn more at: https://firebase.google.com/support/dynamic-links-faq
+     */
+    linkDomain?: string;
   }
 
   /**
@@ -1342,8 +1348,7 @@ export namespace FirebaseAuthTypes {
     reauthenticateWithCredential(credential: AuthCredential): Promise<UserCredential>;
 
     /**
-     * Re-authenticate a user with a federated authentication provider (Microsoft, Yahoo)
-     *
+     * Re-authenticate a user with a federated authentication provider (Microsoft, Yahoo). For native platforms, this will open a browser window.
      * #### Example
      *
      * ```js
@@ -1359,9 +1364,17 @@ export namespace FirebaseAuthTypes {
      * @error auth/invalid-verification-code Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification code of the credential is not valid.
      * @error auth/invalid-verification-id Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid.
      * @param provider A created {@link auth.AuthProvider}.
+     * @returns A promise that resolves with no value.
      */
-    reauthenticateWithProvider(provider: AuthProvider): Promise<UserCredential>;
-
+    reauthenticateWithRedirect(provider: AuthProvider): Promise<void>;
+    /**
+     * Re-authenticate a user with a federated authentication provider (Microsoft, Yahoo). For native platforms, this will open a browser window.
+     * pop-up equivalent on native platforms.
+     *
+     * @param provider - The auth provider.
+     * @returns A promise that resolves with the user credentials.
+     */
+    reauthenticateWithPopup(provider: AuthProvider): Promise<UserCredential>;
     /**
      * Refreshes the current user.
      *
@@ -1428,7 +1441,6 @@ export namespace FirebaseAuthTypes {
      * const user = firebase.auth().currentUser.toJSON();
      * ```
      */
-    // eslint-disable-next-line @typescript-eslint/ban-types
     toJSON(): object;
 
     /**
@@ -1794,17 +1806,27 @@ export namespace FirebaseAuthTypes {
     /**
      * Signs a user in with an email and password.
      *
+     * ⚠️ Note:
+     * If "Email Enumeration Protection" is enabled in your Firebase Authentication settings (enabled by default),
+     * Firebase may return a generic `auth/invalid-login-credentials` error instead of more specific ones like
+     * `auth/user-not-found` or `auth/wrong-password`. This behavior is intended to prevent leaking information
+     * about whether an account with the given email exists.
+     *
+     * To receive detailed error codes, you must disable "Email Enumeration Protection", which may increase
+     * security risks if not properly handled on the frontend.
+     *
      * #### Example
      *
      * ```js
      * const userCredential = await firebase.auth().signInWithEmailAndPassword('joe.bloggs@example.com', '123456');
-     * ````
+     * ```
+     *
      * @error auth/invalid-email Thrown if the email address is not valid.
      * @error auth/user-disabled Thrown if the user corresponding to the given email has been disabled.
-     * @error auth/user-not-found Thrown if there is no user corresponding to the given email.
-     * @error auth/wrong-password Thrown if the password is invalid for the given email, or the account corresponding to the email does not have a password set.
-     * @param email The users email address.
-     * @param password The users password.
+     * @error auth/user-not-found Thrown if there is no user corresponding to the given email. (May be suppressed if email enumeration protection is enabled.)
+     * @error auth/wrong-password Thrown if the password is invalid or missing. (May be suppressed if email enumeration protection is enabled.)
+     * @param email The user's email address.
+     * @param password The user's password.
      */
     signInWithEmailAndPassword(email: string, password: string): Promise<UserCredential>;
 
@@ -1996,17 +2018,18 @@ export namespace FirebaseAuthTypes {
     sendSignInLinkToEmail(email: string, actionCodeSettings?: ActionCodeSettings): Promise<void>;
 
     /**
-     * Returns whether the user signed in with a given email link.
+     * Checks if an incoming link is a sign-in with email link suitable for signInWithEmailLink.
+     * Note that android and other platforms require `apiKey` link parameter for signInWithEmailLink
      *
      * #### Example
      *
      * ```js
-     * const signedInWithLink = firebase.auth().isSignInWithEmailLink(link);
+     * const valid = await firebase.auth().isSignInWithEmailLink(link);
      * ```
      *
-     * @param emailLink The email link to check whether the user signed in with it.
+     * @param emailLink The email link to verify prior to using signInWithEmailLink
      */
-    isSignInWithEmailLink(emailLink: string): boolean;
+    isSignInWithEmailLink(emailLink: string): Promise<boolean>;
 
     /**
      * Signs the user in with an email link.
@@ -2083,18 +2106,27 @@ export namespace FirebaseAuthTypes {
     /**
      * Returns a list of authentication methods that can be used to sign in a given user (identified by its main email address).
      *
+     * ⚠️ Note:
+     * If "Email Enumeration Protection" is enabled in your Firebase Authentication settings (which is the default),
+     * this method may return an empty array even if the email is registered, especially when called from an unauthenticated context.
+     *
+     * This is a security measure to prevent leaking account existence via email enumeration attacks.
+     * Do not use the result of this method to directly inform the user whether an email is registered.
+     *
      * #### Example
      *
      * ```js
      * const methods = await firebase.auth().fetchSignInMethodsForEmail('joe.bloggs@example.com');
      *
-     * methods.forEach((method) => {
-     *   console.log(method);
-     * });
+     * if (methods.length > 0) {
+     *   // Likely a registered user — offer sign-in
+     * } else {
+     *   // Could be unregistered OR email enumeration protection is active — offer registration
+     * }
      * ```
      *
      * @error auth/invalid-email Thrown if the email address is not valid.
-     * @param email The users email address.
+     * @param email The user's email address.
      */
     fetchSignInMethodsForEmail(email: string): Promise<string[]>;
 
@@ -2191,7 +2223,6 @@ export default defaultExport;
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
 declare module '@react-native-firebase/app' {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {

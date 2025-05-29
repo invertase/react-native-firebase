@@ -3,6 +3,101 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [22.2.0](https://github.com/invertase/react-native-firebase/compare/v22.1.0...v22.2.0) (2025-05-12)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+## [22.1.0](https://github.com/invertase/react-native-firebase/compare/v22.0.0...v22.1.0) (2025-04-30)
+
+### Bug Fixes
+
+- **firestore, types:** exist -> exists() change reflected in types ([339834d](https://github.com/invertase/react-native-firebase/commit/339834d940f1260ddd9a142cc17def1e876ff0fa))
+
+## [22.0.0](https://github.com/invertase/react-native-firebase/compare/v21.14.0...v22.0.0) (2025-04-25)
+
+### ⚠ BREAKING CHANGES
+
+- **firestore:** alter all use of DocumentSnapshot `exists` to `exists()` - should be a method not a property
+
+### Bug Fixes
+
+- **android:** use `=` assignment vs deprecated space-assignment ([39c2ecb](https://github.com/invertase/react-native-firebase/commit/39c2ecb0069a8a5a65b04fb7f86ccecf83273868))
+- enable provenance signing during publish ([4535f0d](https://github.com/invertase/react-native-firebase/commit/4535f0d5756c89aeb8f8e772348c71d8176348be))
+- **firestore:** DocumentSnapshot.exists() should be a method not a property ([#8483](https://github.com/invertase/react-native-firebase/issues/8483)) ([346272c](https://github.com/invertase/react-native-firebase/commit/346272cf9d6545ab5c1a2c30127bc4079700c2d1))
+
+## [21.14.0](https://github.com/invertase/react-native-firebase/compare/v21.13.0...v21.14.0) (2025-04-14)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+## [21.13.0](https://github.com/invertase/react-native-firebase/compare/v21.12.3...v21.13.0) (2025-03-31)
+
+### Bug Fixes
+
+- **firestore:** a single or/and filter is allowed, 2+ not required ([2308183](https://github.com/invertase/react-native-firebase/commit/23081838321d4c8f0548461917c52a0c00bdc96e))
+
+## [21.12.3](https://github.com/invertase/react-native-firebase/compare/v21.12.2...v21.12.3) (2025-03-26)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+## [21.12.2](https://github.com/invertase/react-native-firebase/compare/v21.12.1...v21.12.2) (2025-03-23)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+## [21.12.1](https://github.com/invertase/react-native-firebase/compare/v21.12.0...v21.12.1) (2025-03-22)
+
+### Bug Fixes
+
+- **firestore, ios:** use correct key to cache instance ([#8404](https://github.com/invertase/react-native-firebase/issues/8404)) ([e6642ec](https://github.com/invertase/react-native-firebase/commit/e6642ec51e7e7771611c1c7e36aa6bdeeb4989c9))
+
+## [21.12.0](https://github.com/invertase/react-native-firebase/compare/v21.11.0...v21.12.0) (2025-03-03)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+## [21.11.0](https://github.com/invertase/react-native-firebase/compare/v21.10.1...v21.11.0) (2025-02-20)
+
+### Bug Fixes
+
+- **firestore, bytes:** return Bytes for modular API usage, fix deprecation ([5a29425](https://github.com/invertase/react-native-firebase/commit/5a2942517b071141306d675a8501f7d23d87af55))
+
+## [21.10.1](https://github.com/invertase/react-native-firebase/compare/v21.10.0...v21.10.1) (2025-02-18)
+
+### Bug Fixes
+
+- **firestore:** implement queryEqual modular API ([2f855a6](https://github.com/invertase/react-native-firebase/commit/2f855a6150cc02d9d55873e63320c01424ce6434))
+- **firestore:** implement refEqual modular API ([f30a4fb](https://github.com/invertase/react-native-firebase/commit/f30a4fb87e8d65ed2ad94bf40d6f83c6bd271580))
+- **firestore:** implement snapshotEqual in modular API ([6da740f](https://github.com/invertase/react-native-firebase/commit/6da740f4b4fca988dcfcad52206af0695f3efe4f))
+- **firestore:** spread args into query to quiet deprecation ([1cf9f50](https://github.com/invertase/react-native-firebase/commit/1cf9f508832b2907e13f31d1a2fa2204ba75996c))
+
+## [21.10.0](https://github.com/invertase/react-native-firebase/compare/v21.9.0...v21.10.0) (2025-02-11)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+## [21.9.0](https://github.com/invertase/react-native-firebase/compare/v21.8.0...v21.9.0) (2025-02-11)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+## [21.8.0](https://github.com/invertase/react-native-firebase/compare/v21.7.4...v21.8.0) (2025-02-10)
+
+### Bug Fixes
+
+- do not ship unit tests in released packages ([e71dadf](https://github.com/invertase/react-native-firebase/commit/e71dadfc1c0cad2e89c94100913af31ddf7d9c91))
+
+## [21.7.4](https://github.com/invertase/react-native-firebase/compare/v21.7.3...v21.7.4) (2025-02-08)
+
+### Bug Fixes
+
+- the init calls for modular should use modular getApp() ([79da98b](https://github.com/invertase/react-native-firebase/commit/79da98bf4ecf7860db61b2813b87673f1cd0adfd))
+
+## [21.7.3](https://github.com/invertase/react-native-firebase/compare/v21.7.2...v21.7.3) (2025-02-08)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+## [21.7.2](https://github.com/invertase/react-native-firebase/compare/v21.7.1...v21.7.2) (2025-02-05)
+
+### Bug Fixes
+
+- **firestore, ios:** account for filters in getAggregateFromServer with collection groups ([#8259](https://github.com/invertase/react-native-firebase/issues/8259)) ([c78dfe9](https://github.com/invertase/react-native-firebase/commit/c78dfe93bfa42922c4248a5fbe55afd8d491068f))
+
 ## [21.7.1](https://github.com/invertase/react-native-firebase/compare/v21.7.0...v21.7.1) (2025-01-20)
 
 **Note:** Version bump only for package @react-native-firebase/firestore

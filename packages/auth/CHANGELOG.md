@@ -3,6 +3,111 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [22.2.0](https://github.com/invertase/react-native-firebase/compare/v22.1.0...v22.2.0) (2025-05-12)
+
+### Bug Fixes
+
+- **auth, expo:** lowercase `String?` in swift using `.lowercased()` ([af435e8](https://github.com/invertase/react-native-firebase/commit/af435e8b8bc84a98e4fab336ade6952178c7f6f8))
+- **auth:** missing PhoneMultiFactorGenerator export ([aaaec03](https://github.com/invertase/react-native-firebase/commit/aaaec03bba10c68d0f700b6c4b26a17c467f71bb))
+
+## [22.1.0](https://github.com/invertase/react-native-firebase/compare/v22.0.0...v22.1.0) (2025-04-30)
+
+### Features
+
+- **auth, expo:** add support for AppDelegate.swift ([e4966ef](https://github.com/invertase/react-native-firebase/commit/e4966ef3b692b3b8a3b89fbf54a0a0d59ca06ab6))
+
+### Bug Fixes
+
+- **auth, android:** catch native error in signWithEmailLink ([a08580e](https://github.com/invertase/react-native-firebase/commit/a08580e29d672af99e890a60dbef8aba094b697c))
+- **auth:** delegate modular `multiFactor` to MultiFactorUser constructor ([0937c77](https://github.com/invertase/react-native-firebase/commit/0937c77c9642da082de34de39cbf6a1847ae065c))
+
+## [22.0.0](https://github.com/invertase/react-native-firebase/compare/v21.14.0...v22.0.0) (2025-04-25)
+
+### ⚠ BREAKING CHANGES
+
+- **auth:** return type of auth isSignInWithEmailLink changed from boolean to Promise<boolean>
+
+### Features
+
+- **auth:** use native isSignInWithEmailLink - returns Promise<boolean> vs boolean ([#8450](https://github.com/invertase/react-native-firebase/issues/8450)) ([3785690](https://github.com/invertase/react-native-firebase/commit/37856901323d81ee8b232bfa0279b6606dbf366d))
+
+### Bug Fixes
+
+- **analytics:** Type defs ([#8363](https://github.com/invertase/react-native-firebase/issues/8363)) ([74efc84](https://github.com/invertase/react-native-firebase/commit/74efc848e3ecda47b5c7cdf79e5e72370cd10b7d))
+- **android:** use `=` assignment vs deprecated space-assignment ([39c2ecb](https://github.com/invertase/react-native-firebase/commit/39c2ecb0069a8a5a65b04fb7f86ccecf83273868))
+- **auth:** Make REVERSED_CLIENT_ID optional ([#8470](https://github.com/invertase/react-native-firebase/issues/8470)) ([a909d1b](https://github.com/invertase/react-native-firebase/commit/a909d1beb597dcb92035a2ee6e66995c3aee8a5a))
+- enable provenance signing during publish ([4535f0d](https://github.com/invertase/react-native-firebase/commit/4535f0d5756c89aeb8f8e772348c71d8176348be))
+
+## [21.14.0](https://github.com/invertase/react-native-firebase/compare/v21.13.0...v21.14.0) (2025-04-14)
+
+### Bug Fixes
+
+- **auth:** correct modular AuthListenerCallback type ([#8436](https://github.com/invertase/react-native-firebase/issues/8436)) ([d94a2d8](https://github.com/invertase/react-native-firebase/commit/d94a2d8e3786b69eb43d18eb0f329e5492ceaeb1))
+
+## [21.13.0](https://github.com/invertase/react-native-firebase/compare/v21.12.3...v21.13.0) (2025-03-31)
+
+### Features
+
+- **auth:** validatePassword method implementation ([#8400](https://github.com/invertase/react-native-firebase/issues/8400)) ([1ec33f5](https://github.com/invertase/react-native-firebase/commit/1ec33f5020664fe32aa8132a170a83ec865aa95d))
+
+## [21.12.3](https://github.com/invertase/react-native-firebase/compare/v21.12.2...v21.12.3) (2025-03-26)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+## [21.12.2](https://github.com/invertase/react-native-firebase/compare/v21.12.1...v21.12.2) (2025-03-23)
+
+### Bug Fixes
+
+- **auth:** Fix auth type definitions and add more ([#8323](https://github.com/invertase/react-native-firebase/issues/8323)) ([3dc8119](https://github.com/invertase/react-native-firebase/commit/3dc81195219a38b22294bec4490d4192c9d94fce))
+
+## [21.12.1](https://github.com/invertase/react-native-firebase/compare/v21.12.0...v21.12.1) (2025-03-22)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+## [21.12.0](https://github.com/invertase/react-native-firebase/compare/v21.11.0...v21.12.0) (2025-03-03)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+## [21.11.0](https://github.com/invertase/react-native-firebase/compare/v21.10.1...v21.11.0) (2025-02-20)
+
+### Features
+
+- **auth:** `linkDomain` support for `ActionCodeSettings` ([#8335](https://github.com/invertase/react-native-firebase/issues/8335)) ([77af6b2](https://github.com/invertase/react-native-firebase/commit/77af6b2c444084f232254db79a667930cb4fa770))
+
+## [21.10.1](https://github.com/invertase/react-native-firebase/compare/v21.10.0...v21.10.1) (2025-02-18)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+## [21.10.0](https://github.com/invertase/react-native-firebase/compare/v21.9.0...v21.10.0) (2025-02-11)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+## [21.9.0](https://github.com/invertase/react-native-firebase/compare/v21.8.0...v21.9.0) (2025-02-11)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+## [21.8.0](https://github.com/invertase/react-native-firebase/compare/v21.7.4...v21.8.0) (2025-02-10)
+
+### Bug Fixes
+
+- do not ship unit tests in released packages ([e71dadf](https://github.com/invertase/react-native-firebase/commit/e71dadfc1c0cad2e89c94100913af31ddf7d9c91))
+
+## [21.7.4](https://github.com/invertase/react-native-firebase/compare/v21.7.3...v21.7.4) (2025-02-08)
+
+### Bug Fixes
+
+- the init calls for modular should use modular getApp() ([79da98b](https://github.com/invertase/react-native-firebase/commit/79da98bf4ecf7860db61b2813b87673f1cd0adfd))
+
+## [21.7.3](https://github.com/invertase/react-native-firebase/compare/v21.7.2...v21.7.3) (2025-02-08)
+
+### Bug Fixes
+
+- **auth:** resolve type issue when migrating to v9 ([#8277](https://github.com/invertase/react-native-firebase/issues/8277)) ([f4e44ad](https://github.com/invertase/react-native-firebase/commit/f4e44ad50ec85604b7ba0ea835490f473ed5447c))
+
+## [21.7.2](https://github.com/invertase/react-native-firebase/compare/v21.7.1...v21.7.2) (2025-02-05)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
 ## [21.7.1](https://github.com/invertase/react-native-firebase/compare/v21.7.0...v21.7.1) (2025-01-20)
 
 **Note:** Version bump only for package @react-native-firebase/auth

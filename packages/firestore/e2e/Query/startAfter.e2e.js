@@ -22,6 +22,16 @@ describe('firestore().collection().startAfter()', function () {
   });
 
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('throws if no argument provided', function () {
       try {
         firebase.firestore().collection(COLLECTION).startAfter();
@@ -246,7 +256,7 @@ describe('firestore().collection().startAfter()', function () {
     });
 
     it('starts after snapshot field values', async function () {
-      const { getFirestore, collection, doc, setDoc, query, startAfter, getDocs, getDoc } =
+      const { getFirestore, collection, doc, setDoc, query, startAfter, getDocs, getDoc, orderBy } =
         firestoreModular;
       const colRef = collection(getFirestore(), `${COLLECTION}/startAfter/snapshotFields`);
       const doc1 = doc(colRef, 'doc1');
@@ -261,7 +271,7 @@ describe('firestore().collection().startAfter()', function () {
 
       const startAfterSnapshot = await getDoc(doc2);
 
-      const qs = await getDocs(query(colRef.orderBy('bar.value'), startAfter(startAfterSnapshot)));
+      const qs = await getDocs(query(colRef, orderBy('bar.value'), startAfter(startAfterSnapshot)));
 
       qs.docs.length.should.eql(1);
       qs.docs[0].id.should.eql('doc3');

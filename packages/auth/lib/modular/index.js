@@ -15,7 +15,12 @@
  * limitations under the License.
  */
 
-import { firebase } from '..';
+import { getApp } from '@react-native-firebase/app';
+import { fetchPasswordPolicy } from '../password-policy/passwordPolicyApi';
+import { PasswordPolicyImpl } from '../password-policy/PasswordPolicyImpl';
+import FacebookAuthProvider from '../providers/FacebookAuthProvider';
+import { MultiFactorUser } from '../multiFactor';
+export { FacebookAuthProvider };
 
 /**
  * @typedef {import('@firebase/app-types').FirebaseApp} FirebaseApp
@@ -47,9 +52,9 @@ import { firebase } from '..';
  */
 export function getAuth(app) {
   if (app) {
-    return firebase.app(app.name).auth();
+    return getApp(app.name).auth();
   }
-  return firebase.app().auth();
+  return getApp().auth();
 }
 
 /**
@@ -60,9 +65,9 @@ export function getAuth(app) {
  */
 export function initializeAuth(app, deps) {
   if (app) {
-    return firebase.app(app.name).auth();
+    return getApp(app.name).auth();
   }
-  return firebase.app().auth();
+  return getApp().auth();
 }
 
 /**
@@ -161,7 +166,7 @@ export async function getRedirectResult(auth, resolver) {
  * Checks if an incoming link is a sign-in with email link suitable for signInWithEmailLink().
  * @param {Auth} auth - The Auth instance.
  * @param {string} emailLink - The email link to check.
- * @returns {boolean}
+ * @returns {Promise<boolean>}
  */
 export function isSignInWithEmailLink(auth, emailLink) {
   return auth.isSignInWithEmailLink(emailLink);
@@ -186,6 +191,15 @@ export function onAuthStateChanged(auth, nextOrObserver) {
 export function onIdTokenChanged(auth, nextOrObserver) {
   return auth.onIdTokenChanged(nextOrObserver);
 }
+
+/**
+ * Revoke the given access token, Currently only supports Apple OAuth access tokens.
+ * @param auth - The Auth Instance.
+ * @param token - The Access Token
+ */
+export async function revokeAccessToken(auth, token) {
+  throw new Error('revokeAccessToken() is only supported on Web');
+} //TO DO: Add Support
 
 /**
  * Sends a password reset email to the given email address.
@@ -449,7 +463,7 @@ export async function linkWithRedirect(user, provider, resolver) {
  * @returns {MultiFactorUser}
  */
 export function multiFactor(user) {
-  return user._auth.multiFactor(user);
+  return new MultiFactorUser(getAuth(), user);
 }
 
 /**
@@ -474,10 +488,10 @@ export async function reauthenticateWithPhoneNumber(user, phoneNumber, appVerifi
 }
 
 /**
- * Reauthenticates the current user with the specified OAuthProvider using a pop-up based OAuth flow.
+ * Re-authenticate a user with a federated authentication provider (Microsoft, Yahoo). For native platforms, this will open a browser window.
  * @param {User} user - The user to re-authenticate.
  * @param {AuthProvider} provider - The auth provider.
- * @param {PopupRedirectResolver} [resolver] - Optional. The popup redirect resolver.
+ * @param {PopupRedirectResolver} [resolver] - Optional. The popup redirect resolver. Web only.
  * @returns {Promise<UserCredential>}
  */
 export async function reauthenticateWithPopup(user, provider, resolver) {
@@ -485,11 +499,11 @@ export async function reauthenticateWithPopup(user, provider, resolver) {
 }
 
 /**
- * Reauthenticates the current user with the specified OAuthProvider using a full-page redirect flow.
+ * Re-authenticate a user with a federated authentication provider (Microsoft, Yahoo). For native platforms, this will open a browser window.
  * @param {User} user - The user to re-authenticate.
  * @param {AuthProvider} provider - The auth provider.
- * @param {PopupRedirectResolver} [resolver] - Optional. The popup redirect resolver.
- * @returns {Promise<void>}
+ * @param {PopupRedirectResolver} [resolver] - Optional. The popup redirect resolver. Web only.
+ * @returns {Promise<UserCredential>}
  */
 export async function reauthenticateWithRedirect(user, provider, resolver) {
   return user.reauthenticateWithRedirect(provider, resolver);
@@ -591,4 +605,24 @@ export function getAdditionalUserInfo(userCredential) {
  */
 export function getCustomAuthDomain(auth) {
   return auth.getCustomAuthDomain();
+}
+
+/**
+ * Returns a password validation status
+ * @param {Auth} auth - The Auth instance.
+ * @param {string} password - The password to validate.
+ * @returns {Promise<PasswordValidationStatus>}
+ */
+export async function validatePassword(auth, password) {
+  if (password === null || password === undefined) {
+    throw new Error(
+      "firebase.auth().validatePassword(*) expected 'password' to be a non-null or a defined value.",
+    );
+  }
+  let passwordPolicy = await fetchPasswordPolicy(auth);
+
+  const passwordPolicyImpl = await new PasswordPolicyImpl(passwordPolicy);
+  let status = passwordPolicyImpl.validatePassword(password);
+
+  return status;
 }

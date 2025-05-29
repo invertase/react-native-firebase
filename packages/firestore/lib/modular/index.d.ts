@@ -276,6 +276,22 @@ export function collection(
 ): CollectionReference<DocumentData>;
 
 /**
+ *Returns true if the provided references are equal.
+ *
+ * @param left	DocumentReference<AppModelType, DbModelType> | CollectionReference<AppModelType, DbModelType>	A reference to compare.
+ * @param right	DocumentReference<AppModelType, DbModelType> | CollectionReference<AppModelType, DbModelType>	A reference to compare.
+ * @return boolean true if the references point to the same location in the same Firestore database.
+ */
+export declare function refEqual<AppModelType, DbModelType extends DocumentData>(
+  left:
+    | DocumentReference<AppModelType, DbModelType>
+    | CollectionReference<AppModelType, DbModelType>,
+  right:
+    | DocumentReference<AppModelType, DbModelType>
+    | CollectionReference<AppModelType, DbModelType>,
+): boolean;
+
+/**
  * Creates and returns a new `Query` instance that includes all documents in the
  * database that are contained in a collection or subcollection with the
  * given `collectionId`.

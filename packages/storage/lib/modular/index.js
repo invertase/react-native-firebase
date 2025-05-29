@@ -28,7 +28,7 @@
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
  */
 
-import { firebase } from '..';
+import { getApp } from '@react-native-firebase/app';
 
 /**
  * Returns a Storage instance for the given app.
@@ -39,17 +39,17 @@ import { firebase } from '..';
 export function getStorage(app, bucketUrl) {
   if (app) {
     if (bucketUrl != null) {
-      return firebase.app(app.name).storage(bucketUrl);
+      return getApp(app.name).storage(bucketUrl);
     }
 
-    return firebase.app(app.name).storage();
+    return getApp(app.name).storage();
   }
 
   if (bucketUrl != null) {
-    return firebase.app().storage(bucketUrl);
+    return getApp().storage(bucketUrl);
   }
 
-  return firebase.app().storage();
+  return getApp().storage();
 }
 
 /**
@@ -90,7 +90,7 @@ export function deleteObject(storageRef) {
  * @returns {Promise<Blob>}
  */
 // eslint-disable-next-line
-export function getBlob(storageRef) {
+export function getBlob(storageRef, maxDownloadSizeBytes) {
   throw new Error('`getBlob()` is not implemented');
 }
 
@@ -279,3 +279,5 @@ export function child(storageRef, path) {
 export function setMaxDownloadRetryTime(storage, time) {
   return storage.setMaxDownloadRetryTime(time);
 }
+
+export { StringFormat, TaskEvent, TaskState } from '../StorageStatics';

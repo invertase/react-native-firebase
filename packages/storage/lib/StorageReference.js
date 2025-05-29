@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -33,7 +32,7 @@ import {
 } from '@react-native-firebase/app/lib/common';
 import StorageDownloadTask from './StorageDownloadTask';
 import StorageListResult, { provideStorageReferenceClass } from './StorageListResult';
-import StorageStatics from './StorageStatics';
+import { StringFormat } from './StorageStatics';
 import StorageUploadTask from './StorageUploadTask';
 import { validateMetadata } from './utils';
 
@@ -199,7 +198,7 @@ export default class StorageReference extends ReferenceBase {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putString
    */
-  putString(string, format = StorageStatics.StringFormat.RAW, metadata) {
+  putString(string, format = StringFormat.RAW, metadata) {
     const { _string, _format, _metadata } = this._updateString(string, format, metadata, false);
 
     return new StorageUploadTask(this, task =>
@@ -271,10 +270,10 @@ export default class StorageReference extends ReferenceBase {
       );
     }
 
-    if (!Object.values(StorageStatics.StringFormat).includes(format)) {
+    if (!Object.values(StringFormat).includes(format)) {
       throw new Error(
         `firebase.storage.StorageReference.putString(_, *, _) 'format' provided is invalid, must be one of ${Object.values(
-          StorageStatics.StringFormat,
+          StringFormat,
         ).join(',')}.`,
       );
     }
@@ -287,10 +286,10 @@ export default class StorageReference extends ReferenceBase {
     let _format = format;
     let _metadata = metadata;
 
-    if (format === StorageStatics.StringFormat.RAW) {
+    if (format === StringFormat.RAW) {
       _string = Base64.btoa(_string);
-      _format = StorageStatics.StringFormat.BASE64;
-    } else if (format === StorageStatics.StringFormat.DATA_URL) {
+      _format = StringFormat.BASE64;
+    } else if (format === StringFormat.DATA_URL) {
       const { mediaType, base64String } = getDataUrlParts(_string);
       if (isUndefined(base64String)) {
         throw new Error(
@@ -304,7 +303,7 @@ export default class StorageReference extends ReferenceBase {
         }
         _metadata.contentType = mediaType;
         _string = base64String;
-        _format = StorageStatics.StringFormat.BASE64;
+        _format = StringFormat.BASE64;
       }
     }
     return { _string, _metadata, _format };

@@ -24,12 +24,12 @@ jobs:
           fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
       - name: Configure JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
       - uses: actions/cache/restore@v4
         name: Yarn Cache Restore
         id: yarn-cache
@@ -69,7 +69,7 @@ jobs:
           fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
       - uses: actions/cache/restore@v4
         name: Yarn Cache Restore
         id: yarn-cache
@@ -104,7 +104,7 @@ jobs:
           fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
       - uses: actions/cache/restore@v4
         name: Yarn Cache Restore
         id: yarn-cache
@@ -127,7 +127,7 @@ jobs:
           max_attempts: 3
           command: cd website && yarn
       - name: Generate TypeDoc
-        run: node -e "require('./website/scripts/generate-typedoc').generateTypedoc()"
+        run: cd website && yarn typedoc
       - uses: actions/cache/save@v4
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"

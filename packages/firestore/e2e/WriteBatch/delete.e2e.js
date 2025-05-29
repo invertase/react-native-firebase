@@ -18,6 +18,16 @@ const COLLECTION = 'firestore';
 
 describe('firestore.WriteBatch.delete()', function () {
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('throws if a DocumentReference instance is not provided', function () {
       try {
         firebase.firestore().batch().delete(123);
@@ -68,12 +78,13 @@ describe('firestore.WriteBatch.delete()', function () {
     });
 
     it('throws if a DocumentReference firestore instance is different', function () {
+      const { getApp } = modular;
       const { getFirestore, doc, writeBatch } = firestoreModular;
       try {
-        const app2 = firebase.app('secondaryFromNative');
+        const app2 = getApp('secondaryFromNative');
         const docRef = doc(getFirestore(app2), `${COLLECTION}/foo`);
 
-        writeBatch(getFirestore()).delete(docRef);
+        writeBatch(getFirestore()).delete(docRef).commit();
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql(

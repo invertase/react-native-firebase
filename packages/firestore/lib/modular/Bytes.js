@@ -1,15 +1,18 @@
-import { firebase } from '../index';
+import FirestoreBlob from '../FirestoreBlob';
 
 /**
  * An immutable object representing an array of bytes.
  */
-export class Bytes {
+export class Bytes extends FirestoreBlob {
   /**
    * @hideconstructor
    * @param {firebase.firestore.Blob} blob
    */
   constructor(blob) {
-    this._blob = blob;
+    super(true);
+    // binary string was already parsed and created, potentially expensive
+    // don't parse it again, just set it into the new FirebaseBlob
+    this._binaryString = blob._binaryString;
   }
 
   /**
@@ -17,7 +20,7 @@ export class Bytes {
    * @returns {Bytes}
    */
   static fromBase64String(base64) {
-    return new Bytes(firebase.firestore.Blob.fromBase64String(base64));
+    return new Bytes(FirestoreBlob.fromBase64String(base64));
   }
 
   /**
@@ -25,21 +28,21 @@ export class Bytes {
    * @returns {Bytes}
    */
   static fromUint8Array(array) {
-    return new Bytes(firebase.firestore.Blob.fromUint8Array(array));
+    return new Bytes(FirestoreBlob.fromUint8Array(array));
   }
 
   /**
    * @returns {string}
    */
   toBase64() {
-    return this._blob.toBase64();
+    return super.toBase64();
   }
 
   /**
    * @returns {Uint8Array}
    */
   toUint8Array() {
-    return this._blob.toUint8Array();
+    return super.toUint8Array();
   }
 
   /**
@@ -54,6 +57,6 @@ export class Bytes {
    * @returns {boolean}
    */
   isEqual(other) {
-    return this._blob.isEqual(other._blob);
+    return super.isEqual(other);
   }
 }

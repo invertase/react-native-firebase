@@ -1,4 +1,4 @@
-import { firebase } from '..';
+import { getApp } from '@react-native-firebase/app';
 
 /**
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
@@ -11,7 +11,7 @@ import { firebase } from '..';
  */
 export function getML(app) {
   if (app) {
-    return firebase.ml(app);
+    return getApp(app.name).ml();
   }
-  return firebase.ml();
+  return getApp().ml();
 }

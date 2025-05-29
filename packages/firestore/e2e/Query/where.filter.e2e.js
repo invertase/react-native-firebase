@@ -20,8 +20,15 @@ let Filter;
 
 describe('firestore().collection().where(Filters)', function () {
   beforeEach(async function () {
+    // @ts-ignore
+    globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
     Filter = firebase.firestore.Filter;
     return await wipe();
+  });
+
+  afterEach(async function afterEachTest() {
+    // @ts-ignore
+    globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
   });
 
   it('throws if fieldPath string is invalid', function () {

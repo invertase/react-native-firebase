@@ -61,12 +61,17 @@ project.ext {
 
 apply from: file('./../../app/android/firebase-json.gradle')
 
-String notificationChannelId = ''
+String defaultNotificationChannelId = ''
+String notificationChannelId = defaultNotificationChannelId
 String defaultNotificationColor = '@color/white'
 String notificationColor = defaultNotificationColor
 
+String deliveryMetricsExportEnabled = 'false'
+
 // If nothing is defined, data collection defaults to true
 String dataCollectionEnabled = 'true'
+
+String notificationDelegationEnabled = 'false'
 
 if (rootProject.ext && rootProject.ext.firebaseJson) {
   /* groovylint-disable-next-line NoDef, VariableTypeRequired */
@@ -84,39 +89,48 @@ if (rootProject.ext && rootProject.ext.firebaseJson) {
     }
   }
 
-  notificationChannelId = rnfbConfig.getStringValue('messaging_android_notification_channel_id', '')
+  if (rnfbConfig.isFlagEnabled('messaging_android_notification_delivery_metrics_export_enabled', false)) {
+    deliveryMetricsExportEnabled = 'true'
+  }
+  notificationChannelId = rnfbConfig.getStringValue('messaging_android_notification_channel_id', defaultNotificationChannelId)
   notificationColor = rnfbConfig.getStringValue('messaging_android_notification_color', defaultNotificationColor)
+
+  if (rnfbConfig.isFlagEnabled('messaging_android_notification_delegation_enabled', false)) {
+    notificationDelegationEnabled = 'true'
+  }
 }
 
 android {
   def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger()
   if (agpVersion >= 7) {
-    namespace 'io.invertase.firebase.messaging'
+    namespace = 'io.invertase.firebase.messaging'
   }
 
   defaultConfig {
-    multiDexEnabled true
+    multiDexEnabled = true
     manifestPlaceholders = [
+      firebaseJsonDeliveryMetricsExportEnabled: deliveryMetricsExportEnabled,
       firebaseJsonAutoInitEnabled: dataCollectionEnabled,
       firebaseJsonNotificationChannelId: notificationChannelId,
-      firebaseJsonNotificationColor: notificationColor
+      firebaseJsonNotificationColor: notificationColor,
+      firebaseJsonNotificationDelegationEnabled: notificationDelegationEnabled
     ]
   }
 
   buildFeatures {
     // AGP 8 no longer builds config by default
-    buildConfig true
+    buildConfig = true
   }
 
   lintOptions {
     disable 'GradleCompatible'
-    abortOnError false
+    abortOnError = false
   }
 
   if (agpVersion < 8) {
     compileOptions {
-      sourceCompatibility JavaVersion.VERSION_11
-      targetCompatibility JavaVersion.VERSION_11
+      sourceCompatibility = JavaVersion.VERSION_11
+      targetCompatibility = JavaVersion.VERSION_11
     }
   }
 }

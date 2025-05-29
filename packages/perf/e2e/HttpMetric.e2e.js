@@ -19,6 +19,16 @@ const aCoolUrl = 'https://invertase.io';
 
 describe('HttpMetric modular', function () {
   describe('firebase v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     describe('start()', function () {
       it('correctly starts with internal flag ', async function () {
         const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');

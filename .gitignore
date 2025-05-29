@@ -15,6 +15,7 @@
 bin/
 gen/
 out/
+tests/android/app/.cxx
 
 # Gradle files
 .gradle/
@@ -535,6 +536,7 @@ Pods/*
 **/Pods/**
 **/dist/
 packages/**/version.js
+packages/**/version.ts
 typedoc.raw.json
 tests/ios/Firebase
 tests/ios/resetXcode.sh
@@ -579,3 +581,7 @@ website/public
 
 # Typescript items
 *.tsbuildinfo
+
+# vertexai test data
+vertexai-sdk-test-data*
+mocks-lookup.ts

@@ -6,13 +6,17 @@ import {
   getApps as getAppsCompat,
   initializeApp as initializeAppCompat,
   setLogLevel as setLogLevelCompat,
+  setReactNativeAsyncStorage as setReactNativeAsyncStorageCompat,
 } from '../internal';
+import { setUserLogHandler } from '../internal/logger';
 import sdkVersion from '../version';
 
 /**
  * @typedef {import('..').ReactNativeFirebase.FirebaseApp} FirebaseApp
  * @typedef {import('..').ReactNativeFirebase.FirebaseAppOptions} FirebaseAppOptions
  * @typedef {import('..').ReactNativeFirebase.LogLevelString} LogLevelString
+ * @typedef {import('../internal/logger').LogCallback} LogCallback
+ * @typedef {import('../internal/logger').LogOptions} LogOptions
  */
 
 /**
@@ -28,7 +32,7 @@ export function deleteApp(app) {
  * Registers a library's name and version for platform logging purposes.
   @param {string} libraryKeyOrName - library name or key.
   @param {string} version - library version.
-  @param {string | null} variant - library variant.
+  @param {string | undefined} variant - library variant. Optional.
  * @returns {Promise<void>}
  */
 export function registerVersion(libraryKeyOrName, version, variant) {
@@ -36,13 +40,13 @@ export function registerVersion(libraryKeyOrName, version, variant) {
 }
 
 /**
- * Sets log handler for all Firebase SDKs.
- * @param {Function} logCallback - The callback function to handle logs.
- * @param {Object} [options] - Optional settings for log handling.
- * @returns {Promise<void>}
+ * Sets log handler for VertexAI only currently.
+ * @param {LogCallback | null} logCallback - The callback function to handle logs.
+ * @param {LogOptions} [options] - Optional settings for log handling.
+ * @returns {void}
  */
 export function onLog(logCallback, options) {
-  throw new Error('onLog is only supported on Web');
+  setUserLogHandler(logCallback, options);
 }
 
 /**
@@ -79,6 +83,68 @@ export function getApp(name) {
  */
 export function setLogLevel(logLevel) {
   return setLogLevelCompat.call(null, logLevel, MODULAR_DEPRECATION_ARG);
+}
+
+/**
+ * The `AsyncStorage` implementation to use for persisting data on 'Other' platforms.
+ * If not specified, in memory persistence is used.
+ *
+ * This is required if you want to persist things like Auth sessions, Analytics device IDs, etc.
+ */
+export function setReactNativeAsyncStorage(asyncStorage) {
+  return setReactNativeAsyncStorageCompat.call(null, asyncStorage, MODULAR_DEPRECATION_ARG);
+}
+
+/**
+ * Gets react-native-firebase specific "meta" data from native Info.plist / AndroidManifest.xml
+ * @returns map of key / value pairs containing native meta data
+ */
+export function metaGetAll() {
+  return NativeModules.RNFBAppModule.metaGetAll();
+}
+
+/**
+ * Gets react-native-firebase specific "firebase.json" data
+ * @returns map of key / value pairs containing native firebase.json constants
+ */
+export function jsonGetAll() {
+  return NativeModules.RNFBAppModule.jsonGetAll();
+}
+
+/**
+ * Clears react-native-firebase specific native preferences
+ * @returns Promise<void>
+ */
+export function preferencesClearAll() {
+  return NativeModules.RNFBAppModule.preferencesClearAll();
+}
+
+/**
+ * Gets react-native-firebase specific native preferences
+ * @returns map of key / value pairs containing native preferences data
+ */
+export function preferencesGetAll() {
+  return NativeModules.RNFBAppModule.preferencesGetAll();
+}
+
+/**
+ * Sets react-native-firebase specific native boolean preference
+ * @param key the name of the native preference to set
+ * @param value the value of the native preference to set
+ * @returns Promise<void>
+ */
+export function preferencesSetBool(key, value) {
+  return NativeModules.RNFBAppModule.preferencesSetBool(key, value);
+}
+
+/**
+ * Sets react-native-firebase specific native string preference
+ * @param key the name of the native preference to set
+ * @param value the value of the native preference to set
+ * @returns Promise<void>
+ */
+export function preferencesSetString(key, value) {
+  return NativeModules.RNFBAppModule.preferencesSetString(key, value);
 }
 
 export const SDK_VERSION = sdkVersion;

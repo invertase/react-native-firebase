@@ -21,6 +21,16 @@ const TEST_PATH = `${PATH}/remove`;
 
 describe('database().ref().remove()', function () {
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('throws if onComplete is not a function', async function () {
       try {
         await firebase.database().ref(TEST_PATH).remove('foo');

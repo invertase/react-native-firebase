@@ -219,6 +219,20 @@ RCT_EXPORT_METHOD(getIsHeadless : (RCTPromiseResolveBlock)resolve : (RCTPromiseR
   return resolve(@([RCTConvert BOOL:@(notifCenter.isHeadless)]));
 }
 
+RCT_EXPORT_METHOD(completeNotificationProcessing) {
+  dispatch_get_main_queue(), ^{
+    RNFBMessagingAppDelegate *appDelegate = [RNFBMessagingAppDelegate sharedInstance];
+    if (appDelegate.completionHandler) {
+      appDelegate.completionHandler(UIBackgroundFetchResultNewData);
+      appDelegate.completionHandler = nil;
+    }
+    if (appDelegate.backgroundTaskId != UIBackgroundTaskInvalid) {
+      [[UIApplication sharedApplication] endBackgroundTask:appDelegate.backgroundTaskId];
+      appDelegate.backgroundTaskId = UIBackgroundTaskInvalid;
+    }
+  };
+}
+
 RCT_EXPORT_METHOD(requestPermission
                   : (NSDictionary *)permissions
                   : (RCTPromiseResolveBlock)resolve

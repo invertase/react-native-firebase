@@ -1,5 +1,6 @@
-import { firebase } from '..';
 import { MODULAR_DEPRECATION_ARG } from '../../../app/lib/common';
+import { getApp } from '@react-native-firebase/app';
+import { Platform } from 'react-native';
 
 /**
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
@@ -49,9 +50,9 @@ import { MODULAR_DEPRECATION_ARG } from '../../../app/lib/common';
  */
 export function getAnalytics(app) {
   if (app) {
-    return firebase.app(app.name).analytics();
+    return getApp(app.name).analytics();
   }
-  return firebase.app().analytics();
+  return getApp().analytics();
 }
 
 /**
@@ -62,7 +63,21 @@ export function getAnalytics(app) {
  */
 // eslint-disable-next-line
 export function initializeAnalytics(app, options) {
-  return firebase.app(app.name).analytics();
+  return getApp(app.name).analytics();
+}
+
+/**
+ * Retrieves a unique Google Analytics identifier for the web client.
+ *
+ * @param {FirebaseAnalytics} analytics - Instance of analytics (web - only)
+ * @returns {Promise<string>}
+ */
+export async function getGoogleAnalyticsClientId(analytics) {
+  if (Platform.OS === 'android' || Platform.OS === 'ios') {
+    throw new Error('getGoogleAnalyticsClientId is web-only.');
+  } else {
+    return getAppInstanceId(analytics);
+  }
 }
 
 /**

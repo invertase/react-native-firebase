@@ -29,6 +29,16 @@ describe('database().ref().setPriority()', function () {
   });
 
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('throws if priority is not a valid type', async function () {
       try {
         await firebase.database().ref().setPriority({});
@@ -73,7 +83,7 @@ describe('database().ref().setPriority()', function () {
       try {
         await firebase.database().ref('tests/siudfhsuidfj').setPriority(1);
         return Promise.reject(new Error('Did not throw error.'));
-      } catch (error) {
+      } catch (_) {
         // WEB SDK: INVALID_PARAMETERS: could not set priority on non-existent node
         // TODO Get this error? Native code = -999 Unknown
         return Promise.resolve();
@@ -131,7 +141,7 @@ describe('database().ref().setPriority()', function () {
       try {
         await setPriority(dbRef, 1);
         return Promise.reject(new Error('Did not throw error.'));
-      } catch (error) {
+      } catch (_) {
         // WEB SDK: INVALID_PARAMETERS: could not set priority on non-existent node
         // TODO Get this error? Native code = -999 Unknown
         return Promise.resolve();

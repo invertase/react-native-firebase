@@ -15,7 +15,7 @@
  *
  */
 
-import { firebase } from '..';
+import { getApp } from '@react-native-firebase/app';
 
 /**
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
@@ -26,6 +26,7 @@ import { firebase } from '..';
  * @typedef {import('..').FirebaseRemoteConfigTypes.ConfigValues} ConfigValues
  * @typedef {import('..').FirebaseRemoteConfigTypes.LastFetchStatusType} LastFetchStatusType
  * @typedef {import('..').FirebaseRemoteConfigTypes.RemoteConfigLogLevel} RemoteConfigLogLevel
+ * @typedef {import('.').CustomSignals} CustomSignals
  */
 
 /**
@@ -35,10 +36,10 @@ import { firebase } from '..';
  */
 export function getRemoteConfig(app) {
   if (app) {
-    return firebase.app(app.name).remoteConfig();
+    return getApp(app.name).remoteConfig();
   }
 
-  return firebase.app().remoteConfig();
+  return getApp().remoteConfig();
 }
 
 /**
@@ -194,7 +195,6 @@ export function reset(remoteConfig) {
 /**
  * Set the Remote RemoteConfig settings, currently able to set
  * `fetchTimeMillis` & `minimumFetchIntervalMillis`
- * Android only. iOS does not reset anything.
  * @param {RemoteConfig} remoteConfig - RemoteConfig instance
  * @param {ConfigSettings} settings - ConfigSettings instance
  * @returns {Promise<void>}
@@ -243,3 +243,22 @@ export function setDefaultsFromResource(remoteConfig, resourceName) {
 export function onConfigUpdated(remoteConfig, callback) {
   return remoteConfig.onConfigUpdated(callback);
 }
+
+/**
+ * Sets the custom signals for the app instance.
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
+ * @param {CustomSignals} customSignals - CustomSignals
+ * @returns {Promise<void>}
+ */
+export async function setCustomSignals(remoteConfig, customSignals) {
+  for (const [key, value] of Object.entries(customSignals)) {
+    if (typeof value !== 'string' && typeof value !== 'number' && value !== null) {
+      throw new Error(
+        `firebase.remoteConfig().setCustomSignals(): Invalid type for custom signal '${key}': ${typeof value}. Expected 'string', 'number', or 'null'.`,
+      );
+    }
+  }
+  return remoteConfig._promiseWithConstants(remoteConfig.native.setCustomSignals(customSignals));
+}
+
+export { LastFetchStatus, ValueSource } from '../statics';

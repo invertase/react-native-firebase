@@ -23,15 +23,26 @@ describe('firestore().namedQuery()', function () {
 
   beforeEach(async function () {
     await wipe();
-    return await firebase.firestore().loadBundle(getBundle());
+    const { getFirestore, loadBundle } = firestoreModular;
+    return await loadBundle(getFirestore(), getBundle());
   });
 
   // FIXME named query functionality appears to have an android-only issue
   // with loading and clearing and re-loading bundles. We test modular but not v8
-  // APIs since they are the future, and idsable the v8 compat APIs for now
+  // APIs since they are the future, and disable the v8 compat APIs for now
   // Still bears investigating, there could be a race condition either in our android
   // native code or in firebase-android-sdk
   xdescribe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('returns bundled QuerySnapshot', async function () {
       const query = firebase.firestore().namedQuery(BUNDLE_QUERY_NAME);
       const snapshot = await query.get({ source: 'cache' });

@@ -18,7 +18,8 @@
 describe('config', function () {
   describe('meta', function () {
     it('should read Info.plist/AndroidManifest.xml meta data', async function () {
-      const metaData = await NativeModules.RNFBAppModule.metaGetAll();
+      const { metaGetAll } = modular;
+      const metaData = await metaGetAll();
       if (Platform.other) return;
       metaData.rnfirebase_meta_testing_string.should.equal('abc');
       metaData.rnfirebase_meta_testing_boolean_false.should.equal(false);
@@ -28,7 +29,8 @@ describe('config', function () {
 
   describe('json', function () {
     it('should read firebase.json data', async function () {
-      const jsonData = await NativeModules.RNFBAppModule.jsonGetAll();
+      const { jsonGetAll } = modular;
+      const jsonData = await jsonGetAll();
       if (Platform.other) return;
       jsonData.rnfirebase_json_testing_string.should.equal('abc');
       jsonData.rnfirebase_json_testing_boolean_false.should.equal(false);
@@ -38,40 +40,43 @@ describe('config', function () {
 
   describe('prefs', function () {
     beforeEach(async function () {
-      await NativeModules.RNFBAppModule.preferencesClearAll();
+      const { preferencesClearAll } = modular;
+      await preferencesClearAll();
     });
 
     // NOTE: "preferencesClearAll" clears Firestore settings. Set DB as emulator again.
     after(async function () {
+      const { connectFirestoreEmulator, getFirestore } = firestoreModular;
       if (Platform.other) return;
-      await firebase
-        .firestore()
-        .settings({ host: 'localhost:8080', ssl: false, persistence: true });
+      connectFirestoreEmulator(getFirestore(), 'localhost', 8080);
     });
 
     it('should set bool values', async function () {
-      const prefsBefore = await NativeModules.RNFBAppModule.preferencesGetAll();
+      const { preferencesGetAll, preferencesSetBool } = modular;
+      const prefsBefore = await preferencesGetAll();
       should.equal(prefsBefore.invertase_oss, undefined);
-      await NativeModules.RNFBAppModule.preferencesSetBool('invertase_oss', true);
-      const prefsAfter = await NativeModules.RNFBAppModule.preferencesGetAll();
+      await preferencesSetBool('invertase_oss', true);
+      const prefsAfter = await preferencesGetAll();
       prefsAfter.invertase_oss.should.equal(true);
     });
 
     it('should set string values', async function () {
-      const prefsBefore = await NativeModules.RNFBAppModule.preferencesGetAll();
+      const { preferencesGetAll, preferencesSetString } = modular;
+      const prefsBefore = await preferencesGetAll();
       should.equal(prefsBefore.invertase_oss, undefined);
-      await NativeModules.RNFBAppModule.preferencesSetString('invertase_oss', 'invertase.io');
-      const prefsAfter = await NativeModules.RNFBAppModule.preferencesGetAll();
+      await preferencesSetString('invertase_oss', 'invertase.io');
+      const prefsAfter = await preferencesGetAll();
       prefsAfter.invertase_oss.should.equal('invertase.io');
     });
 
     it('should clear all values', async function () {
-      await NativeModules.RNFBAppModule.preferencesSetString('invertase_oss', 'invertase.io');
-      const prefsBefore = await NativeModules.RNFBAppModule.preferencesGetAll();
+      const { preferencesClearAll, preferencesGetAll, preferencesSetString } = modular;
+      await preferencesSetString('invertase_oss', 'invertase.io');
+      const prefsBefore = await preferencesGetAll();
       prefsBefore.invertase_oss.should.equal('invertase.io');
 
-      await NativeModules.RNFBAppModule.preferencesClearAll();
-      const prefsAfter = await NativeModules.RNFBAppModule.preferencesGetAll();
+      await preferencesClearAll();
+      const prefsAfter = await preferencesGetAll();
       should.equal(prefsAfter.invertase_oss, undefined);
     });
   });

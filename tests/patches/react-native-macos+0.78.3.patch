@@ -1,0 +1,28 @@
+diff --git a/node_modules/react-native-macos/Libraries/Blob/BlobManager.js b/node_modules/react-native-macos/Libraries/Blob/BlobManager.js
+index f4c5ed3..7628f81 100644
+--- a/node_modules/react-native-macos/Libraries/Blob/BlobManager.js
++++ b/node_modules/react-native-macos/Libraries/Blob/BlobManager.js
+@@ -9,7 +9,7 @@
+  */
+ 
+ import type {BlobCollector, BlobData, BlobOptions} from './BlobTypes';
+-
++import {fromByteArray} from 'base64-js';
+ import NativeBlobModule from './NativeBlobModule';
+ import invariant from 'invariant';
+ 
+@@ -67,9 +67,11 @@ class BlobManager {
+     const blobId = uuidv4();
+     const items = parts.map(part => {
+       if (part instanceof ArrayBuffer || ArrayBuffer.isView(part)) {
+-        throw new Error(
+-          "Creating blobs from 'ArrayBuffer' and 'ArrayBufferView' are not supported",
+-        );
++        return {
++          // $FlowFixMe[incompatible-cast]
++          data: fromByteArray(new Uint8Array((part))),
++          type: 'string',
++        };
+       }
+       if (part instanceof Blob) {
+         return {

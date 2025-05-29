@@ -17,9 +17,11 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, StatusBar, AppRegistry } from 'react-native';
+import { StyleSheet, View, StatusBar, AppRegistry, Text } from 'react-native';
 
 import { JetProvider, ConnectionText, StatusEmoji, StatusText } from 'jet';
+
+import { LocalTests } from './local-test-component';
 
 const platformSupportedModules = [];
 
@@ -33,6 +35,7 @@ if (Platform.other) {
   platformSupportedModules.push('remoteConfig');
   platformSupportedModules.push('analytics');
   platformSupportedModules.push('appCheck');
+  platformSupportedModules.push('vertexai');
   // TODO add more modules here once they are supported.
 }
 
@@ -54,6 +57,7 @@ if (!Platform.other) {
   platformSupportedModules.push('appDistribution');
   platformSupportedModules.push('dynamicLinks');
   platformSupportedModules.push('ml');
+  platformSupportedModules.push('vertexai');
 }
 // Registering an error handler that always throw unhandled exceptions
 // This is to enable Jet to exit on uncaught errors
@@ -63,41 +67,55 @@ ErrorUtils.setGlobalHandler((err, isFatal) => {
   throw err;
 });
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function loadTests(_) {
   describe('React Native Firebase', function () {
-    if (!global.RNFBDebug) {
-      // Only retry tests if not debugging locally,
+    if (!globalThis.RNFBDebug) {
+      // Only retry tests if not debugging or hunting deprecated API usage locally,
       // otherwise it gets annoying to debug.
       this.retries(4);
     }
 
     before(async function () {
-      if (platformSupportedModules.includes('functions'))
-        firebase.functions().useEmulator('localhost', 5001);
-      if (platformSupportedModules.includes('database'))
-        firebase.database().useEmulator('localhost', 9000);
-      if (platformSupportedModules.includes('auth'))
-        firebase.auth().useEmulator('http://localhost:9099');
+      if (platformSupportedModules.includes('functions')) {
+        const { connectFunctionsEmulator, getFunctions } = functionsModular;
+        connectFunctionsEmulator(getFunctions(), 'localhost', 5001);
+      }
+      if (platformSupportedModules.includes('database')) {
+        const { connectDatabaseEmulator, getDatabase } = databaseModular;
+        connectDatabaseEmulator(getDatabase(), 'localhost', 9000);
+      }
+      if (platformSupportedModules.includes('auth')) {
+        const { connectAuthEmulator, getAuth } = authModular;
+        connectAuthEmulator(getAuth(), 'http://localhost:9099');
+      }
       if (platformSupportedModules.includes('firestore')) {
-        firebase.firestore().useEmulator('localhost', 8080);
-        firebase.app().firestore('second-rnfb').useEmulator('localhost', 8080);
+        const { getApp } = modular;
+        const { connectFirestoreEmulator, clearIndexedDbPersistence, getFirestore } =
+          firestoreModular;
+        connectFirestoreEmulator(getFirestore(), 'localhost', 8080);
+        connectFirestoreEmulator(getFirestore(getApp(), 'second-rnfb'), 'localhost', 8080);
         // Firestore caches documents locally (a great feature!) and that confounds tests
         // as data from previous runs pollutes following runs until re-install the app. Clear it.
         if (!Platform.other) {
-          firebase.firestore().clearPersistence();
+          clearIndexedDbPersistence(getFirestore());
         }
       }
       if (platformSupportedModules.includes('storage')) {
-        firebase.storage().useEmulator('localhost', 9199);
-        firebase.app('secondaryFromNative').storage().useEmulator('localhost', 9199);
-        firebase.app().storage('gs://react-native-firebase-testing').useEmulator('localhost', 9199);
+        const { getApp } = modular;
+        const { getStorage, connectStorageEmulator } = storageModular;
+        connectStorageEmulator(getStorage(), 'localhost', 9199);
+        connectStorageEmulator(getStorage(getApp('secondaryFromNative')), 'localhost', 9199);
+        connectStorageEmulator(
+          getStorage(getApp(), 'gs://react-native-firebase-testing'),
+          'localhost',
+          9199,
+        );
       }
     });
 
     afterEach(async function afterEachTest() {
-      global.RNFBDebugLastTest = this.currentTest.title;
-      global.RNFBDebugInTestLeakDetection = false;
+      globalThis.RNFBDebugLastTest = this.currentTest.title;
+      globalThis.RNFBDebugInTestLeakDetection = false;
       if (RNFBDebug) {
         const emoji = this.currentTest.state === 'passed' ? '✅' : '❌';
         console.debug(`[TEST->Finish][${emoji}] ${this.currentTest.title}`);
@@ -129,7 +147,7 @@ function loadTests(_) {
         // Allow time for things to settle between tests.
         await Utils.sleep(50);
       }
-      global.RNFBDebugInTestLeakDetection = true;
+      globalThis.RNFBDebugInTestLeakDetection = true;
     });
 
     // Load tests for each Firebase module.
@@ -218,6 +236,11 @@ function loadTests(_) {
       );
       remoteConfigTests.keys().forEach(remoteConfigTests);
     }
+
+    if (platformSupportedModules.includes('vertexai')) {
+      const vertexaiTests = require.context('../packages/vertexai/e2e', true, /\.e2e\.js$/);
+      vertexaiTests.keys().forEach(vertexaiTests);
+    }
     if (platformSupportedModules.includes('storage')) {
       const storageTests = require.context('../packages/storage/e2e', true, /\.e2e\.js$/);
 
@@ -242,16 +265,23 @@ function loadTests(_) {
 
 function App() {
   return (
-    <JetProvider tests={loadTests}>
+    <>
       <StatusBar hidden />
       <View style={styles.container}>
-        <ConnectionText style={styles.connectionText} />
-        <View style={styles.statusContainer}>
-          <StatusEmoji style={styles.statusEmoji} />
-          <StatusText style={styles.statusText} />
-        </View>
+        <View style={styles.hardRule} />
+        <Text>Local Manual Tests:</Text>
+        <LocalTests />
+        <View style={styles.hardRule} />
+        <Text>Automated Tests:</Text>
+        <JetProvider tests={loadTests}>
+          <ConnectionText style={styles.connectionText} />
+          <View style={styles.statusContainer}>
+            <StatusEmoji style={styles.statusEmoji} />
+            <StatusText style={styles.statusText} />
+          </View>
+        </JetProvider>
       </View>
-    </JetProvider>
+    </>
   );
 }
 
@@ -259,6 +289,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    // instead of depending on react-native-safe-area-context to avoid
+    // colliding with system UI we are just going to pad things out for simplicity
+    marginTop: 60,
+    paddingHorizontal: '5%',
+    paddingBottom: '5%',
   },
   statusContainer: {
     flex: 1,
@@ -279,6 +314,11 @@ const styles = StyleSheet.create({
   connectionText: {
     textAlign: 'center',
     color: 'black',
+  },
+  hardRule: {
+    height: 1,
+    backgroundColor: 'black',
+    width: '100%',
   },
 });
 

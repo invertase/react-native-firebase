@@ -12,7 +12,7 @@
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
  */
 
-import { firebase } from '../index';
+import { getApp, setLogLevel as appSetLogLevel } from '@react-native-firebase/app';
 import { isObject } from '@react-native-firebase/app/lib/common';
 import {
   FirestoreAggregateQuerySnapshot,
@@ -31,16 +31,16 @@ import { MODULAR_DEPRECATION_ARG } from '../../../app/lib/common';
 export function getFirestore(app, databaseId) {
   if (app) {
     if (databaseId) {
-      return firebase.app(app.name).firestore(databaseId);
+      return getApp(app.name).firestore(databaseId);
     } else {
-      return firebase.app(app.name).firestore();
+      return getApp(app.name).firestore();
     }
   }
   if (databaseId) {
-    return firebase.app().firestore(databaseId);
+    return getApp().firestore(databaseId);
   }
 
-  return firebase.app().firestore();
+  return getApp().firestore();
 }
 
 /**
@@ -69,6 +69,15 @@ export function collection(parent, path, ...pathSegments) {
   }
 
   return parent.collection.call(parent, path, MODULAR_DEPRECATION_ARG);
+}
+
+/**
+ * @param {DocumentReference<AppModelType, DbModelType> | CollectionReference<AppModelType, DbModelType>} left
+ * @param {DocumentReference<AppModelType, DbModelType> | CollectionReference<AppModelType, DbModelType>} right
+ * @return boolean true if the two references are equal
+ */
+export function refEqual(left, right) {
+  return left.isEqual.call(left, right, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -185,7 +194,8 @@ export function waitForPendingWrites(firestore) {
  */
 export async function initializeFirestore(app, settings /* databaseId */) {
   // TODO(exaby73): implement 2nd database once it's supported
-  const firestore = firebase.firestore(app);
+  const firebase = getApp(app.name);
+  const firestore = firebase.firestore();
   await firestore.settings.call(firestore, settings, MODULAR_DEPRECATION_ARG);
   return firestore;
 }
@@ -199,7 +209,7 @@ export function connectFirestoreEmulator(firestore, host, port, options) {
  * @returns {void}
  */
 export function setLogLevel(logLevel) {
-  return firebase.firestore.setLogLevel.call(null, logLevel, MODULAR_DEPRECATION_ARG);
+  return appSetLogLevel(logLevel);
 }
 
 /**

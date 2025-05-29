@@ -129,7 +129,7 @@ export default {
    * @param {string} dbURL - The database URL, not used.
    * @param {boolean} enabled - The logging enabled state.
    */
-  setLoggingEnabled(app, dbURL, enabled) {
+  setLoggingEnabled(_app, _dbURL, enabled) {
     return guard(async () => {
       enableLogging(enabled);
     });
@@ -376,7 +376,7 @@ export default {
     });
   },
 
-  off(queryKey, eventRegistrationKey) {
+  off(_queryKey, eventRegistrationKey) {
     const listener = listeners[eventRegistrationKey];
     if (listener) {
       listener();

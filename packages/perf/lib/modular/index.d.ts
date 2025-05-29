@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import { FirebaseApp } from '@firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { FirebasePerformanceTypes } from '..';
 
 import Performance = FirebasePerformanceTypes.Module;
@@ -23,6 +23,7 @@ import Trace = FirebasePerformanceTypes.Module.Trace;
 import HttpMethod = FirebasePerformanceTypes.HttpMethod;
 import HttpMetric = FirebasePerformanceTypes.HttpMetric;
 import ScreenTrace = FirebasePerformanceTypes.ScreenTrace;
+import FirebaseApp = ReactNativeFirebase.FirebaseApp;
 
 /**
  * Returns a Performance instance for the given app.
@@ -38,12 +39,12 @@ type PerformanceSettings = {
 /**
  * Returns a Performance instance for the given app.
  * @param app - FirebaseApp. Required.
- * @param settings - PerformanceSettings. Set "dataCollectionEnabled" which will enable/disable Performance collection.
+ * @param settings - Optional PerformanceSettings. Set "dataCollectionEnabled" which will enable/disable Performance collection.
  * @returns {Promise<Performance>}
  */
 export function initializePerformance(
   app: FirebaseApp,
-  settings: PerformanceSettings,
+  settings?: PerformanceSettings,
 ): Promise<Performance>;
 
 /**

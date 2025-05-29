@@ -19,6 +19,16 @@ const COLLECTION_GROUP = 'collectionGroup';
 
 describe('firestore()', function () {
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     describe('namespace', function () {
       // removing as pending if module.options.hasMultiAppSupport = true
       it('supports multiple apps', async function () {
@@ -188,7 +198,7 @@ describe('firestore()', function () {
         //if we sign in as a different user then it should reject the promise
         try {
           await firebase.auth().signOut();
-        } catch (e) {}
+        } catch (_) {}
         await firebase.auth().signInAnonymously();
         should(rejected).equal(true);
 
@@ -209,7 +219,8 @@ describe('firestore()', function () {
 
     describe('settings', function () {
       describe('serverTimestampBehavior', function () {
-        it("handles 'estimate'", async function () {
+        // TODO flakey in new Jet setup since it conflicts with the modular tests
+        xit("handles 'estimate'", async function () {
           // TODO(ehesp): Figure out how to call settings on other.
           if (Platform.other) {
             // Not supported on web lite sdk
@@ -236,7 +247,8 @@ describe('firestore()', function () {
           await ref.delete();
         });
 
-        it("handles 'previous'", async function () {
+        // TODO flakey in new Jet setup since it conflicts with the modular tests
+        xit("handles 'previous'", async function () {
           // TODO(ehesp): Figure out how to call settings on other.
           if (Platform.other) {
             // Not supported on web lite sdk
@@ -293,7 +305,8 @@ describe('firestore()', function () {
           await ref.delete();
         });
 
-        it("handles 'none'", async function () {
+        // works in isolation but not in suite
+        xit("handles 'none'", async function () {
           // TODO(ehesp): Figure out how to call settings on other.
           if (Platform.other) {
             return;
@@ -422,9 +435,10 @@ describe('firestore()', function () {
     describe('getFirestore', function () {
       // removing as pending if module.options.hasMultiAppSupport = true
       it('supports multiple apps', async function () {
+        const { getApp } = modular;
         const { getFirestore } = firestoreModular;
         const db1 = await getFirestore();
-        const db2 = await getFirestore(firebase.app('secondaryFromNative'));
+        const db2 = await getFirestore(getApp('secondaryFromNative'));
 
         db1.app.name.should.equal('[DEFAULT]');
         db2.app.name.should.equal('secondaryFromNative');
@@ -615,7 +629,7 @@ describe('firestore()', function () {
         //if we sign in as a different user then it should reject the promise
         try {
           await firebase.auth().signOut();
-        } catch (e) {}
+        } catch (_) {}
         await firebase.auth().signInAnonymously();
         should(rejected).equal(true);
 
@@ -633,11 +647,24 @@ describe('firestore()', function () {
 
     describe('settings', function () {
       describe('serverTimestampBehavior', function () {
-        // TODO flakey in new Jet setup since it conflicts with the v8 tests
-        xit("handles 'estimate'", async function () {
-          const { initializeFirestore, doc, onSnapshot, setDoc, deleteDoc } = firestoreModular;
+        it("handles 'estimate'", async function () {
+          // TODO(ehesp): Figure out how to call settings on other.
+          if (Platform.other) {
+            // Not supported on web lite sdk
+            return;
+          }
+          const { getApp } = modular;
+          const {
+            initializeFirestore,
+            doc,
+            onSnapshot,
+            setDoc,
+            deleteDoc,
+            serverTimestamp,
+            Timestamp,
+          } = firestoreModular;
 
-          const db = await initializeFirestore(firebase.app(), {
+          const db = await initializeFirestore(getApp(), {
             serverTimestampBehavior: 'estimate',
           });
           const ref = doc(db, `${COLLECTION}/serverTimestampEstimate`);
@@ -647,7 +674,7 @@ describe('firestore()', function () {
               ref,
               snapshot => {
                 try {
-                  should(snapshot.get('timestamp')).be.an.instanceOf(firebase.firestore.Timestamp);
+                  should(snapshot.get('timestamp')).be.an.instanceOf(Timestamp);
                   subscription();
                   resolve();
                 } catch (e) {
@@ -658,16 +685,30 @@ describe('firestore()', function () {
             );
           });
 
-          await setDoc(ref, { timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+          await setDoc(ref, { timestamp: serverTimestamp() });
           await promise;
           await deleteDoc(ref);
         });
 
-        // FIXME: works in isolation but not in suite
-        xit("handles 'previous'", async function () {
-          const { initializeFirestore, doc, onSnapshot, setDoc, deleteDoc } = firestoreModular;
+        it("handles 'previous'", async function () {
+          // TODO(ehesp): Figure out how to call settings on other.
+          if (Platform.other) {
+            // Not supported on web lite sdk
+            return;
+          }
+          const { getApp } = modular;
+          const {
+            initializeFirestore,
+            doc,
+            onSnapshot,
+            setDoc,
+            deleteDoc,
+            snapshotEqual,
+            serverTimestamp,
+            Timestamp,
+          } = firestoreModular;
 
-          const db = await initializeFirestore(firebase.app(), {
+          const db = await initializeFirestore(getApp(), {
             serverTimestampBehavior: 'previous',
           });
           const ref = doc(db, `${COLLECTION}/serverTimestampPrevious`);
@@ -684,25 +725,19 @@ describe('firestore()', function () {
                       should(snapshot.get('timestamp')).equal(null);
                       break;
                     case 1:
-                      should(snapshot.get('timestamp')).be.an.instanceOf(
-                        firebase.firestore.Timestamp,
-                      );
+                      should(snapshot.get('timestamp')).be.an.instanceOf(Timestamp);
                       break;
                     case 2:
-                      should(snapshot.get('timestamp')).be.an.instanceOf(
-                        firebase.firestore.Timestamp,
-                      );
-                      should(snapshot.get('timestamp').isEqual(previous.get('timestamp'))).equal(
-                        true,
-                      );
+                      should(snapshot.get('timestamp')).be.an.instanceOf(Timestamp);
+                      should(
+                        snapshotEqual(snapshot.get('timestamp'), previous.get('timestamp')),
+                      ).equal(true);
                       break;
                     case 3:
-                      should(snapshot.get('timestamp')).be.an.instanceOf(
-                        firebase.firestore.Timestamp,
-                      );
-                      should(snapshot.get('timestamp').isEqual(previous.get('timestamp'))).equal(
-                        false,
-                      );
+                      should(snapshot.get('timestamp')).be.an.instanceOf(Timestamp);
+                      should(
+                        snapshotEqual(snapshot.get('timestamp'), previous.get('timestamp')),
+                      ).equal(false);
                       subscription();
                       resolve();
                       break;
@@ -716,18 +751,31 @@ describe('firestore()', function () {
             );
           });
 
-          await setDoc(ref, { timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+          await setDoc(ref, { timestamp: serverTimestamp() });
           await new Promise(resolve => setTimeout(resolve, 100));
-          await setDoc(ref, { timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+          await setDoc(ref, { timestamp: serverTimestamp() });
           await promise;
           await deleteDoc(ref);
         });
 
-        // FIXME: works in isolation but not in suite
-        xit("handles 'none'", async function () {
-          const { initializeFirestore, doc, onSnapshot, setDoc, deleteDoc } = firestoreModular;
+        it("handles 'none'", async function () {
+          // TODO(ehesp): Figure out how to call settings on other.
+          if (Platform.other) {
+            // Not supported on web lite sdk
+            return;
+          }
+          const { getApp } = modular;
+          const {
+            initializeFirestore,
+            doc,
+            onSnapshot,
+            setDoc,
+            deleteDoc,
+            serverTimestamp,
+            Timestamp,
+          } = firestoreModular;
 
-          const db = await initializeFirestore(firebase.app(), {
+          const db = await initializeFirestore(getApp(), {
             serverTimestampBehavior: 'none',
           });
           const ref = doc(db, `${COLLECTION}/serverTimestampNone`);
@@ -744,9 +792,7 @@ describe('firestore()', function () {
                       should(snapshot.get('timestamp')).equal(null);
                       break;
                     case 1:
-                      should(snapshot.get('timestamp')).be.an.instanceOf(
-                        firebase.firestore.Timestamp,
-                      );
+                      should(snapshot.get('timestamp')).be.an.instanceOf(Timestamp);
                       subscription();
                       resolve();
                       break;
@@ -762,7 +808,7 @@ describe('firestore()', function () {
             );
           });
 
-          await setDoc(ref, { timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+          await setDoc(ref, { timestamp: serverTimestamp() });
           await promise;
           await deleteDoc(ref);
         });

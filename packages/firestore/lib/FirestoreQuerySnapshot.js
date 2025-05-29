@@ -112,7 +112,8 @@ export default class FirestoreQuerySnapshot {
     }
   }
 
-  isEqual(other) {
+  // send '...args' through as it may contain our namespace deprecation marker
+  isEqual(other, ...args) {
     if (!(other instanceof FirestoreQuerySnapshot)) {
       throw new Error(
         "firebase.firestore() QuerySnapshot.isEqual(*) 'other' expected a QuerySnapshot instance.",
@@ -134,7 +135,8 @@ export default class FirestoreQuerySnapshot {
       const thisDoc = this.docs[i];
       const otherDoc = other.docs[i];
 
-      if (!thisDoc.isEqual(otherDoc)) {
+      // send '...args' through as it may contain our namespace deprecation marker
+      if (!thisDoc.isEqual(otherDoc, ...args)) {
         return false;
       }
     }

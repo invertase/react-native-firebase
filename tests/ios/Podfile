@@ -24,8 +24,8 @@ $RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true
 # Toggle this to true if you want to include optional support for extended analytics features
 $RNFirebaseAnalyticsEnableAdSupport = true
 
-# react-native 0.73 is currently iOS 13.4 as a minimum
-min_ios_version_supported = 13.4
+# react-native 0.76 is currently iOS 15.1 as a minimum
+min_ios_version_supported = 15.1
 
 # Uncomment this to test new architecture
 #ENV['RCT_NEW_ARCH_ENABLED'] = '1'

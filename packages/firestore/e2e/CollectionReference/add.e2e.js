@@ -23,6 +23,16 @@ describe('firestore.collection().add()', function () {
   });
 
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('throws if data is not an object', function () {
       try {
         firebase.firestore().collection(COLLECTION).add(123);
@@ -39,7 +49,7 @@ describe('firestore.collection().add()', function () {
       should.equal(docRef.constructor.name, 'FirestoreDocumentReference');
       const docSnap = await docRef.get();
       docSnap.data().should.eql(jet.contextify(data));
-      docSnap.exists.should.eql(true);
+      docSnap.exists().should.eql(true);
       await docRef.delete();
     });
   });
@@ -65,7 +75,7 @@ describe('firestore.collection().add()', function () {
       should.equal(docRef.constructor.name, 'FirestoreDocumentReference');
       const docSnap = await getDoc(docRef);
       docSnap.data().should.eql(jet.contextify(data));
-      docSnap.exists.should.eql(true);
+      docSnap.exists().should.eql(true);
       await deleteDoc(docRef);
     });
   });

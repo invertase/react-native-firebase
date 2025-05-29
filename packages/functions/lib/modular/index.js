@@ -21,7 +21,7 @@
  * @typedef {import("@firebase/app").FirebaseApp} FirebaseApp
  */
 
-import { firebase } from '..';
+import { getApp } from '@react-native-firebase/app';
 
 /**
  * Returns a Functions instance for the given app.
@@ -31,10 +31,10 @@ import { firebase } from '..';
  */
 export function getFunctions(app, regionOrCustomDomain) {
   if (app) {
-    return firebase.app(app.name).functions(regionOrCustomDomain);
+    return getApp(app.name).functions(regionOrCustomDomain);
   }
 
-  return firebase.app().functions(regionOrCustomDomain);
+  return getApp().functions(regionOrCustomDomain);
 }
 
 /**
@@ -46,10 +46,7 @@ export function getFunctions(app, regionOrCustomDomain) {
  * @returns {void}
  */
 export function connectFunctionsEmulator(functionsInstance, host, port) {
-  return firebase
-    .app(functionsInstance.app.name)
-    .functions(functionsInstance._customUrlOrRegion)
-    .useEmulator(host, port);
+  return functionsInstance.useEmulator(host, port);
 }
 
 /**
@@ -60,10 +57,7 @@ export function connectFunctionsEmulator(functionsInstance, host, port) {
  * @returns {HttpsCallable}
  */
 export function httpsCallable(functionsInstance, name, options) {
-  return firebase
-    .app(functionsInstance.app.name)
-    .functions(functionsInstance._customUrlOrRegion)
-    .httpsCallable(name, options);
+  return functionsInstance.httpsCallable(name, options);
 }
 
 /**
@@ -74,8 +68,7 @@ export function httpsCallable(functionsInstance, name, options) {
  * @returns {HttpsCallable}
  */
 export function httpsCallableFromUrl(functionsInstance, url, options) {
-  return firebase
-    .app(functionsInstance.app.name)
-    .functions(functionsInstance._customUrlOrRegion)
-    .httpsCallableFromUrl(url, options);
+  return functionsInstance.httpsCallableFromUrl(url, options);
 }
+
+export { HttpsErrorCode } from '../index';

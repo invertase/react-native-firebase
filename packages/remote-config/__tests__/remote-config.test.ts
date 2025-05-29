@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import { describe, expect, it } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
 
 import {
   firebase,
@@ -39,10 +39,23 @@ import {
   setDefaults,
   setDefaultsFromResource,
   onConfigUpdated,
+  setCustomSignals,
+  LastFetchStatus,
+  ValueSource,
 } from '../lib';
 
 describe('remoteConfig()', function () {
   describe('namespace', function () {
+    beforeAll(async function () {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterAll(async function () {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('accessible from firebase.app()', function () {
       const app = firebase.app();
       expect(app.remoteConfig()).toBeDefined();
@@ -55,80 +68,80 @@ describe('remoteConfig()', function () {
         'secondaryFromNative',
       );
     });
-  });
 
-  describe('statics', function () {
-    it('LastFetchStatus', function () {
-      expect(firebase.remoteConfig.LastFetchStatus).toBeDefined();
-      expect(firebase.remoteConfig.LastFetchStatus.FAILURE).toEqual('failure');
-      expect(firebase.remoteConfig.LastFetchStatus.SUCCESS).toEqual('success');
-      expect(firebase.remoteConfig.LastFetchStatus.NO_FETCH_YET).toEqual('no_fetch_yet');
-      expect(firebase.remoteConfig.LastFetchStatus.THROTTLED).toEqual('throttled');
+    describe('statics', function () {
+      it('LastFetchStatus', function () {
+        expect(firebase.remoteConfig.LastFetchStatus).toBeDefined();
+        expect(firebase.remoteConfig.LastFetchStatus.FAILURE).toEqual('failure');
+        expect(firebase.remoteConfig.LastFetchStatus.SUCCESS).toEqual('success');
+        expect(firebase.remoteConfig.LastFetchStatus.NO_FETCH_YET).toEqual('no_fetch_yet');
+        expect(firebase.remoteConfig.LastFetchStatus.THROTTLED).toEqual('throttled');
+      });
+
+      it('ValueSource', function () {
+        expect(firebase.remoteConfig.ValueSource).toBeDefined();
+        expect(firebase.remoteConfig.ValueSource.REMOTE).toEqual('remote');
+        expect(firebase.remoteConfig.ValueSource.STATIC).toEqual('static');
+        expect(firebase.remoteConfig.ValueSource.DEFAULT).toEqual('default');
+      });
     });
 
-    it('ValueSource', function () {
-      expect(firebase.remoteConfig.ValueSource).toBeDefined();
-      expect(firebase.remoteConfig.ValueSource.REMOTE).toEqual('remote');
-      expect(firebase.remoteConfig.ValueSource.STATIC).toEqual('static');
-      expect(firebase.remoteConfig.ValueSource.DEFAULT).toEqual('default');
-    });
-  });
-
-  describe('fetch()', function () {
-    it('it throws if expiration is not a number', function () {
-      expect(() => {
-        // @ts-ignore - incorrect argument on purpose to check validation
-        firebase.remoteConfig().fetch('foo');
-      }).toThrow('must be a number value');
-    });
-  });
-
-  describe('setConfigSettings()', function () {
-    it('it throws if arg is not an object', async function () {
-      expect(() => {
-        // @ts-ignore - incorrect argument on purpose to check validation
-        firebase.remoteConfig().setConfigSettings('not an object');
-      }).toThrow('must set an object');
+    describe('fetch()', function () {
+      it('it throws if expiration is not a number', function () {
+        expect(() => {
+          // @ts-ignore - incorrect argument on purpose to check validation
+          firebase.remoteConfig().fetch('foo');
+        }).toThrow('must be a number value');
+      });
     });
 
-    it('throws if minimumFetchIntervalMillis is not a number', async function () {
-      expect(() => {
-        // @ts-ignore - incorrect argument on purpose to check validation
-        firebase.remoteConfig().setConfigSettings({ minimumFetchIntervalMillis: 'potato' });
-      }).toThrow('must be a number type in milliseconds.');
+    describe('setConfigSettings()', function () {
+      it('it throws if arg is not an object', async function () {
+        expect(() => {
+          // @ts-ignore - incorrect argument on purpose to check validation
+          firebase.remoteConfig().setConfigSettings('not an object');
+        }).toThrow('must set an object');
+      });
+
+      it('throws if minimumFetchIntervalMillis is not a number', async function () {
+        expect(() => {
+          // @ts-ignore - incorrect argument on purpose to check validation
+          firebase.remoteConfig().setConfigSettings({ minimumFetchIntervalMillis: 'potato' });
+        }).toThrow('must be a number type in milliseconds.');
+      });
+
+      it('throws if fetchTimeMillis is not a number', function () {
+        expect(() => {
+          // @ts-ignore - incorrect argument on purpose to check validation
+          firebase.remoteConfig().setConfigSettings({ fetchTimeMillis: 'potato' });
+        }).toThrow('must be a number type in milliseconds.');
+      });
     });
 
-    it('throws if fetchTimeMillis is not a number', function () {
-      expect(() => {
-        // @ts-ignore - incorrect argument on purpose to check validation
-        firebase.remoteConfig().setConfigSettings({ fetchTimeMillis: 'potato' });
-      }).toThrow('must be a number type in milliseconds.');
+    describe('setDefaults()', function () {
+      it('it throws if defaults object not provided', function () {
+        expect(() => {
+          // @ts-ignore - incorrect argument on purpose to check validation
+          firebase.remoteConfig().setDefaults('not an object');
+        }).toThrow('must be an object.');
+      });
     });
-  });
 
-  describe('setDefaults()', function () {
-    it('it throws if defaults object not provided', function () {
-      expect(() => {
-        // @ts-ignore - incorrect argument on purpose to check validation
-        firebase.remoteConfig().setDefaults('not an object');
-      }).toThrow('must be an object.');
+    describe('setDefaultsFromResource()', function () {
+      it('throws if resourceName is not a string', function () {
+        expect(() => {
+          // @ts-ignore - incorrect argument on purpose to check validation
+          firebase.remoteConfig().setDefaultsFromResource(1337);
+        }).toThrow('must be a string value');
+      });
     });
-  });
 
-  describe('setDefaultsFromResource()', function () {
-    it('throws if resourceName is not a string', function () {
-      expect(() => {
-        // @ts-ignore - incorrect argument on purpose to check validation
-        firebase.remoteConfig().setDefaultsFromResource(1337);
-      }).toThrow('must be a string value');
-    });
-  });
-
-  describe('getAll() should not crash', function () {
-    it('should return an empty object pre-fetch, pre-defaults', function () {
-      const config = firebase.remoteConfig().getAll();
-      expect(config).toBeDefined();
-      expect(config).toEqual({});
+    describe('getAll() should not crash', function () {
+      it('should return an empty object pre-fetch, pre-defaults', function () {
+        const config = firebase.remoteConfig().getAll();
+        expect(config).toBeDefined();
+        expect(config).toEqual({});
+      });
     });
   });
 
@@ -215,6 +228,23 @@ describe('remoteConfig()', function () {
 
     it('`onConfigUpdated` function is properly exposed to end user', function () {
       expect(onConfigUpdated).toBeDefined();
+    });
+
+    it('`setCustomSignals` function is properly exposed to end user', function () {
+      expect(setCustomSignals).toBeDefined();
+    });
+
+    it('`LastFetchStatus` is properly exposed to end user', function () {
+      expect(LastFetchStatus.FAILURE).toBeDefined();
+      expect(LastFetchStatus.NO_FETCH_YET).toBeDefined();
+      expect(LastFetchStatus.SUCCESS).toBeDefined();
+      expect(LastFetchStatus.THROTTLED).toBeDefined();
+    });
+
+    it('`ValueSource` is properly exposed to end user', function () {
+      expect(ValueSource.DEFAULT).toBeDefined();
+      expect(ValueSource.REMOTE).toBeDefined();
+      expect(ValueSource.STATIC).toBeDefined();
     });
   });
 });

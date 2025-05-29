@@ -28,6 +28,16 @@ describe('database().ref().once()', function () {
     return wipe(TEST_PATH);
   });
 
+  beforeEach(async function beforeEachTest() {
+    // @ts-ignore
+    globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+  });
+
+  afterEach(async function afterEachTest() {
+    // @ts-ignore
+    globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+  });
+
   it('throws if event type is invalid', async function () {
     try {
       await firebase.database().ref().once('foo');

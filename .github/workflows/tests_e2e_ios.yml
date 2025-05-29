@@ -27,22 +27,32 @@ concurrency:
 jobs:
   ios:
     name: iOS
-    runs-on: macos-15-xlarge
+    runs-on: macos-15
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
     timeout-minutes: 60
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
+      CCACHE_FILECLONE: true
+      CCACHE_DEPEND: true
+      CCACHE_INODECACHE: true
+      CCACHE_LIMIT_MULTIPLE: 0.95
+    strategy:
+      fail-fast: false
+      matrix:
+        # We want to test debug (for coverage) and release mode
+        buildmode: [debug, release]
     steps:
       # Set up tool versions
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
 
       - name: Configure JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
 
       - uses: maxim-lobanov/setup-xcode@v1
         with:
@@ -78,7 +88,7 @@ jobs:
       - uses: hendrikmuhs/ccache-action@v1
         name: Xcode Compile Cache
         with:
-          key: ${{ runner.os }}-ios-v3 # makes a unique key w/related restore key internally
+          key: ${{ runner.os }}-${{ matrix.buildmode }}-ios-v3 # makes a unique key w/related restore key internally
           create-symlink: true
           max-size: 1500M
 
@@ -144,13 +154,9 @@ jobs:
           max_attempts: 3
           command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew && HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils xcbeautify
 
-      - name: Build iOS App
+      - name: Build iOS App Debug
+        if: contains(matrix.buildmode, 'debug')
         run: |
-          export CCACHE_SLOPPINESS=clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
-          export CCACHE_FILECLONE=true
-          export CCACHE_DEPEND=true
-          export CCACHE_INODECACHE=true
-          export CCACHE_LIMIT_MULTIPLE=0.95
           ccache -s
           export SKIP_BUNDLING=1
           export RCT_NO_LAUNCH_PACKAGER=1
@@ -158,6 +164,18 @@ jobs:
           echo $PATH
           which clang
           yarn tests:ios:build
+          ccache -s
+        shell: bash
+
+      - name: Build iOS App Release
+        if: contains(matrix.buildmode, 'release')
+        run: |
+          ccache -s
+          export RCT_NO_LAUNCH_PACKAGER=1
+          set -o pipefail
+          echo $PATH
+          which clang
+          yarn tests:ios:build:release
           ccache -s
         shell: bash
 
@@ -192,8 +210,14 @@ jobs:
         run: nohup sh -c "sleep 110 && xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &"
 
       - name: Detox Test
+        if: contains(matrix.buildmode, 'debug')
         timeout-minutes: 50
         run: yarn tests:ios:test-cover
+
+      - name: Detox Test
+        if: contains(matrix.buildmode, 'release')
+        timeout-minutes: 50
+        run: yarn tests:ios:test:release
 
       - name: Stop App Video
         if: always()
@@ -205,16 +229,17 @@ jobs:
         continue-on-error: true
         if: always()
         with:
-          name: simulator_video
+          name: simulator-${{ matrix.buildmode }}_video
           path: simulator.mp4
 
       - name: Upload Simulator Log
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: simulator_log
+          name: simulator-${{ matrix.buildmode }}_log
           path: simulator.log
 
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v5
+        if: contains(matrix.buildmode, 'debug')
         with:
           verbose: true

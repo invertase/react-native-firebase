@@ -5,8 +5,8 @@ import { AnalyticsApi } from './api';
 
 let analyticsInstances = {};
 
-function getAnalyticsApi() {
-  const app = getApp('[DEFAULT]');
+function getAnalyticsApi(appName) {
+  const app = getApp(appName);
   const measurementId = app.options.measurementId;
   if (!measurementId) {
     // eslint-disable-next-line no-console
@@ -16,7 +16,7 @@ function getAnalyticsApi() {
   }
   if (!analyticsInstances[measurementId]) {
     analyticsInstances[measurementId] = new AnalyticsApi('[DEFAULT]', measurementId);
-    if (global.RNFBDebug) {
+    if (globalThis.RNFBDebug) {
       analyticsInstances[measurementId].setDebug(true);
     }
   }
@@ -104,9 +104,9 @@ export default {
   },
 
   getAppInstanceId() {
-    // Unsupported for web.
     return guard(async () => {
-      return null;
+      const api = getAnalyticsApi('[DEFAULT]');
+      return api._getCid();
     });
   },
 

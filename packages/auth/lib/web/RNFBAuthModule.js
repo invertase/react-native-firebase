@@ -10,6 +10,7 @@ import {
   multiFactor,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  isSignInWithEmailLink,
   signInWithEmailLink,
   signInWithCustomToken,
   sendPasswordResetEmail,
@@ -113,7 +114,7 @@ function userToObject(user) {
  * @param {string|null} secret - The secret to use for the credential.
  * @returns {AuthCredential|null} - The AuthCredential object.
  */
-function getAuthCredential(auth, provider, token, secret) {
+function getAuthCredential(_auth, provider, token, secret) {
   if (provider.startsWith('oidc.')) {
     return new OAuthProvider(provider).credential({
       idToken: token,
@@ -230,20 +231,18 @@ function getCachedAuthInstance(appName) {
       // Warn auth persistence is is disabled unless Async Storage implementation is provided.
       // eslint-disable-next-line no-console
       console.warn(
-        ```
-Firebase Auth persistence is disabled. To enable persistence, provide an Async Storage implementation.
-
-For example, to use React Native Async Storage:
-
-  import AsyncStorage from '@react-native-async-storage/async-storage';
-
-  // Before initializing Firebase set the Async Storage implementation
-  // that will be used to persist user sessions.
-  firebase.setReactNativeAsyncStorage(AsyncStorage);
-
-  // Then initialize Firebase as normal.
-  await firebase.initializeApp({ ... });
-```,
+        'Firebase Auth persistence is disabled. To enable persistence, provide an Async Storage implementation.\n' +
+          '\n' +
+          'For example, to use React Native Async Storage:\n' +
+          '\n' +
+          "  import AsyncStorage from '@react-native-async-storage/async-storage';\n" +
+          '\n' +
+          '  // Before initializing Firebase set the Async Storage implementation\n' +
+          '  // that will be used to persist user sessions.\n' +
+          '  firebase.setReactNativeAsyncStorage(AsyncStorage);\n' +
+          '\n' +
+          '  // Then initialize Firebase as normal.\n' +
+          '  await firebase.initializeApp({ ... });\n',
       );
     }
     instances[appName] = initializeAuth(getApp(appName), {
@@ -446,6 +445,19 @@ export default {
       const auth = getCachedAuthInstance(appName);
       const credential = await signInWithEmailAndPassword(auth, email, password);
       return authResultToObject(credential);
+    });
+  },
+
+  /**
+   * Check if a sign in with email link is valid
+   * @param {string} appName - The name of the app to get the auth instance for.
+   * @param {string} emailLink - The email link to sign in with.
+   * @returns {Promise<boolean>} - Whether the link is a valid sign in with email link.
+   */
+  async isSignInWithEmailLink(appName, emailLink) {
+    return guard(async () => {
+      const auth = getCachedAuthInstance(appName);
+      return await isSignInWithEmailLink(auth, emailLink);
     });
   },
 

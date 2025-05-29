@@ -32,19 +32,11 @@ import {
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import fallBackModule from './web/RNFBConfigModule';
 import version from './version';
+import { LastFetchStatus, ValueSource } from './statics';
 
 const statics = {
-  LastFetchStatus: {
-    SUCCESS: 'success',
-    FAILURE: 'failure',
-    THROTTLED: 'throttled',
-    NO_FETCH_YET: 'no_fetch_yet',
-  },
-  ValueSource: {
-    REMOTE: 'remote',
-    DEFAULT: 'default',
-    STATIC: 'static',
-  },
+  LastFetchStatus,
+  ValueSource,
 };
 
 const namespace = 'remoteConfig';

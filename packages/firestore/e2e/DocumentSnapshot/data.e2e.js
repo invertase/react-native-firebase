@@ -26,6 +26,16 @@ describe('firestore().doc() -> snapshot.data()', function () {
   });
 
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('returns undefined if document does not exist', async function () {
       const ref = firebase.firestore().doc(`${COLLECTION}/idonotexist`);
       const snapshot = await ref.get();
@@ -173,7 +183,8 @@ describe('firestore().doc() -> snapshot.data()', function () {
     // });
 
     it('handles all data types', async function () {
-      const { getFirestore, doc, setDoc, getDoc, deleteDoc } = firestoreModular;
+      const { getFirestore, doc, setDoc, getDoc, deleteDoc, Timestamp, Bytes, GeoPoint } =
+        firestoreModular;
       const types = {
         string: '123456',
         stringEmpty: '',
@@ -186,11 +197,11 @@ describe('firestore().doc() -> snapshot.data()', function () {
         map: {}, // set after
         array: [], // set after,
         nullValue: null,
-        timestamp: new firebase.firestore.Timestamp(123, 123456),
+        timestamp: new Timestamp(123, 123456),
         date: new Date(),
-        geopoint: new firebase.firestore.GeoPoint(1, 2),
-        reference: firebase.firestore().doc(`${COLLECTION}/foobar`),
-        blob: firebase.firestore.Blob.fromBase64String(blobBase64),
+        geopoint: new GeoPoint(1, 2),
+        reference: doc(getFirestore(), `${COLLECTION}/foobar`),
+        bytes: Bytes.fromBase64String(blobBase64),
       };
 
       const map = { foo: 'bar' };
@@ -236,15 +247,15 @@ describe('firestore().doc() -> snapshot.data()', function () {
       should.equal(data.nullValue, null);
 
       // Timestamp
-      data.timestamp.should.be.an.instanceOf(firebase.firestore.Timestamp);
+      data.timestamp.should.be.an.instanceOf(Timestamp);
       data.timestamp.seconds.should.be.a.Number();
       data.timestamp.nanoseconds.should.be.a.Number();
-      data.date.should.be.an.instanceOf(firebase.firestore.Timestamp);
+      data.date.should.be.an.instanceOf(Timestamp);
       data.date.seconds.should.be.a.Number();
       data.date.nanoseconds.should.be.a.Number();
 
       // GeoPoint
-      data.geopoint.should.be.an.instanceOf(firebase.firestore.GeoPoint);
+      data.geopoint.should.be.an.instanceOf(GeoPoint);
       data.geopoint.latitude.should.be.a.Number();
       data.geopoint.longitude.should.be.a.Number();
 
@@ -252,8 +263,11 @@ describe('firestore().doc() -> snapshot.data()', function () {
       // data.reference.should.be.an.instanceOf();
       data.reference.path.should.equal(`${COLLECTION}/foobar`);
 
-      // Blob
-      data.blob.toBase64.should.be.a.Function();
+      // Bytes
+      data.bytes.should.be.an.instanceOf(Bytes);
+      types.bytes.isEqual(data.bytes);
+      data.bytes.isEqual(types.bytes);
+      data.bytes.toBase64.should.be.a.Function();
 
       await deleteDoc(ref);
     });

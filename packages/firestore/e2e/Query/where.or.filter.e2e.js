@@ -16,15 +16,24 @@
  */
 const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
-let Filter;
+const { Filter } = firestoreModular;
 
 describe('firestore().collection().where(OR Filters)', function () {
   beforeEach(async function () {
-    Filter = firebase.firestore.Filter;
     return await wipe();
   });
 
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('throws if using nested Filter.or() queries', async function () {
       try {
         firebase
@@ -1228,16 +1237,14 @@ describe('firestore().collection().where(OR Filters)', function () {
     });
 
     it('allows multiple inequalities (excluding `!=`) on different paths provided', async function () {
-      const { where, or, and, query } = firestoreModular;
+      const { getFirestore, addDoc, collection, where, or, and, query } = firestoreModular;
 
-      const colRef = firebase
-        .firestore()
-        .collection(`${COLLECTION}/filter/different-path-inequality`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/different-path-inequality`);
       const expected = { foo: { bar: 300 }, bar: 200 };
       await Promise.all([
-        colRef.add({ foo: { bar: 1 }, bar: 1 }),
-        colRef.add(expected),
-        colRef.add(expected),
+        addDoc(colRef, { foo: { bar: 1 }, bar: 1 }),
+        addDoc(colRef, expected),
+        addDoc(colRef, expected),
       ]);
 
       const snapshot = await query(
@@ -1509,16 +1516,16 @@ describe('firestore().collection().where(OR Filters)', function () {
     });
 
     it("should allow query when combining '!=' operator with any other inequality operator on a different field", async function () {
-      const { getFirestore, collection, where, or, and, query } = firestoreModular;
+      const { getFirestore, addDoc, collection, where, or, and, query } = firestoreModular;
       const colRef = collection(
         getFirestore(),
         `${COLLECTION}/filter/inequality-combine-not-equal`,
       );
       const expected = { foo: { bar: 300 }, bar: 200 };
       await Promise.all([
-        colRef.add({ foo: { bar: 1 }, bar: 1 }),
-        colRef.add(expected),
-        colRef.add(expected),
+        addDoc(colRef, { foo: { bar: 1 }, bar: 1 }),
+        addDoc(colRef, expected),
+        addDoc(colRef, expected),
       ]);
 
       const snapshot = await query(
@@ -1841,12 +1848,16 @@ describe('firestore().collection().where(OR Filters)', function () {
     });
 
     it('returns with where "==" & "<" filter', async function () {
-      const { getFirestore, collection, where, or, and, query, getDocs } = firestoreModular;
+      const { getFirestore, addDoc, collection, where, or, and, query, getDocs } = firestoreModular;
       const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals-modular`);
 
       const expected = { foo: 'bar', population: 200 };
       const notExpected = { foo: 'bar', population: 1000 };
-      await Promise.all([colRef.add(notExpected), colRef.add(expected), colRef.add(expected)]);
+      await Promise.all([
+        addDoc(colRef, notExpected),
+        addDoc(colRef, expected),
+        addDoc(colRef, expected),
+      ]);
 
       const snapshot = await getDocs(
         query(

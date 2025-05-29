@@ -56,12 +56,7 @@
         "app_log_level": {
           "description": "Set the log level across all modules. Only applies to iOS currently. Can be 'error', 'warn', 'info', 'debug'.\n Logs messages at the configured level or lower.\n Note that if an app is running from AppStore, it will never log above info even if level is set to a higher (more verbose) setting",
           "type": "string",
-          "enum": [
-            "error",
-            "warn",
-            "info",
-            "debug"
-          ]
+          "enum": ["error", "warn", "info", "debug"]
         },
         "app_check_token_auto_refresh": {
           "description": "If this flag is disabled then Firebase App Check will not periodically auto-refresh the app check token.\n This is useful for opt-in-first data flows, for example when dealing with GDPR compliance. \nIf unset it will default to the SDK-wide data collection default enabled setting. This may be overridden dynamically in Javascript.",
@@ -100,9 +95,17 @@
           "type": "number",
           "minimum": 0
         },
+        "messaging_android_notification_delegation_enabled": {
+          "description": "On Android Q+ and current Play Services, your FCM may be delegated which disables firebase message listeners. Disabled by default. You may re-enable if necessary",
+          "type": "boolean"
+        },
         "messaging_android_notification_channel_id": {
           "description": "On Android, any message which displays a Notification use a default Notification Channel (created by FCM called `Miscellaneous`). This channel contains basic notification settings which may not be appropriate for your application. You can change what Channel is used by updating the `messaging_android_notification_channel_id` property.",
           "type": "string"
+        },
+        "messaging_android_notification_delivery_metrics_export_enabled": {
+          "description": "Determines whether Firebase Cloud Messaging exports message delivery metrics to BigQuery. Defaults to disabled.",
+          "type": "boolean"
         },
         "messaging_android_notification_color": {
           "description": "On Android, any messages which display a Notification do not use a color to tint the content (such as the small icon, title etc). To provide a custom tint color, update the messaging_android_notification_color property with a Android color resource name. \n The library provides a set of predefined colors corresponding to the HTML colors for convenience",

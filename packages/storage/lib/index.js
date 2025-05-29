@@ -23,10 +23,17 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 import StorageReference from './StorageReference';
-import StorageStatics from './StorageStatics';
+import { StringFormat, TaskEvent, TaskState } from './StorageStatics';
 import { getGsUrlParts, getHttpUrlParts, handleStorageEvent } from './utils';
 import version from './version';
 import fallBackModule from './web/RNFBStorageModule';
+
+// import { STATICS } from '@react-native-firebase/storage';
+const statics = {
+  StringFormat,
+  TaskEvent,
+  TaskState,
+};
 
 const namespace = 'storage';
 const nativeEvents = ['storage_event'];
@@ -172,7 +179,7 @@ class FirebaseStorageModule extends FirebaseModule {
         _host = '10.0.2.2';
         // eslint-disable-next-line no-console
         console.log(
-          'Mapping storage host to "10.0.2.2" for android emulators. Use real IP on real devices.',
+          'Mapping storage host to "10.0.2.2" for android emulators. Use real IP on real devices. You can bypass this behaviour with "android_bypass_emulator_url_remap" flag.',
         );
       }
     }
@@ -186,13 +193,10 @@ class FirebaseStorageModule extends FirebaseModule {
 // import { SDK_VERSION } from '@react-native-firebase/storage';
 export const SDK_VERSION = version;
 
-// import { STATICS } from '@react-native-firebase/storage';
-export const STATICS = StorageStatics;
-
 // import storage from '@react-native-firebase/storage';
 // storage().X(...);
 export default createModuleNamespace({
-  statics: StorageStatics,
+  statics,
   version,
   namespace,
   nativeEvents,

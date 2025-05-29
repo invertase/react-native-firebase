@@ -123,7 +123,7 @@ export default class DatabaseDataSnapshot {
 
     // If the value is an array,
     if (isArray(this._snapshot.value)) {
-      return this._snapshot.value.some((value, i) => {
+      return this._snapshot.value.some((_value, i) => {
         const snapshot = this.child(i.toString());
         return action(snapshot, i) === true;
       });

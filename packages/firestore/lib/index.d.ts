@@ -523,13 +523,13 @@ export namespace FirebaseFirestoreTypes {
    * .`data()` or `.get(:field)` to get a specific field.
    *
    * For a DocumentSnapshot that points to a non-existing document, any data access will return 'undefined'.
-   * You can use the `exists` property to explicitly verify a document's existence.
+   * You can use the `exists()` method to explicitly verify a document's existence.
    */
   export interface DocumentSnapshot<T extends DocumentData = DocumentData> {
     /**
-     * Property of the `DocumentSnapshot` that signals whether or not the data exists. True if the document exists.
+     * Method of the `DocumentSnapshot` that signals whether or not the data exists. True if the document exists.
      */
-    exists: boolean;
+    exists(): boolean;
 
     /**
      * Property of the `DocumentSnapshot` that provides the document's ID.
@@ -597,14 +597,14 @@ export namespace FirebaseFirestoreTypes {
    * The document is guaranteed to exist and its data can be extracted with .data() or .get(:field) to get a specific field.
    *
    * A QueryDocumentSnapshot offers the same API surface as a DocumentSnapshot.
-   * Since query results contain only existing documents, the exists property will always be true and data() will never return 'undefined'.
+   * Since query results contain only existing documents, the exists() method will always be true and data() will never return 'undefined'.
    */
   export interface QueryDocumentSnapshot<T extends DocumentData = DocumentData>
     extends DocumentSnapshot<T> {
     /**
      * A QueryDocumentSnapshot is always guaranteed to exist.
      */
-    exists: true;
+    exists(): true;
 
     /**
      * Retrieves all fields in the document as an Object.
@@ -2392,7 +2392,6 @@ export default defaultExport;
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
 declare module '@react-native-firebase/app' {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {

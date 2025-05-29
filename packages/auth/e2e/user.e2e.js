@@ -12,24 +12,25 @@ const {
 describe('auth().currentUser', function () {
   describe('firebase v8 compatibility', function () {
     before(async function () {
-      try {
-        await clearAllUsers();
-      } catch (e) {
-        throw e;
-      }
-      firebase.auth().settings.appVerificationDisabledForTesting = true;
-      try {
-        await firebase.auth().createUserWithEmailAndPassword(TEST_EMAIL, TEST_PASS);
-      } catch (e) {
-        // they may already exist, that's fine
-      }
+      const { getAuth, createUserWithEmailAndPassword } = authModular;
+      await clearAllUsers();
+      getAuth().settings.appVerificationDisabledForTesting = true;
+      await createUserWithEmailAndPassword(getAuth(), TEST_EMAIL, TEST_PASS);
     });
 
-    beforeEach(async function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+
       if (firebase.auth().currentUser) {
         await firebase.auth().signOut();
         await Utils.sleep(50);
       }
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
     });
 
     describe('getIdToken()', function () {
@@ -633,7 +634,7 @@ describe('auth().currentUser', function () {
         try {
           await firebase.auth().createUserWithEmailAndPassword(email, random);
           await firebase.auth().currentUser.verifyBeforeUpdateEmail(updateEmail);
-        } catch (e) {
+        } catch (_) {
           return Promise.reject("'verifyBeforeUpdateEmail()' did not work");
         }
         await firebase.auth().currentUser.delete();
@@ -655,7 +656,7 @@ describe('auth().currentUser', function () {
             .auth()
             .currentUser.verifyBeforeUpdateEmail(updateEmail, actionCodeSettings);
           await firebase.auth().currentUser.delete();
-        } catch (error) {
+        } catch (_) {
           try {
             await firebase.auth().currentUser.delete();
           } catch (e) {
@@ -939,7 +940,7 @@ describe('auth().currentUser', function () {
       auth.settings.appVerificationDisabledForTesting = true;
       try {
         await createUserWithEmailAndPassword(auth, TEST_EMAIL, TEST_PASS);
-      } catch (e) {
+      } catch (_) {
         // they may already exist, that's fine
       }
     });
@@ -1671,7 +1672,7 @@ describe('auth().currentUser', function () {
         try {
           await createUserWithEmailAndPassword(auth, email, random);
           await verifyBeforeUpdateEmail(auth.currentUser, updateEmail);
-        } catch (e) {
+        } catch (_) {
           return Promise.reject("'verifyBeforeUpdateEmail()' did not work");
         }
         await deleteUser(auth.currentUser);
@@ -1694,7 +1695,7 @@ describe('auth().currentUser', function () {
           await createUserWithEmailAndPassword(auth, email, random);
           await verifyBeforeUpdateEmail(auth.currentUser, updateEmail, actionCodeSettings);
           await deleteUser(auth.currentUser);
-        } catch (error) {
+        } catch (_) {
           try {
             await deleteUser(auth.currentUser);
           } catch (e) {

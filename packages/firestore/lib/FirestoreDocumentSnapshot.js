@@ -33,10 +33,6 @@ export default class FirestoreDocumentSnapshot {
     this._exists = nativeData.exists;
   }
 
-  get exists() {
-    return this._exists;
-  }
-
   get id() {
     return this._ref.id;
   }
@@ -47,6 +43,10 @@ export default class FirestoreDocumentSnapshot {
 
   get ref() {
     return this._ref;
+  }
+
+  exists() {
+    return this._exists;
   }
 
   data() {
@@ -114,7 +114,7 @@ export default class FirestoreDocumentSnapshot {
     }
 
     if (
-      this.exists !== other.exists ||
+      this.exists() !== other.exists() ||
       !this.metadata.isEqual(other.metadata) ||
       !this.ref.isEqual(other.ref)
     ) {

@@ -31,6 +31,14 @@ describe('storage() -> StorageTask', function () {
     describe('firebase v8 compatibility', function () {
       before(async function () {
         await seed(PATH);
+
+        // @ts-ignore
+        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+      });
+
+      after(async function afterEachTest() {
+        // @ts-ignore
+        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
       });
 
       describe('writeToFile()', function () {

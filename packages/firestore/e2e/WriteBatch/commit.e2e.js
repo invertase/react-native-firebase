@@ -23,6 +23,16 @@ describe('firestore.WriteBatch.commit()', function () {
   });
 
   describe('v8 compatibility', function () {
+    beforeEach(async function beforeEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+    });
+
+    afterEach(async function afterEachTest() {
+      // @ts-ignore
+      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
     it('returns a Promise', function () {
       const commit = firebase.firestore().batch().commit();
       commit.should.be.a.Promise();
@@ -171,9 +181,9 @@ describe('firestore.WriteBatch.commit()', function () {
 
       const [lDoc, nycDoc, sDoc] = await Promise.all([lRef.get(), nycRef.get(), sfRef.get()]);
 
-      lDoc.exists.should.be.False();
-      nycDoc.exists.should.be.False();
-      sDoc.exists.should.be.False();
+      lDoc.exists().should.be.False();
+      nycDoc.exists().should.be.False();
+      sDoc.exists().should.be.False();
     });
 
     it('should update & commit', async function () {
@@ -366,9 +376,9 @@ describe('firestore.WriteBatch.commit()', function () {
 
       const [lDoc, nycDoc, sDoc] = await Promise.all([getDoc(lRef), getDoc(nycRef), getDoc(sfRef)]);
 
-      lDoc.exists.should.be.False();
-      nycDoc.exists.should.be.False();
-      sDoc.exists.should.be.False();
+      lDoc.exists().should.be.False();
+      nycDoc.exists().should.be.False();
+      sDoc.exists().should.be.False();
     });
 
     it('should update & commit', async function () {

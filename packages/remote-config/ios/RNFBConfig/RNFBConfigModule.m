@@ -305,6 +305,22 @@ RCT_EXPORT_METHOD(removeConfigUpdateRegistration : (FIRApp *)firebaseApp) {
   }
 }
 
+RCT_EXPORT_METHOD(setCustomSignals
+                  : (FIRApp *)firebaseApp
+                  : (NSDictionary *)customSignals
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp]
+      setCustomSignals:customSignals
+        withCompletion:^(NSError *_Nullable error) {
+          if (error != nil) {
+            [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+          } else {
+            resolve([self resultWithConstants:[NSNull null] firebaseApp:firebaseApp]);
+          }
+        }];
+}
+
 #pragma mark -
 #pragma mark Internal Helper Methods
 

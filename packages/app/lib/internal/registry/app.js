@@ -29,6 +29,7 @@ import FirebaseApp from '../../FirebaseApp';
 import { DEFAULT_APP_NAME } from '../constants';
 import { setReactNativeAsyncStorageInternal } from '../asyncStorage';
 import { getAppModule } from './nativeModule';
+import { setLogLevelInternal } from '../logger';
 
 const APP_REGISTRY = {};
 let onAppCreateFn = null;
@@ -208,6 +209,8 @@ export function setLogLevel(logLevel) {
   if (!['error', 'warn', 'info', 'debug', 'verbose'].includes(logLevel)) {
     throw new Error('LogLevel must be one of "error", "warn", "info", "debug", "verbose"');
   }
+  // This is setting LogLevel for VertexAI which does not wrap around native SDK
+  setLogLevelInternal(logLevel);
 
   if (isIOS || isOther) {
     getAppModule().setLogLevel(logLevel);
@@ -215,26 +218,22 @@ export function setLogLevel(logLevel) {
 }
 
 export function setReactNativeAsyncStorage(asyncStorage) {
+  warnIfNotModularCall(arguments, 'setReactNativeAsyncStorage()');
+
   if (!isObject(asyncStorage)) {
-    throw new Error("firebase.setReactNativeAsyncStorage(*) 'asyncStorage' must be an object.");
+    throw new Error("setReactNativeAsyncStorage(*) 'asyncStorage' must be an object.");
   }
 
   if (!isFunction(asyncStorage.setItem)) {
-    throw new Error(
-      "firebase.setReactNativeAsyncStorage(*) 'asyncStorage.setItem' must be a function.",
-    );
+    throw new Error("setReactNativeAsyncStorage(*) 'asyncStorage.setItem' must be a function.");
   }
 
   if (!isFunction(asyncStorage.getItem)) {
-    throw new Error(
-      "firebase.setReactNativeAsyncStorage(*) 'asyncStorage.getItem' must be a function.",
-    );
+    throw new Error("setReactNativeAsyncStorage(*) 'asyncStorage.getItem' must be a function.");
   }
 
   if (!isFunction(asyncStorage.removeItem)) {
-    throw new Error(
-      "firebase.setReactNativeAsyncStorage(*) 'asyncStorage.removeItem' must be a function.",
-    );
+    throw new Error("setReactNativeAsyncStorage(*) 'asyncStorage.removeItem' must be a function.");
   }
 
   setReactNativeAsyncStorageInternal(asyncStorage);

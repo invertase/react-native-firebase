@@ -31,6 +31,7 @@ import FirestoreGeoPoint from '../FirestoreGeoPoint';
 import FirestorePath from '../FirestorePath';
 import FirestoreTimestamp from '../FirestoreTimestamp';
 import { getTypeMapInt, getTypeMapName } from './typemap';
+import { Bytes } from '../modular/Bytes';
 
 // To avoid React Native require cycle warnings
 let FirestoreDocumentReference = null;
@@ -179,7 +180,8 @@ export function generateNativeData(value, ignoreUndefined) {
       return getTypeMapInt('timestamp', [value.seconds, value.nanoseconds]);
     }
 
-    if (value instanceof FirestoreBlob) {
+    // Modular API uses Bytes instead of Blob
+    if (value instanceof FirestoreBlob || value instanceof Bytes) {
       return getTypeMapInt('blob', value.toBase64());
     }
 
@@ -276,7 +278,7 @@ export function parseNativeData(firestore, nativeArray) {
     case 'timestamp':
       return new FirestoreTimestamp(value[0], value[1]);
     case 'blob':
-      return FirestoreBlob.fromBase64String(value);
+      return Bytes.fromBase64String(value);
     default:
       // eslint-disable-next-line no-console
       console.warn(`Unknown data type received from native channel: ${type}`);

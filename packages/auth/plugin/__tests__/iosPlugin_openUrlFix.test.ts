@@ -10,6 +10,7 @@ import {
   ensureFirebaseSwizzlingIsEnabled,
   appDelegateOpenUrlInsertionPointAfter,
   multiline_appDelegateOpenUrlInsertionPointAfter,
+  modifyAppDelegate,
 } from '../src/ios/openUrlFix';
 import type { ExpoConfigPluginEntry } from '../src/ios/openUrlFix';
 
@@ -188,15 +189,16 @@ describe('Config Plugin iOS Tests - openUrlFix', () => {
   });
 
   const appDelegateFixturesPatch = [
-    'AppDelegate_bare_sdk43.m',
-    'AppDelegate_sdk44.m',
-    'AppDelegate_sdk45.mm',
+    { fixtureName: 'AppDelegate_bare_sdk43.m', language: 'objc' },
+    { fixtureName: 'AppDelegate_sdk44.m', language: 'objc' },
+    { fixtureName: 'AppDelegate_sdk45.mm', language: 'objcpp' },
+    { fixtureName: 'AppDelegate_sdk53.swift', language: 'swift' },
   ];
-  appDelegateFixturesPatch.forEach(fixtureName => {
+  appDelegateFixturesPatch.forEach(({ fixtureName, language }) => {
     it(`munges AppDelegate correctly - ${fixtureName}`, async () => {
       const fixturePath = path.join(__dirname, 'fixtures', fixtureName);
       const appDelegate = await fs.readFile(fixturePath, { encoding: 'utf-8' });
-      const result = modifyObjcAppDelegate(appDelegate);
+      const result = modifyAppDelegate(appDelegate, language);
       expect(result).toMatchSnapshot();
     });
 
@@ -209,7 +211,7 @@ describe('Config Plugin iOS Tests - openUrlFix', () => {
         modRequest: { projectRoot: path.join(__dirname, 'fixtures') } as any,
         modResults: {
           path: fixturePath,
-          language: 'objc',
+          language: language,
           contents: appDelegate,
         } as AppDelegateProjectFile,
         modRawConfig: { name: 'TestName', slug: 'TestSlug' },
@@ -226,8 +228,12 @@ describe('Config Plugin iOS Tests - openUrlFix', () => {
     });
   });
 
-  const appDelegateFixturesNoop = ['AppDelegate_sdk42.m', 'AppDelegate_fallback.m'];
-  appDelegateFixturesNoop.forEach(fixtureName => {
+  const appDelegateFixturesNoop = [
+    { fixtureName: 'AppDelegate_sdk42.m', language: 'objc' },
+    { fixtureName: 'AppDelegate_fallback.m', language: 'objc' },
+    { fixtureName: 'AppDelegate_noOpenURL_sdk53.swift', language: 'swift' },
+  ];
+  appDelegateFixturesNoop.forEach(({ fixtureName, language }) => {
     it(`skips AppDelegate without openURL - ${fixtureName}`, async () => {
       const fixturePath = path.join(__dirname, 'fixtures', fixtureName);
       const appDelegate = await fs.readFile(fixturePath, { encoding: 'utf-8' });
@@ -238,7 +244,7 @@ describe('Config Plugin iOS Tests - openUrlFix', () => {
         modRequest: { projectRoot: path.join(__dirname, 'fixtures') } as any,
         modResults: {
           path: fixturePath,
-          language: 'objc',
+          language: language,
           contents: appDelegate,
         } as AppDelegateProjectFile,
         modRawConfig: { name: 'TestName', slug: 'TestSlug' },
@@ -264,7 +270,7 @@ describe('Config Plugin iOS Tests - openUrlFix', () => {
         modRequest: { projectRoot: path.join(__dirname, 'fixtures') } as any,
         modResults: {
           path: fixturePath,
-          language: 'objc',
+          language: language,
           contents: appDelegate,
         } as AppDelegateProjectFile,
         modRawConfig: { name: 'TestName', slug: 'TestSlug' },

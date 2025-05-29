@@ -16,6 +16,7 @@
  */
 
 import { isObject, isString, isUndefined, isBoolean } from '@react-native-firebase/app/lib/common';
+import { warnDynamicLink } from './utils';
 
 export default class User {
   constructor(auth, user) {
@@ -131,6 +132,7 @@ export default class User {
   }
 
   sendEmailVerification(actionCodeSettings) {
+    warnDynamicLink(actionCodeSettings);
     if (isObject(actionCodeSettings)) {
       if (!isString(actionCodeSettings.url)) {
         throw new Error(
@@ -144,6 +146,12 @@ export default class User {
       ) {
         throw new Error(
           "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.dynamicLinkDomain' expected a string value.",
+        );
+      }
+
+      if (!isUndefined(actionCodeSettings.linkDomain) && !isString(actionCodeSettings.linkDomain)) {
+        throw new Error(
+          "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.linkDomain' expected a string value.",
         );
       }
 
@@ -241,6 +249,7 @@ export default class User {
   }
 
   verifyBeforeUpdateEmail(newEmail, actionCodeSettings) {
+    warnDynamicLink(actionCodeSettings);
     if (!isString(newEmail)) {
       throw new Error(
         "firebase.auth.User.verifyBeforeUpdateEmail(*) 'newEmail' expected a string value.",
@@ -260,6 +269,12 @@ export default class User {
       ) {
         throw new Error(
           "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.dynamicLinkDomain' expected a string value.",
+        );
+      }
+
+      if (!isUndefined(actionCodeSettings.linkDomain) && !isString(actionCodeSettings.linkDomain)) {
+        throw new Error(
+          "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.linkDomain' expected a string value.",
         );
       }
 
