@@ -1068,10 +1068,284 @@ describe('Analytics', function () {
       it('analytics.logAddPaymentInfo()', function () {
         const analytics = getAnalytics();
         analyticsRefV9Deprecation(
-          // no corresponding method
+          // This is deprecated for both namespaced and modular.
           () => {},
           () => analytics.logAddPaymentInfo({ value: 1, currency: 'usd' }),
           'logAddPaymentInfo',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () => logAddPaymentInfo(analytics, { value: 1, currency: 'usd' }),
+          'logAddPaymentInfo',
+        );
+      });
+
+      it('analytics.logScreenView()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logScreenView({
+              screen_class: 'ProductScreen',
+              screen_name: 'ProductScreen',
+            }),
+          'logScreenView',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logScreenView(analytics, {
+              screen_class: 'ProductScreen',
+              screen_name: 'ProductScreen',
+            }),
+          'logScreenView',
+        );
+      });
+
+      it('analytics.logAddShippingInfo()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logAddShippingInfo({
+              value: 100,
+              currency: 'usd',
+            }),
+          'logAddShippingInfo',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logAddShippingInfo(analytics, {
+              value: 100,
+              currency: 'usd',
+            }),
+          'logAddShippingInfo',
+        );
+      });
+
+      it('analytics.logAddToCart()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logAddToCart({
+              value: 100,
+              currency: 'usd',
+            }),
+          'logAddToCart',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logAddToCart(analytics, {
+              value: 100,
+              currency: 'usd',
+            }),
+          'logAddToCart',
+        );
+      });
+
+      it('analytics.logAddToWishlist()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logAddToWishlist({
+              value: 100,
+              currency: 'usd',
+            }),
+          'logAddToWishlist',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logAddToWishlist(analytics, {
+              value: 100,
+              currency: 'usd',
+            }),
+          'logAddToWishlist',
+        );
+      });
+
+      it('analytics.logAppOpen()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () => analytics.logAppOpen(),
+          'logAppOpen',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () => logAppOpen(analytics),
+          'logAppOpen',
+        );
+      });
+
+      it('analytics.logBeginCheckout()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logBeginCheckout({
+              value: 100,
+              currency: 'usd',
+            }),
+          'logBeginCheckout',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logBeginCheckout(analytics, {
+              value: 100,
+              currency: 'usd',
+            }),
+          'logBeginCheckout',
+        );
+      });
+
+      it('analytics.logCampaignDetails()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logCampaignDetails({
+              source: 'email',
+              medium: 'cta_button',
+              campaign: 'newsletter',
+            }),
+          'logCampaignDetails',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logCampaignDetails(analytics, {
+              source: 'email',
+              medium: 'cta_button',
+              campaign: 'newsletter',
+            }),
+          'logCampaignDetails',
+        );
+      });
+
+      it('analytics.logEarnVirtualCurrency()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logEarnVirtualCurrency({
+              virtual_currency_name: 'coins',
+              value: 100,
+            }),
+          'logEarnVirtualCurrency',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logEarnVirtualCurrency(analytics, {
+              virtual_currency_name: 'coins',
+              value: 100,
+            }),
+          'logEarnVirtualCurrency',
+        );
+      });
+
+      it('analytics.logGenerateLead()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logGenerateLead({
+              currency: 'USD',
+              value: 123,
+            }),
+          'logGenerateLead',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logGenerateLead(analytics, {
+              currency: 'USD',
+              value: 123,
+            }),
+          'logGenerateLead',
+        );
+      });
+
+      it('analytics.logJoinGroup()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logJoinGroup({
+              group_id: '12345',
+            }),
+          'logJoinGroup',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logJoinGroup(analytics, {
+              group_id: '12345',
+            }),
+          'logJoinGroup',
+        );
+      });
+
+      it('analytics.logLevelEnd()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logLevelEnd({
+              level: 12,
+              success: 'true',
+            }),
+          'logLevelEnd',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logLevelEnd(analytics, {
+              level: 12,
+              success: 'true',
+            }),
+          'logLevelEnd',
         );
       });
     });

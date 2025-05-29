@@ -184,7 +184,7 @@ export function resetAnalyticsData(analytics) {
  * @returns {Promise<void>}
  */
 export function logAddPaymentInfo(analytics, params) {
-  // TODO - not sure if this should be deprecated. up to this point.
+  // This is deprecated for both namespaced and modular.
   return analytics.logAddPaymentInfo(params);
 }
 
@@ -195,6 +195,7 @@ export function logAddPaymentInfo(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logScreenView(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logScreenView(params);
 }
 
@@ -205,6 +206,7 @@ export function logScreenView(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logAddShippingInfo(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logAddShippingInfo(params);
 }
 
@@ -215,6 +217,7 @@ export function logAddShippingInfo(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logAddToCart(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logAddToCart(params);
 }
 
@@ -225,6 +228,7 @@ export function logAddToCart(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logAddToWishlist(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logAddToWishlist(params);
 }
 
@@ -234,6 +238,7 @@ export function logAddToWishlist(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logAppOpen(analytics) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logAppOpen();
 }
 
@@ -244,6 +249,7 @@ export function logAppOpen(analytics) {
  * @returns {Promise<void>}
  */
 export function logBeginCheckout(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logBeginCheckout(params);
 }
 
@@ -254,6 +260,7 @@ export function logBeginCheckout(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logCampaignDetails(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logCampaignDetails(params);
 }
 
@@ -264,6 +271,7 @@ export function logCampaignDetails(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logEarnVirtualCurrency(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logEarnVirtualCurrency(params);
 }
 
@@ -274,6 +282,7 @@ export function logEarnVirtualCurrency(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logGenerateLead(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logGenerateLead(params);
 }
 
@@ -284,6 +293,7 @@ export function logGenerateLead(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logJoinGroup(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logJoinGroup(params);
 }
 
@@ -294,6 +304,7 @@ export function logJoinGroup(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logLevelEnd(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logLevelEnd(params);
 }
 

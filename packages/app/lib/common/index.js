@@ -131,8 +131,19 @@ const mapOfDeprecationReplacements = {
       setUserProperties: 'setUserProperties()',
       resetAnalyticsData: 'resetAnalyticsData()',
       setConsent: 'setConsent()',
-      // TODO are we deprecating all modular methods for each specific event. e.g. `logAddPaymentInfo()`
+      // We're deprecating all helper methods for event. e.g. `logAddPaymentInfo()` from namespaced and modular.
       logAddPaymentInfo: 'logEvent()',
+      logScreenView: 'logEvent()',
+      logAddShippingInfo: 'logEvent()',
+      logAddToCart: 'logEvent()',
+      logAddToWishlist: 'logEvent()',
+      logAppOpen: 'logEvent()',
+      logBeginCheckout: 'logEvent()',
+      logCampaignDetails: 'logEvent()',
+      logEarnVirtualCurrency: 'logEvent()',
+      logGenerateLead: 'logEvent()',
+      logJoinGroup: 'logEvent()',
+      logLevelEnd: 'logEvent()',
     },
   },
   crashlytics: {
