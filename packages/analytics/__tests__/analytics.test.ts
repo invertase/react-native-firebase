@@ -1348,6 +1348,580 @@ describe('Analytics', function () {
           'logLevelEnd',
         );
       });
+
+      it('analytics.logLevelStart()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logLevelStart({
+              level: 12,
+            }),
+          'logLevelStart',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logLevelStart(analytics, {
+              level: 12,
+            }),
+          'logLevelStart',
+        );
+      });
+
+      it('analytics.logLevelUp()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logLevelUp({
+              level: 12,
+            }),
+          'logLevelUp',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logLevelUp(analytics, {
+              level: 12,
+            }),
+          'logLevelUp',
+        );
+      });
+
+      it('analytics.logLogin()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logLogin({
+              method: 'facebook.com',
+            }),
+          'logLogin',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logLogin(analytics, {
+              method: 'facebook.com',
+            }),
+          'logLogin',
+        );
+      });
+
+      it('analytics.logPostScore()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logPostScore({
+              score: 567334,
+              level: 3,
+            }),
+          'logPostScore',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logPostScore(analytics, {
+              score: 567334,
+              level: 3,
+            }),
+          'logPostScore',
+        );
+      });
+
+      it('analytics.logSelectContent()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logSelectContent({
+              content_type: 'clothing',
+              item_id: 'abcd',
+            }),
+          'logSelectContent',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logSelectContent(analytics, {
+              content_type: 'clothing',
+              item_id: 'abcd',
+            }),
+          'logSelectContent',
+        );
+      });
+
+      it('analytics.logPurchase()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logPurchase({
+              value: 100,
+              currency: 'usd',
+            }),
+          'logPurchase',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logPurchase(analytics, {
+              value: 100,
+              currency: 'usd',
+            }),
+          'logPurchase',
+        );
+      });
+
+      it('analytics.logRefund()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logRefund({
+              value: 100,
+              currency: 'usd',
+            }),
+          'logRefund',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logRefund(analytics, {
+              value: 100,
+              currency: 'usd',
+            }),
+          'logRefund',
+        );
+      });
+
+      it('analytics.logRemoveFromCart()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logRemoveFromCart({
+              value: 100,
+              currency: 'usd',
+            }),
+          'logRemoveFromCart',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logRemoveFromCart(analytics, {
+              value: 100,
+              currency: 'usd',
+            }),
+          'logRemoveFromCart',
+        );
+      });
+
+      it('analytics.logSearch()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logSearch({
+              search_term: 't-shirts',
+            }),
+          'logSearch',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logSearch(analytics, {
+              search_term: 't-shirts',
+            }),
+          'logSearch',
+        );
+      });
+
+      it('analytics.logSelectItem()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logSelectItem({
+              item_list_id: '54690834',
+              item_list_name: 't-shirts',
+              content_type: 'clothing',
+            }),
+          'logSelectItem',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logSelectItem(analytics, {
+              item_list_id: '54690834',
+              item_list_name: 't-shirts',
+              content_type: 'clothing',
+            }),
+          'logSelectItem',
+        );
+      });
+
+      it('analytics.logSetCheckoutOption()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logSetCheckoutOption({
+              checkout_step: 2,
+              checkout_option: 'false',
+            }),
+          'logSetCheckoutOption',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logSetCheckoutOption(analytics, {
+              checkout_step: 2,
+              checkout_option: 'false',
+            }),
+          'logSetCheckoutOption',
+        );
+      });
+
+      it('analytics.logSelectPromotion()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logSelectPromotion({
+              creative_name: 'the promotion',
+              creative_slot: 'evening',
+              location_id: 'london',
+              promotion_id: '230593',
+              promotion_name: 'summer sale',
+            }),
+          'logSelectPromotion',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logSelectPromotion(analytics, {
+              creative_name: 'the promotion',
+              creative_slot: 'evening',
+              location_id: 'london',
+              promotion_id: '230593',
+              promotion_name: 'summer sale',
+            }),
+          'logSelectPromotion',
+        );
+      });
+
+      it('analytics.logShare()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logShare({
+              content_type: 't-shirts',
+              item_id: '12345',
+              method: 'twitter.com',
+            }),
+          'logShare',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logShare(analytics, {
+              content_type: 't-shirts',
+              item_id: '12345',
+              method: 'twitter.com',
+            }),
+          'logShare',
+        );
+      });
+
+      it('analytics.logSignUp()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logSignUp({
+              method: 'facebook.com',
+            }),
+          'logSignUp',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logSignUp(analytics, {
+              method: 'facebook.com',
+            }),
+          'logSignUp',
+        );
+      });
+
+      it('analytics.logSpendVirtualCurrency()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            analytics.logSpendVirtualCurrency({
+              item_name: 'battle_pass',
+              virtual_currency_name: 'coins',
+              value: 100,
+            }),
+          'logSpendVirtualCurrency',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () =>
+            logSpendVirtualCurrency(analytics, {
+              item_name: 'battle_pass',
+              virtual_currency_name: 'coins',
+              value: 100,
+            }),
+          'logSpendVirtualCurrency',
+        );
+      });
+
+      it('analytics.logTutorialBegin()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () => analytics.logTutorialBegin(),
+          'logTutorialBegin',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () => logTutorialBegin(analytics),
+          'logTutorialBegin',
+        );
+      });
+
+      it('analytics.logTutorialComplete()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () => analytics.logTutorialComplete(),
+          'logTutorialComplete',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () => logTutorialComplete(analytics),
+          'logTutorialComplete',
+        );
+      });
+
+      it('analytics.logUnlockAchievement()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () => analytics.logUnlockAchievement({ achievement_id: '12345' }),
+          'logUnlockAchievement',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () => logUnlockAchievement(analytics, { achievement_id: '12345' }),
+          'logUnlockAchievement',
+        );
+      });
+
+      it('analytics.logViewCart()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () => analytics.logViewCart({ value: 100, currency: 'usd' }),
+          'logViewCart',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () => logViewCart(analytics, { value: 100, currency: 'usd' }),
+          'logViewCart',
+        );
+      });
+
+      it('analytics.logViewItem()', function () {
+        const analytics = getAnalytics();
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () => analytics.logViewItem({ value: 100, currency: 'usd' }),
+          'logViewItem',
+        );
+
+        analyticsRefV9Deprecation(
+          // This is deprecated for both namespaced and modular.
+          () => {},
+          () => logViewItem(analytics, { value: 100, currency: 'usd' }),
+          'logViewItem',
+        );
+      });
+    });
+
+    it('analytics.logViewPromotion()', function () {
+      const analytics = getAnalytics();
+      analyticsRefV9Deprecation(
+        // This is deprecated for both namespaced and modular.
+        () => {},
+        () =>
+          analytics.logViewPromotion({
+            creative_name: 'the promotion',
+            creative_slot: 'evening',
+            location_id: 'london',
+            promotion_id: '230593',
+          }),
+        'logViewPromotion',
+      );
+
+      analyticsRefV9Deprecation(
+        // This is deprecated for both namespaced and modular.
+        () => {},
+        () =>
+          logViewPromotion(analytics, {
+            creative_name: 'the promotion',
+            creative_slot: 'evening',
+            location_id: 'london',
+            promotion_id: '230593',
+          }),
+        'logViewPromotion',
+      );
+    });
+
+    it('analytics.logViewSearchResults()', function () {
+      const analytics = getAnalytics();
+      analyticsRefV9Deprecation(
+        // This is deprecated for both namespaced and modular.
+        () => {},
+        () =>
+          analytics.logViewSearchResults({
+            search_term: 'clothing',
+          }),
+        'logViewSearchResults',
+      );
+
+      analyticsRefV9Deprecation(
+        // This is deprecated for both namespaced and modular.
+        () => {},
+        () =>
+          logViewSearchResults(analytics, {
+            search_term: 'clothing',
+          }),
+        'logViewSearchResults',
+      );
+    });
+
+    it('analytics.setDefaultEventParameters()', function () {
+      const analytics = getAnalytics();
+      analyticsRefV9Deprecation(
+        () =>
+          setDefaultEventParameters(analytics, {
+            search_term: 'clothing',
+          }),
+        () =>
+          analytics.setDefaultEventParameters({
+            search_term: 'clothing',
+          }),
+        'setDefaultEventParameters',
+      );
+    });
+
+    it('analytics.initiateOnDeviceConversionMeasurementWithEmailAddress()', function () {
+      const analytics = getAnalytics();
+      analyticsRefV9Deprecation(
+        () => initiateOnDeviceConversionMeasurementWithEmailAddress(analytics, 'some@email.com'),
+        () => analytics.initiateOnDeviceConversionMeasurementWithEmailAddress('some@email.com'),
+        'initiateOnDeviceConversionMeasurementWithEmailAddress',
+      );
+    });
+
+    it('analytics.initiateOnDeviceConversionMeasurementWithHashedEmailAddress()', function () {
+      const analytics = getAnalytics();
+      analyticsRefV9Deprecation(
+        () =>
+          initiateOnDeviceConversionMeasurementWithHashedEmailAddress(analytics, 'some@email.com'),
+        () =>
+          analytics.initiateOnDeviceConversionMeasurementWithHashedEmailAddress('some@email.com'),
+        'initiateOnDeviceConversionMeasurementWithHashedEmailAddress',
+      );
+    });
+
+    it('analytics.initiateOnDeviceConversionMeasurementWithPhoneNumber()', function () {
+      const analytics = getAnalytics();
+      analyticsRefV9Deprecation(
+        () => initiateOnDeviceConversionMeasurementWithPhoneNumber(analytics, '+1555321'),
+        () => analytics.initiateOnDeviceConversionMeasurementWithPhoneNumber('+1555321'),
+        'initiateOnDeviceConversionMeasurementWithPhoneNumber',
+      );
+    });
+
+    it('analytics.initiateOnDeviceConversionMeasurementWithHashedPhoneNumber()', function () {
+      const analytics = getAnalytics();
+      analyticsRefV9Deprecation(
+        () =>
+          initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
+            analytics,
+            'b1b1b3b0b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1',
+          ),
+        () =>
+          analytics.initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
+            'b1b1b3b0b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1',
+          ),
+        'initiateOnDeviceConversionMeasurementWithHashedPhoneNumber',
+      );
     });
   });
 });

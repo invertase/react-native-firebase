@@ -315,6 +315,7 @@ export function logLevelEnd(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logLevelStart(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logLevelStart(params);
 }
 
@@ -325,6 +326,7 @@ export function logLevelStart(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logLevelUp(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logLevelUp(params);
 }
 
@@ -335,6 +337,7 @@ export function logLevelUp(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logLogin(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logLogin(params);
 }
 
@@ -345,6 +348,7 @@ export function logLogin(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logPostScore(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logPostScore(params);
 }
 
@@ -355,6 +359,7 @@ export function logPostScore(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logSelectContent(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logSelectContent(params);
 }
 
@@ -365,6 +370,7 @@ export function logSelectContent(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logPurchase(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logPurchase(params);
 }
 
@@ -375,6 +381,7 @@ export function logPurchase(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logRefund(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logRefund(params);
 }
 
@@ -385,6 +392,7 @@ export function logRefund(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logRemoveFromCart(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logRemoveFromCart(params);
 }
 
@@ -395,6 +403,7 @@ export function logRemoveFromCart(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logSearch(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logSearch(params);
 }
 
@@ -405,6 +414,7 @@ export function logSearch(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logSelectItem(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logSelectItem(params);
 }
 
@@ -415,6 +425,7 @@ export function logSelectItem(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logSetCheckoutOption(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logSetCheckoutOption(params);
 }
 
@@ -425,6 +436,7 @@ export function logSetCheckoutOption(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logSelectPromotion(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logSelectPromotion(params);
 }
 
@@ -435,6 +447,7 @@ export function logSelectPromotion(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logShare(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logShare(params);
 }
 
@@ -445,6 +458,7 @@ export function logShare(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logSignUp(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logSignUp(params);
 }
 
@@ -455,6 +469,7 @@ export function logSignUp(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logSpendVirtualCurrency(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logSpendVirtualCurrency(params);
 }
 
@@ -464,6 +479,7 @@ export function logSpendVirtualCurrency(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logTutorialBegin(analytics) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logTutorialBegin();
 }
 
@@ -473,6 +489,7 @@ export function logTutorialBegin(analytics) {
  * @returns {Promise<void>}
  */
 export function logTutorialComplete(analytics) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logTutorialComplete();
 }
 
@@ -483,6 +500,7 @@ export function logTutorialComplete(analytics) {
  * @returns {Promise<void>}
  */
 export function logUnlockAchievement(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logUnlockAchievement(params);
 }
 
@@ -493,6 +511,7 @@ export function logUnlockAchievement(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logViewCart(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logViewCart(params);
 }
 
@@ -503,6 +522,7 @@ export function logViewCart(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logViewItem(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logViewItem(params);
 }
 
@@ -513,6 +533,7 @@ export function logViewItem(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logViewItemList(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logViewItemList(params);
 }
 
@@ -523,6 +544,7 @@ export function logViewItemList(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logViewPromotion(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logViewPromotion(params);
 }
 
@@ -533,6 +555,7 @@ export function logViewPromotion(analytics, params) {
  * @returns {Promise<void>}
  */
 export function logViewSearchResults(analytics, params) {
+  // This is deprecated for both namespaced and modular.
   return analytics.logViewSearchResults(params);
 }
 
@@ -543,7 +566,7 @@ export function logViewSearchResults(analytics, params) {
  * @returns {Promise<void>}
  */
 export function setDefaultEventParameters(analytics, params = {}) {
-  return analytics.setDefaultEventParameters(params);
+  return analytics.setDefaultEventParameters.call(analytics, params, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -554,7 +577,11 @@ export function setDefaultEventParameters(analytics, params = {}) {
  * @returns {Promise<void>}
  */
 export function initiateOnDeviceConversionMeasurementWithEmailAddress(analytics, emailAddress) {
-  return analytics.initiateOnDeviceConversionMeasurementWithEmailAddress(emailAddress);
+  return analytics.initiateOnDeviceConversionMeasurementWithEmailAddress.call(
+    analytics,
+    emailAddress,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -570,7 +597,11 @@ export function initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
   analytics,
   hashedEmailAddress,
 ) {
-  return analytics.initiateOnDeviceConversionMeasurementWithHashedEmailAddress(hashedEmailAddress);
+  return analytics.initiateOnDeviceConversionMeasurementWithHashedEmailAddress.call(
+    analytics,
+    hashedEmailAddress,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -581,7 +612,11 @@ export function initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
  * @returns {Promise<void>}
  */
 export function initiateOnDeviceConversionMeasurementWithPhoneNumber(analytics, phoneNumber) {
-  return analytics.initiateOnDeviceConversionMeasurementWithPhoneNumber(phoneNumber);
+  return analytics.initiateOnDeviceConversionMeasurementWithPhoneNumber.call(
+    analytics,
+    phoneNumber,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -597,7 +632,11 @@ export function initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
   analytics,
   hashedPhoneNumber,
 ) {
-  return analytics.initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(hashedPhoneNumber);
+  return analytics.initiateOnDeviceConversionMeasurementWithHashedPhoneNumber.call(
+    analytics,
+    hashedPhoneNumber,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
