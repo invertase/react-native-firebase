@@ -1,8 +1,8 @@
 {
-  "name": "@react-native-firebase/vertexai",
+  "name": "@react-native-firebase/ai",
   "version": "22.2.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
-  "description": "React Native Firebase - Vertex AI is a fully-managed, unified AI development platform for building and using generative AI",
+  "description": "React Native Firebase - Firebase AI is a fully-managed, unified AI development platform for building and using generative AI",
   "main": "./dist/commonjs/index.js",
   "module": "./dist/module/index.js",
   "types": "./dist/typescript/module/lib/index.d.ts",
@@ -14,14 +14,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/invertase/react-native-firebase/tree/main/packages/vertexai"
+    "url": "https://github.com/invertase/react-native-firebase/tree/main/packages/ai"
   },
   "license": "Apache-2.0",
   "keywords": [
     "react",
     "react-native",
     "firebase",
-    "vertexai",
+    "firebase-ai",
+    "ai",
     "gemini",
     "generative-ai"
   ],
