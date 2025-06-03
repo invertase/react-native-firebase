@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import { VertexAIError } from '../errors';
-import { VertexAIErrorCode } from '../types';
+import { AIError } from '../errors';
+import { AIErrorCode } from '../types';
 import {
   SchemaInterface,
   SchemaType,
@@ -49,6 +49,12 @@ export abstract class Schema implements SchemaInterface {
   format?: string;
   /** Optional. The description of the property. */
   description?: string;
+  /** Optional. The items of the property. */
+  items?: SchemaInterface;
+  /** The minimum number of items (elements) in a schema of type {@link SchemaType.ARRAY}. */
+  minItems?: number;
+  /** The maximum number of items (elements) in a schema of type {@link SchemaType.ARRAY}. */
+  maxItems?: number;
   /** Optional. Whether the property is nullable. Defaults to false. */
   nullable: boolean;
   /** Optional. The example of the property. */
@@ -257,8 +263,8 @@ export class ObjectSchema extends Schema {
     if (this.optionalProperties) {
       for (const propertyKey of this.optionalProperties) {
         if (!this.properties.hasOwnProperty(propertyKey)) {
-          throw new VertexAIError(
-            VertexAIErrorCode.INVALID_SCHEMA,
+          throw new AIError(
+            AIErrorCode.INVALID_SCHEMA,
             `Property "${propertyKey}" specified in "optionalProperties" does not exist.`,
           );
         }
