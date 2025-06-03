@@ -21,9 +21,10 @@ import {
   FunctionCall,
   GenerateContentCandidate,
   GenerateContentResponse,
-  VertexAIErrorCode,
+  AIErrorCode,
+  InlineDataPart,
 } from '../types';
-import { VertexAIError } from '../errors';
+import { AIError } from '../errors';
 import { logger } from '../logger';
 
 /**
@@ -62,8 +63,8 @@ export function addHelpers(response: GenerateContentResponse): EnhancedGenerateC
         );
       }
       if (hadBadFinishReason(response.candidates[0]!)) {
-        throw new VertexAIError(
-          VertexAIErrorCode.RESPONSE_ERROR,
+        throw new AIError(
+          AIErrorCode.RESPONSE_ERROR,
           `Response error: ${formatBlockErrorMessage(
             response,
           )}. Response body stored in error.response`,
@@ -74,8 +75,8 @@ export function addHelpers(response: GenerateContentResponse): EnhancedGenerateC
       }
       return getText(response);
     } else if (response.promptFeedback) {
-      throw new VertexAIError(
-        VertexAIErrorCode.RESPONSE_ERROR,
+      throw new AIError(
+        AIErrorCode.RESPONSE_ERROR,
         `Text not available. ${formatBlockErrorMessage(response)}`,
         {
           response,
@@ -83,6 +84,40 @@ export function addHelpers(response: GenerateContentResponse): EnhancedGenerateC
       );
     }
     return '';
+  };
+  (response as EnhancedGenerateContentResponse).inlineDataParts = ():
+    | InlineDataPart[]
+    | undefined => {
+    if (response.candidates && response.candidates.length > 0) {
+      if (response.candidates.length > 1) {
+        logger.warn(
+          `This response had ${response.candidates.length} ` +
+            `candidates. Returning data from the first candidate only. ` +
+            `Access response.candidates directly to use the other candidates.`,
+        );
+      }
+      if (hadBadFinishReason(response.candidates[0]!)) {
+        throw new AIError(
+          AIErrorCode.RESPONSE_ERROR,
+          `Response error: ${formatBlockErrorMessage(
+            response,
+          )}. Response body stored in error.response`,
+          {
+            response,
+          },
+        );
+      }
+      return getInlineDataParts(response);
+    } else if (response.promptFeedback) {
+      throw new AIError(
+        AIErrorCode.RESPONSE_ERROR,
+        `Data not available. ${formatBlockErrorMessage(response)}`,
+        {
+          response,
+        },
+      );
+    }
+    return undefined;
   };
   (response as EnhancedGenerateContentResponse).functionCalls = () => {
     if (response.candidates && response.candidates.length > 0) {
@@ -94,8 +129,8 @@ export function addHelpers(response: GenerateContentResponse): EnhancedGenerateC
         );
       }
       if (hadBadFinishReason(response.candidates[0]!)) {
-        throw new VertexAIError(
-          VertexAIErrorCode.RESPONSE_ERROR,
+        throw new AIError(
+          AIErrorCode.RESPONSE_ERROR,
           `Response error: ${formatBlockErrorMessage(
             response,
           )}. Response body stored in error.response`,
@@ -106,8 +141,8 @@ export function addHelpers(response: GenerateContentResponse): EnhancedGenerateC
       }
       return getFunctionCalls(response);
     } else if (response.promptFeedback) {
-      throw new VertexAIError(
-        VertexAIErrorCode.RESPONSE_ERROR,
+      throw new AIError(
+        AIErrorCode.RESPONSE_ERROR,
         `Function call not available. ${formatBlockErrorMessage(response)}`,
         {
           response,
@@ -125,7 +160,7 @@ export function addHelpers(response: GenerateContentResponse): EnhancedGenerateC
 export function getText(response: GenerateContentResponse): string {
   const textStrings = [];
   if (response.candidates?.[0]?.content?.parts) {
-    for (const part of response.candidates?.[0].content?.parts) {
+    for (const part of response.candidates?.[0]?.content?.parts) {
       if (part.text) {
         textStrings.push(part.text);
       }
@@ -139,7 +174,7 @@ export function getText(response: GenerateContentResponse): string {
 }
 
 /**
- * Returns <code>{@link FunctionCall}</code>s associated with first candidate.
+ * Returns {@link FunctionCall}s associated with first candidate.
  */
 export function getFunctionCalls(response: GenerateContentResponse): FunctionCall[] | undefined {
   const functionCalls: FunctionCall[] = [];
@@ -152,6 +187,31 @@ export function getFunctionCalls(response: GenerateContentResponse): FunctionCal
   }
   if (functionCalls.length > 0) {
     return functionCalls;
+  } else {
+    return undefined;
+  }
+}
+
+/**
+ * Returns {@link InlineDataPart}s in the first candidate if present.
+ *
+ * @internal
+ */
+export function getInlineDataParts(
+  response: GenerateContentResponse,
+): InlineDataPart[] | undefined {
+  const data: InlineDataPart[] = [];
+
+  if (response.candidates?.[0]?.content?.parts) {
+    for (const part of response.candidates?.[0]?.content?.parts) {
+      if (part.inlineData) {
+        data.push(part);
+      }
+    }
+  }
+
+  if (data.length > 0) {
+    return data;
   } else {
     return undefined;
   }
