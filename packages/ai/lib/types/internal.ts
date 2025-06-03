@@ -15,11 +15,18 @@
  * limitations under the License.
  */
 import { FirebaseAppCheckTypes } from '@react-native-firebase/app-check';
+import { Backend } from '../public-types';
 
 export interface ApiSettings {
   apiKey: string;
+  appId: string;
   project: string;
+  /**
+   * @deprecated Use `backend.location` instead.
+   */
   location: string;
+  automaticDataCollectionEnabled?: boolean;
+  backend: Backend;
   getAuthToken?: () => Promise<string>;
   getAppCheckToken?: () => Promise<FirebaseAppCheckTypes.AppCheckTokenResult>;
 }
