@@ -43,23 +43,42 @@ export enum HarmCategory {
  * @public
  */
 export enum HarmBlockThreshold {
-  // Content with NEGLIGIBLE will be allowed.
+  /**
+   * Content with `NEGLIGIBLE` will be allowed.
+   */
   BLOCK_LOW_AND_ABOVE = 'BLOCK_LOW_AND_ABOVE',
-  // Content with NEGLIGIBLE and LOW will be allowed.
+  /**
+   * Content with `NEGLIGIBLE` and `LOW` will be allowed.
+   */
   BLOCK_MEDIUM_AND_ABOVE = 'BLOCK_MEDIUM_AND_ABOVE',
-  // Content with NEGLIGIBLE, LOW, and MEDIUM will be allowed.
+  /**
+   * Content with `NEGLIGIBLE`, `LOW`, and `MEDIUM` will be allowed.
+   */
   BLOCK_ONLY_HIGH = 'BLOCK_ONLY_HIGH',
-  // All content will be allowed.
+  /**
+   * All content will be allowed.
+   */
   BLOCK_NONE = 'BLOCK_NONE',
+  /**
+   * All content will be allowed. This is the same as `BLOCK_NONE`, but the metadata corresponding
+   * to the {@link HarmCategory} will not be present in the response.
+   */
+  OFF = 'OFF',
 }
 
 /**
+ * This property is not supported in the Gemini Developer API ({@link GoogleAIBackend}).
+ *
  * @public
  */
 export enum HarmBlockMethod {
-  // The harm block method uses both probability and severity scores.
+  /**
+   * The harm block method uses both probability and severity scores.
+   */
   SEVERITY = 'SEVERITY',
-  // The harm block method uses the probability score.
+  /**
+   * The harm block method uses the probability score.
+   */
   PROBABILITY = 'PROBABILITY',
 }
 
@@ -68,13 +87,21 @@ export enum HarmBlockMethod {
  * @public
  */
 export enum HarmProbability {
-  // Content has a negligible chance of being unsafe.
+  /**
+   * Content has a negligible chance of being unsafe.
+   */
   NEGLIGIBLE = 'NEGLIGIBLE',
-  // Content has a low chance of being unsafe.
+  /**
+   * Content has a low chance of being unsafe.
+   */
   LOW = 'LOW',
-  // Content has a medium chance of being unsafe.
+  /**
+   * Content has a medium chance of being unsafe.
+   */
   MEDIUM = 'MEDIUM',
-  // Content has a high chance of being unsafe.
+  /**
+   * Content has a high chance of being unsafe.
+   */
   HIGH = 'HIGH',
 }
 
@@ -83,13 +110,21 @@ export enum HarmProbability {
  * @public
  */
 export enum HarmSeverity {
-  // Negligible level of harm severity.
+  /**
+   * Negligible level of harm severity.
+   */
   HARM_SEVERITY_NEGLIGIBLE = 'HARM_SEVERITY_NEGLIGIBLE',
-  // Low level of harm severity.
+  /**
+   * Low level of harm severity.
+   */
   HARM_SEVERITY_LOW = 'HARM_SEVERITY_LOW',
-  // Medium level of harm severity.
+  /**
+   * Medium level of harm severity.
+   */
   HARM_SEVERITY_MEDIUM = 'HARM_SEVERITY_MEDIUM',
-  // High level of harm severity.
+  /**
+   * High level of harm severity.
+   */
   HARM_SEVERITY_HIGH = 'HARM_SEVERITY_HIGH',
   /**
    * Harm severity is not supported.
@@ -105,14 +140,22 @@ export enum HarmSeverity {
  * @public
  */
 export enum BlockReason {
-  // The prompt was blocked because it contained terms from the terminology blocklist.
-  BLOCKLIST = 'BLOCKLIST',
-  // The prompt was blocked due to prohibited content.
-  PROHIBITED_CONTENT = 'PROHIBITED_CONTENT',
-  // Content was blocked by safety settings.
+  /**
+   * Content was blocked by safety settings.
+   */
   SAFETY = 'SAFETY',
-  // Content was blocked, but the reason is uncategorized.
+  /**
+   * Content was blocked, but the reason is uncategorized.
+   */
   OTHER = 'OTHER',
+  /**
+   * Content was blocked because it contained terms from the terminology blocklist.
+   */
+  BLOCKLIST = 'BLOCKLIST',
+  /**
+   * Content was blocked due to prohibited content.
+   */
+  PROHIBITED_CONTENT = 'PROHIBITED_CONTENT',
 }
 
 /**
@@ -120,37 +163,119 @@ export enum BlockReason {
  * @public
  */
 export enum FinishReason {
-  // Token generation was stopped because the response contained forbidden terms.
-  BLOCKLIST = 'BLOCKLIST',
-  // Token generation was stopped because the response contained potentially prohibited content.
-  PROHIBITED_CONTENT = 'PROHIBITED_CONTENT',
-  // Token generation was stopped because of Sensitive Personally Identifiable Information (SPII).
-  SPII = 'SPII',
-  // Natural stop point of the model or provided stop sequence.
+  /**
+   * Natural stop point of the model or provided stop sequence.
+   */
   STOP = 'STOP',
-  // The maximum number of tokens as specified in the request was reached.
+  /**
+   * The maximum number of tokens as specified in the request was reached.
+   */
   MAX_TOKENS = 'MAX_TOKENS',
-  // The candidate content was flagged for safety reasons.
+  /**
+   * The candidate content was flagged for safety reasons.
+   */
   SAFETY = 'SAFETY',
-  // The candidate content was flagged for recitation reasons.
+  /**
+   * The candidate content was flagged for recitation reasons.
+   */
   RECITATION = 'RECITATION',
-  // Unknown reason.
+  /**
+   * Unknown reason.
+   */
   OTHER = 'OTHER',
+  /**
+   * The candidate content contained forbidden terms.
+   */
+  BLOCKLIST = 'BLOCKLIST',
+  /**
+   * The candidate content potentially contained prohibited content.
+   */
+  PROHIBITED_CONTENT = 'PROHIBITED_CONTENT',
+  /**
+   * The candidate content potentially contained Sensitive Personally Identifiable Information (SPII).
+   */
+  SPII = 'SPII',
+  /**
+   * The function call generated by the model was invalid.
+   */
+  MALFORMED_FUNCTION_CALL = 'MALFORMED_FUNCTION_CALL',
 }
 
 /**
  * @public
  */
 export enum FunctionCallingMode {
-  // Default model behavior, model decides to predict either a function call
-  // or a natural language response.
+  /**
+   * Default model behavior; model decides to predict either a function call
+   * or a natural language response.
+   */
   AUTO = 'AUTO',
-  // Model is constrained to always predicting a function call only.
-  // If "allowed_function_names" is set, the predicted function call will be
-  // limited to any one of "allowed_function_names", else the predicted
-  // function call will be any one of the provided "function_declarations".
+  /**
+   * Model is constrained to always predicting a function call only.
+   * If `allowed_function_names` is set, the predicted function call will be
+   * limited to any one of `allowed_function_names`, else the predicted
+   * function call will be any one of the provided `function_declarations`.
+   */
   ANY = 'ANY',
-  // Model will not predict any function call. Model behavior is same as when
-  // not passing any function declarations.
+  /**
+   * Model will not predict any function call. Model behavior is same as when
+   * not passing any function declarations.
+   */
   NONE = 'NONE',
 }
+
+/**
+ * Content part modality.
+ * @public
+ */
+export enum Modality {
+  /**
+   * Unspecified modality.
+   */
+  MODALITY_UNSPECIFIED = 'MODALITY_UNSPECIFIED',
+  /**
+   * Plain text.
+   */
+  TEXT = 'TEXT',
+  /**
+   * Image.
+   */
+  IMAGE = 'IMAGE',
+  /**
+   * Video.
+   */
+  VIDEO = 'VIDEO',
+  /**
+   * Audio.
+   */
+  AUDIO = 'AUDIO',
+  /**
+   * Document (for example, PDF).
+   */
+  DOCUMENT = 'DOCUMENT',
+}
+
+/**
+ * Generation modalities to be returned in generation responses.
+ *
+ * @beta
+ */
+export const ResponseModality = {
+  /**
+   * Text.
+   * @beta
+   */
+  TEXT: 'TEXT',
+  /**
+   * Image.
+   * @beta
+   */
+  IMAGE: 'IMAGE',
+} as const;
+
+/**
+ * Generation modalities to be returned in generation responses.
+ *
+ * @beta
+ */
+export type ResponseModality = (typeof ResponseModality)[keyof typeof ResponseModality];
