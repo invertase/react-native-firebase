@@ -17,7 +17,7 @@
 
 import { version } from './version';
 
-export const VERTEX_TYPE = 'vertexAI';
+export const AI_TYPE = 'AI';
 
 export const DEFAULT_LOCATION = 'us-central1';
 

@@ -62,7 +62,7 @@ export interface CustomErrorData {
  *
  * @public
  */
-export const enum VertexAIErrorCode {
+export const enum AIErrorCode {
   /** A generic error occurred. */
   ERROR = 'error',
 
@@ -87,6 +87,9 @@ export const enum VertexAIErrorCode {
   /** An error occurred due to a missing Firebase API key. */
   NO_API_KEY = 'no-api-key',
 
+  /** An error occurred due to a missing Firebase app ID. */
+  NO_APP_ID = 'no-app-id',
+
   /** An error occurred due to a model name not being specified during initialization. */
   NO_MODEL = 'no-model',
 
@@ -95,4 +98,7 @@ export const enum VertexAIErrorCode {
 
   /** An error occurred while parsing. */
   PARSE_FAILED = 'parse-failed',
+
+  /** An error occured due an attempt to use an unsupported feature. */
+  UNSUPPORTED = 'unsupported',
 }
