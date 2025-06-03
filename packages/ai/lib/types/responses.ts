@@ -16,7 +16,14 @@
  */
 
 import { Content, FunctionCall, InlineDataPart } from './content';
-import { BlockReason, FinishReason, HarmCategory, HarmProbability, HarmSeverity } from './enums';
+import {
+  BlockReason,
+  FinishReason,
+  HarmCategory,
+  HarmProbability,
+  HarmSeverity,
+  Modality,
+} from './enums';
 
 /**
  * Result object returned from {@link GenerativeModel.generateContent} call.
@@ -77,7 +84,7 @@ export interface GenerateContentResponse {
 }
 
 /**
- * Usage metadata about a <code>{@link GenerateContentResponse}</code>.
+ * Usage metadata about a {@link GenerateContentResponse}.
  *
  * @public
  */
@@ -85,6 +92,20 @@ export interface UsageMetadata {
   promptTokenCount: number;
   candidatesTokenCount: number;
   totalTokenCount: number;
+  promptTokensDetails?: ModalityTokenCount[];
+  candidatesTokensDetails?: ModalityTokenCount[];
+}
+
+/**
+ * Represents token counting info for a single modality.
+ *
+ * @public
+ */
+export interface ModalityTokenCount {
+  /** The modality associated with this token count. */
+  modality: Modality;
+  /** The number of tokens counted. */
+  tokenCount: number;
 }
 
 /**
@@ -95,11 +116,16 @@ export interface UsageMetadata {
 export interface PromptFeedback {
   blockReason?: BlockReason;
   safetyRatings: SafetyRating[];
+  /**
+   * A human-readable description of the `blockReason`.
+   *
+   * This property is only supported in the Vertex AI Gemini API ({@link VertexAIBackend}).
+   */
   blockReasonMessage?: string;
 }
 
 /**
- * A candidate returned as part of a <code>{@link GenerateContentResponse}</code>.
+ * A candidate returned as part of a {@link GenerateContentResponse}.
  * @public
  */
 export interface GenerateContentCandidate {
@@ -113,7 +139,7 @@ export interface GenerateContentCandidate {
 }
 
 /**
- * Citation metadata that may be found on a <code>{@link GenerateContentCandidate}</code>.
+ * Citation metadata that may be found on a {@link GenerateContentCandidate}.
  * @public
  */
 export interface CitationMetadata {
@@ -129,7 +155,17 @@ export interface Citation {
   endIndex?: number;
   uri?: string;
   license?: string;
+  /**
+   * The title of the cited source, if available.
+   *
+   * This property is only supported in the Vertex AI Gemini API ({@link VertexAIBackend}).
+   */
   title?: string;
+  /**
+   * The publication date of the cited source, if available.
+   *
+   * This property is only supported in the Vertex AI Gemini API ({@link VertexAIBackend}).
+   */
   publicationDate?: Date;
 }
 
@@ -140,10 +176,14 @@ export interface Citation {
 export interface GroundingMetadata {
   webSearchQueries?: string[];
   retrievalQueries?: string[];
+  /**
+   * @deprecated
+   */
   groundingAttributions: GroundingAttribution[];
 }
 
 /**
+ * @deprecated
  * @public
  */
 export interface GroundingAttribution {
@@ -189,14 +229,32 @@ export interface Date {
 }
 
 /**
- * A safety rating associated with a <code>{@link GenerateContentCandidate}</code>
+ * A safety rating associated with a {@link GenerateContentCandidate}
  * @public
  */
 export interface SafetyRating {
   category: HarmCategory;
   probability: HarmProbability;
+  /**
+   * The harm severity level.
+   *
+   * This property is only supported when using the Vertex AI Gemini API ({@link VertexAIBackend}).
+   * When using the Gemini Developer API ({@link GoogleAIBackend}), this property is not supported and will default to `HarmSeverity.UNSUPPORTED`.
+   */
   severity: HarmSeverity;
+  /**
+   * The probability score of the harm category.
+   *
+   * This property is only supported when using the Vertex AI Gemini API ({@link VertexAIBackend}).
+   * When using the Gemini Developer API ({@link GoogleAIBackend}), this property is not supported and will default to 0.
+   */
   probabilityScore: number;
+  /**
+   * The severity score of the harm category.
+   *
+   * This property is only supported when using the Vertex AI Gemini API ({@link VertexAIBackend}).
+   * When using the Gemini Developer API ({@link GoogleAIBackend}), this property is not supported and will default to 0.
+   */
   severityScore: number;
   blocked: boolean;
 }
@@ -213,6 +271,13 @@ export interface CountTokensResponse {
   /**
    * The total number of billable characters counted across all instances
    * from the request.
+   *
+   * This property is only supported when using the Vertex AI Gemini API ({@link VertexAIBackend}).
+   * When using the Gemini Developer API ({@link GoogleAIBackend}), this property is not supported and will default to 0.
    */
   totalBillableCharacters?: number;
+  /**
+   * The breakdown, by modality, of how many tokens are consumed by the prompt.
+   */
+  promptTokensDetails?: ModalityTokenCount[];
 }
