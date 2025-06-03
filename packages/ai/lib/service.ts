@@ -16,24 +16,28 @@
  */
 
 import { ReactNativeFirebase } from '@react-native-firebase/app';
-import { VertexAI, VertexAIOptions } from './public-types';
-import { DEFAULT_LOCATION } from './constants';
+import { AI, Backend } from './public-types';
 import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { FirebaseAppCheckTypes } from '@react-native-firebase/app-check';
+import { VertexAIBackend } from './backend';
 
-export class VertexAIService implements VertexAI {
+export class AIService implements AI {
   auth: FirebaseAuthTypes.Module | null;
   appCheck: FirebaseAppCheckTypes.Module | null;
   location: string;
 
   constructor(
     public app: ReactNativeFirebase.FirebaseApp,
+    public backend: Backend,
     auth?: FirebaseAuthTypes.Module,
     appCheck?: FirebaseAppCheckTypes.Module,
-    public options?: VertexAIOptions,
   ) {
     this.auth = auth || null;
     this.appCheck = appCheck || null;
-    this.location = this.options?.location || DEFAULT_LOCATION;
+    if (backend instanceof VertexAIBackend) {
+      this.location = backend.location;
+    } else {
+      this.location = '';
+    }
   }
 }
