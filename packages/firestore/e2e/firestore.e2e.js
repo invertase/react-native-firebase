@@ -1,3 +1,5 @@
+import { getFirestore } from "../lib";
+
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -913,6 +915,22 @@ describe('firestore()', function () {
             e.message.should.containEql('Not supported in the lite SDK');
           }
         });
+      });
+    });
+    describe('snapshotsInSync', function () {
+      it('snapshotsInSync fires', async function (){
+        if (Platform.other) {
+          return;
+        }
+
+        let events = [];
+        unsubscribe = onSnapshotsInSync(getFirestore(), () => {
+              events.push('onSnapshotsInSync');
+            });
+
+        events.length.should.equal(1);
+        events[0].should.equal('onSnapshotsInSync');
+        unsubscribe();
       });
     });
   });
