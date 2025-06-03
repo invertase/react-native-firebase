@@ -10,5 +10,3 @@ The new Firebase AI Logic SDK provides **preview** support for the Gemini Develo
 Using the Firebase AI Logic SDK with the Vertex AI Gemini API is still generally available (GA).
 
 To start using the new SDK, import the `@react-native-firebase/ai` package and use the modular method `getAI()` to initialize. See details in the [migration guide](https://firebase.google.com/docs/vertex-ai/migrate-to-latest-sdk).
-
-
