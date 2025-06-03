@@ -16,15 +16,15 @@
  */
 
 import { FirebaseError } from '@firebase/util';
-import { VertexAIErrorCode, CustomErrorData } from './types';
-import { VERTEX_TYPE } from './constants';
+import { AIErrorCode, CustomErrorData } from './types';
+import { AI_TYPE } from './constants';
 
 /**
  * Error class for the Vertex AI in Firebase SDK.
  *
  * @public
  */
-export class VertexAIError extends FirebaseError {
+export class AIError extends FirebaseError {
   /**
    * Constructs a new instance of the `VertexAIError` class.
    *
@@ -33,18 +33,17 @@ export class VertexAIError extends FirebaseError {
    * @param customErrorData - Optional error data.
    */
   constructor(
-    readonly code: VertexAIErrorCode,
+    readonly code: AIErrorCode,
     message: string,
     readonly customErrorData?: CustomErrorData,
   ) {
     // Match error format used by FirebaseError from ErrorFactory
-    const service = VERTEX_TYPE;
-    const serviceName = 'VertexAI';
+    const service = AI_TYPE;
     const fullCode = `${service}/${code}`;
-    const fullMessage = `${serviceName}: ${message} (${fullCode})`;
+    const fullMessage = `${service}: ${message} (${fullCode})`;
     super(code, fullMessage);
 
-    Object.setPrototypeOf(this, VertexAIError.prototype);
+    Object.setPrototypeOf(this, AIError.prototype);
 
     // Since Error is an interface, we don't inherit toString and so we define it ourselves.
     this.toString = () => fullMessage;

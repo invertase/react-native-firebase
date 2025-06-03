@@ -31,23 +31,18 @@ import {
   StartChatParams,
   Tool,
   ToolConfig,
-  VertexAIErrorCode,
 } from '../types';
-import { VertexAIError } from '../errors';
 import { ChatSession } from '../methods/chat-session';
 import { countTokens } from '../methods/count-tokens';
 import { formatGenerateContentInput, formatSystemInstruction } from '../requests/request-helpers';
-import { VertexAI } from '../public-types';
-import { ApiSettings } from '../types/internal';
-import { VertexAIService } from '../service';
+import { AIModel } from './ai-model';
+import { AI } from '../public-types';
 
 /**
  * Class for generative model APIs.
  * @public
  */
-export class GenerativeModel {
-  private _apiSettings: ApiSettings;
-  model: string;
+export class GenerativeModel extends AIModel {
   generationConfig: GenerationConfig;
   safetySettings: SafetySetting[];
   requestOptions?: RequestOptions;
@@ -55,45 +50,8 @@ export class GenerativeModel {
   toolConfig?: ToolConfig;
   systemInstruction?: Content;
 
-  constructor(vertexAI: VertexAI, modelParams: ModelParams, requestOptions?: RequestOptions) {
-    if (!vertexAI.app?.options?.apiKey) {
-      throw new VertexAIError(
-        VertexAIErrorCode.NO_API_KEY,
-        `The "apiKey" field is empty in the local Firebase config. Firebase VertexAI requires this field to contain a valid API key.`,
-      );
-    } else if (!vertexAI.app?.options?.projectId) {
-      throw new VertexAIError(
-        VertexAIErrorCode.NO_PROJECT_ID,
-        `The "projectId" field is empty in the local Firebase config. Firebase VertexAI requires this field to contain a valid project ID.`,
-      );
-    } else {
-      this._apiSettings = {
-        apiKey: vertexAI.app.options.apiKey,
-        project: vertexAI.app.options.projectId,
-        location: vertexAI.location,
-      };
-      if ((vertexAI as VertexAIService).appCheck) {
-        this._apiSettings.getAppCheckToken = () =>
-          (vertexAI as VertexAIService).appCheck!.getToken();
-      }
-
-      if ((vertexAI as VertexAIService).auth?.currentUser) {
-        this._apiSettings.getAuthToken = () =>
-          (vertexAI as VertexAIService).auth!.currentUser!.getIdToken();
-      }
-    }
-    if (modelParams.model.includes('/')) {
-      if (modelParams.model.startsWith('models/')) {
-        // Add "publishers/google" if the user is only passing in 'models/model-name'.
-        this.model = `publishers/google/${modelParams.model}`;
-      } else {
-        // Any other custom format (e.g. tuned models) must be passed in correctly.
-        this.model = modelParams.model;
-      }
-    } else {
-      // If path is not included, assume it's a non-tuned model.
-      this.model = `publishers/google/models/${modelParams.model}`;
-    }
+  constructor(ai: AI, modelParams: ModelParams, requestOptions?: RequestOptions) {
+    super(ai, modelParams.model);
     this.generationConfig = modelParams.generationConfig || {};
     this.safetySettings = modelParams.safetySettings || [];
     this.tools = modelParams.tools;
@@ -104,7 +62,7 @@ export class GenerativeModel {
 
   /**
    * Makes a single non-streaming call to the model
-   * and returns an object containing a single <code>{@link GenerateContentResponse}</code>.
+   * and returns an object containing a single {@link GenerateContentResponse}.
    */
   async generateContent(
     request: GenerateContentRequest | string | Array<string | Part>,
@@ -151,7 +109,7 @@ export class GenerativeModel {
   }
 
   /**
-   * Gets a new <code>{@link ChatSession}</code> instance which can be used for
+   * Gets a new {@link ChatSession} instance which can be used for
    * multi-turn chats.
    */
   startChat(startChatParams?: StartChatParams): ChatSession {
@@ -162,6 +120,13 @@ export class GenerativeModel {
         tools: this.tools,
         toolConfig: this.toolConfig,
         systemInstruction: this.systemInstruction,
+        generationConfig: this.generationConfig,
+        safetySettings: this.safetySettings,
+        /**
+         * Overrides params inherited from GenerativeModel with those explicitly set in the
+         * StartChatParams. For example, if startChatParams.generationConfig is set, it'll override
+         * this.generationConfig.
+         */
         ...startChatParams,
       },
       this.requestOptions,
