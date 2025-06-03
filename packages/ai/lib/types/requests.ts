@@ -17,7 +17,13 @@
 
 import { TypedSchema } from '../requests/schema-builder';
 import { Content, Part } from './content';
-import { FunctionCallingMode, HarmBlockMethod, HarmBlockThreshold, HarmCategory } from './enums';
+import {
+  FunctionCallingMode,
+  HarmBlockMethod,
+  HarmBlockThreshold,
+  HarmCategory,
+  ResponseModality,
+} from './enums';
 import { ObjectSchemaInterface, SchemaRequest } from './schema';
 
 /**
@@ -30,7 +36,7 @@ export interface BaseParams {
 }
 
 /**
- * Params passed to <code>{@link getGenerativeModel}</code>.
+ * Params passed to {@link getGenerativeModel}.
  * @public
  */
 export interface ModelParams extends BaseParams {
@@ -58,6 +64,13 @@ export interface GenerateContentRequest extends BaseParams {
 export interface SafetySetting {
   category: HarmCategory;
   threshold: HarmBlockThreshold;
+  /**
+   * The harm block method.
+   *
+   * This property is only supported in the Vertex AI Gemini API ({@link VertexAIBackend}).
+   * When using the Gemini Developer API ({@link GoogleAIBackend}), an {@link AIError} will be
+   * thrown if this property is defined.
+   */
   method?: HarmBlockMethod;
 }
 
@@ -83,13 +96,23 @@ export interface GenerationConfig {
   responseMimeType?: string;
   /**
    * Output response schema of the generated candidate text. This
-   * value can be a class generated with a <code>{@link Schema}</code> static method
+   * value can be a class generated with a {@link Schema} static method
    * like `Schema.string()` or `Schema.object()` or it can be a plain
-   * JS object matching the <code>{@link SchemaRequest}</code> interface.
+   * JS object matching the {@link SchemaRequest} interface.
    * <br/>Note: This only applies when the specified `responseMIMEType` supports a schema; currently
    * this is limited to `application/json` and `text/x.enum`.
    */
   responseSchema?: TypedSchema | SchemaRequest;
+  /**
+   * Generation modalities to be returned in generation responses.
+   *
+   * @remarks
+   *  - Multimodal response generation is only supported by some Gemini models and versions; see {@link https://firebase.google.com/docs/vertex-ai/models | model versions}.
+   *  - Only image generation (`ResponseModality.IMAGE`) is supported.
+   *
+   * @beta
+   */
+  responseModalities?: ResponseModality[];
 }
 
 /**
@@ -109,10 +132,22 @@ export interface StartChatParams extends BaseParams {
  */
 export interface CountTokensRequest {
   contents: Content[];
+  /**
+   * Instructions that direct the model to behave a certain way.
+   */
+  systemInstruction?: string | Part | Content;
+  /**
+   * {@link Tool} configuration.
+   */
+  tools?: Tool[];
+  /**
+   * Configuration options that control how the model generates a response.
+   */
+  generationConfig?: GenerationConfig;
 }
 
 /**
- * Params passed to <code>{@link getGenerativeModel}</code>.
+ * Params passed to {@link getGenerativeModel}.
  * @public
  */
 export interface RequestOptions {
@@ -172,8 +207,8 @@ export declare interface FunctionDeclarationsTool {
    * Optional. One or more function declarations
    * to be passed to the model along with the current user query. Model may
    * decide to call a subset of these functions by populating
-   * <code>{@link FunctionCall}</code> in the response. User should
-   * provide a <code>{@link FunctionResponse}</code> for each
+   * {@link FunctionCall} in the response. User should
+   * provide a {@link FunctionResponse} for each
    * function call in the next turn. Based on the function responses, the model will
    * generate the final response back to the user. Maximum 64 function
    * declarations can be provided.
