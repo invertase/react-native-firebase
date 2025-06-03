@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Content, FunctionCall } from './content';
+import { Content, FunctionCall, InlineDataPart } from './content';
 import { BlockReason, FinishReason, HarmCategory, HarmProbability, HarmSeverity } from './enums';
 
 /**
@@ -51,6 +51,15 @@ export interface EnhancedGenerateContentResponse extends GenerateContentResponse
    * Throws if the prompt or candidate was blocked.
    */
   text: () => string;
+  /**
+   * Aggregates and returns all {@link InlineDataPart}s from the {@link GenerateContentResponse}'s
+   * first candidate.
+   *
+   * @returns An array of {@link InlineDataPart}s containing data from the response, if available.
+   *
+   * @throws If the prompt or candidate was blocked.
+   */
+  inlineDataParts: () => InlineDataPart[] | undefined;
   functionCalls: () => FunctionCall[] | undefined;
 }
 
