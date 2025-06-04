@@ -255,10 +255,6 @@ RCT_EXPORT_METHOD(addSnapshotsInSync
   }
 
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId];
-  if (!firestore) {
-    reject(@"firestore/not-found", @"Firestore instance not found.", nil);
-    return;
-  }
 
   id<FIRListenerRegistration> listener = [firestore addSnapshotsInSyncListener:^{
     [[RNFBRCTEventEmitter shared]
