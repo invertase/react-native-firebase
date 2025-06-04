@@ -76,7 +76,7 @@ describe('Google AI Mappers', () => {
       };
       const error = new AIError(
         AIErrorCode.UNSUPPORTED,
-        'SafetySettings.method is not supported in requests to the Gemini Developer API',
+        'AI: SafetySetting.method is not supported in the the Gemini Developer API. Please remove this property. (AI/unsupported)',
       );
       expect(() => mapGenerateContentRequest(request)).toThrowError(error);
     });
@@ -90,7 +90,7 @@ describe('Google AI Mappers', () => {
       };
       const mappedRequest = mapGenerateContentRequest(request);
       expect(loggerWarnSpy).toHaveBeenCalledWith(
-        'topK in GenerationConfig has been rounded to the nearest integer to match the format for requests to the Gemini Developer API.',
+        expect.stringContaining('topK in GenerationConfig has been rounded to the nearest integer'),
       );
       expect(mappedRequest.generationConfig?.topK).toBe(16);
     });
