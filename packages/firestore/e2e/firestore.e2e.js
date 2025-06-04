@@ -918,19 +918,37 @@ describe('firestore()', function () {
       });
     });
     describe('snapshotsInSync', function () {
+      const {
+        getFirestore,
+        onSnapshotsInSync,
+        doc,
+        setDoc,
+        deleteDoc
+      } = firestoreModular;
+
       it('snapshotsInSync fires', async function (){
         if (Platform.other) {
           return;
         }
 
-        let events = [];
-        unsubscribe = onSnapshotsInSync(getFirestore(), () => {
-              events.push('onSnapshotsInSync');
-            });
+        const events = [];
+        const testDoc = doc(getFirestore(), `${COLLECTION}/snapshotsInSync`);
+        
+        const promise = new Promise((resolve) => {
+          const unsubscribe = onSnapshotsInSync(getFirestore(), () => {
+            events.push('onSnapshotsInSync');
+            unsubscribe();
+            resolve();
+          });
+        });
+
+        // Trigger a write to force sync
+        await setDoc(testDoc, { test: true });
+        await promise;
+        await deleteDoc(testDoc);
 
         events.length.should.equal(1);
         events[0].should.equal('onSnapshotsInSync');
-        unsubscribe();
       });
     });
   });
