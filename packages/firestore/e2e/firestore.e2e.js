@@ -915,11 +915,9 @@ describe('firestore()', function () {
         });
       });
     });
-    
+
     describe('snapshotsInSync', function () {
-      const {
-        getFirestore, onSnapshotsInSync, doc, setDoc, deleteDoc
-      } = firestoreModular;
+      const { getFirestore, onSnapshotsInSync, doc, setDoc, deleteDoc } = firestoreModular;
 
       it('snapshotsInSync fires', async function () {
         if (Platform.other) {
@@ -929,7 +927,7 @@ describe('firestore()', function () {
         const events = [];
         const testDoc = doc(getFirestore(), `${COLLECTION}/snapshotsInSync`);
 
-        const promise = new Promise((resolve) => {
+        const promise = new Promise(resolve => {
           const unsubscribe = onSnapshotsInSync(getFirestore(), () => {
             events.push('onSnapshotsInSync');
             unsubscribe();

@@ -142,57 +142,6 @@ class FirebaseFirestoreModule extends FirebaseModule {
     await this.native.terminate();
   }
 
-  onSnapshot(...args) {
-    let snapshotListenOptions;
-    let callback;
-    let onNext;
-    let onError;
-
-    try {
-      const options = parseSnapshotArgs(args);
-      snapshotListenOptions = options.snapshotListenOptions;
-      callback = options.callback;
-      onNext = options.onNext;
-      onError = options.onError;
-    } catch (e) {
-      throw new Error(`firebase.firestore().doc().onSnapshot(*) ${e.message}`);
-    }
-
-    function handleSuccess(documentSnapshot) {
-      callback(documentSnapshot, null);
-      onNext(documentSnapshot);
-    }
-
-    function handleError(error) {
-      callback(null, error);
-      onError(error);
-    }
-
-    const listenerId = _id++;
-
-    const onSnapshotSubscription = this._firestore.emitter.addListener(
-      this._firestore.eventNameForApp(`firestore_snapshots_in_sync_event:${listenerId}`),
-      event => {
-        if (event.body.error) {
-          handleError(NativeError.fromEvent(event.body.error, 'firestore'));
-        } else {
-          const documentSnapshot = createDeprecationProxy(
-            new FirestoreDocumentSnapshot(this._firestore, event.body.snapshot),
-          );
-          handleSuccess(documentSnapshot);
-        }
-      },
-    );
-
-    const unsubscribe = () => {
-      onSnapshotSubscription.remove();
-      this._firestore.native.documentOffSnapshot(listenerId);
-    };
-
-    this.firestore.native.snapshotsInSyncListener(listenerId);
-    return unsubscribe;
-  }
-
   useEmulator(host, port) {
     if (!host || !isString(host) || !port || !isNumber(port)) {
       throw new Error('firebase.firestore().useEmulator() takes a non-empty host and port');
