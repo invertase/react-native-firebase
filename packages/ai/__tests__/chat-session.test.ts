@@ -21,11 +21,14 @@ import { GenerateContentStreamResult } from '../lib/types';
 import { ChatSession } from '../lib/methods/chat-session';
 import { ApiSettings } from '../lib/types/internal';
 import { RequestOptions } from '../lib/types/requests';
+import { VertexAIBackend } from '../lib/backend';
 
 const fakeApiSettings: ApiSettings = {
   apiKey: 'key',
   project: 'my-project',
+  appId: 'my-appid',
   location: 'us-central1',
+  backend: new VertexAIBackend(),
 };
 
 const requestOptions: RequestOptions = {
