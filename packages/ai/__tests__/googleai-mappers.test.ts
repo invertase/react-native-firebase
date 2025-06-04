@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
-import { AIError } from '../lib/errors';
 import {
   mapCountTokensRequest,
   mapGenerateContentCandidates,
@@ -74,11 +73,14 @@ describe('Google AI Mappers', () => {
           },
         ],
       };
-      const error = new AIError(
-        AIErrorCode.UNSUPPORTED,
-        'AI: SafetySetting.method is not supported in the the Gemini Developer API. Please remove this property. (AI/unsupported)',
+
+      expect(() => mapGenerateContentRequest(request)).toThrowError(
+        expect.objectContaining({
+          code: AIErrorCode.UNSUPPORTED,
+          message:
+            'AI: SafetySetting.method is not supported in the the Gemini Developer API. Please remove this property. (AI/unsupported)',
+        }),
       );
-      expect(() => mapGenerateContentRequest(request)).toThrowError(error);
     });
 
     it('should warn and round topK if present', () => {
@@ -90,6 +92,7 @@ describe('Google AI Mappers', () => {
       };
       const mappedRequest = mapGenerateContentRequest(request);
       expect(loggerWarnSpy).toHaveBeenCalledWith(
+        expect.any(String), // First argument (timestamp)
         expect.stringContaining('topK in GenerationConfig has been rounded to the nearest integer'),
       );
       expect(mappedRequest.generationConfig?.topK).toBe(16);
@@ -299,7 +302,11 @@ describe('Google AI Mappers', () => {
         },
       ];
       expect(() => mapGenerateContentCandidates(candidates)).toThrowError(
-        new AIError(AIErrorCode.UNSUPPORTED, 'Part.videoMetadata is not supported'),
+        expect.objectContaining({
+          code: AIErrorCode.UNSUPPORTED,
+          message:
+            'AI: Part.videoMetadata is not supported in the Gemini Developer API. Please remove this property. (AI/unsupported)',
+        }),
       );
     });
 
