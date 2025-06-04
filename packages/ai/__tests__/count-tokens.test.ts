@@ -21,11 +21,14 @@ import { countTokens } from '../lib/methods/count-tokens';
 import { CountTokensRequest } from '../lib/types';
 import { ApiSettings } from '../lib/types/internal';
 import { Task } from '../lib/requests/request';
+import { GoogleAIBackend } from '../lib/backend';
 
 const fakeApiSettings: ApiSettings = {
   apiKey: 'key',
   project: 'my-project',
   location: 'us-central1',
+  appId: '',
+  backend: new GoogleAIBackend(),
 };
 
 const fakeRequestParams: CountTokensRequest = {
