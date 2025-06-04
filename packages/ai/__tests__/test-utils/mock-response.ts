@@ -17,6 +17,11 @@
 import { ReadableStream } from 'web-streams-polyfill';
 import { mocksLookup } from './mocks-lookup';
 
+export enum BackendName {
+  VertexAI = 'vertexai',
+  GoogleAI = 'googleai',
+}
+
 /**
  * Mock native Response.body
  * Streams contents of json file in 20 character chunks
@@ -40,10 +45,16 @@ export function getChunkedStream(input: string, chunkLength = 20): ReadableStrea
   return stream;
 }
 export function getMockResponseStreaming(
+  backendName: BackendName,
   filename: string,
   chunkLength: number = 20,
 ): Partial<Response> {
-  const fullText = mocksLookup[filename];
+  // @ts-ignore
+  const backendMocksLookup: Record<string, string> = mocksLookup[backendName];
+  if (!backendMocksLookup[filename]) {
+    throw Error(`${backendName} mock response file '${filename}' not found.`);
+  }
+  const fullText = backendMocksLookup[filename] as string;
 
   return {
     // Really tangled typescript error here from our transitive dependencies.
@@ -59,11 +70,10 @@ export function getMockResponseStreaming(
   };
 }
 
-type BackendName = 'vertexai' | 'googleai';
 export function getMockResponse(backendName: BackendName, filename: string): Partial<Response> {
   // @ts-ignore
   const backendMocksLookup: Record<string, string> = mocksLookup[backendName];
-  if (!(filename in backendMocksLookup)) {
+  if (!backendMocksLookup[filename]) {
     throw Error(`${backendName} mock response file '${filename}' not found.`);
   }
   const fullText = backendMocksLookup[filename] as string;
