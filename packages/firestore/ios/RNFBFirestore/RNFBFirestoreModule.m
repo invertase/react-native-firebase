@@ -288,7 +288,7 @@ RCT_EXPORT_METHOD(removeSnapshotsInSync
     [snapshotsInSyncListeners removeObjectForKey:listenerId];
   }
 
-  resolve(@{});
+  resolve(nil);
 }
 
 - (NSMutableDictionary *)taskProgressToDictionary:(FIRLoadBundleTaskProgress *)progress {
