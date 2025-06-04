@@ -944,7 +944,7 @@ describe('firestore()', function () {
         events[0].should.equal('onSnapshotsInSync');
       });
 
-      it('handles multiple writes and unsubscribe correctly', async function() {
+      it('handles multiple writes and unsubscribe correctly', async function () {
         if (Platform.other) {
           return;
         }
@@ -954,7 +954,7 @@ describe('firestore()', function () {
         const testDoc1 = doc(db, `${COLLECTION}/snapshotsInSync1`);
         const testDoc2 = doc(db, `${COLLECTION}/snapshotsInSync2`);
 
-        const promise = new Promise((resolve) => {
+        const promise = new Promise(resolve => {
           const unsubscribe = onSnapshotsInSync(db, () => {
             events.push('sync');
           });
