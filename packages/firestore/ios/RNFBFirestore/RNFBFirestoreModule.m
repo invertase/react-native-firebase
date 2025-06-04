@@ -16,11 +16,11 @@
  */
 
 #import "RNFBFirestoreModule.h"
+#import <RNFBApp/RNFBRCTEventEmitter.h>
 #import <React/RCTUtils.h>
 #import "FirebaseFirestoreInternal/FIRPersistentCacheIndexManager.h"
 #import "RNFBFirestoreCommon.h"
 #import "RNFBPreferences.h"
-#import <RNFBApp/RNFBRCTEventEmitter.h>
 
 NSMutableDictionary *emulatorConfigs;
 static __strong NSMutableDictionary *snapshotsInSyncListeners;
@@ -248,8 +248,7 @@ RCT_EXPORT_METHOD(addSnapshotsInSync
                   : (NSString *)databaseId
                   : (nonnull NSNumber *)listenerId
                   : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject)
-{
+                  : (RCTPromiseRejectBlock)reject) {
   if (snapshotsInSyncListeners[listenerId]) {
     resolve(@{});
     return;
@@ -282,8 +281,7 @@ RCT_EXPORT_METHOD(removeSnapshotsInSync
                   : (NSString *)databaseId
                   : (nonnull NSNumber *)listenerId
                   : (RCTPromiseResolveBlock)resolve
-                  : (RCTPromiseRejectBlock)reject)
-{
+                  : (RCTPromiseRejectBlock)reject) {
   id<FIRListenerRegistration> listener = snapshotsInSyncListeners[listenerId];
   if (listener) {
     [listener remove];
