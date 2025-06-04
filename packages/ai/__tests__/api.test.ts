@@ -47,8 +47,8 @@ describe('Top level API', () => {
     } catch (e) {
       expect((e as AIError).code).toContain(AIErrorCode.NO_MODEL);
       expect((e as AIError).message).toContain(
-        `VertexAI: Must provide a model name. Example: ` +
-          `getGenerativeModel({ model: 'my-model-name' }) (vertexAI/${AIErrorCode.NO_MODEL})`,
+        `AI: Must provide a model name. Example: ` +
+          `getGenerativeModel({ model: 'my-model-name' }) (${AI_TYPE}/${AIErrorCode.NO_MODEL})`,
       );
     }
   });
@@ -63,9 +63,9 @@ describe('Top level API', () => {
     } catch (e) {
       expect((e as AIError).code).toContain(AIErrorCode.NO_API_KEY);
       expect((e as AIError).message).toBe(
-        `VertexAI: The "apiKey" field is empty in the local ` +
-          `Firebase config. Firebase VertexAI requires this field to` +
-          ` contain a valid API key. (vertexAI/${AIErrorCode.NO_API_KEY})`,
+        `AI: The "apiKey" field is empty in the local ` +
+          `Firebase config. Firebase AI requires this field to` +
+          ` contain a valid API key. (${AI_TYPE}/${AIErrorCode.NO_API_KEY})`,
       );
     }
   });
@@ -80,9 +80,9 @@ describe('Top level API', () => {
     } catch (e) {
       expect((e as AIError).code).toContain(AIErrorCode.NO_PROJECT_ID);
       expect((e as AIError).message).toBe(
-        `VertexAI: The "projectId" field is empty in the local` +
-          ` Firebase config. Firebase VertexAI requires this field ` +
-          `to contain a valid project ID. (vertexAI/${AIErrorCode.NO_PROJECT_ID})`,
+        `AI: The "projectId" field is empty in the local` +
+          ` Firebase config. Firebase AI requires this field ` +
+          `to contain a valid project ID. (${AI_TYPE}/${AIErrorCode.NO_PROJECT_ID})`,
       );
     }
   });
