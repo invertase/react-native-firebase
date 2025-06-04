@@ -250,7 +250,7 @@ RCT_EXPORT_METHOD(addSnapshotsInSync
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   if (snapshotsInSyncListeners[listenerId]) {
-    resolve(@{});
+    resolve(nil);
     return;
   }
 
