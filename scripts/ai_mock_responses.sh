@@ -29,7 +29,7 @@ tail -n1)
 # Define the directory name using REPO_NAME and LATEST_TAG.
 CLONE_DIR="${REPO_NAME}_${LATEST_TAG//./_}"
 
-cd "$(dirname "$0")/../packages/vertexai/__tests__/test-utils" || exit
+cd "$(dirname "$0")/../packages/ai/__tests__/test-utils" || exit
 
 # Remove any directories that start with REPO_NAME but are not CLONE_DIR
 for dir in "${REPO_NAME}"*; do
