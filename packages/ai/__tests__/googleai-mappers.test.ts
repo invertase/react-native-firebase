@@ -41,7 +41,7 @@ import {
   PromptFeedback,
   SafetyRating,
 } from '../lib/public-types';
-import { getMockResponse } from './test-utils/mock-response';
+import { BackendName, getMockResponse } from './test-utils/mock-response';
 import { SpiedFunction } from 'jest-mock';
 
 const fakeModel = 'models/gemini-pro';
@@ -129,7 +129,7 @@ describe('Google AI Mappers', () => {
   describe('mapGenerateContentResponse', () => {
     it('should map a full Google AI response', async () => {
       const googleAIMockResponse: GoogleAIGenerateContentResponse = await (
-        getMockResponse('unary-success-citations.json') as Response
+        getMockResponse(BackendName.GoogleAI, 'unary-success-citations.json') as Response
       ).json();
       const mappedResponse = mapGenerateContentResponse(googleAIMockResponse);
 
