@@ -1,5 +1,3 @@
-import { getFirestore } from "../lib";
-
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -917,23 +915,20 @@ describe('firestore()', function () {
         });
       });
     });
+    
     describe('snapshotsInSync', function () {
       const {
-        getFirestore,
-        onSnapshotsInSync,
-        doc,
-        setDoc,
-        deleteDoc
+        getFirestore, onSnapshotsInSync, doc, setDoc, deleteDoc
       } = firestoreModular;
 
-      it('snapshotsInSync fires', async function (){
+      it('snapshotsInSync fires', async function () {
         if (Platform.other) {
           return;
         }
 
         const events = [];
         const testDoc = doc(getFirestore(), `${COLLECTION}/snapshotsInSync`);
-        
+
         const promise = new Promise((resolve) => {
           const unsubscribe = onSnapshotsInSync(getFirestore(), () => {
             events.push('onSnapshotsInSync');
@@ -960,7 +955,7 @@ describe('firestore()', function () {
         const db = getFirestore();
         const testDoc1 = doc(db, `${COLLECTION}/snapshotsInSync1`);
         const testDoc2 = doc(db, `${COLLECTION}/snapshotsInSync2`);
-        
+
         const promise = new Promise((resolve) => {
           const unsubscribe = onSnapshotsInSync(db, () => {
             events.push('sync');
@@ -969,16 +964,16 @@ describe('firestore()', function () {
           (async () => {
             await setDoc(testDoc1, { test: 1 });
             await setDoc(testDoc2, { test: 2 });
-            
+
             // Give some time for syncs to occur
             await new Promise(r => setTimeout(r, 1000));
-            
+
             unsubscribe();
             await setDoc(testDoc1, { test: 3 });
-            
+
             await deleteDoc(testDoc1);
             await deleteDoc(testDoc2);
-            
+
             resolve();
           })();
         });
