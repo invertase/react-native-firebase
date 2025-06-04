@@ -16,7 +16,7 @@
  */
 import { describe, expect, it } from '@jest/globals';
 import { Schema } from '../lib/requests/schema-builder';
-import { VertexAIErrorCode } from '../lib/types';
+import { AIErrorCode } from '../lib/types';
 
 describe('Schema builder', () => {
   it('builds integer schema', () => {
@@ -252,7 +252,7 @@ describe('Schema builder', () => {
       },
       optionalProperties: ['cat'],
     });
-    expect(() => schema.toJSON()).toThrow(VertexAIErrorCode.INVALID_SCHEMA);
+    expect(() => schema.toJSON()).toThrow(AIErrorCode.INVALID_SCHEMA);
   });
 });
 

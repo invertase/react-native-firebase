@@ -30,9 +30,19 @@ import {
   HarmCategory,
   HarmProbability,
   SafetyRating,
-  VertexAIErrorCode,
+  AIErrorCode,
 } from '../lib/types';
-import { VertexAIError } from '../lib/errors';
+import { AIError } from '../lib/errors';
+import { ApiSettings } from '../lib/types/internal';
+import { VertexAIBackend } from '../lib/backend';
+
+const fakeApiSettings: ApiSettings = {
+  apiKey: 'key',
+  project: 'my-project',
+  appId: 'my-appid',
+  location: 'us-central1',
+  backend: new VertexAIBackend(),
+};
 
 describe('stream-reader', () => {
   describe('getResponseStream', () => {
@@ -86,7 +96,7 @@ describe('stream-reader', () => {
 
     it('streaming response - short', async () => {
       const fakeResponse = getMockResponseStreaming('streaming-success-basic-reply-short.txt');
-      const result = processStream(fakeResponse as Response);
+      const result = processStream(fakeResponse as Response, fakeApiSettings);
       for await (const response of result.stream) {
         expect(response.text()).not.toBe('');
       }
@@ -96,7 +106,7 @@ describe('stream-reader', () => {
 
     it('streaming response - functioncall', async () => {
       const fakeResponse = getMockResponseStreaming('streaming-success-function-call-short.txt');
-      const result = processStream(fakeResponse as Response);
+      const result = processStream(fakeResponse as Response, fakeApiSettings);
       for await (const response of result.stream) {
         expect(response.text()).toBe('');
         expect(response.functionCalls()).toEqual([
@@ -118,7 +128,7 @@ describe('stream-reader', () => {
 
     it('handles citations', async () => {
       const fakeResponse = getMockResponseStreaming('streaming-success-citations.txt');
-      const result = processStream(fakeResponse as Response);
+      const result = processStream(fakeResponse as Response, fakeApiSettings);
       const aggregatedResponse = await result.response;
       expect(aggregatedResponse.text()).toContain('Quantum mechanics is');
       expect(aggregatedResponse.candidates?.[0]!.citationMetadata?.citations.length).toBe(3);
@@ -134,7 +144,7 @@ describe('stream-reader', () => {
 
     it('removes empty text parts', async () => {
       const fakeResponse = getMockResponseStreaming('streaming-success-empty-text-part.txt');
-      const result = processStream(fakeResponse as Response);
+      const result = processStream(fakeResponse as Response, fakeApiSettings);
       const aggregatedResponse = await result.response;
       expect(aggregatedResponse.text()).toBe('1');
       expect(aggregatedResponse.candidates?.length).toBe(1);
@@ -358,8 +368,8 @@ describe('stream-reader', () => {
         try {
           aggregateResponses(responsesToAggregate);
         } catch (e) {
-          expect((e as VertexAIError).code).toBe(VertexAIErrorCode.INVALID_CONTENT);
-          expect((e as VertexAIError).message).toContain(
+          expect((e as AIError).code).toBe(AIErrorCode.INVALID_CONTENT);
+          expect((e as AIError).message).toContain(
             'Part should have at least one property, but there are none. This is likely caused ' +
               'by a malformed response from the backend.',
           );

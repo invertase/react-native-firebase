@@ -17,7 +17,8 @@
 import { describe, expect, it } from '@jest/globals';
 import { type ReactNativeFirebase } from '@react-native-firebase/app';
 import { DEFAULT_LOCATION } from '../lib/constants';
-import { VertexAIService } from '../lib/service';
+import { AIService } from '../lib/service';
+import { VertexAIBackend } from '../lib/backend';
 
 const fakeApp = {
   name: 'DEFAULT',
@@ -27,18 +28,17 @@ const fakeApp = {
   },
 } as ReactNativeFirebase.FirebaseApp;
 
-describe('VertexAIService', () => {
+describe('AIService', () => {
   it('uses default location if not specified', () => {
-    const vertexAI = new VertexAIService(fakeApp);
+    const vertexAI = new AIService(fakeApp, new VertexAIBackend());
     expect(vertexAI.location).toBe(DEFAULT_LOCATION);
   });
 
   it('uses custom location if specified', () => {
-    const vertexAI = new VertexAIService(
+    const vertexAI = new AIService(
       fakeApp,
-      /* authProvider */ undefined,
+      new VertexAIBackend('somewhere'),
       /* appCheckProvider */ undefined,
-      { location: 'somewhere' },
     );
     expect(vertexAI.location).toBe('somewhere');
   });

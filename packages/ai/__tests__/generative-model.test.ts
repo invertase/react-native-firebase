@@ -17,50 +17,28 @@
 import { describe, expect, it, jest } from '@jest/globals';
 import { type ReactNativeFirebase } from '@react-native-firebase/app';
 import { GenerativeModel } from '../lib/models/generative-model';
-import { FunctionCallingMode, VertexAI } from '../lib/public-types';
+import { AI, FunctionCallingMode } from '../lib/public-types';
 import * as request from '../lib/requests/request';
 import { getMockResponse } from './test-utils/mock-response';
+import { VertexAIBackend } from '../lib/backend';
 
-const fakeVertexAI: VertexAI = {
+const fakeAI: AI = {
   app: {
     name: 'DEFAULT',
+    automaticDataCollectionEnabled: true,
     options: {
       apiKey: 'key',
       projectId: 'my-project',
+      appId: 'my-appid',
     },
   } as ReactNativeFirebase.FirebaseApp,
+  backend: new VertexAIBackend('us-central1'),
   location: 'us-central1',
 };
 
 describe('GenerativeModel', () => {
-  it('handles plain model name', () => {
-    const genModel = new GenerativeModel(fakeVertexAI, { model: 'my-model' });
-    expect(genModel.model).toBe('publishers/google/models/my-model');
-  });
-
-  it('handles models/ prefixed model name', () => {
-    const genModel = new GenerativeModel(fakeVertexAI, {
-      model: 'models/my-model',
-    });
-    expect(genModel.model).toBe('publishers/google/models/my-model');
-  });
-
-  it('handles full model name', () => {
-    const genModel = new GenerativeModel(fakeVertexAI, {
-      model: 'publishers/google/models/my-model',
-    });
-    expect(genModel.model).toBe('publishers/google/models/my-model');
-  });
-
-  it('handles prefixed tuned model name', () => {
-    const genModel = new GenerativeModel(fakeVertexAI, {
-      model: 'tunedModels/my-model',
-    });
-    expect(genModel.model).toBe('tunedModels/my-model');
-  });
-
   it('passes params through to generateContent', async () => {
-    const genModel = new GenerativeModel(fakeVertexAI, {
+    const genModel = new GenerativeModel(fakeAI, {
       model: 'my-model',
       tools: [
         {
@@ -95,7 +73,7 @@ describe('GenerativeModel', () => {
   });
 
   it('passes text-only systemInstruction through to generateContent', async () => {
-    const genModel = new GenerativeModel(fakeVertexAI, {
+    const genModel = new GenerativeModel(fakeAI, {
       model: 'my-model',
       systemInstruction: 'be friendly',
     });
@@ -117,7 +95,7 @@ describe('GenerativeModel', () => {
   });
 
   it('generateContent overrides model values', async () => {
-    const genModel = new GenerativeModel(fakeVertexAI, {
+    const genModel = new GenerativeModel(fakeAI, {
       model: 'my-model',
       tools: [
         {
@@ -160,8 +138,38 @@ describe('GenerativeModel', () => {
     makeRequestStub.mockRestore();
   });
 
+  it('passes base model params through to ChatSession when there are no startChatParams', async () => {
+    const genModel = new GenerativeModel(fakeAI, {
+      model: 'my-model',
+      generationConfig: {
+        topK: 1,
+      },
+    });
+    const chatSession = genModel.startChat();
+    expect(chatSession.params?.generationConfig).toEqual({
+      topK: 1,
+    });
+  });
+
+  it('overrides base model params with startChatParams', () => {
+    const genModel = new GenerativeModel(fakeAI, {
+      model: 'my-model',
+      generationConfig: {
+        topK: 1,
+      },
+    });
+    const chatSession = genModel.startChat({
+      generationConfig: {
+        topK: 2,
+      },
+    });
+    expect(chatSession.params?.generationConfig).toEqual({
+      topK: 2,
+    });
+  });
+
   it('passes params through to chat.sendMessage', async () => {
-    const genModel = new GenerativeModel(fakeVertexAI, {
+    const genModel = new GenerativeModel(fakeAI, {
       model: 'my-model',
       tools: [{ functionDeclarations: [{ name: 'myfunc', description: 'mydesc' }] }],
       toolConfig: { functionCallingConfig: { mode: FunctionCallingMode.NONE } },
@@ -187,7 +195,7 @@ describe('GenerativeModel', () => {
   });
 
   it('passes text-only systemInstruction through to chat.sendMessage', async () => {
-    const genModel = new GenerativeModel(fakeVertexAI, {
+    const genModel = new GenerativeModel(fakeAI, {
       model: 'my-model',
       systemInstruction: 'be friendly',
     });
@@ -209,7 +217,7 @@ describe('GenerativeModel', () => {
   });
 
   it('startChat overrides model values', async () => {
-    const genModel = new GenerativeModel(fakeVertexAI, {
+    const genModel = new GenerativeModel(fakeAI, {
       model: 'my-model',
       tools: [{ functionDeclarations: [{ name: 'myfunc', description: 'mydesc' }] }],
       toolConfig: { functionCallingConfig: { mode: FunctionCallingMode.NONE } },
@@ -247,7 +255,7 @@ describe('GenerativeModel', () => {
   });
 
   it('calls countTokens', async () => {
-    const genModel = new GenerativeModel(fakeVertexAI, { model: 'my-model' });
+    const genModel = new GenerativeModel(fakeAI, { model: 'my-model' });
     const mockResponse = getMockResponse('unary-success-total-tokens.json');
     const makeRequestStub = jest
       .spyOn(request, 'makeRequest')

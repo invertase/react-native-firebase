@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 import { describe, expect, it } from '@jest/globals';
-import { getApp, type ReactNativeFirebase } from '../../app/lib';
+import { type ReactNativeFirebase } from '../../app/lib';
 
-import { ModelParams, VertexAIErrorCode } from '../lib/types';
-import { VertexAIError } from '../lib/errors';
-import { getGenerativeModel, getVertexAI } from '../lib/index';
+import { ModelParams, AIErrorCode } from '../lib/types';
+import { AIError } from '../lib/errors';
+import { getGenerativeModel } from '../lib/index';
 
-import { VertexAI } from '../lib/public-types';
+import { AI } from '../lib/public-types';
 import { GenerativeModel } from '../lib/models/generative-model';
 
-import '../../auth/lib';
-import '../../app-check/lib';
-import { getAuth } from '../../auth/lib';
+import { AI_TYPE } from '../lib/constants';
+import { VertexAIBackend } from '../lib/backend';
 
-const fakeVertexAI: VertexAI = {
+const fakeAI: AI = {
   app: {
     name: 'DEFAULT',
     options: {
@@ -37,66 +36,76 @@ const fakeVertexAI: VertexAI = {
       projectId: 'my-project',
     },
   } as ReactNativeFirebase.FirebaseApp,
+  backend: new VertexAIBackend('us-central1'),
   location: 'us-central1',
 };
 
 describe('Top level API', () => {
-  it('should allow auth and app check instances to be passed in', () => {
-    const app = getApp();
-    const auth = getAuth();
-    const appCheck = app.appCheck();
-
-    getVertexAI(app, { appCheck, auth });
-  });
-
   it('getGenerativeModel throws if no model is provided', () => {
     try {
-      getGenerativeModel(fakeVertexAI, {} as ModelParams);
+      getGenerativeModel(fakeAI, {} as ModelParams);
     } catch (e) {
-      expect((e as VertexAIError).code).toContain(VertexAIErrorCode.NO_MODEL);
-      expect((e as VertexAIError).message).toContain(
+      expect((e as AIError).code).toContain(AIErrorCode.NO_MODEL);
+      expect((e as AIError).message).toContain(
         `VertexAI: Must provide a model name. Example: ` +
-          `getGenerativeModel({ model: 'my-model-name' }) (vertexAI/${VertexAIErrorCode.NO_MODEL})`,
+          `getGenerativeModel({ model: 'my-model-name' }) (vertexAI/${AIErrorCode.NO_MODEL})`,
       );
     }
   });
 
   it('getGenerativeModel throws if no apiKey is provided', () => {
     const fakeVertexNoApiKey = {
-      ...fakeVertexAI,
-      app: { options: { projectId: 'my-project' } },
-    } as VertexAI;
+      ...fakeAI,
+      app: { options: { projectId: 'my-project', appId: 'my-appid' } },
+    } as AI;
     try {
       getGenerativeModel(fakeVertexNoApiKey, { model: 'my-model' });
     } catch (e) {
-      expect((e as VertexAIError).code).toContain(VertexAIErrorCode.NO_API_KEY);
-      expect((e as VertexAIError).message).toBe(
+      expect((e as AIError).code).toContain(AIErrorCode.NO_API_KEY);
+      expect((e as AIError).message).toBe(
         `VertexAI: The "apiKey" field is empty in the local ` +
           `Firebase config. Firebase VertexAI requires this field to` +
-          ` contain a valid API key. (vertexAI/${VertexAIErrorCode.NO_API_KEY})`,
+          ` contain a valid API key. (vertexAI/${AIErrorCode.NO_API_KEY})`,
       );
     }
   });
 
   it('getGenerativeModel throws if no projectId is provided', () => {
     const fakeVertexNoProject = {
-      ...fakeVertexAI,
+      ...fakeAI,
       app: { options: { apiKey: 'my-key' } },
-    } as VertexAI;
+    } as AI;
     try {
       getGenerativeModel(fakeVertexNoProject, { model: 'my-model' });
     } catch (e) {
-      expect((e as VertexAIError).code).toContain(VertexAIErrorCode.NO_PROJECT_ID);
-      expect((e as VertexAIError).message).toBe(
+      expect((e as AIError).code).toContain(AIErrorCode.NO_PROJECT_ID);
+      expect((e as AIError).message).toBe(
         `VertexAI: The "projectId" field is empty in the local` +
           ` Firebase config. Firebase VertexAI requires this field ` +
-          `to contain a valid project ID. (vertexAI/${VertexAIErrorCode.NO_PROJECT_ID})`,
+          `to contain a valid project ID. (vertexAI/${AIErrorCode.NO_PROJECT_ID})`,
+      );
+    }
+  });
+
+  it('getGenerativeModel throws if no appId is provided', () => {
+    const fakeVertexNoProject = {
+      ...fakeAI,
+      app: { options: { apiKey: 'my-key', projectId: 'my-projectid' } },
+    } as AI;
+    try {
+      getGenerativeModel(fakeVertexNoProject, { model: 'my-model' });
+    } catch (e) {
+      expect((e as AIError).code).toContain(AIErrorCode.NO_APP_ID);
+      expect((e as AIError).message).toBe(
+        `AI: The "appId" field is empty in the local` +
+          ` Firebase config. Firebase AI requires this field ` +
+          `to contain a valid app ID. (${AI_TYPE}/${AIErrorCode.NO_APP_ID})`,
       );
     }
   });
 
   it('getGenerativeModel gets a GenerativeModel', () => {
-    const genModel = getGenerativeModel(fakeVertexAI, { model: 'my-model' });
+    const genModel = getGenerativeModel(fakeAI, { model: 'my-model' });
     expect(genModel).toBeInstanceOf(GenerativeModel);
     expect(genModel.model).toBe('publishers/google/models/my-model');
   });
