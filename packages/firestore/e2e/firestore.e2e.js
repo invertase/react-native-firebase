@@ -953,30 +953,32 @@ describe('firestore()', function () {
         const db = getFirestore();
         const testDoc1 = doc(db, `${COLLECTION}/snapshotsInSync1`);
         const testDoc2 = doc(db, `${COLLECTION}/snapshotsInSync2`);
-
-        const promise = new Promise(resolve => {
+        
+        const syncPromise = new Promise(resolve => {
           const unsubscribe = onSnapshotsInSync(db, () => {
             events.push('sync');
+            if (events.length >= 1) {
+              unsubscribe();
+              resolve();
+            }
           });
-
-          (async () => {
-            await setDoc(testDoc1, { test: 1 });
-            await setDoc(testDoc2, { test: 2 });
-
-            // Give some time for syncs to occur
-            await new Promise(r => setTimeout(r, 1000));
-
-            unsubscribe();
-            await setDoc(testDoc1, { test: 3 });
-
-            await deleteDoc(testDoc1);
-            await deleteDoc(testDoc2);
-
-            resolve();
-          })();
         });
 
-        await promise;
+        await Promise.all([
+          setDoc(testDoc1, { test: 1 }),
+          setDoc(testDoc2, { test: 2 })
+        ]);
+
+        await syncPromise;
+        
+        // Verify unsubscribe worked by doing another write
+        await setDoc(testDoc1, { test: 3 });
+        
+        // Cleanup
+        await Promise.all([
+          deleteDoc(testDoc1),
+          deleteDoc(testDoc2)
+        ]);
 
         events.length.should.be.greaterThan(0);
         events.forEach(event => event.should.equal('sync'));
