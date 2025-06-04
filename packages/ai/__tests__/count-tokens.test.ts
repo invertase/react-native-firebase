@@ -14,20 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, expect, it, afterEach, jest } from '@jest/globals';
-import { getMockResponse } from './test-utils/mock-response';
+import { describe, expect, it, afterEach, jest, beforeEach } from '@jest/globals';
+import { BackendName, getMockResponse } from './test-utils/mock-response';
 import * as request from '../lib/requests/request';
 import { countTokens } from '../lib/methods/count-tokens';
-import { CountTokensRequest } from '../lib/types';
+import { CountTokensRequest, RequestOptions } from '../lib/types';
 import { ApiSettings } from '../lib/types/internal';
 import { Task } from '../lib/requests/request';
 import { GoogleAIBackend } from '../lib/backend';
+import { SpiedFunction } from 'jest-mock';
+import { mapCountTokensRequest } from '../lib/googleai-mappers';
 
 const fakeApiSettings: ApiSettings = {
   apiKey: 'key',
   project: 'my-project',
   location: 'us-central1',
   appId: '',
+  backend: new GoogleAIBackend(),
+};
+
+const fakeGoogleAIApiSettings: ApiSettings = {
+  apiKey: 'key',
+  project: 'my-project',
+  appId: 'my-appid',
+  location: '',
   backend: new GoogleAIBackend(),
 };
 
@@ -41,7 +51,7 @@ describe('countTokens()', () => {
   });
 
   it('total tokens', async () => {
-    const mockResponse = getMockResponse('unary-success-total-tokens.json');
+    const mockResponse = getMockResponse(BackendName.VertexAI, 'unary-success-total-tokens.json');
     const makeRequestStub = jest
       .spyOn(request, 'makeRequest')
       .mockResolvedValue(mockResponse as Response);
@@ -58,8 +68,35 @@ describe('countTokens()', () => {
     );
   });
 
+  it('total tokens with modality details', async () => {
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-success-detailed-token-response.json',
+    );
+    const makeRequestStub = jest
+      .spyOn(request, 'makeRequest')
+      .mockResolvedValue(mockResponse as Response);
+    const result = await countTokens(fakeApiSettings, 'model', fakeRequestParams);
+
+    expect(result.totalTokens).toBe(1837);
+    expect(result.totalBillableCharacters).toBe(117);
+    expect(result.promptTokensDetails?.[0]?.modality).toBe('IMAGE');
+    expect(result.promptTokensDetails?.[0]?.tokenCount).toBe(1806);
+    expect(makeRequestStub).toHaveBeenCalledWith(
+      'model',
+      Task.COUNT_TOKENS,
+      fakeApiSettings,
+      false,
+      expect.stringContaining('contents'),
+      undefined,
+    );
+  });
+
   it('total tokens no billable characters', async () => {
-    const mockResponse = getMockResponse('unary-success-no-billable-characters.json');
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-success-no-billable-characters.json',
+    );
     const makeRequestStub = jest
       .spyOn(request, 'makeRequest')
       .mockResolvedValue(mockResponse as Response);
@@ -77,7 +114,10 @@ describe('countTokens()', () => {
   });
 
   it('model not found', async () => {
-    const mockResponse = getMockResponse('unary-failure-model-not-found.json');
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-failure-model-not-found.json',
+    );
     const mockFetch = jest.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: false,
       status: 404,
@@ -87,5 +127,41 @@ describe('countTokens()', () => {
       /404.*not found/,
     );
     expect(mockFetch).toHaveBeenCalled();
+  });
+
+  describe('googleAI', () => {
+    let makeRequestStub: SpiedFunction<
+      (
+        model: string,
+        task: Task,
+        apiSettings: ApiSettings,
+        stream: boolean,
+        body: string,
+        requestOptions?: RequestOptions,
+      ) => Promise<Response>
+    >;
+
+    beforeEach(() => {
+      makeRequestStub = jest.spyOn(request, 'makeRequest');
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('maps request to GoogleAI format', async () => {
+      makeRequestStub.mockResolvedValue({ ok: true, json: () => {} } as Response); // Unused
+
+      await countTokens(fakeGoogleAIApiSettings, 'model', fakeRequestParams);
+
+      expect(makeRequestStub).toHaveBeenCalledWith(
+        'model',
+        Task.COUNT_TOKENS,
+        fakeGoogleAIApiSettings,
+        false,
+        JSON.stringify(mapCountTokensRequest(fakeRequestParams, 'model')),
+        undefined,
+      );
+    });
   });
 });
