@@ -273,7 +273,7 @@ RCT_EXPORT_METHOD(addSnapshotsInSync
 
   snapshotsInSyncListeners[listenerId] = listener;
 
-  resolve(@{});
+  resolve(nil);
 }
 
 RCT_EXPORT_METHOD(removeSnapshotsInSync
