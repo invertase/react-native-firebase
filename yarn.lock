@@ -5348,6 +5348,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-firebase/ai@workspace:packages/ai":
+  version: 0.0.0-use.local
+  resolution: "@react-native-firebase/ai@workspace:packages/ai"
+  dependencies:
+    "@types/text-encoding": "npm:^0.0.40"
+    react-native-builder-bob: "npm:^0.40.6"
+    react-native-fetch-api: "npm:^3.0.0"
+    text-encoding: "npm:^0.7.0"
+    typescript: "npm:^5.8.3"
+    web-streams-polyfill: "npm:^4.1.0"
+  peerDependencies:
+    "@react-native-firebase/app": 22.2.0
+  languageName: unknown
+  linkType: soft
+
 "@react-native-firebase/analytics@npm:23.0.0, @react-native-firebase/analytics@workspace:packages/analytics":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/analytics@workspace:packages/analytics"
