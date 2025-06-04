@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 import { describe, expect, it, afterEach, jest, beforeEach } from '@jest/globals';
-import { getMockResponse } from './test-utils/mock-response';
+import { BackendName, getMockResponse } from './test-utils/mock-response';
 import * as request from '../lib/requests/request';
 import { generateContent } from '../lib/methods/generate-content';
 import {
@@ -81,7 +81,10 @@ describe('generateContent()', () => {
   });
 
   it('short response', async () => {
-    const mockResponse = getMockResponse('unary-success-basic-reply-short.json');
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-success-basic-reply-short.json',
+    );
     const makeRequestStub = jest
       .spyOn(request, 'makeRequest')
       .mockResolvedValue(mockResponse as Response);
@@ -98,7 +101,10 @@ describe('generateContent()', () => {
   });
 
   it('long response', async () => {
-    const mockResponse = getMockResponse('unary-success-basic-reply-long.json');
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-success-basic-reply-long.json',
+    );
     const makeRequestStub = jest
       .spyOn(request, 'makeRequest')
       .mockResolvedValue(mockResponse as Response);
@@ -116,7 +122,10 @@ describe('generateContent()', () => {
   });
 
   it('long response with token details', async () => {
-    const mockResponse = getMockResponse('unary-success-basic-response-long-usage-metadata.json');
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-success-basic-response-long-usage-metadata.json',
+    );
     const makeRequestStub = jest
       .spyOn(request, 'makeRequest')
       .mockResolvedValue(mockResponse as Response);
@@ -138,7 +147,7 @@ describe('generateContent()', () => {
   });
 
   it('citations', async () => {
-    const mockResponse = getMockResponse('unary-success-citations.json');
+    const mockResponse = getMockResponse(BackendName.VertexAI, 'unary-success-citations.json');
     const makeRequestStub = jest
       .spyOn(request, 'makeRequest')
       .mockResolvedValue(mockResponse as Response);
@@ -156,7 +165,10 @@ describe('generateContent()', () => {
   });
 
   it('blocked prompt', async () => {
-    const mockResponse = getMockResponse('unary-failure-prompt-blocked-safety.json');
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-failure-prompt-blocked-safety.json',
+    );
     const makeRequestStub = jest
       .spyOn(request, 'makeRequest')
       .mockResolvedValue(mockResponse as Response);
@@ -175,7 +187,10 @@ describe('generateContent()', () => {
   });
 
   it('finishReason safety', async () => {
-    const mockResponse = getMockResponse('unary-failure-finish-reason-safety.json');
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-failure-finish-reason-safety.json',
+    );
     const makeRequestStub = jest
       .spyOn(request, 'makeRequest')
       .mockResolvedValue(mockResponse as Response);
@@ -192,7 +207,7 @@ describe('generateContent()', () => {
   });
 
   it('empty content', async () => {
-    const mockResponse = getMockResponse('unary-failure-empty-content.json');
+    const mockResponse = getMockResponse(BackendName.VertexAI, 'unary-failure-empty-content.json');
     const makeRequestStub = jest
       .spyOn(request, 'makeRequest')
       .mockResolvedValue(mockResponse as Response);
@@ -209,7 +224,10 @@ describe('generateContent()', () => {
   });
 
   it('unknown enum - should ignore', async () => {
-    const mockResponse = getMockResponse('unary-success-unknown-enum-safety-ratings.json');
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-success-unknown-enum-safety-ratings.json',
+    );
     const makeRequestStub = jest
       .spyOn(request, 'makeRequest')
       .mockResolvedValue(mockResponse as Response);
@@ -226,7 +244,7 @@ describe('generateContent()', () => {
   });
 
   it('image rejected (400)', async () => {
-    const mockResponse = getMockResponse('unary-failure-image-rejected.json');
+    const mockResponse = getMockResponse(BackendName.VertexAI, 'unary-failure-image-rejected.json');
     const mockFetch = jest.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: false,
       status: 400,
@@ -239,7 +257,10 @@ describe('generateContent()', () => {
   });
 
   it('api not enabled (403)', async () => {
-    const mockResponse = getMockResponse('unary-failure-firebasevertexai-api-not-enabled.json');
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-failure-firebasevertexai-api-not-enabled.json',
+    );
     const mockFetch = jest.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: false,
       status: 403,
@@ -263,7 +284,10 @@ describe('generateContent()', () => {
     });
 
     it('throws error when method is defined', async () => {
-      const mockResponse = getMockResponse('unary-success-basic-reply-short.txt');
+      const mockResponse = getMockResponse(
+        BackendName.GoogleAI,
+        'unary-success-basic-reply-short.txt',
+      );
       makeRequestStub.mockResolvedValue(mockResponse as Response);
 
       const requestParamsWithMethod: GenerateContentRequest = {
@@ -285,7 +309,10 @@ describe('generateContent()', () => {
     });
 
     it('maps request to GoogleAI format', async () => {
-      const mockResponse = getMockResponse('unary-success-basic-reply-short.txt');
+      const mockResponse = getMockResponse(
+        BackendName.GoogleAI,
+        'unary-success-basic-reply-short.txt',
+      );
       makeRequestStub.mockResolvedValue(mockResponse as Response);
 
       await generateContent(fakeGoogleAIApiSettings, 'model', fakeGoogleAIRequestParams);
