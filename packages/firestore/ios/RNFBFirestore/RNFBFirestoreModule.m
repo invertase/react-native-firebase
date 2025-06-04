@@ -254,7 +254,7 @@ RCT_EXPORT_METHOD(addSnapshotsInSync
     return;
   }
 
-  FIRFirestore *firestore = [FIRFirestore firestoreForApp:firebaseApp];
+  FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp databaseId:databaseId];
   if (!firestore) {
     reject(@"firestore/not-found", @"Firestore instance not found.", nil);
     return;
