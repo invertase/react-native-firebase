@@ -20,7 +20,7 @@ import { ApiSettings } from '../lib/types/internal';
 import { DEFAULT_API_VERSION } from '../lib/constants';
 import { AIErrorCode } from '../lib/types';
 import { AIError } from '../lib/errors';
-import { getMockResponse } from './test-utils/mock-response';
+import { BackendName, getMockResponse } from './test-utils/mock-response';
 import { VertexAIBackend } from '../lib/backend';
 
 const fakeApiSettings: ApiSettings = {
@@ -350,7 +350,10 @@ describe('request methods', () => {
   });
 
   it('Network error, API not enabled', async () => {
-    const mockResponse = getMockResponse('unary-failure-firebasevertexai-api-not-enabled.json');
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-failure-firebasevertexai-api-not-enabled.json',
+    );
     const fetchMock = jest.spyOn(globalThis, 'fetch').mockResolvedValue(mockResponse as Response);
     try {
       await makeRequest('models/model-name', Task.GENERATE_CONTENT, fakeApiSettings, false, '');
