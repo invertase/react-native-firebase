@@ -20,7 +20,7 @@ const fs = require('fs');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { join } = require('path');
 
-function findMockResponseDir(): string {
+function findMockResponseDir(backend: string): string {
   const directories = fs
     .readdirSync(__dirname, { withFileTypes: true })
     .filter(
@@ -36,18 +36,22 @@ function findMockResponseDir(): string {
     throw new Error('Multiple directories starting with "vertexai-sdk-test-data*" found');
   }
 
-  return join(__dirname, directories[0], 'mock-responses', 'vertexai');
+  return join(__dirname, directories[0], 'mock-responses', backend);
 }
 
 async function main(): Promise<void> {
-  const mockResponseDir = findMockResponseDir();
-  const list = fs.readdirSync(mockResponseDir);
-  const lookup: Record<string, string> = {};
-  // eslint-disable-next-line guard-for-in
-  for (const fileName of list) {
-    console.log(`attempting to read ${mockResponseDir}/${fileName}`)
-    const fullText = fs.readFileSync(join(mockResponseDir, fileName), 'utf-8');
-    lookup[fileName] = fullText;
+  const backendNames = ['googleai', 'vertexai'];
+  const lookup: Record<string, Record<string, string>> = {};
+
+  for (const backend of backendNames) {
+    const mockResponseDir = findMockResponseDir(backend);
+    const list = fs.readdirSync(mockResponseDir);
+    lookup[backend] = {};
+    const backendLookup = lookup[backend];
+    for (const fileName of list) {
+      const fullText = fs.readFileSync(join(mockResponseDir, fileName), 'utf-8');
+      backendLookup[fileName] = fullText;
+    }
   }
   let fileText = `// Generated from mocks text files.`;
 
