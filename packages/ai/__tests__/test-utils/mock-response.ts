@@ -46,7 +46,6 @@ export function getMockResponseStreaming(
   const fullText = mocksLookup[filename];
 
   return {
-
     // Really tangled typescript error here from our transitive dependencies.
     // Ignoring it now, but uncomment and run `yarn lerna:prepare` in top-level
     // of the repo to see if you get it or if it has gone away.
@@ -60,10 +59,17 @@ export function getMockResponseStreaming(
   };
 }
 
-export function getMockResponse(filename: string): Partial<Response> {
-  const fullText = mocksLookup[filename];
+type BackendName = 'vertexai' | 'googleai';
+export function getMockResponse(backendName: BackendName, filename: string): Partial<Response> {
+  // @ts-ignore
+  const backendMocksLookup: Record<string, string> = mocksLookup[backendName];
+  if (!(filename in backendMocksLookup)) {
+    throw Error(`${backendName} mock response file '${filename}' not found.`);
+  }
+  const fullText = backendMocksLookup[filename] as string;
+
   return {
     ok: true,
-    json: () => Promise.resolve(JSON.parse(fullText!)),
+    json: () => Promise.resolve(JSON.parse(fullText)),
   };
 }
