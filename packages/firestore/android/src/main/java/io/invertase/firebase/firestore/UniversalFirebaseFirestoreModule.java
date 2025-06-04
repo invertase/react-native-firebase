@@ -23,7 +23,6 @@ import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.i
 
 import android.content.Context;
 import android.util.SparseArray;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Task;
@@ -31,7 +30,6 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.LoadBundleTask;
-
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.UniversalFirebaseModule;
 import io.invertase.firebase.common.UniversalFirebasePreferences;
@@ -41,8 +39,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
-  private static SparseArray<ListenerRegistration> onSnapshotInSyncListeners =
-    new SparseArray<>();
+  private static SparseArray<ListenerRegistration> onSnapshotInSyncListeners = new SparseArray<>();
 
   private static HashMap<String, String> emulatorConfigs = new HashMap<>();
 
@@ -50,36 +47,28 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
     super(context, serviceName);
   }
 
-  void addSnapshotsInSync(
-    String appName,
-    String databaseId,
-    int listenerId
-  ) {
+  void addSnapshotsInSync(String appName, String databaseId, int listenerId) {
 
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
-    ListenerRegistration listenerRegistration = firebaseFirestore
-      .addSnapshotsInSyncListener(() -> {
-        ReactNativeFirebaseEventEmitter emitter =
-          ReactNativeFirebaseEventEmitter.getSharedInstance();
-        WritableMap body = Arguments.createMap();
-        emitter.sendEvent(
-          new ReactNativeFirebaseFirestoreEvent(
-            ReactNativeFirebaseFirestoreEvent.SNAPSHOT_IN_SYNC_EVENT_SYNC,
-            body,
-            appName,
-            databaseId,
-            listenerId));
-      });
-
+    ListenerRegistration listenerRegistration =
+        firebaseFirestore.addSnapshotsInSyncListener(
+            () -> {
+              ReactNativeFirebaseEventEmitter emitter =
+                  ReactNativeFirebaseEventEmitter.getSharedInstance();
+              WritableMap body = Arguments.createMap();
+              emitter.sendEvent(
+                  new ReactNativeFirebaseFirestoreEvent(
+                      ReactNativeFirebaseFirestoreEvent.SNAPSHOT_IN_SYNC_EVENT_SYNC,
+                      body,
+                      appName,
+                      databaseId,
+                      listenerId));
+            });
 
     onSnapshotInSyncListeners.put(listenerId, listenerRegistration);
   }
 
-  void removeSnapshotsInSync(
-    String appName,
-    String databaseId,
-    int listenerId
-  ) {
+  void removeSnapshotsInSync(String appName, String databaseId, int listenerId) {
     ListenerRegistration listenerRegistration = onSnapshotInSyncListeners.get(listenerId);
     if (listenerRegistration != null) {
       listenerRegistration.remove();

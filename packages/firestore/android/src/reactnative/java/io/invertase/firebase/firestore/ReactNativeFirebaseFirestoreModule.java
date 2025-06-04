@@ -29,10 +29,8 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.LoadBundleTaskProgress;
 import com.google.firebase.firestore.PersistentCacheIndexManager;
-
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModule {
@@ -197,20 +195,14 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
 
   @ReactMethod
   public void addSnapshotsInSync(
-    String appName,
-    String databaseId,
-    int listenerId,
-    Promise promise
-    ) {
+      String appName, String databaseId, int listenerId, Promise promise) {
     module.addSnapshotsInSync(appName, databaseId, listenerId);
     promise.resolve(null);
   }
 
   @ReactMethod
-  public void removeSnapshotsInSync(String appName,
-                                    String databaseId,
-                                    int listenerId,
-                                    Promise promise){
+  public void removeSnapshotsInSync(
+      String appName, String databaseId, int listenerId, Promise promise) {
     module.removeSnapshotsInSync(appName, databaseId, listenerId);
     promise.resolve(null);
   }
