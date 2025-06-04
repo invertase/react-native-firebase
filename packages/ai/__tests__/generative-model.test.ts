@@ -19,7 +19,7 @@ import { type ReactNativeFirebase } from '@react-native-firebase/app';
 import { GenerativeModel } from '../lib/models/generative-model';
 import { AI, FunctionCallingMode } from '../lib/public-types';
 import * as request from '../lib/requests/request';
-import { getMockResponse } from './test-utils/mock-response';
+import { BackendName, getMockResponse } from './test-utils/mock-response';
 import { VertexAIBackend } from '../lib/backend';
 
 const fakeAI: AI = {
@@ -56,7 +56,10 @@ describe('GenerativeModel', () => {
     expect(genModel.tools?.length).toBe(1);
     expect(genModel.toolConfig?.functionCallingConfig?.mode).toBe(FunctionCallingMode.NONE);
     expect(genModel.systemInstruction?.parts[0]!.text).toBe('be friendly');
-    const mockResponse = getMockResponse('unary-success-basic-reply-short.json');
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-success-basic-reply-short.json',
+    );
     const makeRequestStub = jest
       .spyOn(request, 'makeRequest')
       .mockResolvedValue(mockResponse as Response);
@@ -78,7 +81,10 @@ describe('GenerativeModel', () => {
       systemInstruction: 'be friendly',
     });
     expect(genModel.systemInstruction?.parts[0]!.text).toBe('be friendly');
-    const mockResponse = getMockResponse('unary-success-basic-reply-short.json');
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-success-basic-reply-short.json',
+    );
     const makeRequestStub = jest
       .spyOn(request, 'makeRequest')
       .mockResolvedValue(mockResponse as Response);
@@ -113,7 +119,10 @@ describe('GenerativeModel', () => {
     expect(genModel.tools?.length).toBe(1);
     expect(genModel.toolConfig?.functionCallingConfig?.mode).toBe(FunctionCallingMode.NONE);
     expect(genModel.systemInstruction?.parts[0]!.text).toBe('be friendly');
-    const mockResponse = getMockResponse('unary-success-basic-reply-short.json');
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-success-basic-reply-short.json',
+    );
     const makeRequestStub = jest
       .spyOn(request, 'makeRequest')
       .mockResolvedValue(mockResponse as Response);
@@ -178,7 +187,10 @@ describe('GenerativeModel', () => {
     expect(genModel.tools?.length).toBe(1);
     expect(genModel.toolConfig?.functionCallingConfig?.mode).toBe(FunctionCallingMode.NONE);
     expect(genModel.systemInstruction?.parts[0]!.text).toBe('be friendly');
-    const mockResponse = getMockResponse('unary-success-basic-reply-short.json');
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-success-basic-reply-short.json',
+    );
     const makeRequestStub = jest
       .spyOn(request, 'makeRequest')
       .mockResolvedValue(mockResponse as Response);
@@ -200,7 +212,10 @@ describe('GenerativeModel', () => {
       systemInstruction: 'be friendly',
     });
     expect(genModel.systemInstruction?.parts[0]!.text).toBe('be friendly');
-    const mockResponse = getMockResponse('unary-success-basic-reply-short.json');
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-success-basic-reply-short.json',
+    );
     const makeRequestStub = jest
       .spyOn(request, 'makeRequest')
       .mockResolvedValue(mockResponse as Response);
@@ -226,7 +241,10 @@ describe('GenerativeModel', () => {
     expect(genModel.tools?.length).toBe(1);
     expect(genModel.toolConfig?.functionCallingConfig?.mode).toBe(FunctionCallingMode.NONE);
     expect(genModel.systemInstruction?.parts[0]!.text).toBe('be friendly');
-    const mockResponse = getMockResponse('unary-success-basic-reply-short.json');
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-success-basic-reply-short.json',
+    );
     const makeRequestStub = jest
       .spyOn(request, 'makeRequest')
       .mockResolvedValue(mockResponse as Response);
@@ -256,7 +274,7 @@ describe('GenerativeModel', () => {
 
   it('calls countTokens', async () => {
     const genModel = new GenerativeModel(fakeAI, { model: 'my-model' });
-    const mockResponse = getMockResponse('unary-success-total-tokens.json');
+    const mockResponse = getMockResponse(BackendName.VertexAI, 'unary-success-total-tokens.json');
     const makeRequestStub = jest
       .spyOn(request, 'makeRequest')
       .mockResolvedValue(mockResponse as Response);

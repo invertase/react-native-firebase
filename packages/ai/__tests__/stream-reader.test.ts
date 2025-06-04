@@ -22,7 +22,11 @@ import {
   processStream,
 } from '../lib/requests/stream-reader';
 
-import { getChunkedStream, getMockResponseStreaming } from './test-utils/mock-response';
+import {
+  BackendName,
+  getChunkedStream,
+  getMockResponseStreaming,
+} from './test-utils/mock-response';
 import {
   BlockReason,
   FinishReason,
@@ -95,7 +99,10 @@ describe('stream-reader', () => {
     });
 
     it('streaming response - short', async () => {
-      const fakeResponse = getMockResponseStreaming('streaming-success-basic-reply-short.txt');
+      const fakeResponse = getMockResponseStreaming(
+        BackendName.VertexAI,
+        'streaming-success-basic-reply-short.txt',
+      );
       const result = processStream(fakeResponse as Response, fakeApiSettings);
       for await (const response of result.stream) {
         expect(response.text()).not.toBe('');
@@ -105,7 +112,10 @@ describe('stream-reader', () => {
     });
 
     it('streaming response - functioncall', async () => {
-      const fakeResponse = getMockResponseStreaming('streaming-success-function-call-short.txt');
+      const fakeResponse = getMockResponseStreaming(
+        BackendName.VertexAI,
+        'streaming-success-function-call-short.txt',
+      );
       const result = processStream(fakeResponse as Response, fakeApiSettings);
       for await (const response of result.stream) {
         expect(response.text()).toBe('');
@@ -127,7 +137,10 @@ describe('stream-reader', () => {
     });
 
     it('handles citations', async () => {
-      const fakeResponse = getMockResponseStreaming('streaming-success-citations.txt');
+      const fakeResponse = getMockResponseStreaming(
+        BackendName.VertexAI,
+        'streaming-success-citations.txt',
+      );
       const result = processStream(fakeResponse as Response, fakeApiSettings);
       const aggregatedResponse = await result.response;
       expect(aggregatedResponse.text()).toContain('Quantum mechanics is');
@@ -143,7 +156,10 @@ describe('stream-reader', () => {
     });
 
     it('removes empty text parts', async () => {
-      const fakeResponse = getMockResponseStreaming('streaming-success-empty-text-part.txt');
+      const fakeResponse = getMockResponseStreaming(
+        BackendName.VertexAI,
+        'streaming-success-empty-text-part.txt',
+      );
       const result = processStream(fakeResponse as Response, fakeApiSettings);
       const aggregatedResponse = await result.response;
       expect(aggregatedResponse.text()).toBe('1');
