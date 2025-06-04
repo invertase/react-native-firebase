@@ -16,8 +16,9 @@
  */
 import { describe, it, expect } from '@jest/globals';
 import { GoogleAIBackend, VertexAIBackend } from '../lib/backend';
-import { BackendType } from 'lib/public-types';
-import { DEFAULT_LOCATION } from 'lib/constants';
+import { BackendType } from '../lib/public-types';
+import { DEFAULT_LOCATION } from '../lib/constants';
+
 describe('Backend', () => {
   describe('GoogleAIBackend', () => {
     it('sets backendType to GOOGLE_AI', () => {

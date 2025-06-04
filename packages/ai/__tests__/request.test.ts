@@ -18,14 +18,17 @@ import { describe, expect, it, jest, afterEach } from '@jest/globals';
 import { RequestUrl, Task, getHeaders, makeRequest } from '../lib/requests/request';
 import { ApiSettings } from '../lib/types/internal';
 import { DEFAULT_API_VERSION } from '../lib/constants';
-import { VertexAIErrorCode } from '../lib/types';
-import { VertexAIError } from '../lib/errors';
+import { AIErrorCode } from '../lib/types';
+import { AIError } from '../lib/errors';
 import { getMockResponse } from './test-utils/mock-response';
+import { VertexAIBackend } from '../lib/backend';
 
 const fakeApiSettings: ApiSettings = {
   apiKey: 'key',
   project: 'my-project',
+  appId: 'my-appid',
   location: 'us-central1',
+  backend: new VertexAIBackend(),
 };
 
 describe('request methods', () => {
@@ -106,7 +109,9 @@ describe('request methods', () => {
     const fakeApiSettings: ApiSettings = {
       apiKey: 'key',
       project: 'myproject',
+      appId: 'my-appid',
       location: 'moon',
+      backend: new VertexAIBackend(),
       getAuthToken: () => Promise.resolve('authtoken'),
       getAppCheckToken: () => Promise.resolve({ token: 'appchecktoken' }),
     };
@@ -140,7 +145,9 @@ describe('request methods', () => {
         {
           apiKey: 'key',
           project: 'myproject',
+          appId: 'my-appid',
           location: 'moon',
+          backend: new VertexAIBackend(),
         },
         true,
         {},
@@ -176,6 +183,8 @@ describe('request methods', () => {
           project: 'myproject',
           location: 'moon',
           getAppCheckToken: () => Promise.reject(new Error('oops')),
+          backend: new VertexAIBackend(),
+          appId: 'my-appid',
         },
         true,
         {},
@@ -204,7 +213,9 @@ describe('request methods', () => {
         {
           apiKey: 'key',
           project: 'myproject',
+          appId: 'my-appid',
           location: 'moon',
+          backend: new VertexAIBackend(),
         },
         true,
         {},
@@ -260,10 +271,10 @@ describe('request methods', () => {
           timeout: 180000,
         });
       } catch (e) {
-        expect((e as VertexAIError).code).toBe(VertexAIErrorCode.FETCH_ERROR);
-        expect((e as VertexAIError).customErrorData?.status).toBe(500);
-        expect((e as VertexAIError).customErrorData?.statusText).toBe('AbortError');
-        expect((e as VertexAIError).message).toContain('500 AbortError');
+        expect((e as AIError).code).toBe(AIErrorCode.FETCH_ERROR);
+        expect((e as AIError).customErrorData?.status).toBe(500);
+        expect((e as AIError).customErrorData?.statusText).toBe('AbortError');
+        expect((e as AIError).message).toContain('500 AbortError');
       }
 
       expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -278,10 +289,10 @@ describe('request methods', () => {
       try {
         await makeRequest('models/model-name', Task.GENERATE_CONTENT, fakeApiSettings, false, '');
       } catch (e) {
-        expect((e as VertexAIError).code).toBe(VertexAIErrorCode.FETCH_ERROR);
-        expect((e as VertexAIError).customErrorData?.status).toBe(500);
-        expect((e as VertexAIError).customErrorData?.statusText).toBe('Server Error');
-        expect((e as VertexAIError).message).toContain('500 Server Error');
+        expect((e as AIError).code).toBe(AIErrorCode.FETCH_ERROR);
+        expect((e as AIError).customErrorData?.status).toBe(500);
+        expect((e as AIError).customErrorData?.statusText).toBe('Server Error');
+        expect((e as AIError).message).toContain('500 Server Error');
       }
       expect(fetchMock).toHaveBeenCalledTimes(1);
     });
@@ -296,11 +307,11 @@ describe('request methods', () => {
       try {
         await makeRequest('models/model-name', Task.GENERATE_CONTENT, fakeApiSettings, false, '');
       } catch (e) {
-        expect((e as VertexAIError).code).toBe(VertexAIErrorCode.FETCH_ERROR);
-        expect((e as VertexAIError).customErrorData?.status).toBe(500);
-        expect((e as VertexAIError).customErrorData?.statusText).toBe('Server Error');
-        expect((e as VertexAIError).message).toContain('500 Server Error');
-        expect((e as VertexAIError).message).toContain('extra info');
+        expect((e as AIError).code).toBe(AIErrorCode.FETCH_ERROR);
+        expect((e as AIError).customErrorData?.status).toBe(500);
+        expect((e as AIError).customErrorData?.statusText).toBe('Server Error');
+        expect((e as AIError).message).toContain('500 Server Error');
+        expect((e as AIError).message).toContain('extra info');
       }
       expect(fetchMock).toHaveBeenCalledTimes(1);
     });
@@ -327,12 +338,12 @@ describe('request methods', () => {
       try {
         await makeRequest('models/model-name', Task.GENERATE_CONTENT, fakeApiSettings, false, '');
       } catch (e) {
-        expect((e as VertexAIError).code).toBe(VertexAIErrorCode.FETCH_ERROR);
-        expect((e as VertexAIError).customErrorData?.status).toBe(500);
-        expect((e as VertexAIError).customErrorData?.statusText).toBe('Server Error');
-        expect((e as VertexAIError).message).toContain('500 Server Error');
-        expect((e as VertexAIError).message).toContain('extra info');
-        expect((e as VertexAIError).message).toContain('generic::invalid_argument');
+        expect((e as AIError).code).toBe(AIErrorCode.FETCH_ERROR);
+        expect((e as AIError).customErrorData?.status).toBe(500);
+        expect((e as AIError).customErrorData?.statusText).toBe('Server Error');
+        expect((e as AIError).message).toContain('500 Server Error');
+        expect((e as AIError).message).toContain('extra info');
+        expect((e as AIError).message).toContain('generic::invalid_argument');
       }
       expect(fetchMock).toHaveBeenCalledTimes(1);
     });
@@ -344,9 +355,9 @@ describe('request methods', () => {
     try {
       await makeRequest('models/model-name', Task.GENERATE_CONTENT, fakeApiSettings, false, '');
     } catch (e) {
-      expect((e as VertexAIError).code).toBe(VertexAIErrorCode.API_NOT_ENABLED);
-      expect((e as VertexAIError).message).toContain('my-project');
-      expect((e as VertexAIError).message).toContain('googleapis.com');
+      expect((e as AIError).code).toBe(AIErrorCode.API_NOT_ENABLED);
+      expect((e as AIError).message).toContain('my-project');
+      expect((e as AIError).message).toContain('googleapis.com');
     }
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });

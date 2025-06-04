@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, expect, it, afterEach, jest } from '@jest/globals';
+import { describe, expect, it, afterEach, jest, beforeEach } from '@jest/globals';
 import { getMockResponse } from './test-utils/mock-response';
 import * as request from '../lib/requests/request';
 import { generateContent } from '../lib/methods/generate-content';
@@ -27,11 +27,25 @@ import {
 } from '../lib/types';
 import { ApiSettings } from '../lib/types/internal';
 import { Task } from '../lib/requests/request';
+import { GoogleAIBackend, VertexAIBackend } from '../lib/backend';
+import { SpiedFunction } from 'jest-mock';
+import { AIError } from '../lib/errors';
+import { mapGenerateContentRequest } from '../lib/googleai-mappers';
 
 const fakeApiSettings: ApiSettings = {
   apiKey: 'key',
   project: 'my-project',
+  appId: 'my-appid',
   location: 'us-central1',
+  backend: new VertexAIBackend(),
+};
+
+const fakeGoogleAIApiSettings: ApiSettings = {
+  apiKey: 'key',
+  project: 'my-project',
+  appId: 'my-appid',
+  location: 'us-central1',
+  backend: new GoogleAIBackend(),
 };
 
 const fakeRequestParams: GenerateContentRequest = {
@@ -44,6 +58,19 @@ const fakeRequestParams: GenerateContentRequest = {
       category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
       threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
       method: HarmBlockMethod.SEVERITY,
+    },
+  ],
+};
+
+const fakeGoogleAIRequestParams: GenerateContentRequest = {
+  contents: [{ parts: [{ text: 'hello' }], role: 'user' }],
+  generationConfig: {
+    topK: 16,
+  },
+  safetySettings: [
+    {
+      category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+      threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
     },
   ],
 };
@@ -78,6 +105,28 @@ describe('generateContent()', () => {
     const result = await generateContent(fakeApiSettings, 'model', fakeRequestParams);
     expect(result.response.text()).toContain('Use Freshly Ground Coffee');
     expect(result.response.text()).toContain('30 minutes of brewing');
+    expect(makeRequestStub).toHaveBeenCalledWith(
+      'model',
+      Task.GENERATE_CONTENT,
+      fakeApiSettings,
+      false,
+      expect.anything(),
+      undefined,
+    );
+  });
+
+  it('long response with token details', async () => {
+    const mockResponse = getMockResponse('unary-success-basic-response-long-usage-metadata.json');
+    const makeRequestStub = jest
+      .spyOn(request, 'makeRequest')
+      .mockResolvedValue(mockResponse as Response);
+    const result = await generateContent(fakeApiSettings, 'model', fakeRequestParams);
+    expect(result.response.usageMetadata?.totalTokenCount).toEqual(1913);
+    expect(result.response.usageMetadata?.candidatesTokenCount).toEqual(76);
+    expect(result.response.usageMetadata?.promptTokensDetails?.[0]?.modality).toEqual('IMAGE');
+    expect(result.response.usageMetadata?.promptTokensDetails?.[0]?.tokenCount).toEqual(1806);
+    expect(result.response.usageMetadata?.candidatesTokensDetails?.[0]?.modality).toEqual('TEXT');
+    expect(result.response.usageMetadata?.candidatesTokensDetails?.[0]?.tokenCount).toEqual(76);
     expect(makeRequestStub).toHaveBeenCalledWith(
       'model',
       Task.GENERATE_CONTENT,
@@ -200,5 +249,55 @@ describe('generateContent()', () => {
       /firebasevertexai\.googleapis[\s\S]*my-project[\s\S]*api-not-enabled/,
     );
     expect(mockFetch).toHaveBeenCalled();
+  });
+
+  describe('googleAI', () => {
+    let makeRequestStub: SpiedFunction<typeof request.makeRequest>;
+
+    beforeEach(() => {
+      makeRequestStub = jest.spyOn(request, 'makeRequest');
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('throws error when method is defined', async () => {
+      const mockResponse = getMockResponse('unary-success-basic-reply-short.txt');
+      makeRequestStub.mockResolvedValue(mockResponse as Response);
+
+      const requestParamsWithMethod: GenerateContentRequest = {
+        contents: [{ parts: [{ text: 'hello' }], role: 'user' }],
+        safetySettings: [
+          {
+            category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+            threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+            method: HarmBlockMethod.SEVERITY, // Unsupported in Google AI.
+          },
+        ],
+      };
+
+      // Expect generateContent to throw a AIError that method is not supported.
+      await expect(
+        generateContent(fakeGoogleAIApiSettings, 'model', requestParamsWithMethod),
+      ).rejects.toThrow(AIError);
+      expect(makeRequestStub).not.toHaveBeenCalled();
+    });
+
+    it('maps request to GoogleAI format', async () => {
+      const mockResponse = getMockResponse('unary-success-basic-reply-short.txt');
+      makeRequestStub.mockResolvedValue(mockResponse as Response);
+
+      await generateContent(fakeGoogleAIApiSettings, 'model', fakeGoogleAIRequestParams);
+
+      expect(makeRequestStub).toHaveBeenCalledWith(
+        'model',
+        Task.GENERATE_CONTENT,
+        fakeGoogleAIApiSettings,
+        false,
+        JSON.stringify(mapGenerateContentRequest(fakeGoogleAIRequestParams)),
+        undefined,
+      );
+    });
   });
 });

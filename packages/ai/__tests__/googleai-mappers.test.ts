@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
-import { AIError } from 'lib';
+import { AIError } from '../lib/errors';
 import {
   mapCountTokensRequest,
   mapGenerateContentCandidates,
   mapGenerateContentRequest,
   mapGenerateContentResponse,
   mapPromptFeedback,
-} from 'lib/googleai-mappers';
+} from '../lib/googleai-mappers';
 import {
   AIErrorCode,
   BlockReason,
@@ -40,7 +40,7 @@ import {
   HarmSeverity,
   PromptFeedback,
   SafetyRating,
-} from 'lib/public-types';
+} from '../lib/public-types';
 import { getMockResponse } from './test-utils/mock-response';
 import { SpiedFunction } from 'jest-mock';
 
