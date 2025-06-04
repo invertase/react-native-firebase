@@ -5,9 +5,6 @@
  */
 
 import { MODULAR_DEPRECATION_ARG } from '../../../app/lib/common';
-import { NativeEventEmitter, NativeModules } from 'react-native';
-
-const emitter = new NativeEventEmitter(NativeModules.RNFBFirestoreModule);
 
 /**
  * @param {Query | DocumentReference} reference
