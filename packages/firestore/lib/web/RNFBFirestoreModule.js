@@ -132,6 +132,14 @@ export default {
     return rejectWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
   },
 
+  addSnapshotsInSync() {
+    return rejectWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
+  },
+
+  removeSnapshotsInSync() {
+    return rejectWithCodeAndMessage('unsupported', 'Not supported in the lite SDK.');
+  },
+
   /**
    * Use the Firestore emulator.
    * @param {string} appName - The app name.
