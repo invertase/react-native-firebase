@@ -155,3 +155,27 @@ export interface AI {
    */
   location: string;
 }
+
+/**
+ * An instance of the Vertex AI in Firebase SDK.
+ * @public
+ */
+export interface VertexAI {
+  /**
+   * The {@link @firebase/app#FirebaseApp} this <code>{@link VertexAI}</code> instance is associated with.
+   */
+  app: ReactNativeFirebase.FirebaseApp;
+  location: string;
+  appCheck?: FirebaseAppCheckTypes.Module | null;
+  auth?: FirebaseAuthTypes.Module | null;
+}
+
+/**
+ * Options when initializing the Vertex AI in Firebase SDK.
+ * @public
+ */
+export interface VertexAIOptions {
+  location?: string;
+  appCheck?: FirebaseAppCheckTypes.Module | null;
+  auth?: FirebaseAuthTypes.Module | null;
+}
