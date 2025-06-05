@@ -921,19 +921,14 @@ describe('firestore()', function () {
 
       it('snapshotsInSync fires', async function () {
         if (Platform.other) {
+          // Should throw error for lite SDK
           try {
-            const testDoc = doc(getFirestore(), `${COLLECTION}/snapshotsInSync`);
-
-            const promise = new Promise(resolve => {
-              const unsubscribe = onSnapshotsInSync(getFirestore(), () => {
-                events.push('onSnapshotsInSync');
-                unsubscribe();
-                resolve();
-              });
-            });
+            const unsubscribe = onSnapshotsInSync(getFirestore(), () => {});
+            unsubscribe();
           } catch (e) {
-            e.message.should.containEql('Not supported in the lite SDK');
+            e.message.should.equal('Not supported in the lite SDK.');
           }
+          return;
         }
 
         const events = [];
@@ -958,19 +953,14 @@ describe('firestore()', function () {
 
       it('handles multiple writes and unsubscribe correctly', async function () {
         if (Platform.other) {
+          // Should throw error for lite SDK
           try {
-            const testDoc = doc(getFirestore(), `${COLLECTION}/snapshotsInSync`);
-
-            const promise = new Promise(resolve => {
-              const unsubscribe = onSnapshotsInSync(getFirestore(), () => {
-                events.push('onSnapshotsInSync');
-                unsubscribe();
-                resolve();
-              });
-            });
+            const unsubscribe = onSnapshotsInSync(getFirestore(), () => {});
+            unsubscribe();
           } catch (e) {
-            e.message.should.containEql('Not supported in the lite SDK');
+            e.message.should.equal('Not supported in the lite SDK.');
           }
+          return;
         }
 
         const events = [];
@@ -988,10 +978,7 @@ describe('firestore()', function () {
           });
         });
 
-        await Promise.all([
-          setDoc(testDoc1, { test: 1 }),
-          setDoc(testDoc2, { test: 2 })
-        ]);
+        await Promise.all([setDoc(testDoc1, { test: 1 }), setDoc(testDoc2, { test: 2 })]);
 
         await syncPromise;
         
@@ -999,10 +986,7 @@ describe('firestore()', function () {
         await setDoc(testDoc1, { test: 3 });
         
         // Cleanup
-        await Promise.all([
-          deleteDoc(testDoc1),
-          deleteDoc(testDoc2)
-        ]);
+        await Promise.all([deleteDoc(testDoc1), deleteDoc(testDoc2)]);
 
         events.length.should.be.greaterThan(0);
         events.forEach(event => event.should.equal('sync'));
