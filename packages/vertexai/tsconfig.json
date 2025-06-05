@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "rootDir": ".",
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "esModuleInterop": true,
@@ -25,9 +26,7 @@
     "paths": {
       "@react-native-firebase/app": ["../app/lib"],
       "@react-native-firebase/auth": ["../auth/lib"],
-      "@react-native-firebase/app-check": ["../app-check/lib"],
-      "@react-native-firebase/ai": ["../ai/lib"],
+      "@react-native-firebase/app-check": ["../app-check/lib"]
     }
-  },
-  "include": ["lib/**/*", "../ai/lib/**/*"]
+  }
 }
