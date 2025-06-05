@@ -25,9 +25,15 @@ import { GenerativeModel } from './models/generative-model';
 export { ChatSession } from './methods/chat-session';
 export * from './requests/schema-builder';
 
-export { GenerativeModel };
-
-export { AIError };
+export {
+  GenerativeModel,
+  AIError,
+  AIErrorCode,
+  ModelParams,
+  RequestOptions,
+  GoogleAIBackend,
+  VertexAIBackend,
+};
 
 /**
  * Returns the default {@link AI} instance that is associated with the provided
