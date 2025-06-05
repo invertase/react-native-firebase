@@ -16,8 +16,8 @@
  */
 
 import { ReactNativeFirebase } from '@react-native-firebase/app';
-import { VertexAI, VertexAIOptions } from '@react-native-firebase/ai';
-import { DEFAULT_LOCATION } from './constants';
+import { VertexAI, VertexAIOptions } from './ai-symlink/index';
+import { DEFAULT_LOCATION } from './ai-symlink/constants';
 import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { FirebaseAppCheckTypes } from '@react-native-firebase/app-check';
 
