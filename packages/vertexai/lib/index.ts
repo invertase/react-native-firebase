@@ -24,16 +24,15 @@ import {
   GenerativeModel,
   RequestOptions,
   ModelParams,
+  VertexAIErrorCode,
+  VertexAIError,
+  VertexAI,
+  VertexAIOptions,
 } from '@react-native-firebase/ai';
-import { VertexAIErrorCode } from './types';
 import { DEFAULT_LOCATION } from './constants';
-import { VertexAI, VertexAIOptions } from './public-types';
-import { VertexAIError } from './errors';
 import { VertexAIService } from './service';
-export { ChatSession } from './methods/chat-session';
-export * from './requests/schema-builder';
 
-export { VertexAIError };
+export * from '@react-native-firebase/ai';
 
 /**
  * Returns a <code>{@link VertexAI}</code> instance for the given app.
