@@ -102,3 +102,75 @@ export const enum AIErrorCode {
   /** An error occurred due an attempt to use an unsupported feature. */
   UNSUPPORTED = 'unsupported',
 }
+
+/**
+ * Standardized error codes that <code>{@link VertexAIError}</code> can have.
+ *
+ * @public
+ */
+export const enum VertexAIErrorCode {
+  /** A generic error occurred. */
+  ERROR = 'error',
+
+  /** An error occurred in a request. */
+  REQUEST_ERROR = 'request-error',
+
+  /** An error occurred in a response. */
+  RESPONSE_ERROR = 'response-error',
+
+  /** An error occurred while performing a fetch. */
+  FETCH_ERROR = 'fetch-error',
+
+  /** An error associated with a Content object.  */
+  INVALID_CONTENT = 'invalid-content',
+
+  /** An error due to the Firebase API not being enabled in the Console. */
+  API_NOT_ENABLED = 'api-not-enabled',
+
+  /** An error due to invalid Schema input.  */
+  INVALID_SCHEMA = 'invalid-schema',
+
+  /** An error occurred due to a missing Firebase API key. */
+  NO_API_KEY = 'no-api-key',
+
+  /** An error occurred due to a model name not being specified during initialization. */
+  NO_MODEL = 'no-model',
+
+  /** An error occurred due to a missing project ID. */
+  NO_PROJECT_ID = 'no-project-id',
+
+  /** An error occurred while parsing. */
+  PARSE_FAILED = 'parse-failed',
+}
+
+/**
+ * Error class for the Vertex AI in Firebase SDK.
+ *
+ * @public
+ */
+export class VertexAIError extends FirebaseError {
+  /**
+   * Constructs a new instance of the `VertexAIError` class.
+   *
+   * @param code - The error code from <code>{@link VertexAIErrorCode}</code>.
+   * @param message - A human-readable message describing the error.
+   * @param customErrorData - Optional error data.
+   */
+  constructor(
+    readonly code: VertexAIErrorCode,
+    message: string,
+    readonly customErrorData?: CustomErrorData,
+  ) {
+    // Match error format used by FirebaseError from ErrorFactory
+    const service = VERTEX_TYPE;
+    const serviceName = 'VertexAI';
+    const fullCode = `${service}/${code}`;
+    const fullMessage = `${serviceName}: ${message} (${fullCode})`;
+    super(code, fullMessage);
+
+    Object.setPrototypeOf(this, VertexAIError.prototype);
+
+    // Since Error is an interface, we don't inherit toString and so we define it ourselves.
+    this.toString = () => fullMessage;
+  }
+}
