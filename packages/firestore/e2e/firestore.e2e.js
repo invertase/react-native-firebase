@@ -967,7 +967,7 @@ describe('firestore()', function () {
         const db = getFirestore();
         const testDoc1 = doc(db, `${COLLECTION}/snapshotsInSync1`);
         const testDoc2 = doc(db, `${COLLECTION}/snapshotsInSync2`);
-        
+
         const syncPromise = new Promise(resolve => {
           const unsubscribe = onSnapshotsInSync(db, () => {
             events.push('sync');
@@ -981,10 +981,10 @@ describe('firestore()', function () {
         await Promise.all([setDoc(testDoc1, { test: 1 }), setDoc(testDoc2, { test: 2 })]);
 
         await syncPromise;
-        
+
         // Verify unsubscribe worked by doing another write
         await setDoc(testDoc1, { test: 3 });
-        
+
         // Cleanup
         await Promise.all([deleteDoc(testDoc1), deleteDoc(testDoc2)]);
 
