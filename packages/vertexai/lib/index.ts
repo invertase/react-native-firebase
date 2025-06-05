@@ -17,16 +17,21 @@
 
 import './polyfills';
 import { getApp, ReactNativeFirebase } from '@react-native-firebase/app';
-import { ModelParams, RequestOptions, VertexAIErrorCode } from './types';
+import {
+  getGenerativeModel as getGenerativeModelFromAI,
+  getAI,
+  VertexAIBackend,
+  GenerativeModel,
+  RequestOptions,
+  ModelParams,
+} from '@react-native-firebase/ai';
+import { VertexAIErrorCode } from './types';
 import { DEFAULT_LOCATION } from './constants';
 import { VertexAI, VertexAIOptions } from './public-types';
 import { VertexAIError } from './errors';
-import { GenerativeModel } from './models/generative-model';
 import { VertexAIService } from './service';
 export { ChatSession } from './methods/chat-session';
 export * from './requests/schema-builder';
-
-export { GenerativeModel };
 
 export { VertexAIError };
 
@@ -69,5 +74,10 @@ export function getGenerativeModel(
       `Must provide a model name. Example: getGenerativeModel({ model: 'my-model-name' })`,
     );
   }
-  return new GenerativeModel(vertexAI, modelParams, requestOptions);
+
+  const ai = getAI(vertexAI.app, {
+    backend: new VertexAIBackend(vertexAI.location),
+  });
+
+  return getGenerativeModelFromAI(ai, modelParams, requestOptions);
 }
