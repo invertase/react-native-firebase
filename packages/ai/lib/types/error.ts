@@ -17,6 +17,7 @@
 
 import { FirebaseError } from '@firebase/util';
 import { GenerateContentResponse } from './responses';
+import { VERTEX_TYPE } from '../constants';
 
 /**
  * Details object that may be included in an error response.
