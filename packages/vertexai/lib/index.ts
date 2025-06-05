@@ -28,11 +28,9 @@ import {
   VertexAIError,
   VertexAI,
   VertexAIOptions,
-} from '@react-native-firebase/ai';
-import { DEFAULT_LOCATION } from './constants';
+} from './ai-symlink/index';
+import { DEFAULT_LOCATION } from './ai-symlink/constants';
 import { VertexAIService } from './service';
-
-export * from '@react-native-firebase/ai';
 
 /**
  * Returns a <code>{@link VertexAI}</code> instance for the given app.
