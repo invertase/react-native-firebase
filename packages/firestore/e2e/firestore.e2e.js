@@ -921,7 +921,19 @@ describe('firestore()', function () {
 
       it('snapshotsInSync fires', async function () {
         if (Platform.other) {
-          return;
+          try {
+            const testDoc = doc(getFirestore(), `${COLLECTION}/snapshotsInSync`);
+
+            const promise = new Promise(resolve => {
+              const unsubscribe = onSnapshotsInSync(getFirestore(), () => {
+                events.push('onSnapshotsInSync');
+                unsubscribe();
+                resolve();
+              });
+            });
+          } catch (e) {
+            e.message.should.containEql('Not supported in the lite SDK');
+          }
         }
 
         const events = [];
@@ -946,7 +958,19 @@ describe('firestore()', function () {
 
       it('handles multiple writes and unsubscribe correctly', async function () {
         if (Platform.other) {
-          return;
+          try {
+            const testDoc = doc(getFirestore(), `${COLLECTION}/snapshotsInSync`);
+
+            const promise = new Promise(resolve => {
+              const unsubscribe = onSnapshotsInSync(getFirestore(), () => {
+                events.push('onSnapshotsInSync');
+                unsubscribe();
+                resolve();
+              });
+            });
+          } catch (e) {
+            e.message.should.containEql('Not supported in the lite SDK');
+          }
         }
 
         const events = [];
