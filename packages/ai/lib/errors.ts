@@ -26,9 +26,9 @@ import { AI_TYPE } from './constants';
  */
 export class AIError extends FirebaseError {
   /**
-   * Constructs a new instance of the `VertexAIError` class.
+   * Constructs a new instance of the `AIError` class.
    *
-   * @param code - The error code from <code>{@link VertexAIErrorCode}</code>.
+   * @param code - The error code from <code>{@link AIErrorCode}</code>.
    * @param message - A human-readable message describing the error.
    * @param customErrorData - Optional error data.
    */
