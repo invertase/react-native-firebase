@@ -196,7 +196,7 @@ describe('request methods', () => {
       // See: https://github.com/firebase/firebase-js-sdk/blob/main/packages/vertexai/src/requests/request.test.ts#L172
       // expect(headers.get('X-Firebase-AppCheck')).toBe('dummytoken');
       expect(warnSpy).toHaveBeenCalledWith(
-        expect.stringMatching(/vertexai/),
+        expect.stringMatching(/firebase\/ai/),
         expect.stringMatching(/App Check.*oops/),
       );
     });
