@@ -5348,7 +5348,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-firebase/ai@workspace:packages/ai":
+"@react-native-firebase/ai@npm:22.2.0, @react-native-firebase/ai@workspace:packages/ai":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/ai@workspace:packages/ai"
   dependencies:
@@ -5565,6 +5565,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/vertexai@workspace:packages/vertexai"
   dependencies:
+    "@react-native-firebase/ai": "npm:22.2.0"
     "@types/text-encoding": "npm:^0.0.40"
     react-native-builder-bob: "npm:^0.40.6"
     react-native-fetch-api: "npm:^3.0.0"
