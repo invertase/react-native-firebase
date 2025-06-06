@@ -25,6 +25,12 @@
     "gemini",
     "generative-ai"
   ],
+  "dependencies": {
+    "@react-native-firebase/ai": "22.2.0",
+    "react-native-fetch-api": "^3.0.0",
+    "text-encoding": "^0.7.0",
+    "web-streams-polyfill": "^4.1.0"
+  },
   "peerDependencies": {
     "@react-native-firebase/app": "23.0.0"
   },
@@ -79,10 +85,5 @@
   "eslintIgnore": [
     "node_modules/",
     "dist/"
-  ],
-  "dependencies": {
-    "react-native-fetch-api": "^3.0.0",
-    "text-encoding": "^0.7.0",
-    "web-streams-polyfill": "^4.1.0"
-  }
+  ]
 }

@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-import './polyfills';
 import { getApp, ReactNativeFirebase } from '@react-native-firebase/app';
-import {
-  getGenerativeModel as getGenerativeModelFromAI,
-  getAI,
-  VertexAIBackend,
-  GenerativeModel,
-  RequestOptions,
-  ModelParams,
-  VertexAIErrorCode,
-  VertexAIError,
-  VertexAI,
-  VertexAIOptions,
-} from './ai-symlink/index';
-import { DEFAULT_LOCATION } from './ai-symlink/constants';
-import { VertexAIService } from './service';
+import { VertexAIBackend, AIModel, AIError, AIErrorCode } from '@react-native-firebase/ai';
+import { VertexAIOptions, VertexAI } from './public-types';
+export * from './public-types';
+export * from '@react-native-firebase/ai';
+
+const DEFAULT_LOCATION = 'us-central1';
 
 /**
+ * @deprecated Use the new {@link getAI | getAI()} instead. The Vertex AI in Firebase SDK has been
+ * replaced with the Firebase AI SDK to accommodate the evolving set of supported features and
+ * services. For migration details, see the {@link https://firebase.google.com/docs/vertex-ai/migrate-to-latest-sdk | migration guide}.
+ *
+ * Returns a {@link VertexAI} instance for the given app, configured to use the
+ * Vertex AI Gemini API. This instance will be
+ * configured to use the Vertex AI Gemini API.
+ *
  * Returns a <code>{@link VertexAI}</code> instance for the given app.
  *
  * @public
@@ -51,30 +50,31 @@ export function getVertexAI(
     location: options?.location || DEFAULT_LOCATION,
     appCheck: options?.appCheck || null,
     auth: options?.auth || null,
-  } as VertexAIService;
+    backend: new VertexAIBackend(options?.location || DEFAULT_LOCATION),
+  };
 }
 
 /**
- * Returns a <code>{@link GenerativeModel}</code> class with methods for inference
- * and other functionality.
+ * @deprecated Use the new {@link AIModel} instead. The Vertex AI in Firebase SDK has been
+ * replaced with the Firebase AI SDK to accommodate the evolving set of supported features and
+ * services. For migration details, see the {@link https://firebase.google.com/docs/vertex-ai/migrate-to-latest-sdk | migration guide}.
+ *
+ * Base class for Firebase AI model APIs.
  *
  * @public
  */
-export function getGenerativeModel(
-  vertexAI: VertexAI,
-  modelParams: ModelParams,
-  requestOptions?: RequestOptions,
-): GenerativeModel {
-  if (!modelParams.model) {
-    throw new VertexAIError(
-      VertexAIErrorCode.NO_MODEL,
-      `Must provide a model name. Example: getGenerativeModel({ model: 'my-model-name' })`,
-    );
-  }
+export const VertexAIModel = AIModel;
 
-  const ai = getAI(vertexAI.app, {
-    backend: new VertexAIBackend(vertexAI.location),
-  });
+/**
+ * @deprecated Use the new {@link AIError} instead. The Vertex AI in Firebase SDK has been
+ * replaced with the Firebase AI SDK to accommodate the evolving set of supported features and
+ * services. For migration details, see the {@link https://firebase.google.com/docs/vertex-ai/migrate-to-latest-sdk | migration guide}.
+ *
+ * Error class for the Firebase AI SDK.
+ *
+ * @public
+ */
+export const VertexAIError = AIError;
 
-  return getGenerativeModelFromAI(ai, modelParams, requestOptions);
-}
+export { AIErrorCode as VertexAIErrorCode };
+export { VertexAIBackend, AIModel, AIError };

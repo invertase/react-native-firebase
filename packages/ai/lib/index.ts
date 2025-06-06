@@ -19,16 +19,16 @@ import './polyfills';
 import { getApp, ReactNativeFirebase } from '@react-native-firebase/app';
 import { GoogleAIBackend, VertexAIBackend } from './backend';
 import { AIErrorCode, ModelParams, RequestOptions } from './types';
-import { AI, AIOptions, VertexAI, VertexAIOptions } from './public-types';
+import { AI, AIOptions } from './public-types';
 import { AIError } from './errors';
 import { GenerativeModel } from './models/generative-model';
+import { AIModel } from './models/ai-model';
+
+export * from './public-types';
 export { ChatSession } from './methods/chat-session';
-
 export * from './requests/schema-builder';
-export * from './types';
-export * from './backend';
-
-export { GenerativeModel, AIError, VertexAI, VertexAIOptions };
+export { GoogleAIBackend, VertexAIBackend } from './backend';
+export { GenerativeModel, AIError, AIModel };
 
 /**
  * Returns the default {@link AI} instance that is associated with the provided
