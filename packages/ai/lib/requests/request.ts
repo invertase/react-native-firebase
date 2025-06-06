@@ -60,10 +60,18 @@ export class RequestUrl {
       }
       return emulatorUrl;
     }
-    const url = new URL(this.baseUrl); // Throws if the URL is invalid
-    url.pathname = `/${this.apiVersion}/${this.modelPath}:${this.task}`;
-    url.search = this.queryParams.toString();
-    return url.toString();
+
+    // Manually construct URL to avoid React Native URL API issues
+    let baseUrl = this.baseUrl;
+    // Remove trailing slash if present
+    if (baseUrl.endsWith('/')) {
+      baseUrl = baseUrl.slice(0, -1);
+    }
+
+    const pathname = `/${this.apiVersion}/${this.modelPath}:${this.task}`;
+    const queryString = this.queryParams;
+
+    return `${baseUrl}${pathname}${queryString ? `?${queryString}` : ''}`;
   }
 
   private get baseUrl(): string {
@@ -87,10 +95,10 @@ export class RequestUrl {
     }
   }
 
-  private get queryParams(): URLSearchParams {
-    const params = new URLSearchParams();
+  private get queryParams(): string {
+    let params = '';
     if (this.stream) {
-      params.set('alt', 'sse');
+      params += 'alt=sse';
     }
 
     return params;
