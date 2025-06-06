@@ -33,6 +33,8 @@ export interface AIOptions {
    * The backend configuration to use for the AI service instance.
    */
   backend: Backend;
+  appCheck?: FirebaseAppCheckTypes.Module | null;
+  auth?: FirebaseAuthTypes.Module | null;
 }
 
 /**
