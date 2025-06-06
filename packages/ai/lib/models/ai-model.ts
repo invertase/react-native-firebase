@@ -66,6 +66,7 @@ export abstract class AIModel {
         location: ai.location,
         backend: ai.backend,
       };
+
       if ((ai as AIService).appCheck) {
         this._apiSettings.getAppCheckToken = () => (ai as AIService).appCheck!.getToken();
       }
