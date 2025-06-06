@@ -19,8 +19,6 @@ import { version } from './version';
 
 export const AI_TYPE = 'AI';
 
-export const VERTEX_TYPE = 'vertexAI';
-
 export const DEFAULT_LOCATION = 'us-central1';
 
 export const DEFAULT_BASE_URL = 'https://firebasevertexai.googleapis.com';

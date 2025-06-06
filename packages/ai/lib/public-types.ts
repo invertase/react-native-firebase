@@ -22,30 +22,6 @@ import { FirebaseAppCheckTypes } from '@react-native-firebase/app-check';
 export * from './types';
 
 /**
- * An instance of the Vertex AI in Firebase SDK.
- * @public
- */
-export interface VertexAI {
-  /**
-   * The {@link @firebase/app#FirebaseApp} this <code>{@link VertexAI}</code> instance is associated with.
-   */
-  app: ReactNativeFirebase.FirebaseApp;
-  location: string;
-  appCheck?: FirebaseAppCheckTypes.Module | null;
-  auth?: FirebaseAuthTypes.Module | null;
-}
-
-/**
- * Options when initializing the Vertex AI in Firebase SDK.
- * @public
- */
-export interface VertexAIOptions {
-  location?: string;
-  appCheck?: FirebaseAppCheckTypes.Module | null;
-  auth?: FirebaseAuthTypes.Module | null;
-}
-
-/**
  * Options for initializing the AI service using {@link getAI | getAI()}.
  * This allows specifying which backend to use (Vertex AI Gemini API or Gemini Developer API)
  * and configuring its specific options (like location for Vertex AI).
@@ -142,6 +118,8 @@ export interface AI {
    * The {@link @firebase/app#FirebaseApp} this {@link AI} instance is associated with.
    */
   app: ReactNativeFirebase.FirebaseApp;
+  appCheck?: FirebaseAppCheckTypes.Module | null;
+  auth?: FirebaseAuthTypes.Module | null;
   /**
    * A {@link Backend} instance that specifies the configuration for the target backend,
    * either the Gemini Developer API (using {@link GoogleAIBackend}) or the
@@ -154,28 +132,4 @@ export interface AI {
    * The location configured for this AI service instance, relevant for Vertex AI backends.
    */
   location: string;
-}
-
-/**
- * An instance of the Vertex AI in Firebase SDK.
- * @public
- */
-export interface VertexAI {
-  /**
-   * The {@link @firebase/app#FirebaseApp} this <code>{@link VertexAI}</code> instance is associated with.
-   */
-  app: ReactNativeFirebase.FirebaseApp;
-  location: string;
-  appCheck?: FirebaseAppCheckTypes.Module | null;
-  auth?: FirebaseAuthTypes.Module | null;
-}
-
-/**
- * Options when initializing the Vertex AI in Firebase SDK.
- * @public
- */
-export interface VertexAIOptions {
-  location?: string;
-  appCheck?: FirebaseAppCheckTypes.Module | null;
-  auth?: FirebaseAuthTypes.Module | null;
 }
