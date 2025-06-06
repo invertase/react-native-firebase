@@ -2,13 +2,13 @@
   <a href="https://rnfirebase.io">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
-  <h2 align="center">React Native Firebase - Vertex AI</h2>
+  <h2 align="center">React Native Firebase - AI Logic</h2>
 </p>
 
 <p align="center">
-  <a href="https://api.rnfirebase.io/coverage/vertexai/detail"><img src="https://api.rnfirebase.io/coverage/vertexai/badge?style=flat-square" alt="Coverage"></a>
-  <a href="https://www.npmjs.com/package/@react-native-firebase/vertexai"><img src="https://img.shields.io/npm/dm/@react-native-firebase/vertexai.svg?style=flat-square" alt="NPM downloads"></a>
-  <a href="https://www.npmjs.com/package/@react-native-firebase/vertexai"><img src="https://img.shields.io/npm/v/@react-native-firebase/vertexai.svg?style=flat-square" alt="NPM version"></a>
+  <a href="https://api.rnfirebase.io/coverage/ai/detail"><img src="https://api.rnfirebase.io/coverage/ai/badge?style=flat-square" alt="Coverage"></a>
+  <a href="https://www.npmjs.com/package/@react-native-firebase/ai"><img src="https://img.shields.io/npm/dm/@react-native-firebase/ai.svg?style=flat-square" alt="NPM downloads"></a>
+  <a href="https://www.npmjs.com/package/@react-native-firebase/ai"><img src="https://img.shields.io/npm/v/@react-native-firebase/ai.svg?style=flat-square" alt="NPM version"></a>
   <a href="/LICENSE"><img src="https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square" alt="License"></a>
   <a href="https://lerna.js.org/"><img src="https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg?style=flat-square" alt="Maintained with Lerna"></a>
 </p>
@@ -21,22 +21,23 @@
 
 ---
 
-Vertex AI is a fully-managed, unified AI development platform for building and using generative AI. Access and utilize Vertex AI Studio, Agent Builder, and 150+ foundation models including Gemini 1.5 Pro and Gemini 1.5 Flash.
+Firebase AI Logic gives you access to the latest generative AI models from Google.
 
-[> Learn More](https://firebase.google.com/docs/vertex-ai/)
+If you need to call the Gemini API directly from your mobile or web app — rather than server-side — you can use the Firebase AI Logic client SDKs. These client SDKs are built specifically for use with mobile and web apps, offering security options against unauthorized clients as well as integrations with other Firebase services.
+
+[> Learn More](https://firebase.google.com/docs/ai-logic/)
 
 ## Installation
 
 Requires `@react-native-firebase/app` to be installed.
 
 ```bash
-yarn add @react-native-firebase/vertexai
+yarn add @react-native-firebase/ai
 ```
 
 ## Documentation
 
-- [Quick Start](https://rnfirebase.io/vertexai/usage)
-- [Reference](https://rnfirebase.io/reference/vertexai)
+- [Quick Start](https://rnfirebase.io/ai/usage)
 
 ## License
 
