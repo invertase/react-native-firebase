@@ -79,7 +79,7 @@ export class RequestUrl {
   }
 
   private get apiVersion(): string {
-    return DEFAULT_API_VERSION; // TODO: allow user-set options if that feature becomes available
+    return DEFAULT_API_VERSION;
   }
 
   private get modelPath(): string {
