@@ -89,6 +89,24 @@ export function collectionGroup(firestore, collectionId) {
   return firestore.collectionGroup.call(firestore, collectionId, MODULAR_DEPRECATION_ARG);
 }
 
+let _id_SnapshotInSync = 0;
+
+export function onSnapshotsInSync(firestore, callback) {
+  const listenerId = _id_SnapshotInSync++;
+  firestore.native.addSnapshotsInSync(listenerId);
+  const onSnapshotsInSyncSubscription = firestore.emitter.addListener(
+    firestore.eventNameForApp(`firestore_snapshots_in_sync_event:${listenerId}`),
+    () => {
+      callback();
+    },
+  );
+
+  return () => {
+    onSnapshotsInSyncSubscription.remove();
+    firestore.native.removeSnapshotsInSync(listenerId);
+  };
+}
+
 /**
  * @param {DocumentReference} reference
  * @param {import('.').PartialWithFieldValue} data

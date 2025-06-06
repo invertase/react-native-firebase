@@ -915,5 +915,82 @@ describe('firestore()', function () {
         });
       });
     });
+
+    describe('snapshotsInSync', function () {
+      const { getFirestore, onSnapshotsInSync, doc, setDoc, deleteDoc } = firestoreModular;
+
+      it('snapshotsInSync fires', async function () {
+        if (Platform.other) {
+          // Should throw error for lite SDK
+          try {
+            const unsubscribe = onSnapshotsInSync(getFirestore(), () => {});
+            unsubscribe();
+          } catch (e) {
+            e.message.should.equal('Not supported in the lite SDK.');
+          }
+          return;
+        }
+
+        const events = [];
+        const testDoc = doc(getFirestore(), `${COLLECTION}/snapshotsInSync`);
+
+        const promise = new Promise(resolve => {
+          const unsubscribe = onSnapshotsInSync(getFirestore(), () => {
+            events.push('onSnapshotsInSync');
+            unsubscribe();
+            resolve();
+          });
+        });
+
+        // Trigger a write to force sync
+        await setDoc(testDoc, { test: true });
+        await promise;
+        await deleteDoc(testDoc);
+
+        events.length.should.equal(1);
+        events[0].should.equal('onSnapshotsInSync');
+      });
+
+      it('handles multiple writes and unsubscribe correctly', async function () {
+        if (Platform.other) {
+          // Should throw error for lite SDK
+          try {
+            const unsubscribe = onSnapshotsInSync(getFirestore(), () => {});
+            unsubscribe();
+          } catch (e) {
+            e.message.should.equal('Not supported in the lite SDK.');
+          }
+          return;
+        }
+
+        const events = [];
+        const db = getFirestore();
+        const testDoc1 = doc(db, `${COLLECTION}/snapshotsInSync1`);
+        const testDoc2 = doc(db, `${COLLECTION}/snapshotsInSync2`);
+
+        const syncPromise = new Promise(resolve => {
+          const unsubscribe = onSnapshotsInSync(db, () => {
+            events.push('sync');
+            if (events.length >= 1) {
+              unsubscribe();
+              resolve();
+            }
+          });
+        });
+
+        await Promise.all([setDoc(testDoc1, { test: 1 }), setDoc(testDoc2, { test: 2 })]);
+
+        await syncPromise;
+
+        // Verify unsubscribe worked by doing another write
+        await setDoc(testDoc1, { test: 3 });
+
+        // Cleanup
+        await Promise.all([deleteDoc(testDoc1), deleteDoc(testDoc2)]);
+
+        events.length.should.be.greaterThan(0);
+        events.forEach(event => event.should.equal('sync'));
+      });
+    });
   });
 });
