@@ -150,7 +150,7 @@ describe('countTokens()', () => {
     });
 
     it('maps request to GoogleAI format', async () => {
-      makeRequestStub.mockResolvedValue({ ok: true, json: () => {} } as Response); // Unused
+      makeRequestStub.mockResolvedValue({ ok: true, json: () => {} } as Response);
 
       await countTokens(fakeGoogleAIApiSettings, 'model', fakeRequestParams);
 
