@@ -18,8 +18,6 @@
 import { getApp, ReactNativeFirebase } from '@react-native-firebase/app';
 import { VertexAIBackend, AIModel, AIError, AIErrorCode } from '@react-native-firebase/ai';
 import { VertexAIOptions, VertexAI } from './public-types';
-export * from './public-types';
-export * from '@react-native-firebase/ai';
 
 const DEFAULT_LOCATION = 'us-central1';
 
@@ -78,3 +76,6 @@ export const VertexAIError = AIError;
 
 export { AIErrorCode as VertexAIErrorCode };
 export { VertexAIBackend, AIModel, AIError };
+
+export * from './public-types';
+export * from '@react-native-firebase/ai';
