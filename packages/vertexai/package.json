@@ -10,7 +10,7 @@
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf dist",
     "compile": "bob build",
-    "prepare": "yarn tests:ai:mocks && yarn run build && yarn compile"
+    "prepare": "yarn run build && yarn compile"
   },
   "repository": {
     "type": "git",
