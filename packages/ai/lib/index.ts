@@ -66,6 +66,8 @@ export function getAI(
     app,
     backend: options.backend,
     location: (options.backend as VertexAIBackend)?.location || '',
+    appCheck: options.appCheck || null,
+    auth: options.auth || null,
   } as AI;
 }
 
