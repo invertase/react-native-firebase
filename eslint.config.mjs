@@ -37,8 +37,9 @@ export default [
       '**/app.playground.js',
       '**/type-test.ts',
       'packages/**/modular/dist/**/*',
-      'packages/vertexai/__tests__/test-utils',
+      'packages/ai/__tests__/test-utils',
       'packages/vertexai/dist',
+      'packages/ai/dist',
     ],
   },
   ...compat
