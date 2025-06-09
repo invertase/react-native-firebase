@@ -255,7 +255,7 @@ RCT_EXPORT_METHOD(addSnapshotsInSync
   }
 
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
-                                                            databaseId:databaseId];
+                                                         databaseId:databaseId];
 
   id<FIRListenerRegistration> listener = [firestore addSnapshotsInSyncListener:^{
     [[RNFBRCTEventEmitter shared]
