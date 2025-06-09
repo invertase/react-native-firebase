@@ -923,7 +923,6 @@ describe('firestore()', function () {
         const events = [];
         const testDoc = doc(getFirestore(), `${COLLECTION}/snapshotsInSync`);
 
-
         if (Platform.other) {
           // Should throw error for lite SDK
           try {
@@ -935,7 +934,7 @@ describe('firestore()', function () {
               });
             });
 
-            await promise;
+          await promise;
 
           } catch (e) {
             e.message.should.equal('Not supported in the lite SDK.');
@@ -979,7 +978,7 @@ describe('firestore()', function () {
               });
             });
 
-            await syncPromise;
+          await syncPromise;
 
           } catch (e) {
             e.message.should.equal('Not supported in the lite SDK.');
@@ -987,6 +986,7 @@ describe('firestore()', function () {
           return;
         }
 
+        let unsubscribe;
         const syncPromise = new Promise(resolve => {
           const unsubscribe = onSnapshotsInSync(db, () => {
             events.push('sync');
