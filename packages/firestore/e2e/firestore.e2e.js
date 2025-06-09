@@ -934,8 +934,7 @@ describe('firestore()', function () {
               });
             });
 
-          await promise;
-
+            await promise;
           } catch (e) {
             e.message.should.equal('Not supported in the lite SDK.');
           }
@@ -978,8 +977,7 @@ describe('firestore()', function () {
               });
             });
 
-          await syncPromise;
-
+            await syncPromise;
           } catch (e) {
             e.message.should.equal('Not supported in the lite SDK.');
           }
