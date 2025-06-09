@@ -3,7 +3,7 @@ import { setFireBaseMessagingAndroidManifest } from '../src/android/setupFirebas
 import { ExpoConfig } from '@expo/config-types';
 import {
   expoConfigExample,
-  expoConfigExampleWithExpoNotificationsPlugin,
+  expoConfigExampleWithExpoNotificationsPlugins,
 } from './fixtures/expo-config-example';
 import manifestApplicationExample from './fixtures/application-example';
 import { ManifestApplication } from '@expo/config-plugins/build/android/Manifest';
@@ -73,7 +73,7 @@ describe('Config Plugin Android Tests', function () {
 
   it('applies changes to app/src/main/AndroidManifest.xml with expo-notifications plugin config when app.json notification is undefined', async function () {
     const config: ExpoConfig = JSON.parse(
-      JSON.stringify(expoConfigExampleWithExpoNotificationsPlugin),
+      JSON.stringify(expoConfigExampleWithExpoNotificationsPlugins),
     );
     const manifestApplication: ManifestApplication = JSON.parse(
       JSON.stringify(manifestApplicationExample),
@@ -97,7 +97,7 @@ describe('Config Plugin Android Tests', function () {
 
   it('applies changes to app/src/main/AndroidManifest.xml with app.json notification config when both configs are defined', async function () {
     const config: ExpoConfig = JSON.parse(
-      JSON.stringify(expoConfigExampleWithExpoNotificationsPlugin),
+      JSON.stringify(expoConfigExampleWithExpoNotificationsPlugins),
     );
     const manifestApplication: ManifestApplication = JSON.parse(
       JSON.stringify(manifestApplicationExample),

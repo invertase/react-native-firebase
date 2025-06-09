@@ -17,9 +17,13 @@ export const expoConfigExample: ExpoConfig = {
 /**
  * @type {import('@expo/config-types').ExpoConfig}
  */
-export const expoConfigExampleWithExpoNotificationsPlugin: ExpoConfig = {
+export const expoConfigExampleWithExpoNotificationsPlugins: ExpoConfig = {
   name: 'FirebaseMessagingTest',
   slug: 'fire-base-messaging-test',
   notification: notificationConfig,
-  plugins: [['expo-notifications', notificationConfig]],
+  plugins: [
+    ['expo-notifications', notificationConfig],
+    '../test-plugin',
+    ['expo-camera'],
+  ],
 };
