@@ -23,4 +23,3 @@ export const expoConfigExampleWithExpoNotificationsPlugin: ExpoConfig = {
   notification: notificationConfig,
   plugins: [['expo-notifications', notificationConfig]],
 };
-

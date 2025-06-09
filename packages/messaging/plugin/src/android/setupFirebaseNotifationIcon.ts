@@ -40,7 +40,9 @@ export function setFireBaseMessagingAndroidManifest(
     color: null,
   };
 
-  const notificationConfigFromPlugin = config.plugins?.find(plugin => plugin[0] === 'expo-notifications')?.[1];
+  const notificationConfigFromPlugin = config.plugins?.find(
+    plugin => plugin[0] === 'expo-notifications',
+  )?.[1];
 
   // check if the notification config is defined in the expo-notifications plugin first
   if (notificationConfigFromPlugin?.icon || notificationConfigFromPlugin?.color) {

@@ -1,7 +1,10 @@
 import { describe, expect, it } from '@jest/globals';
 import { setFireBaseMessagingAndroidManifest } from '../src/android/setupFirebaseNotifationIcon';
 import { ExpoConfig } from '@expo/config-types';
-import { expoConfigExample, expoConfigExampleWithExpoNotificationsPlugin } from './fixtures/expo-config-example';
+import {
+  expoConfigExample,
+  expoConfigExampleWithExpoNotificationsPlugin,
+} from './fixtures/expo-config-example';
 import manifestApplicationExample from './fixtures/application-example';
 import { ManifestApplication } from '@expo/config-plugins/build/android/Manifest';
 
@@ -69,7 +72,9 @@ describe('Config Plugin Android Tests', function () {
   });
 
   it('applies changes to app/src/main/AndroidManifest.xml with expo-notifications plugin config when app.json notification is undefined', async function () {
-    const config: ExpoConfig = JSON.parse(JSON.stringify(expoConfigExampleWithExpoNotificationsPlugin));
+    const config: ExpoConfig = JSON.parse(
+      JSON.stringify(expoConfigExampleWithExpoNotificationsPlugin),
+    );
     const manifestApplication: ManifestApplication = JSON.parse(
       JSON.stringify(manifestApplicationExample),
     );
@@ -91,7 +96,9 @@ describe('Config Plugin Android Tests', function () {
   });
 
   it('applies changes to app/src/main/AndroidManifest.xml with app.json notification config when both configs are defined', async function () {
-    const config: ExpoConfig = JSON.parse(JSON.stringify(expoConfigExampleWithExpoNotificationsPlugin));
+    const config: ExpoConfig = JSON.parse(
+      JSON.stringify(expoConfigExampleWithExpoNotificationsPlugin),
+    );
     const manifestApplication: ManifestApplication = JSON.parse(
       JSON.stringify(manifestApplicationExample),
     );
@@ -108,6 +115,6 @@ describe('Config Plugin Android Tests', function () {
         'android:resource': '@color/notification_icon_color',
         'tools:replace': 'android:resource',
       },
-    }); 
+    });
   });
 });
