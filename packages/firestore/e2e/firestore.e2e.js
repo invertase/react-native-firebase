@@ -986,7 +986,7 @@ describe('firestore()', function () {
 
         let unsubscribe;
         const syncPromise = new Promise(resolve => {
-          const unsubscribe = onSnapshotsInSync(db, () => {
+          unsubscribe = onSnapshotsInSync(db, () => {
             events.push('sync');
             if (events.length >= 1) {
               resolve();
