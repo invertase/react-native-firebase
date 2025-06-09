@@ -927,6 +927,7 @@ describe('firestore()', function () {
           // Should throw error for lite SDK
           try {
             const unsubscribe = onSnapshotsInSync(getFirestore(), () => {});
+            unsubscribe();
           } catch (e) {
             e.message.should.equal('Not supported in the lite SDK.');
           }
@@ -960,6 +961,7 @@ describe('firestore()', function () {
           // Should throw error for lite SDK
           try {
             const unsubscribe = onSnapshotsInSync(getFirestore(), () => {});
+            unsubscribe();
           } catch (e) {
             e.message.should.equal('Not supported in the lite SDK.');
           }
