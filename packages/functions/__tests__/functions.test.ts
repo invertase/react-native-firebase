@@ -14,6 +14,7 @@ import {
   CheckV9DeprecationFunction,
 } from '../../app/lib/common/unitTestUtils';
 
+// @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 
 describe('Cloud Functions', function () {
@@ -122,9 +123,9 @@ describe('Cloud Functions', function () {
         const app = firebase.app();
         const functions = app.functions();
         functionsRefV9Deprecation(
-          () => connectFunctionsEmulator(functions, 'localhost', 5001),
-          () => functions.useFunctionsEmulator('localhost'),
-          'useFunctionsEmulator()',
+          () => connectFunctionsEmulator(functions, 'localhost', 8080),
+          () => functions.useEmulator('localhost', 8080),
+          'useEmulator',
         );
       });
 
@@ -134,7 +135,7 @@ describe('Cloud Functions', function () {
         functionsRefV9Deprecation(
           () => httpsCallable(functions, 'example'),
           () => functions.httpsCallable('example'),
-          'httpsCallable()',
+          'httpsCallable',
         );
       });
 
@@ -144,7 +145,7 @@ describe('Cloud Functions', function () {
         functionsRefV9Deprecation(
           () => httpsCallableFromUrl(functions, 'https://example.com/example'),
           () => functions.httpsCallableFromUrl('https://example.com/example'),
-          'httpsCallableFromUrl()',
+          'httpsCallableFromUrl',
         );
       });
     });

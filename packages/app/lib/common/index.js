@@ -213,7 +213,7 @@ const mapOfDeprecationReplacements = {
   },
   functions: {
     default: {
-      useEmulator: 'connectFunctionsEmulator()',
+      useEmulator: 'connectFirestoreEmulator()',
       httpsCallable: 'httpsCallable()',
       httpsCallableFromUrl: 'httpsCallableFromUrl()',
     },
