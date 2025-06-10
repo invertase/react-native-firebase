@@ -140,7 +140,7 @@ describe('Cloud Functions', function () {
 
       it('httpsCallableFromUrl()', function () {
         const app = firebase.app();
-        const functions = app.functions();  
+        const functions = app.functions();
         functionsRefV9Deprecation(
           () => httpsCallableFromUrl(functions, 'https://example.com/example'),
           () => functions.httpsCallableFromUrl('https://example.com/example'),

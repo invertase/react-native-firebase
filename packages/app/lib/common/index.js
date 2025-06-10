@@ -219,7 +219,7 @@ const mapOfDeprecationReplacements = {
     },
     statics: {
       HttpsErrorCode: 'HttpsErrorCode',
-    }
+    },
   },
 };
 
