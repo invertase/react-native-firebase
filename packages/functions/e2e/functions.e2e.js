@@ -93,11 +93,15 @@ describe('functions() modular', function () {
     beforeEach(async function beforeEachTest() {
       // @ts-ignore
       globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+      // @ts-ignore
+      globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE = false;
     });
 
     afterEach(async function afterEachTest() {
       // @ts-ignore
       globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+      // @ts-ignore
+      globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE = false;
     });
 
     describe('namespace', function () {
