@@ -166,10 +166,9 @@ signInWithEmailAndPassword(getAuth(), email, password)
       // Currently only phone based factors are supported
       if (resolver.hints[0].factorId === PhoneMultiFactorGenerator.FACTOR_ID) {
         const hint = resolver.hints[0];
-        const sessionId = resolver.session;
 
         new PhoneAuthProvider(getAuth())
-          .verifyPhoneNumber(hint, sessionId) // triggers the message to the user
+          .verifyPhoneNumber({ multiFactorHint: hint, session: resolver.session }) // triggers the message to the user
           .then(verificationId => setVerificationId(verificationId));
 
         // Request verificationCode from user
