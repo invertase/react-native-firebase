@@ -366,6 +366,16 @@ const mapOfDeprecationReplacements = {
       TaskState: 'TaskState',
     },
   },
+  functions: {
+    default: {
+      useEmulator: 'connectFirestoreEmulator()',
+      httpsCallable: 'httpsCallable()',
+      httpsCallableFromUrl: 'httpsCallableFromUrl()',
+    },
+    statics: {
+      HttpsErrorCode: 'HttpsErrorCode',
+    },
+  },
 };
 
 const modularDeprecationMessage =
