@@ -22,6 +22,7 @@
  */
 
 import { getApp } from '@react-native-firebase/app';
+import { MODULAR_DEPRECATION_ARG } from '../../../app/lib/common';
 
 /**
  * Returns a Functions instance for the given app.
@@ -46,7 +47,7 @@ export function getFunctions(app, regionOrCustomDomain) {
  * @returns {void}
  */
 export function connectFunctionsEmulator(functionsInstance, host, port) {
-  return functionsInstance.useEmulator(host, port);
+  return functionsInstance.useEmulator.call(functionsInstance, host, port, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -57,7 +58,7 @@ export function connectFunctionsEmulator(functionsInstance, host, port) {
  * @returns {HttpsCallable}
  */
 export function httpsCallable(functionsInstance, name, options) {
-  return functionsInstance.httpsCallable(name, options);
+  return functionsInstance.httpsCallable.call(functionsInstance, name, options, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -68,7 +69,7 @@ export function httpsCallable(functionsInstance, name, options) {
  * @returns {HttpsCallable}
  */
 export function httpsCallableFromUrl(functionsInstance, url, options) {
-  return functionsInstance.httpsCallableFromUrl(url, options);
+  return functionsInstance.httpsCallableFromUrl.call(functionsInstance, url, options, MODULAR_DEPRECATION_ARG);
 }
 
 export { HttpsErrorCode } from '../index';

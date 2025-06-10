@@ -67,6 +67,14 @@ export const HttpsErrorCode = {
   'data-loss': 'data-loss',
 };
 
+const mapOfDeprecationReplacements = {
+  functions: {
+    useEmulator: 'connectFunctionsEmulator()',
+    httpsCallable: 'httpsCallable()',
+    httpsCallableFromUrl: 'httpsCallableFromUrl()',
+  }
+}
+
 const statics = {
   HttpsErrorCode,
 };
