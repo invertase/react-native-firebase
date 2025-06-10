@@ -14,8 +14,6 @@ import {
   CheckV9DeprecationFunction,
 } from '../../app/lib/common/unitTestUtils';
 
-import FirebaseModule from '../../app/lib/internal/FirebaseModule';
-
 describe('Cloud Functions', function () {
   describe('namespace', function () {
     beforeAll(async function () {

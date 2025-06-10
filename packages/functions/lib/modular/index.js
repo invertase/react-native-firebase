@@ -58,7 +58,12 @@ export function connectFunctionsEmulator(functionsInstance, host, port) {
  * @returns {HttpsCallable}
  */
 export function httpsCallable(functionsInstance, name, options) {
-  return functionsInstance.httpsCallable.call(functionsInstance, name, options, MODULAR_DEPRECATION_ARG);
+  return functionsInstance.httpsCallable.call(
+    functionsInstance,
+    name,
+    options,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -69,7 +74,12 @@ export function httpsCallable(functionsInstance, name, options) {
  * @returns {HttpsCallable}
  */
 export function httpsCallableFromUrl(functionsInstance, url, options) {
-  return functionsInstance.httpsCallableFromUrl.call(functionsInstance, url, options, MODULAR_DEPRECATION_ARG);
+  return functionsInstance.httpsCallableFromUrl.call(
+    functionsInstance,
+    url,
+    options,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 export { HttpsErrorCode } from '../index';
