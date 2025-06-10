@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [22.2.1](https://github.com/invertase/react-native-firebase/compare/v22.2.0...v22.2.1) (2025-06-10)
+
+### Bug Fixes
+
+- **app:** firebase-android-sdk 33.14.0 / firebase-ios-sdk 11.13.0 ([9b6ce6e](https://github.com/invertase/react-native-firebase/commit/9b6ce6e87e7cff4ef35746e7e5e7cfbe055b3a8e))
+
 ## [22.2.0](https://github.com/invertase/react-native-firebase/compare/v22.1.0...v22.2.0) (2025-05-12)
 
 **Note:** Version bump only for package react-native-firebase-tests

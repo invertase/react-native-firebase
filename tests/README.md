@@ -6,8 +6,8 @@ Our tests are powered by [Jet ✈️](https://github.com/invertase/jet).
 
 ## Requirements
 
-- Make sure you have Xcode installed (tested with Xcode 15+) to develop iOS items
-- Make sure you have Node.js installed with yarn installed globally (node version 18 and 20 tested, `npm install --global yarn`).
+- Make sure you have Xcode installed (tested with Xcode 16.4+) to develop iOS items
+- Make sure you have a recent enough Node.js installed (node version 22 tested)
 - Make sure you have all required iOS dependencies installed:
 
   - [Apple Sim Utils](https://github.com/wix/AppleSimulatorUtils):

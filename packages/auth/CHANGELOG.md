@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [22.2.1](https://github.com/invertase/react-native-firebase/compare/v22.2.0...v22.2.1) (2025-06-10)
+
+### Bug Fixes
+
+- **auth, ios:** avoid inappropriate linking when host is nil ([#8517](https://github.com/invertase/react-native-firebase/issues/8517)) ([f0cba0b](https://github.com/invertase/react-native-firebase/commit/f0cba0bdc0eb36693cf77baa22e214b6cfa674eb))
+
 ## [22.2.0](https://github.com/invertase/react-native-firebase/compare/v22.1.0...v22.2.0) (2025-05-12)
 
 ### Bug Fixes
