@@ -122,7 +122,7 @@ describe('Cloud Functions', function () {
         const app = firebase.app();
         const functions = app.functions();
         functionsRefV9Deprecation(
-          () => connectFunctionsEmulator(functions, 'localhost'),
+          () => connectFunctionsEmulator(functions, 'localhost', 5001),
           () => functions.useFunctionsEmulator('localhost'),
           'useFunctionsEmulator()',
         );
