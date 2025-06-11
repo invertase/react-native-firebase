@@ -211,6 +211,16 @@ const mapOfDeprecationReplacements = {
       nanoseconds: NO_REPLACEMENT,
     },
   },
+  functions: {
+    default: {
+      useEmulator: 'connectFirestoreEmulator()',
+      httpsCallable: 'httpsCallable()',
+      httpsCallableFromUrl: 'httpsCallableFromUrl()',
+    },
+    statics: {
+      HttpsErrorCode: 'HttpsErrorCode',
+    },
+  },
 };
 
 const modularDeprecationMessage =

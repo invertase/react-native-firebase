@@ -448,7 +448,7 @@ describe('functions() modular', function () {
 
     it('accepts passing in a region string as first arg to an app', async function () {
       const { getApp } = modular;
-      const { getFunctions } = functionsModular;
+      const { getFunctions, httpsCallable } = functionsModular;
       const region = 'europe-west1';
 
       const functionsForRegion = getFunctions(getApp(), region);
@@ -461,7 +461,7 @@ describe('functions() modular', function () {
 
       getApp().functions(region)._customUrlOrRegion.should.equal(region);
 
-      const functionRunner = functionsForRegion.httpsCallable('testFunctionCustomRegion');
+      const functionRunner = httpsCallable(functionsForRegion, 'testFunctionCustomRegion');
 
       const response = await functionRunner();
       response.data.should.equal(region);
@@ -469,7 +469,7 @@ describe('functions() modular', function () {
 
     it('accepts passing in a custom url string as first arg to an app', async function () {
       const { getApp } = modular;
-      const { getFunctions } = functionsModular;
+      const { getFunctions, httpsCallable } = functionsModular;
       const customUrl = 'https://us-central1-react-native-firebase-testing.cloudfunctions.net';
 
       const functionsForCustomUrl = getFunctions(getApp(), customUrl);
@@ -482,7 +482,7 @@ describe('functions() modular', function () {
 
       functionsForCustomUrl._customUrlOrRegion.should.equal(customUrl);
 
-      const functionRunner = functionsForCustomUrl.httpsCallable('testFunctionDefaultRegionV2');
+      const functionRunner = httpsCallable(functionsForCustomUrl, 'testFunctionDefaultRegionV2');
 
       const response = await functionRunner();
       response.data.should.equal('null');
