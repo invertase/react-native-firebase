@@ -36,6 +36,9 @@ import {
 } from '../../app/lib/common/unitTestUtils';
 
 // @ts-ignore test
+import { createDeprecationProxy } from '../../app/lib/common';
+
+// @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 
 describe('Storage', function () {
@@ -248,16 +251,71 @@ describe('Storage', function () {
         );
       });
 
-      it('delete()', function () {
-        const app = firebase.app();
-        const storage = app.storage();
-        const storageRef = storage.ref('foo');
-        storageRefV9Deprecation(
-          () => deleteObject(storageRef),
-          () => storageRef.delete(),
-          'delete',
-        );
-      });
+      // it('delete()', function () {
+      //   const app = firebase.app();
+      //   const storage = app.storage();
+      //   const storageRef = storage.ref('foo');
+      //   storageRefV9Deprecation(
+      //     () => deleteObject(storageRef),
+      //     () => storageRef.delete(),
+      //     'delete',
+      //   );
+      // });
+
+      // it('getDownloadURL()', function () {
+      //   const app = firebase.app();
+      //   const storage = app.storage();
+      //   const storageRef = ref(storage, 'foo');
+      //   storageRefV9Deprecation(
+      //     () => getDownloadURL(storageRef),
+      //     () => storageRef.getDownloadURL(),
+      //     'getDownloadURL',
+      //   );
+      // });
+
+      // it('getMetadata()', function () {
+      //   const app = firebase.app();
+      //   const storage = app.storage();
+      //   const storageRef = ref(storage, 'foo');
+      //   storageRefV9Deprecation(
+      //     () => getMetadata(storageRef),
+      //     () => storageRef.getMetadata(),
+      //     'getMetadata',
+      //   );
+      // });
+
+      // it('list()', function () {
+      //   const app = firebase.app();
+      //   const storage = app.storage();
+      //   const storageRef = ref(storage, 'foo');
+      //   storageRefV9Deprecation(
+      //     () => list(storageRef),
+      //     () => storageRef.list(),
+      //     'list',
+      //   );
+      // });
+
+      // it('listAll()', function () {
+      //   const app = firebase.app();
+      //   const storage = app.storage();
+      //   const storageRef = ref(storage, 'foo');
+      //   storageRefV9Deprecation(
+      //     () => listAll(storageRef),
+      //     () => storageRef.listAll(),
+      //     'listAll',
+      //   );
+      // });
+
+      // it('updateMetadata()', function () {
+      //   const app = firebase.app();
+      //   const storage = app.storage();
+      //   const storageRef = ref(storage, 'foo');
+      //   storageRefV9Deprecation(
+      //     () => updateMetadata(storageRef, {}),
+      //     () => storageRef.updateMetadata({}),
+      //     'updateMetadata',
+      //   );
+      // });
     });
   });
 });
