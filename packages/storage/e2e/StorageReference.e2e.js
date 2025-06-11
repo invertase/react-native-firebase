@@ -110,7 +110,6 @@ describe('storage() -> StorageReference', function () {
         const storageReference = firebase.storage().ref(`${PATH}/deleteMe.txt`);
         await storageReference.putString('Delete File');
         await storageReference.delete();
-
         try {
           await storageReference.getMetadata();
           return Promise.reject(new Error('Did not throw'));
@@ -717,16 +716,16 @@ describe('storage() -> StorageReference', function () {
       // Same bucket defined in app.js when setting up emulator
 
       it('should write a file to the second storage bucket', async function () {
-        const { ref } = storageModular;
+        const { ref, uploadString } = storageModular;
 
         // "only-second-bucket" is not an allowable path on live project for either bucket
         const storageReference = ref(secondStorage, 'only-second-bucket/ok.txt');
 
-        await storageReference.putString('Hello World');
+        await uploadString(storageReference, 'Hello World');
       });
 
       it('should throw exception on path not allowed on second bucket security rules', async function () {
-        const { ref } = storageModular;
+        const { ref, uploadString } = storageModular;
 
         // "react-native-firebase-testing" is not an allowed on second bucket, only "ony-second-bucket"
         const storageReference = ref(
@@ -735,7 +734,7 @@ describe('storage() -> StorageReference', function () {
         );
 
         try {
-          await storageReference.putString('Hello World');
+          await uploadString(storageReference, 'Hello World');
           return Promise.reject(new Error('Did not throw'));
         } catch (error) {
           error.code.should.equal('storage/unauthorized');
@@ -974,10 +973,10 @@ describe('storage() -> StorageReference', function () {
 
     describe('list', function () {
       it('should return list results', async function () {
-        const { getStorage, ref } = storageModular;
+        const { getStorage, ref, list } = storageModular;
         const storageReference = ref(getStorage(), `${PATH}/list`);
 
-        const result = await storageReference.list();
+        const result = await list(storageReference);
 
         result.constructor.name.should.eql('StorageListResult');
         result.should.have.property('nextPageToken');
