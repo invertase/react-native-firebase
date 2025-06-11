@@ -461,7 +461,7 @@ describe('functions() modular', function () {
 
       getApp().functions(region)._customUrlOrRegion.should.equal(region);
 
-      const functionRunner = httpsCallable(functionsForRegion,'testFunctionCustomRegion');
+      const functionRunner = httpsCallable(functionsForRegion, 'testFunctionCustomRegion');
 
       const response = await functionRunner();
       response.data.should.equal(region);
