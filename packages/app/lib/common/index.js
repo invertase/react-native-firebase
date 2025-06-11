@@ -211,6 +211,31 @@ const mapOfDeprecationReplacements = {
       nanoseconds: NO_REPLACEMENT,
     },
   },
+  storage: {
+    default: {
+      useEmulator: 'connectFirestoreEmulator()',
+      ref: 'ref()',
+      deleteObject: 'deleteObject()',
+      getDownloadURL: 'getDownloadURL()',
+      getMetadata: 'getMetadata()',
+      list: 'list()',
+      listAll: 'listAll()',
+      updateMetadata: 'updateMetadata()',
+      uploadBytesResumable: 'uploadBytesResumable()',
+      uploadString: 'uploadString()',
+      refFromURL: 'refFromURL()',
+      setMaxOperationRetryTime: 'setMaxOperationRetryTime()',
+      setMaxUploadRetryTime: 'setMaxUploadRetryTime()',
+      putFile: 'putFile()',
+      writeToFile: 'writeToFile()',
+      toString: 'toString()',
+      child: 'child()',
+      setMaxDownloadRetryTime: 'setMaxDownloadRetryTime()',
+    },
+    statics: {
+      StorageReference: 'StorageReference',
+    },
+  },
 };
 
 const modularDeprecationMessage =

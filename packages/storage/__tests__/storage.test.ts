@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
 
 import storage, {
   firebase,
@@ -29,6 +29,14 @@ import storage, {
   TaskEvent,
   TaskState,
 } from '../lib';
+
+import {
+  createCheckV9Deprecation,
+  CheckV9DeprecationFunction,
+} from '../../app/lib/common/unitTestUtils';
+
+// @ts-ignore test
+import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 
 describe('Storage', function () {
   describe('namespace', function () {
@@ -194,6 +202,62 @@ describe('Storage', function () {
       expect(TaskState.PAUSED).toBeDefined();
       expect(TaskState.RUNNING).toBeDefined();
       expect(TaskState.SUCCESS).toBeDefined();
+    });
+  });
+  describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
+    let storageRefV9Deprecation: CheckV9DeprecationFunction;
+
+    beforeEach(function () {
+      storageRefV9Deprecation = createCheckV9Deprecation(['storage']);
+
+      // @ts-ignore test
+      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
+        return new Proxy(
+          {},
+          {
+            get: () =>
+              jest.fn().mockResolvedValue({
+                source: 'cache',
+                changes: [],
+                documents: [],
+                metadata: {},
+                path: 'foo',
+              } as never),
+          },
+        );
+      });
+    });
+    describe('Storage', function () {
+      it('useStorageEmulator()', function () {
+        const app = firebase.app();
+        const storage = app.storage();
+        storageRefV9Deprecation(
+          () => connectStorageEmulator(storage, 'localhost', 8080),
+          () => storage.useEmulator('localhost', 8080),
+          'useEmulator',
+        );
+      });
+
+      it('ref()', function () {
+        const app = firebase.app();
+        const storage = app.storage();
+        storageRefV9Deprecation(
+          () => ref(storage, 'foo'),
+          () => storage.ref('foo'),
+          'ref',
+        );
+      });
+
+      it('delete()', function () {
+        const app = firebase.app();
+        const storage = app.storage();
+        const storageRef = storage.ref('foo');
+        storageRefV9Deprecation(
+          () => deleteObject(storageRef),
+          () => storageRef.delete(),
+          'delete',
+        );
+      });
     });
   });
 });

@@ -506,10 +506,10 @@ export namespace FirebaseStorageTypes {
      *
      * ```js
      * const ref = firebase.storage().ref('invertase/logo.png');
-     * await ref.deleteObject();
+     * await ref.delete();
      * ```
      */
-    deleteObject(): Promise<void>;
+    delete(): Promise<void>;
 
     /**
      * Fetches a long lived download URL for this object.
