@@ -15,7 +15,13 @@
  *
  */
 
-import { isAndroid, isNumber, isString } from '@react-native-firebase/app/lib/common';
+import {
+  isAndroid,
+  isNumber,
+  isString,
+  createDeprecationProxy,
+} from '@react-native-firebase/app/lib/common';
+
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import {
   createModuleNamespace,
@@ -91,8 +97,7 @@ class FirebaseStorageModule extends FirebaseModule {
     if (!isString(path)) {
       throw new Error("firebase.storage().ref(*) 'path' must be a string value.");
     }
-
-    return new StorageReference(this, path);
+    return createDeprecationProxy(new StorageReference(this, path));
   }
 
   /**

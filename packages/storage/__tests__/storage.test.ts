@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
 
 import storage, {
   firebase,
@@ -29,6 +29,14 @@ import storage, {
   TaskEvent,
   TaskState,
 } from '../lib';
+
+import {
+  createCheckV9Deprecation,
+  CheckV9DeprecationFunction,
+} from '../../app/lib/common/unitTestUtils';
+
+// @ts-ignore test
+import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 
 describe('Storage', function () {
   describe('namespace', function () {
@@ -194,6 +202,249 @@ describe('Storage', function () {
       expect(TaskState.PAUSED).toBeDefined();
       expect(TaskState.RUNNING).toBeDefined();
       expect(TaskState.SUCCESS).toBeDefined();
+    });
+  });
+
+  describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
+    let storageV9Deprecation: CheckV9DeprecationFunction;
+    let storageRefV9Deprecation: CheckV9DeprecationFunction;
+    let staticsV9Deprecation: CheckV9DeprecationFunction;
+
+    beforeEach(function () {
+      storageV9Deprecation = createCheckV9Deprecation(['storage']);
+
+      storageRefV9Deprecation = createCheckV9Deprecation(['storage', 'StorageReference']);
+
+      staticsV9Deprecation = createCheckV9Deprecation(['storage', 'statics']);
+
+      // @ts-ignore test
+      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
+        return new Proxy(
+          {},
+          {
+            get: (_target, prop) => {
+              // Handle list operations specially
+              if (prop === 'list' || prop === 'listAll') {
+                return jest.fn().mockResolvedValue({
+                  items: [],
+                  prefixes: [],
+                  nextPageToken: null,
+                } as never);
+              }
+              // Default mock for other operations
+              return jest.fn().mockResolvedValue({
+                source: 'cache',
+                changes: [],
+                documents: [],
+                metadata: {},
+                path: 'foo',
+              } as never);
+            },
+          },
+        );
+      });
+    });
+
+    describe('Storage', function () {
+      it('useStorageEmulator()', function () {
+        const storage = getStorage();
+        storageV9Deprecation(
+          () => connectStorageEmulator(storage, 'localhost', 8080),
+          () => storage.useEmulator('localhost', 8080),
+          'useEmulator',
+        );
+      });
+
+      it('ref()', function () {
+        const storage = getStorage();
+        storageV9Deprecation(
+          () => ref(storage, 'foo'),
+          () => storage.ref('foo'),
+          'ref',
+        );
+      });
+
+      it('refFromURL()', function () {
+        const storage = firebase.app().storage();
+        storageV9Deprecation(
+          () => refFromURL(storage, 'gs://flutterfire-e2e-tests.appspot.com/flutter-tsts'),
+          () => storage.refFromURL('gs://flutterfire-e2e-tests.appspot.com/flutter-tsts'),
+          'refFromURL',
+        );
+      });
+
+      it('setMaxOperationRetryTime()', function () {
+        const storage = firebase.app().storage();
+        storageV9Deprecation(
+          () => setMaxOperationRetryTime(storage, 1000),
+          () => storage.setMaxOperationRetryTime(1000),
+          'setMaxOperationRetryTime',
+        );
+      });
+
+      it('setMaxUploadRetryTime()', function () {
+        const storage = firebase.app().storage();
+        storageV9Deprecation(
+          () => setMaxUploadRetryTime(storage, 1000),
+          () => storage.setMaxUploadRetryTime(1000),
+          'setMaxUploadRetryTime',
+        );
+      });
+
+      it('setMaxDownloadRetryTime()', function () {
+        const storage = firebase.app().storage();
+        storageV9Deprecation(
+          () => setMaxDownloadRetryTime(storage, 1000),
+          () => storage.setMaxDownloadRetryTime(1000),
+          'setMaxDownloadRetryTime',
+        );
+      });
+
+      it('delete()', function () {
+        const storage = firebase.app().storage();
+        const storageRef = storage.ref('foo');
+        storageRefV9Deprecation(
+          () => deleteObject(storageRef),
+          () => storageRef.delete(),
+          'delete',
+        );
+      });
+
+      it('getDownloadURL()', function () {
+        const storage = firebase.app().storage();
+        const storageRef = storage.ref('foo');
+        storageRefV9Deprecation(
+          () => getDownloadURL(storageRef),
+          () => storageRef.getDownloadURL(),
+          'getDownloadURL',
+        );
+      });
+
+      it('getMetadata()', function () {
+        const storage = firebase.app().storage();
+        const storageRef = storage.ref('foo');
+        storageRefV9Deprecation(
+          () => getMetadata(storageRef),
+          () => storageRef.getMetadata(),
+          'getMetadata',
+        );
+      });
+
+      it('list()', function () {
+        const storage = firebase.app().storage();
+        const storageRef = storage.ref('foo');
+        storageRefV9Deprecation(
+          () => list(storageRef),
+          () => storageRef.list(),
+          'list',
+        );
+      });
+
+      it('listAll()', function () {
+        const storage = firebase.app().storage();
+        const storageRef = storage.ref('foo');
+        storageRefV9Deprecation(
+          () => listAll(storageRef),
+          () => storageRef.listAll(),
+          'listAll',
+        );
+      });
+
+      it('updateMetadata()', function () {
+        const storage = firebase.app().storage();
+        const storageRef = storage.ref('foo');
+        storageRefV9Deprecation(
+          () => updateMetadata(storageRef, {}),
+          () => storageRef.updateMetadata({}),
+          'updateMetadata',
+        );
+      });
+
+      it('put()', function () {
+        const storage = firebase.app().storage();
+        const storageRef = storage.ref('foo');
+        storageRefV9Deprecation(
+          () => uploadBytesResumable(storageRef, new Blob(['foo']), {}),
+          () => storageRef.put(new Blob(['foo']), {}),
+          'put',
+        );
+      });
+
+      it('putString()', function () {
+        const storage = firebase.app().storage();
+        const storageRef = storage.ref('foo');
+        storageRefV9Deprecation(
+          () => uploadString(storageRef, 'foo', StringFormat.RAW),
+          () => storageRef.putString('foo', StringFormat.RAW),
+          'putString',
+        );
+      });
+
+      it('putFile()', function () {
+        const storage = firebase.app().storage();
+        const storageRef = storage.ref('foo');
+        storageRefV9Deprecation(
+          () => putFile(storageRef, 'foo', {}),
+          () => storageRef.putFile('foo', {}),
+          'putFile',
+        );
+      });
+
+      it('writeToFile()', function () {
+        const storage = firebase.app().storage();
+        const storageRef = storage.ref('foo');
+        storageRefV9Deprecation(
+          () => writeToFile(storageRef, 'foo'),
+          () => storageRef.writeToFile('foo'),
+          'writeToFile',
+        );
+      });
+
+      it('toString()', function () {
+        const storage = firebase.app().storage();
+        const storageRef = storage.ref('foo');
+        storageRefV9Deprecation(
+          () => toString(storageRef),
+          () => storageRef.toString(),
+          'toString',
+        );
+      });
+
+      it('child()', function () {
+        const storage = firebase.app().storage();
+        const storageRef = storage.ref('foo');
+        storageRefV9Deprecation(
+          () => child(storageRef, 'bar'),
+          () => storageRef.child('bar'),
+          'child',
+        );
+      });
+    });
+
+    describe('statics', function () {
+      it('StringFormat static', function () {
+        staticsV9Deprecation(
+          () => StringFormat.RAW,
+          () => firebase.storage.StringFormat.RAW,
+          'StringFormat',
+        );
+      });
+
+      it('TaskEvent static', function () {
+        staticsV9Deprecation(
+          () => TaskEvent.STATE_CHANGED,
+          () => firebase.storage.TaskEvent.STATE_CHANGED,
+          'TaskEvent',
+        );
+      });
+
+      it('TaskState static', function () {
+        staticsV9Deprecation(
+          () => TaskState.SUCCESS,
+          () => firebase.storage.TaskState.SUCCESS,
+          'TaskState',
+        );
+      });
     });
   });
 });

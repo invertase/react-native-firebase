@@ -269,6 +269,35 @@ const mapOfDeprecationReplacements = {
       nanoseconds: NO_REPLACEMENT,
     },
   },
+  storage: {
+    default: {
+      useEmulator: 'connectStorageEmulator()',
+      ref: 'ref()',
+      refFromURL: 'refFromURL()',
+      setMaxOperationRetryTime: 'setMaxOperationRetryTime()',
+      setMaxUploadRetryTime: 'setMaxUploadRetryTime()',
+      setMaxDownloadRetryTime: 'setMaxDownloadRetryTime()',
+    },
+    StorageReference: {
+      delete: 'deleteObject()',
+      getDownloadURL: 'getDownloadURL()',
+      getMetadata: 'getMetadata()',
+      list: 'list()',
+      listAll: 'listAll()',
+      updateMetadata: 'updateMetadata()',
+      put: 'uploadBytesResumable()',
+      putString: 'uploadString()',
+      putFile: 'putFile()',
+      writeToFile: 'writeToFile()',
+      toString: 'toString()',
+      child: 'child()',
+    },
+    statics: {
+      StringFormat: 'StringFormat',
+      TaskEvent: 'TaskEvent',
+      TaskState: 'TaskState',
+    },
+  },
 };
 
 const modularDeprecationMessage =
@@ -332,6 +361,10 @@ function getNamespace(target) {
   if (target._config && target._config.namespace) {
     return target._config.namespace;
   }
+  if (target.constructor.name === 'StorageReference') {
+    return 'storage';
+  }
+
   const className = target.name ? target.name : target.constructor.name;
   return Object.keys(mapOfDeprecationReplacements).find(key => {
     if (mapOfDeprecationReplacements[key][className]) {
@@ -348,6 +381,11 @@ function getInstanceName(target) {
   if (target._config) {
     // module class instance, we use default to store map of deprecated methods
     return 'default';
+  }
+
+  if (target.constructor.name === 'StorageReference') {
+    // if path passed into ref(), it will pass in the arg as target.name
+    return target.constructor.name;
   }
   if (target.name) {
     // It's a function which has a name property unlike classes
@@ -389,6 +427,9 @@ export function createDeprecationProxy(instance) {
         }
         if (prop === 'CustomProvider') {
           deprecationConsoleWarning('appCheck', prop, 'statics', false);
+        }
+        if (prop === 'StringFormat' || prop === 'TaskEvent' || prop === 'TaskState') {
+          deprecationConsoleWarning('storage', prop, 'statics', false);
         }
 
         if (prop !== 'setLogLevel') {

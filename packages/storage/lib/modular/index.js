@@ -29,6 +29,7 @@
  */
 
 import { getApp } from '@react-native-firebase/app';
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 
 /**
  * Returns a Storage instance for the given app.
@@ -61,7 +62,7 @@ export function getStorage(app, bucketUrl) {
  * @returns {void}
  */
 export function connectStorageEmulator(storage, host, port, options) {
-  return storage.useEmulator(host, port, options);
+  return storage.useEmulator.call(storage, host, port, options, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -72,7 +73,7 @@ export function connectStorageEmulator(storage, host, port, options) {
  * @returns {Reference}
  */
 export function ref(storage, path) {
-  return storage.ref(path);
+  return storage.ref.call(storage, path, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -81,7 +82,7 @@ export function ref(storage, path) {
  * @returns {Promise<void>}
  */
 export function deleteObject(storageRef) {
-  return storageRef.delete();
+  return storageRef.delete.call(storageRef, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -111,7 +112,7 @@ export function getBytes(storageRef, maxDownloadSizeBytes) {
  * @returns {Promise<string>}
  */
 export function getDownloadURL(storageRef) {
-  return storageRef.getDownloadURL();
+  return storageRef.getDownloadURL.call(storageRef, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -120,7 +121,7 @@ export function getDownloadURL(storageRef) {
  * @returns {Promise<FullMetadata>}
  */
 export function getMetadata(storageRef) {
-  return storageRef.getMetadata();
+  return storageRef.getMetadata.call(storageRef, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -141,7 +142,7 @@ export function getStream(storageRef, maxDownloadSizeBytes) {
  * @returns {Promise<ListResult>}
  */
 export function list(storageRef, options) {
-  return storageRef.list(options);
+  return storageRef.list.call(storageRef, options, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -150,7 +151,7 @@ export function list(storageRef, options) {
  * @returns {Promise<ListResult>}
  */
 export function listAll(storageRef) {
-  return storageRef.listAll();
+  return storageRef.listAll.call(storageRef, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -160,7 +161,7 @@ export function listAll(storageRef) {
  * @returns {Promise<FullMetadata>}
  */
 export function updateMetadata(storageRef, metadata) {
-  return storageRef.updateMetadata(metadata);
+  return storageRef.updateMetadata.call(storageRef, metadata, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -183,7 +184,7 @@ export async function uploadBytes(storageRef, data, metadata) {
  * @returns {Task}
  */
 export function uploadBytesResumable(storageRef, data, metadata) {
-  return storageRef.put(data, metadata);
+  return storageRef.put.call(storageRef, data, metadata, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -195,7 +196,7 @@ export function uploadBytesResumable(storageRef, data, metadata) {
  * @returns {Task}
  */
 export function uploadString(storageRef, data, format, metadata) {
-  return storageRef.putString(data, format, metadata);
+  return storageRef.putString.call(storageRef, data, format, metadata, MODULAR_DEPRECATION_ARG);
 }
 
 // Methods not on the Firebase JS SDK below
@@ -207,7 +208,7 @@ export function uploadString(storageRef, data, format, metadata) {
  * @returns {Reference}
  */
 export function refFromURL(storage, url) {
-  return storage.refFromURL(url);
+  return storage.refFromURL.call(storage, url, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -217,7 +218,7 @@ export function refFromURL(storage, url) {
  * @returns {Promise<void>}
  */
 export function setMaxOperationRetryTime(storage, time) {
-  return storage.setMaxOperationRetryTime(time);
+  return storage.setMaxOperationRetryTime.call(storage, time, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -227,7 +228,7 @@ export function setMaxOperationRetryTime(storage, time) {
  * @returns {Promise<void>}
  */
 export function setMaxUploadRetryTime(storage, time) {
-  return storage.setMaxUploadRetryTime(time);
+  return storage.setMaxUploadRetryTime.call(storage, time, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -238,7 +239,7 @@ export function setMaxUploadRetryTime(storage, time) {
  * @returns {Task}
  */
 export function putFile(storageRef, filePath, metadata) {
-  return storageRef.putFile(filePath, metadata);
+  return storageRef.putFile.call(storageRef, filePath, metadata, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -248,7 +249,7 @@ export function putFile(storageRef, filePath, metadata) {
  * @returns {Task}
  */
 export function writeToFile(storageRef, filePath) {
-  return storageRef.writeToFile(filePath);
+  return storageRef.writeToFile.call(storageRef, filePath, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -257,7 +258,7 @@ export function writeToFile(storageRef, filePath) {
  * @returns {String}
  */
 export function toString(storageRef) {
-  return storageRef.toString();
+  return storageRef.toString.call(storageRef, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -267,7 +268,7 @@ export function toString(storageRef) {
  * @returns {String}
  */
 export function child(storageRef, path) {
-  return storageRef.child(path);
+  return storageRef.child.call(storageRef, path, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -277,7 +278,7 @@ export function child(storageRef, path) {
  * @returns {Promise<void>}
  */
 export function setMaxDownloadRetryTime(storage, time) {
-  return storage.setMaxDownloadRetryTime(time);
+  return storage.setMaxDownloadRetryTime.call(storage, time, MODULAR_DEPRECATION_ARG);
 }
 
 export { StringFormat, TaskEvent, TaskState } from '../StorageStatics';
