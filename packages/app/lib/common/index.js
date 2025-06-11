@@ -211,6 +211,32 @@ const mapOfDeprecationReplacements = {
       nanoseconds: NO_REPLACEMENT,
     },
   },
+  storage: {
+    default: {
+      useEmulator: 'connectStorageEmulator()',
+      ref: 'ref()',
+      delete: 'deleteObject()',
+      refFromURL: 'refFromURL()',
+      setMaxOperationRetryTime: 'setMaxOperationRetryTime()',
+      setMaxUploadRetryTime: 'setMaxUploadRetryTime()',
+      setMaxDownloadRetryTime: 'setMaxDownloadRetryTime()',
+      delete: 'deleteObject()',
+      getDownloadURL: 'getDownloadURL()',
+      getMetadata: 'getMetadata()',
+      list: 'list()',
+      listAll: 'listAll()',
+      updateMetadata: 'updateMetadata()',
+      put: 'uploadBytesResumable()',
+      putString: 'uploadString()',
+      putFile: 'putFile()',
+      writeToFile: 'writeToFile()',
+      toString: 'toString()',
+      child: 'child()',
+    },
+    statics: {
+      StorageReference: 'StorageReference',
+    },
+  },
 };
 
 const modularDeprecationMessage =
