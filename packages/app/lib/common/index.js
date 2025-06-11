@@ -213,9 +213,9 @@ const mapOfDeprecationReplacements = {
   },
   storage: {
     default: {
-      useEmulator: 'connectFirestoreEmulator()',
+      useEmulator: 'connectStorageEmulator()',
       ref: 'ref()',
-      deleteObject: 'deleteObject()',
+      delete: 'deleteObject()',
       getDownloadURL: 'getDownloadURL()',
       getMetadata: 'getMetadata()',
       list: 'list()',
