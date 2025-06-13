@@ -26,6 +26,7 @@ import auth, {
   setPersistence,
   signInAnonymously,
   signInWithCredential,
+  signInWithAppleCredential,
   signInWithCustomToken,
   signInWithEmailAndPassword,
   signInWithEmailLink,
@@ -360,6 +361,10 @@ describe('Auth', function () {
 
     it('`signInWithCredential` function is properly exposed to end user', function () {
       expect(signInWithCredential).toBeDefined();
+    });
+
+    it('`signInWithAppleCredential` function is properly exposed to end user', function () {
+      expect(signInWithAppleCredential).toBeDefined();
     });
 
     it('`signInWithCustomToken` function is properly exposed to end user', function () {
