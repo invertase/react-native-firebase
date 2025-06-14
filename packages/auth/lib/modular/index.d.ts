@@ -273,6 +273,18 @@ export function signInWithCredential(
 ): Promise<FirebaseAuthTypes.UserCredential>;
 
 /**
+ * Asynchronously signs in with the given Apple credentials.
+ *
+ * @param auth - The Auth instance.
+ * @param credential - The auth credentials.
+ * @returns A promise that resolves with the user credentials.
+ */
+export function signInWithAppleCredential(
+  auth: Auth,
+  credential: FirebaseAuthTypes.AppleAuthCredential | FirebaseAuthTypes.AuthCredential,
+): Promise<FirebaseAuthTypes.UserCredential>;
+
+/**
  * Asynchronously signs in using a custom token.
  *
  * @param auth - The Auth instance.

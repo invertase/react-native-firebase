@@ -346,6 +346,25 @@ class FirebaseAuthModule extends FirebaseModule {
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
+  signInWithAppleCredential(credential) {
+    if (credential.hasOwnProperty('fullName')) {
+      return this.native
+        .signInWithAppleCredential(credential.providerId, credential.token, credential.secret, {
+          namePrefix: credential.fullName.namePrefix,
+          givenName: credential.fullName.givenName,
+          middleName: credential.fullName.middleName,
+          familyName: credential.fullName.familyName,
+          nameSuffix: credential.fullName.nameSuffix,
+          nickname: credential.fullName.nickname,
+        })
+        .then(userCredential => this._setUserCredential(userCredential));
+    } else {
+      return this.native
+        .signInWithCredential(credential.providerId, credential.token, credential.secret)
+        .then(userCredential => this._setUserCredential(userCredential));
+    }
+  }
+
   revokeToken(authorizationCode) {
     return this.native.revokeToken(authorizationCode);
   }
