@@ -215,11 +215,12 @@ const mapOfDeprecationReplacements = {
     default: {
       useEmulator: 'connectStorageEmulator()',
       ref: 'ref()',
-      delete: 'deleteObject()',
       refFromURL: 'refFromURL()',
       setMaxOperationRetryTime: 'setMaxOperationRetryTime()',
       setMaxUploadRetryTime: 'setMaxUploadRetryTime()',
       setMaxDownloadRetryTime: 'setMaxDownloadRetryTime()',
+    },
+    StorageReference: {
       delete: 'deleteObject()',
       getDownloadURL: 'getDownloadURL()',
       getMetadata: 'getMetadata()',
