@@ -301,6 +301,10 @@ function getNamespace(target) {
   if (target._config && target._config.namespace) {
     return target._config.namespace;
   }
+  if (target.constructor.name === 'StorageReference') {
+    return 'storage';
+  }
+
   const className = target.name ? target.name : target.constructor.name;
   return Object.keys(mapOfDeprecationReplacements).find(key => {
     if (mapOfDeprecationReplacements[key][className]) {
@@ -317,6 +321,11 @@ function getInstanceName(target) {
   if (target._config) {
     // module class instance, we use default to store map of deprecated methods
     return 'default';
+  }
+
+  if (target.constructor.name === 'StorageReference') {
+    // if path passed into ref(), it will pass in the arg as target.name
+    return target.constructor.name;
   }
   if (target.name) {
     // It's a function which has a name property unlike classes
