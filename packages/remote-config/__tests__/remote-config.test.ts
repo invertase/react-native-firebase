@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, it, beforeEach, jest } from '@jest/globals';
 
 import {
   firebase,
@@ -43,6 +43,14 @@ import {
   LastFetchStatus,
   ValueSource,
 } from '../lib';
+
+import {
+  createCheckV9Deprecation,
+  CheckV9DeprecationFunction,
+} from '../../app/lib/common/unitTestUtils';
+
+// @ts-ignore test
+import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 
 describe('remoteConfig()', function () {
   describe('namespace', function () {
@@ -245,6 +253,41 @@ describe('remoteConfig()', function () {
       expect(ValueSource.DEFAULT).toBeDefined();
       expect(ValueSource.REMOTE).toBeDefined();
       expect(ValueSource.STATIC).toBeDefined();
+    });
+    describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
+      let functionsRefV9Deprecation: CheckV9DeprecationFunction;
+  
+      beforeEach(function () {
+        functionsRefV9Deprecation = createCheckV9Deprecation(['functions']);
+  
+        // @ts-ignore test
+        jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
+          return new Proxy(
+            {},
+            {
+              get: () =>
+                jest.fn().mockResolvedValue({
+                  source: 'cache',
+                  changes: [],
+                  documents: [],
+                  metadata: {},
+                  path: 'foo',
+                } as never),
+            },
+          );
+        });
+      });
+      describe('remoteConfig functions', function () {
+        it('useFunctionsEmulator()', function () {
+          const app = firebase.app();
+          const remoteConfig = app.remoteConfig();
+          functionsRefV9Deprecation(
+            () => activate(remoteConfig),
+            () => remoteConfig.activate(),
+            'activate',
+          );
+        });
+      });
     });
   });
 });

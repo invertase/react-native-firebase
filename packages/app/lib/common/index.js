@@ -211,6 +211,31 @@ const mapOfDeprecationReplacements = {
       nanoseconds: NO_REPLACEMENT,
     },
   },
+  remoteConfig: {
+    default: {
+      activate: 'activate()',
+      ensureInitialized: 'ensureInitialized()',
+      fetchAndActivate: 'fetchAndActivate()',
+      fetchConfig: 'fetchConfig()',
+      getAll: 'getAll()',
+      getBoolean: 'getBoolean()',
+      getNumber: 'getNumber()',
+      getString: 'getString()',
+      getValue: 'getValue()',
+      fetchTimeMillis: 'fetchTimeMillis()',
+      settings: 'settings()',
+      lastFetchStatus: 'lastFetchStatus()',
+      reset: 'reset()',
+      setConfigSettings: 'setConfigSettings()',
+      fetch: 'fetch()',
+      setDefaults: 'setDefaults()',
+      setDefaultsFromResource: 'setDefaultsFromResource()',
+      onConfigUpdated: 'onConfigUpdated()',
+    },
+    statics: {
+      setLogLevel: 'setLogLevel()',
+    },
+  },
 };
 
 const modularDeprecationMessage =
