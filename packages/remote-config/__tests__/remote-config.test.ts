@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, it, beforeEach, jest } from '@jest/globals';
 
 import {
   firebase,
@@ -43,6 +43,14 @@ import {
   LastFetchStatus,
   ValueSource,
 } from '../lib';
+
+import {
+  createCheckV9Deprecation,
+  CheckV9DeprecationFunction,
+} from '../../app/lib/common/unitTestUtils';
+
+// @ts-ignore test
+import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 
 describe('remoteConfig()', function () {
   describe('namespace', function () {
@@ -245,6 +253,183 @@ describe('remoteConfig()', function () {
       expect(ValueSource.DEFAULT).toBeDefined();
       expect(ValueSource.REMOTE).toBeDefined();
       expect(ValueSource.STATIC).toBeDefined();
+    });
+
+    describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
+      let remoteConfigV9Deprecation: CheckV9DeprecationFunction;
+      let staticsV9Deprecation: CheckV9DeprecationFunction;
+
+      beforeEach(function () {
+        remoteConfigV9Deprecation = createCheckV9Deprecation(['remoteConfig']);
+
+        staticsV9Deprecation = createCheckV9Deprecation(['remoteConfig', 'statics']);
+
+        // @ts-ignore test
+        jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
+          return new Proxy(
+            {},
+            {
+              get: () =>
+                jest.fn().mockResolvedValue({
+                  result: true,
+                  constants: {
+                    lastFetchTime: Date.now(),
+                    lastFetchStatus: 'success',
+                    fetchTimeout: 60,
+                    minimumFetchInterval: 12,
+                    values: {},
+                  },
+                } as never),
+            },
+          );
+        });
+      });
+
+      describe('remoteConfig functions', function () {
+        it('activate()', function () {
+          const remoteConfig = getRemoteConfig();
+          remoteConfigV9Deprecation(
+            () => activate(remoteConfig),
+            () => remoteConfig.activate(),
+            'activate',
+          );
+        });
+
+        it('ensureInitialized()', function () {
+          const remoteConfig = getRemoteConfig();
+          remoteConfigV9Deprecation(
+            () => ensureInitialized(remoteConfig),
+            () => remoteConfig.ensureInitialized(),
+            'ensureInitialized',
+          );
+        });
+
+        it('fetchAndActivate()', function () {
+          const remoteConfig = getRemoteConfig();
+          remoteConfigV9Deprecation(
+            () => fetchAndActivate(remoteConfig),
+            () => remoteConfig.fetchAndActivate(),
+            'fetchAndActivate',
+          );
+        });
+
+        it('getAll()', function () {
+          const remoteConfig = getRemoteConfig();
+          remoteConfigV9Deprecation(
+            () => getAll(remoteConfig),
+            () => remoteConfig.getAll(),
+            'getAll',
+          );
+        });
+
+        it('getBoolean()', function () {
+          const remoteConfig = getRemoteConfig();
+          remoteConfigV9Deprecation(
+            () => getBoolean(remoteConfig, 'foo'),
+            () => remoteConfig.getBoolean('foo'),
+            'getBoolean',
+          );
+        });
+
+        it('getNumber()', function () {
+          const remoteConfig = getRemoteConfig();
+          remoteConfigV9Deprecation(
+            () => getNumber(remoteConfig, 'foo'),
+            () => remoteConfig.getNumber('foo'),
+            'getNumber',
+          );
+        });
+
+        it('getString()', function () {
+          const remoteConfig = getRemoteConfig();
+          remoteConfigV9Deprecation(
+            () => getString(remoteConfig, 'foo'),
+            () => remoteConfig.getString('foo'),
+            'getString',
+          );
+        });
+
+        it('getValue()', function () {
+          const remoteConfig = getRemoteConfig();
+          remoteConfigV9Deprecation(
+            () => getValue(remoteConfig, 'foo'),
+            () => remoteConfig.getValue('foo'),
+            'getValue',
+          );
+        });
+
+        it('reset()', function () {
+          const remoteConfig = getRemoteConfig();
+          remoteConfigV9Deprecation(
+            () => reset(remoteConfig),
+            () => remoteConfig.reset(),
+            'reset',
+          );
+        });
+
+        it('setConfigSettings()', function () {
+          const remoteConfig = getRemoteConfig();
+          remoteConfigV9Deprecation(
+            () => setConfigSettings(remoteConfig, { minimumFetchIntervalMillis: 12 }),
+            () => remoteConfig.setConfigSettings({ minimumFetchIntervalMillis: 12 }),
+            'setConfigSettings',
+          );
+        });
+
+        it('fetch()', function () {
+          const remoteConfig = getRemoteConfig();
+          remoteConfigV9Deprecation(
+            () => fetch(remoteConfig, 12),
+            () => remoteConfig.fetch(12),
+            'fetch',
+          );
+        });
+
+        it('setDefaults()', function () {
+          const remoteConfig = getRemoteConfig();
+          remoteConfigV9Deprecation(
+            () => setDefaults(remoteConfig, { foo: 'bar' }),
+            () => remoteConfig.setDefaults({ foo: 'bar' }),
+            'setDefaults',
+          );
+        });
+
+        it('setDefaultsFromResource()', function () {
+          const remoteConfig = getRemoteConfig();
+          remoteConfigV9Deprecation(
+            () => setDefaultsFromResource(remoteConfig, 'foo'),
+            () => remoteConfig.setDefaultsFromResource('foo'),
+            'setDefaultsFromResource',
+          );
+        });
+
+        it('onConfigUpdated()', function () {
+          const remoteConfig = getRemoteConfig();
+          remoteConfigV9Deprecation(
+            () => onConfigUpdated(remoteConfig, () => {}),
+            () => remoteConfig.onConfigUpdated(() => {}),
+            'onConfigUpdated',
+          );
+        });
+      });
+
+      describe('statics', function () {
+        it('LastFetchStatus', function () {
+          staticsV9Deprecation(
+            () => LastFetchStatus.FAILURE,
+            () => firebase.remoteConfig.LastFetchStatus.FAILURE,
+            'LastFetchStatus',
+          );
+        });
+
+        it('ValueSource', function () {
+          staticsV9Deprecation(
+            () => ValueSource.DEFAULT,
+            () => firebase.remoteConfig.ValueSource.DEFAULT,
+            'ValueSource',
+          );
+        });
+      });
     });
   });
 });

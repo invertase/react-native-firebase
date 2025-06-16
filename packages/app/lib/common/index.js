@@ -337,6 +337,28 @@ const mapOfDeprecationReplacements = {
       nanoseconds: NO_REPLACEMENT,
     },
   },
+  remoteConfig: {
+    default: {
+      activate: 'activate()',
+      ensureInitialized: 'ensureInitialized()',
+      fetchAndActivate: 'fetchAndActivate()',
+      getAll: 'getAll()',
+      getBoolean: 'getBoolean()',
+      getNumber: 'getNumber()',
+      getString: 'getString()',
+      getValue: 'getValue()',
+      reset: 'reset()',
+      setConfigSettings: 'setConfigSettings()',
+      fetch: 'fetch()',
+      setDefaults: 'setDefaults()',
+      setDefaultsFromResource: 'setDefaultsFromResource()',
+      onConfigUpdated: 'onConfigUpdated()',
+    },
+    statics: {
+      LastFetchStatus: 'LastFetchStatus',
+      ValueSource: 'ValueSource',
+    },
+  },
   storage: {
     default: {
       useEmulator: 'connectStorageEmulator()',
@@ -502,6 +524,9 @@ export function createDeprecationProxy(instance) {
           prop === 'FieldPath'
         ) {
           deprecationConsoleWarning('firestore', prop, 'statics', false);
+        }
+        if (prop === 'LastFetchStatus' || prop === 'ValueSource') {
+          deprecationConsoleWarning('remoteConfig', prop, 'statics', false);
         }
         if (prop === 'CustomProvider') {
           deprecationConsoleWarning('appCheck', prop, 'statics', false);
