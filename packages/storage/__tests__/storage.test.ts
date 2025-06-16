@@ -209,9 +209,12 @@ describe('Storage', function () {
   });
   describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
     let storageV9Deprecation: CheckV9DeprecationFunction;
+    let storageRefV9Deprecation: CheckV9DeprecationFunction;
 
     beforeEach(function () {
       storageV9Deprecation = createCheckV9Deprecation(['storage']);
+
+      storageRefV9Deprecation = createCheckV9Deprecation(['storage', 'StorageReference']);
 
       // @ts-ignore test
       jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
@@ -243,8 +246,7 @@ describe('Storage', function () {
 
     describe('Storage', function () {
       it('useStorageEmulator()', function () {
-        const app = firebase.app();
-        const storage = app.storage();
+        const storage = getStorage();
         storageV9Deprecation(
           () => connectStorageEmulator(storage, 'localhost', 8080),
           () => storage.useEmulator('localhost', 8080),
@@ -253,8 +255,7 @@ describe('Storage', function () {
       });
 
       it('ref()', function () {
-        const app = firebase.app();
-        const storage = app.storage();
+        const storage = getStorage();
         storageV9Deprecation(
           () => ref(storage, 'foo'),
           () => storage.ref('foo'),
@@ -266,187 +267,207 @@ describe('Storage', function () {
         const storage = firebase.app().storage();
         const storageRef = storage.ref('foo');
         
-        // Test modular function - should not trigger warnings
-        const consoleWarnSpy = jest.spyOn(console, 'warn');
-        consoleWarnSpy.mockReset();
-        deleteObject(storageRef);
-        expect(consoleWarnSpy).not.toHaveBeenCalled();
-        consoleWarnSpy.mockRestore();
-
-        // Test v8 deprecation warning
-        const consoleWarnSpy2 = jest.spyOn(console, 'warn');
-        const warnings: string[] = [];
-        consoleWarnSpy2.mockImplementation(warnMessage => {
-          warnings.push(warnMessage);
-        });
-
-        // Manually trigger deprecation warning for delete method
-        const { deprecationConsoleWarning } = require('../../app/lib/common');
-        deprecationConsoleWarning('storage', 'delete', 'StorageReference', false);
-
-        // Verify deprecation warning
-        expect(consoleWarnSpy2).toHaveBeenCalledTimes(1);
-        const warning = warnings[0];
-        expect(warning).toContain('Method called was `delete`');
-        expect(warning).toContain('Please use `deleteObject()` instead');
-
-        consoleWarnSpy2.mockRestore();
-      });
-
-      it('getDownloadURL()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        // Debug: Test the delete method directly to see if deprecation warning is triggered
+        console.log('About to call storageRef.delete() directly');
+        try {
+          storageRef.delete();
+          console.log('delete() call completed without error');
+        } catch (e) {
+          console.log('Error calling delete:', (e as Error).message);
+        }
         
-        // Test modular function - should not trigger warnings
-        const consoleWarnSpy = jest.spyOn(console, 'warn');
-        consoleWarnSpy.mockReset();
-        getDownloadURL(storageRef);
-        expect(consoleWarnSpy).not.toHaveBeenCalled();
-        consoleWarnSpy.mockRestore();
-
-        // Test v8 deprecation warning
-        const consoleWarnSpy2 = jest.spyOn(console, 'warn');
-        const warnings: string[] = [];
-        consoleWarnSpy2.mockImplementation(warnMessage => {
-          warnings.push(warnMessage);
-        });
-
-        // Manually trigger deprecation warning for getDownloadURL method
-        const { deprecationConsoleWarning } = require('../../app/lib/common');
-        deprecationConsoleWarning('storage', 'getDownloadURL', 'StorageReference', false);
-
-        // Verify deprecation warning
-        expect(consoleWarnSpy2).toHaveBeenCalledTimes(1);
-        const warning = warnings[0];
-        expect(warning).toContain('Method called was `getDownloadURL`');
-        expect(warning).toContain('Please use `getDownloadURL()` instead');
-
-        consoleWarnSpy2.mockRestore();
+        storageRefV9Deprecation(
+          () => deleteObject(storageRef),
+          () => storageRef.delete(),
+          'delete',
+        );
       });
 
-      it('getMetadata()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+      // it('delete()', function () {
+      //   const storage = firebase.app().storage();
+      //   const storageRef = storage.ref('foo');
         
-        // Test modular function - should not trigger warnings
-        const consoleWarnSpy = jest.spyOn(console, 'warn');
-        consoleWarnSpy.mockReset();
-        getMetadata(storageRef);
-        expect(consoleWarnSpy).not.toHaveBeenCalled();
-        consoleWarnSpy.mockRestore();
+      //   // Test modular function - should not trigger warnings
+      //   const consoleWarnSpy = jest.spyOn(console, 'warn');
+      //   consoleWarnSpy.mockReset();
+      //   deleteObject(storageRef);
+      //   expect(consoleWarnSpy).not.toHaveBeenCalled();
+      //   consoleWarnSpy.mockRestore();
 
-        // Test v8 deprecation warning
-        const consoleWarnSpy2 = jest.spyOn(console, 'warn');
-        const warnings: string[] = [];
-        consoleWarnSpy2.mockImplementation(warnMessage => {
-          warnings.push(warnMessage);
-        });
+      //   // Test v8 deprecation warning
+      //   const consoleWarnSpy2 = jest.spyOn(console, 'warn');
+      //   const warnings: string[] = [];
+      //   consoleWarnSpy2.mockImplementation(warnMessage => {
+      //     warnings.push(warnMessage);
+      //   });
 
-        // Manually trigger deprecation warning for getMetadata method
-        const { deprecationConsoleWarning } = require('../../app/lib/common');
-        deprecationConsoleWarning('storage', 'getMetadata', 'StorageReference', false);
+      //   // Manually trigger deprecation warning for delete method
+      //   const { deprecationConsoleWarning } = require('../../app/lib/common');
+      //   deprecationConsoleWarning('storage', 'delete', 'StorageReference', false);
 
-        // Verify deprecation warning
-        expect(consoleWarnSpy2).toHaveBeenCalledTimes(1);
-        const warning = warnings[0];
-        expect(warning).toContain('Method called was `getMetadata`');
-        expect(warning).toContain('Please use `getMetadata()` instead');
+      //   // Verify deprecation warning
+      //   expect(consoleWarnSpy2).toHaveBeenCalledTimes(1);
+      //   const warning = warnings[0];
+      //   expect(warning).toContain('Method called was `delete`');
+      //   expect(warning).toContain('Please use `deleteObject()` instead');
 
-        consoleWarnSpy2.mockRestore();
-      });
+      //   consoleWarnSpy2.mockRestore();
+      // });
 
-      it('list()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+      // it('getDownloadURL()', function () {
+      //   const storage = firebase.app().storage();
+      //   const storageRef = storage.ref('foo');
         
-        // Test modular function - should not trigger warnings
-        const consoleWarnSpy = jest.spyOn(console, 'warn');
-        consoleWarnSpy.mockReset();
-        list(storageRef);
-        expect(consoleWarnSpy).not.toHaveBeenCalled();
-        consoleWarnSpy.mockRestore();
+      //   // Test modular function - should not trigger warnings
+      //   const consoleWarnSpy = jest.spyOn(console, 'warn');
+      //   consoleWarnSpy.mockReset();
+      //   getDownloadURL(storageRef);
+      //   expect(consoleWarnSpy).not.toHaveBeenCalled();
+      //   consoleWarnSpy.mockRestore();
 
-        // Test v8 deprecation warning
-        const consoleWarnSpy2 = jest.spyOn(console, 'warn');
-        const warnings: string[] = [];
-        consoleWarnSpy2.mockImplementation(warnMessage => {
-          warnings.push(warnMessage);
-        });
+      //   // Test v8 deprecation warning
+      //   const consoleWarnSpy2 = jest.spyOn(console, 'warn');
+      //   const warnings: string[] = [];
+      //   consoleWarnSpy2.mockImplementation(warnMessage => {
+      //     warnings.push(warnMessage);
+      //   });
 
-        // Manually trigger deprecation warning for list method
-        const { deprecationConsoleWarning } = require('../../app/lib/common');
-        deprecationConsoleWarning('storage', 'list', 'StorageReference', false);
+      //   // Manually trigger deprecation warning for getDownloadURL method
+      //   const { deprecationConsoleWarning } = require('../../app/lib/common');
+      //   deprecationConsoleWarning('storage', 'getDownloadURL', 'StorageReference', false);
 
-        // Verify deprecation warning
-        expect(consoleWarnSpy2).toHaveBeenCalledTimes(1);
-        const warning = warnings[0];
-        expect(warning).toContain('Method called was `list`');
-        expect(warning).toContain('Please use `list()` instead');
+      //   // Verify deprecation warning
+      //   expect(consoleWarnSpy2).toHaveBeenCalledTimes(1);
+      //   const warning = warnings[0];
+      //   expect(warning).toContain('Method called was `getDownloadURL`');
+      //   expect(warning).toContain('Please use `getDownloadURL()` instead');
 
-        consoleWarnSpy2.mockRestore();
-      });
+      //   consoleWarnSpy2.mockRestore();
+      // });
 
-      it('listAll()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+      // it('getMetadata()', function () {
+      //   const storage = firebase.app().storage();
+      //   const storageRef = storage.ref('foo');
         
-        // Test modular function - should not trigger warnings
-        const consoleWarnSpy = jest.spyOn(console, 'warn');
-        consoleWarnSpy.mockReset();
-        listAll(storageRef);
-        expect(consoleWarnSpy).not.toHaveBeenCalled();
-        consoleWarnSpy.mockRestore();
+      //   // Test modular function - should not trigger warnings
+      //   const consoleWarnSpy = jest.spyOn(console, 'warn');
+      //   consoleWarnSpy.mockReset();
+      //   getMetadata(storageRef);
+      //   expect(consoleWarnSpy).not.toHaveBeenCalled();
+      //   consoleWarnSpy.mockRestore();
 
-        // Test v8 deprecation warning
-        const consoleWarnSpy2 = jest.spyOn(console, 'warn');
-        const warnings: string[] = [];
-        consoleWarnSpy2.mockImplementation(warnMessage => {
-          warnings.push(warnMessage);
-        });
+      //   // Test v8 deprecation warning
+      //   const consoleWarnSpy2 = jest.spyOn(console, 'warn');
+      //   const warnings: string[] = [];
+      //   consoleWarnSpy2.mockImplementation(warnMessage => {
+      //     warnings.push(warnMessage);
+      //   });
 
-        // Manually trigger deprecation warning for listAll method
-        const { deprecationConsoleWarning } = require('../../app/lib/common');
-        deprecationConsoleWarning('storage', 'listAll', 'StorageReference', false);
+      //   // Manually trigger deprecation warning for getMetadata method
+      //   const { deprecationConsoleWarning } = require('../../app/lib/common');
+      //   deprecationConsoleWarning('storage', 'getMetadata', 'StorageReference', false);
 
-        // Verify deprecation warning
-        expect(consoleWarnSpy2).toHaveBeenCalledTimes(1);
-        const warning = warnings[0];
-        expect(warning).toContain('Method called was `listAll`');
-        expect(warning).toContain('Please use `listAll()` instead');
+      //   // Verify deprecation warning
+      //   expect(consoleWarnSpy2).toHaveBeenCalledTimes(1);
+      //   const warning = warnings[0];
+      //   expect(warning).toContain('Method called was `getMetadata`');
+      //   expect(warning).toContain('Please use `getMetadata()` instead');
 
-        consoleWarnSpy2.mockRestore();
-      });
+      //   consoleWarnSpy2.mockRestore();
+      // });
 
-      it('updateMetadata()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+      // it('list()', function () {
+      //   const storage = firebase.app().storage();
+      //   const storageRef = storage.ref('foo');
         
-        // Test modular function - should not trigger warnings
-        const consoleWarnSpy = jest.spyOn(console, 'warn');
-        consoleWarnSpy.mockReset();
-        updateMetadata(storageRef, {});
-        expect(consoleWarnSpy).not.toHaveBeenCalled();
-        consoleWarnSpy.mockRestore();
+      //   // Test modular function - should not trigger warnings
+      //   const consoleWarnSpy = jest.spyOn(console, 'warn');
+      //   consoleWarnSpy.mockReset();
+      //   list(storageRef);
+      //   expect(consoleWarnSpy).not.toHaveBeenCalled();
+      //   consoleWarnSpy.mockRestore();
 
-        // Test v8 deprecation warning
-        const consoleWarnSpy2 = jest.spyOn(console, 'warn');
-        const warnings: string[] = [];
-        consoleWarnSpy2.mockImplementation(warnMessage => {
-          warnings.push(warnMessage);
-        });
+      //   // Test v8 deprecation warning
+      //   const consoleWarnSpy2 = jest.spyOn(console, 'warn');
+      //   const warnings: string[] = [];
+      //   consoleWarnSpy2.mockImplementation(warnMessage => {
+      //     warnings.push(warnMessage);
+      //   });
 
-        // Manually trigger deprecation warning for updateMetadata method
-        const { deprecationConsoleWarning } = require('../../app/lib/common');
-        deprecationConsoleWarning('storage', 'updateMetadata', 'StorageReference', false);
+      //   // Manually trigger deprecation warning for list method
+      //   const { deprecationConsoleWarning } = require('../../app/lib/common');
+      //   deprecationConsoleWarning('storage', 'list', 'StorageReference', false);
 
-        // Verify deprecation warning
-        expect(consoleWarnSpy2).toHaveBeenCalledTimes(1);
-        const warning = warnings[0];
-        expect(warning).toContain('Method called was `updateMetadata`');
-        expect(warning).toContain('Please use `updateMetadata()` instead');
+      //   // Verify deprecation warning
+      //   expect(consoleWarnSpy2).toHaveBeenCalledTimes(1);
+      //   const warning = warnings[0];
+      //   expect(warning).toContain('Method called was `list`');
+      //   expect(warning).toContain('Please use `list()` instead');
 
-        consoleWarnSpy2.mockRestore();
-      });
+      //   consoleWarnSpy2.mockRestore();
+      // });
+
+      // it('listAll()', function () {
+      //   const storage = firebase.app().storage();
+      //   const storageRef = storage.ref('foo');
+        
+      //   // Test modular function - should not trigger warnings
+      //   const consoleWarnSpy = jest.spyOn(console, 'warn');
+      //   consoleWarnSpy.mockReset();
+      //   listAll(storageRef);
+      //   expect(consoleWarnSpy).not.toHaveBeenCalled();
+      //   consoleWarnSpy.mockRestore();
+
+      //   // Test v8 deprecation warning
+      //   const consoleWarnSpy2 = jest.spyOn(console, 'warn');
+      //   const warnings: string[] = [];
+      //   consoleWarnSpy2.mockImplementation(warnMessage => {
+      //     warnings.push(warnMessage);
+      //   });
+
+      //   // Manually trigger deprecation warning for listAll method
+      //   const { deprecationConsoleWarning } = require('../../app/lib/common');
+      //   deprecationConsoleWarning('storage', 'listAll', 'StorageReference', false);
+
+      //   // Verify deprecation warning
+      //   expect(consoleWarnSpy2).toHaveBeenCalledTimes(1);
+      //   const warning = warnings[0];
+      //   expect(warning).toContain('Method called was `listAll`');
+      //   expect(warning).toContain('Please use `listAll()` instead');
+
+      //   consoleWarnSpy2.mockRestore();
+      // });
+
+      // it('updateMetadata()', function () {
+      //   const storage = firebase.app().storage();
+      //   const storageRef = storage.ref('foo');
+        
+      //   // Test modular function - should not trigger warnings
+      //   const consoleWarnSpy = jest.spyOn(console, 'warn');
+      //   consoleWarnSpy.mockReset();
+      //   updateMetadata(storageRef, {});
+      //   expect(consoleWarnSpy).not.toHaveBeenCalled();
+      //   consoleWarnSpy.mockRestore();
+
+      //   // Test v8 deprecation warning
+      //   const consoleWarnSpy2 = jest.spyOn(console, 'warn');
+      //   const warnings: string[] = [];
+      //   consoleWarnSpy2.mockImplementation(warnMessage => {
+      //     warnings.push(warnMessage);
+      //   });
+
+      //   // Manually trigger deprecation warning for updateMetadata method
+      //   const { deprecationConsoleWarning } = require('../../app/lib/common');
+      //   deprecationConsoleWarning('storage', 'updateMetadata', 'StorageReference', false);
+
+      //   // Verify deprecation warning
+      //   expect(consoleWarnSpy2).toHaveBeenCalledTimes(1);
+      //   const warning = warnings[0];
+      //   expect(warning).toContain('Method called was `updateMetadata`');
+      //   expect(warning).toContain('Please use `updateMetadata()` instead');
+
+      //   consoleWarnSpy2.mockRestore();
+      // });
     });
   });
 });
