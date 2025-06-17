@@ -204,8 +204,8 @@ describe('Storage', function () {
       expect(TaskState.SUCCESS).toBeDefined();
     });
   });
-  describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
 
+  describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
     let storageV9Deprecation: CheckV9DeprecationFunction;
     let storageRefV9Deprecation: CheckV9DeprecationFunction;
 
@@ -299,7 +299,7 @@ describe('Storage', function () {
 
       it('delete()', function () {
         const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');    
+        const storageRef = storage.ref('foo');  
         storageRefV9Deprecation(
           () => deleteObject(storageRef),
           () => storageRef.delete(),
