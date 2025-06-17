@@ -802,9 +802,9 @@ describe('storage() -> StorageTask', function () {
 
       it('downloads a file', async function () {
         if (Platform.other) return;
-        const { getStorage, ref } = storageModular;
+        const { getStorage, ref, writeToFile } = storageModular;
 
-        const meta = await ref(getStorage(), `${PATH}/list/file1.txt`).writeToFile(
+        const meta = await writeToFile(ref(getStorage(), `${PATH}/list/file1.txt`),
           `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/file1.txt`,
         );
 

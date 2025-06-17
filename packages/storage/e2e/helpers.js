@@ -15,11 +15,6 @@ exports.seed = async function seed(path) {
     //await ref(getStorage(), WRITE_ONLY_NAME).putString('Write Only');
     await uploadString(ref(getStorage(), WRITE_ONLY_NAME), 'Write Only');
 
-    // Setup list items - Future.wait not working...
-    // await ref(getStorage(), `${path}/list/file1.txt`).putString('File 1', 'raw', {
-    //   contentType: 'text/plain',
-    // });
-
     await uploadString(ref(getStorage(), `${path}/list/file1.txt`), 'File 1', StringFormat.RAW, {
       contentType: 'text/plain',
     });
@@ -28,10 +23,6 @@ exports.seed = async function seed(path) {
     await uploadString(ref(getStorage(), `${path}/list/file3.txt`), 'File 3');
     await uploadString(ref(getStorage(), `${path}/list/file4.txt`), 'File 4');
     await uploadString(ref(getStorage(), `${path}/list/nested/file5.txt`), 'File 5');
-    // await ref(getStorage(), `${path}/list/file2.txt`).putString('File 2');
-    // await ref(getStorage(), `${path}/list/file3.txt`).putString('File 3');
-    // await ref(getStorage(), `${path}/list/file4.txt`).putString('File 4');
-    // await ref(getStorage(), `${path}/list/nested/file5.txt`).putString('File 5');
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error('unable to seed storage service with test fixtures');
