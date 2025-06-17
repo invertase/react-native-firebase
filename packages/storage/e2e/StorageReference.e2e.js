@@ -108,9 +108,11 @@ describe('storage() -> StorageReference', function () {
     describe('delete()', function () {
       it('should delete a file', async function () {
         const storageReference = firebase.storage().ref(`${PATH}/deleteMe.txt`);
+        console.log('storageReferenceeeeeee', storageReference);
         await storageReference.putString('Delete File');
+        console.log('putString: Delete File');
         await storageReference.delete();
-
+        console.log('delete: Delete File');
         try {
           await storageReference.getMetadata();
           return Promise.reject(new Error('Did not throw'));
