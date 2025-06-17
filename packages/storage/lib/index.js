@@ -15,10 +15,11 @@
  *
  */
 
-import { isAndroid, 
-  isNumber, 
-  isString, 
-  createDeprecationProxy 
+import {
+  isAndroid,
+  isNumber,
+  isString,
+  createDeprecationProxy,
 } from '@react-native-firebase/app/lib/common';
 
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';

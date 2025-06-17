@@ -299,7 +299,7 @@ describe('Storage', function () {
 
       it('delete()', function () {
         const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');  
+        const storageRef = storage.ref('foo');
         storageRefV9Deprecation(
           () => deleteObject(storageRef),
           () => storageRef.delete(),
