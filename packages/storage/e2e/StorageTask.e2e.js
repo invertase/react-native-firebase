@@ -804,7 +804,8 @@ describe('storage() -> StorageTask', function () {
         if (Platform.other) return;
         const { getStorage, ref, writeToFile } = storageModular;
 
-        const meta = await writeToFile(ref(getStorage(), `${PATH}/list/file1.txt`),
+        const meta = await writeToFile(
+          ref(getStorage(), `${PATH}/list/file1.txt`),
           `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/file1.txt`,
         );
 
