@@ -349,7 +349,10 @@ describe('storage() -> StorageTask', function () {
 
         it('should have access to the snapshot values outside of the event subscriber', async function () {
           const { getStorage, ref, uploadString, TaskState } = storageModular;
-          const uploadTaskSnapshot = uploadString(ref(getStorage(), `${PATH}/putStringBlob.json`), 'Just a string to put in a file for upload');
+          const uploadTaskSnapshot = uploadString(
+            ref(getStorage(), `${PATH}/putStringBlob.json`),
+            'Just a string to put in a file for upload',
+          );
           const { resolve, promise } = Promise.defer();
           uploadTaskSnapshot.on('state_changed', {
             next: snapshot => {
@@ -1040,7 +1043,7 @@ describe('storage() -> StorageTask', function () {
       });
 
       it('should have access to the snapshot values outside of the Task thennable', async function () {
-        const { getStorage, ref, uploadBytesResumable, TaskState } = storageModular;
+        const { getStorage, ref, uploadBytesResumable } = storageModular;
         const jsonDerulo = JSON.stringify({ foo: 'bar' });
 
         const bob = new Blob([jsonDerulo], {
@@ -1142,7 +1145,7 @@ describe('storage() -> StorageTask', function () {
       });
 
       it('uploads a file without read permission', async function () {
-        const { getStorage, ref, uploadString, TaskState   } = storageModular;
+        const { getStorage, ref, uploadString, TaskState } = storageModular;
         const uploadTaskSnapshot = await uploadString(
           ref(getStorage(), WRITE_ONLY_NAME),
           'Just a string to put in a file for upload',
@@ -1189,7 +1192,7 @@ describe('storage() -> StorageTask', function () {
 
     describe('on()', function () {
       before(async function () {
-        const { getStorage, ref, uploadString, } = storageModular;
+        const { getStorage, ref, uploadString } = storageModular;
 
         await uploadString(
           ref(getStorage(), `${PATH}/ok.json`),
