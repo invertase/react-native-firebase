@@ -307,10 +307,6 @@ function getNamespace(target) {
     return 'storage';
   }
 
-  if (target.constructor.name === 'statics') {
-    return 'storage';
-  }
-
   const className = target.name ? target.name : target.constructor.name;
   return Object.keys(mapOfDeprecationReplacements).find(key => {
     if (mapOfDeprecationReplacements[key][className]) {
