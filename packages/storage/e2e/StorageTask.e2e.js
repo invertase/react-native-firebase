@@ -928,11 +928,7 @@ describe('storage() -> StorageTask', function () {
         const { getStorage, ref, uploadString, StringFormat } = storageModular;
         const dataUrl = '';
         try {
-          await uploadString(
-            ref(getStorage(), '/a.b'),
-            dataUrl,
-            StringFormat.DATA_URL,
-          );
+          await uploadString(ref(getStorage(), '/a.b'), dataUrl, StringFormat.DATA_URL);
 
           return Promise.reject(new Error('Did not throw!'));
         } catch (error) {
@@ -1157,7 +1153,7 @@ describe('storage() -> StorageTask', function () {
       });
 
       it('should have access to the snapshot values outside of the Task thennable', async function () {
-        const { getStorage, ref, uploadString, TaskState } = storageModular;
+        const { getStorage, ref, uploadString } = storageModular;
 
         const uploadTaskSnapshot = uploadString(
           ref(getStorage(), `${PATH}/putStringBlob.json`),
