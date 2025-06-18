@@ -12,7 +12,6 @@ exports.seed = async function seed(path) {
 
   try {
     // Add a write only file
-    //await ref(getStorage(), WRITE_ONLY_NAME).putString('Write Only');
     await uploadString(ref(getStorage(), WRITE_ONLY_NAME), 'Write Only');
 
     await uploadString(ref(getStorage(), `${path}/list/file1.txt`), 'File 1', StringFormat.RAW, {

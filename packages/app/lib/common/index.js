@@ -235,7 +235,9 @@ const mapOfDeprecationReplacements = {
       child: 'child()',
     },
     statics: {
-      StorageReference: 'StorageReference',
+      StringFormat: 'StringFormat',
+      TaskEvent: 'TaskEvent',
+      TaskState: 'TaskState',
     },
   },
 };
@@ -305,6 +307,10 @@ function getNamespace(target) {
     return 'storage';
   }
 
+  if (target.constructor.name === 'statics') {
+    return 'storage';
+  }
+
   const className = target.name ? target.name : target.constructor.name;
   return Object.keys(mapOfDeprecationReplacements).find(key => {
     if (mapOfDeprecationReplacements[key][className]) {
@@ -367,6 +373,9 @@ export function createDeprecationProxy(instance) {
         }
         if (prop === 'CustomProvider') {
           deprecationConsoleWarning('appCheck', prop, 'statics', false);
+        }
+        if (prop === 'StringFormat' || prop === 'TaskEvent' || prop === 'TaskState') {
+          deprecationConsoleWarning('storage', prop, 'statics', false);
         }
 
         if (prop !== 'setLogLevel') {

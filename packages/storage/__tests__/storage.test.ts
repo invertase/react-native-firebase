@@ -208,11 +208,14 @@ describe('Storage', function () {
   describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
     let storageV9Deprecation: CheckV9DeprecationFunction;
     let storageRefV9Deprecation: CheckV9DeprecationFunction;
+    let staticsV9Deprecation: CheckV9DeprecationFunction;
 
     beforeEach(function () {
       storageV9Deprecation = createCheckV9Deprecation(['storage']);
 
       storageRefV9Deprecation = createCheckV9Deprecation(['storage', 'StorageReference']);
+
+      staticsV9Deprecation = createCheckV9Deprecation(['storage', 'statics']);
 
       // @ts-ignore test
       jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
@@ -414,6 +417,32 @@ describe('Storage', function () {
           () => child(storageRef, 'bar'),
           () => storageRef.child('bar'),
           'child',
+        );
+      });
+    });
+
+    describe('statics', function () {
+      it('StringFormat static', function () {
+        staticsV9Deprecation(
+          () => StringFormat.RAW,
+          () => firebase.storage.StringFormat.RAW,
+          'StringFormat',
+        );
+      });
+
+      it('TaskEvent static', function () {
+        staticsV9Deprecation(
+          () => TaskEvent.STATE_CHANGED,
+          () => firebase.storage.TaskEvent.STATE_CHANGED,
+          'TaskEvent',
+        );
+      });
+
+      it('TaskState static', function () {
+        staticsV9Deprecation(
+          () => TaskState.SUCCESS,
+          () => firebase.storage.TaskState.SUCCESS,
+          'TaskState',
         );
       });
     });
