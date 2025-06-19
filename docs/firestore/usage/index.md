@@ -13,10 +13,10 @@ This module requires that the `@react-native-firebase/app` module is already set
 
 ```bash
 # Install & setup the app module
-yarn add @react-native-firebase/app
+npx expo install @react-native-firebase/app
 
 # Install the firestore module
-yarn add @react-native-firebase/firestore
+npx expo install @react-native-firebase/firestore
 
 # If you're developing your app using iOS, run this command
 cd ios/ && pod install
