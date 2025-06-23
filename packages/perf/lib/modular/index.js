@@ -26,6 +26,8 @@
 import { isBoolean } from '@react-native-firebase/app/lib/common';
 import { getApp } from '@react-native-firebase/app';
 
+import { MODULAR_DEPRECATION_ARG } from '../../../app/lib/common';
+
 /**
  * Returns a Performance instance for the given app.
  * @param app - FirebaseApp. Optional.
@@ -49,7 +51,7 @@ export async function initializePerformance(app, settings) {
   const perf = getApp(app.name).perf();
 
   if (settings && isBoolean(settings.dataCollectionEnabled)) {
-    await perf.setPerformanceCollectionEnabled(settings.dataCollectionEnabled);
+    await perf.setPerformanceCollectionEnabled.call(perf, settings.dataCollectionEnabled, MODULAR_DEPRECATION_ARG);
   }
 
   return perf;
@@ -62,7 +64,7 @@ export async function initializePerformance(app, settings) {
  * @returns {Trace}
  */
 export function trace(perf, identifier) {
-  return perf.newTrace(identifier);
+  return perf.newTrace.call(perf, identifier, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -72,7 +74,7 @@ export function trace(perf, identifier) {
  * @returns {HttpMetric}
  */
 export function httpMetric(perf, identifier, httpMethod) {
-  return perf.newHttpMetric(identifier, httpMethod);
+  return perf.newHttpMetric.call(perf, identifier, httpMethod, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -84,7 +86,7 @@ export function httpMetric(perf, identifier, httpMethod) {
  * @returns {ScreenTrace}
  */
 export function newScreenTrace(perf, identifier) {
-  return perf.newScreenTrace(identifier);
+  return perf.newScreenTrace.call(perf, identifier, MODULAR_DEPRECATION_ARG);
 }
 /**
  * Creates a ScreenTrace instance with the given identifier and immediately starts it.
@@ -95,5 +97,5 @@ export function newScreenTrace(perf, identifier) {
  * @returns {Promise<ScreenTrace>}
  */
 export function startScreenTrace(perf, identifier) {
-  return perf.startScreenTrace(identifier);
+  return perf.startScreenTrace.call(perf, identifier, MODULAR_DEPRECATION_ARG);
 }
