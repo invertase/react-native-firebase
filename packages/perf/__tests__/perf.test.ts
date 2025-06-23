@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, it, beforeEach, jest } from '@jest/globals';
 
 import perf, {
   firebase,
@@ -9,6 +9,14 @@ import perf, {
   newScreenTrace,
   startScreenTrace,
 } from '../lib';
+
+import {
+  createCheckV9Deprecation,
+  CheckV9DeprecationFunction,
+} from '../../app/lib/common/unitTestUtils';
+
+// @ts-ignore test
+import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 
 describe('Performance Monitoring', function () {
   describe('namespace', function () {
@@ -161,6 +169,67 @@ describe('Performance Monitoring', function () {
 
     it('`startScreenTrace` function is properly exposed to end user', function () {
       expect(startScreenTrace).toBeDefined();
+    });
+  });
+
+  describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
+    let perfV9Deprecation: CheckV9DeprecationFunction;
+
+    beforeEach(function () {
+      perfV9Deprecation = createCheckV9Deprecation(['perf']);
+
+      // @ts-ignore test
+      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
+        return new Proxy(
+          {},
+          {
+            get: () =>
+              jest.fn().mockResolvedValue({
+                result: true,
+                constants: {
+                  isPerformanceCollectionEnabled: true,
+                  isInstrumentationEnabled: true,
+                },
+              } as never),
+          },
+        );
+      });
+    });
+
+    it('newTrace()', function () {
+      const perf = getPerformance();
+      perfV9Deprecation(
+        () => trace(perf, 'invertase'),
+        () => perf.newTrace('invertase'),
+        'newTrace',
+      );
+    });
+
+    it('newHttpMetric()', function () {
+      const perf = getPerformance();
+      perfV9Deprecation(
+        () => httpMetric(perf, 'https://invertase.io', 'GET'),
+        () => perf.newHttpMetric('https://invertase.io', 'GET'),
+        'newHttpMetric',
+      );
+    });
+
+    it('newScreenTrace()', function () {
+      const perf = getPerformance();
+      perfV9Deprecation(
+        () => newScreenTrace(perf, 'invertase'),
+        () => perf.newScreenTrace('invertase'),
+        'newScreenTrace',
+      );
+    });
+
+    it('startScreenTrace()', function () {
+      const perf = getPerformance();
+      perfV9Deprecation(
+        () => startScreenTrace(perf, 'invertase'),
+        () => perf.startScreenTrace('invertase'),
+        'startScreenTrace',
+      );
     });
   });
 });

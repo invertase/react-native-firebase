@@ -403,6 +403,15 @@ const mapOfDeprecationReplacements = {
       NotificationAndroidVisibility: 'NotificationAndroidVisibility',
     },
   },
+  perf: {
+    default: {
+      setPerformanceCollectionEnabled: 'initializePerformance()',
+      newTrace: 'trace()',
+      newHttpMetric: 'httpMetric()',
+      newScreenTrace: 'newScreenTrace()',
+      startScreenTrace: 'startScreenTrace()',
+    },
+  },
   remoteConfig: {
     default: {
       activate: 'activate()',
