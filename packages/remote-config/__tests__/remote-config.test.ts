@@ -254,6 +254,7 @@ describe('remoteConfig()', function () {
       expect(ValueSource.REMOTE).toBeDefined();
       expect(ValueSource.STATIC).toBeDefined();
     });
+
     describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
       let remoteConfigV9Deprecation: CheckV9DeprecationFunction;
       let staticsV9Deprecation: CheckV9DeprecationFunction;
@@ -283,6 +284,7 @@ describe('remoteConfig()', function () {
           );
         });
       });
+
       describe('remoteConfig functions', function () {
         it('activate()', function () {
           const remoteConfig = getRemoteConfig();

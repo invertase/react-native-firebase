@@ -232,7 +232,11 @@ export function setDefaults(remoteConfig, defaults) {
  * @returns {Promise<null>}
  */
 export function setDefaultsFromResource(remoteConfig, resourceName) {
-  return remoteConfig.setDefaultsFromResource.call(remoteConfig, resourceName, MODULAR_DEPRECATION_ARG);
+  return remoteConfig.setDefaultsFromResource.call(
+    remoteConfig,
+    resourceName,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -260,7 +264,11 @@ export async function setCustomSignals(remoteConfig, customSignals) {
       );
     }
   }
-  return remoteConfig._promiseWithConstants.call(remoteConfig, remoteConfig.native.setCustomSignals(customSignals), MODULAR_DEPRECATION_ARG);
+  return remoteConfig._promiseWithConstants.call(
+    remoteConfig,
+    remoteConfig.native.setCustomSignals(customSignals),
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 export { LastFetchStatus, ValueSource } from '../statics';
