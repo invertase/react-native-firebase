@@ -51,7 +51,11 @@ export async function initializePerformance(app, settings) {
   const perf = getApp(app.name).perf();
 
   if (settings && isBoolean(settings.dataCollectionEnabled)) {
-    await perf.setPerformanceCollectionEnabled.call(perf, settings.dataCollectionEnabled, MODULAR_DEPRECATION_ARG);
+    await perf.setPerformanceCollectionEnabled.call(
+      perf,
+      settings.dataCollectionEnabled,
+      MODULAR_DEPRECATION_ARG,
+    );
   }
 
   return perf;
