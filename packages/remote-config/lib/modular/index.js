@@ -260,7 +260,7 @@ export async function setCustomSignals(remoteConfig, customSignals) {
       );
     }
   }
-  return remoteConfig._promiseWithConstants(remoteConfig.native.setCustomSignals(customSignals));
+  return remoteConfig._promiseWithConstants.call(remoteConfig, remoteConfig.native.setCustomSignals(customSignals), MODULAR_DEPRECATION_ARG);
 }
 
 export { LastFetchStatus, ValueSource } from '../statics';
