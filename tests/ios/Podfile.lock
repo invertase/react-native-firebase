@@ -238,7 +238,6 @@ PODS:
     - GoogleUtilities/Network (~> 8.1)
     - "GoogleUtilities/NSData+zlib (~> 8.1)"
     - nanopb (~> 3.30910.0)
-  - GoogleAppMeasurementOnDeviceConversion (11.14.0)
   - GoogleDataTransport (10.1.0):
     - nanopb (~> 3.30910.0)
     - PromisesObjC (~> 2.4)
@@ -1825,7 +1824,6 @@ PODS:
     - React-Core
   - RNFBAnalytics (22.2.1):
     - Firebase/Analytics (= 11.14.0)
-    - GoogleAppMeasurementOnDeviceConversion (= 11.14.0)
     - React-Core
     - RNFBApp
   - RNFBApp (22.2.1):
@@ -2022,7 +2020,6 @@ SPEC REPOS:
     - FirebaseStorage
     - GoogleAdsOnDeviceConversion
     - GoogleAppMeasurement
-    - GoogleAppMeasurementOnDeviceConversion
     - GoogleDataTransport
     - GoogleUtilities
     - GTMSessionFetcher
@@ -2256,7 +2253,6 @@ SPEC CHECKSUMS:
   glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
   GoogleAdsOnDeviceConversion: 5c3c8de58786e7d0a4bdecbd32c16f87d815cc9f
   GoogleAppMeasurement: 078fe9bfeed8e398253772ce81ef8690b0413b45
-  GoogleAppMeasurementOnDeviceConversion: a1f73abef4a5a568d0ad9dc5e6c4317171c3d8f9
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   GTMSessionFetcher: fc75fc972958dceedee61cb662ae1da7a83a91cf
@@ -2326,7 +2322,7 @@ SPEC CHECKSUMS:
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
   RNCAsyncStorage: 5321442ed26760d7581b26effab82399ea5ff18b
   RNDeviceInfo: d863506092aef7e7af3a1c350c913d867d795047
-  RNFBAnalytics: 15e12b3ff0488ac2307a9630f211c0fbc59b7af5
+  RNFBAnalytics: 517dc2163a7fbb19fdd8fc66993e6cc87acc7c8c
   RNFBApp: 642484fe7cf356dc6e284836fc44ef6eac7f7133
   RNFBAppCheck: 8cf16f88736fa3b9214ae09962b655545362a043
   RNFBAppDistribution: 1ff284f51a6fabc1c7ab2837cef5cac8f6b7414a
@@ -2346,6 +2342,6 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 6eb60fc2c0eef63e7d2ef4a56e0a3353534143a2
 
-PODFILE CHECKSUM: 3abe8cfe7b06f24b788e90bea320d8ae6ea6d11a
+PODFILE CHECKSUM: 0657bfe0c029f96429affb5385cec200f33d2f6a
 
 COCOAPODS: 1.16.2
