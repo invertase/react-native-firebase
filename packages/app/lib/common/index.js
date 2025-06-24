@@ -337,6 +337,47 @@ const mapOfDeprecationReplacements = {
       nanoseconds: NO_REPLACEMENT,
     },
   },
+  messaging: {
+    default: {
+      isAutoInitEnabled: 'isAutoInitEnabled()',
+      isDeviceRegisteredForRemoteMessages: 'isDeviceRegisteredForRemoteMessages()',
+      isNotificationDelegationEnabled: 'isNotificationDelegationEnabled()',
+      isDeliveryMetricsExportToBigQueryEnabled: 'isDeliveryMetricsExportToBigQueryEnabled()',
+      setAutoInitEnabled: 'setAutoInitEnabled()',
+      getInitialNotification: 'getInitialNotification()',
+      getDidOpenSettingsForNotification: 'getDidOpenSettingsForNotification()',
+      getIsHeadless: 'getIsHeadless()',
+      onNotificationOpenedApp: 'onNotificationOpenedApp()',
+      onTokenRefresh: 'onTokenRefresh()',
+      requestPermission: 'requestPermission()',
+      registerDeviceForRemoteMessages: 'registerDeviceForRemoteMessages()',
+      unregisterDeviceForRemoteMessages: 'unregisterDeviceForRemoteMessages()',
+      getAPNSToken: 'getAPNSToken()',
+      setAPNSToken: 'setAPNSToken()',
+      hasPermission: 'hasPermission()',
+      onDeletedMessages: 'onDeletedMessages()',
+      onMessageSent: 'onMessageSent()',
+      onSendError: 'onSendError()',
+      setBackgroundMessageHandler: 'setBackgroundMessageHandler()',
+      setOpenSettingsForNotificationsHandler: 'setOpenSettingsForNotificationsHandler()',
+      sendMessage: 'sendMessage()',
+      subscribeToTopic: 'subscribeToTopic()',
+      unsubscribeFromTopic: 'unsubscribeFromTopic()',
+      setNotificationDelegationEnabled: 'setNotificationDelegationEnabled()',
+      // Actual firebase-js-sdk methods
+      getToken: 'getToken()',
+      deleteToken: 'deleteToken()',
+      onMessage: 'onMessage()',
+      isSupported: 'isSupported()',
+      setDeliveryMetricsExportToBigQuery:
+        'experimentalSetDeliveryMetricsExportedToBigQueryEnabled()',
+    },
+    statics: {
+      AuthorizationStatus: 'AuthorizationStatus',
+      NotificationAndroidPriority: 'NotificationAndroidPriority',
+      NotificationAndroidVisibility: 'NotificationAndroidVisibility',
+    },
+  },
   remoteConfig: {
     default: {
       activate: 'activate()',
@@ -553,9 +594,41 @@ export function createDeprecationProxy(instance) {
           deprecationConsoleWarning('auth', prop, 'statics', false);
         }
 
+        if (
+          prop === 'AuthorizationStatus' ||
+          prop === 'NotificationAndroidPriority' ||
+          prop === 'NotificationAndroidVisibility'
+        ) {
+          deprecationConsoleWarning('messaging', prop, 'statics', false);
+        }
+
         if (prop !== 'setLogLevel') {
           // we want to capture setLogLevel function call which we do below
           return Reflect.get(target, prop, receiver);
+        }
+      }
+
+      // Check if it's a getter/setter first
+      const descriptor =
+        Object.getOwnPropertyDescriptor(target, prop) ||
+        Object.getOwnPropertyDescriptor(Object.getPrototypeOf(target), prop);
+
+      if (descriptor && (descriptor.get || descriptor.set)) {
+        const instanceName = getInstanceName(target);
+        const nameSpace = getNamespace(target);
+
+        if (descriptor.get) {
+          // Handle getter - call it and show deprecation warning
+          deprecationConsoleWarning(nameSpace, prop, instanceName, _isModularCall);
+          return descriptor.get.call(target);
+        }
+
+        if (descriptor.set) {
+          // Handle setter - return a function that calls the setter with deprecation warning
+          return function (value) {
+            deprecationConsoleWarning(nameSpace, prop, instanceName, _isModularCall);
+            descriptor.set.call(target, value);
+          };
         }
       }
 
@@ -576,6 +649,19 @@ export function createDeprecationProxy(instance) {
 }
 
 export const MODULAR_DEPRECATION_ARG = 'react-native-firebase-modular-method-call';
+
+// Flag to track if we're currently in a modular call
+let _isModularCall = false;
+
+export function withModularFlag(fn) {
+  const previousFlag = _isModularCall;
+  _isModularCall = true;
+  try {
+    return fn();
+  } finally {
+    _isModularCall = previousFlag;
+  }
+}
 
 export function filterModularArgument(list) {
   return list.filter(arg => arg !== MODULAR_DEPRECATION_ARG);
