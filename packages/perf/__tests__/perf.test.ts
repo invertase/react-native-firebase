@@ -197,19 +197,6 @@ describe('Performance Monitoring', function () {
       });
     });
 
-    it('initializePerformance()', function () {
-      const settings = {
-        dataCollectionEnabled: true,
-      };
-      const app = getApp();
-      const perf = getPerformance();
-      perfV9Deprecation(
-        () => initializePerformance(app, settings),
-        () => perf.setPerformanceCollectionEnabled(settings.dataCollectionEnabled),
-        'setPerformanceCollectionEnabled',
-      );
-    });
-
     it('newTrace()', function () {
       const perf = getPerformance();
       perfV9Deprecation(
