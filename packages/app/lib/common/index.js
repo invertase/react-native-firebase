@@ -107,6 +107,47 @@ export function tryJSONStringify(data) {
 const NO_REPLACEMENT = true;
 
 const mapOfDeprecationReplacements = {
+  messaging: {
+    default: {
+      isAutoInitEnabled: 'isAutoInitEnabled()',
+      isDeviceRegisteredForRemoteMessages: 'isDeviceRegisteredForRemoteMessages()',
+      isNotificationDelegationEnabled: 'isNotificationDelegationEnabled()',
+      isDeliveryMetricsExportToBigQueryEnabled: 'isDeliveryMetricsExportToBigQueryEnabled()',
+      setAutoInitEnabled: 'setAutoInitEnabled()',
+      getInitialNotification: 'getInitialNotification()',
+      getDidOpenSettingsForNotification: 'getDidOpenSettingsForNotification()',
+      getIsHeadless: 'getIsHeadless()',
+      onNotificationOpenedApp: 'onNotificationOpenedApp()',
+      onTokenRefresh: 'onTokenRefresh()',
+      requestPermission: 'requestPermission()',
+      registerDeviceForRemoteMessages: 'registerDeviceForRemoteMessages()',
+      unregisterDeviceForRemoteMessages: 'unregisterDeviceForRemoteMessages()',
+      getAPNSToken: 'getAPNSToken()',
+      setAPNSToken: 'setAPNSToken()',
+      hasPermission: 'hasPermission()',
+      onDeletedMessages: 'onDeletedMessages()',
+      onMessageSent: 'onMessageSent()',
+      onSendError: 'onSendError()',
+      setBackgroundMessageHandler: 'setBackgroundMessageHandler()',
+      setOpenSettingsForNotificationsHandler: 'setOpenSettingsForNotificationsHandler()',
+      sendMessage: 'sendMessage()',
+      subscribeToTopic: 'subscribeToTopic()',
+      unsubscribeFromTopic: 'unsubscribeFromTopic()',
+      setNotificationDelegationEnabled: 'setNotificationDelegationEnabled()',
+      // Actual firebase-js-sdk methods
+      getToken: 'getToken()',
+      deleteToken: 'deleteToken()',
+      onMessage: 'onMessage()',
+      isSupported: 'isSupported()',
+      setDeliveryMetricsExportToBigQuery:
+        'experimentalSetDeliveryMetricsExportedToBigQueryEnabled()',
+    },
+    statics: {
+      AuthorizationStatus: 'AuthorizationStatus',
+      NotificationAndroidPriority: 'NotificationAndroidPriority',
+      NotificationAndroidVisibility: 'NotificationAndroidVisibility',
+    },
+  },
   appCheck: {
     default: {
       activate: 'initializeAppCheck()',
