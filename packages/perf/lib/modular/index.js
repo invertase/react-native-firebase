@@ -52,22 +52,10 @@ export async function initializePerformance(app, settings) {
   const perf = getApp(app.name).perf();
 
   if (settings && settings.dataCollectionEnabled !== undefined) {
-    if (!isBoolean(settings.dataCollectionEnabled)) {
-      throw new Error("getPerformance().dataCollectionEnabled = 'enabled' must be a boolean.");
-    }
-    perf._isPerformanceCollectionEnabled = settings.dataCollectionEnabled;
-    perf.native.setPerformanceCollectionEnabled(settings.dataCollectionEnabled);
+    perf.dataCollectionEnabled = settings.dataCollectionEnabled;
   }
   if (settings && settings.instrumentationEnabled !== undefined) {
-    if (!isBoolean(settings.instrumentationEnabled)) {
-      throw new Error("getPerformance().instrumentationEnabled = 'enabled' must be a boolean.");
-    }
-    if (Platform.OS == 'ios') {
-      // We don't change for android as it cannot be set from code, it is set at gradle build time.
-      perf._instrumentationEnabled = settings.instrumentationEnabled;
-      // No need to await, as it only takes effect on the next app run.
-      perf.native.instrumentationEnabled(settings.instrumentationEnabled);
-    }
+    perf.instrumentationEnabled = settings.instrumentationEnabled;
   }
 
   return perf;
