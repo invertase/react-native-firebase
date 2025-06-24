@@ -14,7 +14,6 @@ import {
   createCheckV9Deprecation,
   CheckV9DeprecationFunction,
 } from '../../app/lib/common/unitTestUtils';
-import { getApp } from '../../app/lib/modular';
 
 // @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';

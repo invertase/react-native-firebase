@@ -58,7 +58,6 @@ export async function initializePerformance(app, settings) {
     perf._isPerformanceCollectionEnabled = settings.dataCollectionEnabled;
     perf.native.setPerformanceCollectionEnabled(settings.dataCollectionEnabled);
   }
-  
   if (settings && settings.instrumentationEnabled !== undefined) {
     if (!isBoolean(settings.instrumentationEnabled)) {
       throw new Error("getPerformance().instrumentationEnabled = 'enabled' must be a boolean.");
