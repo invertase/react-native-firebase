@@ -23,9 +23,7 @@
  * @typedef {import('..').FirebasePerformanceTypes.HttpMetric} HttpMetric
  */
 
-import { isBoolean } from '@react-native-firebase/app/lib/common';
 import { getApp } from '@react-native-firebase/app';
-import { Platform } from 'react-native';
 
 import { MODULAR_DEPRECATION_ARG } from '../../../app/lib/common';
 
