@@ -1,6 +1,6 @@
-import { describe, expect, it } from '@jest/globals';
+import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 
-import {
+import messaging, {
   getMessaging,
   deleteToken,
   getToken,
@@ -35,7 +35,15 @@ import {
   NotificationAndroidVisibility,
 } from '../lib';
 
-describe('Firestore', function () {
+import {
+  createCheckV9Deprecation,
+  CheckV9DeprecationFunction,
+} from '../../app/lib/common/unitTestUtils';
+
+// @ts-ignore test
+import FirebaseModule from '../../app/lib/internal/FirebaseModule';
+
+describe('Messaging', function () {
   describe('modular', function () {
     it('`getMessaging` function is properly exposed to end user', function () {
       expect(getMessaging).toBeDefined();
@@ -173,6 +181,219 @@ describe('Firestore', function () {
       expect(NotificationAndroidVisibility.VISIBILITY_PRIVATE).toBeDefined();
       expect(NotificationAndroidVisibility.VISIBILITY_PUBLIC).toBeDefined();
       expect(NotificationAndroidVisibility.VISIBILITY_SECRET).toBeDefined();
+    });
+  });
+
+  describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
+    let messagingV9Deprecation: CheckV9DeprecationFunction;
+    let staticsV9Deprecation: CheckV9DeprecationFunction;
+
+    beforeEach(function () {
+      messagingV9Deprecation = createCheckV9Deprecation(['messaging']);
+      staticsV9Deprecation = createCheckV9Deprecation(['messaging', 'statics']);
+
+      // @ts-ignore test
+      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
+        return new Proxy(
+          {},
+          {
+            get: () =>
+              jest.fn().mockResolvedValue({
+                result: true,
+              } as never),
+          },
+        );
+      });
+    });
+
+    describe('Messaging', function () {
+      it('isAutoInitEnabled', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => isAutoInitEnabled(messaging),
+          () => messaging.isAutoInitEnabled,
+          'isAutoInitEnabled',
+        );
+      });
+
+      it('isDeviceRegisteredForRemoteMessages', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => isDeviceRegisteredForRemoteMessages(messaging),
+          () => messaging.isDeviceRegisteredForRemoteMessages,
+          'isDeviceRegisteredForRemoteMessages',
+        );
+      });
+
+      it('setAutoInitEnabled', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => setAutoInitEnabled(messaging, true),
+          () => messaging.setAutoInitEnabled(true),
+          'setAutoInitEnabled',
+        );
+      });
+
+      it('getInitialNotification', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => getInitialNotification(messaging),
+          () => messaging.getInitialNotification(),
+          'getInitialNotification',
+        );
+      });
+
+      it('getDidOpenSettingsForNotification', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => getDidOpenSettingsForNotification(messaging),
+          () => messaging.getDidOpenSettingsForNotification(),
+          'getDidOpenSettingsForNotification',
+        );
+      });
+
+      it('getIsHeadless', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => getIsHeadless(messaging),
+          () => messaging.getIsHeadless(),
+          'getIsHeadless',
+        );
+      });
+
+      it('requestPermission', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => requestPermission(messaging),
+          () => messaging.requestPermission(),
+          'requestPermission',
+        );
+      });
+
+      it('registerDeviceForRemoteMessages', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => registerDeviceForRemoteMessages(messaging),
+          () => messaging.registerDeviceForRemoteMessages(),
+          'registerDeviceForRemoteMessages',
+        );
+      });
+
+      it('unregisterDeviceForRemoteMessages', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => unregisterDeviceForRemoteMessages(messaging),
+          () => messaging.unregisterDeviceForRemoteMessages(),
+          'unregisterDeviceForRemoteMessages',
+        );
+      });
+
+      it('getAPNSToken', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => getAPNSToken(messaging),
+          () => messaging.getAPNSToken(),
+          'getAPNSToken',
+        );
+      });
+
+      it('setAPNSToken', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => setAPNSToken(messaging, 'token'),
+          () => messaging.setAPNSToken('token'),
+          'setAPNSToken',
+        );
+      });
+
+      it('hasPermission', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => hasPermission(messaging),
+          () => messaging.hasPermission(),
+          'hasPermission',
+        );
+      });
+
+      it('subscribeToTopic', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => subscribeToTopic(messaging, 'topic'),
+          () => messaging.subscribeToTopic('topic'),
+          'subscribeToTopic',
+        );
+      });
+
+      it('unsubscribeFromTopic', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => unsubscribeFromTopic(messaging, 'topic'),
+          () => messaging.unsubscribeFromTopic('topic'),
+          'unsubscribeFromTopic',
+        );
+      });
+
+      it('getToken', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => getToken(messaging),
+          () => messaging.getToken(),
+          'getToken',
+        );
+      });
+
+      it('deleteToken', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => deleteToken(messaging),
+          () => messaging.deleteToken(),
+          'deleteToken',
+        );
+      });
+
+      it('isSupported', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => isSupported(messaging),
+          () => messaging.isSupported(),
+          'isSupported',
+        );
+      });
+
+      it('experimentalSetDeliveryMetricsExportedToBigQueryEnabled', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => experimentalSetDeliveryMetricsExportedToBigQueryEnabled(messaging, true),
+          () => messaging.setDeliveryMetricsExportToBigQuery(true),
+          'setDeliveryMetricsExportToBigQuery',
+        );
+      });
+
+      describe('statics', function () {
+        it('AuthorizationStatus', function () {
+          staticsV9Deprecation(
+            () => AuthorizationStatus,
+            () => messaging.AuthorizationStatus,
+            'AuthorizationStatus',
+          );
+        });
+
+        it('NotificationAndroidPriority', function () {
+          staticsV9Deprecation(
+            () => NotificationAndroidPriority,
+            () => messaging.NotificationAndroidPriority,
+            'NotificationAndroidPriority',
+          );
+        });
+
+        it('NotificationAndroidVisibility', function () {
+          staticsV9Deprecation(
+            () => NotificationAndroidVisibility,
+            () => messaging.NotificationAndroidVisibility,
+            'NotificationAndroidVisibility',
+          );
+        });
+      });
     });
   });
 });
