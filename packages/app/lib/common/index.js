@@ -211,6 +211,32 @@ const mapOfDeprecationReplacements = {
       nanoseconds: NO_REPLACEMENT,
     },
   },
+  database: {
+    default: {
+      useEmulator: 'connectDatabaseEmulator()',
+      goOffline: 'goOffline()',
+      goOnline: 'goOnline()',
+      ref: 'ref()',
+      refFromURL: 'refFromURL()',
+      setPersistenceEnabled: 'setPersistenceEnabled()',
+      setLoggingEnabled: 'setLoggingEnabled()',
+      setPersistenceCacheSizeBytes: 'setPersistenceCacheSizeBytes()',
+      getServerTime: 'getServerTime()',
+    },
+    statics: {
+      ServerValue: 'ServerValue',
+    },
+    DatabaseTransaction: {
+      runTransaction: 'runTransaction()',
+    },
+    DatabaseQuery: {
+      ref: 'ref()',
+      transaction: 'runTransaction()',
+    },
+    DatabaseReference: {
+      transaction: 'runTransaction()',
+    },
+  },
 };
 
 const modularDeprecationMessage =
@@ -274,6 +300,15 @@ function getNamespace(target) {
   if (target._config && target._config.namespace) {
     return target._config.namespace;
   }
+  if (target.constructor.name === 'DatabaseQuery') {
+    return 'database';
+  }
+  if (target.constructor.name === 'DatabaseReference') {
+    return 'database';
+  }
+  if (target.constructor.name === 'DatabaseTransaction') {
+    return 'database';
+  }
   const className = target.name ? target.name : target.constructor.name;
   return Object.keys(mapOfDeprecationReplacements).find(key => {
     if (mapOfDeprecationReplacements[key][className]) {
@@ -285,6 +320,9 @@ function getNamespace(target) {
 function getInstanceName(target) {
   if (target.GeoPoint || target.CustomProvider) {
     // target is statics object. GeoPoint - Firestore, CustomProvider - AppCheck
+    return 'statics';
+  }
+  if (target.ServerValue) {
     return 'statics';
   }
   if (target._config) {
@@ -332,10 +370,21 @@ export function createDeprecationProxy(instance) {
         if (prop === 'CustomProvider') {
           deprecationConsoleWarning('appCheck', prop, 'statics', false);
         }
+        if (prop === 'ServerValue') {
+          deprecationConsoleWarning('database', prop, 'statics', false);
+        }
 
         if (prop !== 'setLogLevel') {
           // we want to capture setLogLevel function call which we do below
           return Reflect.get(target, prop, receiver);
+        }
+
+        if (target.constructor.name === 'DatabaseQuery') {
+          return target.constructor.name;
+        }
+
+        if (target.constructor.name === 'DatabaseTransaction') {
+          return target.constructor.name;
         }
       }
 
