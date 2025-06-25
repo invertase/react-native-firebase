@@ -406,7 +406,7 @@ export function createDeprecationProxy(instance) {
         if (descriptor.set) {
           // Handle setter - return a function that calls the setter with deprecation warning
           return function (value) {
-            deprecationConsoleWarning(nameSpace, prop, instanceName, false);
+            deprecationConsoleWarning(nameSpace, prop, instanceName, _isModularCall);
             descriptor.set.call(target, value);
           };
         }
