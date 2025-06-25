@@ -98,11 +98,7 @@ describe('installations()', function () {
           {
             get: () =>
               jest.fn().mockResolvedValue({
-                result: true,
-                constants: {
-                  isPerformanceCollectionEnabled: true,
-                  isInstrumentationEnabled: true,
-                },
+                constants: {},
               } as never),
           },
         );
