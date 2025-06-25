@@ -100,10 +100,10 @@ describe('database.X', function () {
       });
 
       it('populates the property with a Unix timestamp', async function () {
-        const { serverTimestamp, getDatabase, ref, set } = databaseModular;
+        const { serverTimestamp, getDatabase, ref, set, get } = databaseModular;
         const dbRef = ref(getDatabase(), `${TEST_PATH}/timestamp`);
         await set(dbRef, serverTimestamp());
-        const snapshot = await dbRef.once('value');
+        const snapshot = await get(dbRef, 'value');
         snapshot.val().should.be.a.Number();
       });
     });

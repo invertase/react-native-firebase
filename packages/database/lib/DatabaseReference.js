@@ -28,6 +28,7 @@ import {
   pathChild,
   pathParent,
   promiseWithOptionalCallback,
+  createDeprecationProxy,
 } from '@react-native-firebase/app/lib/common';
 import DatabaseDataSnapshot from './DatabaseDataSnapshot';
 import DatabaseOnDisconnect from './DatabaseOnDisconnect';
@@ -210,7 +211,11 @@ export default class DatabaseReference extends DatabaseQuery {
           if (error) {
             onComplete(error, committed, null);
           } else {
-            onComplete(null, committed, new DatabaseDataSnapshot(this, snapshotData));
+            onComplete(
+              null,
+              committed,
+              createDeprecationProxy(new DatabaseDataSnapshot(this, snapshotData)),
+            );
           }
         }
 
@@ -219,7 +224,7 @@ export default class DatabaseReference extends DatabaseQuery {
         }
         return resolve({
           committed,
-          snapshot: new DatabaseDataSnapshot(this, snapshotData),
+          snapshot: createDeprecationProxy(new DatabaseDataSnapshot(this, snapshotData)),
         });
       };
 
