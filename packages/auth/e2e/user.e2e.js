@@ -1019,7 +1019,8 @@ describe('auth().currentUser', function () {
     describe('linkWithCredential()', function () {
       // hanging against auth emulator?
       it('should link anonymous account <-> email account', async function () {
-        const { getAuth, signInAnonymously, deleteUser, linkWithCredential } = authModular;
+        const { getAuth, signInAnonymously, deleteUser, linkWithCredential, EmailAuthProvider } =
+          authModular;
         const auth = getAuth();
 
         const random = Utils.randString(12, '#aA');
@@ -1030,7 +1031,7 @@ describe('auth().currentUser', function () {
         const { currentUser } = auth;
 
         // Test
-        const credential = firebase.auth.EmailAuthProvider.credential(email, pass);
+        const credential = EmailAuthProvider.credential(email, pass);
 
         const linkedUserCredential = await linkWithCredential(currentUser, credential);
 
@@ -1049,7 +1050,8 @@ describe('auth().currentUser', function () {
       });
 
       it('should error on link anon <-> email if email already exists', async function () {
-        const { getAuth, signInAnonymously, deleteUser, linkWithCredential } = authModular;
+        const { getAuth, signInAnonymously, deleteUser, linkWithCredential, EmailAuthProvider } =
+          authModular;
         const auth = getAuth();
 
         await signInAnonymously(auth);
@@ -1057,7 +1059,7 @@ describe('auth().currentUser', function () {
 
         // Test
         try {
-          const credential = firebase.auth.EmailAuthProvider.credential(TEST_EMAIL, TEST_PASS);
+          const credential = EmailAuthProvider.credential(TEST_EMAIL, TEST_PASS);
           await linkWithCredential(currentUser, credential);
 
           // Clean up
@@ -1084,6 +1086,7 @@ describe('auth().currentUser', function () {
           createUserWithEmailAndPassword,
           deleteUser,
           reauthenticateWithCredential,
+          EmailAuthProvider,
         } = authModular;
         const auth = getAuth();
 
@@ -1094,7 +1097,7 @@ describe('auth().currentUser', function () {
         await createUserWithEmailAndPassword(auth, email, pass);
 
         // Test
-        const credential = firebase.auth.EmailAuthProvider.credential(email, pass);
+        const credential = EmailAuthProvider.credential(email, pass);
 
         await reauthenticateWithCredential(auth.currentUser, credential);
 
@@ -1713,7 +1716,14 @@ describe('auth().currentUser', function () {
 
     describe('unlink()', function () {
       it('should unlink the email address', async function () {
-        const { getAuth, signInAnonymously, linkWithCredential, unlink, deleteUser } = authModular;
+        const {
+          getAuth,
+          signInAnonymously,
+          linkWithCredential,
+          unlink,
+          deleteUser,
+          EmailAuthProvider,
+        } = authModular;
         const auth = getAuth();
 
         const random = Utils.randString(12, '#aA');
@@ -1722,11 +1732,11 @@ describe('auth().currentUser', function () {
 
         await signInAnonymously(auth);
 
-        const credential = firebase.auth.EmailAuthProvider.credential(email, pass);
+        const credential = EmailAuthProvider.credential(email, pass);
         await linkWithCredential(auth.currentUser, credential);
 
         // Test
-        await unlink(auth.currentUser, firebase.auth.EmailAuthProvider.PROVIDER_ID);
+        await unlink(auth.currentUser, EmailAuthProvider.PROVIDER_ID);
 
         // Assertions
         const unlinkedUser = auth.currentUser;
@@ -1769,8 +1779,13 @@ describe('auth().currentUser', function () {
       }
 
       it('should update the phone number', async function () {
-        const { getAuth, signInWithPhoneNumber, updatePhoneNumber, verifyPhoneNumber } =
-          authModular;
+        const {
+          getAuth,
+          signInWithPhoneNumber,
+          updatePhoneNumber,
+          verifyPhoneNumber,
+          PhoneAuthProvider,
+        } = authModular;
         const auth = getAuth();
 
         const testPhone = await getRandomPhoneNumber();
@@ -1793,10 +1808,7 @@ describe('auth().currentUser', function () {
 
         try {
           const newSmsCode = await getLastSmsCode(newPhone);
-          const credential = firebase.auth.PhoneAuthProvider.credential(
-            newPhoneVerificationId,
-            newSmsCode,
-          );
+          const credential = PhoneAuthProvider.credential(newPhoneVerificationId, newSmsCode);
 
           // Update with number?
           await updatePhoneNumber(auth.currentUser, credential);

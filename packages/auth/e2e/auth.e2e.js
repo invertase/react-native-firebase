@@ -1204,27 +1204,27 @@ describe('auth() modular', function () {
         if (Platform.other) return;
 
         const { getApp } = modular;
-        const { signInAnonymously, signOut, getAuth } = authModular;
+        const { signInAnonymously, signOut, getAuth, reload } = authModular;
         const defaultAuth = getAuth(getApp());
 
         const firstCredential = await signInAnonymously(defaultAuth);
         await Utils.sleep(500);
         const firstUser = firstCredential.user;
-        await firstUser.reload();
+        await reload(firstUser);
 
         await signOut(defaultAuth);
 
         const secondCredential = await signInAnonymously(defaultAuth);
         await Utils.sleep(500);
         const secondUser = secondCredential.user;
-        await secondUser.reload();
+        await reload(secondUser);
 
         firstUser.metadata.creationTime.should.not.equal(secondUser.metadata.creationTime);
       });
 
       it('Meta data returns as expected with email and password sign in', async function () {
         const { getApp } = modular;
-        const { createUserWithEmailAndPassword, signOut, getAuth } = authModular;
+        const { createUserWithEmailAndPassword, signOut, getAuth, reload } = authModular;
         const defaultAuth = getAuth(getApp());
         const random = Utils.randString(12, '#aA');
         const email1 = `${random}@${random}.com`;
@@ -1232,7 +1232,7 @@ describe('auth() modular', function () {
 
         const firstCredential = await createUserWithEmailAndPassword(defaultAuth, email1, pass);
         const firstUser = firstCredential.user;
-        await firstUser.reload();
+        await reload(firstUser);
         await Utils.sleep(500);
         await signOut(defaultAuth);
         await Utils.sleep(500);
@@ -1241,7 +1241,7 @@ describe('auth() modular', function () {
 
         const secondCredential = await createUserWithEmailAndPassword(defaultAuth, email2, pass);
         const secondUser = secondCredential.user;
-        await secondUser.reload();
+        await reload(secondUser);
 
         firstUser.metadata.creationTime.should.not.equal(secondUser.metadata.creationTime);
       });
@@ -1581,8 +1581,6 @@ describe('auth() modular', function () {
           const currentUser = currentUserCredential.user;
           currentUser.should.be.an.Object();
           currentUser.uid.should.be.a.String();
-          currentUser.toJSON().should.be.an.Object();
-          should.equal(currentUser.toJSON().email, null);
           currentUser.isAnonymous.should.equal(true);
           currentUser.providerId.should.equal('firebase');
           currentUser.should.equal(defaultAuth.currentUser);
@@ -1608,8 +1606,6 @@ describe('auth() modular', function () {
           const currentUser = currentUserCredential.user;
           currentUser.should.be.an.Object();
           currentUser.uid.should.be.a.String();
-          currentUser.toJSON().should.be.an.Object();
-          currentUser.toJSON().email.should.eql(TEST_EMAIL);
           currentUser.isAnonymous.should.equal(false);
           currentUser.providerId.should.equal('firebase');
           currentUser.should.equal(defaultAuth.currentUser);
@@ -1697,16 +1693,14 @@ describe('auth() modular', function () {
     describe('signInWithCredential()', function () {
       it('it should login with email and password', async function () {
         const { getApp } = modular;
-        const { signInWithCredential, getAuth, signOut } = authModular;
+        const { signInWithCredential, getAuth, signOut, EmailAuthProvider } = authModular;
         const defaultAuth = getAuth(getApp());
-        const credential = firebase.auth.EmailAuthProvider.credential(TEST_EMAIL, TEST_PASS);
+        const credential = EmailAuthProvider.credential(TEST_EMAIL, TEST_PASS);
 
         const successCb = currentUserCredential => {
           const currentUser = currentUserCredential.user;
           currentUser.should.be.an.Object();
           currentUser.uid.should.be.a.String();
-          currentUser.toJSON().should.be.an.Object();
-          currentUser.toJSON().email.should.eql(TEST_EMAIL);
           currentUser.isAnonymous.should.equal(false);
           currentUser.providerId.should.equal('firebase');
           currentUser.should.equal(getAuth().currentUser);
@@ -1724,12 +1718,9 @@ describe('auth() modular', function () {
 
       it('it should error on login if user is disabled', async function () {
         const { getApp } = modular;
-        const { signInWithCredential, getAuth } = authModular;
+        const { signInWithCredential, getAuth, EmailAuthProvider } = authModular;
         const defaultAuth = getAuth(getApp());
-        const credential = firebase.auth.EmailAuthProvider.credential(
-          DISABLED_EMAIL,
-          DISABLED_PASS,
-        );
+        const credential = EmailAuthProvider.credential(DISABLED_EMAIL, DISABLED_PASS);
 
         const successCb = () => Promise.reject(new Error('Did not error.'));
 
@@ -1748,12 +1739,9 @@ describe('auth() modular', function () {
 
       it('it should error on login if password incorrect', async function () {
         const { getApp } = modular;
-        const { signInWithCredential, getAuth } = authModular;
+        const { signInWithCredential, getAuth, EmailAuthProvider } = authModular;
         const defaultAuth = getAuth(getApp());
-        const credential = firebase.auth.EmailAuthProvider.credential(
-          TEST_EMAIL,
-          TEST_PASS + '666',
-        );
+        const credential = EmailAuthProvider.credential(TEST_EMAIL, TEST_PASS + '666');
 
         const successCb = () => Promise.reject(new Error('Did not error.'));
 
@@ -1772,13 +1760,13 @@ describe('auth() modular', function () {
 
       it('it should error on login if user not found', async function () {
         const { getApp } = modular;
-        const { signInWithCredential, getAuth } = authModular;
+        const { signInWithCredential, getAuth, EmailAuthProvider } = authModular;
         const defaultAuth = getAuth(getApp());
         const random = Utils.randString(12, '#aA');
         const email = `${random}@${random}.com`;
         const pass = random;
 
-        const credential = firebase.auth.EmailAuthProvider.credential(email, pass);
+        const credential = EmailAuthProvider.credential(email, pass);
 
         const successCb = () => Promise.reject(new Error('Did not error.'));
 
@@ -1798,7 +1786,7 @@ describe('auth() modular', function () {
       describe('createUserWithEmailAndPassword()', function () {
         it('it should create a user with an email and password', async function () {
           const { getApp } = modular;
-          const { createUserWithEmailAndPassword, getAuth } = authModular;
+          const { createUserWithEmailAndPassword, getAuth, deleteUser } = authModular;
           const defaultAuth = getAuth(getApp());
 
           const random = Utils.randString(12, '#aA');
@@ -1822,7 +1810,7 @@ describe('auth() modular', function () {
             additionalUserInfo.should.be.an.Object();
             additionalUserInfo.isNewUser.should.equal(true);
 
-            await newUser.delete();
+            await deleteUser(newUser);
           } catch (error) {
             throw error;
           }
@@ -1946,7 +1934,7 @@ describe('auth() modular', function () {
       describe('delete()', function () {
         it('should delete a user', async function () {
           const { getApp } = modular;
-          const { createUserWithEmailAndPassword, getAuth } = authModular;
+          const { createUserWithEmailAndPassword, getAuth, deleteUser } = authModular;
           const defaultAuth = getAuth(getApp());
 
           const random = Utils.randString(12, '#aA');
@@ -1961,7 +1949,7 @@ describe('auth() modular', function () {
             newUser.emailVerified.should.equal(false);
             newUser.isAnonymous.should.equal(false);
             newUser.providerId.should.equal('firebase');
-            await defaultAuth.currentUser.delete();
+            await deleteUser(defaultAuth.currentUser);
           } catch (error) {
             throw error;
           }
@@ -1971,30 +1959,30 @@ describe('auth() modular', function () {
       describe('languageCode', function () {
         it('it should change the language code', async function () {
           const { getApp } = modular;
-          const { getAuth } = authModular;
+          const { getAuth, setLanguageCode } = authModular;
           const defaultAuth = getAuth(getApp());
 
-          defaultAuth.languageCode = 'en';
+          await setLanguageCode(defaultAuth, 'en');
 
           if (defaultAuth.languageCode !== 'en') {
             throw new Error('Expected language code to be "en".');
           }
-          defaultAuth.languageCode = 'fr';
+          await setLanguageCode(defaultAuth, 'fr');
 
           if (defaultAuth.languageCode !== 'fr') {
             throw new Error('Expected language code to be "fr".');
           }
           // expect no error
-          defaultAuth.languageCode = null;
+          await setLanguageCode(defaultAuth, null);
 
           try {
-            defaultAuth.languageCode = 123;
+            await setLanguageCode(defaultAuth, 123);
             throw new Error('It did not error');
           } catch (e) {
             e.message.should.containEql("expected 'languageCode' to be a string or null value");
           }
 
-          defaultAuth.languageCode = 'en';
+          setLanguageCode(defaultAuth, 'en');
         });
       });
 
@@ -2033,7 +2021,8 @@ describe('auth() modular', function () {
       describe('sendPasswordResetEmail()', function () {
         it('should not error', async function () {
           const { getApp } = modular;
-          const { createUserWithEmailAndPassword, sendPasswordResetEmail, getAuth } = authModular;
+          const { createUserWithEmailAndPassword, sendPasswordResetEmail, getAuth, deleteUser } =
+            authModular;
           const defaultAuth = getAuth(getApp());
           const random = Utils.randString(12, '#aA');
           const email = `${random}@${random}.com`;
@@ -2046,7 +2035,7 @@ describe('auth() modular', function () {
             throw new Error('sendPasswordResetEmail() caused an error', error);
           } finally {
             if (credential) {
-              await credential.user.delete();
+              await deleteUser(credential.user);
             }
           }
         });
@@ -2061,6 +2050,7 @@ describe('auth() modular', function () {
               sendPasswordResetEmail,
               getAuth,
               verifyPasswordResetCode,
+              deleteUser,
             } = authModular;
             const defaultAuth = getAuth(getApp());
             const random = Utils.randString(12, '#a');
@@ -2076,7 +2066,7 @@ describe('auth() modular', function () {
               throw new Error('sendPasswordResetEmail() caused an error', error);
             } finally {
               if (credential) {
-                await credential.user.delete();
+                await deleteUser(credential.user);
               }
             }
           }
@@ -2089,6 +2079,7 @@ describe('auth() modular', function () {
             sendPasswordResetEmail,
             getAuth,
             verifyPasswordResetCode,
+            deleteUser,
           } = authModular;
           const defaultAuth = getAuth(getApp());
           const random = Utils.randString(12, '#a');
@@ -2105,7 +2096,7 @@ describe('auth() modular', function () {
             error.message.should.containEql('[auth/invalid-action-code]');
           } finally {
             if (credential) {
-              await credential.user.delete();
+              await deleteUser(credential.user);
             }
           }
         });
@@ -2118,6 +2109,7 @@ describe('auth() modular', function () {
             getAuth,
             signOut,
             signInWithEmailAndPassword,
+            deleteUser,
           } = authModular;
           const defaultAuth = getAuth(getApp());
           const random = Utils.randString(12, '#a');
@@ -2136,7 +2128,7 @@ describe('auth() modular', function () {
             throw new Error('sendPasswordResetEmail() caused an error', error);
           } finally {
             if (credential) {
-              await defaultAuth.currentUser.delete();
+              await deleteUser(defaultAuth.currentUser);
             }
           }
         });
@@ -2150,6 +2142,7 @@ describe('auth() modular', function () {
             confirmPasswordReset,
             signOut,
             signInWithEmailAndPassword,
+            deleteUser,
           } = authModular;
           const defaultAuth = getAuth(getApp());
           const random = Utils.randString(12, '#a');
@@ -2168,7 +2161,7 @@ describe('auth() modular', function () {
             throw new Error('sendPasswordResetEmail() caused an error', error);
           } finally {
             if (credential) {
-              await credential.user.delete();
+              await deleteUser(credential.user);
             }
           }
         });

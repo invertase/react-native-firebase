@@ -405,6 +405,21 @@ export function updateCurrentUser(auth: Auth, user: FirebaseAuthTypes.User | nul
 export function useDeviceLanguage(auth: Auth): void;
 
 /**
+ * Sets the language code.
+ *
+ * #### Example
+ *
+ * ```js
+ * // Set language to French
+ * await firebase.auth().setLanguageCode('fr');
+ * ```
+ * @param auth - The Auth instance.
+ * @param languageCode An ISO language code.
+ * 'null' value will set the language code to the app's current language.
+ */
+export function setLanguageCode(auth: Auth, languageCode: string | null): Promise<void>;
+
+/**
  * Validates the password against the password policy configured for the project or tenant.
  *
  * @param auth - The Auth instance.
@@ -781,4 +796,5 @@ export {
   PhoneAuthProvider,
   PhoneMultiFactorGenerator,
   TwitterAuthProvider,
+  PhoneAuthState,
 } from '../index';
