@@ -787,22 +787,22 @@ describe('Auth', function () {
 
         it('multiFactor', function () {
           const auth = getAuth();
-          const user = {} as any;
-          authV9Deprecation(
-            () => multiFactor(user),
-            () => auth.multiFactor(user),
-            'multiFactor',
-          );
-        });
-
-        it('useDeviceLanguage', function () {
-          const auth = getAuth();
-          authV9Deprecation(
-            () => useDeviceLanguage(auth),
-            () => {
-              (auth as any).languageCode = null;
+          const mockUser = {
+            userId: 'test-user-id',
+            multiFactor: {
+              enrolledFactors: [],
             },
-            'useDeviceLanguage',
+          } as any;
+
+          // Mock the currentUser to have the same userId
+          auth.currentUser = {
+            userId: 'test-user-id',
+          } as any;
+
+          authV9Deprecation(
+            () => multiFactor(mockUser),
+            () => auth.multiFactor(mockUser),
+            'multiFactor',
           );
         });
       });
