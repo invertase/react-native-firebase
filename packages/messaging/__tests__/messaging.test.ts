@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 
-import {
+import messaging, {
   getMessaging,
   deleteToken,
   getToken,
@@ -186,9 +186,11 @@ describe('Messaging', function () {
 
   describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
     let messagingV9Deprecation: CheckV9DeprecationFunction;
+    let staticsV9Deprecation: CheckV9DeprecationFunction;
 
     beforeEach(function () {
       messagingV9Deprecation = createCheckV9Deprecation(['messaging']);
+      staticsV9Deprecation = createCheckV9Deprecation(['messaging', 'statics']);
 
       // @ts-ignore test
       jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
@@ -365,6 +367,32 @@ describe('Messaging', function () {
           () => messaging.setDeliveryMetricsExportToBigQuery(true),
           'setDeliveryMetricsExportToBigQuery',
         );
+      });
+
+      describe('statics', function () {
+        it('AuthorizationStatus', function () {
+          staticsV9Deprecation(
+            () => AuthorizationStatus,
+            () => messaging.AuthorizationStatus,
+            'AuthorizationStatus',
+          );
+        });
+
+        it('NotificationAndroidPriority', function () {
+          staticsV9Deprecation(
+            () => NotificationAndroidPriority,
+            () => messaging.NotificationAndroidPriority,
+            'NotificationAndroidPriority',
+          );
+        });
+
+        it('NotificationAndroidVisibility', function () {
+          staticsV9Deprecation(
+            () => NotificationAndroidVisibility,
+            () => messaging.NotificationAndroidVisibility,
+            'NotificationAndroidVisibility',
+          );
+        });
       });
     });
   });

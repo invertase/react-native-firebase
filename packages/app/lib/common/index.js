@@ -374,6 +374,14 @@ export function createDeprecationProxy(instance) {
           deprecationConsoleWarning('appCheck', prop, 'statics', false);
         }
 
+        if (
+          prop === 'AuthorizationStatus' ||
+          prop === 'NotificationAndroidPriority' ||
+          prop === 'NotificationAndroidVisibility'
+        ) {
+          deprecationConsoleWarning('messaging', prop, 'statics', false);
+        }
+
         if (prop !== 'setLogLevel') {
           // we want to capture setLogLevel function call which we do below
           return Reflect.get(target, prop, receiver);
