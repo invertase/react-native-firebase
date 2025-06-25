@@ -364,6 +364,15 @@ export function useDeviceLanguage(auth) {
 }
 
 /**
+ * Sets the language code.
+ * @param {Auth} auth - The Auth instance.
+ * @param {string} languageCode - The language code.
+ */
+export function setLanguageCode(auth, languageCode) {
+  auth.setLanguageCode.call(auth, languageCode, MODULAR_DEPRECATION_ARG);
+}
+
+/**
  * Sets the current language to the default device/browser preference.
  * @param {Auth} auth - The Auth instance.
  * @param {string} userAccessGroup - The user access group.
