@@ -20,6 +20,7 @@ import { fetchPasswordPolicy } from '../password-policy/passwordPolicyApi';
 import { PasswordPolicyImpl } from '../password-policy/PasswordPolicyImpl';
 import FacebookAuthProvider from '../providers/FacebookAuthProvider';
 import { MultiFactorUser } from '../multiFactor';
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 export { FacebookAuthProvider };
 
 /**
@@ -77,7 +78,7 @@ export function initializeAuth(app, deps) {
  * @returns {Promise<void>}
  */
 export async function applyActionCode(auth, oobCode) {
-  return auth.applyActionCode(oobCode);
+  return auth.applyActionCode.call(auth, oobCode, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -97,7 +98,7 @@ export function beforeAuthStateChanged(auth, callback, onAbort) {
  * @returns {Promise<ActionCodeInfo>}
  */
 export async function checkActionCode(auth, oobCode) {
-  return auth.checkActionCode(oobCode);
+  return auth.checkActionCode.call(auth, oobCode, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -108,7 +109,7 @@ export async function checkActionCode(auth, oobCode) {
  * @returns {Promise<void>}
  */
 export async function confirmPasswordReset(auth, oobCode, newPassword) {
-  return auth.confirmPasswordReset(oobCode, newPassword);
+  return auth.confirmPasswordReset.call(auth, oobCode, newPassword, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -129,7 +130,7 @@ export function connectAuthEmulator(auth, url, options) {
  * @returns {Promise<UserCredential>}
  */
 export async function createUserWithEmailAndPassword(auth, email, password) {
-  return auth.createUserWithEmailAndPassword(email, password);
+  return auth.createUserWithEmailAndPassword.call(auth, email, password, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -139,7 +140,7 @@ export async function createUserWithEmailAndPassword(auth, email, password) {
  * @returns {Promise<string[]>}
  */
 export async function fetchSignInMethodsForEmail(auth, email) {
-  return auth.fetchSignInMethodsForEmail(email);
+  return auth.fetchSignInMethodsForEmail.call(auth, email, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -149,7 +150,7 @@ export async function fetchSignInMethodsForEmail(auth, email) {
  * @returns {MultiFactorResolver}
  */
 export function getMultiFactorResolver(auth, error) {
-  return auth.getMultiFactorResolver(error);
+  return auth.getMultiFactorResolver.call(auth, error, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -169,7 +170,7 @@ export async function getRedirectResult(auth, resolver) {
  * @returns {Promise<boolean>}
  */
 export function isSignInWithEmailLink(auth, emailLink) {
-  return auth.isSignInWithEmailLink(emailLink);
+  return auth.isSignInWithEmailLink.call(auth, emailLink, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -179,7 +180,7 @@ export function isSignInWithEmailLink(auth, emailLink) {
  * @returns {() => void}
  */
 export function onAuthStateChanged(auth, nextOrObserver) {
-  return auth.onAuthStateChanged(nextOrObserver);
+  return auth.onAuthStateChanged.call(auth, nextOrObserver, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -189,7 +190,7 @@ export function onAuthStateChanged(auth, nextOrObserver) {
  * @returns {() => void}
  */
 export function onIdTokenChanged(auth, nextOrObserver) {
-  return auth.onIdTokenChanged(nextOrObserver);
+  return auth.onIdTokenChanged.call(auth, nextOrObserver, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -209,7 +210,7 @@ export async function revokeAccessToken(auth, token) {
  * @returns {Promise<void>}
  */
 export async function sendPasswordResetEmail(auth, email, actionCodeSettings) {
-  return auth.sendPasswordResetEmail(email, actionCodeSettings);
+  return auth.sendPasswordResetEmail.call(auth, email, actionCodeSettings, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -220,7 +221,7 @@ export async function sendPasswordResetEmail(auth, email, actionCodeSettings) {
  * @returns {Promise<void>}
  */
 export async function sendSignInLinkToEmail(auth, email, actionCodeSettings) {
-  return auth.sendSignInLinkToEmail(email, actionCodeSettings);
+  return auth.sendSignInLinkToEmail.call(auth, email, actionCodeSettings, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -239,7 +240,7 @@ export async function setPersistence(auth, persistence) {
  * @returns {Promise<UserCredential>}
  */
 export async function signInAnonymously(auth) {
-  return auth.signInAnonymously();
+  return auth.signInAnonymously.call(auth, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -249,7 +250,7 @@ export async function signInAnonymously(auth) {
  * @returns {Promise<UserCredential>}
  */
 export async function signInWithCredential(auth, credential) {
-  return auth.signInWithCredential(credential);
+  return auth.signInWithCredential.call(auth, credential, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -259,7 +260,7 @@ export async function signInWithCredential(auth, credential) {
  * @returns {Promise<UserCredential>}
  */
 export async function signInWithCustomToken(auth, customToken) {
-  return auth.signInWithCustomToken(customToken);
+  return auth.signInWithCustomToken.call(auth, customToken, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -270,7 +271,7 @@ export async function signInWithCustomToken(auth, customToken) {
  * @returns {Promise<UserCredential>}
  */
 export async function signInWithEmailAndPassword(auth, email, password) {
-  return auth.signInWithEmailAndPassword(email, password);
+  return auth.signInWithEmailAndPassword.call(auth, email, password, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -281,7 +282,7 @@ export async function signInWithEmailAndPassword(auth, email, password) {
  * @returns {Promise<UserCredential>}
  */
 export async function signInWithEmailLink(auth, email, emailLink) {
-  return auth.signInWithEmailLink(email, emailLink);
+  return auth.signInWithEmailLink.call(auth, email, emailLink, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -292,7 +293,7 @@ export async function signInWithEmailLink(auth, email, emailLink) {
  * @returns {Promise<ConfirmationResult>}
  */
 export async function signInWithPhoneNumber(auth, phoneNumber, appVerifier) {
-  return auth.signInWithPhoneNumber(phoneNumber, appVerifier);
+  return auth.signInWithPhoneNumber.call(auth, phoneNumber, appVerifier, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -304,7 +305,13 @@ export async function signInWithPhoneNumber(auth, phoneNumber, appVerifier) {
  * @returns {PhoneAuthListener}
  */
 export function verifyPhoneNumber(auth, phoneNumber, autoVerifyTimeoutOrForceResend, forceResend) {
-  return auth.verifyPhoneNumber(phoneNumber, autoVerifyTimeoutOrForceResend, forceResend);
+  return auth.verifyPhoneNumber.call(
+    auth,
+    phoneNumber,
+    autoVerifyTimeoutOrForceResend,
+    forceResend,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -315,7 +322,7 @@ export function verifyPhoneNumber(auth, phoneNumber, autoVerifyTimeoutOrForceRes
  * @returns {Promise<UserCredential>}
  */
 export async function signInWithPopup(auth, provider, resolver) {
-  return auth.signInWithPopup(provider, resolver);
+  return auth.signInWithPopup.call(auth, provider, resolver, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -326,7 +333,7 @@ export async function signInWithPopup(auth, provider, resolver) {
  * @returns {Promise<void>}
  */
 export async function signInWithRedirect(auth, provider, resolver) {
-  return auth.signInWithRedirect(provider, resolver);
+  return auth.signInWithRedirect.call(auth, provider, resolver, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -335,7 +342,7 @@ export async function signInWithRedirect(auth, provider, resolver) {
  * @returns {Promise<void>}
  */
 export async function signOut(auth) {
-  return auth.signOut();
+  return auth.signOut.call(auth, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -363,7 +370,7 @@ export function useDeviceLanguage(auth) {
  * @returns {Promise<void>}
  */
 export function useUserAccessGroup(auth, userAccessGroup) {
-  return auth.useUserAccessGroup(userAccessGroup);
+  return auth.useUserAccessGroup.call(auth, userAccessGroup, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -373,7 +380,7 @@ export function useUserAccessGroup(auth, userAccessGroup) {
  * @returns {Promise<string>}
  */
 export async function verifyPasswordResetCode(auth, code) {
-  return auth.verifyPasswordResetCode(code);
+  return auth.verifyPasswordResetCode.call(auth, code, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -391,7 +398,7 @@ export function parseActionCodeURL(link) {
  * @returns {Promise<void>}
  */
 export async function deleteUser(user) {
-  return user.delete();
+  return user.delete.call(user, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -401,7 +408,7 @@ export async function deleteUser(user) {
  * @returns {Promise<string>}
  */
 export async function getIdToken(user, forceRefresh) {
-  return user.getIdToken(forceRefresh);
+  return user.getIdToken.call(user, forceRefresh, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -411,7 +418,7 @@ export async function getIdToken(user, forceRefresh) {
  * @returns {Promise<IdTokenResult>}
  */
 export async function getIdTokenResult(user, forceRefresh) {
-  return user.getIdTokenResult(forceRefresh);
+  return user.getIdTokenResult.call(user, forceRefresh, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -421,7 +428,7 @@ export async function getIdTokenResult(user, forceRefresh) {
  * @returns {Promise<UserCredential>}
  */
 export async function linkWithCredential(user, credential) {
-  return user.linkWithCredential(credential);
+  return user.linkWithCredential.call(user, credential, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -443,7 +450,7 @@ export async function linkWithPhoneNumber(user, phoneNumber, appVerifier) {
  * @returns {Promise<UserCredential>}
  */
 export async function linkWithPopup(user, provider, resolver) {
-  return user.linkWithPopup(provider, resolver);
+  return user.linkWithPopup.call(user, provider, resolver, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -454,7 +461,7 @@ export async function linkWithPopup(user, provider, resolver) {
  * @returns {Promise<void>}
  */
 export async function linkWithRedirect(user, provider, resolver) {
-  return user.linkWithRedirect(provider, resolver);
+  return user.linkWithRedirect.call(user, provider, resolver, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -473,7 +480,7 @@ export function multiFactor(user) {
  * @returns {Promise<UserCredential>}
  */
 export async function reauthenticateWithCredential(user, credential) {
-  return user.reauthenticateWithCredential(credential);
+  return user.reauthenticateWithCredential.call(user, credential, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -495,7 +502,7 @@ export async function reauthenticateWithPhoneNumber(user, phoneNumber, appVerifi
  * @returns {Promise<UserCredential>}
  */
 export async function reauthenticateWithPopup(user, provider, resolver) {
-  return user.reauthenticateWithPopup(provider, resolver);
+  return user.reauthenticateWithPopup.call(user, provider, resolver, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -506,7 +513,7 @@ export async function reauthenticateWithPopup(user, provider, resolver) {
  * @returns {Promise<UserCredential>}
  */
 export async function reauthenticateWithRedirect(user, provider, resolver) {
-  return user.reauthenticateWithRedirect(provider, resolver);
+  return user.reauthenticateWithRedirect.call(user, provider, resolver, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -515,7 +522,7 @@ export async function reauthenticateWithRedirect(user, provider, resolver) {
  * @returns {Promise<void>}
  */
 export async function reload(user) {
-  return user.reload();
+  return user.reload.call(user, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -525,7 +532,7 @@ export async function reload(user) {
  * @returns {Promise<void>}
  */
 export async function sendEmailVerification(user, actionCodeSettings) {
-  return user.sendEmailVerification(actionCodeSettings);
+  return user.sendEmailVerification.call(user, actionCodeSettings, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -535,7 +542,7 @@ export async function sendEmailVerification(user, actionCodeSettings) {
  * @returns {Promise<User>}
  */
 export async function unlink(user, providerId) {
-  return user.unlink(providerId);
+  return user.unlink.call(user, providerId, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -545,7 +552,7 @@ export async function unlink(user, providerId) {
  * @returns {Promise<void>}
  */
 export async function updateEmail(user, newEmail) {
-  return user.updateEmail(newEmail);
+  return user.updateEmail.call(user, newEmail, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -555,7 +562,7 @@ export async function updateEmail(user, newEmail) {
  * @returns {Promise<void>}
  */
 export async function updatePassword(user, newPassword) {
-  return user.updatePassword(newPassword);
+  return user.updatePassword.call(user, newPassword, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -565,7 +572,7 @@ export async function updatePassword(user, newPassword) {
  * @returns {Promise<void>}
  */
 export async function updatePhoneNumber(user, credential) {
-  return user.updatePhoneNumber(credential);
+  return user.updatePhoneNumber.call(user, credential, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -575,7 +582,11 @@ export async function updatePhoneNumber(user, credential) {
  * @returns {Promise<void>}
  */
 export async function updateProfile(user, { displayName, photoURL: photoUrl }) {
-  return user.updateProfile({ displayName, photoURL: photoUrl });
+  return user.updateProfile.call(
+    user,
+    { displayName, photoURL: photoUrl },
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -586,7 +597,12 @@ export async function updateProfile(user, { displayName, photoURL: photoUrl }) {
  * @returns {Promise<void>}
  */
 export async function verifyBeforeUpdateEmail(user, newEmail, actionCodeSettings) {
-  return user.verifyBeforeUpdateEmail(newEmail, actionCodeSettings);
+  return user.verifyBeforeUpdateEmail.call(
+    user,
+    newEmail,
+    actionCodeSettings,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -604,7 +620,7 @@ export function getAdditionalUserInfo(userCredential) {
  * @returns {Promise<string>}
  */
 export function getCustomAuthDomain(auth) {
-  return auth.getCustomAuthDomain();
+  return auth.getCustomAuthDomain.call(auth, MODULAR_DEPRECATION_ARG);
 }
 
 /**
