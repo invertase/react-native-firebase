@@ -211,6 +211,15 @@ const mapOfDeprecationReplacements = {
       nanoseconds: NO_REPLACEMENT,
     },
   },
+  perf: {
+    default: {
+      setPerformanceCollectionEnabled: 'initializePerformance()',
+      newTrace: 'trace()',
+      newHttpMetric: 'httpMetric()',
+      newScreenTrace: 'newScreenTrace()',
+      startScreenTrace: 'startScreenTrace()',
+    },
+  },
 };
 
 const modularDeprecationMessage =
