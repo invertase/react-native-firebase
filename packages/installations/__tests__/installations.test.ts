@@ -109,12 +109,12 @@ describe('installations()', function () {
       });
     });
 
-      it('delete', function () {
-        const installations = getInstallations();
-        installationsV9Deprecation(
-          () => deleteInstallations(installations),
-          () => installations.delete(),
-          'delete',
+    it('delete', function () {
+      const installations = getInstallations();
+      installationsV9Deprecation(
+        () => deleteInstallations(installations),
+        () => installations.delete(),
+        'delete',
       );
     });
 
