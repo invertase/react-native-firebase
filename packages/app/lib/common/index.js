@@ -211,6 +211,14 @@ const mapOfDeprecationReplacements = {
       nanoseconds: NO_REPLACEMENT,
     },
   },
+  appDistribution: {
+    default: {
+      isTesterSignedIn: 'isTesterSignedIn()',
+      signInTester: 'signInTester()',
+      checkForUpdate: 'checkForUpdate()',
+      signOutTester: 'signOutTester()',
+    },
+  },
 };
 
 const modularDeprecationMessage =
