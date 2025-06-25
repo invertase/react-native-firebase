@@ -345,6 +345,23 @@ const mapOfDeprecationReplacements = {
       nanoseconds: NO_REPLACEMENT,
     },
   },
+  functions: {
+    default: {
+      useEmulator: 'connectFirestoreEmulator()',
+      httpsCallable: 'httpsCallable()',
+      httpsCallableFromUrl: 'httpsCallableFromUrl()',
+    },
+    statics: {
+      HttpsErrorCode: 'HttpsErrorCode',
+    },
+  },
+  installations: {
+    default: {
+      delete: 'deleteInstallations()',
+      getId: 'getId()',
+      getToken: 'getToken()',
+    },
+  },
   messaging: {
     default: {
       isAutoInitEnabled: 'isAutoInitEnabled()',
@@ -435,16 +452,6 @@ const mapOfDeprecationReplacements = {
       StringFormat: 'StringFormat',
       TaskEvent: 'TaskEvent',
       TaskState: 'TaskState',
-    },
-  },
-  functions: {
-    default: {
-      useEmulator: 'connectFirestoreEmulator()',
-      httpsCallable: 'httpsCallable()',
-      httpsCallableFromUrl: 'httpsCallableFromUrl()',
-    },
-    statics: {
-      HttpsErrorCode: 'HttpsErrorCode',
     },
   },
 };
