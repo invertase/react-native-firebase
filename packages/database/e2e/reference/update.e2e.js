@@ -22,7 +22,7 @@ const TEST_PATH = `${PATH}/update`;
 describe('database().ref().update()', function () {
   after(async function () {
     const { getDatabase, ref } = databaseModular;
-    await ref(getDatabase(), TEST_PATH).remove();
+    await remove(ref(getDatabase(), TEST_PATH));
   });
 
   describe('v8 compatibility', function () {

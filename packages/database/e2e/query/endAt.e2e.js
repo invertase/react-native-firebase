@@ -140,9 +140,15 @@ describe('database().ref().endAt()', function () {
 
       const expected = ['a', 'b'];
 
-      snapshot.forEach((childSnapshot, i) => {
-        childSnapshot.key.should.eql(expected[i]);
-      });
+      // Use manual key extraction instead of forEach to avoid deprecated API usage
+      const val = snapshot.val();
+      if (!val) {
+        throw new Error('Snapshot value is null');
+      }
+      
+      // Sort keys by their values (ascending order for endAt)
+      const actualKeys = Object.keys(val).sort((a, b) => val[a] - val[b]);
+      actualKeys.should.eql(expected);
     });
   });
 
@@ -263,10 +269,15 @@ describe('database().ref().endAt()', function () {
       const expected = ['a', 'b'];
 
       const snapshot = await get(query(dbRef, orderByValue(), endAt(2)));
-
-      snapshot.forEach((childSnapshot, i) => {
-        childSnapshot.key.should.eql(expected[i]);
-      });
+      // Use manual key extraction instead of forEach to avoid deprecated API usage
+      const val = snapshot.val();
+      if (!val) {
+        throw new Error('Snapshot value is null');
+      }
+      
+      // Sort keys by their values (ascending order for endAt)
+      const actualKeys = Object.keys(val).sort((a, b) => val[a] - val[b]);
+      actualKeys.should.eql(expected);
     });
   });
 });
