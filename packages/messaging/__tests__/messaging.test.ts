@@ -223,149 +223,149 @@ describe('Messaging', function () {
         );
       });
 
-      // it('setAutoInitEnabled', function () {
-      //   const messaging = getMessaging();
-      //   messagingV9Deprecation(
-      //     () => setAutoInitEnabled(messaging, true),
-      //     () => messaging.setAutoInitEnabled(true),
-      //     'setAutoInitEnabled',
-      //   );
-      // });
+      it('setAutoInitEnabled', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => setAutoInitEnabled(messaging, true),
+          () => messaging.setAutoInitEnabled(true),
+          'setAutoInitEnabled',
+        );
+      });
 
-      // it('getInitialNotification', function () {
-      //   const messaging = getMessaging();
-      //   messagingV9Deprecation(
-      //     () => getInitialNotification(messaging),
-      //     () => messaging.getInitialNotification(),
-      //     'getInitialNotification',
-      //   );
-      // });
+      it('getInitialNotification', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => getInitialNotification(messaging),
+          () => messaging.getInitialNotification(),
+          'getInitialNotification',
+        );
+      });
 
-      // it('getDidOpenSettingsForNotification', function () {
-      //   const messaging = getMessaging();
-      //   messagingV9Deprecation(
-      //     () => getDidOpenSettingsForNotification(messaging),
-      //     () => messaging.getDidOpenSettingsForNotification(),
-      //     'getDidOpenSettingsForNotification',
-      //   );
-      // });
+      it('getDidOpenSettingsForNotification', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => getDidOpenSettingsForNotification(messaging),
+          () => messaging.getDidOpenSettingsForNotification(),
+          'getDidOpenSettingsForNotification',
+        );
+      });
 
-      // it('getIsHeadless', function () {
-      //   const messaging = getMessaging();
-      //   messagingV9Deprecation(
-      //     () => getIsHeadless(messaging),
-      //     () => messaging.getIsHeadless(),
-      //     'getIsHeadless',
-      //   );
-      // });
+      it('getIsHeadless', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => getIsHeadless(messaging),
+          () => messaging.getIsHeadless(),
+          'getIsHeadless',
+        );
+      });
 
-      // it('requestPermission', function () {
-      //   const messaging = getMessaging();
-      //   messagingV9Deprecation(
-      //     () => requestPermission(messaging),
-      //     () => messaging.requestPermission,
-      //     'requestPermission',
-      //   );
-      // });
+      it('requestPermission', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => requestPermission(messaging),
+          () => messaging.requestPermission(),
+          'requestPermission',
+        );
+      });
 
-      // it('registerDeviceForRemoteMessages', function () {
-      //   const messaging = getMessaging();
-      //   messagingV9Deprecation(
-      //     () => registerDeviceForRemoteMessages(messaging),
-      //     () => messaging.registerDeviceForRemoteMessages,
-      //     'registerDeviceForRemoteMessages',
-      //   );
-      // });
+      it('registerDeviceForRemoteMessages', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => registerDeviceForRemoteMessages(messaging),
+          () => messaging.registerDeviceForRemoteMessages(),
+          'registerDeviceForRemoteMessages',
+        );
+      });
 
-      // it('unregisterDeviceForRemoteMessages', function () {
-      //   const messaging = getMessaging();
-      //   messagingV9Deprecation(
-      //     () => unregisterDeviceForRemoteMessages(messaging),
-      //     () => messaging.unregisterDeviceForRemoteMessages,
-      //     'unregisterDeviceForRemoteMessages',
-      //   );
-      // });
+      it('unregisterDeviceForRemoteMessages', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => unregisterDeviceForRemoteMessages(messaging),
+          () => messaging.unregisterDeviceForRemoteMessages(),
+          'unregisterDeviceForRemoteMessages',
+        );
+      });
 
-      // it('getAPNSToken', function () {
-      //   const messaging = getMessaging();
-      //   messagingV9Deprecation(
-      //     () => getAPNSToken(messaging),
-      //     () => messaging.getAPNSToken(),
-      //     'getAPNSToken',
-      //   );
-      // });
+      it('getAPNSToken', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => getAPNSToken(messaging),
+          () => messaging.getAPNSToken(),
+          'getAPNSToken',
+        );
+      });
 
-      // it('setAPNSToken', function () {
-      //   const messaging = getMessaging();
-      //   messagingV9Deprecation(
-      //     () => setAPNSToken(messaging, 'token'),
-      //     () => messaging.setAPNSToken('token'),
-      //     'setAPNSToken',
-      //   );
-      // });
+      it('setAPNSToken', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => setAPNSToken(messaging, 'token'),
+          () => messaging.setAPNSToken('token'),
+          'setAPNSToken',
+        );
+      });
 
-      // it('hasPermission', function () {
-      //   const messaging = getMessaging();
-      //   messagingV9Deprecation(
-      //     () => hasPermission(messaging),
-      //     () => messaging.hasPermission(),
-      //     'hasPermission',
-      //   );
-      // });
+      it('hasPermission', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => hasPermission(messaging),
+          () => messaging.hasPermission(),
+          'hasPermission',
+        );
+      });
 
-      // it('subscribeToTopic', function () {
-      //   const messaging = getMessaging();
-      //   messagingV9Deprecation(
-      //     () => subscribeToTopic(messaging, 'topic'),
-      //     () => messaging.subscribeToTopic('topic'),
-      //     'subscribeToTopic',
-      //   );
-      // });
+      it('subscribeToTopic', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => subscribeToTopic(messaging, 'topic'),
+          () => messaging.subscribeToTopic('topic'),
+          'subscribeToTopic',
+        );
+      });
 
-      // it('unsubscribeFromTopic', function () {
-      //   const messaging = getMessaging();
-      //   messagingV9Deprecation(
-      //     () => unsubscribeFromTopic(messaging, 'topic'),
-      //     () => messaging.unsubscribeFromTopic('topic'),
-      //     'unsubscribeFromTopic',
-      //   );
-      // });
+      it('unsubscribeFromTopic', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => unsubscribeFromTopic(messaging, 'topic'),
+          () => messaging.unsubscribeFromTopic('topic'),
+          'unsubscribeFromTopic',
+        );
+      });
 
-      // it('getToken', function () {
-      //   const messaging = getMessaging();
-      //   messagingV9Deprecation(
-      //     () => getToken(messaging),
-      //     () => messaging.getToken(),
-      //     'getToken',
-      //   );
-      // });
+      it('getToken', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => getToken(messaging),
+          () => messaging.getToken(),
+          'getToken',
+        );
+      });
 
-      // it('deleteToken', function () {
-      //   const messaging = getMessaging();
-      //   messagingV9Deprecation(
-      //     () => deleteToken(messaging),
-      //     () => messaging.deleteToken(),
-      //     'deleteToken',
-      //   );
-      // });
+      it('deleteToken', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => deleteToken(messaging),
+          () => messaging.deleteToken(),
+          'deleteToken',
+        );
+      });
 
-      // it('isSupported', function () {
-      //   const messaging = getMessaging();
-      //   messagingV9Deprecation(
-      //     () => isSupported(messaging),
-      //     () => messaging.isSupported(),
-      //     'isSupported',
-      //   );
-      // });
+      it('isSupported', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => isSupported(messaging),
+          () => messaging.isSupported(),
+          'isSupported',
+        );
+      });
 
-      // it('experimentalSetDeliveryMetricsExportedToBigQueryEnabled', function () {
-      //   const messaging = getMessaging();
-      //   messagingV9Deprecation(
-      //     () => experimentalSetDeliveryMetricsExportedToBigQueryEnabled(messaging, true),
-      //     () => messaging.setDeliveryMetricsExportToBigQuery(true),
-      //     'setDeliveryMetricsExportToBigQuery',
-      //   );
-      // });
+      it('experimentalSetDeliveryMetricsExportedToBigQueryEnabled', function () {
+        const messaging = getMessaging();
+        messagingV9Deprecation(
+          () => experimentalSetDeliveryMetricsExportedToBigQueryEnabled(messaging, true),
+          () => messaging.setDeliveryMetricsExportToBigQuery(true),
+          'setDeliveryMetricsExportToBigQuery',
+        );
+      });
     });
   });
 });
