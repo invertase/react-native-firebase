@@ -23,6 +23,7 @@ import auth, {
   onIdTokenChanged,
   sendPasswordResetEmail,
   sendSignInLinkToEmail,
+  setLanguageCode,
   setPersistence,
   signInAnonymously,
   signInWithCredential,
@@ -779,7 +780,7 @@ describe('Auth', function () {
         it('setLanguageCode', function () {
           const auth = getAuth();
           authV9Deprecation(
-            () => useDeviceLanguage(auth),
+            () => setLanguageCode(auth, 'en'),
             () => auth.setLanguageCode('en'),
             'setLanguageCode',
           );
@@ -794,10 +795,13 @@ describe('Auth', function () {
             },
           } as any;
 
-          // Mock the currentUser to have the same userId
-          auth.currentUser = {
-            userId: 'test-user-id',
-          } as any;
+          // Mock the currentUser getter to have the same userId
+          Object.defineProperty(auth, 'currentUser', {
+            get: () => ({
+              userId: 'test-user-id',
+            }),
+            configurable: true,
+          });
 
           authV9Deprecation(
             () => multiFactor(mockUser),
