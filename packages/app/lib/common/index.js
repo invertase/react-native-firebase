@@ -211,6 +211,22 @@ const mapOfDeprecationReplacements = {
       nanoseconds: NO_REPLACEMENT,
     },
   },
+  database: {
+    default: {
+      useEmulator: 'connectDatabaseEmulator()',
+      goOffline: 'goOffline()',
+      goOnline: 'goOnline()',
+      ref: 'ref()',
+      refFromURL: 'refFromURL()',
+      setPersistenceEnabled: 'setPersistenceEnabled()',
+      setLoggingEnabled: 'setLoggingEnabled()',
+      setPersistenceCacheSizeBytes: 'setPersistenceCacheSizeBytes()',
+      getServerTime: 'getServerTime()',
+    },
+    statics: {
+      ServerValue: 'ServerValue',
+    },
+  },
 };
 
 const modularDeprecationMessage =
@@ -287,6 +303,9 @@ function getInstanceName(target) {
     // target is statics object. GeoPoint - Firestore, CustomProvider - AppCheck
     return 'statics';
   }
+  if (target.ServerValue) {
+    return 'statics';
+  }
   if (target._config) {
     // module class instance, we use default to store map of deprecated methods
     return 'default';
@@ -331,6 +350,9 @@ export function createDeprecationProxy(instance) {
         }
         if (prop === 'CustomProvider') {
           deprecationConsoleWarning('appCheck', prop, 'statics', false);
+        }
+        if (prop === 'ServerValue') {
+          deprecationConsoleWarning('database', prop, 'statics', false);
         }
 
         if (prop !== 'setLogLevel') {

@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, it, beforeEach, jest } from '@jest/globals';
 
 import database, {
   firebase,
@@ -47,6 +47,17 @@ import database, {
   remove,
   update,
 } from '../lib';
+
+// @ts-ignore - no declaration file for DatabaseStatics
+import DatabaseStatics from '../lib/DatabaseStatics';
+
+import {
+  createCheckV9Deprecation,
+  CheckV9DeprecationFunction,
+} from '../../app/lib/common/unitTestUtils';
+
+// @ts-ignore test
+import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 
 describe('Database', function () {
   describe('namespace', function () {
@@ -281,6 +292,132 @@ describe('Database', function () {
 
     it('`update` function is properly exposed to end user', function () {
       expect(update).toBeDefined();
+    });
+  });
+
+  describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
+    let databaseV9Deprecation: CheckV9DeprecationFunction;
+    let staticsV9Deprecation: CheckV9DeprecationFunction;
+
+    beforeEach(function () {
+      databaseV9Deprecation = createCheckV9Deprecation(['database']);
+      staticsV9Deprecation = createCheckV9Deprecation(['database', 'statics']);
+
+      // @ts-ignore test
+      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
+        return new Proxy(
+          {},
+          {
+            get: (_target, prop) => {
+              if (prop === 'constants') {
+                return {
+                  isDatabaseCollectionEnabled: true,
+                  url: 'https://test.firebaseio.com',
+                };
+              }
+              return jest.fn().mockResolvedValue({
+                constants: {
+                  isDatabaseCollectionEnabled: true,
+                  url: 'https://test.firebaseio.com',
+                },
+              } as never);
+            },
+          },
+        );
+      });
+    });
+
+    it('useEmulator', function () {
+      const db = getDatabase();
+      databaseV9Deprecation(
+        () => connectDatabaseEmulator(db, 'localhost', 9000),
+        () => db.useEmulator('localhost', 9000),
+        'useEmulator',
+      );
+    });
+
+    it('goOffline', function () {
+      const db = getDatabase();
+      databaseV9Deprecation(
+        () => goOffline(db),
+        () => db.goOffline(),
+        'goOffline',
+      );
+    });
+
+    it('goOnline', function () {
+      const db = getDatabase();
+      databaseV9Deprecation(
+        () => goOnline(db),
+        () => db.goOnline(),
+        'goOnline',
+      );
+    });
+
+    it('ref', function () {
+      const db = getDatabase();
+      databaseV9Deprecation(
+        () => ref(db, 'test'),
+        () => db.ref('test'),
+        'ref',
+      );
+    });
+
+    it('refFromURL', function () {
+      const db = getDatabase();
+      // Mock the _customUrlOrRegion property directly on the database instance
+      (db as any)._customUrlOrRegion = 'https://test.firebaseio.com';
+      databaseV9Deprecation(
+        () => refFromURL(db, 'https://test.firebaseio.com'),
+        () => db.refFromURL('https://test.firebaseio.com'),
+        'refFromURL',
+      );
+    });
+
+    it('setPersistenceEnabled', function () {
+      const db = getDatabase();
+      databaseV9Deprecation(
+        () => setPersistenceEnabled(db, true),
+        () => db.setPersistenceEnabled(true),
+        'setPersistenceEnabled',
+      );
+    });
+
+    it('setLoggingEnabled', function () {
+      const db = getDatabase();
+      databaseV9Deprecation(
+        () => setLoggingEnabled(db, true),
+        () => db.setLoggingEnabled(true),
+        'setLoggingEnabled',
+      );
+    });
+
+    it('setPersistenceCacheSizeBytes', function () {
+      const db = getDatabase();
+      databaseV9Deprecation(
+        () => setPersistenceCacheSizeBytes(db, 10000000),
+        () => db.setPersistenceCacheSizeBytes(10000000),
+        'setPersistenceCacheSizeBytes',
+      );
+    });
+
+    it('getServerTime', function () {
+      const db = getDatabase();
+      databaseV9Deprecation(
+        () => getServerTime(db),
+        () => db.getServerTime(),
+        'getServerTime',
+      );
+    });
+    
+    describe('statics', function () {
+      it('ServerValue', function () {
+        staticsV9Deprecation(
+          () => DatabaseStatics.ServerValue,
+          () => firebase.database.ServerValue,
+          'ServerValue',
+        );
+      });
     });
   });
 });
