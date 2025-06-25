@@ -226,6 +226,16 @@ const mapOfDeprecationReplacements = {
     statics: {
       ServerValue: 'ServerValue',
     },
+    DatabaseTransaction: {
+      runTransaction: 'runTransaction()',
+    },
+    DatabaseQuery: {
+      ref: 'ref()',
+      transaction: 'runTransaction()',
+    },
+    DatabaseReference: {
+      transaction: 'runTransaction()',
+    },
   },
 };
 
@@ -289,6 +299,15 @@ function getNamespace(target) {
   }
   if (target._config && target._config.namespace) {
     return target._config.namespace;
+  }
+  if (target.constructor.name === 'DatabaseQuery') {
+    return 'database';
+  }
+  if (target.constructor.name === 'DatabaseReference') {
+    return 'database';
+  }
+  if (target.constructor.name === 'DatabaseTransaction') {
+    return 'database';
   }
   const className = target.name ? target.name : target.constructor.name;
   return Object.keys(mapOfDeprecationReplacements).find(key => {
@@ -358,6 +377,14 @@ export function createDeprecationProxy(instance) {
         if (prop !== 'setLogLevel') {
           // we want to capture setLogLevel function call which we do below
           return Reflect.get(target, prop, receiver);
+        }
+
+        if (target.constructor.name === 'DatabaseQuery') {
+          return target.constructor.name;
+        }
+
+        if (target.constructor.name === 'DatabaseTransaction') {
+          return target.constructor.name;
         }
       }
 

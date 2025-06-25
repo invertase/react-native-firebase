@@ -13,6 +13,9 @@
 /**
  * @implements {IQueryConstraint}
  */
+
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
+
 class QueryConstraint {
   constructor(type, ...args) {
     this._type = type;
@@ -21,7 +24,7 @@ class QueryConstraint {
 
   _apply(query) {
     // eslint-disable-next-line prefer-spread
-    return query[this._type].apply(query, this._args);
+    return query[this._type].apply(query, this._args, MODULAR_DEPRECATION_ARG);
   }
 }
 

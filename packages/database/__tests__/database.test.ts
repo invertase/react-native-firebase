@@ -298,10 +298,12 @@ describe('Database', function () {
   describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
     let databaseV9Deprecation: CheckV9DeprecationFunction;
     let staticsV9Deprecation: CheckV9DeprecationFunction;
+    let referenceV9Deprecation: CheckV9DeprecationFunction;
 
     beforeEach(function () {
       databaseV9Deprecation = createCheckV9Deprecation(['database']);
       staticsV9Deprecation = createCheckV9Deprecation(['database', 'statics']);
+      referenceV9Deprecation = createCheckV9Deprecation(['database', 'DatabaseReference']);
 
       // @ts-ignore test
       jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
@@ -313,6 +315,7 @@ describe('Database', function () {
                 return {
                   isDatabaseCollectionEnabled: true,
                   url: 'https://test.firebaseio.com',
+                  ref: 'ref()',
                 };
               }
               return jest.fn().mockResolvedValue({
@@ -409,13 +412,26 @@ describe('Database', function () {
         'getServerTime',
       );
     });
-    
+
     describe('statics', function () {
       it('ServerValue', function () {
         staticsV9Deprecation(
           () => DatabaseStatics.ServerValue,
           () => firebase.database.ServerValue,
           'ServerValue',
+        );
+      });
+    });
+
+    describe('transaction', function () {
+      it('runTransaction', function () {
+        const db = getDatabase();
+        const testRef = ref(db, 'test');
+        console.log('Reference class name:', testRef.constructor.name);
+        referenceV9Deprecation(
+          () => runTransaction(ref(db, 'test'), () => {}),
+          () => ref(db, 'test').transaction(() => {}),
+          'transaction',
         );
       });
     });
