@@ -22,7 +22,7 @@
  */
 
 import { getApp } from '@react-native-firebase/app';
-import { MODULAR_DEPRECATION_ARG } from '../../../app/lib/common';
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 
 /**
  * Returns a Functions instance for the given app.
