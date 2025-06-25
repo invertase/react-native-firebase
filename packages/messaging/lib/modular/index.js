@@ -1,4 +1,5 @@
 import { getApp } from '@react-native-firebase/app';
+import { withModularFlag } from '@react-native-firebase/app/lib/common';
 
 /**
  * @typedef {import('..').FirebaseMessagingTypes} FirebaseMessagingTypes
@@ -33,7 +34,7 @@ export function getMessaging(app) {
  * @returns {Promise<void>}
  */
 export function deleteToken(messaging, tokenOptions) {
-  return messaging.deleteToken(tokenOptions);
+  return messaging.deleteToken.call(messaging, tokenOptions);
 }
 
 /**
@@ -43,7 +44,7 @@ export function deleteToken(messaging, tokenOptions) {
  * @returns {Promise<string>}
  */
 export function getToken(messaging, options) {
-  return messaging.getToken(options);
+  return messaging.getToken.call(messaging, options);
 }
 
 /**
@@ -54,7 +55,7 @@ export function getToken(messaging, options) {
  * @returns {() => void}
  */
 export function onMessage(messaging, listener) {
-  return messaging.onMessage(listener);
+  return messaging.onMessage.call(messaging, listener);
 }
 
 /**
@@ -65,7 +66,7 @@ export function onMessage(messaging, listener) {
  * @returns {() => void}
  */
 export function onNotificationOpenedApp(messaging, listener) {
-  return messaging.onNotificationOpenedApp(listener);
+  return messaging.onNotificationOpenedApp.call(messaging, listener);
 }
 
 /**
@@ -77,7 +78,7 @@ export function onNotificationOpenedApp(messaging, listener) {
  * @returns {() => void}
  */
 export function onTokenRefresh(messaging, listener) {
-  return messaging.onTokenRefresh(listener);
+  return messaging.onTokenRefresh.call(messaging, listener);
 }
 
 /**
@@ -88,7 +89,7 @@ export function onTokenRefresh(messaging, listener) {
  * @returns {Promise<AuthorizationStatus>}
  */
 export function requestPermission(messaging, iosPermissions) {
-  return messaging.requestPermission(iosPermissions);
+  return messaging.requestPermission.call(messaging, iosPermissions);
 }
 
 /**
@@ -97,7 +98,7 @@ export function requestPermission(messaging, iosPermissions) {
  * @returns {boolean}
  */
 export function isAutoInitEnabled(messaging) {
-  return messaging.isAutoInitEnabled;
+  return withModularFlag(() => messaging.isAutoInitEnabled);
 }
 
 /**
@@ -107,7 +108,7 @@ export function isAutoInitEnabled(messaging) {
  * @returns {Promise<void>}
  */
 export function setAutoInitEnabled(messaging, enabled) {
-  return messaging.setAutoInitEnabled(enabled);
+  return messaging.setAutoInitEnabled.call(messaging, enabled);
 }
 
 /**
@@ -118,7 +119,7 @@ export function setAutoInitEnabled(messaging, enabled) {
  * @returns {Promise<RemoteMessage | null>}
  */
 export function getInitialNotification(messaging) {
-  return messaging.getInitialNotification();
+  return messaging.getInitialNotification.call(messaging);
 }
 
 /**
@@ -128,7 +129,7 @@ export function getInitialNotification(messaging) {
  * @returns {Promise<boolean>}
  */
 export function getDidOpenSettingsForNotification(messaging) {
-  return messaging.getDidOpenSettingsForNotification();
+  return messaging.getDidOpenSettingsForNotification.call(messaging);
 }
 
 /**
@@ -138,7 +139,7 @@ export function getDidOpenSettingsForNotification(messaging) {
  * @returns {Promise<boolean>}
  */
 export function getIsHeadless(messaging) {
-  return messaging.getIsHeadless();
+  return messaging.getIsHeadless.call(messaging);
 }
 
 /**
@@ -148,7 +149,7 @@ export function getIsHeadless(messaging) {
  * @returns {Promise<void>}
  */
 export function registerDeviceForRemoteMessages(messaging) {
-  return messaging.registerDeviceForRemoteMessages();
+  return messaging.registerDeviceForRemoteMessages.call(messaging);
 }
 
 /**
@@ -158,7 +159,7 @@ export function registerDeviceForRemoteMessages(messaging) {
  * @returns {boolean}
  */
 export function isDeviceRegisteredForRemoteMessages(messaging) {
-  return messaging.isDeviceRegisteredForRemoteMessages;
+  return messaging.isDeviceRegisteredForRemoteMessages.call(messaging);
 }
 
 /**
@@ -167,7 +168,7 @@ export function isDeviceRegisteredForRemoteMessages(messaging) {
  * @returns {Promise<void>}
  */
 export function unregisterDeviceForRemoteMessages(messaging) {
-  return messaging.unregisterDeviceForRemoteMessages();
+  return messaging.unregisterDeviceForRemoteMessages.call(messaging);
 }
 
 /**
@@ -177,7 +178,7 @@ export function unregisterDeviceForRemoteMessages(messaging) {
  * @returns {Promise<string | null>}
  */
 export function getAPNSToken(messaging) {
-  return messaging.getAPNSToken();
+  return messaging.getAPNSToken.call(messaging);
 }
 
 /**
@@ -204,7 +205,7 @@ export function getAPNSToken(messaging) {
  * @returns {Promise<void>}
  */
 export function setAPNSToken(messaging, token, type) {
-  return messaging.setAPNSToken(token, type);
+  return messaging.setAPNSToken.call(messaging, token, type);
 }
 
 /**
@@ -213,7 +214,7 @@ export function setAPNSToken(messaging, token, type) {
  * @returns {Promise<AuthorizationStatus>}
  */
 export function hasPermission(messaging) {
-  return messaging.hasPermission();
+  return messaging.hasPermission.call(messaging);
 }
 
 /**
@@ -223,7 +224,7 @@ export function hasPermission(messaging) {
  * @returns {() => void}
  */
 export function onDeletedMessages(messaging, listener) {
-  return messaging.onDeletedMessages(listener);
+  return messaging.onDeletedMessages.call(messaging, listener);
 }
 
 /**
@@ -233,7 +234,7 @@ export function onDeletedMessages(messaging, listener) {
  * @returns {() => void}
  */
 export function onMessageSent(messaging, listener) {
-  return messaging.onMessageSent(listener);
+  return messaging.onMessageSent.call(messaging, listener);
 }
 
 /**
@@ -243,7 +244,7 @@ export function onMessageSent(messaging, listener) {
  * @returns {() => void}
  */
 export function onSendError(messaging, listener) {
-  return messaging.onSendError(listener);
+  return messaging.onSendError.call(messaging, listener);
 }
 
 /**
@@ -255,7 +256,7 @@ export function onSendError(messaging, listener) {
  * @returns {void}
  */
 export function setBackgroundMessageHandler(messaging, handler) {
-  return messaging.setBackgroundMessageHandler(handler);
+  return messaging.setBackgroundMessageHandler.call(messaging, handler);
 }
 
 /**
@@ -266,7 +267,7 @@ export function setBackgroundMessageHandler(messaging, handler) {
  * @returns {void}
  */
 export function setOpenSettingsForNotificationsHandler(messaging, handler) {
-  return messaging.setOpenSettingsForNotificationsHandler(handler);
+  return messaging.setOpenSettingsForNotificationsHandler.call(messaging, handler);
 }
 
 /**
@@ -276,7 +277,7 @@ export function setOpenSettingsForNotificationsHandler(messaging, handler) {
  * @returns {Promise<void>}
  */
 export function sendMessage(messaging, message) {
-  return messaging.sendMessage(message);
+  return messaging.sendMessage.call(messaging, message);
 }
 
 /**
@@ -287,7 +288,7 @@ export function sendMessage(messaging, message) {
  * @returns {Promise<void>}
  */
 export function subscribeToTopic(messaging, topic) {
-  return messaging.subscribeToTopic(topic);
+  return messaging.subscribeToTopic.call(messaging, topic);
 }
 
 /**
@@ -297,7 +298,7 @@ export function subscribeToTopic(messaging, topic) {
  * @returns {Promise<void>}
  */
 export function unsubscribeFromTopic(messaging, topic) {
-  return messaging.unsubscribeFromTopic(topic);
+  return messaging.unsubscribeFromTopic.call(messaging, topic);
 }
 
 /**
@@ -306,7 +307,7 @@ export function unsubscribeFromTopic(messaging, topic) {
  * @returns {boolean}
  */
 export function isDeliveryMetricsExportToBigQueryEnabled(messaging) {
-  return messaging.isDeliveryMetricsExportToBigQueryEnabled;
+  return messaging.isDeliveryMetricsExportToBigQueryEnabled.call(messaging);
 }
 
 /**
@@ -316,7 +317,7 @@ export function isDeliveryMetricsExportToBigQueryEnabled(messaging) {
  * @returns {boolean}
  */
 export function isNotificationDelegationEnabled(messaging) {
-  return messaging.isNotificationDelegationEnabled;
+  return messaging.isNotificationDelegationEnabled.call(messaging);
 }
 
 /**
@@ -328,7 +329,7 @@ export function isNotificationDelegationEnabled(messaging) {
  * @returns {Promise<void>}
  */
 export function setNotificationDelegationEnabled(messaging, enabled) {
-  return messaging.setNotificationDelegationEnabled(enabled);
+  return messaging.setNotificationDelegationEnabled.call(messaging, enabled);
 }
 
 /**
@@ -337,7 +338,7 @@ export function setNotificationDelegationEnabled(messaging, enabled) {
  * @returns {boolean}
  */
 export function isSupported(messaging) {
-  return messaging.isSupported();
+  return messaging.isSupported.call(messaging);
 }
 
 /**
@@ -348,7 +349,7 @@ export function isSupported(messaging) {
  * @returns {Promise<void>}
  */
 export function experimentalSetDeliveryMetricsExportedToBigQueryEnabled(messaging, enabled) {
-  return messaging.setDeliveryMetricsExportToBigQuery(enabled);
+  return messaging.setDeliveryMetricsExportToBigQuery.call(messaging, enabled);
 }
 
 export {

@@ -380,6 +380,30 @@ export function createDeprecationProxy(instance) {
         }
       }
 
+      // Check if it's a getter/setter first
+      const descriptor =
+        Object.getOwnPropertyDescriptor(target, prop) ||
+        Object.getOwnPropertyDescriptor(Object.getPrototypeOf(target), prop);
+
+      if (descriptor && (descriptor.get || descriptor.set)) {
+        const instanceName = getInstanceName(target);
+        const nameSpace = getNamespace(target);
+
+        if (descriptor.get) {
+          // Handle getter - call it and show deprecation warning
+          deprecationConsoleWarning(nameSpace, prop, instanceName, _isModularCall);
+          return descriptor.get.call(target);
+        }
+
+        if (descriptor.set) {
+          // Handle setter - return a function that calls the setter with deprecation warning
+          return function (value) {
+            deprecationConsoleWarning(nameSpace, prop, instanceName, false);
+            descriptor.set.call(target, value);
+          };
+        }
+      }
+
       if (typeof originalMethod === 'function') {
         return function (...args) {
           const isModularMethod = args.includes(MODULAR_DEPRECATION_ARG);
@@ -397,6 +421,19 @@ export function createDeprecationProxy(instance) {
 }
 
 export const MODULAR_DEPRECATION_ARG = 'react-native-firebase-modular-method-call';
+
+// Flag to track if we're currently in a modular call
+let _isModularCall = false;
+
+export function withModularFlag(fn) {
+  const previousFlag = _isModularCall;
+  _isModularCall = true;
+  try {
+    return fn();
+  } finally {
+    _isModularCall = previousFlag;
+  }
+}
 
 export function filterModularArgument(list) {
   return list.filter(arg => arg !== MODULAR_DEPRECATION_ARG);
