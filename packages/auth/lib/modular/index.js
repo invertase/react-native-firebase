@@ -119,7 +119,7 @@ export async function confirmPasswordReset(auth, oobCode, newPassword) {
  * @param {{ disableWarnings: boolean }} [options] - Optional. Options for the emulator connection.
  */
 export function connectAuthEmulator(auth, url, options) {
-  auth.useEmulator(url, options);
+  auth.useEmulator.call(auth, url, options, MODULAR_DEPRECATION_ARG);
 }
 
 /**
