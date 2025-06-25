@@ -273,28 +273,30 @@ describe('auth() => Phone', function () {
     // or take minutes to complete each test.
     xdescribe('verifyPhoneNumber', function () {
       it('successfully verifies', async function () {
-        const { getAuth, signInWithPhoneNumber } = authModular;
+        const { getApp } = modular;
+        const { getAuth, signInWithPhoneNumber, verifyPhoneNumber } = authModular;
 
-        const defaultApp = firebase.app();
+        const defaultApp = getApp();
         const defaultAuth = getAuth(defaultApp);
 
         const testPhone = getRandomPhoneNumber();
         const confirmResult = await signInWithPhoneNumber(defaultAuth, testPhone);
         const lastSmsCode = await getLastSmsCode(testPhone);
         await confirmResult.confirm(lastSmsCode);
-        await firebase.auth().verifyPhoneNumber(testPhone, false, false);
+        await verifyPhoneNumber(defaultAuth, testPhone, false, false);
       });
 
       it('uses the autoVerifyTimeout when a non boolean autoVerifyTimeoutOrForceResend is provided', async function () {
-        const { getAuth, signInWithPhoneNumber } = authModular;
+        const { getApp } = modular;
+        const { getAuth, signInWithPhoneNumber, verifyPhoneNumber } = authModular;
 
-        const defaultApp = firebase.app();
+        const defaultApp = getApp();
         const defaultAuth = getAuth(defaultApp);
         const testPhone = getRandomPhoneNumber();
         const confirmResult = await signInWithPhoneNumber(defaultAuth, testPhone);
         const lastSmsCode = await getLastSmsCode(testPhone);
         await confirmResult.confirm(lastSmsCode);
-        await firebase.auth().verifyPhoneNumber(testPhone, 0, false);
+        await verifyPhoneNumber(defaultAuth, testPhone, 0, false);
       });
 
       it('throws an error with an invalid on event', async function () {
@@ -316,9 +318,10 @@ describe('auth() => Phone', function () {
       });
 
       it('throws an error with an invalid observer event', async function () {
+        const { getApp } = modular;
         const { getAuth, verifyPhoneNumber } = authModular;
 
-        const defaultApp = firebase.app();
+        const defaultApp = getApp();
         const defaultAuth = getAuth(defaultApp);
 
         const testPhone = getRandomPhoneNumber();
@@ -335,9 +338,10 @@ describe('auth() => Phone', function () {
       });
 
       it('successfully runs verification complete handler', async function () {
+        const { getApp } = modular;
         const { getAuth, verifyPhoneNumber } = authModular;
 
-        const defaultApp = firebase.app();
+        const defaultApp = getApp();
         const defaultAuth = getAuth(defaultApp);
 
         const testPhone = getRandomPhoneNumber();
@@ -353,9 +357,10 @@ describe('auth() => Phone', function () {
       });
 
       it('successfully runs and calls success callback', async function () {
+        const { getApp } = modular;
         const { getAuth, verifyPhoneNumber } = authModular;
 
-        const defaultApp = firebase.app();
+        const defaultApp = getApp();
         const defaultAuth = getAuth(defaultApp);
 
         const testPhone = getRandomPhoneNumber();
@@ -391,9 +396,10 @@ describe('auth() => Phone', function () {
 
       // TODO determine why this is not stable on the emulator, is it also not stable on real device?
       xit('successfully runs and calls error callback', async function () {
+        const { getApp } = modular;
         const { getAuth, verifyPhoneNumber } = authModular;
 
-        const defaultApp = firebase.app();
+        const defaultApp = getApp();
         const defaultAuth = getAuth(defaultApp);
 
         const successCb = sinon.spy();
@@ -418,9 +424,10 @@ describe('auth() => Phone', function () {
       });
 
       it('catches an error and emits an error event', async function () {
+        const { getApp } = modular;
         const { getAuth, verifyPhoneNumber } = authModular;
 
-        const defaultApp = firebase.app();
+        const defaultApp = getApp();
         const defaultAuth = getAuth(defaultApp);
 
         const catchCb = sinon.spy();

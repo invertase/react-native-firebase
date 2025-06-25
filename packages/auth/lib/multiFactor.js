@@ -1,9 +1,8 @@
+import { reload } from './modular';
 /**
  * Return a MultiFactorUser instance the gateway to multi-factor operations.
  */
 export function multiFactor(auth) {
-  // eslint-disable-next-line no-console
-  console.warn('This method is deprecated. Please use auth().multiFactor(user) instead');
   return new MultiFactorUser(auth);
 }
 
@@ -33,7 +32,7 @@ export class MultiFactorUser {
     await this._auth.native.finalizeMultiFactorEnrollment(token, secret, displayName);
 
     // We need to reload the user otherwise the changes are not visible
-    return this._auth.currentUser.reload();
+    return reload(this._auth.currentUser);
   }
 
   unenroll() {

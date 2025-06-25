@@ -107,6 +107,74 @@ export function tryJSONStringify(data) {
 const NO_REPLACEMENT = true;
 
 const mapOfDeprecationReplacements = {
+  auth: {
+    default: {
+      applyActionCode: 'applyActionCode()',
+      checkActionCode: 'checkActionCode()',
+      confirmPasswordReset: 'confirmPasswordReset()',
+      createUserWithEmailAndPassword: 'createUserWithEmailAndPassword()',
+      fetchSignInMethodsForEmail: 'fetchSignInMethodsForEmail()',
+      getMultiFactorResolver: 'getMultiFactorResolver()',
+      isSignInWithEmailLink: 'isSignInWithEmailLink()',
+      onAuthStateChanged: 'onAuthStateChanged()',
+      onIdTokenChanged: 'onIdTokenChanged()',
+      sendPasswordResetEmail: 'sendPasswordResetEmail()',
+      sendSignInLinkToEmail: 'sendSignInLinkToEmail()',
+      signInAnonymously: 'signInAnonymously()',
+      signInWithCredential: 'signInWithCredential()',
+      signInWithCustomToken: 'signInWithCustomToken()',
+      signInWithEmailAndPassword: 'signInWithEmailAndPassword()',
+      signInWithEmailLink: 'signInWithEmailLink()',
+      signInWithPhoneNumber: 'signInWithPhoneNumber()',
+      signInWithRedirect: 'signInWithRedirect()',
+      signInWithPopup: 'signInWithPopup()',
+      signOut: 'signOut()',
+      useUserAccessGroup: 'useUserAccessGroup()',
+      verifyPasswordResetCode: 'verifyPasswordResetCode()',
+      getCustomAuthDomain: 'getCustomAuthDomain()',
+      useEmulator: 'connectAuthEmulator()',
+      setLanguageCode: 'useDeviceLanguage()',
+      multiFactor: 'multiFactor()',
+      useDeviceLanguage: 'useDeviceLanguage()',
+      updateCurrentUser: 'updateCurrentUser()',
+      validatePassword: 'validatePassword()',
+    },
+    User: {
+      delete: 'deleteUser()',
+      getIdToken: 'getIdToken()',
+      getIdTokenResult: 'getIdTokenResult()',
+      linkWithCredential: 'linkWithCredential()',
+      linkWithPopup: 'linkWithPopup()',
+      linkWithRedirect: 'linkWithRedirect()',
+      reauthenticateWithCredential: 'reauthenticateWithCredential()',
+      reauthenticateWithPopup: 'reauthenticateWithPopup()',
+      reauthenticateWithRedirect: 'reauthenticateWithRedirect()',
+      reload: 'reload()',
+      sendEmailVerification: 'sendEmailVerification()',
+      toJSON: NO_REPLACEMENT,
+      unlink: 'unlink()',
+      updateEmail: 'updateEmail()',
+      updatePassword: 'updatePassword()',
+      updatePhoneNumber: 'updatePhoneNumber()',
+      updateProfile: 'updateProfile()',
+      verifyBeforeUpdateEmail: 'verifyBeforeUpdateEmail()',
+    },
+    statics: {
+      AppleAuthProvider: 'AppleAuthProvider',
+      EmailAuthProvider: 'EmailAuthProvider',
+      PhoneAuthProvider: 'PhoneAuthProvider',
+      GoogleAuthProvider: 'GoogleAuthProvider',
+      GithubAuthProvider: 'GithubAuthProvider',
+      TwitterAuthProvider: 'TwitterAuthProvider',
+      FacebookAuthProvider: 'FacebookAuthProvider',
+      PhoneMultiFactorGenerator: 'PhoneMultiFactorGenerator',
+      OAuthProvider: 'OAuthProvider',
+      OIDCAuthProvider: 'OIDCAuthProvider',
+      PhoneAuthState: 'PhoneAuthState',
+      getMultiFactorResolver: 'getMultiFactorResolver()',
+      multiFactor: 'multiFactor()',
+    },
+  },
   appCheck: {
     default: {
       activate: 'initializeAppCheck()',
@@ -430,6 +498,24 @@ export function createDeprecationProxy(instance) {
         }
         if (prop === 'StringFormat' || prop === 'TaskEvent' || prop === 'TaskState') {
           deprecationConsoleWarning('storage', prop, 'statics', false);
+        }
+
+        if (
+          prop === 'PhoneAuthState' ||
+          prop === 'AppleAuthProvider' ||
+          prop === 'PhoneAuthProvider' ||
+          prop === 'GoogleAuthProvider' ||
+          prop === 'GithubAuthProvider' ||
+          prop === 'TwitterAuthProvider' ||
+          prop === 'FacebookAuthProvider' ||
+          prop === 'OAuthProvider' ||
+          prop === 'OIDCAuthProvider' ||
+          prop === 'PhoneMultiFactorGenerator' ||
+          prop === 'EmailAuthProvider' ||
+          prop === 'multiFactor' ||
+          prop === 'getMultiFactorResolver'
+        ) {
+          deprecationConsoleWarning('auth', prop, 'statics', false);
         }
 
         if (prop !== 'setLogLevel') {

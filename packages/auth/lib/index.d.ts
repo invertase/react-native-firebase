@@ -279,6 +279,15 @@ export namespace FirebaseAuthTypes {
    * firebase.auth.X
    */
   export interface Statics {
+    /**
+     * Return the #{@link MultiFactorUser} instance for the current user.
+     */
+    multiFactor: multiFactor;
+    /**
+     * Try and obtain a #{@link MultiFactorResolver} instance based on an error.
+     * Returns null if no resolver object could be found.
+     *
+     */
     getMultiFactorResolver: getMultiFactorResolver;
     /**
      * Email and password auth provider implementation.
