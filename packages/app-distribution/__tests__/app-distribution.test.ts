@@ -18,15 +18,12 @@ import {
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 
 // Mock isIOS to be true so the app distribution methods work in tests
-jest.mock(
-  '@react-native-firebase/app/lib/common',
-  () => ({
+jest.mock('@react-native-firebase/app/lib/common', () => {
+  const actualCommon = jest.requireActual('@react-native-firebase/app/lib/common');
+  return Object.assign({}, actualCommon, {
     isIOS: true,
-    isAndroid: false,
-    isOther: false,
-  }),
-  { virtual: true },
-);
+  });
+});
 
 describe('appDistribution()', function () {
   describe('namespace', function () {
