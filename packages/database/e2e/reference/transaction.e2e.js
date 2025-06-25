@@ -304,10 +304,10 @@ describe('database().ref().transaction()', function () {
     });
 
     it('sets a value if one does not exist', async function () {
-      const { getDatabase, ref, runTransaction } = databaseModular;
+      const { getDatabase, ref, runTransaction, remove } = databaseModular;
 
       const dbRef = ref(getDatabase(), `${TEST_PATH}/transactionCreate`);
-      await dbRef.remove();
+      await remove(dbRef);
 
       const value = Date.now();
 
