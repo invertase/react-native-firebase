@@ -107,6 +107,37 @@ export function tryJSONStringify(data) {
 const NO_REPLACEMENT = true;
 
 const mapOfDeprecationReplacements = {
+  auth: {
+    default: {
+      applyActionCode: 'applyActionCode()',
+      checkActionCode: 'checkActionCode()',
+      confirmPasswordReset: 'confirmPasswordReset()',
+      createUserWithEmailAndPassword: 'createUserWithEmailAndPassword()',
+      fetchSignInMethodsForEmail: 'fetchSignInMethodsForEmail()',
+      getMultiFactorResolver: 'getMultiFactorResolver()',
+      isSignInWithEmailLink: 'isSignInWithEmailLink()',
+      onAuthStateChanged: 'onAuthStateChanged()',
+      onIdTokenChanged: 'onIdTokenChanged()',
+      sendPasswordResetEmail: 'sendPasswordResetEmail()',
+      sendSignInLinkToEmail: 'sendSignInLinkToEmail()',
+      signInAnonymously: 'signInAnonymously()',
+      signInWithCredential: 'signInWithCredential()',
+      signInWithCustomToken: 'signInWithCustomToken()',
+      signInWithEmailAndPassword: 'signInWithEmailAndPassword()',
+      signInWithEmailLink: 'signInWithEmailLink()',
+      signInWithPhoneNumber: 'signInWithPhoneNumber()',
+      signOut: 'signOut()',
+      useUserAccessGroup: 'useUserAccessGroup()',
+      verifyPasswordResetCode: 'verifyPasswordResetCode()',
+      getCustomAuthDomain: 'getCustomAuthDomain()',
+      useEmulator: 'connectAuthEmulator()',
+      setLanguageCode: 'useDeviceLanguage()',
+      multiFactor: 'multiFactor()',
+      useDeviceLanguage: 'useDeviceLanguage()',
+      updateCurrentUser: 'updateCurrentUser()',
+      validatePassword: 'validatePassword()',
+    },
+  },
   appCheck: {
     default: {
       activate: 'initializeAppCheck()',
