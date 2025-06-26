@@ -126,6 +126,8 @@ const mapOfDeprecationReplacements = {
       signInWithEmailAndPassword: 'signInWithEmailAndPassword()',
       signInWithEmailLink: 'signInWithEmailLink()',
       signInWithPhoneNumber: 'signInWithPhoneNumber()',
+      signInWithRedirect: 'signInWithRedirect()',
+      signInWithPopup: 'signInWithPopup()',
       signOut: 'signOut()',
       useUserAccessGroup: 'useUserAccessGroup()',
       verifyPasswordResetCode: 'verifyPasswordResetCode()',

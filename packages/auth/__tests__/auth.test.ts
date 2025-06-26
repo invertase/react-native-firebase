@@ -664,6 +664,26 @@ describe('Auth', function () {
           );
         });
 
+        it('signInWithPopup', function () {
+          const auth = getAuth();
+          const provider = { toObject: () => ({}) } as any;
+          authV9Deprecation(
+            () => signInWithPopup(auth, provider),
+            () => auth.signInWithPopup(provider),
+            'signInWithPopup',
+          );
+        });
+
+        it('signInWithRedirect', function () {
+          const auth = getAuth();
+          const provider = { toObject: () => ({}) } as any;
+          authV9Deprecation(
+            () => signInWithRedirect(auth, provider),
+            () => auth.signInWithRedirect(provider),
+            'signInWithRedirect',
+          );
+        });
+
         it('sendPasswordResetEmail', function () {
           const auth = getAuth();
           authV9Deprecation(
@@ -1030,7 +1050,6 @@ describe('Auth', function () {
           );
         });
 
-        // Test for toJSON which has no modular equivalent
         it('toJSON', function () {
           userV9Deprecation(
             // No modular equivalent
