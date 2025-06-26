@@ -1697,9 +1697,9 @@ describe('auth() modular', function () {
     describe('signInWithCredential()', function () {
       it('it should login with email and password', async function () {
         const { getApp } = modular;
-        const { signInWithCredential, getAuth, signOut } = authModular;
+        const { signInWithCredential, getAuth, signOut, EmailAuthProvider } = authModular;
         const defaultAuth = getAuth(getApp());
-        const credential = firebase.auth.EmailAuthProvider.credential(TEST_EMAIL, TEST_PASS);
+        const credential = EmailAuthProvider.credential(TEST_EMAIL, TEST_PASS);
 
         const successCb = currentUserCredential => {
           const currentUser = currentUserCredential.user;
@@ -1724,12 +1724,9 @@ describe('auth() modular', function () {
 
       it('it should error on login if user is disabled', async function () {
         const { getApp } = modular;
-        const { signInWithCredential, getAuth } = authModular;
+        const { signInWithCredential, getAuth, EmailAuthProvider } = authModular;
         const defaultAuth = getAuth(getApp());
-        const credential = firebase.auth.EmailAuthProvider.credential(
-          DISABLED_EMAIL,
-          DISABLED_PASS,
-        );
+        const credential = EmailAuthProvider.credential(DISABLED_EMAIL, DISABLED_PASS);
 
         const successCb = () => Promise.reject(new Error('Did not error.'));
 
@@ -1748,12 +1745,9 @@ describe('auth() modular', function () {
 
       it('it should error on login if password incorrect', async function () {
         const { getApp } = modular;
-        const { signInWithCredential, getAuth } = authModular;
+        const { signInWithCredential, getAuth, EmailAuthProvider } = authModular;
         const defaultAuth = getAuth(getApp());
-        const credential = firebase.auth.EmailAuthProvider.credential(
-          TEST_EMAIL,
-          TEST_PASS + '666',
-        );
+        const credential = EmailAuthProvider.credential(TEST_EMAIL, TEST_PASS + '666');
 
         const successCb = () => Promise.reject(new Error('Did not error.'));
 
@@ -1772,13 +1766,13 @@ describe('auth() modular', function () {
 
       it('it should error on login if user not found', async function () {
         const { getApp } = modular;
-        const { signInWithCredential, getAuth } = authModular;
+        const { signInWithCredential, getAuth, EmailAuthProvider } = authModular;
         const defaultAuth = getAuth(getApp());
         const random = Utils.randString(12, '#aA');
         const email = `${random}@${random}.com`;
         const pass = random;
 
-        const credential = firebase.auth.EmailAuthProvider.credential(email, pass);
+        const credential = EmailAuthProvider.credential(email, pass);
 
         const successCb = () => Promise.reject(new Error('Did not error.'));
 
