@@ -73,6 +73,7 @@ import auth, {
   PhoneAuthProvider,
   PhoneMultiFactorGenerator,
   TwitterAuthProvider,
+  PhoneAuthState,
 } from '../lib';
 
 const PasswordPolicyImpl = require('../lib/password-policy/PasswordPolicyImpl').default;
@@ -556,12 +557,12 @@ describe('Auth', function () {
     describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
       let authV9Deprecation: CheckV9DeprecationFunction;
       let userV9Deprecation: CheckV9DeprecationFunction;
-      // let staticsV9Deprecation: CheckV9DeprecationFunction;
+      let staticsV9Deprecation: CheckV9DeprecationFunction;
 
       beforeEach(function () {
         authV9Deprecation = createCheckV9Deprecation(['auth']);
         userV9Deprecation = createCheckV9Deprecation(['auth', 'User']);
-        // staticsV9Deprecation = createCheckV9Deprecation(['messaging', 'statics']);
+        staticsV9Deprecation = createCheckV9Deprecation(['auth', 'statics']);
 
         // @ts-ignore test
         jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
@@ -1035,6 +1036,112 @@ describe('Auth', function () {
             () => {},
             () => mockUser.toJSON(),
             'toJSON',
+          );
+        });
+      });
+
+      describe('statics', function () {
+        it('AppleAuthProvider', function () {
+          staticsV9Deprecation(
+            () => AppleAuthProvider,
+            () => auth.AppleAuthProvider,
+            'AppleAuthProvider',
+          );
+        });
+
+        it('EmailAuthProvider', function () {
+          staticsV9Deprecation(
+            () => EmailAuthProvider,
+            () => auth.EmailAuthProvider,
+            'EmailAuthProvider',
+          );
+        });
+
+        it('PhoneAuthProvider', function () {
+          staticsV9Deprecation(
+            () => PhoneAuthProvider,
+            () => auth.PhoneAuthProvider,
+            'PhoneAuthProvider',
+          );
+        });
+
+        it('GoogleAuthProvider', function () {
+          staticsV9Deprecation(
+            () => GoogleAuthProvider,
+            () => auth.GoogleAuthProvider,
+            'GoogleAuthProvider',
+          );
+        });
+
+        it('GithubAuthProvider', function () {
+          staticsV9Deprecation(
+            () => GithubAuthProvider,
+            () => auth.GithubAuthProvider,
+            'GithubAuthProvider',
+          );
+        });
+
+        it('TwitterAuthProvider', function () {
+          staticsV9Deprecation(
+            () => TwitterAuthProvider,
+            () => auth.TwitterAuthProvider,
+            'TwitterAuthProvider',
+          );
+        });
+
+        it('FacebookAuthProvider', function () {
+          staticsV9Deprecation(
+            () => FacebookAuthProvider,
+            () => auth.FacebookAuthProvider,
+            'FacebookAuthProvider',
+          );
+        });
+
+        it('PhoneMultiFactorGenerator', function () {
+          staticsV9Deprecation(
+            () => PhoneMultiFactorGenerator,
+            () => auth.PhoneMultiFactorGenerator,
+            'PhoneMultiFactorGenerator',
+          );
+        });
+
+        it('OAuthProvider', function () {
+          staticsV9Deprecation(
+            () => OAuthProvider,
+            () => auth.OAuthProvider,
+            'OAuthProvider',
+          );
+        });
+
+        it('OIDCAuthProvider', function () {
+          staticsV9Deprecation(
+            () => OIDCAuthProvider,
+            () => auth.OIDCAuthProvider,
+            'OIDCAuthProvider',
+          );
+        });
+
+        it('PhoneAuthState', function () {
+          staticsV9Deprecation(
+            () => PhoneAuthState,
+            () => auth.PhoneAuthState,
+            'PhoneAuthState',
+          );
+        });
+
+        it('getMultiFactorResolver', function () {
+          staticsV9Deprecation(
+            () => getMultiFactorResolver,
+            () => auth.getMultiFactorResolver,
+            'getMultiFactorResolver',
+          );
+        });
+
+        it('multiFactor', function () {
+          staticsV9Deprecation(
+            () => multiFactor,
+            () => auth.multiFactor,
+            'multiFactor',
           );
         });
       });
