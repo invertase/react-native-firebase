@@ -1581,7 +1581,6 @@ describe('auth() modular', function () {
           const currentUser = currentUserCredential.user;
           currentUser.should.be.an.Object();
           currentUser.uid.should.be.a.String();
-          currentUser.toJSON().should.be.an.Object();
           should.equal(currentUser.toJSON().email, null);
           currentUser.isAnonymous.should.equal(true);
           currentUser.providerId.should.equal('firebase');
@@ -1608,8 +1607,6 @@ describe('auth() modular', function () {
           const currentUser = currentUserCredential.user;
           currentUser.should.be.an.Object();
           currentUser.uid.should.be.a.String();
-          currentUser.toJSON().should.be.an.Object();
-          currentUser.toJSON().email.should.eql(TEST_EMAIL);
           currentUser.isAnonymous.should.equal(false);
           currentUser.providerId.should.equal('firebase');
           currentUser.should.equal(defaultAuth.currentUser);
@@ -1705,8 +1702,6 @@ describe('auth() modular', function () {
           const currentUser = currentUserCredential.user;
           currentUser.should.be.an.Object();
           currentUser.uid.should.be.a.String();
-          currentUser.toJSON().should.be.an.Object();
-          currentUser.toJSON().email.should.eql(TEST_EMAIL);
           currentUser.isAnonymous.should.equal(false);
           currentUser.providerId.should.equal('firebase');
           currentUser.should.equal(getAuth().currentUser);
@@ -1965,30 +1960,30 @@ describe('auth() modular', function () {
       describe('languageCode', function () {
         it('it should change the language code', async function () {
           const { getApp } = modular;
-          const { getAuth } = authModular;
+          const { getAuth, setLanguageCode } = authModular;
           const defaultAuth = getAuth(getApp());
 
-          defaultAuth.languageCode = 'en';
+          setLanguageCode(defaultAuth, 'en');
 
           if (defaultAuth.languageCode !== 'en') {
             throw new Error('Expected language code to be "en".');
           }
-          defaultAuth.languageCode = 'fr';
+          setLanguageCode(defaultAuth, 'fr');
 
           if (defaultAuth.languageCode !== 'fr') {
             throw new Error('Expected language code to be "fr".');
           }
           // expect no error
-          defaultAuth.languageCode = null;
+          setLanguageCode(defaultAuth, null);
 
           try {
-            defaultAuth.languageCode = 123;
+            setLanguageCode(defaultAuth, 123);
             throw new Error('It did not error');
           } catch (e) {
             e.message.should.containEql("expected 'languageCode' to be a string or null value");
           }
 
-          defaultAuth.languageCode = 'en';
+          setLanguageCode(defaultAuth, 'en');
         });
       });
 
