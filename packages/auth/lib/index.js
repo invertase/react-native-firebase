@@ -60,6 +60,14 @@ export {
   PhoneMultiFactorGenerator,
   OAuthProvider,
   OIDCAuthProvider,
+  PhoneAuthState,
+};
+
+const PhoneAuthState = {
+  CODE_SENT: 'sent',
+  AUTO_VERIFY_TIMEOUT: 'timeout',
+  AUTO_VERIFIED: 'verified',
+  ERROR: 'error',
 };
 
 const statics = {
@@ -73,12 +81,7 @@ const statics = {
   PhoneMultiFactorGenerator,
   OAuthProvider,
   OIDCAuthProvider,
-  PhoneAuthState: {
-    CODE_SENT: 'sent',
-    AUTO_VERIFY_TIMEOUT: 'timeout',
-    AUTO_VERIFIED: 'verified',
-    ERROR: 'error',
-  },
+  PhoneAuthState,
   getMultiFactorResolver,
   multiFactor,
 };
