@@ -399,6 +399,24 @@ export function createDeprecationProxy(instance) {
           deprecationConsoleWarning('appCheck', prop, 'statics', false);
         }
 
+        if (
+          prop === 'PhoneAuthState' ||
+          prop === 'AppleAuthProvider' ||
+          prop === 'PhoneAuthProvider' ||
+          prop === 'GoogleAuthProvider' ||
+          prop === 'GithubAuthProvider' ||
+          prop === 'TwitterAuthProvider' ||
+          prop === 'FacebookAuthProvider' ||
+          prop === 'OAuthProvider' ||
+          prop === 'OIDCAuthProvider' ||
+          prop === 'PhoneMultiFactorGenerator' ||
+          prop === 'EmailAuthProvider' ||
+          prop === 'multiFactor' ||
+          prop === 'getMultiFactorResolver'
+        ) {
+          deprecationConsoleWarning('auth', prop, 'statics', false);
+        }
+
         if (prop !== 'setLogLevel') {
           // we want to capture setLogLevel function call which we do below
           return Reflect.get(target, prop, receiver);
