@@ -49,6 +49,13 @@ import version from './version';
 import fallBackModule from './web/RNFBAuthModule';
 import { warnDynamicLink } from './utils';
 
+const PhoneAuthState = {
+  CODE_SENT: 'sent',
+  AUTO_VERIFY_TIMEOUT: 'timeout',
+  AUTO_VERIFIED: 'verified',
+  ERROR: 'error',
+};
+
 export {
   AppleAuthProvider,
   EmailAuthProvider,
@@ -61,13 +68,6 @@ export {
   OAuthProvider,
   OIDCAuthProvider,
   PhoneAuthState,
-};
-
-const PhoneAuthState = {
-  CODE_SENT: 'sent',
-  AUTO_VERIFY_TIMEOUT: 'timeout',
-  AUTO_VERIFIED: 'verified',
-  ERROR: 'error',
 };
 
 const statics = {

@@ -157,6 +157,21 @@ const mapOfDeprecationReplacements = {
       updateProfile: 'updateProfile()',
       verifyBeforeUpdateEmail: 'verifyBeforeUpdateEmail()',
     },
+    statics: {
+      AppleAuthProvider: 'AppleAuthProvider',
+      EmailAuthProvider: 'EmailAuthProvider',
+      PhoneAuthProvider: 'PhoneAuthProvider',
+      GoogleAuthProvider: 'GoogleAuthProvider',
+      GithubAuthProvider: 'GithubAuthProvider',
+      TwitterAuthProvider: 'TwitterAuthProvider',
+      FacebookAuthProvider: 'FacebookAuthProvider',
+      PhoneMultiFactorGenerator: 'PhoneMultiFactorGenerator',
+      OAuthProvider: 'OAuthProvider',
+      OIDCAuthProvider: 'OIDCAuthProvider',
+      PhoneAuthState: 'PhoneAuthState',
+      getMultiFactorResolver: 'getMultiFactorResolver()',
+      multiFactor: 'multiFactor()',
+    },
   },
   appCheck: {
     default: {

@@ -796,4 +796,5 @@ export {
   PhoneAuthProvider,
   PhoneMultiFactorGenerator,
   TwitterAuthProvider,
+  PhoneAuthState,
 } from '../index';

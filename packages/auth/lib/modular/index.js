@@ -21,7 +21,6 @@ import { PasswordPolicyImpl } from '../password-policy/PasswordPolicyImpl';
 import FacebookAuthProvider from '../providers/FacebookAuthProvider';
 import { MultiFactorUser } from '../multiFactor';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
-export { FacebookAuthProvider };
 
 /**
  * @typedef {import('@firebase/app-types').FirebaseApp} FirebaseApp
