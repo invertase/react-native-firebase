@@ -85,6 +85,8 @@ import {
   CheckV9DeprecationFunction,
   createCheckV9Deprecation,
 } from '@react-native-firebase/app/lib/common/unitTestUtils';
+// @ts-ignore
+import { createDeprecationProxy } from '@react-native-firebase/app/lib/common';
 
 describe('Auth', function () {
   describe('namespace', function () {
@@ -553,10 +555,12 @@ describe('Auth', function () {
 
     describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
       let authV9Deprecation: CheckV9DeprecationFunction;
+      let userV9Deprecation: CheckV9DeprecationFunction;
       // let staticsV9Deprecation: CheckV9DeprecationFunction;
 
       beforeEach(function () {
         authV9Deprecation = createCheckV9Deprecation(['auth']);
+        userV9Deprecation = createCheckV9Deprecation(['auth', 'User']);
         // staticsV9Deprecation = createCheckV9Deprecation(['messaging', 'statics']);
 
         // @ts-ignore test
@@ -807,6 +811,230 @@ describe('Auth', function () {
             () => multiFactor(mockUser),
             () => auth.multiFactor(mockUser),
             'multiFactor',
+          );
+        });
+      });
+
+      describe('User', function () {
+        let mockUser: User;
+
+        beforeEach(function () {
+          mockUser = new User(getAuth(), {
+            uid: 'test-user-id',
+            displayName: 'Test User',
+            email: 'test@example.com',
+            emailVerified: true,
+            isAnonymous: false,
+            metadata: {
+              lastSignInTime: '2023-01-01T00:00:00.000Z',
+              creationTime: '2023-01-01T00:00:00.000Z',
+            },
+            multiFactor: {
+              enrolledFactors: [],
+            },
+            phoneNumber: '+1234567890',
+            tenantId: null,
+            photoURL: 'https://example.com/photo.jpg',
+            providerData: [
+              {
+                uid: 'test-uid',
+                displayName: 'Test User',
+                email: 'test@example.com',
+                phoneNumber: '+1234567890',
+                photoURL: 'https://example.com/photo.jpg',
+                providerId: 'password',
+              },
+            ],
+            providerId: 'firebase',
+          });
+          mockUser = createDeprecationProxy(mockUser);
+        });
+
+        it('delete', function () {
+          userV9Deprecation(
+            () => deleteUser(mockUser),
+            () => mockUser.delete(),
+            'delete',
+          );
+        });
+
+        it('getIdToken', function () {
+          userV9Deprecation(
+            () => getIdToken(mockUser),
+            () => mockUser.getIdToken(),
+            'getIdToken',
+          );
+        });
+
+        it('getIdToken with forceRefresh', function () {
+          userV9Deprecation(
+            () => getIdToken(mockUser, true),
+            () => mockUser.getIdToken(true),
+            'getIdToken',
+          );
+        });
+
+        it('getIdTokenResult', function () {
+          userV9Deprecation(
+            () => getIdTokenResult(mockUser),
+            () => mockUser.getIdTokenResult(),
+            'getIdTokenResult',
+          );
+        });
+
+        it('getIdTokenResult with forceRefresh', function () {
+          userV9Deprecation(
+            () => getIdTokenResult(mockUser, true),
+            () => mockUser.getIdTokenResult(true),
+            'getIdTokenResult',
+          );
+        });
+
+        it('linkWithCredential', function () {
+          const credential = {} as any;
+          userV9Deprecation(
+            () => linkWithCredential(mockUser, credential),
+            () => mockUser.linkWithCredential(credential),
+            'linkWithCredential',
+          );
+        });
+
+        it('linkWithPopup', function () {
+          const provider = { toObject: () => ({}) } as any;
+          userV9Deprecation(
+            () => linkWithPopup(mockUser, provider),
+            () => mockUser.linkWithPopup(provider),
+            'linkWithPopup',
+          );
+        });
+
+        it('linkWithRedirect', function () {
+          const provider = { toObject: () => ({}) } as any;
+          userV9Deprecation(
+            () => linkWithRedirect(mockUser, provider),
+            () => mockUser.linkWithRedirect(provider),
+            'linkWithRedirect',
+          );
+        });
+
+        it('reauthenticateWithCredential', function () {
+          const credential = {} as any;
+          userV9Deprecation(
+            () => reauthenticateWithCredential(mockUser, credential),
+            () => mockUser.reauthenticateWithCredential(credential),
+            'reauthenticateWithCredential',
+          );
+        });
+
+        it('reauthenticateWithPopup', function () {
+          const provider = { toObject: () => ({}) } as any;
+          userV9Deprecation(
+            () => reauthenticateWithPopup(mockUser, provider),
+            () => mockUser.reauthenticateWithPopup(provider),
+            'reauthenticateWithPopup',
+          );
+        });
+
+        it('reauthenticateWithRedirect', function () {
+          const provider = { toObject: () => ({}) } as any;
+          userV9Deprecation(
+            () => reauthenticateWithRedirect(mockUser, provider),
+            () => mockUser.reauthenticateWithRedirect(provider),
+            'reauthenticateWithRedirect',
+          );
+        });
+
+        it('reload', function () {
+          userV9Deprecation(
+            () => reload(mockUser),
+            () => mockUser.reload(),
+            'reload',
+          );
+        });
+
+        it('sendEmailVerification', function () {
+          userV9Deprecation(
+            () => sendEmailVerification(mockUser),
+            () => mockUser.sendEmailVerification(),
+            'sendEmailVerification',
+          );
+        });
+
+        it('sendEmailVerification with actionCodeSettings', function () {
+          const actionCodeSettings = { url: 'https://example.com' };
+          userV9Deprecation(
+            () => sendEmailVerification(mockUser, actionCodeSettings),
+            () => mockUser.sendEmailVerification(actionCodeSettings),
+            'sendEmailVerification',
+          );
+        });
+
+        it('unlink', function () {
+          userV9Deprecation(
+            () => unlink(mockUser, 'google.com'),
+            () => mockUser.unlink('google.com'),
+            'unlink',
+          );
+        });
+
+        it('updateEmail', function () {
+          userV9Deprecation(
+            () => updateEmail(mockUser, 'newemail@example.com'),
+            () => mockUser.updateEmail('newemail@example.com'),
+            'updateEmail',
+          );
+        });
+
+        it('updatePassword', function () {
+          userV9Deprecation(
+            () => updatePassword(mockUser, 'newPassword123'),
+            () => mockUser.updatePassword('newPassword123'),
+            'updatePassword',
+          );
+        });
+
+        it('updatePhoneNumber', function () {
+          const credential = {} as any;
+          userV9Deprecation(
+            () => updatePhoneNumber(mockUser, credential),
+            () => mockUser.updatePhoneNumber(credential),
+            'updatePhoneNumber',
+          );
+        });
+
+        it('updateProfile', function () {
+          const profile = { displayName: 'John Doe', photoURL: 'https://example.com/photo.jpg' };
+          userV9Deprecation(
+            () => updateProfile(mockUser, profile),
+            () => mockUser.updateProfile(profile),
+            'updateProfile',
+          );
+        });
+
+        it('verifyBeforeUpdateEmail', function () {
+          userV9Deprecation(
+            () => verifyBeforeUpdateEmail(mockUser, 'newemail@example.com'),
+            () => mockUser.verifyBeforeUpdateEmail('newemail@example.com'),
+            'verifyBeforeUpdateEmail',
+          );
+        });
+
+        it('verifyBeforeUpdateEmail with actionCodeSettings', function () {
+          const actionCodeSettings = { url: 'https://example.com' };
+          userV9Deprecation(
+            () => verifyBeforeUpdateEmail(mockUser, 'newemail@example.com', actionCodeSettings),
+            () => mockUser.verifyBeforeUpdateEmail('newemail@example.com', actionCodeSettings),
+            'verifyBeforeUpdateEmail',
+          );
+        });
+
+        // Test for toJSON which has no modular equivalent
+        it('toJSON', function () {
+          userV9Deprecation(
+            // No modular equivalent
+            () => {},
+            () => mockUser.toJSON(),
+            'toJSON',
           );
         });
       });
