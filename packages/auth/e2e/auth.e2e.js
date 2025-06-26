@@ -1204,27 +1204,27 @@ describe('auth() modular', function () {
         if (Platform.other) return;
 
         const { getApp } = modular;
-        const { signInAnonymously, signOut, getAuth } = authModular;
+        const { signInAnonymously, signOut, getAuth, reload } = authModular;
         const defaultAuth = getAuth(getApp());
 
         const firstCredential = await signInAnonymously(defaultAuth);
         await Utils.sleep(500);
         const firstUser = firstCredential.user;
-        await firstUser.reload();
+        await reload(firstUser);
 
         await signOut(defaultAuth);
 
         const secondCredential = await signInAnonymously(defaultAuth);
         await Utils.sleep(500);
         const secondUser = secondCredential.user;
-        await secondUser.reload();
+        await reload(secondUser);
 
         firstUser.metadata.creationTime.should.not.equal(secondUser.metadata.creationTime);
       });
 
       it('Meta data returns as expected with email and password sign in', async function () {
         const { getApp } = modular;
-        const { createUserWithEmailAndPassword, signOut, getAuth } = authModular;
+        const { createUserWithEmailAndPassword, signOut, getAuth, reload } = authModular;
         const defaultAuth = getAuth(getApp());
         const random = Utils.randString(12, '#aA');
         const email1 = `${random}@${random}.com`;
@@ -1232,7 +1232,7 @@ describe('auth() modular', function () {
 
         const firstCredential = await createUserWithEmailAndPassword(defaultAuth, email1, pass);
         const firstUser = firstCredential.user;
-        await firstUser.reload();
+        await reload(firstUser);
         await Utils.sleep(500);
         await signOut(defaultAuth);
         await Utils.sleep(500);
@@ -1241,7 +1241,7 @@ describe('auth() modular', function () {
 
         const secondCredential = await createUserWithEmailAndPassword(defaultAuth, email2, pass);
         const secondUser = secondCredential.user;
-        await secondUser.reload();
+        await reload(secondUser);
 
         firstUser.metadata.creationTime.should.not.equal(secondUser.metadata.creationTime);
       });
@@ -1792,7 +1792,7 @@ describe('auth() modular', function () {
       describe('createUserWithEmailAndPassword()', function () {
         it('it should create a user with an email and password', async function () {
           const { getApp } = modular;
-          const { createUserWithEmailAndPassword, getAuth } = authModular;
+          const { createUserWithEmailAndPassword, getAuth, deleteUser } = authModular;
           const defaultAuth = getAuth(getApp());
 
           const random = Utils.randString(12, '#aA');
@@ -1816,7 +1816,7 @@ describe('auth() modular', function () {
             additionalUserInfo.should.be.an.Object();
             additionalUserInfo.isNewUser.should.equal(true);
 
-            await newUser.delete();
+            await deleteUser(newUser);
           } catch (error) {
             throw error;
           }
@@ -1940,7 +1940,7 @@ describe('auth() modular', function () {
       describe('delete()', function () {
         it('should delete a user', async function () {
           const { getApp } = modular;
-          const { createUserWithEmailAndPassword, getAuth } = authModular;
+          const { createUserWithEmailAndPassword, getAuth, deleteUser } = authModular;
           const defaultAuth = getAuth(getApp());
 
           const random = Utils.randString(12, '#aA');
@@ -1955,7 +1955,7 @@ describe('auth() modular', function () {
             newUser.emailVerified.should.equal(false);
             newUser.isAnonymous.should.equal(false);
             newUser.providerId.should.equal('firebase');
-            await defaultAuth.currentUser.delete();
+            await deleteUser(defaultAuth.currentUser);
           } catch (error) {
             throw error;
           }
@@ -2027,7 +2027,8 @@ describe('auth() modular', function () {
       describe('sendPasswordResetEmail()', function () {
         it('should not error', async function () {
           const { getApp } = modular;
-          const { createUserWithEmailAndPassword, sendPasswordResetEmail, getAuth } = authModular;
+          const { createUserWithEmailAndPassword, sendPasswordResetEmail, getAuth, deleteUser } =
+            authModular;
           const defaultAuth = getAuth(getApp());
           const random = Utils.randString(12, '#aA');
           const email = `${random}@${random}.com`;
@@ -2040,7 +2041,7 @@ describe('auth() modular', function () {
             throw new Error('sendPasswordResetEmail() caused an error', error);
           } finally {
             if (credential) {
-              await credential.user.delete();
+              await deleteUser(credential.user);
             }
           }
         });
@@ -2055,6 +2056,7 @@ describe('auth() modular', function () {
               sendPasswordResetEmail,
               getAuth,
               verifyPasswordResetCode,
+              deleteUser,
             } = authModular;
             const defaultAuth = getAuth(getApp());
             const random = Utils.randString(12, '#a');
@@ -2070,7 +2072,7 @@ describe('auth() modular', function () {
               throw new Error('sendPasswordResetEmail() caused an error', error);
             } finally {
               if (credential) {
-                await credential.user.delete();
+                await deleteUser(credential.user);
               }
             }
           }
@@ -2083,6 +2085,7 @@ describe('auth() modular', function () {
             sendPasswordResetEmail,
             getAuth,
             verifyPasswordResetCode,
+            deleteUser,
           } = authModular;
           const defaultAuth = getAuth(getApp());
           const random = Utils.randString(12, '#a');
@@ -2099,7 +2102,7 @@ describe('auth() modular', function () {
             error.message.should.containEql('[auth/invalid-action-code]');
           } finally {
             if (credential) {
-              await credential.user.delete();
+              await deleteUser(credential.user);
             }
           }
         });
@@ -2112,6 +2115,7 @@ describe('auth() modular', function () {
             getAuth,
             signOut,
             signInWithEmailAndPassword,
+            deleteUser,
           } = authModular;
           const defaultAuth = getAuth(getApp());
           const random = Utils.randString(12, '#a');
@@ -2130,7 +2134,7 @@ describe('auth() modular', function () {
             throw new Error('sendPasswordResetEmail() caused an error', error);
           } finally {
             if (credential) {
-              await defaultAuth.currentUser.delete();
+              await deleteUser(defaultAuth.currentUser);
             }
           }
         });
@@ -2144,6 +2148,7 @@ describe('auth() modular', function () {
             confirmPasswordReset,
             signOut,
             signInWithEmailAndPassword,
+            deleteUser,
           } = authModular;
           const defaultAuth = getAuth(getApp());
           const random = Utils.randString(12, '#a');
@@ -2162,7 +2167,7 @@ describe('auth() modular', function () {
             throw new Error('sendPasswordResetEmail() caused an error', error);
           } finally {
             if (credential) {
-              await credential.user.delete();
+              await deleteUser(credential.user);
             }
           }
         });
