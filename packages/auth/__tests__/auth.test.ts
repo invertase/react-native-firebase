@@ -82,11 +82,11 @@ const PasswordPolicyImpl = require('../lib/password-policy/PasswordPolicyImpl').
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 // @ts-ignore - We don't mind missing types here
 import { NativeFirebaseError } from '../../app/lib/internal';
-// @ts-ignore test
+
 import {
-  CheckV9DeprecationFunction,
   createCheckV9Deprecation,
-} from '@react-native-firebase/app/lib/common/unitTestUtils';
+  CheckV9DeprecationFunction,
+} from '../../app/lib/common/unitTestUtils';
 // @ts-ignore
 import { createDeprecationProxy } from '@react-native-firebase/app/lib/common';
 
