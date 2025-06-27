@@ -768,7 +768,7 @@ describe('multi-factor modular', function () {
         }
 
         const { getApp } = modular;
-        const { signInWithEmailAndPassword, getAuth, multiFactor } = authModular;
+        const { signInWithEmailAndPassword, getAuth, multiFactor, PhoneAuthProvider } = authModular;
 
         const defaultAuth = getAuth(getApp());
 
@@ -777,7 +777,7 @@ describe('multi-factor modular', function () {
         try {
           const multiFactorUser = await multiFactor(defaultAuth.currentUser);
           const session = await multiFactorUser.getSession();
-          await new firebase.auth.PhoneAuthProvider(defaultAuth).verifyPhoneNumber({
+          await new PhoneAuthProvider(defaultAuth).verifyPhoneNumber({
             phoneNumber: getRandomPhoneNumber(),
             session,
           });

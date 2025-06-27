@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { FirebaseAuthTypes } from '../lib/index';
 // @ts-ignore
 import User from '../lib/User';
@@ -23,6 +23,7 @@ import auth, {
   onIdTokenChanged,
   sendPasswordResetEmail,
   sendSignInLinkToEmail,
+  setLanguageCode,
   setPersistence,
   signInAnonymously,
   signInWithCredential,
@@ -72,6 +73,7 @@ import auth, {
   PhoneAuthProvider,
   PhoneMultiFactorGenerator,
   TwitterAuthProvider,
+  PhoneAuthState,
 } from '../lib';
 
 const PasswordPolicyImpl = require('../lib/password-policy/PasswordPolicyImpl').default;
@@ -80,6 +82,13 @@ const PasswordPolicyImpl = require('../lib/password-policy/PasswordPolicyImpl').
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 // @ts-ignore - We don't mind missing types here
 import { NativeFirebaseError } from '../../app/lib/internal';
+
+import {
+  createCheckV9Deprecation,
+  CheckV9DeprecationFunction,
+} from '../../app/lib/common/unitTestUtils';
+// @ts-ignore
+import { createDeprecationProxy } from '@react-native-firebase/app/lib/common';
 
 describe('Auth', function () {
   describe('namespace', function () {
@@ -544,6 +553,618 @@ describe('Auth', function () {
 
     it('`TwitterAuthProvider` class is properly exposed to end user', function () {
       expect(TwitterAuthProvider).toBeDefined();
+    });
+
+    describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
+      let authV9Deprecation: CheckV9DeprecationFunction;
+      let userV9Deprecation: CheckV9DeprecationFunction;
+      let staticsV9Deprecation: CheckV9DeprecationFunction;
+
+      beforeEach(function () {
+        authV9Deprecation = createCheckV9Deprecation(['auth']);
+        userV9Deprecation = createCheckV9Deprecation(['auth', 'User']);
+        staticsV9Deprecation = createCheckV9Deprecation(['auth', 'statics']);
+
+        // @ts-ignore test
+        jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
+          return new Proxy(
+            {},
+            {
+              get: () =>
+                jest.fn().mockResolvedValue({
+                  result: true,
+                } as never),
+            },
+          );
+        });
+      });
+
+      describe('Auth', function () {
+        it('applyActionCode', function () {
+          const auth = getAuth();
+          authV9Deprecation(
+            () => applyActionCode(auth, 'code'),
+            () => auth.applyActionCode('code'),
+            'applyActionCode',
+          );
+        });
+
+        it('checkActionCode', function () {
+          const auth = getAuth();
+          authV9Deprecation(
+            () => checkActionCode(auth, 'code'),
+            () => auth.checkActionCode('code'),
+            'checkActionCode',
+          );
+        });
+
+        it('confirmPasswordReset', function () {
+          const auth = getAuth();
+          authV9Deprecation(
+            () => confirmPasswordReset(auth, 'code', 'newPassword'),
+            () => auth.confirmPasswordReset('code', 'newPassword'),
+            'confirmPasswordReset',
+          );
+        });
+
+        it('createUserWithEmailAndPassword', function () {
+          const auth = getAuth();
+          authV9Deprecation(
+            () => createUserWithEmailAndPassword(auth, 'test@example.com', 'password'),
+            () => auth.createUserWithEmailAndPassword('test@example.com', 'password'),
+            'createUserWithEmailAndPassword',
+          );
+        });
+
+        it('fetchSignInMethodsForEmail', function () {
+          const auth = getAuth();
+          authV9Deprecation(
+            () => fetchSignInMethodsForEmail(auth, 'test@example.com'),
+            () => auth.fetchSignInMethodsForEmail('test@example.com'),
+            'fetchSignInMethodsForEmail',
+          );
+        });
+
+        it('getMultiFactorResolver', function () {
+          const auth = getAuth();
+          const error = new Error() as any;
+          authV9Deprecation(
+            () => getMultiFactorResolver(auth, error),
+            () => auth.getMultiFactorResolver(error),
+            'getMultiFactorResolver',
+          );
+        });
+
+        it('isSignInWithEmailLink', function () {
+          const auth = getAuth();
+          authV9Deprecation(
+            () => isSignInWithEmailLink(auth, 'emailLink'),
+            () => auth.isSignInWithEmailLink('emailLink'),
+            'isSignInWithEmailLink',
+          );
+        });
+
+        it('onAuthStateChanged', function () {
+          const auth = getAuth();
+          const callback = () => {};
+          authV9Deprecation(
+            () => onAuthStateChanged(auth, callback),
+            () => auth.onAuthStateChanged(callback),
+            'onAuthStateChanged',
+          );
+        });
+
+        it('onIdTokenChanged', function () {
+          const auth = getAuth();
+          const callback = () => {};
+          authV9Deprecation(
+            () => onIdTokenChanged(auth, callback),
+            () => auth.onIdTokenChanged(callback),
+            'onIdTokenChanged',
+          );
+        });
+
+        it('signInWithPopup', function () {
+          const auth = getAuth();
+          const provider = { toObject: () => ({}) } as any;
+          authV9Deprecation(
+            () => signInWithPopup(auth, provider),
+            () => auth.signInWithPopup(provider),
+            'signInWithPopup',
+          );
+        });
+
+        it('signInWithRedirect', function () {
+          const auth = getAuth();
+          const provider = { toObject: () => ({}) } as any;
+          authV9Deprecation(
+            () => signInWithRedirect(auth, provider),
+            () => auth.signInWithRedirect(provider),
+            'signInWithRedirect',
+          );
+        });
+
+        it('sendPasswordResetEmail', function () {
+          const auth = getAuth();
+          authV9Deprecation(
+            () => sendPasswordResetEmail(auth, 'test@example.com'),
+            () => auth.sendPasswordResetEmail('test@example.com'),
+            'sendPasswordResetEmail',
+          );
+        });
+
+        it('sendSignInLinkToEmail', function () {
+          const auth = getAuth();
+          const actionCodeSettings = { url: 'https://example.com' };
+          authV9Deprecation(
+            () => sendSignInLinkToEmail(auth, 'test@example.com', actionCodeSettings),
+            () => auth.sendSignInLinkToEmail('test@example.com', actionCodeSettings),
+            'sendSignInLinkToEmail',
+          );
+        });
+
+        it('signInAnonymously', function () {
+          const auth = getAuth();
+          authV9Deprecation(
+            () => signInAnonymously(auth),
+            () => auth.signInAnonymously(),
+            'signInAnonymously',
+          );
+        });
+
+        it('signInWithCredential', function () {
+          const auth = getAuth();
+          const credential = {} as any;
+          authV9Deprecation(
+            () => signInWithCredential(auth, credential),
+            () => auth.signInWithCredential(credential),
+            'signInWithCredential',
+          );
+        });
+
+        it('signInWithCustomToken', function () {
+          const auth = getAuth();
+          authV9Deprecation(
+            () => signInWithCustomToken(auth, 'customToken'),
+            () => auth.signInWithCustomToken('customToken'),
+            'signInWithCustomToken',
+          );
+        });
+
+        it('signInWithEmailAndPassword', function () {
+          const auth = getAuth();
+          authV9Deprecation(
+            () => signInWithEmailAndPassword(auth, 'test@example.com', 'password'),
+            () => auth.signInWithEmailAndPassword('test@example.com', 'password'),
+            'signInWithEmailAndPassword',
+          );
+        });
+
+        it('signInWithEmailLink', function () {
+          const auth = getAuth();
+          authV9Deprecation(
+            () => signInWithEmailLink(auth, 'test@example.com', 'emailLink'),
+            () => auth.signInWithEmailLink('test@example.com', 'emailLink'),
+            'signInWithEmailLink',
+          );
+        });
+
+        it('signInWithPhoneNumber', function () {
+          const auth = getAuth();
+          authV9Deprecation(
+            () => signInWithPhoneNumber(auth, '+1234567890', undefined),
+            () => auth.signInWithPhoneNumber('+1234567890', false),
+            'signInWithPhoneNumber',
+          );
+        });
+
+        it('signOut', function () {
+          const auth = getAuth();
+          authV9Deprecation(
+            () => signOut(auth),
+            () => auth.signOut(),
+            'signOut',
+          );
+        });
+
+        it('useUserAccessGroup', function () {
+          const auth = getAuth();
+          authV9Deprecation(
+            () => useUserAccessGroup(auth, 'group'),
+            () => auth.useUserAccessGroup('group'),
+            'useUserAccessGroup',
+          );
+        });
+
+        it('verifyPasswordResetCode', function () {
+          const auth = getAuth();
+          authV9Deprecation(
+            () => verifyPasswordResetCode(auth, 'code'),
+            () => auth.verifyPasswordResetCode('code'),
+            'verifyPasswordResetCode',
+          );
+        });
+
+        it('getCustomAuthDomain', function () {
+          const auth = getAuth();
+          authV9Deprecation(
+            () => getCustomAuthDomain(auth),
+            () => auth.getCustomAuthDomain(),
+            'getCustomAuthDomain',
+          );
+        });
+
+        it('useEmulator', function () {
+          const auth = getAuth();
+          authV9Deprecation(
+            () => connectAuthEmulator(auth, 'http://localhost:9099'),
+            () => auth.useEmulator('http://localhost:9099'),
+            'useEmulator',
+          );
+        });
+
+        it('setLanguageCode', function () {
+          const auth = getAuth();
+          authV9Deprecation(
+            () => setLanguageCode(auth, 'en'),
+            () => auth.setLanguageCode('en'),
+            'setLanguageCode',
+          );
+        });
+
+        it('multiFactor', function () {
+          const auth = getAuth();
+          const mockUser = {
+            userId: 'test-user-id',
+            multiFactor: {
+              enrolledFactors: [],
+            },
+          } as any;
+
+          // Mock the currentUser getter to have the same userId
+          Object.defineProperty(auth, 'currentUser', {
+            get: () => ({
+              userId: 'test-user-id',
+            }),
+            configurable: true,
+          });
+
+          authV9Deprecation(
+            () => multiFactor(mockUser),
+            () => auth.multiFactor(mockUser),
+            'multiFactor',
+          );
+        });
+      });
+
+      describe('User', function () {
+        let mockUser: User;
+
+        beforeEach(function () {
+          mockUser = new User(getAuth(), {
+            uid: 'test-user-id',
+            displayName: 'Test User',
+            email: 'test@example.com',
+            emailVerified: true,
+            isAnonymous: false,
+            metadata: {
+              lastSignInTime: '2023-01-01T00:00:00.000Z',
+              creationTime: '2023-01-01T00:00:00.000Z',
+            },
+            multiFactor: {
+              enrolledFactors: [],
+            },
+            phoneNumber: '+1234567890',
+            tenantId: null,
+            photoURL: 'https://example.com/photo.jpg',
+            providerData: [
+              {
+                uid: 'test-uid',
+                displayName: 'Test User',
+                email: 'test@example.com',
+                phoneNumber: '+1234567890',
+                photoURL: 'https://example.com/photo.jpg',
+                providerId: 'password',
+              },
+            ],
+            providerId: 'firebase',
+          });
+          mockUser = createDeprecationProxy(mockUser);
+        });
+
+        it('delete', function () {
+          userV9Deprecation(
+            () => deleteUser(mockUser),
+            () => mockUser.delete(),
+            'delete',
+          );
+        });
+
+        it('getIdToken', function () {
+          userV9Deprecation(
+            () => getIdToken(mockUser),
+            () => mockUser.getIdToken(),
+            'getIdToken',
+          );
+        });
+
+        it('getIdToken with forceRefresh', function () {
+          userV9Deprecation(
+            () => getIdToken(mockUser, true),
+            () => mockUser.getIdToken(true),
+            'getIdToken',
+          );
+        });
+
+        it('getIdTokenResult', function () {
+          userV9Deprecation(
+            () => getIdTokenResult(mockUser),
+            () => mockUser.getIdTokenResult(),
+            'getIdTokenResult',
+          );
+        });
+
+        it('getIdTokenResult with forceRefresh', function () {
+          userV9Deprecation(
+            () => getIdTokenResult(mockUser, true),
+            () => mockUser.getIdTokenResult(true),
+            'getIdTokenResult',
+          );
+        });
+
+        it('linkWithCredential', function () {
+          const credential = {} as any;
+          userV9Deprecation(
+            () => linkWithCredential(mockUser, credential),
+            () => mockUser.linkWithCredential(credential),
+            'linkWithCredential',
+          );
+        });
+
+        it('linkWithPopup', function () {
+          const provider = { toObject: () => ({}) } as any;
+          userV9Deprecation(
+            () => linkWithPopup(mockUser, provider),
+            () => mockUser.linkWithPopup(provider),
+            'linkWithPopup',
+          );
+        });
+
+        it('linkWithRedirect', function () {
+          const provider = { toObject: () => ({}) } as any;
+          userV9Deprecation(
+            () => linkWithRedirect(mockUser, provider),
+            () => mockUser.linkWithRedirect(provider),
+            'linkWithRedirect',
+          );
+        });
+
+        it('reauthenticateWithCredential', function () {
+          const credential = {} as any;
+          userV9Deprecation(
+            () => reauthenticateWithCredential(mockUser, credential),
+            () => mockUser.reauthenticateWithCredential(credential),
+            'reauthenticateWithCredential',
+          );
+        });
+
+        it('reauthenticateWithPopup', function () {
+          const provider = { toObject: () => ({}) } as any;
+          userV9Deprecation(
+            () => reauthenticateWithPopup(mockUser, provider),
+            () => mockUser.reauthenticateWithPopup(provider),
+            'reauthenticateWithPopup',
+          );
+        });
+
+        it('reauthenticateWithRedirect', function () {
+          const provider = { toObject: () => ({}) } as any;
+          userV9Deprecation(
+            () => reauthenticateWithRedirect(mockUser, provider),
+            () => mockUser.reauthenticateWithRedirect(provider),
+            'reauthenticateWithRedirect',
+          );
+        });
+
+        it('reload', function () {
+          userV9Deprecation(
+            () => reload(mockUser),
+            () => mockUser.reload(),
+            'reload',
+          );
+        });
+
+        it('sendEmailVerification', function () {
+          userV9Deprecation(
+            () => sendEmailVerification(mockUser),
+            () => mockUser.sendEmailVerification(),
+            'sendEmailVerification',
+          );
+        });
+
+        it('sendEmailVerification with actionCodeSettings', function () {
+          const actionCodeSettings = { url: 'https://example.com' };
+          userV9Deprecation(
+            () => sendEmailVerification(mockUser, actionCodeSettings),
+            () => mockUser.sendEmailVerification(actionCodeSettings),
+            'sendEmailVerification',
+          );
+        });
+
+        it('unlink', function () {
+          userV9Deprecation(
+            () => unlink(mockUser, 'google.com'),
+            () => mockUser.unlink('google.com'),
+            'unlink',
+          );
+        });
+
+        it('updateEmail', function () {
+          userV9Deprecation(
+            () => updateEmail(mockUser, 'newemail@example.com'),
+            () => mockUser.updateEmail('newemail@example.com'),
+            'updateEmail',
+          );
+        });
+
+        it('updatePassword', function () {
+          userV9Deprecation(
+            () => updatePassword(mockUser, 'newPassword123'),
+            () => mockUser.updatePassword('newPassword123'),
+            'updatePassword',
+          );
+        });
+
+        it('updatePhoneNumber', function () {
+          const credential = {} as any;
+          userV9Deprecation(
+            () => updatePhoneNumber(mockUser, credential),
+            () => mockUser.updatePhoneNumber(credential),
+            'updatePhoneNumber',
+          );
+        });
+
+        it('updateProfile', function () {
+          const profile = { displayName: 'John Doe', photoURL: 'https://example.com/photo.jpg' };
+          userV9Deprecation(
+            () => updateProfile(mockUser, profile),
+            () => mockUser.updateProfile(profile),
+            'updateProfile',
+          );
+        });
+
+        it('verifyBeforeUpdateEmail', function () {
+          userV9Deprecation(
+            () => verifyBeforeUpdateEmail(mockUser, 'newemail@example.com'),
+            () => mockUser.verifyBeforeUpdateEmail('newemail@example.com'),
+            'verifyBeforeUpdateEmail',
+          );
+        });
+
+        it('verifyBeforeUpdateEmail with actionCodeSettings', function () {
+          const actionCodeSettings = { url: 'https://example.com' };
+          userV9Deprecation(
+            () => verifyBeforeUpdateEmail(mockUser, 'newemail@example.com', actionCodeSettings),
+            () => mockUser.verifyBeforeUpdateEmail('newemail@example.com', actionCodeSettings),
+            'verifyBeforeUpdateEmail',
+          );
+        });
+
+        it('toJSON', function () {
+          userV9Deprecation(
+            // No modular equivalent
+            () => {},
+            () => mockUser.toJSON(),
+            'toJSON',
+          );
+        });
+      });
+
+      describe('statics', function () {
+        it('AppleAuthProvider', function () {
+          staticsV9Deprecation(
+            () => AppleAuthProvider,
+            () => auth.AppleAuthProvider,
+            'AppleAuthProvider',
+          );
+        });
+
+        it('EmailAuthProvider', function () {
+          staticsV9Deprecation(
+            () => EmailAuthProvider,
+            () => auth.EmailAuthProvider,
+            'EmailAuthProvider',
+          );
+        });
+
+        it('PhoneAuthProvider', function () {
+          staticsV9Deprecation(
+            () => PhoneAuthProvider,
+            () => auth.PhoneAuthProvider,
+            'PhoneAuthProvider',
+          );
+        });
+
+        it('GoogleAuthProvider', function () {
+          staticsV9Deprecation(
+            () => GoogleAuthProvider,
+            () => auth.GoogleAuthProvider,
+            'GoogleAuthProvider',
+          );
+        });
+
+        it('GithubAuthProvider', function () {
+          staticsV9Deprecation(
+            () => GithubAuthProvider,
+            () => auth.GithubAuthProvider,
+            'GithubAuthProvider',
+          );
+        });
+
+        it('TwitterAuthProvider', function () {
+          staticsV9Deprecation(
+            () => TwitterAuthProvider,
+            () => auth.TwitterAuthProvider,
+            'TwitterAuthProvider',
+          );
+        });
+
+        it('FacebookAuthProvider', function () {
+          staticsV9Deprecation(
+            () => FacebookAuthProvider,
+            () => auth.FacebookAuthProvider,
+            'FacebookAuthProvider',
+          );
+        });
+
+        it('PhoneMultiFactorGenerator', function () {
+          staticsV9Deprecation(
+            () => PhoneMultiFactorGenerator,
+            () => auth.PhoneMultiFactorGenerator,
+            'PhoneMultiFactorGenerator',
+          );
+        });
+
+        it('OAuthProvider', function () {
+          staticsV9Deprecation(
+            () => OAuthProvider,
+            () => auth.OAuthProvider,
+            'OAuthProvider',
+          );
+        });
+
+        it('OIDCAuthProvider', function () {
+          staticsV9Deprecation(
+            () => OIDCAuthProvider,
+            () => auth.OIDCAuthProvider,
+            'OIDCAuthProvider',
+          );
+        });
+
+        it('PhoneAuthState', function () {
+          staticsV9Deprecation(
+            () => PhoneAuthState,
+            () => auth.PhoneAuthState,
+            'PhoneAuthState',
+          );
+        });
+
+        it('getMultiFactorResolver', function () {
+          staticsV9Deprecation(
+            () => getMultiFactorResolver,
+            () => auth.getMultiFactorResolver,
+            'getMultiFactorResolver',
+          );
+        });
+
+        it('multiFactor', function () {
+          staticsV9Deprecation(
+            () => multiFactor,
+            () => auth.multiFactor,
+            'multiFactor',
+          );
+        });
+      });
     });
 
     describe('PasswordPolicyImpl', function () {

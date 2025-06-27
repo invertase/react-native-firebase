@@ -2,8 +2,6 @@
  * Return a MultiFactorUser instance the gateway to multi-factor operations.
  */
 export function multiFactor(auth) {
-  // eslint-disable-next-line no-console
-  console.warn('This method is deprecated. Please use auth().multiFactor(user) instead');
   return new MultiFactorUser(auth);
 }
 
