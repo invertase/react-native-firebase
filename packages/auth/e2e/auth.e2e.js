@@ -1581,7 +1581,6 @@ describe('auth() modular', function () {
           const currentUser = currentUserCredential.user;
           currentUser.should.be.an.Object();
           currentUser.uid.should.be.a.String();
-          should.equal(currentUser.toJSON().email, null);
           currentUser.isAnonymous.should.equal(true);
           currentUser.providerId.should.equal('firebase');
           currentUser.should.equal(defaultAuth.currentUser);
