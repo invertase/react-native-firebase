@@ -1962,21 +1962,21 @@ describe('auth() modular', function () {
           const { getAuth, setLanguageCode } = authModular;
           const defaultAuth = getAuth(getApp());
 
-          setLanguageCode(defaultAuth, 'en');
+          await setLanguageCode(defaultAuth, 'en');
 
           if (defaultAuth.languageCode !== 'en') {
             throw new Error('Expected language code to be "en".');
           }
-          setLanguageCode(defaultAuth, 'fr');
+          await setLanguageCode(defaultAuth, 'fr');
 
           if (defaultAuth.languageCode !== 'fr') {
             throw new Error('Expected language code to be "fr".');
           }
           // expect no error
-          setLanguageCode(defaultAuth, null);
+          await setLanguageCode(defaultAuth, null);
 
           try {
-            setLanguageCode(defaultAuth, 123);
+            await setLanguageCode(defaultAuth, 123);
             throw new Error('It did not error');
           } catch (e) {
             e.message.should.containEql("expected 'languageCode' to be a string or null value");

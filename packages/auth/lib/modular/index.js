@@ -368,7 +368,7 @@ export function useDeviceLanguage(auth) {
  * @param {string} languageCode - The language code.
  */
 export function setLanguageCode(auth, languageCode) {
-  auth.setLanguageCode.call(auth, languageCode, MODULAR_DEPRECATION_ARG);
+  return auth.setLanguageCode.call(auth, languageCode, MODULAR_DEPRECATION_ARG);
 }
 
 /**
