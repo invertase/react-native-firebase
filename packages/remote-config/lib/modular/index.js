@@ -17,6 +17,8 @@
 
 import { getApp } from '@react-native-firebase/app';
 
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
+
 /**
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
  * @typedef {import('..').FirebaseRemoteConfigTypes.Module} RemoteConfig
@@ -49,7 +51,7 @@ export function getRemoteConfig(app) {
  * @returns {Promise<boolean>}
  */
 export function activate(remoteConfig) {
-  return remoteConfig.activate();
+  return remoteConfig.activate.call(remoteConfig, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -58,7 +60,7 @@ export function activate(remoteConfig) {
  * @returns {Promise<void>}
  */
 export function ensureInitialized(remoteConfig) {
-  return remoteConfig.ensureInitialized();
+  return remoteConfig.ensureInitialized.call(remoteConfig, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -68,7 +70,7 @@ export function ensureInitialized(remoteConfig) {
  * @returns {Promise<boolean>}
  */
 export function fetchAndActivate(remoteConfig) {
-  return remoteConfig.fetchAndActivate();
+  return remoteConfig.fetchAndActivate.call(remoteConfig, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -77,7 +79,7 @@ export function fetchAndActivate(remoteConfig) {
  * @returns {Promise<void>}
  */
 export function fetchConfig(remoteConfig) {
-  return remoteConfig.fetchConfig();
+  return remoteConfig.fetchConfig.call(remoteConfig, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -86,7 +88,7 @@ export function fetchConfig(remoteConfig) {
  * @returns {ConfigValues}
  */
 export function getAll(remoteConfig) {
-  return remoteConfig.getAll();
+  return remoteConfig.getAll.call(remoteConfig, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -96,7 +98,7 @@ export function getAll(remoteConfig) {
  * @returns {boolean}
  */
 export function getBoolean(remoteConfig, key) {
-  return remoteConfig.getBoolean(key);
+  return remoteConfig.getBoolean.call(remoteConfig, key, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -106,7 +108,7 @@ export function getBoolean(remoteConfig, key) {
  * @returns {number}
  */
 export function getNumber(remoteConfig, key) {
-  return remoteConfig.getNumber(key);
+  return remoteConfig.getNumber.call(remoteConfig, key, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -116,7 +118,7 @@ export function getNumber(remoteConfig, key) {
  * @returns {string}
  */
 export function getString(remoteConfig, key) {
-  return remoteConfig.getString(key);
+  return remoteConfig.getString.call(remoteConfig, key, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -126,7 +128,7 @@ export function getString(remoteConfig, key) {
  * @returns {ConfigValue}
  */
 export function getValue(remoteConfig, key) {
-  return remoteConfig.getValue(key);
+  return remoteConfig.getValue.call(remoteConfig, key, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -159,7 +161,7 @@ export function isSupported() {
  * @returns {number}
  */
 export function fetchTimeMillis(remoteConfig) {
-  return remoteConfig.fetchTimeMillis;
+  return remoteConfig.fetchTimeMillis.call(remoteConfig, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -169,7 +171,7 @@ export function fetchTimeMillis(remoteConfig) {
  * @returns {ConfigSettings}
  */
 export function settings(remoteConfig) {
-  return remoteConfig.settings;
+  return remoteConfig.settings.call(remoteConfig, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -178,7 +180,7 @@ export function settings(remoteConfig) {
  * @returns {LastFetchStatusType}
  */
 export function lastFetchStatus(remoteConfig) {
-  return remoteConfig.lastFetchStatus;
+  return remoteConfig.lastFetchStatus.call(remoteConfig, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -189,7 +191,7 @@ export function lastFetchStatus(remoteConfig) {
  * @returns {Promise<void>}
  */
 export function reset(remoteConfig) {
-  return remoteConfig.reset();
+  return remoteConfig.reset.call(remoteConfig, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -200,7 +202,7 @@ export function reset(remoteConfig) {
  * @returns {Promise<void>}
  */
 export function setConfigSettings(remoteConfig, settings) {
-  return remoteConfig.setConfigSettings(settings);
+  return remoteConfig.setConfigSettings.call(remoteConfig, settings, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -210,7 +212,7 @@ export function setConfigSettings(remoteConfig, settings) {
  * @returns {Promise<void>}
  */
 export function fetch(remoteConfig, expirationDurationSeconds) {
-  return remoteConfig.fetch(expirationDurationSeconds);
+  return remoteConfig.fetch.call(remoteConfig, expirationDurationSeconds, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -220,7 +222,7 @@ export function fetch(remoteConfig, expirationDurationSeconds) {
  * @returns {Promise<void>}
  */
 export function setDefaults(remoteConfig, defaults) {
-  return remoteConfig.setDefaults(defaults);
+  return remoteConfig.setDefaults.call(remoteConfig, defaults, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -230,7 +232,11 @@ export function setDefaults(remoteConfig, defaults) {
  * @returns {Promise<null>}
  */
 export function setDefaultsFromResource(remoteConfig, resourceName) {
-  return remoteConfig.setDefaultsFromResource(resourceName);
+  return remoteConfig.setDefaultsFromResource.call(
+    remoteConfig,
+    resourceName,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -241,7 +247,7 @@ export function setDefaultsFromResource(remoteConfig, resourceName) {
  * @returns {function} unsubscribe listener
  */
 export function onConfigUpdated(remoteConfig, callback) {
-  return remoteConfig.onConfigUpdated(callback);
+  return remoteConfig.onConfigUpdated.call(remoteConfig, callback, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -258,7 +264,11 @@ export async function setCustomSignals(remoteConfig, customSignals) {
       );
     }
   }
-  return remoteConfig._promiseWithConstants(remoteConfig.native.setCustomSignals(customSignals));
+  return remoteConfig._promiseWithConstants.call(
+    remoteConfig,
+    remoteConfig.native.setCustomSignals(customSignals),
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 export { LastFetchStatus, ValueSource } from '../statics';

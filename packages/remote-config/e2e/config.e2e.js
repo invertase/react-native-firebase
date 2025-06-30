@@ -379,7 +379,7 @@ describe('remoteConfig()', function () {
 
     describe('fetch()', function () {
       it('with expiration provided', async function () {
-        const { getRemoteConfig, ensureInitialized, fetch } = remoteConfigModular;
+        const { getRemoteConfig, ensureInitialized, fetch, LastFetchStatus } = remoteConfigModular;
         const date = Date.now() - 30000;
         const remoteConfig = getRemoteConfig();
         await ensureInitialized(remoteConfig);
@@ -390,7 +390,7 @@ describe('remoteConfig()', function () {
         }
 
         await fetch(remoteConfig, 0);
-        remoteConfig.lastFetchStatus.should.equal(firebase.remoteConfig.LastFetchStatus.SUCCESS);
+        remoteConfig.lastFetchStatus.should.equal(LastFetchStatus.SUCCESS);
         should.equal(getRemoteConfig().fetchTimeMillis >= date, true);
       });
 
