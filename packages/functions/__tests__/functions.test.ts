@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
 
 import functions, {
   firebase,
@@ -8,6 +8,14 @@ import functions, {
   httpsCallableFromUrl,
   HttpsErrorCode,
 } from '../lib';
+
+import {
+  createCheckV9Deprecation,
+  CheckV9DeprecationFunction,
+} from '../../app/lib/common/unitTestUtils';
+
+// @ts-ignore test
+import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 
 describe('Cloud Functions', function () {
   describe('namespace', function () {
@@ -83,6 +91,63 @@ describe('Cloud Functions', function () {
 
     it('`HttpsErrorCode` function is properly exposed to end user', function () {
       expect(HttpsErrorCode).toBeDefined();
+    });
+  });
+
+  describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
+    let functionsRefV9Deprecation: CheckV9DeprecationFunction;
+
+    beforeEach(function () {
+      functionsRefV9Deprecation = createCheckV9Deprecation(['functions']);
+
+      // @ts-ignore test
+      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
+        return new Proxy(
+          {},
+          {
+            get: () =>
+              jest.fn().mockResolvedValue({
+                source: 'cache',
+                changes: [],
+                documents: [],
+                metadata: {},
+                path: 'foo',
+              } as never),
+          },
+        );
+      });
+    });
+
+    describe('Cloud Functions', function () {
+      it('useFunctionsEmulator()', function () {
+        const app = firebase.app();
+        const functions = app.functions();
+        functionsRefV9Deprecation(
+          () => connectFunctionsEmulator(functions, 'localhost', 8080),
+          () => functions.useEmulator('localhost', 8080),
+          'useEmulator',
+        );
+      });
+
+      it('httpsCallable()', function () {
+        const app = firebase.app();
+        const functions = app.functions();
+        functionsRefV9Deprecation(
+          () => httpsCallable(functions, 'example'),
+          () => functions.httpsCallable('example'),
+          'httpsCallable',
+        );
+      });
+
+      it('httpsCallableFromUrl()', function () {
+        const app = firebase.app();
+        const functions = app.functions();
+        functionsRefV9Deprecation(
+          () => httpsCallableFromUrl(functions, 'https://example.com/example'),
+          () => functions.httpsCallableFromUrl('https://example.com/example'),
+          'httpsCallableFromUrl',
+        );
+      });
     });
   });
 });
