@@ -272,10 +272,10 @@ However, you only want to do this for the web platform. For non-web / native app
 At some point during your application's bootstrap processes, initialize firebase like this:
 
 ```javascript
-import { getApp, initializeApp } from "@react-native-firebase/app";
+import { getApp, initializeApp } from '@react-native-firebase/app';
 
 // web requires dynamic initialization on web prior to using firebase
-if (Platform.OS === "web") {
+if (Platform.OS === 'web') {
   const firebaseConfig = {
     // ... config items pasted from firebase console for your web app here
   };
