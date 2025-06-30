@@ -592,6 +592,379 @@ describe('analytics()', function () {
       });
     });
 
+    describe('tests that are for deprecated API for modular and namespace', function () {
+      beforeEach(async function beforeEachTest() {
+        // @ts-ignore
+        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+      });
+
+      afterEach(async function afterEachTest() {
+        // @ts-ignore
+        globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+      });
+
+      describe('logScreenView()', function () {
+        it('calls logScreenView', async function () {
+          const { getAnalytics, logScreenView } = analyticsModular;
+          await logScreenView(getAnalytics(), {
+            screen_name: 'invertase screen',
+            screen_class: 'invertase class',
+          });
+        });
+      });
+
+      describe('logAddPaymentInfo()', function () {
+        it('calls logAddPaymentInfo', async function () {
+          const { getAnalytics, logAddPaymentInfo } = analyticsModular;
+          await logAddPaymentInfo(getAnalytics(), {
+            value: 123,
+            currency: 'USD',
+            items: [],
+          });
+        });
+      });
+
+      describe('logAddToCart()', function () {
+        it('calls logAddToCart', async function () {
+          const { getAnalytics, logAddToCart } = analyticsModular;
+          await logAddToCart(getAnalytics(), {
+            value: 123,
+            currency: 'GBP',
+          });
+        });
+      });
+
+      describe('logAddShippingInfo()', function () {
+        it('calls logAddShippingInfo', async function () {
+          const { getAnalytics, logAddShippingInfo } = analyticsModular;
+          await logAddShippingInfo(getAnalytics(), {
+            value: 123,
+            currency: 'GBP',
+          });
+        });
+      });
+
+      describe('logAddToWishlist()', function () {
+        it('calls logAddToWishlist', async function () {
+          const { getAnalytics, logAddToWishlist } = analyticsModular;
+          await logAddToWishlist(getAnalytics(), {
+            items: [
+              {
+                item_id: 'foo',
+                item_name: 'foo',
+                item_category: 'foo',
+                item_location_id: 'foo',
+                quantity: 5,
+              },
+            ],
+            value: 123,
+            currency: 'GBP',
+          });
+        });
+      });
+
+      describe('logAppOpen()', function () {
+        it('calls logAppOpen', async function () {
+          const { getAnalytics, logAppOpen } = analyticsModular;
+          await logAppOpen(getAnalytics());
+        });
+      });
+
+      describe('logBeginCheckout()', function () {
+        it('calls logBeginCheckout', async function () {
+          const { getAnalytics, logBeginCheckout } = analyticsModular;
+          await logBeginCheckout(getAnalytics());
+        });
+      });
+
+      describe('logCampaignDetails()', function () {
+        it('calls logCampaignDetails', async function () {
+          const { getAnalytics, logCampaignDetails } = analyticsModular;
+          await logCampaignDetails(getAnalytics(), {
+            source: 'foo',
+            medium: 'bar',
+            campaign: 'baz',
+          });
+        });
+      });
+
+      describe('logEarnVirtualCurrency()', function () {
+        it('calls logEarnVirtualCurrency', async function () {
+          const { getAnalytics, logEarnVirtualCurrency } = analyticsModular;
+          await logEarnVirtualCurrency(getAnalytics(), {
+            virtual_currency_name: 'foo',
+            value: 123,
+          });
+        });
+      });
+
+      describe('logPurchase()', function () {
+        it('calls logPurchase', async function () {
+          const { getAnalytics, logPurchase } = analyticsModular;
+          await logPurchase(getAnalytics(), {
+            currency: 'USD',
+            value: 123,
+            affiliation: 'affiliation',
+          });
+        });
+      });
+
+      describe('logViewPromotion()', function () {
+        it('calls logViewPromotion', async function () {
+          const { getAnalytics, logViewPromotion } = analyticsModular;
+          await logViewPromotion(getAnalytics(), {
+            creative_name: 'creative_name',
+            creative_slot: 'creative_slot',
+          });
+        });
+      });
+
+      describe('logGenerateLead()', function () {
+        it('calls logGenerateLead', async function () {
+          const { getAnalytics, logGenerateLead } = analyticsModular;
+          await logGenerateLead(getAnalytics(), {
+            currency: 'USD',
+            value: 123,
+          });
+        });
+      });
+
+      describe('logJoinGroup()', function () {
+        it('calls logJoinGroup', async function () {
+          const { getAnalytics, logJoinGroup } = analyticsModular;
+          await logJoinGroup(getAnalytics(), {
+            group_id: '123',
+          });
+        });
+      });
+
+      describe('logLevelEnd()', function () {
+        it('calls logLevelEnd', async function () {
+          const { getAnalytics, logLevelEnd } = analyticsModular;
+          await logLevelEnd(getAnalytics(), {
+            level: 123,
+            success: 'yes',
+          });
+        });
+      });
+
+      describe('logLevelStart()', function () {
+        it('calls logLevelEnd', async function () {
+          const { getAnalytics, logLevelStart } = analyticsModular;
+          await logLevelStart(getAnalytics(), {
+            level: 123,
+          });
+        });
+      });
+
+      describe('logLevelUp()', function () {
+        it('calls logLevelUp', async function () {
+          const { getAnalytics, logLevelUp } = analyticsModular;
+          await logLevelUp(getAnalytics(), {
+            level: 123,
+            character: 'foo',
+          });
+        });
+      });
+
+      describe('logLogin()', function () {
+        it('calls logLogin', async function () {
+          const { getAnalytics, logLogin } = analyticsModular;
+          await logLogin(getAnalytics(), {
+            method: 'facebook.com',
+          });
+        });
+      });
+
+      describe('logPostScore()', function () {
+        it('calls logPostScore', async function () {
+          const { getAnalytics, logPostScore } = analyticsModular;
+          await logPostScore(getAnalytics(), {
+            score: 123,
+          });
+        });
+      });
+
+      describe('logRemoveFromCart()', function () {
+        it('calls logRemoveFromCart', async function () {
+          const { getAnalytics, logRemoveFromCart } = analyticsModular;
+          await logRemoveFromCart(getAnalytics(), {
+            value: 123,
+            currency: 'USD',
+          });
+        });
+      });
+
+      describe('logSearch()', function () {
+        it('calls logSearch', async function () {
+          const { getAnalytics, logSearch } = analyticsModular;
+          await logSearch(getAnalytics(), {
+            search_term: 'foo',
+          });
+        });
+      });
+
+      describe('logSetCheckoutOption()', function () {
+        it('calls logSelectContent', async function () {
+          const { getAnalytics, logSetCheckoutOption } = analyticsModular;
+          await logSetCheckoutOption(getAnalytics(), {
+            checkout_step: 123,
+            checkout_option: 'foo',
+          });
+        });
+      });
+
+      describe('logSelectItem()', function () {
+        it('calls logSelectItem', async function () {
+          const { getAnalytics, logSelectItem } = analyticsModular;
+          await logSelectItem(getAnalytics(), {
+            item_list_id: 'foo',
+            item_list_name: 'foo',
+            content_type: 'foo',
+          });
+        });
+      });
+
+      describe('logShare()', function () {
+        it('calls logShare', async function () {
+          const { getAnalytics, logShare } = analyticsModular;
+          await logShare(getAnalytics(), {
+            content_type: 'foo',
+            item_id: 'foo',
+            method: 'foo',
+          });
+        });
+      });
+
+      describe('logSignUp()', function () {
+        it('calls logSignUp', async function () {
+          const { getAnalytics, logSignUp } = analyticsModular;
+          await logSignUp(getAnalytics(), {
+            method: 'facebook.com',
+          });
+        });
+      });
+
+      describe('logSpendVirtualCurrency()', function () {
+        it('calls logSpendVirtualCurrency', async function () {
+          const { getAnalytics, logSpendVirtualCurrency } = analyticsModular;
+          await logSpendVirtualCurrency(getAnalytics(), {
+            item_name: 'foo',
+            virtual_currency_name: 'foo',
+            value: 123,
+          });
+        });
+      });
+
+      describe('logTutorialBegin()', function () {
+        it('calls logTutorialBegin', async function () {
+          const { getAnalytics, logTutorialBegin } = analyticsModular;
+          await logTutorialBegin(getAnalytics());
+        });
+      });
+
+      describe('logTutorialComplete()', function () {
+        it('calls logTutorialComplete', async function () {
+          const { getAnalytics, logTutorialComplete } = analyticsModular;
+          await logTutorialComplete(getAnalytics());
+        });
+      });
+
+      describe('logUnlockAchievement()', function () {
+        it('calls logUnlockAchievement', async function () {
+          const { getAnalytics, logUnlockAchievement } = analyticsModular;
+          await logUnlockAchievement(getAnalytics(), {
+            achievement_id: 'foo',
+          });
+        });
+      });
+
+      describe('logViewCart()', function () {
+        it('calls logViewCart', async function () {
+          const { getAnalytics, logViewCart } = analyticsModular;
+          await logViewCart(getAnalytics());
+        });
+      });
+
+      describe('logViewItem()', function () {
+        it('calls logViewItem', async function () {
+          const { getAnalytics, logViewItem } = analyticsModular;
+          await logViewItem(getAnalytics(), {
+            items: [
+              {
+                item_id: 'foo',
+                item_name: 'foo',
+                item_category: 'foo',
+                item_location_id: 'foo',
+              },
+            ],
+            value: 123,
+            currency: 'GBP',
+          });
+        });
+      });
+
+      describe('logViewItemList()', function () {
+        it('calls logViewItemList', async function () {
+          const { getAnalytics, logViewItemList } = analyticsModular;
+          await logViewItemList(getAnalytics(), {
+            item_list_name: 'foo',
+            items: [
+              {
+                item_id: 'foo',
+                item_name: 'foo',
+                item_category: 'foo',
+                item_location_id: 'foo',
+                price: 123,
+              },
+            ],
+          });
+        });
+      });
+
+      describe('logRefund()', function () {
+        it('calls logRefund', async function () {
+          const { getAnalytics, logRefund } = analyticsModular;
+          await logRefund(getAnalytics(), {
+            affiliation: 'affiliation',
+            coupon: 'coupon',
+          });
+        });
+      });
+
+      describe('logSelectContent()', function () {
+        it('calls logSelectContent', async function () {
+          const { getAnalytics, logSelectContent } = analyticsModular;
+          await logSelectContent(getAnalytics(), {
+            content_type: 'clothing',
+            item_id: 'abcd',
+          });
+        });
+      });
+
+      describe('logSelectPromotion()', function () {
+        it('calls logSelectPromotion', async function () {
+          const { getAnalytics, logSelectPromotion } = analyticsModular;
+          await logSelectPromotion(getAnalytics(), {
+            creative_name: 'string',
+            creative_slot: 'string',
+            location_id: 'string',
+            promotion_id: 'string',
+            promotion_name: 'string',
+          });
+        });
+      });
+
+      describe('logViewSearchResults()', function () {
+        it('calls logViewSearchResults', async function () {
+          const { getAnalytics, logViewSearchResults } = analyticsModular;
+          await logViewSearchResults(getAnalytics(), {
+            search_term: 'promotion',
+          });
+        });
+      });
+    });
+
     describe('setSessionTimeoutDuration()', function () {
       it('default duration', async function () {
         const { getAnalytics, setSessionTimeoutDuration } = analyticsModular;
@@ -685,367 +1058,6 @@ describe('analytics()', function () {
       it('accepts string values', async function () {
         const { getAnalytics, setUserProperties } = analyticsModular;
         await setUserProperties(getAnalytics(), { invertase3: 'rn-firebase' });
-      });
-    });
-
-    describe('logScreenView()', function () {
-      it('calls logScreenView', async function () {
-        const { getAnalytics, logScreenView } = analyticsModular;
-        await logScreenView(getAnalytics(), {
-          screen_name: 'invertase screen',
-          screen_class: 'invertase class',
-        });
-      });
-    });
-
-    describe('logAddPaymentInfo()', function () {
-      it('calls logAddPaymentInfo', async function () {
-        const { getAnalytics, logAddPaymentInfo } = analyticsModular;
-        await logAddPaymentInfo(getAnalytics(), {
-          value: 123,
-          currency: 'USD',
-          items: [],
-        });
-      });
-    });
-
-    describe('logAddToCart()', function () {
-      it('calls logAddToCart', async function () {
-        const { getAnalytics, logAddToCart } = analyticsModular;
-        await logAddToCart(getAnalytics(), {
-          value: 123,
-          currency: 'GBP',
-        });
-      });
-    });
-
-    describe('logAddShippingInfo()', function () {
-      it('calls logAddShippingInfo', async function () {
-        const { getAnalytics, logAddShippingInfo } = analyticsModular;
-        await logAddShippingInfo(getAnalytics(), {
-          value: 123,
-          currency: 'GBP',
-        });
-      });
-    });
-
-    describe('logAddToWishlist()', function () {
-      it('calls logAddToWishlist', async function () {
-        const { getAnalytics, logAddToWishlist } = analyticsModular;
-        await logAddToWishlist(getAnalytics(), {
-          items: [
-            {
-              item_id: 'foo',
-              item_name: 'foo',
-              item_category: 'foo',
-              item_location_id: 'foo',
-              quantity: 5,
-            },
-          ],
-          value: 123,
-          currency: 'GBP',
-        });
-      });
-    });
-
-    describe('logAppOpen()', function () {
-      it('calls logAppOpen', async function () {
-        const { getAnalytics, logAppOpen } = analyticsModular;
-        await logAppOpen(getAnalytics());
-      });
-    });
-
-    describe('logBeginCheckout()', function () {
-      it('calls logBeginCheckout', async function () {
-        const { getAnalytics, logBeginCheckout } = analyticsModular;
-        await logBeginCheckout(getAnalytics());
-      });
-    });
-
-    describe('logCampaignDetails()', function () {
-      it('calls logCampaignDetails', async function () {
-        const { getAnalytics, logCampaignDetails } = analyticsModular;
-        await logCampaignDetails(getAnalytics(), {
-          source: 'foo',
-          medium: 'bar',
-          campaign: 'baz',
-        });
-      });
-    });
-
-    describe('logEarnVirtualCurrency()', function () {
-      it('calls logEarnVirtualCurrency', async function () {
-        const { getAnalytics, logEarnVirtualCurrency } = analyticsModular;
-        await logEarnVirtualCurrency(getAnalytics(), {
-          virtual_currency_name: 'foo',
-          value: 123,
-        });
-      });
-    });
-
-    describe('logPurchase()', function () {
-      it('calls logPurchase', async function () {
-        const { getAnalytics, logPurchase } = analyticsModular;
-        await logPurchase(getAnalytics(), {
-          currency: 'USD',
-          value: 123,
-          affiliation: 'affiliation',
-        });
-      });
-    });
-
-    describe('logViewPromotion()', function () {
-      it('calls logViewPromotion', async function () {
-        const { getAnalytics, logViewPromotion } = analyticsModular;
-        await logViewPromotion(getAnalytics(), {
-          creative_name: 'creative_name',
-          creative_slot: 'creative_slot',
-        });
-      });
-    });
-
-    describe('logGenerateLead()', function () {
-      it('calls logGenerateLead', async function () {
-        const { getAnalytics, logGenerateLead } = analyticsModular;
-        await logGenerateLead(getAnalytics(), {
-          currency: 'USD',
-          value: 123,
-        });
-      });
-    });
-
-    describe('logJoinGroup()', function () {
-      it('calls logJoinGroup', async function () {
-        const { getAnalytics, logJoinGroup } = analyticsModular;
-        await logJoinGroup(getAnalytics(), {
-          group_id: '123',
-        });
-      });
-    });
-
-    describe('logLevelEnd()', function () {
-      it('calls logLevelEnd', async function () {
-        const { getAnalytics, logLevelEnd } = analyticsModular;
-        await logLevelEnd(getAnalytics(), {
-          level: 123,
-          success: 'yes',
-        });
-      });
-    });
-
-    describe('logLevelStart()', function () {
-      it('calls logLevelEnd', async function () {
-        const { getAnalytics, logLevelStart } = analyticsModular;
-        await logLevelStart(getAnalytics(), {
-          level: 123,
-        });
-      });
-    });
-
-    describe('logLevelUp()', function () {
-      it('calls logLevelUp', async function () {
-        const { getAnalytics, logLevelUp } = analyticsModular;
-        await logLevelUp(getAnalytics(), {
-          level: 123,
-          character: 'foo',
-        });
-      });
-    });
-
-    describe('logLogin()', function () {
-      it('calls logLogin', async function () {
-        const { getAnalytics, logLogin } = analyticsModular;
-        await logLogin(getAnalytics(), {
-          method: 'facebook.com',
-        });
-      });
-    });
-
-    describe('logPostScore()', function () {
-      it('calls logPostScore', async function () {
-        const { getAnalytics, logPostScore } = analyticsModular;
-        await logPostScore(getAnalytics(), {
-          score: 123,
-        });
-      });
-    });
-
-    describe('logRemoveFromCart()', function () {
-      it('calls logRemoveFromCart', async function () {
-        const { getAnalytics, logRemoveFromCart } = analyticsModular;
-        await logRemoveFromCart(getAnalytics(), {
-          value: 123,
-          currency: 'USD',
-        });
-      });
-    });
-
-    describe('logSearch()', function () {
-      it('calls logSearch', async function () {
-        const { getAnalytics, logSearch } = analyticsModular;
-        await logSearch(getAnalytics(), {
-          search_term: 'foo',
-        });
-      });
-    });
-
-    describe('logSetCheckoutOption()', function () {
-      it('calls logSelectContent', async function () {
-        const { getAnalytics, logSetCheckoutOption } = analyticsModular;
-        await logSetCheckoutOption(getAnalytics(), {
-          checkout_step: 123,
-          checkout_option: 'foo',
-        });
-      });
-    });
-
-    describe('logSelectItem()', function () {
-      it('calls logSelectItem', async function () {
-        const { getAnalytics, logSelectItem } = analyticsModular;
-        await logSelectItem(getAnalytics(), {
-          item_list_id: 'foo',
-          item_list_name: 'foo',
-          content_type: 'foo',
-        });
-      });
-    });
-
-    describe('logShare()', function () {
-      it('calls logShare', async function () {
-        const { getAnalytics, logShare } = analyticsModular;
-        await logShare(getAnalytics(), {
-          content_type: 'foo',
-          item_id: 'foo',
-          method: 'foo',
-        });
-      });
-    });
-
-    describe('logSignUp()', function () {
-      it('calls logSignUp', async function () {
-        const { getAnalytics, logSignUp } = analyticsModular;
-        await logSignUp(getAnalytics(), {
-          method: 'facebook.com',
-        });
-      });
-    });
-
-    describe('logSpendVirtualCurrency()', function () {
-      it('calls logSpendVirtualCurrency', async function () {
-        const { getAnalytics, logSpendVirtualCurrency } = analyticsModular;
-        await logSpendVirtualCurrency(getAnalytics(), {
-          item_name: 'foo',
-          virtual_currency_name: 'foo',
-          value: 123,
-        });
-      });
-    });
-
-    describe('logTutorialBegin()', function () {
-      it('calls logTutorialBegin', async function () {
-        const { getAnalytics, logTutorialBegin } = analyticsModular;
-        await logTutorialBegin(getAnalytics());
-      });
-    });
-
-    describe('logTutorialComplete()', function () {
-      it('calls logTutorialComplete', async function () {
-        const { getAnalytics, logTutorialComplete } = analyticsModular;
-        await logTutorialComplete(getAnalytics());
-      });
-    });
-
-    describe('logUnlockAchievement()', function () {
-      it('calls logUnlockAchievement', async function () {
-        const { getAnalytics, logUnlockAchievement } = analyticsModular;
-        await logUnlockAchievement(getAnalytics(), {
-          achievement_id: 'foo',
-        });
-      });
-    });
-
-    describe('logViewCart()', function () {
-      it('calls logViewCart', async function () {
-        const { getAnalytics, logViewCart } = analyticsModular;
-        await logViewCart(getAnalytics());
-      });
-    });
-
-    describe('logViewItem()', function () {
-      it('calls logViewItem', async function () {
-        const { getAnalytics, logViewItem } = analyticsModular;
-        await logViewItem(getAnalytics(), {
-          items: [
-            {
-              item_id: 'foo',
-              item_name: 'foo',
-              item_category: 'foo',
-              item_location_id: 'foo',
-            },
-          ],
-          value: 123,
-          currency: 'GBP',
-        });
-      });
-    });
-
-    describe('logViewItemList()', function () {
-      it('calls logViewItemList', async function () {
-        const { getAnalytics, logViewItemList } = analyticsModular;
-        await logViewItemList(getAnalytics(), {
-          item_list_name: 'foo',
-          items: [
-            {
-              item_id: 'foo',
-              item_name: 'foo',
-              item_category: 'foo',
-              item_location_id: 'foo',
-              price: 123,
-            },
-          ],
-        });
-      });
-    });
-
-    describe('logRefund()', function () {
-      it('calls logRefund', async function () {
-        const { getAnalytics, logRefund } = analyticsModular;
-        await logRefund(getAnalytics(), {
-          affiliation: 'affiliation',
-          coupon: 'coupon',
-        });
-      });
-    });
-
-    describe('logSelectContent()', function () {
-      it('calls logSelectContent', async function () {
-        const { getAnalytics, logSelectContent } = analyticsModular;
-        await logSelectContent(getAnalytics(), {
-          content_type: 'clothing',
-          item_id: 'abcd',
-        });
-      });
-    });
-
-    describe('logSelectPromotion()', function () {
-      it('calls logSelectPromotion', async function () {
-        const { getAnalytics, logSelectPromotion } = analyticsModular;
-        await logSelectPromotion(getAnalytics(), {
-          creative_name: 'string',
-          creative_slot: 'string',
-          location_id: 'string',
-          promotion_id: 'string',
-          promotion_name: 'string',
-        });
-      });
-    });
-
-    describe('logViewSearchResults()', function () {
-      it('calls logViewSearchResults', async function () {
-        const { getAnalytics, logViewSearchResults } = analyticsModular;
-        await logViewSearchResults(getAnalytics(), {
-          search_term: 'promotion',
-        });
       });
     });
 
