@@ -57,12 +57,12 @@ export function getApps(): FirebaseApp[] {
  * Initializes a Firebase app with the provided options and name.
  * @param {FirebaseAppOptions} options - Options to configure the services used in the app.
  * @param {string} [name] - The optional name of the app to initialize ('[DEFAULT]' if omitted).
- * @returns {FirebaseApp} - The initialized Firebase app.
+ * @returns {Promise<FirebaseApp>} - The initialized Firebase app.
  */
 export function initializeApp(
   options: ReactNativeFirebase.FirebaseAppOptions,
   name?: string,
-): FirebaseApp {
+): Promise<FirebaseApp> {
   return initializeAppCompat.call(null, options, name, MODULAR_DEPRECATION_ARG);
 }
 
@@ -100,7 +100,7 @@ export function setReactNativeAsyncStorage(
  * Gets react-native-firebase specific "meta" data from native Info.plist / AndroidManifest.xml
  * @returns map of key / value pairs containing native meta data
  */
-export function metaGetAll(): Record<string, string> {
+export function metaGetAll(): Promise<{ [keyof: string]: string | boolean }> {
   return getReactNativeModule('RNFBAppModule').metaGetAll();
 }
 
@@ -124,7 +124,7 @@ export function preferencesClearAll(): Promise<void> {
  * Gets react-native-firebase specific native preferences
  * @returns map of key / value pairs containing native preferences data
  */
-export function preferencesGetAll(): Record<string, string> {
+export function preferencesGetAll(): Promise<{ [keyof: string]: string | boolean }> {
   return getReactNativeModule('RNFBAppModule').preferencesGetAll();
 }
 
