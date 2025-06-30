@@ -915,5 +915,101 @@ describe('firestore()', function () {
         });
       });
     });
+
+    describe('snapshotsInSync', function () {
+      const { getFirestore, onSnapshotsInSync, doc, setDoc, deleteDoc } = firestoreModular;
+
+      it('snapshotsInSync fires when document is updated and synced', async function () {
+        const events = [];
+
+        const db = getFirestore();
+        const testDoc1 = doc(db, `${COLLECTION}/snapshotsInSync1`);
+        const testDoc2 = doc(db, `${COLLECTION}/snapshotsInSync2`);
+
+        if (Platform.other) {
+          // Should throw error for lite SDK
+          try {
+            const unsubscribe = onSnapshotsInSync(getFirestore(), () => {});
+            unsubscribe();
+          } catch (e) {
+            e.message.should.equal('Not supported in the lite SDK.');
+          }
+          return;
+        }
+
+        let unsubscribe;
+        const syncPromise = new Promise(resolve => {
+          unsubscribe = onSnapshotsInSync(db, () => {
+            events.push('sync');
+            if (events.length >= 1) {
+              resolve();
+            }
+          });
+        });
+
+        await Promise.all([setDoc(testDoc1, { test: 1 }), setDoc(testDoc2, { test: 2 })]);
+
+        await syncPromise;
+
+        unsubscribe();
+
+        // Verify unsubscribe worked by doing another write
+        await setDoc(testDoc1, { test: 3 });
+
+        // Cleanup
+        await Promise.all([deleteDoc(testDoc1), deleteDoc(testDoc2)]);
+
+        events.length.should.be.greaterThan(0);
+        events.forEach(event => event.should.equal('sync'));
+      });
+
+      it('unsubscribe() call should prevent further sync events', async function () {
+        const events = [];
+
+        const db = getFirestore();
+        const testDoc1 = doc(db, `${COLLECTION}/snapshotsInSync1`);
+        const testDoc2 = doc(db, `${COLLECTION}/snapshotsInSync2`);
+
+        if (Platform.other) {
+          // Should throw error for lite SDK
+          try {
+            const unsubscribe = onSnapshotsInSync(getFirestore(), () => {});
+            unsubscribe();
+          } catch (e) {
+            e.message.should.equal('Not supported in the lite SDK.');
+          }
+          return;
+        }
+
+        let unsubscribe;
+        const syncPromise = new Promise(resolve => {
+          unsubscribe = onSnapshotsInSync(db, () => {
+            events.push('sync');
+            if (events.length >= 1) {
+              resolve();
+            }
+          });
+        });
+
+        // Trigger initial sync events
+        await Promise.all([setDoc(testDoc1, { test: 1 }), setDoc(testDoc2, { test: 2 })]);
+
+        await syncPromise;
+
+        // Record the number of events before unsubscribe
+        const eventsBeforeUnsubscribe = events.length;
+
+        await unsubscribe();
+
+        await setDoc(testDoc1, { test: 3 });
+        await setDoc(testDoc2, { test: 4 });
+
+        await Promise.all([deleteDoc(testDoc1), deleteDoc(testDoc2)]);
+
+        // Verify that no additional events were recorded after unsubscribe
+        events.length.should.equal(eventsBeforeUnsubscribe);
+        events.forEach(event => event.should.equal('sync'));
+      });
+    });
   });
 });
