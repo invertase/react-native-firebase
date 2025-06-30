@@ -16,7 +16,7 @@
  */
 
 import { getApp } from '@react-native-firebase/app';
-
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 /**
  * @typedef {import('..').FirebaseInstallationsTypes.Module} FirebaseInstallation
  */
@@ -33,7 +33,7 @@ export function getInstallations(app) {
  * @returns {Promise<void>}
  */
 export function deleteInstallations(installations) {
-  return installations.delete();
+  return installations.delete.call(installations, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -41,7 +41,7 @@ export function deleteInstallations(installations) {
  * @returns {Promise<string>}
  */
 export function getId(installations) {
-  return installations.getId();
+  return installations.getId.call(installations, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -50,7 +50,7 @@ export function getId(installations) {
  * @returns {Promise<string>}
  */
 export function getToken(installations, forceRefresh) {
-  return installations.getToken(forceRefresh);
+  return installations.getToken.call(installations, forceRefresh, MODULAR_DEPRECATION_ARG);
 }
 
 /**

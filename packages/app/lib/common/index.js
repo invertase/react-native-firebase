@@ -211,6 +211,13 @@ const mapOfDeprecationReplacements = {
       nanoseconds: NO_REPLACEMENT,
     },
   },
+  installations: {
+    default: {
+      delete: 'deleteInstallations()',
+      getId: 'getId()',
+      getToken: 'getToken()',
+    },
+  },
 };
 
 const modularDeprecationMessage =
