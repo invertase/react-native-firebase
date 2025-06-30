@@ -3,7 +3,7 @@
   "version": "22.2.1",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Admob, Analytics, Auth, Crash Reporting, Cloud Firestore, Database, Dynamic Links, Functions, Messaging (FCM), Remote Config, Storage and more.",
-  "main": "lib/index.js",
+  "main": "./dist/commonjs/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "genversion --semi lib/version.js && npm run build:version",
@@ -11,7 +11,8 @@
     "build:clean": "rimraf android/build && rimraf ios/build",
     "build:plugin": "rimraf plugin/build && tsc --build plugin",
     "lint:plugin": "eslint plugin/src/*",
-    "prepare": "npm run build && npm run build:plugin"
+    "compile": "bob build",
+    "prepare": "npm run build && npm run build:plugin && yarn compile"
   },
   "repository": {
     "type": "git",
@@ -61,7 +62,8 @@
   },
   "devDependencies": {
     "@react-native-async-storage/async-storage": "^2.1.2",
-    "expo": "^52.0.46"
+    "expo": "^52.0.46",
+    "react-native-builder-bob": "^0.40.12"
   },
   "peerDependenciesMeta": {
     "expo": {
@@ -90,5 +92,47 @@
       "playServicesAuth": "21.3.0",
       "firebaseAppDistributionGradle": "5.1.1"
     }
-  }
+  },
+  "exports": {
+    ".": {
+      "source": "./lib/modular/index.js",
+      "import": {
+        "default": "./dist/module/index.js"
+      },
+      "require": {
+        "default": "./dist/commonjs/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "module": "./dist/module/index.js",
+  "files": [
+    "lib/modular",
+    "dist",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__"
+  ],
+  "react-native-builder-bob": {
+    "source": "lib/modular",
+    "output": "dist",
+    "targets": [
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "commonjs",
+        {
+          "esm": true
+        }
+      ]
+    ]
+  },
+  "eslintIgnore": [
+    "node_modules/",
+    "dist/"
+  ]
 }
