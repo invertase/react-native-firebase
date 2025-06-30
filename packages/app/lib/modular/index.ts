@@ -1,30 +1,26 @@
-import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
+import { MODULAR_DEPRECATION_ARG } from '../common';
+import { getReactNativeModule } from '../internal/nativeModule';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   deleteApp as deleteAppCompat,
+  FirebaseApp,
   getApp as getAppCompat,
   getApps as getAppsCompat,
   initializeApp as initializeAppCompat,
   setLogLevel as setLogLevelCompat,
   setReactNativeAsyncStorage as setReactNativeAsyncStorageCompat,
 } from '../internal';
-import { setUserLogHandler } from '../internal/logger';
+import { LogCallback, LogOptions, setUserLogHandler } from '../internal/logger';
 import sdkVersion from '../version';
-
-/**
- * @typedef {import('..').ReactNativeFirebase.FirebaseApp} FirebaseApp
- * @typedef {import('..').ReactNativeFirebase.FirebaseAppOptions} FirebaseAppOptions
- * @typedef {import('..').ReactNativeFirebase.LogLevelString} LogLevelString
- * @typedef {import('../internal/logger').LogCallback} LogCallback
- * @typedef {import('../internal/logger').LogOptions} LogOptions
- */
+import type { ReactNativeFirebase } from '../index.d.ts';
 
 /**
  * Renders this app unusable and frees the resources of all associated services.
  * @param {FirebaseApp} app - The app to delete.
  * @returns {Promise<void>}
  */
-export function deleteApp(app) {
+export function deleteApp(app: FirebaseApp): Promise<void> {
+  // @ts-ignore - ignoring TS warning regarding amount of arguments
   return deleteAppCompat.call(null, app.name, app._nativeInitialized, MODULAR_DEPRECATION_ARG);
 }
 
@@ -35,7 +31,7 @@ export function deleteApp(app) {
   @param {string | undefined} variant - library variant. Optional.
  * @returns {Promise<void>}
  */
-export function registerVersion(libraryKeyOrName, version, variant) {
+export function registerVersion(libraryKeyOrName: string, version: string, variant?: string) {
   throw new Error('registerVersion is only supported on Web');
 }
 
@@ -45,7 +41,7 @@ export function registerVersion(libraryKeyOrName, version, variant) {
  * @param {LogOptions} [options] - Optional settings for log handling.
  * @returns {void}
  */
-export function onLog(logCallback, options) {
+export function onLog(logCallback: LogCallback, options?: LogOptions): void {
   setUserLogHandler(logCallback, options);
 }
 
@@ -53,7 +49,7 @@ export function onLog(logCallback, options) {
  * Gets the list of all initialized apps.
  * @returns {FirebaseApp[]} - An array of all initialized Firebase apps.
  */
-export function getApps() {
+export function getApps(): FirebaseApp[] {
   return getAppsCompat.call(null, MODULAR_DEPRECATION_ARG);
 }
 
@@ -63,7 +59,10 @@ export function getApps() {
  * @param {string} [name] - The optional name of the app to initialize ('[DEFAULT]' if omitted).
  * @returns {FirebaseApp} - The initialized Firebase app.
  */
-export function initializeApp(options, name) {
+export function initializeApp(
+  options: ReactNativeFirebase.FirebaseAppOptions,
+  name?: string,
+): FirebaseApp {
   return initializeAppCompat.call(null, options, name, MODULAR_DEPRECATION_ARG);
 }
 
@@ -72,7 +71,7 @@ export function initializeApp(options, name) {
  * @param {string} [name] - The optional name of the app to return ('[DEFAULT]' if omitted).
  * @returns {FirebaseApp} - The requested Firebase app instance.
  */
-export function getApp(name) {
+export function getApp(name?: string): FirebaseApp {
   return getAppCompat.call(null, name, MODULAR_DEPRECATION_ARG);
 }
 
@@ -81,7 +80,7 @@ export function getApp(name) {
  * @param {LogLevelString} logLevel - The log level to set ('debug', 'verbose', 'info', 'warn', 'error', 'silent').
  * @returns {void}
  */
-export function setLogLevel(logLevel) {
+export function setLogLevel(logLevel: ReactNativeFirebase.LogLevelString): void {
   return setLogLevelCompat.call(null, logLevel, MODULAR_DEPRECATION_ARG);
 }
 
@@ -91,7 +90,9 @@ export function setLogLevel(logLevel) {
  *
  * This is required if you want to persist things like Auth sessions, Analytics device IDs, etc.
  */
-export function setReactNativeAsyncStorage(asyncStorage) {
+export function setReactNativeAsyncStorage(
+  asyncStorage: ReactNativeFirebase.ReactNativeAsyncStorage,
+): void {
   return setReactNativeAsyncStorageCompat.call(null, asyncStorage, MODULAR_DEPRECATION_ARG);
 }
 
@@ -99,8 +100,8 @@ export function setReactNativeAsyncStorage(asyncStorage) {
  * Gets react-native-firebase specific "meta" data from native Info.plist / AndroidManifest.xml
  * @returns map of key / value pairs containing native meta data
  */
-export function metaGetAll() {
-  return NativeModules.RNFBAppModule.metaGetAll();
+export function metaGetAll(): Record<string, string> {
+  return getReactNativeModule('RNFBAppModule').metaGetAll();
 }
 
 /**
@@ -108,23 +109,23 @@ export function metaGetAll() {
  * @returns map of key / value pairs containing native firebase.json constants
  */
 export function jsonGetAll() {
-  return NativeModules.RNFBAppModule.jsonGetAll();
+  return getReactNativeModule('RNFBAppModule').jsonGetAll();
 }
 
 /**
  * Clears react-native-firebase specific native preferences
  * @returns Promise<void>
  */
-export function preferencesClearAll() {
-  return NativeModules.RNFBAppModule.preferencesClearAll();
+export function preferencesClearAll(): Promise<void> {
+  return getReactNativeModule('RNFBAppModule').preferencesClearAll();
 }
 
 /**
  * Gets react-native-firebase specific native preferences
  * @returns map of key / value pairs containing native preferences data
  */
-export function preferencesGetAll() {
-  return NativeModules.RNFBAppModule.preferencesGetAll();
+export function preferencesGetAll(): Record<string, string> {
+  return getReactNativeModule('RNFBAppModule').preferencesGetAll();
 }
 
 /**
@@ -133,8 +134,8 @@ export function preferencesGetAll() {
  * @param value the value of the native preference to set
  * @returns Promise<void>
  */
-export function preferencesSetBool(key, value) {
-  return NativeModules.RNFBAppModule.preferencesSetBool(key, value);
+export function preferencesSetBool(key: string, value: boolean): Promise<void> {
+  return getReactNativeModule('RNFBAppModule').preferencesSetBool(key, value);
 }
 
 /**
@@ -143,8 +144,11 @@ export function preferencesSetBool(key, value) {
  * @param value the value of the native preference to set
  * @returns Promise<void>
  */
-export function preferencesSetString(key, value) {
-  return NativeModules.RNFBAppModule.preferencesSetString(key, value);
+export function preferencesSetString(key: string, value: string): Promise<void> {
+  return getReactNativeModule('RNFBAppModule').preferencesSetString(key, value);
 }
 
 export const SDK_VERSION = sdkVersion;
+
+// Re-export the namespaced API from modular until removed in next breaking change
+export * from '../index';
