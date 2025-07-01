@@ -74,7 +74,7 @@ async function onAppleButtonPress() {
   const appleCredential = auth.AppleAuthProvider.credential(identityToken, nonce, fullName);
 
   // Sign the user in with the credential
-  return auth().signInWithAppleCredential(appleCredential);
+  return signInWithCredential(getAuth(), appleCredential);
 }
 ```
 
