@@ -185,11 +185,11 @@ export function doc(
  * a document.
  * @returns The `DocumentReference` instance.
  */
-export function doc<T>(
-  reference: CollectionReference<T>,
+export declare function doc<AppModelType, DbModelType extends DocumentData>(
+  reference: CollectionReference<AppModelType, DbModelType>,
   path?: string,
   ...pathSegments: string[]
-): DocumentReference<T>;
+): DocumentReference<AppModelType, DbModelType>;
 
 /**
  * Gets a `DocumentReference` instance that refers to a document within
@@ -203,11 +203,11 @@ export function doc<T>(
  * a document.
  * @returns The `DocumentReference` instance.
  */
-export function doc(
-  reference: DocumentReference<unknown>,
+export declare function doc<AppModelType, DbModelType extends DocumentData>(
+  reference: DocumentReference<AppModelType, DbModelType>,
   path: string,
   ...pathSegments: string[]
-): DocumentReference<DocumentData>;
+): DocumentReference<DocumentData, DocumentData>;
 
 export function doc<T>(
   parent: Firestore | CollectionReference<T> | DocumentReference<unknown>,
@@ -231,7 +231,7 @@ export function collection(
   firestore: Firestore,
   path: string,
   ...pathSegments: string[]
-): CollectionReference<DocumentData>;
+): CollectionReference<DocumentData, DocumentData>;
 
 /**
  * Gets a `CollectionReference` instance that refers to a subcollection of
@@ -245,11 +245,29 @@ export function collection(
  * to a collection.
  * @returns The `CollectionReference` instance.
  */
-export function collection(
-  reference: CollectionReference<unknown>,
+export declare function collection<AppModelType, DbModelType extends DocumentData>(
+  reference: CollectionReference<AppModelType, DbModelType>,
   path: string,
   ...pathSegments: string[]
-): CollectionReference<DocumentData>;
+): CollectionReference<DocumentData, DocumentData>;
+
+/**
+ * Gets a `CollectionReference` instance that refers to a subcollection of
+ * `reference` at the specified relative path.
+ *
+ * @param reference - A reference to a document.
+ * @param path - A slash-separated path to a collection.
+ * @param pathSegments - Additional path segments to apply relative to the first
+ * argument.
+ * @throws If the final path has an even number of segments and does not point
+ * to a collection.
+ * @returns The `CollectionReference` instance.
+ */
+export declare function collection<AppModelType, DbModelType extends DocumentData>(
+  reference: DocumentReference<AppModelType, DbModelType>,
+  path: string,
+  ...pathSegments: string[]
+): CollectionReference<DocumentData, DocumentData>;
 
 /**
  * Gets a `CollectionReference` instance that refers to a subcollection of
@@ -302,7 +320,10 @@ export declare function refEqual<AppModelType, DbModelType extends DocumentData>
  * will be included. Cannot contain a slash.
  * @returns The created `Query`.
  */
-export function collectionGroup(firestore: Firestore, collectionId: string): Query<DocumentData>;
+export function collectionGroup(
+  firestore: Firestore,
+  collectionId: string,
+): Query<DocumentData, DocumentData>;
 
 /**
  * Writes to the document referred to by this `DocumentReference`. If the
@@ -383,10 +404,10 @@ export function updateDoc(
  * newly created document after it has been written to the backend (Note that it
  * won't resolve while you're offline).
  */
-export function addDoc<T>(
-  reference: CollectionReference<T>,
-  data: WithFieldValue<T>,
-): Promise<DocumentReference<T>>;
+export declare function addDoc<AppModelType, DbModelType extends DocumentData>(
+  reference: CollectionReference<AppModelType, DbModelType>,
+  data: WithFieldValue<AppModelType>,
+): Promise<DocumentReference<AppModelType, DbModelType>>;
 
 /**
  * Re-enables use of the network for this {@link Firestore} instance after a prior
@@ -701,7 +722,7 @@ export function loadBundle(
  * @param name - The name of the query.
  * @returns A named Query.
  */
-export function namedQuery(firestore: Firestore, name: string): Query<DocumentData>;
+export function namedQuery(firestore: Firestore, name: string): Promise<Query | null>;
 
 /**
  * Creates a write batch, used for performing multiple writes as a single
