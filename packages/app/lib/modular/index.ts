@@ -26,12 +26,12 @@ export function deleteApp(app: FirebaseApp): Promise<void> {
 
 /**
  * Registers a library's name and version for platform logging purposes.
-  @param {string} libraryKeyOrName - library name or key.
-  @param {string} version - library version.
-  @param {string | undefined} variant - library variant. Optional.
+  @param {string} _libraryKeyOrName - library name or key.
+  @param {string} _version - library version.
+  @param {string | undefined} _variant - library variant. Optional.
  * @returns {Promise<void>}
  */
-export function registerVersion(libraryKeyOrName: string, version: string, variant?: string) {
+export function registerVersion(_libraryKeyOrName: string, _version: string, _variant?: string) {
   throw new Error('registerVersion is only supported on Web');
 }
 
