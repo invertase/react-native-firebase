@@ -210,10 +210,9 @@ export function waitForPendingWrites(firestore) {
  * @param {string?} databaseId
  * @returns {Promise<Firestore>}
  */
-export async function initializeFirestore(app, settings /* databaseId */) {
-  // TODO(exaby73): implement 2nd database once it's supported
+export async function initializeFirestore(app, settings, databaseId) {
   const firebase = getApp(app.name);
-  const firestore = firebase.firestore();
+  const firestore = firebase.firestore(databaseId);
   await firestore.settings.call(firestore, settings, MODULAR_DEPRECATION_ARG);
   return firestore;
 }
