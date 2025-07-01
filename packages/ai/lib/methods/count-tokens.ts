@@ -28,12 +28,17 @@ export async function countTokens(
   requestOptions?: RequestOptions,
 ): Promise<CountTokensResponse> {
   let body: string = '';
-  if (apiSettings.backend.backendType === BackendType.GOOGLE_AI) {
-    const mappedParams = GoogleAIMapper.mapCountTokensRequest(params, model);
-    body = JSON.stringify(mappedParams);
-  } else {
-    body = JSON.stringify(params);
+  switch (apiSettings.backend.backendType) {
+    case BackendType.GOOGLE_AI:
+      const mappedParams = GoogleAIMapper.mapCountTokensRequest(params, model);
+      body = JSON.stringify(mappedParams);
+      break;
+    case BackendType.VERTEX_AI:
+    default:
+      body = JSON.stringify(params);
+      break;
   }
+
   const response = await makeRequest(
     model,
     Task.COUNT_TOKENS,
