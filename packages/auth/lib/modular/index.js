@@ -367,7 +367,7 @@ export function useDeviceLanguage(auth) {
 }
 
 /**
- * Sets the current language to the default device/browser preference.
+ * Configures a shared user access group to sync auth state across multiple apps via the Keychain.
  * @param {Auth} auth - The Auth instance.
  * @param {string} userAccessGroup - The user access group.
  * @returns {Promise<void>}

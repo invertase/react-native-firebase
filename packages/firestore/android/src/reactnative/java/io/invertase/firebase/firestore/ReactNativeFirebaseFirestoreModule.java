@@ -193,6 +193,20 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
     promise.resolve(null);
   }
 
+  @ReactMethod
+  public void addSnapshotsInSync(
+      String appName, String databaseId, int listenerId, Promise promise) {
+    module.addSnapshotsInSync(appName, databaseId, listenerId);
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void removeSnapshotsInSync(
+      String appName, String databaseId, int listenerId, Promise promise) {
+    module.removeSnapshotsInSync(appName, databaseId, listenerId);
+    promise.resolve(null);
+  }
+
   private WritableMap taskProgressToWritableMap(LoadBundleTaskProgress progress) {
     WritableMap writableMap = Arguments.createMap();
     writableMap.putDouble("bytesLoaded", progress.getBytesLoaded());

@@ -101,16 +101,16 @@ import RNFBAppCheck`,
     return contents.replace(
       firebaseLine,
       `${firebaseLine}
-        FirebaseApp.configure()
         RNFBAppCheckModule.sharedInstance()
+        FirebaseApp.configure()
       `,
     );
   }
 
   // If Firebase initialization block not found, add both Firebase and App Check initialization
   // This is to make sure Firebase is initialized before App Check
-  const methodInvocationBlock = `FirebaseApp.configure()
-    RNFBAppCheckModule.sharedInstance()`;
+  const methodInvocationBlock = `RNFBAppCheckModule.sharedInstance()
+    FirebaseApp.configure()`;
 
   const methodInvocationLineMatcher = /(?:factory\.startReactNative\()/;
 

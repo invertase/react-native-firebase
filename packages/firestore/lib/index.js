@@ -56,6 +56,7 @@ const nativeEvents = [
   'firestore_collection_sync_event',
   'firestore_document_sync_event',
   'firestore_transaction_event',
+  'firestore_snapshots_in_sync_event',
 ];
 
 class FirebaseFirestoreModule extends FirebaseModule {
@@ -80,6 +81,13 @@ class FirebaseFirestoreModule extends FirebaseModule {
     this.emitter.addListener(this.eventNameForApp('firestore_document_sync_event'), event => {
       this.emitter.emit(
         this.eventNameForApp(`firestore_document_sync_event:${event.listenerId}`),
+        event,
+      );
+    });
+
+    this.emitter.addListener(this.eventNameForApp('firestore_snapshots_in_sync_event'), event => {
+      this.emitter.emit(
+        this.eventNameForApp(`firestore_snapshots_in_sync_event:${event.listenerId}`),
         event,
       );
     });

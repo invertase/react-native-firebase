@@ -26,6 +26,8 @@ Integration with Expo is possible when using a [development build](https://docs.
 
 _NOTE:_ React Native Firebase cannot be used in the pre-compiled [Expo Go app](https://docs.expo.dev/workflow/overview/#expo-go-an-optional-tool-for-learning) because React Native Firebase uses native code that is not compiled into Expo Go.
 
+> **Warning:** If you are using `expo-dev-client`, native crashes (such as those triggered by `crashlytics().crash()`) will **not** be reported to Firebase Crashlytics during development. This is because `expo-dev-client` provides a custom error overlay that catches and displays errors before they are sent to Firebase. To test native crash reporting, you must remove `expo-dev-client` and run your app in a standard release or debug build without the custom error overlay.
+
 To create a new Expo project, see the [Get started](https://docs.expo.dev/get-started/create-a-project/) guide in Expo documentation.
 
 ### Install React Native Firebase modules
