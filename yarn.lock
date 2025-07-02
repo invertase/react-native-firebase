@@ -4785,6 +4785,7 @@ __metadata:
   resolution: "@react-native-firebase/functions@workspace:packages/functions"
   dependencies:
     "@react-native-firebase/private-tests-firebase-functions": "npm:^0.0.1"
+    typescript: "npm:^5.8.3"
   peerDependencies:
     "@react-native-firebase/app": 22.2.1
   languageName: unknown

@@ -27,7 +27,8 @@
     "@react-native-firebase/app": "22.2.1"
   },
   "devDependencies": {
-    "@react-native-firebase/private-tests-firebase-functions": "^0.0.1"
+    "@react-native-firebase/private-tests-firebase-functions": "^0.0.1",
+    "typescript": "^5.8.3"
   },
   "publishConfig": {
     "access": "public",
