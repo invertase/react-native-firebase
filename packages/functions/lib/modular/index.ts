@@ -15,15 +15,19 @@
  *
  */
 
-import { ReactNativeFirebase, getApp } from '@react-native-firebase/app';
-import { FirebaseFunctionsTypes } from '..';
+import { getApp } from '@react-native-firebase/app';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { FirebaseFunctionsTypes } from '..';
 // @ts-ignore
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 
-import FirebaseApp = ReactNativeFirebase.FirebaseApp;
-import Functions = FirebaseFunctionsTypes.Module;
-import HttpsCallable = FirebaseFunctionsTypes.HttpsCallable;
-import HttpsCallableOptions = FirebaseFunctionsTypes.HttpsCallableOptions;
+type FirebaseApp = ReactNativeFirebase.FirebaseApp;
+type Functions = FirebaseFunctionsTypes.Module;
+type HttpsCallable<
+  RequestData = unknown,
+  ResponseData = unknown,
+> = FirebaseFunctionsTypes.HttpsCallable<RequestData, ResponseData>;
+type HttpsCallableOptions = FirebaseFunctionsTypes.HttpsCallableOptions;
 
 /**
  * Returns a Functions instance for the given app.
