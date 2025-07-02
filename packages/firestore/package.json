@@ -26,6 +26,9 @@
     "realtime",
     "firestore"
   ],
+  "dependencies": {
+    "react-native-url-polyfill": "2.0.0"
+  },
   "peerDependencies": {
     "@react-native-firebase/app": "22.2.1"
   },
