@@ -11,7 +11,7 @@ import functions, {
 
 import {
   createCheckV9Deprecation,
-  CheckV9DeprecationFunction,
+  type CheckV9DeprecationFunction,
 } from '../../app/lib/common/unitTestUtils';
 
 // @ts-ignore test
