@@ -200,8 +200,6 @@ export default createModuleNamespace({
   ModuleClass: FirebaseFunctionsModule,
 });
 
-
-
 // import functions, { firebase } from '@react-native-firebase/functions';
 // functions().logEvent(...);
 // firebase.functions().logEvent(...);
