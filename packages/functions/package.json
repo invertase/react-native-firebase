@@ -41,11 +41,11 @@
     ".": {
       "source": "./lib/modular/index.ts",
       "import": {
-        "types": "./dist/typescript/module/lib/modular/index.d.ts",
+        "types": "./dist/typescript/module/functions/lib/modular/index.d.ts",
         "default": "./dist/module/index.js"
       },
       "require": {
-        "types": "./dist/typescript/commonjs/lib/modular/index.d.ts",
+        "types": "./dist/typescript/commonjs/functions/lib/modular/index.d.ts",
         "default": "./dist/commonjs/index.js"
       }
     },
