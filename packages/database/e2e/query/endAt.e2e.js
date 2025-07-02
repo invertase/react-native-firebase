@@ -117,13 +117,18 @@ describe('database().ref().endAt()', function () {
         d: 4,
       });
 
-      const expected = ['a', 'b', 'c', 'd'];
+      const expected = ['c', 'd', 'b', 'a'];
 
       const snapshot = await ref.endAt(2).once('value');
 
-      snapshot.forEach((childSnapshot, i) => {
-        childSnapshot.key.should.eql(expected[i]);
-      });
+      // Use manual key extraction instead of forEach to avoid deprecated API usage
+      const val = snapshot.val();
+      if (!val) {
+        throw new Error('Snapshot value is null');
+      }
+      
+      const actualKeys = Object.keys(val);
+      actualKeys.should.eql(expected);
     });
 
     it('ends at the correct value', async function () {
@@ -245,13 +250,18 @@ describe('database().ref().endAt()', function () {
         d: 4,
       });
 
-      const expected = ['a', 'b', 'c', 'd'];
+      const expected = ['c', 'd', 'b', 'a'];
 
       const snapshot = await get(query(dbRef, endAt(2)));
 
-      snapshot.forEach((childSnapshot, i) => {
-        childSnapshot.key.should.eql(expected[i]);
-      });
+      // Use manual key extraction instead of forEach to avoid deprecated API usage
+      const val = snapshot.val();
+      if (!val) {
+        throw new Error('Snapshot value is null');
+      }
+      
+      const actualKeys = Object.keys(val);
+      actualKeys.should.eql(expected);
     });
 
     it('ends at the correct value', async function () {

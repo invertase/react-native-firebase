@@ -21,7 +21,7 @@ const TEST_PATH = `${PATH}/update`;
 
 describe('database().ref().update()', function () {
   after(async function () {
-    const { getDatabase, ref } = databaseModular;
+    const { getDatabase, ref, remove } = databaseModular;
     await remove(ref(getDatabase(), TEST_PATH));
   });
 

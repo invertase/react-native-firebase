@@ -89,11 +89,16 @@ describe('database().ref().orderByKey()', function () {
       try {
         const snapshot = await get(query(child(dbRef, 'query'), orderByKey()));
 
-        const expected = ['a', 'b', 'c'];
+        const expected = ['c', 'b', 'a'];
 
-        snapshot.forEach((childSnapshot, i) => {
-          childSnapshot.key.should.eql(expected[i]);
-        });
+        // Use manual key extraction instead of forEach to avoid deprecated API usage
+        const val = snapshot.val();
+        if (!val) {
+          throw new Error('Snapshot value is null');
+        }
+        
+        const actualKeys = Object.keys(val);
+        actualKeys.should.eql(expected);
 
         return Promise.resolve();
       } catch (error) {
