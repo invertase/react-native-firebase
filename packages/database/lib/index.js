@@ -15,7 +15,13 @@
  *
  */
 
-import { isAndroid, isBoolean, isNumber, isString } from '@react-native-firebase/app/lib/common';
+import {
+  isAndroid,
+  isBoolean,
+  isNumber,
+  isString,
+  MODULAR_DEPRECATION_ARG,
+} from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
@@ -27,6 +33,8 @@ import DatabaseStatics from './DatabaseStatics';
 import DatabaseTransaction from './DatabaseTransaction';
 import version from './version';
 import fallBackModule from './web/RNFBDatabaseModule';
+
+import { createDeprecationProxy } from '@react-native-firebase/app/lib/common';
 
 const namespace = 'database';
 
@@ -54,9 +62,13 @@ class FirebaseDatabaseModule extends FirebaseModule {
    * @private
    */
   _syncServerTimeOffset() {
-    this.ref('.info/serverTimeOffset').on('value', snapshot => {
-      this._serverTimeOffset = snapshot.val();
-    });
+    this.ref('.info/serverTimeOffset').on(
+      'value',
+      snapshot => {
+        this._serverTimeOffset = snapshot.val();
+      },
+      MODULAR_DEPRECATION_ARG,
+    );
   }
 
   /**
@@ -84,7 +96,7 @@ class FirebaseDatabaseModule extends FirebaseModule {
       );
     }
 
-    return new DatabaseReference(this, path);
+    return createDeprecationProxy(new DatabaseReference(this, path));
   }
 
   /**
@@ -112,7 +124,7 @@ class FirebaseDatabaseModule extends FirebaseModule {
       path = path.slice(0, path.indexOf('?'));
     }
 
-    return new DatabaseReference(this, path || '/');
+    return createDeprecationProxy(new DatabaseReference(this, path || '/'));
   }
 
   /**

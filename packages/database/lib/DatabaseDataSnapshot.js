@@ -21,6 +21,7 @@ import {
   isObject,
   isString,
   isNumber,
+  createDeprecationProxy,
 } from '@react-native-firebase/app/lib/common';
 import { deepGet } from '@react-native-firebase/app/lib/common/deeps';
 
@@ -74,13 +75,13 @@ export default class DatabaseDataSnapshot {
         childPriority = childPriorityValue;
       }
     }
-    return new DatabaseDataSnapshot(childRef, {
+    return createDeprecationProxy(new DatabaseDataSnapshot(childRef, {
       value,
       key: childRef.key,
       exists: value !== null,
       childKeys: isObject(value) ? Object.keys(value) : [],
       priority: childPriority,
-    });
+    }));
   }
 
   /**

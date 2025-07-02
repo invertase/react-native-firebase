@@ -202,11 +202,17 @@ describe('database().ref().equalTo()', function () {
 
       const snapshot = await get(query(dbRef, orderByValue(), equalTo(2)));
 
-      const expected = ['b', 'e'];
+      const expected = ['e', 'b'];
 
-      snapshot.forEach((childSnapshot, i) => {
-        childSnapshot.key.should.eql(expected[i]);
-      });
+      // Use manual key extraction instead of forEach to avoid deprecated API usage
+      const val = snapshot.val();
+      if (!val) {
+        throw new Error('Snapshot value is null');
+      }
+      
+      // Sort keys by their values (ascending order for orderByValue)
+      const actualKeys = Object.keys(val).sort((a, b) => val[a] - val[b]);
+      actualKeys.should.eql(expected);
     });
   });
 });

@@ -10,6 +10,15 @@
  * @param {TransactionOptions?} options
  * @returns {Promise<TransactionResult>}
  */
+
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
+
 export function runTransaction(ref, transactionUpdate, options) {
-  return ref.transaction(transactionUpdate, undefined, options && options.applyLocally);
+  return ref.transaction.call(
+    ref,
+    transactionUpdate,
+    undefined,
+    options && options.applyLocally,
+    MODULAR_DEPRECATION_ARG,
+  );
 }

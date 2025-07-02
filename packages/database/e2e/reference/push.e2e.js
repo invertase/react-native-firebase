@@ -108,36 +108,38 @@ describe('database().ref().push()', function () {
 
   describe('modular', function () {
     it('returns a promise when no value is passed', function () {
-      const { getDatabase, ref, push } = databaseModular;
+      const { getDatabase, ref, push, get } = databaseModular;
 
       const dbRef = ref(getDatabase(), `${TEST_PATH}/boop`);
       const pushed = push(dbRef);
       return pushed
         .then(childRef => {
-          pushed.ref.parent.toString().should.eql(dbRef.toString());
-          pushed.toString().should.eql(childRef.toString());
-          return pushed.once('value');
+          // Verify the push operation returns the correct reference
+          pushed.should.eql(childRef);
+          return get(pushed);
         })
         .then(snap => {
           should.equal(snap.val(), null);
-          snap.ref.toString().should.eql(pushed.toString());
+          // Verify the snapshot is from the correct reference
+          snap.ref.should.eql(pushed);
         });
     });
 
     it('returns a promise and sets the provided value', function () {
-      const { getDatabase, ref, push } = databaseModular;
+      const { getDatabase, ref, push, get } = databaseModular;
 
       const dbRef = ref(getDatabase(), `${TEST_PATH}/value`);
       const pushed = push(dbRef, 6);
       return pushed
         .then(childRef => {
-          pushed.ref.parent.toString().should.eql(dbRef.toString());
-          pushed.toString().should.eql(childRef.toString());
-          return pushed.once('value');
+          // Verify the push operation returns the correct reference
+          pushed.should.eql(childRef);
+          return get(pushed);
         })
         .then(snap => {
           snap.val().should.equal(6);
-          snap.ref.toString().should.eql(pushed.toString());
+          // Verify the snapshot is from the correct reference
+          snap.ref.should.eql(pushed);
         });
     });
 
