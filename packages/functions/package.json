@@ -4,6 +4,7 @@
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Cloud Functions for Firebase lets you automatically run backend code in response to events triggered by Firebase features and HTTPS requests. React Native Firebase supports integration with production and locally emulated Cloud Functions with a simple API interface.\n\n",
   "main": "./dist/commonjs/index.js",
+  "module": "./dist/module/index.js",
   "types": "./dist/typescript/commonjs/lib/modular/index.d.ts",
   "scripts": {
     "build": "genversion --semi lib/version.js",
@@ -50,7 +51,6 @@
     },
     "./package.json": "./package.json"
   },
-  "module": "./dist/module/index.js",
   "files": [
     "lib/modular",
     "dist",
