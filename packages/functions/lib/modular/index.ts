@@ -17,6 +17,7 @@
 
 import { ReactNativeFirebase, getApp } from '@react-native-firebase/app';
 import { FirebaseFunctionsTypes } from '..';
+// @ts-ignore
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 
 import FirebaseApp = ReactNativeFirebase.FirebaseApp;
@@ -50,6 +51,7 @@ export function connectFunctionsEmulator(
   host: string,
   port: number,
 ): void {
+  // @ts-ignore
   return functionsInstance.useEmulator.call(functionsInstance, host, port, MODULAR_DEPRECATION_ARG);
 }
 
@@ -69,8 +71,9 @@ export function httpsCallable<RequestData = unknown, ResponseData = unknown>(
     functionsInstance,
     name,
     options,
+    // @ts-ignore
     MODULAR_DEPRECATION_ARG,
-  );
+  ) as HttpsCallable<RequestData, ResponseData>;
 }
 
 /**
@@ -89,8 +92,9 @@ export function httpsCallableFromUrl<RequestData = unknown, ResponseData = unkno
     functionsInstance,
     url,
     options,
+    // @ts-ignore
     MODULAR_DEPRECATION_ARG,
-  );
+  ) as HttpsCallable<RequestData, ResponseData>;
 }
 
 // Define HttpsErrorCode locally to avoid circular imports
