@@ -317,16 +317,3 @@ export const firebase = getFirebaseRoot();
 setReactNativeModule(nativeModuleName, fallBackModule);
 
 export * from './modular';
-
-// Module augmentation for @react-native-firebase/app
-declare module '@react-native-firebase/app' {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace ReactNativeFirebase {
-    interface Module {
-      functions: any;
-    }
-    interface FirebaseApp {
-      functions(customUrlOrRegion?: string): FirebaseFunctionsTypes.Module;
-    }
-  }
-}
