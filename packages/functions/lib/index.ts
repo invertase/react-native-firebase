@@ -95,6 +95,83 @@ export interface FunctionsModule {
   useEmulator(host: string, port: number): void;
 }
 
+// Export the complete FirebaseFunctionsTypes namespace
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace FirebaseFunctionsTypes {
+  export type FunctionsErrorCode =
+    | 'ok'
+    | 'cancelled'
+    | 'unknown'
+    | 'invalid-argument'
+    | 'deadline-exceeded'
+    | 'not-found'
+    | 'already-exists'
+    | 'permission-denied'
+    | 'resource-exhausted'
+    | 'failed-precondition'
+    | 'aborted'
+    | 'out-of-range'
+    | 'unimplemented'
+    | 'internal'
+    | 'unavailable'
+    | 'data-loss'
+    | 'unauthenticated';
+
+  export interface HttpsCallableResult<ResponseData = unknown> {
+    readonly data: ResponseData;
+  }
+
+  export interface HttpsCallable<RequestData = unknown, ResponseData = unknown> {
+    (data?: RequestData | null): Promise<HttpsCallableResult<ResponseData>>;
+  }
+
+  export interface HttpsCallableOptions {
+    timeout?: number;
+  }
+
+  export interface HttpsError extends Error {
+    readonly code: FunctionsErrorCode;
+    readonly details?: any;
+  }
+
+  export interface HttpsErrorCode {
+    OK: 'ok';
+    CANCELLED: 'cancelled';
+    UNKNOWN: 'unknown';
+    INVALID_ARGUMENT: 'invalid-argument';
+    DEADLINE_EXCEEDED: 'deadline-exceeded';
+    NOT_FOUND: 'not-found';
+    ALREADY_EXISTS: 'already-exists';
+    PERMISSION_DENIED: 'permission-denied';
+    UNAUTHENTICATED: 'unauthenticated';
+    RESOURCE_EXHAUSTED: 'resource-exhausted';
+    FAILED_PRECONDITION: 'failed-precondition';
+    ABORTED: 'aborted';
+    OUT_OF_RANGE: 'out-of-range';
+    UNIMPLEMENTED: 'unimplemented';
+    INTERNAL: 'internal';
+    UNAVAILABLE: 'unavailable';
+    DATA_LOSS: 'data-loss';
+  }
+
+  export interface Statics {
+    HttpsErrorCode: HttpsErrorCode;
+  }
+
+  export interface Module {
+    httpsCallable<RequestData = unknown, ResponseData = unknown>(
+      name: string,
+      options?: HttpsCallableOptions,
+    ): HttpsCallable<RequestData, ResponseData>;
+    httpsCallableFromUrl<RequestData = unknown, ResponseData = unknown>(
+      url: string,
+      options?: HttpsCallableOptions,
+    ): HttpsCallable<RequestData, ResponseData>;
+    useFunctionsEmulator(origin: string): void;
+    useEmulator(host: string, port: number): void;
+  }
+}
+
 class FirebaseFunctionsModule extends FirebaseModule {
   private _customUrlOrRegion: string;
   private _useFunctionsEmulatorHost: string | null;
@@ -238,3 +315,18 @@ export const firebase = getFirebaseRoot();
 
 // Register the interop module for non-native platforms.
 setReactNativeModule(nativeModuleName, fallBackModule);
+
+export * from './modular';
+
+// Module augmentation for @react-native-firebase/app
+declare module '@react-native-firebase/app' {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace ReactNativeFirebase {
+    interface Module {
+      functions: any;
+    }
+    interface FirebaseApp {
+      functions(customUrlOrRegion?: string): FirebaseFunctionsTypes.Module;
+    }
+  }
+}
