@@ -21,7 +21,7 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import HttpsError from './HttpsError';
+import { HttpsError, type NativeError } from './HttpsError';
 import version from './version';
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import fallBackModule from './web/RNFBFunctionsModule';
@@ -73,15 +73,6 @@ const statics = {
 
 interface HttpsCallableOptions {
   timeout?: number;
-}
-
-interface NativeError {
-  userInfo?: {
-    code?: string;
-    message?: string;
-    details?: any;
-  };
-  message?: string;
 }
 
 class FirebaseFunctionsModule extends FirebaseModule {
@@ -170,7 +161,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
     }
     const [, host, portStr] = match;
     const port = portStr ? parseInt(portStr) : 5001;
-    this.useEmulator(host, port);
+    this.useEmulator(host as string, port);
   }
 
   useEmulator(host: string, port: number): void {

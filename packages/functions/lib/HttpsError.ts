@@ -17,21 +17,21 @@
 
 import { NativeFirebaseError } from '@react-native-firebase/app/lib/internal';
 
-interface NativeErrorInstance {
+export interface NativeError {
+  userInfo?: {
+    code?: string;
+    message?: string;
+    details?: any;
+  };
   jsStack?: string;
+  message?: string;
 }
-
-export default class HttpsError extends Error {
+export class HttpsError extends Error {
   readonly code!: string;
   readonly details!: any;
   readonly message!: string;
 
-  constructor(
-    code: string,
-    message?: string,
-    details?: any,
-    nativeErrorInstance?: NativeErrorInstance,
-  ) {
+  constructor(code: string, message?: string, details?: any, nativeErrorInstance?: NativeError) {
     super(message);
 
     Object.defineProperty(this, 'code', {

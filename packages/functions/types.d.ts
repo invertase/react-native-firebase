@@ -33,12 +33,6 @@ declare module '@react-native-firebase/app/lib/internal/web/firebaseFunctions' {
   ): void;
 }
 
-declare module './HttpsError' {
-  export default class HttpsError extends Error {
-    constructor(code: string, message?: string, details?: any, nativeError?: any);
-  }
-}
-
 declare module './version' {
   const version: string;
   export default version;

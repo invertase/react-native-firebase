@@ -17,17 +17,17 @@
 
 import { getApp } from '@react-native-firebase/app';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
-import type { FirebaseFunctionsTypes } from '..';
 // @ts-ignore
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 
 type FirebaseApp = ReactNativeFirebase.FirebaseApp;
-type Functions = FirebaseFunctionsTypes.Module;
-type HttpsCallable<
-  RequestData = unknown,
-  ResponseData = unknown,
-> = FirebaseFunctionsTypes.HttpsCallable<RequestData, ResponseData>;
-type HttpsCallableOptions = FirebaseFunctionsTypes.HttpsCallableOptions;
+type Functions = any; // Will be properly typed once index.ts is converted
+type HttpsCallable<RequestData = unknown, ResponseData = unknown> = (
+  data?: RequestData | null,
+) => Promise<{ data: ResponseData }>;
+type HttpsCallableOptions = {
+  timeout?: number;
+};
 
 /**
  * Returns a Functions instance for the given app.
@@ -37,10 +37,10 @@ type HttpsCallableOptions = FirebaseFunctionsTypes.HttpsCallableOptions;
  */
 export function getFunctions(app?: FirebaseApp, regionOrCustomDomain?: string): Functions {
   if (app) {
-    return getApp(app.name).functions(regionOrCustomDomain);
+    return getApp(app.name).functions(regionOrCustomDomain) as Functions;
   }
 
-  return getApp().functions(regionOrCustomDomain);
+  return getApp().functions(regionOrCustomDomain) as Functions;
 }
 
 /**
