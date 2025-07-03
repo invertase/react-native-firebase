@@ -15,19 +15,12 @@
  *
  */
 
-import { getApp } from '@react-native-firebase/app';
-import type { ReactNativeFirebase } from '@react-native-firebase/app';
-// @ts-ignore
+import { getApp, type ReactNativeFirebase } from '@react-native-firebase/app';
+import type { FunctionsModule, HttpsCallable, HttpsCallableOptions } from '../index';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 
 type FirebaseApp = ReactNativeFirebase.FirebaseApp;
-type Functions = any; // Will be properly typed once index.ts is converted
-type HttpsCallable<RequestData = unknown, ResponseData = unknown> = (
-  data?: RequestData | null,
-) => Promise<{ data: ResponseData }>;
-type HttpsCallableOptions = {
-  timeout?: number;
-};
+type Functions = FunctionsModule;
 
 /**
  * Returns a Functions instance for the given app.

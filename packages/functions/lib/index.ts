@@ -75,6 +75,26 @@ interface HttpsCallableOptions {
   timeout?: number;
 }
 
+// Export types for use in modular API
+export type { HttpsCallableOptions };
+
+export interface HttpsCallable<RequestData = unknown, ResponseData = unknown> {
+  (data?: RequestData | null): Promise<{ data: ResponseData }>;
+}
+
+export interface FunctionsModule {
+  httpsCallable<RequestData = unknown, ResponseData = unknown>(
+    name: string,
+    options?: HttpsCallableOptions,
+  ): HttpsCallable<RequestData, ResponseData>;
+  httpsCallableFromUrl<RequestData = unknown, ResponseData = unknown>(
+    url: string,
+    options?: HttpsCallableOptions,
+  ): HttpsCallable<RequestData, ResponseData>;
+  useFunctionsEmulator(origin: string): void;
+  useEmulator(host: string, port: number): void;
+}
+
 class FirebaseFunctionsModule extends FirebaseModule {
   private _customUrlOrRegion: string;
   private _useFunctionsEmulatorHost: string | null;

@@ -21,6 +21,17 @@ declare module '@react-native-firebase/app/lib/internal/nativeModule' {
   export function setReactNativeModule(moduleName: string, module: any): void;
 }
 
+declare module '@react-native-firebase/app' {
+  export function getApp(name?: string): ReactNativeFirebase.FirebaseApp;
+
+  namespace ReactNativeFirebase {
+    interface FirebaseApp {
+      functions(customUrlOrRegion?: string): any;
+      readonly name: string;
+    }
+  }
+}
+
 declare module '@react-native-firebase/app/lib/internal/web/firebaseFunctions' {
   export function getApp(appName: string): any;
   export function getFunctions(app: any, regionOrCustomDomain?: string): any;
