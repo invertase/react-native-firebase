@@ -14,6 +14,8 @@ import {
   CheckV9DeprecationFunction,
 } from '../../app/lib/common/unitTestUtils';
 
+import { getApp } from '../../app';
+
 // @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 
@@ -120,7 +122,7 @@ describe('Cloud Functions', function () {
 
     describe('Cloud Functions', function () {
       it('useFunctionsEmulator()', function () {
-        const app = firebase.app();
+        const app = getApp();
         const functions = app.functions();
         functionsRefV9Deprecation(
           () => connectFunctionsEmulator(functions, 'localhost', 8080),
@@ -130,7 +132,7 @@ describe('Cloud Functions', function () {
       });
 
       it('httpsCallable()', function () {
-        const app = firebase.app();
+        const app = getApp();
         const functions = app.functions();
         functionsRefV9Deprecation(
           () => httpsCallable(functions, 'example'),
@@ -140,7 +142,7 @@ describe('Cloud Functions', function () {
       });
 
       it('httpsCallableFromUrl()', function () {
-        const app = firebase.app();
+        const app = getApp();
         const functions = app.functions();
         functionsRefV9Deprecation(
           () => httpsCallableFromUrl(functions, 'https://example.com/example'),
