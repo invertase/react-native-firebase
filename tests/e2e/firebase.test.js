@@ -17,10 +17,10 @@
  */
 const { execSync, spawn } = require('child_process');
 
-describe('Jet Tests', () => {
-  jest.retryTimes(3, { logErrorsBeforeRetry: true });
+describe('Jet Tests', function () {
+  jest.retryTimes(0, { logErrorsBeforeRetry: true });
 
-  it('runs all tests', async () => {
+  it('runs all tests', async function () {
     return new Promise(async (resolve, reject) => {
       const platform = detox.device.getPlatform();
       const jetProcess = spawn('yarn', ['jet', `--target=${platform}`, '--coverage'], {
@@ -81,7 +81,7 @@ afterAll(async function () {
 
   try {
     await device.terminateApp();
-  } catch (e) {
+  } catch (_) {
     // No-op
   }
 });
