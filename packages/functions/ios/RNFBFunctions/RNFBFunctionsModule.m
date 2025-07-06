@@ -56,7 +56,17 @@ RCT_EXPORT_METHOD(httpsCallable
     callable.timeoutInterval = [options[@"timeout"] doubleValue];
   }
 
-  [callable callWithObject:[wrapper valueForKey:@"data"]
+  // In reality, this value is always null, because we always call it with null data
+  // on the javascript side for some reason. Check for that case (which should be 100% of the time)
+  // and set it to an `NSNull` (versus the `Optional<Any>` Swift will see from `valueForKey` so that
+  // FirebaseFunctions serializer won't have a validation failure for an unknown type.
+  id data = [wrapper valueForKey:@"data"];
+  NSLog(@"RNFBFUNCTIONS pulled data from 'wrapper', has type %@", [data class]);
+  if (data == nil) {
+    data = [NSNull null];
+  }
+
+  [callable callWithObject:data
                 completion:^(FIRHTTPSCallableResult *_Nullable result, NSError *_Nullable error) {
                   if (error) {
                     NSObject *details = [NSNull null];
@@ -108,7 +118,16 @@ RCT_EXPORT_METHOD(httpsCallableFromUrl
     callable.timeoutInterval = [options[@"timeout"] doubleValue];
   }
 
-  [callable callWithObject:[wrapper valueForKey:@"data"]
+  // In reality, this value is always null, because we always call it with null data
+  // on the javascript side for some reason. Check for that case (which should be 100% of the time)
+  // and set it to an `NSNull` (versus the `Optional<Any>` Swift will see from `valueForKey` so that
+  // FirebaseFunctions serializer won't have a validation failure for an unknown type.
+  id data = [wrapper valueForKey:@"data"];
+  if (data == nil) {
+    data = [NSNull null];
+  }
+
+  [callable callWithObject:data
                 completion:^(FIRHTTPSCallableResult *_Nullable result, NSError *_Nullable error) {
                   if (error) {
                     NSObject *details = [NSNull null];
@@ -134,60 +153,72 @@ RCT_EXPORT_METHOD(httpsCallableFromUrl
 
 - (NSString *)getErrorCodeName:(NSError *)error {
   NSString *code = @"UNKNOWN";
-  switch (error.code) {
-    case FIRFunctionsErrorCodeOK:
-      code = @"OK";
-      break;
-    case FIRFunctionsErrorCodeCancelled:
-      code = @"CANCELLED";
-      break;
-    case FIRFunctionsErrorCodeUnknown:
-      code = @"UNKNOWN";
-      break;
-    case FIRFunctionsErrorCodeInvalidArgument:
-      code = @"INVALID_ARGUMENT";
-      break;
-    case FIRFunctionsErrorCodeDeadlineExceeded:
-      code = @"DEADLINE_EXCEEDED";
-      break;
-    case FIRFunctionsErrorCodeNotFound:
-      code = @"NOT_FOUND";
-      break;
-    case FIRFunctionsErrorCodeAlreadyExists:
-      code = @"ALREADY_EXISTS";
-      break;
-    case FIRFunctionsErrorCodePermissionDenied:
-      code = @"PERMISSION_DENIED";
-      break;
-    case FIRFunctionsErrorCodeResourceExhausted:
-      code = @"RESOURCE_EXHAUSTED";
-      break;
-    case FIRFunctionsErrorCodeFailedPrecondition:
-      code = @"FAILED_PRECONDITION";
-      break;
-    case FIRFunctionsErrorCodeAborted:
-      code = @"ABORTED";
-      break;
-    case FIRFunctionsErrorCodeOutOfRange:
-      code = @"OUT_OF_RANGE";
-      break;
-    case FIRFunctionsErrorCodeUnimplemented:
-      code = @"UNIMPLEMENTED";
-      break;
-    case FIRFunctionsErrorCodeInternal:
-      code = @"INTERNAL";
-      break;
-    case FIRFunctionsErrorCodeUnavailable:
-      code = @"UNAVAILABLE";
-      break;
-    case FIRFunctionsErrorCodeDataLoss:
-      code = @"DATA_LOSS";
-      break;
-    case FIRFunctionsErrorCodeUnauthenticated:
-      code = @"UNAUTHENTICATED";
-      break;
-    default:
-      break;
+
+  if ([error.domain isEqual:@"com.firebase.functions"]) {
+    switch (error.code) {
+      case FIRFunctionsErrorCodeOK:
+        code = @"OK";
+        break;
+      case FIRFunctionsErrorCodeCancelled:
+        code = @"CANCELLED";
+        break;
+      case FIRFunctionsErrorCodeUnknown:
+        code = @"UNKNOWN";
+        break;
+      case FIRFunctionsErrorCodeInvalidArgument:
+        code = @"INVALID_ARGUMENT";
+        break;
+      case FIRFunctionsErrorCodeDeadlineExceeded:
+        code = @"DEADLINE_EXCEEDED";
+        break;
+      case FIRFunctionsErrorCodeNotFound:
+        code = @"NOT_FOUND";
+        break;
+      case FIRFunctionsErrorCodeAlreadyExists:
+        code = @"ALREADY_EXISTS";
+        break;
+      case FIRFunctionsErrorCodePermissionDenied:
+        code = @"PERMISSION_DENIED";
+        break;
+      case FIRFunctionsErrorCodeResourceExhausted:
+        code = @"RESOURCE_EXHAUSTED";
+        break;
+      case FIRFunctionsErrorCodeFailedPrecondition:
+        code = @"FAILED_PRECONDITION";
+        break;
+      case FIRFunctionsErrorCodeAborted:
+        code = @"ABORTED";
+        break;
+      case FIRFunctionsErrorCodeOutOfRange:
+        code = @"OUT_OF_RANGE";
+        break;
+      case FIRFunctionsErrorCodeUnimplemented:
+        code = @"UNIMPLEMENTED";
+        break;
+      case FIRFunctionsErrorCodeInternal:
+        code = @"INTERNAL";
+        break;
+      case FIRFunctionsErrorCodeUnavailable:
+        code = @"UNAVAILABLE";
+        break;
+      case FIRFunctionsErrorCodeDataLoss:
+        code = @"DATA_LOSS";
+        break;
+      case FIRFunctionsErrorCodeUnauthenticated:
+        code = @"UNAUTHENTICATED";
+        break;
+      default:
+        break;
+    }
+  }
+  if ([error.domain isEqual:@"FirebaseFunctions.FunctionsSerializer.Error"]) {
+    NSLog(@"RNFBFUNCTIONS error description: %@", error.description);
+    if ([error.description containsString:@"unsupportedType"]) {
+      code = @"UNSUPPORTED_TYPE";
+    }
+    if ([error.description containsString:@"failedToParseWrappedNumber"]) {
+      code = @"FAILED_TO_PARSE_WRAPPED_NUMBER";
+    }
   }
 
   return code;

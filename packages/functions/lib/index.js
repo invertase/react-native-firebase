@@ -47,6 +47,8 @@ export const HttpsErrorCode = {
   INTERNAL: 'internal',
   UNAVAILABLE: 'unavailable',
   DATA_LOSS: 'data-loss',
+  UNSUPPORTED_TYPE: 'unsupported-type',
+  FAILED_TO_PARSE_WRAPPED_NUMBER: 'failed-to-parse-wrapped-number',
   // Web codes are lowercase dasherized.
   ok: 'ok',
   cancelled: 'cancelled',
