@@ -166,10 +166,8 @@ If you need to avoid IDFA usage while still using analytics, then you need `fire
 $RNFirebaseAnalyticsWithoutAdIdSupport = true
 ```
 
-During `pod install`, using that variable installs a new
-["Analytics With No Ad Ids"](https://firebase.google.com/support/release-notes/ios#version_7110_-_april_20_2021)
-pod the firebase-ios-sdk team has created, and allows both the use of Firebase Analytics in Kids Category apps,
-and use of Firebase Analytics without needing the App Tracking Transparency handling (assuming no other parts
+During `pod install`, using that variable installs the `FirebaseAnalytics/Core` Pod but not the `FirebaseAnalytics/IdentitySupport` Pod, so you may use Firebase Analytics in Kids Category apps,
+or Firebase Analytics without needing the App Tracking Transparency handling (assuming no other parts
 of your app handle data in a way that requires ATT)
 
 Note that for obvious reasons, configuring Firebase Analytics for use without IDFA is incompatible with AdMob
@@ -184,7 +182,7 @@ The way to do this using CocoaPods is to add this variable to your `Podfile` so 
 $RNFirebaseAnalyticsEnableAdSupport = true
 ```
 
-Note: this is setting will have no effect if you disabled Ad IDs as described above, since this setting is specifically linking in the `AdSupport` framework which requires the Ad IDs.
+Note: this setting will have no effect if you disabled Ad IDs as described above, since this setting is specifically linking in the `AdSupport` framework which requires the Ad IDs.
 
 # firebase.json
 

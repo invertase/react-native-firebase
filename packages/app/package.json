@@ -74,7 +74,7 @@
   },
   "sdkVersions": {
     "ios": {
-      "firebase": "11.13.0",
+      "firebase": "11.15.0",
       "iosTarget": "13.0",
       "macosTarget": "10.15",
       "tvosTarget": "13.0"
