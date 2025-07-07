@@ -70,7 +70,7 @@
     "@firebase/rules-unit-testing": "^4.0.1",
     "@inquirer/prompts": "^7.4.1",
     "@octokit/core": "^6.1.5",
-    "@react-native-community/cli": "18.0.0",
+    "@react-native-community/cli": "latest",
     "@react-native/codegen": "^0.80.1",
     "@tsconfig/node-lts": "^22.0.1",
     "@types/react": "^19.0.0",

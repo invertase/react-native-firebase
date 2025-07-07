@@ -20,7 +20,7 @@
     "build:clean": "rimraf android/build && rimraf ios/build",
     "compile": "bob build",
     "prepare": "yarn compile && yarn run build",
-    "codegen": "npx @react-native-community/cli codegen"
+    "codegen": "npx react-native codegen --source library"
   },
   "repository": {
     "type": "git",
@@ -40,6 +40,7 @@
   },
   "devDependencies": {
     "@react-native-firebase/private-tests-firebase-functions": "^0.0.1",
+    "react-native": "^0.80.1",
     "react-native-builder-bob": "^0.40.12",
     "typescript": "^5.8.3"
   },
