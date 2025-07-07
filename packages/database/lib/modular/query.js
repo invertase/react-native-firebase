@@ -211,6 +211,7 @@ export function onChildRemoved(query, callback, cancelCallbackOrListenOptions, o
  * @returns {Promise<void>}
  */
 export function set(ref, value) {
+  //return ref.set.call(ref, value, () => {}, MODULAR_DEPRECATION_ARG);
   return ref.set.call(ref, value, MODULAR_DEPRECATION_ARG);
 }
 
@@ -220,7 +221,7 @@ export function set(ref, value) {
  * @returns {Promise<void>}
  */
 export function setPriority(ref, priority) {
-  return ref.setPriority.call(ref, priority, MODULAR_DEPRECATION_ARG);
+  return ref.setPriority.call(ref, priority, () => {}, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -238,7 +239,7 @@ export function setWithPriority(ref, value, priority) {
  * @returns {DataSnapshot}
  */
 export function get(query) {
-  return query.once.call(query, 'value', MODULAR_DEPRECATION_ARG);
+  return query.once.call(query, 'value', () => {}, () => {}, {}, MODULAR_DEPRECATION_ARG);
 }
 
 export function off(_query, _eventType, _callback) {
