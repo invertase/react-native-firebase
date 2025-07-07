@@ -7,7 +7,7 @@
   "module": "./dist/module/index.js",
   "types": "./dist/typescript/commonjs/functions/lib/modular/index.d.ts",
   "codegenConfig": {
-    "name": "RNFBFunctionsSpec",
+    "name": "NativeFunctionsModule",
     "type": "modules",
     "jsSrcsDir": "specs",
     "includesGeneratedCode": true,

@@ -15,9 +15,9 @@
 #error This file must be compiled as Obj-C++. If you are importing it, you must change your file extension to .mm.
 #endif
 
-// Avoid multiple includes of RNFBFunctionsSpec symbols
-#ifndef RNFBFunctionsSpec_H
-#define RNFBFunctionsSpec_H
+// Avoid multiple includes of NativeFunctionsModule symbols
+#ifndef NativeFunctionsModule_H
+#define NativeFunctionsModule_H
 
 #import <Foundation/Foundation.h>
 #import <RCTRequired/RCTRequired.h>
@@ -150,4 +150,4 @@ inline std::optional<double> JS::NativeFunctionsModule::SpecHttpsCallableFromUrl
   return RCTBridgingToOptionalDouble(p);
 }
 NS_ASSUME_NONNULL_END
-#endif // RNFBFunctionsSpec_H
+#endif // NativeFunctionsModule_H
