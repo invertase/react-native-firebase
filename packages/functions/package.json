@@ -6,11 +6,21 @@
   "main": "./dist/commonjs/index.js",
   "module": "./dist/module/index.js",
   "types": "./dist/typescript/commonjs/functions/lib/modular/index.d.ts",
+  "codegenConfig": {
+    "name": "RNFBFunctionsSpec",
+    "type": "modules",
+    "jsSrcsDir": "specs",
+    "includesGeneratedCode": true,
+    "android": {
+      "javaPackageName": "com.rnfb.functions"
+    }
+  },
   "scripts": {
     "build": "genversion --semi lib/version.js",
     "build:clean": "rimraf android/build && rimraf ios/build",
     "compile": "bob build",
-    "prepare": "yarn compile && yarn run build"
+    "prepare": "yarn compile && yarn run build",
+    "codegen": "npx @react-native-community/cli codegen"
   },
   "repository": {
     "type": "git",
