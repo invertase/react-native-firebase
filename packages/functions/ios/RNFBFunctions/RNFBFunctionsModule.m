@@ -20,6 +20,10 @@
 
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBFunctionsModule.h"
+#import "NativeFunctionsModule/NativeFunctionsModule.h"
+
+@interface RNFBFunctionsModule () <NativeFunctionsModuleSpec>
+@end
 
 @implementation RNFBFunctionsModule
 #pragma mark -
@@ -30,33 +34,39 @@ RCT_EXPORT_MODULE();
 #pragma mark -
 #pragma mark Firebase Functions Methods
 
-RCT_EXPORT_METHOD(httpsCallable
-                  : (FIRApp *)firebaseApp customUrlOrRegion
-                  : (NSString *)customUrlOrRegion host
-                  : (NSString *)host port
-                  : (NSNumber *_Nonnull)port name
-                  : (NSString *)name wrapper
-                  : (NSDictionary *)wrapper options
-                  : (NSDictionary *)options resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)httpsCallable:(NSString * _Nullable)emulatorHost
+         emulatorPort:(double)emulatorPort
+                 name:(NSString *)name
+                 data:(JS::NativeFunctionsModule::SpecHttpsCallableData &)data
+              options:(JS::NativeFunctionsModule::SpecHttpsCallableOptions &)options
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject {
+
+  FIRApp *firebaseApp = [FIRApp defaultApp];
+
+  id callableData = data.data();
+
+  std::optional<double> timeout = options.timeout();
+
+  NSString *customUrlOrRegion = emulatorHost ? emulatorHost : @"us-central1";
+
   NSURL *url = [NSURL URLWithString:customUrlOrRegion];
   FIRFunctions *functions =
       (url && url.scheme && url.host)
           ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
           : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
 
-  if (host != nil) {
-    [functions useEmulatorWithHost:host port:[port intValue]];
+  if (emulatorHost != nil) {
+    [functions useEmulatorWithHost:emulatorHost port:(int)emulatorPort];
   }
 
   FIRHTTPSCallable *callable = [functions HTTPSCallableWithName:name];
 
-  if (options[@"timeout"]) {
-    callable.timeoutInterval = [options[@"timeout"] doubleValue];
+  if (timeout.has_value()) {
+    callable.timeoutInterval = timeout.value();
   }
 
-  [callable callWithObject:[wrapper valueForKey:@"data"]
+  [callable callWithObject:callableData
                 completion:^(FIRHTTPSCallableResult *_Nullable result, NSError *_Nullable error) {
                   if (error) {
                     NSObject *details = [NSNull null];
@@ -80,35 +90,41 @@ RCT_EXPORT_METHOD(httpsCallable
                 }];
 }
 
-RCT_EXPORT_METHOD(httpsCallableFromUrl
-                  : (FIRApp *)firebaseApp customUrlOrRegion
-                  : (NSString *)customUrlOrRegion host
-                  : (NSString *)host port
-                  : (NSNumber *_Nonnull)port url
-                  : (NSString *)url wrapper
-                  : (NSDictionary *)wrapper options
-                  : (NSDictionary *)options resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+- (void)httpsCallableFromUrl:(NSString * _Nullable)emulatorHost
+                emulatorPort:(double)emulatorPort
+                         url:(NSString *)url
+                        data:(JS::NativeFunctionsModule::SpecHttpsCallableFromUrlData &)data
+                     options:(JS::NativeFunctionsModule::SpecHttpsCallableFromUrlOptions &)options
+                     resolve:(RCTPromiseResolveBlock)resolve
+                      reject:(RCTPromiseRejectBlock)reject {
+
+  FIRApp *firebaseApp = [FIRApp defaultApp];
+
+  id callableData = data.data();
+
+  std::optional<double> timeout = options.timeout();
+
+  NSString *customUrlOrRegion = emulatorHost ? emulatorHost : @"us-central1";
+
   NSURL *customUrl = [NSURL URLWithString:customUrlOrRegion];
   FIRFunctions *functions =
       (customUrl && customUrl.scheme && customUrl.host)
           ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
           : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
 
-  if (host != nil) {
-    [functions useEmulatorWithHost:host port:[port intValue]];
+  if (emulatorHost != nil) {
+    [functions useEmulatorWithHost:emulatorHost port:(int)emulatorPort];
   }
 
   NSURL *functionUrl = [NSURL URLWithString:url];
 
   FIRHTTPSCallable *callable = [functions HTTPSCallableWithURL:functionUrl];
 
-  if (options[@"timeout"]) {
-    callable.timeoutInterval = [options[@"timeout"] doubleValue];
+  if (timeout.has_value()) {
+    callable.timeoutInterval = timeout.value();
   }
 
-  [callable callWithObject:[wrapper valueForKey:@"data"]
+  [callable callWithObject:callableData
                 completion:^(FIRHTTPSCallableResult *_Nullable result, NSError *_Nullable error) {
                   if (error) {
                     NSObject *details = [NSNull null];
