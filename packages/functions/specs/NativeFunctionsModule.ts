@@ -36,7 +36,7 @@ export interface Spec extends TurboModule {
     url: string,
     data: { data: any },
     options: { timeout?: number },
-  ): Promise<{ data: any }>;
+  ): Promise<{ data: unknown }>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('NativeFunctionsSpec');
+export default TurboModuleRegistry.getEnforcing<Spec>('NativeFunctionsModule');
