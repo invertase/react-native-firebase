@@ -1,6 +1,10 @@
 import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
 
+// Define generic types outside the interface
+export type RequestData = unknown;
+export type ResponseData = unknown;
+
 export interface Spec extends TurboModule {
   /**
    * Calls a Cloud Function with the given name and data.
@@ -16,9 +20,9 @@ export interface Spec extends TurboModule {
     emulatorHost: string | null,
     emulatorPort: number,
     name: string,
-    data: { data: any },
+    data: { data: RequestData },
     options: { timeout?: number },
-  ): Promise<{ data: any }>;
+  ): Promise<{ data: ResponseData }>;
 
   /**
    * Calls a Cloud Function using a full URL instead of just the function name.
@@ -34,9 +38,9 @@ export interface Spec extends TurboModule {
     emulatorHost: string | null,
     emulatorPort: number,
     url: string,
-    data: { data: any },
+    data: { data: RequestData },
     options: { timeout?: number },
-  ): Promise<{ data: unknown }>;
+  ): Promise<{ data: ResponseData }>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('NativeFunctionsModule');
