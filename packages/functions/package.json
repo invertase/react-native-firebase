@@ -12,7 +12,7 @@
     "jsSrcsDir": "specs",
     "includesGeneratedCode": true,
     "android": {
-      "javaPackageName": "com.rnfb.functions"
+      "javaPackageName": "io.invertase.firebase.functions"
     }
   },
   "scripts": {
@@ -20,7 +20,9 @@
     "build:clean": "rimraf android/build && rimraf ios/build",
     "compile": "bob build",
     "prepare": "yarn compile && yarn run build",
-    "codegen": "npx react-native codegen --source library"
+    "codegen": "yarn android:codegen && yarn ios:codegen",
+    "android:codegen": "npx @react-native-community/cli codegen --platform android --outputPath=./android/src/main/java/io/invertase/firebase/functions/generated",
+    "ios:codegen": "npx @react-native-community/cli codegen --platform ios --outputPath=./ios/generated"
   },
   "repository": {
     "type": "git",
