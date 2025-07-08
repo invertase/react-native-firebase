@@ -16,7 +16,7 @@
     }
   },
   "scripts": {
-    "build": "genversion --semi lib/version.js",
+    "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
     "compile": "bob build",
     "prepare": "yarn compile && yarn run build",

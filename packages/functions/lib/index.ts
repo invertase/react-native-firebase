@@ -22,7 +22,7 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 import { HttpsError, type NativeError } from './HttpsError';
-import version from './version';
+import { version } from './version';
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import fallBackModule from './web/RNFBFunctionsModule';
 
