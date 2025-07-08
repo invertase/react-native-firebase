@@ -27,11 +27,19 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = firebase_ios_target
   s.macos.deployment_target = firebase_macos_target
   s.tvos.deployment_target = firebase_tvos_target
-  s.source_files        = 'ios/**/*.{h,m, mm, cpp}'
+  s.source_files        = 'ios/**/*.{h,m,mm,cpp}'
+  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*'
+
+  s.compiler_flags      = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1'
 
   # React Native dependencies
   s.dependency          'React-Core'
   s.dependency          'RNFBApp'
+  s.dependency          'ReactCodegen'
+  s.dependency          'ReactAppDependencyProvider'
+  # TODO - not sure if we need these two as I believe they're UI related
+  s.dependency          'React-Fabric'
+  s.dependency          'RCT-Folly'
 
   if defined?($FirebaseSDKVersion)
     Pod::UI.puts "#{s.name}: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"

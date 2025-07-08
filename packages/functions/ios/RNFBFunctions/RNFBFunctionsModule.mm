@@ -20,7 +20,7 @@
 
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBFunctionsModule.h"
-#import "NativeFunctionsModule/NativeFunctionsModule.h"
+#import "NativeFunctionsModule.h"
 
 @interface RNFBFunctionsModule () <NativeFunctionsModuleSpec>
 @end
