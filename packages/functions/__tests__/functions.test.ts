@@ -1,17 +1,18 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
 
-import functions, {
+import {
   firebase,
   getFunctions,
   connectFunctionsEmulator,
   httpsCallable,
   httpsCallableFromUrl,
   HttpsErrorCode,
-} from '../lib';
+} from '../lib/modular';
 
+import functions from '../lib';
 import {
   createCheckV9Deprecation,
-  CheckV9DeprecationFunction,
+  type CheckV9DeprecationFunction,
 } from '../../app/lib/common/unitTestUtils';
 
 // @ts-ignore test
