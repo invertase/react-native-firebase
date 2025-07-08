@@ -15,7 +15,7 @@ module.exports = {
       async before(config) {
         return config;
       },
-      async after(config) {
+      async after(_config) {
         // no-op
       },
     },
@@ -23,7 +23,7 @@ module.exports = {
       async before(config) {
         return config;
       },
-      async after(config) {
+      async after(_config) {
         // no-op
       },
     },
@@ -31,7 +31,7 @@ module.exports = {
       async before(config) {
         try {
           execSync(`killall "io.invertase.testing"`);
-        } catch (e) {
+        } catch (_e) {
           // noop
         }
         const macApp = spawn(
@@ -47,23 +47,26 @@ module.exports = {
           }
           if (macOsRetries < 3) {
             macOsRetries++;
+            // eslint-disable-next-line no-console
             console.log('App crashed, retrying macOS app tests...');
             this.before(config);
             return;
           } else {
+            // eslint-disable-next-line no-console
             console.error('macOS app failed to start, exiting...');
             process.exit(1);
           }
         });
         macApp.on('spawn', () => {
+          // eslint-disable-next-line no-console
           console.log('[💻] macOS app started');
         });
         return config;
       },
-      async after(config) {
+      async after(_config) {
         try {
           execSync(`killall "io.invertase.testing"`);
-        } catch (e) {
+        } catch (_e) {
           // noop
         }
       },
