@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [22.3.0](https://github.com/invertase/react-native-firebase/compare/v22.2.1...v22.3.0) (2025-07-08)
+
+### Bug Fixes
+
+- **functions, ios:** use concrete NSNull for SDK params when possible ([3d13d38](https://github.com/invertase/react-native-firebase/commit/3d13d38441a007c9e667067e4ad01ab3fd6a4630))
+
 ## [22.2.1](https://github.com/invertase/react-native-firebase/compare/v22.2.0...v22.2.1) (2025-06-10)
 
 **Note:** Version bump only for package @react-native-firebase/functions

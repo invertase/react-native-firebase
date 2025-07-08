@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [22.3.0](https://github.com/invertase/react-native-firebase/compare/v22.2.1...v22.3.0) (2025-07-08)
+
+### Features
+
+- **firestore:** add support for onSnapshotsInSync ([#8379](https://github.com/invertase/react-native-firebase/issues/8379)) ([f8c1464](https://github.com/invertase/react-native-firebase/commit/f8c1464fc0249864e9c6bf01af7f8679e3d235cf))
+
+### Bug Fixes
+
+- **app:** firebase-js-sdk bump 11.3.1 > 11.10.0 ([29ea831](https://github.com/invertase/react-native-firebase/commit/29ea8310beed3eb0598bda55aacc29c100c7f770))
+- **firestore:** type definitions ([#8378](https://github.com/invertase/react-native-firebase/issues/8378)) ([497c6d1](https://github.com/invertase/react-native-firebase/commit/497c6d153a897226ddf195b4187ee6a3be99d1f2))
+
 ## [22.2.1](https://github.com/invertase/react-native-firebase/compare/v22.2.0...v22.2.1) (2025-06-10)
 
 **Note:** Version bump only for package @react-native-firebase/firestore

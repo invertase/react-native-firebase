@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [22.3.0](https://github.com/invertase/react-native-firebase/compare/v22.2.1...v22.3.0) (2025-07-08)
+
+### Bug Fixes
+
+- **app-check, expo:** init app-check shared instance before firebase in plugin ([#8559](https://github.com/invertase/react-native-firebase/issues/8559)) ([f0a0292](https://github.com/invertase/react-native-firebase/commit/f0a0292e979f51c39f917859bba19accea04eecc))
+
 ## [22.2.1](https://github.com/invertase/react-native-firebase/compare/v22.2.0...v22.2.1) (2025-06-10)
 
 **Note:** Version bump only for package @react-native-firebase/app-check

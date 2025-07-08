@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [22.3.0](https://github.com/invertase/react-native-firebase/compare/v22.2.1...v22.3.0) (2025-07-08)
+
+### Bug Fixes
+
+- **app, ios:** adopt firebase-ios-sdk 11.15.0 ([28471dc](https://github.com/invertase/react-native-firebase/commit/28471dcc4948851106bc3be2e614dd59c358c403)), closes [/firebase.google.com/support/faq#analytics-odm2](https://github.com/invertase//firebase.google.com/support/faq/issues/analytics-odm2)
+
 ## [22.2.1](https://github.com/invertase/react-native-firebase/compare/v22.2.0...v22.2.1) (2025-06-10)
 
 **Note:** Version bump only for package @react-native-firebase/analytics
