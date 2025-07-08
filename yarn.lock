@@ -20391,6 +20391,9 @@ __metadata:
     escape-string-regexp: "npm:^5.0.0"
     fast-glob: "npm:^3.3.3"
   checksum: 10/c92d339ab592488996f77a49cc97d0ab8b1d528fb2d15001c255aa03eea48e013175cdaaddc2bb8b1ebdee620448bcf1901410996aaaf4a5fea470a2e354b0c2
+  languageName: node
+  linkType: hard
+
 "react-native-url-polyfill@npm:2.0.0":
   version: 2.0.0
   resolution: "react-native-url-polyfill@npm:2.0.0"
