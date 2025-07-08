@@ -231,7 +231,7 @@ export function setPriority(ref, priority) {
  * @returns {Promise<void>}
  */
 export function setWithPriority(ref, value, priority) {
-  return ref.setWithPriority.call(ref, value, priority, MODULAR_DEPRECATION_ARG);
+  return ref.setWithPriority.call(ref, value, priority, () => {}, MODULAR_DEPRECATION_ARG);
 }
 
 /**

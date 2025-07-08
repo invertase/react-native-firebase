@@ -24,6 +24,7 @@ import {
 } from '@react-native-firebase/app/lib/common';
 import { deepGet } from '@react-native-firebase/app/lib/common/deeps';
 
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 export default class DatabaseDataSnapshot {
   constructor(reference, snapshot) {
     this._snapshot = snapshot;
