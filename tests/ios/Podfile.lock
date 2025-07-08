@@ -1857,7 +1857,11 @@ PODS:
     - RNFBApp
   - RNFBFunctions (22.2.1):
     - Firebase/Functions (= 11.13.0)
+    - RCT-Folly
     - React-Core
+    - React-Fabric
+    - ReactAppDependencyProvider
+    - ReactCodegen
     - RNFBApp
   - RNFBInAppMessaging (22.2.1):
     - Firebase/InAppMessaging (= 11.13.0)
@@ -2327,7 +2331,7 @@ SPEC CHECKSUMS:
   RNFBDatabase: fcfa7b19ac56c666827f10434f1f8257760fe174
   RNFBDynamicLinks: b8849df53de99a3ccc000125c6d69c3db29ddb20
   RNFBFirestore: dde90f839f5d712bd1ea8548d8324ba655fa48d7
-  RNFBFunctions: 87ea4cec40d4351457acfce61bcfc1a881a5ef3e
+  RNFBFunctions: 12ae18aca53333a20c542caaefb17d7ce57aeb1d
   RNFBInAppMessaging: 9810fe36b4f67011305883c8b7b19df207ec6bb4
   RNFBInstallations: 9acf5bb1917e358cd499a78d9e55ef9143cba203
   RNFBMessaging: 8ce084d2f49f59bae6d1abea130335d6b26969cd
