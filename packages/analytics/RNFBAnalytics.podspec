@@ -41,6 +41,7 @@ Pod::Spec.new do |s|
   # Firebase dependencies
   if defined?($RNFirebaseAnalyticsWithoutAdIdSupport) && ($RNFirebaseAnalyticsWithoutAdIdSupport == true)
     Pod::UI.puts "#{s.name}: Not installing FirebaseAnalytics/IdentitySupport Pod, no IDFA will be collected."
+    s.dependency           'FirebaseAnalytics/Core', firebase_sdk_version
   else
     if !defined?($RNFirebaseAnalyticsWithoutAdIdSupport)
       Pod::UI.puts "#{s.name}: Using FirebaseAnalytics/IdentitySupport with Ad Ids. May require App Tracking Transparency. Not allowed for Kids apps."
