@@ -1013,12 +1013,15 @@ describe('firestore()', function () {
     });
 
     describe('non-default db', function () {
-      it('should be able to initialize a non-default db', async function () {
-        const { initializeFirestore } = firestoreModular;
-        const { getApp } = modular;
-        const app = getApp('secondaryFromNative');
-        const db = await initializeFirestore(app, { persistence: false }, 'test2ndDb');
-        db.customUrlOrRegion.should.equal('test2ndDb');
+      it('should be able to initialize a non-default db on mobile platforms', async function () {
+        // Not allowed to initiliaze a non-default db on web lite sdk
+        if (!Platform.other) {
+          const { initializeFirestore } = firestoreModular;
+          const { getApp } = modular;
+          const app = getApp('secondaryFromNative');
+          const db = await initializeFirestore(app, { persistence: false }, 'test2ndDb');
+          db.customUrlOrRegion.should.equal('test2ndDb');
+        }
       });
     });
   });
