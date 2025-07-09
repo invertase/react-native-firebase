@@ -15,20 +15,109 @@
  *
  */
 
-import { isAndroid, isNumber } from '@react-native-firebase/app/lib/common';
-import {
-  createModuleNamespace,
-  FirebaseModule,
-  getFirebaseRoot,
-} from '@react-native-firebase/app/lib/internal';
-import { HttpsError, type NativeError } from './HttpsError';
-import { version } from './version';
-import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
-import fallBackModule from './web/RNFBFunctionsModule';
+import { getApp, type ReactNativeFirebase } from '@react-native-firebase/app';
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 
-const namespace = 'functions';
-const nativeModuleName = 'RNFBFunctionsModule';
+type FirebaseApp = ReactNativeFirebase.FirebaseApp;
+type Functions = FunctionsModule;
 
+interface HttpsCallableOptions {
+  timeout?: number;
+}
+
+// Export types for use in modular API
+export type { HttpsCallableOptions };
+
+export interface HttpsCallable<RequestData = unknown, ResponseData = unknown> {
+  (data?: RequestData | null): Promise<{ data: ResponseData }>;
+}
+
+export interface FunctionsModule {
+  httpsCallable<RequestData = unknown, ResponseData = unknown>(
+    name: string,
+    options?: HttpsCallableOptions,
+  ): HttpsCallable<RequestData, ResponseData>;
+  httpsCallableFromUrl<RequestData = unknown, ResponseData = unknown>(
+    url: string,
+    options?: HttpsCallableOptions,
+  ): HttpsCallable<RequestData, ResponseData>;
+  useFunctionsEmulator(origin: string): void;
+  useEmulator(host: string, port: number): void;
+}
+
+/**
+ * Returns a Functions instance for the given app.
+ * @param app - The FirebaseApp to use. Optional.
+ * @param regionOrCustomDomain - One of: a) The region the callable functions are located in (ex: us-central1) b) A custom domain hosting the callable functions (ex: https://mydomain.com). Optional.
+ * @returns Functions instance for the given app.
+ */
+export function getFunctions(app?: FirebaseApp, regionOrCustomDomain?: string): Functions {
+  if (app) {
+    return getApp(app.name).functions(regionOrCustomDomain) as Functions;
+  }
+
+  return getApp().functions(regionOrCustomDomain) as Functions;
+}
+
+/**
+ * Modify this instance to communicate with the Cloud Functions emulator.
+ * Note: this must be called before this instance has been used to do any operations.
+ * @param functionsInstance A functions instance.
+ * @param host The emulator host. (ex: localhost)
+ * @param port The emulator port. (ex: 5001)
+ */
+export function connectFunctionsEmulator(
+  functionsInstance: Functions,
+  host: string,
+  port: number,
+): void {
+  // @ts-ignore
+  return functionsInstance.useEmulator.call(functionsInstance, host, port, MODULAR_DEPRECATION_ARG);
+}
+
+/**
+ * Returns a reference to the callable HTTPS trigger with the given name.
+ * @param functionsInstance A functions instance.
+ * @param name The name of the trigger.
+ * @param options An interface for metadata about how calls should be executed.
+ * @returns HttpsCallable instance
+ */
+export function httpsCallable<RequestData = unknown, ResponseData = unknown>(
+  functionsInstance: Functions,
+  name: string,
+  options?: HttpsCallableOptions,
+): HttpsCallable<RequestData, ResponseData> {
+  return functionsInstance.httpsCallable.call(
+    functionsInstance,
+    name,
+    options,
+    // @ts-ignore
+    MODULAR_DEPRECATION_ARG,
+  ) as HttpsCallable<RequestData, ResponseData>;
+}
+
+/**
+ * Returns a reference to the callable HTTPS trigger with the specified url.
+ * @param functionsInstance A functions instance.
+ * @param url The url of the trigger.
+ * @param options An instance of HttpsCallableOptions containing metadata about how calls should be executed.
+ * @returns HttpsCallable instance
+ */
+export function httpsCallableFromUrl<RequestData = unknown, ResponseData = unknown>(
+  functionsInstance: Functions,
+  url: string,
+  options?: HttpsCallableOptions,
+): HttpsCallable<RequestData, ResponseData> {
+  return functionsInstance.httpsCallableFromUrl.call(
+    functionsInstance,
+    url,
+    options,
+    // @ts-ignore
+    MODULAR_DEPRECATION_ARG,
+  ) as HttpsCallable<RequestData, ResponseData>;
+}
+
+// Define HttpsErrorCode locally to avoid circular imports
 export const HttpsErrorCode = {
   OK: 'ok',
   CANCELLED: 'cancelled',
@@ -67,253 +156,4 @@ export const HttpsErrorCode = {
   'data-loss': 'data-loss',
 } as const;
 
-const statics = {
-  HttpsErrorCode,
-};
-
-interface HttpsCallableOptions {
-  timeout?: number;
-}
-
-// Export types for use in modular API
-export type { HttpsCallableOptions };
-
-export interface HttpsCallable<RequestData = unknown, ResponseData = unknown> {
-  (data?: RequestData | null): Promise<{ data: ResponseData }>;
-}
-
-export interface FunctionsModule {
-  httpsCallable<RequestData = unknown, ResponseData = unknown>(
-    name: string,
-    options?: HttpsCallableOptions,
-  ): HttpsCallable<RequestData, ResponseData>;
-  httpsCallableFromUrl<RequestData = unknown, ResponseData = unknown>(
-    url: string,
-    options?: HttpsCallableOptions,
-  ): HttpsCallable<RequestData, ResponseData>;
-  useFunctionsEmulator(origin: string): void;
-  useEmulator(host: string, port: number): void;
-}
-
-// Export the complete FirebaseFunctionsTypes namespace
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace FirebaseFunctionsTypes {
-  export type FunctionsErrorCode =
-    | 'ok'
-    | 'cancelled'
-    | 'unknown'
-    | 'invalid-argument'
-    | 'deadline-exceeded'
-    | 'not-found'
-    | 'already-exists'
-    | 'permission-denied'
-    | 'resource-exhausted'
-    | 'failed-precondition'
-    | 'aborted'
-    | 'out-of-range'
-    | 'unimplemented'
-    | 'internal'
-    | 'unavailable'
-    | 'data-loss'
-    | 'unauthenticated';
-
-  export interface HttpsCallableResult<ResponseData = unknown> {
-    readonly data: ResponseData;
-  }
-
-  export interface HttpsCallable<RequestData = unknown, ResponseData = unknown> {
-    (data?: RequestData | null): Promise<HttpsCallableResult<ResponseData>>;
-  }
-
-  export interface HttpsCallableOptions {
-    timeout?: number;
-  }
-
-  export interface HttpsError extends Error {
-    readonly code: FunctionsErrorCode;
-    readonly details?: any;
-  }
-
-  export interface HttpsErrorCode {
-    OK: 'ok';
-    CANCELLED: 'cancelled';
-    UNKNOWN: 'unknown';
-    INVALID_ARGUMENT: 'invalid-argument';
-    DEADLINE_EXCEEDED: 'deadline-exceeded';
-    NOT_FOUND: 'not-found';
-    ALREADY_EXISTS: 'already-exists';
-    PERMISSION_DENIED: 'permission-denied';
-    UNAUTHENTICATED: 'unauthenticated';
-    RESOURCE_EXHAUSTED: 'resource-exhausted';
-    FAILED_PRECONDITION: 'failed-precondition';
-    ABORTED: 'aborted';
-    OUT_OF_RANGE: 'out-of-range';
-    UNIMPLEMENTED: 'unimplemented';
-    INTERNAL: 'internal';
-    UNAVAILABLE: 'unavailable';
-    DATA_LOSS: 'data-loss';
-  }
-
-  export interface Statics {
-    HttpsErrorCode: HttpsErrorCode;
-  }
-
-  export interface Module {
-    httpsCallable<RequestData = unknown, ResponseData = unknown>(
-      name: string,
-      options?: HttpsCallableOptions,
-    ): HttpsCallable<RequestData, ResponseData>;
-    httpsCallableFromUrl<RequestData = unknown, ResponseData = unknown>(
-      url: string,
-      options?: HttpsCallableOptions,
-    ): HttpsCallable<RequestData, ResponseData>;
-    useFunctionsEmulator(origin: string): void;
-    useEmulator(host: string, port: number): void;
-  }
-}
-
-class FirebaseFunctionsModule extends FirebaseModule {
-  private _customUrlOrRegion: string;
-  private _useFunctionsEmulatorHost: string | null;
-  private _useFunctionsEmulatorPort: number;
-
-  constructor(...args: any[]) {
-    super(...args);
-    // @ts-ignore
-    this._customUrlOrRegion = this._customUrlOrRegion || 'us-central1';
-    this._useFunctionsEmulatorHost = null;
-    this._useFunctionsEmulatorPort = -1;
-  }
-
-  httpsCallable(name: string, options: HttpsCallableOptions = {}) {
-    if (options.timeout) {
-      if (isNumber(options.timeout)) {
-        options.timeout = options.timeout / 1000;
-      } else {
-        throw new Error('HttpsCallableOptions.timeout expected a Number in milliseconds');
-      }
-    }
-
-    return (data?: any) => {
-      const nativePromise = this.native.httpsCallable(
-        this._useFunctionsEmulatorHost,
-        this._useFunctionsEmulatorPort,
-        name,
-        {
-          data,
-        },
-        options,
-      );
-      return nativePromise.catch((nativeError: NativeError) => {
-        const { code, message, details } = nativeError.userInfo || {};
-        return Promise.reject(
-          new HttpsError(
-            HttpsErrorCode[code as keyof typeof HttpsErrorCode] || HttpsErrorCode.UNKNOWN,
-            message || nativeError.message,
-            details || null,
-            nativeError,
-          ),
-        );
-      });
-    };
-  }
-
-  httpsCallableFromUrl(url: string, options: HttpsCallableOptions = {}) {
-    if (options.timeout) {
-      if (isNumber(options.timeout)) {
-        options.timeout = options.timeout / 1000;
-      } else {
-        throw new Error('HttpsCallableOptions.timeout expected a Number in milliseconds');
-      }
-    }
-
-    return (data?: any) => {
-      const nativePromise = this.native.httpsCallableFromUrl(
-        this._useFunctionsEmulatorHost,
-        this._useFunctionsEmulatorPort,
-        url,
-        {
-          data,
-        },
-        options,
-      );
-      return nativePromise.catch((nativeError: NativeError) => {
-        const { code, message, details } = nativeError.userInfo || {};
-        return Promise.reject(
-          new HttpsError(
-            HttpsErrorCode[code as keyof typeof HttpsErrorCode] || HttpsErrorCode.UNKNOWN,
-            message || nativeError.message,
-            details || null,
-            nativeError,
-          ),
-        );
-      });
-    };
-  }
-
-  useFunctionsEmulator(origin: string): void {
-    const match = /https?\:.*\/\/([^:]+):?(\d+)?/.exec(origin);
-    if (!match) {
-      throw new Error('Invalid emulator origin format');
-    }
-    const [, host, portStr] = match;
-    const port = portStr ? parseInt(portStr) : 5001;
-    this.useEmulator(host as string, port);
-  }
-
-  useEmulator(host: string, port: number): void {
-    if (!isNumber(port)) {
-      throw new Error('useEmulator port parameter must be a number');
-    }
-
-    let _host = host;
-
-    const androidBypassEmulatorUrlRemap =
-      typeof this.firebaseJson.android_bypass_emulator_url_remap === 'boolean' &&
-      this.firebaseJson.android_bypass_emulator_url_remap;
-    if (!androidBypassEmulatorUrlRemap && isAndroid && _host) {
-      if (_host.startsWith('localhost')) {
-        _host = _host.replace('localhost', '10.0.2.2');
-        // eslint-disable-next-line no-console
-        console.log(
-          'Mapping functions host "localhost" to "10.0.2.2" for android emulators. Use real IP on real devices. You can bypass this behaviour with "android_bypass_emulator_url_remap" flag.',
-        );
-      }
-      if (_host.startsWith('127.0.0.1')) {
-        _host = _host.replace('127.0.0.1', '10.0.2.2');
-        // eslint-disable-next-line no-console
-        console.log(
-          'Mapping functions host "127.0.0.1" to "10.0.2.2" for android emulators. Use real IP on real devices. You can bypass this behaviour with "android_bypass_emulator_url_remap" flag.',
-        );
-      }
-    }
-    this._useFunctionsEmulatorHost = _host || null;
-    this._useFunctionsEmulatorPort = port || -1;
-  }
-}
-
-// import { SDK_VERSION } from '@react-native-firebase/functions';
-export const SDK_VERSION = version;
-
-// import functions from '@react-native-firebase/functions';
-// functions().logEvent(...);
-export default createModuleNamespace({
-  statics,
-  version,
-  namespace,
-  nativeModuleName,
-  nativeEvents: false,
-  hasMultiAppSupport: true,
-  hasCustomUrlOrRegionSupport: true,
-  ModuleClass: FirebaseFunctionsModule,
-});
-
-// import functions, { firebase } from '@react-native-firebase/functions';
-// functions().logEvent(...);
-// firebase.functions().logEvent(...);
-export const firebase = getFirebaseRoot();
-
-// Register the interop module for non-native platforms.
-setReactNativeModule(nativeModuleName, fallBackModule);
-
-export * from './modular';
+export * from './namespaced';

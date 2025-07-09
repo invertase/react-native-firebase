@@ -7,9 +7,9 @@ import {
   httpsCallable,
   httpsCallableFromUrl,
   HttpsErrorCode,
-} from '../lib/modular';
+} from '../lib';
 
-import functions from '../lib';
+import functions from '../lib/namespaced';
 import {
   createCheckV9Deprecation,
   type CheckV9DeprecationFunction,
