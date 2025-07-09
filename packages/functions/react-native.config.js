@@ -3,7 +3,7 @@ module.exports = {
     platforms: {
       android: {
         cmakeListsPath:
-          './android/src/main/java/io/invertase/firebase/functions/generated/jni/CMakeLists.txt',
+          './src/main/java/io/invertase/firebase/functions/generated/jni/CMakeLists.txt',
       },
     },
   },
