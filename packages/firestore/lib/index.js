@@ -97,6 +97,11 @@ class FirebaseFirestoreModule extends FirebaseModule {
       persistence: true,
     };
   }
+
+  get customUrlOrRegion() {
+    return this._customUrlOrRegion;
+  }
+
   // We override the FirebaseModule's `eventNameForApp()` method to include the customUrlOrRegion
   eventNameForApp(...args) {
     return `${this.app.name}-${this._customUrlOrRegion}-${args.join('-')}`;
