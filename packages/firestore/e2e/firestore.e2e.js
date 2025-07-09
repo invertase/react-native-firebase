@@ -1014,7 +1014,7 @@ describe('firestore()', function () {
 
     describe('non-default db', function () {
       it('should be able to initialize a non-default db on mobile platforms', async function () {
-        // Not allowed to initiliaze a non-default db on web lite sdk
+        // Not supported on web lite sdk
         if (!Platform.other) {
           const { initializeFirestore } = firestoreModular;
           const { getApp } = modular;
