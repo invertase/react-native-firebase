@@ -13,6 +13,9 @@
 /**
  * @implements {IQueryConstraint}
  */
+
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
+
 class QueryConstraint {
   constructor(type, ...args) {
     this._type = type;
@@ -20,8 +23,7 @@ class QueryConstraint {
   }
 
   _apply(query) {
-    // eslint-disable-next-line prefer-spread
-    return query[this._type].apply(query, this._args);
+    return query[this._type].apply(query, [...this._args, MODULAR_DEPRECATION_ARG]);
   }
 }
 
@@ -143,9 +145,9 @@ function addEventListener(query, eventType, callback, cancelCallbackOrListenOpti
     };
   }
 
-  query.on(eventType, callback, cancelCallback);
+  query.on.call(query, eventType, callback, cancelCallback, MODULAR_DEPRECATION_ARG);
 
-  return () => query.off(eventType, callback);
+  return () => query.off.call(query, eventType, callback, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -209,7 +211,8 @@ export function onChildRemoved(query, callback, cancelCallbackOrListenOptions, o
  * @returns {Promise<void>}
  */
 export function set(ref, value) {
-  return ref.set(value);
+  //return ref.set.call(ref, value, () => {}, MODULAR_DEPRECATION_ARG);
+  return ref.set.call(ref, value, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -218,7 +221,7 @@ export function set(ref, value) {
  * @returns {Promise<void>}
  */
 export function setPriority(ref, priority) {
-  return ref.setPriority(priority);
+  return ref.setPriority.call(ref, priority, () => {}, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -228,7 +231,7 @@ export function setPriority(ref, priority) {
  * @returns {Promise<void>}
  */
 export function setWithPriority(ref, value, priority) {
-  return ref.setWithPriority(value, priority);
+  return ref.setWithPriority.call(ref, value, priority, () => {}, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -236,7 +239,7 @@ export function setWithPriority(ref, value, priority) {
  * @returns {DataSnapshot}
  */
 export function get(query) {
-  return query.once('value');
+  return query.once.call(query, 'value', () => {}, () => {}, {}, MODULAR_DEPRECATION_ARG);
 }
 
 export function off(_query, _eventType, _callback) {
@@ -249,7 +252,7 @@ export function off(_query, _eventType, _callback) {
  * @returns {DatabaseReference}
  */
 export function child(parent, path) {
-  return parent.child(path);
+  return parent.child.call(parent, path, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -257,7 +260,7 @@ export function child(parent, path) {
  * @returns {OnDisconnect}
  */
 export function onDisconnect(ref) {
-  return ref.onDisconnect();
+  return ref.onDisconnect.call(ref, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -266,7 +269,7 @@ export function onDisconnect(ref) {
  * @returns {Promise<void>}
  */
 export function keepSynced(ref, value) {
-  return ref.keepSynced(value);
+  return ref.keepSynced.call(ref, value, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -275,7 +278,7 @@ export function keepSynced(ref, value) {
  * @returns {ThenableReference}
  */
 export function push(parent, value) {
-  return parent.push(value);
+  return parent.push.call(parent, value, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -283,7 +286,7 @@ export function push(parent, value) {
  * @returns {Promise<void>}
  */
 export function remove(ref) {
-  return ref.remove();
+  return ref.remove.call(ref, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -292,5 +295,5 @@ export function remove(ref) {
  * @returns {Promise<void>}
  */
 export function update(ref, values) {
-  return ref.update(values);
+  return ref.update.call(ref, values, MODULAR_DEPRECATION_ARG);
 }
