@@ -1,0 +1,5 @@
+{
+  "$schema": "https://docs.page/schema.json",
+  "name": "React Native Firebase",
+  "description": "A well-tested feature-rich modular Firebase implementation for React Native. Supports both iOS & Android platforms for all Firebase services."
+}
