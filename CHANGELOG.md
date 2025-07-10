@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [22.4.0](https://github.com/invertase/react-native-firebase/compare/v22.3.0...v22.4.0) (2025-07-10)
+
+### Features
+
+- **firestore:** add support for non-default databases [#8489](https://github.com/invertase/react-native-firebase/issues/8489) ([422badb](https://github.com/invertase/react-native-firebase/commit/422badbf9aed4f97cf2d4fc18ce1739759cc1ac1))
+
+### Bug Fixes
+
+- **analytics, ios:** `FirebaseAnalytics/Core` is always needed ([a5a0d80](https://github.com/invertase/react-native-firebase/commit/a5a0d80c887b21b0d55a079348e59f6ac6b76c98))
+
 ## [22.3.0](https://github.com/invertase/react-native-firebase/compare/v22.2.1...v22.3.0) (2025-07-08)
 
 ### Features
