@@ -21,9 +21,5 @@ export const expoConfigExampleWithExpoNotificationsPlugins: ExpoConfig = {
   name: 'FirebaseMessagingTest',
   slug: 'fire-base-messaging-test',
   notification: notificationConfig,
-  plugins: [
-    ['expo-notifications', notificationConfig],
-    '../test-plugin',
-    ['expo-camera'],
-  ],
+  plugins: [['expo-notifications', notificationConfig], '../test-plugin', ['expo-camera']],
 };
