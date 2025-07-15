@@ -210,7 +210,7 @@ export function setDefaultsFromResource(
  */
 export function onConfigUpdated(
   remoteConfig: RemoteConfig,
-  callback: (config: ConfigValues) => void,
+  callback: Parameters<RemoteConfig['onConfigUpdated']>[0],
 ): () => void;
 
 /**
