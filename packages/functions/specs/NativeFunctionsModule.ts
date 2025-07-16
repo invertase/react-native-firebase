@@ -17,6 +17,8 @@ export interface Spec extends TurboModule {
    * @returns Promise that resolves with the function result
    */
   httpsCallable(
+    appName: string,
+    region: string,
     emulatorHost: string | null,
     emulatorPort: number,
     name: string,
@@ -35,6 +37,8 @@ export interface Spec extends TurboModule {
    * @returns Promise that resolves with the function result
    */
   httpsCallableFromUrl(
+    appName: string,
+    region: string,
     emulatorHost: string | null,
     emulatorPort: number,
     url: string,
