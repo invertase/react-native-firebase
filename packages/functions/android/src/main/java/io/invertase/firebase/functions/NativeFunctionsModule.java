@@ -29,7 +29,6 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.functions.FirebaseFunctionsException;
 import io.invertase.firebase.common.RCTConvertFirebase;
 import io.invertase.firebase.common.UniversalFirebaseModule;
@@ -49,6 +48,8 @@ public class NativeFunctionsModule extends NativeFunctionsModuleSpec {
 
   @Override
   public void httpsCallable(
+      String appName,
+      String region,
       String emulatorHost,
       double emulatorPort,
       String name,
@@ -56,18 +57,13 @@ public class NativeFunctionsModule extends NativeFunctionsModuleSpec {
       ReadableMap options,
       Promise promise) {
 
-    // Get the default Firebase app
-    FirebaseApp firebaseApp = FirebaseApp.getInstance();
-    String region = "us-central1"; // Default region
-
-    // Extract data from the wrapper
     Object callableData = data.toHashMap().get(DATA_KEY);
 
     // Convert emulatorPort to Integer (null if not using emulator)
     Integer port = emulatorHost != null ? (int) emulatorPort : null;
 
     Task<Object> callMethodTask = module.httpsCallable(
-        firebaseApp.getName(), region, emulatorHost, port, name, callableData, options);
+        appName, region, emulatorHost, port, name, callableData, options);
 
     // resolve
     callMethodTask.addOnSuccessListener(
@@ -79,35 +75,13 @@ public class NativeFunctionsModule extends NativeFunctionsModuleSpec {
     // reject
     callMethodTask.addOnFailureListener(
       universalFirebaseModule.getExecutor(),
-        exception -> {
-          Object details = null;
-          String code = "UNKNOWN";
-          String message = exception.getMessage();
-          WritableMap userInfo = Arguments.createMap();
-          if (exception.getCause() instanceof FirebaseFunctionsException) {
-            FirebaseFunctionsException functionsException =
-                (FirebaseFunctionsException) exception.getCause();
-            details = functionsException.getDetails();
-            code = functionsException.getCode().name();
-            message = functionsException.getMessage();
-            String timeout = FirebaseFunctionsException.Code.DEADLINE_EXCEEDED.name();
-            Boolean isTimeout = code.contains(timeout);
-
-            if (functionsException.getCause() instanceof IOException && !isTimeout) {
-              // return UNAVAILABLE for network io errors, to match iOS
-              code = FirebaseFunctionsException.Code.UNAVAILABLE.name();
-              message = FirebaseFunctionsException.Code.UNAVAILABLE.name();
-            }
-          }
-          RCTConvertFirebase.mapPutValue(CODE_KEY, code, userInfo);
-          RCTConvertFirebase.mapPutValue(MSG_KEY, message, userInfo);
-          RCTConvertFirebase.mapPutValue(DETAILS_KEY, details, userInfo);
-          promise.reject(code, message, exception, userInfo);
-        });
+        exception -> handleFunctionsException(exception, promise));
   }
 
   @Override
   public void httpsCallableFromUrl(
+      String appName,
+      String region,
       String emulatorHost,
       double emulatorPort,
       String url,
@@ -115,53 +89,50 @@ public class NativeFunctionsModule extends NativeFunctionsModuleSpec {
       ReadableMap options,
       Promise promise) {
 
-    // Get the default Firebase app
-    FirebaseApp firebaseApp = FirebaseApp.getInstance();
-    String region = "us-central1"; // Default region
-
-    // Extract data from the wrapper
     Object callableData = data.toHashMap().get(DATA_KEY);
 
     // Convert emulatorPort to Integer (null if not using emulator)
     Integer port = emulatorHost != null ? (int) emulatorPort : null;
 
     Task<Object> callMethodTask = module.httpsCallableFromUrl(
-        firebaseApp.getName(), region, emulatorHost, port, url, callableData, options);
+        appName, region, emulatorHost, port, url, callableData, options);
 
-    // resolve
     callMethodTask.addOnSuccessListener(
       universalFirebaseModule.getExecutor(),
         result -> {
           promise.resolve(RCTConvertFirebase.mapPutValue(DATA_KEY, result, Arguments.createMap()));
         });
 
-    // reject
     callMethodTask.addOnFailureListener(
       universalFirebaseModule.getExecutor(),
-        exception -> {
-          Object details = null;
-          String code = "UNKNOWN";
-          String message = exception.getMessage();
-          WritableMap userInfo = Arguments.createMap();
-          if (exception.getCause() instanceof FirebaseFunctionsException) {
-            FirebaseFunctionsException functionsException =
-                (FirebaseFunctionsException) exception.getCause();
-            details = functionsException.getDetails();
-            code = functionsException.getCode().name();
-            message = functionsException.getMessage();
-            String timeout = FirebaseFunctionsException.Code.DEADLINE_EXCEEDED.name();
-            Boolean isTimeout = code.contains(timeout);
+        exception -> handleFunctionsException(exception, promise));
+  }
 
-            if (functionsException.getCause() instanceof IOException && !isTimeout) {
-              // return UNAVAILABLE for network io errors, to match iOS
-              code = FirebaseFunctionsException.Code.UNAVAILABLE.name();
-              message = FirebaseFunctionsException.Code.UNAVAILABLE.name();
-            }
-          }
-          RCTConvertFirebase.mapPutValue(CODE_KEY, code, userInfo);
-          RCTConvertFirebase.mapPutValue(MSG_KEY, message, userInfo);
-          RCTConvertFirebase.mapPutValue(DETAILS_KEY, details, userInfo);
-          promise.reject(code, message, exception, userInfo);
-        });
+  private void handleFunctionsException(Exception exception, Promise promise) {
+    Object details = null;
+    String code = "UNKNOWN";
+    String message = exception.getMessage();
+    WritableMap userInfo = Arguments.createMap();
+
+    if (exception.getCause() instanceof FirebaseFunctionsException) {
+      FirebaseFunctionsException functionsException =
+          (FirebaseFunctionsException) exception.getCause();
+      details = functionsException.getDetails();
+      code = functionsException.getCode().name();
+      message = functionsException.getMessage();
+      String timeout = FirebaseFunctionsException.Code.DEADLINE_EXCEEDED.name();
+      Boolean isTimeout = code.contains(timeout);
+
+      if (functionsException.getCause() instanceof IOException && !isTimeout) {
+        // return UNAVAILABLE for network io errors, to match iOS
+        code = FirebaseFunctionsException.Code.UNAVAILABLE.name();
+        message = FirebaseFunctionsException.Code.UNAVAILABLE.name();
+      }
+    }
+
+    RCTConvertFirebase.mapPutValue(CODE_KEY, code, userInfo);
+    RCTConvertFirebase.mapPutValue(MSG_KEY, message, userInfo);
+    RCTConvertFirebase.mapPutValue(DETAILS_KEY, details, userInfo);
+    promise.reject(code, message, exception, userInfo);
   }
 }
