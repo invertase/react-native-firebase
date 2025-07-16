@@ -14,18 +14,18 @@ namespace facebook::react {
 
 static facebook::jsi::Value __hostFunction_NativeFunctionsModuleSpecJSI_httpsCallable(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "httpsCallable", "(Ljava/lang/String;DLjava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "httpsCallable", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;DLjava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
 }
 
 static facebook::jsi::Value __hostFunction_NativeFunctionsModuleSpecJSI_httpsCallableFromUrl(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
   static jmethodID cachedMethodId = nullptr;
-  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "httpsCallableFromUrl", "(Ljava/lang/String;DLjava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "httpsCallableFromUrl", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;DLjava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
 }
 
 NativeFunctionsModuleSpecJSI::NativeFunctionsModuleSpecJSI(const JavaTurboModule::InitParams &params)
   : JavaTurboModule(params) {
-  methodMap_["httpsCallable"] = MethodMetadata {5, __hostFunction_NativeFunctionsModuleSpecJSI_httpsCallable};
-  methodMap_["httpsCallableFromUrl"] = MethodMetadata {5, __hostFunction_NativeFunctionsModuleSpecJSI_httpsCallableFromUrl};
+  methodMap_["httpsCallable"] = MethodMetadata {7, __hostFunction_NativeFunctionsModuleSpecJSI_httpsCallable};
+  methodMap_["httpsCallableFromUrl"] = MethodMetadata {7, __hostFunction_NativeFunctionsModuleSpecJSI_httpsCallableFromUrl};
 }
 
 std::shared_ptr<TurboModule> NativeFunctionsModule_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params) {

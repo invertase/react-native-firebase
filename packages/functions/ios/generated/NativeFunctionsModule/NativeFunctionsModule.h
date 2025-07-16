@@ -94,14 +94,18 @@ namespace JS {
 @end
 @protocol NativeFunctionsModuleSpec <RCTBridgeModule, RCTTurboModule>
 
-- (void)httpsCallable:(NSString * _Nullable)emulatorHost
+- (void)httpsCallable:(NSString *)appName
+               region:(NSString *)region
+         emulatorHost:(NSString * _Nullable)emulatorHost
          emulatorPort:(double)emulatorPort
                  name:(NSString *)name
                  data:(JS::NativeFunctionsModule::SpecHttpsCallableData &)data
               options:(JS::NativeFunctionsModule::SpecHttpsCallableOptions &)options
               resolve:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject;
-- (void)httpsCallableFromUrl:(NSString * _Nullable)emulatorHost
+- (void)httpsCallableFromUrl:(NSString *)appName
+                      region:(NSString *)region
+                emulatorHost:(NSString * _Nullable)emulatorHost
                 emulatorPort:(double)emulatorPort
                          url:(NSString *)url
                         data:(JS::NativeFunctionsModule::SpecHttpsCallableFromUrlData &)data

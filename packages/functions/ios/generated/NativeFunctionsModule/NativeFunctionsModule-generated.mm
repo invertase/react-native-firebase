@@ -50,22 +50,22 @@
 namespace facebook::react {
   
     static facebook::jsi::Value __hostFunction_NativeFunctionsModuleSpecJSI_httpsCallable(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "httpsCallable", @selector(httpsCallable:emulatorPort:name:data:options:resolve:reject:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "httpsCallable", @selector(httpsCallable:region:emulatorHost:emulatorPort:name:data:options:resolve:reject:), args, count);
     }
 
     static facebook::jsi::Value __hostFunction_NativeFunctionsModuleSpecJSI_httpsCallableFromUrl(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
-      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "httpsCallableFromUrl", @selector(httpsCallableFromUrl:emulatorPort:url:data:options:resolve:reject:), args, count);
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "httpsCallableFromUrl", @selector(httpsCallableFromUrl:region:emulatorHost:emulatorPort:url:data:options:resolve:reject:), args, count);
     }
 
   NativeFunctionsModuleSpecJSI::NativeFunctionsModuleSpecJSI(const ObjCTurboModule::InitParams &params)
     : ObjCTurboModule(params) {
       
-        methodMap_["httpsCallable"] = MethodMetadata {5, __hostFunction_NativeFunctionsModuleSpecJSI_httpsCallable};
-        setMethodArgConversionSelector(@"httpsCallable", 3, @"JS_NativeFunctionsModule_SpecHttpsCallableData:");
-        setMethodArgConversionSelector(@"httpsCallable", 4, @"JS_NativeFunctionsModule_SpecHttpsCallableOptions:");
+        methodMap_["httpsCallable"] = MethodMetadata {7, __hostFunction_NativeFunctionsModuleSpecJSI_httpsCallable};
+        setMethodArgConversionSelector(@"httpsCallable", 5, @"JS_NativeFunctionsModule_SpecHttpsCallableData:");
+        setMethodArgConversionSelector(@"httpsCallable", 6, @"JS_NativeFunctionsModule_SpecHttpsCallableOptions:");
         
-        methodMap_["httpsCallableFromUrl"] = MethodMetadata {5, __hostFunction_NativeFunctionsModuleSpecJSI_httpsCallableFromUrl};
-        setMethodArgConversionSelector(@"httpsCallableFromUrl", 3, @"JS_NativeFunctionsModule_SpecHttpsCallableFromUrlData:");
-        setMethodArgConversionSelector(@"httpsCallableFromUrl", 4, @"JS_NativeFunctionsModule_SpecHttpsCallableFromUrlOptions:");
+        methodMap_["httpsCallableFromUrl"] = MethodMetadata {7, __hostFunction_NativeFunctionsModuleSpecJSI_httpsCallableFromUrl};
+        setMethodArgConversionSelector(@"httpsCallableFromUrl", 5, @"JS_NativeFunctionsModule_SpecHttpsCallableFromUrlData:");
+        setMethodArgConversionSelector(@"httpsCallableFromUrl", 6, @"JS_NativeFunctionsModule_SpecHttpsCallableFromUrlOptions:");
   }
 } // namespace facebook::react

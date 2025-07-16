@@ -32,9 +32,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.functions.FirebaseFunctionsException;
 import io.invertase.firebase.common.RCTConvertFirebase;
-import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import io.invertase.firebase.common.UniversalFirebaseModule;
-;
 import java.io.IOException;
 
 public class NativeFunctionsModule extends NativeFunctionsModuleSpec {

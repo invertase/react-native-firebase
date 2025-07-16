@@ -14,28 +14,32 @@ namespace facebook::react {
 static jsi::Value __hostFunction_NativeFunctionsModuleCxxSpecJSI_httpsCallable(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeFunctionsModuleCxxSpecJSI *>(&turboModule)->httpsCallable(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asString(rt)),
-    count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asNumber(),
-    count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
-    count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asObject(rt),
-    count <= 4 ? throw jsi::JSError(rt, "Expected argument in position 4 to be passed") : args[4].asObject(rt)
+    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+    count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+    count <= 2 || args[2].isNull() || args[2].isUndefined() ? std::nullopt : std::make_optional(args[2].asString(rt)),
+    count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asNumber(),
+    count <= 4 ? throw jsi::JSError(rt, "Expected argument in position 4 to be passed") : args[4].asString(rt),
+    count <= 5 ? throw jsi::JSError(rt, "Expected argument in position 5 to be passed") : args[5].asObject(rt),
+    count <= 6 ? throw jsi::JSError(rt, "Expected argument in position 6 to be passed") : args[6].asObject(rt)
   );
 }
 static jsi::Value __hostFunction_NativeFunctionsModuleCxxSpecJSI_httpsCallableFromUrl(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
   return static_cast<NativeFunctionsModuleCxxSpecJSI *>(&turboModule)->httpsCallableFromUrl(
     rt,
-    count <= 0 || args[0].isNull() || args[0].isUndefined() ? std::nullopt : std::make_optional(args[0].asString(rt)),
-    count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asNumber(),
-    count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asString(rt),
-    count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asObject(rt),
-    count <= 4 ? throw jsi::JSError(rt, "Expected argument in position 4 to be passed") : args[4].asObject(rt)
+    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+    count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+    count <= 2 || args[2].isNull() || args[2].isUndefined() ? std::nullopt : std::make_optional(args[2].asString(rt)),
+    count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asNumber(),
+    count <= 4 ? throw jsi::JSError(rt, "Expected argument in position 4 to be passed") : args[4].asString(rt),
+    count <= 5 ? throw jsi::JSError(rt, "Expected argument in position 5 to be passed") : args[5].asObject(rt),
+    count <= 6 ? throw jsi::JSError(rt, "Expected argument in position 6 to be passed") : args[6].asObject(rt)
   );
 }
 
 NativeFunctionsModuleCxxSpecJSI::NativeFunctionsModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
   : TurboModule("NativeFunctionsModule", jsInvoker) {
-  methodMap_["httpsCallable"] = MethodMetadata {5, __hostFunction_NativeFunctionsModuleCxxSpecJSI_httpsCallable};
-  methodMap_["httpsCallableFromUrl"] = MethodMetadata {5, __hostFunction_NativeFunctionsModuleCxxSpecJSI_httpsCallableFromUrl};
+  methodMap_["httpsCallable"] = MethodMetadata {7, __hostFunction_NativeFunctionsModuleCxxSpecJSI_httpsCallable};
+  methodMap_["httpsCallableFromUrl"] = MethodMetadata {7, __hostFunction_NativeFunctionsModuleCxxSpecJSI_httpsCallableFromUrl};
 }
 
 

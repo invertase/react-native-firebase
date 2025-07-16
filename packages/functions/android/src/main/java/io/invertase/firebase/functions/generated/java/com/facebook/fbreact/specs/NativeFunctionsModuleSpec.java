@@ -36,9 +36,9 @@ public abstract class NativeFunctionsModuleSpec extends ReactContextBaseJavaModu
 
   @ReactMethod
   @DoNotStrip
-  public abstract void httpsCallable(@Nullable String emulatorHost, double emulatorPort, String name, ReadableMap data, ReadableMap options, Promise promise);
+  public abstract void httpsCallable(String appName, String region, @Nullable String emulatorHost, double emulatorPort, String name, ReadableMap data, ReadableMap options, Promise promise);
 
   @ReactMethod
   @DoNotStrip
-  public abstract void httpsCallableFromUrl(@Nullable String emulatorHost, double emulatorPort, String url, ReadableMap data, ReadableMap options, Promise promise);
+  public abstract void httpsCallableFromUrl(String appName, String region, @Nullable String emulatorHost, double emulatorPort, String url, ReadableMap data, ReadableMap options, Promise promise);
 }
