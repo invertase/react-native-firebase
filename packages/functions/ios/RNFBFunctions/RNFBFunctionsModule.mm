@@ -22,17 +22,21 @@
 #import "RNFBFunctionsModule.h"
 #import "NativeFunctionsModule.h"
 
-@interface RNFBFunctionsModule () <NativeFunctionsModuleSpec>
+@interface RNFBFunctionsModule ()
 @end
 
 @implementation RNFBFunctionsModule
 #pragma mark -
 #pragma mark Module Setup
 
-RCT_EXPORT_MODULE();
 
 #pragma mark -
 #pragma mark Firebase Functions Methods
+
++ (NSString *)moduleName
+{
+  return @"NativeFunctionsModule";
+}
 
 - (void)httpsCallable:(NSString *)appName
                region:(NSString *)region
