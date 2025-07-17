@@ -29,13 +29,13 @@
 #pragma mark -
 #pragma mark Module Setup
 
-RCT_EXPORT_MODULE(RNFBFunctionsModule)
+RCT_EXPORT_MODULE(NativeFunctionsModule)
 #pragma mark -
 #pragma mark Firebase Functions Methods
 
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params {
-  return std::make_shared<facebook::react::NativeFunctionsModuleJSI>(params);
+  return std::make_shared<facebook::react::NativeFunctionsModuleSpecJSI>(params);
 }
 
 - (void)httpsCallable:(NSString *)appName
