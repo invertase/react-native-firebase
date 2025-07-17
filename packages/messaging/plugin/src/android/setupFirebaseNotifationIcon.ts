@@ -36,15 +36,15 @@ export function setFireBaseMessagingAndroidManifest(
     // eslint-disable-next-line no-console
     console.warn(
       '[@react-native-firebase/messaging] For Android, it is necessary to set a notification icon to ensure correct display. Add notification configuration to your app.json:\n' +
-      '{\n' +
-      '  "expo": {\n' +
-      '    "notification": {\n' +
-      '      "icon": "./assets/notification-icon.png",\n' +
-      '      "color": "#FF0000"\n' +
-      '    }\n' +
-      '  }\n' +
-      '}\n' +
-      'For more information, visit https://docs.expo.dev/versions/latest/config/app/#notification',
+        '{\n' +
+        '  "expo": {\n' +
+        '    "notification": {\n' +
+        '      "icon": "./assets/notification-icon.png",\n' +
+        '      "color": "#FF0000"\n' +
+        '    }\n' +
+        '  }\n' +
+        '}\n' +
+        'For more information, visit https://docs.expo.dev/versions/latest/config/app/#notification',
     );
     return config;
   }
@@ -65,9 +65,11 @@ export function setFireBaseMessagingAndroidManifest(
         'android:resource': '@drawable/notification_icon',
       },
     });
-    
+
     // eslint-disable-next-line no-console
-    console.log('[@react-native-firebase/messaging] Android notification icon configured from app.json');
+    console.log(
+      '[@react-native-firebase/messaging] Android notification icon configured from app.json',
+    );
   }
 
   if (
@@ -83,9 +85,11 @@ export function setFireBaseMessagingAndroidManifest(
         'tools:replace': 'android:resource',
       },
     });
-    
+
     // eslint-disable-next-line no-console
-    console.log('[@react-native-firebase/messaging] Android notification color configured from app.json');
+    console.log(
+      '[@react-native-firebase/messaging] Android notification color configured from app.json',
+    );
   }
 
   return application;
