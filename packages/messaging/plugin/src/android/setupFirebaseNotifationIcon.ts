@@ -35,7 +35,16 @@ export function setFireBaseMessagingAndroidManifest(
     // This warning is important because the notification icon can only use pure white on Android. By default, the system uses the app icon as the notification icon, but the app icon is usually not pure white, so you need to set the notification icon
     // eslint-disable-next-line no-console
     console.warn(
-      'For Android 8.0 and above, it is necessary to set the notification icon to ensure correct display. Otherwise, the notification will not show the correct icon. For more information, visit https://docs.expo.dev/versions/latest/config/app/#notification',
+      '[@react-native-firebase/messaging] For Android, it is necessary to set a notification icon to ensure correct display. Add notification configuration to your app.json:\n' +
+      '{\n' +
+      '  "expo": {\n' +
+      '    "notification": {\n' +
+      '      "icon": "./assets/notification-icon.png",\n' +
+      '      "color": "#FF0000"\n' +
+      '    }\n' +
+      '  }\n' +
+      '}\n' +
+      'For more information, visit https://docs.expo.dev/versions/latest/config/app/#notification',
     );
     return config;
   }
@@ -56,6 +65,9 @@ export function setFireBaseMessagingAndroidManifest(
         'android:resource': '@drawable/notification_icon',
       },
     });
+    
+    // eslint-disable-next-line no-console
+    console.log('[@react-native-firebase/messaging] Android notification icon configured from app.json');
   }
 
   if (
@@ -71,6 +83,9 @@ export function setFireBaseMessagingAndroidManifest(
         'tools:replace': 'android:resource',
       },
     });
+    
+    // eslint-disable-next-line no-console
+    console.log('[@react-native-firebase/messaging] Android notification color configured from app.json');
   }
 
   return application;

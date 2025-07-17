@@ -71,10 +71,14 @@ describe('Enhanced Firebase Messaging Plugin Tests', function () {
   // Test case 3: Missing notification config
   it('warns when notification config is missing', async function () {
     const warnOrig = console.warn;
+    const logOrig = console.log;
     let warnCalled = false;
-    console.warn = (_: string) => {
+    let warnMessage = '';
+    console.warn = (message: string) => {
       warnCalled = true;
+      warnMessage = message;
     };
+    console.log = () => {}; // Suppress log messages
     
     const config: ExpoConfig = {
       name: 'Test App',
@@ -90,6 +94,38 @@ describe('Enhanced Firebase Messaging Plugin Tests', function () {
     setFireBaseMessagingAndroidManifest(config, manifestApplication);
     
     expect(warnCalled).toBeTruthy();
+    expect(warnMessage).toContain('[@react-native-firebase/messaging]');
+    expect(warnMessage).toContain('notification configuration');
     console.warn = warnOrig;
+    console.log = logOrig;
+  });
+
+  // Test case 4: Successful configuration with logging
+  it('logs successful configuration', async function () {
+    const logOrig = console.log;
+    let logMessages: string[] = [];
+    console.log = (message: string) => {
+      logMessages.push(message);
+    };
+    
+    const config: ExpoConfig = {
+      name: 'Test App',
+      slug: 'test-app',
+      notification: {
+        icon: './assets/notification-icon.png',
+        color: '#FF0000'
+      }
+    };
+    
+    const manifestApplication: ManifestApplication = {
+      $: { 'android:name': '' },
+      'meta-data': []
+    };
+    
+    setFireBaseMessagingAndroidManifest(config, manifestApplication);
+    
+    expect(logMessages.some(msg => msg.includes('notification icon configured'))).toBeTruthy();
+    expect(logMessages.some(msg => msg.includes('notification color configured'))).toBeTruthy();
+    console.log = logOrig;
   });
 });
