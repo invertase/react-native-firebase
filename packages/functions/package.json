@@ -13,6 +13,11 @@
     "includesGeneratedCode": true,
     "android": {
       "javaPackageName": "io.invertase.firebase.functions"
+    },
+    "ios": {
+      "modulesProvider": {
+        "NativeFunctionsModule": "RNFBFunctionsModule"
+      }
     }
   },
   "scripts": {

@@ -34,7 +34,9 @@ RCT_EXPORT_MODULE();
 #pragma mark -
 #pragma mark Firebase Functions Methods
 
-- (void)httpsCallable:(NSString * _Nullable)emulatorHost
+- (void)httpsCallable:(NSString *)appName
+               region:(NSString *)region
+         emulatorHost:(NSString * _Nullable)emulatorHost
          emulatorPort:(double)emulatorPort
                  name:(NSString *)name
                  data:(JS::NativeFunctionsModule::SpecHttpsCallableData &)data
@@ -90,7 +92,9 @@ RCT_EXPORT_MODULE();
                 }];
 }
 
-- (void)httpsCallableFromUrl:(NSString * _Nullable)emulatorHost
+- (void)httpsCallableFromUrl:(NSString *)appName
+                      region:(NSString *)region
+                emulatorHost:(NSString * _Nullable)emulatorHost
                 emulatorPort:(double)emulatorPort
                          url:(NSString *)url
                         data:(JS::NativeFunctionsModule::SpecHttpsCallableFromUrlData &)data
