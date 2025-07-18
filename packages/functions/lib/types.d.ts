@@ -25,6 +25,23 @@ declare module '@react-native-firebase/app' {
   export function getApp(name?: string): ReactNativeFirebase.FirebaseApp;
 
   namespace ReactNativeFirebase {
+    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+    interface Module {
+      functions: FirebaseModuleWithStaticsAndApp<any, any>;
+    }
+    interface FirebaseApp {
+      functions(customUrlOrRegion?: string): any;
+      readonly name: string;
+    }
+  }
+}
+
+declare module '@react-native-firebase/app/lib' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+    interface Module {
+      functions: FirebaseModuleWithStaticsAndApp<any, any>;
+    }
     interface FirebaseApp {
       functions(customUrlOrRegion?: string): any;
       readonly name: string;

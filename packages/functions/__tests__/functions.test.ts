@@ -15,7 +15,7 @@ import {
   type CheckV9DeprecationFunction,
 } from '../../app/lib/common/unitTestUtils';
 
-import { getApp } from '../../app';
+import { getApp } from '@react-native-firebase/app';
 
 // @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
