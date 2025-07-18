@@ -40,8 +40,8 @@ const fakeAI: AI = {
   location: 'us-central1',
 };
 
-describe('Top level API', () => {
-  it('getGenerativeModel throws if no model is provided', () => {
+describe('getGenerativeModel()', () => {
+  it('should throw an error if no model is provided', () => {
     try {
       getGenerativeModel(fakeAI, {} as ModelParams);
     } catch (e) {
@@ -70,7 +70,7 @@ describe('Top level API', () => {
     }
   });
 
-  it('getGenerativeModel throws if no projectId is provided', () => {
+  it('should throw an error if no projectId is provided', () => {
     const fakeVertexNoProject = {
       ...fakeAI,
       app: { options: { apiKey: 'my-key' } },
@@ -87,7 +87,7 @@ describe('Top level API', () => {
     }
   });
 
-  it('getGenerativeModel throws if no appId is provided', () => {
+  it('should throw an error if no appId is provided', () => {
     const fakeVertexNoProject = {
       ...fakeAI,
       app: { options: { apiKey: 'my-key', projectId: 'my-projectid' } },
@@ -104,7 +104,7 @@ describe('Top level API', () => {
     }
   });
 
-  it('getGenerativeModel gets a GenerativeModel', () => {
+  it('should return an instance of GenerativeModel', () => {
     const genModel = getGenerativeModel(fakeAI, { model: 'my-model' });
     expect(genModel).toBeInstanceOf(GenerativeModel);
     expect(genModel.model).toBe('publishers/google/models/my-model');
