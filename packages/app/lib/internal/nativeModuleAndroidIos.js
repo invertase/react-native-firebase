@@ -9,7 +9,7 @@ import { TurboModuleRegistry } from 'react-native';
  * @param moduleName
  */
 export function getReactNativeModule(moduleName) {
-  const nativeModule = NativeModules[moduleName] || TurboModuleRegistry.getEnforcing(moduleName);
+  const nativeModule = NativeModules[moduleName] || TurboModuleRegistry.get(moduleName);
   if (!globalThis.RNFBDebug) {
     return nativeModule;
   }
