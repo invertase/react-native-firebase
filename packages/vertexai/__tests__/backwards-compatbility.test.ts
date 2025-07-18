@@ -47,25 +47,25 @@ const fakeAI: AI = {
 
 const fakeVertexAI: VertexAI = fakeAI;
 
-describe('backwards-compatible types', function () {
-  it('AI is backwards compatible with VertexAI', function () {
+describe('VertexAI backward compatibility', function () {
+  it('should allow VertexAI to be assignable to AI', function () {
     assertAssignable<VertexAI, AI>();
   });
 
-  it('AIError is backwards compatible with VertexAIError', function () {
+  it('should allow VertexAIError to extend AIError, function () {
     assertAssignable<typeof VertexAIError, typeof AIError>();
     const err = new VertexAIError(VertexAIErrorCode.ERROR, '');
     expect(err).toBeInstanceOf(AIError);
     expect(err).toBeInstanceOf(VertexAIError);
   });
 
-  it('AIErrorCode is backwards compatible with VertexAIErrorCode', () => {
+  it('should allow VertexAIErrorCode to be assignable to AIErrorCode', () => {
     assertAssignable<VertexAIErrorCode, AIErrorCode>();
     const errCode = AIErrorCode.ERROR;
     expect(errCode).toBe(VertexAIErrorCode.ERROR);
   });
 
-  it('AIModel is backwards compatible with VertexAIModel', () => {
+  it('should allow VertexAIModel to extend AIModel', () => {
     assertAssignable<typeof VertexAIModel, typeof AIModel>();
 
     const model = new GenerativeModel(fakeAI, { model: 'model-name' });
@@ -73,8 +73,8 @@ describe('backwards-compatible types', function () {
     expect(model).toBeInstanceOf(VertexAIModel);
   });
 
-  describe('backward-compatible functions', () => {
-    it('getGenerativeModel', () => {
+  describe('VertexAI functions', () => {
+    it('should return a VertexAIModel assignable to AIModel from getGenerativeModel()l', () => {
       const model = getGenerativeModel(fakeVertexAI, { model: 'model-name' });
       expect(model).toBeInstanceOf(AIModel);
       expect(model).toBeInstanceOf(VertexAIModel);
