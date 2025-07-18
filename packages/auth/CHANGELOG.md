@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [22.4.0](https://github.com/invertase/react-native-firebase/compare/v22.3.0...v22.4.0) (2025-07-10)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+## [22.3.0](https://github.com/invertase/react-native-firebase/compare/v22.2.1...v22.3.0) (2025-07-08)
+
+### Bug Fixes
+
+- **auth, ios:** correct useUserAccessGroup JSDoc ([#8543](https://github.com/invertase/react-native-firebase/issues/8543)) ([1324b4e](https://github.com/invertase/react-native-firebase/commit/1324b4e6757788de51c1f28bb45d8e2cd4d3d7a6))
+
 ## [22.2.1](https://github.com/invertase/react-native-firebase/compare/v22.2.0...v22.2.1) (2025-06-10)
 
 ### Bug Fixes

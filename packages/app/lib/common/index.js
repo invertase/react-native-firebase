@@ -107,6 +107,64 @@ export function tryJSONStringify(data) {
 const NO_REPLACEMENT = true;
 
 const mapOfDeprecationReplacements = {
+  analytics: {
+    default: {
+      logEvent: 'logEvent()',
+      setAnalyticsCollectionEnabled: 'setAnalyticsCollectionEnabled()',
+      setSessionTimeoutDuration: 'setSessionTimeoutDuration()',
+      getAppInstanceId: 'getAppInstanceId()',
+      getSessionId: 'getSessionId()',
+      setUserId: 'setUserId()',
+      setUserProperty: 'setUserProperty()',
+      setUserProperties: 'setUserProperties()',
+      resetAnalyticsData: 'resetAnalyticsData()',
+      setDefaultEventParameters: 'setDefaultEventParameters()',
+      initiateOnDeviceConversionMeasurementWithEmailAddress:
+        'initiateOnDeviceConversionMeasurementWithEmailAddress()',
+      initiateOnDeviceConversionMeasurementWithHashedEmailAddress:
+        'initiateOnDeviceConversionMeasurementWithHashedEmailAddress()',
+      initiateOnDeviceConversionMeasurementWithPhoneNumber:
+        'initiateOnDeviceConversionMeasurementWithPhoneNumber()',
+      initiateOnDeviceConversionMeasurementWithHashedPhoneNumber:
+        'initiateOnDeviceConversionMeasurementWithHashedPhoneNumber()',
+      setConsent: 'setConsent()',
+      // We're deprecating all helper methods for event. e.g. `logAddPaymentInfo()` from namespaced and modular.
+      logAddPaymentInfo: 'logEvent()',
+      logScreenView: 'logEvent()',
+      logAddShippingInfo: 'logEvent()',
+      logAddToCart: 'logEvent()',
+      logAddToWishlist: 'logEvent()',
+      logAppOpen: 'logEvent()',
+      logBeginCheckout: 'logEvent()',
+      logCampaignDetails: 'logEvent()',
+      logEarnVirtualCurrency: 'logEvent()',
+      logGenerateLead: 'logEvent()',
+      logJoinGroup: 'logEvent()',
+      logLevelEnd: 'logEvent()',
+      logLevelStart: 'logEvent()',
+      logLevelUp: 'logEvent()',
+      logLogin: 'logEvent()',
+      logPostScore: 'logEvent()',
+      logSelectContent: 'logEvent()',
+      logPurchase: 'logEvent()',
+      logRefund: 'logEvent()',
+      logRemoveFromCart: 'logEvent()',
+      logSearch: 'logEvent()',
+      logSelectItem: 'logEvent()',
+      logSetCheckoutOption: 'logEvent()',
+      logSelectPromotion: 'logEvent()',
+      logShare: 'logEvent()',
+      logSignUp: 'logEvent()',
+      logSpendVirtualCurrency: 'logEvent()',
+      logTutorialBegin: 'logEvent()',
+      logTutorialComplete: 'logEvent()',
+      logUnlockAchievement: 'logEvent()',
+      logViewCart: 'logEvent()',
+      logViewItem: 'logEvent()',
+      logViewPromotion: 'logEvent()',
+      logViewSearchResults: 'logEvent()',
+    },
+  },
   appCheck: {
     default: {
       activate: 'initializeAppCheck()',
@@ -117,6 +175,82 @@ const mapOfDeprecationReplacements = {
     },
     statics: {
       CustomProvider: 'CustomProvider',
+    },
+  },
+  appDistribution: {
+    default: {
+      isTesterSignedIn: 'isTesterSignedIn()',
+      signInTester: 'signInTester()',
+      checkForUpdate: 'checkForUpdate()',
+      signOutTester: 'signOutTester()',
+    },
+  },
+  auth: {
+    default: {
+      applyActionCode: 'applyActionCode()',
+      checkActionCode: 'checkActionCode()',
+      confirmPasswordReset: 'confirmPasswordReset()',
+      createUserWithEmailAndPassword: 'createUserWithEmailAndPassword()',
+      fetchSignInMethodsForEmail: 'fetchSignInMethodsForEmail()',
+      getMultiFactorResolver: 'getMultiFactorResolver()',
+      isSignInWithEmailLink: 'isSignInWithEmailLink()',
+      onAuthStateChanged: 'onAuthStateChanged()',
+      onIdTokenChanged: 'onIdTokenChanged()',
+      sendPasswordResetEmail: 'sendPasswordResetEmail()',
+      sendSignInLinkToEmail: 'sendSignInLinkToEmail()',
+      signInAnonymously: 'signInAnonymously()',
+      signInWithCredential: 'signInWithCredential()',
+      signInWithCustomToken: 'signInWithCustomToken()',
+      signInWithEmailAndPassword: 'signInWithEmailAndPassword()',
+      signInWithEmailLink: 'signInWithEmailLink()',
+      signInWithPhoneNumber: 'signInWithPhoneNumber()',
+      signInWithRedirect: 'signInWithRedirect()',
+      signInWithPopup: 'signInWithPopup()',
+      signOut: 'signOut()',
+      useUserAccessGroup: 'useUserAccessGroup()',
+      verifyPasswordResetCode: 'verifyPasswordResetCode()',
+      getCustomAuthDomain: 'getCustomAuthDomain()',
+      useEmulator: 'connectAuthEmulator()',
+      setLanguageCode: 'useDeviceLanguage()',
+      multiFactor: 'multiFactor()',
+      useDeviceLanguage: 'useDeviceLanguage()',
+      updateCurrentUser: 'updateCurrentUser()',
+      validatePassword: 'validatePassword()',
+    },
+    User: {
+      delete: 'deleteUser()',
+      getIdToken: 'getIdToken()',
+      getIdTokenResult: 'getIdTokenResult()',
+      linkWithCredential: 'linkWithCredential()',
+      linkWithPopup: 'linkWithPopup()',
+      linkWithRedirect: 'linkWithRedirect()',
+      reauthenticateWithCredential: 'reauthenticateWithCredential()',
+      reauthenticateWithPopup: 'reauthenticateWithPopup()',
+      reauthenticateWithRedirect: 'reauthenticateWithRedirect()',
+      reload: 'reload()',
+      sendEmailVerification: 'sendEmailVerification()',
+      toJSON: NO_REPLACEMENT,
+      unlink: 'unlink()',
+      updateEmail: 'updateEmail()',
+      updatePassword: 'updatePassword()',
+      updatePhoneNumber: 'updatePhoneNumber()',
+      updateProfile: 'updateProfile()',
+      verifyBeforeUpdateEmail: 'verifyBeforeUpdateEmail()',
+    },
+    statics: {
+      AppleAuthProvider: 'AppleAuthProvider',
+      EmailAuthProvider: 'EmailAuthProvider',
+      PhoneAuthProvider: 'PhoneAuthProvider',
+      GoogleAuthProvider: 'GoogleAuthProvider',
+      GithubAuthProvider: 'GithubAuthProvider',
+      TwitterAuthProvider: 'TwitterAuthProvider',
+      FacebookAuthProvider: 'FacebookAuthProvider',
+      PhoneMultiFactorGenerator: 'PhoneMultiFactorGenerator',
+      OAuthProvider: 'OAuthProvider',
+      OIDCAuthProvider: 'OIDCAuthProvider',
+      PhoneAuthState: 'PhoneAuthState',
+      getMultiFactorResolver: 'getMultiFactorResolver()',
+      multiFactor: 'multiFactor()',
     },
   },
   crashlytics: {
@@ -211,6 +345,124 @@ const mapOfDeprecationReplacements = {
       nanoseconds: NO_REPLACEMENT,
     },
   },
+  functions: {
+    default: {
+      useEmulator: 'connectFirestoreEmulator()',
+      httpsCallable: 'httpsCallable()',
+      httpsCallableFromUrl: 'httpsCallableFromUrl()',
+    },
+    statics: {
+      HttpsErrorCode: 'HttpsErrorCode',
+    },
+  },
+  installations: {
+    default: {
+      delete: 'deleteInstallations()',
+      getId: 'getId()',
+      getToken: 'getToken()',
+    },
+  },
+  messaging: {
+    default: {
+      isAutoInitEnabled: 'isAutoInitEnabled()',
+      isDeviceRegisteredForRemoteMessages: 'isDeviceRegisteredForRemoteMessages()',
+      isNotificationDelegationEnabled: 'isNotificationDelegationEnabled()',
+      isDeliveryMetricsExportToBigQueryEnabled: 'isDeliveryMetricsExportToBigQueryEnabled()',
+      setAutoInitEnabled: 'setAutoInitEnabled()',
+      getInitialNotification: 'getInitialNotification()',
+      getDidOpenSettingsForNotification: 'getDidOpenSettingsForNotification()',
+      getIsHeadless: 'getIsHeadless()',
+      onNotificationOpenedApp: 'onNotificationOpenedApp()',
+      onTokenRefresh: 'onTokenRefresh()',
+      requestPermission: 'requestPermission()',
+      registerDeviceForRemoteMessages: 'registerDeviceForRemoteMessages()',
+      unregisterDeviceForRemoteMessages: 'unregisterDeviceForRemoteMessages()',
+      getAPNSToken: 'getAPNSToken()',
+      setAPNSToken: 'setAPNSToken()',
+      hasPermission: 'hasPermission()',
+      onDeletedMessages: 'onDeletedMessages()',
+      onMessageSent: 'onMessageSent()',
+      onSendError: 'onSendError()',
+      setBackgroundMessageHandler: 'setBackgroundMessageHandler()',
+      setOpenSettingsForNotificationsHandler: 'setOpenSettingsForNotificationsHandler()',
+      sendMessage: 'sendMessage()',
+      subscribeToTopic: 'subscribeToTopic()',
+      unsubscribeFromTopic: 'unsubscribeFromTopic()',
+      setNotificationDelegationEnabled: 'setNotificationDelegationEnabled()',
+      // Actual firebase-js-sdk methods
+      getToken: 'getToken()',
+      deleteToken: 'deleteToken()',
+      onMessage: 'onMessage()',
+      isSupported: 'isSupported()',
+      setDeliveryMetricsExportToBigQuery:
+        'experimentalSetDeliveryMetricsExportedToBigQueryEnabled()',
+    },
+    statics: {
+      AuthorizationStatus: 'AuthorizationStatus',
+      NotificationAndroidPriority: 'NotificationAndroidPriority',
+      NotificationAndroidVisibility: 'NotificationAndroidVisibility',
+    },
+  },
+  perf: {
+    default: {
+      setPerformanceCollectionEnabled: 'initializePerformance()',
+      newTrace: 'trace()',
+      newHttpMetric: 'httpMetric()',
+      newScreenTrace: 'newScreenTrace()',
+      startScreenTrace: 'startScreenTrace()',
+    },
+  },
+  remoteConfig: {
+    default: {
+      activate: 'activate()',
+      ensureInitialized: 'ensureInitialized()',
+      fetchAndActivate: 'fetchAndActivate()',
+      getAll: 'getAll()',
+      getBoolean: 'getBoolean()',
+      getNumber: 'getNumber()',
+      getString: 'getString()',
+      getValue: 'getValue()',
+      reset: 'reset()',
+      setConfigSettings: 'setConfigSettings()',
+      fetch: 'fetch()',
+      setDefaults: 'setDefaults()',
+      setDefaultsFromResource: 'setDefaultsFromResource()',
+      onConfigUpdated: 'onConfigUpdated()',
+    },
+    statics: {
+      LastFetchStatus: 'LastFetchStatus',
+      ValueSource: 'ValueSource',
+    },
+  },
+  storage: {
+    default: {
+      useEmulator: 'connectStorageEmulator()',
+      ref: 'ref()',
+      refFromURL: 'refFromURL()',
+      setMaxOperationRetryTime: 'setMaxOperationRetryTime()',
+      setMaxUploadRetryTime: 'setMaxUploadRetryTime()',
+      setMaxDownloadRetryTime: 'setMaxDownloadRetryTime()',
+    },
+    StorageReference: {
+      delete: 'deleteObject()',
+      getDownloadURL: 'getDownloadURL()',
+      getMetadata: 'getMetadata()',
+      list: 'list()',
+      listAll: 'listAll()',
+      updateMetadata: 'updateMetadata()',
+      put: 'uploadBytesResumable()',
+      putString: 'uploadString()',
+      putFile: 'putFile()',
+      writeToFile: 'writeToFile()',
+      toString: 'toString()',
+      child: 'child()',
+    },
+    statics: {
+      StringFormat: 'StringFormat',
+      TaskEvent: 'TaskEvent',
+      TaskState: 'TaskState',
+    },
+  },
 };
 
 const modularDeprecationMessage =
@@ -274,6 +526,10 @@ function getNamespace(target) {
   if (target._config && target._config.namespace) {
     return target._config.namespace;
   }
+  if (target.constructor.name === 'StorageReference') {
+    return 'storage';
+  }
+
   const className = target.name ? target.name : target.constructor.name;
   return Object.keys(mapOfDeprecationReplacements).find(key => {
     if (mapOfDeprecationReplacements[key][className]) {
@@ -290,6 +546,11 @@ function getInstanceName(target) {
   if (target._config) {
     // module class instance, we use default to store map of deprecated methods
     return 'default';
+  }
+
+  if (target.constructor.name === 'StorageReference') {
+    // if path passed into ref(), it will pass in the arg as target.name
+    return target.constructor.name;
   }
   if (target.name) {
     // It's a function which has a name property unlike classes
@@ -329,13 +590,69 @@ export function createDeprecationProxy(instance) {
         ) {
           deprecationConsoleWarning('firestore', prop, 'statics', false);
         }
+        if (prop === 'LastFetchStatus' || prop === 'ValueSource') {
+          deprecationConsoleWarning('remoteConfig', prop, 'statics', false);
+        }
         if (prop === 'CustomProvider') {
           deprecationConsoleWarning('appCheck', prop, 'statics', false);
+        }
+        if (prop === 'StringFormat' || prop === 'TaskEvent' || prop === 'TaskState') {
+          deprecationConsoleWarning('storage', prop, 'statics', false);
+        }
+
+        if (
+          prop === 'PhoneAuthState' ||
+          prop === 'AppleAuthProvider' ||
+          prop === 'PhoneAuthProvider' ||
+          prop === 'GoogleAuthProvider' ||
+          prop === 'GithubAuthProvider' ||
+          prop === 'TwitterAuthProvider' ||
+          prop === 'FacebookAuthProvider' ||
+          prop === 'OAuthProvider' ||
+          prop === 'OIDCAuthProvider' ||
+          prop === 'PhoneMultiFactorGenerator' ||
+          prop === 'EmailAuthProvider' ||
+          prop === 'multiFactor' ||
+          prop === 'getMultiFactorResolver'
+        ) {
+          deprecationConsoleWarning('auth', prop, 'statics', false);
+        }
+
+        if (
+          prop === 'AuthorizationStatus' ||
+          prop === 'NotificationAndroidPriority' ||
+          prop === 'NotificationAndroidVisibility'
+        ) {
+          deprecationConsoleWarning('messaging', prop, 'statics', false);
         }
 
         if (prop !== 'setLogLevel') {
           // we want to capture setLogLevel function call which we do below
           return Reflect.get(target, prop, receiver);
+        }
+      }
+
+      // Check if it's a getter/setter first
+      const descriptor =
+        Object.getOwnPropertyDescriptor(target, prop) ||
+        Object.getOwnPropertyDescriptor(Object.getPrototypeOf(target), prop);
+
+      if (descriptor && (descriptor.get || descriptor.set)) {
+        const instanceName = getInstanceName(target);
+        const nameSpace = getNamespace(target);
+
+        if (descriptor.get) {
+          // Handle getter - call it and show deprecation warning
+          deprecationConsoleWarning(nameSpace, prop, instanceName, _isModularCall);
+          return descriptor.get.call(target);
+        }
+
+        if (descriptor.set) {
+          // Handle setter - return a function that calls the setter with deprecation warning
+          return function (value) {
+            deprecationConsoleWarning(nameSpace, prop, instanceName, _isModularCall);
+            descriptor.set.call(target, value);
+          };
         }
       }
 
@@ -356,6 +673,19 @@ export function createDeprecationProxy(instance) {
 }
 
 export const MODULAR_DEPRECATION_ARG = 'react-native-firebase-modular-method-call';
+
+// Flag to track if we're currently in a modular call
+let _isModularCall = false;
+
+export function withModularFlag(fn) {
+  const previousFlag = _isModularCall;
+  _isModularCall = true;
+  try {
+    return fn();
+  } finally {
+    _isModularCall = previousFlag;
+  }
+}
 
 export function filterModularArgument(list) {
   return list.filter(arg => arg !== MODULAR_DEPRECATION_ARG);

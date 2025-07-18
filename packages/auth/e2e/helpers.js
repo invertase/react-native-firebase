@@ -178,12 +178,12 @@ exports.signInUser = async function signInUser(oobUrl) {
 };
 
 async function createVerifiedUser(email, password) {
-  const { getAuth, createUserWithEmailAndPassword } = authModular;
+  const { getAuth, createUserWithEmailAndPassword, reload, sendEmailVerification } = authModular;
   const credential = await createUserWithEmailAndPassword(getAuth(), email, password);
-  await credential.user.sendEmailVerification();
+  await sendEmailVerification(credential.user);
   const { oobCode } = await getLastOob(email);
   await verifyEmail(oobCode);
-  await credential.user.reload();
+  await reload(credential.user);
   return credential.user;
 }
 exports.createVerifiedUser = createVerifiedUser;

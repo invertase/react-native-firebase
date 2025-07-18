@@ -130,27 +130,25 @@ export function startAfter(...docOrFields) {
 }
 
 /**
- * @param {number | string | boolean | null} value
- * @param {string?} key
- * @returns {QueryConstraint}
+ * Creates a QueryEndAtConstraint that modifies the result set to end at the provided fields relative to the order of the query.
+ * The order of the field values must match the order of the order by clauses of the query.
+ *
+ * @param {*} ...args Can be either a DocumentSnapshot or an array of field values.
  */
-export function endAt(value, key) {
-  if (!key) {
-    return new QueryConstraint('endAt', value);
-  }
-  return new QueryConstraint('endAt', value, key);
+
+export function endAt(...args) {
+  return new QueryConstraint('endAt', ...args);
 }
 
 /**
- * @param {number | string | boolean | null} value
- * @param {string?} key
- * @returns {QueryConstraint}
+ * Creates a QueryEndAtConstraint that modifies the result set to end before the provided fields relative to the order of the query.
+ * The order of the field values must match the order of the order by clauses of the query.
+ *
+ * @param {*} fieldValues
  */
-export function endBefore(value, key) {
-  if (!key) {
-    return new QueryConstraint('endBefore', value);
-  }
-  return new QueryConstraint('endBefore', value, key);
+
+export function endBefore(...fieldValues) {
+  return new QueryConstraint('endBefore', ...fieldValues);
 }
 
 /**

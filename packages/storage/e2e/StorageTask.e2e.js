@@ -348,14 +348,15 @@ describe('storage() -> StorageTask', function () {
         });
 
         it('should have access to the snapshot values outside of the event subscriber', async function () {
-          const uploadTaskSnapshot = firebase
-            .storage()
-            .ref(`${PATH}/putStringBlob.json`)
-            .putString('Just a string to put in a file for upload');
+          const { getStorage, ref, uploadString, TaskState } = storageModular;
+          const uploadTaskSnapshot = uploadString(
+            ref(getStorage(), `${PATH}/putStringBlob.json`),
+            'Just a string to put in a file for upload',
+          );
           const { resolve, promise } = Promise.defer();
           uploadTaskSnapshot.on('state_changed', {
             next: snapshot => {
-              if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+              if (snapshot.state === TaskState.SUCCESS) {
                 snapshotProperties(snapshot);
                 resolve();
               }
@@ -802,77 +803,78 @@ describe('storage() -> StorageTask', function () {
 
       it('downloads a file', async function () {
         if (Platform.other) return;
-        const { getStorage, ref } = storageModular;
+        const { getStorage, ref, writeToFile, TaskState } = storageModular;
 
-        const meta = await ref(getStorage(), `${PATH}/list/file1.txt`).writeToFile(
+        const meta = await writeToFile(
+          ref(getStorage(), `${PATH}/list/file1.txt`),
           `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/file1.txt`,
         );
 
-        meta.state.should.eql(firebase.storage.TaskState.SUCCESS);
+        meta.state.should.eql(TaskState.SUCCESS);
         meta.bytesTransferred.should.eql(meta.totalBytes);
       });
     });
 
     describe('putString()', function () {
       it('uploads a raw string', async function () {
-        const { getStorage, ref, uploadString } = storageModular;
+        const { getStorage, ref, uploadString, StringFormat, TaskState } = storageModular;
 
         const jsonDerulo = JSON.stringify({ foo: 'bar' });
 
         const uploadTaskSnapshot = await uploadString(
           ref(getStorage(), `${PATH}/putString.json`),
           jsonDerulo,
-          firebase.storage.StringFormat.RAW,
+          StringFormat.RAW,
           {
             contentType: 'application/json',
           },
         );
 
-        uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+        uploadTaskSnapshot.state.should.eql(TaskState.SUCCESS);
         uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
         uploadTaskSnapshot.metadata.should.be.an.Object();
       });
 
       it('uploads a data_url formatted string', async function () {
-        const { getStorage, ref, uploadString } = storageModular;
+        const { getStorage, ref, uploadString, StringFormat, TaskState } = storageModular;
 
         const dataUrl = 'data:application/json;base64,eyJmb28iOiJiYXNlNjQifQ==';
 
         const uploadTaskSnapshot = await uploadString(
           ref(getStorage(), `${PATH}/putStringDataURL.json`),
           dataUrl,
-          firebase.storage.StringFormat.DATA_URL,
+          StringFormat.DATA_URL,
         );
 
-        uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+        uploadTaskSnapshot.state.should.eql(TaskState.SUCCESS);
         uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
         uploadTaskSnapshot.metadata.should.be.an.Object();
       });
 
       it('uploads a url encoded data_url formatted string', async function () {
-        const { getStorage, ref, uploadString } = storageModular;
+        const { getStorage, ref, uploadString, StringFormat, TaskState } = storageModular;
 
         const dataUrl = 'data:text/html,%3Ch1%3EHello%2C%20World!%3C%2Fh1%3E';
 
         const uploadTaskSnapshot = await uploadString(
           ref(getStorage(), `${PATH}/helloWorld.html`),
           dataUrl,
-          firebase.storage.StringFormat.DATA_URL,
+          StringFormat.DATA_URL,
         );
 
-        uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+        uploadTaskSnapshot.state.should.eql(TaskState.SUCCESS);
         uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
         uploadTaskSnapshot.metadata.should.be.an.Object();
       });
 
       it('when using data_url it still sets the content type if metadata is provided', async function () {
-        const { getStorage, ref, uploadString } = storageModular;
+        const { getStorage, ref, uploadString, StringFormat, TaskState } = storageModular;
         const dataUrl = 'data:text/html,%3Ch1%3EHello%2C%20World!%3C%2Fh1%3E';
 
         const uploadTaskSnapshot = await uploadString(
           ref(getStorage(), `${PATH}/helloWorld.html`),
           dataUrl,
-          firebase.storage.StringFormat.DATA_URL,
+          StringFormat.DATA_URL,
           {
             // TODO(salakar) automate test metadata is preserved when auto setting mediatype
             customMetadata: {
@@ -881,56 +883,52 @@ describe('storage() -> StorageTask', function () {
           },
         );
 
-        uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+        uploadTaskSnapshot.state.should.eql(TaskState.SUCCESS);
         uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
         uploadTaskSnapshot.metadata.should.be.an.Object();
       });
 
       it('uploads a base64 string', async function () {
-        const { getStorage, ref, uploadString } = storageModular;
+        const { getStorage, ref, uploadString, StringFormat, TaskState } = storageModular;
         const base64String = 'eyJmb28iOiJiYXNlNjQifQ==';
 
         const uploadTaskSnapshot = await uploadString(
           ref(getStorage(), `${PATH}/putStringBase64.json`),
           base64String,
-          firebase.storage.StringFormat.BASE64,
+          StringFormat.BASE64,
           {
             contentType: 'application/json',
           },
         );
 
-        uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+        uploadTaskSnapshot.state.should.eql(TaskState.SUCCESS);
         uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
         uploadTaskSnapshot.metadata.should.be.an.Object();
       });
 
       it('uploads a base64url string', async function () {
-        const { getStorage, ref, uploadString } = storageModular;
+        const { getStorage, ref, uploadString, StringFormat, TaskState } = storageModular;
         const base64UrlString = 'eyJmb28iOiJiYXNlNjQifQ';
 
         const uploadTaskSnapshot = await uploadString(
           ref(getStorage(), `${PATH}/putStringBase64Url.json`),
           base64UrlString,
-          firebase.storage.StringFormat.BASE64URL,
+          StringFormat.BASE64URL,
           {
             contentType: 'application/json',
           },
         );
 
-        uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+        uploadTaskSnapshot.state.should.eql(TaskState.SUCCESS);
         uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
         uploadTaskSnapshot.metadata.should.be.an.Object();
       });
 
       it('throws an error on invalid data_url', async function () {
-        const { getStorage, ref, uploadString } = storageModular;
+        const { getStorage, ref, uploadString, StringFormat } = storageModular;
         const dataUrl = '';
         try {
-          await uploadString(
-            ref(getStorage(), '/a.b'),
-            dataUrl,
-            firebase.storage.StringFormat.DATA_URL,
-          );
+          await uploadString(ref(getStorage(), '/a.b'), dataUrl, StringFormat.DATA_URL);
 
           return Promise.reject(new Error('Did not throw!'));
         } catch (error) {
@@ -940,9 +938,9 @@ describe('storage() -> StorageTask', function () {
       });
 
       it('throws if string arg is not a valid string', async function () {
-        const { getStorage, ref, uploadString } = storageModular;
+        const { getStorage, ref, uploadString, StringFormat } = storageModular;
         try {
-          await uploadString(ref(getStorage(), '/a.b'), 1, 'base64');
+          await uploadString(ref(getStorage(), '/a.b'), 1, StringFormat.BASE64);
           return Promise.reject(new Error('Did not throw!'));
         } catch (error) {
           error.message.should.containEql("'string' expects a string value");
@@ -962,9 +960,9 @@ describe('storage() -> StorageTask', function () {
       });
 
       it('throws an error if metadata is not an object', async function () {
-        const { getStorage, ref, uploadString } = storageModular;
+        const { getStorage, ref, uploadString, StringFormat } = storageModular;
         try {
-          await uploadString(ref(getStorage(), '/a.b'), 'fooby', 'raw', 1234);
+          await uploadString(ref(getStorage(), '/a.b'), 'fooby', StringFormat.RAW, 1234);
           return Promise.reject(new Error('Did not throw!'));
         } catch (error) {
           error.message.should.containEql('must be an object value if provided');
@@ -976,7 +974,7 @@ describe('storage() -> StorageTask', function () {
     describe('put()', function () {
       // TODO flakey test, RN JSTimer exception sometimes
       xit('uploads a Blob', async function () {
-        const { getStorage, ref, uploadBytesResumable } = storageModular;
+        const { getStorage, ref, uploadBytesResumable, TaskState } = storageModular;
         const jsonDerulo = JSON.stringify({ foo: 'bar' });
 
         const bob = new Blob([jsonDerulo], {
@@ -988,13 +986,13 @@ describe('storage() -> StorageTask', function () {
           bob,
         );
 
-        uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+        uploadTaskSnapshot.state.should.eql(TaskState.SUCCESS);
         uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
         uploadTaskSnapshot.metadata.should.be.an.Object();
       });
 
       it('uploads an ArrayBuffer', async function () {
-        const { getStorage, ref, uploadBytesResumable } = storageModular;
+        const { getStorage, ref, uploadBytesResumable, TaskState } = storageModular;
         const jsonDerulo = JSON.stringify({ foo: 'bar' });
 
         const arrayBuffer = new ArrayBuffer(jsonDerulo.length);
@@ -1011,13 +1009,13 @@ describe('storage() -> StorageTask', function () {
           },
         );
 
-        uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+        uploadTaskSnapshot.state.should.eql(TaskState.SUCCESS);
         uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
         uploadTaskSnapshot.metadata.should.be.an.Object();
       });
 
       it('uploads an Uint8Array', async function () {
-        const { getStorage, ref, uploadBytesResumable } = storageModular;
+        const { getStorage, ref, uploadBytesResumable, TaskState } = storageModular;
         const jsonDerulo = JSON.stringify({ foo: 'bar' });
 
         const arrayBuffer = new ArrayBuffer(jsonDerulo.length);
@@ -1035,7 +1033,7 @@ describe('storage() -> StorageTask', function () {
           },
         );
 
-        uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+        uploadTaskSnapshot.state.should.eql(TaskState.SUCCESS);
         uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
         uploadTaskSnapshot.metadata.should.be.an.Object();
       });
@@ -1143,13 +1141,13 @@ describe('storage() -> StorageTask', function () {
       });
 
       it('uploads a file without read permission', async function () {
-        const { getStorage, ref, uploadString } = storageModular;
+        const { getStorage, ref, uploadString, TaskState } = storageModular;
         const uploadTaskSnapshot = await uploadString(
           ref(getStorage(), WRITE_ONLY_NAME),
           'Just a string to put in a file for upload',
         );
 
-        uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+        uploadTaskSnapshot.state.should.eql(TaskState.SUCCESS);
         uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
         uploadTaskSnapshot.metadata.should.be.an.Object();
       });
@@ -1168,7 +1166,7 @@ describe('storage() -> StorageTask', function () {
       });
 
       it('should have access to the snapshot values outside of the event subscriber', async function () {
-        const { getStorage, ref, uploadString } = storageModular;
+        const { getStorage, ref, uploadString, TaskState } = storageModular;
 
         const uploadTaskSnapshot = uploadString(
           ref(getStorage(), `${PATH}/putStringBlob.json`),
@@ -1178,7 +1176,7 @@ describe('storage() -> StorageTask', function () {
         const { resolve, promise } = Promise.defer();
         uploadTaskSnapshot.on('state_changed', {
           next: snapshot => {
-            if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+            if (snapshot.state === TaskState.SUCCESS) {
               snapshotProperties(snapshot);
               resolve();
             }
@@ -1199,7 +1197,7 @@ describe('storage() -> StorageTask', function () {
       });
 
       it('throws an Error if event is invalid', async function () {
-        const { getStorage, ref, putFile } = storageModular;
+        const { getStorage, ref, putFile, TaskEvent } = storageModular;
 
         const storageReference = ref(getStorage(), `${PATH}/ok.jpeg`);
         try {
@@ -1209,18 +1207,18 @@ describe('storage() -> StorageTask', function () {
           return Promise.reject(new Error('Did not error!'));
         } catch (error) {
           error.message.should.containEql(
-            "event argument must be a string with a value of 'state_changed'",
+            `event argument must be a string with a value of '${TaskEvent.STATE_CHANGED}'`,
           );
           return Promise.resolve();
         }
       });
 
       it('throws an Error if nextOrObserver is invalid', async function () {
-        const { getStorage, ref, putFile } = storageModular;
+        const { getStorage, ref, putFile, TaskEvent } = storageModular;
         const storageReference = ref(getStorage(), `${PATH}/ok.jpeg`);
         try {
           const task = putFile(storageReference, 'abc');
-          task.on('state_changed', 'not a fn');
+          task.on(TaskEvent.STATE_CHANGED, 'not a fn');
           return Promise.reject(new Error('Did not error!'));
         } catch (error) {
           error.message.should.containEql("'nextOrObserver' must be a Function, an Object or Null");
@@ -1230,13 +1228,13 @@ describe('storage() -> StorageTask', function () {
 
       it('observer calls error callback', async function () {
         if (Platform.other) return; // TODO refactor to use putString instead of writeToFile/putFile
-        const { getStorage, ref, putFile } = storageModular;
+        const { getStorage, ref, putFile, TaskEvent } = storageModular;
         const storageRef = ref(getStorage(), `${PATH}/uploadOk.jpeg`);
         const { resolve, promise } = Promise.defer();
         const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/notFoundFooFile.bar`;
         const task = putFile(storageRef, path);
 
-        task.on('state_changed', {
+        task.on(TaskEvent.STATE_CHANGED, {
           error: error => {
             error.code.should.containEql('storage/file-not-found');
             resolve();
@@ -1254,7 +1252,7 @@ describe('storage() -> StorageTask', function () {
 
       it('observer: calls next callback', async function () {
         if (Platform.other) return; // TODO refactor to use putString instead of writeToFile
-        const { getStorage, ref, writeToFile } = storageModular;
+        const { getStorage, ref, writeToFile, TaskState } = storageModular;
 
         const storageRef = ref(getStorage(), `${PATH}/ok.jpeg`);
         const { resolve, promise } = Promise.defer();
@@ -1262,7 +1260,7 @@ describe('storage() -> StorageTask', function () {
         const task = writeToFile(storageRef, path);
         task.on('state_changed', {
           next: snapshot => {
-            if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+            if (snapshot.state === TaskState.SUCCESS) {
               resolve();
             }
           },
@@ -1273,7 +1271,7 @@ describe('storage() -> StorageTask', function () {
 
       it('observer: calls completion callback', async function () {
         if (Platform.other) return; // TODO refactor to use putString instead of writeToFile
-        const { getStorage, ref, writeToFile } = storageModular;
+        const { getStorage, ref, writeToFile, TaskState } = storageModular;
         const storageRef = ref(getStorage(), `${PATH}/ok.jpeg`);
 
         const { resolve, promise } = Promise.defer();
@@ -1282,7 +1280,7 @@ describe('storage() -> StorageTask', function () {
 
         task.on('state_changed', {
           complete: snapshot => {
-            snapshot.state.should.equal(firebase.storage.TaskState.SUCCESS);
+            snapshot.state.should.equal(TaskState.SUCCESS);
             resolve();
           },
         });
@@ -1320,7 +1318,7 @@ describe('storage() -> StorageTask', function () {
 
       it('calls next callback', async function () {
         if (Platform.other) return; // TODO refactor to use putString instead of writeToFile
-        const { getStorage, ref, writeToFile } = storageModular;
+        const { getStorage, ref, writeToFile, TaskState } = storageModular;
         const storageRef = ref(getStorage(), `${PATH}/ok.jpeg`);
 
         const { resolve, promise } = Promise.defer();
@@ -1328,7 +1326,7 @@ describe('storage() -> StorageTask', function () {
         const task = writeToFile(storageRef, path);
 
         task.on('state_changed', snapshot => {
-          if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+          if (snapshot.state === TaskState.SUCCESS) {
             resolve();
           }
         });
@@ -1339,14 +1337,14 @@ describe('storage() -> StorageTask', function () {
 
       it('calls completion callback', async function () {
         if (Platform.other) return; // TODO refactor to use putString instead of writeToFile
-        const { getStorage, ref, writeToFile } = storageModular;
+        const { getStorage, ref, writeToFile, TaskState } = storageModular;
         const storageRef = ref(getStorage(), `${PATH}/ok.jpeg`);
         const { resolve, promise } = Promise.defer();
         const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.jpeg`;
         const task = writeToFile(storageRef, path);
 
         task.on('state_changed', null, null, snapshot => {
-          snapshot.state.should.equal(firebase.storage.TaskState.SUCCESS);
+          snapshot.state.should.equal(TaskState.SUCCESS);
           resolve();
         });
 
@@ -1356,7 +1354,7 @@ describe('storage() -> StorageTask', function () {
 
       it('returns a subscribe fn', async function () {
         if (Platform.other) return; // TODO refactor to use putString instead of writeToFile
-        const { getStorage, ref, writeToFile } = storageModular;
+        const { getStorage, ref, writeToFile, TaskState } = storageModular;
         const storageRef = ref(getStorage(), `${PATH}/ok.jpeg`);
         const { resolve, promise } = Promise.defer();
         const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.jpeg`;
@@ -1365,7 +1363,7 @@ describe('storage() -> StorageTask', function () {
         const subscribe = task.on('state_changed');
 
         subscribe(null, null, snapshot => {
-          if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+          if (snapshot.state === TaskState.SUCCESS) {
             resolve();
           }
         });
@@ -1376,7 +1374,7 @@ describe('storage() -> StorageTask', function () {
 
       it('returns a subscribe fn supporting observer usage syntax', async function () {
         if (Platform.other) return; // TODO refactor to use putString instead of writeToFile
-        const { getStorage, ref, writeToFile } = storageModular;
+        const { getStorage, ref, writeToFile, TaskState } = storageModular;
         const storageRef = ref(getStorage(), `${PATH}/ok.jpeg`);
         const { resolve, promise } = Promise.defer();
         const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.jpeg`;
@@ -1386,7 +1384,7 @@ describe('storage() -> StorageTask', function () {
 
         subscribe({
           complete: snapshot => {
-            if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+            if (snapshot.state === TaskState.SUCCESS) {
               resolve();
             }
           },
@@ -1398,7 +1396,7 @@ describe('storage() -> StorageTask', function () {
 
       it('listens to download state', async function () {
         if (Platform.other) return; // TODO refactor to use putString instead of writeToFile
-        const { getStorage, ref, writeToFile } = storageModular;
+        const { getStorage, ref, writeToFile, TaskState } = storageModular;
         const storageRef = ref(getStorage(), `${PATH}/ok.jpeg`);
         const { resolve, reject, promise } = Promise.defer();
         const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.gif`;
@@ -1406,7 +1404,7 @@ describe('storage() -> StorageTask', function () {
         const unsubscribe = writeToFile(storageRef, path).on(
           'state_changed',
           snapshot => {
-            if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+            if (snapshot.state === TaskState.SUCCESS) {
               resolve();
             }
           },
@@ -1421,7 +1419,7 @@ describe('storage() -> StorageTask', function () {
 
       it('listens to upload state', async function () {
         if (Platform.other) return; // TODO refactor to use putString instead of putFile
-        const { getStorage, ref, putFile } = storageModular;
+        const { getStorage, ref, putFile, TaskState } = storageModular;
         const storageRef = ref(getStorage(), `${PATH}/ok.jpeg`);
         const { resolve, reject, promise } = Promise.defer();
         const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.gif`;
@@ -1429,7 +1427,7 @@ describe('storage() -> StorageTask', function () {
         const unsubscribe = putFile(storageRef, path).on(
           'state_changed',
           snapshot => {
-            if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+            if (snapshot.state === TaskState.SUCCESS) {
               resolve();
             }
           },
@@ -1447,7 +1445,7 @@ describe('storage() -> StorageTask', function () {
     xdescribe('pause() resume()', function () {
       it('successfully pauses and resumes an upload', async function testRunner() {
         this.timeout(100 * 1000);
-        const { getStorage, ref, writeToFile, putFile } = storageModular;
+        const { getStorage, ref, writeToFile, putFile, TaskState } = storageModular;
         const storageRef = ref(getStorage(), Platform.ios ? '/smallFileTest.png' : '/cat.gif');
 
         await writeToFile(
@@ -1469,7 +1467,7 @@ describe('storage() -> StorageTask', function () {
           'state_changed',
           snapshot => {
             // 1) pause when we receive first running event
-            if (snapshot.state === firebase.storage.TaskState.RUNNING && !hadRunningStatus) {
+            if (snapshot.state === TaskState.RUNNING && !hadRunningStatus) {
               hadRunningStatus = true;
               if (Platform.android) {
                 uploadTask.pause();
@@ -1482,14 +1480,14 @@ describe('storage() -> StorageTask', function () {
             }
 
             // 2) resume when we receive first paused event
-            if (snapshot.state === firebase.storage.TaskState.PAUSED) {
+            if (snapshot.state === TaskState.PAUSED) {
               hadPausedStatus = true;
               uploadTask.resume();
             }
 
             // 3) track that we resumed on 2nd running status whilst paused
             if (
-              snapshot.state === firebase.storage.TaskState.RUNNING &&
+              snapshot.state === TaskState.RUNNING &&
               hadRunningStatus &&
               hadPausedStatus &&
               !hadResumedStatus
@@ -1498,7 +1496,7 @@ describe('storage() -> StorageTask', function () {
             }
 
             // 4) finally confirm we received all statuses
-            if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+            if (snapshot.state === TaskState.SUCCESS) {
               should.equal(hadRunningStatus, true);
               should.equal(hadPausedStatus, true);
               should.equal(hadResumedStatus, true);
@@ -1515,7 +1513,7 @@ describe('storage() -> StorageTask', function () {
 
       it('successfully pauses and resumes a download', async function () {
         if (Platform.other) return; // TODO refactor to use putString instead of writeToFile
-        const { getStorage, ref, writeToFile } = storageModular;
+        const { getStorage, ref, writeToFile, TaskState } = storageModular;
         const storageRef = ref(getStorage(), Platform.ios ? '/1mbTestFile.gif' : '/cat.gif');
 
         const { resolve, reject, promise } = Promise.defer();
@@ -1535,20 +1533,20 @@ describe('storage() -> StorageTask', function () {
           snapshot => {
             // TODO(salakar) validate snapshot props
             // 1) pause when we receive first running event
-            if (snapshot.state === firebase.storage.TaskState.RUNNING && !hadRunningStatus) {
+            if (snapshot.state === TaskState.RUNNING && !hadRunningStatus) {
               hadRunningStatus = true;
               downloadTask.pause();
             }
 
             // 2) resume when we receive first paused event
-            if (snapshot.state === firebase.storage.TaskState.PAUSED) {
+            if (snapshot.state === TaskState.PAUSED) {
               hadPausedStatus = true;
               downloadTask.resume();
             }
 
             // 3) track that we resumed on 2nd running status whilst paused
             if (
-              snapshot.state === firebase.storage.TaskState.RUNNING &&
+              snapshot.state === TaskState.RUNNING &&
               hadRunningStatus &&
               hadPausedStatus &&
               !hadResumedStatus
@@ -1557,7 +1555,7 @@ describe('storage() -> StorageTask', function () {
             }
 
             // 4) finally confirm we received all statuses
-            if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+            if (snapshot.state === TaskState.SUCCESS) {
               should.equal(hadRunningStatus, true);
               should.equal(hadPausedStatus, true);
               should.equal(hadResumedStatus, true);
@@ -1576,7 +1574,7 @@ describe('storage() -> StorageTask', function () {
     describe('cancel()', function () {
       // TODO stage a file big enough to test upload cancel
       xit('successfully cancels an upload', async function () {
-        const { getStorage, ref, writeToFile, putFile } = storageModular;
+        const { getStorage, ref, writeToFile, putFile, TaskState } = storageModular;
         const storageRef = ref(getStorage(), Platform.ios ? '/1mbTestFile.gif' : '/cat.gif');
         await writeToFile(
           storageRef,
@@ -1598,22 +1596,22 @@ describe('storage() -> StorageTask', function () {
           snapshot => {
             // TODO(salakar) validate snapshot props
             // 1) cancel it when we receive first running event
-            if (snapshot.state === firebase.storage.TaskState.RUNNING && !hadRunningStatus) {
+            if (snapshot.state === TaskState.RUNNING && !hadRunningStatus) {
               hadRunningStatus = true;
               uploadTask.cancel();
             }
 
             // 2) confirm cancellation
-            if (snapshot.state === firebase.storage.TaskState.CANCELLED) {
+            if (snapshot.state === TaskState.CANCELLED) {
               should.equal(hadRunningStatus, true);
               hadCancelledStatus = true;
             }
 
-            if (snapshot.state === firebase.storage.TaskState.ERROR) {
+            if (snapshot.state === TaskState.ERROR) {
               throw new Error('Should not error if cancelled?');
             }
 
-            if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+            if (snapshot.state === TaskState.SUCCESS) {
               reject(new Error('UploadTask did not cancel!'));
             }
           },
@@ -1632,7 +1630,7 @@ describe('storage() -> StorageTask', function () {
 
     // TODO stage a file big enough to cancel a download
     xit('successfully cancels a download', async function () {
-      const { getStorage, ref, writeToFile } = storageModular;
+      const { getStorage, ref, writeToFile, TaskState } = storageModular;
       const storageRef = ref(getStorage(), '/1mbTestFile.gif');
       await Utils.sleep(10000);
       const { resolve, reject, promise } = Promise.defer();
@@ -1647,22 +1645,22 @@ describe('storage() -> StorageTask', function () {
         snapshot => {
           // TODO(salakar) validate snapshot props
           // 1) cancel it when we receive first running event
-          if (snapshot.state === firebase.storage.TaskState.RUNNING && !hadRunningStatus) {
+          if (snapshot.state === TaskState.RUNNING && !hadRunningStatus) {
             hadRunningStatus = true;
             downloadTask.cancel();
           }
 
           // 2) confirm cancellation
-          if (snapshot.state === firebase.storage.TaskState.CANCELLED) {
+          if (snapshot.state === TaskState.CANCELLED) {
             should.equal(hadRunningStatus, true);
             hadCancelledStatus = true;
           }
 
-          if (snapshot.state === firebase.storage.TaskState.ERROR) {
+          if (snapshot.state === TaskState.ERROR) {
             throw new Error('Should not error if cancelled?');
           }
 
-          if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+          if (snapshot.state === TaskState.SUCCESS) {
             reject(new Error('DownloadTask did not cancel!'));
           }
         },

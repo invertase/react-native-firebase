@@ -1,5 +1,5 @@
 import { getApp } from '@react-native-firebase/app';
-
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 /**
  * @typedef {import("..").FirebaseApp} FirebaseApp
  * @typedef {import("..").FirebaseAppDistributionTypes.AppDistributionRelease} AppDistributionRelease
@@ -22,7 +22,7 @@ export function getAppDistribution(app) {
  * @returns {Promise<boolean>}
  */
 export function isTesterSignedIn(appDistribution) {
-  return appDistribution.isTesterSignedIn();
+  return appDistribution.isTesterSignedIn.call(appDistribution, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -30,7 +30,7 @@ export function isTesterSignedIn(appDistribution) {
  * @returns {Promise<void>}
  */
 export function signInTester(appDistribution) {
-  return appDistribution.signInTester();
+  return appDistribution.signInTester.call(appDistribution, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -38,7 +38,7 @@ export function signInTester(appDistribution) {
  * @returns {AppDistributionRelease>}
  */
 export function checkForUpdate(appDistribution) {
-  return appDistribution.checkForUpdate();
+  return appDistribution.checkForUpdate.call(appDistribution, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -46,5 +46,5 @@ export function checkForUpdate(appDistribution) {
  * @returns {Promise<void>}
  */
 export function signOutTester(appDistribution) {
-  return appDistribution.signOutTester();
+  return appDistribution.signOutTester.call(appDistribution, MODULAR_DEPRECATION_ARG);
 }

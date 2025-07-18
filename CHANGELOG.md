@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [22.4.0](https://github.com/invertase/react-native-firebase/compare/v22.3.0...v22.4.0) (2025-07-10)
+
+### Features
+
+- **firestore:** add support for non-default databases [#8489](https://github.com/invertase/react-native-firebase/issues/8489) ([422badb](https://github.com/invertase/react-native-firebase/commit/422badbf9aed4f97cf2d4fc18ce1739759cc1ac1))
+
+### Bug Fixes
+
+- **analytics, ios:** `FirebaseAnalytics/Core` is always needed ([a5a0d80](https://github.com/invertase/react-native-firebase/commit/a5a0d80c887b21b0d55a079348e59f6ac6b76c98))
+
+## [22.3.0](https://github.com/invertase/react-native-firebase/compare/v22.2.1...v22.3.0) (2025-07-08)
+
+### Features
+
+- **firestore:** add support for onSnapshotsInSync ([#8379](https://github.com/invertase/react-native-firebase/issues/8379)) ([f8c1464](https://github.com/invertase/react-native-firebase/commit/f8c1464fc0249864e9c6bf01af7f8679e3d235cf))
+
+### Bug Fixes
+
+- **app-check, expo:** init app-check shared instance before firebase in plugin ([#8559](https://github.com/invertase/react-native-firebase/issues/8559)) ([f0a0292](https://github.com/invertase/react-native-firebase/commit/f0a0292e979f51c39f917859bba19accea04eecc))
+- **app, android:** adopt firebase-android-sdk 33.16.0 ([7221dc4](https://github.com/invertase/react-native-firebase/commit/7221dc4602963d50eddccfc315ffbf458d9e9b29))
+- **app, ios:** adopt firebase-ios-sdk 11.15.0 ([28471dc](https://github.com/invertase/react-native-firebase/commit/28471dcc4948851106bc3be2e614dd59c358c403)), closes [/firebase.google.com/support/faq#analytics-odm2](https://github.com/invertase//firebase.google.com/support/faq/issues/analytics-odm2)
+- **app:** firebase-js-sdk bump 11.3.1 > 11.10.0 ([29ea831](https://github.com/invertase/react-native-firebase/commit/29ea8310beed3eb0598bda55aacc29c100c7f770))
+- **auth, ios:** correct useUserAccessGroup JSDoc ([#8543](https://github.com/invertase/react-native-firebase/issues/8543)) ([1324b4e](https://github.com/invertase/react-native-firebase/commit/1324b4e6757788de51c1f28bb45d8e2cd4d3d7a6))
+- **docs:** add a necessary await operator to the example code for initializeAppCheck() ([#8569](https://github.com/invertase/react-native-firebase/issues/8569)) ([a3cc4de](https://github.com/invertase/react-native-firebase/commit/a3cc4ded05a8832d381c37b7d34de91bbd6e5ca8))
+- **firestore:** type definitions ([#8378](https://github.com/invertase/react-native-firebase/issues/8378)) ([497c6d1](https://github.com/invertase/react-native-firebase/commit/497c6d153a897226ddf195b4187ee6a3be99d1f2))
+- **functions, ios:** use concrete NSNull for SDK params when possible ([3d13d38](https://github.com/invertase/react-native-firebase/commit/3d13d38441a007c9e667067e4ad01ab3fd6a4630))
+
 ## [22.2.1](https://github.com/invertase/react-native-firebase/compare/v22.2.0...v22.2.1) (2025-06-10)
 
 ### Bug Fixes

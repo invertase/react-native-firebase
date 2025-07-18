@@ -43,6 +43,12 @@ import version from './version';
 import fallBackModule from './web/RNFBFirestoreModule';
 import FirestorePersistentCacheIndexManager from './FirestorePersistentCacheIndexManager';
 
+// react-native at least through 0.77 does not correctly support URL.host, which
+// is needed by firebase-js-sdk. It appears that in 0.80+ it is supported, so this
+// (and the package.json entry for this package) should be removed when the minimum
+// supported version of react-native is 0.80 or higher.
+import 'react-native-url-polyfill/auto';
+
 const namespace = 'firestore';
 
 const nativeModuleName = [
@@ -56,6 +62,7 @@ const nativeEvents = [
   'firestore_collection_sync_event',
   'firestore_document_sync_event',
   'firestore_transaction_event',
+  'firestore_snapshots_in_sync_event',
 ];
 
 class FirebaseFirestoreModule extends FirebaseModule {
@@ -84,11 +91,23 @@ class FirebaseFirestoreModule extends FirebaseModule {
       );
     });
 
+    this.emitter.addListener(this.eventNameForApp('firestore_snapshots_in_sync_event'), event => {
+      this.emitter.emit(
+        this.eventNameForApp(`firestore_snapshots_in_sync_event:${event.listenerId}`),
+        event,
+      );
+    });
+
     this._settings = {
       ignoreUndefinedProperties: false,
       persistence: true,
     };
   }
+
+  get customUrlOrRegion() {
+    return this._customUrlOrRegion;
+  }
+
   // We override the FirebaseModule's `eventNameForApp()` method to include the customUrlOrRegion
   eventNameForApp(...args) {
     return `${this.app.name}-${this._customUrlOrRegion}-${args.join('-')}`;

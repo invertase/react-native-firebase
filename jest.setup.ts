@@ -32,6 +32,9 @@ jest.doMock('react-native', () => {
         OS: 'android',
         select: () => {},
       },
+      AppRegistry: {
+        registerHeadlessTask: jest.fn(),
+      },
       NativeModules: {
         ...ReactNative.NativeModules,
         RNFBAnalyticsModule: {

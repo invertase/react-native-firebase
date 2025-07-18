@@ -16,6 +16,7 @@
  */
 
 import {
+  createDeprecationProxy,
   isAndroid,
   isBoolean,
   isNull,
@@ -48,6 +49,13 @@ import version from './version';
 import fallBackModule from './web/RNFBAuthModule';
 import { warnDynamicLink } from './utils';
 
+const PhoneAuthState = {
+  CODE_SENT: 'sent',
+  AUTO_VERIFY_TIMEOUT: 'timeout',
+  AUTO_VERIFIED: 'verified',
+  ERROR: 'error',
+};
+
 export {
   AppleAuthProvider,
   EmailAuthProvider,
@@ -59,6 +67,7 @@ export {
   PhoneMultiFactorGenerator,
   OAuthProvider,
   OIDCAuthProvider,
+  PhoneAuthState,
 };
 
 const statics = {
@@ -72,12 +81,7 @@ const statics = {
   PhoneMultiFactorGenerator,
   OAuthProvider,
   OIDCAuthProvider,
-  PhoneAuthState: {
-    CODE_SENT: 'sent',
-    AUTO_VERIFY_TIMEOUT: 'timeout',
-    AUTO_VERIFIED: 'verified',
-    ERROR: 'error',
-  },
+  PhoneAuthState,
   getMultiFactorResolver,
   multiFactor,
 };
@@ -173,14 +177,14 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   _setUser(user) {
-    this._user = user ? new User(this, user) : null;
+    this._user = user ? createDeprecationProxy(new User(this, user)) : null;
     this._authResult = true;
     this.emitter.emit(this.eventNameForApp('onUserChanged'), this._user);
     return this._user;
   }
 
   _setUserCredential(userCredential) {
-    const user = new User(this, userCredential.user);
+    const user = createDeprecationProxy(new User(this, userCredential.user));
     this._user = user;
     this._authResult = true;
     this.emitter.emit(this.eventNameForApp('onUserChanged'), this._user);

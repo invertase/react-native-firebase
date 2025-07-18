@@ -26,6 +26,8 @@ Integration with Expo is possible when using a [development build](https://docs.
 
 _NOTE:_ React Native Firebase cannot be used in the pre-compiled [Expo Go app](https://docs.expo.dev/workflow/overview/#expo-go-an-optional-tool-for-learning) because React Native Firebase uses native code that is not compiled into Expo Go.
 
+> **Warning:** If you are using `expo-dev-client`, native crashes (such as those triggered by `crashlytics().crash()`) will **not** be reported to Firebase Crashlytics during development. This is because `expo-dev-client` provides a custom error overlay that catches and displays errors before they are sent to Firebase. To test native crash reporting, you must remove `expo-dev-client` and run your app in a standard release or debug build without the custom error overlay.
+
 To create a new Expo project, see the [Get started](https://docs.expo.dev/get-started/create-a-project/) guide in Expo documentation.
 
 ### Install React Native Firebase modules
@@ -136,7 +138,7 @@ First, add the `google-services` plugin as a dependency inside of your `/android
 buildscript {
   dependencies {
     // ... other dependencies
-    classpath 'com.google.gms:google-services:4.4.2'
+    classpath 'com.google.gms:google-services:4.4.3'
     // Add me --- /\
   }
 }
@@ -318,7 +320,7 @@ project.ext {
       // Overriding Library SDK Versions
       firebase: [
         // Override Firebase SDK Version
-        bom           : "33.14.0"
+        bom           : "33.16.0"
       ],
     ],
   ])
@@ -333,12 +335,12 @@ Open your projects `/ios/Podfile` and add any of the globals shown below to the 
 
 ```ruby
 # Override Firebase SDK Version
-$FirebaseSDKVersion = '11.13.0'
+$FirebaseSDKVersion = '11.15.0'
 ```
 
 Once changed, reinstall your projects pods via pod install and rebuild your project with `npx react-native run-ios`.
 
-Alternatively, if you cannot edit the Podfile easily (as when using Expo), you may add the environment variable `FIREBASE_SDK_VERSION=11.12.0` (or whatever version you need) to the command line that installs pods. For example `FIREBASE_SDK_VERSION=11.13.0 yarn expo prebuild --clean`
+Alternatively, if you cannot edit the Podfile easily (as when using Expo), you may add the environment variable `FIREBASE_SDK_VERSION=11.15.0` (or whatever version you need) to the command line that installs pods. For example `FIREBASE_SDK_VERSION=11.15.0 yarn expo prebuild --clean`
 
 ### Android Performance
 

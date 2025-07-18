@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, it, beforeEach, jest } from '@jest/globals';
 
 import {
   firebase,
@@ -8,6 +8,14 @@ import {
   getToken,
   onIdChange,
 } from '../lib';
+
+import {
+  createCheckV9Deprecation,
+  CheckV9DeprecationFunction,
+} from '../../app/lib/common/unitTestUtils';
+
+// @ts-ignore test
+import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 
 describe('installations()', function () {
   describe('namespace', function () {
@@ -74,6 +82,54 @@ describe('installations()', function () {
           'onIdChange() is unsupported by the React Native Firebase SDK.',
         );
       });
+    });
+  });
+
+  describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
+    let installationsV9Deprecation: CheckV9DeprecationFunction;
+
+    beforeEach(function () {
+      installationsV9Deprecation = createCheckV9Deprecation(['installations']);
+
+      // @ts-ignore test
+      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
+        return new Proxy(
+          {},
+          {
+            get: () =>
+              jest.fn().mockResolvedValue({
+                constants: {},
+              } as never),
+          },
+        );
+      });
+    });
+
+    it('delete', function () {
+      const installations = getInstallations();
+      installationsV9Deprecation(
+        () => deleteInstallations(installations),
+        () => installations.delete(),
+        'delete',
+      );
+    });
+
+    it('getId', function () {
+      const installations = getInstallations();
+      installationsV9Deprecation(
+        () => getId(installations),
+        () => installations.getId(),
+        'getId',
+      );
+    });
+
+    it('getToken', function () {
+      const installations = getInstallations();
+      installationsV9Deprecation(
+        () => getToken(installations),
+        () => installations.getToken(),
+        'getToken',
+      );
     });
   });
 });
