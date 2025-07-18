@@ -1,6 +1,8 @@
 import { ReactNativeFirebase } from '..';
 
-import FirebaseApp = ReactNativeFirebase.FirebaseApp;
+type FirebaseApp = ReactNativeFirebase.FirebaseApp & {
+  functions(regionOrCustomDomain?: string): Functions;
+};
 import FirebaseAppOptions = ReactNativeFirebase.FirebaseAppOptions;
 import LogLevelString = ReactNativeFirebase.LogLevelString;
 

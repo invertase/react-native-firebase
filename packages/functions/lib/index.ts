@@ -18,8 +18,10 @@
 import { getApp, type ReactNativeFirebase } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 
-type FirebaseApp = ReactNativeFirebase.FirebaseApp;
 type Functions = FunctionsModule;
+type FirebaseApp = ReactNativeFirebase.FirebaseApp & {
+  functions(regionOrCustomDomain?: string): Functions;
+};
 
 interface HttpsCallableOptions {
   timeout?: number;

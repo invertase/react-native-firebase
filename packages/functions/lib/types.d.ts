@@ -1,3 +1,4 @@
+
 declare module '@react-native-firebase/app/lib/common' {
   export const MODULAR_DEPRECATION_ARG: string;
   export const isAndroid: boolean;
@@ -19,21 +20,6 @@ declare module '@react-native-firebase/app/lib/internal' {
 
 declare module '@react-native-firebase/app/lib/internal/nativeModule' {
   export function setReactNativeModule(moduleName: string, module: any): void;
-}
-
-declare module '@react-native-firebase/app' {
-  export function getApp(name?: string): ReactNativeFirebase.FirebaseApp;
-
-  namespace ReactNativeFirebase {
-    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
-    interface Module {
-      functions: FirebaseModuleWithStaticsAndApp<any, any>;
-    }
-    interface FirebaseApp {
-      functions(customUrlOrRegion?: string): any;
-      readonly name: string;
-    }
-  }
 }
 
 declare module '@react-native-firebase/app/lib' {
