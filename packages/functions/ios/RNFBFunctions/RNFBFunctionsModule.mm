@@ -19,6 +19,7 @@
 #import <React/RCTUtils.h>
 
 #import "RNFBApp/RNFBSharedUtils.h"
+#import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBFunctionsModule.h"
 #import "NativeFunctionsModule.h"
 
@@ -39,7 +40,7 @@ RCT_EXPORT_MODULE(NativeFunctionsModule)
 }
 
 - (void)httpsCallable:(NSString *)appName
-               region:(NSString *)region
+               region:(NSString *)customUrlOrRegion
          emulatorHost:(NSString * _Nullable)emulatorHost
          emulatorPort:(double)emulatorPort
                  name:(NSString *)name
@@ -47,20 +48,18 @@ RCT_EXPORT_MODULE(NativeFunctionsModule)
               options:(JS::NativeFunctionsModule::SpecHttpsCallableOptions &)options
               resolve:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject {
+  NSURL *url = [NSURL URLWithString:customUrlOrRegion];
+  FIRApp *firebaseApp = [RCTConvert firAppFromString: appName];
 
-  FIRApp *firebaseApp = [FIRApp defaultApp];
+  FIRFunctions *functions =
+        (url && url.scheme && url.host)
+            ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
+            : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
+
 
   id callableData = data.data();
 
   std::optional<double> timeout = options.timeout();
-
-  NSString *customUrlOrRegion = emulatorHost ? emulatorHost : @"us-central1";
-
-  NSURL *url = [NSURL URLWithString:customUrlOrRegion];
-  FIRFunctions *functions =
-      (url && url.scheme && url.host)
-          ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
-          : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
 
   if (emulatorHost != nil) {
     [functions useEmulatorWithHost:emulatorHost port:(int)emulatorPort];
@@ -97,7 +96,7 @@ RCT_EXPORT_MODULE(NativeFunctionsModule)
 }
 
 - (void)httpsCallableFromUrl:(NSString *)appName
-                      region:(NSString *)region
+                      region:(NSString *)customUrlOrRegion
                 emulatorHost:(NSString * _Nullable)emulatorHost
                 emulatorPort:(double)emulatorPort
                          url:(NSString *)url
@@ -106,19 +105,18 @@ RCT_EXPORT_MODULE(NativeFunctionsModule)
                      resolve:(RCTPromiseResolveBlock)resolve
                       reject:(RCTPromiseRejectBlock)reject {
 
-  FIRApp *firebaseApp = [FIRApp defaultApp];
+  NSURL *customUrl = [NSURL URLWithString:customUrlOrRegion];
+  FIRApp *firebaseApp = [RCTConvert firAppFromString: appName];
+
+  FIRFunctions *functions =
+        (customUrl && customUrl.scheme && customUrl.host)
+            ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
+            : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
 
   id callableData = data.data();
 
   std::optional<double> timeout = options.timeout();
 
-  NSString *customUrlOrRegion = emulatorHost ? emulatorHost : @"us-central1";
-
-  NSURL *customUrl = [NSURL URLWithString:customUrlOrRegion];
-  FIRFunctions *functions =
-      (customUrl && customUrl.scheme && customUrl.host)
-          ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
-          : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
 
   if (emulatorHost != nil) {
     [functions useEmulatorWithHost:emulatorHost port:(int)emulatorPort];
