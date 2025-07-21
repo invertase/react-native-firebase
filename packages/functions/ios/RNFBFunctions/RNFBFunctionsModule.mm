@@ -58,6 +58,10 @@ RCT_EXPORT_MODULE(NativeFunctionsModule)
 
 
   id callableData = data.data();
+  
+  if (callableData == nil) {
+    callableData = [NSNull null];
+  }
 
   std::optional<double> timeout = options.timeout();
 
@@ -114,6 +118,10 @@ RCT_EXPORT_MODULE(NativeFunctionsModule)
             : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
 
   id callableData = data.data();
+  
+  if (callableData == nil) {
+    callableData = [NSNull null];
+  }
 
   std::optional<double> timeout = options.timeout();
 
