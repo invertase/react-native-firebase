@@ -52,7 +52,7 @@ describe('VertexAI backward compatibility', function () {
     assertAssignable<VertexAI, AI>();
   });
 
-  it('should allow VertexAIError to extend AIError, function () {
+  it('should allow VertexAIError to extend AIError', function () {
     assertAssignable<typeof VertexAIError, typeof AIError>();
     const err = new VertexAIError(VertexAIErrorCode.ERROR, '');
     expect(err).toBeInstanceOf(AIError);
