@@ -27,7 +27,7 @@ import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/na
 import fallBackModule from './web/RNFBFunctionsModule';
 import type { HttpsCallableOptions } from '.';
 const namespace = 'functions';
-// TODO: change to RNFBFunctionsModule
+
 const nativeModuleName = 'NativeFunctionsModule';
 
 export const HttpsErrorCode = {
