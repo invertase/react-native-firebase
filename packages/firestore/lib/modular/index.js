@@ -400,6 +400,10 @@ export function deleteAllPersistentCacheIndexes(indexManager) {
   return indexManager.deleteAllIndexes.call(indexManager, MODULAR_DEPRECATION_ARG);
 }
 
+export function settings(firestore, settings) {
+  return firestore.settings.call(firestore, settings, MODULAR_DEPRECATION_ARG);
+}
+
 export * from './query';
 export * from './snapshot';
 export * from './Bytes';
