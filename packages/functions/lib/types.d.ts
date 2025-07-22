@@ -10,6 +10,7 @@ declare module '@react-native-firebase/app/lib/internal' {
     constructor(...args: any[]);
     native: any;
     firebaseJson: any;
+    _customUrlOrRegion: string | null;
   }
   export function getFirebaseRoot(): any;
   export class NativeFirebaseError {
