@@ -5,23 +5,11 @@ import {
   httpsCallableFromURL,
   connectFunctionsEmulator,
 } from '@react-native-firebase/app/lib/internal/web/firebaseFunctions';
+import type { HttpsCallableOptions } from '../index';
+import type { NativeError } from '../HttpsError';
 
 interface WrapperData {
   data?: any;
-}
-
-interface CallableOptions {
-  [key: string]: any;
-}
-
-interface NativeError {
-  code: string;
-  message: string;
-  userInfo: {
-    code: string;
-    message: string;
-    details?: any;
-  };
 }
 
 /**
@@ -49,7 +37,7 @@ export default {
     port: number,
     name: string,
     wrapper: WrapperData,
-    options: CallableOptions,
+    options: HttpsCallableOptions,
   ): Promise<any> {
     try {
       const app = getApp(appName);
@@ -87,7 +75,6 @@ export default {
     } catch (error: any) {
       const { code, message, details } = error;
       const nativeError: NativeError = {
-        code,
         message,
         userInfo: {
           code: code ? code.replace('functions/', '') : 'unknown',
@@ -117,7 +104,7 @@ export default {
     port: number,
     url: string,
     wrapper: WrapperData,
-    options: CallableOptions,
+    options: HttpsCallableOptions,
   ): Promise<any> {
     try {
       const app = getApp(appName);
@@ -146,7 +133,6 @@ export default {
     } catch (error: any) {
       const { code, message, details } = error;
       const nativeError: NativeError = {
-        code,
         message,
         userInfo: {
           code: code ? code.replace('functions/', '') : 'unknown',
