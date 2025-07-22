@@ -294,5 +294,3 @@ export const firebase = getFirebaseRoot();
 
 // Register the interop module for non-native platforms.
 setReactNativeModule(nativeModuleName, fallBackModule);
-
-export * from '.';
