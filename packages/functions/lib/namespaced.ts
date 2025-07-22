@@ -26,6 +26,7 @@ import { version } from './version';
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import fallBackModule from './web/RNFBFunctionsModule';
 import type { HttpsCallableOptions } from '.';
+import type { FirebaseApp } from '@react-native-firebase/app';
 const namespace = 'functions';
 
 const nativeModuleName = 'NativeFunctionsModule';
@@ -152,14 +153,13 @@ export namespace FirebaseFunctionsTypes {
 }
 
 class FirebaseFunctionsModule extends FirebaseModule {
-  private _customUrlOrRegion: string;
+  _customUrlOrRegion: string;
   private _useFunctionsEmulatorHost: string | null;
   private _useFunctionsEmulatorPort: number;
-
-  constructor(...args: any[]) {
-    super(...args);
-    // @ts-ignore
-    this._customUrlOrRegion = this._customUrlOrRegion || 'us-central1';
+  // TODO: config is app package (FirebaseModule) object to be typed in the future
+  constructor(app: FirebaseApp, config: any, customUrlOrRegion: string | null) {
+    super(app, config, customUrlOrRegion);
+    this._customUrlOrRegion = customUrlOrRegion || 'us-central1';
     this._useFunctionsEmulatorHost = null;
     this._useFunctionsEmulatorPort = -1;
   }
