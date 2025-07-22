@@ -114,7 +114,7 @@ public class NativeFunctionsModule extends NativeFunctionsModuleSpec {
     String message = exception.getMessage();
     WritableMap userInfo = Arguments.createMap();
 
-    if (exception.getCause() instanceof FirebaseFunctionsException) {
+    if (exception.getCause() != null) {
       FirebaseFunctionsException functionsException =
           (FirebaseFunctionsException) exception.getCause();
       details = functionsException.getDetails();
