@@ -778,21 +778,21 @@ export function deleteAllPersistentCacheIndexes(
   indexManager: PersistentCacheIndexManager,
 ): Promise<void>;
 
- /**
-     * Specifies custom settings to be used to configure the Firestore instance. Must be set before invoking any other methods.
-     *
-     * #### Example
-     *
-     * ```js
-     * const settings = {
-     *   cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
-     * };
-     *
-     * await firebase.firestore().settings(settings);
-     * ```
-     *
-     * @param settings A `Settings` object.
-     */
+/**
+ * Specifies custom settings to be used to configure the Firestore instance. Must be set before invoking any other methods.
+ *
+ * #### Example
+ *
+ * ```js
+ * const settings = {
+ *   cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
+ * };
+ *
+ * await firebase.firestore().settings(settings);
+ * ```
+ *
+ * @param settings A `Settings` object.
+ */
 export function settings(settings: Settings): Promise<void>;
 
 export interface Settings {
@@ -845,7 +845,6 @@ export interface Settings {
    */
   serverTimestampBehavior?: 'estimate' | 'previous' | 'none';
 }
-
 
 export * from './query';
 export * from './snapshot';
