@@ -28,13 +28,13 @@ export interface NativeError {
 }
 export class HttpsError extends Error {
   readonly code!: string;
-  readonly details!: Record<string, string>;
+  readonly details!: Record<string, string> | null;
   readonly message!: string;
 
   constructor(
     code: string,
     message?: string,
-    details?: Record<string, string>,
+    details?: Record<string, string> | null,
     nativeErrorInstance?: NativeError,
   ) {
     super(message);
