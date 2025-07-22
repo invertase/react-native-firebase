@@ -58,7 +58,11 @@ RCT_EXPORT_MODULE(NativeFunctionsModule)
 
 
   id callableData = data.data();
-  
+
+  // In reality, this value is always null, because we always call it with null data
+  // on the javascript side for some reason. Check for that case (which should be 100% of the time)
+  // and set it to an `NSNull` (versus the `Optional<Any>` Swift will see from `valueForKey` so that
+  // FirebaseFunctions serializer won't have a validation failure for an unknown type.
   if (callableData == nil) {
     callableData = [NSNull null];
   }
@@ -118,7 +122,11 @@ RCT_EXPORT_MODULE(NativeFunctionsModule)
             : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
 
   id callableData = data.data();
-  
+
+  // In reality, this value is always null, because we always call it with null data
+  // on the javascript side for some reason. Check for that case (which should be 100% of the time)
+  // and set it to an `NSNull` (versus the `Optional<Any>` Swift will see from `valueForKey` so that
+  // FirebaseFunctions serializer won't have a validation failure for an unknown type.
   if (callableData == nil) {
     callableData = [NSNull null];
   }
