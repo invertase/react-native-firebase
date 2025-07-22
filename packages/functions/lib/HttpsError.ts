@@ -21,17 +21,22 @@ export interface NativeError {
   userInfo?: {
     code?: string;
     message?: string;
-    details?: any;
+    details?: Record<string, string>;
   };
   jsStack?: string;
   message?: string;
 }
 export class HttpsError extends Error {
   readonly code!: string;
-  readonly details!: any;
+  readonly details!: Record<string, string>;
   readonly message!: string;
 
-  constructor(code: string, message?: string, details?: any, nativeErrorInstance?: NativeError) {
+  constructor(
+    code: string,
+    message?: string,
+    details?: Record<string, string>,
+    nativeErrorInstance?: NativeError,
+  ) {
     super(message);
 
     Object.defineProperty(this, 'code', {

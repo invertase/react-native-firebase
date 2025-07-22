@@ -189,7 +189,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
           new HttpsError(
             HttpsErrorCode[code as keyof typeof HttpsErrorCode] || HttpsErrorCode.UNKNOWN,
             message || nativeError.message,
-            details || null,
+            details || {},
             nativeError,
           ),
         );
@@ -222,7 +222,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
           new HttpsError(
             HttpsErrorCode[code as keyof typeof HttpsErrorCode] || HttpsErrorCode.UNKNOWN,
             message || nativeError.message,
-            details || null,
+            details || {},
             nativeError,
           ),
         );
