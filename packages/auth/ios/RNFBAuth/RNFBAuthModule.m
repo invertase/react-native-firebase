@@ -58,6 +58,7 @@ static __strong NSMutableDictionary<NSString *, FIRAuthCredential *> *credential
 #if TARGET_OS_IOS
 static __strong NSMutableDictionary<NSString *, FIRMultiFactorResolver *> *cachedResolver;
 static __strong NSMutableDictionary<NSString *, FIRMultiFactorSession *> *cachedSessions;
+static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecrets;
 #endif
 
 @implementation RNFBAuthModule
@@ -81,6 +82,7 @@ RCT_EXPORT_MODULE();
 #if TARGET_OS_IOS
     cachedResolver = [[NSMutableDictionary alloc] init];
     cachedSessions = [[NSMutableDictionary alloc] init];
+    cachedTotpSecrets = [[NSMutableDictionary alloc] init];
 #endif
   });
   return self;
@@ -110,6 +112,7 @@ RCT_EXPORT_MODULE();
 #if TARGET_OS_IOS
   [cachedResolver removeAllObjects];
   [cachedSessions removeAllObjects];
+  [cachedTotpSecrets removeAllObjects];
 #endif
 }
 
@@ -967,6 +970,62 @@ RCT_EXPORT_METHOD(resolveMultiFactorSignIn
                                               }];
 }
 
+RCT_EXPORT_METHOD(resolveTotpSignIn
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)sessionKey
+                  : (NSString *)uid
+                  : (NSString *)oneTimePassword
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  DLog(@"using instance resolve TotpSignIn: %@", firebaseApp.name);
+
+  FIRMultiFactorAssertion *assertion =
+      [FIRTOTPMultiFactorGenerator assertionForSignInWithEnrollmentID:uid
+                                                      oneTimePassword:oneTimePassword];
+  [cachedResolver[sessionKey] resolveSignInWithAssertion:assertion
+                                              completion:^(FIRAuthDataResult *_Nullable authResult,
+                                                           NSError *_Nullable error) {
+                                                DLog(@"authError: %@", error) if (error) {
+                                                  [self promiseRejectAuthException:reject
+                                                                             error:error];
+                                                }
+                                                else {
+                                                  [self promiseWithAuthResult:resolve
+                                                                     rejecter:reject
+                                                                   authResult:authResult];
+                                                }
+                                              }];
+}
+
+RCT_EXPORT_METHOD(generateTotpSecret
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)sessionKey
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  DLog(@"using instance resolve generateTotpSecret: %@", firebaseApp.name);
+
+  FIRMultiFactorSession *session = cachedSessions[sessionKey];
+  DLog(@"using sessionKey: %@", sessionKey);
+  DLog(@"using session: %@", session);
+  [FIRTOTPMultiFactorGenerator
+      generateSecretWithMultiFactorSession:session
+                                completion:^(FIRTOTPSecret *_Nullable totpSecret,
+                                             NSError *_Nullable error) {
+                                  DLog(@"authError: %@", error) if (error) {
+                                    [self promiseRejectAuthException:reject error:error];
+                                  }
+                                  else {
+                                    NSString *secretKey = totpSecret.sharedSecretKey;
+                                    DLog(@"secretKey generated: %@", secretKey);
+                                    cachedTotpSecrets[secretKey] = totpSecret;
+                                    DLog(@"cachedSecret: %@", cachedTotpSecrets[secretKey]);
+                                    resolve(@{
+                                      @"secretKey" : secretKey,
+                                    });
+                                  }
+                                }];
+}
+
 RCT_EXPORT_METHOD(getSession
                   : (FIRApp *)firebaseApp
                   : (RCTPromiseResolveBlock)resolve
@@ -985,6 +1044,26 @@ RCT_EXPORT_METHOD(getSession
   }];
 }
 
+RCT_EXPORT_METHOD(unenrollMultiFactor
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)factorUID
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  DLog(@"using instance unenrollMultiFactor: %@", firebaseApp.name);
+
+  FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
+  [user.multiFactor unenrollWithFactorUID:factorUID
+                               completion:^(NSError *_Nullable error) {
+                                 if (error != nil) {
+                                   [self promiseRejectAuthException:reject error:error];
+                                   return;
+                                 }
+
+                                 resolve(nil);
+                                 return;
+                               }];
+}
+
 RCT_EXPORT_METHOD(finalizeMultiFactorEnrollment
                   : (FIRApp *)firebaseApp
                   : (NSString *)verificationId
@@ -1001,6 +1080,37 @@ RCT_EXPORT_METHOD(finalizeMultiFactorEnrollment
   FIRMultiFactorAssertion *assertion =
       [FIRPhoneMultiFactorGenerator assertionWithCredential:credential];
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
+  [user.multiFactor enrollWithAssertion:assertion
+                            displayName:displayName
+                             completion:^(NSError *_Nullable error) {
+                               if (error != nil) {
+                                 [self promiseRejectAuthException:reject error:error];
+                                 return;
+                               }
+
+                               resolve(nil);
+                               return;
+                             }];
+}
+
+RCT_EXPORT_METHOD(finalizeTotpEnrollment
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)totpSecret
+                  : (NSString *)verificationCode
+                  : (NSString *_Nullable)displayName
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  DLog(@"using instance finalizeTotpEnrollment: %@", firebaseApp.name);
+
+  FIRTOTPSecret *cachedTotpSecret = cachedTotpSecrets[totpSecret];
+  DLog(@"using totpSecretKey: %@", totpSecret);
+  DLog(@"using cachedSecret: %@", cachedTotpSecret);
+  FIRTOTPMultiFactorAssertion *assertion =
+      [FIRTOTPMultiFactorGenerator assertionForEnrollmentWithSecret:cachedTotpSecret
+                                                    oneTimePassword:verificationCode];
+
+  FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
+
   [user.multiFactor enrollWithAssertion:assertion
                             displayName:displayName
                              completion:^(NSError *_Nullable error) {
@@ -1741,12 +1851,12 @@ RCT_EXPORT_METHOD(useEmulator
       @"enrollmentDate" : enrollmentTime,
     } mutableCopy];
 
-    // only support phone mutli factor
     if ([hint isKindOfClass:[FIRPhoneMultiFactorInfo class]]) {
       FIRPhoneMultiFactorInfo *phoneHint = (FIRPhoneMultiFactorInfo *)hint;
       factorDict[@"phoneNumber"] = phoneHint.phoneNumber;
-      [enrolledFactors addObject:factorDict];
     }
+
+    [enrolledFactors addObject:factorDict];
   }
   return enrolledFactors;
 }
