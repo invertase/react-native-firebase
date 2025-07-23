@@ -1457,8 +1457,10 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
         task -> {
           if (task.isSuccessful()) {
             TotpSecret totpSecret = task.getResult();
+            String totpSecretKey = totpSecret.getSharedSecretKey();
+            mTotpSecrets.put(totpSecretKey, totpSecret);
             WritableMap result = Arguments.createMap();
-            result.putString("secretKey", totpSecret.getSharedSecretKey());
+            result.putString("secretKey", totpSecretKey);
             promise.resolve(result);
           } else {
             promiseRejectAuthException(promise, task.getException());
