@@ -42,6 +42,7 @@ export default class TotpMultiFactorGenerator {
     }
     const {
       secretKey,
+      // Other properties are not publicly exposed in native APIs
       // hashingAlgorithm, codeLength, codeIntervalSeconds, enrollmentCompletionDeadline
     } = await auth.native.generateTotpSecret(session);
 
