@@ -9,7 +9,12 @@ export default class MultiFactorResolver {
   }
 
   resolveSignIn(assertion) {
-    const { token, secret } = assertion;
-    return this._auth.resolveMultiFactorSignIn(this.session, token, secret);
+    const { token, secret, uid, verificationCode } = assertion;
+
+    if (token && secret) {
+      return this._auth.resolveMultiFactorSignIn(this.session, token, secret);
+    }
+
+    return this._auth.resolveTotpSignIn(this.session, uid, verificationCode);
   }
 }
