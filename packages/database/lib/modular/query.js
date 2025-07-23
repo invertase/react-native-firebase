@@ -145,9 +145,9 @@ function addEventListener(query, eventType, callback, cancelCallbackOrListenOpti
     };
   }
 
-  query.on.call(query, eventType, callback, cancelCallback, MODULAR_DEPRECATION_ARG);
+  query.on.call(query, eventType, callback, cancelCallback, null, MODULAR_DEPRECATION_ARG);
 
-  return () => query.off.call(query, eventType, callback, MODULAR_DEPRECATION_ARG);
+  return () => query.off.call(query, eventType, callback, null, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -211,8 +211,7 @@ export function onChildRemoved(query, callback, cancelCallbackOrListenOptions, o
  * @returns {Promise<void>}
  */
 export function set(ref, value) {
-  //return ref.set.call(ref, value, () => {}, MODULAR_DEPRECATION_ARG);
-  return ref.set.call(ref, value, MODULAR_DEPRECATION_ARG);
+  return ref.set.call(ref, value, () => {}, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -239,7 +238,14 @@ export function setWithPriority(ref, value, priority) {
  * @returns {DataSnapshot}
  */
 export function get(query) {
-  return query.once.call(query, 'value', () => {}, () => {}, {}, MODULAR_DEPRECATION_ARG);
+  return query.once.call(
+    query,
+    'value',
+    () => {},
+    () => {},
+    {},
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 export function off(_query, _eventType, _callback) {

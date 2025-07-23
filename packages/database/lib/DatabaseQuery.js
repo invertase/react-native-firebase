@@ -218,7 +218,7 @@ export default class DatabaseQuery extends ReferenceBase {
       throw new Error("firebase.database().ref().off(_, *) 'callback' must be a function.");
     }
 
-    if (!isUndefined(context) && !isObject(context)) {
+    if (!isUndefined(context) && !isNull(context) && !isObject(context)) {
       throw new Error("firebase.database().ref().off(_, _, *) 'context' must be an object.");
     }
 
@@ -287,7 +287,7 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    if (!isUndefined(context) && !isObject(context)) {
+    if (!isUndefined(context) && !isNull(context) && !isObject(context)) {
       throw new Error("firebase.database().ref().on(_, _, _, *) 'context' must be an object.");
     }
 
