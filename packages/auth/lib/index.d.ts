@@ -275,6 +275,22 @@ export namespace FirebaseAuthTypes {
     assertion(credential: AuthCredential): MultiFactorAssertion;
   }
 
+  export interface TotpMultiFactorGenerator {
+    FACTOR_ID: FactorId.TOTP;
+
+    assertionForSignIn(uid: string, totpSecret: string): MultiFactorAssertion;
+  }
+
+  export declare interface MultiFactorError extends AuthError {
+      /** Details about the MultiFactorError. */
+      readonly customData: AuthError['customData'] & {
+          /**
+           * The type of operation (sign-in, linking, or re-authentication) that raised the error.
+           */
+          readonly operationType: (typeof OperationType)[keyof typeof OperationType];
+      };
+  }
+
   /**
    * firebase.auth.X
    */
@@ -476,6 +492,7 @@ export namespace FirebaseAuthTypes {
    */
   export enum FactorId {
     PHONE = 'phone',
+    TOTP = 'totp',
   }
 
   /**
@@ -596,6 +613,12 @@ export namespace FirebaseAuthTypes {
      * The method will ensure the user state is reloaded after successfully enrolling a factor.
      */
     enroll(assertion: MultiFactorAssertion, displayName?: string): Promise<void>;
+
+    /**
+     * Unenroll a previously enrolled multi-factor authentication factor.
+     * @param option The multi-factor option to unenroll.
+     */
+    unenroll(option: MultiFactorInfo | string): Promise<void>;
   }
 
   /**

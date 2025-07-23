@@ -32,6 +32,7 @@ import {
 import ConfirmationResult from './ConfirmationResult';
 import PhoneAuthListener from './PhoneAuthListener';
 import PhoneMultiFactorGenerator from './PhoneMultiFactorGenerator';
+import TotpMultiFactorGenerator from './TotpMultiFactorGenerator';
 import Settings from './Settings';
 import User from './User';
 import { getMultiFactorResolver } from './getMultiFactorResolver';
@@ -65,6 +66,7 @@ export {
   TwitterAuthProvider,
   FacebookAuthProvider,
   PhoneMultiFactorGenerator,
+  TotpMultiFactorGenerator,
   OAuthProvider,
   OIDCAuthProvider,
   PhoneAuthState,
@@ -79,6 +81,7 @@ const statics = {
   TwitterAuthProvider,
   FacebookAuthProvider,
   PhoneMultiFactorGenerator,
+  TotpMultiFactorGenerator,
   OAuthProvider,
   OIDCAuthProvider,
   PhoneAuthState,
@@ -325,6 +328,14 @@ class FirebaseAuthModule extends FirebaseModule {
         return this._setUserCredential(userCredential);
       });
   }
+
+    resolveTotpSignIn(session, uid, totpSecret) {
+     return this.native
+      .resolveTotpSignIn(session, uid, totpSecret)
+      .then(userCredential => {
+         return this._setUserCredential(userCredential);
+       });
+   }
 
   createUserWithEmailAndPassword(email, password) {
     return this.native

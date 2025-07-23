@@ -1,4 +1,4 @@
-import { reload } from './modular';
+import { reload } from "./modular";
 /**
  * Return a MultiFactorUser instance the gateway to multi-factor operations.
  */
@@ -28,14 +28,23 @@ export class MultiFactorUser {
    * profile, which is necessary to see the multi-factor changes.
    */
   async enroll(multiFactorAssertion, displayName) {
-    const { token, secret } = multiFactorAssertion;
-    await this._auth.native.finalizeMultiFactorEnrollment(token, secret, displayName);
+    const { token, secret, totpSecret, verificationCode } = multiFactorAssertion;
+    if (token && secret) {
+      await this._auth.native.finalizeMultiFactorEnrollment(token, secret, displayName);
+    } else if (totpSecret && verificationCode) {
+      await this._auth.native.finalizeTotpEnrollment(totpSecret, verificationCode, displayName);
+    } else {
+      throw new Error("Invalid multi-factor assertion provided for enrollment.");
+    }
 
     // We need to reload the user otherwise the changes are not visible
     return reload(this._auth.currentUser);
   }
 
-  unenroll() {
-    return Promise.reject(new Error('No implemented yet.'));
+  async unenroll(enrollmentId) {
+    await this._auth.native.unenrollMultiFactor(enrollmentId);
+
+    // We need to reload the user otherwise the changes are not visible
+    return reload(this._auth.currentUser);
   }
 }
