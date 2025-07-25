@@ -25,6 +25,7 @@ import {
 import { deepGet } from '@react-native-firebase/app/lib/common/deeps';
 
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
+import { CreateDeprecationProxy } from '@react-native-firebase/app/lib/common/deprecation';
 export default class DatabaseDataSnapshot {
   constructor(reference, snapshot) {
     this._snapshot = snapshot;
@@ -66,7 +67,7 @@ export default class DatabaseDataSnapshot {
       value = null;
     }
 
-    const childRef = this._ref.child(path);
+    const childRef = this._ref.child.call(this._ref, path, MODULAR_DEPRECATION_ARG);
 
     let childPriority = null;
     if (this._snapshot.childPriorities) {
@@ -138,7 +139,7 @@ export default class DatabaseDataSnapshot {
 
     for (let i = 0; i < this._snapshot.childKeys.length; i++) {
       const key = this._snapshot.childKeys[i];
-      const snapshot = this.child.call(this, key, MODULAR_DEPRECATION_ARG);
+      const snapshot = this.child(key);
       const actionReturn = action(snapshot, i);
 
       if (actionReturn === true) {
