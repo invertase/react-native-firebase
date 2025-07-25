@@ -25,15 +25,11 @@ export default class TotpMultiFactorGenerator {
   }
 
   static assertionForSignIn(uid, verificationCode) {
-    // There is no logic here, we mainly do this for API compatibility
-    // (following the Web API).
     return { uid, verificationCode };
   }
 
   static assertionForEnrollment(totpSecret, verificationCode) {
-    // There is no logic here, we mainly do this for API compatibility
-    // (following the Web API).
-    return { totpSecret, verificationCode };
+    return { totpSecret: totpSecret.secretKey, verificationCode };
   }
 
   static async generateSecret(session, auth) {

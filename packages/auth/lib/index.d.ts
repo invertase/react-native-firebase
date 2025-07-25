@@ -276,9 +276,16 @@ export namespace FirebaseAuthTypes {
   }
 
   export interface TotpMultiFactorGenerator {
-    FACTOR_ID: FactorId.TOTP;
+    static FACTOR_ID: FactorId.TOTP;
 
-    assertionForSignIn(uid: string, totpSecret: string): MultiFactorAssertion;
+    static assertionForSignIn(uid: string, totpSecret: string): MultiFactorAssertion;
+    
+    static assertionForEnrollment(secret: TotpSecret, code: string): MultiFactorAssertion;
+
+    /**
+     * @param auth - The Auth instance. Only used for native platforms, should be ignored on web.
+     */
+    static generateSecret(session: FirebaseAuthTypes.MultiFactorSession, auth: FirebaseAuthTypes.Auth): Promise<TotpSecret>;
   }
 
   export declare interface MultiFactorError extends AuthError {
