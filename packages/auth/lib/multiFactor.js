@@ -1,4 +1,4 @@
-import { reload } from "./modular";
+import { reload } from './modular';
 /**
  * Return a MultiFactorUser instance the gateway to multi-factor operations.
  */
@@ -34,7 +34,7 @@ export class MultiFactorUser {
     } else if (totpSecret && verificationCode) {
       await this._auth.native.finalizeTotpEnrollment(totpSecret, verificationCode, displayName);
     } else {
-      throw new Error("Invalid multi-factor assertion provided for enrollment.");
+      throw new Error('Invalid multi-factor assertion provided for enrollment.');
     }
 
     // We need to reload the user otherwise the changes are not visible
