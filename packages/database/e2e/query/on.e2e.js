@@ -115,7 +115,7 @@ describe('database().ref().on()', function () {
     await Utils.sleep(100);
     await ref.set('bar');
     await Utils.spyToBeCalledTimesAsync(callback, 2);
-    ref.off('value');
+    await ref.off('value');
     callback.getCall(0).args[0].should.equal('foo');
     callback.getCall(1).args[0].should.equal('bar');
   });
