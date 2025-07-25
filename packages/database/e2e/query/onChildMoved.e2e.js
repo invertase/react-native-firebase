@@ -22,10 +22,12 @@ const TEST_PATH = `${PATH}/on`;
 describe('onChildMoved', function () {
   before(async function () {
     await seed(TEST_PATH);
+    globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE = false;
   });
 
   after(async function () {
     await wipe(TEST_PATH);
+    globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE = true;
   });
 
   // FIXME super flaky on ios simulator

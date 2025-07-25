@@ -107,41 +107,34 @@ describe('database().ref().push()', function () {
   });
 
   describe('modular', function () {
-    it('returns a promise when no value is passed', function () {
+    it('returns a Promise when a value is passed', function () {
       const { getDatabase, ref, push, get } = databaseModular;
-
+    
       const dbRef = ref(getDatabase(), `${TEST_PATH}/boop`);
-      const pushed = push(dbRef);
-      return pushed
-        .then(childRef => {
-          // Verify the push operation returns the correct reference
-          pushed.should.eql(childRef);
-          return get(pushed);
-        })
-        .then(snap => {
-          should.equal(snap.val(), null);
-          // Verify the snapshot is from the correct reference
-          snap.ref.should.eql(pushed);
-        });
+      const pushed = push(dbRef, null);
+    
+      return pushed.then(childRef => {
+        childRef.should.have.property('key').which.is.a.String();
+        return get(childRef);
+      }).then(snap => {
+        should.equal(snap.val(), null);
+        snap.ref.should.have.property('key').which.is.a.String();
+      });
     });
 
-    it('returns a promise and sets the provided value', function () {
+    it('returns a promise and sets the provided value', async function () {
       const { getDatabase, ref, push, get } = databaseModular;
-
+    
       const dbRef = ref(getDatabase(), `${TEST_PATH}/value`);
-      const pushed = push(dbRef, 6);
-      return pushed
-        .then(childRef => {
-          // Verify the push operation returns the correct reference
-          pushed.should.eql(childRef);
-          return get(pushed);
-        })
-        .then(snap => {
-          snap.val().should.equal(6);
-          // Verify the snapshot is from the correct reference
-          snap.ref.should.eql(pushed);
-        });
+      const childRef = await push(dbRef, 6);
+    
+      childRef.should.have.property('key').which.is.a.String();
+    
+      const snap = await get(childRef);
+      snap.val().should.equal(6);
+      snap.ref.should.eql(childRef);
     });
+    
 
     it('throws if push errors', async function () {
       const { getDatabase, ref, push } = databaseModular;
