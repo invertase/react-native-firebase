@@ -28,7 +28,6 @@ import {
   ReferenceBase,
   createDeprecationProxy,
   MODULAR_DEPRECATION_ARG,
-  filterModularArgument,
 } from '@react-native-firebase/app/lib/common';
 import DatabaseDataSnapshot from './DatabaseDataSnapshot';
 import DatabaseSyncTree from './DatabaseSyncTree';

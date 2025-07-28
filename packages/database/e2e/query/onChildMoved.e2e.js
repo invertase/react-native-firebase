@@ -35,7 +35,7 @@ describe('onChildMoved', function () {
       this.skip();
     }
 
-    const { getDatabase, ref, query, orderByChild, set, child, onChildMoved } = databaseModular;
+    const { getDatabase, ref, set, child, onChildMoved } = databaseModular;
     const dbRef = ref(getDatabase(), `${TEST_PATH}/childMoved`);
 
     const callback = sinon.spy();
@@ -56,7 +56,6 @@ describe('onChildMoved', function () {
       { onlyOnce: true },
     );
 
-
     await set(dbRef, initial);
     await set(child(dbRef, 'greg/nuggets'), 57);
     await set(child(dbRef, 'rob/nuggets'), 61);
@@ -69,11 +68,10 @@ describe('onChildMoved', function () {
     if (Platform.other) {
       this.skip();
     }
-    const { getDatabase, ref, query, orderByChild, onChildMoved, set, child } = databaseModular;
+    const { getDatabase, ref, onChildMoved, set, child } = databaseModular;
 
     const callback = sinon.spy();
     const dbRef = ref(getDatabase(), `${TEST_PATH}/childMoved2`);
-    const orderedRef = query(dbRef, orderByChild('nuggets'));
 
     const initial = {
       alex: { nuggets: 60 },

@@ -121,7 +121,9 @@ class DatabaseSyncTree {
     if (event.eventType === 'value') {
       snapshot = createDeprecationProxy(new DatabaseDataSnapshot(registration.ref, event.data));
     } else {
-      snapshot = createDeprecationProxy(new DatabaseDataSnapshot(registration.ref, event.data.snapshot));
+      snapshot = createDeprecationProxy(
+        new DatabaseDataSnapshot(registration.ref, event.data.snapshot),
+      );
       previousChildName = event.data.previousChildName;
     }
 

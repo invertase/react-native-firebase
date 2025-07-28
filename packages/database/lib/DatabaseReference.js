@@ -211,7 +211,11 @@ export default class DatabaseReference extends DatabaseQuery {
           if (error) {
             onComplete(error, committed, null);
           } else {
-            onComplete(null, committed, createDeprecationProxy(new DatabaseDataSnapshot(this, snapshotData)));
+            onComplete(
+              null,
+              committed,
+              createDeprecationProxy(new DatabaseDataSnapshot(this, snapshotData)),
+            );
           }
         }
 

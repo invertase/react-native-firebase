@@ -252,17 +252,9 @@ describe('database().ref().startAt()', function () {
 
       const snapshot = await get(query(dbRef, orderByValue(), startAt(2)));
 
-      const expected = ['b', 'c', 'd'];
-
-      // Use manual key extraction instead of forEach to avoid deprecated API usage
-      const val = snapshot.val();
-      if (!val) {
-        throw new Error('Snapshot value is null');
-      }
-      
-      // Sort keys by their values (ascending order for startAt)
-      const actualKeys = Object.keys(val).sort((a, b) => val[a] - val[b]);
-      actualKeys.should.eql(expected);
+      snapshot.forEach((childSnapshot, i) => {
+        childSnapshot.key.should.eql(expected[i]);
+      });
     });
   });
 });
