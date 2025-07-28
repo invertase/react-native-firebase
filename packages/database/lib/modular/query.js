@@ -140,7 +140,7 @@ function addEventListener(query, eventType, callback, cancelCallbackOrListenOpti
   if (options && options.onlyOnce) {
     const userCallback = callback;
     callback = snapshot => {
-      query.off(eventType, callback);
+      query.off.call(query, eventType, callback, null, MODULAR_DEPRECATION_ARG);
       return userCallback(snapshot);
     };
   }

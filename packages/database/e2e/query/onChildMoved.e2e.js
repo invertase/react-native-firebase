@@ -22,12 +22,10 @@ const TEST_PATH = `${PATH}/on`;
 describe('onChildMoved', function () {
   before(async function () {
     await seed(TEST_PATH);
-    globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE = false;
   });
 
   after(async function () {
     await wipe(TEST_PATH);
-    globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE = true;
   });
 
   // FIXME super flaky on ios simulator
@@ -39,7 +37,6 @@ describe('onChildMoved', function () {
 
     const { getDatabase, ref, query, orderByChild, set, child, onChildMoved } = databaseModular;
     const dbRef = ref(getDatabase(), `${TEST_PATH}/childMoved`);
-    const orderedRef = query(dbRef, orderByChild('nuggets'));
 
     const callback = sinon.spy();
 
@@ -52,12 +49,13 @@ describe('onChildMoved', function () {
     };
 
     onChildMoved(
-      orderedRef,
+      dbRef,
       $ => {
         callback($.val());
       },
       { onlyOnce: true },
     );
+
 
     await set(dbRef, initial);
     await set(child(dbRef, 'greg/nuggets'), 57);

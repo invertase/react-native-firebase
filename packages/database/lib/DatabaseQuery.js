@@ -26,14 +26,12 @@ import {
   pathIsEmpty,
   pathToUrlEncodedString,
   ReferenceBase,
+  createDeprecationProxy,
+  MODULAR_DEPRECATION_ARG,
+  filterModularArgument,
 } from '@react-native-firebase/app/lib/common';
 import DatabaseDataSnapshot from './DatabaseDataSnapshot';
 import DatabaseSyncTree from './DatabaseSyncTree';
-
-import {
-  createDeprecationProxy,
-  MODULAR_DEPRECATION_ARG,
-} from '@react-native-firebase/app/lib/common';
 
 const eventTypes = ['value', 'child_added', 'child_changed', 'child_moved', 'child_removed'];
 
