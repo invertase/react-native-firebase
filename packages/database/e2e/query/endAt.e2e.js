@@ -263,7 +263,7 @@ describe('database().ref().endAt()', function () {
       const expected = ['a', 'b'];
 
       const snapshot = await get(query(dbRef, orderByValue(), endAt(2)));
-      
+
       snapshot.forEach((childSnapshot, i) => {
         childSnapshot.key.should.eql(expected[i]);
       });
