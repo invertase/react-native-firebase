@@ -535,8 +535,8 @@ Pods/*
 .idea/**/*
 **/Pods/**
 **/dist/
-packages/**/version.js
-packages/**/version.ts
+# packages/**/version.js
+# packages/**/version.ts
 typedoc.raw.json
 tests/ios/Firebase
 tests/ios/resetXcode.sh
