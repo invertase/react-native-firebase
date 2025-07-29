@@ -187,14 +187,6 @@ function loadTests(_) {
       databaseTests.keys().forEach(databaseTests);
     }
 
-    if (platformSupportedModules.includes('dynamicLinks')) {
-      const dynamicLinksTests = require.context(
-        '../packages/dynamic-links/e2e',
-        true,
-        /\.e2e\.js$/,
-      );
-      dynamicLinksTests.keys().forEach(dynamicLinksTests);
-    }
     if (platformSupportedModules.includes('firestore')) {
       const firestoreTests = require.context('../packages/firestore/e2e', true, /\.e2e\.js$/);
       firestoreTests.keys().forEach(firestoreTests);
