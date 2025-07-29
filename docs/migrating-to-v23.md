@@ -56,3 +56,8 @@ Please refer to the official deprecation FAQ for complete migration guidance and
 - Crashlytics gradle plugin has been bumped from `3.0.4` to `3.0.5`.
 - Performance gradle plugin has been bumped from `1.4.2` to `2.0.0`.
 - App distribution gradle plugin has been bumped from `5.1.1` to `5.1.2`.
+
+# Web platform
+
+- Firebase JS SDK has been bumped to `12.0.0` which now requires a minimum of Node.js `20` and a minimum of `ES2020`.
+  [See release notes](https://firebase.google.com/support/release-notes/js#version_1200_-_july_17_2025).
