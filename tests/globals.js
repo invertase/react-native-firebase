@@ -62,7 +62,6 @@ import '@react-native-firebase/app/lib/utils';
 import '@react-native-firebase/auth';
 import '@react-native-firebase/crashlytics';
 import '@react-native-firebase/database';
-import '@react-native-firebase/dynamic-links';
 import '@react-native-firebase/firestore';
 import '@react-native-firebase/in-app-messaging';
 import '@react-native-firebase/installations';
