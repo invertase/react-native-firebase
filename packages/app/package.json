@@ -80,10 +80,10 @@
       "tvosTarget": "13.0"
     },
     "android": {
-      "minSdk": 21,
+      "minSdk": 23,
       "targetSdk": 34,
       "compileSdk": 34,
-      "firebase": "33.16.0",
+      "firebase": "34.0.0",
       "firebaseCrashlyticsGradle": "3.0.4",
       "firebasePerfGradle": "1.4.2",
       "gmsGoogleServicesGradle": "4.4.3",
