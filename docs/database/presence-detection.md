@@ -1,7 +1,7 @@
 ---
 title: Presence Detection
 description: Show a realtime list of online users with Realtime Database.
-next: /dynamic-links/usage
+next: /firestore/usage
 previous: /database/offline-support
 ---
 

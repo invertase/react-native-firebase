@@ -1,6 +1,6 @@
 ---
 title: Dynamic Links
-description: Installation and getting started with Dynamic Links.
+description: Dynamic Links has been removed.
 icon: //static.invertase.io/assets/firebase/dynamic-links.svg
 next: /in-app-messaging/usage
 previous: /database/presence-detection
