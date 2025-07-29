@@ -20,7 +20,6 @@
     "@react-native-firebase/auth": "22.4.0",
     "@react-native-firebase/crashlytics": "22.4.0",
     "@react-native-firebase/database": "22.4.0",
-    "@react-native-firebase/dynamic-links": "22.4.0",
     "@react-native-firebase/firestore": "22.4.0",
     "@react-native-firebase/functions": "22.4.0",
     "@react-native-firebase/in-app-messaging": "22.4.0",
