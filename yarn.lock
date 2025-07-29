@@ -5433,19 +5433,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/dynamic-links@npm:22.4.0, @react-native-firebase/dynamic-links@workspace:packages/dynamic-links":
-  version: 0.0.0-use.local
-  resolution: "@react-native-firebase/dynamic-links@workspace:packages/dynamic-links"
-  dependencies:
-    expo: "npm:^52.0.46"
+"@react-native-firebase/dynamic-links@npm:22.4.0":
+  version: 22.4.0
+  resolution: "@react-native-firebase/dynamic-links@npm:22.4.0"
   peerDependencies:
     "@react-native-firebase/app": 22.4.0
     expo: ">=47.0.0"
   peerDependenciesMeta:
     expo:
       optional: true
-  languageName: unknown
-  linkType: soft
+  checksum: 10/bd517fed584f8e7d027a05ba5deefe1f5bb1fc77e7c0f60cdaff1954777a9ed9e21758282665f6aa67192251f0ee94ea91300d84be741c346859b7e8d7349ccc
+  languageName: node
+  linkType: hard
 
 "@react-native-firebase/firestore@npm:22.4.0, @react-native-firebase/firestore@workspace:packages/firestore":
   version: 0.0.0-use.local
