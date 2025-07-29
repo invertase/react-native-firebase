@@ -11,7 +11,7 @@ function getAnalyticsApi(appName) {
   if (!measurementId) {
     // eslint-disable-next-line no-console
     console.warn(
-      'No measurement id found for Firebase Analytics. Analytics will be unavailable. Have you set gaTrackingId in your Firebase config?',
+      'No measurement id (`FirebaseOptions.measurementId`) found for Firebase Analytics. Analytics will be unavailable.',
     );
   }
   if (!analyticsInstances[measurementId]) {
