@@ -415,8 +415,6 @@ describe('database()...snapshot', function () {
     });
 
     it('forEach works with objects and cancels when returning true', async function () {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
       const { getDatabase, ref, child, orderByKey, query, get } = databaseModular;
 
       const callback = sinon.spy();
@@ -432,8 +430,6 @@ describe('database()...snapshot', function () {
       });
 
       callback.should.be.calledOnce();
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
     });
 
     it('forEach works with arrays and cancels when returning true', async function () {
@@ -471,8 +467,6 @@ describe('database()...snapshot', function () {
     });
 
     it('forEach cancels iteration when returning true', async function () {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
       const { getDatabase, ref, child, orderByValue, query, get } = databaseModular;
 
       const callback = sinon.spy();
@@ -488,8 +482,6 @@ describe('database()...snapshot', function () {
       cancelled.should.equal(true);
       callback.should.be.callCount(1);
       callback.getCall(0).args[0].should.equal(0);
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
     });
 
     it('getPriority returns the correct value', async function () {
