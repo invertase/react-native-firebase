@@ -46,6 +46,7 @@ import database, {
   push,
   remove,
   update,
+  ServerValue,
 } from '../lib';
 
 // @ts-ignore - no declaration file for DatabaseStatics
@@ -425,7 +426,7 @@ describe('Database', function () {
     describe('statics', function () {
       it('ServerValue', function () {
         staticsV9Deprecation(
-          () => DatabaseStatics.ServerValue,
+          () => ServerValue,
           () => firebase.database.ServerValue,
           'ServerValue',
         );

@@ -221,6 +221,20 @@ export function getServerTime(db: Database): Promise<number>;
 export function increment(delta: number): object;
 
 /**
+ * Server specific values.
+ */
+export const ServerValue: {
+  /**
+   * A placeholder value for auto-populating the current timestamp.
+   */
+  TIMESTAMP: object;
+  /**
+   * Returns a placeholder value that can be used to atomically increment the current database value.
+   */
+  increment(delta: number): object;
+};
+
+/**
  * Logs debugging information to the console. Not implemented on native.
  *
  * @param enabled

@@ -124,6 +124,8 @@ export function increment(delta) {
   return ServerValue.increment.call(ServerValue, delta, MODULAR_DEPRECATION_ARG);
 }
 
+export { ServerValue };
+
 export function enableLogging(_enabled, _persistent) {
   throw new Error('enableLogging() is not implemented');
 }
