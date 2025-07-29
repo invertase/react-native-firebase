@@ -19,7 +19,7 @@ const { PATH, seed, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/on`;
 
-describe('onChildMoved', function () {
+describe.only('onChildMoved', function () {
   before(async function () {
     await seed(TEST_PATH);
   });

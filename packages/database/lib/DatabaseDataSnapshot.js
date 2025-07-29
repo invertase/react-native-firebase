@@ -31,7 +31,7 @@ export default class DatabaseDataSnapshot {
 
     if (reference.key !== snapshot.key) {
       // reference is a query?
-      this._ref = reference.ref.child(snapshot.key);
+      this._ref = reference.ref.child.call(reference.ref, snapshot.key, MODULAR_DEPRECATION_ARG);
     } else {
       this._ref = reference;
     }
