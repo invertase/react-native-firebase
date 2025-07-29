@@ -49,9 +49,6 @@ import database, {
   ServerValue,
 } from '../lib';
 
-// @ts-ignore - no declaration file for DatabaseStatics
-import DatabaseStatics from '../lib/DatabaseStatics';
-
 import {
   createCheckV9Deprecation,
   CheckV9DeprecationFunction,
