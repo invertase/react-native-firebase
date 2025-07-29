@@ -85,8 +85,7 @@ export namespace ReactNativeFirebase {
     /**
      * The tracking ID for Google Analytics, e.g. "UA-12345678-1", used to configure Google Analytics.
      */
-    // TODO this should now be measurementId
-    gaTrackingId?: string;
+    measurementId?: string;
 
     /**
      * The Google Cloud Storage bucket name, e.g. "abc-xyz-123.storage.firebase.com".

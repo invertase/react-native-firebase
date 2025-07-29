@@ -190,10 +190,7 @@ RCT_EXPORT_METHOD(initializeApp
     if (![[options valueForKey:@"storageBucket"] isEqual:[NSNull null]]) {
       firOptions.storageBucket = [options valueForKey:@"storageBucket"];
     }
-    // kFirebaseOptionsDeepLinkURLScheme
-    if (![[options valueForKey:@"deepLinkURLScheme"] isEqual:[NSNull null]]) {
-      firOptions.deepLinkURLScheme = [options valueForKey:@"deepLinkURLScheme"];
-    }
+
     // kFirebaseOptionsIosBundleId
     if (![[options valueForKey:@"iosBundleId"] isEqual:[NSNull null]]) {
       firOptions.bundleID = [options valueForKey:@"iosBundleId"];

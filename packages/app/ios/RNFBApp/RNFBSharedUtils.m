@@ -59,13 +59,10 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
   firAppOptions[@"appId"] = firOptions.googleAppID;
   firAppOptions[@"projectId"] = firOptions.projectID;
   firAppOptions[@"databaseURL"] = firOptions.databaseURL;
-  firAppOptions[@"gaTrackingId"] = firOptions.trackingID;
   firAppOptions[@"storageBucket"] = firOptions.storageBucket;
   firAppOptions[@"messagingSenderId"] = firOptions.GCMSenderID;
   // missing from android sdk - ios only:
   firAppOptions[@"clientId"] = firOptions.clientID;
-  firAppOptions[@"androidClientID"] = firOptions.androidClientID;
-  firAppOptions[@"deepLinkUrlScheme"] = firOptions.deepLinkURLScheme;
   // not in FIROptions API but in JS SDK and project config JSON
   if ([RNFBAppModule getCustomDomain:name] != nil) {
     firAppOptions[@"authDomain"] = [RNFBAppModule getCustomDomain:name];

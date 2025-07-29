@@ -18,7 +18,7 @@ If you do not meet these prerequisites, follow the links below:
 - [React Native - Setting up the development environment](https://reactnative.dev/docs/environment-setup)
 - [Create a new Firebase project](https://console.firebase.google.com/)
 
-Additionally, current versions of firebase-ios-sdk have a minimum Xcode requirement of 15.2, which implies a minimum macOS version of 13.5 (macOS Ventura).
+Additionally, current versions of firebase-ios-sdk have a minimum Xcode requirement of 16.2, which implies a minimum macOS version of 14.5 (macOS Sequoia).
 
 ## Installation for Expo projects
 
@@ -335,7 +335,7 @@ Open your projects `/ios/Podfile` and add any of the globals shown below to the 
 
 ```ruby
 # Override Firebase SDK Version
-$FirebaseSDKVersion = '11.15.0'
+$FirebaseSDKVersion = '12.0.0'
 ```
 
 Once changed, reinstall your projects pods via pod install and rebuild your project with `npx react-native run-ios`.

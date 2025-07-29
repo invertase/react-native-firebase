@@ -21,9 +21,15 @@ const multiFactorUser = credential.user.multiFactor;
 console.log(multiFactorUser.enrolledFactors);
 ```
 
+# Firebase App
+
+- `gaMeasurementId` property from `FirebaseOptions` has been replaced with `measurementId` to match Firebase web JS SDK.
+
 # Firebase Dynamic Links
 
 ⚠️ **REMOVED** ⚠️
+
+Firebase Dynamic Links has been Removed
 
 This package has been deprecated and removed from the React Native Firebase repository.
 
@@ -56,6 +62,12 @@ Please refer to the official deprecation FAQ for complete migration guidance and
 - Crashlytics gradle plugin has been bumped from `3.0.4` to `3.0.5`.
 - Performance gradle plugin has been bumped from `1.4.2` to `2.0.0`.
 - App distribution gradle plugin has been bumped from `5.1.1` to `5.1.2`.
+
+# iOS platform
+
+- Minimum iOS deployment target has now been bumped to `15` from `13`.
+- Minimum Xcode version required for iOS development is now Xcode `16.2`, previous was Xcode `15.2`.
+- `gaMeasurementId` property from `FirebaseOptions` (now `measurementId` in React Native Firebase) has been removed from firebase-ios-sdk as it wasn't used.
 
 # Web platform
 
