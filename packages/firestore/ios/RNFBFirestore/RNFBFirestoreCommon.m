@@ -102,7 +102,14 @@ NSMutableDictionary *instanceCache;
   firestoreSettings.sslEnabled =
       (BOOL)[preferences getBooleanValue:sslKey defaultValue:firestore.settings.sslEnabled];
 
-  firestore.settings = firestoreSettings;
+  @try {
+    firestore.settings = firestoreSettings;
+  } @catch (NSException *exception) {
+    // The Firestore instance is already running, this is fine, we'll just use the existing
+    // instance with its existing settings.
+    NSLog(@"RNFBFirestore: Failed to set settings, likely because Firestore is already running. %@",
+          exception.reason);
+  }
 
   [preferences remove:cacheKey];
   [preferences remove:hostKey];
