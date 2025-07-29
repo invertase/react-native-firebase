@@ -2591,7 +2591,6 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       builder = builder.setHandleCodeInApp(actionCodeSettings.getBoolean("handleCodeInApp"));
     }
 
-
     if (actionCodeSettings.hasKey("linkDomain")) {
       builder =
           builder.setLinkDomain(Objects.requireNonNull(actionCodeSettings.getString("linkDomain")));
