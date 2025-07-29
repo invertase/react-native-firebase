@@ -35,8 +35,9 @@ describe('onChildMoved', function () {
       this.skip();
     }
 
-    const { getDatabase, ref, set, child, onChildMoved } = databaseModular;
+    const { getDatabase, ref, set, child, onChildMoved, query, orderByChild } = databaseModular;
     const dbRef = ref(getDatabase(), `${TEST_PATH}/childMoved`);
+    const orderedRef = query(dbRef, orderByChild('nuggets'));
 
     const callback = sinon.spy();
 
@@ -49,7 +50,7 @@ describe('onChildMoved', function () {
     };
 
     onChildMoved(
-      dbRef,
+      orderedRef,
       $ => {
         callback($.val());
       },
@@ -68,10 +69,11 @@ describe('onChildMoved', function () {
     if (Platform.other) {
       this.skip();
     }
-    const { getDatabase, ref, onChildMoved, set, child } = databaseModular;
+    const { getDatabase, ref, onChildMoved, set, child, query, orderByChild } = databaseModular;
 
     const callback = sinon.spy();
     const dbRef = ref(getDatabase(), `${TEST_PATH}/childMoved2`);
+    const orderedRef = query(dbRef, orderByChild('nuggets'));
 
     const initial = {
       alex: { nuggets: 60 },
