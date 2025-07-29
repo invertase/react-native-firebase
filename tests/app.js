@@ -55,7 +55,6 @@ if (!Platform.other) {
   platformSupportedModules.push('installations');
   platformSupportedModules.push('appCheck');
   platformSupportedModules.push('appDistribution');
-  platformSupportedModules.push('dynamicLinks');
   platformSupportedModules.push('ml');
   platformSupportedModules.push('vertexai');
 }
