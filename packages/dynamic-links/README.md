@@ -38,7 +38,7 @@ Firebase Dynamic Links has been deprecated by Google and will be shut down on Au
 The deprecation FAQ provides detailed guidance on how to migrate from Firebase Dynamic Links, including:
 
 - **Full feature parity**: Use alternative deep-linking service providers
-- **Simple deep-linking**: Migrate to App Links and Universal Links
+- **Simple deep-linking**: Migrate to App Links and Universal Links. [See Firebase documentation](https://firebase.google.com/support/guides/app-links-universal-links).
 - **No replacement needed**: Remove the package entirely
 
 ## Timeline
