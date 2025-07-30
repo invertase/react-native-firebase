@@ -353,9 +353,7 @@ export default {
           break;
       }
 
-      const encoder = new TextEncoder();
-
-      const arrayBuffer = encoder.encode(decodedString).buffer;
+      const arrayBuffer = new Uint8Array([...decodedString].map(c => c.charCodeAt(0)));
 
       const task = uploadBytesResumable(ref, arrayBuffer, {
         ...makeSettableMetadata(metadata),
