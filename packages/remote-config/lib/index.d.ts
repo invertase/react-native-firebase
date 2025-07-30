@@ -540,6 +540,17 @@ export namespace FirebaseRemoteConfigTypes {
      */
     reset(): Promise<void>;
   }
+
+  export type CallbackOrObserver<T extends (...args: any[]) => any> = T | { next: T };
+
+  export type OnConfigUpdatedListenerCallback = (
+    event?: { updatedKeys: string[] },
+    error?: {
+      code: string;
+      message: string;
+      nativeErrorMessage: string;
+    },
+  ) => void;
 }
 
 declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
@@ -553,17 +564,6 @@ export const firebase: ReactNativeFirebase.Module & {
     name?: string,
   ): ReactNativeFirebase.FirebaseApp & { remoteConfig(): FirebaseRemoteConfigTypes.Module };
 };
-
-type CallbackOrObserver<T extends (...args: any[]) => any> = T | { next: T };
-
-type OnConfigUpdatedListenerCallback = (
-  event?: { updatedKeys: string[] },
-  error?: {
-    code: string;
-    message: string;
-    nativeErrorMessage: string;
-  },
-) => void;
 
 export default defaultExport;
 
