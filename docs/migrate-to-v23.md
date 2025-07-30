@@ -1,14 +1,13 @@
 ---
-title: Dynamic Links
-description: Dynamic Links has been removed.
-icon: //static.invertase.io/assets/firebase/dynamic-links.svg
-next: /in-app-messaging/usage
-previous: /database/presence-detection
+title: Migrating to v23
+description: Migrate to React Native Firebase v23.
+previous: /migrate-to-v23
+next: /typescript
 ---
 
-# Firebase Dynamic Links
+⚠️ **REMOVED** ⚠️
 
-⚠️ **DEPRECATED** ⚠️
+# Firebase Dynamic Links has been Removed
 
 This package has been deprecated and removed from the React Native Firebase repository.
 
