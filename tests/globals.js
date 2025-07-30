@@ -62,7 +62,6 @@ import '@react-native-firebase/app/lib/utils';
 import '@react-native-firebase/auth';
 import '@react-native-firebase/crashlytics';
 import '@react-native-firebase/database';
-import '@react-native-firebase/dynamic-links';
 import '@react-native-firebase/firestore';
 import '@react-native-firebase/in-app-messaging';
 import '@react-native-firebase/installations';
@@ -85,7 +84,6 @@ import * as databaseModular from '@react-native-firebase/database';
 import * as inAppMessagingModular from '@react-native-firebase/in-app-messaging';
 import * as installationsModular from '@react-native-firebase/installations';
 import * as crashlyticsModular from '@react-native-firebase/crashlytics';
-import * as dynamicLinksModular from '@react-native-firebase/dynamic-links';
 import * as mlModular from '@react-native-firebase/ml';
 
 import { Platform } from 'react-native';
@@ -439,12 +437,6 @@ Object.defineProperty(global, 'installationsModular', {
 Object.defineProperty(global, 'crashlyticsModular', {
   get() {
     return crashlyticsModular;
-  },
-});
-
-Object.defineProperty(global, 'dynamicLinksModular', {
-  get() {
-    return dynamicLinksModular;
   },
 });
 
