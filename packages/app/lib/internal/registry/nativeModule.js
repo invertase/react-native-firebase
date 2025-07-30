@@ -40,7 +40,8 @@ function nativeModuleKey(module) {
  */
 function nativeModuleMethodWrapped(namespace, method, argToPrepend) {
   return (...args) => {
-    const possiblePromise = method(...[...argToPrepend, ...args]);
+    const allArgs = [...argToPrepend, ...args];
+    const possiblePromise = method(...allArgs);
 
     if (possiblePromise && possiblePromise.then) {
       const jsStack = new Error().stack;

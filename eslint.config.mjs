@@ -38,7 +38,7 @@ export default [
       '**/type-test.ts',
       'packages/**/modular/dist/**/*',
       'packages/vertexai/__tests__/test-utils',
-      'packages/vertexai/dist',
+      'packages/**/dist',
     ],
   },
   ...compat

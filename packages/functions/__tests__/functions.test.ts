@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
 
-import functions, {
+import {
   firebase,
   getFunctions,
   connectFunctionsEmulator,
@@ -9,12 +9,13 @@ import functions, {
   HttpsErrorCode,
 } from '../lib';
 
+import functions from '../lib/namespaced';
 import {
   createCheckV9Deprecation,
-  CheckV9DeprecationFunction,
+  type CheckV9DeprecationFunction,
 } from '../../app/lib/common/unitTestUtils';
 
-import { getApp } from '../../app';
+import { getApp } from '@react-native-firebase/app';
 
 // @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
