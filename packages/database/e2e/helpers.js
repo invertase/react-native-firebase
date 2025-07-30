@@ -52,10 +52,10 @@ const CONTENT = {
 };
 
 exports.seed = function seed(path) {
-  const { getDatabase, ref } = databaseModular;
+  const { getDatabase, ref, set } = databaseModular;
   return Promise.all([
-    ref(getDatabase(), `${path}/types`).set(CONTENT.TYPES),
-    ref(getDatabase(), `${path}/query`).set(CONTENT.QUERY),
+    set(ref(getDatabase(), `${path}/types`), CONTENT.TYPES),
+    set(ref(getDatabase(), `${path}/query`), CONTENT.QUERY),
     // The database emulator does not load rules correctly. We force them pre-test.
     // TODO(ehesp): This is current erroring - however without it, we can't test rules.
     testingUtils.initializeTestEnvironment({
@@ -71,8 +71,8 @@ exports.seed = function seed(path) {
 };
 
 exports.wipe = function wipe(path) {
-  const { getDatabase, ref } = databaseModular;
-  return ref(getDatabase(), path).remove();
+  const { getDatabase, ref, remove } = databaseModular;
+  return remove(ref(getDatabase(), path));
 };
 
 exports.PATH = PATH;

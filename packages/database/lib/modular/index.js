@@ -2,6 +2,7 @@ import { getApp } from '@react-native-firebase/app';
 import DatabaseStatics from '../DatabaseStatics';
 
 const { ServerValue } = DatabaseStatics;
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 
 /**
  * @typedef {import("..").FirebaseApp} FirebaseApp
@@ -28,7 +29,7 @@ export function getDatabase(app, url) {
  * @returns {void}
  */
 export function connectDatabaseEmulator(db, host, port) {
-  db.useEmulator(host, port);
+  db.useEmulator.call(db, host, port, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -36,7 +37,7 @@ export function connectDatabaseEmulator(db, host, port) {
  * @returns {Promise<void>}
  */
 export function goOffline(db) {
-  return db.goOffline();
+  return db.goOffline.call(db, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -44,7 +45,7 @@ export function goOffline(db) {
  * @returns {Promise<void>}
  */
 export function goOnline(db) {
-  return db.goOnline();
+  return db.goOnline.call(db, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -53,7 +54,7 @@ export function goOnline(db) {
  * @returns {DatabaseReference}
  */
 export function ref(db, path) {
-  return db.ref(path);
+  return db.ref.call(db, path, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -62,7 +63,7 @@ export function ref(db, path) {
  * @returns {DatabaseReference}
  */
 export function refFromURL(db, url) {
-  return db.refFromURL(url);
+  return db.refFromURL.call(db, url, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -71,7 +72,7 @@ export function refFromURL(db, url) {
  * @returns {void}
  */
 export function setPersistenceEnabled(db, enabled) {
-  return db.setPersistenceEnabled(enabled);
+  return db.setPersistenceEnabled.call(db, enabled, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -80,7 +81,7 @@ export function setPersistenceEnabled(db, enabled) {
  * @returns {void}
  */
 export function setLoggingEnabled(db, enabled) {
-  return db.setLoggingEnabled(enabled);
+  return db.setLoggingEnabled.call(db, enabled, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -89,7 +90,7 @@ export function setLoggingEnabled(db, enabled) {
  * @returns {void}
  */
 export function setPersistenceCacheSizeBytes(db, bytes) {
-  return db.setPersistenceCacheSizeBytes(bytes);
+  return db.setPersistenceCacheSizeBytes.call(db, bytes, MODULAR_DEPRECATION_ARG);
 }
 
 export function forceLongPolling() {
@@ -105,7 +106,7 @@ export function forceWebSockets() {
  * @returns {Date}
  */
 export function getServerTime(db) {
-  return db.getServerTime();
+  return db.getServerTime.call(db, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -120,8 +121,10 @@ export function serverTimestamp() {
  * @returns {object}
  */
 export function increment(delta) {
-  return ServerValue.increment(delta);
+  return ServerValue.increment.call(ServerValue, delta, MODULAR_DEPRECATION_ARG);
 }
+
+export { ServerValue };
 
 export function enableLogging(_enabled, _persistent) {
   throw new Error('enableLogging() is not implemented');

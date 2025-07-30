@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, it, beforeEach, jest } from '@jest/globals';
 
 import database, {
   firebase,
@@ -46,7 +46,16 @@ import database, {
   push,
   remove,
   update,
+  ServerValue,
 } from '../lib';
+
+import {
+  createCheckV9Deprecation,
+  CheckV9DeprecationFunction,
+} from '../../app/lib/common/unitTestUtils';
+
+// @ts-ignore test
+import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 
 describe('Database', function () {
   describe('namespace', function () {
@@ -281,6 +290,348 @@ describe('Database', function () {
 
     it('`update` function is properly exposed to end user', function () {
       expect(update).toBeDefined();
+    });
+  });
+
+  describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
+    let databaseV9Deprecation: CheckV9DeprecationFunction;
+    let staticsV9Deprecation: CheckV9DeprecationFunction;
+    let referenceV9Deprecation: CheckV9DeprecationFunction;
+
+    beforeEach(function () {
+      databaseV9Deprecation = createCheckV9Deprecation(['database']);
+      staticsV9Deprecation = createCheckV9Deprecation(['database', 'statics']);
+      referenceV9Deprecation = createCheckV9Deprecation(['database', 'DatabaseReference']);
+      // @ts-ignore test
+      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
+        return new Proxy(
+          {},
+          {
+            get: (_target, prop) => {
+              if (prop === 'constants') {
+                return {
+                  isDatabaseCollectionEnabled: true,
+                  url: 'https://test.firebaseio.com',
+                  ref: 'ref()',
+                };
+              }
+              // Mock the once method to return proper snapshot data
+              if (prop === 'once') {
+                return jest.fn().mockResolvedValue({
+                  key: 'test',
+                  value: 'mock_value',
+                  exists: true,
+                  childKeys: [],
+                  priority: null,
+                } as never);
+              }
+              return jest.fn().mockResolvedValue({
+                constants: {
+                  isDatabaseCollectionEnabled: true,
+                  url: 'https://test.firebaseio.com',
+                },
+              } as never);
+            },
+          },
+        );
+      });
+    });
+
+    it('useEmulator', function () {
+      const db = getDatabase();
+      databaseV9Deprecation(
+        () => connectDatabaseEmulator(db, 'localhost', 9000),
+        () => db.useEmulator('localhost', 9000),
+        'useEmulator',
+      );
+    });
+
+    it('goOffline', function () {
+      const db = getDatabase();
+      databaseV9Deprecation(
+        () => goOffline(db),
+        () => db.goOffline(),
+        'goOffline',
+      );
+    });
+
+    it('goOnline', function () {
+      const db = getDatabase();
+      databaseV9Deprecation(
+        () => goOnline(db),
+        () => db.goOnline(),
+        'goOnline',
+      );
+    });
+
+    it('ref', function () {
+      const db = getDatabase();
+      databaseV9Deprecation(
+        () => ref(db, 'test'),
+        () => db.ref('test'),
+        'ref',
+      );
+    });
+
+    it('refFromURL', function () {
+      const db = getDatabase();
+      // Mock the _customUrlOrRegion property directly on the database instance
+      (db as any)._customUrlOrRegion = 'https://test.firebaseio.com';
+      databaseV9Deprecation(
+        () => refFromURL(db, 'https://test.firebaseio.com'),
+        () => db.refFromURL('https://test.firebaseio.com'),
+        'refFromURL',
+      );
+    });
+
+    it('setPersistenceEnabled', function () {
+      const db = getDatabase();
+      databaseV9Deprecation(
+        () => setPersistenceEnabled(db, true),
+        () => db.setPersistenceEnabled(true),
+        'setPersistenceEnabled',
+      );
+    });
+
+    it('setLoggingEnabled', function () {
+      const db = getDatabase();
+      databaseV9Deprecation(
+        () => setLoggingEnabled(db, true),
+        () => db.setLoggingEnabled(true),
+        'setLoggingEnabled',
+      );
+    });
+
+    it('setPersistenceCacheSizeBytes', function () {
+      const db = getDatabase();
+      databaseV9Deprecation(
+        () => setPersistenceCacheSizeBytes(db, 10000000),
+        () => db.setPersistenceCacheSizeBytes(10000000),
+        'setPersistenceCacheSizeBytes',
+      );
+    });
+
+    it('getServerTime', function () {
+      const db = getDatabase();
+      databaseV9Deprecation(
+        () => getServerTime(db),
+        () => db.getServerTime(),
+        'getServerTime',
+      );
+    });
+
+    describe('statics', function () {
+      it('ServerValue', function () {
+        staticsV9Deprecation(
+          () => ServerValue,
+          () => firebase.database.ServerValue,
+          'ServerValue',
+        );
+      });
+    });
+
+    describe('DatabaseReference', function () {
+      it('child', function () {
+        const db = getDatabase();
+        const testRef = ref(db, 'test');
+        referenceV9Deprecation(
+          () => child(testRef, 'child'),
+          () => testRef.child('child'),
+          'child',
+        );
+      });
+
+      it('set', function () {
+        const db = getDatabase();
+        const testRef = ref(db, 'test');
+        referenceV9Deprecation(
+          () => set(testRef, 'value'),
+          () => testRef.set('value'),
+          'set',
+        );
+      });
+
+      it('update', function () {
+        const db = getDatabase();
+        const testRef = ref(db, 'test');
+        referenceV9Deprecation(
+          () => update(testRef, { value: 'value' }),
+          () => testRef.update({ value: 'value' }),
+          'update',
+        );
+      });
+
+      it('setWithPriority', function () {
+        const db = getDatabase();
+        const testRef = ref(db, 'test');
+        referenceV9Deprecation(
+          () => setWithPriority(testRef, 'value', 1),
+          () => testRef.setWithPriority('value', 1),
+          'setWithPriority',
+        );
+      });
+
+      it('remove', function () {
+        const db = getDatabase();
+        const testRef = ref(db, 'test');
+        referenceV9Deprecation(
+          () => remove(testRef),
+          () => testRef.remove(),
+          'remove',
+        );
+      });
+
+      it('onValue', function () {
+        const db = getDatabase();
+        const testRef = ref(db, 'test');
+        referenceV9Deprecation(
+          () => onValue(testRef, () => {}),
+          () => testRef.on('value', () => {}),
+          'on',
+        );
+      });
+
+      it('get', function () {
+        const db = getDatabase();
+        const testRef = ref(db, 'test');
+        referenceV9Deprecation(
+          () => get(testRef),
+          () => testRef.once('value'),
+          'once',
+        );
+      });
+
+      it('endAt', function () {
+        const db = getDatabase();
+        const testRef = ref(db, 'test');
+        referenceV9Deprecation(
+          () => query(testRef, endAt('value')),
+          () => testRef.endAt('value'),
+          'endAt',
+        );
+      });
+
+      it('startAt', function () {
+        const db = getDatabase();
+        const testRef = ref(db, 'test');
+        referenceV9Deprecation(
+          () => query(testRef, startAt('value')),
+          () => testRef.startAt('value'),
+          'startAt',
+        );
+      });
+
+      it('limitToFirst', function () {
+        const db = getDatabase();
+        const testRef = ref(db, 'test');
+        referenceV9Deprecation(
+          () => query(testRef, limitToFirst(10)),
+          () => testRef.limitToFirst(10),
+          'limitToFirst',
+        );
+      });
+
+      it('limitToLast', function () {
+        const db = getDatabase();
+        const testRef = ref(db, 'test');
+        referenceV9Deprecation(
+          () => query(testRef, limitToLast(10)),
+          () => testRef.limitToLast(10),
+          'limitToLast',
+        );
+      });
+
+      it('orderByChild', function () {
+        const db = getDatabase();
+        const testRef = ref(db, 'test');
+        referenceV9Deprecation(
+          () => query(testRef, orderByChild('name')),
+          () => testRef.orderByChild('name'),
+          'orderByChild',
+        );
+      });
+
+      it('orderByKey', function () {
+        const db = getDatabase();
+        const testRef = ref(db, 'test');
+        referenceV9Deprecation(
+          () => query(testRef, orderByKey()),
+          () => testRef.orderByKey(),
+          'orderByKey',
+        );
+      });
+
+      it('orderByValue', function () {
+        const db = getDatabase();
+        const testRef = ref(db, 'test');
+        referenceV9Deprecation(
+          () => query(testRef, orderByValue()),
+          () => testRef.orderByValue(),
+          'orderByValue',
+        );
+      });
+
+      it('equalTo', function () {
+        const db = getDatabase();
+        const testRef = ref(db, 'test');
+        referenceV9Deprecation(
+          () => query(testRef, equalTo('value')),
+          () => testRef.equalTo('value'),
+          'equalTo',
+        );
+      });
+
+      it('setPriority', function () {
+        const db = getDatabase();
+        const testRef = ref(db, 'test');
+        referenceV9Deprecation(
+          () => setPriority(testRef, 'value'),
+          () => testRef.setPriority('value'),
+          'setPriority',
+        );
+      });
+
+      it('push', function () {
+        const db = getDatabase();
+        const testRef = ref(db, 'test');
+        referenceV9Deprecation(
+          () => push(testRef, 'value'),
+          () => testRef.push('value'),
+          'push',
+        );
+      });
+
+      it('onDisconnect', function () {
+        const db = getDatabase();
+        const testRef = ref(db, 'test');
+        referenceV9Deprecation(
+          () => onDisconnect(testRef),
+          () => testRef.onDisconnect(),
+          'onDisconnect',
+        );
+      });
+
+      it('keepSynced', function () {
+        const db = getDatabase();
+        const testRef = ref(db, 'test');
+        referenceV9Deprecation(
+          () => keepSynced(testRef, true),
+          () => testRef.keepSynced(true),
+          'keepSynced',
+        );
+      });
+    });
+
+    describe('DatabaseTransaction', function () {
+      it('runTransaction', function () {
+        const db = getDatabase();
+        const testRef = ref(db, 'test');
+        referenceV9Deprecation(
+          () => runTransaction(testRef, currentData => currentData, { applyLocally: true }),
+          () => testRef.transaction(currentData => currentData, undefined, true),
+          'transaction',
+        );
+      });
     });
   });
 });
