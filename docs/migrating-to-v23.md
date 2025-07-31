@@ -5,6 +5,11 @@ previous: /migrate-to-v22
 next: /typescript
 ---
 
+# Firebase Crashlytics
+
+Modular API method `isCrashlyticsCollectionEnabled(crashlytics)` has been removed, please use the property on Crashlytics instance
+`getCrashlytics().isCrashlyticsCollectionEnabled` instead.
+
 # Firebase Auth
 
 `MultiFactorUser.enrolledFactor` has been removed, please use `MultiFactorUser.enrolledFactors`. See example:
