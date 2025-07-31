@@ -12,17 +12,6 @@ type FirebaseCrashlytics = FirebaseCrashlyticsTypes.Module;
 export declare function getCrashlytics(): FirebaseCrashlytics;
 
 /**
- * Whether Crashlytics reporting is enabled.
- *
- * #### Example
- *
- * ```js
- * const crashlytics = getCrashlytics();
- * const isEnabled = isCrashlyticsCollectionEnabled(crashlytics);
- * ```
- */
-export declare function isCrashlyticsCollectionEnabled(crashlytics: FirebaseCrashlytics): boolean;
-/**
  * Determines whether there are any unsent crash reports cached on the device. The callback only executes
  * if automatic data collection is disabled.
  *

@@ -20,27 +20,6 @@ export function getCrashlytics() {
 }
 
 /**
- * Whether Crashlytics reporting is enabled.
- *
- * #### Example
- *
- * ```js
- * const crashlytics = getCrashlytics();
- * const isEnabled = isCrashlyticsCollectionEnabled(crashlytics);
- * ```
- * @param {FirebaseCrashlytics} crashlytics
- * @returns {boolean}
- */
-export function isCrashlyticsCollectionEnabled(crashlytics) {
-  // Unique. Deprecating modular method and allow it as a property on Crashlytics instance.
-  // eslint-disable-next-line no-console
-  console.warn(
-    '`isCrashlyticsCollectionEnabled()` is deprecated, please use `Crashlytics.isCrashlyticsCollectionEnabled` property instead',
-  );
-  return crashlytics.isCrashlyticsCollectionEnabled;
-}
-
-/**
  * Determines whether there are any unsent crash reports cached on the device. The callback only executes
  * if automatic data collection is disabled.
  *

@@ -14,8 +14,6 @@ export class MultiFactorUser {
     }
     this._user = user;
     this.enrolledFactors = user.multiFactor.enrolledFactors;
-    // @deprecated kept for backwards compatibility, please use enrolledFactors
-    this.enrolledFactor = user.multiFactor.enrolledFactors;
   }
 
   getSession() {
