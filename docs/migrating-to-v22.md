@@ -2,7 +2,7 @@
 title: Migrating to v22
 description: Migrate to React Native Firebase v22.
 previous: /
-next: /typescript
+next: /migrate-to-v23
 ---
 
 # Switching off warning logs
