@@ -3,6 +3,8 @@
   - '/'
 - - Migration Guide to v22
   - '/migrating-to-v22'
+- - Migration Guide to v23
+  - '/migrating-to-v23'
 - - TypeScript
   - '/typescript'
 - - Platforms
@@ -101,10 +103,6 @@
     - - Presence Detection
       - '/database/presence-detection'
   - '//static.invertase.io/assets/firebase/realtime-database.svg'
-- - Dynamic Links
-  - - - Usage
-      - '/dynamic-links/usage'
-  - '//static.invertase.io/assets/firebase/dynamic-links.svg'
 - - In-App Messaging
   - - - Usage
       - '/in-app-messaging/usage'

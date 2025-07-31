@@ -248,49 +248,6 @@ describe('Auth', function () {
         sendEmailVerification(user, actionCodeSettings);
         verifyBeforeUpdateEmail(user, email, actionCodeSettings);
       });
-
-      it('should warn using `ActionCodeSettings.dynamicLinkDomain`', function () {
-        const auth = firebase.app().auth();
-        const actionCodeSettings: FirebaseAuthTypes.ActionCodeSettings = {
-          url: 'https://example.com',
-          handleCodeInApp: true,
-          linkDomain: 'example.com',
-          dynamicLinkDomain: 'example.com',
-        };
-        const email = 'fake@example.com';
-        let warnings = 0;
-        const consoleWarnSpy = jest.spyOn(console, 'warn');
-        consoleWarnSpy.mockReset();
-        consoleWarnSpy.mockImplementation(warnMessage => {
-          if (
-            warnMessage.includes(
-              'Instead, use ActionCodeSettings.linkDomain to set up a custom domain',
-            )
-          ) {
-            warnings++;
-          }
-        });
-        auth.sendSignInLinkToEmail(email, actionCodeSettings);
-        expect(warnings).toBe(1);
-        auth.sendPasswordResetEmail(email, actionCodeSettings);
-        expect(warnings).toBe(2);
-        sendPasswordResetEmail(auth, email, actionCodeSettings);
-        expect(warnings).toBe(3);
-        sendSignInLinkToEmail(auth, email, actionCodeSettings);
-        expect(warnings).toBe(4);
-        const user: FirebaseAuthTypes.User = new User(auth, {});
-
-        user.sendEmailVerification(actionCodeSettings);
-        expect(warnings).toBe(5);
-        user.verifyBeforeUpdateEmail(email, actionCodeSettings);
-        expect(warnings).toBe(6);
-        sendEmailVerification(user, actionCodeSettings);
-        expect(warnings).toBe(7);
-        verifyBeforeUpdateEmail(user, email, actionCodeSettings);
-        expect(warnings).toBe(8);
-        consoleWarnSpy.mockReset();
-        consoleWarnSpy.mockRestore();
-      });
     });
   });
 
