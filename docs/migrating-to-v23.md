@@ -18,8 +18,7 @@ Modular API method `isCrashlyticsCollectionEnabled(crashlytics)` has been remove
 const credential = await signInWithEmailAndPassword(getAuth(), 'dummy@example.com', 'password');
 const multiFactorUser = credential.user.multiFactor;
 // Use below - remove any instances of `multiFactorUser.enrolledFactor`
-console.log(multiFactorUser.enrolledFactors)
-
+console.log(multiFactorUser.enrolledFactors);
 ```
 
 # Firebase Dynamic Links
