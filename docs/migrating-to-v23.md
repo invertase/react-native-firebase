@@ -5,9 +5,21 @@ previous: /migrate-to-v22
 next: /typescript
 ---
 
-⚠️ **REMOVED** ⚠️
+# Firebase Auth
 
-# Firebase Dynamic Links has been Removed
+`MultiFactorUser.enrolledFactor` has been removed, please use `MultiFactorUser.enrolledFactors`. See example:
+
+```js
+const credential = await signInWithEmailAndPassword(getAuth(), 'dummy@example.com', 'password');
+const multiFactorUser = credential.user.multiFactor;
+// Use below - remove any instances of `multiFactorUser.enrolledFactor`
+console.log(multiFactorUser.enrolledFactors)
+
+```
+
+# Firebase Dynamic Links
+
+⚠️ **REMOVED** ⚠️
 
 This package has been deprecated and removed from the React Native Firebase repository.
 
