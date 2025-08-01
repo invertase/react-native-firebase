@@ -4,10 +4,10 @@ description: Migrate to React Native Firebase v23.
 previous: /migrate-to-v22
 next: /typescript
 ---
+
 # Firebase App
 
 - `gaMeasurementId` property from `FirebaseOptions` has been replaced with `measurementId` to match Firebase web JS SDK.
-
 
 ⚠️ **REMOVED** ⚠️
 
@@ -37,10 +37,8 @@ The deprecation FAQ provides detailed guidance on how to migrate from Firebase D
 
 Please refer to the official deprecation FAQ for complete migration guidance and support.
 
-
 # iOS platform
 
 - Minimum iOS deployment target has now been bumped to `15` from `13`.
 - Minimum Xcode version required for iOS development is now Xcode `16.2`, previous was Xcode `15.2`.
 - `gaMeasurementId` property from `FirebaseOptions` (now `measurementId` in React Native Firebase) has been removed from firebase-ios-sdk as it wasn't used.
-
