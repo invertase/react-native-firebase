@@ -33,7 +33,6 @@ The deprecation FAQ provides detailed guidance on how to migrate from Firebase D
 
 Please refer to the official deprecation FAQ for complete migration guidance and support.
 
-
 # Android Platform
 
 - Android `minSdk` has been bumped from `21` to `23` (except Auth which already had a `minSdk` of `23`).
