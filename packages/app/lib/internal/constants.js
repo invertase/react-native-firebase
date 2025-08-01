@@ -33,7 +33,6 @@ export const KNOWN_NAMESPACES = [
   'functions',
   'indexing',
   'storage',
-  'dynamicLinks',
   'messaging',
   'naturalLanguage',
   'ml',

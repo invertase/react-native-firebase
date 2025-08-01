@@ -58,7 +58,7 @@ jobs:
           # yarn3+ by default disables lockfile alteration in CI. We want it.
           YARN_ENABLE_IMMUTABLE_INSTALLS: false
         run: |
-          PACKAGE_LIST=`find packages -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | egrep -v 'template|invites'`
+          PACKAGE_LIST=`find packages -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | egrep -v 'template|invites|dynamic-links'`
           mkdir $HOME/packages
           for PACKAGE in $PACKAGE_LIST; do
             echo "Packing PR version of package $PACKAGE"

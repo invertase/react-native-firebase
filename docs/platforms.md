@@ -35,7 +35,6 @@ Below is a table outlining which Firebase modules are supported on each platform
 | auth             |   🟢    | 🟢  |  🟠   |
 | crashlytics      |   🟢    | 🟢  |  🔴   |
 | database         |   🟢    | 🟢  |  🟢   |
-| dynamic-links    |   🟢    | 🟢  |  🔴   |
 | firestore        |   🟢    | 🟢  |  🟠   |
 | functions        |   🟢    | 🟢  |  🟢   |
 | in-app-messaging |   🟢    | 🟢  |  🔴   |

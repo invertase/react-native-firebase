@@ -16,7 +16,7 @@ If you come across a discussion that results in great advice that can benefit ma
 
 This package wraps `firebase-android-sdk` and `firebase-ios-sdk` into a Javascript API for React Native projects, so the main benefits come with the access to native code.
 
-- There are more modules in the native SDKs than the web SDK because some things only make sense in a mobile / native context (Dynamic Links, App Distribution, Crashlytics), so you can actually do more, and some of it is important for example, making an app more viral with Dynamic Links or monitoring quality with Crashlytics
+- There are more modules in the native SDKs than the web SDK because some things only make sense in a mobile / native context ( App Distribution, Crashlytics), so you can actually do more, and some of it is important for example, monitoring quality with Crashlytics
 
 - Some of the modules that are both in the web SDK and native SDK have a great deal more functionality when they can harness native APIs, like messaging (with background delivery that can start your app if not running), like App Check where you can tie the attestation to device-level providers, Storage where you can do background downloads, Performance where you can start measurements from boot, etc.
 
