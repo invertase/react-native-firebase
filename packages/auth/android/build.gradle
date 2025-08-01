@@ -47,7 +47,7 @@ project.ext {
   set('react-native', [
     versions: [
       android : [
-        minSdk    : jsonMinSdk
+        minSdk    : jsonMinSdk,
         targetSdk : jsonTargetSdk,
         compileSdk: jsonCompileSdk,
       ],
