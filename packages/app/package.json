@@ -57,7 +57,7 @@
     "react-native": "*"
   },
   "dependencies": {
-    "firebase": "11.10.0"
+    "firebase": "12.0.0"
   },
   "devDependencies": {
     "@react-native-async-storage/async-storage": "^2.1.2",
