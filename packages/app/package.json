@@ -84,11 +84,11 @@
       "targetSdk": 34,
       "compileSdk": 34,
       "firebase": "34.0.0",
-      "firebaseCrashlyticsGradle": "3.0.4",
-      "firebasePerfGradle": "1.4.2",
+      "firebaseCrashlyticsGradle": "3.0.5",
+      "firebasePerfGradle": "2.0.0",
       "gmsGoogleServicesGradle": "4.4.3",
-      "playServicesAuth": "21.3.0",
-      "firebaseAppDistributionGradle": "5.1.1"
+      "playServicesAuth": "24.0.0",
+      "firebaseAppDistributionGradle": "5.1.2"
     }
   }
 }

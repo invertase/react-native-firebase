@@ -32,3 +32,12 @@ The deprecation FAQ provides detailed guidance on how to migrate from Firebase D
 - All APIs will return error responses
 
 Please refer to the official deprecation FAQ for complete migration guidance and support.
+
+
+# Android Platform
+
+- Android `minSdk` has been bumped from `21` to `23` (except Auth which already had a `minSdk` of `23`).
+- Auth play services has been bumped from `21.3.0` to `24.0.0`.
+- Crashlytics gradle plugin has been bumped from `3.0.4` to `3.0.5`.
+- Performance gradle plugin has been bumped from `1.4.2` to `2.0.0`.
+- App distribution gradle plugin has been bumped from `5.1.1` to `5.1.2`.
