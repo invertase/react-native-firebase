@@ -35,5 +35,5 @@ Please refer to the official deprecation FAQ for complete migration guidance and
 
 # Web platform
 
-- Firebase JS SDK has been bumped to `12.0.0` which now requires a minimum of nodejs `20` and a minimum of `ES2020`.
+- Firebase JS SDK has been bumped to `12.0.0` which now requires a minimum of Node.js `20` and a minimum of `ES2020`.
   [See release notes](https://firebase.google.com/support/release-notes/js#version_1200_-_july_17_2025).
