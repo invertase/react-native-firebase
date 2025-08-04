@@ -27,6 +27,8 @@ import RemoteConfigLogLevel = FirebaseRemoteConfigTypes.RemoteConfigLogLevel;
 import FirebaseApp = ReactNativeFirebase.FirebaseApp;
 import LastFetchStatusInterface = FirebaseRemoteConfigTypes.LastFetchStatus;
 import ValueSourceInterface = FirebaseRemoteConfigTypes.ValueSource;
+import CallbackOrObserver = FirebaseRemoteConfigTypes.CallbackOrObserver;
+import OnConfigUpdatedListenerCallback = FirebaseRemoteConfigTypes.OnConfigUpdatedListenerCallback;
 
 export const LastFetchStatus: LastFetchStatusInterface;
 export const ValueSource: ValueSourceInterface;
@@ -210,7 +212,7 @@ export function setDefaultsFromResource(
  */
 export function onConfigUpdated(
   remoteConfig: RemoteConfig,
-  callback: (config: ConfigValues) => void,
+  callback: CallbackOrObserver<OnConfigUpdatedListenerCallback>,
 ): () => void;
 
 /**

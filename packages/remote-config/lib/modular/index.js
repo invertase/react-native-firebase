@@ -243,7 +243,7 @@ export function setDefaultsFromResource(remoteConfig, resourceName) {
  * Registers a listener to changes in the configuration.
  *
  * @param {RemoteConfig} remoteConfig - RemoteConfig instance
- * @param {function(ConfigValues): void} callback - function called on config change
+ * @param {CallbackOrObserver<OnConfigUpdatedListenerCallback>} callback - function called on config change
  * @returns {function} unsubscribe listener
  */
 export function onConfigUpdated(remoteConfig, callback) {
