@@ -5,6 +5,12 @@ import {
   httpsCallableFromURL,
   connectFunctionsEmulator,
 } from '@react-native-firebase/app/lib/internal/web/firebaseFunctions';
+import type { HttpsCallableOptions } from '../index';
+import type { NativeError } from '../HttpsError';
+
+interface WrapperData {
+  data?: any;
+}
 
 /**
  * This is a 'NativeModule' for the web platform.
@@ -15,16 +21,24 @@ import {
 export default {
   /**
    * Get and execute a Firebase Functions callable.
-   * @param {string} appName - The name of the app to get the functions instance for.
-   * @param {string} regionOrCustomDomain - The region or custom domain to use for the functions instance.
-   * @param {string} host - The host to use for the functions emulator.
-   * @param {number} port - The port to use for the functions emulator.
-   * @param {string} name - The name of the functions callable.
-   * @param {object} wrapper - The wrapper object to use for the functions callable.
-   * @param {object} options - The options to use for the functions callable.
-   * @returns {object} - The result of the functions callable.
+   * @param appName - The name of the app to get the functions instance for.
+   * @param regionOrCustomDomain - The region or custom domain to use for the functions instance.
+   * @param host - The host to use for the functions emulator.
+   * @param port - The port to use for the functions emulator.
+   * @param name - The name of the functions callable.
+   * @param wrapper - The wrapper object to use for the functions callable.
+   * @param options - The options to use for the functions callable.
+   * @returns The result of the functions callable.
    */
-  async httpsCallable(appName, regionOrCustomDomain, host, port, name, wrapper, options) {
+  async httpsCallable(
+    appName: string,
+    regionOrCustomDomain: string | null,
+    host: string | null,
+    port: number,
+    name: string,
+    wrapper: WrapperData,
+    options: HttpsCallableOptions,
+  ): Promise<any> {
     try {
       const app = getApp(appName);
       let functionsInstance;
@@ -58,10 +72,9 @@ export default {
       const data = wrapper['data'] ?? null;
       const result = await callable(data);
       return result;
-    } catch (error) {
+    } catch (error: any) {
       const { code, message, details } = error;
-      const nativeError = {
-        code,
+      const nativeError: NativeError = {
         message,
         userInfo: {
           code: code ? code.replace('functions/', '') : 'unknown',
@@ -75,22 +88,30 @@ export default {
 
   /**
    * Get and execute a Firebase Functions callable from a URL.
-   * @param {string} appName - The name of the app to get the functions instance for.
-   * @param {string} regionOrCustomDomain - The region or custom domain to use for the functions instance.
-   * @param {string} host - The host to use for the functions emulator.
-   * @param {number} port - The port to use for the functions emulator.
-   * @param {string} url - The URL to use for the functions callable.
-   * @param {object} wrapper - The wrapper object to use for the functions callable.
-   * @param {object} options - The options to use for the functions callable.
-   * @returns {object} - The result of the functions callable.
+   * @param appName - The name of the app to get the functions instance for.
+   * @param regionOrCustomDomain - The region or custom domain to use for the functions instance.
+   * @param host - The host to use for the functions emulator.
+   * @param port - The port to use for the functions emulator.
+   * @param url - The URL to use for the functions callable.
+   * @param wrapper - The wrapper object to use for the functions callable.
+   * @param options - The options to use for the functions callable.
+   * @returns The result of the functions callable.
    */
-  async httpsCallableFromUrl(appName, regionOrCustomDomain, host, port, url, wrapper, options) {
+  async httpsCallableFromUrl(
+    appName: string,
+    regionOrCustomDomain: string | null,
+    host: string | null,
+    port: number,
+    url: string,
+    wrapper: WrapperData,
+    options: HttpsCallableOptions,
+  ): Promise<any> {
     try {
       const app = getApp(appName);
       let functionsInstance;
       if (regionOrCustomDomain) {
         functionsInstance = getFunctions(app, regionOrCustomDomain);
-        // Hack to work around custom domain and` region not being set on the instance.
+        // Hack to work around custom domain and region not being set on the instance.
         if (regionOrCustomDomain.startsWith('http')) {
           functionsInstance.customDomain = regionOrCustomDomain;
         } else {
@@ -109,10 +130,9 @@ export default {
       const callable = httpsCallableFromURL(functionsInstance, url, options);
       const result = await callable(wrapper['data']);
       return result;
-    } catch (error) {
+    } catch (error: any) {
       const { code, message, details } = error;
-      const nativeError = {
-        code,
+      const nativeError: NativeError = {
         message,
         userInfo: {
           code: code ? code.replace('functions/', '') : 'unknown',
