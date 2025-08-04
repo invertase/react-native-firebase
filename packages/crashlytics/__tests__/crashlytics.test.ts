@@ -8,7 +8,6 @@ import {
 import {
   firebase,
   getCrashlytics,
-  isCrashlyticsCollectionEnabled,
   checkForUnsentReports,
   deleteUnsentReports,
   didCrashOnPreviousExecution,
@@ -44,10 +43,6 @@ describe('Crashlytics', function () {
   describe('modular', function () {
     it('`getCrashlytics` function is properly exposed to end user', function () {
       expect(getCrashlytics).toBeDefined();
-    });
-
-    it('`isCrashlyticsCollectionEnabled` function is properly exposed to end user', function () {
-      expect(isCrashlyticsCollectionEnabled).toBeDefined();
     });
 
     it('`checkForUnsentReports` function is properly exposed to end user', function () {
@@ -208,17 +203,6 @@ describe('Crashlytics', function () {
         () => setCrashlyticsCollectionEnabled(crashlytics, true),
         () => crashlytics.setCrashlyticsCollectionEnabled(true),
         'setCrashlyticsCollectionEnabled',
-      );
-    });
-
-    it('isCrashlyticsCollectionEnabled', function () {
-      const crashlytics = getCrashlytics();
-      checkV9Deprecation(
-        // swapped order here because we're deprecating the modular method and keeping the property on Crashlytics instance
-        () => crashlytics.isCrashlyticsCollectionEnabled,
-        () => isCrashlyticsCollectionEnabled(crashlytics),
-        '',
-        '`isCrashlyticsCollectionEnabled()` is deprecated, please use `Crashlytics.isCrashlyticsCollectionEnabled` property instead',
       );
     });
   });

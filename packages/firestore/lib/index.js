@@ -314,10 +314,6 @@ class FirebaseFirestoreModule extends FirebaseModule {
     }
 
     if (!isUndefined(settings.host)) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        'host in settings to connect with firestore emulator is deprecated. Use useEmulator instead.',
-      );
       if (!isString(settings.host)) {
         return Promise.reject(
           new Error("firebase.firestore().settings(*) 'settings.host' must be a string value."),
