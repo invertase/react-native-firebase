@@ -39,6 +39,7 @@ export default [
       'packages/**/modular/dist/**/*',
       'packages/vertexai/__tests__/test-utils',
       'packages/vertexai/dist',
+      'packages/dynamic-links/**/*',
     ],
   },
   ...compat
