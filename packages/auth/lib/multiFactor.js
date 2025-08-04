@@ -44,7 +44,8 @@ export class MultiFactorUser {
   async unenroll(enrollmentId) {
     await this._auth.native.unenrollMultiFactor(enrollmentId);
 
-    // We need to reload the user otherwise the changes are not visible
-    return reload(this._auth.currentUser);
+    if (this._auth.currentUser) {
+      return reload(this._auth.currentUser);
+    }
   }
 }
