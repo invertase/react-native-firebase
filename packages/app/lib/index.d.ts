@@ -150,6 +150,11 @@ export namespace ReactNativeFirebase {
     readonly options: FirebaseAppOptions;
 
     /**
+     * The settable config flag for GDPR opt-in/opt-out
+     */
+    automaticDataCollectionEnabled: boolean;
+
+    /**
      * Make this app unusable and free up resources.
      */
     delete(): Promise<void>;

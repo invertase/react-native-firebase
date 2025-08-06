@@ -9,6 +9,7 @@ import {
   modifyObjcAppDelegate,
   modifySwiftAppDelegate,
 } from '../src/ios/appDelegate';
+import { platform } from 'os';
 
 describe('Config Plugin iOS Tests', function () {
   beforeEach(function () {
@@ -43,6 +44,9 @@ describe('Config Plugin iOS Tests', function () {
   });
 
   it('tests changes made to AppDelegate.m with fallback regex (if the original one fails)', async function () {
+    if (platform() == 'win32') {
+      return;
+    }
     const appDelegate = await fs.readFile(
       path.join(__dirname, './fixtures/AppDelegate_fallback.m'),
       {

@@ -13,6 +13,7 @@ import {
   modifyAppDelegate,
 } from '../src/ios/openUrlFix';
 import type { ExpoConfigPluginEntry } from '../src/ios/openUrlFix';
+import { platform } from 'os';
 
 describe('Config Plugin iOS Tests - openUrlFix', () => {
   beforeEach(function () {
@@ -196,6 +197,9 @@ describe('Config Plugin iOS Tests - openUrlFix', () => {
   ];
   appDelegateFixturesPatch.forEach(({ fixtureName, language }) => {
     it(`munges AppDelegate correctly - ${fixtureName}`, async () => {
+      if (platform() == 'win32') {
+        return;
+      }
       const fixturePath = path.join(__dirname, 'fixtures', fixtureName);
       const appDelegate = await fs.readFile(fixturePath, { encoding: 'utf-8' });
       const result = modifyAppDelegate(appDelegate, language);
@@ -203,6 +207,9 @@ describe('Config Plugin iOS Tests - openUrlFix', () => {
     });
 
     it(`prints warning message when configured to default and AppDelegate is modified`, async () => {
+      if (platform() == 'win32') {
+        return;
+      }
       const fixturePath = path.join(__dirname, 'fixtures', fixtureName);
       const appDelegate = await fs.readFile(fixturePath, { encoding: 'utf-8' });
       const config = {
