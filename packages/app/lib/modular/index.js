@@ -60,7 +60,7 @@ export function getApps() {
 /**
  * Initializes a Firebase app with the provided options and name.
  * @param {FirebaseAppOptions} options - Options to configure the services used in the app.
- * @param {string | FirebaseAppConfig} [configOrName] - The optional name of the app to initialize ('[DEFAULT]' if omitted).
+ * @param {string | FirebaseAppConfig} [configOrName] - The optional name of the app, or config for the app to initialize (a name of '[DEFAULT]' will be used if omitted).
  * @returns {FirebaseApp} - The initialized Firebase app.
  */
 export function initializeApp(options, configOrName) {
