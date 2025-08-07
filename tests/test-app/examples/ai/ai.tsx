@@ -387,8 +387,7 @@ function App(): JSX.Element {
             const prompt: string = 'Generate an image of London bridge with sharks in the water';
 
             const result = await model.generateImages(prompt);
-            const images = result;
-            console.log('Generated images:', images);
+            // const image = result.images[0].bytesBase64Encoded;
           } catch (e) {
             console.error(e);
           }
