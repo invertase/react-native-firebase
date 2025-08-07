@@ -24,10 +24,16 @@ import {
 } from '../vertexai/base-64-media';
 
 type MediaOption = 'image' | 'pdf' | 'video' | 'audio' | 'emoji';
+type ImageOption = 'inline' | 'storage';
 
 interface OptionSelectorProps {
   selectedOption: MediaOption;
   setSelectedOption: (option: MediaOption) => void;
+}
+
+interface ImageOptionSelectorProps {
+  selectedOption: ImageOption;
+  setSelectedOption: (option: ImageOption) => void;
 }
 
 function OptionSelector({ selectedOption, setSelectedOption }: OptionSelectorProps): JSX.Element {
@@ -61,6 +67,44 @@ function OptionSelector({ selectedOption, setSelectedOption }: OptionSelectorPro
   );
 }
 
+function ImageOptionSelector({
+  selectedOption,
+  setSelectedOption,
+}: ImageOptionSelectorProps): JSX.Element {
+  const options: ImageOption[] = ['inline', 'storage'];
+  const optionLabels = {
+    inline: 'INLINE IMAGE',
+    storage: 'STORAGE BUCKET',
+  };
+
+  return (
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', margin: 10 }}>
+      {options.map(option => {
+        const isSelected = selectedOption === option;
+        return (
+          <Pressable
+            key={option}
+            onPress={() => setSelectedOption(option)}
+            style={{
+              paddingVertical: 10,
+              paddingHorizontal: 15,
+              margin: 5,
+              borderRadius: 8,
+              borderWidth: 1,
+              borderColor: isSelected ? '#007bff' : '#ccc',
+              backgroundColor: isSelected ? '#007bff' : '#fff',
+            }}
+          >
+            <Text style={{ color: isSelected ? '#fff' : '#000', fontSize: 16 }}>
+              {optionLabels[option]}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
 interface MediaDetails {
   data: string;
   mimeType: string;
@@ -70,6 +114,8 @@ interface MediaDetails {
 function App(): JSX.Element {
   const [selectedOption, setSelectedOption] = useState<MediaOption>('image');
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [selectedImageOption, setSelectedImageOption] = useState<ImageOption>('inline');
+  const [uploadSuccessMessage, setUploadSuccessMessage] = useState<string>('');
 
   const getMediaDetails = (option: MediaOption): MediaDetails | null => {
     switch (option) {
@@ -388,16 +434,43 @@ function App(): JSX.Element {
             const prompt: string =
               'Generate an image of London bridge with sharks in the water at sunset';
 
-            const result = await model.generateImages(prompt);
+            // Clear previous messages
+            setUploadSuccessMessage('');
+            setGeneratedImage(null);
 
-            const image = result.images[0].bytesBase64Encoded;
-
-            setGeneratedImage(image);
+            if (selectedImageOption === 'storage') {
+              // Upload to storage bucket
+              const gcsURI = 'gs://react-native-firebase-testing.appspot.com/imagen';
+              const result = await model.generateImagesGCS(prompt, gcsURI);
+              setUploadSuccessMessage('Image uploaded successfully to storage bucket!');
+              console.log('Image uploaded to GCS:', result);
+            } else {
+              // Generate inline image
+              const result = await model.generateImages(prompt);
+              const image = result.images[0].bytesBase64Encoded;
+              setGeneratedImage(image);
+            }
           } catch (e) {
             console.error(e);
+            setUploadSuccessMessage('');
           }
         }}
       />
+
+      {/* Image generation options */}
+      <ImageOptionSelector
+        selectedOption={selectedImageOption}
+        setSelectedOption={setSelectedImageOption}
+      />
+
+      {/* Success message for storage bucket upload */}
+      {uploadSuccessMessage !== '' && (
+        <View style={{ margin: 20, alignItems: 'center' }}>
+          <Text style={{ fontSize: 16, color: 'green', textAlign: 'center' }}>
+            {uploadSuccessMessage}
+          </Text>
+        </View>
+      )}
 
       {/* Display generated image if available */}
       {generatedImage && (
