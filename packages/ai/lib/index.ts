@@ -19,10 +19,10 @@ import './polyfills';
 import { getApp, ReactNativeFirebase } from '@react-native-firebase/app';
 import { GoogleAIBackend, VertexAIBackend } from './backend';
 import { AIErrorCode, ModelParams, RequestOptions } from './types';
-import { AI, AIOptions } from './public-types';
+import { AI, AIOptions, ImagenModelParams } from './public-types';
 import { AIError } from './errors';
 import { GenerativeModel } from './models/generative-model';
-import { AIModel } from './models/ai-model';
+import { AIModel, ImagenModel } from './models';
 
 export * from './public-types';
 export { ChatSession } from './methods/chat-session';
@@ -89,4 +89,32 @@ export function getGenerativeModel(
     );
   }
   return new GenerativeModel(ai, modelParams, requestOptions);
+}
+
+/**
+ * Returns an {@link ImagenModel} class with methods for using Imagen.
+ *
+ * Only Imagen 3 models (named `imagen-3.0-*`) are supported.
+ *
+ * @param ai - An {@link AI} instance.
+ * @param modelParams - Parameters to use when making Imagen requests.
+ * @param requestOptions - Additional options to use when making requests.
+ *
+ * @throws If the `apiKey` or `projectId` fields are missing in your
+ * Firebase config.
+ *
+ * @beta
+ */
+export function getImagenModel(
+  ai: AI,
+  modelParams: ImagenModelParams,
+  requestOptions?: RequestOptions,
+): ImagenModel {
+  if (!modelParams.model) {
+    throw new AIError(
+      AIErrorCode.NO_MODEL,
+      `Must provide a model name. Example: getImagenModel({ model: 'my-model-name' })`,
+    );
+  }
+  return new ImagenModel(ai, modelParams, requestOptions);
 }
