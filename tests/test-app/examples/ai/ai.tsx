@@ -385,14 +385,14 @@ function App(): JSX.Element {
               model: 'imagen-3.0-generate-002',
             });
 
-            const prompt: string = 'Generate an image of London bridge with sharks in the water';
+            const prompt: string =
+              'Generate an image of London bridge with sharks in the water at sunset';
 
             const result = await model.generateImages(prompt);
+
             const image = result.images[0].bytesBase64Encoded;
 
-            // Store the base64 image to display it
             setGeneratedImage(image);
-            console.log('Image generated successfully!');
           } catch (e) {
             console.error(e);
           }
@@ -405,7 +405,7 @@ function App(): JSX.Element {
           <Text style={{ fontSize: 16, marginBottom: 10 }}>Generated Image:</Text>
           <Image
             source={{ uri: `data:image/png;base64,${generatedImage}` }}
-            style={{ width: 300, height: 300, borderRadius: 10 }}
+            style={{ width: 200, height: 200, borderRadius: 10 }}
             resizeMode="contain"
           />
         </View>
