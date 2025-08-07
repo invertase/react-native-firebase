@@ -5350,14 +5350,14 @@ __metadata:
 
 "@react-native-firebase/ai@file:../packages/ai::locator=react-native-firebase-tests%40workspace%3Atests":
   version: 22.2.0
-  resolution: "@react-native-firebase/ai@file:../packages/ai#../packages/ai::hash=e95d4d&locator=react-native-firebase-tests%40workspace%3Atests"
+  resolution: "@react-native-firebase/ai@file:../packages/ai#../packages/ai::hash=e8e97d&locator=react-native-firebase-tests%40workspace%3Atests"
   dependencies:
     react-native-fetch-api: "npm:^3.0.0"
     text-encoding: "npm:^0.7.0"
     web-streams-polyfill: "npm:^4.1.0"
   peerDependencies:
     "@react-native-firebase/app": 22.2.0
-  checksum: 10/11fe2664fed0b13d4c1816121edad0e9c701bc01731a621c6901509429d964471eb2b246db6eafcd515c7bc817554a7a3e66a6b351236b8d95dd5672cf4ea16c
+  checksum: 10/5e056a5b6f1d9a09ea044d4cc46d0f5cb5f64385c58c1943f0a8592b3fa63afe73068962a80f37567b3f7344b334b40a2a6d3f1fb1964bf9c3638de349a32ac7
   languageName: node
   linkType: hard
 
