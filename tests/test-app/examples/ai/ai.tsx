@@ -1,8 +1,20 @@
-import React, { useState } from 'react';
+import React, { JSX, useState } from 'react';
 import { AppRegistry, Button, View, Text, Pressable } from 'react-native';
 
 import { getApp } from '@react-native-firebase/app';
-import { getAI, getGenerativeModel, Schema } from '@react-native-firebase/ai';
+import {
+  getAI,
+  getGenerativeModel,
+  Schema,
+  getImagenModel,
+  AI,
+  GenerativeModel,
+  // ImagenModel,
+  GenerateContentResult,
+  GenerateContentStreamResult,
+  // CountTokensResult,
+  ChatSession,
+} from '@react-native-firebase/ai';
 import {
   PDF_BASE_64,
   POEM_BASE_64,
@@ -11,9 +23,15 @@ import {
   EMOJI_BASE_64,
 } from '../vertexai/base-64-media';
 
-// eslint-disable-next-line react/prop-types
-function OptionSelector({ selectedOption, setSelectedOption }) {
-  const options = ['image', 'pdf', 'video', 'audio', 'emoji'];
+type MediaOption = 'image' | 'pdf' | 'video' | 'audio' | 'emoji';
+
+interface OptionSelectorProps {
+  selectedOption: MediaOption;
+  setSelectedOption: (option: MediaOption) => void;
+}
+
+function OptionSelector({ selectedOption, setSelectedOption }: OptionSelectorProps): JSX.Element {
+  const options: MediaOption[] = ['image', 'pdf', 'video', 'audio', 'emoji'];
 
   return (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', margin: 10 }}>
@@ -43,9 +61,16 @@ function OptionSelector({ selectedOption, setSelectedOption }) {
   );
 }
 
-function App() {
-  const [selectedOption, setSelectedOption] = useState('image');
-  const getMediaDetails = option => {
+interface MediaDetails {
+  data: string;
+  mimeType: string;
+  prompt: string;
+}
+
+function App(): JSX.Element {
+  const [selectedOption, setSelectedOption] = useState<MediaOption>('image');
+
+  const getMediaDetails = (option: MediaOption): MediaDetails | null => {
     switch (option) {
       case 'image':
         return { data: IMAGE_BASE_64.trim(), mimeType: 'image/jpeg', prompt: 'What can you see?' };
@@ -72,13 +97,13 @@ function App() {
       <View style={{ height: 90 }} />
       <Button
         title="Generate Content"
-        onPress={async () => {
+        onPress={async (): Promise<void> => {
           try {
             const app = getApp();
-            const ai = getAI(app);
-            const model = getGenerativeModel(ai, { model: 'gemini-1.5-flash' });
+            const ai: AI = getAI(app);
+            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-1.5-flash' });
 
-            const result = await model.generateContent('What is 2 + 2?');
+            const result: GenerateContentResult = await model.generateContent('What is 2 + 2?');
 
             console.log('result', result.response.text());
           } catch (e) {
@@ -88,17 +113,19 @@ function App() {
       />
       <Button
         title="Generate Content Stream"
-        onPress={async () => {
+        onPress={async (): Promise<void> => {
           try {
             const app = getApp();
-            const ai = getAI(app);
-            const model = getGenerativeModel(ai, { model: 'gemini-1.5-flash' });
+            const ai: AI = getAI(app);
+            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-1.5-flash' });
 
-            const result = await model.generateContentStream('Write me a short, funny rap');
+            const result: GenerateContentStreamResult = await model.generateContentStream(
+              'Write me a short, funny rap',
+            );
 
-            let text = '';
+            let text: string = '';
             for await (const chunk of result.stream) {
-              const chunkText = chunk.text();
+              const chunkText: string = chunk.text();
               console.log(chunkText);
 
               text += chunkText;
@@ -114,23 +141,23 @@ function App() {
       <OptionSelector selectedOption={selectedOption} setSelectedOption={setSelectedOption} />
       <Button
         title="Generate Content Stream multi-modal"
-        onPress={async () => {
+        onPress={async (): Promise<void> => {
           try {
             const app = getApp();
-            const ai = getAI(app);
-            const model = getGenerativeModel(ai, { model: 'gemini-1.5-flash' });
-            const mediaDetails = getMediaDetails(selectedOption);
+            const ai: AI = getAI(app);
+            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-1.5-flash' });
+            const mediaDetails: MediaDetails | null = getMediaDetails(selectedOption);
             if (!mediaDetails) return;
 
             const { data, mimeType, prompt } = mediaDetails;
 
             // Call generateContentStream with the text and images
-            const response = await model.generateContentStream([
+            const response: GenerateContentStreamResult = await model.generateContentStream([
               prompt,
               { inlineData: { mimeType, data } },
             ]);
 
-            let text = '';
+            let text: string = '';
             for await (const chunk of response.stream) {
               text += chunk.text();
             }
@@ -143,10 +170,10 @@ function App() {
       />
       <Button
         title="Generate JSON Response"
-        onPress={async () => {
+        onPress={async (): Promise<void> => {
           try {
             const app = getApp();
-            const ai = getAI(app);
+            const ai: AI = getAI(app);
             const jsonSchema = Schema.object({
               properties: {
                 characters: Schema.array({
@@ -162,7 +189,7 @@ function App() {
                 }),
               },
             });
-            const model = getGenerativeModel(ai, {
+            const model: GenerativeModel = getGenerativeModel(ai, {
               model: 'gemini-1.5-flash',
               generationConfig: {
                 responseMimeType: 'application/json',
@@ -170,9 +197,10 @@ function App() {
               },
             });
 
-            let prompt = "For use in a children's card game, generate 10 animal-based characters.";
+            const prompt: string =
+              "For use in a children's card game, generate 10 animal-based characters.";
 
-            let result = await model.generateContent(prompt);
+            const result: GenerateContentResult = await model.generateContent(prompt);
             console.log(result.response.text());
           } catch (e) {
             console.error(e);
@@ -181,13 +209,13 @@ function App() {
       />
       <Button
         title="Start Chat"
-        onPress={async () => {
+        onPress={async (): Promise<void> => {
           try {
             const app = getApp();
-            const ai = getAI(app);
-            const model = getGenerativeModel(ai, { model: 'gemini-1.5-flash' });
+            const ai: AI = getAI(app);
+            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-1.5-flash' });
 
-            const chat = model.startChat({
+            const chat: ChatSession = model.startChat({
               history: [
                 {
                   role: 'user',
@@ -203,12 +231,12 @@ function App() {
               },
             });
 
-            const msg = 'How many paws are in my house?';
-            const result = await chat.sendMessageStream(msg);
+            const msg: string = 'How many paws are in my house?';
+            const result: GenerateContentStreamResult = await chat.sendMessageStream(msg);
 
-            let text = '';
+            let text: string = '';
             for await (const chunk of result.stream) {
-              const chunkText = chunk.text();
+              const chunkText: string = chunk.text();
               text += chunkText;
             }
             console.log(text);
@@ -220,11 +248,11 @@ function App() {
       />
       <Button
         title="Count Tokens"
-        onPress={async () => {
+        onPress={async (): Promise<void> => {
           try {
             const app = getApp();
-            const ai = getAI(app);
-            const model = getGenerativeModel(ai, { model: 'gemini-1.5-flash' });
+            const ai: AI = getAI(app);
+            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-1.5-flash' });
 
             const result = await model.countTokens('What is 2 + 2?');
 
@@ -238,16 +266,37 @@ function App() {
 
       <Button
         title="Function Calling"
-        onPress={async () => {
+        onPress={async (): Promise<void> => {
           // This function calls a hypothetical external API that returns
           // a collection of weather information for a given location on a given date.
           // `location` is an object of the form { city: string, state: string }
-          async function fetchWeather({ location, date }) {
+          interface WeatherLocation {
+            city: string;
+            state: string;
+          }
+
+          interface WeatherData {
+            temperature: number;
+            chancePrecipitation: string;
+            cloudConditions: string;
+            location: WeatherLocation | undefined;
+            date: string | undefined;
+          }
+
+          async function fetchWeather({
+            location,
+            date,
+          }: {
+            location: WeatherLocation | undefined;
+            date: string | undefined;
+          }): Promise<WeatherData> {
             // For demo purposes, this hypothetical response is hardcoded here in the expected format.
             return {
               temperature: 38,
               chancePrecipitation: '56%',
               cloudConditions: 'partlyCloudy',
+              location,
+              date,
             };
           }
           const fetchWeatherTool = {
@@ -282,26 +331,28 @@ function App() {
           };
           try {
             const app = getApp();
-            const ai = getAI(app);
-            const model = getGenerativeModel(ai, {
+            const ai: AI = getAI(app);
+            const model: GenerativeModel = getGenerativeModel(ai, {
               model: 'gemini-1.5-flash',
+              // @ts-ignore
               tools: fetchWeatherTool,
             });
 
-            const chat = model.startChat();
-            const prompt = 'What was the weather in Boston on October 17, 2024?';
+            const chat: ChatSession = model.startChat();
+            const prompt: string = 'What was the weather in Boston on October 17, 2024?';
 
             // Send the user's question (the prompt) to the model using multi-turn chat.
-            let result = await chat.sendMessage(prompt);
+            let result: GenerateContentResult = await chat.sendMessage(prompt);
             const functionCalls = result.response.functionCalls();
-            let functionCall;
-            let functionResult;
+            let functionCall: any;
+            let functionResult: WeatherData | undefined;
             // When the model responds with one or more function calls, invoke the function(s).
-            if (functionCalls.length > 0) {
+            if (functionCalls && functionCalls.length > 0) {
               for (const call of functionCalls) {
                 if (call.name === 'fetchWeather') {
                   // Forward the structured input data prepared by the model
                   // to the hypothetical external API.
+                  // @ts-ignore
                   functionResult = await fetchWeather(call.args);
                   functionCall = call;
                 }
@@ -311,11 +362,33 @@ function App() {
               {
                 functionResponse: {
                   name: functionCall.name, // "fetchWeather"
+                  // @ts-ignore
                   response: functionResult,
                 },
               },
             ]);
             console.log(result.response.text());
+          } catch (e) {
+            console.error(e);
+          }
+        }}
+      />
+      <Button
+        title="Generate image using Imagen"
+        onPress={async (): Promise<void> => {
+          try {
+            const app = getApp();
+            const ai: AI = getAI(app);
+
+            const model = getImagenModel(ai, {
+              model: 'imagen-3.0-generate-002',
+            });
+
+            const prompt: string = 'Generate an image of London bridge with sharks in the water';
+
+            const result = await model.generateImages(prompt);
+            const images = result;
+            console.log('Generated images:', images);
           } catch (e) {
             console.error(e);
           }

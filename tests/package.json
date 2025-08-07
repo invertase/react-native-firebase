@@ -12,6 +12,7 @@
     "@react-native-community/cli": "15.1.3",
     "@react-native-community/cli-platform-android": "15.1.3",
     "@react-native-community/cli-platform-ios": "15.1.3",
+    "@react-native-firebase/ai": "file:../packages/ai",
     "@react-native-firebase/analytics": "22.4.0",
     "@react-native-firebase/app": "22.4.0",
     "@react-native-firebase/app-check": "22.4.0",
