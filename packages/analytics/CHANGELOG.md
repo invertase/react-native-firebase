@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.0.0](https://github.com/invertase/react-native-firebase/compare/v22.4.0...v23.0.0) (2025-08-07)
+
+### ⚠ BREAKING CHANGES
+
+- new minimums: iOS 15+, Xcode 16.2+
+
+### Features
+
+- bump firebase-ios-sdk to `12.0.0` ([e3d6d22](https://github.com/invertase/react-native-firebase/commit/e3d6d222f0a83f6a3f6ea6975401e4b03cc4421a))
+
 ## [22.4.0](https://github.com/invertase/react-native-firebase/compare/v22.3.0...v22.4.0) (2025-07-10)
 
 ### Bug Fixes

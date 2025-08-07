@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.0.0](https://github.com/invertase/react-native-firebase/compare/v22.4.0...v23.0.0) (2025-08-07)
+
+### ⚠ BREAKING CHANGES
+
+- remove deprecated API from auth & crashlytics (#8636)
+
+### Bug Fixes
+
+- remove deprecated API from auth & crashlytics ([#8636](https://github.com/invertase/react-native-firebase/issues/8636)) ([213b939](https://github.com/invertase/react-native-firebase/commit/213b939b552e0f84fbccb136a03f23e9b5c8ade8))
+
 ## [22.4.0](https://github.com/invertase/react-native-firebase/compare/v22.3.0...v22.4.0) (2025-07-10)
 
 ### Features

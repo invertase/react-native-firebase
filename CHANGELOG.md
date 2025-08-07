@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.0.0](https://github.com/invertase/react-native-firebase/compare/v22.4.0...v23.0.0) (2025-08-07)
+
+### ⚠ BREAKING CHANGES
+
+- new minimums: iOS 15+, Xcode 16.2+
+- requires node v20+ and ES2020+
+- android minSdk now must be 23+ (was 21)
+- remove deprecated API from auth & crashlytics (#8636)
+- **dynamic-links:** remove Dynamic Links from React Native Firebase (#8631)
+
+### Features
+
+- bump Firebase android SDK to `34.0.0` ([#8627](https://github.com/invertase/react-native-firebase/issues/8627)) ([e9ef5ec](https://github.com/invertase/react-native-firebase/commit/e9ef5ec9742f28ec1d621a401f82125acff0f1cf))
+- bump firebase-ios-sdk to `12.0.0` ([e3d6d22](https://github.com/invertase/react-native-firebase/commit/e3d6d222f0a83f6a3f6ea6975401e4b03cc4421a))
+- bump firebase-js-sdk to `12.0.0` ([ab0529e](https://github.com/invertase/react-native-firebase/commit/ab0529ef5cfc1382688ee220aeb46eba4dcf9761))
+
+### Bug Fixes
+
+- **app, ios:** adopt firebase-ios-sdk 12.1.0 ([8be970c](https://github.com/invertase/react-native-firebase/commit/8be970c86fff5ad8d046ccba442f54bec3ecaf41))
+- **dynamic-links:** remove Dynamic Links from React Native Firebase ([#8631](https://github.com/invertase/react-native-firebase/issues/8631)) ([fe4550f](https://github.com/invertase/react-native-firebase/commit/fe4550f362548dcb66359044715e22222a413f97))
+- **remote-config:** type error in callback for modular `onConfigUpdated` ([#8614](https://github.com/invertase/react-native-firebase/issues/8614)) ([0d9947c](https://github.com/invertase/react-native-firebase/commit/0d9947c321241de8a43259591a4cbd7995c3fbea)), closes [#8613](https://github.com/invertase/react-native-firebase/issues/8613)
+- remove deprecated API from auth & crashlytics ([#8636](https://github.com/invertase/react-native-firebase/issues/8636)) ([213b939](https://github.com/invertase/react-native-firebase/commit/213b939b552e0f84fbccb136a03f23e9b5c8ade8))
+
 ## [22.4.0](https://github.com/invertase/react-native-firebase/compare/v22.3.0...v22.4.0) (2025-07-10)
 
 ### Features
