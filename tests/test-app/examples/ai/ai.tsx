@@ -1,5 +1,5 @@
 import React, { JSX, useState } from 'react';
-import { AppRegistry, Button, View, Text, Pressable } from 'react-native';
+import { AppRegistry, Button, View, Text, Pressable, Image } from 'react-native';
 
 import { getApp } from '@react-native-firebase/app';
 import {
@@ -69,6 +69,7 @@ interface MediaDetails {
 
 function App(): JSX.Element {
   const [selectedOption, setSelectedOption] = useState<MediaOption>('image');
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
 
   const getMediaDetails = (option: MediaOption): MediaDetails | null => {
     switch (option) {
@@ -387,12 +388,28 @@ function App(): JSX.Element {
             const prompt: string = 'Generate an image of London bridge with sharks in the water';
 
             const result = await model.generateImages(prompt);
-            // const image = result.images[0].bytesBase64Encoded;
+            const image = result.images[0].bytesBase64Encoded;
+
+            // Store the base64 image to display it
+            setGeneratedImage(image);
+            console.log('Image generated successfully!');
           } catch (e) {
             console.error(e);
           }
         }}
       />
+
+      {/* Display generated image if available */}
+      {generatedImage && (
+        <View style={{ margin: 20, alignItems: 'center' }}>
+          <Text style={{ fontSize: 16, marginBottom: 10 }}>Generated Image:</Text>
+          <Image
+            source={{ uri: `data:image/png;base64,${generatedImage}` }}
+            style={{ width: 300, height: 300, borderRadius: 10 }}
+            resizeMode="contain"
+          />
+        </View>
+      )}
     </View>
   );
 }
