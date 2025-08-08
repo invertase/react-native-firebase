@@ -1462,14 +1462,6 @@ RCT_EXPORT_METHOD(useEmulator
 }
 #endif
 
-- (NSString *)getJSFactorId:(NSString *)factorId {
-  if ([factorId isEqualToString:@"1"]) {
-    // Only phone is supported by the front-end so far
-    return @"phone";
-  }
-
-  return factorId;
-}
 
 - (void)promiseRejectAuthException:(RCTPromiseRejectBlock)reject error:(NSError *)error {
   NSDictionary *jsError = [self getJSError:error];
@@ -1737,19 +1729,23 @@ RCT_EXPORT_METHOD(useEmulator
 - (NSArray<NSMutableDictionary *> *)convertMultiFactorData:(NSArray<FIRMultiFactorInfo *> *)hints {
   NSMutableArray *enrolledFactors = [NSMutableArray array];
 
-  for (FIRPhoneMultiFactorInfo *hint in hints) {
-    NSString *enrollmentTime =
-        [[[NSISO8601DateFormatter alloc] init] stringFromDate:hint.enrollmentDate];
-    [enrolledFactors addObject:@{
-      @"uid" : hint.UID,
-      @"factorId" : [self getJSFactorId:(hint.factorID)],
-      @"displayName" : hint.displayName == nil ? [NSNull null] : hint.displayName,
-      @"enrollmentTime" : enrollmentTime,
-      // @deprecated enrollmentDate kept for backwards compatibility, please use enrollmentTime
-      @"enrollmentDate" : enrollmentTime,
-      // phoneNumber only present on FIRPhoneMultiFactorInfo
-      @"phoneNumber" : hint.phoneNumber == nil ? [NSNull null] : hint.phoneNumber,
-    }];
+  for (FIRMultiFactorInfo *hint in hints) {
+    // only support phone mutli factor 
+    if ([hint isKindOfClass:[FIRPhoneMultiFactorInfo class]]) {
+      FIRPhoneMultiFactorInfo *phoneHint = (FIRPhoneMultiFactorInfo *)hint;
+      
+      NSString *enrollmentTime =
+          [[[NSISO8601DateFormatter alloc] init] stringFromDate:phoneHint.enrollmentDate];
+      [enrolledFactors addObject:@{
+        @"uid" : phoneHint.UID,
+        @"factorId" : FIRPhoneMultiFactorInfo.FIRPhoneMultiFactorID,
+        @"displayName" : phoneHint.displayName == nil ? [NSNull null] : phoneHint.displayName,
+        @"enrollmentTime" : enrollmentTime,
+        // @deprecated enrollmentDate kept for backwards compatibility, please use enrollmentTime
+        @"enrollmentDate" : enrollmentTime,
+        @"phoneNumber" : phoneHint.phoneNumber,
+      }];
+    }
   }
   return enrolledFactors;
 }
