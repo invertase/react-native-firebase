@@ -1730,22 +1730,24 @@ RCT_EXPORT_METHOD(useEmulator
   NSMutableArray *enrolledFactors = [NSMutableArray array];
 
   for (FIRMultiFactorInfo *hint in hints) {
-    // only support phone mutli factor 
-    if ([hint isKindOfClass:[FIRPhoneMultiFactorInfo class]]) {
-      FIRPhoneMultiFactorInfo *phoneHint = (FIRPhoneMultiFactorInfo *)hint;
-      
       NSString *enrollmentTime =
-          [[[NSISO8601DateFormatter alloc] init] stringFromDate:phoneHint.enrollmentDate];
-      [enrolledFactors addObject:@{
-        @"uid" : phoneHint.UID,
-        @"factorId" : FIRPhoneMultiFactorInfo.FIRPhoneMultiFactorID,
-        @"displayName" : phoneHint.displayName == nil ? [NSNull null] : phoneHint.displayName,
+        [[[NSISO8601DateFormatter alloc] init] stringFromDate:hint.enrollmentDate];
+      
+      NSMutableDictionary *factorDict = [@{
+        @"uid" : hint.UID,
+        @"factorId": hint.factorID,
+        @"displayName" : hint.displayName == nil ? [NSNull null] : hint.displayName,
         @"enrollmentTime" : enrollmentTime,
         // @deprecated enrollmentDate kept for backwards compatibility, please use enrollmentTime
         @"enrollmentDate" : enrollmentTime,
-        @"phoneNumber" : phoneHint.phoneNumber,
-      }];
-    }
+      } mutableCopy];
+      
+      // only support phone mutli factor
+      if ([hint isKindOfClass:[FIRPhoneMultiFactorInfo class]]) {
+          FIRPhoneMultiFactorInfo *phoneHint = (FIRPhoneMultiFactorInfo *)hint;
+          factorDict[@"phoneNumber"] = phoneHint.phoneNumber;
+          [enrolledFactors addObject:factorDict];
+      }
   }
   return enrolledFactors;
 }
