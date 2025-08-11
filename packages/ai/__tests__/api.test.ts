@@ -193,7 +193,7 @@ describe('API tests', () => {
     it('should return an instance of GenerativeModel', () => {
       const genModel = getGenerativeModel(fakeGoogleAI, { model: 'my-model' });
       expect(genModel).toBeInstanceOf(GenerativeModel);
-      expect(genModel.model).toBe('publishers/google/models/my-model');
+      expect(genModel.model).toBe('models/my-model');
     });
   });
 });
