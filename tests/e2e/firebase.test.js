@@ -23,8 +23,17 @@ describe('Jet Tests', function () {
   it('runs all tests', async function () {
     return new Promise(async (resolve, reject) => {
       const platform = detox.device.getPlatform();
-      const jetProcess = spawn('yarn', ['jet', `--target=${platform}`, '--coverage'], {
+      const jetArgs =
+        process.platform === 'win32'
+          ? ['jet', `--target=${platform}`] // NYC / coverage does not work on windows.
+          : ['jet', `--target=${platform}`, '--coverage'];
+      const jetProcess = spawn('yarn', jetArgs, {
         stdio: ['ignore', 'inherit', 'inherit'],
+        shell: true,
+      });
+      jetProcess.on('error', err => {
+        console.error(`Jet tests had an error: ${err}`);
+        reject(new Error(`Jet tests failed!`));
       });
       jetProcess.on('close', code => {
         if (code === 0) {
