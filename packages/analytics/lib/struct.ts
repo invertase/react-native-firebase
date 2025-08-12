@@ -15,11 +15,11 @@
  */
 
 import { isUndefined } from '@react-native-firebase/app/lib/common/validate';
-import { create, Struct, StructError } from 'superstruct';
+import { create, StructError } from 'superstruct';
 
 export const validateStruct = (
   value: Record<string, any> = {},
-  struct: Struct,
+  struct: any,
   prefix = '',
 ): Record<string, any> => {
   try {
