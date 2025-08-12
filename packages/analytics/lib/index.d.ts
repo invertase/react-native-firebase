@@ -50,6 +50,39 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
 export namespace FirebaseAnalyticsTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
+  /**
+   * A currency amount.
+   */
+  export type Currency = number;
+
+  /**
+   * Consent status string values.
+   */
+  export type ConsentStatusString = 'granted' | 'denied';
+
+  /**
+   * Promotion object for analytics events.
+   */
+  export interface Promotion {
+    /**
+     * The name of a creative used in a promotional spot
+     */
+    creative_name?: string;
+    /**
+     * The name of a creative slot
+     */
+    creative_slot?: string;
+    /**
+     * The ID of a product promotion
+     */
+    promotion_id?: string;
+    /**
+     * The name of a product promotion
+     */
+    promotion_name?: string;
+    [key: string]: any;
+  }
+
   export interface Item {
     /**
      * The item's brand.
