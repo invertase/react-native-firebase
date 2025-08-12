@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 import {
   isAlphaNumericUnderscore,
   isE164PhoneNumber,
@@ -41,9 +41,22 @@ import { validateStruct, validateCompound } from './struct';
 import { RNFBAnalyticsModule } from './web/RNFBAnalyticsModule';
 import { version } from './version';
 import * as structs from './structs';
+import { Statics } from '../types/analytics';
 
 // Import types from the index file
 import type { FirebaseAnalyticsTypes } from './types';
+
+export declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
+  FirebaseAnalyticsModule,
+  Statics
+>;
+
+// export declare firebase: FirebaseAnalyticsModule & {
+//   analytics: typeof defaultExport;
+//   app(
+//     name?: string,
+//   ): ReactNativeFirebase.FirebaseApp & { analytics(): FirebaseAnalyticsTypes.Module };
+// };
 
 const ReservedEventNames: readonly string[] = [
   'ad_activeview',
