@@ -41,10 +41,43 @@ import { validateStruct, validateCompound } from './struct';
 import { RNFBAnalyticsModule } from './web/RNFBAnalyticsModule';
 import { version } from './version';
 import * as structs from './structs';
-import { Statics } from '../types/analytics';
-
-// Import types from the index file
-import type { FirebaseAnalyticsTypes } from './types';
+import {
+  Statics,
+  AnalyticsCallOptions,
+  ConsentSettings,
+  AddPaymentInfoEventParameters,
+  ScreenViewParameters,
+  AddShippingInfoParameters,
+  AddToCartEventParameters,
+  AddToWishlistEventParameters,
+  BeginCheckoutEventParameters,
+  CampaignDetailsEventParameters,
+  EarnVirtualCurrencyEventParameters,
+  GenerateLeadEventParameters,
+  JoinGroupEventParameters,
+  LevelEndEventParameters,
+  LevelStartEventParameters,
+  LevelUpEventParameters,
+  LoginEventParameters,
+  PostScoreEventParameters,
+  SelectContentEventParameters,
+  PurchaseEventParameters,
+  RefundEventParameters,
+  RemoveFromCartEventParameters,
+  SearchEventParameters,
+  SelectItemEventParameters,
+  SetCheckoutOptionEventParameters,
+  SelectPromotionEventParameters,
+  ShareEventParameters,
+  SignUpEventParameters,
+  SpendVirtualCurrencyEventParameters,
+  UnlockAchievementEventParameters,
+  ViewCartEventParameters,
+  ViewItemEventParameters,
+  ViewItemListEventParameters,
+  ViewPromotionEventParameters,
+  ViewSearchResultsParameters,
+} from '../types/analytics';
 
 export declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
   FirebaseAnalyticsModule,
@@ -93,7 +126,7 @@ const ReservedEventNames: readonly string[] = [
   'user_engagement',
 ] as const;
 
-const statics: FirebaseAnalyticsTypes.Statics = {};
+const statics: Statics = {};
 
 const namespace = 'analytics';
 
@@ -105,7 +138,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   logEvent(
     name: string,
     params: { [key: string]: any } = {},
-    options: FirebaseAnalyticsTypes.AnalyticsCallOptions = { global: false },
+    options: AnalyticsCallOptions = { global: false },
   ): Promise<void> {
     if (!isString(name)) {
       throw new Error("firebase.analytics().logEvent(*) 'name' expected a string value.");
@@ -202,7 +235,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
   setUserProperties(
     properties: { [key: string]: string | null },
-    options: FirebaseAnalyticsTypes.AnalyticsCallOptions = { global: false },
+    options: AnalyticsCallOptions = { global: false },
   ): Promise<void> {
     if (!isObject(properties)) {
       throw new Error(
@@ -241,7 +274,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     return this.native.resetAnalyticsData();
   }
 
-  setConsent(consentSettings: FirebaseAnalyticsTypes.ConsentSettings): Promise<void> {
+  setConsent(consentSettings: ConsentSettings): Promise<void> {
     if (!isObject(consentSettings)) {
       throw new Error(
         'firebase.analytics().setConsent(*): The supplied arg must be an object of key/values.',
@@ -266,7 +299,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   /** -------------------
    *        EVENTS
    * -------------------- */
-  logAddPaymentInfo(object: FirebaseAnalyticsTypes.AddPaymentInfoEventParameters): Promise<void> {
+  logAddPaymentInfo(object: AddPaymentInfoEventParameters): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logAddPaymentInfo(*): The supplied arg must be an object of key/values.',
@@ -281,7 +314,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logScreenView(object: FirebaseAnalyticsTypes.ScreenViewParameters): Promise<void> {
+  logScreenView(object: ScreenViewParameters): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logScreenView(*): The supplied arg must be an object of key/values.',
@@ -294,7 +327,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logAddShippingInfo(object: FirebaseAnalyticsTypes.AddShippingInfoParameters = {}): Promise<void> {
+  logAddShippingInfo(object: AddShippingInfoParameters = {}): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logAddShippingInfo(*): The supplied arg must be an object of key/values.',
@@ -313,7 +346,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logAddToCart(object: FirebaseAnalyticsTypes.AddToCartEventParameters = {}): Promise<void> {
+  logAddToCart(object: AddToCartEventParameters = {}): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logAddToCart(*): The supplied arg must be an object of key/values.',
@@ -328,9 +361,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logAddToWishlist(
-    object: FirebaseAnalyticsTypes.AddToWishlistEventParameters = {},
-  ): Promise<void> {
+  logAddToWishlist(object: AddToWishlistEventParameters = {}): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logAddToWishlist(*): The supplied arg must be an object of key/values.',
@@ -349,9 +380,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     return this.logEvent('app_open');
   }
 
-  logBeginCheckout(
-    object: FirebaseAnalyticsTypes.BeginCheckoutEventParameters = {},
-  ): Promise<void> {
+  logBeginCheckout(object: BeginCheckoutEventParameters = {}): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logBeginCheckout(*): The supplied arg must be an object of key/values.',
@@ -366,7 +395,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logCampaignDetails(object: FirebaseAnalyticsTypes.CampaignDetailsEventParameters): Promise<void> {
+  logCampaignDetails(object: CampaignDetailsEventParameters): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logCampaignDetails(*): The supplied arg must be an object of key/values.',
@@ -383,9 +412,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logEarnVirtualCurrency(
-    object: FirebaseAnalyticsTypes.EarnVirtualCurrencyEventParameters,
-  ): Promise<void> {
+  logEarnVirtualCurrency(object: EarnVirtualCurrencyEventParameters): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logEarnVirtualCurrency(*): The supplied arg must be an object of key/values.',
@@ -402,7 +429,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logGenerateLead(object: FirebaseAnalyticsTypes.GenerateLeadEventParameters = {}): Promise<void> {
+  logGenerateLead(object: GenerateLeadEventParameters = {}): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logGenerateLead(*): The supplied arg must be an object of key/values.',
@@ -417,7 +444,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logJoinGroup(object: FirebaseAnalyticsTypes.JoinGroupEventParameters): Promise<void> {
+  logJoinGroup(object: JoinGroupEventParameters): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logJoinGroup(*): The supplied arg must be an object of key/values.',
@@ -430,7 +457,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logLevelEnd(object: FirebaseAnalyticsTypes.LevelEndEventParameters): Promise<void> {
+  logLevelEnd(object: LevelEndEventParameters): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logLevelEnd(*): The supplied arg must be an object of key/values.',
@@ -443,7 +470,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logLevelStart(object: FirebaseAnalyticsTypes.LevelStartEventParameters): Promise<void> {
+  logLevelStart(object: LevelStartEventParameters): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logLevelStart(*): The supplied arg must be an object of key/values.',
@@ -456,7 +483,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logLevelUp(object: FirebaseAnalyticsTypes.LevelUpEventParameters): Promise<void> {
+  logLevelUp(object: LevelUpEventParameters): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logLevelUp(*): The supplied arg must be an object of key/values.',
@@ -469,7 +496,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logLogin(object: FirebaseAnalyticsTypes.LoginEventParameters): Promise<void> {
+  logLogin(object: LoginEventParameters): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logLogin(*): The supplied arg must be an object of key/values.',
@@ -482,7 +509,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logPostScore(object: FirebaseAnalyticsTypes.PostScoreEventParameters): Promise<void> {
+  logPostScore(object: PostScoreEventParameters): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logPostScore(*): The supplied arg must be an object of key/values.',
@@ -495,7 +522,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logSelectContent(object: FirebaseAnalyticsTypes.SelectContentEventParameters): Promise<void> {
+  logSelectContent(object: SelectContentEventParameters): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logSelectContent(*): The supplied arg must be an object of key/values.',
@@ -508,7 +535,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logPurchase(object: FirebaseAnalyticsTypes.PurchaseEventParameters = {}): Promise<void> {
+  logPurchase(object: PurchaseEventParameters = {}): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logPurchase(*): The supplied arg must be an object of key/values.',
@@ -523,7 +550,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logRefund(object: FirebaseAnalyticsTypes.RefundEventParameters = {}): Promise<void> {
+  logRefund(object: RefundEventParameters = {}): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logRefund(*): The supplied arg must be an object of key/values.',
@@ -538,9 +565,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logRemoveFromCart(
-    object: FirebaseAnalyticsTypes.RemoveFromCartEventParameters = {},
-  ): Promise<void> {
+  logRemoveFromCart(object: RemoveFromCartEventParameters = {}): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logRemoveFromCart(*): The supplied arg must be an object of key/values.',
@@ -555,7 +580,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logSearch(object: FirebaseAnalyticsTypes.SearchEventParameters): Promise<void> {
+  logSearch(object: SearchEventParameters): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logSearch(*): The supplied arg must be an object of key/values.',
@@ -568,7 +593,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logSelectItem(object: FirebaseAnalyticsTypes.SelectItemEventParameters): Promise<void> {
+  logSelectItem(object: SelectItemEventParameters): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logSelectItem(*): The supplied arg must be an object of key/values.',
@@ -581,9 +606,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logSetCheckoutOption(
-    object: FirebaseAnalyticsTypes.SetCheckoutOptionEventParameters,
-  ): Promise<void> {
+  logSetCheckoutOption(object: SetCheckoutOptionEventParameters): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logSetCheckoutOption(*): The supplied arg must be an object of key/values.',
@@ -600,7 +623,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logSelectPromotion(object: FirebaseAnalyticsTypes.SelectPromotionEventParameters): Promise<void> {
+  logSelectPromotion(object: SelectPromotionEventParameters): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logSelectPromotion(*): The supplied arg must be an object of key/values.',
@@ -617,7 +640,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logShare(object: FirebaseAnalyticsTypes.ShareEventParameters): Promise<void> {
+  logShare(object: ShareEventParameters): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logShare(*): The supplied arg must be an object of key/values.',
@@ -630,7 +653,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logSignUp(object: FirebaseAnalyticsTypes.SignUpEventParameters): Promise<void> {
+  logSignUp(object: SignUpEventParameters): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logSignUp(*): The supplied arg must be an object of key/values.',
@@ -643,9 +666,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logSpendVirtualCurrency(
-    object: FirebaseAnalyticsTypes.SpendVirtualCurrencyEventParameters,
-  ): Promise<void> {
+  logSpendVirtualCurrency(object: SpendVirtualCurrencyEventParameters): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logSpendVirtualCurrency(*): The supplied arg must be an object of key/values.',
@@ -670,9 +691,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     return this.logEvent('tutorial_complete');
   }
 
-  logUnlockAchievement(
-    object: FirebaseAnalyticsTypes.UnlockAchievementEventParameters,
-  ): Promise<void> {
+  logUnlockAchievement(object: UnlockAchievementEventParameters): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logUnlockAchievement(*): The supplied arg must be an object of key/values.',
@@ -689,7 +708,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logViewCart(object: FirebaseAnalyticsTypes.ViewCartEventParameters = {}): Promise<void> {
+  logViewCart(object: ViewCartEventParameters = {}): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logViewCart(*): The supplied arg must be an object of key/values.',
@@ -704,7 +723,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logViewItem(object: FirebaseAnalyticsTypes.ViewItemEventParameters = {}): Promise<void> {
+  logViewItem(object: ViewItemEventParameters = {}): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logViewItem(*): The supplied arg must be an object of key/values.',
@@ -718,7 +737,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logViewItemList(object: FirebaseAnalyticsTypes.ViewItemListEventParameters = {}): Promise<void> {
+  logViewItemList(object: ViewItemListEventParameters = {}): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logViewItemList(*): The supplied arg must be an object of key/values.',
@@ -731,9 +750,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logViewPromotion(
-    object: FirebaseAnalyticsTypes.ViewPromotionEventParameters = {},
-  ): Promise<void> {
+  logViewPromotion(object: ViewPromotionEventParameters = {}): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logViewPromotion(*): The supplied arg must be an object of key/values.',
@@ -749,7 +766,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
    * Unsupported in "Enhanced Ecommerce reports":
    * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-view_search_results
    */
-  logViewSearchResults(object: FirebaseAnalyticsTypes.ViewSearchResultsParameters): Promise<void> {
+  logViewSearchResults(object: ViewSearchResultsParameters): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logViewSearchResults(*): The supplied arg must be an object of key/values.',
