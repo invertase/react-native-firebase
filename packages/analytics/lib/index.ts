@@ -1,9 +1,8 @@
-// @ts-ignore - JavaScript module without types
-import { MODULAR_DEPRECATION_ARG } from '../../app/lib/common/index';
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 import { getApp } from '@react-native-firebase/app';
 import { Platform } from 'react-native';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
-import type { FirebaseAnalyticsTypes } from '../';
+import type { FirebaseAnalyticsTypes } from './types';
 
 /**
  * Returns an Analytics instance for the given app.

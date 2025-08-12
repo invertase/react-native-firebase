@@ -39,11 +39,11 @@ import { isBoolean } from '@react-native-firebase/app/lib/common';
 
 import { validateStruct, validateCompound } from './struct';
 import fallBackModule from './web/RNFBAnalyticsModule';
-import version from './version';
+import { version } from './version';
 import * as structs from './structs';
 
 // Import types from the index file
-import type { FirebaseAnalyticsTypes } from '../';
+import type { FirebaseAnalyticsTypes } from './types';
 
 const ReservedEventNames: readonly string[] = [
   'ad_activeview',
@@ -253,9 +253,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   /** -------------------
    *        EVENTS
    * -------------------- */
-  logAddPaymentInfo(
-    object: FirebaseAnalyticsTypes.AddPaymentInfoEventParameters = {},
-  ): Promise<void> {
+  logAddPaymentInfo(object: FirebaseAnalyticsTypes.AddPaymentInfoEventParameters): Promise<void> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logAddPaymentInfo(*): The supplied arg must be an object of key/values.',
