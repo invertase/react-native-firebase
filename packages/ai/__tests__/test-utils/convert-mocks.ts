@@ -56,8 +56,7 @@ async function main(): Promise<void> {
   let fileText = `// Generated from mocks text files. Do not edit.`;
 
   fileText += '\n\n';
-  fileText += `// @ts-nocheck\n`;
-  fileText += `export const mocksLookup: Record<string, string> = ${JSON.stringify(
+  fileText += `export const mocksLookup: Record<string, Record<string, string>> = ${JSON.stringify(
     lookup,
     null,
     2,
