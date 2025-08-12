@@ -1,2 +1,3 @@
 // No-op for ios.
-export default {};
+const RNFBAnalyticsModule = {};
+export { RNFBAnalyticsModule };

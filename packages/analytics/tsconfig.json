@@ -22,7 +22,7 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "ESNext",
-    "verbatimModuleSyntax": true,
+    "verbatimModuleSyntax": false,
     "baseUrl": ".",
     "typeRoots": ["./types", "./node_modules/@types"],
     "paths": {

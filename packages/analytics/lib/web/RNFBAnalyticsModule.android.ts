@@ -1,2 +1,3 @@
 // No-op for android.
-export default {};
+const RNFBAnalyticsModule = {};
+export { RNFBAnalyticsModule };
