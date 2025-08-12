@@ -18,12 +18,12 @@ import { isUndefined } from '@react-native-firebase/app/lib/common/validate';
 import { create, Struct, StructError } from 'superstruct';
 
 export const validateStruct = (
-  value: Record<string, unknown> = {},
+  value: Record<string, any> = {},
   struct: Struct,
   prefix = '',
-): Record<string, unknown> => {
+): Record<string, any> => {
   try {
-    return create(value, struct) as Record<string, unknown>;
+    return create(value, struct) as Record<string, any>;
   } catch (e) {
     const { path, message } = e as StructError;
 
@@ -39,7 +39,7 @@ export const validateStruct = (
 };
 
 export const validateCompound = (
-  source: Record<string, unknown> = {},
+  source: Record<string, any> = {},
   a: string,
   b: string,
   prefix = '',
