@@ -15,8 +15,6 @@
  *
  */
 
-import { ReactNativeFirebase } from '@react-native-firebase/app';
-
 export interface AnalyticsEventParameters {
   [key: string]: string | number | boolean | undefined | null;
 }
