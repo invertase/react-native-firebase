@@ -24,7 +24,7 @@ import { rimrafSync } from 'rimraf';
 // Our test data repository
 const REPO_NAME = 'vertexai-sdk-test-data';
 const REPO_LINK = `https://github.com/FirebaseExtended/${REPO_NAME}.git`;
-const TEST_DATA_ROOT = join(__dirname, '..', 'packages', 'vertexai', '__tests__', 'test-utils');
+const TEST_DATA_ROOT = join(__dirname, '..', 'packages', 'ai', '__tests__', 'test-utils');
 
 // Get tags from repository, sorted by tag name, and coerce result to a string, then trim it
 const repoTags = (
