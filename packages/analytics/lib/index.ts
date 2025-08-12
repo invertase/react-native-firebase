@@ -3,6 +3,44 @@ import { getApp } from '@react-native-firebase/app';
 import { Platform } from 'react-native';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import type { FirebaseAnalyticsTypes } from './types';
+import type {
+  AnalyticsSettings,
+  AnalyticsCallOptions,
+  ConsentSettings,
+  AddPaymentInfoEventParameters,
+  ScreenViewParameters,
+  AddShippingInfoParameters,
+  AddToCartEventParameters,
+  AddToWishlistEventParameters,
+  BeginCheckoutEventParameters,
+  CampaignDetailsEventParameters,
+  EarnVirtualCurrencyEventParameters,
+  GenerateLeadEventParameters,
+  JoinGroupEventParameters,
+  LevelEndEventParameters,
+  LevelStartEventParameters,
+  LevelUpEventParameters,
+  LoginEventParameters,
+  PostScoreEventParameters,
+  SelectContentEventParameters,
+  PurchaseEventParameters,
+  RefundEventParameters,
+  RemoveFromCartEventParameters,
+  SearchEventParameters,
+  SelectItemEventParameters,
+  SetCheckoutOptionEventParameters,
+  SelectPromotionEventParameters,
+  ShareEventParameters,
+  SignUpEventParameters,
+  SpendVirtualCurrencyEventParameters,
+  UnlockAchievementEventParameters,
+  ViewCartEventParameters,
+  ViewItemEventParameters,
+  ViewItemListEventParameters,
+  ViewPromotionEventParameters,
+  ViewSearchResultsParameters,
+  SettingsOptions,
+} from '../types/analytics';
 
 /**
  * Returns an Analytics instance for the given app.
@@ -19,7 +57,7 @@ export function getAnalytics(app?: ReactNativeFirebase.FirebaseApp): FirebaseAna
  */
 export function initializeAnalytics(
   app: ReactNativeFirebase.FirebaseApp,
-  _options?: FirebaseAnalyticsTypes.AnalyticsSettings,
+  _options?: AnalyticsSettings,
 ): FirebaseAnalyticsTypes.Module {
   return getApp(app.name).analytics();
 }
@@ -45,7 +83,7 @@ export function logEvent(
   analytics: FirebaseAnalyticsTypes.Module,
   name: string,
   params: { [key: string]: any } = {},
-  options: FirebaseAnalyticsTypes.AnalyticsCallOptions = { global: false },
+  options: AnalyticsCallOptions = { global: false },
 ): Promise<void> {
   // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return analytics.logEvent.call(analytics, name, params, options, MODULAR_DEPRECATION_ARG);
@@ -123,7 +161,7 @@ export function setUserProperty(
 export function setUserProperties(
   analytics: FirebaseAnalyticsTypes.Module,
   properties: { [key: string]: string | null },
-  options: FirebaseAnalyticsTypes.AnalyticsCallOptions = { global: false },
+  options: AnalyticsCallOptions = { global: false },
 ): Promise<void> {
   // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return analytics.setUserProperties.call(analytics, properties, options, MODULAR_DEPRECATION_ARG);
@@ -143,7 +181,7 @@ export function resetAnalyticsData(analytics: FirebaseAnalyticsTypes.Module): Pr
  */
 export function logAddPaymentInfo(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.AddPaymentInfoEventParameters,
+  params: AddPaymentInfoEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logAddPaymentInfo(params);
@@ -154,7 +192,7 @@ export function logAddPaymentInfo(
  */
 export function logScreenView(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.ScreenViewParameters,
+  params: ScreenViewParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logScreenView(params);
@@ -165,7 +203,7 @@ export function logScreenView(
  */
 export function logAddShippingInfo(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.AddShippingInfoParameters,
+  params: AddShippingInfoParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logAddShippingInfo(params);
@@ -176,7 +214,7 @@ export function logAddShippingInfo(
  */
 export function logAddToCart(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.AddToCartEventParameters,
+  params: AddToCartEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logAddToCart(params);
@@ -187,7 +225,7 @@ export function logAddToCart(
  */
 export function logAddToWishlist(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.AddToWishlistEventParameters,
+  params: AddToWishlistEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logAddToWishlist(params);
@@ -206,7 +244,7 @@ export function logAppOpen(analytics: FirebaseAnalyticsTypes.Module): Promise<vo
  */
 export function logBeginCheckout(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.BeginCheckoutEventParameters,
+  params: BeginCheckoutEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logBeginCheckout(params);
@@ -217,7 +255,7 @@ export function logBeginCheckout(
  */
 export function logCampaignDetails(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.CampaignDetailsEventParameters,
+  params: CampaignDetailsEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logCampaignDetails(params);
@@ -228,7 +266,7 @@ export function logCampaignDetails(
  */
 export function logEarnVirtualCurrency(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.EarnVirtualCurrencyEventParameters,
+  params: EarnVirtualCurrencyEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logEarnVirtualCurrency(params);
@@ -239,7 +277,7 @@ export function logEarnVirtualCurrency(
  */
 export function logGenerateLead(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.GenerateLeadEventParameters,
+  params: GenerateLeadEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logGenerateLead(params);
@@ -250,7 +288,7 @@ export function logGenerateLead(
  */
 export function logJoinGroup(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.JoinGroupEventParameters,
+  params: JoinGroupEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logJoinGroup(params);
@@ -261,7 +299,7 @@ export function logJoinGroup(
  */
 export function logLevelEnd(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.LevelEndEventParameters,
+  params: LevelEndEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logLevelEnd(params);
@@ -272,7 +310,7 @@ export function logLevelEnd(
  */
 export function logLevelStart(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.LevelStartEventParameters,
+  params: LevelStartEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logLevelStart(params);
@@ -283,7 +321,7 @@ export function logLevelStart(
  */
 export function logLevelUp(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.LevelUpEventParameters,
+  params: LevelUpEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logLevelUp(params);
@@ -294,7 +332,7 @@ export function logLevelUp(
  */
 export function logLogin(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.LoginEventParameters,
+  params: LoginEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logLogin(params);
@@ -305,7 +343,7 @@ export function logLogin(
  */
 export function logPostScore(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.PostScoreEventParameters,
+  params: PostScoreEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logPostScore(params);
@@ -319,7 +357,7 @@ export function logPostScore(
  */
 export function logSelectContent(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.SelectContentEventParameters,
+  params: SelectContentEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logSelectContent(params);
@@ -333,7 +371,7 @@ export function logSelectContent(
  */
 export function logPurchase(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.PurchaseEventParameters,
+  params: PurchaseEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logPurchase(params);
@@ -347,7 +385,7 @@ export function logPurchase(
  */
 export function logRefund(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.RefundEventParameters,
+  params: RefundEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logRefund(params);
@@ -361,7 +399,7 @@ export function logRefund(
  */
 export function logRemoveFromCart(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.RemoveFromCartEventParameters,
+  params: RemoveFromCartEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logRemoveFromCart(params);
@@ -375,7 +413,7 @@ export function logRemoveFromCart(
  */
 export function logSearch(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.SearchEventParameters,
+  params: SearchEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logSearch(params);
@@ -389,7 +427,7 @@ export function logSearch(
  */
 export function logSelectItem(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.SelectItemEventParameters,
+  params: SelectItemEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logSelectItem(params);
@@ -403,7 +441,7 @@ export function logSelectItem(
  */
 export function logSetCheckoutOption(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.SetCheckoutOptionEventParameters,
+  params: SetCheckoutOptionEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logSetCheckoutOption(params);
@@ -417,7 +455,7 @@ export function logSetCheckoutOption(
  */
 export function logSelectPromotion(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.SelectPromotionEventParameters,
+  params: SelectPromotionEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logSelectPromotion(params);
@@ -431,7 +469,7 @@ export function logSelectPromotion(
  */
 export function logShare(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.ShareEventParameters,
+  params: ShareEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logShare(params);
@@ -445,7 +483,7 @@ export function logShare(
  */
 export function logSignUp(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.SignUpEventParameters,
+  params: SignUpEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logSignUp(params);
@@ -459,7 +497,7 @@ export function logSignUp(
  */
 export function logSpendVirtualCurrency(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.SpendVirtualCurrencyEventParameters,
+  params: SpendVirtualCurrencyEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logSpendVirtualCurrency(params);
@@ -493,7 +531,7 @@ export function logTutorialComplete(analytics: FirebaseAnalyticsTypes.Module): P
  */
 export function logUnlockAchievement(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.UnlockAchievementEventParameters,
+  params: UnlockAchievementEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logUnlockAchievement(params);
@@ -507,7 +545,7 @@ export function logUnlockAchievement(
  */
 export function logViewCart(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.ViewCartEventParameters,
+  params: ViewCartEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logViewCart(params);
@@ -521,7 +559,7 @@ export function logViewCart(
  */
 export function logViewItem(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.ViewItemEventParameters,
+  params: ViewItemEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logViewItem(params);
@@ -535,7 +573,7 @@ export function logViewItem(
  */
 export function logViewItemList(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.ViewItemListEventParameters,
+  params: ViewItemListEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logViewItemList(params);
@@ -549,7 +587,7 @@ export function logViewItemList(
  */
 export function logViewPromotion(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.ViewPromotionEventParameters,
+  params: ViewPromotionEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logViewPromotion(params);
@@ -563,7 +601,7 @@ export function logViewPromotion(
  */
 export function logViewSearchResults(
   analytics: FirebaseAnalyticsTypes.Module,
-  params: FirebaseAnalyticsTypes.ViewSearchResultsParameters,
+  params: ViewSearchResultsParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logViewSearchResults(params);
@@ -683,7 +721,7 @@ export function isSupported(): Promise<boolean> {
  */
 export function setConsent(
   analytics: FirebaseAnalyticsTypes.Module,
-  consentSettings: FirebaseAnalyticsTypes.ConsentSettings,
+  consentSettings: ConsentSettings,
 ): Promise<void> {
   // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return analytics.setConsent.call(analytics, consentSettings, MODULAR_DEPRECATION_ARG);
@@ -695,7 +733,7 @@ export function setConsent(
  * @param {SettingsOptions} options - See SettingsOptions.
  * @returns {void}
  */
-export function settings(_options: FirebaseAnalyticsTypes.SettingsOptions): void {
+export function settings(_options: SettingsOptions): void {
   // Returns nothing until Web implemented.
 }
 
