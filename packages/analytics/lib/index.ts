@@ -699,3 +699,5 @@ export function setConsent(
 export function settings(_options: FirebaseAnalyticsTypes.SettingsOptions): void {
   // Returns nothing until Web implemented.
 }
+
+export * from './namespaced';
