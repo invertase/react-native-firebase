@@ -195,6 +195,15 @@ export function mapGenerateContentCandidates(
   return mappedCandidates;
 }
 
+/**
+ * Maps a {@link GenerateContentResponse} from Google AI to the format of the
+ * {@link GenerateContentResponse} that we get from VertexAI that is exposed in the public API.
+ *
+ * @param googleAIResponse The {@link GenerateContentResponse} from Google AI.
+ * @returns A {@link GenerateContentResponse} that conforms to the public API's format.
+ *
+ * @internal
+ */
 export function mapPromptFeedback(promptFeedback: PromptFeedback): PromptFeedback {
   // Assign missing SafetyRating properties to their defaults if undefined.
   const mappedSafetyRatings: SafetyRating[] = [];
