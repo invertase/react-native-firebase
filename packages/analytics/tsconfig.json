@@ -22,6 +22,10 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "ESNext",
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "baseUrl": ".",
+    "paths": {
+      "@react-native-firebase/app": ["../app/lib"]
+    }
   }
 }
