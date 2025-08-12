@@ -38,7 +38,7 @@ import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/na
 import { isBoolean } from '@react-native-firebase/app/lib/common';
 
 import { validateStruct, validateCompound } from './struct';
-import fallBackModule from './web/RNFBAnalyticsModule';
+import { RNFBAnalyticsModule } from './web/RNFBAnalyticsModule';
 import { version } from './version';
 import * as structs from './structs';
 
@@ -856,4 +856,4 @@ export default createModuleNamespace({
 export const firebase = getFirebaseRoot();
 
 // Register the interop module for non-native platforms.
-setReactNativeModule(nativeModuleName, fallBackModule);
+setReactNativeModule(nativeModuleName, RNFBAnalyticsModule);

@@ -134,4 +134,4 @@ const RNFBAnalyticsModule: RNFBAnalyticsModule = {
   },
 };
 
-export default RNFBAnalyticsModule;
+export { RNFBAnalyticsModule };
