@@ -35,8 +35,8 @@ buildscript {
     classpath 'com.android.tools.build:gradle:8.9.2' // https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
     classpath("com.facebook.react:react-native-gradle-plugin")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
-    classpath 'com.google.firebase:perf-plugin:1.4.2'
-    classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.4'
+    classpath 'com.google.firebase:perf-plugin:2.0.1'
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.6'
     classpath 'com.google.firebase:firebase-appdistribution-gradle:5.1.1'
   }
 }
