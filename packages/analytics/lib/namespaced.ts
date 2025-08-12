@@ -844,8 +844,6 @@ export default createModuleNamespace({
   ModuleClass: FirebaseAnalyticsModule,
 });
 
-export * from './modular/index';
-
 // import analytics, { firebase } from '@react-native-firebase/analytics';
 // analytics().logEvent(...);
 // firebase.analytics().logEvent(...);
