@@ -7,7 +7,7 @@ import type {
   AnalyticsUserProperties,
   AnalyticsConsent,
   RNFBAnalyticsModule,
-} from '../../types';
+} from '../../types/web';
 
 interface AnalyticsInstances {
   [measurementId: string]: AnalyticsApi;
