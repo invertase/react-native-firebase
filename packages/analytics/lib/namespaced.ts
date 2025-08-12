@@ -32,6 +32,8 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
+
+// Internal types are now available through module declarations in app package
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import { isBoolean } from '@react-native-firebase/app/lib/common';
 
@@ -85,6 +87,8 @@ const namespace = 'analytics';
 const nativeModuleName = 'RNFBAnalyticsModule';
 
 class FirebaseAnalyticsModule extends FirebaseModule {
+  // Explicitly declare native property from parent class
+  declare native: any;
   logEvent(
     name: string,
     params: { [key: string]: any } = {},
@@ -207,7 +211,9 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
     const entries = Object.entries(properties);
     for (let i = 0; i < entries.length; i++) {
-      const [key, value] = entries[i];
+      const entry = entries[i];
+      if (!entry) continue;
+      const [key, value] = entry;
       if (!isNull(value) && !isString(value)) {
         throw new Error(
           `firebase.analytics().setUserProperties(*) 'properties' value for parameter '${key}' is invalid, expected a string.`,
@@ -231,7 +237,9 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
     const entries = Object.entries(consentSettings);
     for (let i = 0; i < entries.length; i++) {
-      const [key, value] = entries[i];
+      const entry = entries[i];
+      if (!entry) continue;
+      const [key, value] = entry;
       if (!isBoolean(value)) {
         throw new Error(
           `firebase.analytics().setConsent(*) 'consentSettings' value for parameter '${key}' is invalid, expected a boolean.`,

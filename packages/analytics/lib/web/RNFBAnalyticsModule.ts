@@ -2,10 +2,20 @@ import { getApp } from '@react-native-firebase/app/lib/internal/web/firebaseApp'
 import { guard } from '@react-native-firebase/app/lib/internal/web/utils';
 
 import { AnalyticsApi } from './api';
+import type {
+  AnalyticsEventParameters,
+  AnalyticsUserProperties,
+  AnalyticsConsent,
+  RNFBAnalyticsModule,
+} from '../../types';
 
-let analyticsInstances = {};
+interface AnalyticsInstances {
+  [measurementId: string]: AnalyticsApi;
+}
 
-function getAnalyticsApi(appName) {
+let analyticsInstances: AnalyticsInstances = {};
+
+function getAnalyticsApi(appName: string): AnalyticsApi {
   const app = getApp(appName);
   const measurementId = app.options.measurementId;
   if (!measurementId) {
@@ -13,10 +23,16 @@ function getAnalyticsApi(appName) {
     console.warn(
       'No measurement id (`FirebaseOptions.measurementId`) found for Firebase Analytics. Analytics will be unavailable.',
     );
+    // Return a default instance with empty measurementId for cases where it's not configured
+    const defaultKey = 'default';
+    if (!analyticsInstances[defaultKey]) {
+      analyticsInstances[defaultKey] = new AnalyticsApi('[DEFAULT]', '');
+    }
+    return analyticsInstances[defaultKey];
   }
   if (!analyticsInstances[measurementId]) {
     analyticsInstances[measurementId] = new AnalyticsApi('[DEFAULT]', measurementId);
-    if (globalThis.RNFBDebug) {
+    if ((globalThis as any).RNFBDebug) {
       analyticsInstances[measurementId].setDebug(true);
     }
   }
@@ -29,8 +45,8 @@ function getAnalyticsApi(appName) {
  * the native android/ios modules e.g. `@ReactMethod` annotated
  * java methods on Android.
  */
-export default {
-  logEvent(name, params) {
+const RNFBAnalyticsModule: RNFBAnalyticsModule = {
+  logEvent(name: string, params?: AnalyticsEventParameters): Promise<null> {
     return guard(async () => {
       const api = getAnalyticsApi('[DEFAULT]');
       api.logEvent(name, params);
@@ -38,7 +54,7 @@ export default {
     });
   },
 
-  setUserId(userId) {
+  setUserId(userId: string | null): Promise<null> {
     return guard(async () => {
       const api = getAnalyticsApi('[DEFAULT]');
       api.setUserId(userId);
@@ -46,7 +62,7 @@ export default {
     });
   },
 
-  setUserProperty(key, value) {
+  setUserProperty(key: string, value: string | null): Promise<null> {
     return guard(async () => {
       const api = getAnalyticsApi('[DEFAULT]');
       api.setUserProperty(key, value);
@@ -54,7 +70,7 @@ export default {
     });
   },
 
-  setUserProperties(properties) {
+  setUserProperties(properties: AnalyticsUserProperties): Promise<null> {
     return guard(async () => {
       const api = getAnalyticsApi('[DEFAULT]');
       api.setUserProperties(properties);
@@ -62,7 +78,7 @@ export default {
     });
   },
 
-  setDefaultEventParameters(params) {
+  setDefaultEventParameters(params: AnalyticsEventParameters | null): Promise<null> {
     return guard(async () => {
       const api = getAnalyticsApi('[DEFAULT]');
       api.setDefaultEventParameters(params);
@@ -70,18 +86,18 @@ export default {
     });
   },
 
-  setConsent(consent) {
+  setConsent(consent: AnalyticsConsent): Promise<null> {
     return guard(async () => {
       const api = getAnalyticsApi('[DEFAULT]');
       // TODO currently we only support ad_personalization
-      if (consent && consent.ad_personalization) {
+      if (consent && consent.ad_personalization !== undefined) {
         api.setConsent({ ad_personalization: consent.ad_personalization });
       }
       return null;
     });
   },
 
-  setAnalyticsCollectionEnabled(enabled) {
+  setAnalyticsCollectionEnabled(enabled: boolean): Promise<null> {
     return guard(async () => {
       const api = getAnalyticsApi('[DEFAULT]');
       api.setAnalyticsCollectionEnabled(enabled);
@@ -89,31 +105,33 @@ export default {
     });
   },
 
-  resetAnalyticsData() {
+  resetAnalyticsData(): Promise<null> {
     // Unsupported for web.
     return guard(async () => {
       return null;
     });
   },
 
-  setSessionTimeoutDuration() {
+  setSessionTimeoutDuration(): Promise<null> {
     // Unsupported for web.
     return guard(async () => {
       return null;
     });
   },
 
-  getAppInstanceId() {
+  getAppInstanceId(): Promise<string | null> {
     return guard(async () => {
       const api = getAnalyticsApi('[DEFAULT]');
       return api._getCid();
     });
   },
 
-  getSessionId() {
+  getSessionId(): Promise<null> {
     // Unsupported for web.
     return guard(async () => {
       return null;
     });
   },
 };
+
+export default RNFBAnalyticsModule;
