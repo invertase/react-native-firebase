@@ -29,6 +29,7 @@ import {
   pathParent,
   promiseWithOptionalCallback,
   createDeprecationProxy,
+  MODULAR_DEPRECATION_ARG,
 } from '@react-native-firebase/app/lib/common';
 import DatabaseDataSnapshot from './DatabaseDataSnapshot';
 import DatabaseOnDisconnect from './DatabaseOnDisconnect';
@@ -63,14 +64,14 @@ export default class DatabaseReference extends DatabaseQuery {
     if (parentPath === null) {
       return null;
     }
-    return new DatabaseReference(this._database, parentPath);
+    return createDeprecationProxy(new DatabaseReference(this._database, parentPath));
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Reference.html#root
    */
   get root() {
-    return new DatabaseReference(this._database, '/');
+    return createDeprecationProxy(new DatabaseReference(this._database, '/'));
   }
 
   /**
@@ -81,7 +82,9 @@ export default class DatabaseReference extends DatabaseQuery {
     if (!isString(path)) {
       throw new Error("firebase.database().ref().child(*) 'path' must be a string value.");
     }
-    return new DatabaseReference(this._database, pathChild(this.path, path));
+    return createDeprecationProxy(
+      new DatabaseReference(this._database, pathChild(this.path, path)),
+    );
   }
 
   /**
@@ -276,13 +279,15 @@ export default class DatabaseReference extends DatabaseQuery {
       return new DatabaseThenableReference(
         this._database,
         pathChild(this.path, id),
-        Promise.resolve(this.child(id)),
+        Promise.resolve(this.child.call(this, id, MODULAR_DEPRECATION_ARG)),
       );
     }
 
-    const pushRef = this.child(id);
+    const pushRef = this.child.call(this, id, MODULAR_DEPRECATION_ARG);
 
-    const promise = pushRef.set(value, onComplete).then(() => pushRef);
+    const promise = pushRef.set
+      .call(pushRef, value, onComplete, MODULAR_DEPRECATION_ARG)
+      .then(() => pushRef);
 
     // Prevent unhandled promise rejection if onComplete is passed
     if (onComplete) {
