@@ -14,17 +14,17 @@
  * limitations under the License.
  *
  */
+import type { ReactNativeFirebase } from './index';
 
 // Type definitions for internal modules used by other packages during TypeScript migration
 
 declare module '@react-native-firebase/app/lib/internal' {
-  export function createModuleNamespace(config: any): any;
-  export class FirebaseModule {
-    constructor(...args: any[]);
+  import BaseFirebaseModule = ReactNativeFirebase.FirebaseModule;
+  export class FirebaseModule extends BaseFirebaseModule {
     native: any;
-    firebaseJson: any;
-    _customUrlOrRegion: string | null;
+    emitter: any;
   }
+  export function createModuleNamespace(config: any): any;
   export function getFirebaseRoot(): any;
   export class NativeFirebaseError {
     static getStackWithMessage(message: string, jsStack?: string): string;

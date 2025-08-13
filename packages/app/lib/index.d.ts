@@ -264,16 +264,6 @@ export namespace ReactNativeFirebase {
      * The current `FirebaseApp` instance for this Firebase service.
      */
     app: FirebaseApp;
-
-    /**
-     * The native module instance for this Firebase service.
-     */
-    private native: any;
-
-    /**
-     * Returns the shared event emitter instance used for all JS event routing.
-     */
-    private emitter: any;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
