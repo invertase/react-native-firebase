@@ -1,10 +1,6 @@
-import type { ReactNativeFirebase } from '@react-native-firebase/app';
-import defaultExport, { FirebaseAnalyticsModule } from './namespaced';
-import { Statics } from './types/analytics';
+import defaultExport from './namespaced';
+
 export * from './modular';
 export * from './namespaced';
 
-export default defaultExport as ReactNativeFirebase.FirebaseModuleWithStatics<
-  FirebaseAnalyticsModule,
-  Statics
->;
+export default defaultExport;
