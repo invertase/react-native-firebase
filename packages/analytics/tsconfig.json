@@ -24,7 +24,7 @@
     "target": "ESNext",
     "verbatimModuleSyntax": false,
     "baseUrl": ".",
-    "typeRoots": ["./types", "./node_modules/@types"],
+    "typeRoots": ["lib/types", "./node_modules/@types"],
     "paths": {
       "@react-native-firebase/app": ["../app/lib"]
     }
