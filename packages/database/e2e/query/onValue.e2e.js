@@ -75,33 +75,43 @@ describe('onValue()', function () {
     unsubscribe();
   });
 
-  // FIXME super flaky on jet
-  xit('should stop listening if ListeningOptions.onlyOnce is true', async function () {
-    if (Platform.ios || !global.isCI) {
-      const { getDatabase, ref, set, onValue } = databaseModular;
-      const dbRef = ref(getDatabase(), `${TEST_PATH}/init`);
+  it('should stop listening if ListeningOptions.onlyOnce is true', async function () {
+    const date = Date.now();
+    const { getDatabase, ref, set, onValue } = databaseModular;
+    const dbRef = ref(getDatabase(), `${TEST_PATH}/listenOnlyOnce/${date}`);
 
-      const callback = sinon.spy();
+    const callback = sinon.spy();
+    onValue(
+      dbRef,
+      $ => {
+        callback($.val());
+      },
+      { onlyOnce: true },
+    );
 
-      onValue(
-        dbRef,
-        $ => {
-          callback($.val());
-        },
-        { onlyOnce: true },
-      );
+    // onValue *should* be async, it uses bridge to add native listener
+    // That would be a breaking API change so wait for initial callback
+    await Utils.spyToBeCalledOnceAsync(callback, 1000);
+    await set(dbRef, 'foo');
+    callback.should.be.calledWith(null); // initial callback pre-set
 
-      let value = Date.now();
-      set(dbRef, value);
-      await Utils.spyToBeCalledOnceAsync(callback, 5000);
-      callback.should.be.calledWith(value);
+    const callback2 = sinon.spy();
+    onValue(
+      dbRef,
+      $ => {
+        callback2($.val());
+      },
+      { onlyOnce: true },
+    );
 
-      let secondValue = Date.now();
-      set(dbRef, secondValue);
-      callback.should.not.be.calledWith(secondValue);
-    } else {
-      this.skip();
-    }
+    await Utils.spyToBeCalledOnceAsync(callback2, 1000);
+    callback2.should.be.calledWith('foo');
+    await set(dbRef, 'bar');
+    await Utils.sleep(1000); // allow for a call to probe onlyOnce behavior
+
+    // verify both listeners were called exactly once
+    callback.should.be.calledOnce();
+    callback2.should.be.calledOnce();
   });
 
   xit('should callback multiple times when the value changes', async function () {
