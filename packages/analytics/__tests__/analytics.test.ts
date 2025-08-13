@@ -1,7 +1,7 @@
 import { jest, afterAll, beforeAll, describe, expect, it, xit, beforeEach } from '@jest/globals';
 
 // @ts-ignore test
-import FirebaseModule from '../../app/lib/internal/FirebaseModule';
+import FirebaseModule from '@react-native-firebase/app/lib/internal/FirebaseModule';
 
 import {
   firebase,
@@ -65,7 +65,7 @@ import {
 import {
   createCheckV9Deprecation,
   CheckV9DeprecationFunction,
-} from '../../app/lib/common/unitTestUtils';
+} from '@react-native-firebase/app/lib/common/unitTestUtils';
 
 describe('Analytics', function () {
   describe('namespace', function () {
