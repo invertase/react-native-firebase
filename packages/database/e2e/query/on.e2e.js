@@ -111,13 +111,16 @@ describe('database().ref().on()', function () {
     ref.on('value', $ => {
       callback($.val());
     });
+    // onValue *should* be async, it uses bridge to add native listener
+    // That would be a breaking API change so wait for initial callback
+    await Utils.spyToBeCalledOnceAsync(callback, 1000);
+    callback.should.be.calledWith(null); // initial callback pre-set
     await ref.set('foo');
-    await Utils.sleep(100);
     await ref.set('bar');
-    await Utils.spyToBeCalledTimesAsync(callback, 2);
+    await Utils.spyToBeCalledTimesAsync(callback, 3);
     await ref.off('value');
-    callback.getCall(0).args[0].should.equal('foo');
-    callback.getCall(1).args[0].should.equal('bar');
+    callback.getCall(1).args[0].should.equal('foo');
+    callback.getCall(2).args[0].should.equal('bar');
   });
 
   // the cancelCallback is never called for ref.on but ref.once works?
