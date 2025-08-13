@@ -861,6 +861,22 @@ export const SDK_VERSION: string = version;
 // import analytics, { firebase } from '@react-native-firebase/analytics';
 // analytics().logEvent(...);
 // firebase.analytics().logEvent(...);
+
+// Override the createModuleNamespace type for this specific usage using module augmentation
+
+// declare module '@react-native-firebase/app/lib/internal' {
+//   function createModuleNamespace(config: {
+//     statics: any;
+//     version: string;
+//     namespace: string;
+//     nativeModuleName: string;
+//     nativeEvents: boolean;
+//     hasMultiAppSupport: boolean;
+//     hasCustomUrlOrRegionSupport: boolean;
+//     ModuleClass: any;
+//   }): ReactNativeFirebase.FirebaseModuleWithStatics<FirebaseAnalyticsModule, Statics>;
+// }
+
 export declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
   FirebaseAnalyticsModule,
   Statics
@@ -875,12 +891,13 @@ export default createModuleNamespace({
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseAnalyticsModule,
-}) as typeof defaultExport;
+});
 
 // Register the interop module for non-native platforms.
 setReactNativeModule(nativeModuleName, RNFBAnalyticsModule);
 
 export const firebase: FirebaseAnalyticsModule & {
   analytics: typeof defaultExport;
+  SDK_VERSION: string;
   app(name?: string): ReactNativeFirebase.FirebaseApp & { analytics(): FirebaseAnalyticsModule };
 } = getFirebaseRoot();
