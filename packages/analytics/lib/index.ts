@@ -40,7 +40,7 @@ import type {
   ViewPromotionEventParameters,
   ViewSearchResultsParameters,
   SettingsOptions,
-} from '../types/analytics';
+} from './types/analytics';
 
 declare module '@react-native-firebase/app' {
   function getApp(

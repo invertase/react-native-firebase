@@ -77,7 +77,7 @@ import {
   ViewItemListEventParameters,
   ViewPromotionEventParameters,
   ViewSearchResultsParameters,
-} from '../types/analytics';
+} from './types/analytics';
 
 const ReservedEventNames: readonly string[] = [
   'ad_activeview',

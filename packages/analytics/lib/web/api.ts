@@ -18,7 +18,7 @@ import type {
   AnalyticsUserProperties,
   AnalyticsConsent,
   AnalyticsApi as IAnalyticsApi,
-} from '../../types/web';
+} from '../types/web';
 
 /**
  * Generates a Google Analytics client ID.
