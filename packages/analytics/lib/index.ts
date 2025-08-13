@@ -1,8 +1,8 @@
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
+import { FirebaseAnalyticsModule } from './namespaced';
 import { getApp } from '@react-native-firebase/app';
 import { Platform } from 'react-native';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
-import type { FirebaseAnalyticsTypes } from './types';
 import type {
   AnalyticsSettings,
   AnalyticsCallOptions,
@@ -42,10 +42,16 @@ import type {
   SettingsOptions,
 } from '../types/analytics';
 
+declare module '@react-native-firebase/app' {
+  function getApp(
+    name?: string,
+  ): ReactNativeFirebase.FirebaseApp & { analytics(): FirebaseAnalyticsModule };
+}
+
 /**
  * Returns an Analytics instance for the given app.
  */
-export function getAnalytics(app?: ReactNativeFirebase.FirebaseApp): FirebaseAnalyticsTypes.Module {
+export function getAnalytics(app?: ReactNativeFirebase.FirebaseApp): FirebaseAnalyticsModule {
   if (app) {
     return getApp(app.name).analytics();
   }
@@ -58,7 +64,7 @@ export function getAnalytics(app?: ReactNativeFirebase.FirebaseApp): FirebaseAna
 export function initializeAnalytics(
   app: ReactNativeFirebase.FirebaseApp,
   _options?: AnalyticsSettings,
-): FirebaseAnalyticsTypes.Module {
+): FirebaseAnalyticsModule {
   return getApp(app.name).analytics();
 }
 
@@ -66,7 +72,7 @@ export function initializeAnalytics(
  * Retrieves a unique Google Analytics identifier for the web client.
  */
 export async function getGoogleAnalyticsClientId(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
 ): Promise<string> {
   if (Platform.OS === 'android' || Platform.OS === 'ios') {
     throw new Error('getGoogleAnalyticsClientId is web-only.');
@@ -80,7 +86,7 @@ export async function getGoogleAnalyticsClientId(
  * Log a custom event with optional params.
  */
 export function logEvent(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   name: string,
   params: { [key: string]: any } = {},
   options: AnalyticsCallOptions = { global: false },
@@ -93,7 +99,7 @@ export function logEvent(
  * If true, allows the device to collect analytical data and send it to Firebase. Useful for GDPR.
  */
 export function setAnalyticsCollectionEnabled(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   enabled: boolean,
 ): Promise<void> {
   // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
@@ -104,7 +110,7 @@ export function setAnalyticsCollectionEnabled(
  * Sets the duration of inactivity that terminates the current session.
  */
 export function setSessionTimeoutDuration(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   milliseconds: number = 1800000,
 ): Promise<void> {
   // This doesn't exist on firebase-js-sdk, but probably should keep this for android & iOS
@@ -115,7 +121,7 @@ export function setSessionTimeoutDuration(
 /**
  * Retrieve the app instance id of the application.
  */
-export function getAppInstanceId(analytics: FirebaseAnalyticsTypes.Module): Promise<string | null> {
+export function getAppInstanceId(analytics: FirebaseAnalyticsModule): Promise<string | null> {
   // This doesn't exist on firebase-js-sdk, but probably should keep this for android & iOS
   // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return analytics.getAppInstanceId.call(analytics, MODULAR_DEPRECATION_ARG);
@@ -125,7 +131,7 @@ export function getAppInstanceId(analytics: FirebaseAnalyticsTypes.Module): Prom
  * Retrieves the session id from the client.
  * On iOS, Firebase SDK may return an error that is handled internally and may take many minutes to return a valid value. Check native debug logs for more details.
  */
-export function getSessionId(analytics: FirebaseAnalyticsTypes.Module): Promise<number | null> {
+export function getSessionId(analytics: FirebaseAnalyticsModule): Promise<number | null> {
   // This doesn't exist on firebase-js-sdk, but probably should keep this for android & iOS
   // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return analytics.getSessionId.call(analytics, MODULAR_DEPRECATION_ARG);
@@ -134,10 +140,7 @@ export function getSessionId(analytics: FirebaseAnalyticsTypes.Module): Promise<
 /**
  * Gives a user a unique identification.
  */
-export function setUserId(
-  analytics: FirebaseAnalyticsTypes.Module,
-  id: string | null,
-): Promise<void> {
+export function setUserId(analytics: FirebaseAnalyticsModule, id: string | null): Promise<void> {
   // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return analytics.setUserId.call(analytics, id, MODULAR_DEPRECATION_ARG);
 }
@@ -146,7 +149,7 @@ export function setUserId(
  * Sets a key/value pair of data on the current user. Each Firebase project can have up to 25 uniquely named (case-sensitive) user properties.
  */
 export function setUserProperty(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   name: string,
   value: string | null,
 ): Promise<void> {
@@ -159,7 +162,7 @@ export function setUserProperty(
  * Sets multiple key/value pairs of data on the current user. Each Firebase project can have up to 25 uniquely named (case-sensitive) user properties.
  */
 export function setUserProperties(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   properties: { [key: string]: string | null },
   options: AnalyticsCallOptions = { global: false },
 ): Promise<void> {
@@ -170,7 +173,7 @@ export function setUserProperties(
 /**
  * Clears all analytics data for this instance from the device and resets the app instance ID.
  */
-export function resetAnalyticsData(analytics: FirebaseAnalyticsTypes.Module): Promise<void> {
+export function resetAnalyticsData(analytics: FirebaseAnalyticsModule): Promise<void> {
   // This doesn't exist on firebase-js-sdk, but probably should keep this for android & iOS
   // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return analytics.resetAnalyticsData.call(analytics, MODULAR_DEPRECATION_ARG);
@@ -180,7 +183,7 @@ export function resetAnalyticsData(analytics: FirebaseAnalyticsTypes.Module): Pr
  * E-Commerce Purchase event. This event signifies that an item(s) was purchased by a user. Note: This is different from the in-app purchase event, which is reported automatically for Google Play-based apps.
  */
 export function logAddPaymentInfo(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: AddPaymentInfoEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -191,7 +194,7 @@ export function logAddPaymentInfo(
  * Sets or clears the screen name and class the user is currently viewing.
  */
 export function logScreenView(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: ScreenViewParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -202,7 +205,7 @@ export function logScreenView(
  * Add Payment Info event. This event signifies that a user has submitted their payment information to your app.
  */
 export function logAddShippingInfo(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: AddShippingInfoParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -213,7 +216,7 @@ export function logAddShippingInfo(
  * E-Commerce Add To Cart event.
  */
 export function logAddToCart(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: AddToCartEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -224,7 +227,7 @@ export function logAddToCart(
  * E-Commerce Add To Wishlist event. This event signifies that an item was added to a wishlist.
  */
 export function logAddToWishlist(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: AddToWishlistEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -234,7 +237,7 @@ export function logAddToWishlist(
 /**
  * App Open event. By logging this event when an App is moved to the foreground, developers can understand how often users leave and return during the course of a Session.
  */
-export function logAppOpen(analytics: FirebaseAnalyticsTypes.Module): Promise<void> {
+export function logAppOpen(analytics: FirebaseAnalyticsModule): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logAppOpen();
 }
@@ -243,7 +246,7 @@ export function logAppOpen(analytics: FirebaseAnalyticsTypes.Module): Promise<vo
  * E-Commerce Begin Checkout event. This event signifies that a user has begun the process of checking out.
  */
 export function logBeginCheckout(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: BeginCheckoutEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -254,7 +257,7 @@ export function logBeginCheckout(
  * Log this event to supply the referral details of a re-engagement campaign.
  */
 export function logCampaignDetails(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: CampaignDetailsEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -265,7 +268,7 @@ export function logCampaignDetails(
  * Earn Virtual Currency event. This event tracks the awarding of virtual currency in your app.
  */
 export function logEarnVirtualCurrency(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: EarnVirtualCurrencyEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -276,7 +279,7 @@ export function logEarnVirtualCurrency(
  * Generate Lead event. Log this event when a lead has been generated in the app.
  */
 export function logGenerateLead(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: GenerateLeadEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -287,7 +290,7 @@ export function logGenerateLead(
  * Join Group event. Log this event when a user joins a group such as a guild, team or family.
  */
 export function logJoinGroup(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: JoinGroupEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -298,7 +301,7 @@ export function logJoinGroup(
  * Level End event.
  */
 export function logLevelEnd(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: LevelEndEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -309,7 +312,7 @@ export function logLevelEnd(
  * Level Start event.
  */
 export function logLevelStart(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: LevelStartEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -320,7 +323,7 @@ export function logLevelStart(
  * Level Up event. This event signifies that a player has leveled up in your gaming app.
  */
 export function logLevelUp(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: LevelUpEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -331,7 +334,7 @@ export function logLevelUp(
  * Login event. Apps with a login feature can report this event to signify that a user has logged in.
  */
 export function logLogin(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: LoginEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -342,7 +345,7 @@ export function logLogin(
  * Post Score event. Log this event when the user posts a score in your gaming app.
  */
 export function logPostScore(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: PostScoreEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -356,7 +359,7 @@ export function logPostScore(
  * @returns {Promise<void>}
  */
 export function logSelectContent(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: SelectContentEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -370,7 +373,7 @@ export function logSelectContent(
  * @returns {Promise<void>}
  */
 export function logPurchase(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: PurchaseEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -384,7 +387,7 @@ export function logPurchase(
  * @returns {Promise<void>}
  */
 export function logRefund(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: RefundEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -398,7 +401,7 @@ export function logRefund(
  * @returns {Promise<void>}
  */
 export function logRemoveFromCart(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: RemoveFromCartEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -412,7 +415,7 @@ export function logRemoveFromCart(
  * @returns {Promise<void>}
  */
 export function logSearch(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: SearchEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -426,7 +429,7 @@ export function logSearch(
  * @returns {Promise<void>}
  */
 export function logSelectItem(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: SelectItemEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -440,7 +443,7 @@ export function logSelectItem(
  * @returns {Promise<void>}
  */
 export function logSetCheckoutOption(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: SetCheckoutOptionEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -454,7 +457,7 @@ export function logSetCheckoutOption(
  * @returns {Promise<void>}
  */
 export function logSelectPromotion(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: SelectPromotionEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -468,7 +471,7 @@ export function logSelectPromotion(
  * @returns {Promise<void>}
  */
 export function logShare(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: ShareEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -482,7 +485,7 @@ export function logShare(
  * @returns {Promise<void>}
  */
 export function logSignUp(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: SignUpEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -496,7 +499,7 @@ export function logSignUp(
  * @returns {Promise<void>}
  */
 export function logSpendVirtualCurrency(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: SpendVirtualCurrencyEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -508,7 +511,7 @@ export function logSpendVirtualCurrency(
  * @param {FirebaseAnalytics} analytics - Analytics instance.
  * @returns {Promise<void>}
  */
-export function logTutorialBegin(analytics: FirebaseAnalyticsTypes.Module): Promise<void> {
+export function logTutorialBegin(analytics: FirebaseAnalyticsModule): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logTutorialBegin();
 }
@@ -518,7 +521,7 @@ export function logTutorialBegin(analytics: FirebaseAnalyticsTypes.Module): Prom
  * @param {FirebaseAnalytics} analytics - Analytics instance.
  * @returns {Promise<void>}
  */
-export function logTutorialComplete(analytics: FirebaseAnalyticsTypes.Module): Promise<void> {
+export function logTutorialComplete(analytics: FirebaseAnalyticsModule): Promise<void> {
   // This is deprecated for both namespaced and modular.
   return analytics.logTutorialComplete();
 }
@@ -530,7 +533,7 @@ export function logTutorialComplete(analytics: FirebaseAnalyticsTypes.Module): P
  * @returns {Promise<void>}
  */
 export function logUnlockAchievement(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: UnlockAchievementEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -544,7 +547,7 @@ export function logUnlockAchievement(
  * @returns {Promise<void>}
  */
 export function logViewCart(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: ViewCartEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -558,7 +561,7 @@ export function logViewCart(
  * @returns {Promise<void>}
  */
 export function logViewItem(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: ViewItemEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -572,7 +575,7 @@ export function logViewItem(
  * @returns {Promise<void>}
  */
 export function logViewItemList(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: ViewItemListEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -586,7 +589,7 @@ export function logViewItemList(
  * @returns {Promise<void>}
  */
 export function logViewPromotion(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: ViewPromotionEventParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -600,7 +603,7 @@ export function logViewPromotion(
  * @returns {Promise<void>}
  */
 export function logViewSearchResults(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: ViewSearchResultsParameters,
 ): Promise<void> {
   // This is deprecated for both namespaced and modular.
@@ -614,7 +617,7 @@ export function logViewSearchResults(
  * @returns {Promise<void>}
  */
 export function setDefaultEventParameters(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   params: { [key: string]: any } = {},
 ): Promise<void> {
   // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
@@ -629,7 +632,7 @@ export function setDefaultEventParameters(
  * @returns {Promise<void>}
  */
 export function initiateOnDeviceConversionMeasurementWithEmailAddress(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   emailAddress: string,
 ): Promise<void> {
   return analytics.initiateOnDeviceConversionMeasurementWithEmailAddress.call(
@@ -650,7 +653,7 @@ export function initiateOnDeviceConversionMeasurementWithEmailAddress(
  * @link https://firebase.google.com/docs/tutorials/ads-ios-on-device-measurement/step-3#use-hashed-credentials
  */
 export function initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   hashedEmailAddress: string,
 ): Promise<void> {
   return analytics.initiateOnDeviceConversionMeasurementWithHashedEmailAddress.call(
@@ -669,7 +672,7 @@ export function initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
  * @returns {Promise<void>}
  */
 export function initiateOnDeviceConversionMeasurementWithPhoneNumber(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   phoneNumber: string,
 ): Promise<void> {
   return analytics.initiateOnDeviceConversionMeasurementWithPhoneNumber.call(
@@ -690,7 +693,7 @@ export function initiateOnDeviceConversionMeasurementWithPhoneNumber(
  * @link https://firebase.google.com/docs/tutorials/ads-ios-on-device-measurement/step-3#use-hashed-credentials
  */
 export function initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   hashedPhoneNumber: string,
 ): Promise<void> {
   return analytics.initiateOnDeviceConversionMeasurementWithHashedPhoneNumber.call(
@@ -720,7 +723,7 @@ export function isSupported(): Promise<boolean> {
  * @returns {Promise<void>}
  */
 export function setConsent(
-  analytics: FirebaseAnalyticsTypes.Module,
+  analytics: FirebaseAnalyticsModule,
   consentSettings: ConsentSettings,
 ): Promise<void> {
   // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
