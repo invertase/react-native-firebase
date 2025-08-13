@@ -10,7 +10,8 @@
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
     "compile": "bob build",
-    "prepare": "yarn run build && yarn compile"
+    "prepare": "yarn run build && yarn compile",
+    "tsc": "../../node_modules/.bin/tsc"
   },
   "repository": {
     "type": "git",
@@ -73,7 +74,12 @@
           "esm": true
         }
       ],
-      "typescript"
+      [
+        "typescript",
+        {
+          "tsc": "../../node_modules/.bin/tsc"
+        }
+      ]
     ]
   },
   "eslintIgnore": [
