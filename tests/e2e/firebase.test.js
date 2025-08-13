@@ -38,8 +38,9 @@ describe('Jet Tests', function () {
       jetProcess.on('close', code => {
         if (code === 0) {
           resolve();
+        } else {
+          reject(new Error(`Jet tests failed!`));
         }
-        reject(new Error(`Jet tests failed!`));
       });
       await device.launchApp({
         newInstance: true,
