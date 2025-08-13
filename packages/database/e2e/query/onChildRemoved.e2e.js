@@ -28,14 +28,14 @@ describe('onChildRemoved', function () {
     await wipe(TEST_PATH);
   });
 
-  // FIXME super flaky on jet
-  xit('should stop listening if ListeningOptions.onlyOnce is true', async function () {
+  it('should stop listening if ListeningOptions.onlyOnce is true', async function () {
     if (Platform.ios) {
       this.skip();
     }
 
     const { getDatabase, ref, child, set, remove, onChildRemoved } = databaseModular;
-    const dbRef = ref(getDatabase(), `${TEST_PATH}/childRemoved`);
+    const date = Date.now();
+    const dbRef = ref(getDatabase(), `${TEST_PATH}/childRemoved/${date}`);
     const childRef = child(dbRef, 'removeme');
     await set(childRef, 'foo');
 
@@ -48,20 +48,23 @@ describe('onChildRemoved', function () {
       },
       { onlyOnce: true },
     );
+    await Utils.sleep(100);
 
     await remove(childRef);
     await Utils.spyToBeCalledTimesAsync(callback, 1);
     callback.should.be.calledWith('foo');
   });
 
-  // FIXME super flaky on jet
-  xit('subscribe to child removed events', async function () {
+  it('subscribe to child removed events', async function () {
+    if (Platform.ios) {
+      this.skip();
+    }
     const { getDatabase, ref, child, set, remove, onChildRemoved } = databaseModular;
 
     const successCallback = sinon.spy();
     const cancelCallback = sinon.spy();
-
-    const dbRef = ref(getDatabase(), `${TEST_PATH}/childRemoved2`);
+    const date = Date.now();
+    const dbRef = ref(getDatabase(), `${TEST_PATH}/childRemoved2/${date}`);
     const childRef = child(dbRef, 'removeme');
     await set(childRef, 'foo');
 
@@ -75,6 +78,7 @@ describe('onChildRemoved', function () {
       },
     );
 
+    await Utils.sleep(100);
     await remove(childRef);
     await Utils.spyToBeCalledOnceAsync(successCallback, 10000);
     unsubscribe();
