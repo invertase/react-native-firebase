@@ -857,6 +857,15 @@ export const SDK_VERSION: string = version;
 
 // import analytics from '@react-native-firebase/analytics';
 // analytics().logEvent(...);
+
+// import analytics, { firebase } from '@react-native-firebase/analytics';
+// analytics().logEvent(...);
+// firebase.analytics().logEvent(...);
+export declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
+  FirebaseAnalyticsModule,
+  Statics
+>;
+
 export default createModuleNamespace({
   statics,
   version,
@@ -870,14 +879,6 @@ export default createModuleNamespace({
 
 // Register the interop module for non-native platforms.
 setReactNativeModule(nativeModuleName, RNFBAnalyticsModule);
-
-// import analytics, { firebase } from '@react-native-firebase/analytics';
-// analytics().logEvent(...);
-// firebase.analytics().logEvent(...);
-export declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
-  FirebaseAnalyticsModule,
-  Statics
->;
 
 export const firebase: FirebaseAnalyticsModule & {
   analytics: typeof defaultExport;
