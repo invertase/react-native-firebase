@@ -139,42 +139,41 @@ describe('database().ref().once()', function () {
     callback.should.be.calledWith(value);
   });
 
-  // FIXME not working on ios locally against emulator
-  // FIXME too flaky against android
-  xit('resolves when a child is changed', async function () {
+  it('resolves when a child is changed', async function () {
     const callbackAdd = sinon.spy();
     const callbackChange = sinon.spy();
-    const ref = firebase.database().ref(`${TEST_PATH}/childChanged`);
+    const date = Date.now();
+    const ref = firebase.database().ref(`${TEST_PATH}/childChanged/${date}`);
 
     ref.once('child_added').then($ => callbackAdd($.val()));
+    await Utils.sleep(100);
     await ref.child('foo').set(1);
     await Utils.spyToBeCalledOnceAsync(callbackAdd, 10000);
     ref.once('child_changed').then($ => callbackChange($.val()));
+    await Utils.sleep(100);
     await ref.child('foo').set(2);
     await Utils.spyToBeCalledOnceAsync(callbackChange, 10000);
     callbackChange.should.be.calledWith(2);
   });
 
-  // FIXME too flaky against android in CI
-  xit('resolves when a child is removed', async function () {
-    if (Platform.ios || Platform.other) {
-      const callbackAdd = sinon.spy();
-      const callbackRemove = sinon.spy();
-      const ref = firebase.database().ref(`${TEST_PATH}/childRemoved`);
-      ref.once('child_added').then($ => callbackAdd($.val()));
-      const child = ref.child('removeme');
-      await child.set('foo');
-      await Utils.spyToBeCalledOnceAsync(callbackAdd, 10000);
-      ref
-        .once('child_removed')
-        .then($ => callbackRemove($.val()))
-        .catch(e => callback(e));
-      await child.remove();
-      await Utils.spyToBeCalledOnceAsync(callbackRemove, 10000);
-      callbackRemove.should.be.calledWith('foo');
-    } else {
-      this.skip();
-    }
+  it('resolves when a child is removed', async function () {
+    const callbackAdd = sinon.spy();
+    const callbackRemove = sinon.spy();
+    const date = Date.now();
+    const ref = firebase.database().ref(`${TEST_PATH}/childRemoved/${date}`);
+    ref.once('child_added').then($ => callbackAdd($.val()));
+    await Utils.sleep(100);
+    const child = ref.child('removeme');
+    await child.set('foo');
+    await Utils.spyToBeCalledOnceAsync(callbackAdd, 10000);
+    ref
+      .once('child_removed')
+      .then($ => callbackRemove($.val()))
+      .catch(e => callback(e));
+    await Utils.sleep(100);
+    await child.remove();
+    await Utils.spyToBeCalledOnceAsync(callbackRemove, 10000);
+    callbackRemove.should.be.calledWith('foo');
   });
 
   // https://github.com/firebase/firebase-js-sdk/blob/6b53e0058483c9002d2fe56119f86fc9fb96b56c/packages/database/test/order_by.test.ts#L104
