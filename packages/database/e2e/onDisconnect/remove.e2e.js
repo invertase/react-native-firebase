@@ -49,7 +49,11 @@ describe('database().ref().onDisconnect().remove()', function () {
       }
     });
 
-    xit('removes a node whilst offline', async function () {
+    it('removes a node whilst offline', async function () {
+      if (Platform.android) {
+        // offline / online behavior does not work in android + firebase emulator
+        this.skip();
+      }
       const ref = firebase.database().ref(TEST_PATH).child('removeMe');
       await ref.set('foobar');
       await ref.onDisconnect().remove();
@@ -98,7 +102,11 @@ describe('database().ref().onDisconnect().remove()', function () {
       }
     });
 
-    xit('removes a node whilst offline', async function () {
+    it('removes a node whilst offline', async function () {
+      if (Platform.android) {
+        // offline / online behavior does not work in android + firebase emulator
+        this.skip();
+      }
       const { getDatabase, ref, child, onDisconnect, goOffline, goOnline, get } = databaseModular;
       const db = getDatabase();
       const dbRef = ref(db, TEST_PATH);
