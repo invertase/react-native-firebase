@@ -121,8 +121,6 @@ const namespace = 'analytics';
 const nativeModuleName = 'RNFBAnalyticsModule';
 
 class FirebaseAnalyticsModule extends FirebaseModule {
-  // Explicitly declare native property from parent class
-  declare native: any;
   logEvent(
     name: string,
     params: { [key: string]: any } = {},
