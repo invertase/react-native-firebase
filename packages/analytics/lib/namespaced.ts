@@ -866,7 +866,7 @@ export declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatic
   Statics
 >;
 
-export default createModuleNamespace({
+const module = createModuleNamespace({
   statics,
   version,
   namespace,
@@ -875,7 +875,9 @@ export default createModuleNamespace({
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseAnalyticsModule,
-});
+}) as typeof defaultExport;
+
+export default module;
 
 // Register the interop module for non-native platforms.
 setReactNativeModule(nativeModuleName, RNFBAnalyticsModule);
