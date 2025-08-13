@@ -15,6 +15,7 @@
  *
  */
 
+import { createDeprecationProxy } from '@react-native-firebase/app/lib/common';
 // To avoid React Native require cycle warnings
 let DatabaseReference = null;
 export function provideReferenceClass(databaseReference) {
@@ -23,7 +24,7 @@ export function provideReferenceClass(databaseReference) {
 
 export default class DatabaseThenableReference {
   constructor(database, path, promise) {
-    this._ref = new DatabaseReference(database, path);
+    this._ref = createDeprecationProxy(new DatabaseReference(database, path));
     this._promise = promise;
 
     return new Proxy(this, {
