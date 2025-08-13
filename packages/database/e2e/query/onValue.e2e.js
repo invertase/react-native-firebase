@@ -114,22 +114,26 @@ describe('onValue()', function () {
     callback2.should.be.calledOnce();
   });
 
-  xit('should callback multiple times when the value changes', async function () {
+  it('should callback multiple times when the value changes', async function () {
     const { getDatabase, ref, set, onValue } = databaseModular;
-    const dbRef = ref(getDatabase(), `${TEST_PATH}/init`);
+    const date = Date.now();
+    const dbRef = ref(getDatabase(), `${TEST_PATH}/multi-change/${date}`);
 
     const callback = sinon.spy();
     const unsubscribe = onValue(dbRef, $ => {
       callback($.val());
     });
 
+    // onValue *should* be async, it uses bridge to add native listener
+    // That would be a breaking API change so wait for initial callback
+    await Utils.spyToBeCalledOnceAsync(callback, 1000);
+    callback.should.be.calledWith(null); // initial callback pre-set
     await set(dbRef, 'foo');
     await set(dbRef, 'bar');
-    await Utils.spyToBeCalledTimesAsync(callback, 2);
+    await Utils.spyToBeCalledTimesAsync(callback, 3);
     unsubscribe();
-
-    callback.getCall(0).args[0].should.equal('foo'); // FIXME these simply do *not* come back
-    callback.getCall(1).args[0].should.equal('bar'); // in the right order every time. ??
+    callback.getCall(1).args[0].should.equal('foo');
+    callback.getCall(2).args[0].should.equal('bar');
   });
 
   it('should cancel when something goes wrong', async function () {
