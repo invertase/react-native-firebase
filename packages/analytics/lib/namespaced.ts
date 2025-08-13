@@ -852,6 +852,9 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 }
 
+// Export the FirebaseAnalyticsModule class for use in modular types 
+export { FirebaseAnalyticsModule };
+
 // import { SDK_VERSION } from '@react-native-firebase/analytics';
 export const SDK_VERSION: string = version;
 
