@@ -63,7 +63,7 @@ class AnalyticsApi implements IAnalyticsApi {
   private debug: boolean;
   private currentScreen: string | null;
   private sessionId?: number;
-  private cid?: string;
+  private cid?: string | null;
 
   constructor(appName: string, measurementId: string) {
     this.appName = appName;
@@ -151,7 +151,11 @@ class AnalyticsApi implements IAnalyticsApi {
   }
 
   private async _getInstallationId(): Promise<void> {
-    (navigator as any).onLine = true;
+    // @ts-ignore
+    if (navigator !== null) {
+      // @ts-ignore
+      (navigator as any).onLine = true;
+    }
     makeIDBAvailable();
     const app = getApp(this.appName);
     const installations = getInstallations(app);
