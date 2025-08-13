@@ -79,18 +79,6 @@ import {
   ViewSearchResultsParameters,
 } from '../types/analytics';
 
-export declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
-  FirebaseAnalyticsModule,
-  Statics
->;
-
-// export declare firebase: FirebaseAnalyticsModule & {
-//   analytics: typeof defaultExport;
-//   app(
-//     name?: string,
-//   ): ReactNativeFirebase.FirebaseApp & { analytics(): FirebaseAnalyticsTypes.Module };
-// };
-
 const ReservedEventNames: readonly string[] = [
   'ad_activeview',
   'ad_click',
@@ -880,10 +868,18 @@ export default createModuleNamespace({
   ModuleClass: FirebaseAnalyticsModule,
 });
 
+// Register the interop module for non-native platforms.
+setReactNativeModule(nativeModuleName, RNFBAnalyticsModule);
+
 // import analytics, { firebase } from '@react-native-firebase/analytics';
 // analytics().logEvent(...);
 // firebase.analytics().logEvent(...);
-export const firebase = getFirebaseRoot();
+export declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
+  FirebaseAnalyticsModule,
+  Statics
+>;
 
-// Register the interop module for non-native platforms.
-setReactNativeModule(nativeModuleName, RNFBAnalyticsModule);
+export const firebase: FirebaseAnalyticsModule & {
+  analytics: typeof defaultExport;
+  app(name?: string): ReactNativeFirebase.FirebaseApp & { analytics(): FirebaseAnalyticsModule };
+} = getFirebaseRoot();
