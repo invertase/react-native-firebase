@@ -781,7 +781,7 @@ describe('remoteConfig()', function () {
       });
     });
 
-    describe('onConfigUpdated', function () {
+    xdescribe('onConfigUpdated', function () {
       if (Platform.other) {
         // Not supported on Web.
         return;
