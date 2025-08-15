@@ -6793,9 +6793,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wix-pilot/core@npm:^3.2.2":
-  version: 3.2.6
-  resolution: "@wix-pilot/core@npm:3.2.6"
+"@wix-pilot/core@npm:^3.4.1":
+  version: 3.4.1
+  resolution: "@wix-pilot/core@npm:3.4.1"
   dependencies:
     chalk: "npm:^4.1.0"
     pngjs: "npm:^7.0.0"
@@ -6805,18 +6805,18 @@ __metadata:
   peerDependenciesMeta:
     expect:
       optional: true
-  checksum: 10/4ac5a3affd87ba332830d897ac04c8bfe2c93ac826e2797c02bd0ec3b0131737a18aa5924ede5d54ae5e3d24795ed75c9dff87bd39262a01e12d73397301a594
+  checksum: 10/02e1fd97fe0ad36b68e61b3a0f08d68858dc11e6a076bf6528850445f7c10c1da72b89ea7f4c7c5bb138fa30e2bffade27eaa8531275691554502f5cf2ed8b87
   languageName: node
   linkType: hard
 
-"@wix-pilot/detox@npm:^1.0.11":
-  version: 1.0.11
-  resolution: "@wix-pilot/detox@npm:1.0.11"
+"@wix-pilot/detox@npm:^1.0.13":
+  version: 1.0.13
+  resolution: "@wix-pilot/detox@npm:1.0.13"
   peerDependencies:
-    "@wix-pilot/core": ^3.1.6
+    "@wix-pilot/core": ^3.4.1
     detox: ">=20.33.0"
     expect: 29.x.x || 28.x.x || ^27.2.5
-  checksum: 10/ca8707e666ae17e04a0740742b454ea9642419f1d941fadcf3dd33dd833f4ffa9473b91d5a5a0b123458d9b6cadd2df5ed514b62e456bb07c7760968d0b0107a
+  checksum: 10/5d9599e0236c55e308fe8f625790ecdfde20d8a84a92ccd252ea9d2972a818c2a2c368cb08d443d9d6b7dfd699f6a9549a165871bc548bb52afbb0538ed7ffc5
   languageName: node
   linkType: hard
 
@@ -10006,12 +10006,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"detox@npm:20.37.0":
-  version: 20.37.0
-  resolution: "detox@npm:20.37.0"
+"detox@npm:20.40.2":
+  version: 20.40.2
+  resolution: "detox@npm:20.40.2"
   dependencies:
-    "@wix-pilot/core": "npm:^3.2.2"
-    "@wix-pilot/detox": "npm:^1.0.11"
+    "@wix-pilot/core": "npm:^3.4.1"
+    "@wix-pilot/detox": "npm:^1.0.13"
     ajv: "npm:^8.6.3"
     bunyan: "npm:^1.8.12"
     bunyan-debug-stream: "npm:^3.1.0"
@@ -10023,7 +10023,7 @@ __metadata:
     funpermaproxy: "npm:^1.1.0"
     glob: "npm:^8.0.3"
     ini: "npm:^1.3.4"
-    jest-environment-emit: "npm:^1.0.8"
+    jest-environment-emit: "npm:^1.2.0"
     json-cycle: "npm:^1.3.0"
     lodash: "npm:^4.17.11"
     multi-sort-stream: "npm:^1.0.3"
@@ -10040,7 +10040,7 @@ __metadata:
     stream-json: "npm:^1.7.4"
     strip-ansi: "npm:^6.0.1"
     telnet-client: "npm:1.2.8"
-    tempfile: "npm:^2.0.0"
+    tmp: "npm:^0.2.1"
     trace-event-lib: "npm:^1.3.1"
     which: "npm:^1.3.1"
     ws: "npm:^7.0.0"
@@ -10048,13 +10048,13 @@ __metadata:
     yargs-parser: "npm:^21.0.0"
     yargs-unparser: "npm:^2.0.0"
   peerDependencies:
-    jest: 29.x.x || 28.x.x || ^27.2.5
+    jest: 30.x.x || 29.x.x || 28.x.x || ^27.2.5
   peerDependenciesMeta:
     jest:
       optional: true
   bin:
     detox: local-cli/cli.js
-  checksum: 10/7fc52400c9ea7a771f595de2a4ea24e07d5e5da28c3b86453bfec22e65e026e6af2f18e9776f5d09113320dd3fefb8b81de09cb2f09f4a6661ee2cb6863cf1b1
+  checksum: 10/9e4b2accfe535c7effe2be0990cae11ee2c4b4ab6bf32a33311fe9b11abeae3a543aabea92e8f16c3e0cedaf98bcdd3d37444cb94ff4571ca2240e414f55e417
   languageName: node
   linkType: hard
 
@@ -14464,9 +14464,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-environment-emit@npm:^1.0.8":
-  version: 1.0.8
-  resolution: "jest-environment-emit@npm:1.0.8"
+"jest-environment-emit@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "jest-environment-emit@npm:1.2.0"
   dependencies:
     bunyamin: "npm:^1.5.2"
     bunyan: "npm:^2.0.5"
@@ -14493,7 +14493,7 @@ __metadata:
       optional: true
     jest-environment-node:
       optional: true
-  checksum: 10/db9545ddb7b85db9412b15054a3d01b90d000d7f229e19d63253c60817b6c818bee376d862ce77278866885fa6ffed009ac9eee5979e33b31eb4e10d1e29cc7c
+  checksum: 10/30fe8dc39289be4bcc821610b16e681a562954dd6197b99cea8b338b1c9af3663f0345246960d1fea6d4385889466ca8122e3e468374ba162f85a13c08798764
   languageName: node
   linkType: hard
 
@@ -20232,7 +20232,7 @@ __metadata:
     assert: "npm:^2.1.0"
     axios: "npm:^1.8.4"
     cpy-cli: "npm:^5.0.0"
-    detox: "npm:20.37.0"
+    detox: "npm:20.40.2"
     firebase: "npm:^11.3.1"
     firebase-tools: "npm:^14.9.0"
     jest-circus: "npm:^29.7.0"
@@ -22952,7 +22952,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"temp-dir@npm:1.0.0, temp-dir@npm:^1.0.0":
+"temp-dir@npm:1.0.0":
   version: 1.0.0
   resolution: "temp-dir@npm:1.0.0"
   checksum: 10/cb2b58ddfb12efa83e939091386ad73b425c9a8487ea0095fe4653192a40d49184a771a1beba99045fbd011e389fd563122d79f54f82be86a55620667e08a6b2
@@ -22979,16 +22979,6 @@ __metadata:
   dependencies:
     rimraf: "npm:~2.6.2"
   checksum: 10/0a7f76b49637415bc391c3f6e69377cc4c38afac95132b4158fa711e77b70b082fe56fd886f9d11ffab9d148df181a105a93c8b618fb72266eeaa5e5ddbfe37f
-  languageName: node
-  linkType: hard
-
-"tempfile@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "tempfile@npm:2.0.0"
-  dependencies:
-    temp-dir: "npm:^1.0.0"
-    uuid: "npm:^3.0.1"
-  checksum: 10/9c8ab891c2af333fdc45404812dbcd71023e220dc90842c54042aafd9830e26ee2c7f4f85f949289f79b5a4b0f8049b01d5989383782d59f0a1713d344a16976
   languageName: node
   linkType: hard
 
@@ -23141,6 +23131,13 @@ __metadata:
   dependencies:
     os-tmpdir: "npm:~1.0.2"
   checksum: 10/09c0abfd165cff29b32be42bc35e80b8c64727d97dedde6550022e88fa9fd39a084660415ed8e3ebaa2aca1ee142f86df8b31d4196d4f81c774a3a20fd4b6abf
+  languageName: node
+  linkType: hard
+
+"tmp@npm:^0.2.1":
+  version: 0.2.5
+  resolution: "tmp@npm:0.2.5"
+  checksum: 10/dd4b78b32385eab4899d3ae296007b34482b035b6d73e1201c4a9aede40860e90997a1452c65a2d21aee73d53e93cd167d741c3db4015d90e63b6d568a93d7ec
   languageName: node
   linkType: hard
 
@@ -24122,15 +24119,6 @@ __metadata:
   bin:
     uuid: dist/bin/uuid
   checksum: 10/35aa60614811a201ff90f8ca5e9ecb7076a75c3821e17f0f5ff72d44e36c2d35fcbc2ceee9c4ac7317f4cc41895da30e74f3885e30313bee48fda6338f250538
-  languageName: node
-  linkType: hard
-
-"uuid@npm:^3.0.1":
-  version: 3.4.0
-  resolution: "uuid@npm:3.4.0"
-  bin:
-    uuid: ./bin/uuid
-  checksum: 10/4f2b86432b04cc7c73a0dd1bcf11f1fc18349d65d2e4e32dd0fc658909329a1e0cc9244aa93f34c0cccfdd5ae1af60a149251a5f420ec3ac4223a3dab198fb2e
   languageName: node
   linkType: hard
 
