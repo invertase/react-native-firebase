@@ -639,6 +639,7 @@ describe('storage() -> StorageTask', function () {
           );
           await promise;
         });
+
         it('successfully pauses and resumes a download', async function () {
           const ref = firebase.storage().ref(Platform.ios ? '/1mbTestFile.gif' : '/cat.gif');
           const { resolve, reject, promise } = Promise.defer();
