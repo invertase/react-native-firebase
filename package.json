@@ -83,7 +83,7 @@
     "eslint-plugin-mocha": "^10.5.0",
     "eslint-plugin-prettier": "^5.2.6",
     "eslint-plugin-react": "^7.37.5",
-    "firebase": "^11.3.1",
+    "firebase": "^12.1.0",
     "firebase-tools": "^14.12.1",
     "genversion": "^3.2.0",
     "google-java-format": "^2.0.1",
