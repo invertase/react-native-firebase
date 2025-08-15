@@ -74,7 +74,7 @@ describe('Google AI Mappers', () => {
         ],
       };
 
-      expect(() => mapGenerateContentRequest(request)).toThrowError(
+      expect(() => mapGenerateContentRequest(request)).toThrow(
         expect.objectContaining({
           code: AIErrorCode.UNSUPPORTED,
           message:
@@ -301,7 +301,7 @@ describe('Google AI Mappers', () => {
           },
         },
       ];
-      expect(() => mapGenerateContentCandidates(candidates)).toThrowError(
+      expect(() => mapGenerateContentCandidates(candidates)).toThrow(
         expect.objectContaining({
           code: AIErrorCode.UNSUPPORTED,
           message:
