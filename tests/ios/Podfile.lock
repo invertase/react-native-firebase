@@ -1780,7 +1780,7 @@ PODS:
     - React-perflogger (= 0.78.2)
     - React-utils (= 0.78.2)
   - RecaptchaInterop (101.0.0)
-  - RNCAsyncStorage (2.1.2):
+  - RNCAsyncStorage (2.2.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2293,7 +2293,7 @@ SPEC CHECKSUMS:
   ReactCodegen: 31f8d982d351eb4dbf3af220f363c7398ae667c8
   ReactCommon: 0adf8f24a3415b6815613bad362d390726b33fc7
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
-  RNCAsyncStorage: 5321442ed26760d7581b26effab82399ea5ff18b
+  RNCAsyncStorage: 6a8127b6987dc9fbce778669b252b14c8355c7ce
   RNDeviceInfo: d863506092aef7e7af3a1c350c913d867d795047
   RNFBAnalytics: 06df9212670ba64dbee22f2d204c1cd5d2cbabba
   RNFBApp: 801ac9162b2a7f518bcd7057c37db8b6d7ac77d7
