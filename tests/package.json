@@ -37,23 +37,23 @@
     "util": "^0.12.5"
   },
   "devDependencies": {
-    "@firebase/rules-unit-testing": "^4.0.1",
+    "@firebase/rules-unit-testing": "^5.0.0",
     "@react-native/babel-preset": "^0.78.2",
     "@react-native/metro-config": "^0.78.2",
     "assert": "^2.1.0",
     "axios": "^1.11.0",
-    "cpy-cli": "^5.0.0",
+    "cpy-cli": "^6.0.0",
     "detox": "20.40.2",
     "firebase": "^12.1.0",
     "firebase-tools": "^14.12.1",
-    "jest-circus": "^29.7.0",
-    "jest-environment-node": "^29.7.0",
+    "jest-circus": "^30.0.5",
+    "jest-environment-node": "^30.0.5",
     "jet": "0.9.0-dev.13",
     "mocha": "^11.7.1",
     "nyc": "^17.1.0",
     "patch-package": "^8.0.0",
     "should": "^13.2.3",
     "should-sinon": "0.0.6",
-    "sinon": "20.0.0"
+    "sinon": "21.0.0"
   }
 }

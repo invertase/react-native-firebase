@@ -61,7 +61,7 @@
   },
   "devDependencies": {
     "@react-native-async-storage/async-storage": "^2.2.0",
-    "expo": "^52.0.47"
+    "expo": "^53.0.20"
   },
   "peerDependenciesMeta": {
     "expo": {
