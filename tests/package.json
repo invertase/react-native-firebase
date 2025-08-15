@@ -44,7 +44,7 @@
     "axios": "^1.8.4",
     "cpy-cli": "^5.0.0",
     "detox": "20.40.2",
-    "firebase": "^11.3.1",
+    "firebase": "^12.1.0",
     "firebase-tools": "^14.12.1",
     "jest-circus": "^29.7.0",
     "jest-environment-node": "^29.7.0",
