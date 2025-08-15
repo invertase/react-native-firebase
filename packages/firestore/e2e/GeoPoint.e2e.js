@@ -16,6 +16,7 @@
  */
 const COLLECTION = 'firestore';
 const { wipe } = require('./helpers');
+
 describe('firestore.GeoPoint', function () {
   before(function () {
     return wipe();
