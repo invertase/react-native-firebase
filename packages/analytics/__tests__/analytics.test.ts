@@ -95,7 +95,7 @@ describe('Analytics', function () {
       ].join('\r\n');
 
       // @ts-ignore test
-      expect(() => firebase.analytics(app)).toThrowError(expectedError);
+      expect(() => firebase.analytics(app)).toThrow(expectedError);
     });
 
     it('throws if analytics access from a non default app', function () {
@@ -107,7 +107,7 @@ describe('Analytics', function () {
         'Ensure you access analytics from the default application only.',
       ].join('\r\n');
 
-      expect(() => app.analytics()).toThrowError(expectedError);
+      expect(() => app.analytics()).toThrow(expectedError);
     });
 
     // TODO in app/registry/namespace.js - if (!hasCustomUrlOrRegionSupport)
@@ -124,35 +124,33 @@ describe('Analytics', function () {
 
     it('errors if milliseconds not a number', function () {
       // @ts-ignore test
-      expect(() => firebase.analytics().setSessionTimeoutDuration('123')).toThrowError(
+      expect(() => firebase.analytics().setSessionTimeoutDuration('123')).toThrow(
         "'milliseconds' expected a number value",
       );
     });
 
     it('throws if none string none null values', function () {
       // @ts-ignore test
-      expect(() => firebase.analytics().setUserId(123)).toThrowError(
-        "'id' expected a string value",
-      );
+      expect(() => firebase.analytics().setUserId(123)).toThrow("'id' expected a string value");
     });
 
     it('throws if name is not a string', function () {
       // @ts-ignore test
-      expect(() => firebase.analytics().setUserProperty(1337, 'invertase')).toThrowError(
+      expect(() => firebase.analytics().setUserProperty(1337, 'invertase')).toThrow(
         "'name' expected a string value",
       );
     });
 
     it('throws if value is invalid', function () {
       // @ts-ignore test
-      expect(() => firebase.analytics().setUserProperty('invertase3', 33.3333)).toThrowError(
+      expect(() => firebase.analytics().setUserProperty('invertase3', 33.3333)).toThrow(
         "'value' expected a string value",
       );
     });
 
     it('throws if properties is not an object', function () {
       // @ts-ignore test
-      expect(() => firebase.analytics().setUserProperties(1337)).toThrowError(
+      expect(() => firebase.analytics().setUserProperties(1337)).toThrow(
         "'properties' expected an object of key/value pairs",
       );
     });
@@ -165,21 +163,21 @@ describe('Analytics', function () {
         },
       };
       // @ts-ignore test
-      expect(() => firebase.analytics().setUserProperties(props)).toThrowError(
+      expect(() => firebase.analytics().setUserProperties(props)).toThrow(
         "'properties' value for parameter 'foo' is invalid",
       );
     });
 
     it('throws if value is a number', function () {
       // @ts-ignore test
-      expect(() => firebase.analytics().setUserProperties({ invertase1: 123 })).toThrowError(
+      expect(() => firebase.analytics().setUserProperties({ invertase1: 123 })).toThrow(
         "'properties' value for parameter 'invertase1' is invalid, expected a string.",
       );
     });
 
     it('throws if consentSettings is not an object', function () {
       // @ts-ignore test
-      expect(() => firebase.analytics().setConsent(1337)).toThrowError(
+      expect(() => firebase.analytics().setConsent(1337)).toThrow(
         'The supplied arg must be an object of key/values.',
       );
     });
@@ -192,21 +190,21 @@ describe('Analytics', function () {
         },
       };
       // @ts-ignore test
-      expect(() => firebase.analytics().setConsent(consentSettings)).toThrowError(
+      expect(() => firebase.analytics().setConsent(consentSettings)).toThrow(
         "'consentSettings' value for parameter 'foo' is invalid, expected a boolean.",
       );
     });
 
     it('throws if one value of consentSettings is a number', function () {
       // @ts-ignore test
-      expect(() => firebase.analytics().setConsent({ ad_storage: 123 })).toThrowError(
+      expect(() => firebase.analytics().setConsent({ ad_storage: 123 })).toThrow(
         "'consentSettings' value for parameter 'ad_storage' is invalid, expected a boolean.",
       );
     });
 
     it('errors when no parameters are set', function () {
       // @ts-ignore test
-      expect(() => firebase.analytics().logSearch()).toThrowError(
+      expect(() => firebase.analytics().logSearch()).toThrow(
         'The supplied arg must be an object of key/values',
       );
     });
@@ -214,26 +212,26 @@ describe('Analytics', function () {
     describe('logEvent()', function () {
       it('errors if name is not a string', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logEvent(123)).toThrowError(
+        expect(() => firebase.analytics().logEvent(123)).toThrow(
           "firebase.analytics().logEvent(*) 'name' expected a string value.",
         );
       });
 
       it('errors if params is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logEvent('invertase_event', 'foobar')).toThrowError(
+        expect(() => firebase.analytics().logEvent('invertase_event', 'foobar')).toThrow(
           "firebase.analytics().logEvent(_, *) 'params' expected an object value.",
         );
       });
 
       it('errors on using a reserved name', function () {
-        expect(() => firebase.analytics().logEvent('session_start')).toThrowError(
+        expect(() => firebase.analytics().logEvent('session_start')).toThrow(
           "firebase.analytics().logEvent(*) 'name' the event name 'session_start' is reserved and can not be used.",
         );
       });
 
       it('errors if name not alphanumeric', function () {
-        expect(() => firebase.analytics().logEvent('!@£$%^&*')).toThrowError(
+        expect(() => firebase.analytics().logEvent('!@£$%^&*')).toThrow(
           "firebase.analytics().logEvent(*) 'name' invalid event name '!@£$%^&*'. Names should contain 1 to 40 alphanumeric characters or underscores.",
         );
       });
@@ -241,7 +239,7 @@ describe('Analytics', function () {
       describe('logScreenView()', function () {
         it('errors if param is not an object', function () {
           // @ts-ignore test
-          expect(() => firebase.analytics().logScreenView(123)).toThrowError(
+          expect(() => firebase.analytics().logScreenView(123)).toThrow(
             'firebase.analytics().logScreenView(*):',
           );
         });
@@ -251,14 +249,14 @@ describe('Analytics', function () {
           expect(() =>
             // @ts-ignore test
             firebase.analytics().logScreenView({ screen_name: 123, foo: 'bar' }),
-          ).toThrowError('firebase.analytics().logScreenView(*):');
+          ).toThrow('firebase.analytics().logScreenView(*):');
         });
       });
 
       describe('logAddPaymentInfo()', function () {
         it('errors if param is not an object', function () {
           // @ts-ignore test
-          expect(() => firebase.analytics().logAddPaymentInfo(123)).toThrowError(
+          expect(() => firebase.analytics().logAddPaymentInfo(123)).toThrow(
             'firebase.analytics().logAddPaymentInfo(*):',
           );
         });
@@ -268,7 +266,7 @@ describe('Analytics', function () {
             firebase.analytics().logAddPaymentInfo({
               value: 123,
             }),
-          ).toThrowError('firebase.analytics().logAddPaymentInfo(*):');
+          ).toThrow('firebase.analytics().logAddPaymentInfo(*):');
         });
       });
     });
@@ -276,7 +274,7 @@ describe('Analytics', function () {
     describe('setDefaultEventParameters()', function () {
       it('errors if params is not a object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().setDefaultEventParameters('123')).toThrowError(
+        expect(() => firebase.analytics().setDefaultEventParameters('123')).toThrow(
           "firebase.analytics().setDefaultEventParameters(*) 'params' expected an object value when it is defined.",
         );
       });
@@ -285,7 +283,7 @@ describe('Analytics', function () {
     describe('logAddToCart()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logAddToCart(123)).toThrowError(
+        expect(() => firebase.analytics().logAddToCart(123)).toThrow(
           'firebase.analytics().logAddToCart(*):',
         );
       });
@@ -295,14 +293,14 @@ describe('Analytics', function () {
           firebase.analytics().logAddToCart({
             value: 123,
           }),
-        ).toThrowError('firebase.analytics().logAddToCart(*):');
+        ).toThrow('firebase.analytics().logAddToCart(*):');
       });
     });
 
     describe('logAddShippingInfo()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logAddShippingInfo(123)).toThrowError(
+        expect(() => firebase.analytics().logAddShippingInfo(123)).toThrow(
           'firebase.analytics().logAddShippingInfo(*):',
         );
       });
@@ -312,14 +310,14 @@ describe('Analytics', function () {
           firebase.analytics().logAddShippingInfo({
             value: 123,
           }),
-        ).toThrowError('firebase.analytics().logAddShippingInfo(*):');
+        ).toThrow('firebase.analytics().logAddShippingInfo(*):');
       });
     });
 
     describe('logAddToWishlist()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logAddToWishlist(123)).toThrowError(
+        expect(() => firebase.analytics().logAddToWishlist(123)).toThrow(
           'firebase.analytics().logAddToWishlist(*):',
         );
       });
@@ -329,7 +327,7 @@ describe('Analytics', function () {
           firebase.analytics().logAddToWishlist({
             value: 123,
           }),
-        ).toThrowError('firebase.analytics().logAddToWishlist(*):');
+        ).toThrow('firebase.analytics().logAddToWishlist(*):');
       });
 
       it('items accept arbitrary custom event parameters', function () {
@@ -342,7 +340,7 @@ describe('Analytics', function () {
     describe('logBeginCheckout()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logBeginCheckout(123)).toThrowError(
+        expect(() => firebase.analytics().logBeginCheckout(123)).toThrow(
           'firebase.analytics().logBeginCheckout(*):',
         );
       });
@@ -352,7 +350,7 @@ describe('Analytics', function () {
           firebase.analytics().logBeginCheckout({
             value: 123,
           }),
-        ).toThrowError('firebase.analytics().logBeginCheckout(*):');
+        ).toThrow('firebase.analytics().logBeginCheckout(*):');
       });
 
       it('accepts arbitrary custom event parameters', function () {
@@ -369,7 +367,7 @@ describe('Analytics', function () {
     describe('logGenerateLead()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logGenerateLead(123)).toThrowError(
+        expect(() => firebase.analytics().logGenerateLead(123)).toThrow(
           'firebase.analytics().logGenerateLead(*):',
         );
       });
@@ -379,14 +377,14 @@ describe('Analytics', function () {
           firebase.analytics().logGenerateLead({
             value: 123,
           }),
-        ).toThrowError('firebase.analytics().logGenerateLead(*):');
+        ).toThrow('firebase.analytics().logGenerateLead(*):');
       });
     });
 
     describe('logCampaignDetails()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logCampaignDetails(123)).toThrowError(
+        expect(() => firebase.analytics().logCampaignDetails(123)).toThrow(
           'firebase.analytics().logCampaignDetails(*):',
         );
       });
@@ -395,7 +393,7 @@ describe('Analytics', function () {
     describe('logEarnVirtualCurrency()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logEarnVirtualCurrency(123)).toThrowError(
+        expect(() => firebase.analytics().logEarnVirtualCurrency(123)).toThrow(
           'firebase.analytics().logEarnVirtualCurrency(*):',
         );
       });
@@ -404,7 +402,7 @@ describe('Analytics', function () {
     describe('logJoinGroup()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logJoinGroup(123)).toThrowError(
+        expect(() => firebase.analytics().logJoinGroup(123)).toThrow(
           'firebase.analytics().logJoinGroup(*):',
         );
       });
@@ -413,7 +411,7 @@ describe('Analytics', function () {
     describe('logLevelEnd()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logLevelEnd(123)).toThrowError(
+        expect(() => firebase.analytics().logLevelEnd(123)).toThrow(
           'firebase.analytics().logLevelEnd(*):',
         );
       });
@@ -422,7 +420,7 @@ describe('Analytics', function () {
     describe('logLevelStart()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logLevelStart(123)).toThrowError(
+        expect(() => firebase.analytics().logLevelStart(123)).toThrow(
           'firebase.analytics().logLevelStart(*):',
         );
       });
@@ -431,7 +429,7 @@ describe('Analytics', function () {
     describe('logLevelUp()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logLevelUp(123)).toThrowError(
+        expect(() => firebase.analytics().logLevelUp(123)).toThrow(
           'firebase.analytics().logLevelUp(*):',
         );
       });
@@ -440,7 +438,7 @@ describe('Analytics', function () {
     describe('logLogin()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logLogin(123)).toThrowError(
+        expect(() => firebase.analytics().logLogin(123)).toThrow(
           'firebase.analytics().logLogin(*):',
         );
       });
@@ -449,7 +447,7 @@ describe('Analytics', function () {
     describe('logPostScore()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logPostScore(123)).toThrowError(
+        expect(() => firebase.analytics().logPostScore(123)).toThrow(
           'firebase.analytics().logPostScore(*):',
         );
       });
@@ -458,7 +456,7 @@ describe('Analytics', function () {
     describe('logSelectContent()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logSelectContent(123)).toThrowError(
+        expect(() => firebase.analytics().logSelectContent(123)).toThrow(
           'firebase.analytics().logSelectContent(*):',
         );
       });
@@ -467,7 +465,7 @@ describe('Analytics', function () {
     describe('logSearch()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logSearch(123)).toThrowError(
+        expect(() => firebase.analytics().logSearch(123)).toThrow(
           'firebase.analytics().logSearch(*):',
         );
       });
@@ -476,7 +474,7 @@ describe('Analytics', function () {
     describe('logSelectItem()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logSelectItem(123)).toThrowError(
+        expect(() => firebase.analytics().logSelectItem(123)).toThrow(
           'firebase.analytics().logSelectItem(*):',
         );
       });
@@ -485,7 +483,7 @@ describe('Analytics', function () {
     describe('logSetCheckoutOption()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logSetCheckoutOption(123)).toThrowError(
+        expect(() => firebase.analytics().logSetCheckoutOption(123)).toThrow(
           'firebase.analytics().logSetCheckoutOption(*):',
         );
       });
@@ -494,7 +492,7 @@ describe('Analytics', function () {
     describe('logShare()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logShare(123)).toThrowError(
+        expect(() => firebase.analytics().logShare(123)).toThrow(
           'firebase.analytics().logShare(*):',
         );
       });
@@ -503,7 +501,7 @@ describe('Analytics', function () {
     describe('logSignUp()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logSignUp(123)).toThrowError(
+        expect(() => firebase.analytics().logSignUp(123)).toThrow(
           'firebase.analytics().logSignUp(*):',
         );
       });
@@ -512,7 +510,7 @@ describe('Analytics', function () {
     describe('logSelectPromotion()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logSelectPromotion(123)).toThrowError(
+        expect(() => firebase.analytics().logSelectPromotion(123)).toThrow(
           'firebase.analytics().logSelectPromotion(*):',
         );
       });
@@ -521,7 +519,7 @@ describe('Analytics', function () {
     describe('logSpendVirtualCurrency()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logSpendVirtualCurrency(123)).toThrowError(
+        expect(() => firebase.analytics().logSpendVirtualCurrency(123)).toThrow(
           'firebase.analytics().logSpendVirtualCurrency(*):',
         );
       });
@@ -530,7 +528,7 @@ describe('Analytics', function () {
     describe('logUnlockAchievement()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logUnlockAchievement(123)).toThrowError(
+        expect(() => firebase.analytics().logUnlockAchievement(123)).toThrow(
           'firebase.analytics().logUnlockAchievement(*):',
         );
       });
@@ -539,7 +537,7 @@ describe('Analytics', function () {
     describe('logPurchase()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logPurchase(123)).toThrowError(
+        expect(() => firebase.analytics().logPurchase(123)).toThrow(
           'firebase.analytics().logPurchase(*):',
         );
       });
@@ -549,7 +547,7 @@ describe('Analytics', function () {
           firebase.analytics().logPurchase({
             value: 123,
           }),
-        ).toThrowError('firebase.analytics().logPurchase(*):');
+        ).toThrow('firebase.analytics().logPurchase(*):');
       });
 
       it('accepts arbitrary custom event parameters', function () {
@@ -566,7 +564,7 @@ describe('Analytics', function () {
     describe('logRefund()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logRefund(123)).toThrowError(
+        expect(() => firebase.analytics().logRefund(123)).toThrow(
           'firebase.analytics().logRefund(*):',
         );
       });
@@ -576,14 +574,14 @@ describe('Analytics', function () {
           firebase.analytics().logRefund({
             value: 123,
           }),
-        ).toThrowError('firebase.analytics().logRefund(*):');
+        ).toThrow('firebase.analytics().logRefund(*):');
       });
     });
 
     describe('logViewCart()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logViewCart(123)).toThrowError(
+        expect(() => firebase.analytics().logViewCart(123)).toThrow(
           'firebase.analytics().logViewCart(*):',
         );
       });
@@ -593,14 +591,14 @@ describe('Analytics', function () {
           firebase.analytics().logViewCart({
             value: 123,
           }),
-        ).toThrowError('firebase.analytics().logViewCart(*):');
+        ).toThrow('firebase.analytics().logViewCart(*):');
       });
     });
 
     describe('logViewItem()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logViewItem(123)).toThrowError(
+        expect(() => firebase.analytics().logViewItem(123)).toThrow(
           'firebase.analytics().logViewItem(*):',
         );
       });
@@ -610,14 +608,14 @@ describe('Analytics', function () {
           firebase.analytics().logViewItem({
             value: 123,
           }),
-        ).toThrowError('firebase.analytics().logViewItem(*):');
+        ).toThrow('firebase.analytics().logViewItem(*):');
       });
     });
 
     describe('logViewItemList()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logViewItemList(123)).toThrowError(
+        expect(() => firebase.analytics().logViewItemList(123)).toThrow(
           'firebase.analytics().logViewItemList(*):',
         );
       });
@@ -626,7 +624,7 @@ describe('Analytics', function () {
     describe('logRemoveFromCart()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logRemoveFromCart(123)).toThrowError(
+        expect(() => firebase.analytics().logRemoveFromCart(123)).toThrow(
           'firebase.analytics().logRemoveFromCart(*):',
         );
       });
@@ -636,14 +634,14 @@ describe('Analytics', function () {
           firebase.analytics().logRemoveFromCart({
             value: 123,
           }),
-        ).toThrowError('firebase.analytics().logRemoveFromCart(*):');
+        ).toThrow('firebase.analytics().logRemoveFromCart(*):');
       });
     });
 
     describe('logViewPromotion()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logViewPromotion(123)).toThrowError(
+        expect(() => firebase.analytics().logViewPromotion(123)).toThrow(
           'firebase.analytics().logViewPromotion(*):',
         );
       });
@@ -652,7 +650,7 @@ describe('Analytics', function () {
     describe('logViewSearchResults()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
-        expect(() => firebase.analytics().logViewSearchResults(123)).toThrowError(
+        expect(() => firebase.analytics().logViewSearchResults(123)).toThrow(
           'firebase.analytics().logViewSearchResults(*):',
         );
       });
@@ -661,7 +659,7 @@ describe('Analytics', function () {
     describe('setAnalyticsCollectionEnabled()', function () {
       it('throws if not a boolean', function () {
         // @ts-ignore
-        expect(() => firebase.analytics().setAnalyticsCollectionEnabled('foo')).toThrowError(
+        expect(() => firebase.analytics().setAnalyticsCollectionEnabled('foo')).toThrow(
           "firebase.analytics().setAnalyticsCollectionEnabled(*) 'enabled' expected a boolean value.",
         );
       });
@@ -672,7 +670,7 @@ describe('Analytics', function () {
         expect(() =>
           // @ts-ignore
           firebase.analytics().initiateOnDeviceConversionMeasurementWithEmailAddress(true),
-        ).toThrowError(
+        ).toThrow(
           "firebase.analytics().initiateOnDeviceConversionMeasurementWithEmailAddress(*) 'emailAddress' expected a string value.",
         );
       });
@@ -683,7 +681,7 @@ describe('Analytics', function () {
         expect(() =>
           // @ts-ignore
           firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedEmailAddress(true),
-        ).toThrowError(
+        ).toThrow(
           "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedEmailAddress(*) 'hashedEmailAddress' expected a string value.",
         );
       });
@@ -694,7 +692,7 @@ describe('Analytics', function () {
         expect(() =>
           // @ts-ignore
           firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(1234),
-        ).toThrowError(
+        ).toThrow(
           "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a string value.",
         );
       });
@@ -704,7 +702,7 @@ describe('Analytics', function () {
           firebase
             .analytics()
             .initiateOnDeviceConversionMeasurementWithHashedPhoneNumber('+1234567890'),
-        ).toThrowError(
+        ).toThrow(
           "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a sha256-hashed value of a phone number in E.164 format.",
         );
       });
@@ -916,7 +914,7 @@ describe('Analytics', function () {
       expect(() =>
         // @ts-ignore
         initiateOnDeviceConversionMeasurementWithHashedEmailAddress(getAnalytics(), true),
-      ).toThrowError(
+      ).toThrow(
         "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedEmailAddress(*) 'hashedEmailAddress' expected a string value.",
       );
     });
@@ -924,7 +922,7 @@ describe('Analytics', function () {
     it('`initiateOnDeviceConversionMeasurementWithHashedPhoneNumber` should throw if the value is in E.164 format', function () {
       expect(() =>
         initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(getAnalytics(), '+1234567890'),
-      ).toThrowError(
+      ).toThrow(
         "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a sha256-hashed value of a phone number in E.164 format.",
       );
     });
