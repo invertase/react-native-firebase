@@ -60,8 +60,8 @@
     "firebase": "12.1.0"
   },
   "devDependencies": {
-    "@react-native-async-storage/async-storage": "^2.1.2",
-    "expo": "^52.0.46"
+    "@react-native-async-storage/async-storage": "^2.2.0",
+    "expo": "^52.0.47"
   },
   "peerDependenciesMeta": {
     "expo": {

@@ -35,8 +35,8 @@
   },
   "devDependencies": {
     "@types/text-encoding": "^0.0.40",
-    "react-native-builder-bob": "^0.40.6",
-    "typescript": "^5.8.3"
+    "react-native-builder-bob": "^0.40.13",
+    "typescript": "^5.9.2"
   },
   "source": "./lib/index.ts",
   "exports": {
@@ -84,6 +84,6 @@
   "dependencies": {
     "react-native-fetch-api": "^3.0.0",
     "text-encoding": "^0.7.0",
-    "web-streams-polyfill": "^4.1.0"
+    "web-streams-polyfill": "^4.2.0"
   }
 }
