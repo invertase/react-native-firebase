@@ -2777,9 +2777,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase-functions@npm:^6.3.2":
-  version: 6.3.2
-  resolution: "firebase-functions@npm:6.3.2"
+"firebase-functions@npm:^6.4.0":
+  version: 6.4.0
+  resolution: "firebase-functions@npm:6.4.0"
   dependencies:
     "@types/cors": "npm:^2.8.5"
     "@types/express": "npm:^4.17.21"
@@ -2790,7 +2790,7 @@ __metadata:
     firebase-admin: ^11.10.0 || ^12.0.0 || ^13.0.0
   bin:
     firebase-functions: lib/bin/firebase-functions.js
-  checksum: 10/ede8421479bfc0c9d23d79cc63a4fb6834db7a4da1e6b520ede3e1fcbc1aa0fd5fa9fb4ced4a8acfc8c5d78d776fcd46dcf2c13fe46bcd80901974cbec7a1620
+  checksum: 10/6527946ec9a5e274c81a6a78d4d4b1453c33e7b2007177c18bbbf0446d38c3f0bde051dac7d6c9366ff0132402b23753c6b16c6e4ef565010387f1ae3d52acfd
   languageName: node
   linkType: hard
 
@@ -3017,10 +3017,10 @@ __metadata:
   resolution: "functions@workspace:."
   dependencies:
     firebase-admin: "npm:^13.4.0"
-    firebase-functions: "npm:^6.3.2"
+    firebase-functions: "npm:^6.4.0"
     firebase-functions-test: "npm:^3.4.1"
     firebase-tools: "npm:^14.12.1"
-    typescript: "npm:^5.8.3"
+    typescript: "npm:^5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -6351,23 +6351,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.8.3":
-  version: 5.8.3
-  resolution: "typescript@npm:5.8.3"
+"typescript@npm:^5.9.2":
+  version: 5.9.2
+  resolution: "typescript@npm:5.9.2"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10/65c40944c51b513b0172c6710ee62e951b70af6f75d5a5da745cb7fab132c09ae27ffdf7838996e3ed603bb015dadd099006658046941bd0ba30340cc563ae92
+  checksum: 10/cc2fe6c822819de5d453fa25aa9f32096bf70dde215d481faa1ad84a283dfb264e33988ed8f6d36bc803dd0b16dbe943efa311a798ef76d5b3892a05dfbfd628
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^5.8.3#optional!builtin<compat/typescript>":
-  version: 5.8.3
-  resolution: "typescript@patch:typescript@npm%3A5.8.3#optional!builtin<compat/typescript>::version=5.8.3&hash=5786d5"
+"typescript@patch:typescript@npm%3A^5.9.2#optional!builtin<compat/typescript>":
+  version: 5.9.2
+  resolution: "typescript@patch:typescript@npm%3A5.9.2#optional!builtin<compat/typescript>::version=5.9.2&hash=5786d5"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10/b9b1e73dabac5dc730c041325dbd9c99467c1b0d239f1b74ec3b90d831384af3e2ba973946232df670519147eb51a2c20f6f96163cea2b359f03de1e2091cc4f
+  checksum: 10/bd810ab13e8e557225a8b5122370385440b933e4e077d5c7641a8afd207fdc8be9c346e3c678adba934b64e0e70b0acf5eef9493ea05170a48ce22bef845fdc7
   languageName: node
   linkType: hard
 
