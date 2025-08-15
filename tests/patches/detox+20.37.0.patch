@@ -1,17 +1,15 @@
-diff --git a/node_modules/detox/android/detox/build.gradle b/node_modules/detox/android/detox/build.gradle
-index 0f034c6..fcb9c86 100644
---- a/node_modules/detox/android/detox/build.gradle
-+++ b/node_modules/detox/android/detox/build.gradle
-@@ -91,6 +91,9 @@ android {
+diff --git a/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/ReactNativeIdlingResources.kt b/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/ReactNativeIdlingResources.kt
+index 3114470..2fedf00 100644
+--- a/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/ReactNativeIdlingResources.kt
++++ b/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/ReactNativeIdlingResources.kt
+@@ -115,6 +115,7 @@ class ReactNativeIdlingResources(
+         loopers.clear()
+     }
  
-         kotlinOptions {
-             jvmTarget = '17'
-+            freeCompilerArgs += [
-+                "-opt-in=kotlin.ExperimentalStdlibApi"
-+            ]
-         }
-     } else {
-         compileOptions {
++    @OptIn(ExperimentalStdlibApi::class)
+     private fun unregisterIdlingResources() {
+         IdlingResourcesName.entries.forEach {
+             removeIdlingResource(it)
 diff --git a/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/network/NetworkIdlingResource.kt b/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/network/NetworkIdlingResource.kt
 index be01a0d..88af8da 100644
 --- a/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/network/NetworkIdlingResource.kt
