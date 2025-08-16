@@ -97,7 +97,6 @@ cd react-native-firebase
 
 ```bash
 yarn
-yarn lerna:prepare  # Note, requires very current node, e.g., node v22.19.1+
 brew tap wix/brew
 brew install applesimutils xcbeautify
 ```
