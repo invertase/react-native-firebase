@@ -205,7 +205,7 @@ const serializer = (strict, json, $, _) => {
 
 function serialize(value, { json, lossy } = {}) {
   const _ = [];
-  return serializer(!(json || lossy), !!json, new Map(), _)(value), _;
+  return (serializer(!(json || lossy), !!json, new Map(), _)(value), _);
 }
 
 let sCloneAvailable = false;

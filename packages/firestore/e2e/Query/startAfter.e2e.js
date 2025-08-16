@@ -16,6 +16,7 @@
  */
 const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
+
 describe('firestore().collection().startAfter()', function () {
   before(function () {
     return wipe();

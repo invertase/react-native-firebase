@@ -16,6 +16,7 @@
  */
 const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
+
 describe('firestore().collection().count()', function () {
   before(async function () {
     return await wipe();

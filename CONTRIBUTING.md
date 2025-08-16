@@ -66,6 +66,7 @@ Working on your first Pull Request? You can learn how from this _free_ series, [
   - This includes matching up with the same method names, types, usages, inputs and outputs.
   - In some instances this is not always possible.
 - Methods/Features that are specific to a single platform only should be documented as such and the types description `@platform` annotated;
+
   ```ts
   export SomeInterface {
     /**
@@ -76,6 +77,7 @@ Working on your first Pull Request? You can learn how from this _free_ series, [
     aCoolMethod(): Promise<null>;
   }
   ```
+
   - If a method works on both platforms then there's no need to annotate it
 - Name your native code methods the same as the JS method name
   - e.g. the Android (`@ReactMethod`) implementation of `signInWithEmailAndPassword()` is named `signInWithEmailAndPassword`
@@ -97,7 +99,6 @@ cd react-native-firebase
 
 ```bash
 yarn
-yarn lerna:prepare  # Note, requires very current node, e.g., node v22.19.1+
 brew tap wix/brew
 brew install applesimutils xcbeautify
 ```
@@ -121,12 +122,10 @@ The project has a Detox powered end-to-end testing app located in `/tests`.
 To run end-to-end tests for `Android`, please run:
 
 - `yarn tests:android:build` - builds `Android` test application.
-  - Note: for Windows you will need `yarn tests:android:build:windows`
 - `yarn tests:packager:jet-reset-cache` - runs JavaScript bundler.
 - `yarn tests:emulator:start` - runs Firestore emulator for Firestore tests.
   - Note: for Windows you will need `yarn tests:emulator:start:windows`
 - `yarn tests:android:test` - runs tests using Detox library. Tests for each package can be found in the `e2e` directory (i.e. `[PACKAGE]/e2e/*.e2e.js`)
-  - Note: for Windows you will need `yarn tests:android:test:windows`
 
 To run end-to-end tests for `iOS`, please run:
 
@@ -144,7 +143,7 @@ To run end-to-end tests for `Other`, please run:
 - `yarn tests:emulator:start` - runs Firestore emulator for Firestore tests.
 - `yarn tests:macos:test-cover` - runs tests using Detox library. Tests for each package can be found in the `e2e` directory (i.e. `[PACKAGE]/e2e/*.e2e.js`)
 
-See its local testing guide [here](https://github.com/invertase/react-native-firebase/blob/main/tests/README.md) to get started
+See [the local testing guide](https://github.com/invertase/react-native-firebase/blob/main/tests/README.md) to get started
 with `e2e` testing this project.
 
 ---
