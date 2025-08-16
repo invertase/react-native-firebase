@@ -96,6 +96,18 @@ jobs:
       fail-fast: false
       matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
     steps:
+      - name: Setup Environment for Screen Recording
+        uses: guidepup/setup-action@0.17.3
+        with:
+          record: true
+
+      - name: Upload Screen Recording Environment Setup
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screenrecording-setup-${{ matrix.iteration }}.mov
+          path: ./recordings/
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -222,6 +234,11 @@ jobs:
           curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=macos&dev=true&minify=false&inlineSourceMap=true"
           echo "...javascript bundle ready"
 
+      - name: Start Screen Recording and System Logging
+        run: |
+          nohup sh -c "sleep 314159265 | screencapture -v -C -k -T0 -g screenrecording.mov > screenrecording.log 2>&1 &"
+          nohup sh -c "log stream --backtrace --color none --style syslog > syslog.log 2>&1 &"
+
       - name: Jet Test
         timeout-minutes: 20
         run: yarn tests:macos:test-cover
@@ -230,9 +247,29 @@ jobs:
         with:
           verbose: true
 
+      - name: Stop Screen Recording and System Logging
+        if: always()
+        run: |
+          killall -int screencapture
+          killall -int log
+
       - name: Upload Metro Log
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: metro-${{ matrix.iteration }}_log
           path: metro.log
+
+      - name: Upload Screen Recording
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screenrecording-${{ matrix.iteration }}
+          path: screenrecording.*
+
+      - name: Upload System Log
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: syslog-${{ matrix.iteration }}
+          path: syslog.log
