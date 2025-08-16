@@ -142,7 +142,7 @@ jobs:
           timeout_minutes: 15
           retry_wait_seconds: 60
           max_attempts: 3
-          command: DETOX_DISABLE_POSTINSTALL=1 yarn && yarn lerna:prepare
+          command: DETOX_DISABLE_POSTINSTALL=1 yarn
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1

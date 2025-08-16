@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "version": "node ./scripts/version.js",
+    "postinstallDev": "yarn prepare && yarn lerna:prepare",
     "prepare": "patch-package",
     "lerna:prepare": "lerna run prepare",
     "lerna:clean": "lerna clean",
