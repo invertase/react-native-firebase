@@ -194,12 +194,15 @@ describe('storage() -> StorageTask', function () {
       });
 
       describe('put()', function () {
-        // TODO flakey test, RN JSTimer exception sometimes
-        xit('uploads a Blob', async function () {
+        it('uploads a Blob', async function () {
           const jsonDerulo = JSON.stringify({ foo: 'bar' });
           const bob = new Blob([jsonDerulo], {
             type: 'application/json',
           });
+
+          // works every time if you sleep - iOS code is racy around Blob creation/usage
+          await Utils.sleep(100);
+
           const uploadTaskSnapshot = await firebase
             .storage()
             .ref(`${PATH}/putStringBlob.json`)
@@ -250,6 +253,10 @@ describe('storage() -> StorageTask', function () {
           const bob = new Blob([jsonDerulo], {
             type: 'application/json',
           });
+
+          // works every time if you sleep - iOS code is racy around Blob creation/usage
+          await Utils.sleep(100);
+
           const uploadTaskSnapshot = firebase.storage().ref(`${PATH}/putStringBlob.json`).put(bob);
           await uploadTaskSnapshot;
           const snapshot = uploadTaskSnapshot.snapshot;
@@ -973,14 +980,15 @@ describe('storage() -> StorageTask', function () {
     });
 
     describe('put()', function () {
-      // TODO flakey test, RN JSTimer exception sometimes
-      xit('uploads a Blob', async function () {
+      it('uploads a Blob', async function () {
         const { getStorage, ref, uploadBytesResumable, TaskState } = storageModular;
         const jsonDerulo = JSON.stringify({ foo: 'bar' });
-
         const bob = new Blob([jsonDerulo], {
           type: 'application/json',
         });
+
+        // works every time if you sleep - iOS code is racy around Blob creation/usage
+        await Utils.sleep(100);
 
         const uploadTaskSnapshot = await uploadBytesResumable(
           ref(getStorage(), `${PATH}/putStringBlob.json`),
@@ -1046,6 +1054,9 @@ describe('storage() -> StorageTask', function () {
         const bob = new Blob([jsonDerulo], {
           type: 'application/json',
         });
+
+        // works every time if you sleep - iOS code is racy around Blob creation/usage
+        await Utils.sleep(100);
 
         const uploadTaskSnapshot = uploadBytesResumable(
           ref(getStorage(), `${PATH}/putStringBlob.json`),
