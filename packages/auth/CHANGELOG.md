@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.0.1](https://github.com/invertase/react-native-firebase/compare/v23.0.0...v23.0.1) (2025-08-12)
+
+### Bug Fixes
+
+- **auth, ios:** filter out non-phone multifactor to avoid crash ([#8645](https://github.com/invertase/react-native-firebase/issues/8645)) ([90b6d98](https://github.com/invertase/react-native-firebase/commit/90b6d988d0c0ca216cbdd47e7900aa0b629bdc43))
+
 ## [23.0.0](https://github.com/invertase/react-native-firebase/compare/v22.4.0...v23.0.0) (2025-08-07)
 
 ### ⚠ BREAKING CHANGES

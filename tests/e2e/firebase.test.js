@@ -38,8 +38,9 @@ describe('Jet Tests', function () {
       jetProcess.on('close', code => {
         if (code === 0) {
           resolve();
+        } else {
+          reject(new Error(`Jet tests failed!`));
         }
-        reject(new Error(`Jet tests failed!`));
       });
       await device.launchApp({
         newInstance: true,
@@ -71,7 +72,7 @@ afterAll(async function () {
 
   // Get the file off the device, into standard location for JaCoCo binary report
   // It will still need processing via gradle jacocoAndroidTestReport task for codecov, but it's available now
-  if (isAndroid) {
+  if (isAndroid && process.platform !== 'win32') {
     const pkg = 'com.invertase.testing';
     const emuOrig = `/data/user/0/${pkg}/files/coverage.ec`;
     const emuDest = '/data/local/tmp/detox/coverage.ec';

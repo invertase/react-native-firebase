@@ -390,9 +390,11 @@ export default class DatabaseQuery extends ReferenceBase {
 
         // Child based events return a previousChildName
         if (eventType === 'value') {
-          dataSnapshot = new DatabaseDataSnapshot(this.ref, result);
+          dataSnapshot = createDeprecationProxy(new DatabaseDataSnapshot(this.ref, result));
         } else {
-          dataSnapshot = new DatabaseDataSnapshot(this.ref, result.snapshot);
+          dataSnapshot = createDeprecationProxy(
+            new DatabaseDataSnapshot(this.ref, result.snapshot),
+          );
           previousChildName = result.previousChildName;
         }
 

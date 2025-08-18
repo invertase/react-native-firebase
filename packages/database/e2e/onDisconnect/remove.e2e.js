@@ -49,7 +49,11 @@ describe('database().ref().onDisconnect().remove()', function () {
       }
     });
 
-    xit('removes a node whilst offline', async function () {
+    it('removes a node whilst offline', async function () {
+      if (Platform.android) {
+        // offline / online behavior does not work in android + firebase emulator
+        this.skip();
+      }
       const ref = firebase.database().ref(TEST_PATH).child('removeMe');
       await ref.set('foobar');
       await ref.onDisconnect().remove();
@@ -98,13 +102,18 @@ describe('database().ref().onDisconnect().remove()', function () {
       }
     });
 
-    xit('removes a node whilst offline', async function () {
-      const { getDatabase, ref, child, onDisconnect, goOffline, goOnline, get } = databaseModular;
+    it('removes a node whilst offline', async function () {
+      if (Platform.android) {
+        // offline / online behavior does not work in android + firebase emulator
+        this.skip();
+      }
+      const { getDatabase, ref, child, onDisconnect, goOffline, goOnline, get, set } =
+        databaseModular;
       const db = getDatabase();
       const dbRef = ref(db, TEST_PATH);
       const childRef = child(dbRef, 'removeMe');
 
-      await childRef.set('foobar');
+      await set(childRef, 'foobar');
       await onDisconnect(childRef).remove();
       await goOffline(db);
       await goOnline(db);
@@ -115,13 +124,13 @@ describe('database().ref().onDisconnect().remove()', function () {
     it('calls back to the onComplete function', async function () {
       const callback = sinon.spy();
 
-      const { getDatabase, ref, child, onDisconnect, goOffline, goOnline } = databaseModular;
+      const { getDatabase, ref, child, onDisconnect, goOffline, goOnline, set } = databaseModular;
       const db = getDatabase();
       const dbRef = ref(db, TEST_PATH);
       const childRef = child(dbRef, 'removeMe');
 
       // Set an initial value
-      await childRef.set('foo');
+      await set(childRef, 'foo');
 
       await onDisconnect(childRef).remove(callback);
       await goOffline(db);

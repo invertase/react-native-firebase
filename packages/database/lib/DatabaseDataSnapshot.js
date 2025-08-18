@@ -16,6 +16,7 @@
  */
 
 import {
+  createDeprecationProxy,
   isArray,
   isFunction,
   isObject,
@@ -75,13 +76,15 @@ export default class DatabaseDataSnapshot {
         childPriority = childPriorityValue;
       }
     }
-    return new DatabaseDataSnapshot(childRef, {
-      value,
-      key: childRef.key,
-      exists: value !== null,
-      childKeys: isObject(value) ? Object.keys(value) : [],
-      priority: childPriority,
-    });
+    return createDeprecationProxy(
+      new DatabaseDataSnapshot(childRef, {
+        value,
+        key: childRef.key,
+        exists: value !== null,
+        childKeys: isObject(value) ? Object.keys(value) : [],
+        priority: childPriority,
+      }),
+    );
   }
 
   /**
