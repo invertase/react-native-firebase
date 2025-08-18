@@ -6,6 +6,7 @@
       "@react-native-firebase/app": ["packages/app/lib"],
       "@react-native-firebase/auth": ["packages/auth/lib"],
       "@react-native-firebase/app-check": ["packages/app-check/lib"],
+      "@react-native-firebase/ai": ["packages/ai/lib"],
     }
   }
 }
