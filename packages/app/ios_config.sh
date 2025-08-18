@@ -88,11 +88,10 @@ done
 
 if [[ ${_SEARCH_RESULT} ]]; then
   _JSON_OUTPUT_RAW=$(cat "${_SEARCH_RESULT}")
-  if ! _RN_ROOT_EXISTS_TMP=$(ruby -Ku -e "require 'json'; output=JSON.parse('$_JSON_OUTPUT_RAW'); puts output[$_JSON_ROOT]"); then
+  if ! _RN_ROOT_EXISTS=$(ruby -Ku -e "require 'json'; output=JSON.parse('$_JSON_OUTPUT_RAW'); puts output[$_JSON_ROOT]"); then
     echo "error: Failed to parse firebase.json, check for syntax errors."
     exit 1
   fi
-  # Check works but appears to nullify the json contents after.
 
   if [[ ${_RN_ROOT_EXISTS} ]]; then
     if ! python3 --version >/dev/null 2>&1; then echo "python3 not found, firebase.json file processing error." && exit 1; fi
