@@ -5363,7 +5363,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/analytics@npm:23.0.0, @react-native-firebase/analytics@workspace:packages/analytics":
+"@react-native-firebase/analytics@npm:23.0.1, @react-native-firebase/analytics@workspace:packages/analytics":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/analytics@workspace:packages/analytics"
   dependencies:
