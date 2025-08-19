@@ -51,7 +51,7 @@ class AnalyticsApi implements IAnalyticsApi {
   public readonly appName: string;
   public readonly measurementId: string;
   private eventQueue: AnalyticsEvent[];
-  private queueTimer: NodeJS.Timeout | null;
+  private queueTimer: number | null;
   private readonly queueInterval: number;
   private defaultEventParameters: AnalyticsEventParameters;
   private userId: string | null;
