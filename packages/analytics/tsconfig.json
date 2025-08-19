@@ -7,7 +7,9 @@
     "forceConsistentCasingInFileNames": true,
     "jsx": "react-jsx",
     "lib": [
-      "ESNext"
+      "ESNext",
+      // needed for web API
+      "DOM"
     ],
     "module": "ESNext",
     "moduleResolution": "bundler",
