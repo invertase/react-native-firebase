@@ -21,26 +21,21 @@
 
 ---
 
-Vertex AI is a fully-managed, unified AI development platform for building and using generative AI. Access and utilize Vertex AI Studio, Agent Builder, and 150+ foundation models including Gemini 1.5 Pro and Gemini 1.5 Flash.
+Vertex AI has been deprecated by Google in favor of the Firebase AI Logic SDK.
 
-[> Learn More](https://firebase.google.com/docs/vertex-ai/)
+Using the Firebase AI Logic SDK with the Vertex AI Gemini API is still generally available (GA).
 
-## Installation
+To start using the new SDK, import the `@react-native-firebase/ai` package and use the modular method `getAI()` to initialize. See details in the [migration guide](https://firebase.google.com/docs/vertex-ai/migrate-to-latest-sdk).
 
-Requires `@react-native-firebase/app` to be installed.
+```javascript
+// BEFORE - using firebase/vertexai
+import { initializeApp } from "firebase/app";
+import { getVertexAI, getGenerativeModel } from "firebase/vertexai"; // Remove this
 
-```bash
-yarn add @react-native-firebase/vertexai
+// AFTER - using firebase/ai
+import { initializeApp } from "firebase/app";
+import { getAI, getGenerativeModel } from "firebase/ai"; // Add this
 ```
-
-## Documentation
-
-- [Quick Start](https://rnfirebase.io/vertexai/usage)
-- [Reference](https://rnfirebase.io/reference/vertexai)
-
-## License
-
-- See [LICENSE](/LICENSE)
 
 ---
 

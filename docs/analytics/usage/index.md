@@ -3,7 +3,7 @@ title: Analytics
 description: Installation and getting started with Analytics.
 icon: //firebase.google.com/static/images/products/icons/run_analytics.svg
 next: /analytics/screen-tracking
-previous: /contributing
+previous: /ai/usage
 ---
 
 # Installation

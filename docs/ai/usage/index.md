@@ -3,7 +3,7 @@ title: AI Logic
 description: Installation and getting started with Firebase AI Logic.
 icon: //firebase.google.com/static/images/icons/firebase-ai-logic.svg
 next: /analytics/usage
-previous: /remote-config/usage
+previous: /contributing
 ---
 
 # Installation
