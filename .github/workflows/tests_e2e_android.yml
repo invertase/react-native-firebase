@@ -2,6 +2,12 @@ name: Testing E2E Android
 
 on:
   workflow_dispatch:
+    inputs:
+      iterations:
+        description: "Number of iterations to run. Default 1. Max 256."
+        required: true
+        default: 1
+        type: number
   pull_request:
     branches:
       - '**'
@@ -26,24 +32,73 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  android:
-    name: Android
+  # We want to generate our matrix dynamically
+  # Initial job generates the matrix as a JSON, and following job will use deserialize and use the result
+  matrix_prep:
+    # Do not run the scheduled jobs on forks
+    if: (github.event_name == 'schedule' && github.repository == 'invertase/react-native-firebase') || (github.event_name != 'schedule')
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.build-matrix.outputs.result }}
+    steps:
+      - id: build-matrix
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // by default, we will run one iteration
+            let iterationArray = [0]
+
+            // workflow dispatch will be a drop-down of different options
+            if (context.eventName === "workflow_dispatch") {
+              const inputs = ${{ toJSON(inputs) }}
+              console.log('inputs is: ' + JSON.stringify(inputs))
+
+              const iterationInput = inputs.iterations
+              console.log('iterations input is: ' + iterationInput)
+              // this will expand for example with input 5 => [0, 1, 2, 3, 4]
+              iterationArray = []
+              for (let i = 0; i < iterationInput; i++) {
+                iterationArray.push(i);
+              }
+              console.log('iterationArray is: ' + iterationArray)
+            }
+
+            // If we are running on a schedule it's our periodic passive scan for flakes
+            // Goal is to run enough iterations on all systems that we have confidence there are no flakes
+            if (context.eventName === "schedule") {
+              const iterationCount = 15
+              for (let i = 0; i < iterationCount; i++) {
+                iterationArray.push(i);
+              }
+            }
+
+            // TODO Refactor to make these dynamic with a minSdk/max bracket only on schedule, not push
+            let apiLevel = [36];
+
+            // These are used for performance tuning what emulator to use.
+            // try different architectures, targets etc
+            let arch = ['x86_64'];
+            let target = ['google_apis'];
+
+            return {
+              "iteration": iterationArray,
+              "api-level": apiLevel,
+              "arch": arch,
+              "target": target
+            }
+      - name: Debug Output
+        run: echo "${{ steps.build-matrix.outputs.result }}"
+
+  # This uses the matrix generated from the matrix-prep stage
+  # it will run unit tests on whatever OS combinations are desired
+  android:
+    name: Android (${{ matrix.api-level }}, ${{ matrix.arch }}, ${{ matrix.target }}, ${{ matrix.iteration }})
+    runs-on: ubuntu-latest
+    needs: matrix_prep
     timeout-minutes: 60
     strategy:
       fail-fast: false
-      matrix:
-        # all APIs below 23 just do not work
-        # google-apis doesn't have an emulator for 27
-        # 23-25, 28-29 appears to work locally but fails in CI
-        # 26 does not support performance tracing due to hardware acceleration bugs
-        # min-possible + max-possible skew looks like 29 and 34 then
-        # running anything below 34 fails at the moment though, so using only it for now
-        api-level: [34]
-        arch: [x86_64]
-        target: [google_apis]
-        # This is useful for benchmarking, do 0, 1, 2, etc (up to 256 max job-per-matrix limit) for averages
-        iteration: [0]
+      matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
@@ -100,7 +155,7 @@ jobs:
           timeout_minutes: 15
           retry_wait_seconds: 60
           max_attempts: 3
-          command: DETOX_DISABLE_POSTINSTALL=1 yarn && yarn lerna:prepare
+          command: DETOX_DISABLE_POSTINSTALL=1 yarn
 
       - name: Cache Firestore Emulator
         uses: actions/cache@v4

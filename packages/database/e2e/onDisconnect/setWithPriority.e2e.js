@@ -71,7 +71,11 @@ describe('database().ref().onDisconnect().setWithPriority()', function () {
       }
     });
 
-    xit('sets value with priority when disconnected', async function () {
+    it('sets value with priority when disconnected', async function () {
+      if (Platform.android) {
+        // offline / online behavior does not work in android + firebase emulator
+        this.skip();
+      }
       const ref = firebase.database().ref(TEST_PATH);
 
       const value = Date.now();
@@ -154,7 +158,11 @@ describe('database().ref().onDisconnect().setWithPriority()', function () {
       }
     });
 
-    xit('sets value with priority when disconnected', async function () {
+    it('sets value with priority when disconnected', async function () {
+      if (Platform.android) {
+        // offline / online behavior does not work in android + firebase emulator
+        this.skip();
+      }
       const { getDatabase, ref, onDisconnect, goOffline, goOnline, get } = databaseModular;
       const db = getDatabase();
       const dbRef = ref(db, TEST_PATH);

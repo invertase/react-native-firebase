@@ -16,6 +16,7 @@
  */
 const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
+
 describe('firestore().collection().orderBy()', function () {
   before(function () {
     return wipe();

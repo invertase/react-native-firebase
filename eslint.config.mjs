@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import js from '@eslint/js';
 import { FlatCompat } from '@eslint/eslintrc';
+import mochaPlugin from 'eslint-plugin-mocha';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,6 +14,7 @@ const compat = new FlatCompat({
 });
 
 export default [
+  mochaPlugin.configs.recommended,
   {
     ignores: [
       'src/version.js',
@@ -37,14 +39,14 @@ export default [
       '**/app.playground.js',
       '**/type-test.ts',
       'packages/**/modular/dist/**/*',
-      'packages/vertexai/__tests__/test-utils',
+      'packages/ai/__tests__/test-utils',
       'packages/vertexai/dist',
+      'packages/ai/dist',
     ],
   },
   ...compat
     .extends(
       'plugin:react/recommended',
-      'plugin:mocha/recommended',
       'plugin:@typescript-eslint/recommended',
       'prettier',
       'plugin:prettier/recommended',
@@ -120,7 +122,7 @@ export default [
       '@typescript-eslint/camelcase': 'off',
       '@typescript-eslint/no-empty-function': 'off',
       '@typescript-eslint/ban-ts-ignore': 'off',
-      'mocha/no-skipped-tests': 'off',
+      'mocha/no-pending-tests': 'off',
       'mocha/no-top-level-hooks': 'off',
       'mocha/no-hooks-for-single-case': 'off',
       'mocha/no-setup-in-describe': 'off',
