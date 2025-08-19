@@ -61,7 +61,6 @@ import analytics, {
   setConsent,
   settings,
 } from '../lib';
-import * as app from '@react-native-firebase/app';
 
 import {
   createCheckV9Deprecation,
