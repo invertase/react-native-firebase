@@ -1,7 +1,7 @@
 ---
 title: Crashlytics
 description: Installation and getting started with Crashlytics.
-icon: //static.invertase.io/assets/firebase/crashlytics.svg
+icon: //firebase.google.com/static/images/products/icons/run_crashlytics.svg
 next: /crashlytics/crash-reports
 previous: /app/utils
 ---
