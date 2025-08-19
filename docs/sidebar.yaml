@@ -17,6 +17,10 @@
   - 'https://invertase.canny.io/react-native-firebase'
 - - Contributing
   - 'https://github.com/invertase/react-native-firebase/blob/main/CONTRIBUTING.md'
+- - AI Logic
+  - - - Usage
+      - '/ai/usage'
+  - '//firebase.google.com/static/images/icons/firebase-ai-logic.svg'
 - - Analytics
   - - - Usage
       - '/analytics/usage'
