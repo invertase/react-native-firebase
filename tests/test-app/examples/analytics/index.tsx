@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppRegistry, Button, Text, View } from 'react-native';
-import analytics from '@react-native-firebase/analytics';
+import analytics, { firebase } from '@react-native-firebase/analytics';
 
 function App() {
   return (
@@ -11,6 +11,8 @@ function App() {
         title="Send analytics"
         onPress={async () => {
           try {
+            const app = firebase.app();
+            console.log('used to test typing for firebase and analytics()', app);
             await analytics().logAddToCart({
               currency: 'usd',
               value: 1000,
