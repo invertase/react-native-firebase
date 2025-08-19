@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.1.0](https://github.com/invertase/react-native-firebase/compare/v23.0.1...v23.1.0) (2025-08-19)
+
+### Features
+
+- **ai:** create `ai` package, `vertexai` wraps around it ([#8555](https://github.com/invertase/react-native-firebase/issues/8555)) ([50c9e0d](https://github.com/invertase/react-native-firebase/commit/50c9e0d8a361b575c6cbf86f028165906d819162))
+
+### Bug Fixes
+
+- **app, ios:** fail build with error if firebase.json has syntax errors ([5c752e7](https://github.com/invertase/react-native-firebase/commit/5c752e710e39f0aad40182706a934e5979727fa1))
+- **app:** adopt firebase-js-sdk 12.1.0 ([115a55c](https://github.com/invertase/react-native-firebase/commit/115a55ce85c1a4db8f8b92f4e30c86776499f6ea))
+
 ## [23.0.1](https://github.com/invertase/react-native-firebase/compare/v23.0.0...v23.0.1) (2025-08-12)
 
 ### Bug Fixes
