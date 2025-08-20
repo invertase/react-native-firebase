@@ -1,7 +1,7 @@
 ---
 title: Cloud Storage
 description: Installation and getting started with Storage.
-icon: //static.invertase.io/assets/firebase/cloud-storage.svg
+icon: //firebase.google.com/static/images/products/icons/build_storage.svg
 next: /app/usage
 previous: /messaging/server-integration
 ---

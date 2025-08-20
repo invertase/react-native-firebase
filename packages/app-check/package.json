@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/app-check",
-  "version": "23.0.1",
+  "version": "23.1.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - App Check",
   "main": "lib/index.js",
@@ -25,11 +25,11 @@
     "appCheck"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "23.0.1",
+    "@react-native-firebase/app": "23.1.0",
     "expo": ">=47.0.0"
   },
   "devDependencies": {
-    "expo": "^52.0.46"
+    "expo": "^53.0.20"
   },
   "peerDependenciesMeta": {
     "expo": {

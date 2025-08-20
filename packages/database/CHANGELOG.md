@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.1.0](https://github.com/invertase/react-native-firebase/compare/v23.0.1...v23.1.0) (2025-08-19)
+
+### Bug Fixes
+
+- **database:** offer more prescriptive advice for unimplemented off() method ([079b0e0](https://github.com/invertase/react-native-firebase/commit/079b0e0da2422e873bfa6e73add50d72e715ed59))
+- **database:** wrap internal object construction in deprecation proxies ([67dad27](https://github.com/invertase/react-native-firebase/commit/67dad275f7239172fc0327dc4a2d40f046a2a2de))
+
 ## [23.0.1](https://github.com/invertase/react-native-firebase/compare/v23.0.0...v23.0.1) (2025-08-12)
 
 **Note:** Version bump only for package @react-native-firebase/database

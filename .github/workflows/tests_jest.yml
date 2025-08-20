@@ -50,7 +50,7 @@ jobs:
           timeout_minutes: 15
           retry_wait_seconds: 60
           max_attempts: 3
-          command: yarn && yarn lerna:prepare
+          command: yarn
       - name: Jest
         run: yarn tests:jest-coverage
       - uses: codecov/codecov-action@v5
