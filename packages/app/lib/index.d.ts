@@ -269,16 +269,6 @@ export namespace ReactNativeFirebase {
      * The current `FirebaseApp` instance for this Firebase service.
      */
     app: FirebaseApp;
-
-    /**
-     * The native module instance for this Firebase service.
-     */
-    private native: any;
-
-    /**
-     * Returns the shared event emitter instance used for all JS event routing.
-     */
-    private emitter: any;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -616,6 +606,21 @@ export namespace Utils {
 export const utils: ReactNativeFirebase.FirebaseModuleWithStatics<Utils.Module, Utils.Statics>;
 
 export * from './modular';
+
+// Internal module type definitions for consumption by other packages
+export namespace Internal {
+  export function createModuleNamespace(config: any): any;
+  export class FirebaseModule {
+    constructor(...args: any[]);
+    native: any;
+    firebaseJson: any;
+    _customUrlOrRegion: string | null;
+  }
+  export function getFirebaseRoot(): any;
+  export class NativeFirebaseError {
+    static getStackWithMessage(message: string, jsStack?: string): string;
+  }
+}
 
 declare const module: ReactNativeFirebase.Module;
 export default module;
