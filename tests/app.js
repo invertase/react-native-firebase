@@ -35,7 +35,7 @@ if (Platform.other) {
   platformSupportedModules.push('remoteConfig');
   platformSupportedModules.push('analytics');
   platformSupportedModules.push('appCheck');
-  platformSupportedModules.push('vertexai');
+  platformSupportedModules.push('ai');
   // TODO add more modules here once they are supported.
 }
 
@@ -56,7 +56,7 @@ if (!Platform.other) {
   platformSupportedModules.push('appCheck');
   platformSupportedModules.push('appDistribution');
   platformSupportedModules.push('ml');
-  platformSupportedModules.push('vertexai');
+  platformSupportedModules.push('ai');
 }
 // Registering an error handler that always throw unhandled exceptions
 // This is to enable Jet to exit on uncaught errors
@@ -227,10 +227,9 @@ function loadTests(_) {
       );
       remoteConfigTests.keys().forEach(remoteConfigTests);
     }
-
-    if (platformSupportedModules.includes('vertexai')) {
-      const vertexaiTests = require.context('../packages/vertexai/e2e', true, /\.e2e\.js$/);
-      vertexaiTests.keys().forEach(vertexaiTests);
+    if (platformSupportedModules.includes('ai')) {
+      const aiTests = require.context('../packages/ai/e2e', true, /\.e2e\.js$/);
+      aiTests.keys().forEach(aiTests);
     }
     if (platformSupportedModules.includes('storage')) {
       const storageTests = require.context('../packages/storage/e2e', true, /\.e2e\.js$/);
