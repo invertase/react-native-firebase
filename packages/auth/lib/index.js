@@ -20,6 +20,7 @@ import {
   isAndroid,
   isBoolean,
   isNull,
+  isOther,
   isString,
   isValidUrl,
 } from '@react-native-firebase/app/lib/common';
@@ -127,7 +128,10 @@ class FirebaseAuthModule extends FirebaseModule {
     // but we need it in Auth if it exists. During app configuration we store
     // mappings from app name to authDomain, this auth constructor
     // is a reasonable time to use the mapping and set it into auth natively
-    this.native.configureAuthDomain();
+    if (!isOther) {
+      // Only supported on native platforms
+      this.native.configureAuthDomain();
+    }
   }
 
   get languageCode() {
