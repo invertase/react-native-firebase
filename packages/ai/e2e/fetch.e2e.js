@@ -26,6 +26,7 @@ const fakeVertexAI = {
     },
   },
   location: 'us-central1',
+  backend: 'GOOGLE_AI',
 };
 // See emulator setup: packages/vertexai/lib/requests/request.ts
 globalThis.RNFB_VERTEXAI_EMULATOR_URL = true;
