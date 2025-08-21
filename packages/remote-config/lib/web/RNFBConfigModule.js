@@ -9,7 +9,7 @@ import {
   makeIDBAvailable,
   setCustomSignals,
 } from '@react-native-firebase/app/lib/internal/web/firebaseRemoteConfig';
-import { guard } from '@react-native-firebase/app/lib/internal/web/utils';
+import { guard, getWebError } from '@react-native-firebase/app/lib/internal/web/utils';
 
 let configSettingsForInstance = {
   // [APP_NAME]: RemoteConfigSettings
@@ -120,5 +120,8 @@ export default {
       await setCustomSignals(remoteConfig, customSignals);
       return resultAndConstants(remoteConfig, null);
     });
+  },
+  onConfigUpdated() {
+    return getWebError('unsupported', 'Not supported by the Firebase Javascript SDK.');
   },
 };
