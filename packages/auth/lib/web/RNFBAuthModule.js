@@ -227,7 +227,7 @@ let sessionId = 0;
 // Returns a cached Firestore instance.
 function getCachedAuthInstance(appName) {
   if (!instances[appName]) {
-    if (!isMemoryStorage()) {
+    if (isMemoryStorage()) {
       // Warn auth persistence is is disabled unless Async Storage implementation is provided.
       // eslint-disable-next-line no-console
       console.warn(
