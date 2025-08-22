@@ -23,6 +23,7 @@ import {
   isOther,
   isString,
   isValidUrl,
+  parseListenerOrObserver,
 } from '@react-native-firebase/app/lib/common';
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import {
@@ -225,14 +226,8 @@ class FirebaseAuthModule extends FirebaseModule {
     await this.native.setTenantId(tenantId);
   }
 
-  _parseListener(listenerOrObserver) {
-    return typeof listenerOrObserver === 'object'
-      ? listenerOrObserver.next.bind(listenerOrObserver)
-      : listenerOrObserver;
-  }
-
   onAuthStateChanged(listenerOrObserver) {
-    const listener = this._parseListener(listenerOrObserver);
+    const listener = parseListenerOrObserver(listenerOrObserver);
     const subscription = this.emitter.addListener(
       this.eventNameForApp('onAuthStateChanged'),
       listener,
@@ -247,7 +242,7 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   onIdTokenChanged(listenerOrObserver) {
-    const listener = this._parseListener(listenerOrObserver);
+    const listener = parseListenerOrObserver(listenerOrObserver);
     const subscription = this.emitter.addListener(
       this.eventNameForApp('onIdTokenChanged'),
       listener,
@@ -262,7 +257,7 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   onUserChanged(listenerOrObserver) {
-    const listener = this._parseListener(listenerOrObserver);
+    const listener = parseListenerOrObserver(listenerOrObserver);
     const subscription = this.emitter.addListener(this.eventNameForApp('onUserChanged'), listener);
     if (this._authResult) {
       Promise.resolve().then(() => {
