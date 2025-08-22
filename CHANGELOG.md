@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.1.1](https://github.com/invertase/react-native-firebase/compare/v23.1.0...v23.1.1) (2025-08-22)
+
+### Bug Fixes
+
+- **auth, other:** configureAuthDomain should only be called on native SDKs ([0e3cf94](https://github.com/invertase/react-native-firebase/commit/0e3cf94e81b093d0b853d0da2756f2713e7be6ce))
+- **auth, other:** correctly detect persistence set or not ([b86b7e3](https://github.com/invertase/react-native-firebase/commit/b86b7e345a72dc7e3dd20068c8dd74b4092ce6a9))
+- **remote-config, other:** return friendly error for onConfigUpdated ([959c4cf](https://github.com/invertase/react-native-firebase/commit/959c4cf98496e6e6f25416d33fa794007bd34119))
+- validate listenerOrObserver callbacks in auth, app-check, remote-config ([06dcae4](https://github.com/invertase/react-native-firebase/commit/06dcae44e29f18e7716727479fd6e6d048336d91))
+
 ## [23.1.0](https://github.com/invertase/react-native-firebase/compare/v23.0.1...v23.1.0) (2025-08-19)
 
 ### Features

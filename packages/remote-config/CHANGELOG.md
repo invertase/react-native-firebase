@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.1.1](https://github.com/invertase/react-native-firebase/compare/v23.1.0...v23.1.1) (2025-08-22)
+
+### Bug Fixes
+
+- **remote-config, other:** return friendly error for onConfigUpdated ([959c4cf](https://github.com/invertase/react-native-firebase/commit/959c4cf98496e6e6f25416d33fa794007bd34119))
+- validate listenerOrObserver callbacks in auth, app-check, remote-config ([06dcae4](https://github.com/invertase/react-native-firebase/commit/06dcae44e29f18e7716727479fd6e6d048336d91))
+
 ## [23.1.0](https://github.com/invertase/react-native-firebase/compare/v23.0.1...v23.1.0) (2025-08-19)
 
 **Note:** Version bump only for package @react-native-firebase/remote-config
