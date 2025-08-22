@@ -781,11 +781,29 @@ describe('remoteConfig()', function () {
       });
     });
 
-    describe('onConfigUpdated on un-supported platforms', function () {
-      it('returns a descriptive error message if called', async function () {
+    describe('onConfigUpdated parameter verification', function () {
+      it('throws an error if no callback provided', async function () {
         const { getRemoteConfig, onConfigUpdated } = remoteConfigModular;
         try {
           onConfigUpdated(getRemoteConfig());
+        } catch (error) {
+          error.message.should.containEql(
+            "'listenerOrObserver' expected a function or an object with 'next' function.",
+          );
+        }
+      });
+    });
+
+    describe('onConfigUpdated on un-supported platforms', function () {
+      if (!Platform.other) {
+        // Supported on non-other, tests are in the following describe block
+        return;
+      }
+
+      it('returns a descriptive error message if called', async function () {
+        const { getRemoteConfig, onConfigUpdated } = remoteConfigModular;
+        try {
+          onConfigUpdated(getRemoteConfig(), () => {});
         } catch (error) {
           error.message.should.containEql('Not supported by the Firebase Javascript SDK');
         }
@@ -794,7 +812,7 @@ describe('remoteConfig()', function () {
 
     xdescribe('onConfigUpdated on supported platforms', function () {
       if (Platform.other) {
-        // Not supported on Web, verify we get a nice error
+        // Not supported on Web
         return;
       }
 
