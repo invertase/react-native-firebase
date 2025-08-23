@@ -49,8 +49,8 @@ function modifyTemplate(data: any, template: any) {
     const deletions = data.operations['delete'];
     deletions.forEach((deletion: string) => {
       logger.info('deleting key: ' + deletion);
-      if (template.parameters?.deletion !== undefined) {
-        delete template.parameters.deletion;
+      if (template.parameters[deletion] !== undefined) {
+        delete template.parameters[deletion];
       }
     });
   }
