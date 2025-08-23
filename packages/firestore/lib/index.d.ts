@@ -194,6 +194,22 @@ export namespace FirebaseFirestoreTypes {
      * @param documentPath A slash-separated path to a document.
      */
     doc(documentPath?: string): DocumentReference<T>;
+
+    /**
+     * Applies a custom data converter to this CollectionReference, allowing you
+     * to use your own custom model objects with Firestore. When you call add()
+     * on the returned CollectionReference instance, the provided converter will
+     * convert between Firestore data of type `NewDbModelType` and your custom
+     * type `NewAppModelType`.
+     *
+     * @param converter Converts objects to and from Firestore. Passing in
+     * `null` removes the current converter.
+     * @return A CollectionReference that uses the provided converter.
+     */
+    withConverter<NewAppModelType, NewDbModelType extends DocumentData = DocumentData>(
+      converter: FirestoreDataConverter<NewAppModelType>,
+    ): CollectionReference<NewAppModelType, NewDbModelType>;
+    withConverter(converter: null): CollectionReference;
   }
 
   /**
