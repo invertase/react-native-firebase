@@ -166,6 +166,81 @@ export namespace FirebaseFirestoreTypes {
           : never);
 
   /**
+   * Converter used by `withConverter()` to transform user objects of type
+   * `AppModelType` into Firestore data of type `DbModelType`.
+   *
+   * Using the converter allows you to specify generic type arguments when
+   * storing and retrieving objects from Firestore.
+   *
+   * In this context, an "AppModel" is a class that is used in an application to
+   * package together related information and functionality. Such a class could,
+   * for example, have properties with complex, nested data types, properties
+   * used for memoization, properties of types not supported by Firestore (such
+   * as `symbol` and `bigint`), and helper functions that perform compound
+   * operations. Such classes are not suitable and/or possible to store into a
+   * Firestore database. Instead, instances of such classes need to be converted
+   * to "plain old JavaScript objects" (POJOs) with exclusively primitive
+   * properties, potentially nested inside other POJOs or arrays of POJOs. In
+   * this context, this type is referred to as the "DbModel" and would be an
+   * object suitable for persisting into Firestore. For convenience,
+   * applications can implement `FirestoreDataConverter` and register the
+   * converter with Firestore objects, such as `DocumentReference` or `Query`,
+   * to automatically convert `AppModel` to `DbModel` when storing into
+   * Firestore, and convert `DbModel` to `AppModel` when retrieving from
+   * Firestore.
+   */
+  export interface FirestoreDataConverter<
+    AppModelType,
+    DbModelType extends DocumentData = DocumentData,
+  > {
+    /**
+     * Converts a custom model object of type
+     * `AppModelType` into a plain Javascript object (suitable for writing
+     * directly to the Firestore database) of type `DbModelType`.
+     *
+     * To use set() with `merge` and `mergeFields`,
+     * toFirestore() must be defined with `Partial<T>`.
+     *
+     * The `WithFieldValue<T>` type extends `T` to also allow FieldValues such
+     * as `FieldValue.delete()` to be used as property values.
+     */
+    toFirestore(modelObject: WithFieldValue<AppModelType>): WithFieldValue<DbModelType>;
+
+    /**
+     * Converts a custom model object of type
+     * `AppModelType` into a plain Javascript object (suitable for writing
+     * directly to the Firestore database) of type `DbModelType`.
+     *
+     * To use set() with `merge` and `mergeFields`,
+     * toFirestore() must be defined with `Partial<T>`.
+     *
+     * The `PartialWithFieldValue<T>` type extends `Partial<T>` to allow
+     * FieldValues such as `FieldValue.delete()` to be used as property values.
+     * It also supports nested `Partial` by allowing nested fields to be
+     * omitted.
+     */
+    toFirestore(
+      modelObject: PartialWithFieldValue<AppModelType>,
+      options: SetOptions,
+    ): PartialWithFieldValue<DbModelType>;
+
+    /**
+     * Called by the Firestore SDK to convert Firestore data into an object of
+     * type `AppModelType`. You can access your data by calling:
+     * `snapshot.data()`.
+     *
+     * Generally, the data returned from `snapshot.data()` can be cast to
+     * `DbModelType`; however, this is not guaranteed because Firestore does not
+     * enforce a schema on the database. For example, writes from a previous
+     * version of the application or writes from another client that did not use
+     * a type converter could have written data with different properties and/or
+     * property types. The implementation will need to choose whether to
+     * gracefully recover from non-conforming data or throw an error.
+     */
+    fromFirestore(snapshot: QueryDocumentSnapshot): AppModelType;
+  }
+
+  /**
    * A `CollectionReference` object can be used for adding documents, getting document references, and querying for
    * documents (using the methods inherited from `Query`).
    */
