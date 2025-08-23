@@ -122,6 +122,9 @@ export default {
     });
   },
   onConfigUpdated() {
-    return getWebError('unsupported', 'Not supported by the Firebase Javascript SDK.');
+    throw getWebError({
+      code: 'unsupported',
+      message: 'Not supported by the Firebase Javascript SDK.',
+    });
   },
 };

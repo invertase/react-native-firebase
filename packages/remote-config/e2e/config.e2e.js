@@ -786,6 +786,7 @@ describe('remoteConfig()', function () {
         const { getRemoteConfig, onConfigUpdated } = remoteConfigModular;
         try {
           onConfigUpdated(getRemoteConfig());
+          throw new Error('Did not reject');
         } catch (error) {
           error.message.should.containEql(
             "'listenerOrObserver' expected a function or an object with 'next' function.",
@@ -804,7 +805,9 @@ describe('remoteConfig()', function () {
         const { getRemoteConfig, onConfigUpdated } = remoteConfigModular;
         try {
           onConfigUpdated(getRemoteConfig(), () => {});
+          throw new Error('Did not reject');
         } catch (error) {
+          error.code.should.equal('unsupported');
           error.message.should.containEql('Not supported by the Firebase Javascript SDK');
         }
       });
