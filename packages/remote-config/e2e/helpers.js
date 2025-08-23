@@ -5,7 +5,7 @@ exports.updateTemplate = async function updateTemplate(operations) {
   const response = await fetch(
     'https://us-central1-' +
       getE2eTestProject() +
-      '.cloudfunctions.net/testFunctionRemoteConfigUpdate',
+      '.cloudfunctions.net/testFunctionRemoteConfigUpdateV2',
     {
       method: 'post',
       body: JSON.stringify({ data: operations }),

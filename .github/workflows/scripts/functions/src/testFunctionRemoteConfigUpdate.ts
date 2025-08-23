@@ -13,6 +13,10 @@ import { CallableRequest, onCall } from 'firebase-functions/v2/https';
 import { getAdminApp } from '.';
 
 export const testFunctionRemoteConfigUpdateV2 = onCall(
+  {
+    maxInstances: 1,
+    concurrency: 1,
+  },
   async (
     req: CallableRequest<{
       operations: {
