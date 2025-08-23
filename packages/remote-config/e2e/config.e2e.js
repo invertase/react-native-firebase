@@ -81,7 +81,6 @@ describe('remoteConfig()', function () {
     });
 
     describe('setConfigSettings()', function () {
-      // TODO: flakey in jet e2e tests
       xit('minimumFetchIntervalMillis sets correctly', async function () {
         await firebase.remoteConfig().setConfigSettings({ minimumFetchIntervalMillis: 3000 });
 
@@ -430,8 +429,7 @@ describe('remoteConfig()', function () {
     });
 
     describe('setConfigSettings()', function () {
-      // TODO flakey in jet e2e tests
-      xit('minimumFetchIntervalMillis sets correctly', async function () {
+      it('minimumFetchIntervalMillis sets correctly', async function () {
         const { getRemoteConfig, setConfigSettings } = remoteConfigModular;
         const remoteConfig = getRemoteConfig();
         await setConfigSettings(remoteConfig, { minimumFetchIntervalMillis: 3000 });
@@ -734,38 +732,74 @@ describe('remoteConfig()', function () {
       });
     });
 
-    xdescribe('onConfigUpdated on supported platforms', function () {
+    describe('onConfigUpdated on supported platforms', function () {
       if (Platform.other) {
         // Not supported on Web
         return;
       }
 
       let unsubscribers = [];
+      const timestamp = '_pls_rm_if_day_old_' + Date.now();
+
+      // We may get more than one callback if other e2e suites run parallel.
+      // But we have a specific parameter values, and we should only get one callback
+      // where the updatedKeys have a given parameter value.
+      // This verifier factory checks for that specific param name in updatedKeys, not a call count.
+      const getVerifier = function (paramName) {
+        return spy => {
+          if (!spy.called) return false;
+          for (let i = 0; i < spy.callCount; i++) {
+            const callbackEvent = spy.getCall(i).args[0];
+            if (callbackEvent.updatedKeys && callbackEvent.updatedKeys.includes(paramName)) {
+              return true;
+            }
+          }
+
+          return false;
+        };
+      };
 
       before(async function () {
         // configure a listener so any new templates are fetched and cached locally
-        const { fetchAndActivate, getRemoteConfig, onConfigUpdated } = remoteConfigModular;
+        const { fetchAndActivate, getAll, getRemoteConfig, onConfigUpdated } = remoteConfigModular;
         const unsubscribe = onConfigUpdated(getRemoteConfig(), () => {});
-
-        // clear out old test data
-        const response = await updateTemplate({
-          operations: {
-            delete: ['rttest_param1', 'rttest_param2', 'rttest_param3'],
-          },
-        });
-        should(response.result !== undefined).equal(true, 'response result not defined');
-        // console.error('before updateTemplate version: ' + response.result.templateVersion);
 
         // activate to make sure all values are in effect,
         // thus realtime updates only shows our testing work
+        await fetchAndActivate(getRemoteConfig());
+
+        // Check for any test param > 1hr old from busted test runs
+        const originalValues = getAll(getRemoteConfig());
+        const staleDeletes = [];
+        Object.keys(originalValues).forEach(param => {
+          if (param.includes('_pls_rm_if_day_old_')) {
+            let paramMillis = Number.parseInt(param.slice(param.lastIndexOf('_') + 1), 10);
+            if (paramMillis < Date.now() - 1000 * 60 * 60) {
+              staleDeletes.push(param);
+            }
+          }
+        });
+
+        // If there is orphaned data, delete it on the server and let that settle
+        if (staleDeletes.length > 0) {
+          const response = await updateTemplate({
+            operations: {
+              delete: staleDeletes,
+            },
+          });
+          should(response.result !== undefined).equal(true, 'response result not defined');
+          await Utils.sleep(1000);
+        }
+
         await fetchAndActivate(getRemoteConfig());
         unsubscribe();
       });
 
       after(async function () {
+        // clean up our own test data after the whole suite runs
         const response = await updateTemplate({
           operations: {
-            delete: ['rttest_param1', 'rttest_param2', 'rttest_param3'],
+            delete: ['rttest1' + timestamp, 'rttest2' + timestamp, 'rttest3' + timestamp],
           },
         });
         should(response.result !== undefined).equal(true, 'response result not defined');
@@ -773,17 +807,14 @@ describe('remoteConfig()', function () {
       });
 
       afterEach(async function () {
+        // make sure all our callbacks are unsubscribed after each test - convenient
         for (let i = 0; i < unsubscribers.length; i++) {
           unsubscribers[i]();
         }
         unsubscribers = [];
       });
 
-      // TODO:
-      //  native listener emits, so verifying native listener count is same as counting callback events
-      //  - so main idea is to focus on callback counts and make sure they are exactly as expected
-      // TODO: flakey in Jet e2e
-      xit('adds a listener and receives updates', async function () {
+      it('adds a listener and receives updates', async function () {
         // Configure our listener
         const { fetchAndActivate, getRemoteConfig, onConfigUpdated } = remoteConfigModular;
         const config = getRemoteConfig();
@@ -794,28 +825,21 @@ describe('remoteConfig()', function () {
         // Update the template using our cloud function, so our listeners are called
         let response = await updateTemplate({
           operations: {
-            add: [{ name: 'rttest_param1', value: Date.now() + '' }],
+            add: [{ name: 'rttest1' + timestamp, value: timestamp }],
           },
         });
         should(response.result !== undefined).equal(true, 'response result not defined');
 
         // Assert: we were called exactly once with expected update event contents
-        await Utils.spyToBeCalledTimesAsync(callback, 1, 60000);
-        should(callback.callCount).equal(1);
-        let callbackError = callback.getCall(0).args[1];
-        should(callbackError).equal(undefined, 'error ' + JSON.stringify(callbackError));
-        let callbackEvent = callback.getCall(0).args[0];
-        should(callbackEvent.updatedKeys.includes('rttest_param1')).equal(
-          true,
-          'updated param not in callback updated keys set',
+        await Utils.spyToBeCalledWithVerifierAsync(
+          callback,
+          getVerifier('rttest1' + timestamp),
+          60000,
         );
         unsubscribe();
       });
 
-      // TODO: flakey in Jet e2e, are we not clearing out old listeners properly?
-      //       AssertionError: expected 16 to be 2 at:
-      //       should(callbackEvent.updatedKeys.length).equal(2);
-      xit('manages multiple listeners', async function () {
+      it('manages multiple listeners', async function () {
         const { fetchAndActivate, getRemoteConfig, onConfigUpdated } = remoteConfigModular;
         const config = getRemoteConfig();
 
@@ -836,77 +860,73 @@ describe('remoteConfig()', function () {
         // Trigger an update that should call them all
         let response = await updateTemplate({
           operations: {
-            add: [{ name: 'rttest_param1', value: Date.now() + '' }],
+            add: [{ name: 'rttest1' + timestamp, value: Date.now() + '' }],
           },
         });
         should(response.result !== undefined).equal(true, 'response result not defined');
 
         // Assert all were called with expected values
-        await Utils.spyToBeCalledTimesAsync(callback1, 1, 60000);
-        await Utils.spyToBeCalledTimesAsync(callback2, 1, 60000);
-        await Utils.spyToBeCalledTimesAsync(callback3, 1, 60000);
-        [callback1, callback2, callback3].forEach(callback => {
-          should(callback.callCount).equal(1);
-          should(callback.getCall(0).args[1]).equal(
-            undefined,
-            'error ' + JSON.stringify(callback.getCall(0).args[1]),
-          );
-          let callbackEvent = callback.getCall(0).args[0];
-          should(callbackEvent.updatedKeys.length).equal(1);
-          should(callbackEvent.updatedKeys.includes('rttest_param1')).equal(
-            true,
-            'updated param not in callback updated keys set',
-          );
-        });
+        await Utils.spyToBeCalledWithVerifierAsync(
+          callback1,
+          getVerifier('rttest1' + timestamp),
+          60000,
+        );
+        await Utils.spyToBeCalledWithVerifierAsync(
+          callback2,
+          getVerifier('rttest1' + timestamp),
+          60000,
+        );
+        await Utils.spyToBeCalledWithVerifierAsync(
+          callback3,
+          getVerifier('rttest1' + timestamp),
+          60000,
+        );
 
         // Unsubscribe second listener and repeat, this time expecting no call on second listener
         unsubscribe2();
+        const callback2Count = callback2.callCount;
 
-        // Trigger update that should call listener 1 and 3
+        // Trigger update that should call listener 1 and 3 for these values
         response = await updateTemplate({
           operations: {
-            add: [{ name: 'rttest_param2', value: Date.now() + '' }],
+            add: [{ name: 'rttest2' + timestamp, value: Date.now() + '' }],
           },
         });
         should(response.result !== undefined).equal(true, 'response result not defined');
 
         // Assert first and third were called with expected values
-        await Utils.spyToBeCalledTimesAsync(callback1, 2, 60000);
-        await Utils.spyToBeCalledTimesAsync(callback3, 2, 60000);
+        await Utils.spyToBeCalledWithVerifierAsync(
+          callback1,
+          getVerifier('rttest2' + timestamp),
+          60000,
+        );
+        await Utils.spyToBeCalledWithVerifierAsync(
+          callback3,
+          getVerifier('rttest2' + timestamp),
+          60000,
+        );
 
         // callback2 should not have been called again - same call count expected
-        should(callback2.callCount).equal(1);
-
-        // assert callback 1 and 3 have new information
-        [callback1, callback3].forEach(callback => {
-          should(callback.callCount).equal(2);
-          should(callback.getCall(1).args[1]).equal(
-            undefined,
-            'error ' + JSON.stringify(callback.getCall(1).args[1]),
-          );
-          let callbackEvent = callback.getCall(1).args[0];
-          should(callbackEvent.updatedKeys.length).equal(2);
-          should(callbackEvent.updatedKeys.includes('rttest_param2')).equal(
-            true,
-            'updated param not in callback updated keys set',
-          );
-        });
+        should(callback2.callCount).equal(callback2Count);
 
         // Unsubscribe remaining listeners
         unsubscribe1();
         unsubscribe3();
+        const callback1Count = callback1.callCount;
+        const callback3Count = callback3.callCount;
 
         // Trigger an update that should call no listeners
         response = await updateTemplate({
           operations: {
-            add: [{ name: 'rttest_param3', value: Date.now() + '' }],
+            add: [{ name: 'rttest3' + timestamp, value: Date.now() + '' }],
           },
         });
         should(response.result !== undefined).equal(true, 'response result not defined');
         // Give the servers plenty of time to call us
         await Utils.sleep(20000);
-        should(callback1.callCount).equal(2);
-        should(callback3.callCount).equal(2);
+        should(callback1.callCount).equal(callback1Count);
+        should(callback2.callCount).equal(callback2Count);
+        should(callback3.callCount).equal(callback3Count);
       });
 
       // - react-native reload
