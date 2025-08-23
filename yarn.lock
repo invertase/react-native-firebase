@@ -11576,9 +11576,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase-tools@npm:^14.12.1":
-  version: 14.12.1
-  resolution: "firebase-tools@npm:14.12.1"
+"firebase-tools@npm:^14.14.0":
+  version: 14.14.0
+  resolution: "firebase-tools@npm:14.14.0"
   dependencies:
     "@electric-sql/pglite": "npm:^0.3.3"
     "@electric-sql/pglite-tools": "npm:^0.2.8"
@@ -11656,7 +11656,7 @@ __metadata:
     zod-to-json-schema: "npm:^3.24.5"
   bin:
     firebase: lib/bin/firebase.js
-  checksum: 10/a50359d8ea96fbeb974ec5651cead9cc0e4e7296dd750f9b06027ae95cfe2815b9c572c7eb79602b853d0924e81f182b208cc1f34d28cc68760ae76f94ab5c5c
+  checksum: 10/08d7120f7e43da62a92d85771bacbac9991f3f78bca60aea60c138bec0e1e29bcf6ad13b76380daaef17b860b7cbfb74296a7394617b0e51dbc2d309436dfdaf
   languageName: node
   linkType: hard
 
@@ -19941,7 +19941,7 @@ __metadata:
     cpy-cli: "npm:^6.0.0"
     detox: "npm:20.40.2"
     firebase: "npm:^12.1.0"
-    firebase-tools: "npm:^14.12.1"
+    firebase-tools: "npm:^14.14.0"
     jest-circus: "npm:^30.0.5"
     jest-environment-node: "npm:^30.0.5"
     jet: "npm:0.9.0-dev.13"
@@ -19990,7 +19990,7 @@ __metadata:
     eslint-plugin-prettier: "npm:^5.5.4"
     eslint-plugin-react: "npm:^7.37.5"
     firebase: "npm:^12.1.0"
-    firebase-tools: "npm:^14.12.1"
+    firebase-tools: "npm:^14.14.0"
     genversion: "npm:^3.2.0"
     google-java-format: "npm:^2.0.1"
     jest: "npm:^30.0.5"
