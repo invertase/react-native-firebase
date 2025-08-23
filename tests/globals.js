@@ -120,6 +120,12 @@ global.Utils = {
     return this.spyToBeCalledTimesAsync(spy, 1, timeout);
   },
   spyToBeCalledTimesAsync(spy, times = 2, timeout = 5000) {
+    const verifier = function (verifiedSpy) {
+      return verifiedSpy.callCount >= times;
+    };
+    return this.spyToBeCalledWithVerifierAsync(spy, verifier, timeout);
+  },
+  spyToBeCalledWithVerifierAsync(spy, verifier, timeout = 5000) {
     let interval;
     const { resolve, reject, promise } = Promise.defer();
     const timer = setTimeout(() => {
@@ -128,7 +134,7 @@ global.Utils = {
     }, timeout);
 
     interval = setInterval(() => {
-      if (spy.callCount >= times) {
+      if (verifier(spy)) {
         clearTimeout(timer);
         clearInterval(interval);
         resolve();
