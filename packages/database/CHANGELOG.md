@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.1.2](https://github.com/invertase/react-native-firebase/compare/v23.1.1...v23.1.2) (2025-08-25)
+
+### Bug Fixes
+
+- **database, other:** correctly reject for unsupported keepSynced API ([c7391f0](https://github.com/invertase/react-native-firebase/commit/c7391f09facebb0d02bb7b910fb52170c14096dd))
+
 ## [23.1.1](https://github.com/invertase/react-native-firebase/compare/v23.1.0...v23.1.1) (2025-08-22)
 
 **Note:** Version bump only for package @react-native-firebase/database
