@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppRegistry, Button, Text, View } from 'react-native';
+import { Button, Text, View } from 'react-native';
 
 // import firebase, { utils } from '@react-native-firebase/app';
 import {
@@ -15,7 +15,7 @@ import {
 
 connectDatabaseEmulator(getDatabase(), '127.0.0.1', 9000);
 
-function App() {
+export function DatabaseOnChildMovedTest() {
   return (
     <View>
       <Text>text text text</Text>
@@ -56,5 +56,3 @@ function App() {
     </View>
   );
 }
-
-AppRegistry.registerComponent('testing', () => App);
