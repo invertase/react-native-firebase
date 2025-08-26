@@ -1,5 +1,6 @@
+/* eslint-disable no-console */
 import React, { useState } from 'react';
-import { AppRegistry, Button, View, Text, Pressable } from 'react-native';
+import { Button, View, Text, Pressable } from 'react-native';
 
 import { getApp } from '@react-native-firebase/app';
 import { getAI, getGenerativeModel, Schema } from '@react-native-firebase/ai';
@@ -43,7 +44,7 @@ function OptionSelector({ selectedOption, setSelectedOption }) {
   );
 }
 
-function App() {
+export function AITestComponent() {
   const [selectedOption, setSelectedOption] = useState('image');
   const getMediaDetails = option => {
     switch (option) {
@@ -242,7 +243,7 @@ function App() {
           // This function calls a hypothetical external API that returns
           // a collection of weather information for a given location on a given date.
           // `location` is an object of the form { city: string, state: string }
-          async function fetchWeather({ location, date }) {
+          async function fetchWeather({ _location, _date }) {
             // For demo purposes, this hypothetical response is hardcoded here in the expected format.
             return {
               temperature: 38,
@@ -324,5 +325,3 @@ function App() {
     </View>
   );
 }
-
-AppRegistry.registerComponent('testing', () => App);
