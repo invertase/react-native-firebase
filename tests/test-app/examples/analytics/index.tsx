@@ -14,7 +14,10 @@ function App() {
             const app = firebase.app();
             const analyticsInstance = analytics();
             console.log('used to test typing for firebase and analytics()', app);
-            logEvent(analyticsInstance, "screen_view", {screen_name: 'screenName', screen_class: 'screenClass'});
+            logEvent(analyticsInstance, 'screen_view', {
+              screen_name: 'screenName',
+              screen_class: 'screenClass',
+            });
 
             await analytics().logAddToCart({
               currency: 'usd',
