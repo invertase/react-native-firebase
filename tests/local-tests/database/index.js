@@ -13,9 +13,10 @@ import {
   connectDatabaseEmulator,
 } from '@react-native-firebase/database';
 
-connectDatabaseEmulator(getDatabase(), '127.0.0.1', 9000);
-
 export function DatabaseOnChildMovedTest() {
+  // Defer connecting to the emulator until we display
+  connectDatabaseEmulator(getDatabase(), '127.0.0.1', 9000);
+
   return (
     <View>
       <Text>text text text</Text>
