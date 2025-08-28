@@ -30,6 +30,7 @@
     "@react-native-firebase/remote-config": "23.1.2",
     "@react-native-firebase/storage": "23.1.2",
     "postinstall-postinstall": "2.1.0",
+    "qrcode-generator": "^2.0.4",
     "react": "19.0.0",
     "react-native": "0.78.2",
     "react-native-device-info": "^14.0.4",
