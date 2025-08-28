@@ -1306,6 +1306,23 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   @ReactMethod
+  public void generateQrCodeUrl(
+      final String appName,
+      final String secretKey,
+      final String account,
+      final String issuer,
+      final Promise promise) {
+
+    TotpSecret secret = mTotpSecrets.get(secretKey);
+    if (secret == null) {
+      rejectPromiseWithCodeAndMessage(
+          promise, "invalid-multi-factor-secret", "can't find secret for provided key");
+      return;
+    }
+    promise.resolve(secret.generateQrCodeUrl(account, issuer));
+  }
+
+  @ReactMethod
   public void finalizeTotpEnrollment(
       final String appName,
       final String totpSecret,
