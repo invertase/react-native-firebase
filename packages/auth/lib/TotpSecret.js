@@ -49,4 +49,19 @@ export class TotpSecret {
     }
     return this.auth.native.generateQrCodeUrl(this.secretKey, accountName, issuer);
   }
+
+  /**
+   * Opens the specified QR Code URL in an OTP authenticator app on the device.
+   * The shared secret key and account name will be populated in the OTP authenticator app.
+   * The URL uses the otpauth:// scheme and will be opened on an app that handles this scheme,
+   * if it exists on the device, possibly opening the ecocystem-specific app store with a generic
+   * query for compatible apps if no app exists on the device.
+   *
+   * @param qrCodeUrl the URL to open in the app, from generateQrCodeUrl
+   */
+  openInOtpApp(qrCodeUrl) {
+    if (isString(qrCodeUrl) && !qrCodeUrl !== '') {
+      return this.auth.native.openInOtpApp(this.secretKey, qrCodeUrl);
+    }
+  }
 }

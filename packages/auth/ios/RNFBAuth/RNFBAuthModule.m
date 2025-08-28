@@ -1041,6 +1041,16 @@ RCT_EXPORT_METHOD(generateQrCodeUrl
   resolve(url);
 }
 
+RCT_EXPORT_METHOD(openInOtpApp
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)secretKey
+                  : (NSString *)qrCodeUri) {
+  DLog(@"generateQrCodeUrl using secretKey: %@", secretKey);
+  FIRTOTPSecret *totpSecret = cachedTotpSecrets[secretKey];
+  DLog(@"openInOtpApp using qrCodeUri: %@", qrCodeUri);
+  [totpSecret openInOTPAppWithQRCodeURL:qrCodeUri];
+}
+
 RCT_EXPORT_METHOD(getSession
                   : (FIRApp *)firebaseApp
                   : (RCTPromiseResolveBlock)resolve
