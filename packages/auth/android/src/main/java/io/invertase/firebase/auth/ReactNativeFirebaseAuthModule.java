@@ -1323,6 +1323,14 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   @ReactMethod
+  public void openInOtpApp(final String appName, final String secretKey, final String qrCodeUri) {
+    TotpSecret secret = mTotpSecrets.get(secretKey);
+    if (secret != null) {
+      secret.openInOtpApp(qrCodeUri);
+    }
+  }
+
+  @ReactMethod
   public void finalizeTotpEnrollment(
       final String appName,
       final String totpSecret,
