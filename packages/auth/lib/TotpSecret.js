@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { isString } from '@react-native-firebase/app/lib/common';
+
 export class TotpSecret {
   constructor(secretKey, auth) {
     // The native TotpSecret has many more properties, but they are
@@ -37,17 +39,14 @@ export class TotpSecret {
    *
    * @param accountName the name of the account/app along with a user identifier.
    * @param issuer issuer of the TOTP (likely the app name).
-   * @returns A QR code URL string.
+   * @returns A Promise that resolves to a QR code URL string.
    */
-  generateQrCodeUrl(_accountName, _issuer) {
-    throw new Error('`generateQrCodeUrl` is not supported on the native Firebase SDKs.');
-    // if (!this.hashingAlgorithm || !this.codeLength) {
-    //   return "";
-    // }
-
-    // return (
-    //   `otpauth://totp/${issuer}:${accountName}?secret=${this.secretKey}&issuer=${issuer}` +
-    //   `&algorithm=${this.hashingAlgorithm}&digits=${this.codeLength}`
-    // );
+  async generateQrCodeUrl(accountName, issuer) {
+    // accountName and issure are nullable in the API specification but are
+    // required by tha native SDK. The JS SDK returns '' if they are missing/empty.
+    if (!isString(accountName) || !isString(issuer) || accountName === '' || issuer === '') {
+      return '';
+    }
+    return this.auth.native.generateQrCodeUrl(this.secretKey, accountName, issuer);
   }
 }

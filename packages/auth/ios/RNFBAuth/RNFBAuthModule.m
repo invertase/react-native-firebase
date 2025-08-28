@@ -1026,6 +1026,21 @@ RCT_EXPORT_METHOD(generateTotpSecret
                                 }];
 }
 
+RCT_EXPORT_METHOD(generateQrCodeUrl
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)secretKey
+                  : (NSString *)accountName
+                  : (NSString *)issuer
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  DLog(@"generateQrCodeUrl using instance resolve generateQrCodeUrl: %@", firebaseApp.name);
+  DLog(@"generateQrCodeUrl using secretKey: %@", secretKey);
+  FIRTOTPSecret *totpSecret = cachedTotpSecrets[secretKey];
+  NSString *url = [totpSecret generateQRCodeURLWithAccountName:accountName issuer:issuer];
+  DLog(@"generateQrCodeUrl got QR Code URL %@", url);
+  resolve(url);
+}
+
 RCT_EXPORT_METHOD(getSession
                   : (FIRApp *)firebaseApp
                   : (RCTPromiseResolveBlock)resolve
