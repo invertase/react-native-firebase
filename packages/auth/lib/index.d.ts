@@ -275,6 +275,52 @@ export namespace FirebaseAuthTypes {
     assertion(credential: AuthCredential): MultiFactorAssertion;
   }
 
+  /**
+   * Represents a TOTP secret that is used for enrolling a TOTP second factor.
+   * Contains the shared secret key and other parameters to generate time-based
+   * one-time passwords. Implements methods to retrieve the shared secret key,
+   * generate a QR code URL, and open the QR code URL in an OTP authenticator app.
+   *
+   * Differs from standard firebase JS implementation in three ways:
+   * 1- there is no visibility into ony properties other than the secretKey
+   * 2- there is an added `openInOtpApp` method supported by native SDKs
+   * 3- the return value of generateQrCodeUrl is a Promise because react-native bridge is async
+   * @public
+   */
+  export declare class TotpSecret {
+    /** used internally to support non-default auth instances */
+    private readonly auth;
+    /**
+     * Shared secret key/seed used for enrolling in TOTP MFA and generating OTPs.
+     */
+    readonly secretKey: string;
+
+    private constructor();
+
+    /**
+     * Returns a QR code URL as described in
+     * https://github.com/google/google-authenticator/wiki/Key-Uri-Format
+     * This can be displayed to the user as a QR code to be scanned into a TOTP app like Google Authenticator.
+     * If the optional parameters are unspecified, an accountName of userEmail and issuer of firebaseAppName are used.
+     *
+     * @param accountName the name of the account/app along with a user identifier.
+     * @param issuer issuer of the TOTP (likely the app name).
+     * @returns A Promise that resolves to a QR code URL string.
+     */
+    async generateQrCodeUrl(accountName?: string, issuer?: string): Promise<string>;
+
+    /**
+     * Opens the specified QR Code URL in an OTP authenticator app on the device.
+     * The shared secret key and account name will be populated in the OTP authenticator app.
+     * The URL uses the otpauth:// scheme and will be opened on an app that handles this scheme,
+     * if it exists on the device, possibly opening the ecocystem-specific app store with a generic
+     * query for compatible apps if no app exists on the device.
+     *
+     * @param qrCodeUrl the URL to open in the app, from generateQrCodeUrl
+     */
+    openInOtpApp(qrCodeUrl: string): string;
+  }
+
   export interface TotpMultiFactorGenerator {
     FACTOR_ID: FactorId.TOTP;
 
