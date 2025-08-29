@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import { countTokens } from '../lib/methods/count-tokens';
 import { CountTokensRequest, RequestOptions } from '../lib/types';
 import { ApiSettings } from '../lib/types/internal';
 import { Task } from '../lib/requests/request';
-import { GoogleAIBackend } from '../lib/backend';
+import { GoogleAIBackend, VertexAIBackend } from '../lib/backend';
 import { SpiedFunction } from 'jest-mock';
 import { mapCountTokensRequest } from '../lib/googleai-mappers';
 

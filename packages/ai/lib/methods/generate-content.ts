@@ -29,6 +29,15 @@ import { ApiSettings } from '../types/internal';
 import { BackendType } from '../public-types';
 import * as GoogleAIMapper from '../googleai-mappers';
 
+/**
+ * Generates a content stream from a request body.
+ *
+ * @param apiSettings The {@link ApiSettings} to use for the request.
+ * @param model The model to use for the request.
+ * @param params The {@link GenerateContentRequest} to send.
+ * @param requestOptions The {@link RequestOptions} to use for the request.
+ * @returns The {@link GenerateContentStreamResult} from the request.
+ */
 export async function generateContentStream(
   apiSettings: ApiSettings,
   model: string,
@@ -48,6 +57,16 @@ export async function generateContentStream(
   );
   return processStream(response, apiSettings);
 }
+
+/**
+ * Generates content from a request body.
+ *
+ * @param apiSettings The {@link ApiSettings} to use for the request.
+ * @param model The model to use for the request.
+ * @param params The {@link GenerateContentRequest} to send.
+ * @param requestOptions The {@link RequestOptions} to use for the request.
+ * @returns The {@link GenerateContentResult} from the request.
+ */
 
 export async function generateContent(
   apiSettings: ApiSettings,
@@ -73,6 +92,13 @@ export async function generateContent(
   };
 }
 
+/**
+ * Processes a generate content response from a request.
+ *
+ * @param response The {@link Response} to process.
+ * @param apiSettings The {@link ApiSettings} to use for the request.
+ * @returns The {@link GenerateContentResponse} from the request.
+ */
 async function processGenerateContentResponse(
   response: Response,
   apiSettings: ApiSettings,

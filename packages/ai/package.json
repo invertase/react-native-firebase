@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/ai",
-  "version": "22.2.0",
+  "version": "23.2.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Firebase AI is a fully-managed, unified AI development platform for building and using generative AI",
   "main": "./dist/commonjs/index.js",
@@ -27,7 +27,7 @@
     "generative-ai"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "22.2.0"
+    "@react-native-firebase/app": "23.2.0"
   },
   "publishConfig": {
     "access": "public",
@@ -35,8 +35,8 @@
   },
   "devDependencies": {
     "@types/text-encoding": "^0.0.40",
-    "react-native-builder-bob": "^0.40.6",
-    "typescript": "^5.8.3"
+    "react-native-builder-bob": "^0.40.13",
+    "typescript": "^5.9.2"
   },
   "source": "./lib/index.ts",
   "exports": {
@@ -84,6 +84,6 @@
   "dependencies": {
     "react-native-fetch-api": "^3.0.0",
     "text-encoding": "^0.7.0",
-    "web-streams-polyfill": "^4.1.0"
+    "web-streams-polyfill": "^4.2.0"
   }
 }

@@ -1,7 +1,7 @@
 ---
 title: Remote Config
 description: Installation and getting started with Remote Config.
-icon: //static.invertase.io/assets/firebase/remote-config.svg
+icon: //firebase.google.com/static/images/products/icons/run_remote_config.svg
 next: /perf/usage
 previous: /ml/usage
 ---

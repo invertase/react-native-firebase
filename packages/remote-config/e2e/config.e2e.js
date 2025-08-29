@@ -81,7 +81,6 @@ describe('remoteConfig()', function () {
     });
 
     describe('setConfigSettings()', function () {
-      // TODO: flakey in jet e2e tests
       xit('minimumFetchIntervalMillis sets correctly', async function () {
         await firebase.remoteConfig().setConfigSettings({ minimumFetchIntervalMillis: 3000 });
 
@@ -348,9 +347,7 @@ describe('remoteConfig()', function () {
 
       it('returns a "null" value as reset() API is not supported on iOS', async function () {
         if (Platform.ios) {
-          const reset = await firebase.remoteConfig().reset();
-
-          should(reset).equal(null);
+          should(await firebase.remoteConfig().reset()).equal(null);
         }
       });
     });
@@ -403,27 +400,21 @@ describe('remoteConfig()', function () {
     describe('fetchAndActivate()', function () {
       it('returns true/false if activated', async function () {
         const { getRemoteConfig, fetchAndActivate } = remoteConfigModular;
-        const activated = await fetchAndActivate(getRemoteConfig());
-        activated.should.be.a.Boolean();
+        (await fetchAndActivate(getRemoteConfig())).should.be.a.Boolean();
       });
     });
 
     describe('activate()', function () {
       it('with expiration provided', async function () {
         const { getRemoteConfig, fetch, activate } = remoteConfigModular;
-        const remoteConfig = getRemoteConfig();
-
-        await fetch(remoteConfig, 0);
-        const activated = await activate(remoteConfig);
-        activated.should.be.a.Boolean();
+        await fetch(getRemoteConfig(), 0);
+        (await activate(getRemoteConfig())).should.be.a.Boolean();
       });
 
       it('without expiration provided', async function () {
         const { getRemoteConfig, fetch, activate } = remoteConfigModular;
-        const remoteConfig = getRemoteConfig();
-        await fetch(remoteConfig);
-        const activated = await activate(remoteConfig);
-        activated.should.be.a.Boolean();
+        await fetch(getRemoteConfig());
+        (await activate(getRemoteConfig())).should.be.a.Boolean();
       });
     });
 
@@ -438,12 +429,10 @@ describe('remoteConfig()', function () {
     });
 
     describe('setConfigSettings()', function () {
-      // TODO flakey in jet e2e tests
-      xit('minimumFetchIntervalMillis sets correctly', async function () {
+      it('minimumFetchIntervalMillis sets correctly', async function () {
         const { getRemoteConfig, setConfigSettings } = remoteConfigModular;
         const remoteConfig = getRemoteConfig();
         await setConfigSettings(remoteConfig, { minimumFetchIntervalMillis: 3000 });
-
         remoteConfig.settings.minimumFetchIntervalMillis.should.be.equal(3000);
       });
 
@@ -451,7 +440,6 @@ describe('remoteConfig()', function () {
         const { getRemoteConfig, setConfigSettings } = remoteConfigModular;
         const remoteConfig = getRemoteConfig();
         await setConfigSettings(remoteConfig, { fetchTimeMillis: 3000 });
-
         remoteConfig.settings.fetchTimeMillis.should.be.equal(3000);
       });
     });
@@ -459,11 +447,8 @@ describe('remoteConfig()', function () {
     describe('ensureInitialized()', function () {
       it('should ensure remote config has been initialized and values are accessible', async function () {
         const { getRemoteConfig, ensureInitialized, getValue } = remoteConfigModular;
-        const remoteConfig = getRemoteConfig();
-
-        const ensure = await ensureInitialized(remoteConfig);
-        const number = getValue(remoteConfig, 'number');
-
+        const ensure = await ensureInitialized(getRemoteConfig());
+        const number = getValue(getRemoteConfig(), 'number');
         should(ensure).equal(null);
         number.getSource().should.equal('remote');
         number.asNumber().should.equal(1337);
@@ -473,11 +458,11 @@ describe('remoteConfig()', function () {
     describe('getAll() with remote', function () {
       it('should return an object of all available values', function () {
         const { getRemoteConfig, getAll } = remoteConfigModular;
-        const remoteConfig = getRemoteConfig();
-        const config = getAll(remoteConfig);
+        // This test fixture is setup in the firebase console in cloud
+        const config = getAll(getRemoteConfig());
         config.number.asNumber().should.equal(1337);
         config.number.getSource().should.equal('remote');
-        // firebase console stores as a string
+        // firebase console stores as a string so we must coerce
         config.float.asNumber().should.equal(123.456);
         config.float.getSource().should.equal('remote');
         config.prefix_1.asNumber().should.equal(1);
@@ -488,18 +473,16 @@ describe('remoteConfig()', function () {
     describe('setDefaults()', function () {
       it('sets default values from key values object', async function () {
         const { getRemoteConfig, setDefaults, getAll } = remoteConfigModular;
-        const remoteConfig = getRemoteConfig();
-        await setDefaults(remoteConfig, {
+        await setDefaults(getRemoteConfig(), {
           some_key: 'I do not exist',
           some_key_1: 1337,
           some_key_2: true,
         });
 
-        const values = getAll(remoteConfig);
+        const values = getAll(getRemoteConfig());
         values.some_key.asString().should.equal('I do not exist');
         values.some_key_1.asNumber().should.equal(1337);
-        should.equal(values.some_key_2.asBoolean(), true);
-
+        values.some_key_2.asBoolean().should.equal(true);
         values.some_key.getSource().should.equal('default');
         values.some_key_1.getSource().should.equal('default');
         values.some_key_2.getSource().should.equal('default');
@@ -521,20 +504,12 @@ describe('remoteConfig()', function () {
             test6: 'on',
           });
 
-          const test1 = getValue(remoteConfig, 'test1').asBoolean();
-
-          const test2 = getValue(remoteConfig, 'test2').asBoolean();
-          const test3 = getValue(remoteConfig, 'test3').asBoolean();
-          const test4 = getValue(remoteConfig, 'test4').asBoolean();
-          const test5 = getValue(remoteConfig, 'test5').asBoolean();
-          const test6 = getValue(remoteConfig, 'test6').asBoolean();
-
-          test1.should.equal(true);
-          test2.should.equal(true);
-          test3.should.equal(true);
-          test4.should.equal(true);
-          test5.should.equal(true);
-          test6.should.equal(true);
+          getValue(remoteConfig, 'test1').asBoolean().should.equal(true);
+          getValue(remoteConfig, 'test2').asBoolean().should.equal(true);
+          getValue(remoteConfig, 'test3').asBoolean().should.equal(true);
+          getValue(remoteConfig, 'test4').asBoolean().should.equal(true);
+          getValue(remoteConfig, 'test5').asBoolean().should.equal(true);
+          getValue(remoteConfig, 'test6').asBoolean().should.equal(true);
         });
 
         it("returns 'false' for values that resolve to a falsy", async function () {
@@ -545,29 +520,20 @@ describe('remoteConfig()', function () {
             test2: 'foo',
           });
 
-          const test1 = getValue(remoteConfig, 'test1').asBoolean();
-
-          const test2 = getValue(remoteConfig, 'test2').asBoolean();
-
-          test1.should.equal(false);
-          test2.should.equal(false);
+          getValue(remoteConfig, 'test1').asBoolean().should.equal(false);
+          getValue(remoteConfig, 'test2').asBoolean().should.equal(false);
         });
 
         it("returns 'false' if the source is static", function () {
           const { getRemoteConfig, getValue } = remoteConfigModular;
-          const remoteConfig = getRemoteConfig();
-          const unknownKey = getValue(remoteConfig, 'unknownKey').asBoolean();
-
-          unknownKey.should.equal(false);
+          getValue(getRemoteConfig(), 'unknownKey').asBoolean().should.equal(false);
         });
       });
 
       describe('getValue().asString()', function () {
         it('returns the value as a string', function () {
           const { getRemoteConfig, getAll } = remoteConfigModular;
-          const remoteConfig = getRemoteConfig();
-          const config = getAll(remoteConfig);
-
+          const config = getAll(getRemoteConfig());
           config.number.asString().should.equal('1337');
           config.float.asString().should.equal('123.456');
           config.prefix_1.asString().should.equal('1');
@@ -578,9 +544,7 @@ describe('remoteConfig()', function () {
       describe('getValue().asNumber()', function () {
         it('returns the value as a number if it can be evaluated as a number', function () {
           const { getRemoteConfig, getAll } = remoteConfigModular;
-          const remoteConfig = getRemoteConfig();
-          const config = getAll(remoteConfig);
-
+          const config = getAll(getRemoteConfig());
           config.number.asNumber().should.equal(1337);
           config.float.asNumber().should.equal(123.456);
           config.prefix_1.asNumber().should.equal(1);
@@ -588,37 +552,29 @@ describe('remoteConfig()', function () {
 
         it('returns the value "0" if it cannot be evaluated as a number', function () {
           const { getRemoteConfig, getAll } = remoteConfigModular;
-          const remoteConfig = getRemoteConfig();
-          const config = getAll(remoteConfig);
-
+          const config = getAll(getRemoteConfig());
           config.bool.asNumber().should.equal(0);
           config.string.asNumber().should.equal(0);
         });
 
         it("returns '0' if the source is static", function () {
           const { getRemoteConfig, getValue } = remoteConfigModular;
-          const remoteConfig = getRemoteConfig();
-          const unknownKey = getValue(remoteConfig, 'unknownKey').asNumber();
-
-          unknownKey.should.equal(0);
+          getValue(getRemoteConfig(), 'unknownKey').asNumber().should.equal(0);
         });
       });
 
       describe('getValue().getSource()', function () {
         it('returns the correct source as default or remote', async function () {
           const { getRemoteConfig, setDefaults, getAll } = remoteConfigModular;
-          const remoteConfig = getRemoteConfig();
-          await setDefaults(remoteConfig, {
+          await setDefaults(getRemoteConfig(), {
             test1: '2',
             test2: 'foo',
           });
 
-          const config = getAll(remoteConfig);
-
+          const config = getAll(getRemoteConfig());
           config.number.getSource().should.equal('remote');
           config.bool.getSource().should.equal('remote');
           config.string.getSource().should.equal('remote');
-
           config.test1.getSource().should.equal('default');
           config.test2.getSource().should.equal('default');
         });
@@ -626,18 +582,15 @@ describe('remoteConfig()', function () {
 
       it("returns an empty string for a static value for keys that doesn't exist", function () {
         const { getRemoteConfig, getValue } = remoteConfigModular;
-        const remoteConfig = getRemoteConfig();
-
-        const configValue = getValue(remoteConfig, 'fourOhFour');
+        const configValue = getValue(getRemoteConfig(), 'fourOhFour');
         configValue.getSource().should.equal('static');
-        should.equal(configValue.asString(), '');
+        configValue.asString().should.equal('');
       });
 
       it('errors if no key provided', async function () {
         const { getRemoteConfig, getValue } = remoteConfigModular;
-        const remoteConfig = getRemoteConfig();
         try {
-          getValue(remoteConfig);
+          getValue(getRemoteConfig());
           return Promise.reject(new Error('Did not throw'));
         } catch (error) {
           error.message.should.containEql('must be a string');
@@ -647,9 +600,8 @@ describe('remoteConfig()', function () {
 
       it('errors if key not a string', async function () {
         const { getRemoteConfig, getValue } = remoteConfigModular;
-        const remoteConfig = getRemoteConfig();
         try {
-          getValue(remoteConfig, 1234);
+          getValue(getRemoteConfig(), 1234);
           return Promise.reject(new Error('Did not throw'));
         } catch (error) {
           error.message.should.containEql('must be a string');
@@ -661,19 +613,12 @@ describe('remoteConfig()', function () {
     describe('getAll()', function () {
       it('gets all values', async function () {
         const { getRemoteConfig, getAll } = remoteConfigModular;
-        const remoteConfig = getRemoteConfig();
-        const config = getAll(remoteConfig);
-
+        const config = getAll(getRemoteConfig());
         config.should.be.a.Object();
         config.should.have.keys('bool', 'string', 'number');
-
-        const boolValue = config.bool.asBoolean();
-        const stringValue = config.string.asString();
-        const numberValue = config.number.asNumber();
-
-        boolValue.should.be.equal(true);
-        stringValue.should.be.equal('invertase');
-        numberValue.should.be.equal(1337);
+        config.bool.asBoolean().should.be.equal(true);
+        config.string.asString().should.be.equal('invertase');
+        config.number.asNumber().should.be.equal(1337);
       });
     });
 
@@ -685,64 +630,48 @@ describe('remoteConfig()', function () {
 
       it('sets defaults from remote_config_resource_test file', async function () {
         const { getRemoteConfig, getAll, setDefaultsFromResource } = remoteConfigModular;
-        const remoteConfig = getRemoteConfig();
-
-        await setDefaultsFromResource(remoteConfig, 'remote_config_resource_test');
-        const config = getAll(remoteConfig);
+        await setDefaultsFromResource(getRemoteConfig(), 'remote_config_resource_test');
+        const config = getAll(getRemoteConfig());
         config.company.getSource().should.equal('default');
         config.company.asString().should.equal('invertase');
       });
 
       it('rejects if resource not found', async function () {
         const { getRemoteConfig, setDefaultsFromResource } = remoteConfigModular;
-        const remoteConfig = getRemoteConfig();
-        let error;
         try {
-          await setDefaultsFromResource(remoteConfig, 'i_do_not_exist');
-        } catch (e) {
-          error = e;
-        }
-        if (!error) {
+          await setDefaultsFromResource(getRemoteConfig(), 'i_do_not_exist');
           throw new Error('Did not reject');
+        } catch (e) {
+          e.code.should.equal('remoteConfig/resource_not_found');
+          e.message.should.containEql('was not found');
         }
-        // TODO dasherize error namespace
-        error.code.should.equal('remoteConfig/resource_not_found');
-        error.message.should.containEql('was not found');
       });
     });
 
     describe('reset()', function () {
-      it('resets all activated, fetched and default config', async function () {
+      it('resets all activated, fetched and default config on supported SDKs', async function () {
         const { getRemoteConfig, setDefaults, getAll, reset } = remoteConfigModular;
         const remoteConfig = getRemoteConfig();
+        // Currently only supported on firebase-android-SDK
         if (Platform.android) {
           await setDefaults(remoteConfig, {
             some_key: 'I do not exist',
           });
 
           const config = getAll(remoteConfig);
-
           const remoteProps = ['some_key'];
-
           config.should.have.keys(...remoteProps);
-
           await reset(remoteConfig);
-
-          const configRetrieveAgain = getAll(remoteConfig);
-
-          should(configRetrieveAgain).not.have.properties(remoteProps);
-        } else {
-          this.skip();
+          getAll(remoteConfig).should.not.have.properties(remoteProps);
         }
       });
 
-      it('returns a "null" value as reset() API is not supported on iOS', async function () {
+      it('returns a "null" value for reset() API on unsupported SDKs', async function () {
         const { getRemoteConfig, reset } = remoteConfigModular;
-        const remoteConfig = getRemoteConfig();
+        // reset() only supported on firebase-android-sdk, and not even implemented on firebase-js-sdk
+        // so for Other this API does not even exist, but on iOS it returns null. Verify that.
         if (Platform.ios) {
-          const resetConfig = await reset(remoteConfig);
-
-          should(resetConfig).equal(null);
+          should(await reset(getRemoteConfig())).equal(null);
         }
       });
     });
@@ -750,70 +679,127 @@ describe('remoteConfig()', function () {
     describe('defaultConfig', function () {
       it('gets plain key/value object of defaults', async function () {
         const { getRemoteConfig, setDefaults } = remoteConfigModular;
-        const remoteConfig = getRemoteConfig();
-
-        await setDefaults(remoteConfig, {
+        await setDefaults(getRemoteConfig(), {
           some_key: 'some_key',
         });
-
-        should(remoteConfig.defaultConfig.some_key).equal('some_key');
+        getRemoteConfig().defaultConfig.some_key.should.equal('some_key');
       });
     });
 
     describe('setLogLevel', function () {
       it('should return "error" log level', function () {
         const { getRemoteConfig, setLogLevel } = remoteConfigModular;
-        const remoteConfig = getRemoteConfig();
-
-        const logLevel = setLogLevel(remoteConfig, 'error');
-
-        should(logLevel).equal('error');
+        setLogLevel(getRemoteConfig(), 'error').should.equal('error');
       });
     });
 
     describe('isSupported', function () {
       it('should return "true"', async function () {
         const { isSupported } = remoteConfigModular;
-
-        const supported = await isSupported();
-
-        should(supported).equal(true);
+        (await isSupported()).should.equal(true);
       });
     });
 
-    describe('onConfigUpdated', function () {
+    describe('onConfigUpdated parameter verification', function () {
+      it('throws an error if no callback provided', async function () {
+        const { getRemoteConfig, onConfigUpdated } = remoteConfigModular;
+        try {
+          onConfigUpdated(getRemoteConfig());
+          throw new Error('Did not reject');
+        } catch (error) {
+          error.message.should.containEql(
+            "'listenerOrObserver' expected a function or an object with 'next' function.",
+          );
+        }
+      });
+    });
+
+    describe('onConfigUpdated on un-supported platforms', function () {
+      if (!Platform.other) {
+        // Supported on non-other, tests are in the following describe block
+        return;
+      }
+
+      it('returns a descriptive error message if called', async function () {
+        const { getRemoteConfig, onConfigUpdated } = remoteConfigModular;
+        try {
+          onConfigUpdated(getRemoteConfig(), () => {});
+          throw new Error('Did not reject');
+        } catch (error) {
+          error.code.should.equal('unsupported');
+          error.message.should.containEql('Not supported by the Firebase Javascript SDK');
+        }
+      });
+    });
+
+    describe('onConfigUpdated on supported platforms', function () {
       if (Platform.other) {
-        // Not supported on Web.
+        // Not supported on Web
         return;
       }
 
       let unsubscribers = [];
+      const timestamp = '_pls_rm_if_day_old_' + Date.now();
+
+      // We may get more than one callback if other e2e suites run parallel.
+      // But we have a specific parameter values, and we should only get one callback
+      // where the updatedKeys have a given parameter value.
+      // This verifier factory checks for that specific param name in updatedKeys, not a call count.
+      const getVerifier = function (paramName) {
+        return spy => {
+          if (!spy.called) return false;
+          for (let i = 0; i < spy.callCount; i++) {
+            const callbackEvent = spy.getCall(i).args[0];
+            if (callbackEvent.updatedKeys && callbackEvent.updatedKeys.includes(paramName)) {
+              return true;
+            }
+          }
+
+          return false;
+        };
+      };
 
       before(async function () {
         // configure a listener so any new templates are fetched and cached locally
-        const { fetchAndActivate, getRemoteConfig, onConfigUpdated } = remoteConfigModular;
-        const config = getRemoteConfig();
-        const unsubscribe = onConfigUpdated(config, () => {});
-
-        // clear out old test data
-        const response = await updateTemplate({
-          operations: {
-            delete: ['rttest_param1', 'rttest_param2', 'rttest_param3'],
-          },
-        });
-        should(response.result !== undefined).equal(true, 'response result not defined');
-        // console.error('before updateTemplate version: ' + response.result.templateVersion);
+        const { fetchAndActivate, getAll, getRemoteConfig, onConfigUpdated } = remoteConfigModular;
+        const unsubscribe = onConfigUpdated(getRemoteConfig(), () => {});
 
         // activate to make sure all values are in effect,
         // thus realtime updates only shows our testing work
+        await fetchAndActivate(getRemoteConfig());
+
+        // Check for any test param > 1hr old from busted test runs
+        const originalValues = getAll(getRemoteConfig());
+        const staleDeletes = [];
+        Object.keys(originalValues).forEach(param => {
+          if (param.includes('_pls_rm_if_day_old_')) {
+            let paramMillis = Number.parseInt(param.slice(param.lastIndexOf('_') + 1), 10);
+            if (paramMillis < Date.now() - 1000 * 60 * 60) {
+              staleDeletes.push(param);
+            }
+          }
+        });
+
+        // If there is orphaned data, delete it on the server and let that settle
+        if (staleDeletes.length > 0) {
+          const response = await updateTemplate({
+            operations: {
+              delete: staleDeletes,
+            },
+          });
+          should(response.result !== undefined).equal(true, 'response result not defined');
+          await Utils.sleep(1000);
+        }
+
         await fetchAndActivate(getRemoteConfig());
         unsubscribe();
       });
 
       after(async function () {
+        // clean up our own test data after the whole suite runs
         const response = await updateTemplate({
           operations: {
-            delete: ['rttest_param1', 'rttest_param2', 'rttest_param3'],
+            delete: ['rttest1' + timestamp, 'rttest2' + timestamp, 'rttest3' + timestamp],
           },
         });
         should(response.result !== undefined).equal(true, 'response result not defined');
@@ -821,17 +807,14 @@ describe('remoteConfig()', function () {
       });
 
       afterEach(async function () {
+        // make sure all our callbacks are unsubscribed after each test - convenient
         for (let i = 0; i < unsubscribers.length; i++) {
           unsubscribers[i]();
         }
         unsubscribers = [];
       });
 
-      // TODO:
-      //  native listener emits, so verifying native listener count is same as counting callback events
-      //  - so main idea is to focus on callback counts and make sure they are exactly as expected
-      // TODO: flakey in Jet e2e
-      xit('adds a listener and receives updates', async function () {
+      it('adds a listener and receives updates', async function () {
         // Configure our listener
         const { fetchAndActivate, getRemoteConfig, onConfigUpdated } = remoteConfigModular;
         const config = getRemoteConfig();
@@ -842,28 +825,21 @@ describe('remoteConfig()', function () {
         // Update the template using our cloud function, so our listeners are called
         let response = await updateTemplate({
           operations: {
-            add: [{ name: 'rttest_param1', value: Date.now() + '' }],
+            add: [{ name: 'rttest1' + timestamp, value: timestamp }],
           },
         });
         should(response.result !== undefined).equal(true, 'response result not defined');
 
         // Assert: we were called exactly once with expected update event contents
-        await Utils.spyToBeCalledTimesAsync(callback, 1, 60000);
-        should(callback.callCount).equal(1);
-        let callbackError = callback.getCall(0).args[1];
-        should(callbackError).equal(undefined, 'error ' + JSON.stringify(callbackError));
-        let callbackEvent = callback.getCall(0).args[0];
-        should(callbackEvent.updatedKeys.includes('rttest_param1')).equal(
-          true,
-          'updated param not in callback updated keys set',
+        await Utils.spyToBeCalledWithVerifierAsync(
+          callback,
+          getVerifier('rttest1' + timestamp),
+          60000,
         );
         unsubscribe();
       });
 
-      // TODO: flakey in Jet e2e, are we not clearing out old listeners properly?
-      //       AssertionError: expected 16 to be 2 at:
-      //       should(callbackEvent.updatedKeys.length).equal(2);
-      xit('manages multiple listeners', async function () {
+      it('manages multiple listeners', async function () {
         const { fetchAndActivate, getRemoteConfig, onConfigUpdated } = remoteConfigModular;
         const config = getRemoteConfig();
 
@@ -884,77 +860,73 @@ describe('remoteConfig()', function () {
         // Trigger an update that should call them all
         let response = await updateTemplate({
           operations: {
-            add: [{ name: 'rttest_param1', value: Date.now() + '' }],
+            add: [{ name: 'rttest1' + timestamp, value: Date.now() + '' }],
           },
         });
         should(response.result !== undefined).equal(true, 'response result not defined');
 
         // Assert all were called with expected values
-        await Utils.spyToBeCalledTimesAsync(callback1, 1, 60000);
-        await Utils.spyToBeCalledTimesAsync(callback2, 1, 60000);
-        await Utils.spyToBeCalledTimesAsync(callback3, 1, 60000);
-        [callback1, callback2, callback3].forEach(callback => {
-          should(callback.callCount).equal(1);
-          should(callback.getCall(0).args[1]).equal(
-            undefined,
-            'error ' + JSON.stringify(callback.getCall(0).args[1]),
-          );
-          let callbackEvent = callback.getCall(0).args[0];
-          should(callbackEvent.updatedKeys.length).equal(1);
-          should(callbackEvent.updatedKeys.includes('rttest_param1')).equal(
-            true,
-            'updated param not in callback updated keys set',
-          );
-        });
+        await Utils.spyToBeCalledWithVerifierAsync(
+          callback1,
+          getVerifier('rttest1' + timestamp),
+          60000,
+        );
+        await Utils.spyToBeCalledWithVerifierAsync(
+          callback2,
+          getVerifier('rttest1' + timestamp),
+          60000,
+        );
+        await Utils.spyToBeCalledWithVerifierAsync(
+          callback3,
+          getVerifier('rttest1' + timestamp),
+          60000,
+        );
 
         // Unsubscribe second listener and repeat, this time expecting no call on second listener
         unsubscribe2();
+        const callback2Count = callback2.callCount;
 
-        // Trigger update that should call listener 1 and 3
+        // Trigger update that should call listener 1 and 3 for these values
         response = await updateTemplate({
           operations: {
-            add: [{ name: 'rttest_param2', value: Date.now() + '' }],
+            add: [{ name: 'rttest2' + timestamp, value: Date.now() + '' }],
           },
         });
         should(response.result !== undefined).equal(true, 'response result not defined');
 
         // Assert first and third were called with expected values
-        await Utils.spyToBeCalledTimesAsync(callback1, 2, 60000);
-        await Utils.spyToBeCalledTimesAsync(callback3, 2, 60000);
+        await Utils.spyToBeCalledWithVerifierAsync(
+          callback1,
+          getVerifier('rttest2' + timestamp),
+          60000,
+        );
+        await Utils.spyToBeCalledWithVerifierAsync(
+          callback3,
+          getVerifier('rttest2' + timestamp),
+          60000,
+        );
 
         // callback2 should not have been called again - same call count expected
-        should(callback2.callCount).equal(1);
-
-        // assert callback 1 and 3 have new information
-        [callback1, callback3].forEach(callback => {
-          should(callback.callCount).equal(2);
-          should(callback.getCall(1).args[1]).equal(
-            undefined,
-            'error ' + JSON.stringify(callback.getCall(1).args[1]),
-          );
-          let callbackEvent = callback.getCall(1).args[0];
-          should(callbackEvent.updatedKeys.length).equal(2);
-          should(callbackEvent.updatedKeys.includes('rttest_param2')).equal(
-            true,
-            'updated param not in callback updated keys set',
-          );
-        });
+        should(callback2.callCount).equal(callback2Count);
 
         // Unsubscribe remaining listeners
         unsubscribe1();
         unsubscribe3();
+        const callback1Count = callback1.callCount;
+        const callback3Count = callback3.callCount;
 
         // Trigger an update that should call no listeners
         response = await updateTemplate({
           operations: {
-            add: [{ name: 'rttest_param3', value: Date.now() + '' }],
+            add: [{ name: 'rttest3' + timestamp, value: Date.now() + '' }],
           },
         });
         should(response.result !== undefined).equal(true, 'response result not defined');
         // Give the servers plenty of time to call us
         await Utils.sleep(20000);
-        should(callback1.callCount).equal(2);
-        should(callback3.callCount).equal(2);
+        should(callback1.callCount).equal(callback1Count);
+        should(callback2.callCount).equal(callback2Count);
+        should(callback3.callCount).equal(callback3Count);
       });
 
       // - react-native reload
@@ -969,9 +941,7 @@ describe('remoteConfig()', function () {
 
     describe('setCustomSignals()', function () {
       it('should resolve with valid signal value; `string`, `number` or `null`', async function () {
-        const { getApp } = modular;
         const { setCustomSignals, getRemoteConfig } = remoteConfigModular;
-        const remoteConfig = getRemoteConfig(getApp());
         // native SDKs just ignore invalid key/values (e.g. too long) and just log warning
         const signals = {
           string: 'string',
@@ -980,14 +950,11 @@ describe('remoteConfig()', function () {
           null: null,
         };
 
-        const result = await setCustomSignals(remoteConfig, signals);
-        should(result).equal(null);
+        should(await setCustomSignals(getRemoteConfig(), signals)).equal(null);
       });
 
       it('should reject with invalid signal value', async function () {
-        const { getApp } = modular;
         const { setCustomSignals, getRemoteConfig } = remoteConfigModular;
-        const remoteConfig = getRemoteConfig(getApp());
 
         const invalidSignals = [
           { signal1: true },
@@ -998,7 +965,7 @@ describe('remoteConfig()', function () {
 
         for (const signals of invalidSignals) {
           try {
-            await setCustomSignals(remoteConfig, signals);
+            await setCustomSignals(getRemoteConfig(), signals);
             throw new Error('Expected setCustomSignals to throw an error');
           } catch (error) {
             error.message.should.containEql(

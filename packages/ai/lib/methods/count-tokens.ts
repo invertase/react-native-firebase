@@ -21,6 +21,15 @@ import { ApiSettings } from '../types/internal';
 import { BackendType } from '../public-types';
 import * as GoogleAIMapper from '../googleai-mappers';
 
+/**
+ * Counts the number of tokens in a request body.
+ *
+ * @param apiSettings The {@link ApiSettings} to use for the request.
+ * @param model The model to use for the request.
+ * @param params The {@link CountTokensRequest} to send.
+ * @param requestOptions The {@link RequestOptions} to use for the request.
+ * @returns The {@link CountTokensResponse} from the request.
+ */
 export async function countTokens(
   apiSettings: ApiSettings,
   model: string,

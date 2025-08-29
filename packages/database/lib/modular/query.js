@@ -249,7 +249,7 @@ export function get(query) {
 }
 
 export function off(_query, _eventType, _callback) {
-  throw new Error('off() is not implemented');
+  throw new Error('off() is not implemented - use unsubscriber callback returned when subscribing');
 }
 
 /**

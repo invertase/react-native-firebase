@@ -16,6 +16,7 @@
  */
 const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
+
 describe('getAggregateFromServer()', function () {
   before(async function () {
     return await wipe();

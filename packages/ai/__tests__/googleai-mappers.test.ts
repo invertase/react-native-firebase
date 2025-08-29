@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ describe('Google AI Mappers', () => {
         ],
       };
 
-      expect(() => mapGenerateContentRequest(request)).toThrowError(
+      expect(() => mapGenerateContentRequest(request)).toThrow(
         expect.objectContaining({
           code: AIErrorCode.UNSUPPORTED,
           message:
@@ -301,7 +301,7 @@ describe('Google AI Mappers', () => {
           },
         },
       ];
-      expect(() => mapGenerateContentCandidates(candidates)).toThrowError(
+      expect(() => mapGenerateContentCandidates(candidates)).toThrow(
         expect.objectContaining({
           code: AIErrorCode.UNSUPPORTED,
           message:

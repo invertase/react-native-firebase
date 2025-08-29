@@ -28,14 +28,10 @@ describe('onChildAdded', function () {
     await wipe(TEST_PATH);
   });
 
-  // FIXME super flaky on jet
-  xit('should stop listening if ListeningOptions.onlyOnce is true', async function () {
-    if (Platform.ios) {
-      this.skip();
-    }
-
+  it('should stop listening if ListeningOptions.onlyOnce is true', async function () {
     const { getDatabase, ref, set, child, onChildAdded } = databaseModular;
-    const dbRef = ref(getDatabase(), `${TEST_PATH}/childAdded`);
+    const date = Date.now();
+    const dbRef = ref(getDatabase(), `${TEST_PATH}/childAdded/${date}`);
 
     const callback = sinon.spy();
 
@@ -57,33 +53,30 @@ describe('onChildAdded', function () {
 
   // FIXME super flaky on android emulator
   it('subscribe to child added events', async function () {
-    if (Platform.ios) {
-      const { getDatabase, ref, set, child, onChildAdded } = databaseModular;
+    const { getDatabase, ref, set, child, onChildAdded } = databaseModular;
 
-      const successCallback = sinon.spy();
-      const cancelCallback = sinon.spy();
-      const dbRef = ref(getDatabase(), `${TEST_PATH}/childAdded2`);
+    const successCallback = sinon.spy();
+    const cancelCallback = sinon.spy();
+    const date = Date.now();
+    const dbRef = ref(getDatabase(), `${TEST_PATH}/childAdded2/${date}`);
 
-      const unsubscribe = onChildAdded(
-        dbRef,
-        $ => {
-          successCallback($.val());
-        },
-        () => {
-          cancelCallback();
-        },
-      );
+    const unsubscribe = onChildAdded(
+      dbRef,
+      $ => {
+        successCallback($.val());
+      },
+      () => {
+        cancelCallback();
+      },
+    );
 
-      await set(child(dbRef, 'child1'), 'foo');
-      await set(child(dbRef, 'child2'), 'bar');
-      await Utils.spyToBeCalledTimesAsync(successCallback, 2);
-      unsubscribe();
+    await set(child(dbRef, 'child1'), 'foo');
+    await set(child(dbRef, 'child2'), 'bar');
+    await Utils.spyToBeCalledTimesAsync(successCallback, 2);
+    unsubscribe();
 
-      successCallback.getCall(0).args[0].should.equal('foo');
-      successCallback.getCall(1).args[0].should.equal('bar');
-      cancelCallback.should.be.callCount(0);
-    } else {
-      this.skip();
-    }
+    successCallback.getCall(0).args[0].should.equal('foo');
+    successCallback.getCall(1).args[0].should.equal('bar');
+    cancelCallback.should.be.callCount(0);
   });
 });

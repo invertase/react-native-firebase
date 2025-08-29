@@ -1,7 +1,7 @@
 ---
 title: Realtime Database
 description: Installation and getting started with Realtime Database.
-icon: //static.invertase.io/assets/firebase/realtime-database.svg
+icon: //firebase.google.com/static/images/products/icons/build_realtime_database.svg
 next: /database/offline-support
 previous: /crashlytics/crash-reports
 ---

@@ -16,6 +16,7 @@
  */
 const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
+
 describe('firestore().collection().where()', function () {
   beforeEach(async function () {
     return await wipe();

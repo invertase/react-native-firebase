@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,8 +56,7 @@ async function main(): Promise<void> {
   let fileText = `// Generated from mocks text files. Do not edit.`;
 
   fileText += '\n\n';
-  fileText += `// @ts-nocheck\n`;
-  fileText += `export const mocksLookup: Record<string, string> = ${JSON.stringify(
+  fileText += `export const mocksLookup: Record<string, Record<string, string>> = ${JSON.stringify(
     lookup,
     null,
     2,

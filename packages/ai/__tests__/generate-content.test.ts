@@ -175,7 +175,7 @@ describe('generateContent()', () => {
 
     const result = await generateContent(fakeApiSettings, 'model', fakeRequestParams);
 
-    expect(() => result.response.text()).toThrowError('SAFETY');
+    expect(() => result.response.text()).toThrow('SAFETY');
     expect(makeRequestStub).toHaveBeenCalledWith(
       'model',
       Task.GENERATE_CONTENT,

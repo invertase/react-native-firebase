@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,8 @@ import { AIErrorCode, ModelParams, RequestOptions } from './types';
 import { AI, AIOptions, ImagenModelParams } from './public-types';
 import { AIError } from './errors';
 import { GenerativeModel } from './models/generative-model';
-import { AIModel, ImagenModel } from './models';
+
+import { AIModel, ImagenModel } from './models/ai-model';
 
 export * from './public-types';
 export { ChatSession } from './methods/chat-session';

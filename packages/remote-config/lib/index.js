@@ -22,6 +22,7 @@ import {
   isString,
   isUndefined,
   isIOS,
+  parseListenerOrObserver,
 } from '@react-native-firebase/app/lib/common';
 import Value from './RemoteConfigValue';
 import {
@@ -247,7 +248,7 @@ class FirebaseConfigModule extends FirebaseModule {
    * @returns {function} unsubscribe listener
    */
   onConfigUpdated(listenerOrObserver) {
-    const listener = this._parseListener(listenerOrObserver);
+    const listener = parseListenerOrObserver(listenerOrObserver);
     let unsubscribed = false;
     const subscription = this.emitter.addListener(
       this.eventNameForApp('on_config_updated'),
@@ -285,12 +286,6 @@ class FirebaseConfigModule extends FirebaseModule {
         this.native.removeConfigUpdateRegistration();
       }
     };
-  }
-
-  _parseListener(listenerOrObserver) {
-    return typeof listenerOrObserver === 'object'
-      ? listenerOrObserver.next.bind(listenerOrObserver)
-      : listenerOrObserver;
   }
 
   _updateFromConstants(constants) {
