@@ -23,7 +23,8 @@ import { AI, AIOptions, ImagenModelParams } from './public-types';
 import { AIError } from './errors';
 import { GenerativeModel } from './models/generative-model';
 
-import { AIModel, ImagenModel } from './models/ai-model';
+import { AIModel } from './models/ai-model';
+import { ImagenModel } from './models/imagen-model';
 
 export * from './public-types';
 export { ChatSession } from './methods/chat-session';

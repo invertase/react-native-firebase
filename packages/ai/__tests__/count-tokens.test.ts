@@ -21,7 +21,7 @@ import { countTokens } from '../lib/methods/count-tokens';
 import { CountTokensRequest, RequestOptions } from '../lib/types';
 import { ApiSettings } from '../lib/types/internal';
 import { Task } from '../lib/requests/request';
-import { GoogleAIBackend, VertexAIBackend } from '../lib/backend';
+import { GoogleAIBackend } from '../lib/backend';
 import { SpiedFunction } from 'jest-mock';
 import { mapCountTokensRequest } from '../lib/googleai-mappers';
 
