@@ -4988,35 +4988,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-firebase/ai@file:../packages/ai::locator=react-native-firebase-tests%40workspace%3Atests":
-  version: 22.2.0
-  resolution: "@react-native-firebase/ai@file:../packages/ai#../packages/ai::hash=e8e97d&locator=react-native-firebase-tests%40workspace%3Atests"
-  dependencies:
-    react-native-fetch-api: "npm:^3.0.0"
-    text-encoding: "npm:^0.7.0"
-    web-streams-polyfill: "npm:^4.1.0"
-  peerDependencies:
-    "@react-native-firebase/app": 22.2.0
-  checksum: 10/5e056a5b6f1d9a09ea044d4cc46d0f5cb5f64385c58c1943f0a8592b3fa63afe73068962a80f37567b3f7344b334b40a2a6d3f1fb1964bf9c3638de349a32ac7
-  languageName: node
-  linkType: hard
-
-"@react-native-firebase/ai@npm:22.2.0, @react-native-firebase/ai@workspace:packages/ai":
+"@react-native-firebase/ai@npm:23.2.0, @react-native-firebase/ai@workspace:packages/ai":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/ai@workspace:packages/ai"
   dependencies:
     "@types/text-encoding": "npm:^0.0.40"
-    react-native-builder-bob: "npm:^0.40.6"
+    react-native-builder-bob: "npm:^0.40.13"
     react-native-fetch-api: "npm:^3.0.0"
     text-encoding: "npm:^0.7.0"
-    typescript: "npm:^5.8.3"
-    web-streams-polyfill: "npm:^4.1.0"
+    typescript: "npm:^5.9.2"
+    web-streams-polyfill: "npm:^4.2.0"
   peerDependencies:
-    "@react-native-firebase/app": 22.2.0
+    "@react-native-firebase/app": 23.2.0
   languageName: unknown
   linkType: soft
 
-"@react-native-firebase/analytics@npm:22.4.0, @react-native-firebase/analytics@workspace:packages/analytics":
+"@react-native-firebase/analytics@npm:23.2.0, @react-native-firebase/analytics@workspace:packages/analytics":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/analytics@workspace:packages/analytics"
   dependencies:
@@ -5218,7 +5205,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/vertexai@workspace:packages/vertexai"
   dependencies:
-    "@react-native-firebase/ai": "npm:22.2.0"
+    "@react-native-firebase/ai": "npm:23.2.0"
     "@types/text-encoding": "npm:^0.0.40"
     react-native-builder-bob: "npm:^0.40.13"
     react-native-fetch-api: "npm:^3.0.0"
@@ -19937,11 +19924,10 @@ __metadata:
     "@react-native-community/cli": "npm:15.1.3"
     "@react-native-community/cli-platform-android": "npm:15.1.3"
     "@react-native-community/cli-platform-ios": "npm:15.1.3"
-    "@react-native-firebase/ai": "file:../packages/ai"
-    "@react-native-firebase/analytics": "npm:22.4.0"
-    "@react-native-firebase/app": "npm:22.4.0"
-    "@react-native-firebase/app-check": "npm:22.4.0"
-    "@react-native-firebase/app-distribution": "npm:22.4.0"
+    "@react-native-firebase/analytics": "npm:23.2.0"
+    "@react-native-firebase/app": "npm:23.2.0"
+    "@react-native-firebase/app-check": "npm:23.2.0"
+    "@react-native-firebase/app-distribution": "npm:23.2.0"
     "@react-native-firebase/app-types": "npm:6.7.2"
     "@react-native-firebase/auth": "npm:23.2.0"
     "@react-native-firebase/crashlytics": "npm:23.2.0"
