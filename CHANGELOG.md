@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.2.0](https://github.com/invertase/react-native-firebase/compare/v23.1.2...v23.2.0) (2025-08-29)
+
+### Features
+
+- **auth:** QR code generation from TOTP secrets ([dd8e14b](https://github.com/invertase/react-native-firebase/commit/dd8e14b3387a8d6a0a48e3379d6379d7a3dae14d))
+- **auth:** support native TOTP app open ([213ee45](https://github.com/invertase/react-native-firebase/commit/213ee456894d21666ccdd6f179232aefba19658a))
+- **auth:** support TOTP enroll and unenroll ([0ad0658](https://github.com/invertase/react-native-firebase/commit/0ad0658ecb6d586c4428bf34b034add03fb90e3e))
+- **other:** implement TOTP auth for Other platform ([3fbc43a](https://github.com/invertase/react-native-firebase/commit/3fbc43a1f1ccf768c5f76a962a59d1850f73ba5a))
+
+### Bug Fixes
+
+- **analytics, ios:** reject getSessionId call if id is zero ([9d2a393](https://github.com/invertase/react-native-firebase/commit/9d2a393e1bcbb3fe9b577abc6892115acd2f78e1))
+- **auth:** add TotpSecret type definition ([be01081](https://github.com/invertase/react-native-firebase/commit/be0108134c93c57fcdac1069ac28b7aab9fc62be))
+
 ## [23.1.2](https://github.com/invertase/react-native-firebase/compare/v23.1.1...v23.1.2) (2025-08-25)
 
 ### Bug Fixes

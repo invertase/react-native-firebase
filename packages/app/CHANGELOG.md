@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.2.0](https://github.com/invertase/react-native-firebase/compare/v23.1.2...v23.2.0) (2025-08-29)
+
+### Features
+
+- **other:** implement TOTP auth for Other platform ([3fbc43a](https://github.com/invertase/react-native-firebase/commit/3fbc43a1f1ccf768c5f76a962a59d1850f73ba5a))
+
 ## [23.1.2](https://github.com/invertase/react-native-firebase/compare/v23.1.1...v23.1.2) (2025-08-25)
 
 **Note:** Version bump only for package @react-native-firebase/app
