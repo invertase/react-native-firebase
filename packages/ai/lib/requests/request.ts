@@ -210,6 +210,7 @@ export async function makeRequest(
       }
       if (
         response.status === 403 &&
+        errorDetails &&
         errorDetails.some((detail: ErrorDetails) => detail.reason === 'SERVICE_DISABLED') &&
         errorDetails.some((detail: ErrorDetails) =>
           (detail.links as Array<Record<string, string>>)?.[0]?.description?.includes(

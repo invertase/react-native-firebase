@@ -14,6 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+export * from './imagen-model';
 export * from './ai-model';
 export * from './generative-model';

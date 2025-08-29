@@ -22,3 +22,4 @@ export * from './responses';
 export * from './error';
 export * from './schema';
 export * from './googleai';
+export * from './imagen';
