@@ -36,6 +36,26 @@ Requires `@react-native-firebase/app` to be installed.
 yarn add @react-native-firebase/messaging
 ```
 
+## Expo Configuration
+
+This package includes an Expo config plugin for automatic configuration in Expo managed workflow. To configure notification icons and colors, add the following to your `app.json`:
+
+```json
+{
+  "expo": {
+    "notification": {
+      "icon": "./assets/notification-icon.png",
+      "color": "#FF0000"
+    },
+    "plugins": [
+      "@react-native-firebase/messaging"
+    ]
+  }
+}
+```
+
+> **Note**: Android requires a pure white notification icon. See the [full documentation](https://rnfirebase.io/messaging/usage#expo) for details.
+
 ## Documentation
 
 - [Quick Start](https://rnfirebase.io/messaging/usage)
