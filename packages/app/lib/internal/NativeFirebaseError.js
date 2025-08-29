@@ -49,6 +49,18 @@ export default class NativeFirebaseError extends Error {
       value: userInfo,
     });
 
+    // Needed for MFA processing of errors on web
+    Object.defineProperty(this, 'customData', {
+      enumerable: false,
+      value: nativeError.customData || null,
+    });
+
+    // Needed for MFA processing of errors on web
+    Object.defineProperty(this, 'operationType', {
+      enumerable: false,
+      value: nativeError.operationType || null,
+    });
+
     Object.defineProperty(this, 'nativeErrorCode', {
       enumerable: false,
       value: userInfo.nativeErrorCode || null,

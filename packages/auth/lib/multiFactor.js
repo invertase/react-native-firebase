@@ -36,6 +36,7 @@ export class MultiFactorUser {
     }
 
     // We need to reload the user otherwise the changes are not visible
+    // TODO reload not working on Other platform
     return reload(this._auth.currentUser);
   }
 

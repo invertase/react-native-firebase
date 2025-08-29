@@ -15,7 +15,9 @@
  *
  */
 
+import { isOther } from '@react-native-firebase/app/lib/common';
 import { TotpSecret } from './TotpSecret';
+import { getAuth } from './modular';
 
 export default class TotpMultiFactorGenerator {
   static FACTOR_ID = 'totp';
@@ -27,6 +29,11 @@ export default class TotpMultiFactorGenerator {
   }
 
   static assertionForSignIn(uid, verificationCode) {
+    if (isOther) {
+      // we require the web native assertion when using firebase-js-sdk
+      // as it has functions used by the SDK, a shim won't do
+      return getAuth().native.assertionForSignIn(uid, verificationCode);
+    }
     return { uid, verificationCode };
   }
 
