@@ -101,6 +101,18 @@ jobs:
       fail-fast: false
       matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
     steps:
+      - name: Setup Environment for Screen Recording
+        uses: guidepup/setup-action@0.17.3
+        with:
+          record: true
+
+      - name: Upload Screen Recording Environment Setup
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screenrecording-setup-${{ matrix.buildmode }}-${{ matrix.iteration }}.mov
+          path: ./recordings/
+
       # Set up tool versions
       - uses: actions/setup-node@v4
         with:
@@ -256,10 +268,13 @@ jobs:
           curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false&inlineSourceMap=true"
           echo "...javascript bundle ready"
 
-      - name: Record App Video
+      - name: Start Screen and Simulator Recordings and System Logging
         # With a little delay so the detox test below has time to spawn it, missing the first part of boot is fine
         continue-on-error: true
-        run: nohup sh -c "sleep 110 && xcrun simctl io booted recordVideo --codec=h264 -f simulator.mp4 2>&1 &"
+        run: |
+          nohup sh -c "sleep 314159265 | screencapture -v -C -k -T0 -g screenrecording.mov > screenrecording.log 2>&1 &"
+          nohup sh -c "log stream --backtrace --color none --style syslog > syslog.log 2>&1 &"
+          nohup sh -c "sleep 110 && xcrun simctl io booted recordVideo --codec=h264 -f simulator.mp4 2>&1 &"
 
       - name: Create Simulator Log
         # With a little delay so the detox test below has time to spawn it, missing the first part of boot is fine
@@ -277,10 +292,13 @@ jobs:
         timeout-minutes: 50
         run: yarn tests:ios:test:release
 
-      - name: Stop App Video
+      - name: Stop Screen and App Video and System Logging
         if: always()
         continue-on-error: true
-        run: killall -INT simctl
+        run: |
+          killall -int simctl
+          killall -int screencapture
+          killall -int log
 
       - name: Upload App Video
         uses: actions/upload-artifact@v4
@@ -292,12 +310,22 @@ jobs:
 
       - name: Upload Simulator Log
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         if: always()
         with:
           name: simulator-${{ matrix.buildmode }}-${{ matrix.iteration }}_log
           path: simulator.log
 
+      - name: Upload Screen Recording
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        if: always()
+        with:
+          name: screenrecording-${{ matrix.buildmode }}-${{ matrix.iteration }}
+          path: screenrecording.*
+
       - uses: codecov/codecov-action@v5
         if: contains(matrix.buildmode, 'debug')
+        continue-on-error: true
         with:
           verbose: true

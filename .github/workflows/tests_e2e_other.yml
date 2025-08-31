@@ -244,10 +244,12 @@ jobs:
         run: yarn tests:macos:test-cover
 
       - uses: codecov/codecov-action@v5
+        continue-on-error: true
         with:
           verbose: true
 
       - name: Stop Screen Recording and System Logging
+        continue-on-error: true
         if: always()
         run: |
           killall -int screencapture
@@ -255,6 +257,7 @@ jobs:
 
       - name: Upload Metro Log
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         if: always()
         with:
           name: metro-${{ matrix.iteration }}_log
@@ -262,6 +265,7 @@ jobs:
 
       - name: Upload Screen Recording
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         if: always()
         with:
           name: screenrecording-${{ matrix.iteration }}
@@ -269,6 +273,7 @@ jobs:
 
       - name: Upload System Log
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         if: always()
         with:
           name: syslog-${{ matrix.iteration }}
