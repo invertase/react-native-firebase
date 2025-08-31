@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       iterations:
-        description: "Number of iterations to run. Default 1. Max 122."
+        description: 'Number of iterations to run. Default 1. Max 122.'
         required: true
         default: 1
         type: number
@@ -281,6 +281,11 @@ jobs:
         # If you boot the simulator separately from detox, some other race fails and detox testee never sends ready to proxy
         continue-on-error: true
         run: nohup sh -c "sleep 110 && xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &"
+
+      - name: Pre-Boot Simulator
+        # The goal here is to separate Simulator boot from Detox run,
+        # So that Simulator boot issues we seem to have may be handled separately
+        run: ./.github/workflows/scripts/boot-simulator.sh
 
       - name: Detox Test
         if: contains(matrix.buildmode, 'debug')
