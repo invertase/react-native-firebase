@@ -48,6 +48,7 @@ import OAuthProvider from './providers/OAuthProvider';
 import OIDCAuthProvider from './providers/OIDCAuthProvider';
 import PhoneAuthProvider from './providers/PhoneAuthProvider';
 import TwitterAuthProvider from './providers/TwitterAuthProvider';
+import { TotpSecret } from './TotpSecret';
 import version from './version';
 import fallBackModule from './web/RNFBAuthModule';
 
@@ -68,6 +69,7 @@ export {
   FacebookAuthProvider,
   PhoneMultiFactorGenerator,
   TotpMultiFactorGenerator,
+  TotpSecret,
   OAuthProvider,
   OIDCAuthProvider,
   PhoneAuthState,
