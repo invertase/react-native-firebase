@@ -14,7 +14,7 @@ The [official guide for Firebase web TOTP authentication](https://firebase.googl
 
 The API details and usage examples may be combined with the full Phone auth example below to give you an MFA solution that fully supports TOTP or SMS MFA.
 
-You may also find it useful to investigate [the local / manual test screens](https://github.com/invertase/react-native-firebase/blob/main/tests/local-tests/auth/auth-totp-demonstrator.tsx) that we use to verify this functionality.
+You may also find it useful to investigate [the local / manual test screens](https://github.com/invertase/react-native-firebase/blob/main/tests/local-tests/auth/auth-mfa-demonstrator.tsx) that we use to verify this functionality.
 
 # Phone MFA
 
