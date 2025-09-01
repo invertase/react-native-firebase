@@ -103,11 +103,13 @@ jobs:
     steps:
       - name: Setup Environment for Screen Recording
         uses: guidepup/setup-action@0.17.3
+        continue-on-error: true
         with:
           record: true
 
       - name: Upload Screen Recording Environment Setup
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         if: always()
         with:
           name: screenrecording-setup-${{ matrix.buildmode }}-${{ matrix.iteration }}.mov

@@ -98,11 +98,13 @@ jobs:
     steps:
       - name: Setup Environment for Screen Recording
         uses: guidepup/setup-action@0.17.3
+        continue-on-error: true
         with:
           record: true
 
       - name: Upload Screen Recording Environment Setup
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         if: always()
         with:
           name: screenrecording-setup-${{ matrix.iteration }}.mov
@@ -235,6 +237,7 @@ jobs:
           echo "...javascript bundle ready"
 
       - name: Start Screen Recording and System Logging
+        continue-on-error: true
         run: |
           nohup sh -c "sleep 314159265 | screencapture -v -C -k -T0 -g screenrecording.mov > screenrecording.log 2>&1 &"
           nohup sh -c "log stream --backtrace --color none --style syslog > syslog.log 2>&1 &"
