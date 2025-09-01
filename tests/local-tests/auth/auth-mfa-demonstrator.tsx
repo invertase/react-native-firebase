@@ -37,6 +37,8 @@ import {
   getMultiFactorResolver,
   multiFactor,
   onAuthStateChanged,
+  PhoneAuthProvider,
+  PhoneMultiFactorGenerator,
   reload,
   sendEmailVerification,
   signInWithEmailAndPassword,
@@ -61,7 +63,7 @@ const Button = (props: {
   );
 };
 
-export function AuthTOTPDemonstrator() {
+export function AuthMFADemonstrator() {
   const [authReady, setAuthReady] = useState(false);
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
 
@@ -187,7 +189,7 @@ const Login = () => {
   };
 
   if (mfaError) {
-    return <MfaLogin error={mfaError} />;
+    return <MfaLogin error={mfaError} clearError={() => setMfaError(undefined)} />;
   }
 
   return (
@@ -225,37 +227,73 @@ const Login = () => {
     </View>
   );
 };
-
-const MfaLogin = ({ error }: { error: FirebaseAuthTypes.MultiFactorError }) => {
+const MfaLogin = ({
+  error,
+  clearError,
+}: {
+  error: FirebaseAuthTypes.MultiFactorError;
+  clearError: () => void;
+}) => {
   const [resolver, setResolver] = useState<FirebaseAuthTypes.MultiFactorResolver>();
   const [activeFactor, setActiveFactor] = useState<FirebaseAuthTypes.MultiFactorInfo>();
-
+  const [verificationId, setVerificationId] = useState<string>('');
   const [code, setCode] = useState<string>('');
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     const resolver = getMultiFactorResolver(getAuth(), error);
     setResolver(resolver);
-    setActiveFactor(resolver.hints[0]);
+    console.log('Active factors: ' + JSON.stringify(resolver.hints));
+    console.log('resolver.hints[0] is ' + JSON.stringify(resolver.hints[0]));
     if (resolver.hints.length === 1) {
-      const hint = resolver.hints[0];
-      setActiveFactor(hint);
+      setActiveFactor(resolver.hints[0]);
+      console.log('activeFactor is ' + JSON.stringify(activeFactor));
+      console.log('activeFactor.factorId is ' + JSON.stringify(activeFactor?.factorId));
     }
   }, [error]);
 
-  const handleConfirm = async () => {
+  const requestCode = async () => {
     if (!resolver) return;
 
     try {
       setLoading(true);
-      // For demo, assume only 1 hint and it's totp
-      const multiFactorAssertion = TotpMultiFactorGenerator.assertionForSignIn(
-        activeFactor!.uid,
-        code,
+      setVerificationId(
+        await new PhoneAuthProvider(getAuth()).verifyPhoneNumber({
+          multiFactorHint: activeFactor,
+          session: resolver.session,
+        }),
       );
+    } catch (error) {
+      console.error('Error during MFA Phone code send:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleConfirm = async () => {
+    if (!resolver || !activeFactor) return;
+
+    try {
+      setLoading(true);
+      let multiFactorAssertion: FirebaseAuthTypes.MultiFactorAssertion;
+      switch (activeFactor.factorId) {
+        case 'totp':
+          multiFactorAssertion = TotpMultiFactorGenerator.assertionForSignIn(
+            activeFactor!.uid,
+            code,
+          );
+          break;
+        case 'phone':
+          const phoneAuthCredential = new PhoneAuthProvider.credential(verificationId, code);
+          multiFactorAssertion = PhoneMultiFactorGenerator.assertion(phoneAuthCredential);
+          break;
+        default:
+          throw new Error('Unknown MFA factor type: ' + activeFactor.factorId);
+      }
+
       return await resolver.resolveSignIn(multiFactorAssertion);
     } catch (error) {
-      console.error('Error during MFA sign in:', error);
+      console.error('Error during MFA TOTP sign in:', error);
     } finally {
       setLoading(false);
     }
@@ -265,15 +303,57 @@ const MfaLogin = ({ error }: { error: FirebaseAuthTypes.MultiFactorError }) => {
     return null;
   }
 
-  // For demo, assume only 1 hint and it's totp
+  if (!activeFactor) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.card}>
+          <Text style={styles.title}>MFA Factor Selection</Text>
+          <Text style={styles.subtitle}>
+            You have multiple second factors enrolled. Please select one.
+          </Text>
+          {resolver.hints?.map(factor => (
+            <Button
+              style={{ marginTop: 20 }}
+              key={factor.uid}
+              onPress={() => setActiveFactor(factor)}
+            >
+              {`${factor.displayName || factor.factorId} (${factor.factorId})`}
+            </Button>
+          ))}
+
+          <Pressable style={styles.secondaryButton} onPress={clearError}>
+            <Text style={styles.secondaryButtonText}>Sign Out</Text>
+          </Pressable>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Text style={styles.title}>Two-Factor Authentication</Text>
-        <Text style={styles.subtitle}>
-          Please enter the verification code from your authenticator app
-        </Text>
+        {/* Show the TOTP code entry if that factor is selected */}
+        {activeFactor !== undefined && activeFactor.factorId === 'totp' && (
+          <>
+            <Text style={styles.title}>TOTP Two-Factor Authentication</Text>
+            <Text style={styles.subtitle}>
+              Please enter the verification code from your authenticator app
+            </Text>
+          </>
+        )}
+        {/* Show the Phone verify && code entry if that factor is selected */}
+        {activeFactor !== undefined && activeFactor.factorId === 'phone' && (
+          <>
+            <Text style={styles.title}>Phone Two-Factor Authentication</Text>
+            <Text style={styles.subtitle}>1) Request SMS code</Text>
 
+            <Button onPress={requestCode} isLoading={isLoading}>
+              Request SMS Code
+            </Button>
+
+            <Text style={styles.subtitle}>2) enter the code, then Verify</Text>
+          </>
+        )}
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
@@ -290,6 +370,17 @@ const MfaLogin = ({ error }: { error: FirebaseAuthTypes.MultiFactorError }) => {
         <Button onPress={handleConfirm} isLoading={isLoading}>
           Verify
         </Button>
+
+        {/* Allow user to change factor if more than one */}
+        {activeFactor && resolver.hints.length > 1 && (
+          <Pressable style={styles.secondaryButton} onPress={() => setActiveFactor(undefined)}>
+            <Text style={styles.secondaryButtonText}>Switch Factor</Text>
+          </Pressable>
+        )}
+
+        <Pressable style={styles.secondaryButton} onPress={clearError}>
+          <Text style={styles.secondaryButtonText}>Sign Out</Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -299,6 +390,7 @@ const Home = () => {
   const [factors, setFactors] = useState(getAuth().currentUser?.multiFactor?.enrolledFactors);
   const [addingFactor, setAddingFactor] = useState(false);
   const [removingFactor, setRemovingFactor] = useState(false);
+  const [addingPhoneFactor, setAddingPhoneFactor] = useState(false);
 
   const [totpSecret, setTotpSecret] = useState<TotpSecret | null>(null);
 
@@ -336,11 +428,21 @@ const Home = () => {
     }
   };
 
+  if (addingPhoneFactor) {
+    return (
+      <EnrollPhone
+        onComplete={() => {
+          setFactors(getAuth().currentUser?.multiFactor?.enrolledFactors);
+          setAddingPhoneFactor(false);
+        }}
+      />
+    );
+  }
+
   if (totpSecret) {
     return (
       <EnrollTotp
         totpSecret={totpSecret}
-        // totpUriQRBase64={totpUriQRBase64}
         onComplete={() => {
           setFactors(getAuth().currentUser?.multiFactor?.enrolledFactors);
           setTotpSecret(null);
@@ -361,6 +463,7 @@ const Home = () => {
 
         {factors?.map(factor => (
           <Button
+            style={{ marginTop: 20 }}
             key={factor.uid}
             onPress={() => handleRemoveFactor(factor)}
             isLoading={removingFactor}
@@ -369,8 +472,105 @@ const Home = () => {
           </Button>
         ))}
 
-        <Button style={{ marginTop: 20 }} isLoading={addingFactor} onPress={generateTotpSecret}>
-          Add TOTP Factor
+        {factors?.find(factor => factor.factorId === 'totp') === undefined && (
+          <Button style={{ marginTop: 20 }} isLoading={addingFactor} onPress={generateTotpSecret}>
+            Add TOTP Factor
+          </Button>
+        )}
+
+        {factors?.find(factor => factor.factorId === 'phone') === undefined && (
+          <Button
+            style={{ marginTop: 20 }}
+            isLoading={addingFactor}
+            onPress={() => setAddingPhoneFactor(true)}
+          >
+            Add SMS Factor
+          </Button>
+        )}
+
+        <Pressable style={styles.secondaryButton} onPress={() => signOut(getAuth())}>
+          <Text style={styles.secondaryButtonText}>Sign Out</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+};
+
+const EnrollPhone = ({ onComplete }: { onComplete: () => void }) => {
+  const [waitingForPhoneVerification, setWaitingForPhoneVerification] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [verificationId, setVerificationId] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [isLoading, setLoading] = useState(false);
+
+  const handleVerifyPhone = async () => {
+    setLoading(true);
+    setWaitingForPhoneVerification(true);
+    try {
+      const user = getAuth().currentUser;
+      if (!user) return;
+
+      const session = await multiFactor(user).getSession();
+      setVerificationId(
+        await new PhoneAuthProvider(getAuth()).verifyPhoneNumber({
+          phoneNumber,
+          session,
+        }),
+      );
+    } catch (error) {
+      console.error('Error sending phone verification:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEnrollPhone = async () => {
+    setLoading(true);
+    try {
+      const user = getAuth().currentUser;
+      if (!user) return;
+      const cred = PhoneAuthProvider.credential(verificationId, verificationCode);
+      const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
+      await multiFactor(user).enroll(multiFactorAssertion, 'Phone');
+      onComplete();
+    } catch (error) {
+      console.error('Error enrolling Phone:', error);
+    } finally {
+      setLoading(false);
+      setWaitingForPhoneVerification(false);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.card}>
+        <Text style={styles.title}>Enroll Phone</Text>
+
+        <Text style={styles.subtitle}>1) Enter phone # and press send code</Text>
+
+        <TextInput
+          style={styles.input}
+          value={phoneNumber}
+          placeholder="+593985787666"
+          placeholderTextColor="#9CA3AF"
+          onChangeText={setPhoneNumber}
+        />
+        <Text style={styles.subtitle}>2) Enter the verification code received.</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Verification Code"
+          placeholderTextColor="#9CA3AF"
+          keyboardType="number-pad"
+          textAlign="center"
+          maxLength={6}
+          onChangeText={setVerificationCode}
+          value={verificationCode}
+        />
+        <Button onPress={handleVerifyPhone} isLoading={isLoading || waitingForPhoneVerification}>
+          Send Code
+        </Button>
+        <Button style={{ marginTop: 20 }} onPress={handleEnrollPhone} isLoading={isLoading}>
+          Confirm
         </Button>
 
         <Pressable style={styles.secondaryButton} onPress={() => signOut(getAuth())}>
