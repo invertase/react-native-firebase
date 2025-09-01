@@ -748,7 +748,11 @@ describe('remoteConfig()', function () {
           if (!spy.called) return false;
           for (let i = 0; i < spy.callCount; i++) {
             const callbackEvent = spy.getCall(i).args[0];
-            if (callbackEvent.updatedKeys && callbackEvent.updatedKeys.includes(paramName)) {
+            if (
+              callbackEvent &&
+              callbackEvent.updatedKeys &&
+              callbackEvent.updatedKeys.includes(paramName)
+            ) {
               return true;
             }
           }
