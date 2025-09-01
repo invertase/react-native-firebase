@@ -66,6 +66,9 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.auth.PhoneMultiFactorAssertion;
 import com.google.firebase.auth.PhoneMultiFactorGenerator;
 import com.google.firebase.auth.PhoneMultiFactorInfo;
+import com.google.firebase.auth.TotpMultiFactorAssertion;
+import com.google.firebase.auth.TotpMultiFactorGenerator;
+import com.google.firebase.auth.TotpSecret;
 import com.google.firebase.auth.TwitterAuthProvider;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -107,6 +110,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
   private final HashMap<String, MultiFactorResolver> mCachedResolvers = new HashMap<>();
   private final HashMap<String, MultiFactorSession> mMultiFactorSessions = new HashMap<>();
+  private final HashMap<String, TotpSecret> mTotpSecrets = new HashMap<>();
 
   // storage for anonymous phone auth credentials, used for linkWithCredentials
   // https://github.com/invertase/react-native-firebase/issues/4911
@@ -154,6 +158,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
     mCachedResolvers.clear();
     mMultiFactorSessions.clear();
+    mTotpSecrets.clear();
   }
 
   @ReactMethod
@@ -1131,6 +1136,26 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   @ReactMethod
+  public void unenrollMultiFactor(
+      final String appName, final String factorUID, final Promise promise) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    firebaseAuth
+        .getCurrentUser()
+        .getMultiFactor()
+        .unenroll(factorUID)
+        .addOnCompleteListener(
+            task -> {
+              if (!task.isSuccessful()) {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+                return;
+              }
+
+              promise.resolve(null);
+            });
+  }
+
+  @ReactMethod
   public void verifyPhoneNumberWithMultiFactorInfo(
       final String appName, final String hintUid, final String sessionKey, final Promise promise) {
     final MultiFactorResolver resolver = mCachedResolvers.get(sessionKey);
@@ -1280,6 +1305,67 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
             });
   }
 
+  @ReactMethod
+  public void generateQrCodeUrl(
+      final String appName,
+      final String secretKey,
+      final String account,
+      final String issuer,
+      final Promise promise) {
+
+    TotpSecret secret = mTotpSecrets.get(secretKey);
+    if (secret == null) {
+      rejectPromiseWithCodeAndMessage(
+          promise, "invalid-multi-factor-secret", "can't find secret for provided key");
+      return;
+    }
+    promise.resolve(secret.generateQrCodeUrl(account, issuer));
+  }
+
+  @ReactMethod
+  public void openInOtpApp(final String appName, final String secretKey, final String qrCodeUri) {
+    TotpSecret secret = mTotpSecrets.get(secretKey);
+    if (secret != null) {
+      secret.openInOtpApp(qrCodeUri);
+    }
+  }
+
+  @ReactMethod
+  public void finalizeTotpEnrollment(
+      final String appName,
+      final String totpSecret,
+      final String verificationCode,
+      @Nullable final String displayName,
+      final Promise promise) {
+
+    TotpSecret secret = mTotpSecrets.get(totpSecret);
+    if (secret == null) {
+      rejectPromiseWithCodeAndMessage(
+          promise, "invalid-multi-factor-secret", "can't find secret for provided key");
+      return;
+    }
+
+    TotpMultiFactorAssertion assertion =
+        TotpMultiFactorGenerator.getAssertionForEnrollment(secret, verificationCode);
+
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    firebaseAuth
+        .getCurrentUser()
+        .getMultiFactor()
+        .enroll(assertion, displayName)
+        .addOnCompleteListener(
+            task -> {
+              if (!task.isSuccessful()) {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+                return;
+              }
+
+              promise.resolve(null);
+            });
+  }
+
   /**
    * This method is intended to resolve a {@link PhoneAuthCredential} obtained through a
    * multi-factor authentication flow. A credential can either be obtained using:
@@ -1333,6 +1419,70 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     final PhoneAuthCredential credential =
         PhoneAuthProvider.getCredential(verificationId, verificationCode);
     resolveMultiFactorCredential(credential, session, promise);
+  }
+
+  @ReactMethod
+  public void resolveTotpSignIn(
+      final String appName,
+      final String sessionKey,
+      final String uid,
+      final String oneTimePassword,
+      final Promise promise) {
+
+    final MultiFactorAssertion assertion =
+        TotpMultiFactorGenerator.getAssertionForSignIn(uid, oneTimePassword);
+
+    final MultiFactorResolver resolver = mCachedResolvers.get(sessionKey);
+    if (resolver == null) {
+      // See https://firebase.google.com/docs/reference/node/firebase.auth.multifactorresolver for
+      // the error code
+      rejectPromiseWithCodeAndMessage(
+          promise,
+          "invalid-multi-factor-session",
+          "No resolver for session found. Is the session id correct?");
+      return;
+    }
+
+    resolver
+        .resolveSignIn(assertion)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                AuthResult authResult = task.getResult();
+                promiseWithAuthResult(authResult, promise);
+              } else {
+                promiseRejectAuthException(promise, task.getException());
+              }
+            });
+  }
+
+  @ReactMethod
+  public void generateTotpSecret(
+      final String appName, final String sessionKey, final Promise promise) {
+
+    final MultiFactorSession session = mMultiFactorSessions.get(sessionKey);
+    if (session == null) {
+      rejectPromiseWithCodeAndMessage(
+          promise,
+          "invalid-multi-factor-session",
+          "No resolver for session found. Is the session id correct?");
+      return;
+    }
+
+    TotpMultiFactorGenerator.generateSecret(session)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                TotpSecret totpSecret = task.getResult();
+                String totpSecretKey = totpSecret.getSharedSecretKey();
+                mTotpSecrets.put(totpSecretKey, totpSecret);
+                WritableMap result = Arguments.createMap();
+                result.putString("secretKey", totpSecretKey);
+                promise.resolve(result);
+              } else {
+                promiseRejectAuthException(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod

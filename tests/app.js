@@ -16,12 +16,12 @@
  *
  */
 
-import React from 'react';
-import { StyleSheet, View, StatusBar, AppRegistry, Text } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, StatusBar, AppRegistry, Text, Button } from 'react-native';
 
 import { JetProvider, ConnectionText, StatusEmoji, StatusText } from 'jet';
 
-import { LocalTests } from './local-test-component';
+import { TestComponents } from './local-tests';
 
 const platformSupportedModules = [];
 
@@ -67,6 +67,9 @@ ErrorUtils.setGlobalHandler((err, isFatal) => {
 });
 
 function loadTests(_) {
+  // this will only execute if Jet executes
+  // ...so manual tests will not have this setup - emulators etc
+  // ...that allows them the freedom to define their own test environment
   describe('React Native Firebase', function () {
     if (!globalThis.RNFBDebug) {
       // Only retry tests if not debugging or hunting deprecated API usage locally,
@@ -239,13 +242,28 @@ function loadTests(_) {
 }
 
 function App() {
+  const [showManualTestPicker, setShowManualTestPicker] = useState(false);
+
+  if (showManualTestPicker) {
+    return (
+      <>
+        <StatusBar hidden />
+        <View style={styles.container}>
+          <View style={styles.hardRule} />
+          <Button title="Hide Manual Tests" onPress={() => setShowManualTestPicker(false)} />
+          <View style={styles.hardRule} />
+          <TestComponents />
+        </View>
+      </>
+    );
+  }
+
   return (
     <>
       <StatusBar hidden />
       <View style={styles.container}>
         <View style={styles.hardRule} />
-        <Text>Local Manual Tests:</Text>
-        <LocalTests />
+        <Button title="Show Manual Tests" onPress={() => setShowManualTestPicker(true)} />
         <View style={styles.hardRule} />
         <Text>Automated Tests:</Text>
         <JetProvider tests={loadTests}>

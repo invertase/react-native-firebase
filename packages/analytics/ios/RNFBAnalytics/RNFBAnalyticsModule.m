@@ -129,6 +129,13 @@ RCT_EXPORT_METHOD(getSessionId
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject) {
   [FIRAnalytics sessionIDWithCompletion:^(int64_t sessionID, NSError *_Nullable error) {
+    // Occasionally sessionID is 0 despite nil error, reject as if it were an error
+    // https://github.com/firebase/firebase-ios-sdk/issues/15258
+    if (!error && [NSNumber numberWithLongLong:sessionID] == 0) {
+      DLog(@"Error getting session ID: sessionID is zero despite nil error");
+      return resolve([NSNull null]);
+    }
+
     if (error) {
       DLog(@"Error getting session ID: %@", error);
       return resolve([NSNull null]);

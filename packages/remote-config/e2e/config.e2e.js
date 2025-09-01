@@ -15,8 +15,6 @@
  *
  */
 
-const { updateTemplate } = require('./helpers');
-
 describe('remoteConfig()', function () {
   describe('firebase v8 compatibility', function () {
     beforeEach(async function beforeEachTest() {
@@ -782,7 +780,7 @@ describe('remoteConfig()', function () {
 
         // If there is orphaned data, delete it on the server and let that settle
         if (staleDeletes.length > 0) {
-          const response = await updateTemplate({
+          const response = await FirebaseHelpers.updateRemoteConfigTemplate({
             operations: {
               delete: staleDeletes,
             },
@@ -797,7 +795,7 @@ describe('remoteConfig()', function () {
 
       after(async function () {
         // clean up our own test data after the whole suite runs
-        const response = await updateTemplate({
+        const response = await FirebaseHelpers.updateRemoteConfigTemplate({
           operations: {
             delete: ['rttest1' + timestamp, 'rttest2' + timestamp, 'rttest3' + timestamp],
           },
@@ -823,7 +821,7 @@ describe('remoteConfig()', function () {
         const unsubscribe = onConfigUpdated(config, (event, error) => callback(event, error));
         unsubscribers.push(unsubscribe);
         // Update the template using our cloud function, so our listeners are called
-        let response = await updateTemplate({
+        let response = await FirebaseHelpers.updateRemoteConfigTemplate({
           operations: {
             add: [{ name: 'rttest1' + timestamp, value: timestamp }],
           },
@@ -858,7 +856,7 @@ describe('remoteConfig()', function () {
         unsubscribers.push(unsubscribe3);
 
         // Trigger an update that should call them all
-        let response = await updateTemplate({
+        let response = await FirebaseHelpers.updateRemoteConfigTemplate({
           operations: {
             add: [{ name: 'rttest1' + timestamp, value: Date.now() + '' }],
           },
@@ -887,7 +885,7 @@ describe('remoteConfig()', function () {
         const callback2Count = callback2.callCount;
 
         // Trigger update that should call listener 1 and 3 for these values
-        response = await updateTemplate({
+        response = await FirebaseHelpers.updateRemoteConfigTemplate({
           operations: {
             add: [{ name: 'rttest2' + timestamp, value: Date.now() + '' }],
           },
@@ -916,7 +914,7 @@ describe('remoteConfig()', function () {
         const callback3Count = callback3.callCount;
 
         // Trigger an update that should call no listeners
-        response = await updateTemplate({
+        response = await FirebaseHelpers.updateRemoteConfigTemplate({
           operations: {
             add: [{ name: 'rttest3' + timestamp, value: Date.now() + '' }],
           },

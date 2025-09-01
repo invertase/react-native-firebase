@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.2.0](https://github.com/invertase/react-native-firebase/compare/v23.1.2...v23.2.0) (2025-08-29)
+
+### Bug Fixes
+
+- **analytics, ios:** reject getSessionId call if id is zero ([9d2a393](https://github.com/invertase/react-native-firebase/commit/9d2a393e1bcbb3fe9b577abc6892115acd2f78e1))
+
 ## [23.1.2](https://github.com/invertase/react-native-firebase/compare/v23.1.1...v23.1.2) (2025-08-25)
 
 **Note:** Version bump only for package @react-native-firebase/analytics
