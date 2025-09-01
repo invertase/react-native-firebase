@@ -1803,69 +1803,69 @@ PODS:
     - Yoga
   - RNDeviceInfo (14.0.4):
     - React-Core
-  - RNFBAnalytics (23.1.2):
+  - RNFBAnalytics (23.2.1):
     - FirebaseAnalytics/Core (= 12.2.0)
     - FirebaseAnalytics/IdentitySupport (= 12.2.0)
     - GoogleAdsOnDeviceConversion
     - React-Core
     - RNFBApp
-  - RNFBApp (23.1.2):
+  - RNFBApp (23.2.1):
     - Firebase/CoreOnly (= 12.2.0)
     - React-Core
-  - RNFBAppCheck (23.1.2):
+  - RNFBAppCheck (23.2.1):
     - Firebase/AppCheck (= 12.2.0)
     - React-Core
     - RNFBApp
-  - RNFBAppDistribution (23.1.2):
+  - RNFBAppDistribution (23.2.1):
     - Firebase/AppDistribution (= 12.2.0)
     - React-Core
     - RNFBApp
-  - RNFBAuth (23.1.2):
+  - RNFBAuth (23.2.1):
     - Firebase/Auth (= 12.2.0)
     - React-Core
     - RNFBApp
-  - RNFBCrashlytics (23.1.2):
+  - RNFBCrashlytics (23.2.1):
     - Firebase/Crashlytics (= 12.2.0)
     - FirebaseCoreExtension
     - React-Core
     - RNFBApp
-  - RNFBDatabase (23.1.2):
+  - RNFBDatabase (23.2.1):
     - Firebase/Database (= 12.2.0)
     - React-Core
     - RNFBApp
-  - RNFBFirestore (23.1.2):
+  - RNFBFirestore (23.2.1):
     - Firebase/Firestore (= 12.2.0)
     - React-Core
     - RNFBApp
-  - RNFBFunctions (23.1.2):
+  - RNFBFunctions (23.2.1):
     - Firebase/Functions (= 12.2.0)
     - React-Core
     - RNFBApp
-  - RNFBInAppMessaging (23.1.2):
+  - RNFBInAppMessaging (23.2.1):
     - Firebase/InAppMessaging (= 12.2.0)
     - React-Core
     - RNFBApp
-  - RNFBInstallations (23.1.2):
+  - RNFBInstallations (23.2.1):
     - Firebase/Installations (= 12.2.0)
     - React-Core
     - RNFBApp
-  - RNFBMessaging (23.1.2):
+  - RNFBMessaging (23.2.1):
     - Firebase/Messaging (= 12.2.0)
     - FirebaseCoreExtension
     - React-Core
     - RNFBApp
-  - RNFBML (23.1.2):
+  - RNFBML (23.2.1):
     - React-Core
     - RNFBApp
-  - RNFBPerf (23.1.2):
+  - RNFBPerf (23.2.1):
     - Firebase/Performance (= 12.2.0)
     - React-Core
     - RNFBApp
-  - RNFBRemoteConfig (23.1.2):
+  - RNFBRemoteConfig (23.2.1):
     - Firebase/RemoteConfig (= 12.2.0)
     - React-Core
     - RNFBApp
-  - RNFBStorage (23.1.2):
+  - RNFBStorage (23.2.1):
     - Firebase/Storage (= 12.2.0)
     - React-Core
     - RNFBApp
@@ -2295,22 +2295,22 @@ SPEC CHECKSUMS:
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
   RNCAsyncStorage: 6a8127b6987dc9fbce778669b252b14c8355c7ce
   RNDeviceInfo: d863506092aef7e7af3a1c350c913d867d795047
-  RNFBAnalytics: 87dd8ea00809fb99dc44b0b21f9745dd00b3d727
-  RNFBApp: 1641151815621803bb8600558aa79724aaeda324
-  RNFBAppCheck: 09e2ddb622df967c033685530b2ea0edac82ef02
-  RNFBAppDistribution: c7d9d0da5f06c467b24279a9afe3306e9e45e541
-  RNFBAuth: bb963a4066d888e6a63b6baebb5c807229352874
-  RNFBCrashlytics: 2cb008920d20ec4a1eac214d092a221ef6028005
-  RNFBDatabase: 0b4250a531dd486c9d83e0414f0a61aea23363c1
-  RNFBFirestore: 1ce7e962be7b416a9912f23b0f84700275e73f9f
-  RNFBFunctions: 6a9f506401392239c5077272341e9cb84a6180f4
-  RNFBInAppMessaging: 6aa0f72eac9aeaf430725d1524d8d162b637aaf6
-  RNFBInstallations: 7a362da9f5ddcadbecef937fea070f66430ae981
-  RNFBMessaging: 1317e9e196aa8de3170c4adca18fb8b00ac80fed
-  RNFBML: ad2affe812fb1942c5b3715cf1b32e66e0206f32
-  RNFBPerf: a6c706c6e0a08f6a22449f54d748f3469221fcd8
-  RNFBRemoteConfig: 8cae1969044bc2b7bf96a17f422d107b33e1ab6b
-  RNFBStorage: b631bd93d97bac0dc625858160b0fef221f01a06
+  RNFBAnalytics: e3a8428b52dd170c147aa583b1b8104ffc4366b8
+  RNFBApp: 0f27e0ccf0121255f380cbd8f8c7f84533d12e81
+  RNFBAppCheck: 8fed3940251ec37876e43d9eb81318f374f1a741
+  RNFBAppDistribution: 0fd0d844cf3bbb735de0e85db5eef0c4f8fa8bfc
+  RNFBAuth: 1ac38c8d67d812b2d9520bab7c3583d152b12449
+  RNFBCrashlytics: d5fedddb8ef41177ad919b7ca8f9828e84cff44e
+  RNFBDatabase: 2d026e610f2758b57bf507eef2bedd2d2651a1fe
+  RNFBFirestore: 1bbb553564696d1d1be07cae0aa63c279d1c339c
+  RNFBFunctions: 45cd16d61906f7a967720e5454e9e4cf2fc00956
+  RNFBInAppMessaging: 2e5569895300e3e596d15fe7f77a245569a0ac7e
+  RNFBInstallations: 876cce8513482ae6b7bcf44f68782544c9c67ffe
+  RNFBMessaging: e9d29f70829162831d2b480b7acfb00bb5104e4c
+  RNFBML: b5aba98d94c9e6f1ac11962a4d525d8402e881a2
+  RNFBPerf: 0956969f871da3054fe9267aa0e5d76d7793ca55
+  RNFBRemoteConfig: 266d3f046153c1ae784249c5446a85bb21449142
+  RNFBStorage: 709658ce12d83c05e51abe4235522906a18c4cc7
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 6eb60fc2c0eef63e7d2ef4a56e0a3353534143a2
 
