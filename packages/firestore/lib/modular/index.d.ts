@@ -9,23 +9,13 @@ import DocumentData = FirebaseFirestoreTypes.DocumentData;
 import Query = FirebaseFirestoreTypes.Query;
 import FieldValue = FirebaseFirestoreTypes.FieldValue;
 import FieldPath = FirebaseFirestoreTypes.FieldPath;
+import PartialWithFieldValue = FirebaseFirestoreTypes.PartialWithFieldValue;
+import WithFieldValue = FirebaseFirestoreTypes.WithFieldValue;
 import PersistentCacheIndexManager = FirebaseFirestoreTypes.PersistentCacheIndexManager;
 import AggregateQuerySnapshot = FirebaseFirestoreTypes.AggregateQuerySnapshot;
 
 /** Primitive types. */
 export type Primitive = string | number | boolean | undefined | null;
-
-/**
- * Similar to Typescript's `Partial<T>`, but allows nested fields to be
- * omitted and FieldValues to be passed in as property values.
- */
-export type PartialWithFieldValue<T> =
-  | Partial<T>
-  | (T extends Primitive
-      ? T
-      : T extends object
-        ? { [K in keyof T]?: PartialWithFieldValue<T[K]> | FieldValue }
-        : never);
 
 /**
  * Given a union type `U = T1 | T2 | ...`, returns an intersected type (`T1 & T2 & ...`).
@@ -83,18 +73,6 @@ export declare type UpdateData<T> = T extends Primitive
         [K in keyof T]?: UpdateData<T[K]> | FieldValue;
       } & NestedUpdateFields<T>
     : Partial<T>;
-
-/**
- * Allows FieldValues to be passed in as a property value while maintaining
- * type safety.
- */
-export type WithFieldValue<T> =
-  | T
-  | (T extends Primitive
-      ? T
-      : T extends object
-        ? { [K in keyof T]: WithFieldValue<T[K]> | FieldValue }
-        : never);
 
 export type EmulatorMockTokenOptions = ({ user_id: string } | { sub: string }) &
   Partial<FirebaseIdToken>;
