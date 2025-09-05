@@ -21,31 +21,27 @@ import { DEFAULT_LOCATION } from '../lib/constants';
 
 describe('Backend', () => {
   describe('GoogleAIBackend', () => {
-    it('should set backendType to GOOGLE_AI', () => {
+    it('sets backendType to GOOGLE_AI', () => {
       const backend = new GoogleAIBackend();
       expect(backend.backendType).toBe(BackendType.GOOGLE_AI);
     });
   });
-
   describe('VertexAIBackend', () => {
-    it('should set backendType to VERTEX_AI', () => {
+    it('set backendType to VERTEX_AI', () => {
       const backend = new VertexAIBackend();
       expect(backend.backendType).toBe(BackendType.VERTEX_AI);
       expect(backend.location).toBe(DEFAULT_LOCATION);
     });
-
-    it('should set a custom location', () => {
+    it('sets custom location', () => {
       const backend = new VertexAIBackend('test-location');
       expect(backend.backendType).toBe(BackendType.VERTEX_AI);
       expect(backend.location).toBe('test-location');
     });
-
-    it('should use a default location if location is empty string', () => {
+    it('uses default location if location is empty string', () => {
       const backend = new VertexAIBackend('');
       expect(backend.backendType).toBe(BackendType.VERTEX_AI);
       expect(backend.location).toBe(DEFAULT_LOCATION);
     });
-
     it('uses default location if location is null', () => {
       const backend = new VertexAIBackend(null as any);
       expect(backend.backendType).toBe(BackendType.VERTEX_AI);

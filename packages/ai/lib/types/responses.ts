@@ -67,7 +67,28 @@ export interface EnhancedGenerateContentResponse extends GenerateContentResponse
    * @throws If the prompt or candidate was blocked.
    */
   inlineDataParts: () => InlineDataPart[] | undefined;
+  /**
+   * Aggregates and returns every {@link FunctionCall} from the first candidate of
+   * {@link GenerateContentResponse}.
+   *
+   * @throws If the prompt or candidate was blocked.
+   */
   functionCalls: () => FunctionCall[] | undefined;
+  /**
+   * Aggregates and returns every {@link TextPart} with their `thought` property set
+   * to `true` from the first candidate of {@link GenerateContentResponse}.
+   *
+   * @throws If the prompt or candidate was blocked.
+   *
+   * @remarks
+   * Thought summaries provide a brief overview of the model's internal thinking process,
+   * offering insight into how it arrived at the final answer. This can be useful for
+   * debugging, understanding the model's reasoning, and verifying its accuracy.
+   *
+   * Thoughts will only be included if {@link ThinkingConfig.includeThoughts} is
+   * set to `true`.
+   */
+  thoughtSummary: () => string | undefined;
 }
 
 /**
@@ -91,6 +112,10 @@ export interface GenerateContentResponse {
 export interface UsageMetadata {
   promptTokenCount: number;
   candidatesTokenCount: number;
+  /**
+   * The number of tokens used by the model's internal "thinking" process.
+   */
+  thoughtsTokenCount?: number;
   totalTokenCount: number;
   promptTokensDetails?: ModalityTokenCount[];
   candidatesTokensDetails?: ModalityTokenCount[];
@@ -170,16 +195,98 @@ export interface Citation {
 }
 
 /**
- * Metadata returned to client when grounding is enabled.
+ * Metadata returned when grounding is enabled.
+ *
+ * Currently, only Grounding with Google Search is supported (see {@link GoogleSearchTool}).
+ *
+ * Important: If using Grounding with Google Search, you are required to comply with the
+ * "Grounding with Google Search" usage requirements for your chosen API provider: {@link https://ai.google.dev/gemini-api/terms#grounding-with-google-search | Gemini Developer API}
+ * or Vertex AI Gemini API (see {@link https://cloud.google.com/terms/service-terms | Service Terms}
+ * section within the Service Specific Terms).
+ *
  * @public
  */
 export interface GroundingMetadata {
-  webSearchQueries?: string[];
-  retrievalQueries?: string[];
   /**
-   * @deprecated
+   * A list of {@link GroundingChunk} objects. Each chunk represents a piece of retrieved content
+   * (for example, from a web page). that the model used to ground its response.
    */
-  groundingAttributions: GroundingAttribution[];
+  groundingChunks?: GroundingChunk[];
+  /**
+   * A list of {@link GroundingSupport} objects. Each object details how specific segments of the
+   * model's response are supported by the `groundingChunks`.
+   */
+  groundingSupports?: GroundingSupport[];
+  /**
+   * A list of web search queries that the model performed to gather the grounding information.
+   * These can be used to allow users to explore the search results themselves.
+   */
+  webSearchQueries?: string[];
+  /**
+   * @deprecated Use {@link GroundingSupport} instead.
+   */
+  retrievalQueries?: string[];
+}
+
+/**
+ * Represents a chunk of retrieved data that supports a claim in the model's response. This is part
+ * of the grounding information provided when grounding is enabled.
+ *
+ * @public
+ */
+export interface GroundingChunk {
+  /**
+   * Contains details if the grounding chunk is from a web source.
+   */
+  web?: WebGroundingChunk;
+}
+
+/**
+ * A grounding chunk from the web.
+ *
+ * Important: If using Grounding with Google Search, you are required to comply with the
+ * {@link https://cloud.google.com/terms/service-terms | Service Specific Terms} for "Grounding with Google Search".
+ *
+ * @public
+ */
+export interface WebGroundingChunk {
+  /**
+   * The URI of the retrieved web page.
+   */
+  uri?: string;
+  /**
+   * The title of the retrieved web page.
+   */
+  title?: string;
+  /**
+   * The domain of the original URI from which the content was retrieved.
+   *
+   * This property is only supported in the Vertex AI Gemini API ({@link VertexAIBackend}).
+   * When using the Gemini Developer API ({@link GoogleAIBackend}), this property will be
+   * `undefined`.
+   */
+  domain?: string;
+}
+
+/**
+ * Provides information about how a specific segment of the model's response is supported by the
+ * retrieved grounding chunks.
+ *
+ * @public
+ */
+export interface GroundingSupport {
+  /**
+   * Specifies the segment of the model's response content that this grounding support pertains to.
+   */
+  segment?: Segment;
+  /**
+   * A list of indices that refer to specific {@link GroundingChunk} objects within the
+   * {@link GroundingMetadata.groundingChunks} array. These referenced chunks
+   * are the sources that support the claim made in the associated `segment` of the response.
+   * For example, an array `[1, 3, 4]` means that `groundingChunks[1]`, `groundingChunks[3]`,
+   * and `groundingChunks[4]` are the retrieved content supporting this part of the response.
+   */
+  groundingChunkIndices?: number[];
 }
 
 /**
@@ -194,12 +301,34 @@ export interface GroundingAttribution {
 }
 
 /**
+ * Represents a specific segment within a {@link Content} object, often used to
+ * pinpoint the exact location of text or data that grounding information refers to.
+ *
  * @public
  */
 export interface Segment {
+  /**
+   * The zero-based index of the {@link Part} object within the `parts` array
+   * of its parent {@link Content} object. This identifies which part of the
+   * content the segment belongs to.
+   */
   partIndex: number;
+  /**
+   * The zero-based start index of the segment within the specified `Part`,
+   * measured in UTF-8 bytes. This offset is inclusive, starting from 0 at the
+   * beginning of the part's content (e.g., `Part.text`).
+   */
   startIndex: number;
+  /**
+   * The zero-based end index of the segment within the specified `Part`,
+   * measured in UTF-8 bytes. This offset is exclusive, meaning the character
+   * at this index is not included in the segment.
+   */
   endIndex: number;
+  /**
+   * The text corresponding to the segment from the response.
+   */
+  text: string;
 }
 
 /**

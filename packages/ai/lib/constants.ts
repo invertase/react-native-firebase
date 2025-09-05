@@ -21,15 +21,12 @@ export const AI_TYPE = 'AI';
 
 export const DEFAULT_LOCATION = 'us-central1';
 
-export const DEFAULT_BASE_URL = 'https://firebasevertexai.googleapis.com';
+export const DEFAULT_DOMAIN = 'firebasevertexai.googleapis.com';
 
-// This is the default API version for the VertexAI API. At some point, should be able to change when the feature becomes available.
-// `v1beta` & `stable` available: https://cloud.google.com/vertex-ai/docs/reference#versions
 export const DEFAULT_API_VERSION = 'v1beta';
 
 export const PACKAGE_VERSION = version;
 
 export const LANGUAGE_TAG = 'gl-rn';
 
-// Timeout is 180s by default
 export const DEFAULT_FETCH_TIMEOUT_MS = 180 * 1000;
