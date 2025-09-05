@@ -47,6 +47,11 @@ export interface TextPart {
   inlineData?: never;
   functionCall?: never;
   functionResponse?: never;
+  thought?: boolean;
+  /**
+   * @internal
+   */
+  thoughtSignature?: string;
 }
 
 /**
@@ -62,6 +67,11 @@ export interface InlineDataPart {
    * Applicable if `inlineData` is a video.
    */
   videoMetadata?: VideoMetadata;
+  thought?: boolean;
+  /**
+   * @internal
+   */
+  thoughtSignature?: never;
 }
 
 /**
@@ -82,7 +92,7 @@ export interface VideoMetadata {
 }
 
 /**
- * Content part interface if the part represents a <code>{@link FunctionCall}</code>.
+ * Content part interface if the part represents a {@link FunctionCall}.
  * @public
  */
 export interface FunctionCallPart {
@@ -90,10 +100,15 @@ export interface FunctionCallPart {
   inlineData?: never;
   functionCall: FunctionCall;
   functionResponse?: never;
+  thought?: boolean;
+  /**
+   * @internal
+   */
+  thoughtSignature?: never;
 }
 
 /**
- * Content part interface if the part represents <code>{@link FunctionResponse}</code>.
+ * Content part interface if the part represents {@link FunctionResponse}.
  * @public
  */
 export interface FunctionResponsePart {
@@ -101,10 +116,15 @@ export interface FunctionResponsePart {
   inlineData?: never;
   functionCall?: never;
   functionResponse: FunctionResponse;
+  thought?: boolean;
+  /**
+   * @internal
+   */
+  thoughtSignature?: never;
 }
 
 /**
- * Content part interface if the part represents <code>{@link FileData}</code>
+ * Content part interface if the part represents {@link FileData}
  * @public
  */
 export interface FileDataPart {
@@ -113,29 +133,51 @@ export interface FileDataPart {
   functionCall?: never;
   functionResponse?: never;
   fileData: FileData;
+  thought?: boolean;
+  /**
+   * @internal
+   */
+  thoughtSignature?: never;
 }
 
 /**
- * A predicted <code>{@link FunctionCall}</code> returned from the model
+ * A predicted {@link FunctionCall} returned from the model
  * that contains a string representing the {@link FunctionDeclaration.name}
  * and a structured JSON object containing the parameters and their values.
  * @public
  */
 export interface FunctionCall {
+  /**
+   * The id of the function call. This must be sent back in the associated {@link FunctionResponse}.
+   *
+   *
+   * @remarks This property is only supported in the Gemini Developer API ({@link GoogleAIBackend}).
+   * When using the Gemini Developer API ({@link GoogleAIBackend}), this property will be
+   * `undefined`.
+   */
+  id?: string;
   name: string;
   args: object;
 }
 
 /**
- * The result output from a <code>{@link FunctionCall}</code> that contains a string
+ * The result output from a {@link FunctionCall} that contains a string
  * representing the {@link FunctionDeclaration.name}
  * and a structured JSON object containing any output
  * from the function is used as context to the model.
- * This should contain the result of a <code>{@link FunctionCall}</code>
+ * This should contain the result of a {@link FunctionCall}
  * made based on model prediction.
  * @public
  */
 export interface FunctionResponse {
+  /**
+   * The id of the {@link FunctionCall}.
+   *
+   * @remarks This property is only supported in the Gemini Developer API ({@link GoogleAIBackend}).
+   * When using the Gemini Developer API ({@link GoogleAIBackend}), this property will be
+   * `undefined`.
+   */
+  id?: string;
   name: string;
   response: object;
 }

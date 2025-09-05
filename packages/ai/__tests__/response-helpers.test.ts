@@ -15,9 +15,21 @@
  * limitations under the License.
  */
 import { describe, expect, it, jest, afterEach } from '@jest/globals';
-import { addHelpers, formatBlockErrorMessage } from '../lib/requests/response-helpers';
+import {
+  addHelpers,
+  formatBlockErrorMessage,
+  handlePredictResponse,
+} from '../lib/requests/response-helpers';
 
-import { BlockReason, Content, FinishReason, GenerateContentResponse } from '../lib/types';
+import {
+  BlockReason,
+  Content,
+  FinishReason,
+  GenerateContentResponse,
+  ImagenInlineImage,
+  ImagenGCSImage,
+} from '../lib/types';
+import { getMockResponse, BackendName } from './test-utils/mock-response';
 
 const fakeResponseText: GenerateContentResponse = {
   candidates: [
@@ -26,6 +38,18 @@ const fakeResponseText: GenerateContentResponse = {
       content: {
         role: 'model',
         parts: [{ text: 'Some text' }, { text: ' and some more text' }],
+      },
+    },
+  ],
+};
+
+const fakeResponseThoughts: GenerateContentResponse = {
+  candidates: [
+    {
+      index: 0,
+      content: {
+        role: 'model',
+        parts: [{ text: 'Some text' }, { text: 'and some thoughts', thought: true }],
       },
     },
   ],
@@ -129,12 +153,14 @@ describe('response-helpers methods', () => {
       const enhancedResponse = addHelpers(fakeResponseText);
       expect(enhancedResponse.text()).toBe('Some text and some more text');
       expect(enhancedResponse.functionCalls()).toBeUndefined();
+      expect(enhancedResponse.thoughtSummary()).toBeUndefined();
     });
 
     it('good response functionCall', () => {
       const enhancedResponse = addHelpers(fakeResponseFunctionCall);
       expect(enhancedResponse.text()).toBe('');
       expect(enhancedResponse.functionCalls()).toEqual([functionCallPart1.functionCall]);
+      expect(enhancedResponse.thoughtSummary()).toBeUndefined();
     });
 
     it('good response functionCalls', () => {
@@ -144,29 +170,41 @@ describe('response-helpers methods', () => {
         functionCallPart1.functionCall,
         functionCallPart2.functionCall,
       ]);
+      expect(enhancedResponse.thoughtSummary()).toBeUndefined();
     });
 
     it('good response text/functionCall', () => {
       const enhancedResponse = addHelpers(fakeResponseMixed1);
       expect(enhancedResponse.functionCalls()).toEqual([functionCallPart2.functionCall]);
       expect(enhancedResponse.text()).toBe('some text');
+      expect(enhancedResponse.thoughtSummary()).toBeUndefined();
     });
 
     it('good response functionCall/text', () => {
       const enhancedResponse = addHelpers(fakeResponseMixed2);
       expect(enhancedResponse.functionCalls()).toEqual([functionCallPart1.functionCall]);
       expect(enhancedResponse.text()).toBe('some text');
+      expect(enhancedResponse.thoughtSummary()).toBeUndefined();
     });
 
     it('good response text/functionCall/text', () => {
       const enhancedResponse = addHelpers(fakeResponseMixed3);
       expect(enhancedResponse.functionCalls()).toEqual([functionCallPart1.functionCall]);
       expect(enhancedResponse.text()).toBe('some text and more text');
+      expect(enhancedResponse.thoughtSummary()).toBeUndefined();
+    });
+
+    it('good response text/thought', () => {
+      const enhancedResponse = addHelpers(fakeResponseThoughts);
+      expect(enhancedResponse.text()).toBe('Some text');
+      expect(enhancedResponse.thoughtSummary()).toBe('and some thoughts');
+      expect(enhancedResponse.functionCalls()).toBeUndefined();
     });
 
     it('bad response safety', () => {
       const enhancedResponse = addHelpers(badFakeResponse);
       expect(() => enhancedResponse.text()).toThrow('SAFETY');
+      expect(() => enhancedResponse.thoughtSummary()).toThrow('SAFETY');
     });
   });
 
@@ -231,6 +269,82 @@ describe('response-helpers methods', () => {
         ],
       });
       expect(message).toContain('Candidate was blocked due to SAFETY: unsafe candidate');
+    });
+  });
+
+  describe('handlePredictResponse', () => {
+    it('returns base64 images', async () => {
+      const mockResponse = getMockResponse(
+        BackendName.VertexAI,
+        'unary-success-generate-images-base64.json',
+      ) as Response;
+      const res = await handlePredictResponse<ImagenInlineImage>(mockResponse);
+      expect(res.filteredReason).toBeUndefined();
+      expect(res.images.length).toBe(4);
+      res.images.forEach(image => {
+        expect(image.mimeType).toBe('image/png');
+        expect(image.bytesBase64Encoded.length).toBeGreaterThan(0);
+      });
+    });
+
+    it('returns GCS images', async () => {
+      const mockResponse = getMockResponse(
+        BackendName.VertexAI,
+        'unary-success-generate-images-gcs.json',
+      ) as Response;
+      const res = await handlePredictResponse<ImagenGCSImage>(mockResponse);
+      expect(res.filteredReason).toBeUndefined();
+      expect(res.images.length).toBe(4);
+      res.images.forEach((image, i) => {
+        expect(image.mimeType).toBe('image/jpeg');
+        expect(image.gcsURI).toBe(
+          `gs://test-project-id-1234.firebasestorage.app/images/1234567890123/sample_${i}.jpg`,
+        );
+      });
+    });
+
+    it('has filtered reason and no images if all images were filtered', async () => {
+      const mockResponse = getMockResponse(
+        BackendName.VertexAI,
+        'unary-failure-generate-images-all-filtered.json',
+      ) as Response;
+      const res = await handlePredictResponse<ImagenInlineImage>(mockResponse);
+      expect(res.filteredReason).toBe(
+        "Unable to show generated images. All images were filtered out because they violated Vertex AI's usage guidelines. You will not be charged for blocked images. Try rephrasing the prompt. If you think this was an error, send feedback. Support codes: 39322892, 29310472",
+      );
+      expect(res.images.length).toBe(0);
+    });
+
+    it('has filtered reason and no images if all base64 images were filtered', async () => {
+      const mockResponse = getMockResponse(
+        BackendName.VertexAI,
+        'unary-failure-generate-images-base64-some-filtered.json',
+      ) as Response;
+      const res = await handlePredictResponse<ImagenInlineImage>(mockResponse);
+      expect(res.filteredReason).toBe(
+        'Your current safety filter threshold filtered out 2 generated images. You will not be charged for blocked images. Try rephrasing the prompt. If you think this was an error, send feedback.',
+      );
+      expect(res.images.length).toBe(2);
+      res.images.forEach(image => {
+        expect(image.mimeType).toBe('image/png');
+        expect(image.bytesBase64Encoded.length).toBeGreaterThan(0);
+      });
+    });
+
+    it('has filtered reason and no images if all GCS images were filtered', async () => {
+      const mockResponse = getMockResponse(
+        BackendName.VertexAI,
+        'unary-failure-generate-images-gcs-some-filtered.json',
+      ) as Response;
+      const res = await handlePredictResponse<ImagenGCSImage>(mockResponse);
+      expect(res.filteredReason).toBe(
+        'Your current safety filter threshold filtered out 2 generated images. You will not be charged for blocked images. Try rephrasing the prompt. If you think this was an error, send feedback.',
+      );
+      expect(res.images.length).toBe(2);
+      res.images.forEach(image => {
+        expect(image.mimeType).toBe('image/jpeg');
+        expect(image.gcsURI.length).toBeGreaterThan(0);
+      });
     });
   });
 });

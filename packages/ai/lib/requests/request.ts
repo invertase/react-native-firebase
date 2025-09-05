@@ -20,7 +20,7 @@ import { AIError } from '../errors';
 import { ApiSettings } from '../types/internal';
 import {
   DEFAULT_API_VERSION,
-  DEFAULT_BASE_URL,
+  DEFAULT_DOMAIN,
   DEFAULT_FETCH_TIMEOUT_MS,
   LANGUAGE_TAG,
   PACKAGE_VERSION,
@@ -75,7 +75,7 @@ export class RequestUrl {
   }
 
   private get baseUrl(): string {
-    return this.requestOptions?.baseUrl || DEFAULT_BASE_URL;
+    return this.requestOptions?.baseUrl || `https://${DEFAULT_DOMAIN}`;
   }
 
   private get apiVersion(): string {
