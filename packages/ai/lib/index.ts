@@ -17,7 +17,7 @@
 
 import './polyfills';
 import { getApp, ReactNativeFirebase } from '@react-native-firebase/app';
-import { GoogleAIBackend, VertexAIBackend } from './backend';
+import { Backend, GoogleAIBackend, VertexAIBackend } from './backend';
 import { AIErrorCode, ModelParams, RequestOptions } from './types';
 import { AI, AIOptions, ImagenModelParams } from './public-types';
 import { AIError } from './errors';
@@ -27,8 +27,9 @@ import { AIModel, ImagenModel } from './models';
 export * from './public-types';
 export { ChatSession } from './methods/chat-session';
 export * from './requests/schema-builder';
-export { GoogleAIBackend, VertexAIBackend } from './backend';
-export { GenerativeModel, AIError, AIModel };
+export { ImagenImageFormat } from './requests/imagen-image-format';
+export { Backend, GoogleAIBackend, VertexAIBackend } from './backend';
+export { GenerativeModel, AIError, AIModel, ImagenModel };
 
 /**
  * Returns the default {@link AI} instance that is associated with the provided
@@ -58,16 +59,22 @@ export { GenerativeModel, AIError, AIModel };
  *
  * @public
  */
-export function getAI(
-  app: ReactNativeFirebase.FirebaseApp = getApp(),
-  options: AIOptions = { backend: new GoogleAIBackend() },
-): AI {
+export function getAI(app: ReactNativeFirebase.FirebaseApp = getApp(), options?: AIOptions): AI {
+  const backend: Backend = options?.backend ?? new GoogleAIBackend();
+
+  const finalOptions: Omit<AIOptions, 'backend'> = {
+    useLimitedUseAppCheckTokens: options?.useLimitedUseAppCheckTokens ?? false,
+    appCheck: options?.appCheck || null,
+    auth: options?.auth || null,
+  };
+
   return {
     app,
-    backend: options.backend,
-    location: (options.backend as VertexAIBackend)?.location || '',
-    appCheck: options.appCheck || null,
-    auth: options.auth || null,
+    backend,
+    options: finalOptions,
+    location: (backend as VertexAIBackend)?.location || '',
+    appCheck: options?.appCheck || null,
+    auth: options?.auth || null,
   } as AI;
 }
 

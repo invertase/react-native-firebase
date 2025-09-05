@@ -113,6 +113,10 @@ export interface GenerationConfig {
    * @beta
    */
   responseModalities?: ResponseModality[];
+  /**
+   * Configuration for "thinking" behavior of compatible Gemini models.
+   */
+  thinkingConfig?: ThinkingConfig;
 }
 
 /**
@@ -165,7 +169,7 @@ export interface RequestOptions {
  * Defines a tool that model can call to access external knowledge.
  * @public
  */
-export declare type Tool = FunctionDeclarationsTool;
+export type Tool = FunctionDeclarationsTool | GoogleSearchTool;
 
 /**
  * Structured representation of a function declaration as defined by the
@@ -176,7 +180,7 @@ export declare type Tool = FunctionDeclarationsTool;
  * as a Tool by the model and executed by the client.
  * @public
  */
-export declare interface FunctionDeclaration {
+export interface FunctionDeclaration {
   /**
    * The name of the function to call. Must start with a letter or an
    * underscore. Must be a-z, A-Z, 0-9, or contain underscores and dashes, with
@@ -197,12 +201,47 @@ export declare interface FunctionDeclaration {
 }
 
 /**
+ * A tool that allows a Gemini model to connect to Google Search to access and incorporate
+ * up-to-date information from the web into its responses.
+ *
+ * Important: If using Grounding with Google Search, you are required to comply with the
+ * "Grounding with Google Search" usage requirements for your chosen API provider: {@link https://ai.google.dev/gemini-api/terms#grounding-with-google-search | Gemini Developer API}
+ * or Vertex AI Gemini API (see {@link https://cloud.google.com/terms/service-terms | Service Terms}
+ * section within the Service Specific Terms).
+ *
+ * @public
+ */
+export interface GoogleSearchTool {
+  /**
+   * Specifies the Google Search configuration.
+   * Currently, this is an empty object, but it's reserved for future configuration options.
+   * Specifies the Google Search configuration.
+   *
+   * When using this feature, you are required to comply with the "Grounding with Google Search"
+   * usage requirements for your chosen API provider: {@link https://ai.google.dev/gemini-api/terms#grounding-with-google-search | Gemini Developer API}
+   * or Vertex AI Gemini API (see {@link https://cloud.google.com/terms/service-terms | Service Terms}
+   * section within the Service Specific Terms).
+   */
+  googleSearch: GoogleSearch;
+}
+
+/**
+ * Specifies the Google Search configuration.
+ *
+ * @remarks Currently, this is an empty object, but it's reserved for future configuration options.
+ *
+ * @public
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface GoogleSearch {}
+
+/**
  * A `FunctionDeclarationsTool` is a piece of code that enables the system to
  * interact with external systems to perform an action, or set of actions,
  * outside of knowledge and scope of the model.
  * @public
  */
-export declare interface FunctionDeclarationsTool {
+export interface FunctionDeclarationsTool {
   /**
    * Optional. One or more function declarations
    * to be passed to the model along with the current user query. Model may
@@ -230,4 +269,77 @@ export interface ToolConfig {
 export interface FunctionCallingConfig {
   mode?: FunctionCallingMode;
   allowedFunctionNames?: string[];
+}
+
+/**
+ * Configuration for "thinking" behavior of compatible Gemini models.
+ *
+ * Certain models utilize a thinking process before generating a response. This allows them to
+ * reason through complex problems and plan a more coherent and accurate answer.
+ *
+ * @public
+ */
+export interface ThinkingConfig {
+  /**
+   * The thinking budget, in tokens.
+   *
+   * This parameter sets an upper limit on the number of tokens the model can use for its internal
+   * "thinking" process. A higher budget may result in higher quality responses for complex tasks
+   * but can also increase latency and cost.
+   *
+   * If you don't specify a budget, the model will determine the appropriate amount
+   * of thinking based on the complexity of the prompt.
+   *
+   * An error will be thrown if you set a thinking budget for a model that does not support this
+   * feature or if the specified budget is not within the model's supported range.
+   */
+  thinkingBudget?: number;
+
+  /**
+   * Whether to include "thought summaries" in the model's response.
+   *
+   * @remarks
+   * Thought summaries provide a brief overview of the model's internal thinking process,
+   * offering insight into how it arrived at the final answer. This can be useful for
+   * debugging, understanding the model's reasoning, and verifying its accuracy.
+   */
+  includeThoughts?: boolean;
+}
+
+/**
+ * Configuration for a pre-built voice.
+ *
+ * @beta
+ */
+export interface PrebuiltVoiceConfig {
+  /**
+   * The voice name to use for speech synthesis.
+   *
+   * For a full list of names and demos of what each voice sounds like, see {@link https://cloud.google.com/text-to-speech/docs/chirp3-hd | Chirp 3: HD Voices}.
+   */
+  voiceName?: string;
+}
+
+/**
+ * Configuration for the voice to used in speech synthesis.
+ *
+ * @beta
+ */
+export interface VoiceConfig {
+  /**
+   * Configures the voice using a pre-built voice configuration.
+   */
+  prebuiltVoiceConfig?: PrebuiltVoiceConfig;
+}
+
+/**
+ * Configures speech synthesis.
+ *
+ * @beta
+ */
+export interface SpeechConfig {
+  /**
+   * Configures the voice to be used in speech synthesis.
+   */
+  voiceConfig?: VoiceConfig;
 }
