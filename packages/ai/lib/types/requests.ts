@@ -119,7 +119,6 @@ export interface GenerationConfig {
   thinkingConfig?: ThinkingConfig;
 }
 
-
 /**
  * Params for {@link GenerativeModel.startChat}.
  * @public

@@ -31,6 +31,18 @@ const fakeResponseText: GenerateContentResponse = {
   ],
 };
 
+const fakeResponseThoughts: GenerateContentResponse = {
+  candidates: [
+    {
+      index: 0,
+      content: {
+        role: 'model',
+        parts: [{ text: 'Some text' }, { text: 'and some thoughts', thought: true }],
+      },
+    },
+  ],
+};
+
 const functionCallPart1 = {
   functionCall: {
     name: 'find_theaters',
@@ -129,12 +141,14 @@ describe('response-helpers methods', () => {
       const enhancedResponse = addHelpers(fakeResponseText);
       expect(enhancedResponse.text()).toBe('Some text and some more text');
       expect(enhancedResponse.functionCalls()).toBeUndefined();
+      expect(enhancedResponse.thoughtSummary()).toBeUndefined();
     });
 
     it('good response functionCall', () => {
       const enhancedResponse = addHelpers(fakeResponseFunctionCall);
       expect(enhancedResponse.text()).toBe('');
       expect(enhancedResponse.functionCalls()).toEqual([functionCallPart1.functionCall]);
+      expect(enhancedResponse.thoughtSummary()).toBeUndefined();
     });
 
     it('good response functionCalls', () => {
@@ -144,29 +158,41 @@ describe('response-helpers methods', () => {
         functionCallPart1.functionCall,
         functionCallPart2.functionCall,
       ]);
+      expect(enhancedResponse.thoughtSummary()).toBeUndefined();
     });
 
     it('good response text/functionCall', () => {
       const enhancedResponse = addHelpers(fakeResponseMixed1);
       expect(enhancedResponse.functionCalls()).toEqual([functionCallPart2.functionCall]);
       expect(enhancedResponse.text()).toBe('some text');
+      expect(enhancedResponse.thoughtSummary()).toBeUndefined();
     });
 
     it('good response functionCall/text', () => {
       const enhancedResponse = addHelpers(fakeResponseMixed2);
       expect(enhancedResponse.functionCalls()).toEqual([functionCallPart1.functionCall]);
       expect(enhancedResponse.text()).toBe('some text');
+      expect(enhancedResponse.thoughtSummary()).toBeUndefined();
     });
 
     it('good response text/functionCall/text', () => {
       const enhancedResponse = addHelpers(fakeResponseMixed3);
       expect(enhancedResponse.functionCalls()).toEqual([functionCallPart1.functionCall]);
       expect(enhancedResponse.text()).toBe('some text and more text');
+      expect(enhancedResponse.thoughtSummary()).toBeUndefined();
+    });
+
+    it('good response text/thought', () => {
+      const enhancedResponse = addHelpers(fakeResponseThoughts);
+      expect(enhancedResponse.text()).toBe('Some text');
+      expect(enhancedResponse.thoughtSummary()).toBe('and some thoughts');
+      expect(enhancedResponse.functionCalls()).toBeUndefined();
     });
 
     it('bad response safety', () => {
       const enhancedResponse = addHelpers(badFakeResponse);
       expect(() => enhancedResponse.text()).toThrow('SAFETY');
+      expect(() => enhancedResponse.thoughtSummary()).toThrow('SAFETY');
     });
   });
 
