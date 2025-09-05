@@ -72,7 +72,7 @@ export function addHelpers(response: GenerateContentResponse): EnhancedGenerateC
             response,
           )}. Response body stored in error.response`,
           {
-            response,
+            response
           },
         );
       }

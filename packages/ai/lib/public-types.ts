@@ -18,8 +18,10 @@
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { FirebaseAppCheckTypes } from '@react-native-firebase/app-check';
+import { Backend } from './backend';
 
 export * from './types';
+export { Backend };
 
 /**
  * Options for initializing the AI service using {@link getAI | getAI()}.
@@ -40,29 +42,6 @@ export interface AIOptions {
   useLimitedUseAppCheckTokens?: boolean;
   appCheck?: FirebaseAppCheckTypes.Module | null;
   auth?: FirebaseAuthTypes.Module | null;
-}
-
-/**
- * Abstract base class representing the configuration for an AI service backend.
- * This class should not be instantiated directly. Use its subclasses; {@link GoogleAIBackend} for
- * the Gemini Developer API (via {@link https://ai.google/ | Google AI}), and
- * {@link VertexAIBackend} for the Vertex AI Gemini API.
- *
- * @public
- */
-export abstract class Backend {
-  /**
-   * Specifies the backend type.
-   */
-  readonly backendType: BackendType;
-
-  /**
-   * Protected constructor for use by subclasses.
-   * @param type - The backend type.
-   */
-  protected constructor(type: BackendType) {
-    this.backendType = type;
-  }
 }
 
 /**
@@ -98,7 +77,6 @@ export const BackendType = {
  * @public
  */
 export type BackendType = (typeof BackendType)[keyof typeof BackendType];
-
 
 /**
  * An instance of the Firebase AI SDK.

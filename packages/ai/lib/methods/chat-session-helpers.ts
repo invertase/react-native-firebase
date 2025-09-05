@@ -25,14 +25,16 @@ const VALID_PART_FIELDS: Array<keyof Part> = [
   'inlineData',
   'functionCall',
   'functionResponse',
+  'thought',
+  'thoughtSignature'
 ];
 
 const VALID_PARTS_PER_ROLE: { [key in Role]: Array<keyof Part> } = {
   user: ['text', 'inlineData'],
   function: ['functionResponse'],
-  model: ['text', 'functionCall'],
+  model: ['text', 'functionCall', 'thought', 'thoughtSignature'],
   // System instructions shouldn't be in history anyway.
-  system: ['text'],
+  system: ['text']
 };
 
 const VALID_PREVIOUS_CONTENT_ROLES: { [key in Role]: Role[] } = {
@@ -40,7 +42,7 @@ const VALID_PREVIOUS_CONTENT_ROLES: { [key in Role]: Role[] } = {
   function: ['model'],
   model: ['user', 'function'],
   // System instructions shouldn't be in history.
-  system: [],
+  system: []
 };
 
 export function validateChatHistory(history: Content[]): void {
@@ -78,6 +80,8 @@ export function validateChatHistory(history: Content[]): void {
       inlineData: 0,
       functionCall: 0,
       functionResponse: 0,
+      thought: 0,
+      thoughtSignature: 0
     };
 
     for (const part of parts) {
