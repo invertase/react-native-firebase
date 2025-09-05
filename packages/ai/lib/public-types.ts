@@ -31,8 +31,13 @@ export * from './types';
 export interface AIOptions {
   /**
    * The backend configuration to use for the AI service instance.
+   * Defaults to the Gemini Developer API backend ({@link GoogleAIBackend}).
    */
-  backend: Backend;
+  backend?: Backend;
+  /**
+   * Whether to use App Check limited use tokens. Defaults to false.
+   */
+  useLimitedUseAppCheckTokens?: boolean;
   appCheck?: FirebaseAppCheckTypes.Module | null;
   auth?: FirebaseAuthTypes.Module | null;
 }
@@ -94,19 +99,6 @@ export const BackendType = {
  */
 export type BackendType = (typeof BackendType)[keyof typeof BackendType];
 
-/**
- * Options for initializing the AI service using {@link getAI | getAI()}.
- * This allows specifying which backend to use (Vertex AI Gemini API or Gemini Developer API)
- * and configuring its specific options (like location for Vertex AI).
- *
- * @public
- */
-export interface AIOptions {
-  /**
-   * The backend configuration to use for the AI service instance.
-   */
-  backend: Backend;
-}
 
 /**
  * An instance of the Firebase AI SDK.
@@ -128,6 +120,10 @@ export interface AI {
    * Vertex AI Gemini API (using {@link VertexAIBackend}).
    */
   backend: Backend;
+  /**
+   * Options applied to this {@link AI} instance.
+   */
+  options?: AIOptions;
   /**
    * @deprecated use `AI.backend.location` instead.
    *

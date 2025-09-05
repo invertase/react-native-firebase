@@ -67,7 +67,28 @@ export interface EnhancedGenerateContentResponse extends GenerateContentResponse
    * @throws If the prompt or candidate was blocked.
    */
   inlineDataParts: () => InlineDataPart[] | undefined;
+  /**
+   * Aggregates and returns every {@link FunctionCall} from the first candidate of
+   * {@link GenerateContentResponse}.
+   *
+   * @throws If the prompt or candidate was blocked.
+   */
   functionCalls: () => FunctionCall[] | undefined;
+  /**
+   * Aggregates and returns every {@link TextPart} with their `thought` property set
+   * to `true` from the first candidate of {@link GenerateContentResponse}.
+   *
+   * @throws If the prompt or candidate was blocked.
+   *
+   * @remarks
+   * Thought summaries provide a brief overview of the model's internal thinking process,
+   * offering insight into how it arrived at the final answer. This can be useful for
+   * debugging, understanding the model's reasoning, and verifying its accuracy.
+   *
+   * Thoughts will only be included if {@link ThinkingConfig.includeThoughts} is
+   * set to `true`.
+   */
+  thoughtSummary: () => string | undefined;
 }
 
 /**
