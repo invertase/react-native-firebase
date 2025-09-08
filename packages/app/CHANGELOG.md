@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.3.1](https://github.com/invertase/react-native-firebase/compare/v23.3.0...v23.3.1) (2025-09-08)
+
+### Bug Fixes
+
+- **app-distribution, android:** use correct app-distribution gradle version 5.1.1 ([25fddad](https://github.com/invertase/react-native-firebase/commit/25fddad1ac540e5e8b006aae286a4e4603198617))
+
 ## [23.3.0](https://github.com/invertase/react-native-firebase/compare/v23.2.2...v23.3.0) (2025-09-04)
 
 **Note:** Version bump only for package @react-native-firebase/app
