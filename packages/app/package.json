@@ -88,7 +88,7 @@
       "firebasePerfGradle": "2.0.1",
       "gmsGoogleServicesGradle": "4.4.3",
       "playServicesAuth": "21.4.0",
-      "firebaseAppDistributionGradle": "5.1.2"
+      "firebaseAppDistributionGradle": "5.1.1"
     }
   }
 }
