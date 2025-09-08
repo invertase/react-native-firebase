@@ -64,7 +64,7 @@ export interface ImagenResponseInternal {
     /**
      * Safety attributes for the prediction.
      */
-    safetyAttributes?: any;
+    safetyAttributes?: unknown;
   }>;
 }
 
