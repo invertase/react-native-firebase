@@ -18,8 +18,10 @@
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { FirebaseAppCheckTypes } from '@react-native-firebase/app-check';
+import { Backend } from './backend';
 
 export * from './types';
+export { Backend };
 
 /**
  * Options for initializing the AI service using {@link getAI | getAI()}.
@@ -31,33 +33,15 @@ export * from './types';
 export interface AIOptions {
   /**
    * The backend configuration to use for the AI service instance.
+   * Defaults to the Gemini Developer API backend ({@link GoogleAIBackend}).
    */
-  backend: Backend;
+  backend?: Backend;
+  /**
+   * Whether to use App Check limited use tokens. Defaults to false.
+   */
+  useLimitedUseAppCheckTokens?: boolean;
   appCheck?: FirebaseAppCheckTypes.Module | null;
   auth?: FirebaseAuthTypes.Module | null;
-}
-
-/**
- * Abstract base class representing the configuration for an AI service backend.
- * This class should not be instantiated directly. Use its subclasses; {@link GoogleAIBackend} for
- * the Gemini Developer API (via {@link https://ai.google/ | Google AI}), and
- * {@link VertexAIBackend} for the Vertex AI Gemini API.
- *
- * @public
- */
-export abstract class Backend {
-  /**
-   * Specifies the backend type.
-   */
-  readonly backendType: BackendType;
-
-  /**
-   * Protected constructor for use by subclasses.
-   * @param type - The backend type.
-   */
-  protected constructor(type: BackendType) {
-    this.backendType = type;
-  }
 }
 
 /**
@@ -95,20 +79,6 @@ export const BackendType = {
 export type BackendType = (typeof BackendType)[keyof typeof BackendType];
 
 /**
- * Options for initializing the AI service using {@link getAI | getAI()}.
- * This allows specifying which backend to use (Vertex AI Gemini API or Gemini Developer API)
- * and configuring its specific options (like location for Vertex AI).
- *
- * @public
- */
-export interface AIOptions {
-  /**
-   * The backend configuration to use for the AI service instance.
-   */
-  backend: Backend;
-}
-
-/**
  * An instance of the Firebase AI SDK.
  *
  * Do not create this instance directly. Instead, use {@link getAI | getAI()}.
@@ -128,6 +98,10 @@ export interface AI {
    * Vertex AI Gemini API (using {@link VertexAIBackend}).
    */
   backend: Backend;
+  /**
+   * Options applied to this {@link AI} instance.
+   */
+  options?: AIOptions;
   /**
    * @deprecated use `AI.backend.location` instead.
    *

@@ -139,6 +139,43 @@ describe('chat-session-helpers', () => {
           ],
           isValid: false,
         },
+        {
+          history: [
+            { role: 'user', parts: [{ text: 'hi' }] },
+            {
+              role: 'model',
+              parts: [
+                { text: 'hi' },
+                {
+                  text: 'thought about hi',
+                  thought: true,
+                  thoughtSignature: 'thought signature',
+                },
+              ],
+            },
+          ],
+          isValid: true,
+        },
+        {
+          history: [
+            {
+              role: 'user',
+              parts: [{ text: 'hi', thought: true, thoughtSignature: 'sig' }],
+            },
+            {
+              role: 'model',
+              parts: [
+                { text: 'hi' },
+                {
+                  text: 'thought about hi',
+                  thought: true,
+                  thoughtSignature: 'thought signature',
+                },
+              ],
+            },
+          ],
+          isValid: false,
+        },
       ];
 
       TCS.forEach(tc => {

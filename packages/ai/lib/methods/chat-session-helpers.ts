@@ -25,12 +25,14 @@ const VALID_PART_FIELDS: Array<keyof Part> = [
   'inlineData',
   'functionCall',
   'functionResponse',
+  'thought',
+  'thoughtSignature',
 ];
 
 const VALID_PARTS_PER_ROLE: { [key in Role]: Array<keyof Part> } = {
   user: ['text', 'inlineData'],
   function: ['functionResponse'],
-  model: ['text', 'functionCall'],
+  model: ['text', 'functionCall', 'thought', 'thoughtSignature'],
   // System instructions shouldn't be in history anyway.
   system: ['text'],
 };
@@ -78,6 +80,8 @@ export function validateChatHistory(history: Content[]): void {
       inlineData: 0,
       functionCall: 0,
       functionResponse: 0,
+      thought: 0,
+      thoughtSignature: 0,
     };
 
     for (const part of parts) {

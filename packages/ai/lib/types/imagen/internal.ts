@@ -61,6 +61,10 @@ export interface ImagenResponseInternal {
      * The reason why the image was filtered.
      */
     raiFilteredReason?: string;
+    /**
+     * Safety attributes for the prediction.
+     */
+    safetyAttributes?: unknown;
   }>;
 }
 
