@@ -187,16 +187,20 @@ global.FirebaseHelpers = {
     let retries = 0;
     let maxRetries = 5;
     // We handle 429 errors in a retry loop
-    while ((doc === undefined || doc.status === 429) && retries < maxRetries) {
-      doc = await fetch(
-        `https://us-central1-${getE2eTestProject()}.cloudfunctions.net/${functioNName}`,
-        {
-          method: 'POST',
-          body: JSON.stringify({ data: postData }),
-          headers: { 'Content-Type': 'application/json' },
-        },
-      );
-      if (doc.status === 429) {
+    while ((doc === undefined || (doc && doc.status === 429)) && retries < maxRetries) {
+      try {
+        doc = await fetch(
+          `https://us-central1-${getE2eTestProject()}.cloudfunctions.net/${functioNName}`,
+          {
+            method: 'POST',
+            body: JSON.stringify({ data: postData }),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        );
+      } catch (_error) {
+        doc = undefined;
+      }
+      if (doc && doc.status === 429) {
         // We have been delayed by concurrency limits or rate limits
         // We'll sleep for a little bit then try again.
         const delayRequired = 10;
@@ -206,7 +210,7 @@ global.FirebaseHelpers = {
     }
 
     // did we eventually have success? If not, error.
-    if (retries === maxRetries && doc.status !== 200) {
+    if (!doc || doc.status !== 200) {
       throw new Error('Unable to execute cloud remote config helper function');
     }
     const result = await doc.json();
