@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+import { Platform } from 'react-native';
 
 /**
  * Performs an API request to Firebase Console to get password policy json.
@@ -29,8 +30,18 @@ export async function fetchPasswordPolicy(auth) {
     // Identity toolkit API endpoint for password policy. Ensure this is enabled on Google cloud.
     const baseURL = 'https://identitytoolkit.googleapis.com/v2/passwordPolicy?key=';
     const apiKey = auth.app.options.apiKey;
+    const headers = {};
 
-    const response = await fetch(`${baseURL}${apiKey}`);
+    if (Platform.OS === 'ios' && globalThis.RNFBTest) {
+      // Need this for API restricted key.
+      headers['X-Ios-Bundle-Identifier'] = 'io.invertase.testing';
+    }
+
+    const response = await fetch(`${baseURL}${apiKey}`, {
+      method: 'GET',
+      headers,
+    });
+
     if (!response.ok) {
       const errorDetails = await response.text();
       throw new Error(
