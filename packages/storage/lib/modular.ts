@@ -30,6 +30,7 @@ import type {
   UploadMetadata,
   EmulatorMockTokenOptions,
 } from './types/storage';
+import { TaskEvent, TaskState } from './types/storage';
 import type { StorageReferenceInternal, StorageInternal } from './types/internal';
 
 type WithModularDeprecationArg<F> = F extends (...args: infer P) => infer R
@@ -267,18 +268,46 @@ export function updateMetadata(
 }
 
 /**
- * Uploads data to this object's location. The upload is not resumable.
- * @param _storageRef - Storage `Reference` instance.
- * @param _data - The data (Blob | Uint8Array | ArrayBuffer) to upload to the storage bucket at the reference location.
- * @param _metadata - A Storage `UploadMetadata` instance to update. Optional.
+ * Uploads data to this object's location. The upload is not resumable. If the upload is canceled,
+ * the Promise will reject with the TaskSnapshot. If there is an error it will reject with the StorageError
+ * @param storageRef - Storage `Reference` instance.
+ * @param data - The data (Blob | Uint8Array | ArrayBuffer) to upload to the storage bucket at the reference location.
+ * @param metadata - A Storage `UploadMetadata` instance to update. Optional.
  * @returns {Promise<TaskResult>}
  */
 export async function uploadBytes(
-  _storageRef: StorageReference,
-  _data: Blob | Uint8Array | ArrayBuffer,
-  _metadata?: UploadMetadata,
+  storageRef: StorageReference,
+  data: Blob | Uint8Array | ArrayBuffer,
+  metadata?: UploadMetadata,
 ): Promise<TaskResult> {
-  throw new Error('`uploadBytes()` is not implemented');
+  const task = uploadBytesResumable(storageRef, data, metadata);
+  return new Promise((resolve, reject) => {
+    task.on(
+      TaskEvent.STATE_CHANGED,
+      taskSnapshot => {
+        switch (taskSnapshot.state) {
+          case TaskState.RUNNING:
+            break;
+          case TaskState.PAUSED:
+            task.resume();
+            break;
+          case TaskState.SUCCESS:
+            resolve({ ref: taskSnapshot.ref, metadata: taskSnapshot.metadata });
+            break;
+          case TaskState.CANCELED:
+            // The TaskSnapshot may be useful to have if we reject due to cancel
+            reject(taskSnapshot);
+            break;
+          case TaskState.ERROR:
+            // this will be handled in the dedicated error listener
+            break;
+          default:
+            throw new Error(`Unhandled task state in uploadBytes: ${taskSnapshot.state}`);
+        }
+      },
+      error => reject(error),
+    );
+  });
 }
 
 /**
