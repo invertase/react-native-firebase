@@ -1,5 +1,5 @@
 {
-  "include": ["packages/**/lib/*.d.ts", "packages/**/type-test.ts"],
+  "include": ["packages/**/lib/*.d.ts", "packages/**/type-test.ts", "packages/**/*.test-d.ts"],
   "compilerOptions": {
     "noEmit": true,
     "target": "es5",

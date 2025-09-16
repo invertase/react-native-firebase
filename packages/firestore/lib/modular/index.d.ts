@@ -78,7 +78,7 @@ export declare type NestedUpdateFields<T extends Record<string, unknown>> = Unio
  */
 export declare type UpdateData<T> = T extends Primitive
   ? T
-  : T extends object
+  : T extends Record<string, unknown>
     ? {
         [K in keyof T]?: UpdateData<T[K]> | FieldValue;
       } & NestedUpdateFields<T>
@@ -185,11 +185,11 @@ export function doc(
  * a document.
  * @returns The `DocumentReference` instance.
  */
-export declare function doc<AppModelType, DbModelType extends DocumentData>(
-  reference: CollectionReference<AppModelType, DbModelType>,
+export declare function doc<T extends DocumentData>(
+  reference: CollectionReference<T>,
   path?: string,
   ...pathSegments: string[]
-): DocumentReference<AppModelType, DbModelType>;
+): DocumentReference<T>;
 
 /**
  * Gets a `DocumentReference` instance that refers to a document within
@@ -203,14 +203,14 @@ export declare function doc<AppModelType, DbModelType extends DocumentData>(
  * a document.
  * @returns The `DocumentReference` instance.
  */
-export declare function doc<AppModelType, DbModelType extends DocumentData>(
-  reference: DocumentReference<AppModelType, DbModelType>,
+export declare function doc<T extends DocumentData>(
+  reference: DocumentReference<T>,
   path: string,
   ...pathSegments: string[]
-): DocumentReference<DocumentData, DocumentData>;
+): DocumentReference<DocumentData>;
 
-export function doc<T>(
-  parent: Firestore | CollectionReference<T> | DocumentReference<unknown>,
+export function doc<T extends DocumentData>(
+  parent: Firestore | CollectionReference<T> | DocumentReference,
   path?: string,
   ...pathSegments: string[]
 ): DocumentReference;
@@ -227,11 +227,11 @@ export function doc<T>(
  * to a collection.
  * @returns The `CollectionReference` instance.
  */
-export function collection(
+export function collection<T extends DocumentData = DocumentData>(
   firestore: Firestore,
   path: string,
   ...pathSegments: string[]
-): CollectionReference<DocumentData, DocumentData>;
+): CollectionReference<T>;
 
 /**
  * Gets a `CollectionReference` instance that refers to a subcollection of
@@ -245,11 +245,11 @@ export function collection(
  * to a collection.
  * @returns The `CollectionReference` instance.
  */
-export declare function collection<AppModelType, DbModelType extends DocumentData>(
-  reference: CollectionReference<AppModelType, DbModelType>,
+export declare function collection<T extends DocumentData>(
+  reference: CollectionReference<T>,
   path: string,
   ...pathSegments: string[]
-): CollectionReference<DocumentData, DocumentData>;
+): CollectionReference<DocumentData>;
 
 /**
  * Gets a `CollectionReference` instance that refers to a subcollection of
@@ -263,11 +263,11 @@ export declare function collection<AppModelType, DbModelType extends DocumentDat
  * to a collection.
  * @returns The `CollectionReference` instance.
  */
-export declare function collection<AppModelType, DbModelType extends DocumentData>(
-  reference: DocumentReference<AppModelType, DbModelType>,
+export declare function collection<T extends DocumentData>(
+  reference: DocumentReference<T>,
   path: string,
   ...pathSegments: string[]
-): CollectionReference<DocumentData, DocumentData>;
+): CollectionReference<DocumentData>;
 
 /**
  * Gets a `CollectionReference` instance that refers to a subcollection of
@@ -288,7 +288,7 @@ export function collection(
 ): CollectionReference<DocumentData>;
 
 export function collection(
-  parent: Firestore | DocumentReference<unknown> | CollectionReference<unknown>,
+  parent: Firestore | DocumentReference | CollectionReference,
   path: string,
   ...pathSegments: string[]
 ): CollectionReference<DocumentData>;
@@ -296,17 +296,13 @@ export function collection(
 /**
  *Returns true if the provided references are equal.
  *
- * @param left	DocumentReference<AppModelType, DbModelType> | CollectionReference<AppModelType, DbModelType>	A reference to compare.
- * @param right	DocumentReference<AppModelType, DbModelType> | CollectionReference<AppModelType, DbModelType>	A reference to compare.
+ * @param left	DocumentReference<T> | CollectionReference<T>	A reference to compare.
+ * @param right	DocumentReference<T> | CollectionReference<T>	A reference to compare.
  * @return boolean true if the references point to the same location in the same Firestore database.
  */
-export declare function refEqual<AppModelType, DbModelType extends DocumentData>(
-  left:
-    | DocumentReference<AppModelType, DbModelType>
-    | CollectionReference<AppModelType, DbModelType>,
-  right:
-    | DocumentReference<AppModelType, DbModelType>
-    | CollectionReference<AppModelType, DbModelType>,
+export declare function refEqual<T extends DocumentData>(
+  left: DocumentReference<T> | CollectionReference<T>,
+  right: DocumentReference<T> | CollectionReference<T>,
 ): boolean;
 
 /**
@@ -320,10 +316,7 @@ export declare function refEqual<AppModelType, DbModelType extends DocumentData>
  * will be included. Cannot contain a slash.
  * @returns The created `Query`.
  */
-export function collectionGroup(
-  firestore: Firestore,
-  collectionId: string,
-): Query<DocumentData, DocumentData>;
+export function collectionGroup(firestore: Firestore, collectionId: string): Query;
 
 /**
  * Writes to the document referred to by this `DocumentReference`. If the
@@ -334,7 +327,10 @@ export function collectionGroup(
  * @returns A `Promise` resolved once the data has been successfully written
  * to the backend (note that it won't resolve while you're offline).
  */
-export function setDoc<T>(reference: DocumentReference<T>, data: WithFieldValue<T>): Promise<void>;
+export function setDoc<T extends DocumentData>(
+  reference: DocumentReference<T>,
+  data: WithFieldValue<T>,
+): Promise<void>;
 
 /**
  * Writes to the document referred to by the specified `DocumentReference`. If
@@ -347,16 +343,10 @@ export function setDoc<T>(reference: DocumentReference<T>, data: WithFieldValue<
  * @returns A Promise resolved once the data has been successfully written
  * to the backend (note that it won't resolve while you're offline).
  */
-export function setDoc<T>(
+export function setDoc<T extends DocumentData>(
   reference: DocumentReference<T>,
   data: PartialWithFieldValue<T>,
   options: FirebaseFirestoreTypes.SetOptions,
-): Promise<void>;
-
-export function setDoc<T>(
-  reference: DocumentReference<T>,
-  data: PartialWithFieldValue<T>,
-  options?: FirebaseFirestoreTypes.SetOptions,
 ): Promise<void>;
 
 /**
@@ -371,7 +361,10 @@ export function setDoc<T>(
  * @returns A `Promise` resolved once the data has been successfully written
  * to the backend (note that it won't resolve while you're offline).
  */
-export function updateDoc<T>(reference: DocumentReference<T>, data: UpdateData<T>): Promise<void>;
+export function updateDoc<T extends DocumentData>(
+  reference: DocumentReference<T>,
+  data: UpdateData<T>,
+): Promise<void>;
 /**
  * Updates fields in the document referred to by the specified
  * `DocumentReference` The update will fail if applied to a document that does
@@ -387,8 +380,8 @@ export function updateDoc<T>(reference: DocumentReference<T>, data: UpdateData<T
  * @returns A `Promise` resolved once the data has been successfully written
  * to the backend (note that it won't resolve while you're offline).
  */
-export function updateDoc(
-  reference: DocumentReference<unknown>,
+export function updateDoc<T extends DocumentData>(
+  reference: DocumentReference<T>,
   field: string | FieldPath,
   value: unknown,
   ...moreFieldsAndValues: unknown[]
@@ -404,10 +397,10 @@ export function updateDoc(
  * newly created document after it has been written to the backend (Note that it
  * won't resolve while you're offline).
  */
-export declare function addDoc<AppModelType, DbModelType extends DocumentData>(
-  reference: CollectionReference<AppModelType, DbModelType>,
-  data: WithFieldValue<AppModelType>,
-): Promise<DocumentReference<AppModelType, DbModelType>>;
+export declare function addDoc<T extends DocumentData>(
+  reference: CollectionReference<T>,
+  data: WithFieldValue<T>,
+): Promise<DocumentReference<T>>;
 
 /**
  * Re-enables use of the network for this {@link Firestore} instance after a prior
@@ -492,7 +485,7 @@ export function waitForPendingWrites(firestore: Firestore): Promise<void>;
  */
 export function initializeFirestore(
   app: FirebaseApp,
-  settings: FirestoreSettings,
+  settings: FirebaseFirestoreTypes.Settings,
   databaseId?: string,
 ): Promise<Firestore>;
 
@@ -553,13 +546,12 @@ export function runTransaction<T>(
  * retrieved from `snapshot.data().count`, where `snapshot` is the
  * `AggregateQuerySnapshot` to which the returned Promise resolves.
  */
-export function getCountFromServer<AppModelType, DbModelType extends DocumentData>(
-  query: Query<AppModelType, DbModelType>,
+export function getCountFromServer<T extends DocumentData>(
+  query: Query<T>,
 ): Promise<
   FirebaseFirestoreTypes.AggregateQuerySnapshot<
     { count: FirebaseFirestoreTypes.AggregateField<number> },
-    AppModelType,
-    DbModelType
+    T
   >
 >;
 
@@ -569,6 +561,19 @@ export function getCountFromServer<AppModelType, DbModelType extends DocumentDat
 interface AggregateSpec {
   [field: string]: AggregateFieldType;
 }
+
+export type FirebaseSignInProvider =
+  | 'custom'
+  | 'email'
+  | 'password'
+  | 'phone'
+  | 'anonymous'
+  | 'google.com'
+  | 'facebook.com'
+  | 'github.com'
+  | 'twitter.com'
+  | 'microsoft.com'
+  | 'apple.com';
 
 interface FirebaseIdToken {
   // Always set to https://securetoken.google.com/PROJECT_ID
@@ -636,12 +641,11 @@ export type AggregateFieldType =
 
 export function getAggregateFromServer<
   AggregateSpecType extends AggregateSpec,
-  AppModelType,
-  DbModelType extends DocumentData,
+  T extends DocumentData,
 >(
-  query: Query<AppModelType, DbModelType>,
+  query: Query<T>,
   aggregateSpec: AggregateSpecType,
-): Promise<AggregateQuerySnapshot<AggregateSpecType, AppModelType, DbModelType>>;
+): Promise<AggregateQuerySnapshot<AggregateSpecType, T>>;
 
 /**
  * Create an AggregateField object that can be used to compute the sum of
@@ -663,6 +667,7 @@ export function average(field: string | FieldPath): AggregateField<number | null
  */
 export function count(): AggregateField<number>;
 
+export type AggregateType = 'count' | 'avg' | 'sum';
 /**
  * Represents an aggregation that can be performed by Firestore.
  */
@@ -680,12 +685,7 @@ export class AggregateField<T> {
    * @param _internalFieldPath Optionally specifies the field that is aggregated.
    * @internal
    */
-  constructor(
-    aggregateType: AggregateType = 'count',
-    readonly _internalFieldPath?: InternalFieldPath,
-  ) {
-    this.aggregateType = aggregateType;
-  }
+  constructor(aggregateType?: AggregateType, _internalFieldPath?: FieldPath);
 }
 
 /**

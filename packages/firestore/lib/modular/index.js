@@ -72,8 +72,8 @@ export function collection(parent, path, ...pathSegments) {
 }
 
 /**
- * @param {DocumentReference<AppModelType, DbModelType> | CollectionReference<AppModelType, DbModelType>} left
- * @param {DocumentReference<AppModelType, DbModelType> | CollectionReference<AppModelType, DbModelType>} right
+ * @param {DocumentReference<T> | CollectionReference<T>} left
+ * @param {DocumentReference<T> | CollectionReference<T>} right
  * @return boolean true if the two references are equal
  */
 export function refEqual(left, right) {
