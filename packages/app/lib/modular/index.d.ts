@@ -128,4 +128,6 @@ export function preferencesSetString(key: string, value: string): Promise<void>;
  *
  * This is required if you want to persist things like Auth sessions, Analytics device IDs, etc.
  */
-export function setReactNativeAsyncStorage(asyncStorage: ReactNativeAsyncStorage): void;
+export function setReactNativeAsyncStorage(
+  asyncStorage: ReactNativeFirebase.ReactNativeAsyncStorage,
+): void;
