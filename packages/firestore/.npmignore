@@ -65,3 +65,4 @@ android/.settings
 .eslintignore
 type-test.ts
 __tests__
+*.test-d.ts
