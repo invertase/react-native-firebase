@@ -105,8 +105,8 @@ export declare function logEvent(
   analytics: Analytics,
   name: 'screen_view',
   params?: {
-    screen_name: EventParams['firebase_screen'];
-    screen_class: EventParams['firebase_screen_class'];
+    screen_name: EventParams['screen_name'];
+    screen_class: EventParams['screen_class'];
     [key: string]: any;
   },
   options?: AnalyticsCallOptions,

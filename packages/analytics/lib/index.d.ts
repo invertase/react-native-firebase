@@ -782,14 +782,7 @@ export namespace FirebaseAnalyticsTypes {
     number?: string;
     promotions?: Promotion[];
     screen_name?: string;
-    /**
-     * Firebase-specific. Use to log a `screen_name` to Firebase Analytics.
-     */
-    firebase_screen?: string;
-    /**
-     * Firebase-specific. Use to log a `screen_class` to Firebase Analytics.
-     */
-    firebase_screen_class?: string;
+    screen_class?: string;
     search_term?: string;
     shipping?: Currency;
     tax?: Currency;
