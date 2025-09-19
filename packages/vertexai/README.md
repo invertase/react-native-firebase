@@ -2,7 +2,7 @@
   <a href="https://rnfirebase.io">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
-  <h2 align="center">React Native Firebase - Vertex AI</h2>
+  <h2 align="center">React Native Firebase - Vertex AI ⚠️ **DEPRECATED** ⚠️</h2>
 </p>
 
 <p align="center">
