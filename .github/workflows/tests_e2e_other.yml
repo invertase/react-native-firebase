@@ -82,7 +82,7 @@ jobs:
   # it will run unit tests on whatever OS combinations are desired
   other:
     name: Other (${{ matrix.iteration }})
-    runs-on: macos-15
+    runs-on: macos-26
     needs: matrix_prep
     timeout-minutes: 100
     env:
