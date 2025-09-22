@@ -60,7 +60,6 @@ The main package that you interface with is `App` (`@react-native-firebase/app`)
 | [Performance Monitoring](/packages/perf)                 |                [![badge](https://img.shields.io/npm/dm/@react-native-firebase/perf.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/perf)                |
 | [Realtime Database](/packages/database)                  |            [![badge](https://img.shields.io/npm/dm/@react-native-firebase/database.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/database)            |
 | [Remote Config](/packages/remote-config)                 |       [![badge](https://img.shields.io/npm/dm/@react-native-firebase/remote-config.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/remote-config)       |
-| [Vertex AI ⚠️ **DEPRECATED** ⚠️](/packages/vertexai)                          |       [![badge](https://img.shields.io/npm/dm/@react-native-firebase/vertexai.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/vertexai)       |
 
 ## Documentation
 
