@@ -12,10 +12,10 @@ echo "Attempting to boot iOS Simulator $SIM..."
 (xcrun simctl boot "$SIM" || true) && open -a Simulator.app
 
 # Is it booted?
-xcrun simctl list |grep -i 'iPhone 16 ('|grep -v 'Phone:'|grep -v 'unavailable'|grep -v CoreSimulator|grep Booted
+xcrun simctl list |grep -i "$SIM ("|grep -v 'Phone:'|grep -v 'unavailable'|grep -v CoreSimulator|grep Booted
 
 # Are we a Debug or Release build?
 BUILDDIR="$(ls -1 ios/build/Build/Products/)"
 
 # Install our app (glob so Release or Debug works)
-xcrun simctl install 'iPhone 16' "ios/build/Build/Products/$BUILDDIR/testing.app"
+xcrun simctl install "$SIM" "ios/build/Build/Products/$BUILDDIR/testing.app"
