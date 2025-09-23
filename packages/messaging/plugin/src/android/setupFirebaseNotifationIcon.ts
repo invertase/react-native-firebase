@@ -30,10 +30,10 @@ export const withExpoPluginFirebaseNotification: ConfigPlugin = config => {
 const getNotificationConfig = (config: ExpoConfig) => {
   // Check expo-notifications plugin
   if (config.plugins) {
-    const expoNotificationsPlugin = config.plugins.find(plugin => 
-      Array.isArray(plugin) && plugin[0] === 'expo-notifications'
+    const expoNotificationsPlugin = config.plugins.find(
+      plugin => Array.isArray(plugin) && plugin[0] === 'expo-notifications',
     );
-    
+
     if (expoNotificationsPlugin && Array.isArray(expoNotificationsPlugin)) {
       const pluginConfig = expoNotificationsPlugin[1];
       if (pluginConfig && typeof pluginConfig === 'object') {
@@ -56,7 +56,7 @@ const getNotificationConfig = (config: ExpoConfig) => {
       color: config.notification.color,
     };
   }
-  
+
   return { icon: undefined, color: undefined };
 };
 
