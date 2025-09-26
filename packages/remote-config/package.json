@@ -30,5 +30,11 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
+  },
+  "dependencies": {
+    "text-encoding": "^0.7.0"
+  },
+  "devDependencies": {
+    "@types/text-encoding": "^0.0.40"
   }
 }
