@@ -5411,6 +5411,9 @@ __metadata:
 "@react-native-firebase/remote-config@npm:23.4.0, @react-native-firebase/remote-config@workspace:packages/remote-config":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/remote-config@workspace:packages/remote-config"
+  dependencies:
+    "@types/text-encoding": "npm:^0.0.40"
+    text-encoding: "npm:^0.7.0"
   peerDependencies:
     "@react-native-firebase/analytics": 23.4.0
     "@react-native-firebase/app": 23.4.0

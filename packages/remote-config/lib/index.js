@@ -15,6 +15,7 @@
  *
  */
 
+import './polyfills';
 import {
   hasOwnProperty,
   isNumber,
