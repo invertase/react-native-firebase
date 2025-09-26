@@ -56,7 +56,7 @@ export namespace FirebaseFirestoreTypes {
   export type QueryFilterType = 'OR' | 'AND';
 
   export interface QueryFieldFilterConstraint {
-    fieldPath: keyof T | FieldPath;
+    fieldPath: FieldPath;
     operator: WhereFilterOp;
     value: any;
   }
@@ -77,7 +77,7 @@ export namespace FirebaseFirestoreTypes {
      * e.g. Filter('name', '==', 'Ada')
      */
     (
-      fieldPath: keyof T | FieldPath,
+      fieldPath: FieldPath | string,
       operator: WhereFilterOp,
       value: any,
     ): QueryFieldFilterConstraint;
@@ -894,7 +894,7 @@ export namespace FirebaseFirestoreTypes {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   export class AggregateField<T> {
     /** A type string to uniquely identify instances of this class. */
-    type = 'AggregateField';
+    readonly type: 'AggregateField';
   }
 
   /**
@@ -923,14 +923,13 @@ export namespace FirebaseFirestoreTypes {
    */
   export interface AggregateQuerySnapshot<
     AggregateSpecType extends AggregateSpec,
-    AppModelType = DocumentData,
-    DbModelType extends DocumentData = DocumentData,
+    T extends DocumentData = DocumentData,
   > {
     /**
      * The underlying query over which the aggregations recorded in this
      * `AggregateQuerySnapshot` were performed.
      */
-    get query(): Query<AppModelType, DbModelType>;
+    get query(): Query<T>;
 
     /**
      * Returns the results of the aggregations performed over the underlying
@@ -953,7 +952,7 @@ export namespace FirebaseFirestoreTypes {
     /**
      * The underlying query for this instance.
      */
-    get query(): Query<unknown>;
+    get query(): Query;
 
     /**
      * Executes the query and returns the results as a AggregateQuerySnapshot.

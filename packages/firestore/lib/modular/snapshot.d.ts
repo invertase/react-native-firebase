@@ -1,5 +1,7 @@
-import { FirebaseFirestoreTypes } from '../index';
+import { FirebaseFirestoreTypes } from '..';
+import type Firestore from '..';
 
+import DocumentData = FirebaseFirestoreTypes.DocumentData;
 import DocumentReference = FirebaseFirestoreTypes.DocumentReference;
 import DocumentSnapshot = FirebaseFirestoreTypes.DocumentSnapshot;
 import SnapshotListenOptions = FirebaseFirestoreTypes.SnapshotListenOptions;
@@ -22,7 +24,7 @@ export type FirestoreError = Error;
  * @returns An unsubscribe function that can be called to cancel
  * the snapshot listener.
  */
-export function onSnapshot<T>(
+export function onSnapshot<T extends DocumentData>(
   reference: DocumentReference<T>,
   observer: {
     next?: (snapshot: DocumentSnapshot<T>) => void;
@@ -44,7 +46,7 @@ export function onSnapshot<T>(
  * @returns An unsubscribe function that can be called to cancel
  * the snapshot listener.
  */
-export function onSnapshot<T>(
+export function onSnapshot<T extends DocumentData>(
   reference: DocumentReference<T>,
   options: SnapshotListenOptions,
   observer: {
@@ -71,7 +73,7 @@ export function onSnapshot<T>(
  * @returns An unsubscribe function that can be called to cancel
  * the snapshot listener.
  */
-export function onSnapshot<T>(
+export function onSnapshot<T extends DocumentData>(
   reference: DocumentReference<T>,
   onNext: (snapshot: DocumentSnapshot<T>) => void,
   onError?: (error: FirestoreError) => void,
@@ -96,7 +98,7 @@ export function onSnapshot<T>(
  * @returns An unsubscribe function that can be called to cancel
  * the snapshot listener.
  */
-export function onSnapshot<T>(
+export function onSnapshot<T extends DocumentData>(
   reference: DocumentReference<T>,
   options: SnapshotListenOptions,
   onNext: (snapshot: DocumentSnapshot<T>) => void,
@@ -117,10 +119,10 @@ export function onSnapshot<T>(
  * @returns An unsubscribe function that can be called to cancel
  * the snapshot listener.
  */
-export declare function onSnapshot<AppModelType, DbModelType extends DocumentData>(
-  query: Query<AppModelType, DbModelType>,
+export declare function onSnapshot<T extends DocumentData>(
+  query: Query<T>,
   observer: {
-    next?: (snapshot: QuerySnapshot<AppModelType, DbModelType>) => void;
+    next?: (snapshot: QuerySnapshot<T>) => void;
     error?: (error: FirestoreError) => void;
     complete?: () => void;
   },
@@ -140,11 +142,11 @@ export declare function onSnapshot<AppModelType, DbModelType extends DocumentDat
  * @returns An unsubscribe function that can be called to cancel
  * the snapshot listener.
  */
-export declare function onSnapshot<AppModelType, DbModelType extends DocumentData>(
-  query: Query<AppModelType, DbModelType>,
+export declare function onSnapshot<T extends DocumentData>(
+  query: Query<T>,
   options: SnapshotListenOptions,
   observer: {
-    next?: (snapshot: QuerySnapshot<AppModelType, DbModelType>) => void;
+    next?: (snapshot: QuerySnapshot<T>) => void;
     error?: (error: FirestoreError) => void;
     complete?: () => void;
   },
@@ -168,9 +170,9 @@ export declare function onSnapshot<AppModelType, DbModelType extends DocumentDat
  * @returns An unsubscribe function that can be called to cancel
  * the snapshot listener.
  */
-export declare function onSnapshot<AppModelType, DbModelType extends DocumentData>(
-  query: Query<AppModelType, DbModelType>,
-  onNext: (snapshot: QuerySnapshot<AppModelType, DbModelType>) => void,
+export declare function onSnapshot<T extends DocumentData>(
+  query: Query<T>,
+  onNext: (snapshot: QuerySnapshot<T>) => void,
   onError?: (error: FirestoreError) => void,
   onCompletion?: () => void,
 ): Unsubscribe;
@@ -194,10 +196,10 @@ export declare function onSnapshot<AppModelType, DbModelType extends DocumentDat
  * @returns An unsubscribe function that can be called to cancel
  * the snapshot listener.
  */
-export declare function onSnapshot<AppModelType, DbModelType extends DocumentData>(
-  query: Query<AppModelType, DbModelType>,
+export declare function onSnapshot<T extends DocumentData>(
+  query: Query<T>,
   options: SnapshotListenOptions,
-  onNext: (snapshot: QuerySnapshot<AppModelType, DbModelType>) => void,
+  onNext: (snapshot: QuerySnapshot<T>) => void,
   onError?: (error: FirestoreError) => void,
   onCompletion?: () => void,
 ): Unsubscribe;
@@ -205,27 +207,27 @@ export declare function onSnapshot<AppModelType, DbModelType extends DocumentDat
 /**
  * Returns true if the provided snapshots are equal.
  *
- * @param left	DocumentSnapshot<AppModelType, DbModelType> | QuerySnapshot<AppModelType, DbModelType>	A snapshot to compare.
- * @param right	DocumentSnapshot<AppModelType, DbModelType> | QuerySnapshot<AppModelType, DbModelType>	A snapshot to compare.
+ * @param left	DocumentSnapshot<T> | QuerySnapshot<T>	A snapshot to compare.
+ * @param right	DocumentSnapshot<T> | QuerySnapshot<T>	A snapshot to compare.
  *
  * @returns boolean true if the snapshots are equal.
  */
-export function snapshotEqual<AppModelType, DbModelType extends DocumentData>(
-  left: DocumentSnapshot<AppModelType, DbModelType> | QuerySnapshot<AppModelType, DbModelType>,
-  right: DocumentSnapshot<AppModelType, DbModelType> | QuerySnapshot<AppModelType, DbModelType>,
+export function snapshotEqual<T extends DocumentData>(
+  left: DocumentSnapshot<T> | QuerySnapshot<T>,
+  right: DocumentSnapshot<T> | QuerySnapshot<T>,
 ): boolean;
 
 /**
  * Returns true if the provided queries point to the same collection and apply the same constraints.
  *
- * @param left	Query<AppModelType, DbModelType> A Query to compare.
- * @param right	Query<AppModelType, DbModelType> A Query to compare.
+ * @param left	Query<T> A Query to compare.
+ * @param right	Query<T> A Query to compare.
  *
  * @return boolean true if the references point to the same location in the same Firestore database.
  */
-export declare function queryEqual<AppModelType, DbModelType extends DocumentData>(
-  left: Query<AppModelType, DbModelType>,
-  right: Query<AppModelType, DbModelType>,
+export declare function queryEqual<T extends DocumentData>(
+  left: Query<T>,
+  right: Query<T>,
 ): boolean;
 
 /**
@@ -237,7 +239,7 @@ export declare function queryEqual<AppModelType, DbModelType extends DocumentDat
  * @param observer
  */
 export declare function onSnapshotsInSync(
-  firestore: Firestore,
+  firestore: typeof Firestore,
   observer: {
     next?: (value: void) => void;
     error?: (error: FirestoreError) => void;
@@ -253,4 +255,7 @@ export declare function onSnapshotsInSync(
  * @param firestore
  * @param onSync
  */
-export declare function onSnapshotsInSync(firestore: Firestore, onSync: () => void): Unsubscribe;
+export declare function onSnapshotsInSync(
+  firestore: typeof Firestore,
+  onSync: () => void,
+): Unsubscribe;
