@@ -149,7 +149,7 @@ export namespace FirebaseFunctionsTypes {
    **/
   export interface HttpsCallableOptions {
     /**
-     * The timeout property is the time in milliseconds after which to cancel if there is no response. Default is 70000.
+     * The timeout property is the time in milliseconds after which to cancel if there is no response. Default is 7000 milliseconds (7 seconds).
      *
      * #### Example
      *
