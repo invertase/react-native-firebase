@@ -140,6 +140,12 @@ RCT_EXPORT_METHOD(transactionBegin
                   : (FIRApp *)firebaseApp
                   : (NSString *)databaseId
                   : (nonnull NSNumber *)transactionId) {
+  // Validate transactionId to prevent crash
+  if (transactionId == nil) {
+    DLog(@"Error: transactionId is nil in transactionBegin");
+    return;
+  }
+
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
                                                          databaseId:databaseId];
   __block BOOL aborted = false;
@@ -152,8 +158,16 @@ RCT_EXPORT_METHOD(transactionBegin
       transactionState[@"semaphore"] = semaphore;
       transactionState[@"transaction"] = transaction;
 
-      if (!transactions[[transactionId stringValue]]) {
-        transactions[[transactionId stringValue]] = transactionState;
+      // Safe dictionary key handling
+      NSString *transactionKey = [transactionId stringValue];
+      if (transactionKey != nil && !transactions[transactionKey]) {
+        transactions[transactionKey] = transactionState;
+      } else {
+        DLog(@"Invalid transactionId provided: %@", transactionId);
+        *errorPointer = [NSError errorWithDomain:FIRFirestoreErrorDomain
+                                            code:FIRFirestoreErrorCodeInvalidArgument
+                                        userInfo:@{NSLocalizedDescriptionKey: @"Invalid transaction ID"}];
+        return nil;
       }
 
       // build and send transaction update event
