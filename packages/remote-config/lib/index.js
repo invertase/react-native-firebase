@@ -22,6 +22,7 @@ import {
   isString,
   isUndefined,
   isIOS,
+  isFunction,
   parseListenerOrObserver,
 } from '@react-native-firebase/app/lib/common';
 import Value from './RemoteConfigValue';
@@ -242,10 +243,68 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   /**
+   * Registers an observer to changes in the configuration.
+   *
+   * @param observer - The {@link ConfigUpdateObserver} to be notified of config updates.
+   * @returns An {@link Unsubscribe} function to remove the listener.
+   */
+  onConfigUpdate(observer) {
+    if (!isObject(observer) || !isFunction(observer.next) || !isFunction(observer.error)) {
+      throw new Error("'observer' expected an object with 'next' and 'error' functions.");
+    }
+
+    // We maintaine our pre-web-support native interface but bend it to match
+    // the official JS SDK API by assuming the callback is an Observer, and sending it a ConfigUpdate
+    // compatible parameter that implements the `getUpdatedKeys` method
+    let unsubscribed = false;
+    const subscription = this.emitter.addListener(
+      this.eventNameForApp('on_config_updated'),
+      event => {
+        const { resultType } = event;
+        if (resultType === 'success') {
+          observer.next({
+            getUpdatedKeys: () => {
+              return new Set(event.updatedKeys);
+            },
+          });
+          return;
+        }
+
+        observer.error({
+          code: event.code,
+          message: event.message,
+          nativeErrorMessage: event.nativeErrorMessage,
+        });
+      },
+    );
+    if (this._configUpdateListenerCount === 0) {
+      this.native.onConfigUpdated();
+    }
+
+    this._configUpdateListenerCount++;
+
+    return () => {
+      if (unsubscribed) {
+        // there is no harm in calling this multiple times to unsubscribe,
+        // but anything after the first call is a no-op
+        return;
+      } else {
+        unsubscribed = true;
+      }
+      subscription.remove();
+      this._configUpdateListenerCount--;
+      if (this._configUpdateListenerCount === 0) {
+        this.native.removeConfigUpdateRegistration();
+      }
+    };
+  }
+
+  /**
    * Registers a listener to changes in the configuration.
    *
    * @param listenerOrObserver - function called on config change
    * @returns {function} unsubscribe listener
+   * @deprecated use official firebase-js-sdk onConfigUpdate now that web supports realtime
    */
   onConfigUpdated(listenerOrObserver) {
     const listener = parseListenerOrObserver(listenerOrObserver);

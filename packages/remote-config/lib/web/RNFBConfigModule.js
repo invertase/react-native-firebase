@@ -8,9 +8,10 @@ import {
   fetchConfig,
   getAll,
   makeIDBAvailable,
+  onConfigUpdate,
   setCustomSignals,
 } from '@react-native-firebase/app/lib/internal/web/firebaseRemoteConfig';
-import { guard, getWebError } from '@react-native-firebase/app/lib/internal/web/utils';
+import { guard, getWebError, emitEvent } from '@react-native-firebase/app/lib/internal/web/utils';
 
 let configSettingsForInstance = {
   // [APP_NAME]: RemoteConfigSettings
@@ -23,6 +24,8 @@ function makeGlobalsAvailable() {
   navigator.onLine = true;
   makeIDBAvailable();
 }
+
+const onConfigUpdateListeners = {};
 
 function getRemoteConfigInstanceForApp(appName, overrides /*: RemoteConfigSettings */) {
   makeGlobalsAvailable();
@@ -122,10 +125,37 @@ export default {
       return resultAndConstants(remoteConfig, null);
     });
   },
-  onConfigUpdated() {
-    throw getWebError({
-      code: 'unsupported',
-      message: 'Not supported by the Firebase Javascript SDK.',
-    });
+  onConfigUpdated(appName) {
+    if (onConfigUpdateListeners[appName]) {
+      return;
+    }
+
+    const remoteConfig = getRemoteConfigInstanceForApp(appName);
+
+    const nativeObserver = {
+      next: configUpdate => {
+        emitEvent('on_config_updated', {
+          appName,
+          resultType: 'success',
+          updatedKeys: Array.from(configUpdate.getUpdatedKeys()),
+        });
+      },
+      error: firebaseError => {
+        emitEvent('on_config_updated', {
+          appName,
+          event: getWebError(firebaseError),
+        });
+      },
+      complete: () => {},
+    };
+
+    onConfigUpdateListeners[appName] = onConfigUpdate(remoteConfig, nativeObserver);
+  },
+  removeConfigUpdateRegistration(appName) {
+    if (!onConfigUpdateListeners[appName]) {
+      return;
+    }
+    onConfigUpdateListeners[appName]();
+    delete onConfigUpdateListeners[appName];
   },
 };

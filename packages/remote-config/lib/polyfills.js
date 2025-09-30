@@ -1,8 +1,9 @@
-/*
- * Copyright (c) 2016-present Invertase Limited & Contributors
+/**
+ * @license
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this library except in compliance with the License.
+ * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
@@ -12,17 +13,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
-
 import { polyfillGlobal } from 'react-native/Libraries/Utilities/PolyfillFunctions';
+import { ReadableStream } from 'web-streams-polyfill/dist/ponyfill';
+import { fetch, Headers, Request, Response } from 'react-native-fetch-api';
 
-// maybe this could be remote-config local install of text-encoding (similar to ai package)
-import { TextEncoder, TextDecoder } from 'text-encoding';
+polyfillGlobal(
+  'fetch',
+  () =>
+    (...args) =>
+      fetch(args[0], { ...args[1], reactNative: { textStreaming: true } }),
+);
+polyfillGlobal('Headers', () => Headers);
+polyfillGlobal('Request', () => Request);
+polyfillGlobal('Response', () => Response);
+polyfillGlobal('ReadableStream', () => ReadableStream);
 
-polyfillGlobal('TextEncoder', () => TextEncoder);
-polyfillGlobal('TextDecoder', () => TextDecoder);
-// Object.assign(global, {
-//   TextEncoder: TextEncoder,
-//   TextDecoder: TextDecoder,
-// });
+import 'text-encoding';

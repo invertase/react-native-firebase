@@ -32,7 +32,9 @@
     "provenance": true
   },
   "dependencies": {
-    "text-encoding": "^0.7.0"
+    "react-native-fetch-api": "^3.0.0",
+    "text-encoding": "^0.7.0",
+    "web-streams-polyfill": "^4.2.0"
   },
   "devDependencies": {
     "@types/text-encoding": "^0.0.40"
