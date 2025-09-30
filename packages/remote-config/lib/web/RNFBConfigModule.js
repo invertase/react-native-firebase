@@ -7,6 +7,7 @@ import {
   fetchConfig,
   getAll,
   makeIDBAvailable,
+  onConfigUpdate,
   setCustomSignals,
 } from '@react-native-firebase/app/lib/internal/web/firebaseRemoteConfig';
 import { guard, getWebError } from '@react-native-firebase/app/lib/internal/web/utils';
@@ -121,6 +122,12 @@ export default {
       return resultAndConstants(remoteConfig, null);
     });
   },
+  onConfigUpdate(appName, listener) {
+    const remoteConfig = getRemoteConfigInstanceForApp(appName);
+    return onConfigUpdate(remoteConfig, listener);
+  },
+  // This is the old API implemented for Android and iOS prior to web support.
+  // Remove when deprecated onConfigUpdated API is removed.
   onConfigUpdated() {
     throw getWebError({
       code: 'unsupported',
