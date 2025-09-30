@@ -189,8 +189,7 @@ in applications that attach one or more listeners for them.
 
 ### Known Issues
 
-1. **_Handle errors / retry in callback_** During testing here in react-native-firebase, we frequently received the "config_update_not_fetched" error when performing updates and fetching them rapidly. This may not occur in normal usage but be sure to include error handling code in your callback. If this error is raised, you should be able to fetch and activate the new config template with retries after a timeout. Tracked as https://github.com/firebase/firebase-ios-sdk/issues/11462 and a fix is anticipated in firebase-ios-sdk 10.12.0
-1. **_iOS web socket will never close_** During testing here in react-native-firebase, we identified a problem in firebase-ios-sdk where native listeners are not removed when you attempt to unsubscribe them, resulting in more update events than expected. As a temporary workaround to avoid the issue, we create a native listener on iOS the first time you subscribe to realtime update events, and we never remove the listener, even if you unsubscribe it. That means the web socket will never close once opened. This is tracked as https://github.com/firebase/firebase-ios-sdk/issues/11458 and a fix is anticipated in firebase-ios-sdk 10.12.0
+1. **_Other platform requires a `fetchAndActivate` before updates come through_** During testing here in react-native-firebase and the sister project `FlutterFire`, we noticed that the firebase-js-sdk does not seem to send realtime update events through unless you have previously called `fetchAndActivate`
 
 Here is an example of how to use the feature, with comments emphasizing the key points to know:
 
@@ -198,19 +197,16 @@ Here is an example of how to use the feature, with comments emphasizing the key 
 // Add a config update listener where appropriate, perhaps in app startup, or a specific app area.
 // Multiple listeners are supported, so listeners may be screen-specific and only handle certain keys
 // depending on application requirements
-let remoteConfigListenerUnsubscriber = remoteConfig().onConfigUpdated((event, error) => {
-  if (error !== undefined) {
-    console.log('remote-config listener subscription error: ' + JSON.stringify(error));
-  } else {
-    // Updated keys are keys that are added, removed, or changed value, metadata, or source
-    // Note: A key is considered updated if it is different then the activated config.
-    //       If the new config is never activated, the same keys will remain in the set of
-    //       of updated keys passed to the callback on every config update
-    console.log('remote-config updated keys: ' + JSON.stringify(event));
+let remoteConfigListenerUnsubscriber = onConfigUpdate(getRemoteConfig(), {
+  next: (update) => {
+    console.log('remote-config keys updated: ' + Array.from(update.getUpdatedKeys()));
 
     // If you use realtime updates, the SDK fetches the new config for you.
     // However, you must activate the new config so it is in effect
-    remoteConfig().activate();
+    activate(getRemoteConfig());
+  }
+  error: (error) => {
+    console.log('remote-config listener subscription error: ' + error);
   }
 });
 

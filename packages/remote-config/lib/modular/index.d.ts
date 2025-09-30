@@ -27,7 +27,11 @@ import RemoteConfigLogLevel = FirebaseRemoteConfigTypes.RemoteConfigLogLevel;
 import FirebaseApp = ReactNativeFirebase.FirebaseApp;
 import LastFetchStatusInterface = FirebaseRemoteConfigTypes.LastFetchStatus;
 import ValueSourceInterface = FirebaseRemoteConfigTypes.ValueSource;
+import ConfigUpdateObserver = FirebaseRemoteConfigTypes.ConfigUpdateObserver;
+import Unsubscribe = FirebaseRemoteConfigTypes.Unsubscribe;
+// deprecated: from pre-Web realtime remote-config support - remove with onConfigUpdated
 import CallbackOrObserver = FirebaseRemoteConfigTypes.CallbackOrObserver;
+// deprecated: from pre-Web realtime remote-config support - remove with onConfigUpdated
 import OnConfigUpdatedListenerCallback = FirebaseRemoteConfigTypes.OnConfigUpdatedListenerCallback;
 
 export const LastFetchStatus: LastFetchStatusInterface;
@@ -204,11 +208,34 @@ export function setDefaultsFromResource(
 ): Promise<null>;
 
 /**
+ * Starts listening for real-time config updates from the Remote Config backend and automatically
+ * fetches updates from the Remote Config backend when they are available.
+ *
+ * @remarks
+ * If a connection to the Remote Config backend is not already open, calling this method will
+ * open it. Multiple listeners can be added by calling this method again, but subsequent calls
+ * re-use the same connection to the backend.
+ *
+ * The list of updated keys passed to the callback will include all keys not currently active,
+ * and the config update process fetches the new config but does not automatically activate
+ * it for you. Typically you will activate the config in your callback to use the new values.
+ *
+ * @param remoteConfig - The {@link RemoteConfig} instance.
+ * @param observer - The {@link ConfigUpdateObserver} to be notified of config updates.
+ * @returns An {@link Unsubscribe} function to remove the listener.
+ */
+export function onConfigUpdate(
+  remoteConfig: RemoteConfig,
+  observer: ConfigUpdateObserver,
+): Unsubscribe;
+
+/**
  * Registers a listener to changes in the configuration.
  *
  * @param remoteConfig - RemoteConfig instance
  * @param callback - function called on config change
  * @returns {function} unsubscribe listener
+ * @deprecated use official firebase-js-sdk onConfigUpdate now that web supports realtime
  */
 export function onConfigUpdated(
   remoteConfig: RemoteConfig,

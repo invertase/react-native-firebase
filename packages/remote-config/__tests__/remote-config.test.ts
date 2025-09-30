@@ -38,6 +38,7 @@ import {
   fetch,
   setDefaults,
   setDefaultsFromResource,
+  onConfigUpdate,
   onConfigUpdated,
   setCustomSignals,
   LastFetchStatus,
@@ -232,6 +233,10 @@ describe('remoteConfig()', function () {
 
     it('`setDefaultsFromResource` function is properly exposed to end user', function () {
       expect(setDefaultsFromResource).toBeDefined();
+    });
+
+    it('`onConfigUpdate` function is properly exposed to end user', function () {
+      expect(onConfigUpdate).toBeDefined();
     });
 
     it('`onConfigUpdated` function is properly exposed to end user', function () {

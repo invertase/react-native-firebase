@@ -698,246 +698,460 @@ describe('remoteConfig()', function () {
       });
     });
 
-    describe('onConfigUpdated parameter verification', function () {
-      it('throws an error if no callback provided', async function () {
-        const { getRemoteConfig, onConfigUpdated } = remoteConfigModular;
-        try {
-          onConfigUpdated(getRemoteConfig());
-          throw new Error('Did not reject');
-        } catch (error) {
-          error.message.should.containEql(
-            "'listenerOrObserver' expected a function or an object with 'next' function.",
-          );
-        }
-      });
-    });
-
-    describe('onConfigUpdated on un-supported platforms', function () {
-      if (!Platform.other) {
-        // Supported on non-other, tests are in the following describe block
-        return;
-      }
-
-      it('returns a descriptive error message if called', async function () {
-        const { getRemoteConfig, onConfigUpdated } = remoteConfigModular;
-        try {
-          onConfigUpdated(getRemoteConfig(), () => {});
-          throw new Error('Did not reject');
-        } catch (error) {
-          error.code.should.equal('unsupported');
-          error.message.should.containEql('Not supported by the Firebase Javascript SDK');
-        }
-      });
-    });
-
-    describe('onConfigUpdated on supported platforms', function () {
-      if (Platform.other) {
-        // Not supported on Web
-        return;
-      }
-
-      let unsubscribers = [];
-      const timestamp = '_pls_rm_if_day_old_' + Date.now();
-
-      // We may get more than one callback if other e2e suites run parallel.
-      // But we have a specific parameter values, and we should only get one callback
-      // where the updatedKeys have a given parameter value.
-      // This verifier factory checks for that specific param name in updatedKeys, not a call count.
-      const getVerifier = function (paramName) {
-        return spy => {
-          if (!spy.called) return false;
-          for (let i = 0; i < spy.callCount; i++) {
-            const callbackEvent = spy.getCall(i).args[0];
-            if (
-              callbackEvent &&
-              callbackEvent.updatedKeys &&
-              callbackEvent.updatedKeys.includes(paramName)
-            ) {
-              return true;
-            }
-          }
-
-          return false;
-        };
-      };
-
-      before(async function () {
-        // configure a listener so any new templates are fetched and cached locally
-        const { fetchAndActivate, getAll, getRemoteConfig, onConfigUpdated } = remoteConfigModular;
-        const unsubscribe = onConfigUpdated(getRemoteConfig(), () => {});
-
-        // activate to make sure all values are in effect,
-        // thus realtime updates only shows our testing work
-        await fetchAndActivate(getRemoteConfig());
-
-        // Check for any test param > 1hr old from busted test runs
-        const originalValues = getAll(getRemoteConfig());
-        const staleDeletes = [];
-        Object.keys(originalValues).forEach(param => {
-          if (param.includes('_pls_rm_if_day_old_')) {
-            let paramMillis = Number.parseInt(param.slice(param.lastIndexOf('_') + 1), 10);
-            if (paramMillis < Date.now() - 1000 * 60 * 60) {
-              staleDeletes.push(param);
-            }
+    describe('onConfigUpdate', function () {
+      describe('onConfigUpdate parameter verification', function () {
+        it('throws an error if no callback provided', async function () {
+          const { getRemoteConfig, onConfigUpdate } = remoteConfigModular;
+          try {
+            onConfigUpdate(getRemoteConfig());
+            throw new Error('Did not reject');
+          } catch (error) {
+            error.message.should.containEql(
+              "'observer' expected an object with 'next' and 'error' functions.",
+            );
           }
         });
+      });
 
-        // If there is orphaned data, delete it on the server and let that settle
-        if (staleDeletes.length > 0) {
+      describe('onConfigUpdate callback works', function () {
+        let unsubscribers = [];
+        const timestamp = '_pls_rm_if_day_old_' + Date.now();
+
+        // We may get more than one callback if other e2e suites run parallel.
+        // But we have a specific parameter values, and we should only get one callback
+        // where the updatedKeys have a given parameter value.
+        // This verifier factory checks for that specific param name in updatedKeys, not a call count.
+        const getVerifier = function (paramName) {
+          return spy => {
+            if (!spy.called) return false;
+            for (let i = 0; i < spy.callCount; i++) {
+              const callbackParam = spy.getCall(i).args[0];
+              if (callbackParam && callbackParam.getUpdatedKeys().has(paramName)) {
+                return true;
+              }
+            }
+
+            return false;
+          };
+        };
+
+        before(async function () {
+          // configure a listener so any new templates are fetched and cached locally
+          const { fetchAndActivate, getAll, getRemoteConfig, onConfigUpdate } = remoteConfigModular;
+          const unsubscribe = onConfigUpdate(getRemoteConfig(), {
+            next: () => {},
+            error: () => {},
+          });
+
+          // activate to make sure all values are in effect,
+          // thus realtime updates only shows our testing work
+          await fetchAndActivate(getRemoteConfig());
+
+          // Check for any test param > 1hr old from busted test runs
+          const originalValues = getAll(getRemoteConfig());
+          const staleDeletes = [];
+          Object.keys(originalValues).forEach(param => {
+            if (param.includes('_pls_rm_if_day_old_')) {
+              let paramMillis = Number.parseInt(param.slice(param.lastIndexOf('_') + 1), 10);
+              if (paramMillis < Date.now() - 1000 * 60 * 60) {
+                staleDeletes.push(param);
+              }
+            }
+          });
+
+          // If there is orphaned data, delete it on the server and let that settle
+          if (staleDeletes.length > 0) {
+            const response = await FirebaseHelpers.updateRemoteConfigTemplate({
+              operations: {
+                delete: staleDeletes,
+              },
+            });
+            should(response.result !== undefined).equal(true, 'response result not defined');
+            await Utils.sleep(1000);
+          }
+
+          await fetchAndActivate(getRemoteConfig());
+          unsubscribe();
+        });
+
+        after(async function () {
+          // clean up our own test data after the whole suite runs
           const response = await FirebaseHelpers.updateRemoteConfigTemplate({
             operations: {
-              delete: staleDeletes,
+              delete: ['rttest1' + timestamp, 'rttest2' + timestamp, 'rttest3' + timestamp],
             },
           });
           should(response.result !== undefined).equal(true, 'response result not defined');
-          await Utils.sleep(1000);
-        }
+          // console.error('after updateTemplate version: ' + response.result.templateVersion);
+        });
 
-        await fetchAndActivate(getRemoteConfig());
-        unsubscribe();
+        afterEach(async function () {
+          // make sure all our callbacks are unsubscribed after each test - convenient
+          for (let i = 0; i < unsubscribers.length; i++) {
+            unsubscribers[i]();
+          }
+          unsubscribers = [];
+        });
+
+        it('adds a listener and receives updates', async function () {
+          // Configure our listener
+          const { fetchAndActivate, getRemoteConfig, onConfigUpdate } = remoteConfigModular;
+          const config = getRemoteConfig();
+          await fetchAndActivate(config);
+          const callback = sinon.spy();
+          const unsubscribe = onConfigUpdate(config, {
+            next: update => callback(update),
+            error: () => {},
+          });
+          unsubscribers.push(unsubscribe);
+          // Update the template using our cloud function, so our listeners are called
+          let response = await FirebaseHelpers.updateRemoteConfigTemplate({
+            operations: {
+              add: [{ name: 'rttest1' + timestamp, value: timestamp }],
+            },
+          });
+          should(response.result !== undefined).equal(true, 'response result not defined');
+
+          // Assert: we were called exactly once with expected update event contents
+          await Utils.spyToBeCalledWithVerifierAsync(
+            callback,
+            getVerifier('rttest1' + timestamp),
+            60000,
+          );
+          unsubscribe();
+        });
+
+        it('manages multiple listeners', async function () {
+          const { fetchAndActivate, getRemoteConfig, onConfigUpdate } = remoteConfigModular;
+          const config = getRemoteConfig();
+
+          // activate the current config so the "updated" list starts empty
+          await fetchAndActivate(config);
+
+          // Set up our listeners
+          const callback1 = sinon.spy();
+          const unsubscribe1 = onConfigUpdate(config, {
+            next: update => callback1(update),
+            error: () => {},
+          });
+          unsubscribers.push(unsubscribe1);
+          const callback2 = sinon.spy();
+          const unsubscribe2 = onConfigUpdate(config, {
+            next: update => callback2(update),
+            error: () => {},
+          });
+          unsubscribers.push(unsubscribe2);
+          const callback3 = sinon.spy();
+          const unsubscribe3 = onConfigUpdate(config, {
+            next: update => callback3(update),
+            error: () => {},
+          });
+          unsubscribers.push(unsubscribe3);
+
+          // Trigger an update that should call them all
+          let response = await FirebaseHelpers.updateRemoteConfigTemplate({
+            operations: {
+              add: [{ name: 'rttest1' + timestamp, value: Date.now() + '' }],
+            },
+          });
+          should(response.result !== undefined).equal(true, 'response result not defined');
+
+          // Assert all were called with expected values
+          await Utils.spyToBeCalledWithVerifierAsync(
+            callback1,
+            getVerifier('rttest1' + timestamp),
+            60000,
+          );
+          await Utils.spyToBeCalledWithVerifierAsync(
+            callback2,
+            getVerifier('rttest1' + timestamp),
+            60000,
+          );
+          await Utils.spyToBeCalledWithVerifierAsync(
+            callback3,
+            getVerifier('rttest1' + timestamp),
+            60000,
+          );
+
+          // Unsubscribe second listener and repeat, this time expecting no call on second listener
+          unsubscribe2();
+          const callback2Count = callback2.callCount;
+
+          // Trigger update that should call listener 1 and 3 for these values
+          response = await FirebaseHelpers.updateRemoteConfigTemplate({
+            operations: {
+              add: [{ name: 'rttest2' + timestamp, value: Date.now() + '' }],
+            },
+          });
+          should(response.result !== undefined).equal(true, 'response result not defined');
+
+          // Assert first and third were called with expected values
+          await Utils.spyToBeCalledWithVerifierAsync(
+            callback1,
+            getVerifier('rttest2' + timestamp),
+            60000,
+          );
+          await Utils.spyToBeCalledWithVerifierAsync(
+            callback3,
+            getVerifier('rttest2' + timestamp),
+            60000,
+          );
+
+          // callback2 should not have been called again - same call count expected
+          should(callback2.callCount).equal(callback2Count);
+
+          // Unsubscribe remaining listeners
+          unsubscribe1();
+          unsubscribe3();
+          const callback1Count = callback1.callCount;
+          const callback3Count = callback3.callCount;
+
+          // Trigger an update that should call no listeners
+          response = await FirebaseHelpers.updateRemoteConfigTemplate({
+            operations: {
+              add: [{ name: 'rttest3' + timestamp, value: Date.now() + '' }],
+            },
+          });
+          should(response.result !== undefined).equal(true, 'response result not defined');
+          // Give the servers plenty of time to call us
+          await Utils.sleep(20000);
+          should(callback1.callCount).equal(callback1Count);
+          should(callback2.callCount).equal(callback2Count);
+          should(callback3.callCount).equal(callback3Count);
+        });
+
+        // - react-native reload
+        //   - make sure native count is zero
+        //   - add a listener, assert native count one
+        //   - rnReload via detox, assert native count is zero
+        it('handles react-native reload', async function () {
+          // TODO implement rnReload test
+          // console.log('checking listener functionality across javascript layer reload');
+        });
+      });
+    });
+
+    // deprecated API prior to official web support
+    describe('onConfigUpdated', function () {
+      describe('onConfigUpdated parameter verification', function () {
+        it('throws an error if no callback provided', async function () {
+          const { getRemoteConfig, onConfigUpdated } = remoteConfigModular;
+          try {
+            onConfigUpdated(getRemoteConfig());
+            throw new Error('Did not reject');
+          } catch (error) {
+            error.message.should.containEql(
+              "'listenerOrObserver' expected a function or an object with 'next' function.",
+            );
+          }
+        });
       });
 
-      after(async function () {
-        // clean up our own test data after the whole suite runs
-        const response = await FirebaseHelpers.updateRemoteConfigTemplate({
-          operations: {
-            delete: ['rttest1' + timestamp, 'rttest2' + timestamp, 'rttest3' + timestamp],
-          },
+      describe('onConfigUpdated deprecated API', function () {
+        let unsubscribers = [];
+        const timestamp = '_pls_rm_if_day_old_' + Date.now();
+
+        // We may get more than one callback if other e2e suites run parallel.
+        // But we have a specific parameter values, and we should only get one callback
+        // where the updatedKeys have a given parameter value.
+        // This verifier factory checks for that specific param name in updatedKeys, not a call count.
+        const getVerifier = function (paramName) {
+          return spy => {
+            if (!spy.called) return false;
+            for (let i = 0; i < spy.callCount; i++) {
+              const callbackEvent = spy.getCall(i).args[0];
+              if (
+                callbackEvent &&
+                callbackEvent.updatedKeys &&
+                callbackEvent.updatedKeys.includes(paramName)
+              ) {
+                return true;
+              }
+            }
+
+            return false;
+          };
+        };
+
+        before(async function () {
+          // configure a listener so any new templates are fetched and cached locally
+          const { fetchAndActivate, getAll, getRemoteConfig, onConfigUpdated } =
+            remoteConfigModular;
+          const unsubscribe = onConfigUpdated(getRemoteConfig(), () => {});
+
+          // activate to make sure all values are in effect,
+          // thus realtime updates only shows our testing work
+          await fetchAndActivate(getRemoteConfig());
+
+          // Check for any test param > 1hr old from busted test runs
+          const originalValues = getAll(getRemoteConfig());
+          const staleDeletes = [];
+          Object.keys(originalValues).forEach(param => {
+            if (param.includes('_pls_rm_if_day_old_')) {
+              let paramMillis = Number.parseInt(param.slice(param.lastIndexOf('_') + 1), 10);
+              if (paramMillis < Date.now() - 1000 * 60 * 60) {
+                staleDeletes.push(param);
+              }
+            }
+          });
+
+          // If there is orphaned data, delete it on the server and let that settle
+          if (staleDeletes.length > 0) {
+            const response = await FirebaseHelpers.updateRemoteConfigTemplate({
+              operations: {
+                delete: staleDeletes,
+              },
+            });
+            should(response.result !== undefined).equal(true, 'response result not defined');
+            await Utils.sleep(1000);
+          }
+
+          await fetchAndActivate(getRemoteConfig());
+          unsubscribe();
         });
-        should(response.result !== undefined).equal(true, 'response result not defined');
-        // console.error('after updateTemplate version: ' + response.result.templateVersion);
-      });
 
-      afterEach(async function () {
-        // make sure all our callbacks are unsubscribed after each test - convenient
-        for (let i = 0; i < unsubscribers.length; i++) {
-          unsubscribers[i]();
-        }
-        unsubscribers = [];
-      });
-
-      it('adds a listener and receives updates', async function () {
-        // Configure our listener
-        const { fetchAndActivate, getRemoteConfig, onConfigUpdated } = remoteConfigModular;
-        const config = getRemoteConfig();
-        await fetchAndActivate(config);
-        const callback = sinon.spy();
-        const unsubscribe = onConfigUpdated(config, (event, error) => callback(event, error));
-        unsubscribers.push(unsubscribe);
-        // Update the template using our cloud function, so our listeners are called
-        let response = await FirebaseHelpers.updateRemoteConfigTemplate({
-          operations: {
-            add: [{ name: 'rttest1' + timestamp, value: timestamp }],
-          },
+        after(async function () {
+          // clean up our own test data after the whole suite runs
+          const response = await FirebaseHelpers.updateRemoteConfigTemplate({
+            operations: {
+              delete: ['rttest1' + timestamp, 'rttest2' + timestamp, 'rttest3' + timestamp],
+            },
+          });
+          should(response.result !== undefined).equal(true, 'response result not defined');
+          // console.error('after updateTemplate version: ' + response.result.templateVersion);
         });
-        should(response.result !== undefined).equal(true, 'response result not defined');
 
-        // Assert: we were called exactly once with expected update event contents
-        await Utils.spyToBeCalledWithVerifierAsync(
-          callback,
-          getVerifier('rttest1' + timestamp),
-          60000,
-        );
-        unsubscribe();
-      });
-
-      it('manages multiple listeners', async function () {
-        const { fetchAndActivate, getRemoteConfig, onConfigUpdated } = remoteConfigModular;
-        const config = getRemoteConfig();
-
-        // activate the current config so the "updated" list starts empty
-        await fetchAndActivate(config);
-
-        // Set up our listeners
-        const callback1 = sinon.spy();
-        const unsubscribe1 = onConfigUpdated(config, (event, error) => callback1(event, error));
-        unsubscribers.push(unsubscribe1);
-        const callback2 = sinon.spy();
-        const unsubscribe2 = onConfigUpdated(config, (event, error) => callback2(event, error));
-        unsubscribers.push(unsubscribe2);
-        const callback3 = sinon.spy();
-        const unsubscribe3 = onConfigUpdated(config, (event, error) => callback3(event, error));
-        unsubscribers.push(unsubscribe3);
-
-        // Trigger an update that should call them all
-        let response = await FirebaseHelpers.updateRemoteConfigTemplate({
-          operations: {
-            add: [{ name: 'rttest1' + timestamp, value: Date.now() + '' }],
-          },
+        afterEach(async function () {
+          // make sure all our callbacks are unsubscribed after each test - convenient
+          for (let i = 0; i < unsubscribers.length; i++) {
+            unsubscribers[i]();
+          }
+          unsubscribers = [];
         });
-        should(response.result !== undefined).equal(true, 'response result not defined');
 
-        // Assert all were called with expected values
-        await Utils.spyToBeCalledWithVerifierAsync(
-          callback1,
-          getVerifier('rttest1' + timestamp),
-          60000,
-        );
-        await Utils.spyToBeCalledWithVerifierAsync(
-          callback2,
-          getVerifier('rttest1' + timestamp),
-          60000,
-        );
-        await Utils.spyToBeCalledWithVerifierAsync(
-          callback3,
-          getVerifier('rttest1' + timestamp),
-          60000,
-        );
+        it('adds a listener and receives updates', async function () {
+          // Configure our listener
+          const { fetchAndActivate, getRemoteConfig, onConfigUpdated } = remoteConfigModular;
+          const config = getRemoteConfig();
+          await fetchAndActivate(config);
+          const callback = sinon.spy();
+          const unsubscribe = onConfigUpdated(config, (event, error) => callback(event, error));
+          unsubscribers.push(unsubscribe);
+          // Update the template using our cloud function, so our listeners are called
+          let response = await FirebaseHelpers.updateRemoteConfigTemplate({
+            operations: {
+              add: [{ name: 'rttest1' + timestamp, value: timestamp }],
+            },
+          });
+          should(response.result !== undefined).equal(true, 'response result not defined');
 
-        // Unsubscribe second listener and repeat, this time expecting no call on second listener
-        unsubscribe2();
-        const callback2Count = callback2.callCount;
-
-        // Trigger update that should call listener 1 and 3 for these values
-        response = await FirebaseHelpers.updateRemoteConfigTemplate({
-          operations: {
-            add: [{ name: 'rttest2' + timestamp, value: Date.now() + '' }],
-          },
+          // Assert: we were called exactly once with expected update event contents
+          await Utils.spyToBeCalledWithVerifierAsync(
+            callback,
+            getVerifier('rttest1' + timestamp),
+            60000,
+          );
+          unsubscribe();
         });
-        should(response.result !== undefined).equal(true, 'response result not defined');
 
-        // Assert first and third were called with expected values
-        await Utils.spyToBeCalledWithVerifierAsync(
-          callback1,
-          getVerifier('rttest2' + timestamp),
-          60000,
-        );
-        await Utils.spyToBeCalledWithVerifierAsync(
-          callback3,
-          getVerifier('rttest2' + timestamp),
-          60000,
-        );
+        it('manages multiple listeners', async function () {
+          const { fetchAndActivate, getRemoteConfig, onConfigUpdated } = remoteConfigModular;
+          const config = getRemoteConfig();
 
-        // callback2 should not have been called again - same call count expected
-        should(callback2.callCount).equal(callback2Count);
+          // activate the current config so the "updated" list starts empty
+          await fetchAndActivate(config);
 
-        // Unsubscribe remaining listeners
-        unsubscribe1();
-        unsubscribe3();
-        const callback1Count = callback1.callCount;
-        const callback3Count = callback3.callCount;
+          // Set up our listeners
+          const callback1 = sinon.spy();
+          const unsubscribe1 = onConfigUpdated(config, (event, error) => callback1(event, error));
+          unsubscribers.push(unsubscribe1);
+          const callback2 = sinon.spy();
+          const unsubscribe2 = onConfigUpdated(config, (event, error) => callback2(event, error));
+          unsubscribers.push(unsubscribe2);
+          const callback3 = sinon.spy();
+          const unsubscribe3 = onConfigUpdated(config, (event, error) => callback3(event, error));
+          unsubscribers.push(unsubscribe3);
 
-        // Trigger an update that should call no listeners
-        response = await FirebaseHelpers.updateRemoteConfigTemplate({
-          operations: {
-            add: [{ name: 'rttest3' + timestamp, value: Date.now() + '' }],
-          },
+          // Trigger an update that should call them all
+          let response = await FirebaseHelpers.updateRemoteConfigTemplate({
+            operations: {
+              add: [{ name: 'rttest1' + timestamp, value: Date.now() + '' }],
+            },
+          });
+          should(response.result !== undefined).equal(true, 'response result not defined');
+
+          // Assert all were called with expected values
+          await Utils.spyToBeCalledWithVerifierAsync(
+            callback1,
+            getVerifier('rttest1' + timestamp),
+            60000,
+          );
+          await Utils.spyToBeCalledWithVerifierAsync(
+            callback2,
+            getVerifier('rttest1' + timestamp),
+            60000,
+          );
+          await Utils.spyToBeCalledWithVerifierAsync(
+            callback3,
+            getVerifier('rttest1' + timestamp),
+            60000,
+          );
+
+          // Unsubscribe second listener and repeat, this time expecting no call on second listener
+          unsubscribe2();
+          const callback2Count = callback2.callCount;
+
+          // Trigger update that should call listener 1 and 3 for these values
+          response = await FirebaseHelpers.updateRemoteConfigTemplate({
+            operations: {
+              add: [{ name: 'rttest2' + timestamp, value: Date.now() + '' }],
+            },
+          });
+          should(response.result !== undefined).equal(true, 'response result not defined');
+
+          // Assert first and third were called with expected values
+          await Utils.spyToBeCalledWithVerifierAsync(
+            callback1,
+            getVerifier('rttest2' + timestamp),
+            60000,
+          );
+          await Utils.spyToBeCalledWithVerifierAsync(
+            callback3,
+            getVerifier('rttest2' + timestamp),
+            60000,
+          );
+
+          // callback2 should not have been called again - same call count expected
+          should(callback2.callCount).equal(callback2Count);
+
+          // Unsubscribe remaining listeners
+          unsubscribe1();
+          unsubscribe3();
+          const callback1Count = callback1.callCount;
+          const callback3Count = callback3.callCount;
+
+          // Trigger an update that should call no listeners
+          response = await FirebaseHelpers.updateRemoteConfigTemplate({
+            operations: {
+              add: [{ name: 'rttest3' + timestamp, value: Date.now() + '' }],
+            },
+          });
+          should(response.result !== undefined).equal(true, 'response result not defined');
+          // Give the servers plenty of time to call us
+          await Utils.sleep(20000);
+          should(callback1.callCount).equal(callback1Count);
+          should(callback2.callCount).equal(callback2Count);
+          should(callback3.callCount).equal(callback3Count);
         });
-        should(response.result !== undefined).equal(true, 'response result not defined');
-        // Give the servers plenty of time to call us
-        await Utils.sleep(20000);
-        should(callback1.callCount).equal(callback1Count);
-        should(callback2.callCount).equal(callback2Count);
-        should(callback3.callCount).equal(callback3Count);
-      });
 
-      // - react-native reload
-      //   - make sure native count is zero
-      //   - add a listener, assert native count one
-      //   - rnReload via detox, assert native count is zero
-      it('handles react-native reload', async function () {
-        // TODO implement rnReload test
-        // console.log('checking listener functionality across javascript layer reload');
+        // - react-native reload
+        //   - make sure native count is zero
+        //   - add a listener, assert native count one
+        //   - rnReload via detox, assert native count is zero
+        it('handles react-native reload', async function () {
+          // TODO implement rnReload test
+          // console.log('checking listener functionality across javascript layer reload');
+        });
       });
     });
 
