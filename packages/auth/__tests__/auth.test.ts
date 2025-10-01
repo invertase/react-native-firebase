@@ -76,6 +76,7 @@ import auth, {
   TotpMultiFactorGenerator,
   TwitterAuthProvider,
   PhoneAuthState,
+  revokeAccessToken,
 } from '../lib';
 
 const PasswordPolicyImpl = require('../lib/password-policy/PasswordPolicyImpl').default;
@@ -308,6 +309,10 @@ describe('Auth', function () {
 
     it('`onIdTokenChanged` function is properly exposed to end user', function () {
       expect(onIdTokenChanged).toBeDefined();
+    });
+
+    it('`revokeAccessToken` function is properly exposed to end user', function () {
+      expect(revokeAccessToken).toBeDefined();
     });
 
     it('`sendPasswordResetEmail` function is properly exposed to end user', function () {
