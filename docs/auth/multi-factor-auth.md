@@ -125,9 +125,7 @@ verification code to the user:
 const hint = resolver.hints[0];
 const sessionId = resolver.session;
 
-new PhoneAuthProvider(getAuth())
-  .verifyPhoneNumber(hint, sessionId) // triggers the message to the user
-  .then(verificationId => setVerificationId(verificationId));
+const verificationId = await getAuth().verifyPhoneNumberWithMultiFactorInfo(hint, resolver.session); // Triggers message to user
 ```
 
 Once the user has entered the verification code you can create a multi-factor
