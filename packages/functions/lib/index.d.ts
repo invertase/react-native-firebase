@@ -149,14 +149,14 @@ export namespace FirebaseFunctionsTypes {
    **/
   export interface HttpsCallableOptions {
     /**
-     * The timeout property is the time in milliseconds after which to cancel if there is no response. Default is 7000 milliseconds (7 seconds).
+     * The timeout property is the time in milliseconds after which to cancel if there is no response. Default is 70000 milliseconds (70 seconds).
      *
      * #### Example
      *
      *```js
-     * // The below will wait 7 seconds for a response from the cloud function before an error is thrown.
+     * // The below will wait 90 seconds for a response from the cloud function before an error is thrown.
      * try {
-     *  const instance = firebase.functions().httpsCallable('order', { timeout: 7000 });
+     *  const instance = firebase.functions().httpsCallable('order', { timeout: 90000 });
      *  const response = await instance({
      *    id: '12345',
      *  });
