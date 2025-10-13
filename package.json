@@ -90,7 +90,7 @@
     "genversion": "^3.2.0",
     "google-java-format": "^2.0.1",
     "jest": "^30.0.5",
-    "lerna": "^8.2.4",
+    "lerna": "^9.0.0",
     "patch-package": "^8.0.0",
     "prettier": "^3.6.2",
     "regenerator-transform": "^0.15.2",
