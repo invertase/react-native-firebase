@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.4.1](https://github.com/invertase/react-native-firebase/compare/v23.4.0...v23.4.1) (2025-10-14)
+
+### Bug Fixes
+
+- **app:** adopt firebase-js-sdk 12.3.0 ([4fecb30](https://github.com/invertase/react-native-firebase/commit/4fecb304be7f223959d4aba0a0e8b7e550983024))
+
 ## [23.4.0](https://github.com/invertase/react-native-firebase/compare/v23.3.1...v23.4.0) (2025-09-24)
 
 **Note:** Version bump only for package @react-native-firebase/remote-config
