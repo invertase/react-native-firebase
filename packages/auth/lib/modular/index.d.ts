@@ -785,6 +785,23 @@ export interface PasswordValidationStatus {
   readonly passwordPolicy: PasswordPolicy;
 }
 
+export interface TokenType {
+  getType(): string;
+  getValue(): string;
+}
+
+export interface AuthorizationCodeToken extends TokenType {
+  getType(): string;
+  getValue(): string;
+}
+
+export interface AccessToken extends TokenType {
+  getType(): string;
+  getValue(): string;
+}
+
+export async function revokeAccessToken(auth: Auth, tokenType: TokenType): Promise<void>;
+
 export {
   AppleAuthProvider,
   EmailAuthProvider,
