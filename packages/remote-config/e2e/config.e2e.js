@@ -932,7 +932,7 @@ describe('remoteConfig()', function () {
     });
 
     // deprecated API prior to official web support
-    describe('onConfigUpdated', function () {
+    describe('onConfigUpdated (deprecated)', function () {
       describe('onConfigUpdated parameter verification', function () {
         it('throws an error if no callback provided', async function () {
           const { getRemoteConfig, onConfigUpdated } = remoteConfigModular;
