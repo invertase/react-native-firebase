@@ -6,7 +6,7 @@ module.exports = {
   config: {
     slow: 3000,
     reporter: 'spec',
-    timeout: 300000, // 5 minutes
+    timeout: 420000, // 7 minutes - fetchAndActivate takes 5+ sometimes
     exitOnError: true,
     coverage: true,
   },

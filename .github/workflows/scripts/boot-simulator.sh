@@ -8,6 +8,9 @@ pushd "$(dirname "$0")/../../../tests" || exit 1
 SIM="$(cat .detoxrc.js | grep iPhone | cut -d"'" -f2)"
 echo "Attempting to boot iOS Simulator $SIM..."
 
+# Clear up any existing attempts in case we are re-trying
+killall Simulator || true
+
 # Boot the simulator if not booted, make sure it is in the foreground
 (xcrun simctl boot "$SIM" || true) && open -a Simulator.app
 
