@@ -89,7 +89,7 @@ jobs:
     runs-on: macos-26
     needs: matrix_prep
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
-    timeout-minutes: 60
+    timeout-minutes: 70
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
@@ -287,7 +287,12 @@ jobs:
       - name: Pre-Boot Simulator
         # The goal here is to separate Simulator boot from Detox run,
         # So that Simulator boot issues we seem to have may be handled separately
-        run: ./.github/workflows/scripts/boot-simulator.sh
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 5
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: ./.github/workflows/scripts/boot-simulator.sh
 
       - name: Detox Test
         if: contains(matrix.buildmode, 'debug')
