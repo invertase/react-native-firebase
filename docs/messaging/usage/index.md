@@ -254,28 +254,39 @@ handler, you must set the "priority" to "high" on Android, and enable the `conte
 if using the Node.js [`firebase-admin`](https://www.npmjs.com/package/firebase-admin) package to send a message:
 
 ```js
-admin.messaging().sendToDevice(
-  [], // device fcm tokens...
-  {
-    data: {
-      owner: JSON.stringify(owner),
-      user: JSON.stringify(user),
-      picture: JSON.stringify(picture),
+
+const message = {
+  data: {
+    owner: JSON.stringify(owner),
+    user: JSON.stringify(user),
+    picture: JSON.stringify(picture),
+  },
+  // device token
+  token: 'YOUR_DEVICE_TOKEN',
+  // Required for background/quit data-only messages on iOS
+  apns: {
+    headers: {
+      'apns-priority': '5',
+    },
+    payload: {
+      aps: {
+        contentAvailable: true,
+      },
     },
   },
-  {
-    // Required for background/quit data-only messages on iOS
-    contentAvailable: true,
-    // Required for background/quit data-only messages on Android
+  // Required for background/quit data-only messages on Android
+  android: {
     priority: 'high',
   },
-);
+};
+
+getMessaging().send(message);
 ```
 
 For iOS specific "data-only" messages, the message must include the appropriate APNs headers as well as the `content-available` flag in order to trigger the background handler. For example, if using the Node.js [`firebase-admin`](https://www.npmjs.com/package/firebase-admin) package to send a "data-only" message to an iOS device:
 
 ```js
-admin.messaging().send({
+const message = {
   data: {
     //some data
   },
@@ -295,7 +306,9 @@ admin.messaging().send({
   //token: //device token
   //topic: //notification topic
   //condition: //notification condition
-});
+}
+
+getMessaging().send(message);
 ```
 
 View the [Sending Notification Requests to APNs](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/sending_notification_requests_to_apns/) documentation to learn more about APNs headers.
