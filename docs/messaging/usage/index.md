@@ -98,7 +98,7 @@ This module provides a `requestPermission` method which triggers a native permis
 import {getMessaging, requestPermission, AuthorizationStatus} from '@react-native-firebase/messaging';
 
 async function requestUserPermission() {
-  const messaging = await getMessaging();
+  const messaging = getMessaging();
   const authStatus = await requestPermission(messaging);
   const enabled =
     authStatus === AuthorizationStatus.AUTHORIZED ||
@@ -194,7 +194,7 @@ import {getMessaging, onMessage} from '@react-native-firebase/messaging';
 
 function App() {
   useEffect(() => {
-    const messaging = await getMessaging();
+    const messaging = getMessaging();
     const unsubscribe = onMessage(messaging, async remoteMessage => {
       Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
     });
