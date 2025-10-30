@@ -315,10 +315,12 @@ you can configure your `AppDelegate.m` file (see instructions below) to inject a
 ```jsx
 // index.js
 import { AppRegistry } from 'react-native';
-import messaging from '@react-native-firebase/messaging';
+import {getMessaging, setBackgroundMessageHandler} from '@react-native-firebase/messaging';
+
+const messaging = getMessaging();
 
 // Handle background messages using setBackgroundMessageHandler
-messaging().setBackgroundMessageHandler(async remoteMessage => {
+setBackgroundMessageHandler(messaging, async remoteMessage => {
   console.log('Message handled in the background!', remoteMessage);
 });
 
