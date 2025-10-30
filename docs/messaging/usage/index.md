@@ -361,11 +361,10 @@ self.initialProps = [RNFBMessagingModule addCustomPropsToUserProps:nil withLaunc
 - For projects that use react-native-navigation (or if you just don't want to mess with your launchProperties) you can use the `getIsHeadless` method (iOS only) from messaging like so:
 
 ```jsx
-messaging()
-  .getIsHeadless()
-  .then(isHeadless => {
+const messaging = getMessaging();
+getIsHeadless(messaging).then(isHeadless => {
     // do sth with isHeadless
-  });
+});
 ```
 
 On Android, the `isHeadless` prop will not exist.
@@ -401,8 +400,8 @@ documentation.
 To subscribe a device, call the `subscribeToTopic` method with the topic name (must not include "/"):
 
 ```js
-messaging()
-  .subscribeToTopic('weather')
+const messaging = getMessaging()
+subscribeToTopic(messaging,'weather')
   .then(() => console.log('Subscribed to topic!'));
 ```
 
@@ -411,8 +410,8 @@ messaging()
 To unsubscribe from a topic, call the `unsubscribeFromTopic` method with the topic name:
 
 ```js
-messaging()
-  .unsubscribeFromTopic('weather')
+const messaging = getMessaging()
+unsubscribeFromTopic(messaging,'weather')
   .then(() => console.log('Unsubscribed fom the topic!'));
 ```
 
@@ -438,10 +437,11 @@ Once auto-registration is disabled you must manually call `registerDeviceForRemo
 early as possible in your application startup;
 
 ```js
-import messaging from '@react-native-firebase/messaging';
+import {getMessaging, registerDeviceForRemoteMessages} from '@react-native-firebase/messaging';
 
 async function registerAppWithFCM() {
-  await messaging().registerDeviceForRemoteMessages();
+  const messaging = getMessaging();
+  await registerDeviceForRemoteMessages(messaging);
 }
 ```
 
