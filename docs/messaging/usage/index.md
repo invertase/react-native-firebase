@@ -224,11 +224,12 @@ To setup a background handler, call the `setBackgroundMessageHandler` outside of
 ```jsx
 // index.js
 import { AppRegistry } from 'react-native';
-import messaging from '@react-native-firebase/messaging';
+import {getMessaging, setBackgroundMessageHandler} from '@react-native-firebase/messaging';
 import App from './App';
 
+const messaging = getMessaging();
 // Register background handler
-messaging().setBackgroundMessageHandler(async remoteMessage => {
+setBackgroundMessageHandler(messaging, async remoteMessage => {
   console.log('Message handled in the background!', remoteMessage);
 });
 
