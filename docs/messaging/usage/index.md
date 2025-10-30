@@ -190,11 +190,12 @@ each time a message is delivered'
 ```js
 import React, { useEffect } from 'react';
 import { Alert } from 'react-native';
-import messaging from '@react-native-firebase/messaging';
+import {getMessaging, onMessage} from '@react-native-firebase/messaging';
 
 function App() {
   useEffect(() => {
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
+    const messaging = await getMessaging();
+    const unsubscribe = onMessage(messaging, async remoteMessage => {
       Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
     });
 
