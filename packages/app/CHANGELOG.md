@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.5.0](https://github.com/invertase/react-native-firebase/compare/v23.4.1...v23.5.0) (2025-10-30)
+
+### Bug Fixes
+
+- **ios:** use 'note' for info messages in Xcode scripts ([f2f1e5e](https://github.com/invertase/react-native-firebase/commit/f2f1e5e396b2e71675e85701bc89ac916431db30))
+
 ## [23.4.1](https://github.com/invertase/react-native-firebase/compare/v23.4.0...v23.4.1) (2025-10-14)
 
 ### Bug Fixes

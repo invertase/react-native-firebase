@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.5.0](https://github.com/invertase/react-native-firebase/compare/v23.4.1...v23.5.0) (2025-10-30)
+
+### Features
+
+- **remote-config, other:** official onConfigUpdate API, w/Other platform support ([0fcc983](https://github.com/invertase/react-native-firebase/commit/0fcc983f3531bde799020e16a23e1ecb551c0896))
+
 ## [23.4.1](https://github.com/invertase/react-native-firebase/compare/v23.4.0...v23.4.1) (2025-10-14)
 
 ### Bug Fixes
