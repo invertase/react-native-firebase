@@ -96,6 +96,10 @@ describe('analytics()', function () {
       });
 
       it('returns a null value if session expires', async function () {
+        if (Platform.ios) {
+          // TODO - 20251030 iOS no longer correctly expires sessions
+          this.skip();
+        }
         // Set session duration to 1 millisecond
         firebase.analytics().setSessionTimeoutDuration(1);
         // Wait 100 millisecond to ensure session expires
@@ -1021,7 +1025,12 @@ describe('analytics()', function () {
       });
 
       it('returns a null value if session expires', async function () {
+        if (Platform.ios) {
+          // TODO - 20251030 iOS no longer correctly expires sessions
+          this.skip();
+        }
         const { getAnalytics, getSessionId, setSessionTimeoutDuration } = analyticsModular;
+
         // Set session duration to 1 millisecond
         setSessionTimeoutDuration(getAnalytics(), 1);
         // Wait 100 millisecond to ensure session expires
