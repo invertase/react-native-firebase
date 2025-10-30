@@ -23,6 +23,7 @@ import FirestoreFieldValue from './FirestoreFieldValue';
 import FirestoreGeoPoint from './FirestoreGeoPoint';
 import FirestoreTimestamp from './FirestoreTimestamp';
 import { Filter } from './FirestoreFilter';
+import FirestoreVectorValue from './FirestoreVectorValue';
 export default {
   Blob: FirestoreBlob,
   FieldPath: FirestoreFieldPath,
@@ -30,6 +31,10 @@ export default {
   GeoPoint: FirestoreGeoPoint,
   Timestamp: createDeprecationProxy(FirestoreTimestamp),
   Filter: createDeprecationProxy(Filter),
+  VectorValue: FirestoreVectorValue,
+  vector(values) {
+    return new FirestoreVectorValue(values);
+  },
 
   CACHE_SIZE_UNLIMITED: -1,
 
