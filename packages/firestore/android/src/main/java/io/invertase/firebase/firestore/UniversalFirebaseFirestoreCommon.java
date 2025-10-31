@@ -22,6 +22,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.remote.FirestoreChannel;
+import io.invertase.firebase.app.ReactNativeFirebaseVersion;
 import io.invertase.firebase.common.UniversalFirebasePreferences;
 import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
@@ -42,6 +44,7 @@ public class UniversalFirebaseFirestoreCommon {
     }
 
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirestoreChannel.setClientLanguage("gl-rn/" + ReactNativeFirebaseVersion.VERSION);
 
     FirebaseFirestore instance = FirebaseFirestore.getInstance(firebaseApp, databaseId);
 

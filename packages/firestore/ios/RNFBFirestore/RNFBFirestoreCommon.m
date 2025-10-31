@@ -17,6 +17,7 @@
 
 #import "RNFBFirestoreCommon.h"
 #import <RNFBApp/RNFBSharedUtils.h>
+#import <RNFBApp/RNFBVersion.h>
 #import "RNFBPreferences.h"
 
 NSString *const FIRESTORE_CACHE_SIZE = @"firebase_firestore_cache_size";
@@ -27,6 +28,10 @@ NSString *const FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR =
     @"firebase_firestore_server_timestamp_behavior";
 
 NSMutableDictionary *instanceCache;
+
+@interface RNFBFirestoreClientLanguage : NSObject
++ (void)setClientLanguage:(NSString *)language;
+@end
 
 @implementation RNFBFirestoreCommon
 + (FIRFirestore *)getFirestoreForApp:(FIRApp *)app databaseId:(NSString *)databaseId {
@@ -42,6 +47,11 @@ NSMutableDictionary *instanceCache;
   }
 
   FIRFirestore *instance = [FIRFirestore firestoreForApp:app database:databaseId];
+
+#if TARGET_OS_IPHONE
+  [RNFBFirestoreClientLanguage
+      setClientLanguage:[NSString stringWithFormat:@"gl-rn/%@", RNFBVersionString]];
+#endif
 
   [self setFirestoreSettings:instance
                      appName:[RNFBSharedUtils getAppJavaScriptName:app.name]
