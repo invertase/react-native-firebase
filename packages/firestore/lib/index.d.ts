@@ -2106,6 +2106,16 @@ export namespace FirebaseFirestoreTypes {
     Filter: typeof Filter;
 
     /**
+     * Returns the `VectorValue` class.
+     */
+    VectorValue: typeof VectorValue;
+
+    /**
+     * Creates a new VectorValue from the provided numbers.
+     */
+    vector(values?: number[]): VectorValue;
+
+    /**
      * Used to set the cache size to unlimited when passing to `cacheSizeBytes` in
      * `firebase.firestore().settings()`.
      */
