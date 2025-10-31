@@ -785,3 +785,4 @@ export * from './FieldPath';
 export * from './FieldValue';
 export * from './GeoPoint';
 export * from './Timestamp';
+export * from './VectorValue';

@@ -1,5 +1,5 @@
 /**
- * A `VectorValue` represents a vector in Firestore. The vector is a numeric array.ßßßß
+ * A `VectorValue` represents a vector in Firestore. The vector is a numeric array.
  * @param values - The numeric values of the vector.
  * @returns A new VectorValue instance.
  */
