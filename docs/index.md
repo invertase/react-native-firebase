@@ -335,12 +335,12 @@ Open your projects `/ios/Podfile` and add any of the globals shown below to the 
 
 ```ruby
 # Override Firebase SDK Version if desired
-$FirebaseSDKVersion = '12.4.0'
+$FirebaseSDKVersion = '12.5.0'
 ```
 
 Once changed, reinstall your projects pods via pod install and rebuild your project with `npx react-native run-ios`.
 
-Alternatively, if you cannot edit the Podfile easily (as when using Expo), you may add the environment variable `FIREBASE_SDK_VERSION=11.15.0` (or whatever version you need) to the command line that installs pods. For example `FIREBASE_SDK_VERSION=11.15.0 yarn expo prebuild --clean`
+Alternatively, if you cannot edit the Podfile easily (as when using Expo), you may add the environment variable `FIREBASE_SDK_VERSION=12.5.0` (or whatever version you need) to the command line that installs pods. For example `FIREBASE_SDK_VERSION=12.5.0 yarn expo prebuild --clean`
 
 ### Android Performance
 
