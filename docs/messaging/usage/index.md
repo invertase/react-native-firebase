@@ -254,14 +254,12 @@ handler, you must set the "priority" to "high" on Android, and enable the `conte
 if using the Node.js [`firebase-admin`](https://www.npmjs.com/package/firebase-admin) package to send a message:
 
 ```js
-
 const message = {
   data: {
     owner: JSON.stringify(owner),
     user: JSON.stringify(user),
     picture: JSON.stringify(picture),
   },
-  // device token
   token: 'YOUR_DEVICE_TOKEN',
   // Required for background/quit data-only messages on iOS
   apns: {
