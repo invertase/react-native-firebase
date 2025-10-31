@@ -10,6 +10,7 @@ import {
   deleteField,
   arrayUnion,
   arrayRemove,
+  VectorValue,
 } from '@react-native-firebase/app/lib/internal/web/firebaseFirestore';
 
 const INT_NAN = 0;
@@ -31,6 +32,7 @@ const INT_FIELDVALUE = 15;
 const INT_OBJECT = 16;
 const INT_INTEGER = 17;
 const INT_NEGATIVE_ZERO = 18;
+const INT_VECTOR = 19;
 const INT_UNKNOWN = -999;
 
 const TYPE = 'type';
@@ -175,6 +177,13 @@ export function buildTypeMap(value) {
     return out;
   }
 
+  if (value instanceof VectorValue) {
+    out.push(INT_VECTOR);
+    // Web VectorValue should expose its numeric array. Fallback to empty if not present.
+    out.push(value.values ?? []);
+    return out;
+  }
+
   if (typeof value === 'object') {
     out.push(INT_OBJECT);
     out.push(objectToWriteable(value));
@@ -253,6 +262,8 @@ export function parseTypeMap(firestore, typedArray) {
       }
     case INT_OBJECT:
       return readableToObject(firestore, typedArray[1]);
+    case INT_VECTOR:
+      return new VectorValue(typedArray[1]);
     case INT_UNKNOWN:
     default:
       return null;

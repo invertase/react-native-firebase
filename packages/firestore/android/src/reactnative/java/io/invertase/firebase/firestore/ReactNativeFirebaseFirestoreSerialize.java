@@ -71,6 +71,7 @@ public class ReactNativeFirebaseFirestoreSerialize {
   private static final int INT_OBJECT = 16;
   private static final int INT_INTEGER = 17;
   private static final int INT_NEGATIVE_ZERO = 18;
+  private static final int INT_VECTOR = 19;
   private static final int INT_UNKNOWN = -999;
 
   // Keys
@@ -404,6 +405,36 @@ public class ReactNativeFirebaseFirestoreSerialize {
       return typeArray;
     }
 
+    // VectorValue – detect via reflection to avoid compile-time dependency on newer SDKs
+    try {
+      Class<?> vectorClass = Class.forName("com.google.firebase.firestore.VectorValue");
+      if (vectorClass.isInstance(value)) {
+        typeArray.pushInt(INT_VECTOR);
+        WritableArray valuesArray = Arguments.createArray();
+        try {
+          double[] doubles = (double[]) vectorClass.getMethod("getValues").invoke(value);
+          if (doubles != null) {
+            for (double d : doubles) valuesArray.pushDouble(d);
+          }
+        } catch (Exception ignored) {
+          try {
+            Object result = vectorClass.getMethod("values").invoke(value);
+            if (result instanceof double[]) {
+              for (double d : (double[]) result) valuesArray.pushDouble(d);
+            } else if (result instanceof List) {
+              for (Object o : (List<?>) result) valuesArray.pushDouble(((Number) o).doubleValue());
+            }
+          } catch (Exception ignored2) {
+            // leave empty if not accessible
+          }
+        }
+        typeArray.pushArray(valuesArray);
+        return typeArray;
+      }
+    } catch (ClassNotFoundException e) {
+      // Older SDK without VectorValue – fall through
+    }
+
     Log.w(TAG, "Unknown object of type " + value.getClass());
 
     typeArray.pushInt(INT_UNKNOWN);
@@ -520,6 +551,26 @@ public class ReactNativeFirebaseFirestoreSerialize {
         }
       case INT_OBJECT:
         return parseReadableMap(firestore, typeArray.getMap(1));
+      case INT_VECTOR:
+        try {
+          Class<?> vectorClass = Class.forName("com.google.firebase.firestore.VectorValue");
+          ReadableArray vals = typeArray.getArray(1);
+          if (vals == null) return null;
+          double[] doubles = new double[vals.size()];
+          for (int i = 0; i < vals.size(); i++) doubles[i] = vals.getDouble(i);
+          try {
+            // Prefer static factory if available
+            return vectorClass.getMethod("from", double[].class).invoke(null, (Object) doubles);
+          } catch (Exception noFactory) {
+            try {
+              return vectorClass.getConstructor(double[].class).newInstance((Object) doubles);
+            } catch (Exception noCtor) {
+              return null;
+            }
+          }
+        } catch (ClassNotFoundException e) {
+          return null;
+        }
       case INT_UNKNOWN:
       default:
         return null;
