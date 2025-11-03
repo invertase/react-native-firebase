@@ -1,14 +1,15 @@
 /**
  * @typedef {import('..').FirebaseFirestoreTypes} FirebaseFirestoreTypes
- * @typedef {import('..').FirebaseFirestoreTypes.CollectionReference} CollectionReference
  * @typedef {import('..').FirebaseFirestoreTypes.DocumentData} DocumentData
- * @typedef {import('..').FirebaseFirestoreTypes.DocumentReference} DocumentReference
  * @typedef {import('..').FirebaseFirestoreTypes.FieldPath} FieldPath
  * @typedef {import('..').FirebaseFirestoreTypes.Module} Firestore
- * @typedef {import('..').FirebaseFirestoreTypes.Query} Query
  * @typedef {import('..').FirebaseFirestoreTypes.SetOptions} SetOptions
  * @typedef {import('..').FirebaseFirestoreTypes.Settings} FirestoreSettings
  * @typedef {import('..').FirebaseFirestoreTypes.PersistentCacheIndexManager} PersistentCacheIndexManager
+ * @typedef {import('.').CollectionReference} CollectionReference
+ * @typedef {import('.').DocumentReference} DocumentReference
+ * @typedef {import('.').Query} Query
+
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
  */
 
@@ -44,7 +45,7 @@ export function getFirestore(app, databaseId) {
 }
 
 /**
- * @param {Firestore | CollectionReference | DocumentReference<unknown>} parent
+ * @param {Firestore | CollectionReference | DocumentReference} parent
  * @param {string?} path
  * @param {string?} pathSegments
  * @returns {DocumentReference}
@@ -58,7 +59,7 @@ export function doc(parent, path, ...pathSegments) {
 }
 
 /**
- * @param {Firestore | DocumentReference<unknown> | CollectionReference<unknown>} parent
+ * @param {Firestore | DocumentReference | CollectionReference} parent
  * @param {string} path
  * @param {string?} pathSegments
  * @returns {CollectionReference<DocumentData>}
