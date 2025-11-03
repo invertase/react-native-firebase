@@ -15,16 +15,22 @@
  *
  */
 
-import { generateFirestoreId, isObject } from '@react-native-firebase/app/dist/module/common';
+import {
+  generateFirestoreId,
+  isObject,
+  isNull,
+  isUndefined,
+} from '@react-native-firebase/app/dist/module/common';
 import FirestoreDocumentReference, {
   provideCollectionReferenceClass,
 } from './FirestoreDocumentReference';
 import FirestoreQuery from './FirestoreQuery';
 import FirestoreQueryModifiers from './FirestoreQueryModifiers';
+import { validateWithConverter } from './utils';
 
 export default class FirestoreCollectionReference extends FirestoreQuery {
-  constructor(firestore, collectionPath) {
-    super(firestore, collectionPath, new FirestoreQueryModifiers());
+  constructor(firestore, collectionPath, converter) {
+    super(firestore, collectionPath, new FirestoreQueryModifiers(), undefined, converter);
   }
 
   get id() {
@@ -62,7 +68,21 @@ export default class FirestoreCollectionReference extends FirestoreQuery {
       );
     }
 
-    return new FirestoreDocumentReference(this._firestore, path);
+    return new FirestoreDocumentReference(this._firestore, path, this._converter);
+  }
+
+  withConverter(converter) {
+    if (isUndefined(converter) || isNull(converter)) {
+      return new FirestoreCollectionReference(this._firestore, this._collectionPath, null);
+    }
+
+    try {
+      validateWithConverter(converter);
+    } catch (e) {
+      throw new Error(`firebase.firestore().collection().withConverter() ${e.message}`);
+    }
+
+    return new FirestoreCollectionReference(this._firestore, this._collectionPath, converter);
   }
 }
 
