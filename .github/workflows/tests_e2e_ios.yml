@@ -212,11 +212,14 @@ jobs:
         run: yarn tests:emulator:start-ci
 
       # https://bitrise.io/blog/post/xcode-15-performance-regressions
-      - name: Install yeetd
+      # https://developer.apple.com/forums/thread/805625?answerId=865340022#865340022
+      - name: Install yeetd and fix iOS perf issues
         run: |
           wget https://github.com/biscuitehh/yeetd/releases/download/1.0/yeetd-normal.pkg
           sudo installer -pkg yeetd-normal.pkg -target /
           yeetd &
+          launchctl unload -w /System/Library/LaunchAgents/com.apple.ReportCrash.plist
+          sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.ReportCrash.Root.plist
 
       - name: Install brew utilities
         uses: nick-fields/retry@v3
