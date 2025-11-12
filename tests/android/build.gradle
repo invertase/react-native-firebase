@@ -49,7 +49,7 @@ subprojects.forEach { project ->
 }
 
 subprojects {
-  task listAllDependencies(type: DependencyReportTask) { }
+  tasks.register('listAllDependencies', DependencyReportTask) {}
 
   // Force all subprojects to use one and only one set of versions
   ext {
