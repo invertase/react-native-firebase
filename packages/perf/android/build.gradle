@@ -1,4 +1,6 @@
 /* groovylint-disable DuplicateStringLiteral */
+
+import com.android.Version
 import io.invertase.gradle.common.PackageJson
 
 buildscript {
@@ -89,7 +91,7 @@ if (rootProject.ext && rootProject.ext.firebaseJson) {
 }
 
 android {
-  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger()
+  def agpVersion = Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger()
   if (agpVersion >= 7) {
     namespace = 'io.invertase.firebase.perf'
   }
