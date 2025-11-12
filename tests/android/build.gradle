@@ -1,25 +1,25 @@
 buildscript {
-  ext.buildToolsVersion = "35.0.0"
+  ext.buildToolsVersion = "36.1.0"
   ext.minSdkVersion = 24
-  ext.compileSdkVersion = 35
+  ext.compileSdkVersion = 36
   ext.targetSdkVersion = 35
 
  ext.ndkVersion = "27.1.12297006"
- 
-  ext.kotlinVersion = '2.1.20' // https://kotlinlang.org/releases.html
-  ext.supportLibVersion = '1.16.0' // this maps to androidx.core https://developer.android.com/jetpack/androidx/releases/core
-  ext.appCompatVersion = '1.7.0' // this maps to androidx.appcompat https://developer.android.com/jetpack/androidx/releases/appcompat
+
+  ext.kotlinVersion = '2.1.21' // https://kotlinlang.org/releases.html
+  ext.supportLibVersion = '1.17.0' // this maps to androidx.core https://developer.android.com/jetpack/androidx/releases/core
+  ext.appCompatVersion = '1.7.1' // this maps to androidx.appcompat https://developer.android.com/jetpack/androidx/releases/appcompat
   ext.supportVersion = ext.supportLibVersion
   ext.frescoVersion = '3.6.0' // https://github.com/facebook/fresco/releases
-  ext.fragmentVersion = '1.8.6' // https://developer.android.com/jetpack/androidx/releases/fragment
+  ext.fragmentVersion = '1.8.9' // https://developer.android.com/jetpack/androidx/releases/fragment
   ext.vectordrawableVersion = '1.2.0' // https://developer.android.com/jetpack/androidx/releases/vectordrawable
   ext.androidxAnnotationVersion = '1.9.1' // https://developer.android.com/jetpack/androidx/releases/annotation
   ext.googlePlayServicesLocationVersion = '21.3.0' // https://developers.google.com/android/guides/setup
-  ext.googlePlayServicesVersion = '18.7.0' // play-services-base
-  ext.googlePlayServicesAuthVersion = '21.3.0' // play-services-auth
+  ext.googlePlayServicesVersion = '18.9.0' // play-services-base
+  ext.googlePlayServicesAuthVersion = '21.4.0' // play-services-auth
   ext.googlePlayServicesVisionVersion = '20.1.3' // play-services-vision
   ext.googlePlayServicesIidVersion = '17.0.0' // play-services-iid - deprecated, device-info only
-  ext.mediaCompatVersion = '1.7.0' // https://developer.android.com/jetpack/androidx/releases/media
+  ext.mediaCompatVersion = '1.7.1' // https://developer.android.com/jetpack/androidx/releases/media
   ext.supportV4Version = '1.0.0' // https://developer.android.com/jetpack/androidx/releases/legacy androidx.legacy:legacy-support-v4
   ext.swiperefreshlayoutVersion = '1.1.0' // https://developer.android.com/jetpack/androidx/releases/swiperefreshlayout
 
@@ -32,12 +32,12 @@ buildscript {
   }
   dependencies {
     classpath 'com.google.gms:google-services:4.4.4' // https://developers.google.com/android/guides/google-services-plugin
-    classpath 'com.android.tools.build:gradle:8.9.2' // https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
+    classpath 'com.android.tools.build:gradle:8.13.1' // https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
     classpath("com.facebook.react:react-native-gradle-plugin")
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
-    classpath 'com.google.firebase:perf-plugin:2.0.1'
+    classpath 'com.google.firebase:perf-plugin:2.0.2'
     classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.6'
-    classpath 'com.google.firebase:firebase-appdistribution-gradle:5.1.1'
+    classpath 'com.google.firebase:firebase-appdistribution-gradle:5.2.0'
   }
 }
 
