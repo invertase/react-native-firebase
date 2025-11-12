@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Config Plugin Android Tests applies changes to app/build.gradle 1`] = `
 "/* Example build.gradle file from https://github.com/expo/expo/blob/6ab0274b5cb9a9c223e0d453787a522b438b4fcb/templates/expo-template-bare-minimum/android/app/build.gradle */
