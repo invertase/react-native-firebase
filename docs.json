@@ -70,11 +70,7 @@
       "icon": "//firebase.google.com/static/images/products/icons/run_analytics.svg",
       "pages": [
         { "title": "Usage", "href": "/analytics/usage" },
-        { "title": "Screen Tracking", "href": "/analytics/screen-tracking" },
-        {
-          "title": "Building an Analytics Funnel",
-          "href": "https://blog.theodo.com/2018/01/building-google-analytics-funnel-firebase-react-native"
-        }
+        { "title": "Screen Tracking", "href": "/analytics/screen-tracking" }
       ]
     },
     {
