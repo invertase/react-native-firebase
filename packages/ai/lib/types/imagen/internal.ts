@@ -72,7 +72,7 @@ export interface ImagenResponseInternal {
  * The parameters to be sent in the request body of the HTTP call
  * to the Vertex AI backend.
  *
- * We need a seperate internal-only interface for this because the REST
+ * We need a separate internal-only interface for this because the REST
  * API expects different parameter names than what we show to our users.
  *
  * Sample request body JSON:
@@ -119,7 +119,7 @@ export interface PredictRequestBody {
 }
 
 /**
- * Contains all possible REST API paramaters that are provided by the caller.
+ * Contains all possible REST API parameters that are provided by the caller.
  *
  * @internal
  */
