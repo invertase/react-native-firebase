@@ -66,8 +66,124 @@ To effectively use this file for feature parity checks:
 - Remove browser-specific test setup
 - Keep test file names identical for traceability
 - Maintain same test coverage and logic
+- **IMPORTANT**: Follow ESLint requirements to ensure tests pass linting (see below)
 
-### 4. Integration Tests Location
+### 4. ESLint Requirements for Tests
+
+**CRITICAL**: All test files MUST pass ESLint. The project uses Mocha ESLint plugin even though tests use Jest.
+
+**Required imports:**
+```typescript
+import { describe, expect, it, jest } from '@jest/globals';
+import { type ReactNativeFirebase } from '@react-native-firebase/app';
+```
+
+**Key rules to follow:**
+
+1. **Import Jest globals explicitly** - Do NOT rely on global types:
+   ```typescript
+   // ✅ CORRECT
+   import { describe, expect, it, jest } from '@jest/globals';
+
+   // ❌ WRONG - Will cause "Cannot find name 'describe'" errors
+   // (no import)
+   ```
+
+2. **Use regular functions, NOT arrow functions** (mocha/no-mocha-arrows):
+   ```typescript
+   // ✅ CORRECT
+   describe('MyTest', function () {
+     it('does something', function () {
+       // test code
+     });
+   });
+
+   // ❌ WRONG - Violates mocha/no-mocha-arrows
+   describe('MyTest', () => {
+     it('does something', () => {
+       // test code
+     });
+   });
+   ```
+
+3. **Type assertions for test objects**:
+   ```typescript
+   // ✅ CORRECT - Cast to proper RN types
+   const fakeAI: AI = {
+     app: {
+       name: 'DEFAULT',
+       options: { apiKey: 'key' }
+     } as ReactNativeFirebase.FirebaseApp,
+     backend: new VertexAIBackend('us-central1'),
+     location: 'us-central1',
+   };
+
+   // For complex mocks needing double casting:
+   const mockService = {
+     ...fakeAI,
+     appCheck: { getToken: mockFn }
+   } as unknown as AIService;
+
+   // ❌ WRONG - Using @ts-ignore
+   const fakeAI: AI = {
+     app: { name: 'DEFAULT' },
+     // @ts-ignore
+   } as AI;
+   ```
+
+4. **Mock function types** (for TypeScript inference):
+   ```typescript
+   // ✅ CORRECT - Explicit type annotation
+   const mockFn = jest
+     .fn<() => Promise<{ token: string }>>()
+     .mockResolvedValue({ token: 'value' });
+
+   // Format on multiple lines for readability (Prettier requirement)
+   ```
+
+5. **Common imports needed**:
+   - `jest` - For jest.fn(), jest.spyOn(), etc.
+   - `afterEach` - For cleanup
+   - `beforeEach` - For setup
+   - `afterAll` / `beforeAll` - For suite setup/teardown
+
+**Example complete test file structure:**
+```typescript
+import { describe, expect, it, jest, afterEach } from '@jest/globals';
+import { type ReactNativeFirebase } from '@react-native-firebase/app';
+import { AI } from '../lib/public-types';
+import { VertexAIBackend } from '../lib/backend';
+
+const fakeAI: AI = {
+  app: {
+    name: 'DEFAULT',
+    automaticDataCollectionEnabled: true,
+    options: { apiKey: 'key', projectId: 'proj', appId: 'app' },
+  } as ReactNativeFirebase.FirebaseApp,
+  backend: new VertexAIBackend('us-central1'),
+  location: 'us-central1',
+};
+
+describe('MyFeature', function () {
+  afterEach(function () {
+    jest.clearAllMocks();
+  });
+
+  it('does something', function () {
+    expect(true).toBe(true);
+  });
+
+  it('handles async', async function () {
+    const mockFn = jest
+      .fn<() => Promise<string>>()
+      .mockResolvedValue('result');
+    const result = await mockFn();
+    expect(result).toBe('result');
+  });
+});
+```
+
+### 5. Integration Tests Location
 - **Firebase JS SDK**: Has `integration/` folder with integration tests
 - **React Native Firebase**: Has `e2e/` folder for end-to-end tests
 - **Reason**: Different testing approaches for web vs mobile
@@ -381,7 +497,13 @@ Use this checklist when identifying new APIs in Firebase JS SDK to port:
      - Replace Karma/Mocha patterns with Jest
      - Replace browser-specific mocks
      - Use React Native Firebase test utilities
+   - **Follow ESLint requirements** (see § 4. ESLint Requirements for Tests):
+     - Import Jest globals: `import { describe, expect, it, jest } from '@jest/globals'`
+     - Use regular functions, NOT arrow functions for `describe()`/`it()`
+     - Cast test objects: `as ReactNativeFirebase.FirebaseApp`
+     - Type mock functions: `jest.fn<() => Promise<Type>>()`
    - Ensure test coverage matches JS SDK
+   - **Verify tests pass linting**: Check with linter before committing
    - Add e2e tests if needed in `e2e/`
    - **Never skip porting tests** - they're critical for maintaining quality
 
