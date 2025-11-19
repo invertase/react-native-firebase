@@ -18,3 +18,7 @@
 export * from './ai-model';
 export * from './generative-model';
 export * from './imagen-model';
+export * from './live-generative-model';
+export * from './template-generative-model';
+export * from './template-imagen-model';
+export { initApiSettings } from './utils';

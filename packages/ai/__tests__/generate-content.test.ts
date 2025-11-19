@@ -91,12 +91,14 @@ describe('generateContent()', () => {
     const result = await generateContent(fakeApiSettings, 'model', fakeRequestParams);
     expect(await result.response.text()).toContain('Mountain View, California');
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'model',
-      Task.GENERATE_CONTENT,
-      fakeApiSettings,
-      false,
+      expect.objectContaining({
+        model: 'model',
+        task: Task.GENERATE_CONTENT,
+        apiSettings: fakeApiSettings,
+        stream: false,
+        requestOptions: undefined,
+      }),
       expect.stringContaining('contents'),
-      undefined,
     );
   });
 
@@ -112,12 +114,14 @@ describe('generateContent()', () => {
     expect(result.response.text()).toContain('Use Freshly Ground Coffee');
     expect(result.response.text()).toContain('30 minutes of brewing');
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'model',
-      Task.GENERATE_CONTENT,
-      fakeApiSettings,
-      false,
+      expect.objectContaining({
+        model: 'model',
+        task: Task.GENERATE_CONTENT,
+        apiSettings: fakeApiSettings,
+        stream: false,
+        requestOptions: undefined,
+      }),
       expect.anything(),
-      undefined,
     );
   });
 
@@ -137,12 +141,14 @@ describe('generateContent()', () => {
     expect(result.response.usageMetadata?.candidatesTokensDetails?.[0]?.modality).toEqual('TEXT');
     expect(result.response.usageMetadata?.candidatesTokensDetails?.[0]?.tokenCount).toEqual(76);
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'model',
-      Task.GENERATE_CONTENT,
-      fakeApiSettings,
-      false,
+      expect.objectContaining({
+        model: 'model',
+        task: Task.GENERATE_CONTENT,
+        apiSettings: fakeApiSettings,
+        stream: false,
+        requestOptions: undefined,
+      }),
       expect.anything(),
-      undefined,
     );
   });
 
@@ -155,12 +161,14 @@ describe('generateContent()', () => {
     expect(result.response.text()).toContain('Some information cited from an external source');
     expect(result.response.candidates?.[0]!.citationMetadata?.citations.length).toBe(3);
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'model',
-      Task.GENERATE_CONTENT,
-      fakeApiSettings,
-      false,
+      expect.objectContaining({
+        model: 'model',
+        task: Task.GENERATE_CONTENT,
+        apiSettings: fakeApiSettings,
+        stream: false,
+        requestOptions: undefined,
+      }),
       expect.anything(),
-      undefined,
     );
   });
 
@@ -177,12 +185,14 @@ describe('generateContent()', () => {
 
     expect(() => result.response.text()).toThrow('SAFETY');
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'model',
-      Task.GENERATE_CONTENT,
-      fakeApiSettings,
-      false,
+      expect.objectContaining({
+        model: 'model',
+        task: Task.GENERATE_CONTENT,
+        apiSettings: fakeApiSettings,
+        stream: false,
+        requestOptions: undefined,
+      }),
       expect.anything(),
-      undefined,
     );
   });
 
@@ -197,12 +207,14 @@ describe('generateContent()', () => {
     const result = await generateContent(fakeApiSettings, 'model', fakeRequestParams);
     expect(() => result.response.text()).toThrow('SAFETY');
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'model',
-      Task.GENERATE_CONTENT,
-      fakeApiSettings,
-      false,
+      expect.objectContaining({
+        model: 'model',
+        task: Task.GENERATE_CONTENT,
+        apiSettings: fakeApiSettings,
+        stream: false,
+        requestOptions: undefined,
+      }),
       expect.anything(),
-      undefined,
     );
   });
 
@@ -214,12 +226,14 @@ describe('generateContent()', () => {
     const result = await generateContent(fakeApiSettings, 'model', fakeRequestParams);
     expect(result.response.text()).toBe('');
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'model',
-      Task.GENERATE_CONTENT,
-      fakeApiSettings,
-      false,
+      expect.objectContaining({
+        model: 'model',
+        task: Task.GENERATE_CONTENT,
+        apiSettings: fakeApiSettings,
+        stream: false,
+        requestOptions: undefined,
+      }),
       expect.anything(),
-      undefined,
     );
   });
 
@@ -234,12 +248,14 @@ describe('generateContent()', () => {
     const result = await generateContent(fakeApiSettings, 'model', fakeRequestParams);
     expect(result.response.text()).toContain('Some text');
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'model',
-      Task.GENERATE_CONTENT,
-      fakeApiSettings,
-      false,
+      expect.objectContaining({
+        model: 'model',
+        task: Task.GENERATE_CONTENT,
+        apiSettings: fakeApiSettings,
+        stream: false,
+        requestOptions: undefined,
+      }),
       expect.anything(),
-      undefined,
     );
   });
 
@@ -318,12 +334,14 @@ describe('generateContent()', () => {
       await generateContent(fakeGoogleAIApiSettings, 'model', fakeGoogleAIRequestParams);
 
       expect(makeRequestStub).toHaveBeenCalledWith(
-        'model',
-        Task.GENERATE_CONTENT,
-        fakeGoogleAIApiSettings,
-        false,
+        expect.objectContaining({
+          model: 'model',
+          task: Task.GENERATE_CONTENT,
+          apiSettings: fakeGoogleAIApiSettings,
+          stream: false,
+          requestOptions: undefined,
+        }),
         JSON.stringify(mapGenerateContentRequest(fakeGoogleAIRequestParams)),
-        undefined,
       );
     });
   });
