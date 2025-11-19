@@ -183,6 +183,10 @@ export function modifySwiftAppDelegate(contents: string): string | null {
       return null;
     }
   }
+  const isAlreadyModified = contents.includes(skipOpenUrlForFirebaseAuthBlockSwift);
+  if (isAlreadyModified) {
+    return null;
+  }
   return contents.replace(pattern, `${fullMatch[0]}${skipOpenUrlForFirebaseAuthBlockSwift}\n`);
 }
 
