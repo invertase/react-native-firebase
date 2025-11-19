@@ -22,7 +22,7 @@ import {
   GenerateContentStreamResult,
   RequestOptions,
 } from '../types';
-import { Task, makeRequest } from '../requests/request';
+import { Task, makeRequest, ServerPromptTemplateTask } from '../requests/request';
 import { createEnhancedContentResponse } from '../requests/response-helpers';
 import { processStream } from '../requests/stream-reader';
 import { ApiSettings } from '../types/internal';
@@ -48,12 +48,14 @@ export async function generateContentStream(
     params = GoogleAIMapper.mapGenerateContentRequest(params);
   }
   const response = await makeRequest(
-    model,
-    Task.STREAM_GENERATE_CONTENT,
-    apiSettings,
-    /* stream */ true,
+    {
+      model,
+      task: Task.STREAM_GENERATE_CONTENT,
+      apiSettings,
+      stream: true,
+      requestOptions,
+    },
     JSON.stringify(params),
-    requestOptions,
   );
   return processStream(response, apiSettings);
 }
@@ -78,12 +80,14 @@ export async function generateContent(
     params = GoogleAIMapper.mapGenerateContentRequest(params);
   }
   const response = await makeRequest(
-    model,
-    Task.GENERATE_CONTENT,
-    apiSettings,
-    /* stream */ false,
+    {
+      model,
+      task: Task.GENERATE_CONTENT,
+      apiSettings,
+      stream: false,
+      requestOptions,
+    },
     JSON.stringify(params),
-    requestOptions,
   );
   const generateContentResponse = await processGenerateContentResponse(response, apiSettings);
   const enhancedResponse = createEnhancedContentResponse(generateContentResponse);
@@ -109,4 +113,68 @@ async function processGenerateContentResponse(
   } else {
     return responseJson;
   }
+}
+
+/**
+ * Generates content from a template with the given ID and variables.
+ *
+ * @param apiSettings The {@link ApiSettings} to use for the request.
+ * @param templateId The ID of the server-side template to execute.
+ * @param templateParams The parameters to populate the template with.
+ * @param requestOptions The {@link RequestOptions} to use for the request.
+ * @returns The {@link GenerateContentResult} from the request.
+ *
+ * @beta
+ */
+export async function templateGenerateContent(
+  apiSettings: ApiSettings,
+  templateId: string,
+  templateParams: object,
+  requestOptions?: RequestOptions,
+): Promise<GenerateContentResult> {
+  const response = await makeRequest(
+    {
+      task: ServerPromptTemplateTask.TEMPLATE_GENERATE_CONTENT,
+      templateId,
+      apiSettings,
+      stream: false,
+      requestOptions,
+    },
+    JSON.stringify(templateParams),
+  );
+  const generateContentResponse = await processGenerateContentResponse(response, apiSettings);
+  const enhancedResponse = createEnhancedContentResponse(generateContentResponse);
+  return {
+    response: enhancedResponse,
+  };
+}
+
+/**
+ * Generates a content stream from a template with the given ID and variables.
+ *
+ * @param apiSettings The {@link ApiSettings} to use for the request.
+ * @param templateId The ID of the server-side template to execute.
+ * @param templateParams The parameters to populate the template with.
+ * @param requestOptions The {@link RequestOptions} to use for the request.
+ * @returns The {@link GenerateContentStreamResult} from the request.
+ *
+ * @beta
+ */
+export async function templateGenerateContentStream(
+  apiSettings: ApiSettings,
+  templateId: string,
+  templateParams: object,
+  requestOptions?: RequestOptions,
+): Promise<GenerateContentStreamResult> {
+  const response = await makeRequest(
+    {
+      task: ServerPromptTemplateTask.TEMPLATE_STREAM_GENERATE_CONTENT,
+      templateId,
+      apiSettings,
+      stream: true,
+      requestOptions,
+    },
+    JSON.stringify(templateParams),
+  );
+  return processStream(response, apiSettings);
 }

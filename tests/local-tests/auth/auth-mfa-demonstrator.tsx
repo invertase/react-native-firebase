@@ -17,8 +17,7 @@
  *
  */
 
-import QRCode from 'qrcode-generator';
-
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -29,7 +28,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-
+import QRCode from 'qrcode-generator';
 import {
   createUserWithEmailAndPassword,
   FirebaseAuthTypes,
@@ -46,7 +45,6 @@ import {
   TotpMultiFactorGenerator,
   TotpSecret,
 } from '@react-native-firebase/auth';
-import { useEffect, useState } from 'react';
 
 const Button = (props: {
   style?: ViewStyle;
@@ -288,7 +286,7 @@ const MfaLogin = ({
           multiFactorAssertion = PhoneMultiFactorGenerator.assertion(phoneAuthCredential);
           break;
         default:
-          throw new Error('Unknown MFA factor type: ' + activeFactor.factorId);
+          throw new Error('Unknown MFA factor type: ' + (activeFactor?.factorId || 'unknown'));
       }
 
       return await resolver.resolveSignIn(multiFactorAssertion);

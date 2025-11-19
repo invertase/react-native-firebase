@@ -107,12 +107,14 @@ export class ImagenModel extends AIModel {
       ...this.safetySettings,
     });
     const response = await makeRequest(
-      this.model,
-      Task.PREDICT,
-      this._apiSettings,
-      /* stream */ false,
+      {
+        model: this.model,
+        task: Task.PREDICT,
+        apiSettings: this._apiSettings,
+        stream: false,
+        requestOptions: this.requestOptions,
+      },
       JSON.stringify(body),
-      this.requestOptions,
     );
     return handlePredictResponse<ImagenInlineImage>(response);
   }
@@ -146,12 +148,14 @@ export class ImagenModel extends AIModel {
       ...this.safetySettings,
     });
     const response = await makeRequest(
-      this.model,
-      Task.PREDICT,
-      this._apiSettings,
-      /* stream */ false,
+      {
+        model: this.model,
+        task: Task.PREDICT,
+        apiSettings: this._apiSettings,
+        stream: false,
+        requestOptions: this.requestOptions,
+      },
       JSON.stringify(body),
-      this.requestOptions,
     );
     return handlePredictResponse<ImagenGCSImage>(response);
   }

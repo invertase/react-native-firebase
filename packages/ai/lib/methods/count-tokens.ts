@@ -49,12 +49,14 @@ export async function countTokens(
   }
 
   const response = await makeRequest(
-    model,
-    Task.COUNT_TOKENS,
-    apiSettings,
-    false,
+    {
+      model,
+      task: Task.COUNT_TOKENS,
+      apiSettings,
+      stream: false,
+      requestOptions,
+    },
     body,
-    requestOptions,
   );
   return response.json();
 }

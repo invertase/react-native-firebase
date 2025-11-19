@@ -27,12 +27,19 @@ import {
 } from '../constants';
 import { logger } from '../logger';
 import { GoogleAIBackend, VertexAIBackend } from '../backend';
+import { BackendType } from '../public-types';
 
 export enum Task {
   GENERATE_CONTENT = 'generateContent',
   STREAM_GENERATE_CONTENT = 'streamGenerateContent',
   COUNT_TOKENS = 'countTokens',
   PREDICT = 'predict',
+}
+
+export const enum ServerPromptTemplateTask {
+  TEMPLATE_GENERATE_CONTENT = 'templateGenerateContent',
+  TEMPLATE_STREAM_GENERATE_CONTENT = 'templateStreamGenerateContent',
+  TEMPLATE_PREDICT = 'templatePredict',
 }
 
 export class RequestUrl {
@@ -105,6 +112,43 @@ export class RequestUrl {
   }
 }
 
+export class TemplateRequestUrl {
+  constructor(
+    public templateId: string,
+    public task: ServerPromptTemplateTask,
+    public apiSettings: ApiSettings,
+    public stream: boolean,
+    public requestOptions?: RequestOptions,
+  ) {}
+
+  toString(): string {
+    // Manually construct URL to avoid React Native URL API issues
+    let baseUrl = this.baseUrl;
+    // Remove trailing slash if present
+    if (baseUrl.endsWith('/')) {
+      baseUrl = baseUrl.slice(0, -1);
+    }
+
+    const pathname = `${this.apiSettings.backend._getTemplatePath(this.apiSettings.project, this.templateId)}:${this.task}`;
+    const queryString = this.queryParams;
+
+    return `${baseUrl}${pathname}${queryString ? `?${queryString}` : ''}`;
+  }
+
+  private get baseUrl(): string {
+    return this.requestOptions?.baseUrl || `https://${DEFAULT_DOMAIN}`;
+  }
+
+  private get queryParams(): string {
+    let params = '';
+    if (this.stream) {
+      params += 'alt=sse';
+    }
+
+    return params;
+  }
+}
+
 /**
  * Log language and "fire/version" to x-goog-api-client
  */
@@ -116,6 +160,37 @@ function getClientHeaders(): string {
 }
 
 export async function getHeaders(url: RequestUrl): Promise<Headers> {
+  const headers = new Headers();
+  headers.append('Content-Type', 'application/json');
+  headers.append('x-goog-api-client', getClientHeaders());
+  headers.append('x-goog-api-key', url.apiSettings.apiKey);
+  if (url.apiSettings.automaticDataCollectionEnabled) {
+    headers.append('X-Firebase-Appid', url.apiSettings.appId);
+  }
+  if (url.apiSettings.getAppCheckToken) {
+    let appCheckToken;
+
+    try {
+      appCheckToken = await url.apiSettings.getAppCheckToken();
+    } catch (e) {
+      logger.warn(`Unable to obtain a valid App Check token: ${e}`);
+    }
+    if (appCheckToken) {
+      headers.append('X-Firebase-AppCheck', appCheckToken.token);
+    }
+  }
+
+  if (url.apiSettings.getAuthToken) {
+    const authToken = await url.apiSettings.getAuthToken();
+    if (authToken) {
+      headers.append('Authorization', `Firebase ${authToken}`);
+    }
+  }
+
+  return headers;
+}
+
+export async function getTemplateHeaders(url: TemplateRequestUrl): Promise<Headers> {
   const headers = new Headers();
   headers.append('Content-Type', 'application/json');
   headers.append('x-goog-api-client', getClientHeaders());
@@ -165,28 +240,113 @@ export async function constructRequest(
   };
 }
 
-export async function makeRequest(
-  model: string,
-  task: Task,
+export async function constructTemplateRequest(
+  templateId: string,
+  task: ServerPromptTemplateTask,
   apiSettings: ApiSettings,
   stream: boolean,
   body: string,
   requestOptions?: RequestOptions,
+): Promise<{ url: string; fetchOptions: RequestInit }> {
+  const url = new TemplateRequestUrl(templateId, task, apiSettings, stream, requestOptions);
+  return {
+    url: url.toString(),
+    fetchOptions: {
+      method: 'POST',
+      headers: await getTemplateHeaders(url),
+      body,
+    },
+  };
+}
+
+// Overload for model requests
+export async function makeRequest(
+  params: {
+    model: string;
+    task: Task;
+    apiSettings: ApiSettings;
+    stream: boolean;
+    requestOptions?: RequestOptions;
+  },
+  body: string,
+): Promise<Response>;
+// Overload for template requests
+export async function makeRequest(
+  params: {
+    templateId: string;
+    task: ServerPromptTemplateTask;
+    apiSettings: ApiSettings;
+    stream: boolean;
+    requestOptions?: RequestOptions;
+  },
+  body: string,
+): Promise<Response>;
+// Implementation
+export async function makeRequest(
+  params:
+    | {
+        model: string;
+        task: Task;
+        apiSettings: ApiSettings;
+        stream: boolean;
+        requestOptions?: RequestOptions;
+      }
+    | {
+        templateId: string;
+        task: ServerPromptTemplateTask;
+        apiSettings: ApiSettings;
+        stream: boolean;
+        requestOptions?: RequestOptions;
+      },
+  body: string,
 ): Promise<Response> {
-  const url = new RequestUrl(model, task, apiSettings, stream, requestOptions);
+  // Determine if this is a template request or model request
+  const isTemplateRequest = 'templateId' in params;
+  const url = isTemplateRequest
+    ? new TemplateRequestUrl(
+        params.templateId,
+        params.task,
+        params.apiSettings,
+        params.stream,
+        params.requestOptions,
+      )
+    : new RequestUrl(
+        (params as { model: string }).model,
+        params.task as Task,
+        params.apiSettings,
+        params.stream,
+        params.requestOptions,
+      );
+
   let response;
   let fetchTimeoutId: string | number | NodeJS.Timeout | undefined;
   try {
-    const request = await constructRequest(model, task, apiSettings, stream, body, requestOptions);
+    const request = isTemplateRequest
+      ? await constructTemplateRequest(
+          params.templateId,
+          params.task,
+          params.apiSettings,
+          params.stream,
+          body,
+          params.requestOptions,
+        )
+      : await constructRequest(
+          (params as { model: string }).model,
+          params.task as Task,
+          params.apiSettings,
+          params.stream,
+          body,
+          params.requestOptions,
+        );
 
     const timeoutMillis =
-      requestOptions?.timeout != null && requestOptions.timeout >= 0
-        ? requestOptions.timeout
+      params.requestOptions?.timeout != null && params.requestOptions.timeout >= 0
+        ? params.requestOptions.timeout
         : DEFAULT_FETCH_TIMEOUT_MS;
     const abortController = new AbortController();
     fetchTimeoutId = setTimeout(() => abortController.abort(), timeoutMillis);
     request.fetchOptions.signal = abortController.signal;
-    const fetchOptions = stream
+    const fetchOptions = params.stream
       ? {
           ...request.fetchOptions,
           reactNative: {
@@ -262,4 +422,24 @@ export async function makeRequest(
     }
   }
   return response;
+}
+
+export class WebSocketUrl {
+  constructor(public apiSettings: ApiSettings) {}
+  toString(): string {
+    // Manually construct URL to avoid React Native URL API issues
+    const baseUrl = `wss://${DEFAULT_DOMAIN}`;
+    const pathname = this.pathname;
+    const queryString = `key=${encodeURIComponent(this.apiSettings.apiKey)}`;
+
+    return `${baseUrl}${pathname}?${queryString}`;
+  }
+
+  private get pathname(): string {
+    if (this.apiSettings.backend.backendType === BackendType.GOOGLE_AI) {
+      return '/ws/google.firebase.vertexai.v1beta.GenerativeService/BidiGenerateContent';
+    } else {
+      return `/ws/google.firebase.vertexai.v1beta.LlmBidiService/BidiGenerateContent/locations/${this.apiSettings.location}`;
+    }
+  }
 }

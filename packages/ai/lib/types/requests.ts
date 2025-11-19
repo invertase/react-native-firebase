@@ -47,6 +47,18 @@ export interface ModelParams extends BaseParams {
 }
 
 /**
+ * Params passed to {@link getLiveGenerativeModel}.
+ * @beta
+ */
+export interface LiveModelParams {
+  model: string;
+  generationConfig?: LiveGenerationConfig;
+  tools?: Tool[];
+  toolConfig?: ToolConfig;
+  systemInstruction?: string | Part | Content;
+}
+
+/**
  * Request sent through {@link GenerativeModel.generateContent}
  * @public
  */
@@ -117,6 +129,75 @@ export interface GenerationConfig {
    * Configuration for "thinking" behavior of compatible Gemini models.
    */
   thinkingConfig?: ThinkingConfig;
+}
+
+/**
+ * Configuration parameters used by {@link LiveGenerativeModel} to control live content generation.
+ *
+ * @beta
+ */
+export interface LiveGenerationConfig {
+  /**
+   * Configuration for speech synthesis.
+   */
+  speechConfig?: SpeechConfig;
+  /**
+   * Specifies the maximum number of tokens that can be generated in the response. The number of
+   * tokens per word varies depending on the language outputted. Is unbounded by default.
+   */
+  maxOutputTokens?: number;
+  /**
+   * Controls the degree of randomness in token selection. A `temperature` value of 0 means that the highest
+   * probability tokens are always selected. In this case, responses for a given prompt are mostly
+   * deterministic, but a small amount of variation is still possible.
+   */
+  temperature?: number;
+  /**
+   * Changes how the model selects tokens for output. Tokens are
+   * selected from the most to least probable until the sum of their probabilities equals the `topP`
+   * value. For example, if tokens A, B, and C have probabilities of 0.3, 0.2, and 0.1 respectively
+   * and the `topP` value is 0.5, then the model will select either A or B as the next token by using
+   * the `temperature` and exclude C as a candidate. Defaults to 0.95 if unset.
+   */
+  topP?: number;
+  /**
+   * Changes how the model selects token for output. A `topK` value of 1 means the select token is
+   * the most probable among all tokens in the model's vocabulary, while a `topK` value 3 means that
+   * the next token is selected from among the 3 most probably using probabilities sampled. Tokens
+   * are then further filtered with the highest selected `temperature` sampling. Defaults to 40
+   * if unspecified.
+   */
+  topK?: number;
+  /**
+   * Positive penalties.
+   */
+  presencePenalty?: number;
+  /**
+   * Frequency penalties.
+   */
+  frequencyPenalty?: number;
+  /**
+   * The modalities of the response.
+   */
+  responseModalities?: ResponseModality[];
+  /**
+   * Enables transcription of audio input.
+   *
+   * When enabled, the model will respond with transcriptions of your audio input in the `inputTranscriptions` property
+   * in {@link LiveServerContent} messages. Note that the transcriptions are broken up across
+   * messages, so you may only receive small amounts of text per message. For example, if you ask the model
+   * "How are you today?", the model may transcribe that input across three messages, broken up as "How a", "re yo", "u today?".
+   */
+  inputAudioTranscription?: AudioTranscriptionConfig;
+  /**
+   * Enables transcription of audio input.
+   *
+   * When enabled, the model will respond with transcriptions of its audio output in the `outputTranscription` property
+   * in {@link LiveServerContent} messages. Note that the transcriptions are broken up across
+   * messages, so you may only receive small amounts of text per message. For example, if the model says
+   * "How are you today?", the model may transcribe that output across three messages, broken up as "How a", "re yo", "u today?".
+   */
+  outputAudioTranscription?: AudioTranscriptionConfig;
 }
 
 /**
@@ -343,3 +424,11 @@ export interface SpeechConfig {
    */
   voiceConfig?: VoiceConfig;
 }
+
+/**
+ * Configuration for audio transcription in Live sessions.
+ *
+ * @beta
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface AudioTranscriptionConfig {}

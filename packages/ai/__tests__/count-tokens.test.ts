@@ -18,11 +18,10 @@ import { describe, expect, it, afterEach, jest, beforeEach } from '@jest/globals
 import { BackendName, getMockResponse } from './test-utils/mock-response';
 import * as request from '../lib/requests/request';
 import { countTokens } from '../lib/methods/count-tokens';
-import { CountTokensRequest, RequestOptions } from '../lib/types';
+import { CountTokensRequest } from '../lib/types';
 import { ApiSettings } from '../lib/types/internal';
 import { Task } from '../lib/requests/request';
 import { GoogleAIBackend } from '../lib/backend';
-import { SpiedFunction } from 'jest-mock';
 import { mapCountTokensRequest } from '../lib/googleai-mappers';
 
 const fakeApiSettings: ApiSettings = {
@@ -59,12 +58,14 @@ describe('countTokens()', () => {
     expect(result.totalTokens).toBe(6);
     expect(result.totalBillableCharacters).toBe(16);
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'model',
-      Task.COUNT_TOKENS,
-      fakeApiSettings,
-      false,
+      expect.objectContaining({
+        model: 'model',
+        task: Task.COUNT_TOKENS,
+        apiSettings: fakeApiSettings,
+        stream: false,
+        requestOptions: undefined,
+      }),
       expect.stringContaining('contents'),
-      undefined,
     );
   });
 
@@ -83,12 +84,14 @@ describe('countTokens()', () => {
     expect(result.promptTokensDetails?.[0]?.modality).toBe('IMAGE');
     expect(result.promptTokensDetails?.[0]?.tokenCount).toBe(1806);
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'model',
-      Task.COUNT_TOKENS,
-      fakeApiSettings,
-      false,
+      expect.objectContaining({
+        model: 'model',
+        task: Task.COUNT_TOKENS,
+        apiSettings: fakeApiSettings,
+        stream: false,
+        requestOptions: undefined,
+      }),
       expect.stringContaining('contents'),
-      undefined,
     );
   });
 
@@ -104,12 +107,14 @@ describe('countTokens()', () => {
     expect(result.totalTokens).toBe(258);
     expect(result).not.toHaveProperty('totalBillableCharacters');
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'model',
-      Task.COUNT_TOKENS,
-      fakeApiSettings,
-      false,
+      expect.objectContaining({
+        model: 'model',
+        task: Task.COUNT_TOKENS,
+        apiSettings: fakeApiSettings,
+        stream: false,
+        requestOptions: undefined,
+      }),
       expect.stringContaining('contents'),
-      undefined,
     );
   });
 
@@ -130,16 +135,7 @@ describe('countTokens()', () => {
   });
 
   describe('googleAI', () => {
-    let makeRequestStub: SpiedFunction<
-      (
-        model: string,
-        task: Task,
-        apiSettings: ApiSettings,
-        stream: boolean,
-        body: string,
-        requestOptions?: RequestOptions,
-      ) => Promise<Response>
-    >;
+    let makeRequestStub: jest.SpiedFunction<typeof request.makeRequest>;
 
     beforeEach(() => {
       makeRequestStub = jest.spyOn(request, 'makeRequest');
@@ -155,12 +151,14 @@ describe('countTokens()', () => {
       await countTokens(fakeGoogleAIApiSettings, 'model', fakeRequestParams);
 
       expect(makeRequestStub).toHaveBeenCalledWith(
-        'model',
-        Task.COUNT_TOKENS,
-        fakeGoogleAIApiSettings,
-        false,
+        expect.objectContaining({
+          model: 'model',
+          task: Task.COUNT_TOKENS,
+          apiSettings: fakeGoogleAIApiSettings,
+          stream: false,
+          requestOptions: undefined,
+        }),
         JSON.stringify(mapCountTokensRequest(fakeRequestParams, 'model')),
-        undefined,
       );
     });
   });

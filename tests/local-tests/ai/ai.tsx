@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 import React, { JSX, useState } from 'react';
 import { Button, View, Text, Pressable } from 'react-native';
-
 import { getApp } from '@react-native-firebase/app';
 import {
   getAI,
@@ -13,6 +12,16 @@ import {
   GenerateContentResult,
   GenerateContentStreamResult,
   ChatSession,
+  VertexAIBackend,
+  getLiveGenerativeModel,
+  LiveGenerativeModel,
+  LiveSession,
+  ResponseModality,
+  getTemplateGenerativeModel,
+  getTemplateImagenModel,
+  TemplateGenerativeModel,
+  TemplateImagenModel,
+  GoogleAIBackend,
 } from '@react-native-firebase/ai';
 import {
   PDF_BASE_64,
@@ -98,7 +107,7 @@ export function AITestComponent() {
           try {
             const app = getApp();
             const ai: AI = getAI(app);
-            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-1.5-flash' });
+            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-2.5-flash' });
 
             const result: GenerateContentResult = await model.generateContent('What is 2 + 2?');
 
@@ -113,8 +122,8 @@ export function AITestComponent() {
         onPress={async (): Promise<void> => {
           try {
             const app = getApp();
-            const ai: AI = getAI(app);
-            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-1.5-flash' });
+            const ai: AI = getAI(app, { backend: new GoogleAIBackend() });
+            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-2.5-flash' });
 
             const result: GenerateContentStreamResult = await model.generateContentStream(
               'Write me a short, funny rap',
@@ -145,7 +154,7 @@ export function AITestComponent() {
           try {
             const app = getApp();
             const ai: AI = getAI(app);
-            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-1.5-flash' });
+            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-2.5-flash' });
             const mediaDetails: MediaDetails | null = getMediaDetails(selectedOption);
             if (!mediaDetails) return;
 
@@ -190,7 +199,7 @@ export function AITestComponent() {
               },
             });
             const model: GenerativeModel = getGenerativeModel(ai, {
-              model: 'gemini-1.5-flash',
+              model: 'gemini-2.5-flash',
               generationConfig: {
                 responseMimeType: 'application/json',
                 responseSchema: jsonSchema,
@@ -213,7 +222,7 @@ export function AITestComponent() {
           try {
             const app = getApp();
             const ai: AI = getAI(app);
-            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-1.5-flash' });
+            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-2.5-flash' });
 
             const chat: ChatSession = model.startChat({
               history: [
@@ -252,7 +261,7 @@ export function AITestComponent() {
           try {
             const app = getApp();
             const ai: AI = getAI(app);
-            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-1.5-flash' });
+            const model: GenerativeModel = getGenerativeModel(ai, { model: 'gemini-2.5-flash' });
 
             const result = await model.countTokens('What is 2 + 2?');
 
@@ -334,7 +343,7 @@ export function AITestComponent() {
             const app = getApp();
             const ai: AI = getAI(app);
             const model: GenerativeModel = getGenerativeModel(ai, {
-              model: 'gemini-1.5-flash',
+              model: 'gemini-2.5-flash',
               // @ts-ignore
               tools: fetchWeatherTool,
             });
@@ -392,6 +401,127 @@ export function AITestComponent() {
             console.log('Generated images:', images);
           } catch (e) {
             console.error(e);
+          }
+        }}
+      />
+      <Button
+        title="Live Generative Model"
+        onPress={async (): Promise<void> => {
+          try {
+            const app = getApp();
+            const ai: AI = getAI(app, { backend: new VertexAIBackend('us-central1') });
+            const model: LiveGenerativeModel = getLiveGenerativeModel(ai, {
+              model: 'gemini-2.0-flash-live-preview-04-09',
+              generationConfig: {
+                responseModalities: [ResponseModality.TEXT],
+              },
+            });
+            let text: string = '';
+            const session: LiveSession = await model.connect();
+            session.send('Hello, how are you?');
+            const messages = session.receive();
+            for await (const message of messages) {
+              switch (message.type) {
+                case 'serverContent':
+                  if (message.turnComplete) {
+                    console.log('text', text);
+                  } else {
+                    const parts = message.modelTurn?.parts;
+                    if (parts) {
+                      text += parts.map(part => part.text).join('');
+                    }
+                  }
+                  break;
+                case 'toolCall':
+                // Ignore
+                case 'toolCallCancellation':
+                // Ignore
+              }
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }}
+      />
+      <Button
+        title="Template Generative Model"
+        onPress={async (): Promise<void> => {
+          try {
+            const app = getApp();
+            const ai: AI = getAI(app);
+            const templateModel: TemplateGenerativeModel = getTemplateGenerativeModel(ai);
+
+            const templateId = 'text-template';
+            const templateVariables = {
+              // topic: 'React Native',
+              // style: 'technical',
+              // length: 'short',
+            };
+
+            const result: GenerateContentResult = await templateModel.generateContent(
+              templateId,
+              templateVariables,
+            );
+
+            console.log('Template result:', result.response.text());
+          } catch (e) {
+            console.error('Template error:', e);
+          }
+        }}
+      />
+      <Button
+        title="Template Generative Model Stream"
+        onPress={async (): Promise<void> => {
+          try {
+            const app = getApp();
+            const ai: AI = getAI(app);
+            const templateModel: TemplateGenerativeModel = getTemplateGenerativeModel(ai);
+
+            const templateId = 'text-template';
+            const templateVariables = {
+              topic: 'Firebase AI',
+              format: 'bullet points',
+            };
+
+            const result: GenerateContentStreamResult = await templateModel.generateContentStream(
+              templateId,
+              templateVariables,
+            );
+
+            let text: string = '';
+            for await (const chunk of result.stream) {
+              const chunkText: string = chunk.text();
+              console.log('Template chunk:', chunkText);
+              text += chunkText;
+            }
+
+            console.log('Template complete:', text);
+          } catch (e) {
+            console.error('Template stream error:', e);
+          }
+        }}
+      />
+      <Button
+        title="Template Imagen Model"
+        onPress={async (): Promise<void> => {
+          try {
+            const app = getApp();
+            const ai: AI = getAI(app);
+            const templateImagenModel: TemplateImagenModel = getTemplateImagenModel(ai);
+
+            const templateId = 'imagen-template';
+            const templateVariables = {
+              prompt: 'frog',
+            };
+
+            const result = await templateImagenModel.generateImages(templateId, templateVariables);
+
+            console.log('Generated images from template:', result.images);
+            if (result.filteredReason) {
+              console.log('Some images were filtered:', result.filteredReason);
+            }
+          } catch (e) {
+            console.error('Template Imagen error:', e);
           }
         }}
       />
