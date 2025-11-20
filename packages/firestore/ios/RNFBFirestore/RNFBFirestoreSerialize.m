@@ -58,6 +58,7 @@ enum TYPE_MAP {
   INT_OBJECT,
   INT_INTEGER,
   INT_NEGATIVE_ZERO,
+  INT_VECTOR,
   INT_UNKNOWN = -999,
 };
 
@@ -358,6 +359,24 @@ enum TYPE_MAP {
     return typeArray;
   }
 
+  // VectorValue (FIRVectorValue) – detect reflectively to avoid hard dependency on symbol
+  Class vectorClass = NSClassFromString(@"FIRVectorValue");
+  if (vectorClass != nil && [value isKindOfClass:vectorClass]) {
+    typeArray[0] = @(INT_VECTOR);
+    NSArray *values = nil;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+    if ([value respondsToSelector:@selector(values)]) {
+      values = [value performSelector:@selector(values)];
+    }
+#pragma clang diagnostic pop
+    if (values == nil) {
+      values = @[];
+    }
+    typeArray[1] = values;
+    return typeArray;
+  }
+
   typeArray[0] = @(INT_UNKNOWN);
   return typeArray;
 }
@@ -466,6 +485,23 @@ enum TYPE_MAP {
     }
     case INT_OBJECT:
       return [self parseNSDictionary:firestore dictionary:typeMap[1]];
+    case INT_VECTOR: {
+      NSArray *values = typeMap[1];
+      Class vectorClass = NSClassFromString(@"FIRVectorValue");
+      if (vectorClass != nil) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+        if ([vectorClass respondsToSelector:@selector(vectorWithValues:)]) {
+          return [vectorClass performSelector:@selector(vectorWithValues:) withObject:values];
+        }
+        id instance = [vectorClass alloc];
+        if ([instance respondsToSelector:@selector(initWithValues:)]) {
+          return [instance performSelector:@selector(initWithValues:) withObject:values];
+        }
+#pragma clang diagnostic pop
+      }
+      return nil;
+    }
     case INT_UNKNOWN:
     default:
       return nil;
