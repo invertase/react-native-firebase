@@ -109,6 +109,7 @@ jobs:
           remove-haskell: true
           remove-codeql: true
           remove-docker-images: true
+          remove-large-packages: true  # ths is slow, but recently we need that last ~2GB as of 20251120
 
       - name: Post Free Disk Space (Ubuntu)
         run: df -h
