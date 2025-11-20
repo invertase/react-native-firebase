@@ -27,6 +27,7 @@ import {
 } from '../constants';
 import { logger } from '../logger';
 import { GoogleAIBackend, VertexAIBackend } from '../backend';
+import { BackendType } from '../public-types';
 
 export enum Task {
   GENERATE_CONTENT = 'generateContent',
@@ -262,4 +263,26 @@ export async function makeRequest(
     }
   }
   return response;
+}
+
+export class WebSocketUrl {
+  constructor(public apiSettings: ApiSettings) {}
+  toString(): string {
+    const url = new URL(`wss://${DEFAULT_DOMAIN}`);
+    url.pathname = this.pathname;
+
+    const queryParams = new URLSearchParams();
+    queryParams.set('key', this.apiSettings.apiKey);
+    url.search = queryParams.toString();
+
+    return url.toString();
+  }
+
+  private get pathname(): string {
+    if (this.apiSettings.backend.backendType === BackendType.GOOGLE_AI) {
+      return 'ws/google.firebase.vertexai.v1beta.GenerativeService/BidiGenerateContent';
+    } else {
+      return `ws/google.firebase.vertexai.v1beta.LlmBidiService/BidiGenerateContent/locations/${this.apiSettings.location}`;
+    }
+  }
 }

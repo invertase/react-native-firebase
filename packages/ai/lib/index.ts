@@ -18,18 +18,20 @@
 import './polyfills';
 import { getApp, ReactNativeFirebase } from '@react-native-firebase/app';
 import { Backend, GoogleAIBackend, VertexAIBackend } from './backend';
-import { AIErrorCode, ModelParams, RequestOptions } from './types';
+import { AIErrorCode, LiveModelParams, ModelParams, RequestOptions } from './types';
 import { AI, AIOptions, ImagenModelParams } from './public-types';
 import { AIError } from './errors';
 import { GenerativeModel } from './models/generative-model';
-import { AIModel, ImagenModel } from './models';
+import { AIModel, ImagenModel, LiveGenerativeModel } from './models';
+import { WebSocketHandlerImpl } from './websocket';
 
 export * from './public-types';
 export { ChatSession } from './methods/chat-session';
+export { LiveSession } from './methods/live-session';
 export * from './requests/schema-builder';
 export { ImagenImageFormat } from './requests/imagen-image-format';
 export { Backend, GoogleAIBackend, VertexAIBackend } from './backend';
-export { GenerativeModel, AIError, AIModel, ImagenModel };
+export { GenerativeModel, AIError, AIModel, ImagenModel, LiveGenerativeModel };
 
 /**
  * Returns the default {@link AI} instance that is associated with the provided
@@ -124,4 +126,27 @@ export function getImagenModel(
     );
   }
   return new ImagenModel(ai, modelParams, requestOptions);
+}
+
+/**
+ * Returns a {@link LiveGenerativeModel} class for real-time, bidirectional communication.
+ *
+ * The Live API is only supported in modern browser windows and Node >= 22.
+ *
+ * @param ai - An {@link AI} instance.
+ * @param modelParams - Parameters to use when setting up a {@link LiveSession}.
+ * @throws If the `apiKey` or `projectId` fields are missing in your
+ * Firebase config.
+ *
+ * @beta
+ */
+export function getLiveGenerativeModel(ai: AI, modelParams: LiveModelParams): LiveGenerativeModel {
+  if (!modelParams.model) {
+    throw new AIError(
+      AIErrorCode.NO_MODEL,
+      `Must provide a model name for getLiveGenerativeModel. Example: getLiveGenerativeModel(ai, { model: 'my-model-name' })`,
+    );
+  }
+  const webSocketHandler = new WebSocketHandlerImpl();
+  return new LiveGenerativeModel(ai, modelParams, webSocketHandler);
 }
