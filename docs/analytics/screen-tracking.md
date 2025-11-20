@@ -13,11 +13,11 @@ therefore there is no "one fits all" solution to screen tracking.
 
 The [React Navigation](https://reactnavigation.org/) library allows for various navigation techniques such as
 Stack, Tab, Native or even custom navigation. The `NavigationContainer` component which the library exposes provides
-access to the current navigation state when a screen changes, allowing you to use the [`logScreenView`](/reference/analytics#logScreenView)
+access to the current navigation state when a screen changes, allowing you to use the [`logEvent`](/reference/analytics#logEvent)
 method the Analytics library provides:
 
 ```jsx
-import analytics from '@react-native-firebase/analytics';
+import { getAnalytics, logEvent } from '@react-native-firebase/analytics';
 import { NavigationContainer } from '@react-navigation/native';
 
 const App = () => {
@@ -34,7 +34,7 @@ const App = () => {
         const currentRouteName = navigationRef.current.getCurrentRoute().name;
 
         if (previousRouteName !== currentRouteName) {
-          await analytics().logScreenView({
+          await logEvent(getAnalytics(), 'screen_view', {
             screen_name: currentRouteName,
             screen_class: currentRouteName,
           });
@@ -57,15 +57,15 @@ documentation on the React Navigation website.
 
 The [`wix/react-native-navigation`](https://github.com/wix/react-native-navigation) provides 100% native platform navigation
 for React Native apps. To manually track screens, you need to setup a `componentDidAppear` event listener and manually call the
-[`logScreenView`](/reference/analytics#logScreenView) method the Analytics library provides:
+[`logEvent`](/reference/analytics#logEvent) method the Analytics library provides:
 
 ```js
-import analytics from '@react-native-firebase/analytics';
+import { getAnalytics, logEvent } from '@react-native-firebase/analytics';
 import { Navigation } from 'react-native-navigation';
 
 Navigation.events().registerComponentDidAppearListener(async ({ componentName, componentType }) => {
   if (componentType === 'Component') {
-    await analytics().logScreenView({
+    await logEvent(getAnalytics(), 'screen_view', {
       screen_name: componentName,
       screen_class: componentName,
     });
