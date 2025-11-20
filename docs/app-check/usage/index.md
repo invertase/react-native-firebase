@@ -233,7 +233,7 @@ On Android, you can subscribe to App Check token updates with `onTokenChanged`. 
 ```javascript
 import { onTokenChanged, getToken } from '@react-native-firebase/app-check';
 
-// Android: receives updates. iOS: no-op (not implemented).
+// Android: receives updates. iOS: no-op (native API does not exist on the SDK).
 const unsubscribe = onTokenChanged(appCheckInstance, async ({ token }) => {
   console.log('App Check token updated:', token);
 });
