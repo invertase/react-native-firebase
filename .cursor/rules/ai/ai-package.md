@@ -188,6 +188,52 @@ describe('MyFeature', function () {
 - **React Native Firebase**: Has `e2e/` folder for end-to-end tests
 - **Reason**: Different testing approaches for web vs mobile
 
+### 6. WebSocket Test Mocking Differences
+
+**Firebase JS SDK WebSocket Tests:**
+```typescript
+// Uses DOM types available in browser test environment
+class MockWebSocket {
+  private listeners: Map<string, Set<EventListener>> = new Map();
+  
+  addEventListener(type: string, listener: EventListener): void {
+    // ...
+  }
+  
+  triggerMessage(data: unknown): void {
+    this.dispatchEvent(new MessageEvent('message', { data }));
+  }
+}
+```
+
+**React Native Firebase WebSocket Tests:**
+```typescript
+// Avoids DOM types not available in React Native
+class MockWebSocket {
+  private listeners: Map<string, Set<(event: any) => void>> = new Map();
+  
+  addEventListener(type: string, listener: (event: any) => void): void {
+    // ...
+  }
+  
+  triggerMessage(data: unknown): void {
+    const event = new Event('message');
+    (event as any).data = data;
+    this.dispatchEvent(event);
+  }
+}
+```
+
+**Key Differences:**
+- **EventListener type**: JS SDK uses `EventListener` (DOM type), RN uses `(event: any) => void`
+- **MessageEvent**: JS SDK uses `MessageEvent` constructor, RN creates basic `Event` and attaches data property
+- **Reason**: DOM types (`EventListener`, `MessageEvent`) are not available in React Native test environment
+
+**When Porting WebSocket Tests:**
+- ✅ Replace `EventListener` type with `(event: any) => void`
+- ✅ Replace `new MessageEvent()` with `new Event()` + manual data property
+- ✅ Keep mock behavior identical, just adapt the types
+
 ---
 
 ## 🔧 Firebase Component System (INTENTIONAL - Do Not Port)
@@ -608,6 +654,9 @@ Use this checklist when identifying new APIs in Firebase JS SDK to port:
      - Use regular functions, NOT arrow functions for `describe()`/`it()`
      - Cast test objects: `as ReactNativeFirebase.FirebaseApp`
      - Type mock functions: `jest.fn<() => Promise<Type>>()`
+   - **Adapt WebSocket test mocks** (see § 6. WebSocket Test Mocking Differences):
+     - Replace `EventListener` type with `(event: any) => void`
+     - Replace `MessageEvent` with `Event` + manual data property assignment
    - Ensure test coverage matches JS SDK
    - **Verify tests pass linting**: Check with linter before committing
    - Add e2e tests if needed in `e2e/`
@@ -666,6 +715,7 @@ Any difference NOT documented in these cursor rules is a potential feature gap.
 | **WebSocket binaryType** | ✅ Sets to 'blob' | ❌ Not supported | RN WebSocket limitation |
 | **WebSocket Data** | Expects Blob | Runtime detection (Blob/ArrayBuffer/string) | RN sends ArrayBuffer |
 | **WebSocket URL** | Uses URL class | Manual string construction | RN URL API issues |
+| **WebSocket Test Mocks** | Uses EventListener, MessageEvent | Uses function types, Event + data | DOM types unavailable in RN |
 
 ---
 
@@ -706,6 +756,7 @@ When asking AI to compare packages:
 - Test file locations (but NOT test content - tests must be ported!)
 - WebSocket `binaryType` differences (RN uses runtime detection instead)
 - WebSocket URL construction methods (RN uses manual string building)
+- WebSocket test mock types (RN uses function types, not DOM EventListener/MessageEvent)
 
 ---
 
