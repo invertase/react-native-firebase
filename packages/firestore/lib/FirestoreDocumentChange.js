@@ -24,15 +24,16 @@ const TYPE_MAP = {
 };
 
 export default class FirestoreDocumentChange {
-  constructor(firestore, nativeData) {
+  constructor(firestore, nativeData, converter) {
     this._firestore = firestore;
     this._nativeData = nativeData;
     this._isMetadataChange = nativeData.isMetadataChange;
+    this._converter = converter;
   }
 
   get doc() {
     return createDeprecationProxy(
-      new FirestoreDocumentSnapshot(this._firestore, this._nativeData.doc),
+      new FirestoreDocumentSnapshot(this._firestore, this._nativeData.doc, this._converter),
     );
   }
 

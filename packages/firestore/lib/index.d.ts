@@ -194,6 +194,36 @@ export namespace FirebaseFirestoreTypes {
      * @param documentPath A slash-separated path to a document.
      */
     doc(documentPath?: string): DocumentReference<T>;
+
+    /**
+     * Applies a custom data converter to this CollectionReference, allowing you
+     * to use your own custom model objects with Firestore. When you call add()
+     * on the returned CollectionReference instance, the provided converter will
+     * convert between Firestore data and your custom type U.
+     *
+     * Passing in `null` as the converter parameter removes the current
+     * converter.
+     *
+     * @param converter Converts objects to and from Firestore. Passing in
+     * `null` removes the current converter.
+     * @return A CollectionReference<U> that uses the provided converter.
+     */
+    withConverter(converter: null): CollectionReference<DocumentData>;
+
+    /**
+     * Applies a custom data converter to this CollectionReference, allowing you
+     * to use your own custom model objects with Firestore. When you call add()
+     * on the returned CollectionReference instance, the provided converter will
+     * convert between Firestore data and your custom type U.
+     *
+     * Passing in `null` as the converter parameter removes the current
+     * converter.
+     *
+     * @param converter Converts objects to and from Firestore. Passing in
+     * `null` removes the current converter.
+     * @return A CollectionReference<U> that uses the provided converter.
+     */
+    withConverter<U>(converter: FirestoreDataConverter<U>): CollectionReference<U>;
   }
 
   /**
@@ -516,6 +546,37 @@ export namespace FirebaseFirestoreTypes {
      * @param moreFieldsAndValues Additional key value pairs.
      */
     update(field: keyof T | FieldPath, value: any, ...moreFieldsAndValues: any[]): Promise<void>;
+
+    /**
+     * Applies a custom data converter to this DocumentReference, allowing you
+     * to use your own custom model objects with Firestore. When you call
+     * set(), get(), etc. on the returned DocumentReference instance, the
+     * provided converter will convert between Firestore data and your custom
+     * type U.
+     *
+     * Passing in `null` as the converter parameter removes the current
+     * converter.
+     *
+     * @param converter Converts objects to and from Firestore. Passing in
+     * `null` removes the current converter.
+     * @return A DocumentReference<U> that uses the provided converter.
+     */
+    withConverter(converter: null): DocumentReference<DocumentData>;
+    /**
+     * Applies a custom data converter to this DocumentReference, allowing you
+     * to use your own custom model objects with Firestore. When you call
+     * set(), get(), etc. on the returned DocumentReference instance, the
+     * provided converter will convert between Firestore data and your custom
+     * type U.
+     *
+     * Passing in `null` as the converter parameter removes the current
+     * converter.
+     *
+     * @param converter Converts objects to and from Firestore. Passing in
+     * `null` removes the current converter.
+     * @return A DocumentReference<U> that uses the provided converter.
+     */
+    withConverter<U>(converter: FirestoreDataConverter<U>): DocumentReference<U>;
   }
 
   /**
@@ -1424,6 +1485,35 @@ export namespace FirebaseFirestoreTypes {
      * @param filter The filter to apply to the query.
      */
     where(filter: QueryFilterConstraint): Query<T>;
+
+    /**
+     * Applies a custom data converter to this Query, allowing you to use your
+     * own custom model objects with Firestore. When you call get() on the
+     * returned Query, the provided converter will convert between Firestore
+     * data and your custom type U.
+     *
+     * Passing in `null` as the converter parameter removes the current
+     * converter.
+     *
+     * @param converter Converts objects to and from Firestore. Passing in
+     * `null` removes the current converter.
+     * @return A Query<U> that uses the provided converter.
+     */
+    withConverter(converter: null): Query<DocumentData>;
+    /**
+     * Applies a custom data converter to this Query, allowing you to use your
+     * own custom model objects with Firestore. When you call get() on the
+     * returned Query, the provided converter will convert between Firestore
+     * data and your custom type U.
+     *
+     * Passing in `null` as the converter parameter removes the current
+     * converter.
+     *
+     * @param converter Converts objects to and from Firestore. Passing in
+     * `null` removes the current converter.
+     * @return A Query<U> that uses the provided converter.
+     */
+    withConverter<U>(converter: FirestoreDataConverter<U>): Query<U>;
   }
 
   /**
@@ -2126,6 +2216,68 @@ export namespace FirebaseFirestoreTypes {
      * @param logLevel The verbosity you set for activity and error logging.
      */
     setLogLevel(logLevel: 'debug' | 'error' | 'silent'): void;
+  }
+
+  /**
+   * Converter used by `withConverter()` to transform user objects of type T
+   * into Firestore data.
+   *
+   * Using the converter allows you to specify generic type arguments when
+   * storing and retrieving objects from Firestore.
+   *
+   * @example
+   * ```typescript
+   * class Post {
+   *   constructor(readonly title: string, readonly author: string) {}
+   *
+   *   toString(): string {
+   *     return this.title + ', by ' + this.author;
+   *   }
+   * }
+   *
+   * const postConverter = {
+   *   toFirestore(post: Post): firebase.firestore.DocumentData {
+   *     return {title: post.title, author: post.author};
+   *   },
+   *   fromFirestore(
+   *     snapshot: firebase.firestore.QueryDocumentSnapshot,
+   *     options: firebase.firestore.SnapshotOptions
+   *   ): Post {
+   *     const data = snapshot.data(options)!;
+   *     return new Post(data.title, data.author);
+   *   }
+   * };
+   *
+   * const postSnap = await firebase.firestore()
+   *   .collection('posts')
+   *   .withConverter(postConverter)
+   *   .doc().get();
+   * const post = postSnap.data();
+   * if (post !== undefined) {
+   *   post.title; // string
+   *   post.toString(); // Should be defined
+   *   post.someNonExistentProperty; // TS error
+   * }
+   * ```
+   */
+  export interface FirestoreDataConverter<T> {
+    /**
+     * Called by the Firestore SDK to convert a custom model object of type T
+     * into a plain JavaScript object (suitable for writing directly to the
+     * Firestore database). To use `set()` with `merge` and `mergeFields`,
+     * `toFirestore()` must be defined with `Partial<T>`.
+     */
+    toFirestore(modelObject: T): DocumentData;
+    toFirestore(modelObject: Partial<T>, options: SetOptions): DocumentData;
+
+    /**
+     * Called by the Firestore SDK to convert Firestore data into an object of
+     * type T. You can access your data by calling: `snapshot.data(options)`.
+     *
+     * @param snapshot A QueryDocumentSnapshot containing your data and metadata.
+     * @param options The SnapshotOptions from the initial call to `data()`.
+     */
+    fromFirestore(snapshot: QueryDocumentSnapshot, options: SnapshotOptions): T;
   }
 
   /**
