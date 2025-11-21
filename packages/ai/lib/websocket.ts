@@ -84,8 +84,8 @@ export class WebSocketHandlerImpl implements WebSocketHandler {
   connect(url: string): Promise<void> {
     return new Promise((resolve, reject) => {
       this.ws = new WebSocket(url);
-      // TODO: fix this
-      // this.ws.binaryType = 'blob'; // Only important to set in Node
+      // Note: binaryType is not supported in React Native's WebSocket implementation.
+      // We handle ArrayBuffer, Blob, and string data types in the message listener instead.
 
       const openHandler = (): void => {
         resolve();
@@ -127,15 +127,23 @@ export class WebSocketHandlerImpl implements WebSocketHandler {
 
     const messageListener = async (event: any): Promise<void> => {
       let data: string;
+
+      // Handle different data types across environments
       if (event.data instanceof Blob) {
+        // Browser environment
         data = await event.data.text();
+      } else if (event.data instanceof ArrayBuffer) {
+        // React Native environment - binary data comes as ArrayBuffer
+        const decoder = new TextDecoder('utf-8');
+        data = decoder.decode(event.data);
       } else if (typeof event.data === 'string') {
+        // String data in all environments
         data = event.data;
       } else {
         errorQueue.push(
           new AIError(
             AIErrorCode.PARSE_FAILED,
-            `Failed to parse WebSocket response. Expected data to be a Blob or string, but was ${typeof event.data}.`,
+            `Failed to parse WebSocket response. Expected data to be a Blob, ArrayBuffer, or string, but was ${typeof event.data}.`,
           ),
         );
         if (resolvePromise) {

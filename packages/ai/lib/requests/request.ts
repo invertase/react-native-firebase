@@ -268,21 +268,19 @@ export async function makeRequest(
 export class WebSocketUrl {
   constructor(public apiSettings: ApiSettings) {}
   toString(): string {
-    const url = new URL(`wss://${DEFAULT_DOMAIN}`);
-    url.pathname = this.pathname;
+    // Manually construct URL to avoid React Native URL API issues
+    const baseUrl = `wss://${DEFAULT_DOMAIN}`;
+    const pathname = this.pathname;
+    const queryString = `key=${encodeURIComponent(this.apiSettings.apiKey)}`;
 
-    const queryParams = new URLSearchParams();
-    queryParams.set('key', this.apiSettings.apiKey);
-    url.search = queryParams.toString();
-
-    return url.toString();
+    return `${baseUrl}${pathname}?${queryString}`;
   }
 
   private get pathname(): string {
     if (this.apiSettings.backend.backendType === BackendType.GOOGLE_AI) {
-      return 'ws/google.firebase.vertexai.v1beta.GenerativeService/BidiGenerateContent';
+      return '/ws/google.firebase.vertexai.v1beta.GenerativeService/BidiGenerateContent';
     } else {
-      return `ws/google.firebase.vertexai.v1beta.LlmBidiService/BidiGenerateContent/locations/${this.apiSettings.location}`;
+      return `/ws/google.firebase.vertexai.v1beta.LlmBidiService/BidiGenerateContent/locations/${this.apiSettings.location}`;
     }
   }
 }
