@@ -29,7 +29,7 @@ class MockWebSocket {
   sentMessages: Array<string | ArrayBuffer> = [];
   url: string;
   binaryType: string = 'blob';
-  private listeners: Map<string, Set<EventListener>> = new Map();
+  private listeners: Map<string, Set<(event: any) => void>> = new Map();
 
   constructor(url: string) {
     this.url = url;
@@ -53,14 +53,14 @@ class MockWebSocket {
     }, 10);
   }
 
-  addEventListener(type: string, listener: EventListener): void {
+  addEventListener(type: string, listener: (event: any) => void): void {
     if (!this.listeners.has(type)) {
       this.listeners.set(type, new Set());
     }
     this.listeners.get(type)!.add(listener);
   }
 
-  removeEventListener(type: string, listener: EventListener): void {
+  removeEventListener(type: string, listener: (event: any) => void): void {
     this.listeners.get(type)?.delete(listener);
   }
 
@@ -74,7 +74,9 @@ class MockWebSocket {
   }
 
   triggerMessage(data: unknown): void {
-    this.dispatchEvent(new MessageEvent('message', { data }));
+    const event = new Event('message');
+    (event as any).data = data;
+    this.dispatchEvent(event);
   }
 
   triggerError(): void {
@@ -235,7 +237,6 @@ describe('WebSocketHandlerImpl', function () {
 
       const generator = handler.listen();
       const listenPromise = (async () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for await (const _ of generator) {
         }
       })();
