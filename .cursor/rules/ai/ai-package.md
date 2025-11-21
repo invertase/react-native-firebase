@@ -289,6 +289,105 @@ polyfillGlobal('ReadableStream', ...)
 
 ---
 
+## 🔌 WebSocket Implementation Differences (INTENTIONAL - Adapt When Porting)
+
+### React Native WebSocket Limitations
+
+**Firebase JS SDK WebSocket Handler:**
+```typescript
+// src/websocket.ts
+connect(url: string): Promise<void> {
+  this.ws = new WebSocket(url);
+  this.ws.binaryType = 'blob'; // Set binary type to blob
+  // ...
+}
+
+// Message handler expects Blob
+const messageListener = (event: MessageEvent): void => {
+  const data = await event.data.text(); // Assumes Blob
+  // ...
+};
+```
+
+**React Native Firebase WebSocket Handler:**
+```typescript
+// lib/websocket.ts
+connect(url: string): Promise<void> {
+  this.ws = new WebSocket(url);
+  // Note: binaryType is not supported in React Native's WebSocket implementation.
+  // We handle ArrayBuffer, Blob, and string data types in the message listener instead.
+  // ...
+}
+
+// Message handler detects data type dynamically
+const messageListener = async (event: any): Promise<void> => {
+  let data: string;
+  
+  if (event.data instanceof Blob) {
+    // Browser environment
+    data = await event.data.text();
+  } else if (event.data instanceof ArrayBuffer) {
+    // React Native environment - binary data comes as ArrayBuffer
+    const decoder = new TextDecoder('utf-8');
+    data = decoder.decode(event.data);
+  } else if (typeof event.data === 'string') {
+    // String data in all environments
+    data = event.data;
+  }
+  // ...
+};
+```
+
+**Key Differences:**
+1. **No `binaryType` property**: React Native's WebSocket doesn't support setting `binaryType = 'blob'`
+2. **ArrayBuffer in RN**: Binary data arrives as `ArrayBuffer` in React Native, not `Blob`
+3. **Runtime type detection**: Must check `event.data` type at runtime instead of configuring upfront
+4. **TextDecoder usage**: Need to manually decode ArrayBuffer to string using TextDecoder
+
+### WebSocket URL Construction
+
+**Firebase JS SDK:**
+```typescript
+// Uses standard URL class
+const url = new URL(`wss://${domain}/path`);
+url.searchParams.set('key', apiKey);
+return url.toString();
+```
+
+**React Native Firebase:**
+```typescript
+// lib/requests/request.ts - WebSocketUrl class
+toString(): string {
+  // Manually construct URL to avoid React Native URL API issues
+  const baseUrl = `wss://${DEFAULT_DOMAIN}`;
+  const pathname = this.pathname;
+  const queryString = `key=${encodeURIComponent(this.apiSettings.apiKey)}`;
+  
+  return `${baseUrl}${pathname}?${queryString}`;
+}
+```
+
+**Reason**: 
+- React Native has URL API quirks/limitations, so we manually construct WebSocket URLs
+- Manual string concatenation is more reliable than URL class in RN environment
+
+### When Porting WebSocket Features
+
+**DO:**
+- ✅ Remove or comment out `binaryType` assignments
+- ✅ Add runtime type checking for `event.data` (Blob | ArrayBuffer | string)
+- ✅ Use TextDecoder for ArrayBuffer conversion
+- ✅ Manually construct WebSocket URLs with string concatenation
+- ✅ Test on both iOS and Android (they may behave slightly differently)
+
+**DON'T:**
+- ❌ Assume `binaryType` can be set
+- ❌ Assume binary data will be Blob
+- ❌ Use URL class for WebSocket URL construction
+- ❌ Remove ArrayBuffer handling code
+
+---
+
 ## 📦 Package Dependencies
 
 ### Firebase JS SDK Dependencies
@@ -490,7 +589,14 @@ Use this checklist when identifying new APIs in Firebase JS SDK to port:
    - Ensure it works with polyfilled ReadableStream
    - Test streaming functionality
 
-### 8. **Testing** (CRITICAL - Always Port Tests)
+### 8. **Adapt WebSocket Code** (If applicable)
+   - Remove `binaryType` property assignments (not supported in RN)
+   - Add runtime type detection for message data (Blob | ArrayBuffer | string)
+   - Use TextDecoder for ArrayBuffer to string conversion
+   - Manually construct WebSocket URLs (avoid URL class)
+   - Test on both iOS and Android
+
+### 9. **Testing** (CRITICAL - Always Port Tests)
    - Port tests from `src/*.test.ts` to `__tests__/*.test.ts`
    - Maintain same file names for easy identification
    - Adapt test utilities for React Native testing environment:
@@ -557,6 +663,9 @@ Any difference NOT documented in these cursor rules is a potential feature gap.
 | **AIService** | Complex (with _FirebaseService) | Simple | Different architecture |
 | **Type Files** | chrome-adapter.ts, language-model.ts | polyfills.d.ts | Platform-specific |
 | **Node Entry** | ✅ Has index.node.ts | ❌ Doesn't have | Unified runtime |
+| **WebSocket binaryType** | ✅ Sets to 'blob' | ❌ Not supported | RN WebSocket limitation |
+| **WebSocket Data** | Expects Blob | Runtime detection (Blob/ArrayBuffer/string) | RN sends ArrayBuffer |
+| **WebSocket URL** | Uses URL class | Manual string construction | RN URL API issues |
 
 ---
 
@@ -595,6 +704,8 @@ When asking AI to compare packages:
 - Helper files for providers
 - Build configuration differences
 - Test file locations (but NOT test content - tests must be ported!)
+- WebSocket `binaryType` differences (RN uses runtime detection instead)
+- WebSocket URL construction methods (RN uses manual string building)
 
 ---
 
