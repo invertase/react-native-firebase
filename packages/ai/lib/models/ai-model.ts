@@ -16,10 +16,8 @@
  */
 
 import { ApiSettings } from '../types/internal';
-import { AIError } from '../errors';
-import { AIErrorCode } from '../types';
 import { AI, BackendType } from '../public-types';
-import { AIService } from '../service';
+import { initApiSettings } from './utils';
 
 /**
  * Base class for Firebase AI model APIs.
@@ -59,41 +57,8 @@ export abstract class AIModel {
    * @internal
    */
   protected constructor(ai: AI, modelName: string) {
-    if (!ai.app?.options?.apiKey) {
-      throw new AIError(
-        AIErrorCode.NO_API_KEY,
-        `The "apiKey" field is empty in the local Firebase config. Firebase AI requires this field to contain a valid API key.`,
-      );
-    } else if (!ai.app?.options?.projectId) {
-      throw new AIError(
-        AIErrorCode.NO_PROJECT_ID,
-        `The "projectId" field is empty in the local Firebase config. Firebase AI requires this field to contain a valid project ID.`,
-      );
-    } else if (!ai.app?.options?.appId) {
-      throw new AIError(
-        AIErrorCode.NO_APP_ID,
-        `The "appId" field is empty in the local Firebase config. Firebase AI requires this field to contain a valid app ID.`,
-      );
-    } else {
-      this._apiSettings = {
-        apiKey: ai.app.options.apiKey,
-        project: ai.app.options.projectId,
-        appId: ai.app.options.appId,
-        automaticDataCollectionEnabled: ai.app.automaticDataCollectionEnabled,
-        location: ai.location,
-        backend: ai.backend,
-      };
-
-      if ((ai as AIService).appCheck) {
-        this._apiSettings.getAppCheckToken = () => (ai as AIService).appCheck!.getToken();
-      }
-
-      if ((ai as AIService).auth?.currentUser) {
-        this._apiSettings.getAuthToken = () => (ai as AIService).auth!.currentUser!.getIdToken();
-      }
-
-      this.model = AIModel.normalizeModelName(modelName, this._apiSettings.backend.backendType);
-    }
+    this._apiSettings = initApiSettings(ai);
+    this.model = AIModel.normalizeModelName(modelName, this._apiSettings.backend.backendType);
   }
 
   /**

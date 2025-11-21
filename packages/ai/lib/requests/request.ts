@@ -27,6 +27,7 @@ import {
 } from '../constants';
 import { logger } from '../logger';
 import { GoogleAIBackend, VertexAIBackend } from '../backend';
+import { BackendType } from '../public-types';
 
 export enum Task {
   GENERATE_CONTENT = 'generateContent',
@@ -262,4 +263,24 @@ export async function makeRequest(
     }
   }
   return response;
+}
+
+export class WebSocketUrl {
+  constructor(public apiSettings: ApiSettings) {}
+  toString(): string {
+    // Manually construct URL to avoid React Native URL API issues
+    const baseUrl = `wss://${DEFAULT_DOMAIN}`;
+    const pathname = this.pathname;
+    const queryString = `key=${encodeURIComponent(this.apiSettings.apiKey)}`;
+
+    return `${baseUrl}${pathname}?${queryString}`;
+  }
+
+  private get pathname(): string {
+    if (this.apiSettings.backend.backendType === BackendType.GOOGLE_AI) {
+      return '/ws/google.firebase.vertexai.v1beta.GenerativeService/BidiGenerateContent';
+    } else {
+      return `/ws/google.firebase.vertexai.v1beta.LlmBidiService/BidiGenerateContent/locations/${this.apiSettings.location}`;
+    }
+  }
 }
