@@ -73,12 +73,22 @@ const statics = {
   HttpsErrorCode,
 };
 
+const nativeEvents = ['functions_streaming_event'];
+
 class FirebaseFunctionsModule extends FirebaseModule {
   constructor(...args) {
     super(...args);
     this._customUrlOrRegion = this._customUrlOrRegion || 'us-central1';
     this._useFunctionsEmulatorHost = null;
     this._useFunctionsEmulatorPort = -1;
+    this._id_functions_streaming_event = 0;
+
+    this.emitter.addListener(this.eventNameForApp('functions_streaming_event'), event => {
+      this.emitter.emit(
+        this.eventNameForApp(`functions_streaming_event:${event.listenerId}`),
+        event,
+      );
+    });
   }
 
   httpsCallable(name, options = {}) {
@@ -89,8 +99,9 @@ class FirebaseFunctionsModule extends FirebaseModule {
         throw new Error('HttpsCallableOptions.timeout expected a Number in milliseconds');
       }
     }
-
-    return data => {
+  
+    // Create the main callable function
+    const callableFunction = data => {
       const nativePromise = this.native.httpsCallable(
         this._useFunctionsEmulatorHost,
         this._useFunctionsEmulatorPort,
@@ -112,6 +123,42 @@ class FirebaseFunctionsModule extends FirebaseModule {
         );
       });
     };
+  
+    // Add the stream property
+    callableFunction.stream = async function* (data) {
+      const listenerId = this._id_functions_streaming_event++;
+      this.native.addFunctionsStreaming(listenerId);
+      const onFunctionsStreamingSubscription = this.emitter.addListener(
+        this.eventNameForApp(`functions_streaming_event:${listenerId}`),
+        event => {
+          useCallback(event => {
+            yield event;
+          }, []);
+        },
+      );
+      // Your streaming implementation here
+      // This could call a different native method that supports streaming
+      const streamPromise = this.native.httpsCallableStream(
+        this._useFunctionsEmulatorHost,
+        this._useFunctionsEmulatorPort,
+        name,
+        {
+          data,
+        },
+        options,
+      );
+      
+      // Yield stream data as it comes in
+      // Implementation depends on your native streaming setup
+      for await (const chunk of streamPromise) {
+        yield chunk;
+      }
+
+      onFunctionsStreamingSubscription.remove();
+      this.native.removeFunctionsStreaming(listenerId);
+    }.bind(this);
+  
+    return callableFunction;
   }
 
   httpsCallableFromUrl(url, options = {}) {
