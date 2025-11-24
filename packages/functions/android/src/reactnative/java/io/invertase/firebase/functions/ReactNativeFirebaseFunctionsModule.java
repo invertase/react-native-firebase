@@ -144,4 +144,43 @@ public class ReactNativeFirebaseFunctionsModule extends ReactNativeFirebaseModul
           promise.reject(code, message, exception, userInfo);
         });
   }
+
+  // -------------------- Streaming bridge (Android only) --------------------
+  @ReactMethod
+  public void addFunctionsStreaming(Integer listenerId) {
+    // Optional hook: no-op, streaming is started explicitly by httpsCallableStream*
+  }
+
+  @ReactMethod
+  public void removeFunctionsStreaming(Integer listenerId) {
+    UniversalFirebaseFunctionsModule.cancelHttpsCallableStream(listenerId);
+  }
+
+  @ReactMethod
+  public void httpsCallableStream(
+      String appName,
+      String region,
+      String host,
+      Integer port,
+      String name,
+      ReadableMap wrapper,
+      ReadableMap options,
+      Integer listenerId) {
+    module.httpsCallableStream(
+        appName, region, host, port, name, wrapper.toHashMap().get(DATA_KEY), options, listenerId);
+  }
+
+  @ReactMethod
+  public void httpsCallableStreamFromUrl(
+      String appName,
+      String region,
+      String host,
+      Integer port,
+      String url,
+      ReadableMap wrapper,
+      ReadableMap options,
+      Integer listenerId) {
+    module.httpsCallableStreamFromUrl(
+        appName, region, host, port, url, wrapper.toHashMap().get(DATA_KEY), options, listenerId);
+  }
 }

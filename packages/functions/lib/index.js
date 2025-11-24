@@ -103,6 +103,8 @@ class FirebaseFunctionsModule extends FirebaseModule {
     // Create the main callable function
     const callableFunction = data => {
       const nativePromise = this.native.httpsCallable(
+        this.appName,
+        this._customUrlOrRegion,
         this._useFunctionsEmulatorHost,
         this._useFunctionsEmulatorPort,
         name,
@@ -124,39 +126,45 @@ class FirebaseFunctionsModule extends FirebaseModule {
       });
     };
   
-    // Add the stream property
-    callableFunction.stream = async function* (data) {
+    // Add a streaming helper (callback-based)
+    // Usage: const stop = functions().httpsCallable('fn').stream(data, (evt) => {...}, options)
+    callableFunction.stream = (data, onEvent, options = {}) => {
+      if (options.timeout) {
+        if (isNumber(options.timeout)) {
+          options.timeout = options.timeout / 1000;
+        } else {
+          throw new Error('HttpsCallableOptions.timeout expected a Number in milliseconds');
+        }
+      }
       const listenerId = this._id_functions_streaming_event++;
       this.native.addFunctionsStreaming(listenerId);
-      const onFunctionsStreamingSubscription = this.emitter.addListener(
-        this.eventNameForApp(`functions_streaming_event:${listenerId}`),
-        event => {
-          useCallback(event => {
-            yield event;
-          }, []);
-        },
-      );
-      // Your streaming implementation here
-      // This could call a different native method that supports streaming
-      const streamPromise = this.native.httpsCallableStream(
+      const eventName = this.eventNameForApp(`functions_streaming_event:${listenerId}`);
+      const subscription = this.emitter.addListener(eventName, event => {
+        const body = event.body;
+        if (onEvent) {
+          onEvent(body);
+        }
+        if (body && (body.done || body.error)) {
+          subscription.remove();
+          this.native.removeFunctionsStreaming(listenerId);
+        }
+      });
+      // Start native streaming on both platforms. iOS implementation to be provided natively.
+      this.native.httpsCallableStream(
+        this.appName,
+        this._customUrlOrRegion,
         this._useFunctionsEmulatorHost,
         this._useFunctionsEmulatorPort,
         name,
-        {
-          data,
-        },
+        { data },
         options,
+        listenerId,
       );
-      
-      // Yield stream data as it comes in
-      // Implementation depends on your native streaming setup
-      for await (const chunk of streamPromise) {
-        yield chunk;
-      }
-
-      onFunctionsStreamingSubscription.remove();
-      this.native.removeFunctionsStreaming(listenerId);
-    }.bind(this);
+      return () => {
+        subscription.remove();
+        this.native.removeFunctionsStreaming(listenerId);
+      };
+    };
   
     return callableFunction;
   }
@@ -172,6 +180,8 @@ class FirebaseFunctionsModule extends FirebaseModule {
 
     return data => {
       const nativePromise = this.native.httpsCallableFromUrl(
+        this.appName,
+        this._customUrlOrRegion,
         this._useFunctionsEmulatorHost,
         this._useFunctionsEmulatorPort,
         url,
@@ -243,7 +253,7 @@ export default createModuleNamespace({
   version,
   namespace,
   nativeModuleName,
-  nativeEvents: false,
+  nativeEvents,
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: true,
   ModuleClass: FirebaseFunctionsModule,
