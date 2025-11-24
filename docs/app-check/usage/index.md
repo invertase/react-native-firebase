@@ -226,22 +226,6 @@ try {
 }
 ```
 
-### Listening for token changes
-
-On Android, you can subscribe to App Check token updates with `onTokenChanged`. On iOS this listener is not implemented yet – subscribing will no-op and log a warning. If you need to react to token changes on iOS, prefer polling `getToken` on demand or rely on automatic refresh.
-
-```javascript
-import { onTokenChanged, getToken } from '@react-native-firebase/app-check';
-
-// Android: receives updates. iOS: no-op (not implemented).
-const unsubscribe = onTokenChanged(appCheckInstance, async ({ token }) => {
-  console.log('App Check token updated:', token);
-});
-
-// iOS-friendly approach: request a fresh token when needed
-const { token } = await appCheckInstance.getToken(true);
-```
-
 ## Automatic Data Collection
 
 App Check has an "tokenAutoRefreshEnabled" setting. This may cause App Check to attempt a remote App Check token fetch prior to user consent. In certain scenarios, like those that exist in GDPR-compliant apps running for the first time, this may be unwanted.
