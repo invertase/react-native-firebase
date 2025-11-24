@@ -178,7 +178,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
       }
     }
 
-    return data => {
+    const callableFunction = data => {
       const nativePromise = this.native.httpsCallableFromUrl(
         this.appName,
         this._customUrlOrRegion,
@@ -202,6 +202,46 @@ class FirebaseFunctionsModule extends FirebaseModule {
         );
       });
     };
+
+    // Add streaming support for URL-based callable
+    callableFunction.stream = (data, onEvent, streamOptions = {}) => {
+      if (streamOptions.timeout) {
+        if (isNumber(streamOptions.timeout)) {
+          streamOptions.timeout = streamOptions.timeout / 1000;
+        } else {
+          throw new Error('HttpsCallableOptions.timeout expected a Number in milliseconds');
+        }
+      }
+      const listenerId = this._id_functions_streaming_event++;
+      this.native.addFunctionsStreaming(listenerId);
+      const eventName = this.eventNameForApp(`functions_streaming_event:${listenerId}`);
+      const subscription = this.emitter.addListener(eventName, event => {
+        const body = event.body;
+        if (onEvent) {
+          onEvent(body);
+        }
+        if (body && (body.done || body.error)) {
+          subscription.remove();
+          this.native.removeFunctionsStreaming(listenerId);
+        }
+      });
+      this.native.httpsCallableStreamFromUrl(
+        this.appName,
+        this._customUrlOrRegion,
+        this._useFunctionsEmulatorHost,
+        this._useFunctionsEmulatorPort,
+        url,
+        { data },
+        streamOptions,
+        listenerId,
+      );
+      return () => {
+        subscription.remove();
+        this.native.removeFunctionsStreaming(listenerId);
+      };
+    };
+
+    return callableFunction;
   }
 
   useFunctionsEmulator(origin) {
