@@ -108,52 +108,43 @@ describe('database().ref().transaction()', function () {
       });
     });
 
-    // FIXME flaky on android local against emulator?
     it('passes valid data through the callback', async function () {
-      if (Platform.ios || Platform.other) {
-        const ref = firebase.database().ref(`${TEST_PATH}/transactionCallback`);
-        await ref.set(1);
+      const ref = firebase.database().ref(`${TEST_PATH}/transactionCallback/${Date.now()}`);
+      await ref.set(1);
 
-        return new Promise((resolve, reject) => {
-          ref.transaction(
-            $ => {
-              return $ + 1;
-            },
-            (error, committed, snapshot) => {
-              if (error) {
-                return reject(error);
-              }
+      return new Promise((resolve, reject) => {
+        ref.transaction(
+          $ => {
+            return $ + 1;
+          },
+          (error, committed, snapshot) => {
+            if (error) {
+              return reject(error);
+            }
 
-              if (!committed) {
-                return reject(new Error('Transaction aborted when it should not have done'));
-              }
+            if (!committed) {
+              return reject(new Error('Transaction aborted when it should not have done'));
+            }
 
-              should.equal(snapshot.val(), 2);
-              return resolve();
-            },
-          );
-        });
-      } else {
-        this.skip();
-      }
+            should.equal(snapshot.val(), 2);
+            return resolve();
+          },
+        );
+      });
     });
 
     // FIXME flaky on android local against emulator?
     it('throws when an error occurs', async function () {
-      if (Platform.ios || Platform.other) {
-        const ref = firebase.database().ref('nope');
+      const ref = firebase.database().ref('nope');
 
-        try {
-          await ref.transaction($ => {
-            return $ + 1;
-          });
-          return Promise.reject(new Error('Did not throw error.'));
-        } catch (error) {
-          error.message.should.containEql('permission');
-          return Promise.resolve();
-        }
-      } else {
-        this.skip();
+      try {
+        await ref.transaction($ => {
+          return $ + 1;
+        });
+        return Promise.reject(new Error('Did not throw error.'));
+      } catch (error) {
+        error.message.should.containEql('permission');
+        return Promise.resolve();
       }
     });
 
@@ -282,32 +273,27 @@ describe('database().ref().transaction()', function () {
       throw new Error('Transaction did not abort commit.');
     });
 
-    // FIXME flaky on android local against emulator?
     it('throws when an error occurs', async function () {
-      if (Platform.ios || Platform.other) {
-        const { getDatabase, ref, runTransaction } = databaseModular;
+      const { getDatabase, ref, runTransaction } = databaseModular;
 
-        const dbRef = ref(getDatabase(), 'nope');
+      const dbRef = ref(getDatabase(), 'nope');
 
-        try {
-          await runTransaction(dbRef, $ => {
-            return $ + 1;
-          });
-          return Promise.reject(new Error('Did not throw error.'));
-        } catch (error) {
-          error.message.should.containEql('permission');
-          return Promise.resolve();
-        }
-      } else {
-        this.skip();
+      try {
+        await runTransaction(dbRef, $ => {
+          return $ + 1;
+        });
+        return Promise.reject(new Error('Did not throw error.'));
+      } catch (error) {
+        error.message.should.containEql('permission');
+        return Promise.resolve();
       }
     });
 
     it('sets a value if one does not exist', async function () {
-      const { getDatabase, ref, runTransaction } = databaseModular;
+      const { getDatabase, ref, runTransaction, remove } = databaseModular;
 
       const dbRef = ref(getDatabase(), `${TEST_PATH}/transactionCreate`);
-      await dbRef.remove();
+      await remove(dbRef);
 
       const value = Date.now();
 

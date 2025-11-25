@@ -16,6 +16,7 @@
  */
 
 import {
+  createDeprecationProxy,
   isArray,
   isFunction,
   isObject,
@@ -24,13 +25,14 @@ import {
 } from '@react-native-firebase/app/lib/common';
 import { deepGet } from '@react-native-firebase/app/lib/common/deeps';
 
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 export default class DatabaseDataSnapshot {
   constructor(reference, snapshot) {
     this._snapshot = snapshot;
 
     if (reference.key !== snapshot.key) {
       // reference is a query?
-      this._ref = reference.ref.child(snapshot.key);
+      this._ref = reference.ref.child.call(reference.ref, snapshot.key, MODULAR_DEPRECATION_ARG);
     } else {
       this._ref = reference;
     }
@@ -65,7 +67,7 @@ export default class DatabaseDataSnapshot {
       value = null;
     }
 
-    const childRef = this._ref.child(path);
+    const childRef = this._ref.child.call(this._ref, path, MODULAR_DEPRECATION_ARG);
 
     let childPriority = null;
     if (this._snapshot.childPriorities) {
@@ -74,13 +76,15 @@ export default class DatabaseDataSnapshot {
         childPriority = childPriorityValue;
       }
     }
-    return new DatabaseDataSnapshot(childRef, {
-      value,
-      key: childRef.key,
-      exists: value !== null,
-      childKeys: isObject(value) ? Object.keys(value) : [],
-      priority: childPriority,
-    });
+    return createDeprecationProxy(
+      new DatabaseDataSnapshot(childRef, {
+        value,
+        key: childRef.key,
+        exists: value !== null,
+        childKeys: isObject(value) ? Object.keys(value) : [],
+        priority: childPriority,
+      }),
+    );
   }
 
   /**
@@ -137,7 +141,7 @@ export default class DatabaseDataSnapshot {
 
     for (let i = 0; i < this._snapshot.childKeys.length; i++) {
       const key = this._snapshot.childKeys[i];
-      const snapshot = this.child(key);
+      const snapshot = this.child.call(this, key, MODULAR_DEPRECATION_ARG);
       const actionReturn = action(snapshot, i);
 
       if (actionReturn === true) {

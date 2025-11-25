@@ -8,6 +8,8 @@ import {
   sendSignInLinkToEmail,
   getAdditionalUserInfo,
   multiFactor,
+  getMultiFactorResolver,
+  TotpMultiFactorGenerator,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   isSignInWithEmailLink,
@@ -70,6 +72,15 @@ function rejectPromiseWithCodeAndMessage(code, message) {
   return rejectPromise(getWebError({ code: `auth/${code}`, message }));
 }
 
+function rejectWithCodeAndMessage(code, message) {
+  return Promise.reject(
+    getWebError({
+      code,
+      message,
+    }),
+  );
+}
+
 /**
  * Returns a structured error object.
  * @param {error} error The error object.
@@ -102,7 +113,9 @@ function userToObject(user) {
     tenantId: user.tenantId !== null && user.tenantId !== '' ? user.tenantId : null,
     providerData: user.providerData.map(userInfoToObject),
     metadata: userMetadataToObject(user.metadata),
-    multiFactor: multiFactor(user).enrolledFactors.map(multiFactorInfoToObject),
+    multiFactor: {
+      enrolledFactors: multiFactor(user).enrolledFactors.map(multiFactorInfoToObject),
+    },
   };
 }
 
@@ -222,12 +235,13 @@ const instances = {};
 const authStateListeners = {};
 const idTokenListeners = {};
 const sessionMap = new Map();
+const totpSecretMap = new Map();
 let sessionId = 0;
 
 // Returns a cached Firestore instance.
 function getCachedAuthInstance(appName) {
   if (!instances[appName]) {
-    if (!isMemoryStorage()) {
+    if (isMemoryStorage()) {
       // Warn auth persistence is is disabled unless Async Storage implementation is provided.
       // eslint-disable-next-line no-console
       console.warn(
@@ -441,11 +455,28 @@ export default {
    * @returns {Promise<object>} - The result of the sign in.
    */
   async signInWithEmailAndPassword(appName, email, password) {
-    return guard(async () => {
-      const auth = getCachedAuthInstance(appName);
-      const credential = await signInWithEmailAndPassword(auth, email, password);
+    // The default guard / getWebError process doesn't work well here,
+    // since it creates a new error object that is then passed through
+    // a native module proxy and gets processed again.
+    // We need lots of information from the error so that MFA will work
+    // later if needed. So we handle the error custom here.
+    // return guard(async () => {
+    try {
+      const credential = await signInWithEmailAndPassword(
+        getCachedAuthInstance(appName),
+        email,
+        password,
+      );
       return authResultToObject(credential);
-    });
+    } catch (e) {
+      e.userInfo = {
+        code: e.code.split('/')[1],
+        message: e.message,
+        customData: e.customData,
+      };
+      throw e;
+    }
+    // });
   },
 
   /**
@@ -989,6 +1020,104 @@ export default {
         token: result.token,
       };
     });
+  },
+
+  /**
+   * Get a MultiFactorResolver from the underlying SDK
+   * @param {*} _appName the name of the app to get the auth instance for
+   * @param {*} uid the uid of the TOTP MFA attempt
+   * @param {*} code the code from the user TOTP app
+   * @return TotpMultiFactorAssertion to use for resolving
+   */
+  assertionForSignIn(_appName, uid, code) {
+    return TotpMultiFactorGenerator.assertionForSignIn(uid, code);
+  },
+
+  /**
+   * Get a MultiFactorResolver from the underlying SDK
+   * @param {*} appName the name of the app to get the auth instance for
+   * @param {*} error the MFA error returned from initial factor login attempt
+   * @return MultiFactorResolver to use for verifying the second factor
+   */
+  getMultiFactorResolver(appName, error) {
+    return getMultiFactorResolver(getCachedAuthInstance(appName), error);
+  },
+
+  /**
+   * generate a TOTP secret
+   * @param {*} _appName - The name of the app to get the auth instance for.
+   * @param {*} session - The MultiFactorSession to associate with the secret
+   * @returns object with secretKey to associate with TotpSecret
+   */
+  async generateTotpSecret(_appName, session) {
+    return guard(async () => {
+      const totpSecret = await TotpMultiFactorGenerator.generateSecret(sessionMap.get(session));
+      totpSecretMap.set(totpSecret.secretKey, totpSecret);
+      return { secretKey: totpSecret.secretKey };
+    });
+  },
+
+  /**
+   * unenroll from TOTP
+   * @param {*} appName - The name of the app to get the auth instance for.
+   * @param {*} enrollmentId - The ID to associate with the enrollment
+   * @returns
+   */
+  async unenrollMultiFactor(appName, enrollmentId) {
+    return guard(async () => {
+      const auth = getCachedAuthInstance(appName);
+      if (auth.currentUser === null) {
+        return promiseNoUser(true);
+      }
+      await multiFactor(auth.currentUser).unenroll(enrollmentId);
+    });
+  },
+
+  /**
+   * finalize a TOTP enrollment
+   * @param {*} appName - The name of the app to get the auth instance for.
+   * @param {*} secretKey - The secretKey to associate native TotpSecret
+   * @param {*} verificationCode - The TOTP to verify
+   * @param {*} displayName - The name to associate as a hint
+   * @returns
+   */
+  async finalizeTotpEnrollment(appName, secretKey, verificationCode, displayName) {
+    return guard(async () => {
+      const auth = getCachedAuthInstance(appName);
+      if (auth.currentUser === null) {
+        return promiseNoUser(true);
+      }
+      const multiFactorAssertion = TotpMultiFactorGenerator.assertionForEnrollment(
+        totpSecretMap.get(secretKey),
+        verificationCode,
+      );
+      await multiFactor(auth.currentUser).enroll(multiFactorAssertion, displayName);
+    });
+  },
+
+  /**
+   * generate a TOTP QR Code URL
+   * @param {*} _appName - The name of the app to get the auth instance for.
+   * @param {*} secretKey - The secretKey to associate with the TotpSecret
+   * @param {*} accountName - The account name to use in auth app
+   * @param {*} issuer - The issuer to use in auth app
+   * @returns QR Code URL
+   */
+  generateQrCodeUrl(_appName, secretKey, accountName, issuer) {
+    return totpSecretMap.get(secretKey).generateQrCodeUrl(accountName, issuer);
+  },
+
+  /**
+   * open a QR Code URL in an app directly
+   * @param {*} appName - The name of the app to get the auth instance for.
+   * @param {*} qrCodeUrl the URL to open in the app, from generateQrCodeUrl
+   * @throws Error not supported in this environment
+   */
+  openInOtpApp() {
+    return rejectWithCodeAndMessage(
+      'unsupported',
+      'This operation is not supported in this environment.',
+    );
   },
 
   /* ----------------------

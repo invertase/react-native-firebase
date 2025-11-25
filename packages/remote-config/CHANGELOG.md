@@ -3,6 +3,69 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.5.0](https://github.com/invertase/react-native-firebase/compare/v23.4.1...v23.5.0) (2025-10-30)
+
+### Features
+
+- **remote-config, other:** official onConfigUpdate API, w/Other platform support ([0fcc983](https://github.com/invertase/react-native-firebase/commit/0fcc983f3531bde799020e16a23e1ecb551c0896))
+
+## [23.4.1](https://github.com/invertase/react-native-firebase/compare/v23.4.0...v23.4.1) (2025-10-14)
+
+### Bug Fixes
+
+- **app:** adopt firebase-js-sdk 12.3.0 ([4fecb30](https://github.com/invertase/react-native-firebase/commit/4fecb304be7f223959d4aba0a0e8b7e550983024))
+
+## [23.4.0](https://github.com/invertase/react-native-firebase/compare/v23.3.1...v23.4.0) (2025-09-24)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [23.3.1](https://github.com/invertase/react-native-firebase/compare/v23.3.0...v23.3.1) (2025-09-08)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [23.3.0](https://github.com/invertase/react-native-firebase/compare/v23.2.2...v23.3.0) (2025-09-04)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [23.2.2](https://github.com/invertase/react-native-firebase/compare/v23.2.1...v23.2.2) (2025-09-03)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [23.2.1](https://github.com/invertase/react-native-firebase/compare/v23.2.0...v23.2.1) (2025-09-01)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [23.2.0](https://github.com/invertase/react-native-firebase/compare/v23.1.2...v23.2.0) (2025-08-29)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [23.1.2](https://github.com/invertase/react-native-firebase/compare/v23.1.1...v23.1.2) (2025-08-25)
+
+### Bug Fixes
+
+- **remote-config, other:** return proper error for onConfigUpdated ([aeb3ead](https://github.com/invertase/react-native-firebase/commit/aeb3ead98f3f7c58273436321c91e34f43383b5f))
+
+## [23.1.1](https://github.com/invertase/react-native-firebase/compare/v23.1.0...v23.1.1) (2025-08-22)
+
+### Bug Fixes
+
+- **remote-config, other:** return friendly error for onConfigUpdated ([959c4cf](https://github.com/invertase/react-native-firebase/commit/959c4cf98496e6e6f25416d33fa794007bd34119))
+- validate listenerOrObserver callbacks in auth, app-check, remote-config ([06dcae4](https://github.com/invertase/react-native-firebase/commit/06dcae44e29f18e7716727479fd6e6d048336d91))
+
+## [23.1.0](https://github.com/invertase/react-native-firebase/compare/v23.0.1...v23.1.0) (2025-08-19)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [23.0.1](https://github.com/invertase/react-native-firebase/compare/v23.0.0...v23.0.1) (2025-08-12)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [23.0.0](https://github.com/invertase/react-native-firebase/compare/v22.4.0...v23.0.0) (2025-08-07)
+
+### Bug Fixes
+
+- **remote-config:** type error in callback for modular `onConfigUpdated` ([#8614](https://github.com/invertase/react-native-firebase/issues/8614)) ([0d9947c](https://github.com/invertase/react-native-firebase/commit/0d9947c321241de8a43259591a4cbd7995c3fbea)), closes [#8613](https://github.com/invertase/react-native-firebase/issues/8613)
+
 ## [22.4.0](https://github.com/invertase/react-native-firebase/compare/v22.3.0...v22.4.0) (2025-07-10)
 
 **Note:** Version bump only for package @react-native-firebase/remote-config

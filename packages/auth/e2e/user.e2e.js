@@ -208,23 +208,6 @@ describe('auth().currentUser', function () {
         await firebase.auth().currentUser.delete();
       });
 
-      it('should error if actionCodeSettings.dynamicLinkDomain is not a string', async function () {
-        const random = Utils.randString(12, '#aA');
-        const email = `${random}@${random}.com`;
-        await firebase.auth().createUserWithEmailAndPassword(email, random);
-        try {
-          firebase
-            .auth()
-            .currentUser.sendEmailVerification({ url: 'string', dynamicLinkDomain: 123 });
-          return Promise.reject(new Error('it did not error'));
-        } catch (error) {
-          error.message.should.containEql(
-            "'actionCodeSettings.dynamicLinkDomain' expected a string value.",
-          );
-        }
-        await firebase.auth().currentUser.delete();
-      });
-
       it('should error if handleCodeInApp is not a string', async function () {
         const random = Utils.randString(12, '#aA');
         const email = `${random}@${random}.com`;
@@ -455,27 +438,6 @@ describe('auth().currentUser', function () {
           return Promise.reject(new Error('it did not error'));
         } catch (error) {
           error.message.should.containEql("'actionCodeSettings.url' expected a string value.");
-        }
-        await firebase.auth().currentUser.delete();
-      });
-
-      it('should error if actionCodeSettings.dynamicLinkDomain is not a string', async function () {
-        const random = Utils.randString(12, '#aA');
-        const random2 = Utils.randString(12, '#aA');
-        const email = `${random}@${random}.com`;
-        const updateEmail = `${random2}@${random2}.com`;
-
-        await firebase.auth().createUserWithEmailAndPassword(email, random);
-        try {
-          firebase.auth().currentUser.verifyBeforeUpdateEmail(updateEmail, {
-            url: 'string',
-            dynamicLinkDomain: 123,
-          });
-          return Promise.reject(new Error('it did not error'));
-        } catch (error) {
-          error.message.should.containEql(
-            "'actionCodeSettings.dynamicLinkDomain' expected a string value.",
-          );
         }
         await firebase.auth().currentUser.delete();
       });
@@ -1165,25 +1127,6 @@ describe('auth().currentUser', function () {
         await deleteUser(auth.currentUser);
       });
 
-      it('should error if actionCodeSettings.dynamicLinkDomain is not a string', async function () {
-        const { getAuth, createUserWithEmailAndPassword, deleteUser, sendEmailVerification } =
-          authModular;
-
-        const auth = getAuth();
-        const random = Utils.randString(12, '#aA');
-        const email = `${random}@${random}.com`;
-        await createUserWithEmailAndPassword(auth, email, random);
-        try {
-          await sendEmailVerification(auth.currentUser, { url: 'string', dynamicLinkDomain: 123 });
-          return Promise.reject(new Error('it did not error'));
-        } catch (error) {
-          error.message.should.containEql(
-            "'actionCodeSettings.dynamicLinkDomain' expected a string value.",
-          );
-        }
-        await deleteUser(auth.currentUser);
-      });
-
       it('should error if handleCodeInApp is not a boolean', async function () {
         const { getAuth, createUserWithEmailAndPassword, deleteUser, sendEmailVerification } =
           authModular;
@@ -1469,30 +1412,6 @@ describe('auth().currentUser', function () {
           return Promise.reject(new Error('it did not error'));
         } catch (error) {
           error.message.should.containEql("'actionCodeSettings.url' expected a string value.");
-        }
-        await deleteUser(auth.currentUser);
-      });
-
-      it('should error if actionCodeSettings.dynamicLinkDomain is not a string', async function () {
-        const { getAuth, createUserWithEmailAndPassword, verifyBeforeUpdateEmail, deleteUser } =
-          authModular;
-        const auth = getAuth();
-        const random = Utils.randString(12, '#aA');
-        const random2 = Utils.randString(12, '#aA');
-        const email = `${random}@${random}.com`;
-        const updateEmail = `${random2}@${random2}.com`;
-
-        await createUserWithEmailAndPassword(auth, email, random);
-        try {
-          await verifyBeforeUpdateEmail(auth.currentUser, updateEmail, {
-            url: 'string',
-            dynamicLinkDomain: 123,
-          });
-          return Promise.reject(new Error('it did not error'));
-        } catch (error) {
-          error.message.should.containEql(
-            "'actionCodeSettings.dynamicLinkDomain' expected a string value.",
-          );
         }
         await deleteUser(auth.currentUser);
       });

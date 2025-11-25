@@ -25,8 +25,17 @@ module.exports = {
     'android.debug': {
       type: 'android.apk',
       binaryPath: 'android/app/build/outputs/apk/debug/app-debug.apk',
+      // keep in sync with android.debug.windows below, except gradlew vs gradlew.bat
       build:
         'cd android && ./gradlew assembleDebug assembleAndroidTest lintDebug -DtestBuildType=debug --warning-mode all && cd ..',
+      reversePorts: [8080, 8081, 8090, 9000, 9099, 9199],
+    },
+    'android.debug.windows': {
+      type: 'android.apk',
+      binaryPath: 'android/app/build/outputs/apk/debug/app-debug.apk',
+      // android.debug.windows only exists to use .bat script vs shell here:
+      build:
+        'cd android && .\\gradlew.bat assembleDebug assembleAndroidTest lintDebug -DtestBuildType=debug --warning-mode all && cd ..',
       reversePorts: [8080, 8081, 8090, 9000, 9099, 9199],
     },
     'android.release': {
@@ -75,6 +84,10 @@ module.exports = {
     'android.emu.debug': {
       device: 'emulator',
       app: 'android.debug',
+    },
+    'android.emu.debug.windows': {
+      device: 'emulator',
+      app: 'android.debug.windows',
     },
     'android.emu.release': {
       device: 'emulator',

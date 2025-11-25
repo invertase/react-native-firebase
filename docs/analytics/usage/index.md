@@ -1,9 +1,9 @@
 ---
 title: Analytics
 description: Installation and getting started with Analytics.
-icon: //static.invertase.io/assets/firebase/analytics.svg
+icon: //firebase.google.com/static/images/products/icons/run_analytics.svg
 next: /analytics/screen-tracking
-previous: /contributing
+previous: /ai/usage
 ---
 
 # Installation
@@ -127,12 +127,11 @@ with any of the following event names will throw an error.
 | `adunit_exposure`                | `app_background`               | `app_clear_data`                |
 | `app_remove`                     | `app_store_refund`             | `app_store_subscription_cancel` |
 | `app_store_subscription_convert` | `app_store_subscription_renew` | `app_update`                    |
-| `app_upgrade`                    | `dynamic_link_app_open`        | `dynamic_link_app_update`       |
-| `dynamic_link_first_open`        | `error`                        | `first_open`                    |
+| `app_upgrade`                    | `error`                        | `first_open`                    |
 | `first_visit`                    | `in_app_purchase`              | `notification_dismiss`          |
 | `notification_foreground`        | `notification_open`            | `notification_receive`          |
 | `os_update`                      | `session_start`                | `session_start_with_rollout`    |
-| `user_engagement`                |
+| `user_engagement`                |                                |                                 |
 
 ## App instance id
 

@@ -28,14 +28,13 @@ describe('onChildChanged', function () {
     await wipe(TEST_PATH);
   });
 
-  // FIXME super flaky on Jet
-  xit('should stop listening if ListeningOptions.onlyOnce is true', async function () {
+  it('should stop listening if ListeningOptions.onlyOnce is true', async function () {
     if (Platform.ios) {
       this.skip();
     }
-
     const { getDatabase, ref, set, child, onChildChanged } = databaseModular;
-    const dbRef = ref(getDatabase(), `${TEST_PATH}/childAdded`);
+    const date = Date.now();
+    const dbRef = ref(getDatabase(), `${TEST_PATH}/childAdded/${date}`);
     await set(child(dbRef, 'changeme'), 'foo');
 
     const callback = sinon.spy();
@@ -47,6 +46,7 @@ describe('onChildChanged', function () {
       },
       { onlyOnce: true },
     );
+    await Utils.sleep(100);
 
     await set(child(dbRef, 'changeme'), 'bar');
     await Utils.spyToBeCalledOnceAsync(callback, 5000);
@@ -56,41 +56,41 @@ describe('onChildChanged', function () {
     callback.should.not.be.calledWith('baz');
   });
 
-  // FIXME super flaky on Jet
-  xit('subscribe to child changed events', async function () {
-    const { getDatabase, ref, set, child, onChildChanged } = databaseModular;
-
+  it('subscribe to child changed events', async function () {
     if (Platform.ios) {
-      const successCallback = sinon.spy();
-      const cancelCallback = sinon.spy();
-
-      const dbRef = ref(getDatabase(), `${TEST_PATH}/childChanged2`);
-      const refChild = child(dbRef, 'changeme');
-      await set(refChild, 'foo');
-
-      const unsubscribe = onChildChanged(
-        dbRef,
-        $ => {
-          successCallback($.val());
-        },
-        () => {
-          cancelCallback();
-        },
-      );
-
-      const value1 = Date.now();
-      const value2 = Date.now() + 123;
-
-      await set(refChild, value1);
-      await set(refChild, value2);
-      await Utils.spyToBeCalledTimesAsync(successCallback, 2);
-      unsubscribe();
-
-      successCallback.getCall(0).args[0].should.equal(value1);
-      successCallback.getCall(1).args[0].should.equal(value2);
-      cancelCallback.should.be.callCount(0);
-    } else {
       this.skip();
     }
+    const { getDatabase, ref, set, child, onChildChanged } = databaseModular;
+    const date = Date.now();
+
+    const successCallback = sinon.spy();
+    const cancelCallback = sinon.spy();
+
+    const dbRef = ref(getDatabase(), `${TEST_PATH}/childChanged2/${date}`);
+    const refChild = child(dbRef, 'changeme');
+    await set(refChild, 'foo');
+
+    const unsubscribe = onChildChanged(
+      dbRef,
+      $ => {
+        successCallback($.val());
+      },
+      () => {
+        cancelCallback();
+      },
+    );
+    await Utils.sleep(100);
+
+    const value1 = Date.now();
+    const value2 = Date.now() + 123;
+
+    await set(refChild, value1);
+    await set(refChild, value2);
+    await Utils.spyToBeCalledTimesAsync(successCallback, 2);
+    unsubscribe();
+
+    successCallback.getCall(0).args[0].should.equal(value1);
+    successCallback.getCall(1).args[0].should.equal(value2);
+    cancelCallback.should.be.callCount(0);
   });
 });

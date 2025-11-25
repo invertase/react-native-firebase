@@ -1,6 +1,13 @@
 name: Testing E2E Other
 
 on:
+  workflow_dispatch:
+    inputs:
+      iterations:
+        description: "Number of iterations to run. Default 1. Max 256."
+        required: true
+        default: 1
+        type: number
   pull_request:
     branches:
       - '**'
@@ -25,9 +32,58 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # We want to generate our matrix dynamically
+  # Initial job generates the matrix as a JSON, and following job will use deserialize and use the result
+  matrix_prep:
+    # Do not run the scheduled jobs on forks
+    if: (github.event_name == 'schedule' && github.repository == 'invertase/react-native-firebase') || (github.event_name != 'schedule')
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.build-matrix.outputs.result }}
+    steps:
+      - id: build-matrix
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // by default, we will run one iteration
+            let iterationArray = [0]
+
+            // workflow dispatch will be a drop-down of different options
+            if (context.eventName === "workflow_dispatch") {
+              const inputs = ${{ toJSON(inputs) }}
+              console.log('inputs is: ' + JSON.stringify(inputs))
+
+              const iterationInput = inputs.iterations
+              console.log('iterations input is: ' + iterationInput)
+              // this will expand for example with input 5 => [0, 1, 2, 3, 4]
+              iterationArray = []
+              for (let i = 0; i < iterationInput; i++) {
+                iterationArray.push(i);
+              }
+              console.log('iterationArray is: ' + iterationArray)
+            }
+
+            // If we are running on a schedule it's our periodic passive scan for flakes
+            // Goal is to run enough iterations on all systems that we have confidence there are no flakes
+            if (context.eventName === "schedule") {
+              const iterationCount = 15
+              for (let i = 0; i < iterationCount; i++) {
+                iterationArray.push(i);
+              }
+            }
+
+            return {
+              "iteration": iterationArray
+            }
+      - name: Debug Output
+        run: echo "${{ steps.build-matrix.outputs.result }}"
+
+  # This uses the matrix generated from the matrix-prep stage
+  # it will run unit tests on whatever OS combinations are desired
   other:
-    name: Other
-    runs-on: macos-15
+    name: Other (${{ matrix.iteration }})
+    runs-on: macos-26
+    needs: matrix_prep
     timeout-minutes: 100
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -36,7 +92,24 @@ jobs:
       CCACHE_DEPEND: true
       CCACHE_INODECACHE: true
       CCACHE_LIMIT_MULTIPLE: 0.95
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
     steps:
+      - name: Setup Environment for Screen Recording
+        uses: guidepup/setup-action@0.17.3
+        continue-on-error: true
+        with:
+          record: true
+
+      - name: Upload Screen Recording Environment Setup
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        if: always()
+        with:
+          name: screenrecording-setup-${{ matrix.iteration }}.mov
+          path: ./recordings/
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -83,7 +156,7 @@ jobs:
           timeout_minutes: 15
           retry_wait_seconds: 60
           max_attempts: 3
-          command: DETOX_DISABLE_POSTINSTALL=1 yarn && yarn lerna:prepare
+          command: DETOX_DISABLE_POSTINSTALL=1 yarn
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -163,17 +236,48 @@ jobs:
           curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=macos&dev=true&minify=false&inlineSourceMap=true"
           echo "...javascript bundle ready"
 
+      - name: Start Screen Recording and System Logging
+        continue-on-error: true
+        run: |
+          nohup sh -c "sleep 314159265 | screencapture -v -C -k -T0 -g screenrecording.mov > screenrecording.log 2>&1 &"
+          nohup sh -c "log stream --backtrace --color none --style syslog > syslog.log 2>&1 &"
+
       - name: Jet Test
         timeout-minutes: 20
         run: yarn tests:macos:test-cover
 
       - uses: codecov/codecov-action@v5
+        continue-on-error: true
         with:
           verbose: true
 
+      - name: Stop Screen Recording and System Logging
+        continue-on-error: true
+        if: always()
+        run: |
+          killall -int screencapture
+          killall -int log
+
       - name: Upload Metro Log
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         if: always()
         with:
-          name: metro_log
+          name: metro-${{ matrix.iteration }}_log
           path: metro.log
+
+      - name: Upload Screen Recording
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        if: always()
+        with:
+          name: screenrecording-${{ matrix.iteration }}
+          path: screenrecording.*
+
+      - name: Upload System Log
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        if: always()
+        with:
+          name: syslog-${{ matrix.iteration }}
+          path: syslog.log

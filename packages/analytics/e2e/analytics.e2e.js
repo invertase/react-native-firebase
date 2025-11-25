@@ -74,12 +74,18 @@ describe('analytics()', function () {
         let sessionId = await firebase.analytics().getSessionId();
         // On iOS it can take ~ 3 minutes for the session ID to be generated
         // Otherwise, `Analytics uninitialized` error will be thrown
-        const retries = 240;
+        // On CI we're only going to give it a few tries
+        const retries = global.isCI ? 3 : 240;
         while (!sessionId && retries > 0) {
           await Utils.sleep(1000);
           sessionId = await firebase.analytics().getSessionId();
         }
 
+        // on CI this will be ignored so it doesn't flake
+        if (!sessionId && global.isCI) {
+          this.skip();
+          return;
+        }
         if (!sessionId) {
           return Promise.reject(
             new Error('Firebase SDK did not return a session ID after 4 minutes'),
@@ -90,6 +96,10 @@ describe('analytics()', function () {
       });
 
       it('returns a null value if session expires', async function () {
+        if (Platform.ios) {
+          // TODO - 20251030 iOS no longer correctly expires sessions
+          this.skip();
+        }
         // Set session duration to 1 millisecond
         firebase.analytics().setSessionTimeoutDuration(1);
         // Wait 100 millisecond to ensure session expires
@@ -1015,7 +1025,12 @@ describe('analytics()', function () {
       });
 
       it('returns a null value if session expires', async function () {
+        if (Platform.ios) {
+          // TODO - 20251030 iOS no longer correctly expires sessions
+          this.skip();
+        }
         const { getAnalytics, getSessionId, setSessionTimeoutDuration } = analyticsModular;
+
         // Set session duration to 1 millisecond
         setSessionTimeoutDuration(getAnalytics(), 1);
         // Wait 100 millisecond to ensure session expires

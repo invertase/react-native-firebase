@@ -3,6 +3,90 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.5.0](https://github.com/invertase/react-native-firebase/compare/v23.4.1...v23.5.0) (2025-10-30)
+
+### Bug Fixes
+
+- **ios:** use 'note' for info messages in Xcode scripts ([f2f1e5e](https://github.com/invertase/react-native-firebase/commit/f2f1e5e396b2e71675e85701bc89ac916431db30))
+
+## [23.4.1](https://github.com/invertase/react-native-firebase/compare/v23.4.0...v23.4.1) (2025-10-14)
+
+### Bug Fixes
+
+- **app:** SDK updates: js 12.4.0, ios 12.4.0, android 34.4.0 ([b7d5f63](https://github.com/invertase/react-native-firebase/commit/b7d5f6319a591751b31a39d904fd4256803ae85e))
+
+## [23.4.0](https://github.com/invertase/react-native-firebase/compare/v23.3.1...v23.4.0) (2025-09-24)
+
+### Bug Fixes
+
+- firebase-ios-sdk 12.3.0 / firebase-android-sdk 34.3.0 ([123e773](https://github.com/invertase/react-native-firebase/commit/123e77372bbf173c60cc35f1fb5c8dbde4d2cdcf))
+
+## [23.3.1](https://github.com/invertase/react-native-firebase/compare/v23.3.0...v23.3.1) (2025-09-08)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+## [23.3.0](https://github.com/invertase/react-native-firebase/compare/v23.2.2...v23.3.0) (2025-09-04)
+
+### Features
+
+- **firebase-ai:** Imagen model support ([fb364ed](https://github.com/invertase/react-native-firebase/commit/fb364ed0dfc7e38d9a84ecd4fb13e18b54fba995))
+
+## [23.2.2](https://github.com/invertase/react-native-firebase/compare/v23.2.1...v23.2.2) (2025-09-03)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+## [23.2.1](https://github.com/invertase/react-native-firebase/compare/v23.2.0...v23.2.1) (2025-09-01)
+
+### Bug Fixes
+
+- **app, ios:** adopt firebase-ios-sdk 12.2.0 ([#8681](https://github.com/invertase/react-native-firebase/issues/8681)) ([1fde0cf](https://github.com/invertase/react-native-firebase/commit/1fde0cfd1cb148397703758bf2622423ad845dbf))
+- **app:** adopt firebase-js-sdk 12.2.1 ([#8682](https://github.com/invertase/react-native-firebase/issues/8682)) ([f3d3985](https://github.com/invertase/react-native-firebase/commit/f3d3985a18a97b55c4c284330f5c06536c2d9730))
+
+## [23.2.0](https://github.com/invertase/react-native-firebase/compare/v23.1.2...v23.2.0) (2025-08-29)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+## [23.1.2](https://github.com/invertase/react-native-firebase/compare/v23.1.1...v23.1.2) (2025-08-25)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+## [23.1.1](https://github.com/invertase/react-native-firebase/compare/v23.1.0...v23.1.1) (2025-08-22)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+## [23.1.0](https://github.com/invertase/react-native-firebase/compare/v23.0.1...v23.1.0) (2025-08-19)
+
+### Features
+
+- **ai:** create `ai` package, `vertexai` wraps around it ([#8555](https://github.com/invertase/react-native-firebase/issues/8555)) ([50c9e0d](https://github.com/invertase/react-native-firebase/commit/50c9e0d8a361b575c6cbf86f028165906d819162))
+
+### Bug Fixes
+
+- **app, ios:** fail build with error if firebase.json has syntax errors ([5c752e7](https://github.com/invertase/react-native-firebase/commit/5c752e710e39f0aad40182706a934e5979727fa1))
+- **app:** adopt firebase-js-sdk 12.1.0 ([115a55c](https://github.com/invertase/react-native-firebase/commit/115a55ce85c1a4db8f8b92f4e30c86776499f6ea))
+
+## [23.0.1](https://github.com/invertase/react-native-firebase/compare/v23.0.0...v23.0.1) (2025-08-12)
+
+### Bug Fixes
+
+- **app, android:** adopt firebase-android-sdk 34.1.0 ([b9af1d3](https://github.com/invertase/react-native-firebase/commit/b9af1d3d24a4fa77587eb1a9f7a5d784750a58bb))
+
+## [23.0.0](https://github.com/invertase/react-native-firebase/compare/v22.4.0...v23.0.0) (2025-08-07)
+
+### ⚠ BREAKING CHANGES
+
+- new minimums: iOS 15+, Xcode 16.2+
+- **dynamic-links:** remove Dynamic Links from React Native Firebase (#8631)
+
+### Features
+
+- bump firebase-ios-sdk to `12.0.0` ([e3d6d22](https://github.com/invertase/react-native-firebase/commit/e3d6d222f0a83f6a3f6ea6975401e4b03cc4421a))
+
+### Bug Fixes
+
+- **app, ios:** adopt firebase-ios-sdk 12.1.0 ([8be970c](https://github.com/invertase/react-native-firebase/commit/8be970c86fff5ad8d046ccba442f54bec3ecaf41))
+- **dynamic-links:** remove Dynamic Links from React Native Firebase ([#8631](https://github.com/invertase/react-native-firebase/issues/8631)) ([fe4550f](https://github.com/invertase/react-native-firebase/commit/fe4550f362548dcb66359044715e22222a413f97))
+
 ## [22.4.0](https://github.com/invertase/react-native-firebase/compare/v22.3.0...v22.4.0) (2025-07-10)
 
 ### Bug Fixes

@@ -37,11 +37,22 @@ describe('database().ref().keepSynced()', function () {
       }
     });
 
-    it('toggles keepSynced on and off without throwing', async function () {
+    it('toggles keepSynced on and off without throwing on supported platforms', async function () {
       if (Platform.other) return;
       const ref = firebase.database().ref('noop').orderByValue();
       await ref.keepSynced(true);
       await ref.keepSynced(false);
+    });
+
+    it('keepSynced throws on unsupported platforms', async function () {
+      if (!Platform.other) return;
+      try {
+        await firebase.database().ref('noop').orderByValue().keepSynced(true);
+        throw new Error('did not throw');
+      } catch (error) {
+        error.code.should.containEql('unsupported');
+        error.message.should.containEql('This operation is not supported on this environment.');
+      }
     });
   });
 
@@ -58,13 +69,26 @@ describe('database().ref().keepSynced()', function () {
       }
     });
 
-    it('toggles keepSynced on and off without throwing', async function () {
+    it('toggles keepSynced on and off without throwing on supported platforms', async function () {
       if (Platform.other) return;
       const { getDatabase, ref, orderByValue, query, keepSynced } = databaseModular;
 
       const dbRef = query(ref(getDatabase(), 'noop'), orderByValue());
       await keepSynced(dbRef, true);
       await keepSynced(dbRef, false);
+    });
+
+    it('keepSynced throws on unsupported platforms', async function () {
+      if (!Platform.other) return;
+      const { getDatabase, ref, orderByValue, query, keepSynced } = databaseModular;
+
+      try {
+        await keepSynced(query(ref(getDatabase(), 'noop'), orderByValue()), true);
+        throw new Error('did not throw');
+      } catch (error) {
+        error.code.should.containEql('unsupported');
+        error.message.should.containEql('This operation is not supported on this environment.');
+      }
     });
   });
 });

@@ -26,6 +26,8 @@ import {
   pathIsEmpty,
   pathToUrlEncodedString,
   ReferenceBase,
+  createDeprecationProxy,
+  MODULAR_DEPRECATION_ARG,
 } from '@react-native-firebase/app/lib/common';
 import DatabaseDataSnapshot from './DatabaseDataSnapshot';
 import DatabaseSyncTree from './DatabaseSyncTree';
@@ -52,7 +54,7 @@ export default class DatabaseQuery extends ReferenceBase {
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Query.html#endat
    */
   get ref() {
-    return new DatabaseReference(this._database, this.path);
+    return createDeprecationProxy(new DatabaseReference(this._database, this.path));
   }
 
   /**
@@ -83,7 +85,7 @@ export default class DatabaseQuery extends ReferenceBase {
     const modifiers = this._modifiers._copy().endAt(value, key);
     modifiers.validateModifiers('firebase.database().ref().endAt()');
 
-    return new DatabaseQuery(this._database, this.path, modifiers);
+    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
   }
 
   /**
@@ -117,7 +119,10 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    return this.startAt(value, key).endAt(value, key);
+    // Internal method calls should always use MODULAR_DEPRECATION_ARG to avoid false deprecation warnings
+    return this.startAt
+      .call(this, value, key, MODULAR_DEPRECATION_ARG)
+      .endAt.call(this, value, MODULAR_DEPRECATION_ARG);
   }
 
   /**
@@ -155,10 +160,8 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    return new DatabaseQuery(
-      this._database,
-      this.path,
-      this._modifiers._copy().limitToFirst(limit),
+    return createDeprecationProxy(
+      new DatabaseQuery(this._database, this.path, this._modifiers._copy().limitToFirst(limit)),
     );
   }
 
@@ -180,7 +183,9 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    return new DatabaseQuery(this._database, this.path, this._modifiers._copy().limitToLast(limit));
+    return createDeprecationProxy(
+      new DatabaseQuery(this._database, this.path, this._modifiers._copy().limitToLast(limit)),
+    );
   }
 
   /**
@@ -210,7 +215,7 @@ export default class DatabaseQuery extends ReferenceBase {
       throw new Error("firebase.database().ref().off(_, *) 'callback' must be a function.");
     }
 
-    if (!isUndefined(context) && !isObject(context)) {
+    if (!isUndefined(context) && !isNull(context) && !isObject(context)) {
       throw new Error("firebase.database().ref().off(_, _, *) 'context' must be an object.");
     }
 
@@ -279,7 +284,7 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    if (!isUndefined(context) && !isObject(context)) {
+    if (!isUndefined(context) && !isNull(context) && !isObject(context)) {
       throw new Error("firebase.database().ref().on(_, _, _, *) 'context' must be an object.");
     }
 
@@ -385,9 +390,11 @@ export default class DatabaseQuery extends ReferenceBase {
 
         // Child based events return a previousChildName
         if (eventType === 'value') {
-          dataSnapshot = new DatabaseDataSnapshot(this.ref, result);
+          dataSnapshot = createDeprecationProxy(new DatabaseDataSnapshot(this.ref, result));
         } else {
-          dataSnapshot = new DatabaseDataSnapshot(this.ref, result.snapshot);
+          dataSnapshot = createDeprecationProxy(
+            new DatabaseDataSnapshot(this.ref, result.snapshot),
+          );
           previousChildName = result.previousChildName;
         }
 
@@ -434,7 +441,7 @@ export default class DatabaseQuery extends ReferenceBase {
     const modifiers = this._modifiers._copy().orderByChild(path);
     modifiers.validateModifiers('firebase.database().ref().orderByChild()');
 
-    return new DatabaseQuery(this._database, this.path, modifiers);
+    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
   }
 
   /**
@@ -450,7 +457,7 @@ export default class DatabaseQuery extends ReferenceBase {
     const modifiers = this._modifiers._copy().orderByKey();
     modifiers.validateModifiers('firebase.database().ref().orderByKey()');
 
-    return new DatabaseQuery(this._database, this.path, modifiers);
+    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
   }
 
   /**
@@ -466,7 +473,7 @@ export default class DatabaseQuery extends ReferenceBase {
     const modifiers = this._modifiers._copy().orderByPriority();
     modifiers.validateModifiers('firebase.database().ref().orderByPriority()');
 
-    return new DatabaseQuery(this._database, this.path, modifiers);
+    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
   }
 
   /**
@@ -482,7 +489,7 @@ export default class DatabaseQuery extends ReferenceBase {
     const modifiers = this._modifiers._copy().orderByValue();
     modifiers.validateModifiers('firebase.database().ref().orderByValue()');
 
-    return new DatabaseQuery(this._database, this.path, modifiers);
+    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
   }
 
   startAt(value, key) {
@@ -507,7 +514,7 @@ export default class DatabaseQuery extends ReferenceBase {
     const modifiers = this._modifiers._copy().startAt(value, key);
     modifiers.validateModifiers('firebase.database().ref().startAt()');
 
-    return new DatabaseQuery(this._database, this.path, modifiers);
+    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
   }
 
   toJSON() {

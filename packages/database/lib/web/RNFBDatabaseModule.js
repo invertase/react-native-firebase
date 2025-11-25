@@ -22,6 +22,15 @@ import {
 import { guard, getWebError, emitEvent } from '@react-native-firebase/app/lib/internal/web/utils';
 import { getQueryInstance } from './query';
 
+function rejectWithCodeAndMessage(code, message) {
+  return Promise.reject(
+    getWebError({
+      code,
+      message,
+    }),
+  );
+}
+
 // Converts a DataSnapshot to an object.
 function snapshotToObject(snapshot) {
   const childKeys = [];
@@ -385,7 +394,7 @@ export default {
   },
 
   keepSynced() {
-    return rejectPromiseWithCodeAndMessage(
+    return rejectWithCodeAndMessage(
       'unsupported',
       'This operation is not supported on this environment.',
     );

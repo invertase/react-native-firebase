@@ -62,7 +62,6 @@ import '@react-native-firebase/app/lib/utils';
 import '@react-native-firebase/auth';
 import '@react-native-firebase/crashlytics';
 import '@react-native-firebase/database';
-import '@react-native-firebase/dynamic-links';
 import '@react-native-firebase/firestore';
 import '@react-native-firebase/in-app-messaging';
 import '@react-native-firebase/installations';
@@ -85,12 +84,12 @@ import * as databaseModular from '@react-native-firebase/database';
 import * as inAppMessagingModular from '@react-native-firebase/in-app-messaging';
 import * as installationsModular from '@react-native-firebase/installations';
 import * as crashlyticsModular from '@react-native-firebase/crashlytics';
-import * as dynamicLinksModular from '@react-native-firebase/dynamic-links';
 import * as mlModular from '@react-native-firebase/ml';
 
 import { Platform } from 'react-native';
 import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNativeEventEmitter';
 import { getReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
+import { getE2eTestProject } from '@react-native-firebase/app/e2e/helpers';
 
 global.should = shouldMatchers;
 global.sinon = require('sinon');
@@ -119,24 +118,15 @@ global.Utils = {
     return result;
   },
   spyToBeCalledOnceAsync(spy, timeout = 5000) {
-    let interval;
-    const { resolve, reject, promise } = Promise.defer();
-    const timer = setTimeout(() => {
-      clearInterval(interval);
-      reject(new Error('Spy was not called within timeout period.'));
-    }, timeout);
-
-    interval = setInterval(() => {
-      if (spy.callCount > 0) {
-        clearTimeout(timer);
-        clearInterval(interval);
-        resolve();
-      }
-    }, 25);
-
-    return promise;
+    return this.spyToBeCalledTimesAsync(spy, 1, timeout);
   },
   spyToBeCalledTimesAsync(spy, times = 2, timeout = 5000) {
+    const verifier = function (verifiedSpy) {
+      return verifiedSpy.callCount >= times;
+    };
+    return this.spyToBeCalledWithVerifierAsync(spy, verifier, timeout);
+  },
+  spyToBeCalledWithVerifierAsync(spy, verifier, timeout = 5000) {
     let interval;
     const { resolve, reject, promise } = Promise.defer();
     const timer = setTimeout(() => {
@@ -145,7 +135,7 @@ global.Utils = {
     }, timeout);
 
     interval = setInterval(() => {
-      if (spy.callCount >= times) {
+      if (verifier(spy)) {
         clearTimeout(timer);
         clearInterval(interval);
         resolve();
@@ -188,30 +178,50 @@ global.FirebaseHelpers = {
         projectId: 'react-native-firebase-testing',
         storageBucket: 'react-native-firebase-testing.appspot.com',
         messagingSenderId: '448618578101',
-        // TODO RNFB is using the old gaTrackingId property, we should remove this in the future
-        // in favor of the measurementId property.
-        gaTrackingId: 'G-HX0JQKHZEB',
+        measurementId: 'G-HX0JQKHZEB',
       };
     },
   },
-  async fetchAppCheckToken() {
-    const tokenRequest = await fetch(
-      'https://us-central1-react-native-firebase-testing.cloudfunctions.net/fetchAppCheckTokenV2',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+  async callCloudHelperFunction(functioNName, postData) {
+    let doc = undefined;
+    let retries = 0;
+    let maxRetries = 5;
+    // We handle 429 errors in a retry loop
+    while ((doc === undefined || doc.status === 429) && retries < maxRetries) {
+      doc = await fetch(
+        `https://us-central1-${getE2eTestProject()}.cloudfunctions.net/${functioNName}`,
+        {
+          method: 'POST',
+          body: JSON.stringify({ data: postData }),
+          headers: { 'Content-Type': 'application/json' },
         },
-        body: JSON.stringify({
-          data: {
-            appId: global.FirebaseHelpers.app.config().appId,
-          },
-        }),
-        redirect: 'follow',
-      },
-    );
-    const { result } = await tokenRequest.json();
+      );
+      if (doc.status === 429) {
+        // We have been delayed by concurrency limits or rate limits
+        // We'll sleep for a little bit then try again.
+        const delayRequired = 10;
+        await new Promise(r => setTimeout(r, delayRequired * 1000));
+      }
+      retries++;
+    }
+
+    // did we eventually have success? If not, error.
+    if (retries === maxRetries && doc.status !== 200) {
+      throw new Error('Unable to execute cloud remote config helper function');
+    }
+    const result = await doc.json();
+    // console.error('received: ' + JSON.stringify(result));
     return result;
+  },
+  async fetchAppCheckToken() {
+    const tokenRequset = await this.callCloudHelperFunction('fetchAppCheckTokenV2', {
+      appId: global.FirebaseHelpers.app.config().appId,
+    });
+    const { result } = tokenRequset;
+    return result;
+  },
+  async updateRemoteConfigTemplate(operations) {
+    return await this.callCloudHelperFunction('testFunctionRemoteConfigUpdateV2', operations);
   },
 };
 
@@ -439,12 +449,6 @@ Object.defineProperty(global, 'installationsModular', {
 Object.defineProperty(global, 'crashlyticsModular', {
   get() {
     return crashlyticsModular;
-  },
-});
-
-Object.defineProperty(global, 'dynamicLinksModular', {
-  get() {
-    return dynamicLinksModular;
   },
 });
 

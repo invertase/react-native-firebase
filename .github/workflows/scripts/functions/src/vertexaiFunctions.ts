@@ -1,4 +1,4 @@
-import * as functions from 'firebase-functions/v2';
+import { onRequest } from 'firebase-functions/v2/https';
 
 const poem = [
   'The wind whispers secrets through the trees,',
@@ -42,7 +42,7 @@ const response = {
   },
 };
 
-export const testFetchStream = functions.https.onRequest(async (req, res) => {
+export const testFetchStream = onRequest(async (_, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
@@ -57,6 +57,6 @@ export const testFetchStream = functions.https.onRequest(async (req, res) => {
   res.end();
 });
 
-export const testFetch = functions.https.onRequest(async (req, res) => {
+export const testFetch = onRequest(async (_, res) => {
   res.json(response);
 });

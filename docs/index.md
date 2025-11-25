@@ -18,7 +18,7 @@ If you do not meet these prerequisites, follow the links below:
 - [React Native - Setting up the development environment](https://reactnative.dev/docs/environment-setup)
 - [Create a new Firebase project](https://console.firebase.google.com/)
 
-Additionally, current versions of firebase-ios-sdk have a minimum Xcode requirement of 15.2, which implies a minimum macOS version of 13.5 (macOS Ventura).
+Additionally, current versions of firebase-ios-sdk have a minimum Xcode requirement of 16.2, which implies a minimum macOS version of 14.5 (macOS Sequoia).
 
 ## Installation for Expo projects
 
@@ -120,7 +120,7 @@ On the Firebase console, add a new Android application and enter your projects d
 local projects package name which can be found inside of the `namespace` field in `/android/app/build.gradle`, or in the
 `manifest` tag within the `/android/app/src/main/AndroidManifest.xml` file within your project for projects using android gradle plugin v7 and below
 
-> The debug signing certificate is optional to use Firebase with your app, but is required for Dynamic Links, Invites and Phone Authentication.
+> The debug signing certificate is optional to use Firebase with your app, but is required for Invites and Phone Authentication.
 > To generate a certificate run `cd android && ./gradlew signingReport`. This generates two variant keys.
 > You have to copy **both** 'SHA1' and 'SHA-256' keys that belong to the 'debugAndroidTest' variant key option.
 > Then, you can add those keys to the 'SHA certificate fingerprints' on your app in Firebase console.
@@ -138,7 +138,7 @@ First, add the `google-services` plugin as a dependency inside of your `/android
 buildscript {
   dependencies {
     // ... other dependencies
-    classpath 'com.google.gms:google-services:4.4.3'
+    classpath 'com.google.gms:google-services:4.4.4'
     // Add me --- /\
   }
 }
@@ -310,17 +310,17 @@ Within your projects /android/build.gradle file, provide your own versions by sp
 project.ext {
   set('react-native', [
     versions: [
-      // Overriding Build/Android SDK Versions
+      // Overriding Build/Android SDK Versions if desired
       android : [
-        minSdk    : 21, // 23+ if using auth module
+        minSdk    : 23,
         targetSdk : 33,
         compileSdk: 34,
       ],
 
-      // Overriding Library SDK Versions
+      // Overriding Library SDK Versions if desired
       firebase: [
         // Override Firebase SDK Version
-        bom           : "33.16.0"
+        bom           : "34.4.0"
       ],
     ],
   ])
@@ -334,13 +334,13 @@ Once changed, rebuild your application with `npx react-native run-android`.
 Open your projects `/ios/Podfile` and add any of the globals shown below to the top of the file:
 
 ```ruby
-# Override Firebase SDK Version
-$FirebaseSDKVersion = '11.15.0'
+# Override Firebase SDK Version if desired
+$FirebaseSDKVersion = '12.5.0'
 ```
 
 Once changed, reinstall your projects pods via pod install and rebuild your project with `npx react-native run-ios`.
 
-Alternatively, if you cannot edit the Podfile easily (as when using Expo), you may add the environment variable `FIREBASE_SDK_VERSION=11.15.0` (or whatever version you need) to the command line that installs pods. For example `FIREBASE_SDK_VERSION=11.15.0 yarn expo prebuild --clean`
+Alternatively, if you cannot edit the Podfile easily (as when using Expo), you may add the environment variable `FIREBASE_SDK_VERSION=12.5.0` (or whatever version you need) to the command line that installs pods. For example `FIREBASE_SDK_VERSION=12.5.0 yarn expo prebuild --clean`
 
 ### Android Performance
 

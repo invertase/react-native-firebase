@@ -16,7 +16,7 @@
  */
 import { Platform } from 'react-native';
 import Base64 from './Base64';
-import { isString } from './validate';
+import { isFunction, isObject, isString } from './validate';
 
 export * from './id';
 export * from './path';
@@ -101,6 +101,19 @@ export function tryJSONStringify(data) {
   } catch (_) {
     return null;
   }
+}
+
+export function parseListenerOrObserver(listenerOrObserver) {
+  if (!isFunction(listenerOrObserver) && !isObject(listenerOrObserver)) {
+  }
+  if (isFunction(listenerOrObserver)) {
+    return listenerOrObserver;
+  }
+  if (isObject(listenerOrObserver) && isFunction(listenerOrObserver.next)) {
+    return listenerOrObserver.next.bind(listenerOrObserver);
+  }
+
+  throw new Error("'listenerOrObserver' expected a function or an object with 'next' function.");
 }
 
 // Used to indicate if there is no corresponding modular function
@@ -266,6 +279,47 @@ const mapOfDeprecationReplacements = {
       recordError: 'recordError()',
       sendUnsentReports: 'sendUnsentReports()',
       setCrashlyticsCollectionEnabled: 'setCrashlyticsCollectionEnabled()',
+    },
+  },
+
+  database: {
+    default: {
+      useEmulator: 'connectDatabaseEmulator()',
+      goOffline: 'goOffline()',
+      goOnline: 'goOnline()',
+      ref: 'ref()',
+      refFromURL: 'refFromURL()',
+      setPersistenceEnabled: 'setPersistenceEnabled()',
+      setLoggingEnabled: 'setLoggingEnabled()',
+      setPersistenceCacheSizeBytes: 'setPersistenceCacheSizeBytes()',
+      getServerTime: 'getServerTime()',
+    },
+    statics: {
+      ServerValue: 'ServerValue',
+    },
+    DatabaseReference: {
+      child: 'child()',
+      set: 'set()',
+      update: 'update()',
+      setWithPriority: 'setWithPriority()',
+      remove: 'remove()',
+      on: 'onValue()',
+      once: 'get()',
+      endAt: 'endAt()',
+      endBefore: 'endBefore()',
+      startAt: 'startAt()',
+      startAfter: 'startAfter()',
+      limitToFirst: 'limitToFirst()',
+      limitToLast: 'limitToLast()',
+      orderByChild: 'orderByChild()',
+      orderByKey: 'orderByKey()',
+      orderByValue: 'orderByValue()',
+      equalTo: 'equalTo()',
+      setPriority: 'setPriority()',
+      push: 'push()',
+      onDisconnect: 'onDisconnect()',
+      keepSynced: 'keepSynced()',
+      transaction: 'runTransaction()',
     },
   },
   firestore: {
@@ -519,6 +573,9 @@ export function createMessage(
 }
 
 function getNamespace(target) {
+  if (target.constructor.name === 'DatabaseReference') {
+    return 'database';
+  }
   if (target.GeoPoint || target.CustomProvider) {
     // target is statics object. GeoPoint - Firestore, CustomProvider - AppCheck
     return 'firestore';
@@ -529,7 +586,6 @@ function getNamespace(target) {
   if (target.constructor.name === 'StorageReference') {
     return 'storage';
   }
-
   const className = target.name ? target.name : target.constructor.name;
   return Object.keys(mapOfDeprecationReplacements).find(key => {
     if (mapOfDeprecationReplacements[key][className]) {
@@ -541,6 +597,9 @@ function getNamespace(target) {
 function getInstanceName(target) {
   if (target.GeoPoint || target.CustomProvider) {
     // target is statics object. GeoPoint - Firestore, CustomProvider - AppCheck
+    return 'statics';
+  }
+  if (target.ServerValue) {
     return 'statics';
   }
   if (target._config) {
@@ -624,6 +683,9 @@ export function createDeprecationProxy(instance) {
           prop === 'NotificationAndroidVisibility'
         ) {
           deprecationConsoleWarning('messaging', prop, 'statics', false);
+        }
+        if (prop === 'ServerValue') {
+          deprecationConsoleWarning('database', prop, 'statics', false);
         }
 
         if (prop !== 'setLogLevel') {

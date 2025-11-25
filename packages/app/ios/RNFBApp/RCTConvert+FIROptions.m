@@ -26,11 +26,8 @@
   firOptions.APIKey = [rawOptions valueForKey:@"apiKey"];
   firOptions.projectID = [rawOptions valueForKey:@"projectId"];
   firOptions.clientID = [rawOptions valueForKey:@"clientId"];
-  firOptions.trackingID = [rawOptions valueForKey:@"gaTrackingId"];
   firOptions.databaseURL = [rawOptions valueForKey:@"databaseURL"];
   firOptions.storageBucket = [rawOptions valueForKey:@"storageBucket"];
-  firOptions.androidClientID = [rawOptions valueForKey:@"androidClientId"];
-  firOptions.deepLinkURLScheme = [rawOptions valueForKey:@"deepLinkURLScheme"];
   firOptions.bundleID = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"];
   return firOptions;
 }

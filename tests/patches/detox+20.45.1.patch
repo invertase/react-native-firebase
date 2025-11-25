@@ -1,0 +1,70 @@
+diff --git a/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/network/NetworkIdlingResource.kt b/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/network/NetworkIdlingResource.kt
+index be01a0d..88af8da 100644
+--- a/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/network/NetworkIdlingResource.kt
++++ b/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/network/NetworkIdlingResource.kt
+@@ -50,23 +50,6 @@ class NetworkIdlingResource(private val dispatcher: Dispatcher) : DetoxIdlingRes
+ 
+     @Synchronized
+     override fun checkIdle(): Boolean {
+-        busyResources.clear()
+-
+-        val calls = dispatcher.runningCalls()
+-        for (call in calls) {
+-            val url = call.request().url.toString()
+-
+-            if (!isUrlBlacklisted(url)) {
+-                busyResources.add(url)
+-            }
+-        }
+-
+-        if (busyResources.isNotEmpty()) {
+-            Log.i(LOG_TAG, "Network is busy, with " + busyResources.size + " in-flight calls")
+-            Choreographer.getInstance().postFrameCallback(this)
+-            return false
+-        }
+-
+         notifyIdle()
+         return true
+     }
+diff --git a/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt b/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
+index 462908c..a367e18 100644
+--- a/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
++++ b/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
+@@ -32,15 +32,8 @@ class TimersIdlingResource @JvmOverloads constructor(
+ 
+     @SuppressLint("VisibleForTests")
+     override fun checkIdle(): Boolean {
+-        val isIdle = !timingModule.hasActiveTimersInRange(BUSY_WINDOW_THRESHOLD)
+-
+-        if (isIdle) {
+-            notifyIdle()
+-        } else {
+-            getChoreographer().postFrameCallback(this)
+-        }
+-
+-        return isIdle
++        notifyIdle()
++        return true
+     }
+ 
+     override fun doFrame(frameTimeNanos: Long) {
+diff --git a/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/fabric/FabricUIManagerIdlingResources.kt b/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/fabric/FabricUIManagerIdlingResources.kt
+index 2793164..98ceab1 100644
+--- a/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/fabric/FabricUIManagerIdlingResources.kt
++++ b/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/fabric/FabricUIManagerIdlingResources.kt
+@@ -16,13 +16,8 @@ class FabricUIManagerIdlingResources(
+ ) : DetoxIdlingResource(), Choreographer.FrameCallback {
+ 
+     override fun checkIdle(): Boolean {
+-        return if (getViewCommandMountItemsSize() == 0 && getMountItemsSize() == 0) {
+-            notifyIdle()
+-            true
+-        } else {
+-            Choreographer.getInstance().postFrameCallback(this)
+-            false
+-        }
++        notifyIdle()
++        return true
+     }
+ 
+     override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {

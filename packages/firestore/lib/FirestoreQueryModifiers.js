@@ -398,15 +398,6 @@ export default class FirestoreQueryModifiers {
             "Invalid query. Query.where() fieldPath parameter: 'FirestoreFieldPath' cannot be used in conjunction with a different Query.orderBy() parameter",
           );
         }
-
-        if (INEQUALITY[filter.operator]) {
-          // Initial orderBy() parameter has to match every where() fieldPath parameter when inequality operator is invoked
-          if (filterFieldPath !== this._orders[0].fieldPath._toPath()) {
-            throw new Error(
-              `Invalid query. Initial Query.orderBy() parameter: ${orderFieldPath} has to be the same as the Query.where() fieldPath parameter(s): ${filterFieldPath} when an inequality operator is invoked `,
-            );
-          }
-        }
       }
     }
   }

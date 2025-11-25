@@ -105,11 +105,11 @@ describe('database().ref().onDisconnect().cancel()', function () {
     });
 
     it('cancels all previously queued events', async function () {
-      const { getDatabase, ref, onDisconnect, goOffline, goOnline, get } = databaseModular;
+      const { getDatabase, ref, onDisconnect, goOffline, goOnline, get, set } = databaseModular;
       const db = getDatabase();
       const dbRef = ref(db, TEST_PATH);
 
-      await dbRef.set('foobar');
+      await set(dbRef, 'foobar');
       const value = Date.now();
 
       await onDisconnect(dbRef).set(value);

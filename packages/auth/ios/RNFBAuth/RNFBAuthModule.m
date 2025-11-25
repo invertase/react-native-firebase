@@ -45,7 +45,6 @@ static NSString *const constAppLanguage = @"APP_LANGUAGE";
 static NSString *const constAppUser = @"APP_USER";
 static NSString *const keyHandleCodeInApp = @"handleCodeInApp";
 static NSString *const keyLinkDomain = @"linkDomain";
-static NSString *const keyDynamicLinkDomain = @"dynamicLinkDomain";
 static NSString *const keyAdditionalUserInfo = @"additionalUserInfo";
 static NSString *const AUTH_STATE_CHANGED_EVENT = @"auth_state_changed";
 static NSString *const AUTH_ID_TOKEN_CHANGED_EVENT = @"auth_id_token_changed";
@@ -59,6 +58,7 @@ static __strong NSMutableDictionary<NSString *, FIRAuthCredential *> *credential
 #if TARGET_OS_IOS
 static __strong NSMutableDictionary<NSString *, FIRMultiFactorResolver *> *cachedResolver;
 static __strong NSMutableDictionary<NSString *, FIRMultiFactorSession *> *cachedSessions;
+static __strong NSMutableDictionary<NSString *, FIRTOTPSecret *> *cachedTotpSecrets;
 #endif
 
 @implementation RNFBAuthModule
@@ -82,6 +82,7 @@ RCT_EXPORT_MODULE();
 #if TARGET_OS_IOS
     cachedResolver = [[NSMutableDictionary alloc] init];
     cachedSessions = [[NSMutableDictionary alloc] init];
+    cachedTotpSecrets = [[NSMutableDictionary alloc] init];
 #endif
   });
   return self;
@@ -111,6 +112,7 @@ RCT_EXPORT_MODULE();
 #if TARGET_OS_IOS
   [cachedResolver removeAllObjects];
   [cachedSessions removeAllObjects];
+  [cachedTotpSecrets removeAllObjects];
 #endif
 }
 
@@ -968,6 +970,87 @@ RCT_EXPORT_METHOD(resolveMultiFactorSignIn
                                               }];
 }
 
+RCT_EXPORT_METHOD(resolveTotpSignIn
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)sessionKey
+                  : (NSString *)uid
+                  : (NSString *)oneTimePassword
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  DLog(@"using instance resolve TotpSignIn: %@", firebaseApp.name);
+
+  FIRMultiFactorAssertion *assertion =
+      [FIRTOTPMultiFactorGenerator assertionForSignInWithEnrollmentID:uid
+                                                      oneTimePassword:oneTimePassword];
+  [cachedResolver[sessionKey] resolveSignInWithAssertion:assertion
+                                              completion:^(FIRAuthDataResult *_Nullable authResult,
+                                                           NSError *_Nullable error) {
+                                                DLog(@"authError: %@", error) if (error) {
+                                                  [self promiseRejectAuthException:reject
+                                                                             error:error];
+                                                }
+                                                else {
+                                                  [self promiseWithAuthResult:resolve
+                                                                     rejecter:reject
+                                                                   authResult:authResult];
+                                                }
+                                              }];
+}
+
+RCT_EXPORT_METHOD(generateTotpSecret
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)sessionKey
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  DLog(@"using instance resolve generateTotpSecret: %@", firebaseApp.name);
+
+  FIRMultiFactorSession *session = cachedSessions[sessionKey];
+  DLog(@"using sessionKey: %@", sessionKey);
+  DLog(@"using session: %@", session);
+  [FIRTOTPMultiFactorGenerator
+      generateSecretWithMultiFactorSession:session
+                                completion:^(FIRTOTPSecret *_Nullable totpSecret,
+                                             NSError *_Nullable error) {
+                                  DLog(@"authError: %@", error) if (error) {
+                                    [self promiseRejectAuthException:reject error:error];
+                                  }
+                                  else {
+                                    NSString *secretKey = totpSecret.sharedSecretKey;
+                                    DLog(@"secretKey generated: %@", secretKey);
+                                    cachedTotpSecrets[secretKey] = totpSecret;
+                                    DLog(@"cachedSecret: %@", cachedTotpSecrets[secretKey]);
+                                    resolve(@{
+                                      @"secretKey" : secretKey,
+                                    });
+                                  }
+                                }];
+}
+
+RCT_EXPORT_METHOD(generateQrCodeUrl
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)secretKey
+                  : (NSString *)accountName
+                  : (NSString *)issuer
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  DLog(@"generateQrCodeUrl using instance resolve generateQrCodeUrl: %@", firebaseApp.name);
+  DLog(@"generateQrCodeUrl using secretKey: %@", secretKey);
+  FIRTOTPSecret *totpSecret = cachedTotpSecrets[secretKey];
+  NSString *url = [totpSecret generateQRCodeURLWithAccountName:accountName issuer:issuer];
+  DLog(@"generateQrCodeUrl got QR Code URL %@", url);
+  resolve(url);
+}
+
+RCT_EXPORT_METHOD(openInOtpApp
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)secretKey
+                  : (NSString *)qrCodeUri) {
+  DLog(@"generateQrCodeUrl using secretKey: %@", secretKey);
+  FIRTOTPSecret *totpSecret = cachedTotpSecrets[secretKey];
+  DLog(@"openInOtpApp using qrCodeUri: %@", qrCodeUri);
+  [totpSecret openInOTPAppWithQRCodeURL:qrCodeUri];
+}
+
 RCT_EXPORT_METHOD(getSession
                   : (FIRApp *)firebaseApp
                   : (RCTPromiseResolveBlock)resolve
@@ -986,6 +1069,26 @@ RCT_EXPORT_METHOD(getSession
   }];
 }
 
+RCT_EXPORT_METHOD(unenrollMultiFactor
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)factorUID
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  DLog(@"using instance unenrollMultiFactor: %@", firebaseApp.name);
+
+  FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
+  [user.multiFactor unenrollWithFactorUID:factorUID
+                               completion:^(NSError *_Nullable error) {
+                                 if (error != nil) {
+                                   [self promiseRejectAuthException:reject error:error];
+                                   return;
+                                 }
+
+                                 resolve(nil);
+                                 return;
+                               }];
+}
+
 RCT_EXPORT_METHOD(finalizeMultiFactorEnrollment
                   : (FIRApp *)firebaseApp
                   : (NSString *)verificationId
@@ -1002,6 +1105,37 @@ RCT_EXPORT_METHOD(finalizeMultiFactorEnrollment
   FIRMultiFactorAssertion *assertion =
       [FIRPhoneMultiFactorGenerator assertionWithCredential:credential];
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
+  [user.multiFactor enrollWithAssertion:assertion
+                            displayName:displayName
+                             completion:^(NSError *_Nullable error) {
+                               if (error != nil) {
+                                 [self promiseRejectAuthException:reject error:error];
+                                 return;
+                               }
+
+                               resolve(nil);
+                               return;
+                             }];
+}
+
+RCT_EXPORT_METHOD(finalizeTotpEnrollment
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)totpSecret
+                  : (NSString *)verificationCode
+                  : (NSString *_Nullable)displayName
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  DLog(@"using instance finalizeTotpEnrollment: %@", firebaseApp.name);
+
+  FIRTOTPSecret *cachedTotpSecret = cachedTotpSecrets[totpSecret];
+  DLog(@"using totpSecretKey: %@", totpSecret);
+  DLog(@"using cachedSecret: %@", cachedTotpSecret);
+  FIRTOTPMultiFactorAssertion *assertion =
+      [FIRTOTPMultiFactorGenerator assertionForEnrollmentWithSecret:cachedTotpSecret
+                                                    oneTimePassword:verificationCode];
+
+  FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
+
   [user.multiFactor enrollWithAssertion:assertion
                             displayName:displayName
                              completion:^(NSError *_Nullable error) {
@@ -1463,15 +1597,6 @@ RCT_EXPORT_METHOD(useEmulator
 }
 #endif
 
-- (NSString *)getJSFactorId:(NSString *)factorId {
-  if ([factorId isEqualToString:@"1"]) {
-    // Only phone is supported by the front-end so far
-    return @"phone";
-  }
-
-  return factorId;
-}
-
 - (void)promiseRejectAuthException:(RCTPromiseRejectBlock)reject error:(NSError *)error {
   NSDictionary *jsError = [self getJSError:error];
 
@@ -1738,19 +1863,25 @@ RCT_EXPORT_METHOD(useEmulator
 - (NSArray<NSMutableDictionary *> *)convertMultiFactorData:(NSArray<FIRMultiFactorInfo *> *)hints {
   NSMutableArray *enrolledFactors = [NSMutableArray array];
 
-  for (FIRPhoneMultiFactorInfo *hint in hints) {
+  for (FIRMultiFactorInfo *hint in hints) {
     NSString *enrollmentTime =
         [[[NSISO8601DateFormatter alloc] init] stringFromDate:hint.enrollmentDate];
-    [enrolledFactors addObject:@{
+
+    NSMutableDictionary *factorDict = [@{
       @"uid" : hint.UID,
-      @"factorId" : [self getJSFactorId:(hint.factorID)],
+      @"factorId" : hint.factorID,
       @"displayName" : hint.displayName == nil ? [NSNull null] : hint.displayName,
       @"enrollmentTime" : enrollmentTime,
       // @deprecated enrollmentDate kept for backwards compatibility, please use enrollmentTime
       @"enrollmentDate" : enrollmentTime,
-      // phoneNumber only present on FIRPhoneMultiFactorInfo
-      @"phoneNumber" : hint.phoneNumber == nil ? [NSNull null] : hint.phoneNumber,
-    }];
+    } mutableCopy];
+
+    if ([hint isKindOfClass:[FIRPhoneMultiFactorInfo class]]) {
+      FIRPhoneMultiFactorInfo *phoneHint = (FIRPhoneMultiFactorInfo *)hint;
+      factorDict[@"phoneNumber"] = phoneHint.phoneNumber;
+    }
+
+    [enrolledFactors addObject:factorDict];
   }
   return enrolledFactors;
 }
@@ -1783,11 +1914,6 @@ RCT_EXPORT_METHOD(useEmulator
   if (actionCodeSettings[keyHandleCodeInApp]) {
     BOOL handleCodeInApp = [actionCodeSettings[keyHandleCodeInApp] boolValue];
     [settings setHandleCodeInApp:handleCodeInApp];
-  }
-
-  if (actionCodeSettings[keyDynamicLinkDomain]) {
-    NSString *dynamicLinkDomain = actionCodeSettings[keyDynamicLinkDomain];
-    [settings setDynamicLinkDomain:dynamicLinkDomain];
   }
 
   if (actionCodeSettings[keyAndroid]) {

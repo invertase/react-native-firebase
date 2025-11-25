@@ -292,6 +292,45 @@ export namespace FirebaseRemoteConfigTypes {
   type LastFetchStatusType = 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
 
   /**
+   * Contains information about which keys have been updated.
+   */
+  export interface ConfigUpdate {
+    /**
+     * Parameter keys whose values have been updated from the currently activated values.
+     * Includes keys that are added, deleted, or whose value, value source, or metadata has changed.
+     */
+    getUpdatedKeys(): Set<string>;
+  }
+
+  /**
+   * Observer interface for receiving real-time Remote Config update notifications.
+   *
+   * NOTE: Although an `complete` callback can be provided, it will
+   * never be called because the ConfigUpdate stream is never-ending.
+   */
+  export interface ConfigUpdateObserver {
+    /**
+     * Called when a new ConfigUpdate is available.
+     */
+    next: (configUpdate: ConfigUpdate) => void;
+
+    /**
+     * Called if an error occurs during the stream.
+     */
+    error: (error: FirebaseError) => void;
+
+    /**
+     * Called when the stream is gracefully terminated.
+     */
+    complete: () => void;
+  }
+
+  /**
+   * A function that unsubscribes from a real-time event stream.
+   */
+  export type Unsubscribe = () => void;
+
+  /**
    * The Firebase Remote RemoteConfig service interface.
    *
    * > This module is available for the default app only.
@@ -377,13 +416,32 @@ export namespace FirebaseRemoteConfigTypes {
     setDefaultsFromResource(resourceName: string): Promise<null>;
 
     /**
+     * Starts listening for real-time config updates from the Remote Config backend and automatically
+     * fetches updates from the Remote Config backend when they are available.
+     *
+     * @remarks
+     * If a connection to the Remote Config backend is not already open, calling this method will
+     * open it. Multiple listeners can be added by calling this method again, but subsequent calls
+     * re-use the same connection to the backend.
+     *
+     * The list of updated keys passed to the callback will include all keys not currently active,
+     * and the config update process fetches the new config but does not automatically activate
+     * it for you. Typically you will activate the config in your callback to use the new values.
+     *
+     * @param remoteConfig - The {@link RemoteConfig} instance.
+     * @param observer - The {@link ConfigUpdateObserver} to be notified of config updates.
+     * @returns An {@link Unsubscribe} function to remove the listener.
+     */
+    onConfigUpdate(remoteConfig: RemoteConfig, observer: ConfigUpdateObserver): Unsubscribe;
+
+    /**
      * Start listening for real-time config updates from the Remote Config backend and
      * automatically fetch updates when they’re available. Note that the list of updated keys
      * passed to the callback will include all keys not currently active, and the config update
      * process fetches the new config but does not automatically activate for you. Typically
      * you will want to activate the config in your callback so the new values are in force.
-     *
      * @param listener called with either array of updated keys or error arg when config changes
+     * @deprecated use official firebase-js-sdk onConfigUpdate now that web supports realtime
      */
     onConfigUpdated(listener: CallbackOrObserver<OnConfigUpdatedListenerCallback>): () => void;
 
@@ -540,6 +598,19 @@ export namespace FirebaseRemoteConfigTypes {
      */
     reset(): Promise<void>;
   }
+
+  // deprecated: from pre-Web realtime remote-config support - remove with onConfigUpdated
+  export type CallbackOrObserver<T extends (...args: any[]) => any> = T | { next: T };
+
+  // deprecated: from pre-Web realtime remote-config support - remove with onConfigUpdated
+  export type OnConfigUpdatedListenerCallback = (
+    event?: { updatedKeys: string[] },
+    error?: {
+      code: string;
+      message: string;
+      nativeErrorMessage: string;
+    },
+  ) => void;
 }
 
 declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
@@ -553,17 +624,6 @@ export const firebase: ReactNativeFirebase.Module & {
     name?: string,
   ): ReactNativeFirebase.FirebaseApp & { remoteConfig(): FirebaseRemoteConfigTypes.Module };
 };
-
-type CallbackOrObserver<T extends (...args: any[]) => any> = T | { next: T };
-
-type OnConfigUpdatedListenerCallback = (
-  event?: { updatedKeys: string[] },
-  error?: {
-    code: string;
-    message: string;
-    nativeErrorMessage: string;
-  },
-) => void;
 
 export default defaultExport;
 

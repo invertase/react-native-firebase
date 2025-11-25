@@ -3,6 +3,8 @@
   - '/'
 - - Migration Guide to v22
   - '/migrating-to-v22'
+- - Migration Guide to v23
+  - '/migrating-to-v23'
 - - TypeScript
   - '/typescript'
 - - Platforms
@@ -15,6 +17,10 @@
   - 'https://invertase.canny.io/react-native-firebase'
 - - Contributing
   - 'https://github.com/invertase/react-native-firebase/blob/main/CONTRIBUTING.md'
+- - AI Logic
+  - - - Usage
+      - '/ai/usage'
+  - '//firebase.google.com/static/images/icons/firebase-ai-logic.svg'
 - - Analytics
   - - - Usage
       - '/analytics/usage'
@@ -22,15 +28,15 @@
       - '/analytics/screen-tracking'
     - - Building an Analytics Funnel
       - 'https://blog.theodo.com/2018/01/building-google-analytics-funnel-firebase-react-native'
-  - '//static.invertase.io/assets/firebase/analytics.svg'
+  - '//firebase.google.com/static/images/products/icons/run_analytics.svg'
 - - App Check
   - - - Usage
       - '/app-check/usage'
-  - '//static.invertase.io/assets/social/firebase-logo.png'
+  - '//firebase.google.com/static/images/products/icons/build_app_check.svg'
 - - App Distribution
   - - - Usage
       - '/app-distribution/usage'
-  - '/assets/docs/app-distribution/app-distribution.png'
+  - '//firebase.google.com/static/images/products/icons/run_app_distribution.svg'
 - - Authentication
   - - - Usage
       - '/auth/usage'
@@ -42,7 +48,7 @@
       - '/auth/oidc-auth'
     - - Multi-factor Auth
       - '/auth/multi-factor-auth'
-  - '//static.invertase.io/assets/firebase/authentication.svg'
+  - '//firebase.google.com/static/images/products/icons/build_auth.svg'
 - - Cloud Firestore
   - - - Usage
       - '/firestore/usage'
@@ -54,13 +60,13 @@
       - '/firestore/pagination'
     - - Building a "TODO" app
       - 'https://invertase.io/blog/getting-started-with-cloud-firestore-on-react-native'
-  - '//static.invertase.io/assets/firebase/cloud-firestore.svg'
+  - '//firebase.google.com/static/images/products/icons/build_firestore.svg'
 - - Cloud Functions
   - - - Usage
       - '/functions/usage'
     - - Writing & Deploying Functions
       - '/functions/writing-deploying-functions'
-  - '//static.invertase.io/assets/firebase/cloud-functions.svg'
+  - '//firebase.google.com/static/images/products/icons/build_functions.svg'
 - - Cloud Messaging
   - - - Usage
       - '/messaging/usage'
@@ -74,11 +80,11 @@
       - '/messaging/ios-notification-images'
     - - Server Integration
       - '/messaging/server-integration'
-  - '//static.invertase.io/assets/firebase/cloud-messaging.svg'
+  - '//firebase.google.com/static/images/products/icons/run_cloud_messaging.svg'
 - - Cloud Storage
   - - - Usage
       - '/storage/usage'
-  - '//static.invertase.io/assets/firebase/cloud-storage.svg'
+  - '//firebase.google.com/static/images/products/icons/build_storage.svg'
 - - Core / App
   - - - Usage
       - '/app/usage'
@@ -92,7 +98,7 @@
       - '/crashlytics/usage'
     - - Viewing crash reports
       - '/crashlytics/crash-reports'
-  - '//static.invertase.io/assets/firebase/crashlytics.svg'
+  - '//firebase.google.com/static/images/products/icons/run_crashlytics.svg'
 - - Realtime Database
   - - - Usage
       - '/database/usage'
@@ -100,15 +106,11 @@
       - '/database/offline-support'
     - - Presence Detection
       - '/database/presence-detection'
-  - '//static.invertase.io/assets/firebase/realtime-database.svg'
-- - Dynamic Links
-  - - - Usage
-      - '/dynamic-links/usage'
-  - '//static.invertase.io/assets/firebase/dynamic-links.svg'
+  - '//firebase.google.com/static/images/products/icons/build_realtime_database.svg'
 - - In-App Messaging
   - - - Usage
       - '/in-app-messaging/usage'
-  - '//static.invertase.io/assets/firebase/in-app-messaging.svg'
+  - '//firebase.google.com/static/images/products/icons/run_in_app_messaging.svg'
 - - Installations
   - - - Usage
       - '/installations/usage'
@@ -116,11 +118,11 @@
 - - ML
   - - - Usage
       - '/ml/usage'
-  - '//static.invertase.io/assets/firebase/ml-kit.svg'
+  - '//firebase.google.com/static/images/products/icons/build_ml.svg'
 - - Remote Config
   - - - Usage
       - '/remote-config/usage'
-  - '//static.invertase.io/assets/firebase/remote-config.svg'
+  - '//firebase.google.com/static/images/products/icons/run_remote_config.svg'
 - - Performance Monitoring
   - - - Usage
       - '/perf/usage'
@@ -128,7 +130,7 @@
       - '/perf/axios-integration'
     - - KY Integration
       - '/perf/ky-integration'
-  - '//static.invertase.io/assets/firebase/performance-monitoring.svg'
+  - '//firebase.google.com/static/images/products/icons/run_performance.svg'
 - - VertexAi
   - - - Usage
       - '/vertexai/usage'

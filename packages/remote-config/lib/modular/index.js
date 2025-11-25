@@ -28,6 +28,8 @@ import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
  * @typedef {import('..').FirebaseRemoteConfigTypes.ConfigValues} ConfigValues
  * @typedef {import('..').FirebaseRemoteConfigTypes.LastFetchStatusType} LastFetchStatusType
  * @typedef {import('..').FirebaseRemoteConfigTypes.RemoteConfigLogLevel} RemoteConfigLogLevel
+ * @typedef {import('..').FirebaseRemoteConfigTypes.ConfigUpdateObserver} ConfigUpdateObserver
+ * @typedef {import('..').FirebaseRemoteConfigTypes.Unsubscribe} Unsubscribe
  * @typedef {import('.').CustomSignals} CustomSignals
  */
 
@@ -243,8 +245,21 @@ export function setDefaultsFromResource(remoteConfig, resourceName) {
  * Registers a listener to changes in the configuration.
  *
  * @param {RemoteConfig} remoteConfig - RemoteConfig instance
- * @param {function(ConfigValues): void} callback - function called on config change
+ * @param {ConfigUpdateObserver} observer - to be notified of config updates.
+ * @returns {Unsubscribe} function to remove the listener.
+ * @deprecated use official firebase-js-sdk onConfigUpdate now that web supports realtime
+ */
+export function onConfigUpdate(remoteConfig, observer) {
+  return remoteConfig.onConfigUpdate.call(remoteConfig, observer, MODULAR_DEPRECATION_ARG);
+}
+
+/**
+ * Registers a listener to changes in the configuration.
+ *
+ * @param {RemoteConfig} remoteConfig - RemoteConfig instance
+ * @param {CallbackOrObserver<OnConfigUpdatedListenerCallback>} callback - function called on config change
  * @returns {function} unsubscribe listener
+ * @deprecated use official firebase-js-sdk onConfigUpdate now that web supports realtime
  */
 export function onConfigUpdated(remoteConfig, callback) {
   return remoteConfig.onConfigUpdated.call(remoteConfig, callback, MODULAR_DEPRECATION_ARG);

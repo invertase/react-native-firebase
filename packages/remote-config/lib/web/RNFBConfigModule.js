@@ -1,3 +1,4 @@
+import '../polyfills';
 import {
   getApp,
   getRemoteConfig,
@@ -7,9 +8,10 @@ import {
   fetchConfig,
   getAll,
   makeIDBAvailable,
+  onConfigUpdate,
   setCustomSignals,
 } from '@react-native-firebase/app/lib/internal/web/firebaseRemoteConfig';
-import { guard } from '@react-native-firebase/app/lib/internal/web/utils';
+import { guard, getWebError, emitEvent } from '@react-native-firebase/app/lib/internal/web/utils';
 
 let configSettingsForInstance = {
   // [APP_NAME]: RemoteConfigSettings
@@ -22,6 +24,8 @@ function makeGlobalsAvailable() {
   navigator.onLine = true;
   makeIDBAvailable();
 }
+
+const onConfigUpdateListeners = {};
 
 function getRemoteConfigInstanceForApp(appName, overrides /*: RemoteConfigSettings */) {
   makeGlobalsAvailable();
@@ -120,5 +124,38 @@ export default {
       await setCustomSignals(remoteConfig, customSignals);
       return resultAndConstants(remoteConfig, null);
     });
+  },
+  onConfigUpdated(appName) {
+    if (onConfigUpdateListeners[appName]) {
+      return;
+    }
+
+    const remoteConfig = getRemoteConfigInstanceForApp(appName);
+
+    const nativeObserver = {
+      next: configUpdate => {
+        emitEvent('on_config_updated', {
+          appName,
+          resultType: 'success',
+          updatedKeys: Array.from(configUpdate.getUpdatedKeys()),
+        });
+      },
+      error: firebaseError => {
+        emitEvent('on_config_updated', {
+          appName,
+          event: getWebError(firebaseError),
+        });
+      },
+      complete: () => {},
+    };
+
+    onConfigUpdateListeners[appName] = onConfigUpdate(remoteConfig, nativeObserver);
+  },
+  removeConfigUpdateRegistration(appName) {
+    if (!onConfigUpdateListeners[appName]) {
+      return;
+    }
+    onConfigUpdateListeners[appName]();
+    delete onConfigUpdateListeners[appName];
   },
 };

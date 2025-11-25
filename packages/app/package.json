@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/app",
-  "version": "22.4.0",
+  "version": "23.5.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Admob, Analytics, Auth, Crash Reporting, Cloud Firestore, Database, Dynamic Links, Functions, Messaging (FCM), Remote Config, Storage and more.",
   "main": "lib/index.js",
@@ -57,11 +57,11 @@
     "react-native": "*"
   },
   "dependencies": {
-    "firebase": "11.10.0"
+    "firebase": "12.5.0"
   },
   "devDependencies": {
-    "@react-native-async-storage/async-storage": "^2.1.2",
-    "expo": "^52.0.46"
+    "@react-native-async-storage/async-storage": "^2.2.0",
+    "expo": "^54.0.23"
   },
   "peerDependenciesMeta": {
     "expo": {
@@ -74,20 +74,20 @@
   },
   "sdkVersions": {
     "ios": {
-      "firebase": "11.15.0",
-      "iosTarget": "13.0",
+      "firebase": "12.5.0",
+      "iosTarget": "15.0",
       "macosTarget": "10.15",
-      "tvosTarget": "13.0"
+      "tvosTarget": "15.0"
     },
     "android": {
-      "minSdk": 21,
+      "minSdk": 23,
       "targetSdk": 34,
       "compileSdk": 34,
-      "firebase": "33.16.0",
-      "firebaseCrashlyticsGradle": "3.0.4",
-      "firebasePerfGradle": "1.4.2",
-      "gmsGoogleServicesGradle": "4.4.3",
-      "playServicesAuth": "21.3.0",
+      "firebase": "34.4.0",
+      "firebaseCrashlyticsGradle": "3.0.6",
+      "firebasePerfGradle": "2.0.1",
+      "gmsGoogleServicesGradle": "4.4.4",
+      "playServicesAuth": "21.4.0",
       "firebaseAppDistributionGradle": "5.1.1"
     }
   }

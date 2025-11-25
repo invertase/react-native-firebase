@@ -16,12 +16,12 @@
  *
  */
 
-import React from 'react';
-import { StyleSheet, View, StatusBar, AppRegistry, Text } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, StatusBar, AppRegistry, Text, Button } from 'react-native';
 
 import { JetProvider, ConnectionText, StatusEmoji, StatusText } from 'jet';
 
-import { LocalTests } from './local-test-component';
+import { TestComponents } from './local-tests';
 
 const platformSupportedModules = [];
 
@@ -35,7 +35,7 @@ if (Platform.other) {
   platformSupportedModules.push('remoteConfig');
   platformSupportedModules.push('analytics');
   platformSupportedModules.push('appCheck');
-  platformSupportedModules.push('vertexai');
+  platformSupportedModules.push('ai');
   // TODO add more modules here once they are supported.
 }
 
@@ -55,9 +55,8 @@ if (!Platform.other) {
   platformSupportedModules.push('installations');
   platformSupportedModules.push('appCheck');
   platformSupportedModules.push('appDistribution');
-  platformSupportedModules.push('dynamicLinks');
   platformSupportedModules.push('ml');
-  platformSupportedModules.push('vertexai');
+  platformSupportedModules.push('ai');
 }
 // Registering an error handler that always throw unhandled exceptions
 // This is to enable Jet to exit on uncaught errors
@@ -68,6 +67,9 @@ ErrorUtils.setGlobalHandler((err, isFatal) => {
 });
 
 function loadTests(_) {
+  // this will only execute if Jet executes
+  // ...so manual tests will not have this setup - emulators etc
+  // ...that allows them the freedom to define their own test environment
   describe('React Native Firebase', function () {
     if (!globalThis.RNFBDebug) {
       // Only retry tests if not debugging or hunting deprecated API usage locally,
@@ -188,14 +190,6 @@ function loadTests(_) {
       databaseTests.keys().forEach(databaseTests);
     }
 
-    if (platformSupportedModules.includes('dynamicLinks')) {
-      const dynamicLinksTests = require.context(
-        '../packages/dynamic-links/e2e',
-        true,
-        /\.e2e\.js$/,
-      );
-      dynamicLinksTests.keys().forEach(dynamicLinksTests);
-    }
     if (platformSupportedModules.includes('firestore')) {
       const firestoreTests = require.context('../packages/firestore/e2e', true, /\.e2e\.js$/);
       firestoreTests.keys().forEach(firestoreTests);
@@ -236,41 +230,40 @@ function loadTests(_) {
       );
       remoteConfigTests.keys().forEach(remoteConfigTests);
     }
-
-    if (platformSupportedModules.includes('vertexai')) {
-      const vertexaiTests = require.context('../packages/vertexai/e2e', true, /\.e2e\.js$/);
-      vertexaiTests.keys().forEach(vertexaiTests);
+    if (platformSupportedModules.includes('ai')) {
+      const aiTests = require.context('../packages/ai/e2e', true, /\.e2e\.js$/);
+      aiTests.keys().forEach(aiTests);
     }
     if (platformSupportedModules.includes('storage')) {
       const storageTests = require.context('../packages/storage/e2e', true, /\.e2e\.js$/);
-
-      if (Platform.other && global.isCI) {
-        // Skip StorageReference & StorageTask tests on CI for "other" platforms
-        // uploadBytesResumable is pretty flaky. Crashes macOS app.
-        // See: https://github.com/facebook/react-native/issues/32784
-        // and: https://github.com/firebase/firebase-js-sdk/issues/5848
-        const filteredTests = storageTests.keys().filter(test => {
-          if (test.includes('StorageReference.e2e') || test.includes('StorageTask.e2e')) {
-            return false;
-          }
-          return true;
-        });
-        filteredTests.forEach(storageTests);
-      } else {
-        storageTests.keys().forEach(storageTests);
-      }
+      storageTests.keys().forEach(storageTests);
     }
   });
 }
 
 function App() {
+  const [showManualTestPicker, setShowManualTestPicker] = useState(false);
+
+  if (showManualTestPicker) {
+    return (
+      <>
+        <StatusBar hidden />
+        <View style={styles.container}>
+          <View style={styles.hardRule} />
+          <Button title="Hide Manual Tests" onPress={() => setShowManualTestPicker(false)} />
+          <View style={styles.hardRule} />
+          <TestComponents />
+        </View>
+      </>
+    );
+  }
+
   return (
     <>
       <StatusBar hidden />
       <View style={styles.container}>
         <View style={styles.hardRule} />
-        <Text>Local Manual Tests:</Text>
-        <LocalTests />
+        <Button title="Show Manual Tests" onPress={() => setShowManualTestPicker(true)} />
         <View style={styles.hardRule} />
         <Text>Automated Tests:</Text>
         <JetProvider tests={loadTests}>

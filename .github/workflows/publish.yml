@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     permissions:
-      id-token: write # to enable use of OIDC for npm provenance
+      id-token: write # enables OIDC for npmjs.com "Trusted Publisher" and provenance
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,22 +30,19 @@ jobs:
           timeout_minutes: 15
           retry_wait_seconds: 60
           max_attempts: 3
-          command: yarn && yarn lerna:prepare
+          command: yarn
       - name: GIT Setup
         # Alter branding of release commit, despite GITHUB_TOKEN having real owner
         run: |
           git config --global user.name 'Invertase Publisher'
           git config --global user.email 'oss@invertase.io'
       - name: Publish Packages
-        # for lerna, you must write the token out to .npmrc like this
         run: |
-          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
           git diff --exit-code
           yarn lerna changed
           yarn lerna version --yes --force-publish=*
           yarn lerna publish from-package --yes
         env:
-          # new style token w/scope for `@react-native-firebase` required
-          # to work with npmjs.com 2FA-or-automation-token package requirement
-          NPM_TOKEN: ${{ secrets.MIKEHARDY_NPM_TOKEN }}
+          # No NPM token needed, all of the packages have been configured
+          # on npmjs.com with this workflow file as an OIDC "Trusted Publisher"
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

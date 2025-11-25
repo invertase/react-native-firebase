@@ -1,7 +1,7 @@
 ---
 title: App Distribution
 description: Installation and getting started with App Distribution.
-icon: /assets/docs/app-distribution/app-distribution.png
+icon: //firebase.google.com/static/images/products/icons/run_app_distribution.svg
 next: /auth/usage
 previous: /app-check/usage
 ---

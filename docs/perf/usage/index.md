@@ -1,7 +1,7 @@
 ---
 title: Performance Monitoring
 description: Installation and getting started with Performance Monitoring.
-icon: //static.invertase.io/assets/firebase/performance-monitoring.svg
+icon: //firebase.google.com/static/images/products/icons/run_performance.svg
 next: /perf/axios-integration
 previous: /remote-config/usage
 ---
@@ -38,7 +38,7 @@ Add the plugin to your `/android/build.gradle` file as a dependency:
 buildscript {
     dependencies {
         // ...
-        classpath 'com.google.firebase:perf-plugin:1.4.2'
+        classpath 'com.google.firebase:perf-plugin:2.0.1'
     }
 ```
 

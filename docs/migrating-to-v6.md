@@ -262,7 +262,6 @@ Install the modules required for your application:
 | <Anchor href="v6/messaging">Cloud Messaging</Anchor>         | @react-native-firebase/messaging        |
 | <Anchor href="v6/storage">Cloud Storage</Anchor>             | @react-native-firebase/storage          |
 | <Anchor href="v6/crashlytics">Crashlytics</Anchor>           | @react-native-firebase/crashlytics      |
-| <Anchor href="v6/links">Dynamic Links</Anchor>               | @react-native-firebase/dynamic-links    |
 | <Anchor href="v6/in-app-messaging">In-app Messaging</Anchor> | @react-native-firebase/in-app-messaging |
 | <Anchor href="v6/iid">Instance ID</Anchor>                   | @react-native-firebase/iid              |
 | <Anchor href="v6/ml">ML</Anchor>                             | @react-native-firebase/ml               |

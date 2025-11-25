@@ -81,7 +81,11 @@ describe('database().ref().onDisconnect().update()', function () {
       }
     });
 
-    xit('updates value when disconnected', async function () {
+    it('updates value when disconnected', async function () {
+      if (Platform.android) {
+        // offline / online behavior does not work in android + firebase emulator
+        this.skip();
+      }
       const ref = firebase.database().ref(TEST_PATH);
 
       const value = Date.now();
@@ -187,13 +191,18 @@ describe('database().ref().onDisconnect().update()', function () {
       }
     });
 
-    xit('updates value when disconnected', async function () {
-      const { getDatabase, ref, onDisconnect, child, goOnline, goOffline, get } = databaseModular;
+    it('updates value when disconnected', async function () {
+      if (Platform.android) {
+        // offline / online behavior does not work in android + firebase emulator
+        this.skip();
+      }
+      const { getDatabase, ref, onDisconnect, child, goOnline, goOffline, get, set } =
+        databaseModular;
       const db = getDatabase();
       const dbRef = ref(db, TEST_PATH);
 
       const value = Date.now();
-      await dbRef.set({
+      await set(dbRef, {
         foo: {
           bar: 'baz',
         },
@@ -214,14 +223,14 @@ describe('database().ref().onDisconnect().update()', function () {
     });
 
     it('calls back to the onComplete function', async function () {
-      const { getDatabase, ref, onDisconnect, goOffline, goOnline } = databaseModular;
+      const { getDatabase, ref, onDisconnect, goOffline, goOnline, set } = databaseModular;
       const db = getDatabase();
 
       const callback = sinon.spy();
       const dbRef = ref(db, TEST_PATH);
 
       // Set an initial value
-      await dbRef.set('foo');
+      await set(dbRef, 'foo');
       await onDisconnect(dbRef).update({ foo: 'bar' }, callback);
       await goOffline(db);
       await goOnline(db);

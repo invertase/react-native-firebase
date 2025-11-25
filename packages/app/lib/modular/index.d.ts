@@ -5,6 +5,7 @@ type FirebaseApp = ReactNativeFirebase.FirebaseApp & {
 };
 import FirebaseAppOptions = ReactNativeFirebase.FirebaseAppOptions;
 import LogLevelString = ReactNativeFirebase.LogLevelString;
+import FirebaseAppConfig = ReactNativeFirebase.FirebaseAppConfig;
 
 /**
  * Renders this app unusable and frees the resources of all associated services.
@@ -59,6 +60,16 @@ export function getApps(): FirebaseApp[];
  */
 export function initializeApp(options: FirebaseAppOptions, name?: string): Promise<FirebaseApp>;
 
+/**
+ * Initializes a Firebase app with the provided options and config.
+ * @param options - Options to configure the services used in the app.
+ * @param config - The optional config for your firebase app.
+ * @returns Promise<FirebaseApp> - The initialized Firebase app.
+ */
+export function initializeApp(
+  options: FirebaseAppOptions,
+  config?: FirebaseAppConfig,
+): Promise<FirebaseApp>;
 /**
  * Retrieves an instance of a Firebase app.
  * @param name - The optional name of the app to return ('[DEFAULT]' if omitted).
