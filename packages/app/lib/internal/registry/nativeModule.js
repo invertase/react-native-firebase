@@ -42,7 +42,7 @@ function nativeModuleKey(module) {
 function nativeModuleMethodWrapped(namespace, method, argToPrepend, nativeModuleName) {
   return (...args) => {
     // if the module is not a NativeModule, it is a TurboModule
-    const isTurboModule = !NativeModules[nativeModuleName];
+    const isTurboModule = !!NativeModules[nativeModuleName];
     // For iOS TurboModules, encode null values in arguments to work around
     // the limitation where null values in object properties get stripped during serialization
     const processedArgs = isIOS && isTurboModule ? args.map(arg => encodeNullValues(arg)) : args;
