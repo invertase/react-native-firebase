@@ -26,7 +26,8 @@ import { AITestComponent } from './ai/ai';
 import { DatabaseOnChildMovedTest } from './database';
 import { FirestoreOnSnapshotInSyncTest } from './firestore/onSnapshotInSync';
 import { VertexAITestComponent } from './vertexai/vertexai';
-import { AuthTOTPDemonstrator } from './auth/auth-mfa-demonstrator';
+import { AuthMFADemonstrator } from './auth/auth-mfa-demonstrator';
+import { HttpsCallableTestComponent } from './storage/https-callable';
 
 const testComponents = {
   // List your imported components here...
@@ -36,6 +37,7 @@ const testComponents = {
   'Firestore onSnapshotInSync Test': FirestoreOnSnapshotInSyncTest,
   'VertexAI Generation Example': VertexAITestComponent,
   'Auth MFA Demonstrator': AuthMFADemonstrator,
+  'HttpsCallable Test': HttpsCallableTestComponent,
 };
 
 export function TestComponents() {
