@@ -164,4 +164,40 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
   return enabled;
 }
 
+/**
+ * Recursively converts sentinel objects back to NSNull.
+ * This works around iOS TurboModule's limitation where null values in object properties get stripped.
+ * The JavaScript side converts nulls to { __rnfbNull: true } sentinel objects,
+ * and this method converts them back to NSNull before passing to Firebase SDKs.
+ *
+ * @param value - The value to decode (can be any type)
+ * @returns The decoded value with sentinels replaced by NSNull
+ */
++ (id)decodeNullSentinels:(id)value {
+  if ([value isKindOfClass:[NSDictionary class]]) {
+    NSDictionary *dict = (NSDictionary *)value;
+    
+    // Check if this is a null sentinel object
+    if ([dict count] == 1 && dict[@"__rnfbNull"] != nil && [dict[@"__rnfbNull"] boolValue]) {
+      return [NSNull null];
+    }
+    
+    // Recursively process dictionary values
+    NSMutableDictionary *decoded = [NSMutableDictionary dictionaryWithCapacity:dict.count];
+    for (id key in dict) {
+      decoded[key] = [self decodeNullSentinels:dict[key]];
+    }
+    return decoded;
+  } else if ([value isKindOfClass:[NSArray class]]) {
+    NSArray *array = (NSArray *)value;
+    NSMutableArray *decoded = [NSMutableArray arrayWithCapacity:array.count];
+    for (id item in array) {
+      [decoded addObject:[self decodeNullSentinels:item]];
+    }
+    return decoded;
+  }
+  
+  return value;
+}
+
 @end
