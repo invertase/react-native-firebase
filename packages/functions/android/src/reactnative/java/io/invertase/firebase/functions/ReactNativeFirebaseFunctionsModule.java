@@ -152,12 +152,20 @@ public class ReactNativeFirebaseFunctionsModule extends ReactNativeFirebaseModul
 
   // -------------------- Streaming bridge (Android only) --------------------
   @ReactMethod
-  public void addFunctionsStreaming(Integer listenerId) {
+  public void addFunctionsStreaming(
+      String appName,
+      String region,
+      Integer listenerId) {
     // Optional hook: no-op, streaming is started explicitly by httpsCallableStream*
+    // Note: appName and region are auto-prepended by the native module wrapper
   }
 
   @ReactMethod
-  public void removeFunctionsStreaming(Integer listenerId) {
+  public void removeFunctionsStreaming(
+      String appName,
+      String region,
+      Integer listenerId) {
+    // Note: appName and region are auto-prepended by the native module wrapper
     UniversalFirebaseFunctionsModule.cancelHttpsCallableStream(listenerId);
   }
 

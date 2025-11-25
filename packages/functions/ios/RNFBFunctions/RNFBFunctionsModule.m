@@ -323,8 +323,12 @@ RCT_EXPORT_METHOD(httpsCallableStreamFromUrl
 
 /**
  * Optional add hook; kept for API symmetry.
+ * Note: firebaseApp and customUrlOrRegion are auto-prepended by the native module wrapper.
  */
-RCT_EXPORT_METHOD(addFunctionsStreaming : (NSNumber *_Nonnull)listenerId) {
+RCT_EXPORT_METHOD(addFunctionsStreaming
+                  : (FIRApp *)firebaseApp customUrlOrRegion
+                  : (NSString *)customUrlOrRegion listenerId
+                  : (NSNumber *_Nonnull)listenerId) {
   if (!httpsCallableStreamListeners) {
     httpsCallableStreamListeners = [NSMutableDictionary dictionary];
   }
@@ -332,8 +336,12 @@ RCT_EXPORT_METHOD(addFunctionsStreaming : (NSNumber *_Nonnull)listenerId) {
 
 /**
  * Cancel and remove an active stream.
+ * Note: firebaseApp and customUrlOrRegion are auto-prepended by the native module wrapper.
  */
-RCT_EXPORT_METHOD(removeFunctionsStreaming : (NSNumber *_Nonnull)listenerId) {
+RCT_EXPORT_METHOD(removeFunctionsStreaming
+                  : (FIRApp *)firebaseApp customUrlOrRegion
+                  : (NSString *)customUrlOrRegion listenerId
+                  : (NSNumber *_Nonnull)listenerId) {
   if (!httpsCallableStreamListeners) {
     return;
   }

@@ -123,4 +123,26 @@ export default {
       return Promise.reject(nativeError);
     }
   },
+
+  /**
+   * Streaming methods - Not fully supported on web platform yet
+   * These are stubs to prevent crashes when code references them
+   */
+  httpsCallableStream(appName, regionOrCustomDomain, host, port, name, wrapper, options, listenerId) {
+    console.warn('httpsCallableStream is not yet fully supported on web platform');
+    // Return empty to prevent crashes
+  },
+
+  httpsCallableStreamFromUrl(appName, regionOrCustomDomain, host, port, url, wrapper, options, listenerId) {
+    console.warn('httpsCallableStreamFromUrl is not yet fully supported on web platform');
+    // Return empty to prevent crashes
+  },
+
+  addFunctionsStreaming(listenerId) {
+    // No-op stub
+  },
+
+  removeFunctionsStreaming(listenerId) {
+    // No-op stub
+  },
 };

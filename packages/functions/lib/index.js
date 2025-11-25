@@ -91,7 +91,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
     });
   }
 
-  httpsCallable(name, options = {}) {
+  httpsCallable(name, options = {}, _deprecationArg) {
     if (options.timeout) {
       if (isNumber(options.timeout)) {
         options.timeout = options.timeout / 1000;
@@ -148,12 +148,11 @@ class FirebaseFunctionsModule extends FirebaseModule {
           }
         }
       });
-      // Start native streaming on both platforms. iOS implementation to be provided natively.
+      // Start native streaming on both platforms.
+      // Note: appName and customUrlOrRegion are automatically prepended by the native module wrapper
       this.native.httpsCallableStream(
-        this.appName,
-        this._customUrlOrRegion,
-        this._useFunctionsEmulatorHost,
-        this._useFunctionsEmulatorPort,
+        this._useFunctionsEmulatorHost || null,
+        this._useFunctionsEmulatorPort || -1,
         name,
         { data },
         options,
@@ -170,7 +169,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
     return callableFunction;
   }
 
-  httpsCallableFromUrl(url, options = {}) {
+  httpsCallableFromUrl(url, options = {}, _deprecationArg) {
     if (options.timeout) {
       if (isNumber(options.timeout)) {
         options.timeout = options.timeout / 1000;
@@ -227,11 +226,10 @@ class FirebaseFunctionsModule extends FirebaseModule {
           }
         }
       });
+      // Note: appName and customUrlOrRegion are automatically prepended by the native module wrapper
       this.native.httpsCallableStreamFromUrl(
-        this.appName,
-        this._customUrlOrRegion,
-        this._useFunctionsEmulatorHost,
-        this._useFunctionsEmulatorPort,
+        this._useFunctionsEmulatorHost || null,
+        this._useFunctionsEmulatorPort || -1,
         url,
         { data },
         streamOptions,
