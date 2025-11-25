@@ -28,6 +28,7 @@ export default [
       '**/app.playground.js',
       '**/type-test.ts',
       'packages/**/modular/dist/**/*',
+      'packages/**/dist/**/*',
       'src/version.js',
       'packages/**/node_modules/**/*',
       'packages/**/plugin/build/**/*',
