@@ -103,8 +103,6 @@ class FirebaseFunctionsModule extends FirebaseModule {
     // Create the main callable function
     const callableFunction = data => {
       const nativePromise = this.native.httpsCallable(
-        this.appName,
-        this._customUrlOrRegion,
         this._useFunctionsEmulatorHost,
         this._useFunctionsEmulatorPort,
         name,
@@ -137,7 +135,6 @@ class FirebaseFunctionsModule extends FirebaseModule {
         }
       }
       const listenerId = this._id_functions_streaming_event++;
-      this.native.addFunctionsStreaming(listenerId);
       const eventName = this.eventNameForApp(`functions_streaming_event:${listenerId}`);
       const subscription = this.emitter.addListener(eventName, event => {
         const body = event.body;
@@ -146,7 +143,9 @@ class FirebaseFunctionsModule extends FirebaseModule {
         }
         if (body && (body.done || body.error)) {
           subscription.remove();
-          this.native.removeFunctionsStreaming(listenerId);
+          if (this.native.removeFunctionsStreaming) {
+            this.native.removeFunctionsStreaming(listenerId);
+          }
         }
       });
       // Start native streaming on both platforms. iOS implementation to be provided natively.
@@ -162,7 +161,9 @@ class FirebaseFunctionsModule extends FirebaseModule {
       );
       return () => {
         subscription.remove();
-        this.native.removeFunctionsStreaming(listenerId);
+        if (this.native.removeFunctionsStreaming) {
+          this.native.removeFunctionsStreaming(listenerId);
+        }
       };
     };
   
@@ -213,7 +214,6 @@ class FirebaseFunctionsModule extends FirebaseModule {
         }
       }
       const listenerId = this._id_functions_streaming_event++;
-      this.native.addFunctionsStreaming(listenerId);
       const eventName = this.eventNameForApp(`functions_streaming_event:${listenerId}`);
       const subscription = this.emitter.addListener(eventName, event => {
         const body = event.body;
@@ -222,7 +222,9 @@ class FirebaseFunctionsModule extends FirebaseModule {
         }
         if (body && (body.done || body.error)) {
           subscription.remove();
-          this.native.removeFunctionsStreaming(listenerId);
+          if (this.native.removeFunctionsStreaming) {
+            this.native.removeFunctionsStreaming(listenerId);
+          }
         }
       });
       this.native.httpsCallableStreamFromUrl(
@@ -237,7 +239,9 @@ class FirebaseFunctionsModule extends FirebaseModule {
       );
       return () => {
         subscription.remove();
-        this.native.removeFunctionsStreaming(listenerId);
+        if (this.native.removeFunctionsStreaming) {
+          this.native.removeFunctionsStreaming(listenerId);
+        }
       };
     };
 

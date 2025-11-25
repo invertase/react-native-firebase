@@ -5,6 +5,7 @@ import FirebaseApp = ReactNativeFirebase.FirebaseApp;
 import Functions = FirebaseFunctionsTypes.Module;
 import HttpsCallable = FirebaseFunctionsTypes.HttpsCallable;
 import HttpsCallableOptions = FirebaseFunctionsTypes.HttpsCallableOptions;
+import HttpsCallableStreamEvent = FirebaseFunctionsTypes.HttpsCallableStreamEvent;
 import HttpsErrorCodeType = FirebaseFunctionsTypes.HttpsErrorCode;
 
 export const HttpsErrorCode: HttpsErrorCodeType;
@@ -55,3 +56,85 @@ export declare function httpsCallableFromUrl<RequestData = unknown, ResponseData
   url: string,
   options?: HttpsCallableOptions,
 ): HttpsCallable<RequestData, ResponseData>;
+
+/**
+ * Convenience helper to start a streaming callable by name from modular API.
+ * Returns a function that when called with data and an event callback, starts the stream and returns an unsubscribe function.
+ * 
+ * #### Example
+ * 
+ * ```js
+ * import { getFunctions, httpsCallableStream } from '@react-native-firebase/functions/lib/modular';
+ * 
+ * const functions = getFunctions();
+ * const startStream = httpsCallableStream(functions, 'myStreamingFunction');
+ * 
+ * const unsubscribe = startStream({ input: 'data' }, (event) => {
+ *   if (event.error) {
+ *     console.error('Error:', event.error);
+ *   } else if (event.done) {
+ *     console.log('Stream complete');
+ *   } else if (event.text) {
+ *     console.log('Received:', event.text);
+ *   }
+ * });
+ * 
+ * // Stop the stream
+ * unsubscribe();
+ * ```
+ * 
+ * @param {Functions} functionsInstance A functions instance.
+ * @param {string} name The name of the trigger.
+ * @param {HttpsCallableOptions | undefined} options Options for execution.
+ * @returns A function that starts the stream and returns an unsubscribe function
+ */
+export declare function httpsCallableStream<RequestData = unknown>(
+  functionsInstance: Functions,
+  name: string,
+  options?: HttpsCallableOptions,
+): (
+  data?: RequestData | null,
+  onEvent?: (event: HttpsCallableStreamEvent) => void,
+  streamOptions?: HttpsCallableOptions,
+) => () => void;
+
+/**
+ * Convenience helper to start a streaming callable by URL from modular API.
+ * Returns a function that when called with data and an event callback, starts the stream and returns an unsubscribe function.
+ * 
+ * #### Example
+ * 
+ * ```js
+ * import { getFunctions, httpsCallableFromUrlStream } from '@react-native-firebase/functions/lib/modular';
+ * 
+ * const functions = getFunctions();
+ * const startStream = httpsCallableFromUrlStream(functions, 'https://mydomain.com/myFunction');
+ * 
+ * const unsubscribe = startStream({ input: 'data' }, (event) => {
+ *   if (event.error) {
+ *     console.error('Error:', event.error);
+ *   } else if (event.done) {
+ *     console.log('Stream complete');
+ *   } else if (event.text) {
+ *     console.log('Received:', event.text);
+ *   }
+ * });
+ * 
+ * // Stop the stream
+ * unsubscribe();
+ * ```
+ * 
+ * @param {Functions} functionsInstance A functions instance.
+ * @param {string} url The URL of the trigger.
+ * @param {HttpsCallableOptions | undefined} options Options for execution.
+ * @returns A function that starts the stream and returns an unsubscribe function
+ */
+export declare function httpsCallableFromUrlStream<RequestData = unknown>(
+  functionsInstance: Functions,
+  url: string,
+  options?: HttpsCallableOptions,
+): (
+  data?: RequestData | null,
+  onEvent?: (event: HttpsCallableStreamEvent) => void,
+  streamOptions?: HttpsCallableOptions,
+) => () => void;

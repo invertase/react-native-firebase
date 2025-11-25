@@ -83,3 +83,27 @@ export function httpsCallableFromUrl(functionsInstance, url, options) {
 }
 
 export { HttpsErrorCode } from '../index';
+
+/**
+ * Convenience helper to start a streaming callable by name from modular API.
+ * @param {Functions} functionsInstance A functions instance.
+ * @param {string} name The name of the trigger.
+ * @param {HttpsCallableOptions | undefined} options Options for execution.
+ * @returns {(data: any, onEvent: (evt: any) => void, streamOptions?: HttpsCallableOptions) => () => void}
+ */
+export function httpsCallableStream(functionsInstance, name, options) {
+  const callable = httpsCallable(functionsInstance, name, options);
+  return (data, onEvent, streamOptions) => callable.stream(data, onEvent, streamOptions);
+}
+
+/**
+ * Convenience helper to start a streaming callable by URL from modular API.
+ * @param {Functions} functionsInstance A functions instance.
+ * @param {string} url The URL of the trigger.
+ * @param {HttpsCallableOptions | undefined} options Options for execution.
+ * @returns {(data: any, onEvent: (evt: any) => void, streamOptions?: HttpsCallableOptions) => () => void}
+ */
+export function httpsCallableFromUrlStream(functionsInstance, url, options) {
+  const callable = httpsCallableFromUrl(functionsInstance, url, options);
+  return (data, onEvent, streamOptions) => callable.stream(data, onEvent, streamOptions);
+}

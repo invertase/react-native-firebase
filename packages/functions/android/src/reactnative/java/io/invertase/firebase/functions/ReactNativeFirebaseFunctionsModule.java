@@ -43,6 +43,11 @@ public class ReactNativeFirebaseFunctionsModule extends ReactNativeFirebaseModul
     this.module = new UniversalFirebaseFunctionsModule(reactContext, SERVICE_NAME);
   }
 
+  @Override
+  public String getName() {
+    return "RNFBFunctionsModule";
+  }
+
   @ReactMethod
   public void httpsCallable(
       String appName,

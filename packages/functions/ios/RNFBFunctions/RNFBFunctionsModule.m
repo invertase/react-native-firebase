@@ -212,6 +212,116 @@ RCT_EXPORT_METHOD(httpsCallableStream
 }
 
 /**
+ * Start a streaming HTTP request to an onRequest endpoint using a URL.
+ * Emits 'functions_streaming_event' events with { listenerId, body, appName, eventName }.
+ * Signature mirrors Android/JS:
+ *   (appName, regionOrDomain, host, port, url, wrapper, options, listenerId)
+ */
+RCT_EXPORT_METHOD(httpsCallableStreamFromUrl
+                  : (FIRApp *)firebaseApp customUrlOrRegion
+                  : (NSString *)customUrlOrRegion host
+                  : (NSString *)host port
+                  : (NSNumber *_Nonnull)port url
+                  : (NSString *)url wrapper
+                  : (__unused NSDictionary *)wrapper options
+                  : (__unused NSDictionary *)options listenerId
+                  : (NSNumber *_Nonnull)listenerId) {
+  if (!httpsCallableStreamListeners) {
+    httpsCallableStreamListeners = [NSMutableDictionary dictionary];
+  }
+  
+  // Use the provided URL directly
+  NSURLComponents *components = [NSURLComponents componentsWithString:url];
+  if (components == nil) {
+    NSMutableDictionary *body = [@{@"error" : @"invalid_url"} mutableCopy];
+    [RNFBSharedUtils sendJSEventForApp:firebaseApp
+                                  name:RNFB_FUNCTIONS_STREAMING_EVENT
+                                  body:@{
+                                    @"listenerId" : listenerId,
+                                    @"eventName" : RNFB_FUNCTIONS_STREAMING_EVENT,
+                                    @"body" : body
+                                  }];
+    return;
+  }
+  
+  // Override to emulator if provided
+  if (host != nil && port != nil) {
+    components.scheme = @"http";
+    components.host = host;
+    components.port = port;
+  }
+  
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[components URL]];
+  [request setHTTPMethod:@"GET"];
+  [request setValue:@"text/event-stream, application/x-ndjson, */*" forHTTPHeaderField:@"Accept"];
+
+  NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
+  config.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+  config.URLCache = nil;
+  NSURLSession *session = [NSURLSession sessionWithConfiguration:config];
+
+  NSURLSessionDataTask *task =
+      [session dataTaskWithRequest:request
+                 completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+                   if (error) {
+                     NSMutableDictionary *body = [@{@"error" : error.localizedDescription ?: @"error"} mutableCopy];
+                     [RNFBSharedUtils sendJSEventForApp:firebaseApp
+                                                   name:RNFB_FUNCTIONS_STREAMING_EVENT
+                                                   body:@{
+                                                     @"listenerId" : listenerId,
+                                                     @"eventName" : RNFB_FUNCTIONS_STREAMING_EVENT,
+                                                     @"body" : body
+                                                   }];
+                   } else if ([response isKindOfClass:[NSHTTPURLResponse class]] &&
+                              [(NSHTTPURLResponse *)response statusCode] >= 400) {
+                     NSHTTPURLResponse *http = (NSHTTPURLResponse *)response;
+                     NSString *msg = [NSString stringWithFormat:@"http_error_%ld_%@",
+                                                              (long)http.statusCode,
+                                                              [NSHTTPURLResponse localizedStringForStatusCode:http.statusCode]];
+                     NSMutableDictionary *body = [@{@"error" : msg} mutableCopy];
+                     [RNFBSharedUtils sendJSEventForApp:firebaseApp
+                                                   name:RNFB_FUNCTIONS_STREAMING_EVENT
+                                                   body:@{
+                                                     @"listenerId" : listenerId,
+                                                     @"eventName" : RNFB_FUNCTIONS_STREAMING_EVENT,
+                                                     @"body" : body
+                                                   }];
+                   } else if (data.length > 0) {
+                     NSString *payload = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                     // Split into lines (handles SSE or NDJSON)
+                     [payload enumerateLinesUsingBlock:^(NSString *line, BOOL *stop) {
+                       if (line.length == 0) return;
+                       NSString *trimmed = [line hasPrefix:@"data: "] ? [line substringFromIndex:6] : line;
+                       NSMutableDictionary *body = [@{@"text" : trimmed} mutableCopy];
+                       [RNFBSharedUtils sendJSEventForApp:firebaseApp
+                                                     name:RNFB_FUNCTIONS_STREAMING_EVENT
+                                                     body:@{
+                                                       @"listenerId" : listenerId,
+                                                       @"eventName" : RNFB_FUNCTIONS_STREAMING_EVENT,
+                                                       @"body" : body
+                                                     }];
+                     }];
+                   }
+                   // Always emit done at end
+                   [RNFBSharedUtils sendJSEventForApp:firebaseApp
+                                                 name:RNFB_FUNCTIONS_STREAMING_EVENT
+                                                 body:@{
+                                                   @"listenerId" : listenerId,
+                                                   @"eventName" : RNFB_FUNCTIONS_STREAMING_EVENT,
+                                                   @"body" : @{@"done" : @YES}
+                                                 }];
+                   @synchronized(httpsCallableStreamListeners) {
+                     [httpsCallableStreamListeners removeObjectForKey:listenerId];
+                   }
+                 }];
+
+  @synchronized(httpsCallableStreamListeners) {
+    httpsCallableStreamListeners[listenerId] = task;
+  }
+  [task resume];
+}
+
+/**
  * Optional add hook; kept for API symmetry.
  */
 RCT_EXPORT_METHOD(addFunctionsStreaming : (NSNumber *_Nonnull)listenerId) {

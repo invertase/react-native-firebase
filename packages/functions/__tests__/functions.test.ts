@@ -6,6 +6,8 @@ import functions, {
   connectFunctionsEmulator,
   httpsCallable,
   httpsCallableFromUrl,
+  httpsCallableStream,
+  httpsCallableFromUrlStream,
   HttpsErrorCode,
 } from '../lib';
 
@@ -94,6 +96,74 @@ describe('Cloud Functions', function () {
     it('`HttpsErrorCode` function is properly exposed to end user', function () {
       expect(HttpsErrorCode).toBeDefined();
     });
+
+    it('`httpsCallableStream` function is properly exposed to end user', function () {
+      expect(httpsCallableStream).toBeDefined();
+    });
+
+    it('`httpsCallableFromUrlStream` function is properly exposed to end user', function () {
+      expect(httpsCallableFromUrlStream).toBeDefined();
+    });
+
+    describe('streaming', function () {
+      it('httpsCallable returns object with stream method', function () {
+        const app = getApp();
+        const functionsInstance = getFunctions(app);
+        const callable = httpsCallable(functionsInstance, 'test');
+        
+        expect(callable).toBeDefined();
+        expect(typeof callable).toBe('function');
+        expect(callable.stream).toBeDefined();
+        expect(typeof callable.stream).toBe('function');
+      });
+
+      it('httpsCallableFromUrl returns object with stream method', function () {
+        const app = getApp();
+        const functionsInstance = getFunctions(app);
+        const callable = httpsCallableFromUrl(functionsInstance, 'https://example.com/test');
+        
+        expect(callable).toBeDefined();
+        expect(typeof callable).toBe('function');
+        expect(callable.stream).toBeDefined();
+        expect(typeof callable.stream).toBe('function');
+      });
+
+      it('httpsCallableStream returns a function', function () {
+        const app = getApp();
+        const functionsInstance = getFunctions(app);
+        const streamStarter = httpsCallableStream(functionsInstance, 'test');
+        
+        expect(streamStarter).toBeDefined();
+        expect(typeof streamStarter).toBe('function');
+      });
+
+      it('httpsCallableFromUrlStream returns a function', function () {
+        const app = getApp();
+        const functionsInstance = getFunctions(app);
+        const streamStarter = httpsCallableFromUrlStream(functionsInstance, 'https://example.com/test');
+        
+        expect(streamStarter).toBeDefined();
+        expect(typeof streamStarter).toBe('function');
+      });
+
+      it('namespace API httpsCallable returns object with stream method', function () {
+        const callable = functions().httpsCallable('test');
+        
+        expect(callable).toBeDefined();
+        expect(typeof callable).toBe('function');
+        expect(callable.stream).toBeDefined();
+        expect(typeof callable.stream).toBe('function');
+      });
+
+      it('namespace API httpsCallableFromUrl returns object with stream method', function () {
+        const callable = functions().httpsCallableFromUrl('https://example.com/test');
+        
+        expect(callable).toBeDefined();
+        expect(typeof callable).toBe('function');
+        expect(callable.stream).toBeDefined();
+        expect(typeof callable.stream).toBe('function');
+      });
+    });
   });
 
   describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
@@ -149,6 +219,26 @@ describe('Cloud Functions', function () {
           () => functions.httpsCallableFromUrl('https://example.com/example'),
           'httpsCallableFromUrl',
         );
+      });
+
+      it('httpsCallableStream()', function () {
+        const app = getApp();
+        const functions = app.functions();
+        const callable = httpsCallable(functions, 'example');
+        
+        // The stream method should be available on the callable
+        expect(callable.stream).toBeDefined();
+        expect(typeof callable.stream).toBe('function');
+      });
+
+      it('httpsCallableFromUrlStream()', function () {
+        const app = getApp();
+        const functions = app.functions();
+        const callable = httpsCallableFromUrl(functions, 'https://example.com/example');
+        
+        // The stream method should be available on the callable
+        expect(callable.stream).toBeDefined();
+        expect(typeof callable.stream).toBe('function');
       });
     });
   });

@@ -122,6 +122,28 @@ export namespace FirebaseFunctionsTypes {
   }
 
   /**
+   * An event emitted during streaming from a callable function.
+   */
+  export interface HttpsCallableStreamEvent {
+    /**
+     * Text chunk received from the stream
+     */
+    text?: string;
+    /**
+     * Error message if the stream encountered an error
+     */
+    error?: string;
+    /**
+     * Whether the stream has completed
+     */
+    done?: boolean;
+    /**
+     * Any additional data in the event
+     */
+    [key: string]: any;
+  }
+
+  /**
    * An HttpsCallable is a reference to a "callable" http trigger in
    * Google Cloud Functions.
    *
@@ -139,9 +161,41 @@ export namespace FirebaseFunctionsTypes {
    *  console.error(e);
    * }
    * ```
+   *
+   * #### Streaming Example
+   *
+   * ```js
+   * const reference = firebase.functions().httpsCallable('streamingFunction');
+   * const unsubscribe = reference.stream({ input: 'data' }, (event) => {
+   *   if (event.error) {
+   *     console.error('Stream error:', event.error);
+   *   } else if (event.done) {
+   *     console.log('Stream completed');
+   *   } else if (event.text) {
+   *     console.log('Stream chunk:', event.text);
+   *   }
+   * });
+   * 
+   * // Later, to stop the stream:
+   * unsubscribe();
+   * ```
    */
   export interface HttpsCallable<RequestData = unknown, ResponseData = unknown> {
     (data?: RequestData | null): Promise<HttpsCallableResult<ResponseData>>;
+    
+    /**
+     * Start a streaming request to the callable function.
+     * 
+     * @param data The data to send to the function
+     * @param onEvent Callback function that receives streaming events
+     * @param options Optional HttpsCallableOptions for the streaming request
+     * @returns A function that when called, stops the stream
+     */
+    stream(
+      data?: RequestData | null,
+      onEvent?: (event: HttpsCallableStreamEvent) => void,
+      options?: HttpsCallableOptions,
+    ): () => void;
   }
 
   /**
