@@ -14,22 +14,23 @@ connectFunctionsEmulator(functions, 'localhost', 5001);
 export function HttpsCallableTestComponent(): React.JSX.Element {
   const handleCallFunction = async (): Promise<void> => {
     try {
-      const functionRunner = httpsCallable<number[], unknown>(
+      const functionRunner = httpsCallable<unknown[], unknown>(
         getFunctions(getApp()),
         'testFunctionDefaultRegionV2',
       );
-      const response = await functionRunner([1, 2, 3, 4]);
+      const response = await functionRunner([1, 2, 3, 4, null, { yo: 1, nooo: null }]);
       console.log('response', response.data);
     } catch (e) {
-      console.log('EEEE', e);
+      console.error(e);
     }
   };
 
   return (
     <View>
-      <Text>React Native Firebase</Text>
-      <Text>Functions API</Text>
-      <Text>Ensure Emulator is running!!</Text>
+      <Text style={{ fontSize: 16, fontWeight: 'bold', padding: 20, textAlign: 'center' }}>
+        Ensure Emulator is running!!
+      </Text>
+
       <Button title="Call Function" onPress={handleCallFunction} />
     </View>
   );
