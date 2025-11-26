@@ -36,8 +36,9 @@ public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebas
 
       // check and remove old notifications message
       List<String> allNotificationList = convertToArray(notificationIds);
-      if (allNotificationList.size() > MAX_SIZE_NOTIFICATIONS) {
+      while (allNotificationList.size() > MAX_SIZE_NOTIFICATIONS) {
         clearFirebaseMessage(allNotificationList.get(0));
+        allNotificationList.remove(0);
       }
     } catch (JSONException e) {
       e.printStackTrace();
