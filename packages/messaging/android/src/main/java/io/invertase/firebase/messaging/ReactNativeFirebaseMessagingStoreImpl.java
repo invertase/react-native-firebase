@@ -74,7 +74,7 @@ public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebas
   @Override
   public void clearFirebaseMessage(String remoteMessageId) {
     UniversalFirebasePreferences preferences = UniversalFirebasePreferences.getSharedInstance();
-    preferences.remove(remoteMessageId);
+    preferences.remove(remoteMessageId).apply();
     // check and remove old notifications message
     String notificationIds = preferences.getStringValue(S_KEY_ALL_NOTIFICATION_IDS, "");
     if (!notificationIds.isEmpty()) {
