@@ -829,67 +829,66 @@ describe('functions() modular', function () {
           return Promise.resolve();
         }
       });
+
+      describe('functions() streaming', function () {
+        // Helper to collect events until done or error
+        function collectStream(callable, data, opts = {}) {
+          const events = [];
+          const stop = callable.stream(data, evt => events.push(evt), opts);
+          const done = new Promise((resolve, reject) => {
+            const started = Date.now();
+            const check = () => {
+              const last = events[events.length - 1];
+              if (last && last.error) return reject(new Error(last.error));
+              if (last && last.done) return resolve(events);
+              if (Date.now() - started > 15000) return reject(new Error('stream timeout'));
+              setTimeout(check, 50);
+            };
+            check();
+          });
+          return { events, done, stop };
+        }
+      
+        it('httpsCallable(name).stream() emits chunks and ends with done', async function () {
+          const { getApp } = modular;
+          const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
+      
+          const region = 'us-central1';
+          const fnName = 'helloWorldV2';
+          const fns = getFunctions(getApp(), region);
+          connectFunctionsEmulator(fns, 'localhost', 5001);
+          const callable = httpsCallable(fns, fnName);
+      
+          const { done } = collectStream(callable);
+          const all = await done;
+          all.length.should.be.greaterThan(0);
+          const firstChunk = all.find(e => e && e.text && !e.done && !e.error);
+          should.exist(firstChunk);
+          firstChunk.text.should.containEql('Hello from Firebase!');
+          all[all.length - 1].done.should.eql(true);
+        });
+      
+        it('httpsCallableFromUrl(url).stream() emits chunks and ends with done', async function () {
+          const { getApp } = modular;
+          const { getFunctions, httpsCallableFromUrl } = functionsModular;
+      
+          let hostname = 'localhost';
+          if (Platform.android) {
+            hostname = '10.0.2.2';
+          }
+          const url = `http://${hostname}:5001/react-native-firebase-testing/us-central1/helloWorldV2`;
+          const fns = getFunctions(getApp());
+          const callableFromUrl = httpsCallableFromUrl(fns, url);
+      
+          const { done } = collectStream(callableFromUrl);
+          const all = await done;
+          all.length.should.be.greaterThan(0);
+          const firstChunk = all.find(e => e && e.text && !e.done && !e.error);
+          should.exist(firstChunk);
+          firstChunk.text.should.containEql('Hello from Firebase!');
+          all[all.length - 1].done.should.eql(true);
+        });
+      });
     });
-  });
-});
-
-// Additional streaming tests for httpsCallable().stream similar to FlutterFire
-describe('functions() streaming', function () {
-  // Helper to collect events until done or error
-  function collectStream(callable, data, opts = {}) {
-    const events = [];
-    const stop = callable.stream(data, evt => events.push(evt), opts);
-    const done = new Promise((resolve, reject) => {
-      const started = Date.now();
-      const check = () => {
-        const last = events[events.length - 1];
-        if (last && last.error) return reject(new Error(last.error));
-        if (last && last.done) return resolve(events);
-        if (Date.now() - started > 15000) return reject(new Error('stream timeout'));
-        setTimeout(check, 50);
-      };
-      check();
-    });
-    return { events, done, stop };
-  }
-
-  it('httpsCallable(name).stream() emits chunks and ends with done', async function () {
-    const { getApp } = modular;
-    const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
-
-    const region = 'us-central1';
-    const fnName = 'helloWorldV2';
-    const fns = getFunctions(getApp(), region);
-    connectFunctionsEmulator(fns, 'localhost', 5001);
-    const callable = httpsCallable(fns, fnName);
-
-    const { done, events } = collectStream(callable);
-    const all = await done;
-    all.length.should.be.greaterThan(0);
-    const firstChunk = all.find(e => e && e.text && !e.done && !e.error);
-    should.exist(firstChunk);
-    firstChunk.text.should.containEql('Hello from Firebase!');
-    all[all.length - 1].done.should.eql(true);
-  });
-
-  it('httpsCallableFromUrl(url).stream() emits chunks and ends with done', async function () {
-    const { getApp } = modular;
-    const { getFunctions, httpsCallableFromUrl } = functionsModular;
-
-    let hostname = 'localhost';
-    if (Platform.android) {
-      hostname = '10.0.2.2';
-    }
-    const url = `http://${hostname}:5001/react-native-firebase-testing/us-central1/helloWorldV2`;
-    const fns = getFunctions(getApp());
-    const callableFromUrl = httpsCallableFromUrl(fns, url);
-
-    const { done, events } = collectStream(callableFromUrl);
-    const all = await done;
-    all.length.should.be.greaterThan(0);
-    const firstChunk = all.find(e => e && e.text && !e.done && !e.error);
-    should.exist(firstChunk);
-    firstChunk.text.should.containEql('Hello from Firebase!');
-    all[all.length - 1].done.should.eql(true);
   });
 });

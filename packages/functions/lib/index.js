@@ -99,7 +99,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
         throw new Error('HttpsCallableOptions.timeout expected a Number in milliseconds');
       }
     }
-  
+
     // Create the main callable function
     const callableFunction = data => {
       const nativePromise = this.native.httpsCallable(
@@ -123,7 +123,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
         );
       });
     };
-  
+
     // Add a streaming helper (callback-based)
     // Usage: const stop = functions().httpsCallable('fn').stream(data, (evt) => {...}, options)
     callableFunction.stream = (data, onEvent, options = {}) => {
@@ -165,7 +165,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
         }
       };
     };
-  
+
     return callableFunction;
   }
 

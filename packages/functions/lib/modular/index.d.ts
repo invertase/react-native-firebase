@@ -60,15 +60,15 @@ export declare function httpsCallableFromUrl<RequestData = unknown, ResponseData
 /**
  * Convenience helper to start a streaming callable by name from modular API.
  * Returns a function that when called with data and an event callback, starts the stream and returns an unsubscribe function.
- * 
+ *
  * #### Example
- * 
+ *
  * ```js
  * import { getFunctions, httpsCallableStream } from '@react-native-firebase/functions/lib/modular';
- * 
+ *
  * const functions = getFunctions();
  * const startStream = httpsCallableStream(functions, 'myStreamingFunction');
- * 
+ *
  * const unsubscribe = startStream({ input: 'data' }, (event) => {
  *   if (event.error) {
  *     console.error('Error:', event.error);
@@ -78,11 +78,11 @@ export declare function httpsCallableFromUrl<RequestData = unknown, ResponseData
  *     console.log('Received:', event.text);
  *   }
  * });
- * 
+ *
  * // Stop the stream
  * unsubscribe();
  * ```
- * 
+ *
  * @param {Functions} functionsInstance A functions instance.
  * @param {string} name The name of the trigger.
  * @param {HttpsCallableOptions | undefined} options Options for execution.
@@ -101,15 +101,15 @@ export declare function httpsCallableStream<RequestData = unknown>(
 /**
  * Convenience helper to start a streaming callable by URL from modular API.
  * Returns a function that when called with data and an event callback, starts the stream and returns an unsubscribe function.
- * 
+ *
  * #### Example
- * 
+ *
  * ```js
  * import { getFunctions, httpsCallableFromUrlStream } from '@react-native-firebase/functions/lib/modular';
- * 
+ *
  * const functions = getFunctions();
  * const startStream = httpsCallableFromUrlStream(functions, 'https://mydomain.com/myFunction');
- * 
+ *
  * const unsubscribe = startStream({ input: 'data' }, (event) => {
  *   if (event.error) {
  *     console.error('Error:', event.error);
@@ -119,11 +119,11 @@ export declare function httpsCallableStream<RequestData = unknown>(
  *     console.log('Received:', event.text);
  *   }
  * });
- * 
+ *
  * // Stop the stream
  * unsubscribe();
  * ```
- * 
+ *
  * @param {Functions} functionsInstance A functions instance.
  * @param {string} url The URL of the trigger.
  * @param {HttpsCallableOptions | undefined} options Options for execution.

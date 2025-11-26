@@ -142,7 +142,7 @@ export default {
    * Mirrors the native streaming implementation, but uses fetch on web.
    *
    * Signature:
-   *   (appName, regionOrCustomDomain, host, port, name, wrapper, options, listenerId)
+   *   (appName, regionOrCustomDomain, host, port, name, listenerId)
    */
   async httpsCallableStream(
     appName,
@@ -150,8 +150,6 @@ export default {
     host,
     port,
     name,
-    wrapper,
-    options,
     listenerId,
   ) {
     const fetchImpl = typeof fetch === 'function' ? fetch : null;
@@ -226,16 +224,11 @@ export default {
    * Start a streaming HTTP request to an onRequest endpoint using a URL.
    *
    * Signature:
-   *   (appName, regionOrCustomDomain, host, port, url, wrapper, options, listenerId)
+   *   (appName, url, listenerId)
    */
   async httpsCallableStreamFromUrl(
     appName,
-    regionOrCustomDomain,
-    host,
-    port,
     url,
-    wrapper,
-    options,
     listenerId,
   ) {
     const fetchImpl = typeof fetch === 'function' ? fetch : null;
@@ -287,17 +280,5 @@ export default {
         delete STREAM_CONTROLLERS[listenerId];
       }
     }
-  },
-
-  addFunctionsStreaming(appName, regionOrCustomDomain, listenerId) {
-    // No-op on web; streaming is started explicitly by httpsCallableStream*.
-  },
-
-  removeFunctionsStreaming(appName, regionOrCustomDomain, listenerId) {
-    const controller = STREAM_CONTROLLERS[listenerId];
-    if (controller && typeof controller.abort === 'function') {
-      controller.abort();
-    }
-    delete STREAM_CONTROLLERS[listenerId];
   },
 };

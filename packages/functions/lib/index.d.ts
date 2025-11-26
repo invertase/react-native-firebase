@@ -175,17 +175,17 @@ export namespace FirebaseFunctionsTypes {
    *     console.log('Stream chunk:', event.text);
    *   }
    * });
-   * 
+   *
    * // Later, to stop the stream:
    * unsubscribe();
    * ```
    */
   export interface HttpsCallable<RequestData = unknown, ResponseData = unknown> {
     (data?: RequestData | null): Promise<HttpsCallableResult<ResponseData>>;
-    
+
     /**
      * Start a streaming request to the callable function.
-     * 
+     *
      * @param data The data to send to the function
      * @param onEvent Callback function that receives streaming events
      * @param options Optional HttpsCallableOptions for the streaming request
