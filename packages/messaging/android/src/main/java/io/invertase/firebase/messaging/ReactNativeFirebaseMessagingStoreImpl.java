@@ -28,18 +28,21 @@ public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebas
           reactToJSON(remoteMessageToWritableMap(remoteMessage)).toString();
       //      Log.d("storeFirebaseMessage", remoteMessageString);
       UniversalFirebasePreferences preferences = UniversalFirebasePreferences.getSharedInstance();
-      preferences.setStringValue(remoteMessage.getMessageId(), remoteMessageString);
-      // save new notification id
-      String notificationIds = preferences.getStringValue(S_KEY_ALL_NOTIFICATION_IDS, "");
-      notificationIds += remoteMessage.getMessageId() + DELIMITER; // append to last
-      preferences.setStringValue(S_KEY_ALL_NOTIFICATION_IDS, notificationIds);
 
-      // check and remove old notifications message
+      // remove old notifications message before store to free space as needed
+      String notificationIds = preferences.getStringValue(S_KEY_ALL_NOTIFICATION_IDS, "");
       List<String> allNotificationList = convertToArray(notificationIds);
-      while (allNotificationList.size() > MAX_SIZE_NOTIFICATIONS) {
+      while (allNotificationList.size() > MAX_SIZE_NOTIFICATIONS - 1) {
         clearFirebaseMessage(allNotificationList.get(0));
         allNotificationList.remove(0);
       }
+
+      // now refetch the ids after possible removals, and store the new message
+      notificationIds = preferences.getStringValue(S_KEY_ALL_NOTIFICATION_IDS, "");
+      preferences.setStringValue(remoteMessage.getMessageId(), remoteMessageString);
+      // save new notification id
+      notificationIds += remoteMessage.getMessageId() + DELIMITER; // append to last
+      preferences.setStringValue(S_KEY_ALL_NOTIFICATION_IDS, notificationIds);
     } catch (JSONException e) {
       e.printStackTrace();
     }
