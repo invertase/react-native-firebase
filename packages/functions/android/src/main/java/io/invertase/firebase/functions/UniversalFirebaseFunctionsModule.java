@@ -20,8 +20,8 @@ package io.invertase.firebase.functions;
 import android.content.Context;
 import android.util.SparseArray;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
@@ -162,7 +162,8 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
     getExecutor()
         .execute(
             () -> {
-              OkHttpClient client = new OkHttpClient.Builder().retryOnConnectionFailure(true).build();
+              OkHttpClient client =
+                  new OkHttpClient.Builder().retryOnConnectionFailure(true).build();
               HttpUrl parsed = HttpUrl.parse(url);
               if (parsed == null) {
                 emitError(appName, listenerId, "invalid_url");

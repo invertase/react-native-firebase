@@ -1,4 +1,5 @@
 package io.invertase.firebase.functions;
+
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -18,6 +19,7 @@ package io.invertase.firebase.functions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import io.invertase.firebase.interfaces.NativeEvent;
+
 public class ReactNativeFirebaseFunctionsEvent implements NativeEvent {
   static final String FUNCTIONS_STREAMING_EVENT = "functions_streaming_event";
   private static final String KEY_ID = "listenerId";
@@ -28,6 +30,7 @@ public class ReactNativeFirebaseFunctionsEvent implements NativeEvent {
   private WritableMap eventBody;
   private String appName;
   private int listenerId;
+
   ReactNativeFirebaseFunctionsEvent(
       String eventName, WritableMap eventBody, String appName, int listenerId) {
     this.eventName = eventName;
@@ -35,10 +38,12 @@ public class ReactNativeFirebaseFunctionsEvent implements NativeEvent {
     this.appName = appName;
     this.listenerId = listenerId;
   }
+
   @Override
   public String getEventName() {
     return eventName;
   }
+
   @Override
   public WritableMap getEventBody() {
     WritableMap event = Arguments.createMap();
@@ -48,6 +53,7 @@ public class ReactNativeFirebaseFunctionsEvent implements NativeEvent {
     event.putString(KEY_EVENT_NAME, eventName);
     return event;
   }
+
   @Override
   public String getFirebaseAppName() {
     return appName;
