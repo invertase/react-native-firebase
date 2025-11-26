@@ -9,7 +9,7 @@
     "lerna:clean": "lerna clean",
     "build:all:clean": "lerna run build:clean",
     "build:all:build": "lerna run build",
-    "build:functions:build": "cd .github/workflows/scripts/functions && yarn build",
+    "test:functions:build": "cd .github/workflows/scripts/functions && yarn build",
     "codegen:all": "lerna run codegen",
     "lint": "yarn lint:js && yarn lint:android && yarn lint:ios:check",
     "lint:js": "eslint packages/* --max-warnings=0",

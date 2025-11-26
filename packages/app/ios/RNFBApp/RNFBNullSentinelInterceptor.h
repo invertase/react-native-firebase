@@ -24,7 +24,8 @@
  * Intercepts TurboModule conversions to automatically decode null sentinels.
  *
  * iOS TurboModules strip null values from object properties during serialization.
- * The JavaScript side encodes nulls as { __rnfbNull: true } sentinel objects,
+ * See: https://github.com/facebook/react-native/issues/52802
+ * The JavaScript side encodes nulls as sentinel objects,
  * and this interceptor automatically converts them back to NSNull before they
  * reach module implementation methods.
  *

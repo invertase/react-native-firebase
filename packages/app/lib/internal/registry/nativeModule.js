@@ -45,6 +45,7 @@ function nativeModuleMethodWrapped(namespace, method, argToPrepend, nativeModule
     const isTurboModule = !!NativeModules[nativeModuleName];
     // For iOS TurboModules, encode null values in arguments to work around
     // the limitation where null values in object properties get stripped during serialization
+    // See: https://github.com/facebook/react-native/issues/52802
     const processedArgs = isIOS && isTurboModule ? args.map(arg => encodeNullValues(arg)) : args;
     const allArgs = [...argToPrepend, ...processedArgs];
     const possiblePromise = method(...allArgs);
