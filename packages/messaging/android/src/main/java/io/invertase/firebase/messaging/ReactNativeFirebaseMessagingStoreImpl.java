@@ -30,17 +30,17 @@ public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebas
       UniversalFirebasePreferences preferences = UniversalFirebasePreferences.getSharedInstance();
       preferences.setStringValue(remoteMessage.getMessageId(), remoteMessageString);
       // save new notification id
-      String notifications = preferences.getStringValue(S_KEY_ALL_NOTIFICATION_IDS, "");
-      notifications += remoteMessage.getMessageId() + DELIMITER; // append to last
+      String notificationIds = preferences.getStringValue(S_KEY_ALL_NOTIFICATION_IDS, "");
+      notificationIds += remoteMessage.getMessageId() + DELIMITER; // append to last
 
       // check and remove old notifications message
-      List<String> allNotificationList = convertToArray(notifications);
+      List<String> allNotificationList = convertToArray(notificationIds);
       if (allNotificationList.size() > MAX_SIZE_NOTIFICATIONS) {
         String firstRemoteMessageId = allNotificationList.get(0);
         preferences.remove(firstRemoteMessageId);
-        notifications = removeRemoteMessage(firstRemoteMessageId, notifications);
+        notificationIds = removeRemoteMessageId(firstRemoteMessageId, notificationIds);
       }
-      preferences.setStringValue(S_KEY_ALL_NOTIFICATION_IDS, notifications);
+      preferences.setStringValue(S_KEY_ALL_NOTIFICATION_IDS, notificationIds);
     } catch (JSONException e) {
       e.printStackTrace();
     }
@@ -78,15 +78,15 @@ public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebas
     UniversalFirebasePreferences preferences = UniversalFirebasePreferences.getSharedInstance();
     preferences.remove(remoteMessageId);
     // check and remove old notifications message
-    String notifications = preferences.getStringValue(S_KEY_ALL_NOTIFICATION_IDS, "");
-    if (!notifications.isEmpty()) {
-      notifications = removeRemoteMessage(remoteMessageId, notifications); // remove from list
-      preferences.setStringValue(S_KEY_ALL_NOTIFICATION_IDS, notifications);
+    String notificationIds = preferences.getStringValue(S_KEY_ALL_NOTIFICATION_IDS, "");
+    if (!notificationIds.isEmpty()) {
+      notificationIds = removeRemoteMessageId(remoteMessageId, notificationIds); // remove from list
+      preferences.setStringValue(S_KEY_ALL_NOTIFICATION_IDS, notificationIds);
     }
   }
 
-  private String removeRemoteMessage(String remoteMessageId, String notifications) {
-    return notifications.replace(remoteMessageId + DELIMITER, "");
+  private String removeRemoteMessageId(String remoteMessageId, String notificationIds) {
+    return notificationIds.replace(remoteMessageId + DELIMITER, "");
   }
 
   private List<String> convertToArray(String string) {
