@@ -854,11 +854,14 @@ describe('functions() streaming', function () {
   }
 
   it('httpsCallable(name).stream() emits chunks and ends with done', async function () {
+    const { getApp } = modular;
+    const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
+
     const region = 'us-central1';
     const fnName = 'helloWorldV2';
-    const fns = firebase.app().functions(region);
-    fns.useEmulator('localhost', 5001);
-    const callable = fns.httpsCallable(fnName);
+    const fns = getFunctions(getApp(), region);
+    connectFunctionsEmulator(fns, 'localhost', 5001);
+    const callable = httpsCallable(fns, fnName);
 
     const { done, events } = collectStream(callable);
     const all = await done;
@@ -870,12 +873,17 @@ describe('functions() streaming', function () {
   });
 
   it('httpsCallableFromUrl(url).stream() emits chunks and ends with done', async function () {
+    const { getApp } = modular;
+    const { getFunctions, httpsCallableFromUrl } = functionsModular;
+
     let hostname = 'localhost';
     if (Platform.android) {
       hostname = '10.0.2.2';
     }
     const url = `http://${hostname}:5001/react-native-firebase-testing/us-central1/helloWorldV2`;
-    const callableFromUrl = firebase.functions().httpsCallableFromUrl(url);
+    const fns = getFunctions(getApp());
+    const callableFromUrl = httpsCallableFromUrl(fns, url);
+
     const { done, events } = collectStream(callableFromUrl);
     const all = await done;
     all.length.should.be.greaterThan(0);

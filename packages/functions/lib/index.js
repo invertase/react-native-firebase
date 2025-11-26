@@ -179,9 +179,8 @@ class FirebaseFunctionsModule extends FirebaseModule {
     }
 
     const callableFunction = data => {
+      // Note: appName and customUrlOrRegion are automatically prepended by the native module wrapper
       const nativePromise = this.native.httpsCallableFromUrl(
-        this.appName,
-        this._customUrlOrRegion,
         this._useFunctionsEmulatorHost,
         this._useFunctionsEmulatorPort,
         url,
