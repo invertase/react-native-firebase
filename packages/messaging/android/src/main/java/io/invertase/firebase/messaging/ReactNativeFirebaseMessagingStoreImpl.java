@@ -32,15 +32,13 @@ public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebas
       // save new notification id
       String notificationIds = preferences.getStringValue(S_KEY_ALL_NOTIFICATION_IDS, "");
       notificationIds += remoteMessage.getMessageId() + DELIMITER; // append to last
+      preferences.setStringValue(S_KEY_ALL_NOTIFICATION_IDS, notificationIds);
 
       // check and remove old notifications message
       List<String> allNotificationList = convertToArray(notificationIds);
       if (allNotificationList.size() > MAX_SIZE_NOTIFICATIONS) {
-        String firstRemoteMessageId = allNotificationList.get(0);
-        preferences.remove(firstRemoteMessageId);
-        notificationIds = removeRemoteMessageId(firstRemoteMessageId, notificationIds);
+        clearFirebaseMessage(allNotificationList.get(0));
       }
-      preferences.setStringValue(S_KEY_ALL_NOTIFICATION_IDS, notificationIds);
     } catch (JSONException e) {
       e.printStackTrace();
     }
