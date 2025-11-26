@@ -144,14 +144,7 @@ export default {
    * Signature:
    *   (appName, regionOrCustomDomain, host, port, name, listenerId)
    */
-  async httpsCallableStream(
-    appName,
-    regionOrCustomDomain,
-    host,
-    port,
-    name,
-    listenerId,
-  ) {
+  async httpsCallableStream(appName, regionOrCustomDomain, host, port, name, listenerId) {
     const fetchImpl = typeof fetch === 'function' ? fetch : null;
     if (!fetchImpl) {
       emitStreamingEvent(appName, listenerId, { error: 'fetch_not_available' });
@@ -226,11 +219,7 @@ export default {
    * Signature:
    *   (appName, url, listenerId)
    */
-  async httpsCallableStreamFromUrl(
-    appName,
-    url,
-    listenerId,
-  ) {
+  async httpsCallableStreamFromUrl(appName, url, listenerId) {
     const fetchImpl = typeof fetch === 'function' ? fetch : null;
     if (!fetchImpl) {
       emitStreamingEvent(appName, listenerId, { error: 'fetch_not_available' });

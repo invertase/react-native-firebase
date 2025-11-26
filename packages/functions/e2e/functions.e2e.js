@@ -848,17 +848,17 @@ describe('functions() modular', function () {
           });
           return { events, done, stop };
         }
-      
+
         it('httpsCallable(name).stream() emits chunks and ends with done', async function () {
           const { getApp } = modular;
           const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
-      
+
           const region = 'us-central1';
           const fnName = 'helloWorldV2';
           const fns = getFunctions(getApp(), region);
           connectFunctionsEmulator(fns, 'localhost', 5001);
           const callable = httpsCallable(fns, fnName);
-      
+
           const { done } = collectStream(callable);
           const all = await done;
           all.length.should.be.greaterThan(0);
@@ -867,11 +867,11 @@ describe('functions() modular', function () {
           firstChunk.text.should.containEql('Hello from Firebase!');
           all[all.length - 1].done.should.eql(true);
         });
-      
+
         it('httpsCallableFromUrl(url).stream() emits chunks and ends with done', async function () {
           const { getApp } = modular;
           const { getFunctions, httpsCallableFromUrl } = functionsModular;
-      
+
           let hostname = 'localhost';
           if (Platform.android) {
             hostname = '10.0.2.2';
@@ -879,7 +879,7 @@ describe('functions() modular', function () {
           const url = `http://${hostname}:5001/react-native-firebase-testing/us-central1/helloWorldV2`;
           const fns = getFunctions(getApp());
           const callableFromUrl = httpsCallableFromUrl(fns, url);
-      
+
           const { done } = collectStream(callableFromUrl);
           const all = await done;
           all.length.should.be.greaterThan(0);
