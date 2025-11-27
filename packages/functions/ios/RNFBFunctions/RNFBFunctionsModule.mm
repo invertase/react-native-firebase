@@ -18,10 +18,10 @@
 #import <Firebase/Firebase.h>
 #import <React/RCTUtils.h>
 
-#import "RNFBApp/RNFBSharedUtils.h"
-#import "RNFBApp/RCTConvert+FIRApp.h"
-#import "RNFBFunctionsModule.h"
 #import "NativeFunctionsModule.h"
+#import "RNFBApp/RCTConvert+FIRApp.h"
+#import "RNFBApp/RNFBSharedUtils.h"
+#import "RNFBFunctionsModule.h"
 
 @interface RNFBFunctionsModule ()
 @end
@@ -34,14 +34,14 @@ RCT_EXPORT_MODULE(NativeFunctionsModule)
 #pragma mark -
 #pragma mark Firebase Functions Methods
 
-
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params {
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
   return std::make_shared<facebook::react::NativeFunctionsModuleSpecJSI>(params);
 }
 
 - (void)httpsCallable:(NSString *)appName
                region:(NSString *)customUrlOrRegion
-         emulatorHost:(NSString * _Nullable)emulatorHost
+         emulatorHost:(NSString *_Nullable)emulatorHost
          emulatorPort:(double)emulatorPort
                  name:(NSString *)name
                  data:(JS::NativeFunctionsModule::SpecHttpsCallableData &)data
@@ -49,13 +49,12 @@ RCT_EXPORT_MODULE(NativeFunctionsModule)
               resolve:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject {
   NSURL *url = [NSURL URLWithString:customUrlOrRegion];
-  FIRApp *firebaseApp = [RCTConvert firAppFromString: appName];
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   FIRFunctions *functions =
-        (url && url.scheme && url.host)
-            ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
-            : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
-
+      (url && url.scheme && url.host)
+          ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
+          : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
 
   id callableData = data.data();
 
@@ -105,21 +104,20 @@ RCT_EXPORT_MODULE(NativeFunctionsModule)
 
 - (void)httpsCallableFromUrl:(NSString *)appName
                       region:(NSString *)customUrlOrRegion
-                emulatorHost:(NSString * _Nullable)emulatorHost
+                emulatorHost:(NSString *_Nullable)emulatorHost
                 emulatorPort:(double)emulatorPort
                          url:(NSString *)url
                         data:(JS::NativeFunctionsModule::SpecHttpsCallableFromUrlData &)data
                      options:(JS::NativeFunctionsModule::SpecHttpsCallableFromUrlOptions &)options
                      resolve:(RCTPromiseResolveBlock)resolve
                       reject:(RCTPromiseRejectBlock)reject {
-
   NSURL *customUrl = [NSURL URLWithString:customUrlOrRegion];
-  FIRApp *firebaseApp = [RCTConvert firAppFromString: appName];
+  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
   FIRFunctions *functions =
-        (customUrl && customUrl.scheme && customUrl.host)
-            ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
-            : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
+      (customUrl && customUrl.scheme && customUrl.host)
+          ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
+          : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
 
   id callableData = data.data();
 
@@ -132,7 +130,6 @@ RCT_EXPORT_MODULE(NativeFunctionsModule)
   }
 
   std::optional<double> timeout = options.timeout();
-
 
   if (emulatorHost != nil) {
     [functions useEmulatorWithHost:emulatorHost port:(int)emulatorPort];

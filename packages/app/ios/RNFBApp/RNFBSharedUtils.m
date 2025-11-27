@@ -165,9 +165,9 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
 }
 
 /**
- * This works around iOS TurboModule's limitation where null values in object properties get stripped.
- * The JavaScript side converts nulls to { __rnfbNull: true } sentinel objects,
- * this method converts them back to NSNull before passing to react-native-firebase binding code
+ * This works around iOS TurboModule's limitation where null values in object properties get
+ * stripped. The JavaScript side converts nulls to { __rnfbNull: true } sentinel objects, this
+ * method converts them back to NSNull before passing to react-native-firebase binding code
  *
  * @param value - The value to decode (can be any type)
  * @returns The decoded value with sentinels replaced by NSNull
@@ -191,8 +191,7 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
  */
 + (id)decodeNullSentinels:(id)value {
   // Non-container values are returned as-is
-  if (![value isKindOfClass:[NSDictionary class]] &&
-      ![value isKindOfClass:[NSArray class]]) {
+  if (![value isKindOfClass:[NSDictionary class]] && ![value isKindOfClass:[NSArray class]]) {
     return value;
   }
 
@@ -221,10 +220,7 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
   // Stack-based iteration to process nested structures without recursion
   // Stack frames: { @"original": container, @"mutable": mutableContainer }
   NSMutableArray<NSDictionary *> *stack = [NSMutableArray array];
-  [stack addObject:@{
-    @"original": rootOriginal,
-    @"mutable": rootMutable
-  }];
+  [stack addObject:@{@"original" : rootOriginal, @"mutable" : rootMutable}];
 
   while (stack.count > 0) {
     NSDictionary *frame = [stack lastObject];
@@ -249,23 +245,16 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
           } else {
             // Process nested dictionary
             NSMutableDictionary *childMut =
-              [NSMutableDictionary dictionaryWithCapacity:childDict.count];
+                [NSMutableDictionary dictionaryWithCapacity:childDict.count];
             mutDict[key] = childMut;
-            [stack addObject:@{
-              @"original": childDict,
-              @"mutable": childMut
-            }];
+            [stack addObject:@{@"original" : childDict, @"mutable" : childMut}];
           }
         } else if ([child isKindOfClass:[NSArray class]]) {
           // Process nested array
           NSArray *childArray = (NSArray *)child;
-          NSMutableArray *childMut =
-            [NSMutableArray arrayWithCapacity:childArray.count];
+          NSMutableArray *childMut = [NSMutableArray arrayWithCapacity:childArray.count];
           mutDict[key] = childMut;
-          [stack addObject:@{
-            @"original": childArray,
-            @"mutable": childMut
-          }];
+          [stack addObject:@{@"original" : childArray, @"mutable" : childMut}];
         } else {
           // Preserve primitive values
           if (child) {
@@ -289,23 +278,16 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
           } else {
             // Process nested dictionary
             NSMutableDictionary *childMut =
-              [NSMutableDictionary dictionaryWithCapacity:childDict.count];
+                [NSMutableDictionary dictionaryWithCapacity:childDict.count];
             [mutArray addObject:childMut];
-            [stack addObject:@{
-              @"original": childDict,
-              @"mutable": childMut
-            }];
+            [stack addObject:@{@"original" : childDict, @"mutable" : childMut}];
           }
         } else if ([child isKindOfClass:[NSArray class]]) {
           // Process nested array
           NSArray *childArray = (NSArray *)child;
-          NSMutableArray *childMut =
-            [NSMutableArray arrayWithCapacity:childArray.count];
+          NSMutableArray *childMut = [NSMutableArray arrayWithCapacity:childArray.count];
           [mutArray addObject:childMut];
-          [stack addObject:@{
-            @"original": childArray,
-            @"mutable": childMut
-          }];
+          [stack addObject:@{@"original" : childArray, @"mutable" : childMut}];
         } else {
           // Preserve primitive values and NSNull (which never became sentinels in arrays)
           [mutArray addObject:child ?: [NSNull null]];

@@ -16,8 +16,8 @@
  */
 
 #import "RNFBNullSentinelInterceptor.h"
-#import "RNFBSharedUtils.h"
 #import <objc/runtime.h>
+#import "RNFBSharedUtils.h"
 
 @implementation RNFBNullSentinelInterceptor
 
@@ -40,38 +40,35 @@
   // Get all methods from RCTCxxConvert
   unsigned int methodCount = 0;
   Method *methods = class_copyMethodList(object_getClass(cxxConvertClass), &methodCount);
-  
+
   for (unsigned int i = 0; i < methodCount; i++) {
     Method method = methods[i];
     SEL selector = method_getName(method);
     NSString *selectorName = NSStringFromSelector(selector);
-    
+
     // Intercept TurboModule data conversion methods (they follow pattern: JS_*Module_Spec*Data:)
-    if ([selectorName hasPrefix:@"JS_"] && 
-        [selectorName containsString:@"Module_Spec"] &&
+    if ([selectorName hasPrefix:@"JS_"] && [selectorName containsString:@"Module_Spec"] &&
         ([selectorName hasSuffix:@"Data:"] || [selectorName containsString:@"Data:"])) {
-      
       // Create a swizzled version using IMP
       IMP originalIMP = method_getImplementation(method);
       const char *typeEncoding = method_getTypeEncoding(method);
-      
+
       // Replace with our wrapper that decodes nulls
       IMP newIMP = imp_implementationWithBlock(^id(id self, id json) {
         // Decode null sentinels before passing to original conversion
         id decoded = [RNFBSharedUtils decodeNullSentinels:json];
-        
+
         // Call original implementation with decoded data
         typedef id (*OriginalFunc)(id, SEL, id);
         OriginalFunc originalFunc = (OriginalFunc)originalIMP;
         return originalFunc(self, selector, decoded);
       });
-      
+
       method_setImplementation(method, newIMP);
     }
   }
-  
+
   free(methods);
 }
 
 @end
-
