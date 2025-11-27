@@ -13,7 +13,7 @@
     "codegen:all": "lerna run codegen",
     "lint": "yarn lint:js && yarn lint:android && yarn lint:ios:check",
     "lint:js": "eslint packages/* --max-warnings=0",
-    "lint:android": "(google-java-format --set-exit-if-changed --replace --glob=\"packages/*/android/src/**/*.java\" || (echo \"\n\nandroid formatting error - please re-run\n\n\" && exit 1)) && (git diff --exit-code packages/*/android/src || (echo \"\n\nandroid files changed from linting, please examine and commit result\n\n\" && exit 1))",
+    "lint:android": "(find packages/*/android/src -name '*.java' -not -path '*/generated/*' -print0 | xargs -0 google-java-format --set-exit-if-changed --replace || (echo \"\n\nandroid formatting error - please re-run\n\n\" && exit 1)) && (git diff --exit-code packages/*/android/src || (echo \"\n\nandroid files changed from linting, please examine and commit result\n\n\" && exit 1))",
     "lint:ios:check": "clang-format --glob=\"packages/*/ios/**/*.{h,cpp,m,mm}\" --style=Google -n -Werror",
     "lint:ios:fix": "clang-format -i --glob=\"packages/*/ios/**/*.{h,cpp,m,mm}\" --style=Google",
     "lint:markdown": "prettier --check \"docs/**/*.md\"",
