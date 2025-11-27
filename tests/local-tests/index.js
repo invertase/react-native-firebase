@@ -27,7 +27,7 @@ import { DatabaseOnChildMovedTest } from './database';
 import { FirestoreOnSnapshotInSyncTest } from './firestore/onSnapshotInSync';
 import { VertexAITestComponent } from './vertexai/vertexai';
 import { AuthMFADemonstrator } from './auth/auth-mfa-demonstrator';
-import { HttpsCallableTestComponent } from './storage/https-callable';
+import { HttpsCallableTestComponent } from './functions/https-callable';
 
 const testComponents = {
   // List your imported components here...
