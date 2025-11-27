@@ -165,7 +165,6 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
 }
 
 /**
- * Recursively converts sentinel objects back to NSNull.
  * This works around iOS TurboModule's limitation where null values in object properties get stripped.
  * The JavaScript side converts nulls to { __rnfbNull: true } sentinel objects,
  * this method converts them back to NSNull before passing to react-native-firebase binding code
@@ -174,30 +173,123 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
  * @returns The decoded value with sentinels replaced by NSNull
  */
 + (id)decodeNullSentinels:(id)value {
+  // Non-container values are returned as-is
+  if (![value isKindOfClass:[NSDictionary class]] &&
+      ![value isKindOfClass:[NSArray class]]) {
+    return value;
+  }
+
+  // Helper to detect the sentinel
+  BOOL (^isNullSentinel)(NSDictionary *) = ^BOOL(NSDictionary *dict) {
+    id flag = dict[@"__rnfbNull"];
+    return (dict.count == 1 && flag != nil && [flag boolValue]);
+  };
+
+  // Root-level sentinel case
+  if ([value isKindOfClass:[NSDictionary class]] && isNullSentinel((NSDictionary *)value)) {
+    return [NSNull null];
+  }
+
+  id rootOriginal = value;
+  id rootMutable = nil;
+
   if ([value isKindOfClass:[NSDictionary class]]) {
     NSDictionary *dict = (NSDictionary *)value;
-    
-    // Check if this is a null sentinel object
-    if ([dict count] == 1 && dict[@"__rnfbNull"] != nil && [dict[@"__rnfbNull"] boolValue]) {
-      return [NSNull null];
-    }
-    
-    // Recursively process dictionary values
-    NSMutableDictionary *decoded = [NSMutableDictionary dictionaryWithCapacity:dict.count];
-    for (id key in dict) {
-      decoded[key] = [self decodeNullSentinels:dict[key]];
-    }
-    return decoded;
-  } else if ([value isKindOfClass:[NSArray class]]) {
+    rootMutable = [NSMutableDictionary dictionaryWithCapacity:dict.count];
+  } else {
     NSArray *array = (NSArray *)value;
-    NSMutableArray *decoded = [NSMutableArray arrayWithCapacity:array.count];
-    for (id item in array) {
-      [decoded addObject:[self decodeNullSentinels:item]];
-    }
-    return decoded;
+    rootMutable = [NSMutableArray arrayWithCapacity:array.count];
   }
-  
-  return value;
+
+  // Stack frames: { @"original": container, @"mutable": mutableContainer }
+  NSMutableArray<NSDictionary *> *stack = [NSMutableArray array];
+  [stack addObject:@{
+    @"original": rootOriginal,
+    @"mutable": rootMutable
+  }];
+
+  while (stack.count > 0) {
+    NSDictionary *frame = [stack lastObject];
+    [stack removeLastObject];
+
+    id original = frame[@"original"];
+    id mutable = frame[@"mutable"];
+
+    if ([original isKindOfClass:[NSDictionary class]]) {
+      NSDictionary *origDict = (NSDictionary *)original;
+      NSMutableDictionary *mutDict = (NSMutableDictionary *)mutable;
+
+      for (id key in origDict) {
+        id child = origDict[key];
+
+        if ([child isKindOfClass:[NSDictionary class]]) {
+          NSDictionary *childDict = (NSDictionary *)child;
+
+          if (isNullSentinel(childDict)) {
+            mutDict[key] = [NSNull null];
+          } else {
+            NSMutableDictionary *childMut =
+              [NSMutableDictionary dictionaryWithCapacity:childDict.count];
+            mutDict[key] = childMut;
+            [stack addObject:@{
+              @"original": childDict,
+              @"mutable": childMut
+            }];
+          }
+        } else if ([child isKindOfClass:[NSArray class]]) {
+          NSArray *childArray = (NSArray *)child;
+          NSMutableArray *childMut =
+            [NSMutableArray arrayWithCapacity:childArray.count];
+          mutDict[key] = childMut;
+          [stack addObject:@{
+            @"original": childArray,
+            @"mutable": childMut
+          }];
+        } else {
+          if (child) {
+            mutDict[key] = child;
+          } else {
+            // NSDictionary can't store nil, and original code wouldn't see nil values either.
+          }
+        }
+      }
+    } else if ([original isKindOfClass:[NSArray class]]) {
+      NSArray *origArray = (NSArray *)original;
+      NSMutableArray *mutArray = (NSMutableArray *)mutable;
+
+      for (id child in origArray) {
+        if ([child isKindOfClass:[NSDictionary class]]) {
+          NSDictionary *childDict = (NSDictionary *)child;
+
+          if (isNullSentinel(childDict)) {
+            [mutArray addObject:[NSNull null]];
+          } else {
+            NSMutableDictionary *childMut =
+              [NSMutableDictionary dictionaryWithCapacity:childDict.count];
+            [mutArray addObject:childMut];
+            [stack addObject:@{
+              @"original": childDict,
+              @"mutable": childMut
+            }];
+          }
+        } else if ([child isKindOfClass:[NSArray class]]) {
+          NSArray *childArray = (NSArray *)child;
+          NSMutableArray *childMut =
+            [NSMutableArray arrayWithCapacity:childArray.count];
+          [mutArray addObject:childMut];
+          [stack addObject:@{
+            @"original": childArray,
+            @"mutable": childMut
+          }];
+        } else {
+          // NSArray also can't hold nil; use NSNull for safety if needed
+          [mutArray addObject:child ?: [NSNull null]];
+        }
+      }
+    }
+  }
+
+  return rootMutable;
 }
 
 @end

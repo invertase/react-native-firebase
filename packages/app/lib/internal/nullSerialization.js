@@ -33,28 +33,113 @@ const NULL_SENTINEL = { __rnfbNull: true };
  */
 export function encodeNullValues(data) {
   if (data === null) {
-    return NULL_SENTINEL;
+    // only null values within objects are encoded
+    return null;
+  }
+  if (typeof data !== 'object') {
+    return data;
   }
 
+  // Prepare root encoded container
+  let rootEncoded;
+  const stack = [];
+
   if (Array.isArray(data)) {
-    // Arrays preserve null values, but we still need to process nested objects
-    return data.map(item => {
-      if (item !== null && typeof item === 'object') {
-        return encodeNullValues(item);
-      }
-      return item; // Keep primitives and nulls as-is in arrays
+    rootEncoded = new Array(data.length);
+    stack.push({
+      type: 'array',
+      original: data,
+      encoded: rootEncoded,
+      index: 0,
+    });
+  } else {
+    rootEncoded = {};
+    stack.push({
+      type: 'object',
+      original: data,
+      encoded: rootEncoded,
+      keys: Object.keys(data),
+      index: 0,
     });
   }
 
-  if (typeof data === 'object' && data !== null) {
-    const encoded = {};
-    for (const key in data) {
-      if (Object.prototype.hasOwnProperty.call(data, key)) {
-        encoded[key] = encodeNullValues(data[key]);
+  while (stack.length > 0) {
+    const frame = stack[stack.length - 1];
+
+    if (frame.type === 'array') {
+      const { original, encoded } = frame;
+
+      if (frame.index >= original.length) {
+        // Done with this array
+        stack.pop();
+        continue;
+      }
+
+      const i = frame.index++;
+      const item = original[i];
+
+      if (item === null || typeof item !== 'object') {
+        // Arrays preserve nulls as null
+        encoded[i] = item;
+      } else if (Array.isArray(item)) {
+        const childEncoded = new Array(item.length);
+        encoded[i] = childEncoded;
+        stack.push({
+          type: 'array',
+          original: item,
+          encoded: childEncoded,
+          index: 0,
+        });
+      } else {
+        const childEncoded = {};
+        encoded[i] = childEncoded;
+        stack.push({
+          type: 'object',
+          original: item,
+          encoded: childEncoded,
+          keys: Object.keys(item),
+          index: 0,
+        });
+      }
+    } else {
+      // frame.type === 'object'
+      const { original, encoded, keys } = frame;
+
+      if (frame.index >= keys.length) {
+        // Done with this object
+        stack.pop();
+        continue;
+      }
+
+      const key = keys[frame.index++];
+      const value = original[key];
+
+      if (value === null) {
+        encoded[key] = NULL_SENTINEL;
+      } else if (typeof value !== 'object') {
+        encoded[key] = value;
+      } else if (Array.isArray(value)) {
+        const childEncoded = new Array(value.length);
+        encoded[key] = childEncoded;
+        stack.push({
+          type: 'array',
+          original: value,
+          encoded: childEncoded,
+          index: 0,
+        });
+      } else {
+        const childEncoded = {};
+        encoded[key] = childEncoded;
+        stack.push({
+          type: 'object',
+          original: value,
+          encoded: childEncoded,
+          keys: Object.keys(value),
+          index: 0,
+        });
       }
     }
-    return encoded;
   }
 
-  return data;
+  return rootEncoded;
 }
