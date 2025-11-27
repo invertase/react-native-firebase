@@ -18,15 +18,15 @@
 const NULL_SENTINEL = { __rnfbNull: true };
 
 /**
- * Recursively replaces null values in object properties with sentinel objects
- * for iOS TurboModule compatibility.
+ * Replaces null values in object properties with sentinel objects for iOS TurboModule compatibility.
+ * Uses iterative stack-based traversal to avoid stack overflow on deeply nested structures.
  *
  * iOS TurboModules strip null values from object properties during serialization,
  * so we replace them with sentinel objects that can survive the serialization
  * and be detected/restored on the native side.
  *
  * Note: Null values in arrays are preserved by iOS TurboModules, so we don't
- * encode them (but we still recursively process nested objects within arrays).
+ * encode them (but we still process nested objects within arrays).
  *
  * @param {any} data - The data to encode
  * @returns {any} - The encoded data with null object properties replaced by sentinels
