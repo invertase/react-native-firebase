@@ -172,6 +172,23 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
  * @param value - The value to decode (can be any type)
  * @returns The decoded value with sentinels replaced by NSNull
  */
+/**
+ * Decodes null sentinel objects back to NSNull values.
+ * Uses iterative stack-based traversal to avoid stack overflow on deeply nested structures.
+ *
+ * This reverses the encoding done on the JavaScript side where null values in object
+ * properties are replaced with {__rnfbNull: true} sentinel objects to survive iOS
+ * TurboModule serialization.
+ *
+ * Process:
+ * 1. Detects sentinel objects: dictionaries with single key "__rnfbNull" set to true
+ * 2. Replaces sentinels with NSNull in object properties and arrays
+ * 3. Preserves regular NSNull values that were in arrays (never encoded as sentinels)
+ * 4. Deep processes all nested objects and arrays using a stack-based iteration
+ *
+ * @param value - The value to decode (dictionary, array, or primitive)
+ * @return The decoded value with sentinels replaced by NSNull
+ */
 + (id)decodeNullSentinels:(id)value {
   // Non-container values are returned as-is
   if (![value isKindOfClass:[NSDictionary class]] &&
@@ -201,6 +218,7 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
     rootMutable = [NSMutableArray arrayWithCapacity:array.count];
   }
 
+  // Stack-based iteration to process nested structures without recursion
   // Stack frames: { @"original": container, @"mutable": mutableContainer }
   NSMutableArray<NSDictionary *> *stack = [NSMutableArray array];
   [stack addObject:@{
@@ -226,8 +244,10 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
           NSDictionary *childDict = (NSDictionary *)child;
 
           if (isNullSentinel(childDict)) {
+            // Replace sentinel with NSNull
             mutDict[key] = [NSNull null];
           } else {
+            // Process nested dictionary
             NSMutableDictionary *childMut =
               [NSMutableDictionary dictionaryWithCapacity:childDict.count];
             mutDict[key] = childMut;
@@ -237,6 +257,7 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
             }];
           }
         } else if ([child isKindOfClass:[NSArray class]]) {
+          // Process nested array
           NSArray *childArray = (NSArray *)child;
           NSMutableArray *childMut =
             [NSMutableArray arrayWithCapacity:childArray.count];
@@ -246,6 +267,7 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
             @"mutable": childMut
           }];
         } else {
+          // Preserve primitive values
           if (child) {
             mutDict[key] = child;
           } else {
@@ -262,8 +284,10 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
           NSDictionary *childDict = (NSDictionary *)child;
 
           if (isNullSentinel(childDict)) {
+            // Replace sentinel with NSNull
             [mutArray addObject:[NSNull null]];
           } else {
+            // Process nested dictionary
             NSMutableDictionary *childMut =
               [NSMutableDictionary dictionaryWithCapacity:childDict.count];
             [mutArray addObject:childMut];
@@ -273,6 +297,7 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
             }];
           }
         } else if ([child isKindOfClass:[NSArray class]]) {
+          // Process nested array
           NSArray *childArray = (NSArray *)child;
           NSMutableArray *childMut =
             [NSMutableArray arrayWithCapacity:childArray.count];
@@ -282,7 +307,7 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
             @"mutable": childMut
           }];
         } else {
-          // NSArray also can't hold nil; use NSNull for safety if needed
+          // Preserve primitive values and NSNull (which never became sentinels in arrays)
           [mutArray addObject:child ?: [NSNull null]];
         }
       }
