@@ -630,6 +630,8 @@ export function getCustomAuthDomain(auth) {
   return auth.getCustomAuthDomain.call(auth, MODULAR_DEPRECATION_ARG);
 }
 
+const cachedPasswordPolicies = {};
+
 /**
  * Returns a password validation status
  * @param {Auth} auth - The Auth instance.
@@ -642,10 +644,14 @@ export async function validatePassword(auth, password) {
       "firebase.auth().validatePassword(*) expected 'password' to be a non-null or a defined value.",
     );
   }
-  let passwordPolicy = await fetchPasswordPolicy(auth);
 
-  const passwordPolicyImpl = await new PasswordPolicyImpl(passwordPolicy);
-  let status = passwordPolicyImpl.validatePassword(password);
+  const appName = auth.app.name;
+  if (!cachedPasswordPolicies[appName]) {
+    cachedPasswordPolicies[appName] = await fetchPasswordPolicy(auth);
+  }
+
+  const passwordPolicyImpl = new PasswordPolicyImpl(cachedPasswordPolicies[appName]);
+  const status = passwordPolicyImpl.validatePassword(password);
 
   return status;
 }
