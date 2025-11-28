@@ -29,7 +29,7 @@ import type { HttpsCallableOptions } from '.';
 import type { FirebaseApp } from '@react-native-firebase/app';
 const namespace = 'functions';
 
-const nativeModuleName = 'NativeFunctionsModule';
+const nativeModuleName = 'NativeRNFBTurboFunctions';
 
 export const HttpsErrorCode = {
   OK: 'ok',
