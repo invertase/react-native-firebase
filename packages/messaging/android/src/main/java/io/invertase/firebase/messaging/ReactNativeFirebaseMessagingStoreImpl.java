@@ -27,6 +27,7 @@ public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebas
   private static final String S_KEY_ALL_NOTIFICATION_IDS = "all_notification_ids";
   private final String DELIMITER = ",";
   private static final int DEFAULT_MAX_SIZE_NOTIFICATIONS = 100;
+  private static final int MIN_SIZE_NOTIFICATIONS = 20;
   private static final int maxNotificationSize = resolveMaxNotificationSize();
 
   private static int resolveMaxNotificationSize() {
@@ -47,8 +48,8 @@ public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebas
         maxSize = meta.getIntValue(KEY_MAX_STORED_NOTIFICATIONS, DEFAULT_MAX_SIZE_NOTIFICATIONS);
       }
 
-      // Safety cap: prevent values > 100 to avoid re-introducing OOM risk
-      return Math.min(maxSize, DEFAULT_MAX_SIZE_NOTIFICATIONS);
+      // Clamp to allowed range to avoid OOM (upper) or mass deletions (lower)
+      return Math.max(MIN_SIZE_NOTIFICATIONS, Math.min(maxSize, DEFAULT_MAX_SIZE_NOTIFICATIONS));
     } catch (Exception e) {
       // Ignore and use default
       return DEFAULT_MAX_SIZE_NOTIFICATIONS;
