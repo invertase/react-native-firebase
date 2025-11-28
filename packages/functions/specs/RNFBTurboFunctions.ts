@@ -47,4 +47,4 @@ export interface Spec extends TurboModule {
   ): Promise<{ data: ResponseData }>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('NativeFunctionsModule');
+export default TurboModuleRegistry.getEnforcing<Spec>('RNFBTurboFunctions');

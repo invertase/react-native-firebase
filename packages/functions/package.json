@@ -7,7 +7,7 @@
   "module": "./dist/module/index.js",
   "types": "./dist/typescript/commonjs/functions/lib/index.d.ts",
   "codegenConfig": {
-    "name": "NativeFunctionsModule",
+    "name": "RNFBTurboFunctions",
     "type": "modules",
     "jsSrcsDir": "specs",
     "includesGeneratedCode": true,
@@ -16,7 +16,7 @@
     },
     "ios": {
       "modulesProvider": {
-        "NativeFunctionsModule": "RNFBFunctionsModule"
+        "RNFBTurboFunctions": "RNFBFunctionsModule"
       }
     }
   },
