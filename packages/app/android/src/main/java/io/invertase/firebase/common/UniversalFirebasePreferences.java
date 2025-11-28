@@ -74,6 +74,8 @@ public class UniversalFirebasePreferences {
     getPreferences().edit().clear().apply();
   }
 
+  // Note the caller is responsible for calling apply() or commit() on the
+  // returned SharedPreferences.Editor object for the remove to take affect
   public SharedPreferences.Editor remove(String key) {
     return getPreferences().edit().remove(key);
   }
