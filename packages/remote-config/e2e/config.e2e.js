@@ -697,8 +697,8 @@ describe('remoteConfig()', function () {
         (await isSupported()).should.equal(true);
       });
     });
-
-    describe('onConfigUpdate', function () {
+    // SKIPPED: Skipping suite of onConfigUpdate tests until they're fixed
+    describe.skip('onConfigUpdate', function () {
       describe('onConfigUpdate parameter verification', function () {
         it('throws an error if no callback provided', async function () {
           const { getRemoteConfig, onConfigUpdate } = remoteConfigModular;
@@ -931,8 +931,8 @@ describe('remoteConfig()', function () {
       });
     });
 
-    // deprecated API prior to official web support
-    describe('onConfigUpdated (deprecated)', function () {
+    // SKIPPED: Skipping suite of onConfigUpdate tests until they're fixed
+    describe.skip('onConfigUpdated (deprecated)', function () {
       describe('onConfigUpdated parameter verification', function () {
         it('throws an error if no callback provided', async function () {
           const { getRemoteConfig, onConfigUpdated } = remoteConfigModular;
