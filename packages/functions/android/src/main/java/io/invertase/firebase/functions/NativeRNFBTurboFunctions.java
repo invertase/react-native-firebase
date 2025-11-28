@@ -22,7 +22,7 @@ import static io.invertase.firebase.functions.UniversalFirebaseFunctionsModule.D
 import static io.invertase.firebase.functions.UniversalFirebaseFunctionsModule.DETAILS_KEY;
 import static io.invertase.firebase.functions.UniversalFirebaseFunctionsModule.MSG_KEY;
 
-import com.facebook.fbreact.specs.NativeFunctionsModuleSpec;
+import com.facebook.fbreact.specs.NativeRNFBTurboFunctionsSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -34,12 +34,12 @@ import io.invertase.firebase.common.RCTConvertFirebase;
 import io.invertase.firebase.common.UniversalFirebaseModule;
 import java.io.IOException;
 
-public class NativeFunctionsModule extends NativeFunctionsModuleSpec {
+public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
   private static final String SERVICE_NAME = "Functions";
   private final UniversalFirebaseFunctionsModule module;
   private final UniversalFirebaseModule universalFirebaseModule;
 
-  public NativeFunctionsModule(ReactApplicationContext reactContext) {
+  public NativeRNFBTurboFunctions(ReactApplicationContext reactContext) {
     super(reactContext);
     // cannot have multiple inheritance so we make this a property rather than extending it
     universalFirebaseModule = new UniversalFirebaseModule(reactContext, SERVICE_NAME);

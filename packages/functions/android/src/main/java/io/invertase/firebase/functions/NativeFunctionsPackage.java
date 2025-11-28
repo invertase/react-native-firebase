@@ -32,7 +32,7 @@ public class NativeFunctionsPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(@Nonnull ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
-    modules.add(new NativeFunctionsModule(reactContext));
+    modules.add(new NativeRNFBTurboFunctions(reactContext));
     return modules;
   }
 
