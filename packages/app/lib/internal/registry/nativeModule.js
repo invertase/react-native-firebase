@@ -14,13 +14,14 @@
  * limitations under the License.
  *
  */
-
+import { NativeModules } from 'react-native';
 import { APP_NATIVE_MODULE } from '../constants';
 import NativeFirebaseError from '../NativeFirebaseError';
 import RNFBNativeEventEmitter from '../RNFBNativeEventEmitter';
 import SharedEventEmitter from '../SharedEventEmitter';
 import { getReactNativeModule } from '../nativeModule';
 import { isAndroid, isIOS } from '../../common';
+import { encodeNullValues } from '../nullSerialization';
 
 const NATIVE_MODULE_REGISTRY = {};
 const NATIVE_MODULE_EVENT_SUBSCRIPTIONS = {};
@@ -38,9 +39,15 @@ function nativeModuleKey(module) {
  * @param argToPrepend
  * @returns {Function}
  */
-function nativeModuleMethodWrapped(namespace, method, argToPrepend) {
+function nativeModuleMethodWrapped(namespace, method, argToPrepend, nativeModuleName) {
   return (...args) => {
-    const allArgs = [...argToPrepend, ...args];
+    // if the module is not a NativeModule, it is a TurboModule
+    const isTurboModule = !!NativeModules[nativeModuleName];
+    // For iOS TurboModules, encode null values in arguments to work around
+    // the limitation where null values in object properties get stripped during serialization
+    // See: https://github.com/facebook/react-native/issues/52802
+    const processedArgs = isIOS && isTurboModule ? args.map(arg => encodeNullValues(arg)) : args;
+    const allArgs = [...argToPrepend, ...processedArgs];
     const possiblePromise = method(...allArgs);
 
     if (possiblePromise && possiblePromise.then) {
@@ -61,7 +68,7 @@ function nativeModuleMethodWrapped(namespace, method, argToPrepend) {
  * @param NativeModule
  * @param argToPrepend
  */
-function nativeModuleWrapped(namespace, NativeModule, argToPrepend) {
+function nativeModuleWrapped(namespace, NativeModule, argToPrepend, nativeModuleName) {
   const native = {};
   if (!NativeModule) {
     return NativeModule;
@@ -73,7 +80,12 @@ function nativeModuleWrapped(namespace, NativeModule, argToPrepend) {
   for (let i = 0, len = properties.length; i < len; i++) {
     const property = properties[i];
     if (typeof NativeModule[property] === 'function') {
-      native[property] = nativeModuleMethodWrapped(namespace, NativeModule[property], argToPrepend);
+      native[property] = nativeModuleMethodWrapped(
+        namespace,
+        NativeModule[property],
+        argToPrepend,
+        nativeModuleName,
+      );
     } else {
       native[property] = NativeModule[property];
     }
@@ -126,7 +138,10 @@ function initialiseNativeModule(module) {
       argToPrepend.push(module._customUrlOrRegion);
     }
 
-    Object.assign(multiModuleRoot, nativeModuleWrapped(namespace, nativeModule, argToPrepend));
+    Object.assign(
+      multiModuleRoot,
+      nativeModuleWrapped(namespace, nativeModule, argToPrepend, nativeModuleName),
+    );
   }
 
   if (nativeEvents && nativeEvents.length) {
@@ -228,7 +243,12 @@ export function getAppModule() {
     throw new Error(getMissingModuleHelpText(namespace));
   }
 
-  NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE] = nativeModuleWrapped(namespace, nativeModule, []);
+  NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE] = nativeModuleWrapped(
+    namespace,
+    nativeModule,
+    [],
+    APP_NATIVE_MODULE,
+  );
 
   return NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE];
 }

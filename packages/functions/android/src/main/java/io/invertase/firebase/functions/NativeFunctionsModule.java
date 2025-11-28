@@ -62,19 +62,19 @@ public class NativeFunctionsModule extends NativeFunctionsModuleSpec {
     // Convert emulatorPort to Integer (null if not using emulator)
     Integer port = emulatorHost != null ? (int) emulatorPort : null;
 
-    Task<Object> callMethodTask = module.httpsCallable(
-        appName, region, emulatorHost, port, name, callableData, options);
+    Task<Object> callMethodTask =
+        module.httpsCallable(appName, region, emulatorHost, port, name, callableData, options);
 
     // resolve
     callMethodTask.addOnSuccessListener(
-      universalFirebaseModule.getExecutor(),
+        universalFirebaseModule.getExecutor(),
         result -> {
           promise.resolve(RCTConvertFirebase.mapPutValue(DATA_KEY, result, Arguments.createMap()));
         });
 
     // reject
     callMethodTask.addOnFailureListener(
-      universalFirebaseModule.getExecutor(),
+        universalFirebaseModule.getExecutor(),
         exception -> handleFunctionsException(exception, promise));
   }
 
@@ -94,17 +94,18 @@ public class NativeFunctionsModule extends NativeFunctionsModuleSpec {
     // Convert emulatorPort to Integer (null if not using emulator)
     Integer port = emulatorHost != null ? (int) emulatorPort : null;
 
-    Task<Object> callMethodTask = module.httpsCallableFromUrl(
-        appName, region, emulatorHost, port, url, callableData, options);
+    Task<Object> callMethodTask =
+        module.httpsCallableFromUrl(
+            appName, region, emulatorHost, port, url, callableData, options);
 
     callMethodTask.addOnSuccessListener(
-      universalFirebaseModule.getExecutor(),
+        universalFirebaseModule.getExecutor(),
         result -> {
           promise.resolve(RCTConvertFirebase.mapPutValue(DATA_KEY, result, Arguments.createMap()));
         });
 
     callMethodTask.addOnFailureListener(
-      universalFirebaseModule.getExecutor(),
+        universalFirebaseModule.getExecutor(),
         exception -> handleFunctionsException(exception, promise));
   }
 
