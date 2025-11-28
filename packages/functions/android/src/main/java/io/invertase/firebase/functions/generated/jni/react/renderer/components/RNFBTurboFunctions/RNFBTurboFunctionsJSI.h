@@ -15,5 +15,66 @@
 namespace facebook::react {
 
 
+  class JSI_EXPORT NativeRNFBTurboFunctionsCxxSpecJSI : public TurboModule {
+protected:
+  NativeRNFBTurboFunctionsCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
+
+public:
+  virtual jsi::Value httpsCallable(jsi::Runtime &rt, jsi::String appName, jsi::String region, std::optional<jsi::String> emulatorHost, double emulatorPort, jsi::String name, jsi::Object data, jsi::Object options) = 0;
+  virtual jsi::Value httpsCallableFromUrl(jsi::Runtime &rt, jsi::String appName, jsi::String region, std::optional<jsi::String> emulatorHost, double emulatorPort, jsi::String url, jsi::Object data, jsi::Object options) = 0;
+
+};
+
+template <typename T>
+class JSI_EXPORT NativeRNFBTurboFunctionsCxxSpec : public TurboModule {
+public:
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
+  }
+
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
+  }
+
+  static constexpr std::string_view kModuleName = "RNFBTurboFunctions";
+
+protected:
+  NativeRNFBTurboFunctionsCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
+    : TurboModule(std::string{NativeRNFBTurboFunctionsCxxSpec::kModuleName}, jsInvoker),
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
+
+
+private:
+  class Delegate : public NativeRNFBTurboFunctionsCxxSpecJSI {
+  public:
+    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
+      NativeRNFBTurboFunctionsCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
+
+    jsi::Value httpsCallable(jsi::Runtime &rt, jsi::String appName, jsi::String region, std::optional<jsi::String> emulatorHost, double emulatorPort, jsi::String name, jsi::Object data, jsi::Object options) override {
+      static_assert(
+          bridging::getParameterCount(&T::httpsCallable) == 8,
+          "Expected httpsCallable(...) to have 8 parameters");
+
+      return bridging::callFromJs<jsi::Value>(
+          rt, &T::httpsCallable, jsInvoker_, instance_, std::move(appName), std::move(region), std::move(emulatorHost), std::move(emulatorPort), std::move(name), std::move(data), std::move(options));
+    }
+    jsi::Value httpsCallableFromUrl(jsi::Runtime &rt, jsi::String appName, jsi::String region, std::optional<jsi::String> emulatorHost, double emulatorPort, jsi::String url, jsi::Object data, jsi::Object options) override {
+      static_assert(
+          bridging::getParameterCount(&T::httpsCallableFromUrl) == 8,
+          "Expected httpsCallableFromUrl(...) to have 8 parameters");
+
+      return bridging::callFromJs<jsi::Value>(
+          rt, &T::httpsCallableFromUrl, jsInvoker_, instance_, std::move(appName), std::move(region), std::move(emulatorHost), std::move(emulatorPort), std::move(url), std::move(data), std::move(options));
+    }
+
+  private:
+    friend class NativeRNFBTurboFunctionsCxxSpec;
+    T *instance_;
+  };
+
+  Delegate delegate_;
+};
 
 } // namespace facebook::react

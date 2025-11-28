@@ -32,7 +32,126 @@
 
 
 NS_ASSUME_NONNULL_BEGIN
+namespace JS {
+  namespace NativeRNFBTurboFunctions {
+    struct SpecHttpsCallableData {
+      id<NSObject> data() const;
+
+      SpecHttpsCallableData(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableData)
++ (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableData:(id)json;
+@end
+namespace JS {
+  namespace NativeRNFBTurboFunctions {
+    struct SpecHttpsCallableOptions {
+      std::optional<double> timeout() const;
+
+      SpecHttpsCallableOptions(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableOptions)
++ (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableOptions:(id)json;
+@end
+namespace JS {
+  namespace NativeRNFBTurboFunctions {
+    struct SpecHttpsCallableFromUrlData {
+      id<NSObject> data() const;
+
+      SpecHttpsCallableFromUrlData(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableFromUrlData)
++ (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableFromUrlData:(id)json;
+@end
+namespace JS {
+  namespace NativeRNFBTurboFunctions {
+    struct SpecHttpsCallableFromUrlOptions {
+      std::optional<double> timeout() const;
+
+      SpecHttpsCallableFromUrlOptions(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableFromUrlOptions)
++ (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableFromUrlOptions:(id)json;
+@end
+@protocol NativeRNFBTurboFunctionsSpec <RCTBridgeModule, RCTTurboModule>
+
+- (void)httpsCallable:(NSString *)appName
+               region:(NSString *)region
+         emulatorHost:(NSString * _Nullable)emulatorHost
+         emulatorPort:(double)emulatorPort
+                 name:(NSString *)name
+                 data:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableData &)data
+              options:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableOptions &)options
+              resolve:(RCTPromiseResolveBlock)resolve
+               reject:(RCTPromiseRejectBlock)reject;
+- (void)httpsCallableFromUrl:(NSString *)appName
+                      region:(NSString *)region
+                emulatorHost:(NSString * _Nullable)emulatorHost
+                emulatorPort:(double)emulatorPort
+                         url:(NSString *)url
+                        data:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableFromUrlData &)data
+                     options:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableFromUrlOptions &)options
+                     resolve:(RCTPromiseResolveBlock)resolve
+                      reject:(RCTPromiseRejectBlock)reject;
+
+@end
+
+@interface NativeRNFBTurboFunctionsSpecBase : NSObject {
+@protected
+facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
 
 
+@end
+
+namespace facebook::react {
+  /**
+   * ObjC++ class for module 'NativeRNFBTurboFunctions'
+   */
+  class JSI_EXPORT NativeRNFBTurboFunctionsSpecJSI : public ObjCTurboModule {
+  public:
+    NativeRNFBTurboFunctionsSpecJSI(const ObjCTurboModule::InitParams &params);
+  };
+} // namespace facebook::react
+inline id<NSObject> JS::NativeRNFBTurboFunctions::SpecHttpsCallableData::data() const
+{
+  id const p = _v[@"data"];
+  return p;
+}
+inline std::optional<double> JS::NativeRNFBTurboFunctions::SpecHttpsCallableOptions::timeout() const
+{
+  id const p = _v[@"timeout"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline id<NSObject> JS::NativeRNFBTurboFunctions::SpecHttpsCallableFromUrlData::data() const
+{
+  id const p = _v[@"data"];
+  return p;
+}
+inline std::optional<double> JS::NativeRNFBTurboFunctions::SpecHttpsCallableFromUrlOptions::timeout() const
+{
+  id const p = _v[@"timeout"];
+  return RCTBridgingToOptionalDouble(p);
+}
 NS_ASSUME_NONNULL_END
 #endif // RNFBTurboFunctions_H

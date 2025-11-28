@@ -84,7 +84,7 @@ Pod::Spec.new do |s|
   s.script_phases = {
     'name' => 'Generate Specs',
     'execution_position' => :before_compile,
-    'input_files' => ["${PODS_ROOT}/../.."],
+    'input_files' => ["${PODS_ROOT}/../../specs/NativeRNFBTurboFunctions.ts"],
     'show_env_vars_in_log' => true,
     'output_files' => ["${DERIVED_FILE_DIR}/react-codegen.log"],
     'script': <<-SCRIPT

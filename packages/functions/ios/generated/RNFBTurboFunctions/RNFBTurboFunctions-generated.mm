@@ -14,3 +14,58 @@
 #import "RNFBTurboFunctions.h"
 
 
+@implementation NativeRNFBTurboFunctionsSpecBase
+
+
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+{
+  _eventEmitterCallback = std::move(eventEmitterCallbackWrapper->_eventEmitterCallback);
+}
+@end
+
+@implementation RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableData)
++ (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableData:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeRNFBTurboFunctions::SpecHttpsCallableData>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableOptions)
++ (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableOptions:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeRNFBTurboFunctions::SpecHttpsCallableOptions>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableFromUrlData)
++ (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableFromUrlData:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeRNFBTurboFunctions::SpecHttpsCallableFromUrlData>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableFromUrlOptions)
++ (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableFromUrlOptions:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeRNFBTurboFunctions::SpecHttpsCallableFromUrlOptions>(json);
+}
+@end
+namespace facebook::react {
+  
+    static facebook::jsi::Value __hostFunction_NativeRNFBTurboFunctionsSpecJSI_httpsCallable(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "httpsCallable", @selector(httpsCallable:region:emulatorHost:emulatorPort:name:data:options:resolve:reject:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeRNFBTurboFunctionsSpecJSI_httpsCallableFromUrl(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "httpsCallableFromUrl", @selector(httpsCallableFromUrl:region:emulatorHost:emulatorPort:url:data:options:resolve:reject:), args, count);
+    }
+
+  NativeRNFBTurboFunctionsSpecJSI::NativeRNFBTurboFunctionsSpecJSI(const ObjCTurboModule::InitParams &params)
+    : ObjCTurboModule(params) {
+      
+        methodMap_["httpsCallable"] = MethodMetadata {7, __hostFunction_NativeRNFBTurboFunctionsSpecJSI_httpsCallable};
+        setMethodArgConversionSelector(@"httpsCallable", 5, @"JS_NativeRNFBTurboFunctions_SpecHttpsCallableData:");
+        setMethodArgConversionSelector(@"httpsCallable", 6, @"JS_NativeRNFBTurboFunctions_SpecHttpsCallableOptions:");
+        
+        methodMap_["httpsCallableFromUrl"] = MethodMetadata {7, __hostFunction_NativeRNFBTurboFunctionsSpecJSI_httpsCallableFromUrl};
+        setMethodArgConversionSelector(@"httpsCallableFromUrl", 5, @"JS_NativeRNFBTurboFunctions_SpecHttpsCallableFromUrlData:");
+        setMethodArgConversionSelector(@"httpsCallableFromUrl", 6, @"JS_NativeRNFBTurboFunctions_SpecHttpsCallableFromUrlOptions:");
+  }
+} // namespace facebook::react

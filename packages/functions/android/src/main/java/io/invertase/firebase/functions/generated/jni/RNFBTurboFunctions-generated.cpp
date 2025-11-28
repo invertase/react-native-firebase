@@ -12,10 +12,26 @@
 
 namespace facebook::react {
 
+static facebook::jsi::Value __hostFunction_NativeRNFBTurboFunctionsSpecJSI_httpsCallable(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "httpsCallable", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;DLjava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
+}
 
+static facebook::jsi::Value __hostFunction_NativeRNFBTurboFunctionsSpecJSI_httpsCallableFromUrl(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+  static jmethodID cachedMethodId = nullptr;
+  return static_cast<JavaTurboModule &>(turboModule).invokeJavaMethod(rt, PromiseKind, "httpsCallableFromUrl", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;DLjava/lang/String;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/bridge/Promise;)V", args, count, cachedMethodId);
+}
+
+NativeRNFBTurboFunctionsSpecJSI::NativeRNFBTurboFunctionsSpecJSI(const JavaTurboModule::InitParams &params)
+  : JavaTurboModule(params) {
+  methodMap_["httpsCallable"] = MethodMetadata {7, __hostFunction_NativeRNFBTurboFunctionsSpecJSI_httpsCallable};
+  methodMap_["httpsCallableFromUrl"] = MethodMetadata {7, __hostFunction_NativeRNFBTurboFunctionsSpecJSI_httpsCallableFromUrl};
+}
 
 std::shared_ptr<TurboModule> RNFBTurboFunctions_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params) {
-
+  if (moduleName == "RNFBTurboFunctions") {
+    return std::make_shared<NativeRNFBTurboFunctionsSpecJSI>(params);
+  }
   return nullptr;
 }
 

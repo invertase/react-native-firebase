@@ -16,6 +16,13 @@
 
 namespace facebook::react {
 
+/**
+ * JNI C++ class for module 'NativeRNFBTurboFunctions'
+ */
+class JSI_EXPORT NativeRNFBTurboFunctionsSpecJSI : public JavaTurboModule {
+public:
+  NativeRNFBTurboFunctionsSpecJSI(const JavaTurboModule::InitParams &params);
+};
 
 
 JSI_EXPORT
