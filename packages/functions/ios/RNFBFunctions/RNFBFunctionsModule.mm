@@ -18,7 +18,7 @@
 #import <Firebase/Firebase.h>
 #import <React/RCTUtils.h>
 
-#import "NativeFunctionsModule.h"
+#import "RNFBTurboFunctions.h"
 #import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBFunctionsModule.h"
@@ -30,13 +30,13 @@
 #pragma mark -
 #pragma mark Module Setup
 
-RCT_EXPORT_MODULE(NativeFunctionsModule)
+RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
 #pragma mark -
 #pragma mark Firebase Functions Methods
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params {
-  return std::make_shared<facebook::react::NativeFunctionsModuleSpecJSI>(params);
+  return std::make_shared<facebook::react::NativeRNFBTurboFunctionsSpecJSI>(params);
 }
 
 - (void)httpsCallable:(NSString *)appName
@@ -44,8 +44,8 @@ RCT_EXPORT_MODULE(NativeFunctionsModule)
          emulatorHost:(NSString *_Nullable)emulatorHost
          emulatorPort:(double)emulatorPort
                  name:(NSString *)name
-                 data:(JS::NativeFunctionsModule::SpecHttpsCallableData &)data
-              options:(JS::NativeFunctionsModule::SpecHttpsCallableOptions &)options
+                 data:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableData &)data
+              options:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableOptions &)options
               resolve:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject {
   NSURL *url = [NSURL URLWithString:customUrlOrRegion];
@@ -107,8 +107,8 @@ RCT_EXPORT_MODULE(NativeFunctionsModule)
                 emulatorHost:(NSString *_Nullable)emulatorHost
                 emulatorPort:(double)emulatorPort
                          url:(NSString *)url
-                        data:(JS::NativeFunctionsModule::SpecHttpsCallableFromUrlData &)data
-                     options:(JS::NativeFunctionsModule::SpecHttpsCallableFromUrlOptions &)options
+                        data:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableFromUrlData &)data
+                     options:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableFromUrlOptions &)options
                      resolve:(RCTPromiseResolveBlock)resolve
                       reject:(RCTPromiseRejectBlock)reject {
   NSURL *customUrl = [NSURL URLWithString:customUrlOrRegion];
