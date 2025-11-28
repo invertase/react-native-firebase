@@ -15,9 +15,9 @@
 #error This file must be compiled as Obj-C++. If you are importing it, you must change your file extension to .mm.
 #endif
 
-// Avoid multiple includes of RNFBTurboFunctions symbols
-#ifndef RNFBTurboFunctions_H
-#define RNFBTurboFunctions_H
+// Avoid multiple includes of NativeRNFBTurboFunctions symbols
+#ifndef NativeRNFBTurboFunctions_H
+#define NativeRNFBTurboFunctions_H
 
 #import <Foundation/Foundation.h>
 #import <RCTRequired/RCTRequired.h>
@@ -154,4 +154,4 @@ inline std::optional<double> JS::NativeRNFBTurboFunctions::SpecHttpsCallableFrom
   return RCTBridgingToOptionalDouble(p);
 }
 NS_ASSUME_NONNULL_END
-#endif // RNFBTurboFunctions_H
+#endif // NativeRNFBTurboFunctions_H

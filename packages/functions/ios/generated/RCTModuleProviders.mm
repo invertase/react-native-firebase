@@ -20,7 +20,7 @@
 
   dispatch_once(&onceToken, ^{
     NSDictionary<NSString *, NSString *> * moduleMapping = @{
-      		@"RNFBTurboFunctions": @"RNFBFunctionsModule", // @react-native-firebase/functions
+      		@"NativeRNFBTurboFunctions": @"RNFBFunctionsModule", // @react-native-firebase/functions
     };
 
     NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:moduleMapping.count];

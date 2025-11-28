@@ -36,7 +36,7 @@ public:
     return delegate_.getPropertyNames(runtime);
   }
 
-  static constexpr std::string_view kModuleName = "RNFBTurboFunctions";
+  static constexpr std::string_view kModuleName = "NativeRNFBTurboFunctions";
 
 protected:
   NativeRNFBTurboFunctionsCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)

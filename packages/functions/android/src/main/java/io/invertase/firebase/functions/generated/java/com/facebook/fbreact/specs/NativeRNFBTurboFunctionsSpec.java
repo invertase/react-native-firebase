@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public abstract class NativeRNFBTurboFunctionsSpec extends ReactContextBaseJavaModule implements TurboModule {
-  public static final String NAME = "RNFBTurboFunctions";
+  public static final String NAME = "NativeRNFBTurboFunctions";
 
   public NativeRNFBTurboFunctionsSpec(ReactApplicationContext reactContext) {
     super(reactContext);

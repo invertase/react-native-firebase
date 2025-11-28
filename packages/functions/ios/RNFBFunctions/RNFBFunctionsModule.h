@@ -16,7 +16,7 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "RNFBTurboFunctions.h"
+#import "NativeRNFBTurboFunctions.h"
 
 @interface RNFBFunctionsModule : NSObject <NativeRNFBTurboFunctionsSpec>
 
