@@ -165,14 +165,6 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
 }
 
 /**
- * This works around iOS TurboModule's limitation where null values in object properties get
- * stripped. The JavaScript side converts nulls to { __rnfbNull: true } sentinel objects, this
- * method converts them back to NSNull before passing to react-native-firebase binding code
- *
- * @param value - The value to decode (can be any type)
- * @returns The decoded value with sentinels replaced by NSNull
- */
-/**
  * Decodes null sentinel objects back to NSNull values.
  * Uses iterative stack-based traversal to avoid stack overflow on deeply nested structures.
  *
