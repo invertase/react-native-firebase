@@ -108,7 +108,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
                 emulatorPort:(double)emulatorPort
                          url:(NSString *)url
                         data:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableFromUrlData &)data
-                     options:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableFromUrlOptions &)options
+                     options:
+                         (JS::NativeRNFBTurboFunctions::SpecHttpsCallableFromUrlOptions &)options
                      resolve:(RCTPromiseResolveBlock)resolve
                       reject:(RCTPromiseRejectBlock)reject {
   NSURL *customUrl = [NSURL URLWithString:customUrlOrRegion];

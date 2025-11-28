@@ -46,7 +46,8 @@
     SEL selector = method_getName(method);
     NSString *selectorName = NSStringFromSelector(selector);
 
-    // Intercept TurboModule data conversion methods (they follow pattern: JS_NativeRNFBTurbo*_Spec*)
+    // Intercept TurboModule data conversion methods (they follow pattern:
+    // JS_NativeRNFBTurbo*_Spec*)
     if ([selectorName hasPrefix:@"JS_NativeRNFBTurbo"] && [selectorName containsString:@"_Spec"]) {
       // Create a swizzled version using IMP
       IMP originalIMP = method_getImplementation(method);
