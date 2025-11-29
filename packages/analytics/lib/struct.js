@@ -22,7 +22,6 @@ export const validateStruct = (value = {}, struct, prefix = '') => {
   if (!__DEV__) {
     return value;
   }
-  
   try {
     return create(value, struct);
   } catch (e) {
