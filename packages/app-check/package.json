@@ -29,7 +29,7 @@
     "expo": ">=47.0.0"
   },
   "devDependencies": {
-    "expo": "^54.0.25"
+    "expo": "^54.0.27"
   },
   "peerDependenciesMeta": {
     "expo": {
