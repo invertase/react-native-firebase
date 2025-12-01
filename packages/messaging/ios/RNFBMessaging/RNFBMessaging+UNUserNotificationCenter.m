@@ -136,16 +136,16 @@ struct {
       [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received"
                                                  body:notificationDict];
     }
-    completionHandler(presentationOptions);
   }
 
   if (_originalDelegate != nil && originalDelegateRespondsTo.willPresentNotification) {
     [_originalDelegate userNotificationCenter:center
                       willPresentNotification:notification
                         withCompletionHandler:completionHandler];
-  } else {
-    completionHandler(presentationOptions);
   }
+  
+  // Don't consume completionHandler before the _originalDelegate has been processed
+  completionHandler(presentationOptions);
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
