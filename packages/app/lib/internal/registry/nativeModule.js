@@ -39,10 +39,8 @@ function nativeModuleKey(module) {
  * @param argToPrepend
  * @returns {Function}
  */
-function nativeModuleMethodWrapped(namespace, method, argToPrepend, nativeModuleName) {
+function nativeModuleMethodWrapped(namespace, method, argToPrepend, isTurboModule) {
   return (...args) => {
-    // if the module is not a NativeModule, it is a TurboModule
-    const isTurboModule = !!NativeModules[nativeModuleName];
     // For iOS TurboModules, encode null values in arguments to work around
     // the limitation where null values in object properties get stripped during serialization
     // See: https://github.com/facebook/react-native/issues/52802
@@ -68,7 +66,7 @@ function nativeModuleMethodWrapped(namespace, method, argToPrepend, nativeModule
  * @param NativeModule
  * @param argToPrepend
  */
-function nativeModuleWrapped(namespace, NativeModule, argToPrepend, nativeModuleName) {
+function nativeModuleWrapped(namespace, NativeModule, argToPrepend, isTurboModule) {
   const native = {};
   if (!NativeModule) {
     return NativeModule;
@@ -84,7 +82,7 @@ function nativeModuleWrapped(namespace, NativeModule, argToPrepend, nativeModule
         namespace,
         NativeModule[property],
         argToPrepend,
-        nativeModuleName,
+        isTurboModule,
       );
     } else {
       native[property] = NativeModule[property];
@@ -110,7 +108,9 @@ function initialiseNativeModule(module) {
     hasMultiAppSupport,
     hasCustomUrlOrRegionSupport,
     disablePrependCustomUrlOrRegion,
+    turboModule,
   } = config;
+  const isTurboModule = !!turboModule;
   const multiModuleRoot = {};
   const multiModule = Array.isArray(nativeModuleName);
   const nativeModuleNames = multiModule ? nativeModuleName : [nativeModuleName];
@@ -140,7 +140,7 @@ function initialiseNativeModule(module) {
 
     Object.assign(
       multiModuleRoot,
-      nativeModuleWrapped(namespace, nativeModule, argToPrepend, nativeModuleName),
+      nativeModuleWrapped(namespace, nativeModule, argToPrepend, isTurboModule),
     );
   }
 
@@ -247,7 +247,8 @@ export function getAppModule() {
     namespace,
     nativeModule,
     [],
-    APP_NATIVE_MODULE,
+    // TODO: change to true when we use TurboModules for app package
+    false,
   );
 
   return NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE];

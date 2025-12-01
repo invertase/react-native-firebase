@@ -285,6 +285,7 @@ export default createModuleNamespace({
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: true,
   ModuleClass: FirebaseFunctionsModule,
+  turboModule: true,
 });
 
 // import functions, { firebase } from '@react-native-firebase/functions';
