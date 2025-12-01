@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-import { NativeModules } from 'react-native';
 import { APP_NATIVE_MODULE } from '../constants';
 import NativeFirebaseError from '../NativeFirebaseError';
 import RNFBNativeEventEmitter from '../RNFBNativeEventEmitter';
