@@ -51,6 +51,10 @@ import TwitterAuthProvider from './providers/TwitterAuthProvider';
 import { TotpSecret } from './TotpSecret';
 import version from './version';
 import fallBackModule from './web/RNFBAuthModule';
+import { fetchPasswordPolicy } from './password-policy/passwordPolicyApi';
+import { PasswordPolicyImpl } from './password-policy/PasswordPolicyImpl';
+
+const EXPECTED_PASSWORD_POLICY_SCHEMA_VERSION = 1;
 
 const PhoneAuthState = {
   CODE_SENT: 'sent',
@@ -103,6 +107,8 @@ class FirebaseAuthModule extends FirebaseModule {
     this._authResult = false;
     this._languageCode = this.native.APP_LANGUAGE[this.app._name];
     this._tenantId = null;
+    this._projectPasswordPolicy = null;
+    this._tenantPasswordPolicies = {};
 
     if (!this.languageCode) {
       this._languageCode = this.native.APP_LANGUAGE['[DEFAULT]'];
@@ -338,13 +344,37 @@ class FirebaseAuthModule extends FirebaseModule {
   createUserWithEmailAndPassword(email, password) {
     return this.native
       .createUserWithEmailAndPassword(email, password)
-      .then(userCredential => this._setUserCredential(userCredential));
+      .then(userCredential => this._setUserCredential(userCredential))
+      .catch(error => {
+        if (error.code === 'auth/password-does-not-meet-requirements') {
+          return this._recachePasswordPolicy()
+            .catch(() => {
+              // Silently ignore recache failures - the original error matters more
+            })
+            .then(() => {
+              throw error;
+            });
+        }
+        throw error;
+      });
   }
 
   signInWithEmailAndPassword(email, password) {
     return this.native
       .signInWithEmailAndPassword(email, password)
-      .then(userCredential => this._setUserCredential(userCredential));
+      .then(userCredential => this._setUserCredential(userCredential))
+      .catch(error => {
+        if (error.code === 'auth/password-does-not-meet-requirements') {
+          return this._recachePasswordPolicy()
+            .catch(() => {
+              // Silently ignore recache failures - the original error matters more
+            })
+            .then(() => {
+              throw error;
+            });
+        }
+        throw error;
+      });
   }
 
   signInWithCustomToken(customToken) {
@@ -382,7 +412,18 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   confirmPasswordReset(code, newPassword) {
-    return this.native.confirmPasswordReset(code, newPassword);
+    return this.native.confirmPasswordReset(code, newPassword).catch(error => {
+      if (error.code === 'auth/password-does-not-meet-requirements') {
+        return this._recachePasswordPolicy()
+          .catch(() => {
+            // Silently ignore recache failures - the original error matters more
+          })
+          .then(() => {
+            throw error;
+          });
+      }
+      throw error;
+    });
   }
 
   applyActionCode(code) {
@@ -490,6 +531,44 @@ class FirebaseAuthModule extends FirebaseModule {
 
   getCustomAuthDomain() {
     return this.native.getCustomAuthDomain();
+  }
+
+  _getPasswordPolicyInternal() {
+    if (this._tenantId === null) {
+      return this._projectPasswordPolicy;
+    }
+    return this._tenantPasswordPolicies[this._tenantId];
+  }
+
+  async _updatePasswordPolicy() {
+    const response = await fetchPasswordPolicy(this);
+    const passwordPolicy = new PasswordPolicyImpl(response);
+    if (this._tenantId === null) {
+      this._projectPasswordPolicy = passwordPolicy;
+    } else {
+      this._tenantPasswordPolicies[this._tenantId] = passwordPolicy;
+    }
+  }
+
+  async _recachePasswordPolicy() {
+    if (this._getPasswordPolicyInternal()) {
+      await this._updatePasswordPolicy();
+    }
+  }
+
+  async validatePassword(password) {
+    if (!this._getPasswordPolicyInternal()) {
+      await this._updatePasswordPolicy();
+    }
+    const passwordPolicy = this._getPasswordPolicyInternal();
+
+    if (passwordPolicy.schemaVersion !== EXPECTED_PASSWORD_POLICY_SCHEMA_VERSION) {
+      throw new Error(
+        'auth/unsupported-password-policy-schema-version: The password policy received from the backend uses a schema version that is not supported by this version of the SDK.',
+      );
+    }
+
+    return passwordPolicy.validatePassword(password);
   }
 }
 

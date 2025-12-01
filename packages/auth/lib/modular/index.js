@@ -16,8 +16,6 @@
  */
 
 import { getApp } from '@react-native-firebase/app';
-import { fetchPasswordPolicy } from '../password-policy/passwordPolicyApi';
-import { PasswordPolicyImpl } from '../password-policy/PasswordPolicyImpl';
 import { MultiFactorUser } from '../multiFactor';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 
@@ -630,8 +628,6 @@ export function getCustomAuthDomain(auth) {
   return auth.getCustomAuthDomain.call(auth, MODULAR_DEPRECATION_ARG);
 }
 
-const cachedPasswordPolicies = {};
-
 /**
  * Returns a password validation status
  * @param {Auth} auth - The Auth instance.
@@ -645,13 +641,5 @@ export async function validatePassword(auth, password) {
     );
   }
 
-  const appName = auth.app.name;
-  if (!cachedPasswordPolicies[appName]) {
-    cachedPasswordPolicies[appName] = await fetchPasswordPolicy(auth);
-  }
-
-  const passwordPolicyImpl = new PasswordPolicyImpl(cachedPasswordPolicies[appName]);
-  const status = passwordPolicyImpl.validatePassword(password);
-
-  return status;
+  return auth.validatePassword(password);
 }
