@@ -19,6 +19,7 @@ export { default as FirebaseApp } from '../FirebaseApp';
 export * from './constants';
 export { default as FirebaseModule } from './FirebaseModule';
 export { default as NativeFirebaseError } from './NativeFirebaseError';
+export * from './NativeModules';
 export * from './registry/app';
 export * from './registry/namespace';
 export * from './registry/nativeModule';
