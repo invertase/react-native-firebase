@@ -23,10 +23,11 @@ let firebaseJson: any = null;
 
 export interface ModuleConfig {
   namespace: string;
-  nativeModuleName?: string;
+  nativeModuleName?: string | string[];
   hasMultiAppSupport?: boolean;
   hasCustomUrlOrRegionSupport?: boolean;
-  nativeEvents?: string[];
+  nativeEvents?: boolean | string[];
+  disablePrependCustomUrlOrRegion?: boolean;
 }
 
 export default class FirebaseModule {

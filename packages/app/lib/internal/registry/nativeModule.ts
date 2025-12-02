@@ -82,6 +82,7 @@ function nativeModuleWrapped(namespace: string, NativeModule: any, argToPrepend:
 
   for (let i = 0, len = properties.length; i < len; i++) {
     const property = properties[i];
+    if (!property) continue;
     if (typeof NativeModule[property] === 'function') {
       native[property] = nativeModuleMethodWrapped(namespace, NativeModule[property], argToPrepend);
     } else {
@@ -111,10 +112,17 @@ function initialiseNativeModule(module: FirebaseModule): any {
   } = config;
   const multiModuleRoot: Record<string, any> = {};
   const multiModule = Array.isArray(nativeModuleName);
-  const nativeModuleNames = multiModule ? nativeModuleName : [nativeModuleName];
+  const nativeModuleNames = multiModule
+    ? nativeModuleName
+    : nativeModuleName
+      ? [nativeModuleName]
+      : [];
 
   for (let i = 0; i < nativeModuleNames.length; i++) {
-    const nativeModule = getReactNativeModule(nativeModuleNames[i]);
+    const moduleName = nativeModuleNames[i];
+    if (!moduleName) continue;
+
+    const nativeModule = getReactNativeModule(moduleName);
 
     // only error if there's a single native module
     // as multi modules can mean some are optional
@@ -123,7 +131,7 @@ function initialiseNativeModule(module: FirebaseModule): any {
     }
 
     if (multiModule) {
-      multiModuleRoot[nativeModuleNames[i]] = !!nativeModule;
+      multiModuleRoot[moduleName] = !!nativeModule;
     }
 
     const argToPrepend: any[] = [];
@@ -139,9 +147,12 @@ function initialiseNativeModule(module: FirebaseModule): any {
     Object.assign(multiModuleRoot, nativeModuleWrapped(namespace, nativeModule, argToPrepend));
   }
 
-  if (nativeEvents && nativeEvents.length) {
+  if (nativeEvents && Array.isArray(nativeEvents) && nativeEvents.length) {
     for (let i = 0, len = nativeEvents.length; i < len; i++) {
-      subscribeToNativeModuleEvent(nativeEvents[i]);
+      const eventName = nativeEvents[i];
+      if (eventName) {
+        subscribeToNativeModuleEvent(eventName);
+      }
     }
   }
 
