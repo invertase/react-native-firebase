@@ -23,8 +23,11 @@
     "target": "ESNext",
     "verbatimModuleSyntax": true,
     "baseUrl": ".",
+    "rootDir": ".",
     "paths": {
       "@react-native-firebase/app": ["../app/lib"]
     }
-  }
+  },
+  "include": ["lib/**/*"],
+  "exclude": ["node_modules", "dist", "__tests__", "**/*.test.ts"]
 }

@@ -5,7 +5,7 @@
   "description": "React Native Firebase - Cloud Functions for Firebase lets you automatically run backend code in response to events triggered by Firebase features and HTTPS requests. React Native Firebase supports integration with production and locally emulated Cloud Functions with a simple API interface.\n\n",
   "main": "./dist/commonjs/index.js",
   "module": "./dist/module/index.js",
-  "types": "./dist/typescript/commonjs/functions/lib/index.d.ts",
+  "types": "./dist/typescript/commonjs/lib/index.d.ts",
   "codegenConfig": {
     "name": "NativeRNFBTurboFunctions",
     "type": "modules",
@@ -59,11 +59,11 @@
     ".": {
       "source": "./lib/index.ts",
       "import": {
-        "types": "./dist/typescript/module/functions/lib/index.d.ts",
+        "types": "./dist/typescript/module/lib/index.d.ts",
         "default": "./dist/module/index.js"
       },
       "require": {
-        "types": "./dist/typescript/commonjs/functions/lib/index.d.ts",
+        "types": "./dist/typescript/commonjs/lib/index.d.ts",
         "default": "./dist/commonjs/index.js"
       }
     },
@@ -92,7 +92,12 @@
           "esm": true
         }
       ],
-      "typescript"
+      [
+        "typescript",
+        {
+          "tsc": "../../node_modules/.bin/tsc"
+        }
+      ]
     ]
   },
   "eslintIgnore": [
