@@ -17,23 +17,26 @@
 
 import { getAppModule, getNativeModule } from './registry/nativeModule';
 import SharedEventEmitter from './SharedEventEmitter';
-import type { ReactNativeFirebase } from '../types/app';
-import type { FirebaseJsonConfig, ModuleConfig } from '../types/internal';
-import type { ReactNativeFirebaseNativeModules } from './NativeModules';
-import type EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
+import type { ReactNativeFirebase } from '../types';
 
-let firebaseJson: FirebaseJsonConfig | null = null;
+let firebaseJson: any = null;
 
-export default class FirebaseModule<
-  NativeModuleName extends keyof ReactNativeFirebaseNativeModules = any,
-> {
-  _app: ReactNativeFirebase.FirebaseAppBase;
-  _nativeModule: ReactNativeFirebaseNativeModules[NativeModuleName] | null;
+export interface ModuleConfig {
+  namespace: string;
+  nativeModuleName?: string;
+  hasMultiAppSupport?: boolean;
+  hasCustomUrlOrRegionSupport?: boolean;
+  nativeEvents?: string[];
+}
+
+export default class FirebaseModule {
+  _app: ReactNativeFirebase.FirebaseApp;
+  _nativeModule: any;
   _customUrlOrRegion: string | null;
   _config: ModuleConfig;
 
   constructor(
-    app: ReactNativeFirebase.FirebaseAppBase,
+    app: ReactNativeFirebase.FirebaseApp,
     config: ModuleConfig,
     customUrlOrRegion?: string | null,
   ) {
@@ -44,32 +47,30 @@ export default class FirebaseModule<
   }
 
   get app(): ReactNativeFirebase.FirebaseApp {
-    return this._app as unknown as ReactNativeFirebase.FirebaseApp;
+    return this._app;
   }
 
-  get firebaseJson(): FirebaseJsonConfig {
+  get firebaseJson(): any {
     if (firebaseJson) {
       return firebaseJson;
     }
     firebaseJson = JSON.parse(getAppModule().FIREBASE_RAW_JSON);
-    return firebaseJson as FirebaseJsonConfig;
+    return firebaseJson;
   }
 
-  get emitter(): EventEmitter {
+  get emitter(): any {
     return SharedEventEmitter;
   }
 
-  eventNameForApp(...args: Array<string | number>): string {
+  eventNameForApp(...args: any[]): string {
     return `${this.app.name}-${args.join('-')}`;
   }
 
-  get native(): ReactNativeFirebaseNativeModules[NativeModuleName] {
+  get native(): any {
     if (this._nativeModule) {
       return this._nativeModule;
     }
-    this._nativeModule = getNativeModule(
-      this,
-    ) as unknown as ReactNativeFirebaseNativeModules[NativeModuleName];
+    this._nativeModule = getNativeModule(this);
     return this._nativeModule;
   }
 }

@@ -17,7 +17,6 @@
 import { Platform } from 'react-native';
 import Base64 from './Base64';
 import { isFunction, isObject, isString } from './validate';
-import type { DataUrlParts, Observer } from '../types/internal';
 
 export * from './id';
 export * from './path';
@@ -27,7 +26,10 @@ export * from './validate';
 export { default as Base64 } from './Base64';
 export { default as ReferenceBase } from './ReferenceBase';
 
-export type { DataUrlParts, Observer };
+export interface DataUrlParts {
+  base64String: string | undefined;
+  mediaType: string | undefined;
+}
 
 export function getDataUrlParts(dataUrlString: string): DataUrlParts {
   const isBase64 = dataUrlString.includes(';base64');
@@ -107,6 +109,12 @@ export function tryJSONStringify(data: any): string | null {
   } catch (_) {
     return null;
   }
+}
+
+export interface Observer<T> {
+  next: (value: T) => void;
+  error?: (error: Error) => void;
+  complete?: () => void;
 }
 
 export function parseListenerOrObserver<T>(
@@ -548,11 +556,11 @@ export function deprecationConsoleWarning(
       const instanceMap = moduleMap[instanceName];
       const deprecatedMethod = instanceMap?.[methodName];
       if (instanceMap && deprecatedMethod) {
-        if (!globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS) {
+        if (!(globalThis as any).RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS) {
           // eslint-disable-next-line no-console
           console.warn(createMessage(nameSpace, methodName, instanceName));
 
-          if (globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE === true) {
+          if ((globalThis as any).RNFB_MODULAR_DEPRECATION_STRICT_MODE === true) {
             throw new Error('Deprecated API usage detected while in strict mode.');
           }
         }
@@ -787,11 +795,11 @@ export function warnIfNotModularCall(args: IArguments, replacementMethodName: st
     message += ` Please use \`${replacementMethodName}\` instead.`;
   }
 
-  if (!globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS) {
+  if (!(globalThis as any).RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS) {
     // eslint-disable-next-line no-console
     console.warn(message);
 
-    if (globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE === true) {
+    if ((globalThis as any).RNFB_MODULAR_DEPRECATION_STRICT_MODE === true) {
       throw new Error('Deprecated API usage detected while in strict mode.');
     }
   }

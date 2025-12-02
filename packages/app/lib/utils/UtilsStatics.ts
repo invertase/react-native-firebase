@@ -16,8 +16,8 @@
  */
 
 import { NativeModules } from 'react-native';
-import { stripTrailingSlash, isOther } from '../common';
-import { Utils } from '../types/app';
+import { stripTrailingSlash, isOther } from '../../lib/common';
+import { Utils } from '../types';
 import { version } from '../version';
 
 const PATH_NAMES = [
@@ -45,16 +45,12 @@ function processPathConstants(nativeModule: any): Utils.FilePath {
 
   for (let i = 0; i < PATH_NAMES.length; i++) {
     const path = PATH_NAMES[i];
-    if (path) {
-      (paths as any)[path] = nativeModule[path] ? stripTrailingSlash(nativeModule[path]) : null;
-    }
+    (paths as any)[path] = nativeModule[path] ? stripTrailingSlash(nativeModule[path]) : null;
   }
 
   for (let i = 0; i < PATH_FILE_TYPES.length; i++) {
     const pathFileType = PATH_FILE_TYPES[i];
-    if (pathFileType) {
-      (paths as any)[pathFileType] = stripTrailingSlash(nativeModule[pathFileType]);
-    }
+    (paths as any)[pathFileType] = stripTrailingSlash(nativeModule[pathFileType]);
   }
 
   Object.freeze(paths);
@@ -71,3 +67,4 @@ const statics: Utils.Statics = {
 };
 
 export default statics;
+

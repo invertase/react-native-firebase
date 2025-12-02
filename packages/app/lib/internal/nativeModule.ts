@@ -2,3 +2,4 @@
 // In this case we use the web Firebase JS SDK.
 export { getReactNativeModule } from './nativeModuleWeb';
 export { setReactNativeModule } from './nativeModuleWeb';
+

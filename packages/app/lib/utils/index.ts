@@ -15,16 +15,18 @@
  *
  */
 
-import { isIOS } from '../common';
-import { createModuleNamespace, FirebaseModule } from '../internal';
+import { isIOS } from '../../lib/common';
+// @ts-expect-error
+import { createModuleNamespace, FirebaseModule } from '../../lib/internal';
 import UtilsStatics from './UtilsStatics';
-import { Utils } from '../types/app';
+import { Utils } from '../types';
+import FirebaseApp from '../FirebaseApp';
 
 const namespace = 'utils';
 const statics = UtilsStatics;
 const nativeModuleName = 'RNFBUtilsModule';
 
-class FirebaseUtilsModule extends FirebaseModule<'RNFBUtilsModule'> {
+class FirebaseUtilsModule extends FirebaseModule implements Utils.Module {
   get isRunningInTestLab(): boolean {
     if (isIOS) {
       return false;
@@ -37,9 +39,6 @@ class FirebaseUtilsModule extends FirebaseModule<'RNFBUtilsModule'> {
       return {
         isAvailable: true,
         status: 0,
-        hasResolution: false,
-        isUserResolvableError: false,
-        error: undefined,
       };
     }
     return this.native.androidPlayServices;
@@ -50,9 +49,6 @@ class FirebaseUtilsModule extends FirebaseModule<'RNFBUtilsModule'> {
       return Promise.resolve({
         isAvailable: true,
         status: 0,
-        hasResolution: false,
-        isUserResolvableError: false,
-        error: undefined,
       });
     }
     return this.native.androidGetPlayServicesStatus();
@@ -91,4 +87,5 @@ export default createModuleNamespace({
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseUtilsModule,
-}) as unknown as Utils.Statics & (() => Utils.Module);
+});
+

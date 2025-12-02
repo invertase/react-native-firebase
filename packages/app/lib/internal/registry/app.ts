@@ -24,17 +24,13 @@ import {
   isFunction,
   isString,
   isUndefined,
-} from '../../common';
+} from '@react-native-firebase/app/lib/common';
 import FirebaseApp from '../../FirebaseApp';
 import { DEFAULT_APP_NAME } from '../constants';
 import { setReactNativeAsyncStorageInternal } from '../asyncStorage';
 import { getAppModule } from './nativeModule';
 import { setLogLevelInternal } from '../logger';
-import type { ReactNativeFirebase } from '../../types/app';
-
-type FirebaseAppConfig = ReactNativeFirebase.FirebaseAppConfig;
-type FirebaseAppOptions = ReactNativeFirebase.FirebaseAppOptions;
-type ReactNativeAsyncStorage = ReactNativeFirebase.ReactNativeAsyncStorage;
+import { FirebaseAppConfig, FirebaseAppOptions, ReactNativeAsyncStorage } from '../../types';
 
 const APP_REGISTRY: Record<string, FirebaseApp> = {};
 let onAppCreateFn: ((app: FirebaseApp) => void) | null = null;
@@ -67,13 +63,11 @@ export function initializeNativeApps(): void {
 
   if (NATIVE_FIREBASE_APPS && NATIVE_FIREBASE_APPS.length) {
     for (let i = 0; i < NATIVE_FIREBASE_APPS.length; i++) {
-      const nativeApp = NATIVE_FIREBASE_APPS[i];
-      if (!nativeApp) continue;
-      const { appConfig, options } = nativeApp;
-      const name = appConfig.name as string;
+      const { appConfig, options } = NATIVE_FIREBASE_APPS[i];
+      const { name } = appConfig;
       APP_REGISTRY[name] = new FirebaseApp(
-        options as FirebaseAppOptions,
-        appConfig as FirebaseAppConfig,
+        options,
+        appConfig,
         true,
         deleteApp.bind(null, name, true),
       );
@@ -92,7 +86,7 @@ export function initializeNativeApps(): void {
  *
  * @param name
  */
-export function getApp(name: string = DEFAULT_APP_NAME): ReactNativeFirebase.FirebaseApp {
+export function getApp(name: string = DEFAULT_APP_NAME, _deprecationArg?: any): FirebaseApp {
   warnIfNotModularCall(arguments, 'getApp()');
   if (!initializedNativeApps) {
     initializeNativeApps();
@@ -103,18 +97,18 @@ export function getApp(name: string = DEFAULT_APP_NAME): ReactNativeFirebase.Fir
     throw new Error(`No Firebase App '${name}' has been created - call firebase.initializeApp()`);
   }
 
-  return app as unknown as ReactNativeFirebase.FirebaseApp;
+  return app;
 }
 
 /**
  * Gets all app instances, used for `firebase.apps`
  */
-export function getApps(): ReactNativeFirebase.FirebaseApp[] {
+export function getApps(_deprecationArg?: any): FirebaseApp[] {
   warnIfNotModularCall(arguments, 'getApps()');
   if (!initializedNativeApps) {
     initializeNativeApps();
   }
-  return Object.values(APP_REGISTRY) as unknown as ReactNativeFirebase.FirebaseApp[];
+  return Object.values(APP_REGISTRY);
 }
 
 /**
@@ -123,9 +117,10 @@ export function getApps(): ReactNativeFirebase.FirebaseApp[] {
  * @param configOrName
  */
 export function initializeApp(
-  options: Partial<FirebaseAppOptions> = {},
+  options: FirebaseAppOptions = {},
   configOrName?: string | FirebaseAppConfig,
-): Promise<ReactNativeFirebase.FirebaseApp> {
+  _deprecationArg?: any,
+): Promise<FirebaseApp> {
   warnIfNotModularCall(arguments, 'initializeApp()');
   let appConfig: FirebaseAppConfig = configOrName as FirebaseAppConfig;
 
@@ -189,12 +184,7 @@ export function initializeApp(
     );
   }
 
-  const app = new FirebaseApp(
-    options as FirebaseAppOptions,
-    appConfig,
-    false,
-    deleteApp.bind(null, name, true),
-  );
+  const app = new FirebaseApp(options, appConfig, false, deleteApp.bind(null, name, true));
 
   // Note these initialization actions with side effects are performed prior to knowledge of
   // successful initialization in the native code. Native code *may* throw an error.
@@ -202,12 +192,12 @@ export function initializeApp(
   onAppCreateFn?.(APP_REGISTRY[name]);
 
   return getAppModule()
-    .initializeApp(options as FirebaseAppOptions, appConfig)
+    .initializeApp(options, appConfig)
     .then(() => {
       app._initialized = true;
-      return app as unknown as ReactNativeFirebase.FirebaseApp;
+      return app;
     })
-    .catch((e: any) => {
+    .catch(e => {
       // we need to clean the app entry from registry as the app does not actually exist
       // There are still possible side effects from `onAppCreateFn` to consider but as existing
       // code may rely on that function running prior to native create, re-ordering it is a semantic change
@@ -219,7 +209,7 @@ export function initializeApp(
     });
 }
 
-export function setLogLevel(logLevel: ReactNativeFirebase.LogLevelString): void {
+export function setLogLevel(logLevel: string, _deprecationArg?: any): void {
   warnIfNotModularCall(arguments, 'setLogLevel()');
   if (!['error', 'warn', 'info', 'debug', 'verbose'].includes(logLevel)) {
     throw new Error('LogLevel must be one of "error", "warn", "info", "debug", "verbose"');
@@ -232,7 +222,7 @@ export function setLogLevel(logLevel: ReactNativeFirebase.LogLevelString): void 
   }
 }
 
-export function setReactNativeAsyncStorage(asyncStorage: ReactNativeAsyncStorage): void {
+export function setReactNativeAsyncStorage(asyncStorage: ReactNativeAsyncStorage, _deprecationArg?: any): void {
   warnIfNotModularCall(arguments, 'setReactNativeAsyncStorage()');
 
   if (!isObject(asyncStorage)) {
@@ -251,13 +241,13 @@ export function setReactNativeAsyncStorage(asyncStorage: ReactNativeAsyncStorage
     throw new Error("setReactNativeAsyncStorage(*) 'asyncStorage.removeItem' must be a function.");
   }
 
-  setReactNativeAsyncStorageInternal(asyncStorage as any);
+  setReactNativeAsyncStorageInternal(asyncStorage);
 }
 
 /**
  *
  */
-export function deleteApp(name: string, nativeInitialized: boolean): Promise<void> {
+export function deleteApp(name: string, nativeInitialized: boolean, _deprecationArg?: any): Promise<void> {
   if (name === DEFAULT_APP_NAME && nativeInitialized) {
     return Promise.reject(new Error('Unable to delete the default native firebase app instance.'));
   }
@@ -271,8 +261,9 @@ export function deleteApp(name: string, nativeInitialized: boolean): Promise<voi
   const nativeModule = getAppModule();
 
   return nativeModule.deleteApp(name).then(() => {
-    (app as any)._deleted = true;
+    app._deleted = true;
     onAppDestroyFn?.(app);
     delete APP_REGISTRY[name];
   });
 }
+

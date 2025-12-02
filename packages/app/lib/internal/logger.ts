@@ -15,9 +15,20 @@
  *
  */
 
-import type { LogCallback, LogOptions } from '../types/app';
+export type LogLevelString = 'debug' | 'verbose' | 'info' | 'warn' | 'error' | 'silent';
 
-type LogLevelString = 'debug' | 'verbose' | 'info' | 'warn' | 'error' | 'silent';
+export interface LogOptions {
+  level?: LogLevelString;
+}
+
+export type LogCallback = (callbackParams: LogCallbackParams) => void;
+
+export interface LogCallbackParams {
+  level: LogLevelString;
+  message: string;
+  args: unknown[];
+  type: string;
+}
 
 /**
  * The JS SDK supports 5 log levels and also allows a user the ability to

@@ -22,7 +22,7 @@ const AlphaNumericUnderscore = /^[a-zA-Z0-9_]+$/;
 /**
  * Validates that all key-value pairs in an object are strings.
  */
-export function objectKeyValuesAreStrings(object: unknown): boolean {
+export function objectKeyValuesAreStrings(object: any): boolean {
   if (!isObject(object)) {
     return false;
   }
@@ -45,7 +45,7 @@ export function objectKeyValuesAreStrings(object: unknown): boolean {
  * @param value
  * @returns {boolean}
  */
-export function isNull(value: unknown): value is null {
+export function isNull(value: any): value is null {
   return value === null;
 }
 
@@ -55,7 +55,7 @@ export function isNull(value: unknown): value is null {
  * @param value
  * @returns {boolean}
  */
-export function isObject(value: unknown): value is Record<string, unknown> {
+export function isObject(value: any): value is Record<string, any> {
   return value ? typeof value === 'object' && !Array.isArray(value) && !isNull(value) : false;
 }
 
@@ -65,13 +65,9 @@ export function isObject(value: unknown): value is Record<string, unknown> {
  * @param value
  * @returns {boolean}
  */
-export function isDate(value: unknown): value is Date {
+export function isDate(value: any): value is Date {
   // use the global isNaN() and not Number.isNaN() since it will validate an Invalid Date
-  return value &&
-    Object.prototype.toString.call(value) === '[object Date]' &&
-    !isNaN(value as number)
-    ? true
-    : false;
+  return value && Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value);
 }
 
 /**
@@ -80,8 +76,7 @@ export function isDate(value: unknown): value is Date {
  * @param value
  * @returns {*|boolean}
  */
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-export function isFunction(value: unknown): value is Function {
+export function isFunction(value: any): value is (...args: any[]) => any {
   return value ? typeof value === 'function' : false;
 }
 
@@ -90,7 +85,7 @@ export function isFunction(value: unknown): value is Function {
  * @param value
  * @return {boolean}
  */
-export function isString(value: unknown): value is string {
+export function isString(value: any): value is string {
   return typeof value === 'string';
 }
 
@@ -99,7 +94,7 @@ export function isString(value: unknown): value is string {
  * @param value
  * @return {boolean}
  */
-export function isNumber(value: unknown): value is number {
+export function isNumber(value: any): value is number {
   return typeof value === 'number';
 }
 
@@ -108,10 +103,7 @@ export function isNumber(value: unknown): value is number {
  * @param value
  * @return {boolean}
  */
-export function isE164PhoneNumber(value: unknown): boolean {
-  if (!isString(value)) {
-    return false;
-  }
+export function isE164PhoneNumber(value: any): boolean {
   const PHONE_NUMBER = /^\+[1-9]\d{1,14}$/; // E.164
   return PHONE_NUMBER.test(value);
 }
@@ -121,7 +113,7 @@ export function isE164PhoneNumber(value: unknown): boolean {
  * @param value
  * @returns {boolean}
  */
-export function isFinite(value: unknown): boolean {
+export function isFinite(value: any): boolean {
   return Number.isFinite(value);
 }
 
@@ -130,7 +122,7 @@ export function isFinite(value: unknown): boolean {
  * @param value
  * @returns {boolean}
  */
-export function isInteger(value: unknown): boolean {
+export function isInteger(value: any): boolean {
   return Number.isInteger(value);
 }
 
@@ -140,16 +132,16 @@ export function isInteger(value: unknown): boolean {
  * @param value
  * @return {boolean}
  */
-export function isBoolean(value: unknown): value is boolean {
+export function isBoolean(value: any): value is boolean {
   return typeof value === 'boolean';
 }
 
 /**
  *
  * @param value
- * @returns {arg is Array<unknown>}
+ * @returns {arg is Array<any>}
  */
-export function isArray(value: unknown): value is Array<unknown> {
+export function isArray(value: any): value is Array<any> {
   return Array.isArray(value);
 }
 
@@ -158,7 +150,7 @@ export function isArray(value: unknown): value is Array<unknown> {
  * @param value
  * @returns {boolean}
  */
-export function isUndefined(value: unknown): value is undefined {
+export function isUndefined(value: any): value is undefined {
   return typeof value === 'undefined';
 }
 
@@ -168,10 +160,7 @@ export function isUndefined(value: unknown): value is undefined {
  * @param value
  * @returns {boolean}
  */
-export function isAlphaNumericUnderscore(value: unknown): boolean {
-  if (!isString(value)) {
-    return false;
-  }
+export function isAlphaNumericUnderscore(value: any): boolean {
   return AlphaNumericUnderscore.test(value);
 }
 
@@ -181,10 +170,7 @@ export function isAlphaNumericUnderscore(value: unknown): boolean {
  * @returns {boolean}
  */
 const IS_VALID_URL_REGEX = /^(http|https):\/\/[^ "]+$/;
-export function isValidUrl(url: unknown): boolean {
-  if (!isString(url)) {
-    return false;
-  }
+export function isValidUrl(url: any): boolean {
   return IS_VALID_URL_REGEX.test(url);
 }
 
@@ -195,7 +181,7 @@ export function isValidUrl(url: unknown): boolean {
  * @param oneOf
  * @returns {boolean}
  */
-export function isOneOf(value: unknown, oneOf: unknown[] = []): boolean {
+export function isOneOf(value: any, oneOf: any[] = []): boolean {
   if (!isArray(oneOf)) {
     return false;
   }
