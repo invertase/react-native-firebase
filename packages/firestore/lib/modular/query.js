@@ -1,8 +1,8 @@
 /**
- * @typedef {import('..').FirebaseFirestoreTypes.FieldPath} FieldPath
- * @typedef {import('..').FirebaseFirestoreTypes.QueryCompositeFilterConstraint} QueryCompositeFilterConstraint
- * @typedef {import('..').FirebaseFirestoreTypes.WhereFilterOp} WhereFilterOp
  * @typedef {import('../FirestoreFilter')._Filter} _Filter
+ * @typedef {import('.').FieldPath} FieldPath
+ * @typedef {import('.').QueryCompositeFilterConstraint} QueryCompositeFilterConstraint
+ * @typedef {import('.').WhereFilterOp} WhereFilterOp
  * @typedef {import('.').DocumentReference} DocumentReference
  * @typedef {import('.').Query} Query
  * @typedef {import('./snapshot').QuerySnapshot} QuerySnapshot

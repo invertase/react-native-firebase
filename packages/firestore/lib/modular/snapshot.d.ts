@@ -1,7 +1,4 @@
-import { FirebaseFirestoreTypes } from '../index';
-import { DocumentReference, Query } from './index';
-
-import SnapshotListenOptions = FirebaseFirestoreTypes.SnapshotListenOptions;
+import { DocumentReference, Query, DocumentData, SnapshotListenOptions } from './index';
 
 export type Unsubscribe = () => void;
 export type FirestoreError = Error;

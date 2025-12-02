@@ -212,6 +212,19 @@ onSnapshot(
     complete() {},
   },
 );
+onSnapshot(
+  collection(firebase.firestore(), 'foo'),
+  {
+    next: (snapshot: QuerySnapshot) => {
+      // @ts-expect-error - toFirestore modelObject must be DocumentData
+      console.log(snapshot.query.converter?.toFirestore(1));
+    },
+    error: (error: { message: any }) => {
+      console.log(error.message);
+    },
+    complete() {},
+  },
+);
 
 function withTestDb(
   fn: (db: FirebaseFirestoreTypes.Module) => void | Promise<void>,

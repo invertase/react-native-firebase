@@ -1,17 +1,28 @@
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { FirebaseFirestoreTypes } from '../index';
+import { FieldValue } from './FieldValue';
+import { FieldPath } from './FieldPath';
 
 import FirebaseApp = ReactNativeFirebase.FirebaseApp;
 import Firestore = FirebaseFirestoreTypes.Module;
-import DocumentData = FirebaseFirestoreTypes.DocumentData;
-import FieldValue = FirebaseFirestoreTypes.FieldValue;
-import FieldPath = FirebaseFirestoreTypes.FieldPath;
-import PersistentCacheIndexManager = FirebaseFirestoreTypes.PersistentCacheIndexManager;
-import AggregateQuerySnapshot = FirebaseFirestoreTypes.AggregateQuerySnapshot;
-import SetOptions = FirebaseFirestoreTypes.SetOptions;
+
+export type PersistentCacheIndexManager = FirebaseFirestoreTypes.PersistentCacheIndexManager;
+export type AggregateQuerySnapshot = FirebaseFirestoreTypes.AggregateQuerySnapshot;
+export type SetOptions = FirebaseFirestoreTypes.SetOptions;
+export type SnapshotListenOptions = FirebaseFirestoreTypes.SnapshotListenOptions;
+export type WhereFilterOp = FirebaseFirestoreTypes.WhereFilterOp;
+export type QueryCompositeFilterConstraint = FirebaseFirestoreTypes.QueryCompositeFilterConstraint;
 
 /** Primitive types. */
 export type Primitive = string | number | boolean | undefined | null;
+
+/**
+ * A `DocumentData` object represents the data in a document.
+ * - Same as {@link FirebaseFirestoreTypes.DocumentData}
+ */
+export interface DocumentData {
+  [key: string]: any;
+}
 
 /**
  * Similar to Typescript's `Partial<T>`, but allows nested fields to be
