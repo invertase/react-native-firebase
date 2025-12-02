@@ -1,9 +1,9 @@
 ---
 title: AI Logic
 description: Installation and getting started with Firebase AI Logic.
-icon: //static.invertase.io/assets/social/firebase-logo.png
+icon: //firebase.google.com/static/images/icons/firebase-ai-logic.svg
 next: /analytics/usage
-previous: /remote-config/usage
+previous: /contributing
 ---
 
 # Installation
@@ -392,6 +392,40 @@ function App() {
     </View>
   );
 }
+```
+
+## Generating images from text
+
+You can ask an Imagen model to generate a single image or multiple image by prompting with text:
+
+```js
+<Button
+  title="generate image using Imagen model"
+  onPress={async () => {
+    const app = getApp();
+    const ai = getAI(app);
+
+    const model = getImagenModel(ai, {
+      model: 'imagen-3.0-generate-002',
+      // Can also Configure the model to generate multiple images for each request
+      // See: https://firebase.google.com/docs/ai-logic/model-parameters
+      // generationConfig: {
+      //   numberOfImages: 4
+      // }
+    });
+
+    const prompt = 'Generate an image of London bridge with sharks in the water at sunset';
+
+    const result = await model.generateImages(prompt);
+    // creates a base64 encoded image you can render
+    const image = result.images[0].bytesBase64Encoded;
+
+    // If you wish to have an image generated and uploaded to your Firebase Storage bucket,
+    // you can do the following instead:
+    const gcsURI = 'gs://[PROJECT NAME].appspot.com/[DIRECTORY TO STORE IMAGE]';
+    const result = await model.generateImagesGCS(prompt, gcsURI);
+  }}
+/>
 ```
 
 ## Getting ready for production

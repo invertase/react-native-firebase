@@ -1,3 +1,4 @@
+import com.android.Version
 import io.invertase.gradle.common.PackageJson
 
 buildscript {
@@ -36,11 +37,8 @@ def jsonTargetSdk = appPackageJson['sdkVersions']['android']['targetSdk']
 def jsonCompileSdk = appPackageJson['sdkVersions']['android']['compileSdk']
 def coreVersionDetected = appPackageJson['version']
 def coreVersionRequired = packageJson['peerDependencies'][appPackageJson['name']]
-// Only log after build completed so log warning appears at the end
 if (coreVersionDetected != coreVersionRequired) {
-  gradle.buildFinished {
-    project.logger.warn("ReactNativeFirebase WARNING: NPM package '${packageJson['name']}' depends on '${appPackageJson['name']}' v${coreVersionRequired} but found v${coreVersionDetected}, this might cause build issues or runtime crashes.")
-  }
+  project.logger.warn("ReactNativeFirebase WARNING: NPM package '${packageJson['name']}' depends on '${appPackageJson['name']}' v${coreVersionRequired} but found v${coreVersionDetected}, this might cause build issues or runtime crashes.")
 }
 
 project.ext {
@@ -59,7 +57,7 @@ project.ext {
 }
 
 android {
-  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger()
+  def agpVersion = Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger()
   if (agpVersion >= 7) {
     namespace = 'io.invertase.firebase.auth'
   }

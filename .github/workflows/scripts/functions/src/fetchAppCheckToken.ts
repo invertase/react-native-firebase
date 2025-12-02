@@ -7,16 +7,15 @@
  *  See License file for more information.
  */
 
-import * as admin from 'firebase-admin';
-import * as functions from 'firebase-functions/v2';
-import { CallableRequest } from 'firebase-functions/v2/https';
+import { getAppCheck } from 'firebase-admin/app-check';
+import { CallableRequest, onCall } from 'firebase-functions/v2/https';
+import { getAdminApp } from '.';
 
 // Note: this will only work in a live environment, not locally via the Firebase emulator.
-export const fetchAppCheckTokenV2 = functions.https.onCall(
-  async (req: CallableRequest<{ appId: string }>) => {
-    const { appId } = req.data;
-    const expireTimeMillis = Math.floor(Date.now() / 1000) + 60 * 60;
-    const result = await admin.appCheck().createToken(appId);
-    return { ...result, expireTimeMillis };
-  },
-);
+export const fetchAppCheckTokenV2 = onCall(async (req: CallableRequest<{ appId: string }>) => {
+  const { appId } = req.data;
+  const expireTimeMillis = Math.floor(Date.now() / 1000) + 60 * 60;
+  getAdminApp();
+  const result = await getAppCheck().createToken(appId);
+  return { ...result, expireTimeMillis };
+});

@@ -138,7 +138,7 @@ First, add the `google-services` plugin as a dependency inside of your `/android
 buildscript {
   dependencies {
     // ... other dependencies
-    classpath 'com.google.gms:google-services:4.4.3'
+    classpath 'com.google.gms:google-services:4.4.4'
     // Add me --- /\
   }
 }
@@ -310,17 +310,17 @@ Within your projects /android/build.gradle file, provide your own versions by sp
 project.ext {
   set('react-native', [
     versions: [
-      // Overriding Build/Android SDK Versions
+      // Overriding Build/Android SDK Versions if desired
       android : [
         minSdk    : 23,
         targetSdk : 33,
         compileSdk: 34,
       ],
 
-      // Overriding Library SDK Versions
+      // Overriding Library SDK Versions if desired
       firebase: [
         // Override Firebase SDK Version
-        bom           : "34.1.0"
+        bom           : "34.6.0"
       ],
     ],
   ])
@@ -334,13 +334,13 @@ Once changed, rebuild your application with `npx react-native run-android`.
 Open your projects `/ios/Podfile` and add any of the globals shown below to the top of the file:
 
 ```ruby
-# Override Firebase SDK Version
-$FirebaseSDKVersion = '12.1.0'
+# Override Firebase SDK Version if desired
+$FirebaseSDKVersion = '12.6.0'
 ```
 
 Once changed, reinstall your projects pods via pod install and rebuild your project with `npx react-native run-ios`.
 
-Alternatively, if you cannot edit the Podfile easily (as when using Expo), you may add the environment variable `FIREBASE_SDK_VERSION=11.15.0` (or whatever version you need) to the command line that installs pods. For example `FIREBASE_SDK_VERSION=11.15.0 yarn expo prebuild --clean`
+Alternatively, if you cannot edit the Podfile easily (as when using Expo), you may add the environment variable `FIREBASE_SDK_VERSION=12.6.0` (or whatever version you need) to the command line that installs pods. For example `FIREBASE_SDK_VERSION=12.6.0 yarn expo prebuild --clean`
 
 ### Android Performance
 

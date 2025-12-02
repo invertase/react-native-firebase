@@ -276,6 +276,78 @@ export namespace FirebaseAuthTypes {
   }
 
   /**
+   * Represents a TOTP secret that is used for enrolling a TOTP second factor.
+   * Contains the shared secret key and other parameters to generate time-based
+   * one-time passwords. Implements methods to retrieve the shared secret key,
+   * generate a QR code URL, and open the QR code URL in an OTP authenticator app.
+   *
+   * Differs from standard firebase JS implementation in three ways:
+   * 1- there is no visibility into ony properties other than the secretKey
+   * 2- there is an added `openInOtpApp` method supported by native SDKs
+   * 3- the return value of generateQrCodeUrl is a Promise because react-native bridge is async
+   * @public
+   */
+  export declare class TotpSecret {
+    /** used internally to support non-default auth instances */
+    private readonly auth;
+    /**
+     * Shared secret key/seed used for enrolling in TOTP MFA and generating OTPs.
+     */
+    readonly secretKey: string;
+
+    private constructor();
+
+    /**
+     * Returns a QR code URL as described in
+     * https://github.com/google/google-authenticator/wiki/Key-Uri-Format
+     * This can be displayed to the user as a QR code to be scanned into a TOTP app like Google Authenticator.
+     * If the optional parameters are unspecified, an accountName of userEmail and issuer of firebaseAppName are used.
+     *
+     * @param accountName the name of the account/app along with a user identifier.
+     * @param issuer issuer of the TOTP (likely the app name).
+     * @returns A Promise that resolves to a QR code URL string.
+     */
+    async generateQrCodeUrl(accountName?: string, issuer?: string): Promise<string>;
+
+    /**
+     * Opens the specified QR Code URL in an OTP authenticator app on the device.
+     * The shared secret key and account name will be populated in the OTP authenticator app.
+     * The URL uses the otpauth:// scheme and will be opened on an app that handles this scheme,
+     * if it exists on the device, possibly opening the ecocystem-specific app store with a generic
+     * query for compatible apps if no app exists on the device.
+     *
+     * @param qrCodeUrl the URL to open in the app, from generateQrCodeUrl
+     */
+    openInOtpApp(qrCodeUrl: string): string;
+  }
+
+  export interface TotpMultiFactorGenerator {
+    FACTOR_ID: FactorId.TOTP;
+
+    assertionForSignIn(uid: string, totpSecret: string): MultiFactorAssertion;
+
+    assertionForEnrollment(secret: TotpSecret, code: string): MultiFactorAssertion;
+
+    /**
+     * @param auth - The Auth instance. Only used for native platforms, should be ignored on web.
+     */
+    generateSecret(
+      session: FirebaseAuthTypes.MultiFactorSession,
+      auth: FirebaseAuthTypes.Auth,
+    ): Promise<TotpSecret>;
+  }
+
+  export declare interface MultiFactorError extends AuthError {
+    /** Details about the MultiFactorError. */
+    readonly customData: AuthError['customData'] & {
+      /**
+       * The type of operation (sign-in, linking, or re-authentication) that raised the error.
+       */
+      readonly operationType: (typeof OperationType)[keyof typeof OperationType];
+    };
+  }
+
+  /**
    * firebase.auth.X
    */
   export interface Statics {
@@ -476,6 +548,7 @@ export namespace FirebaseAuthTypes {
    */
   export enum FactorId {
     PHONE = 'phone',
+    TOTP = 'totp',
   }
 
   /**
@@ -596,6 +669,12 @@ export namespace FirebaseAuthTypes {
      * The method will ensure the user state is reloaded after successfully enrolling a factor.
      */
     enroll(assertion: MultiFactorAssertion, displayName?: string): Promise<void>;
+
+    /**
+     * Unenroll a previously enrolled multi-factor authentication factor.
+     * @param option The multi-factor option to unenroll.
+     */
+    unenroll(option: MultiFactorInfo | string): Promise<void>;
   }
 
   /**

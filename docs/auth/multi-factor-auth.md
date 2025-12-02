@@ -5,16 +5,26 @@ next: /firestore/usage
 previous: /auth/oidc-auth
 ---
 
-# iOS Setup
+> Before a user can enroll a second factor they need to verify their email. See
+> [`User`](/reference/auth/user#sendEmailVerification) interface is returned.
+
+# TOTP MFA
+
+The [official guide for Firebase web TOTP authentication](https://firebase.google.com/docs/auth/web/totp-mfa) explains the TOTP process well, including project prerequisites to enable the feature, as well as code examples.
+
+The API details and usage examples may be combined with the full Phone auth example below to give you an MFA solution that fully supports TOTP or SMS MFA.
+
+You may also find it useful to investigate [the local / manual test screens](https://github.com/invertase/react-native-firebase/blob/main/tests/local-tests/auth/auth-mfa-demonstrator.tsx) that we use to verify this functionality.
+
+# Phone MFA
+
+## iOS Setup
 
 Make sure to follow [the official Identity Platform
 documentation](https://cloud.google.com/identity-platform/docs/ios/mfa#enabling_multi-factor_authentication)
 to enable multi-factor authentication for your project and verify your app.
 
-# Enroll a new factor
-
-> Before a user can enroll a second factor they need to verify their email. See
-> [`User`](/reference/auth/user#sendEmailVerification) interface is returned.
+## Enroll a new factor
 
 Begin by obtaining a [`MultiFactorUser`](/reference/auth/multifactoruser)
 instance for the current user. This is the entry point for most multi-factor
@@ -57,7 +67,7 @@ await multiFactorUser.enroll(multiFactorAssertion, 'Optional display name for th
 You can inspect [`User#multiFactor`](/reference/auth/user#multiFactor) for
 information about the user's enrolled factors.
 
-# Sign-in flow using multi-factor
+## Sign-in flow using phone multi-factor
 
 Ensure the account has already enrolled a second factor. Begin by calling the
 default sign-in methods, for example email and password. If the account requires
@@ -103,7 +113,6 @@ if (resolver.hints.length > 1) {
   // Use resolver.hints to display a list of second factors to the user
 }
 
-// Currently only phone based factors are supported
 if (resolver.hints[0].factorId === PhoneMultiFactorGenerator.FACTOR_ID) {
   // Continue with the sign-in flow
 }
@@ -116,9 +125,7 @@ verification code to the user:
 const hint = resolver.hints[0];
 const sessionId = resolver.session;
 
-new PhoneAuthProvider(getAuth())
-  .verifyPhoneNumber(hint, sessionId) // triggers the message to the user
-  .then(verificationId => setVerificationId(verificationId));
+const verificationId = await getAuth().verifyPhoneNumberWithMultiFactorInfo(hint, resolver.session); // Triggers message to user
 ```
 
 Once the user has entered the verification code you can create a multi-factor
@@ -163,7 +170,6 @@ signInWithEmailAndPassword(getAuth(), email, password)
         // Use resolver.hints to display a list of second factors to the user
       }
 
-      // Currently only phone based factors are supported
       if (resolver.hints[0].factorId === PhoneMultiFactorGenerator.FACTOR_ID) {
         const hint = resolver.hints[0];
 
@@ -185,7 +191,7 @@ signInWithEmailAndPassword(getAuth(), email, password)
   });
 ```
 
-# Testing
+## Testing
 
 You can define test phone numbers and corresponding verification codes. The
 official[official

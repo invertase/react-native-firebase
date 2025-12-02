@@ -6,15 +6,18 @@
  *
  *  See License file for more information.
  */
-import * as admin from 'firebase-admin';
-import * as functions from 'firebase-functions/v2';
-import { CallableRequest } from 'firebase-functions/v2/https';
+// import * as admin from 'firebase-admin';
+import { getRemoteConfig } from 'firebase-admin/remote-config';
+import { logger } from 'firebase-functions/v2';
+import { CallableRequest, onCall } from 'firebase-functions/v2/https';
+import { getAdminApp } from '.';
 
-admin.initializeApp();
-const remoteConfig = admin.remoteConfig();
-
-export const testFunctionRemoteConfigUpdateV2 = functions.https.onCall(
-  (
+export const testFunctionRemoteConfigUpdateV2 = onCall(
+  {
+    maxInstances: 1,
+    concurrency: 1,
+  },
+  async (
     req: CallableRequest<{
       operations: {
         delete: string[] | undefined;
@@ -23,61 +26,55 @@ export const testFunctionRemoteConfigUpdateV2 = functions.https.onCall(
       };
     }>,
   ) => {
-    console.log(Date.now(), req);
+    let template = await getRemoteConfig(getAdminApp()).getTemplate();
+    logger.info('received template version: ' + JSON.stringify(template.version));
+    // logger.info('received template: ' + JSON.stringify(template, null, 2));
 
-    return new Promise(function (resolve, reject) {
-      remoteConfig
-        .getTemplate()
-        .then((template: any) => {
-          console.log('received template version: ' + JSON.stringify(template.version));
-          // console.log('received template: ' + JSON.stringify(template, null, 2));
+    if (req.data !== undefined && req.data.operations !== undefined) {
+      modifyTemplate(req.data, template);
+    }
 
-          if (req.data?.operations['delete'] !== undefined) {
-            const deletions = req.data?.operations['delete'];
-            deletions.forEach((deletion: string) => {
-              console.log('deleting key: ' + deletion);
-              if (template.parameters?.deletion !== undefined) {
-                delete template.parameters.deletion;
-              }
-            });
-          }
+    // validate the template
+    template = await getRemoteConfig(getAdminApp()).validateTemplate(template);
+    logger.info('template is valid after updates.');
+    template = await getRemoteConfig(getAdminApp()).publishTemplate(template);
+    logger.info('template published, new version: ' + JSON.stringify(template.version));
 
-          if (req.data?.operations['add'] !== undefined) {
-            const adds = req.data?.operations['add'];
-            adds.forEach((add: { name: string; value: any }) => {
-              console.log('adding key: ' + JSON.stringify(add));
-              template.parameters[add.name] = {
-                description: 'realtime test parameter',
-                defaultValue: {
-                  value: add.value,
-                },
-              };
-            });
-          }
-
-          if (req.data?.operations['update'] !== undefined) {
-            const updates = req.data?.operations['update'];
-            updates.forEach((update: { name: string; value: any }) => {
-              console.log('updating key: ' + JSON.stringify(update));
-              if (template.parameters[update.name] !== undefined) {
-                template.parameters[update.name].defaultValue = update.value;
-              }
-            });
-          }
-
-          // validate the template
-          remoteConfig.validateTemplate(template).then(template => {
-            console.log('template is valid after updates.');
-            remoteConfig.publishTemplate(template).then(template => {
-              console.log('template published, new version: ' + JSON.stringify(template.version));
-              resolve({ templateVersion: template.version?.versionNumber });
-            });
-          });
-        })
-        .catch((err: string) => {
-          console.error('remoteConfig.getTemplate failure: ' + err);
-          reject({ status: 'failure', message: err });
-        });
-    });
+    return { templateVersion: template.version?.versionNumber };
   },
 );
+
+function modifyTemplate(data: any, template: any) {
+  if (data.operations['delete'] !== undefined) {
+    const deletions = data.operations['delete'];
+    deletions.forEach((deletion: string) => {
+      logger.info('deleting key: ' + deletion);
+      if (template.parameters[deletion] !== undefined) {
+        delete template.parameters[deletion];
+      }
+    });
+  }
+
+  if (data.operations['add'] !== undefined) {
+    const adds = data.operations['add'];
+    adds.forEach((add: { name: string; value: any }) => {
+      logger.info('adding key: ' + JSON.stringify(add));
+      template.parameters[add.name] = {
+        description: 'realtime test parameter',
+        defaultValue: {
+          value: add.value,
+        },
+      };
+    });
+  }
+
+  if (data.operations['update'] !== undefined) {
+    const updates = data.operations['update'];
+    updates.forEach((update: { name: string; value: any }) => {
+      logger.info('updating key: ' + JSON.stringify(update));
+      if (template.parameters[update.name] !== undefined) {
+        template.parameters[update.name].defaultValue = update.value;
+      }
+    });
+  }
+}

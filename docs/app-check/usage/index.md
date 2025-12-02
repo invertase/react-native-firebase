@@ -1,7 +1,7 @@
 ---
 title: App Check
 description: Installation and getting started with App Check.
-icon: //static.invertase.io/assets/social/firebase-logo.png
+icon: //firebase.google.com/static/images/products/icons/build_app_check.svg
 next: /app-distribution/usage
 previous: /analytics/screen-tracking
 ---
@@ -224,6 +224,22 @@ try {
 } catch (error) {
   console.log('AppCheck verification failed');
 }
+```
+
+### Listening for token changes
+
+On Android, you can subscribe to App Check token updates with `onTokenChanged`. On iOS this listener is not implemented yet – subscribing will no-op and log a warning. If you need to react to token changes on iOS, prefer polling `getToken` on demand or rely on automatic refresh.
+
+```javascript
+import { onTokenChanged, getToken } from '@react-native-firebase/app-check';
+
+// Android: receives updates. iOS: no-op (native API does not exist on the SDK).
+const unsubscribe = onTokenChanged(appCheckInstance, async ({ token }) => {
+  console.log('App Check token updated:', token);
+});
+
+// iOS-friendly approach: request a fresh token when needed
+const { token } = await appCheckInstance.getToken(true);
 ```
 
 ## Automatic Data Collection

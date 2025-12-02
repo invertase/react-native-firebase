@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Config Plugin iOS Tests - openUrlFix munges AppDelegate correctly - AppDelegate_bare_sdk43.m 1`] = `
 "// This AppDelegate template is used in Expo SDK 43

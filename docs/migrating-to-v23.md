@@ -61,7 +61,7 @@ Please refer to the official deprecation FAQ for complete migration guidance and
 - Auth play services has been bumped from `21.3.0` to `21.4.0`.
 - Crashlytics gradle plugin has been bumped from `3.0.4` to `3.0.5`.
 - Performance gradle plugin has been bumped from `1.4.2` to `2.0.0`.
-- App distribution gradle plugin has been bumped from `5.1.1` to `5.1.2`.
+- App distribution gradle plugin has been bumped from `5.1.0` to `5.1.1`.
 
 # iOS platform
 

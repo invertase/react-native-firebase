@@ -72,6 +72,8 @@ import auth, {
   OIDCAuthProvider,
   PhoneAuthProvider,
   PhoneMultiFactorGenerator,
+  TotpSecret,
+  TotpMultiFactorGenerator,
   TwitterAuthProvider,
   PhoneAuthState,
 } from '../lib';
@@ -506,6 +508,14 @@ describe('Auth', function () {
 
     it('`PhoneMultiFactorGenerator` class is properly exposed to end user', function () {
       expect(PhoneMultiFactorGenerator).toBeDefined();
+    });
+
+    it('`TotpSecret` class is properly exposed to end user', function () {
+      expect(TotpSecret).toBeDefined();
+    });
+
+    it('`TotpMultiFactorGenerator` class is properly exposed to end user', function () {
+      expect(TotpMultiFactorGenerator).toBeDefined();
     });
 
     it('`TwitterAuthProvider` class is properly exposed to end user', function () {

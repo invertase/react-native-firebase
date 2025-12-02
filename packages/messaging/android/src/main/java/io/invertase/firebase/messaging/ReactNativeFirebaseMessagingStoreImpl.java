@@ -28,19 +28,21 @@ public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebas
           reactToJSON(remoteMessageToWritableMap(remoteMessage)).toString();
       //      Log.d("storeFirebaseMessage", remoteMessageString);
       UniversalFirebasePreferences preferences = UniversalFirebasePreferences.getSharedInstance();
+
+      // remove old notifications message before store to free space as needed
+      String notificationIds = preferences.getStringValue(S_KEY_ALL_NOTIFICATION_IDS, "");
+      List<String> allNotificationList = convertToArray(notificationIds);
+      while (allNotificationList.size() > MAX_SIZE_NOTIFICATIONS - 1) {
+        clearFirebaseMessage(allNotificationList.get(0));
+        allNotificationList.remove(0);
+      }
+
+      // now refetch the ids after possible removals, and store the new message
+      notificationIds = preferences.getStringValue(S_KEY_ALL_NOTIFICATION_IDS, "");
       preferences.setStringValue(remoteMessage.getMessageId(), remoteMessageString);
       // save new notification id
-      String notifications = preferences.getStringValue(S_KEY_ALL_NOTIFICATION_IDS, "");
-      notifications += remoteMessage.getMessageId() + DELIMITER; // append to last
-
-      // check and remove old notifications message
-      List<String> allNotificationList = convertToArray(notifications);
-      if (allNotificationList.size() > MAX_SIZE_NOTIFICATIONS) {
-        String firstRemoteMessageId = allNotificationList.get(0);
-        preferences.remove(firstRemoteMessageId);
-        notifications = removeRemoteMessage(firstRemoteMessageId, notifications);
-      }
-      preferences.setStringValue(S_KEY_ALL_NOTIFICATION_IDS, notifications);
+      notificationIds += remoteMessage.getMessageId() + DELIMITER; // append to last
+      preferences.setStringValue(S_KEY_ALL_NOTIFICATION_IDS, notificationIds);
     } catch (JSONException e) {
       e.printStackTrace();
     }
@@ -76,17 +78,17 @@ public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebas
   @Override
   public void clearFirebaseMessage(String remoteMessageId) {
     UniversalFirebasePreferences preferences = UniversalFirebasePreferences.getSharedInstance();
-    preferences.remove(remoteMessageId);
+    preferences.remove(remoteMessageId).apply();
     // check and remove old notifications message
-    String notifications = preferences.getStringValue(S_KEY_ALL_NOTIFICATION_IDS, "");
-    if (!notifications.isEmpty()) {
-      notifications = removeRemoteMessage(remoteMessageId, notifications); // remove from list
-      preferences.setStringValue(S_KEY_ALL_NOTIFICATION_IDS, notifications);
+    String notificationIds = preferences.getStringValue(S_KEY_ALL_NOTIFICATION_IDS, "");
+    if (!notificationIds.isEmpty()) {
+      notificationIds = removeRemoteMessageId(remoteMessageId, notificationIds); // remove from list
+      preferences.setStringValue(S_KEY_ALL_NOTIFICATION_IDS, notificationIds);
     }
   }
 
-  private String removeRemoteMessage(String remoteMessageId, String notifications) {
-    return notifications.replace(remoteMessageId + DELIMITER, "");
+  private String removeRemoteMessageId(String remoteMessageId, String notificationIds) {
+    return notificationIds.replace(remoteMessageId + DELIMITER, "");
   }
 
   private List<String> convertToArray(String string) {

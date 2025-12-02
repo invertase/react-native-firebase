@@ -26,42 +26,45 @@ const fakeVertexAI = {
     },
   },
   location: 'us-central1',
+  backend: 'GOOGLE_AI',
 };
 // See emulator setup: packages/vertexai/lib/requests/request.ts
 globalThis.RNFB_VERTEXAI_EMULATOR_URL = true;
 
 // It calls firebase functions emulator that mimics responses from VertexAI server
-describe('fetch requests()', function () {
-  it('should fetch', async function () {
-    const model = getGenerativeModel(fakeVertexAI, { model: 'gemini-1.5-flash' });
-    const result = await model.generateContent("What is google's mission statement?");
-    const text = result.response.text();
-    // See vertexAI function emulator for response
-    text.should.containEql(
-      'Google\'s mission is to "organize the world\'s information and make it universally accessible and useful."',
-    );
-  });
+describe('ai()', function () {
+  describe('fetch requests', function () {
+    it('should fetch', async function () {
+      const model = getGenerativeModel(fakeVertexAI, { model: 'gemini-1.5-flash' });
+      const result = await model.generateContent("What is google's mission statement?");
+      const text = result.response.text();
+      // See vertexAI function emulator for response
+      text.should.containEql(
+        'Google\'s mission is to "organize the world\'s information and make it universally accessible and useful."',
+      );
+    });
 
-  it('should fetch stream', async function () {
-    const model = getGenerativeModel(fakeVertexAI, { model: 'gemini-1.5-flash' });
-    // See vertexAI function emulator for response
-    const poem = [
-      'The wind whispers secrets through the trees,',
-      'Rustling leaves in a gentle breeze.',
-      'Sunlight dances on the grass,',
-      'A fleeting moment, sure to pass.',
-      'Birdsong fills the air so bright,',
-      'A symphony of pure delight.',
-      'Time stands still, a peaceful pause,',
-      "In nature's beauty, no flaws.",
-    ];
-    const result = await model.generateContentStream('Write me a short poem');
+    it('should fetch stream', async function () {
+      const model = getGenerativeModel(fakeVertexAI, { model: 'gemini-1.5-flash' });
+      // See vertexAI function emulator for response
+      const poem = [
+        'The wind whispers secrets through the trees,',
+        'Rustling leaves in a gentle breeze.',
+        'Sunlight dances on the grass,',
+        'A fleeting moment, sure to pass.',
+        'Birdsong fills the air so bright,',
+        'A symphony of pure delight.',
+        'Time stands still, a peaceful pause,',
+        "In nature's beauty, no flaws.",
+      ];
+      const result = await model.generateContentStream('Write me a short poem');
 
-    const text = [];
-    for await (const chunk of result.stream) {
-      const chunkText = chunk.text();
-      text.push(chunkText);
-    }
-    text.should.deepEqual(poem);
+      const text = [];
+      for await (const chunk of result.stream) {
+        const chunkText = chunk.text();
+        text.push(chunkText);
+      }
+      text.should.deepEqual(poem);
+    });
   });
 });

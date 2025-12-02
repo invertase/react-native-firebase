@@ -17,18 +17,19 @@
 
 import './polyfills';
 import { getApp, ReactNativeFirebase } from '@react-native-firebase/app';
-import { GoogleAIBackend, VertexAIBackend } from './backend';
+import { Backend, GoogleAIBackend, VertexAIBackend } from './backend';
 import { AIErrorCode, ModelParams, RequestOptions } from './types';
-import { AI, AIOptions } from './public-types';
+import { AI, AIOptions, ImagenModelParams } from './public-types';
 import { AIError } from './errors';
 import { GenerativeModel } from './models/generative-model';
-import { AIModel } from './models/ai-model';
+import { AIModel, ImagenModel } from './models';
 
 export * from './public-types';
 export { ChatSession } from './methods/chat-session';
 export * from './requests/schema-builder';
-export { GoogleAIBackend, VertexAIBackend } from './backend';
-export { GenerativeModel, AIError, AIModel };
+export { ImagenImageFormat } from './requests/imagen-image-format';
+export { Backend, GoogleAIBackend, VertexAIBackend } from './backend';
+export { GenerativeModel, AIError, AIModel, ImagenModel };
 
 /**
  * Returns the default {@link AI} instance that is associated with the provided
@@ -58,16 +59,22 @@ export { GenerativeModel, AIError, AIModel };
  *
  * @public
  */
-export function getAI(
-  app: ReactNativeFirebase.FirebaseApp = getApp(),
-  options: AIOptions = { backend: new GoogleAIBackend() },
-): AI {
+export function getAI(app: ReactNativeFirebase.FirebaseApp = getApp(), options?: AIOptions): AI {
+  const backend: Backend = options?.backend ?? new GoogleAIBackend();
+
+  const finalOptions: Omit<AIOptions, 'backend'> = {
+    useLimitedUseAppCheckTokens: options?.useLimitedUseAppCheckTokens ?? false,
+    appCheck: options?.appCheck || null,
+    auth: options?.auth || null,
+  };
+
   return {
     app,
-    backend: options.backend,
-    location: (options.backend as VertexAIBackend)?.location || '',
-    appCheck: options.appCheck || null,
-    auth: options.auth || null,
+    backend,
+    options: finalOptions,
+    location: (backend as VertexAIBackend)?.location || '',
+    appCheck: options?.appCheck || null,
+    auth: options?.auth || null,
   } as AI;
 }
 
@@ -89,4 +96,32 @@ export function getGenerativeModel(
     );
   }
   return new GenerativeModel(ai, modelParams, requestOptions);
+}
+
+/**
+ * Returns an {@link ImagenModel} class with methods for using Imagen.
+ *
+ * Only Imagen 3 models (named `imagen-3.0-*`) are supported.
+ *
+ * @param ai - An {@link AI} instance.
+ * @param modelParams - Parameters to use when making Imagen requests.
+ * @param requestOptions - Additional options to use when making requests.
+ *
+ * @throws If the `apiKey` or `projectId` fields are missing in your
+ * Firebase config.
+ *
+ * @beta
+ */
+export function getImagenModel(
+  ai: AI,
+  modelParams: ImagenModelParams,
+  requestOptions?: RequestOptions,
+): ImagenModel {
+  if (!modelParams.model) {
+    throw new AIError(
+      AIErrorCode.NO_MODEL,
+      `Must provide a model name. Example: getImagenModel({ model: 'my-model-name' })`,
+    );
+  }
+  return new ImagenModel(ai, modelParams, requestOptions);
 }

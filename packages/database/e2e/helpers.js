@@ -1,4 +1,18 @@
+// Eliminate annoying warning about double-loading firebase while
+// on Other platform - we load it, and rules-unit-testing does as well
+
+// eslint-disable-next-line no-console
+const originalConsoleWarn = console.warn;
+// eslint-disable-next-line no-console
+console.warn = function (message) {
+  if (message && typeof message === 'string' && !message.includes('@firebase/app-compat')) {
+    originalConsoleWarn(message);
+  }
+};
 const testingUtils = require('@firebase/rules-unit-testing');
+// eslint-disable-next-line no-console
+console.warn = originalConsoleWarn;
+
 const { getE2eTestProject, getE2eEmulatorHost } = require('../../app/e2e/helpers');
 
 // TODO make more unique?

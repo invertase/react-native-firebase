@@ -16,7 +16,7 @@
  */
 import { Platform } from 'react-native';
 import Base64 from './Base64';
-import { isString } from './validate';
+import { isFunction, isObject, isString } from './validate';
 
 export * from './id';
 export * from './path';
@@ -101,6 +101,19 @@ export function tryJSONStringify(data) {
   } catch (_) {
     return null;
   }
+}
+
+export function parseListenerOrObserver(listenerOrObserver) {
+  if (!isFunction(listenerOrObserver) && !isObject(listenerOrObserver)) {
+  }
+  if (isFunction(listenerOrObserver)) {
+    return listenerOrObserver;
+  }
+  if (isObject(listenerOrObserver) && isFunction(listenerOrObserver.next)) {
+    return listenerOrObserver.next.bind(listenerOrObserver);
+  }
+
+  throw new Error("'listenerOrObserver' expected a function or an object with 'next' function.");
 }
 
 // Used to indicate if there is no corresponding modular function

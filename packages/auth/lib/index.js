@@ -20,8 +20,10 @@ import {
   isAndroid,
   isBoolean,
   isNull,
+  isOther,
   isString,
   isValidUrl,
+  parseListenerOrObserver,
 } from '@react-native-firebase/app/lib/common';
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import {
@@ -32,6 +34,7 @@ import {
 import ConfirmationResult from './ConfirmationResult';
 import PhoneAuthListener from './PhoneAuthListener';
 import PhoneMultiFactorGenerator from './PhoneMultiFactorGenerator';
+import TotpMultiFactorGenerator from './TotpMultiFactorGenerator';
 import Settings from './Settings';
 import User from './User';
 import { getMultiFactorResolver } from './getMultiFactorResolver';
@@ -45,6 +48,7 @@ import OAuthProvider from './providers/OAuthProvider';
 import OIDCAuthProvider from './providers/OIDCAuthProvider';
 import PhoneAuthProvider from './providers/PhoneAuthProvider';
 import TwitterAuthProvider from './providers/TwitterAuthProvider';
+import { TotpSecret } from './TotpSecret';
 import version from './version';
 import fallBackModule from './web/RNFBAuthModule';
 
@@ -64,6 +68,8 @@ export {
   TwitterAuthProvider,
   FacebookAuthProvider,
   PhoneMultiFactorGenerator,
+  TotpMultiFactorGenerator,
+  TotpSecret,
   OAuthProvider,
   OIDCAuthProvider,
   PhoneAuthState,
@@ -78,6 +84,7 @@ const statics = {
   TwitterAuthProvider,
   FacebookAuthProvider,
   PhoneMultiFactorGenerator,
+  TotpMultiFactorGenerator,
   OAuthProvider,
   OIDCAuthProvider,
   PhoneAuthState,
@@ -127,7 +134,10 @@ class FirebaseAuthModule extends FirebaseModule {
     // but we need it in Auth if it exists. During app configuration we store
     // mappings from app name to authDomain, this auth constructor
     // is a reasonable time to use the mapping and set it into auth natively
-    this.native.configureAuthDomain();
+    if (!isOther) {
+      // Only supported on native platforms
+      this.native.configureAuthDomain();
+    }
   }
 
   get languageCode() {
@@ -221,14 +231,8 @@ class FirebaseAuthModule extends FirebaseModule {
     await this.native.setTenantId(tenantId);
   }
 
-  _parseListener(listenerOrObserver) {
-    return typeof listenerOrObserver === 'object'
-      ? listenerOrObserver.next.bind(listenerOrObserver)
-      : listenerOrObserver;
-  }
-
   onAuthStateChanged(listenerOrObserver) {
-    const listener = this._parseListener(listenerOrObserver);
+    const listener = parseListenerOrObserver(listenerOrObserver);
     const subscription = this.emitter.addListener(
       this.eventNameForApp('onAuthStateChanged'),
       listener,
@@ -243,7 +247,7 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   onIdTokenChanged(listenerOrObserver) {
-    const listener = this._parseListener(listenerOrObserver);
+    const listener = parseListenerOrObserver(listenerOrObserver);
     const subscription = this.emitter.addListener(
       this.eventNameForApp('onIdTokenChanged'),
       listener,
@@ -258,7 +262,7 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   onUserChanged(listenerOrObserver) {
-    const listener = this._parseListener(listenerOrObserver);
+    const listener = parseListenerOrObserver(listenerOrObserver);
     const subscription = this.emitter.addListener(this.eventNameForApp('onUserChanged'), listener);
     if (this._authResult) {
       Promise.resolve().then(() => {
@@ -323,6 +327,12 @@ class FirebaseAuthModule extends FirebaseModule {
       .then(userCredential => {
         return this._setUserCredential(userCredential);
       });
+  }
+
+  resolveTotpSignIn(session, uid, totpSecret) {
+    return this.native.resolveTotpSignIn(session, uid, totpSecret).then(userCredential => {
+      return this._setUserCredential(userCredential);
+    });
   }
 
   createUserWithEmailAndPassword(email, password) {

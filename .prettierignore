@@ -5,3 +5,5 @@ tests/node_modules/**
 tests/app.playground.js
 tests/app.smartreply.js
 tests/app.admob.js
+
+/.nx/workspace-data

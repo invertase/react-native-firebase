@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       iterations:
-        description: "Number of iterations to run. Default 1. Max 122."
+        description: 'Number of iterations to run. Default 1. Max 122.'
         required: true
         default: 1
         type: number
@@ -89,7 +89,7 @@ jobs:
     runs-on: macos-15
     needs: matrix_prep
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
-    timeout-minutes: 60
+    timeout-minutes: 70
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
@@ -101,6 +101,20 @@ jobs:
       fail-fast: false
       matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
     steps:
+      - name: Setup Environment for Screen Recording
+        uses: guidepup/setup-action@0.17.3
+        continue-on-error: true
+        with:
+          record: true
+
+      - name: Upload Screen Recording Environment Setup
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        if: always()
+        with:
+          name: screenrecording-setup-${{ matrix.buildmode }}-${{ matrix.iteration }}.mov
+          path: ./recordings/
+
       # Set up tool versions
       - uses: actions/setup-node@v4
         with:
@@ -114,7 +128,7 @@ jobs:
 
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: 'latest-stable'
+          xcode-version: '26.0.1' # temporarily pinning version until simulators are defined 'latest-stable'
 
       - uses: actions/checkout@v4
         with:
@@ -198,11 +212,14 @@ jobs:
         run: yarn tests:emulator:start-ci
 
       # https://bitrise.io/blog/post/xcode-15-performance-regressions
-      - name: Install yeetd
+      # https://developer.apple.com/forums/thread/805625?answerId=865340022#865340022
+      - name: Install yeetd and fix iOS perf issues
         run: |
           wget https://github.com/biscuitehh/yeetd/releases/download/1.0/yeetd-normal.pkg
           sudo installer -pkg yeetd-normal.pkg -target /
           yeetd &
+          launchctl unload -w /System/Library/LaunchAgents/com.apple.ReportCrash.plist
+          sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.ReportCrash.Root.plist
 
       - name: Install brew utilities
         uses: nick-fields/retry@v3
@@ -256,16 +273,29 @@ jobs:
           curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false&inlineSourceMap=true"
           echo "...javascript bundle ready"
 
-      - name: Record App Video
+      - name: Start Screen and Simulator Recordings and System Logging
         # With a little delay so the detox test below has time to spawn it, missing the first part of boot is fine
         continue-on-error: true
-        run: nohup sh -c "sleep 110 && xcrun simctl io booted recordVideo --codec=h264 -f simulator.mp4 2>&1 &"
+        run: |
+          nohup sh -c "sleep 314159265 | screencapture -v -C -k -T0 -g screenrecording.mov > screenrecording.log 2>&1 &"
+          nohup sh -c "log stream --backtrace --color none --style syslog > syslog.log 2>&1 &"
+          nohup sh -c "sleep 110 && xcrun simctl io booted recordVideo --codec=h264 -f simulator.mp4 2>&1 &"
 
       - name: Create Simulator Log
         # With a little delay so the detox test below has time to spawn it, missing the first part of boot is fine
         # If you boot the simulator separately from detox, some other race fails and detox testee never sends ready to proxy
         continue-on-error: true
         run: nohup sh -c "sleep 110 && xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &"
+
+      - name: Pre-Boot Simulator
+        # The goal here is to separate Simulator boot from Detox run,
+        # So that Simulator boot issues we seem to have may be handled separately
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 5
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: ./.github/workflows/scripts/boot-simulator.sh
 
       - name: Detox Test
         if: contains(matrix.buildmode, 'debug')
@@ -277,10 +307,13 @@ jobs:
         timeout-minutes: 50
         run: yarn tests:ios:test:release
 
-      - name: Stop App Video
+      - name: Stop Screen and App Video and System Logging
         if: always()
         continue-on-error: true
-        run: killall -INT simctl
+        run: |
+          killall -int simctl
+          killall -int screencapture
+          killall -int log
 
       - name: Upload App Video
         uses: actions/upload-artifact@v4
@@ -292,12 +325,22 @@ jobs:
 
       - name: Upload Simulator Log
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         if: always()
         with:
           name: simulator-${{ matrix.buildmode }}-${{ matrix.iteration }}_log
           path: simulator.log
 
+      - name: Upload Screen Recording
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        if: always()
+        with:
+          name: screenrecording-${{ matrix.buildmode }}-${{ matrix.iteration }}
+          path: screenrecording.*
+
       - uses: codecov/codecov-action@v5
         if: contains(matrix.buildmode, 'debug')
+        continue-on-error: true
         with:
           verbose: true

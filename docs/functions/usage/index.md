@@ -1,7 +1,7 @@
 ---
 title: Cloud Functions
 description: Installation and getting started with Cloud Functions.
-icon: //static.invertase.io/assets/firebase/cloud-functions.svg
+icon: //firebase.google.com/static/images/products/icons/build_functions.svg
 next: /functions/writing-deploying-functions
 previous: /firestore/pagination
 ---

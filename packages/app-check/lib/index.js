@@ -23,6 +23,7 @@ import {
   isFunction,
   isUndefined,
   isOther,
+  parseListenerOrObserver,
 } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
@@ -179,12 +180,6 @@ class FirebaseAppCheckModule extends FirebaseModule {
     return this.native.getLimitedUseToken();
   }
 
-  _parseListener(listenerOrObserver) {
-    return typeof listenerOrObserver === 'object'
-      ? listenerOrObserver.next.bind(listenerOrObserver)
-      : listenerOrObserver;
-  }
-
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onTokenChanged(onNextOrObserver, onError, onCompletion) {
     // iOS does not provide any native listening feature
@@ -193,7 +188,7 @@ class FirebaseAppCheckModule extends FirebaseModule {
       console.warn('onTokenChanged is not implemented on IOS, only for Android');
       return () => {};
     }
-    const nextFn = this._parseListener(onNextOrObserver);
+    const nextFn = parseListenerOrObserver(onNextOrObserver);
     // let errorFn = function () { };
     // if (onNextOrObserver.error != null) {
     //   errorFn = onNextOrObserver.error.bind(onNextOrObserver);

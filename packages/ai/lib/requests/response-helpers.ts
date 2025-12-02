@@ -23,9 +23,43 @@ import {
   GenerateContentResponse,
   AIErrorCode,
   InlineDataPart,
+  Part,
+  ImagenInlineImage,
+  ImagenGCSImage,
 } from '../types';
 import { AIError } from '../errors';
 import { logger } from '../logger';
+import { ImagenResponseInternal } from '../types/imagen/internal';
+
+/**
+ * Check that at least one candidate exists and does not have a bad
+ * finish reason. Warns if multiple candidates exist.
+ */
+function hasValidCandidates(response: GenerateContentResponse): boolean {
+  if (response.candidates && response.candidates.length > 0) {
+    if (response.candidates.length > 1) {
+      logger.warn(
+        `This response had ${response.candidates.length} ` +
+          `candidates. Returning text from the first candidate only. ` +
+          `Access response.candidates directly to use the other candidates.`,
+      );
+    }
+    if (hadBadFinishReason(response.candidates[0]!)) {
+      throw new AIError(
+        AIErrorCode.RESPONSE_ERROR,
+        `Response error: ${formatBlockErrorMessage(
+          response,
+        )}. Response body stored in error.response`,
+        {
+          response,
+        },
+      );
+    }
+    return true;
+  } else {
+    return false;
+  }
+}
 
 /**
  * Creates an EnhancedGenerateContentResponse object that has helper functions and
@@ -54,26 +88,8 @@ export function createEnhancedContentResponse(
  */
 export function addHelpers(response: GenerateContentResponse): EnhancedGenerateContentResponse {
   (response as EnhancedGenerateContentResponse).text = () => {
-    if (response.candidates && response.candidates.length > 0) {
-      if (response.candidates.length > 1) {
-        logger.warn(
-          `This response had ${response.candidates.length} ` +
-            `candidates. Returning text from the first candidate only. ` +
-            `Access response.candidates directly to use the other candidates.`,
-        );
-      }
-      if (hadBadFinishReason(response.candidates[0]!)) {
-        throw new AIError(
-          AIErrorCode.RESPONSE_ERROR,
-          `Response error: ${formatBlockErrorMessage(
-            response,
-          )}. Response body stored in error.response`,
-          {
-            response,
-          },
-        );
-      }
-      return getText(response);
+    if (hasValidCandidates(response)) {
+      return getText(response, part => !part.thought);
     } else if (response.promptFeedback) {
       throw new AIError(
         AIErrorCode.RESPONSE_ERROR,
@@ -85,28 +101,25 @@ export function addHelpers(response: GenerateContentResponse): EnhancedGenerateC
     }
     return '';
   };
+  (response as EnhancedGenerateContentResponse).thoughtSummary = () => {
+    if (hasValidCandidates(response)) {
+      const result = getText(response, part => !!part.thought);
+      return result === '' ? undefined : result;
+    } else if (response.promptFeedback) {
+      throw new AIError(
+        AIErrorCode.RESPONSE_ERROR,
+        `Thought summary not available. ${formatBlockErrorMessage(response)}`,
+        {
+          response,
+        },
+      );
+    }
+    return undefined;
+  };
   (response as EnhancedGenerateContentResponse).inlineDataParts = ():
     | InlineDataPart[]
     | undefined => {
-    if (response.candidates && response.candidates.length > 0) {
-      if (response.candidates.length > 1) {
-        logger.warn(
-          `This response had ${response.candidates.length} ` +
-            `candidates. Returning data from the first candidate only. ` +
-            `Access response.candidates directly to use the other candidates.`,
-        );
-      }
-      if (hadBadFinishReason(response.candidates[0]!)) {
-        throw new AIError(
-          AIErrorCode.RESPONSE_ERROR,
-          `Response error: ${formatBlockErrorMessage(
-            response,
-          )}. Response body stored in error.response`,
-          {
-            response,
-          },
-        );
-      }
+    if (hasValidCandidates(response)) {
       return getInlineDataParts(response);
     } else if (response.promptFeedback) {
       throw new AIError(
@@ -120,25 +133,7 @@ export function addHelpers(response: GenerateContentResponse): EnhancedGenerateC
     return undefined;
   };
   (response as EnhancedGenerateContentResponse).functionCalls = () => {
-    if (response.candidates && response.candidates.length > 0) {
-      if (response.candidates.length > 1) {
-        logger.warn(
-          `This response had ${response.candidates.length} ` +
-            `candidates. Returning function calls from the first candidate only. ` +
-            `Access response.candidates directly to use the other candidates.`,
-        );
-      }
-      if (hadBadFinishReason(response.candidates[0]!)) {
-        throw new AIError(
-          AIErrorCode.RESPONSE_ERROR,
-          `Response error: ${formatBlockErrorMessage(
-            response,
-          )}. Response body stored in error.response`,
-          {
-            response,
-          },
-        );
-      }
+    if (hasValidCandidates(response)) {
       return getFunctionCalls(response);
     } else if (response.promptFeedback) {
       throw new AIError(
@@ -155,13 +150,20 @@ export function addHelpers(response: GenerateContentResponse): EnhancedGenerateC
 }
 
 /**
- * Returns all text found in all parts of first candidate.
+ * Returns all text from the first candidate's parts, filtering by whether
+ * `partFilter()` returns true.
+ *
+ * @param response - The `GenerateContentResponse` from which to extract text.
+ * @param partFilter - Only return `Part`s for which this returns true
  */
-export function getText(response: GenerateContentResponse): string {
+export function getText(
+  response: GenerateContentResponse,
+  partFilter: (part: Part) => boolean,
+): string {
   const textStrings = [];
   if (response.candidates?.[0]?.content?.parts) {
     for (const part of response.candidates?.[0]?.content?.parts) {
-      if (part.text) {
+      if (part.text && partFilter(part)) {
         textStrings.push(part.text);
       }
     }
@@ -174,12 +176,12 @@ export function getText(response: GenerateContentResponse): string {
 }
 
 /**
- * Returns {@link FunctionCall}s associated with first candidate.
+ * Returns every {@link FunctionCall} associated with first candidate.
  */
 export function getFunctionCalls(response: GenerateContentResponse): FunctionCall[] | undefined {
   const functionCalls: FunctionCall[] = [];
   if (response.candidates?.[0]?.content?.parts) {
-    for (const part of response.candidates?.[0].content?.parts) {
+    for (const part of response.candidates?.[0]?.content?.parts) {
       if (part.functionCall) {
         functionCalls.push(part.functionCall);
       }
@@ -193,7 +195,7 @@ export function getFunctionCalls(response: GenerateContentResponse): FunctionCal
 }
 
 /**
- * Returns {@link InlineDataPart}s in the first candidate if present.
+ * Returns every {@link InlineDataPart} in the first candidate if present.
  *
  * @internal
  */
@@ -220,7 +222,9 @@ export function getInlineDataParts(
 const badFinishReasons = [FinishReason.RECITATION, FinishReason.SAFETY];
 
 function hadBadFinishReason(candidate: GenerateContentCandidate): boolean {
-  return !!candidate.finishReason && badFinishReasons.includes(candidate.finishReason);
+  return (
+    !!candidate.finishReason && badFinishReasons.some(reason => reason === candidate.finishReason)
+  );
 }
 
 export function formatBlockErrorMessage(response: GenerateContentResponse): string {
@@ -243,4 +247,53 @@ export function formatBlockErrorMessage(response: GenerateContentResponse): stri
     }
   }
   return message;
+}
+
+/**
+ * Convert a generic successful fetch response body to an Imagen response object
+ * that can be returned to the user. This converts the REST APIs response format to our
+ * APIs representation of a response.
+ *
+ * @internal
+ */
+export async function handlePredictResponse<T extends ImagenInlineImage | ImagenGCSImage>(
+  response: Response,
+): Promise<{ images: T[]; filteredReason?: string }> {
+  const responseJson: ImagenResponseInternal = await response.json();
+
+  const images: T[] = [];
+  let filteredReason: string | undefined = undefined;
+
+  // The backend should always send a non-empty array of predictions if the response was successful.
+  if (!responseJson.predictions || responseJson.predictions?.length === 0) {
+    throw new AIError(
+      AIErrorCode.RESPONSE_ERROR,
+      'No predictions or filtered reason received from Vertex AI. Please report this issue with the full error details at https://github.com/invertase/react-native-firebase.',
+    );
+  }
+
+  for (const prediction of responseJson.predictions) {
+    if (prediction.raiFilteredReason) {
+      filteredReason = prediction.raiFilteredReason;
+    } else if (prediction.mimeType && prediction.bytesBase64Encoded) {
+      images.push({
+        mimeType: prediction.mimeType,
+        bytesBase64Encoded: prediction.bytesBase64Encoded,
+      } as T);
+    } else if (prediction.mimeType && prediction.gcsUri) {
+      images.push({
+        mimeType: prediction.mimeType,
+        gcsURI: prediction.gcsUri,
+      } as T);
+    } else if (prediction.safetyAttributes) {
+      // Ignore safetyAttributes "prediction" to avoid throwing an error below.
+    } else {
+      throw new AIError(
+        AIErrorCode.RESPONSE_ERROR,
+        `Unexpected element in 'predictions' array in response: '${JSON.stringify(prediction)}'`,
+      );
+    }
+  }
+
+  return { images, filteredReason };
 }
