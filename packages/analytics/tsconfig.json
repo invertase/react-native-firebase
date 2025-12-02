@@ -5,10 +5,7 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "react-jsx",
-    "lib": [
-      "ESNext",
-      "DOM"
-    ],
+    "lib": ["ESNext", "DOM"],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "noFallthroughCasesInSwitch": true,
@@ -24,9 +21,12 @@
     "target": "ESNext",
     "verbatimModuleSyntax": true,
     "baseUrl": ".",
+    "rootDir": ".",
     "paths": {
       "@react-native-firebase/app/common/*": ["../app/lib/common/*"],
       "@react-native-firebase/app": ["../app/lib"]
     }
-  }
+  },
+  "include": ["lib/**/*"],
+  "exclude": ["node_modules", "dist", "__tests__", "**/*.test.ts"]
 }
