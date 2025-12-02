@@ -17,6 +17,7 @@
 
 import { type EmitterSubscription, NativeEventEmitter } from 'react-native';
 import { getReactNativeModule } from './nativeModule';
+import './global';
 
 class RNFBNativeEventEmitter extends NativeEventEmitter {
   ready: boolean;
@@ -32,7 +33,11 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
     this.ready = false;
   }
 
-  addListener(eventType: string, listener: (...args: any[]) => any, context?: any): EmitterSubscription {
+  addListener(
+    eventType: string,
+    listener: (...args: any[]) => any,
+    context?: any,
+  ): EmitterSubscription {
     const RNFBAppModule = getReactNativeModule('RNFBAppModule');
     if (!this.ready) {
       RNFBAppModule.eventsNotifyReady(true);
@@ -74,12 +79,13 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
 
     // New style is to return a remove function on the object, just in case people call that,
     // we will modify it to do our native unsubscription then call the original
-    let originalRemove = subscription.remove;
-    let newRemove = () => {
+    const originalRemove = subscription.remove;
+    const newRemove = () => {
       RNFBAppModule.eventsRemoveListener(eventType, false);
-      if ((super as any).removeSubscription != null) {
+      const superClass = Object.getPrototypeOf(Object.getPrototypeOf(this));
+      if (superClass.removeSubscription != null) {
         // This is for RN <= 0.64 - 65 and greater no longer have removeSubscription
-        (super as any).removeSubscription(subscription);
+        superClass.removeSubscription(subscription);
       } else if (originalRemove != null) {
         // This is for RN >= 0.65
         originalRemove();
@@ -100,11 +106,11 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
     const RNFBAppModule = getReactNativeModule('RNFBAppModule');
     const eventType = subscription.eventType?.replace('rnfb_', '') || '';
     RNFBAppModule.eventsRemoveListener(eventType, false);
-    if ((super as any).removeSubscription) {
-      (super as any).removeSubscription(subscription);
+    const superClass = Object.getPrototypeOf(Object.getPrototypeOf(this));
+    if (superClass.removeSubscription) {
+      superClass.removeSubscription(subscription);
     }
   }
 }
 
 export default new RNFBNativeEventEmitter();
-

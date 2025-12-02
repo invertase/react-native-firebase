@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 
+import './global';
 // @ts-expect-error
 import RNFBAppModule from './web/RNFBAppModule';
 
@@ -22,21 +23,29 @@ export function getReactNativeModule(moduleName: string): any {
     get: (_, name) => {
       if (typeof nativeModule[name as string] !== 'function') return nativeModule[name as string];
       return (...args: any[]) => {
-        console.debug(`[RNFB->Native][🔵] ${moduleName}.${String(name)} -> ${JSON.stringify(args)}`);
+        console.debug(
+          `[RNFB->Native][🔵] ${moduleName}.${String(name)} -> ${JSON.stringify(args)}`,
+        );
         const result = nativeModule[name as string](...args);
         if (result && result.then) {
           return result.then(
             (res: any) => {
-              console.debug(`[RNFB<-Native][🟢] ${moduleName}.${String(name)} <- ${JSON.stringify(res)}`);
+              console.debug(
+                `[RNFB<-Native][🟢] ${moduleName}.${String(name)} <- ${JSON.stringify(res)}`,
+              );
               return res;
             },
             (err: any) => {
-              console.debug(`[RNFB<-Native][🔴] ${moduleName}.${String(name)} <- ${JSON.stringify(err)}`);
+              console.debug(
+                `[RNFB<-Native][🔴] ${moduleName}.${String(name)} <- ${JSON.stringify(err)}`,
+              );
               throw err;
             },
           );
         }
-        console.debug(`[RNFB<-Native][🟢] ${moduleName}.${String(name)} <- ${JSON.stringify(result)}`);
+        console.debug(
+          `[RNFB<-Native][🟢] ${moduleName}.${String(name)} <- ${JSON.stringify(result)}`,
+        );
         return result;
       };
     },
@@ -48,4 +57,3 @@ export function setReactNativeModule(moduleName: string, nativeModule: any): voi
 }
 
 setReactNativeModule('RNFBAppModule', RNFBAppModule);
-

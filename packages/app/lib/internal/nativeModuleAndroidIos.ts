@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import { NativeModules } from 'react-native';
+import './global';
 
 /**
  * This is used by Android and iOS to get a native module.
@@ -19,21 +20,29 @@ export function getReactNativeModule(moduleName: string): any {
     get: (_, name) => {
       if (typeof nativeModule[name as string] !== 'function') return nativeModule[name as string];
       return (...args: any[]) => {
-        console.debug(`[RNFB->Native][🔵] ${moduleName}.${String(name)} -> ${JSON.stringify(args)}`);
+        console.debug(
+          `[RNFB->Native][🔵] ${moduleName}.${String(name)} -> ${JSON.stringify(args)}`,
+        );
         const result = nativeModule[name as string](...args);
         if (result && result.then) {
           return result.then(
             (res: any) => {
-              console.debug(`[RNFB<-Native][🟢] ${moduleName}.${String(name)} <- ${JSON.stringify(res)}`);
+              console.debug(
+                `[RNFB<-Native][🟢] ${moduleName}.${String(name)} <- ${JSON.stringify(res)}`,
+              );
               return res;
             },
             (err: any) => {
-              console.debug(`[RNFB<-Native][🔴] ${moduleName}.${String(name)} <- ${JSON.stringify(err)}`);
+              console.debug(
+                `[RNFB<-Native][🔴] ${moduleName}.${String(name)} <- ${JSON.stringify(err)}`,
+              );
               throw err;
             },
           );
         }
-        console.debug(`[RNFB<-Native][🟢] ${moduleName}.${String(name)} <- ${JSON.stringify(result)}`);
+        console.debug(
+          `[RNFB<-Native][🟢] ${moduleName}.${String(name)} <- ${JSON.stringify(result)}`,
+        );
         return result;
       };
     },
@@ -43,4 +52,3 @@ export function getReactNativeModule(moduleName: string): any {
 export function setReactNativeModule(): void {
   // No-op
 }
-

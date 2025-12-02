@@ -17,6 +17,7 @@
 import { Platform } from 'react-native';
 import Base64 from './Base64';
 import { isFunction, isObject, isString } from './validate';
+import '../internal/global';
 
 export * from './id';
 export * from './path';
@@ -795,11 +796,11 @@ export function warnIfNotModularCall(args: IArguments, replacementMethodName: st
     message += ` Please use \`${replacementMethodName}\` instead.`;
   }
 
-  if (!(globalThis as any).RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS) {
+  if (!globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS) {
     // eslint-disable-next-line no-console
     console.warn(message);
 
-    if ((globalThis as any).RNFB_MODULAR_DEPRECATION_STRICT_MODE === true) {
+    if (globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE === true) {
       throw new Error('Deprecated API usage detected while in strict mode.');
     }
   }
