@@ -946,7 +946,7 @@ describe('Firestore', function () {
 
         collectionRefV9Deprecation(
           () => getCountFromServer(query),
-          // @ts-expect-error Combines modular and namespace imports
+          // @ts-expect-error Combines modular and namespace API
           () => query.count(),
           'count',
         );
@@ -1155,7 +1155,7 @@ describe('Firestore', function () {
         const docRef = firestore.doc('some/foo');
 
         docRefV9Deprecation(
-          // @ts-expect-error Combines modular and namespace imports
+          // @ts-expect-error Combines modular and namespace API
           () => deleteDoc(docRef),
           () => docRef.delete(),
           'delete',
@@ -1168,7 +1168,7 @@ describe('Firestore', function () {
         const docRef = firestore.doc('some/foo');
 
         docRefV9Deprecation(
-          // @ts-expect-error Combines modular and namespace imports
+          // @ts-expect-error Combines modular and namespace API
           () => getDoc(docRef),
           () => docRef.get(),
           'get',
@@ -1194,7 +1194,7 @@ describe('Firestore', function () {
         const docRef = firestore.doc('some/foo');
 
         docRefV9Deprecation(
-          // @ts-expect-error Combines modular and namespace imports
+          // @ts-expect-error Combines modular and namespace API
           () => onSnapshot(docRef, () => {}),
           () => docRef.onSnapshot(() => {}),
           'onSnapshot',
@@ -1207,7 +1207,7 @@ describe('Firestore', function () {
         const docRef = firestore.doc('some/foo');
 
         docRefV9Deprecation(
-          // @ts-expect-error Combines modular and namespace imports
+          // @ts-expect-error Combines modular and namespace API
           () => setDoc(docRef, { foo: 'bar' }),
           () => docRef.set({ foo: 'bar' }),
           'set',
@@ -1220,7 +1220,7 @@ describe('Firestore', function () {
         const docRef = firestore.doc('some/foo');
 
         docRefV9Deprecation(
-          // @ts-expect-error Combines modular and namespace imports
+          // @ts-expect-error Combines modular and namespace API
           () => updateDoc(docRef, { foo: 'bar' }),
           () => docRef.update({ foo: 'bar' }),
           'update',
