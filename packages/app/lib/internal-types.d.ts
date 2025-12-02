@@ -32,14 +32,14 @@ declare module '@react-native-firebase/app/lib/internal' {
       status: number;
       hasResolution: boolean;
       isUserResolvableError: boolean;
-      error?: string;
+      error: string | undefined;
     };
     androidGetPlayServicesStatus(): Promise<{
       isAvailable: boolean;
       status: number;
       hasResolution: boolean;
       isUserResolvableError: boolean;
-      error?: string;
+      error: string | undefined;
     }>;
     androidPromptForPlayServices(): Promise<void>;
     androidMakePlayServicesAvailable(): Promise<void>;
@@ -81,14 +81,14 @@ declare module '@react-native-firebase/app/lib/internal/NativeModules' {
       status: number;
       hasResolution: boolean;
       isUserResolvableError: boolean;
-      error?: string;
+      error: string | undefined;
     };
     androidGetPlayServicesStatus(): Promise<{
       isAvailable: boolean;
       status: number;
       hasResolution: boolean;
       isUserResolvableError: boolean;
-      error?: string;
+      error: string | undefined;
     }>;
     androidPromptForPlayServices(): Promise<void>;
     androidMakePlayServicesAvailable(): Promise<void>;
