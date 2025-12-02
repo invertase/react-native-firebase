@@ -3,15 +3,17 @@
   "version": "23.5.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Admob, Analytics, Auth, Crash Reporting, Cloud Firestore, Database, Dynamic Links, Functions, Messaging (FCM), Remote Config, Storage and more.",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "./dist/commonjs/index.js",
+  "module": "./dist/module/index.js",
+  "types": "./dist/typescript/commonjs/lib/index.d.ts",
   "scripts": {
-    "build": "genversion --semi lib/version.js && npm run build:version",
+    "build": "genversion --esm --semi lib/version.ts && npm run build:version",
     "build:version": "node ./scripts/genversion-ios && node ./scripts/genversion-android",
     "build:clean": "rimraf android/build && rimraf ios/build",
     "build:plugin": "rimraf plugin/build && tsc --build plugin",
     "lint:plugin": "eslint plugin/src/*",
-    "prepare": "npm run build && npm run build:plugin"
+    "compile": "bob build",
+    "prepare": "npm run build && npm run build:plugin && npm run compile"
   },
   "repository": {
     "type": "git",
@@ -51,6 +53,27 @@
     "dynamic-links",
     "crashlytics"
   ],
+  "exports": {
+    ".": {
+      "source": "./lib/index.js",
+      "import": {
+        "types": "./dist/typescript/module/lib/index.d.ts",
+        "default": "./dist/module/index.js"
+      },
+      "require": {
+        "types": "./dist/typescript/commonjs/lib/index.d.ts",
+        "default": "./dist/commonjs/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "dist",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__"
+  ],
   "peerDependencies": {
     "expo": ">=47.0.0",
     "react": "*",
@@ -61,7 +84,8 @@
   },
   "devDependencies": {
     "@react-native-async-storage/async-storage": "^2.2.0",
-    "expo": "^54.0.25"
+    "expo": "^54.0.25",
+    "react-native-builder-bob": "^0.40.13"
   },
   "peerDependenciesMeta": {
     "expo": {
@@ -90,5 +114,33 @@
       "playServicesAuth": "21.4.0",
       "firebaseAppDistributionGradle": "5.2.0"
     }
-  }
+  },
+  "react-native-builder-bob": {
+    "source": "lib",
+    "output": "dist",
+    "targets": [
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "commonjs",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "tsc": "../../node_modules/.bin/tsc"
+        }
+      ]
+    ]
+  },
+  "eslintIgnore": [
+    "node_modules/",
+    "dist/"
+  ]
 }
