@@ -30,7 +30,7 @@ export const createCheckV9Deprecation = (moduleNames: string[]): CheckV9Deprecat
     uniqueMessage?: string | null,
     checkFirebaseAppDeprecationWarning: boolean = false,
   ) => {
-    const moduleName = moduleNames[0]; // firestore, database, etc
+    const moduleName = moduleNames[0] as string; // firestore, database, etc
     const instanceName = moduleNames[1] || 'default'; // default, FirestoreCollectionReference, etc
     const consoleWarnSpy = jest.spyOn(console, 'warn');
     consoleWarnSpy.mockReset();
