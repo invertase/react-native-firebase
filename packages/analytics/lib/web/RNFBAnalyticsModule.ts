@@ -6,7 +6,7 @@ import type {
   AnalyticsEventParameters,
   AnalyticsUserProperties,
   AnalyticsConsent,
-  RNFBAnalyticsModule,
+  RNFBAnalyticsModule as RNFBAnalyticsModuleType,
 } from '../types/web';
 
 interface AnalyticsInstances {
@@ -45,7 +45,7 @@ function getAnalyticsApi(appName: string): AnalyticsApi {
  * the native android/ios modules e.g. `@ReactMethod` annotated
  * java methods on Android.
  */
-const RNFBAnalyticsModule: RNFBAnalyticsModule = {
+export const RNFBAnalyticsModule: RNFBAnalyticsModuleType = {
   logEvent(name: string, params?: AnalyticsEventParameters): Promise<null> {
     return guard(async () => {
       const api = getAnalyticsApi('[DEFAULT]');
@@ -133,5 +133,3 @@ const RNFBAnalyticsModule: RNFBAnalyticsModule = {
     });
   },
 };
-
-export { RNFBAnalyticsModule };

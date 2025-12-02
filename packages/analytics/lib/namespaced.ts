@@ -38,7 +38,7 @@ import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/na
 import { isBoolean } from '@react-native-firebase/app/lib/common';
 
 import { validateStruct, validateCompound } from './struct';
-import { type RNFBAnalyticsModule } from './web/RNFBAnalyticsModule';
+import { RNFBAnalyticsModule } from './web/RNFBAnalyticsModule';
 import { version } from './version';
 import * as structs from './structs';
 import {

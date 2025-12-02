@@ -176,7 +176,7 @@ class AnalyticsApi implements IAnalyticsApi {
     this.queueTimer = setInterval(
       () => this._processQueue().catch(console.error),
       this.queueInterval,
-    );
+    ) as unknown as number;
   }
 
   private _stopQueueProcessing(): void {
