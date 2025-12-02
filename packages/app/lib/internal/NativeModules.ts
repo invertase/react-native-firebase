@@ -34,14 +34,14 @@ export interface RNFBUtilsModuleInterface {
     status: number;
     hasResolution: boolean;
     isUserResolvableError: boolean;
-    error?: string;
+    error: string | undefined;
   };
   androidGetPlayServicesStatus(): Promise<{
     isAvailable: boolean;
     status: number;
     hasResolution: boolean;
     isUserResolvableError: boolean;
-    error?: string;
+    error: string | undefined;
   }>;
   androidPromptForPlayServices(): Promise<void>;
   androidMakePlayServicesAvailable(): Promise<void>;
