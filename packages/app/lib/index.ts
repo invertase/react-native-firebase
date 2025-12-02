@@ -15,31 +15,15 @@
  *
  */
 
-/**
- * Core React Native Firebase package.
- *
- * #### Example 1
- *
- * Access the default firebase app from the `app` package:
- *
- * ```js
- * import firebase from '@react-native-firebase/app';
- *
- * console.log(firebase.app().name);
- * ```
- *
- * @firebase app
- */
+import { getFirebaseRoot } from './internal/registry/namespace';
+import utils from './utils';
+import type { ReactNativeFirebase, Utils } from './types';
 
-// Re-export all types from the types directory
-export { ReactNativeFirebase, Utils, Internal } from './types';
-
-/**
- * Add Utils module as a named export for `app`.
- */
-export const utils: ReactNativeFirebase.FirebaseModuleWithStatics<Utils.Module, Utils.Statics>;
-
+export const firebase = getFirebaseRoot();
 export * from './modular';
+export { utils };
 
-declare const module: ReactNativeFirebase.Module;
-export default module;
+// Export types
+export type { ReactNativeFirebase, Utils };
+
+export default firebase;
