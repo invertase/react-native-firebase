@@ -300,7 +300,10 @@ describe('validatePassword (modular API)', () => {
 
     const result = await validatePassword(mockAuth, 'Password123$');
 
-    expect(mockAuth.validatePassword).toHaveBeenCalledWith('Password123$');
+    expect(mockAuth.validatePassword).toHaveBeenCalledWith(
+      'Password123$',
+      'react-native-firebase-modular-method-call',
+    );
     expect(result).toEqual({ isValid: true });
   });
 });

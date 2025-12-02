@@ -641,5 +641,5 @@ export async function validatePassword(auth, password) {
     );
   }
 
-  return auth.validatePassword(password);
+  return auth.validatePassword.call(auth, password, MODULAR_DEPRECATION_ARG);
 }
