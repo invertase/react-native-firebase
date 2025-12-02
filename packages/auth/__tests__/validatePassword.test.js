@@ -15,7 +15,9 @@
  *
  */
 
-import { jest, describe, it, expect, beforeEach } from '@jest/globals';
+import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
+import { PasswordPolicyImpl } from '../lib/password-policy/PasswordPolicyImpl.js';
+import { PasswordPolicyMixin } from '../lib/password-policy/PasswordPolicyMixin.js';
 
 const mockPasswordPolicy = {
   schemaVersion: 1,
@@ -31,30 +33,65 @@ const mockPasswordPolicy = {
   enforcementState: 'ENFORCE',
 };
 
-const mockFetchPasswordPolicy = jest.fn().mockResolvedValue(mockPasswordPolicy);
+describe('PasswordPolicyMixin', () => {
+  describe('_getPasswordPolicyInternal', () => {
+    it('should return project policy when tenantId is null', () => {
+      const projectPolicy = new PasswordPolicyImpl(mockPasswordPolicy);
+      const auth = {
+        _tenantId: null,
+        _projectPasswordPolicy: projectPolicy,
+        _tenantPasswordPolicies: {},
+      };
+      Object.assign(auth, {
+        _getPasswordPolicyInternal: PasswordPolicyMixin._getPasswordPolicyInternal,
+      });
 
-jest.unstable_mockModule('../lib/password-policy/passwordPolicyApi', () => ({
-  fetchPasswordPolicy: mockFetchPasswordPolicy,
-}));
+      const result = auth._getPasswordPolicyInternal();
 
-describe('validatePassword', () => {
-  let validatePassword;
+      expect(result).toBe(projectPolicy);
+    });
+
+    it('should return tenant policy when tenantId is set', () => {
+      const tenantPolicy = new PasswordPolicyImpl(mockPasswordPolicy);
+      const auth = {
+        _tenantId: 'tenant-1',
+        _projectPasswordPolicy: null,
+        _tenantPasswordPolicies: { 'tenant-1': tenantPolicy },
+      };
+      Object.assign(auth, {
+        _getPasswordPolicyInternal: PasswordPolicyMixin._getPasswordPolicyInternal,
+      });
+
+      const result = auth._getPasswordPolicyInternal();
+
+      expect(result).toBe(tenantPolicy);
+    });
+
+    it('should return undefined when no policy is cached', () => {
+      const auth = {
+        _tenantId: null,
+        _projectPasswordPolicy: null,
+        _tenantPasswordPolicies: {},
+      };
+      Object.assign(auth, {
+        _getPasswordPolicyInternal: PasswordPolicyMixin._getPasswordPolicyInternal,
+      });
+
+      const result = auth._getPasswordPolicyInternal();
+
+      expect(result).toBeNull();
+    });
+  });
+});
+
+describe('validatePassword (integration)', () => {
   let mockAuth;
+  let mockFetchPasswordPolicy;
 
-  beforeEach(async () => {
-    jest.resetModules();
+  beforeEach(() => {
+    mockFetchPasswordPolicy = jest.fn().mockResolvedValue(mockPasswordPolicy);
 
-    mockFetchPasswordPolicy.mockClear();
-    mockFetchPasswordPolicy.mockResolvedValue(mockPasswordPolicy);
-
-    jest.unstable_mockModule('../lib/password-policy/passwordPolicyApi', () => ({
-      fetchPasswordPolicy: mockFetchPasswordPolicy,
-    }));
-
-    const modular = await import('../lib/modular/index.js');
-    validatePassword = modular.validatePassword;
-
-    // Create a mock auth instance that mimics FirebaseAuthModule
+    // Create mock auth with the mixin, but override _updatePasswordPolicy to use our mock
     mockAuth = {
       app: {
         name: '[DEFAULT]',
@@ -65,15 +102,14 @@ describe('validatePassword', () => {
       _tenantPasswordPolicies: {},
     };
 
-    const { PasswordPolicyImpl } = await import('../lib/password-policy/PasswordPolicyImpl.js');
+    // Apply the real mixin methods
+    Object.assign(mockAuth, {
+      _getPasswordPolicyInternal: PasswordPolicyMixin._getPasswordPolicyInternal,
+      _recachePasswordPolicy: PasswordPolicyMixin._recachePasswordPolicy,
+      validatePassword: PasswordPolicyMixin.validatePassword,
+    });
 
-    mockAuth._getPasswordPolicyInternal = function () {
-      if (this._tenantId === null) {
-        return this._projectPasswordPolicy;
-      }
-      return this._tenantPasswordPolicies[this._tenantId];
-    };
-
+    // Override _updatePasswordPolicy to use our mock fetch
     mockAuth._updatePasswordPolicy = async function () {
       const response = await mockFetchPasswordPolicy(this);
       const passwordPolicy = new PasswordPolicyImpl(response);
@@ -83,52 +119,33 @@ describe('validatePassword', () => {
         this._tenantPasswordPolicies[this._tenantId] = passwordPolicy;
       }
     };
+  });
 
-    mockAuth._recachePasswordPolicy = async function () {
-      if (this._getPasswordPolicyInternal()) {
-        await this._updatePasswordPolicy();
-      }
-    };
-
-    mockAuth.validatePassword = async function (password) {
-      if (!this._getPasswordPolicyInternal()) {
-        await this._updatePasswordPolicy();
-      }
-      const passwordPolicy = this._getPasswordPolicyInternal();
-
-      if (passwordPolicy.schemaVersion !== 1) {
-        throw new Error(
-          'auth/unsupported-password-policy-schema-version: The password policy received from the backend uses a schema version that is not supported by this version of the SDK.',
-        );
-      }
-
-      return passwordPolicy.validatePassword(password);
-    };
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('caching behavior', () => {
     it('should fetch password policy on first call', async () => {
-      await validatePassword(mockAuth, 'Password123$');
+      await mockAuth.validatePassword('Password123$');
 
       expect(mockFetchPasswordPolicy).toHaveBeenCalledTimes(1);
       expect(mockFetchPasswordPolicy).toHaveBeenCalledWith(mockAuth);
     });
 
     it('should use cached policy on subsequent calls for same auth instance', async () => {
-      await validatePassword(mockAuth, 'Password123$');
+      await mockAuth.validatePassword('Password123$');
       expect(mockFetchPasswordPolicy).toHaveBeenCalledTimes(1);
 
-      await validatePassword(mockAuth, 'AnotherPassword1!');
+      await mockAuth.validatePassword('AnotherPassword1!');
       expect(mockFetchPasswordPolicy).toHaveBeenCalledTimes(1);
 
-      await validatePassword(mockAuth, 'YetAnother1@');
+      await mockAuth.validatePassword('YetAnother1@');
       expect(mockFetchPasswordPolicy).toHaveBeenCalledTimes(1);
     });
 
     it('should cache at project level when tenantId is null', async () => {
-      mockAuth._tenantId = null;
-
-      await validatePassword(mockAuth, 'Password123$');
+      await mockAuth.validatePassword('Password123$');
 
       expect(mockAuth._projectPasswordPolicy).not.toBeNull();
       expect(Object.keys(mockAuth._tenantPasswordPolicies).length).toBe(0);
@@ -137,21 +154,21 @@ describe('validatePassword', () => {
     it('should cache separately per tenant', async () => {
       // First tenant
       mockAuth._tenantId = 'tenant-1';
-      await validatePassword(mockAuth, 'Password123$');
+      await mockAuth.validatePassword('Password123$');
       expect(mockFetchPasswordPolicy).toHaveBeenCalledTimes(1);
 
       // Same tenant should use cache
-      await validatePassword(mockAuth, 'AnotherPassword1!');
+      await mockAuth.validatePassword('AnotherPassword1!');
       expect(mockFetchPasswordPolicy).toHaveBeenCalledTimes(1);
 
       // Different tenant should fetch again
       mockAuth._tenantId = 'tenant-2';
-      await validatePassword(mockAuth, 'Password123$');
+      await mockAuth.validatePassword('Password123$');
       expect(mockFetchPasswordPolicy).toHaveBeenCalledTimes(2);
 
       // Back to first tenant should use its cache
       mockAuth._tenantId = 'tenant-1';
-      await validatePassword(mockAuth, 'Password123$');
+      await mockAuth.validatePassword('Password123$');
       expect(mockFetchPasswordPolicy).toHaveBeenCalledTimes(2);
 
       // Verify both tenant policies are cached
@@ -161,18 +178,17 @@ describe('validatePassword', () => {
 
     it('should keep project and tenant caches separate', async () => {
       // Project level (no tenant)
-      mockAuth._tenantId = null;
-      await validatePassword(mockAuth, 'Password123$');
+      await mockAuth.validatePassword('Password123$');
       expect(mockFetchPasswordPolicy).toHaveBeenCalledTimes(1);
 
       // Tenant level
       mockAuth._tenantId = 'tenant-1';
-      await validatePassword(mockAuth, 'Password123$');
+      await mockAuth.validatePassword('Password123$');
       expect(mockFetchPasswordPolicy).toHaveBeenCalledTimes(2);
 
       // Back to project level should use project cache
       mockAuth._tenantId = null;
-      await validatePassword(mockAuth, 'Password123$');
+      await mockAuth.validatePassword('Password123$');
       expect(mockFetchPasswordPolicy).toHaveBeenCalledTimes(2);
 
       // Verify both caches exist
@@ -181,10 +197,10 @@ describe('validatePassword', () => {
     });
 
     it('should return correct validation status using cached policy', async () => {
-      const status1 = await validatePassword(mockAuth, 'Password123$');
+      const status1 = await mockAuth.validatePassword('Password123$');
       expect(status1.isValid).toBe(true);
 
-      const status2 = await validatePassword(mockAuth, 'weak');
+      const status2 = await mockAuth.validatePassword('weak');
       expect(status2.isValid).toBe(false);
 
       expect(mockFetchPasswordPolicy).toHaveBeenCalledTimes(1);
@@ -199,7 +215,7 @@ describe('validatePassword', () => {
       };
       mockFetchPasswordPolicy.mockResolvedValueOnce(unsupportedPolicy);
 
-      await expect(validatePassword(mockAuth, 'Password123$')).rejects.toThrow(
+      await expect(mockAuth.validatePassword('Password123$')).rejects.toThrow(
         'auth/unsupported-password-policy-schema-version',
       );
     });
@@ -211,7 +227,7 @@ describe('validatePassword', () => {
       };
       mockFetchPasswordPolicy.mockResolvedValueOnce(validPolicy);
 
-      const status = await validatePassword(mockAuth, 'Password123$');
+      const status = await mockAuth.validatePassword('Password123$');
       expect(status.isValid).toBe(true);
     });
   });
@@ -219,7 +235,7 @@ describe('validatePassword', () => {
   describe('cache invalidation', () => {
     it('should refresh cache when _recachePasswordPolicy is called with existing cache', async () => {
       // First call caches the policy
-      await validatePassword(mockAuth, 'Password123$');
+      await mockAuth.validatePassword('Password123$');
       expect(mockFetchPasswordPolicy).toHaveBeenCalledTimes(1);
 
       // Simulate cache invalidation
@@ -236,11 +252,11 @@ describe('validatePassword', () => {
     it('should refresh correct tenant cache on invalidation', async () => {
       // Cache for tenant-1
       mockAuth._tenantId = 'tenant-1';
-      await validatePassword(mockAuth, 'Password123$');
+      await mockAuth.validatePassword('Password123$');
 
       // Cache for tenant-2
       mockAuth._tenantId = 'tenant-2';
-      await validatePassword(mockAuth, 'Password123$');
+      await mockAuth.validatePassword('Password123$');
 
       expect(mockFetchPasswordPolicy).toHaveBeenCalledTimes(2);
 
@@ -252,18 +268,39 @@ describe('validatePassword', () => {
       expect(mockFetchPasswordPolicy).toHaveBeenCalledTimes(3);
     });
   });
+});
 
-  describe('input validation', () => {
-    it('should throw error for null password', async () => {
-      await expect(validatePassword(mockAuth, null)).rejects.toThrow(
-        "firebase.auth().validatePassword(*) expected 'password' to be a non-null or a defined value.",
-      );
-    });
+describe('validatePassword (modular API)', () => {
+  let validatePassword;
+  let mockAuth;
 
-    it('should throw error for undefined password', async () => {
-      await expect(validatePassword(mockAuth, undefined)).rejects.toThrow(
-        "firebase.auth().validatePassword(*) expected 'password' to be a non-null or a defined value.",
-      );
-    });
+  beforeEach(async () => {
+    const modular = await import('../lib/modular/index.js');
+    validatePassword = modular.validatePassword;
+
+    mockAuth = {
+      validatePassword: jest.fn(),
+    };
+  });
+
+  it('should throw error for null password', async () => {
+    await expect(validatePassword(mockAuth, null)).rejects.toThrow(
+      "firebase.auth().validatePassword(*) expected 'password' to be a non-null or a defined value.",
+    );
+  });
+
+  it('should throw error for undefined password', async () => {
+    await expect(validatePassword(mockAuth, undefined)).rejects.toThrow(
+      "firebase.auth().validatePassword(*) expected 'password' to be a non-null or a defined value.",
+    );
+  });
+
+  it('should delegate to auth.validatePassword for valid password', async () => {
+    mockAuth.validatePassword.mockResolvedValue({ isValid: true });
+
+    const result = await validatePassword(mockAuth, 'Password123$');
+
+    expect(mockAuth.validatePassword).toHaveBeenCalledWith('Password123$');
+    expect(result).toEqual({ isValid: true });
   });
 });
