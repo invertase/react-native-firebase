@@ -62,10 +62,8 @@ import analytics, {
   settings,
 } from '../lib';
 
-import {
-  createCheckV9Deprecation,
-  CheckV9DeprecationFunction,
-} from '@react-native-firebase/app/lib/common/unitTestUtils';
+import { createCheckV9Deprecation } from '@react-native-firebase/app/common/unitTestUtils';
+import type { CheckV9DeprecationFunction } from '@react-native-firebase/app/common/unitTestUtils';
 
 describe('Analytics', function () {
   describe('namespace', function () {

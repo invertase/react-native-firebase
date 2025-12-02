@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { expect, jest } from '@jest/globals';
 import { createMessage } from './index';
 
@@ -28,7 +27,7 @@ export const createCheckV9Deprecation = (moduleNames: string[]): CheckV9Deprecat
     modularFunction: () => void,
     nonModularFunction: () => void,
     methodNameKey: string,
-    uniqueMessage: string?,
+    uniqueMessage?: string | null,
     checkFirebaseAppDeprecationWarning: boolean = false,
   ) => {
     const moduleName = moduleNames[0]; // firestore, database, etc

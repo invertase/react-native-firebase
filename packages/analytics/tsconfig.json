@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "rootDir": ".",
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "esModuleInterop": true,
@@ -8,7 +7,6 @@
     "jsx": "react-jsx",
     "lib": [
       "ESNext",
-      // needed for web API
       "DOM"
     ],
     "module": "ESNext",
@@ -24,10 +22,10 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "ESNext",
-    "verbatimModuleSyntax": false,
+    "verbatimModuleSyntax": true,
     "baseUrl": ".",
-    "typeRoots": ["lib/types", "./node_modules/@types"],
     "paths": {
+      "@react-native-firebase/app/common/*": ["../app/lib/common/*"],
       "@react-native-firebase/app": ["../app/lib"]
     }
   }

@@ -45,7 +45,10 @@ declare module '@react-native-firebase/app/lib/internal/nativeModule' {
 declare module '@react-native-firebase/app/lib/internal/web/firebaseInstallations' {
   export function getApp(appName?: string): any;
   export function getId(installations: any): Promise<string>;
-  export function onIdChange(installations: any, callback: (installationId: string) => void): () => void;
+  export function onIdChange(
+    installations: any,
+    callback: (installationId: string) => void,
+  ): () => void;
   export function getInstallations(app: any): any;
   export function makeIDBAvailable(): void;
 }
