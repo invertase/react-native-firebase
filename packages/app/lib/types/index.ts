@@ -413,6 +413,7 @@ export namespace Utils {
   }
 
   export interface Statics {
+    SDK_VERSION: string;
     FilePath: FilePath;
   }
 

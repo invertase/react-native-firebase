@@ -20,8 +20,40 @@ import type { ReactNativeFirebase } from './index';
 
 declare module '@react-native-firebase/app/lib/internal' {
   import BaseFirebaseModule = ReactNativeFirebase.FirebaseModule;
-  export class FirebaseModule extends BaseFirebaseModule {
-    native: any;
+
+  export interface ReactNativeFirebaseNativeModules {
+    // Base interface - packages will augment this
+  }
+
+  export interface RNFBUtilsModuleInterface {
+    isRunningInTestLab: boolean;
+    androidPlayServices: {
+      isAvailable: boolean;
+      status: number;
+      hasResolution: boolean;
+      isUserResolvableError: boolean;
+      error?: string;
+    };
+    androidGetPlayServicesStatus(): Promise<{
+      isAvailable: boolean;
+      status: number;
+      hasResolution: boolean;
+      isUserResolvableError: boolean;
+      error?: string;
+    }>;
+    androidPromptForPlayServices(): Promise<void>;
+    androidMakePlayServicesAvailable(): Promise<void>;
+    androidResolutionForPlayServices(): Promise<void>;
+  }
+
+  export interface RNFBAppModuleInterface {
+    FIREBASE_RAW_JSON: string;
+  }
+
+  export class FirebaseModule<
+    NativeModuleName extends keyof ReactNativeFirebaseNativeModules = any,
+  > extends BaseFirebaseModule {
+    native: ReactNativeFirebaseNativeModules[NativeModuleName];
     emitter: any;
   }
   export function createModuleNamespace(config: any): any;
@@ -29,10 +61,53 @@ declare module '@react-native-firebase/app/lib/internal' {
   export class NativeFirebaseError {
     static getStackWithMessage(message: string, jsStack?: string): string;
   }
+
+  export type GetNativeModule<T extends keyof ReactNativeFirebaseNativeModules> =
+    ReactNativeFirebaseNativeModules[T];
+  export type AnyNativeModule =
+    ReactNativeFirebaseNativeModules[keyof ReactNativeFirebaseNativeModules];
+}
+
+declare module '@react-native-firebase/app/lib/internal/NativeModules' {
+  export interface ReactNativeFirebaseNativeModules {
+    RNFBUtilsModule: import('@react-native-firebase/app/lib/internal').RNFBUtilsModuleInterface;
+    RNFBAppModule: import('@react-native-firebase/app/lib/internal').RNFBAppModuleInterface;
+  }
+
+  export interface RNFBUtilsModuleInterface {
+    isRunningInTestLab: boolean;
+    androidPlayServices: {
+      isAvailable: boolean;
+      status: number;
+      hasResolution: boolean;
+      isUserResolvableError: boolean;
+      error?: string;
+    };
+    androidGetPlayServicesStatus(): Promise<{
+      isAvailable: boolean;
+      status: number;
+      hasResolution: boolean;
+      isUserResolvableError: boolean;
+      error?: string;
+    }>;
+    androidPromptForPlayServices(): Promise<void>;
+    androidMakePlayServicesAvailable(): Promise<void>;
+    androidResolutionForPlayServices(): Promise<void>;
+  }
+
+  export interface RNFBAppModuleInterface {
+    FIREBASE_RAW_JSON: string;
+  }
+
+  export type GetNativeModule<T extends keyof ReactNativeFirebaseNativeModules> =
+    ReactNativeFirebaseNativeModules[T];
+  export type AnyNativeModule =
+    ReactNativeFirebaseNativeModules[keyof ReactNativeFirebaseNativeModules];
 }
 
 declare module '@react-native-firebase/app/lib/internal/nativeModule' {
   export function setReactNativeModule(name: string, module: any): void;
+  export function getReactNativeModule(name: string): any;
 }
 
 declare module '@react-native-firebase/app/lib/common' {

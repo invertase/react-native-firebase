@@ -1,2 +1,3 @@
-export declare function getReactNativeModule(moduleName: string): any;
-export declare function setReactNativeModule(moduleName: string, module: any): any;
+export { getReactNativeModule } from './nativeModuleWeb';
+export { setReactNativeModule } from './nativeModuleWeb';
+//# sourceMappingURL=nativeModule.d.ts.map

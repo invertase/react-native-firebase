@@ -15,59 +15,12 @@
  *
  */
 
-import type { ReactNativeFirebase } from '../types/app';
-
 /**
  * Base type for all React Native Firebase native modules.
  * Each package can extend this interface via module augmentation to add their own native methods.
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ReactNativeFirebaseNativeModules {
   // Base interface - packages will augment this
-}
-
-/**
- * Interface for wrapped native modules returned by getAppModule() and getNativeModule()
- * This represents the native module after wrapping with error handling
- */
-export interface WrappedNativeModule {
-  [key: string]: unknown;
-}
-
-/**
- * App Module native methods that are always available
- */
-export interface RNFBAppModuleInterface {
-  // Constants
-  NATIVE_FIREBASE_APPS: Array<{
-    appConfig: ReactNativeFirebase.FirebaseAppConfig;
-    options: ReactNativeFirebase.FirebaseAppOptions;
-  }>;
-  FIREBASE_RAW_JSON: string;
-
-  // Methods
-  initializeApp(
-    options: ReactNativeFirebase.FirebaseAppOptions,
-    appConfig: ReactNativeFirebase.FirebaseAppConfig,
-  ): Promise<void>;
-  deleteApp(name: string): Promise<void>;
-  setLogLevel(logLevel: string): void;
-  metaGetAll(): Promise<{ [key: string]: string | boolean }>;
-  jsonGetAll(): Promise<{ [key: string]: string | boolean }>;
-  preferencesClearAll(): Promise<void>;
-  preferencesGetAll(): Promise<{ [key: string]: string | boolean }>;
-  preferencesSetBool(key: string, value: boolean): Promise<void>;
-  preferencesSetString(key: string, value: string): Promise<void>;
-  setAutomaticDataCollectionEnabled(name: string, enabled: boolean): void;
-
-  // Event emitter methods
-  eventsNotifyReady(ready: boolean): void;
-  eventsAddListener(eventType: string): void;
-  eventsRemoveListener(eventType: string, removeAll: boolean): void;
-
-  // React Native EventEmitter compatibility
-  addListener?: (eventName: string) => void;
-  removeListeners?: (count: number) => void;
 }
 
 /**
@@ -81,18 +34,26 @@ export interface RNFBUtilsModuleInterface {
     status: number;
     hasResolution: boolean;
     isUserResolvableError: boolean;
-    error: string | undefined;
+    error?: string;
   };
   androidGetPlayServicesStatus(): Promise<{
     isAvailable: boolean;
     status: number;
     hasResolution: boolean;
     isUserResolvableError: boolean;
-    error: string | undefined;
+    error?: string;
   }>;
   androidPromptForPlayServices(): Promise<void>;
   androidMakePlayServicesAvailable(): Promise<void>;
   androidResolutionForPlayServices(): Promise<void>;
+}
+
+/**
+ * Core app module native methods
+ */
+export interface RNFBAppModuleInterface {
+  FIREBASE_RAW_JSON: string;
+  // Add other app module methods here as needed
 }
 
 // Augment the base interface with app package's native modules

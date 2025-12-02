@@ -45,12 +45,16 @@ function processPathConstants(nativeModule: any): Utils.FilePath {
 
   for (let i = 0; i < PATH_NAMES.length; i++) {
     const path = PATH_NAMES[i];
-    (paths as any)[path] = nativeModule[path] ? stripTrailingSlash(nativeModule[path]) : null;
+    if (path) {
+      (paths as any)[path] = nativeModule[path] ? stripTrailingSlash(nativeModule[path]) : null;
+    }
   }
 
   for (let i = 0; i < PATH_FILE_TYPES.length; i++) {
     const pathFileType = PATH_FILE_TYPES[i];
-    (paths as any)[pathFileType] = stripTrailingSlash(nativeModule[pathFileType]);
+    if (pathFileType) {
+      (paths as any)[pathFileType] = stripTrailingSlash(nativeModule[pathFileType]);
+    }
   }
 
   Object.freeze(paths);
@@ -67,4 +71,3 @@ const statics: Utils.Statics = {
 };
 
 export default statics;
-

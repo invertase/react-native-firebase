@@ -18,6 +18,7 @@
 import { getAppModule, getNativeModule } from './registry/nativeModule';
 import SharedEventEmitter from './SharedEventEmitter';
 import type { ReactNativeFirebase } from '../types';
+import type { ReactNativeFirebaseNativeModules } from './NativeModules';
 
 let firebaseJson: any = null;
 
@@ -30,7 +31,9 @@ export interface ModuleConfig {
   disablePrependCustomUrlOrRegion?: boolean;
 }
 
-export default class FirebaseModule {
+export default class FirebaseModule<
+  NativeModuleName extends keyof ReactNativeFirebaseNativeModules = any,
+> {
   _app: ReactNativeFirebase.FirebaseApp;
   _nativeModule: any;
   _customUrlOrRegion: string | null;
@@ -67,7 +70,7 @@ export default class FirebaseModule {
     return `${this.app.name}-${args.join('-')}`;
   }
 
-  get native(): any {
+  get native(): ReactNativeFirebaseNativeModules[NativeModuleName] {
     if (this._nativeModule) {
       return this._nativeModule;
     }
