@@ -15,6 +15,8 @@ declare module '@react-native-firebase/app/lib/common' {
 declare module '@react-native-firebase/app/lib/common/unitTestUtils' {
   export const getFirebaseApp: () => any;
   export const getMockNativeModule: (name: string) => any;
+  export function createCheckV9Deprecation(moduleName: string): CheckV9DeprecationFunction;
+  export type CheckV9DeprecationFunction = (methodName: string) => void;
 }
 
 declare module '@react-native-firebase/app/lib/common/validate' {
@@ -41,12 +43,17 @@ declare module '@react-native-firebase/app/lib/internal/nativeModule' {
 }
 
 declare module '@react-native-firebase/app/lib/internal/web/firebaseInstallations' {
+  export function getApp(appName?: string): any;
+  export function getId(installations: any): Promise<string>;
+  export function onIdChange(installations: any, callback: (installationId: string) => void): () => void;
   export function getInstallations(app: any): any;
+  export function makeIDBAvailable(): void;
 }
 
 declare module '@react-native-firebase/app/lib/internal/asyncStorage' {
   export function setItem(key: string, value: string): Promise<void>;
   export function getItem(key: string): Promise<string | null>;
+  export function isMemoryStorage(): boolean;
 }
 
 declare module '@react-native-firebase/app/lib/internal/web/firebaseApp' {
