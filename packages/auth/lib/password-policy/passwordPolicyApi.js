@@ -42,5 +42,3 @@ export async function fetchPasswordPolicy(auth) {
     );
   }
 }
-
-module.exports = { fetchPasswordPolicy };
