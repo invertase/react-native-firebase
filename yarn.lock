@@ -6053,6 +6053,7 @@ __metadata:
     "@react-native-async-storage/async-storage": "npm:^2.2.0"
     expo: "npm:^54.0.25"
     firebase: "npm:12.6.0"
+    react-native-builder-bob: "npm:^0.40.13"
   peerDependencies:
     expo: ">=47.0.0"
     react: "*"
