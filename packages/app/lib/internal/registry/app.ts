@@ -70,7 +70,7 @@ export function initializeNativeApps(): void {
       const nativeApp = NATIVE_FIREBASE_APPS[i];
       if (!nativeApp) continue;
       const { appConfig, options } = nativeApp;
-      const { name } = appConfig;
+      const name = appConfig.name as string;
       APP_REGISTRY[name] = new FirebaseApp(
         options as FirebaseAppOptions,
         appConfig as FirebaseAppConfig,
