@@ -15,6 +15,8 @@
  *
  */
 
+import type { WrappedNativeModule } from '../internal/NativeModules';
+
 /**
  * Core React Native Firebase package types.
  *
@@ -600,8 +602,8 @@ export namespace Utils {
 export namespace Internal {
   export declare function createModuleNamespace(config: any): any;
   export interface FirebaseModule {
-    native: any;
-    firebaseJson: any;
+    native: WrappedNativeModule;
+    firebaseJson: Record<string, unknown>;
     _customUrlOrRegion: string | null;
   }
   export declare function getFirebaseRoot(): any;

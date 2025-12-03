@@ -115,7 +115,7 @@ function initialiseNativeModule(module: FirebaseModule): WrappedNativeModule {
     hasCustomUrlOrRegionSupport,
     disablePrependCustomUrlOrRegion,
   } = config;
-  const multiModuleRoot: Record<string, any> = {};
+  const multiModuleRoot: WrappedNativeModule = {};
   const multiModule = Array.isArray(nativeModuleName);
   const nativeModuleNames = multiModule
     ? nativeModuleName
