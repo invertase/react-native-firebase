@@ -23,8 +23,8 @@
     "baseUrl": ".",
     "rootDir": ".",
     "paths": {
-      "@react-native-firebase/app/common/*": ["../app/lib/common/*"],
-      "@react-native-firebase/app": ["../app/lib"]
+      "@react-native-firebase/app/common/*": ["../app/dist/typescript/commonjs/lib/common/*"],
+      "@react-native-firebase/app": ["../app/dist/typescript/commonjs/lib"]
     }
   },
   "include": ["lib/**/*"],

@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import {
   isAlphaNumericUnderscore,
   isE164PhoneNumber,
