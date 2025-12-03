@@ -244,7 +244,7 @@ export function getNativeModule(module: FirebaseModule): WrappedNativeModule {
  */
 export function getAppModule(): RNFBAppModuleInterface {
   if (NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE]) {
-    return NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE] as RNFBAppModuleInterface;
+    return NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE] as unknown as RNFBAppModuleInterface;
   }
 
   const namespace = 'app';
@@ -256,5 +256,5 @@ export function getAppModule(): RNFBAppModuleInterface {
 
   NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE] = nativeModuleWrapped(namespace, nativeModule, []);
 
-  return NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE] as RNFBAppModuleInterface;
+  return NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE] as unknown as RNFBAppModuleInterface;
 }

@@ -15,6 +15,8 @@
  *
  */
 
+import type { ReactNativeFirebase } from '../types';
+
 /**
  * Base type for all React Native Firebase native modules.
  * Each package can extend this interface via module augmentation to add their own native methods.
@@ -29,7 +31,7 @@ export interface ReactNativeFirebaseNativeModules {
  * This represents the native module after wrapping with error handling
  */
 export interface WrappedNativeModule {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**
@@ -38,13 +40,16 @@ export interface WrappedNativeModule {
 export interface RNFBAppModuleInterface {
   // Constants
   NATIVE_FIREBASE_APPS: Array<{
-    appConfig: { name: string; [key: string]: any };
-    options: { [key: string]: any };
+    appConfig: ReactNativeFirebase.FirebaseAppConfig;
+    options: ReactNativeFirebase.FirebaseAppOptions;
   }>;
   FIREBASE_RAW_JSON: string;
 
   // Methods
-  initializeApp(options: any, appConfig: any): Promise<void>;
+  initializeApp(
+    options: ReactNativeFirebase.FirebaseAppOptions,
+    appConfig: ReactNativeFirebase.FirebaseAppConfig,
+  ): Promise<void>;
   deleteApp(name: string): Promise<void>;
   setLogLevel(logLevel: string): void;
   metaGetAll(): Promise<{ [key: string]: string | boolean }>;
