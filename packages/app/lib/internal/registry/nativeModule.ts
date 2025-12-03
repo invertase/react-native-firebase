@@ -69,25 +69,20 @@ function nativeModuleMethodWrapped(
  * Prepends all arguments in prependArgs to all native method calls
  *
  * @param namespace
- * @param NativeModule - Raw native module from React Native (untyped)
+ * @param NativeModule - Raw native module from React Native
  * @param argToPrepend
  */
 function nativeModuleWrapped(
   namespace: string,
-  NativeModule: unknown,
+  NativeModule: Record<string, unknown> | undefined,
   argToPrepend: unknown[],
 ): WrappedNativeModule {
   const native: Record<string, unknown> = {};
   if (!NativeModule) {
-    return NativeModule as WrappedNativeModule;
-  }
-
-  // Type guard: ensure it's an object before accessing properties
-  if (typeof NativeModule !== 'object') {
     return native;
   }
 
-  const nativeModuleObj = NativeModule as Record<string, unknown>;
+  const nativeModuleObj = NativeModule;
   let properties = Object.keys(Object.getPrototypeOf(nativeModuleObj));
   if (!properties.length) properties = Object.keys(nativeModuleObj);
 
@@ -189,7 +184,8 @@ function initialiseNativeModule(module: FirebaseModule): WrappedNativeModule {
  */
 function subscribeToNativeModuleEvent(eventName: string): void {
   if (!NATIVE_MODULE_EVENT_SUBSCRIPTIONS[eventName]) {
-    RNFBNativeEventEmitter.addListener(eventName, (event: NativeEvent) => {
+    RNFBNativeEventEmitter.addListener(eventName, (...args: unknown[]) => {
+      const event = args[0] as NativeEvent;
       if (event.appName && event.databaseId) {
         // Firestore requires both appName and databaseId to prefix
         SharedEventEmitter.emit(`${event.appName}-${event.databaseId}-${eventName}`, event);

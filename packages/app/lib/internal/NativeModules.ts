@@ -59,6 +59,15 @@ export interface RNFBAppModuleInterface {
   preferencesSetBool(key: string, value: boolean): Promise<void>;
   preferencesSetString(key: string, value: string): Promise<void>;
   setAutomaticDataCollectionEnabled(name: string, enabled: boolean): void;
+
+  // Event emitter methods
+  eventsNotifyReady(ready: boolean): void;
+  eventsAddListener(eventType: string): void;
+  eventsRemoveListener(eventType: string, removeAll: boolean): void;
+
+  // React Native EventEmitter compatibility
+  addListener?: (eventName: string) => void;
+  removeListeners?: (count: number) => void;
 }
 
 /**
