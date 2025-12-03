@@ -83,7 +83,7 @@ export default class FirebaseModule<
     }
     this._nativeModule = getNativeModule(
       this,
-    ) as ReactNativeFirebaseNativeModules[NativeModuleName];
+    ) as unknown as ReactNativeFirebaseNativeModules[NativeModuleName];
     return this._nativeModule;
   }
 }
