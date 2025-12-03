@@ -15,16 +15,15 @@
  *
  */
 
-export { default as FirebaseApp } from '../FirebaseApp';
-export * from './constants';
-export { default as FirebaseModule } from './FirebaseModule';
-export { default as NativeFirebaseError } from './NativeFirebaseError';
-export * from './NativeModules';
-export * from './registry/app';
-export * from './registry/namespace';
-export * from './registry/nativeModule';
-export { default as SharedEventEmitter } from './SharedEventEmitter';
-export { Logger } from './logger';
+import { getFirebaseRoot } from './internal/registry/namespace';
+import utils from './utils';
+import type { ReactNativeFirebase, Utils } from './types';
 
-// Export Internal types for use by other @react-native-firebase packages
-export type { Internal } from '../types';
+export const firebase = getFirebaseRoot();
+export * from './modular';
+export { utils };
+
+// Export types
+export type { ReactNativeFirebase, Utils };
+
+export default firebase;

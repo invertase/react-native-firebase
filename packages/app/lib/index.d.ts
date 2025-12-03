@@ -32,7 +32,8 @@
  */
 
 // Re-export all types from the types directory
-export { ReactNativeFirebase, Utils, Internal } from './types';
+// Note: Internal types are available via '@react-native-firebase/app/lib/internal'
+export { ReactNativeFirebase, Utils } from './types';
 
 /**
  * Add Utils module as a named export for `app`.
