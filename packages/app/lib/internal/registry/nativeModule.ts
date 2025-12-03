@@ -16,7 +16,7 @@
  */
 
 import { APP_NATIVE_MODULE } from '../constants';
-import NativeFirebaseError from '../NativeFirebaseError';
+import NativeFirebaseError, { type NativeError } from '../NativeFirebaseError';
 import RNFBNativeEventEmitter from '../RNFBNativeEventEmitter';
 import SharedEventEmitter from '../SharedEventEmitter';
 import { getReactNativeModule } from '../nativeModule';
@@ -27,7 +27,7 @@ import type { WrappedNativeModule, RNFBAppModuleInterface } from '../NativeModul
 interface NativeEvent {
   appName?: string;
   databaseId?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 const NATIVE_MODULE_REGISTRY: Record<string, WrappedNativeModule> = {};
@@ -48,15 +48,15 @@ function nativeModuleKey(module: FirebaseModule): string {
  */
 function nativeModuleMethodWrapped(
   namespace: string,
-  method: (...args: any[]) => any,
-  argToPrepend: any[],
-): (...args: any[]) => any {
-  return (...args: any[]) => {
+  method: (...args: unknown[]) => unknown,
+  argToPrepend: unknown[],
+): (...args: unknown[]) => unknown {
+  return (...args: unknown[]) => {
     const possiblePromise = method(...[...argToPrepend, ...args]);
 
-    if (possiblePromise && possiblePromise.then) {
+    if (possiblePromise && typeof possiblePromise === 'object' && 'then' in possiblePromise) {
       const jsStack = new Error().stack;
-      return possiblePromise.catch((nativeError: any) =>
+      return (possiblePromise as Promise<unknown>).catch((nativeError: NativeError) =>
         Promise.reject(new NativeFirebaseError(nativeError, jsStack as string, namespace)),
       );
     }
@@ -69,29 +69,39 @@ function nativeModuleMethodWrapped(
  * Prepends all arguments in prependArgs to all native method calls
  *
  * @param namespace
- * @param NativeModule
+ * @param NativeModule - Raw native module from React Native (untyped)
  * @param argToPrepend
  */
 function nativeModuleWrapped(
   namespace: string,
-  NativeModule: any,
-  argToPrepend: any[],
+  NativeModule: unknown,
+  argToPrepend: unknown[],
 ): WrappedNativeModule {
-  const native: Record<string, any> = {};
+  const native: Record<string, unknown> = {};
   if (!NativeModule) {
-    return NativeModule;
+    return NativeModule as WrappedNativeModule;
   }
 
-  let properties = Object.keys(Object.getPrototypeOf(NativeModule));
-  if (!properties.length) properties = Object.keys(NativeModule);
+  // Type guard: ensure it's an object before accessing properties
+  if (typeof NativeModule !== 'object') {
+    return native;
+  }
+
+  const nativeModuleObj = NativeModule as Record<string, unknown>;
+  let properties = Object.keys(Object.getPrototypeOf(nativeModuleObj));
+  if (!properties.length) properties = Object.keys(nativeModuleObj);
 
   for (let i = 0, len = properties.length; i < len; i++) {
     const property = properties[i];
     if (!property) continue;
-    if (typeof NativeModule[property] === 'function') {
-      native[property] = nativeModuleMethodWrapped(namespace, NativeModule[property], argToPrepend);
+    if (typeof nativeModuleObj[property] === 'function') {
+      native[property] = nativeModuleMethodWrapped(
+        namespace,
+        nativeModuleObj[property] as (...args: unknown[]) => unknown,
+        argToPrepend,
+      );
     } else {
-      native[property] = NativeModule[property];
+      native[property] = nativeModuleObj[property];
     }
   }
 
@@ -139,14 +149,14 @@ function initialiseNativeModule(module: FirebaseModule): WrappedNativeModule {
       multiModuleRoot[moduleName] = !!nativeModule;
     }
 
-    const argToPrepend: any[] = [];
+    const argToPrepend: Array<string> = [];
 
     if (hasMultiAppSupport) {
       argToPrepend.push(module.app.name);
     }
 
     if (hasCustomUrlOrRegionSupport && !disablePrependCustomUrlOrRegion) {
-      argToPrepend.push(module._customUrlOrRegion);
+      argToPrepend.push(module._customUrlOrRegion as string);
     }
 
     Object.assign(multiModuleRoot, nativeModuleWrapped(namespace, nativeModule, argToPrepend));
