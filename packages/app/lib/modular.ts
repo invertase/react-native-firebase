@@ -15,8 +15,8 @@
  *
  */
 
-import { MODULAR_DEPRECATION_ARG } from '../common';
-import type { ReactNativeFirebase } from '../types';
+import { MODULAR_DEPRECATION_ARG } from './common';
+import type { ReactNativeFirebase } from './types';
 import {
   deleteApp as deleteAppCompat,
   getApp as getAppCompat,
@@ -24,9 +24,9 @@ import {
   initializeApp as initializeAppCompat,
   setLogLevel as setLogLevelCompat,
   setReactNativeAsyncStorage as setReactNativeAsyncStorageCompat,
-} from '../internal/registry/app';
-import { setUserLogHandler } from '../internal/logger';
-import { version as sdkVersion } from '../version';
+} from './internal/registry/app';
+import { setUserLogHandler } from './internal/logger';
+import { version as sdkVersion } from './version';
 import { NativeModules } from 'react-native';
 
 export interface LogCallbackParams {
