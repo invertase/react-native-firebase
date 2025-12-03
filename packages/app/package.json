@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/app",
-  "version": "23.7.0",
+  "version": "23.5.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Admob, Analytics, Auth, Crash Reporting, Cloud Firestore, Database, Dynamic Links, Functions, Messaging (FCM), Remote Config, Storage and more.",
   "main": "./dist/commonjs/index.js",
@@ -55,7 +55,7 @@
   ],
   "exports": {
     ".": {
-      "source": "./lib/index.ts",
+      "source": "./lib/index.js",
       "import": {
         "types": "./dist/typescript/module/lib/index.d.ts",
         "default": "./dist/module/index.js"
@@ -63,6 +63,17 @@
       "require": {
         "types": "./dist/typescript/commonjs/lib/index.d.ts",
         "default": "./dist/commonjs/index.js"
+      }
+    },
+    "./internal": {
+      "source": "./lib/internal/index.ts",
+      "import": {
+        "types": "./dist/typescript/module/lib/internal/index.d.ts",
+        "default": "./dist/module/internal/index.js"
+      },
+      "require": {
+        "types": "./dist/typescript/commonjs/lib/internal/index.d.ts",
+        "default": "./dist/commonjs/internal/index.js"
       }
     },
     "./lib/internal": {
@@ -74,39 +85,6 @@
       "require": {
         "types": "./dist/typescript/commonjs/lib/internal/index.d.ts",
         "default": "./dist/commonjs/internal/index.js"
-      }
-    },
-    "./lib/internal/*": {
-      "source": "./lib/internal/*.ts",
-      "import": {
-        "types": "./dist/typescript/module/lib/internal/*.d.ts",
-        "default": "./dist/module/internal/*"
-      },
-      "require": {
-        "types": "./dist/typescript/commonjs/lib/internal/*.d.ts",
-        "default": "./dist/commonjs/internal/*"
-      }
-    },
-    "./lib/common": {
-      "source": "./lib/common/index.ts",
-      "import": {
-        "types": "./dist/typescript/module/lib/common/index.d.ts",
-        "default": "./dist/module/common/index.js"
-      },
-      "require": {
-        "types": "./dist/typescript/commonjs/lib/common/index.d.ts",
-        "default": "./dist/commonjs/common/index.js"
-      }
-    },
-    "./lib/common/*": {
-      "source": "./lib/common/*.ts",
-      "import": {
-        "types": "./dist/typescript/module/lib/common/*.d.ts",
-        "default": "./dist/module/common/*"
-      },
-      "require": {
-        "types": "./dist/typescript/commonjs/lib/common/*.d.ts",
-        "default": "./dist/commonjs/common/*"
       }
     },
     "./package.json": "./package.json"
@@ -128,7 +106,7 @@
   },
   "devDependencies": {
     "@react-native-async-storage/async-storage": "^2.2.0",
-    "expo": "^54.0.27",
+    "expo": "^54.0.25",
     "react-native-builder-bob": "^0.40.13"
   },
   "peerDependenciesMeta": {
