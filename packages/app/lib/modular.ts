@@ -16,7 +16,7 @@
  */
 
 import { MODULAR_DEPRECATION_ARG } from './common';
-import type { ReactNativeFirebase, LogCallback, LogOptions } from './types/app';
+import type { ReactNativeFirebase } from './types';
 import {
   deleteApp as deleteAppCompat,
   getApp as getAppCompat,
@@ -27,9 +27,21 @@ import {
 } from './internal/registry/app';
 import { setUserLogHandler } from './internal/logger';
 import { version as sdkVersion } from './version';
-import { getReactNativeModule } from './internal/nativeModule';
-import { APP_NATIVE_MODULE } from './internal/constants';
-import type { RNFBAppModuleInterface } from './internal/NativeModules';
+import { NativeModules } from 'react-native';
+
+export interface LogCallbackParams {
+  level: ReactNativeFirebase.LogLevelString;
+  message: string;
+  args: unknown[];
+  type: string;
+}
+
+export type LogCallback = (callbackParams: LogCallbackParams) => void;
+
+export interface LogOptions {
+  level?: ReactNativeFirebase.LogLevelString;
+}
+
 /**
  * Renders this app unusable and frees the resources of all associated services.
  * @param app - The app to delete.
@@ -40,7 +52,6 @@ export function deleteApp(app: ReactNativeFirebase.FirebaseApp): Promise<void> {
     null,
     app.name,
     (app as any)._nativeInitialized,
-    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
     MODULAR_DEPRECATION_ARG,
   );
 }
@@ -75,11 +86,7 @@ export function onLog(logCallback: LogCallback | null, options?: LogOptions): vo
  * @returns An array of all initialized Firebase apps.
  */
 export function getApps(): ReactNativeFirebase.FirebaseApp[] {
-  return getAppsCompat.call(
-    null,
-    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
-    MODULAR_DEPRECATION_ARG,
-  );
+  return getAppsCompat.call(null, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -92,13 +99,7 @@ export function initializeApp(
   options: ReactNativeFirebase.FirebaseAppOptions,
   configOrName?: string | ReactNativeFirebase.FirebaseAppConfig,
 ): Promise<ReactNativeFirebase.FirebaseApp> {
-  return initializeAppCompat.call(
-    null,
-    options,
-    configOrName,
-    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
-    MODULAR_DEPRECATION_ARG,
-  );
+  return initializeAppCompat.call(null, options, configOrName, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -107,12 +108,7 @@ export function initializeApp(
  * @returns The requested Firebase app instance.
  */
 export function getApp(name?: string): ReactNativeFirebase.FirebaseApp {
-  return getAppCompat.call(
-    null,
-    name,
-    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
-    MODULAR_DEPRECATION_ARG,
-  );
+  return getAppCompat.call(null, name, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -121,12 +117,7 @@ export function getApp(name?: string): ReactNativeFirebase.FirebaseApp {
  * @returns void
  */
 export function setLogLevel(logLevel: ReactNativeFirebase.LogLevelString): void {
-  return setLogLevelCompat.call(
-    null,
-    logLevel,
-    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
-    MODULAR_DEPRECATION_ARG,
-  );
+  return setLogLevelCompat.call(null, logLevel, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -138,12 +129,7 @@ export function setLogLevel(logLevel: ReactNativeFirebase.LogLevelString): void 
 export function setReactNativeAsyncStorage(
   asyncStorage: ReactNativeFirebase.ReactNativeAsyncStorage,
 ): void {
-  return setReactNativeAsyncStorageCompat.call(
-    null,
-    asyncStorage,
-    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
-    MODULAR_DEPRECATION_ARG,
-  );
+  return setReactNativeAsyncStorageCompat.call(null, asyncStorage, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -151,10 +137,7 @@ export function setReactNativeAsyncStorage(
  * @returns map of key / value pairs containing native meta data
  */
 export function metaGetAll(): Promise<{ [key: string]: string | boolean }> {
-  const RNFBAppModule = getReactNativeModule(
-    APP_NATIVE_MODULE,
-  ) as unknown as RNFBAppModuleInterface;
-  return RNFBAppModule.metaGetAll();
+  return NativeModules.RNFBAppModule.metaGetAll();
 }
 
 /**
@@ -162,10 +145,7 @@ export function metaGetAll(): Promise<{ [key: string]: string | boolean }> {
  * @returns map of key / value pairs containing native firebase.json constants
  */
 export function jsonGetAll(): Promise<{ [key: string]: string | boolean }> {
-  const RNFBAppModule = getReactNativeModule(
-    APP_NATIVE_MODULE,
-  ) as unknown as RNFBAppModuleInterface;
-  return RNFBAppModule.jsonGetAll();
+  return NativeModules.RNFBAppModule.jsonGetAll();
 }
 
 /**
@@ -173,10 +153,7 @@ export function jsonGetAll(): Promise<{ [key: string]: string | boolean }> {
  * @returns Promise<void>
  */
 export function preferencesClearAll(): Promise<void> {
-  const RNFBAppModule = getReactNativeModule(
-    APP_NATIVE_MODULE,
-  ) as unknown as RNFBAppModuleInterface;
-  return RNFBAppModule.preferencesClearAll();
+  return NativeModules.RNFBAppModule.preferencesClearAll();
 }
 
 /**
@@ -184,10 +161,7 @@ export function preferencesClearAll(): Promise<void> {
  * @returns map of key / value pairs containing native preferences data
  */
 export function preferencesGetAll(): Promise<{ [key: string]: string | boolean }> {
-  const RNFBAppModule = getReactNativeModule(
-    APP_NATIVE_MODULE,
-  ) as unknown as RNFBAppModuleInterface;
-  return RNFBAppModule.preferencesGetAll();
+  return NativeModules.RNFBAppModule.preferencesGetAll();
 }
 
 /**
@@ -197,10 +171,7 @@ export function preferencesGetAll(): Promise<{ [key: string]: string | boolean }
  * @returns Promise<void>
  */
 export function preferencesSetBool(key: string, value: boolean): Promise<void> {
-  const RNFBAppModule = getReactNativeModule(
-    APP_NATIVE_MODULE,
-  ) as unknown as RNFBAppModuleInterface;
-  return RNFBAppModule.preferencesSetBool(key, value);
+  return NativeModules.RNFBAppModule.preferencesSetBool(key, value);
 }
 
 /**
@@ -210,10 +181,7 @@ export function preferencesSetBool(key: string, value: boolean): Promise<void> {
  * @returns Promise<void>
  */
 export function preferencesSetString(key: string, value: string): Promise<void> {
-  const RNFBAppModule = getReactNativeModule(
-    APP_NATIVE_MODULE,
-  ) as unknown as RNFBAppModuleInterface;
-  return RNFBAppModule.preferencesSetString(key, value);
+  return NativeModules.RNFBAppModule.preferencesSetString(key, value);
 }
 
 export const SDK_VERSION = sdkVersion;
