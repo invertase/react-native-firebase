@@ -67,11 +67,13 @@ export function initializeNativeApps(): void {
 
   if (NATIVE_FIREBASE_APPS && NATIVE_FIREBASE_APPS.length) {
     for (let i = 0; i < NATIVE_FIREBASE_APPS.length; i++) {
-      const { appConfig, options } = NATIVE_FIREBASE_APPS[i];
+      const nativeApp = NATIVE_FIREBASE_APPS[i];
+      if (!nativeApp) continue;
+      const { appConfig, options } = nativeApp;
       const { name } = appConfig;
       APP_REGISTRY[name] = new FirebaseApp(
-        options,
-        appConfig,
+        options as FirebaseAppOptions,
+        appConfig as FirebaseAppConfig,
         true,
         deleteApp.bind(null, name, true),
       );

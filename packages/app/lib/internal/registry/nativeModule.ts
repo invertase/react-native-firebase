@@ -22,6 +22,7 @@ import SharedEventEmitter from '../SharedEventEmitter';
 import { getReactNativeModule } from '../nativeModule';
 import { isAndroid, isIOS } from '../../common';
 import FirebaseModule from '../FirebaseModule';
+import type { WrappedNativeModule, RNFBAppModuleInterface } from '../NativeModules';
 
 interface NativeEvent {
   appName?: string;
@@ -29,7 +30,7 @@ interface NativeEvent {
   [key: string]: any;
 }
 
-const NATIVE_MODULE_REGISTRY: Record<string, any> = {};
+const NATIVE_MODULE_REGISTRY: Record<string, WrappedNativeModule> = {};
 const NATIVE_MODULE_EVENT_SUBSCRIPTIONS: Record<string, boolean> = {};
 
 function nativeModuleKey(module: FirebaseModule): string {
@@ -71,7 +72,11 @@ function nativeModuleMethodWrapped(
  * @param NativeModule
  * @param argToPrepend
  */
-function nativeModuleWrapped(namespace: string, NativeModule: any, argToPrepend: any[]): any {
+function nativeModuleWrapped(
+  namespace: string,
+  NativeModule: any,
+  argToPrepend: any[],
+): WrappedNativeModule {
   const native: Record<string, any> = {};
   if (!NativeModule) {
     return NativeModule;
@@ -99,7 +104,7 @@ function nativeModuleWrapped(namespace: string, NativeModule: any, argToPrepend:
  * @param module
  * @returns {*}
  */
-function initialiseNativeModule(module: FirebaseModule): any {
+function initialiseNativeModule(module: FirebaseModule): WrappedNativeModule {
   const config = module._config;
   const key = nativeModuleKey(module);
   const {
@@ -222,7 +227,7 @@ function getMissingModuleHelpText(namespace: string): string {
  * @param module
  * @returns {*}
  */
-export function getNativeModule(module: FirebaseModule): any {
+export function getNativeModule(module: FirebaseModule): WrappedNativeModule {
   const key = nativeModuleKey(module);
 
   if (NATIVE_MODULE_REGISTRY[key]) {
@@ -237,9 +242,9 @@ export function getNativeModule(module: FirebaseModule): any {
  *
  * @returns {*}
  */
-export function getAppModule(): any {
+export function getAppModule(): RNFBAppModuleInterface {
   if (NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE]) {
-    return NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE];
+    return NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE] as RNFBAppModuleInterface;
   }
 
   const namespace = 'app';
@@ -251,5 +256,5 @@ export function getAppModule(): any {
 
   NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE] = nativeModuleWrapped(namespace, nativeModule, []);
 
-  return NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE];
+  return NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE] as RNFBAppModuleInterface;
 }

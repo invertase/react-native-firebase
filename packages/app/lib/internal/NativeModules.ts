@@ -19,8 +19,41 @@
  * Base type for all React Native Firebase native modules.
  * Each package can extend this interface via module augmentation to add their own native methods.
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ReactNativeFirebaseNativeModules {
   // Base interface - packages will augment this
+}
+
+/**
+ * Interface for wrapped native modules returned by getAppModule() and getNativeModule()
+ * This represents the native module after wrapping with error handling
+ */
+export interface WrappedNativeModule {
+  [key: string]: any;
+}
+
+/**
+ * App Module native methods that are always available
+ */
+export interface RNFBAppModuleInterface {
+  // Constants
+  NATIVE_FIREBASE_APPS: Array<{
+    appConfig: { name: string; [key: string]: any };
+    options: { [key: string]: any };
+  }>;
+  FIREBASE_RAW_JSON: string;
+
+  // Methods
+  initializeApp(options: any, appConfig: any): Promise<void>;
+  deleteApp(name: string): Promise<void>;
+  setLogLevel(logLevel: string): void;
+  metaGetAll(): Promise<{ [key: string]: string | boolean }>;
+  jsonGetAll(): Promise<{ [key: string]: string | boolean }>;
+  preferencesClearAll(): Promise<void>;
+  preferencesGetAll(): Promise<{ [key: string]: string | boolean }>;
+  preferencesSetBool(key: string, value: boolean): Promise<void>;
+  preferencesSetString(key: string, value: string): Promise<void>;
+  setAutomaticDataCollectionEnabled(name: string, enabled: boolean): void;
 }
 
 /**
@@ -46,14 +79,6 @@ export interface RNFBUtilsModuleInterface {
   androidPromptForPlayServices(): Promise<void>;
   androidMakePlayServicesAvailable(): Promise<void>;
   androidResolutionForPlayServices(): Promise<void>;
-}
-
-/**
- * Core app module native methods
- */
-export interface RNFBAppModuleInterface {
-  FIREBASE_RAW_JSON: string;
-  // Add other app module methods here as needed
 }
 
 // Augment the base interface with app package's native modules
