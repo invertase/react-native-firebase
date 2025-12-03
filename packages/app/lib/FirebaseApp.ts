@@ -16,7 +16,7 @@
  */
 import { warnIfNotModularCall } from './common';
 import { getAppModule } from './internal/registry/nativeModule';
-import type { ReactNativeFirebase } from './types';
+import type { ReactNativeFirebase, Utils } from './types';
 
 export default class FirebaseApp implements ReactNativeFirebase.FirebaseApp {
   private _name: string;
@@ -74,7 +74,7 @@ export default class FirebaseApp implements ReactNativeFirebase.FirebaseApp {
     }
   }
 
-  extendApp(extendedProps: Record<string, any>): void {
+  extendApp(extendedProps: Record<string, unknown>): void {
     warnIfNotModularCall(arguments);
     this._checkDestroyed();
     Object.assign(this, extendedProps);
@@ -92,7 +92,7 @@ export default class FirebaseApp implements ReactNativeFirebase.FirebaseApp {
   }
 
   // For backward compatibility - utils method added by registry
-  utils(): any {
+  utils(): Utils.Module {
     throw new Error('utils() should be added by registry');
   }
 }
