@@ -19,8 +19,15 @@ import { getAppModule, getNativeModule } from './registry/nativeModule';
 import SharedEventEmitter from './SharedEventEmitter';
 import type { ReactNativeFirebase } from '../types';
 import type { ReactNativeFirebaseNativeModules } from './NativeModules';
+import type EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
-let firebaseJson: any = null;
+/**
+ * Firebase JSON configuration from firebase.json file
+ * Structure: { "react-native": { [key: string]: boolean | string }, ... }
+ */
+export type FirebaseJsonConfig = Record<string, unknown>;
+
+let firebaseJson: FirebaseJsonConfig | null = null;
 
 export interface ModuleConfig {
   namespace: string;
@@ -35,7 +42,7 @@ export default class FirebaseModule<
   NativeModuleName extends keyof ReactNativeFirebaseNativeModules = any,
 > {
   _app: ReactNativeFirebase.FirebaseApp;
-  _nativeModule: any;
+  _nativeModule: ReactNativeFirebaseNativeModules[NativeModuleName] | null;
   _customUrlOrRegion: string | null;
   _config: ModuleConfig;
 
@@ -54,19 +61,19 @@ export default class FirebaseModule<
     return this._app;
   }
 
-  get firebaseJson(): any {
+  get firebaseJson(): FirebaseJsonConfig {
     if (firebaseJson) {
       return firebaseJson;
     }
     firebaseJson = JSON.parse(getAppModule().FIREBASE_RAW_JSON);
-    return firebaseJson;
+    return firebaseJson as FirebaseJsonConfig;
   }
 
-  get emitter(): any {
+  get emitter(): EventEmitter {
     return SharedEventEmitter;
   }
 
-  eventNameForApp(...args: any[]): string {
+  eventNameForApp(...args: Array<string | number>): string {
     return `${this.app.name}-${args.join('-')}`;
   }
 
@@ -74,7 +81,9 @@ export default class FirebaseModule<
     if (this._nativeModule) {
       return this._nativeModule;
     }
-    this._nativeModule = getNativeModule(this);
+    this._nativeModule = getNativeModule(
+      this,
+    ) as ReactNativeFirebaseNativeModules[NativeModuleName];
     return this._nativeModule;
   }
 }
