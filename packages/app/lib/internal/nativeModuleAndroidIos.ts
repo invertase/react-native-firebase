@@ -7,8 +7,9 @@ import './global';
  * We additionally add a Proxy to the module to intercept calls
  * and log them to the console for debugging purposes, if enabled.
  * @param moduleName
+ * @returns Raw native module from React Native (object with methods/properties or undefined)
  */
-export function getReactNativeModule(moduleName: string): any {
+export function getReactNativeModule(moduleName: string): Record<string, unknown> | undefined {
   const nativeModule = NativeModules[moduleName];
   if (!globalThis.RNFBDebug) {
     return nativeModule;
@@ -18,21 +19,22 @@ export function getReactNativeModule(moduleName: string): any {
       return Object.keys(target);
     },
     get: (_, name) => {
-      if (typeof nativeModule[name as string] !== 'function') return nativeModule[name as string];
-      return (...args: any[]) => {
+      const prop = nativeModule[name as string];
+      if (typeof prop !== 'function') return prop;
+      return (...args: unknown[]) => {
         console.debug(
           `[RNFB->Native][🔵] ${moduleName}.${String(name)} -> ${JSON.stringify(args)}`,
         );
-        const result = nativeModule[name as string](...args);
-        if (result && result.then) {
-          return result.then(
-            (res: any) => {
+        const result: unknown = (prop as (...args: unknown[]) => unknown)(...args);
+        if (result && typeof result === 'object' && 'then' in result) {
+          return (result as Promise<unknown>).then(
+            (res: unknown) => {
               console.debug(
                 `[RNFB<-Native][🟢] ${moduleName}.${String(name)} <- ${JSON.stringify(res)}`,
               );
               return res;
             },
-            (err: any) => {
+            (err: unknown) => {
               console.debug(
                 `[RNFB<-Native][🔴] ${moduleName}.${String(name)} <- ${JSON.stringify(err)}`,
               );
