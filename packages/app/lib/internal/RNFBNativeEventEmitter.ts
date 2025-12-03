@@ -20,6 +20,21 @@ import { getReactNativeModule } from './nativeModule';
 import type { RNFBAppModuleInterface } from './NativeModules';
 import './global';
 
+/**
+ * Type for the eventsNotifyReady native method
+ */
+type EventsNotifyReadyMethod = (ready: boolean) => void;
+
+/**
+ * Type for the eventsAddListener native method
+ */
+type EventsAddListenerMethod = (eventType: string) => void;
+
+/**
+ * Type for the eventsRemoveListener native method
+ */
+type EventsRemoveListenerMethod = (eventType: string, removeAll: boolean) => void;
+
 class RNFBNativeEventEmitter extends NativeEventEmitter {
   ready: boolean;
 
@@ -44,10 +59,10 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
       'RNFBAppModule',
     ) as unknown as RNFBAppModuleInterface;
     if (!this.ready) {
-      (RNFBAppModule.eventsNotifyReady as (ready: boolean) => void)(true);
+      (RNFBAppModule.eventsNotifyReady as EventsNotifyReadyMethod)(true);
       this.ready = true;
     }
-    (RNFBAppModule.eventsAddListener as (eventType: string) => void)(eventType);
+    (RNFBAppModule.eventsAddListener as EventsAddListenerMethod)(eventType);
     if (globalThis.RNFBDebug) {
       // eslint-disable-next-line no-console
       console.debug(`[RNFB-->Event][👂] ${eventType} -> listening`);
@@ -86,10 +101,7 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
     const originalRemove = subscription.remove;
     const newRemove = () => {
       const module = getReactNativeModule('RNFBAppModule') as unknown as RNFBAppModuleInterface;
-      (module.eventsRemoveListener as (eventType: string, removeAll: boolean) => void)(
-        eventType,
-        false,
-      );
+      (module.eventsRemoveListener as EventsRemoveListenerMethod)(eventType, false);
       const superClass = Object.getPrototypeOf(Object.getPrototypeOf(this));
       if (superClass.removeSubscription != null) {
         // This is for RN <= 0.64 - 65 and greater no longer have removeSubscription
@@ -107,10 +119,7 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
     const RNFBAppModule = getReactNativeModule(
       'RNFBAppModule',
     ) as unknown as RNFBAppModuleInterface;
-    (RNFBAppModule.eventsRemoveListener as (eventType: string, removeAll: boolean) => void)(
-      eventType,
-      true,
-    );
+    (RNFBAppModule.eventsRemoveListener as EventsRemoveListenerMethod)(eventType, true);
     super.removeAllListeners(`rnfb_${eventType}`);
   }
 
@@ -120,10 +129,7 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
       'RNFBAppModule',
     ) as unknown as RNFBAppModuleInterface;
     const eventType = subscription.eventType?.replace('rnfb_', '') || '';
-    (RNFBAppModule.eventsRemoveListener as (eventType: string, removeAll: boolean) => void)(
-      eventType,
-      false,
-    );
+    (RNFBAppModule.eventsRemoveListener as EventsRemoveListenerMethod)(eventType, false);
     const superClass = Object.getPrototypeOf(Object.getPrototypeOf(this));
     if (superClass.removeSubscription) {
       superClass.removeSubscription(subscription);
