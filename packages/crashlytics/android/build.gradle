@@ -57,6 +57,20 @@ project.ext {
   ])
 }
 
+apply from: file('./../../app/android/firebase-json.gradle')
+
+// Default to 'false' for the feature due to memory usage concerns
+String crashlyticsNdkEnabled = 'false'
+
+if (rootProject.ext && rootProject.ext.firebaseJson) {
+  def rnfbConfig = rootProject.ext.firebaseJson
+  
+  // Allow users to opt-in to NDK crash reporting (or whatever feature)
+  if (rnfbConfig.isFlagEnabled('crashlytics_ndk_enabled', false) == true) {
+    crashlyticsNdkEnabled = 'true'
+  }
+}
+
 android {
   def agpVersion = Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger()
   if (agpVersion >= 7) {
@@ -65,6 +79,9 @@ android {
 
   defaultConfig {
     multiDexEnabled = true
+    manifestPlaceholders = [
+      firebaseJsonCrashlyticsNdkEnabled: crashlyticsNdkEnabled
+    ]
   }
 
   buildFeatures {

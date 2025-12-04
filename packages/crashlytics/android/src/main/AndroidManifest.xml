@@ -6,10 +6,22 @@
     <meta-data
       android:name="firebase_crashlytics_collection_enabled"
       android:value="false" />
+    
+    <!-- NDK crash reporting - disabled by default due to memory impact -->
+    <!-- Example (in Firebase.json): {
+        "react-native": {
+          "crashlytics_ndk_enabled": true
+        }
+      }
+    -->
+    <meta-data
+      android:name="firebase_crashlytics_ndk_enabled"
+      android:value="${firebaseJsonCrashlyticsNdkEnabled}" />
+    
     <provider
       android:name="io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsInitProvider"
       android:authorities="${applicationId}.reactnativefirebasecrashlyticsinitprovider"
       android:exported="false"
-      android:initOrder="98" /> <!-- Firebase = 100, ReactNativeFirebase = 99, runs after both (highest first) -->
+      android:initOrder="98" />
   </application>
 </manifest>
