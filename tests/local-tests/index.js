@@ -26,7 +26,7 @@ import { AITestComponent } from './ai/ai';
 import { DatabaseOnChildMovedTest } from './database';
 import { FirestoreOnSnapshotInSyncTest } from './firestore/onSnapshotInSync';
 import { VertexAITestComponent } from './vertexai/vertexai';
-import { AuthTOTPDemonstrator } from './auth/auth-mfa-demonstrator';
+import { AuthMFADemonstrator } from './auth/auth-mfa-demonstrator';
 
 const testComponents = {
   // List your imported components here...
