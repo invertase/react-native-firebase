@@ -16,8 +16,6 @@
  */
 
 import { getApp } from '@react-native-firebase/app';
-import { fetchPasswordPolicy } from '../password-policy/passwordPolicyApi';
-import { PasswordPolicyImpl } from '../password-policy/PasswordPolicyImpl';
 import { MultiFactorUser } from '../multiFactor';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 
@@ -642,10 +640,6 @@ export async function validatePassword(auth, password) {
       "firebase.auth().validatePassword(*) expected 'password' to be a non-null or a defined value.",
     );
   }
-  let passwordPolicy = await fetchPasswordPolicy(auth);
 
-  const passwordPolicyImpl = await new PasswordPolicyImpl(passwordPolicy);
-  let status = passwordPolicyImpl.validatePassword(password);
-
-  return status;
+  return auth.validatePassword.call(auth, password, MODULAR_DEPRECATION_ARG);
 }

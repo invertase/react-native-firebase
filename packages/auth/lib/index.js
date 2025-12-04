@@ -51,6 +51,7 @@ import TwitterAuthProvider from './providers/TwitterAuthProvider';
 import { TotpSecret } from './TotpSecret';
 import version from './version';
 import fallBackModule from './web/RNFBAuthModule';
+import { PasswordPolicyMixin } from './password-policy/PasswordPolicyMixin';
 
 const PhoneAuthState = {
   CODE_SENT: 'sent',
@@ -103,6 +104,8 @@ class FirebaseAuthModule extends FirebaseModule {
     this._authResult = false;
     this._languageCode = this.native.APP_LANGUAGE[this.app._name];
     this._tenantId = null;
+    this._projectPasswordPolicy = null;
+    this._tenantPasswordPolicies = {};
 
     if (!this.languageCode) {
       this._languageCode = this.native.APP_LANGUAGE['[DEFAULT]'];
@@ -336,15 +339,45 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   createUserWithEmailAndPassword(email, password) {
-    return this.native
-      .createUserWithEmailAndPassword(email, password)
-      .then(userCredential => this._setUserCredential(userCredential));
+    return (
+      this.native
+        .createUserWithEmailAndPassword(email, password)
+        .then(userCredential => this._setUserCredential(userCredential))
+        /* istanbul ignore next - native error handling cannot be unit tested */
+        .catch(error => {
+          if (error.code === 'auth/password-does-not-meet-requirements') {
+            return this._recachePasswordPolicy()
+              .catch(() => {
+                // Silently ignore recache failures - the original error matters more
+              })
+              .then(() => {
+                throw error;
+              });
+          }
+          throw error;
+        })
+    );
   }
 
   signInWithEmailAndPassword(email, password) {
-    return this.native
-      .signInWithEmailAndPassword(email, password)
-      .then(userCredential => this._setUserCredential(userCredential));
+    return (
+      this.native
+        .signInWithEmailAndPassword(email, password)
+        .then(userCredential => this._setUserCredential(userCredential))
+        /* istanbul ignore next - native error handling cannot be unit tested */
+        .catch(error => {
+          if (error.code === 'auth/password-does-not-meet-requirements') {
+            return this._recachePasswordPolicy()
+              .catch(() => {
+                // Silently ignore recache failures - the original error matters more
+              })
+              .then(() => {
+                throw error;
+              });
+          }
+          throw error;
+        })
+    );
   }
 
   signInWithCustomToken(customToken) {
@@ -382,7 +415,23 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   confirmPasswordReset(code, newPassword) {
-    return this.native.confirmPasswordReset(code, newPassword);
+    return (
+      this.native
+        .confirmPasswordReset(code, newPassword)
+        /* istanbul ignore next - native error handling cannot be unit tested */
+        .catch(error => {
+          if (error.code === 'auth/password-does-not-meet-requirements') {
+            return this._recachePasswordPolicy()
+              .catch(() => {
+                // Silently ignore recache failures - the original error matters more
+              })
+              .then(() => {
+                throw error;
+              });
+          }
+          throw error;
+        })
+    );
   }
 
   applyActionCode(code) {
@@ -492,6 +541,9 @@ class FirebaseAuthModule extends FirebaseModule {
     return this.native.getCustomAuthDomain();
   }
 }
+
+// Apply password policy mixin to FirebaseAuthModule
+Object.assign(FirebaseAuthModule.prototype, PasswordPolicyMixin);
 
 // import { SDK_VERSION } from '@react-native-firebase/auth';
 export const SDK_VERSION = version;

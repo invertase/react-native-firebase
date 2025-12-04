@@ -23,8 +23,6 @@
  * @throws {Error} Throws an error if the request fails or encounters an issue.
  */
 export async function fetchPasswordPolicy(auth) {
-  let schemaVersion = 1;
-
   try {
     // Identity toolkit API endpoint for password policy. Ensure this is enabled on Google cloud.
     const baseURL = 'https://identitytoolkit.googleapis.com/v2/passwordPolicy?key=';
@@ -37,19 +35,10 @@ export async function fetchPasswordPolicy(auth) {
         `firebase.auth().validatePassword(*) failed to fetch password policy from Firebase Console: ${response.statusText}. Details: ${errorDetails}`,
       );
     }
-    const passwordPolicy = await response.json();
-
-    if (passwordPolicy.schemaVersion !== schemaVersion) {
-      throw new Error(
-        `Password policy schema version mismatch. Expected: ${schemaVersion}, received: ${passwordPolicy.schemaVersion}`,
-      );
-    }
-    return passwordPolicy;
+    return await response.json();
   } catch (error) {
     throw new Error(
       `firebase.auth().validatePassword(*) Failed to fetch password policy: ${error.message}`,
     );
   }
 }
-
-module.exports = { fetchPasswordPolicy };
