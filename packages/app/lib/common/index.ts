@@ -17,7 +17,6 @@
 import { Platform } from 'react-native';
 import Base64 from './Base64';
 import { isFunction, isObject, isString } from './validate';
-import '../internal/global';
 
 export * from './id';
 export * from './path';
