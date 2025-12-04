@@ -95,13 +95,14 @@ iOS prevents messages containing notification (or 'alert') payloads from being d
 This module provides a `requestPermission` method which triggers a native permission dialog requesting the user's permission:
 
 ```js
-import messaging from '@react-native-firebase/messaging';
+import {getMessaging, requestPermission, AuthorizationStatus} from '@react-native-firebase/messaging';
 
 async function requestUserPermission() {
-  const authStatus = await messaging().requestPermission();
+  const messaging = getMessaging();
+  const authStatus = await requestPermission(messaging);
   const enabled =
-    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    authStatus === AuthorizationStatus.AUTHORIZED ||
+    authStatus === AuthorizationStatus.PROVISIONAL;
 
   if (enabled) {
     console.log('Authorization status:', authStatus);
@@ -189,11 +190,12 @@ each time a message is delivered'
 ```js
 import React, { useEffect } from 'react';
 import { Alert } from 'react-native';
-import messaging from '@react-native-firebase/messaging';
+import {getMessaging, onMessage} from '@react-native-firebase/messaging';
 
 function App() {
   useEffect(() => {
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
+    const messaging = getMessaging();
+    const unsubscribe = onMessage(messaging, async remoteMessage => {
       Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
     });
 
@@ -222,11 +224,12 @@ To setup a background handler, call the `setBackgroundMessageHandler` outside of
 ```jsx
 // index.js
 import { AppRegistry } from 'react-native';
-import messaging from '@react-native-firebase/messaging';
+import {getMessaging, setBackgroundMessageHandler} from '@react-native-firebase/messaging';
 import App from './App';
 
+const messaging = getMessaging();
 // Register background handler
-messaging().setBackgroundMessageHandler(async remoteMessage => {
+setBackgroundMessageHandler(messaging, async remoteMessage => {
   console.log('Message handled in the background!', remoteMessage);
 });
 
@@ -251,28 +254,37 @@ handler, you must set the "priority" to "high" on Android, and enable the `conte
 if using the Node.js [`firebase-admin`](https://www.npmjs.com/package/firebase-admin) package to send a message:
 
 ```js
-admin.messaging().sendToDevice(
-  [], // device fcm tokens...
-  {
-    data: {
-      owner: JSON.stringify(owner),
-      user: JSON.stringify(user),
-      picture: JSON.stringify(picture),
+const message = {
+  data: {
+    owner: JSON.stringify(owner),
+    user: JSON.stringify(user),
+    picture: JSON.stringify(picture),
+  },
+  token: 'YOUR_DEVICE_TOKEN',
+  // Required for background/quit data-only messages on iOS
+  apns: {
+    headers: {
+      'apns-priority': '5',
+    },
+    payload: {
+      aps: {
+        contentAvailable: true,
+      },
     },
   },
-  {
-    // Required for background/quit data-only messages on iOS
-    contentAvailable: true,
-    // Required for background/quit data-only messages on Android
+  // Required for background/quit data-only messages on Android
+  android: {
     priority: 'high',
   },
-);
+};
+
+getMessaging().send(message);
 ```
 
 For iOS specific "data-only" messages, the message must include the appropriate APNs headers as well as the `content-available` flag in order to trigger the background handler. For example, if using the Node.js [`firebase-admin`](https://www.npmjs.com/package/firebase-admin) package to send a "data-only" message to an iOS device:
 
 ```js
-admin.messaging().send({
+const message = {
   data: {
     //some data
   },
@@ -292,7 +304,9 @@ admin.messaging().send({
   //token: //device token
   //topic: //notification topic
   //condition: //notification condition
-});
+}
+
+getMessaging().send(message);
 ```
 
 View the [Sending Notification Requests to APNs](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/sending_notification_requests_to_apns/) documentation to learn more about APNs headers.
@@ -312,10 +326,12 @@ you can configure your `AppDelegate.m` file (see instructions below) to inject a
 ```jsx
 // index.js
 import { AppRegistry } from 'react-native';
-import messaging from '@react-native-firebase/messaging';
+import {getMessaging, setBackgroundMessageHandler} from '@react-native-firebase/messaging';
+
+const messaging = getMessaging();
 
 // Handle background messages using setBackgroundMessageHandler
-messaging().setBackgroundMessageHandler(async remoteMessage => {
+setBackgroundMessageHandler(messaging, async remoteMessage => {
   console.log('Message handled in the background!', remoteMessage);
 });
 
@@ -356,11 +372,10 @@ self.initialProps = [RNFBMessagingModule addCustomPropsToUserProps:nil withLaunc
 - For projects that use react-native-navigation (or if you just don't want to mess with your launchProperties) you can use the `getIsHeadless` method (iOS only) from messaging like so:
 
 ```jsx
-messaging()
-  .getIsHeadless()
-  .then(isHeadless => {
+const messaging = getMessaging();
+getIsHeadless(messaging).then(isHeadless => {
     // do sth with isHeadless
-  });
+});
 ```
 
 On Android, the `isHeadless` prop will not exist.
@@ -396,8 +411,8 @@ documentation.
 To subscribe a device, call the `subscribeToTopic` method with the topic name (must not include "/"):
 
 ```js
-messaging()
-  .subscribeToTopic('weather')
+const messaging = getMessaging()
+subscribeToTopic(messaging,'weather')
   .then(() => console.log('Subscribed to topic!'));
 ```
 
@@ -406,8 +421,8 @@ messaging()
 To unsubscribe from a topic, call the `unsubscribeFromTopic` method with the topic name:
 
 ```js
-messaging()
-  .unsubscribeFromTopic('weather')
+const messaging = getMessaging()
+unsubscribeFromTopic(messaging,'weather')
   .then(() => console.log('Unsubscribed fom the topic!'));
 ```
 
@@ -433,10 +448,11 @@ Once auto-registration is disabled you must manually call `registerDeviceForRemo
 early as possible in your application startup;
 
 ```js
-import messaging from '@react-native-firebase/messaging';
+import {getMessaging, registerDeviceForRemoteMessages} from '@react-native-firebase/messaging';
 
 async function registerAppWithFCM() {
-  await messaging().registerDeviceForRemoteMessages();
+  const messaging = getMessaging();
+  await registerDeviceForRemoteMessages(messaging);
 }
 ```
 
