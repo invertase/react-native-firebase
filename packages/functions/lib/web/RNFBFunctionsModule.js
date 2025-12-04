@@ -5,6 +5,19 @@ import {
   httpsCallableFromURL,
   connectFunctionsEmulator,
 } from '@react-native-firebase/app/lib/internal/web/firebaseFunctions';
+import RNFBAppModule from '@react-native-firebase/app/lib/internal/web/RNFBAppModule';
+
+const FUNCTIONS_STREAMING_EVENT = 'functions_streaming_event';
+const STREAM_CONTROLLERS = {};
+
+function emitStreamingEvent(appName, listenerId, body) {
+  RNFBAppModule.eventsPing(FUNCTIONS_STREAMING_EVENT, {
+    listenerId,
+    body,
+    appName,
+    eventName: FUNCTIONS_STREAMING_EVENT,
+  });
+}
 
 /**
  * This is a 'NativeModule' for the web platform.
@@ -121,6 +134,140 @@ export default {
         },
       };
       return Promise.reject(nativeError);
+    }
+  },
+
+  /**
+   * Start a streaming HTTP request to an onRequest endpoint using a function name.
+   * Mirrors the native streaming implementation, but uses fetch on web.
+   *
+   * Signature:
+   *   (appName, regionOrCustomDomain, host, port, name, listenerId)
+   */
+  async httpsCallableStream(appName, regionOrCustomDomain, host, port, name, listenerId) {
+    const fetchImpl = typeof fetch === 'function' ? fetch : null;
+    if (!fetchImpl) {
+      emitStreamingEvent(appName, listenerId, { error: 'fetch_not_available' });
+      emitStreamingEvent(appName, listenerId, { done: true });
+      return;
+    }
+
+    const supportsAbort = typeof AbortController === 'function';
+    const controller = supportsAbort ? new AbortController() : null;
+    if (controller) {
+      STREAM_CONTROLLERS[listenerId] = controller;
+    }
+
+    try {
+      const app = getApp(appName);
+      const appOptions = app.options || {};
+      const projectId = appOptions.projectId || appOptions.projectID || '';
+
+      let targetUrl;
+      const region = regionOrCustomDomain || 'us-central1';
+
+      if (host && port != null && port !== -1) {
+        // Emulator: http://host:port/{projectId}/{region}/{name}
+        targetUrl = `http://${host}:${port}/${projectId}/${region}/${name}`;
+      } else if (regionOrCustomDomain && regionOrCustomDomain.startsWith('http')) {
+        // Custom domain: https://example.com/{name}
+        const base = regionOrCustomDomain.replace(/\/+$/, '');
+        targetUrl = `${base}/${name}`;
+      } else {
+        // Prod: https://{region}-{projectId}.cloudfunctions.net/{name}
+        targetUrl = `https://${region}-${projectId}.cloudfunctions.net/${name}`;
+      }
+
+      const response = await fetchImpl(targetUrl, {
+        method: 'GET',
+        headers: {
+          Accept: 'text/event-stream, application/x-ndjson, */*',
+        },
+        signal: controller ? controller.signal : undefined,
+      });
+
+      if (!response.ok) {
+        const msg = `http_error_${response.status}_${response.statusText || 'error'}`;
+        emitStreamingEvent(appName, listenerId, { error: msg });
+      } else {
+        const payload = await response.text();
+        const lines = payload.split(/\r?\n/);
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          if (!line || !line.trim()) continue;
+          const trimmed = line.startsWith('data: ') ? line.slice(6) : line;
+          emitStreamingEvent(appName, listenerId, { text: trimmed });
+        }
+      }
+    } catch (error) {
+      if (!(supportsAbort && error && error.name === 'AbortError')) {
+        emitStreamingEvent(appName, listenerId, {
+          error: error && error.message ? error.message : String(error),
+        });
+      }
+    } finally {
+      emitStreamingEvent(appName, listenerId, { done: true });
+      if (controller && STREAM_CONTROLLERS[listenerId] === controller) {
+        delete STREAM_CONTROLLERS[listenerId];
+      }
+    }
+  },
+
+  /**
+   * Start a streaming HTTP request to an onRequest endpoint using a URL.
+   *
+   * Signature:
+   *   (appName, url, listenerId)
+   */
+  async httpsCallableStreamFromUrl(appName, url, listenerId) {
+    const fetchImpl = typeof fetch === 'function' ? fetch : null;
+    if (!fetchImpl) {
+      emitStreamingEvent(appName, listenerId, { error: 'fetch_not_available' });
+      emitStreamingEvent(appName, listenerId, { done: true });
+      return;
+    }
+
+    const supportsAbort = typeof AbortController === 'function';
+    const controller = supportsAbort ? new AbortController() : null;
+    if (controller) {
+      STREAM_CONTROLLERS[listenerId] = controller;
+    }
+
+    try {
+      // For web we use the provided URL directly. If host/port are provided they
+      // have already been baked into the URL by caller (e.g. emulator).
+      const response = await fetchImpl(url, {
+        method: 'GET',
+        headers: {
+          Accept: 'text/event-stream, application/x-ndjson, */*',
+        },
+        signal: controller ? controller.signal : undefined,
+      });
+
+      if (!response.ok) {
+        const msg = `http_error_${response.status}_${response.statusText || 'error'}`;
+        emitStreamingEvent(appName, listenerId, { error: msg });
+      } else {
+        const payload = await response.text();
+        const lines = payload.split(/\r?\n/);
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          if (!line || !line.trim()) continue;
+          const trimmed = line.startsWith('data: ') ? line.slice(6) : line;
+          emitStreamingEvent(appName, listenerId, { text: trimmed });
+        }
+      }
+    } catch (error) {
+      if (!(supportsAbort && error && error.name === 'AbortError')) {
+        emitStreamingEvent(appName, listenerId, {
+          error: error && error.message ? error.message : String(error),
+        });
+      }
+    } finally {
+      emitStreamingEvent(appName, listenerId, { done: true });
+      if (controller && STREAM_CONTROLLERS[listenerId] === controller) {
+        delete STREAM_CONTROLLERS[listenerId];
+      }
     }
   },
 };

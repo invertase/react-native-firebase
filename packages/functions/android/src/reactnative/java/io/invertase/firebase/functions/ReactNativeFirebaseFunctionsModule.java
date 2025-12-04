@@ -43,6 +43,11 @@ public class ReactNativeFirebaseFunctionsModule extends ReactNativeFirebaseModul
     this.module = new UniversalFirebaseFunctionsModule(reactContext, SERVICE_NAME);
   }
 
+  @Override
+  public String getName() {
+    return "RNFBFunctionsModule";
+  }
+
   @ReactMethod
   public void httpsCallable(
       String appName,
@@ -143,5 +148,46 @@ public class ReactNativeFirebaseFunctionsModule extends ReactNativeFirebaseModul
           RCTConvertFirebase.mapPutValue(DETAILS_KEY, details, userInfo);
           promise.reject(code, message, exception, userInfo);
         });
+  }
+
+  // -------------------- Streaming bridge (Android only) --------------------
+  @ReactMethod
+  public void addFunctionsStreaming(String appName, String region, Integer listenerId) {
+    // Optional hook: no-op, streaming is started explicitly by httpsCallableStream*
+    // Note: appName and region are auto-prepended by the native module wrapper
+  }
+
+  @ReactMethod
+  public void removeFunctionsStreaming(String appName, String region, Integer listenerId) {
+    // Note: appName and region are auto-prepended by the native module wrapper
+    UniversalFirebaseFunctionsModule.cancelHttpsCallableStream(listenerId);
+  }
+
+  @ReactMethod
+  public void httpsCallableStream(
+      String appName,
+      String region,
+      String host,
+      Integer port,
+      String name,
+      ReadableMap wrapper,
+      ReadableMap options,
+      Integer listenerId) {
+    module.httpsCallableStream(
+        appName, region, host, port, name, wrapper.toHashMap().get(DATA_KEY), options, listenerId);
+  }
+
+  @ReactMethod
+  public void httpsCallableStreamFromUrl(
+      String appName,
+      String region,
+      String host,
+      Integer port,
+      String url,
+      ReadableMap wrapper,
+      ReadableMap options,
+      Integer listenerId) {
+    module.httpsCallableStreamFromUrl(
+        appName, region, host, port, url, wrapper.toHashMap().get(DATA_KEY), options, listenerId);
   }
 }

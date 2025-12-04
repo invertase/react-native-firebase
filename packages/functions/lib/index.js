@@ -73,15 +73,25 @@ const statics = {
   HttpsErrorCode,
 };
 
+const nativeEvents = ['functions_streaming_event'];
+
 class FirebaseFunctionsModule extends FirebaseModule {
   constructor(...args) {
     super(...args);
     this._customUrlOrRegion = this._customUrlOrRegion || 'us-central1';
     this._useFunctionsEmulatorHost = null;
     this._useFunctionsEmulatorPort = -1;
+    this._id_functions_streaming_event = 0;
+
+    this.emitter.addListener(this.eventNameForApp('functions_streaming_event'), event => {
+      this.emitter.emit(
+        this.eventNameForApp(`functions_streaming_event:${event.listenerId}`),
+        event,
+      );
+    });
   }
 
-  httpsCallable(name, options = {}) {
+  httpsCallable(name, options = {}, _deprecationArg) {
     if (options.timeout) {
       if (isNumber(options.timeout)) {
         options.timeout = options.timeout / 1000;
@@ -90,7 +100,8 @@ class FirebaseFunctionsModule extends FirebaseModule {
       }
     }
 
-    return data => {
+    // Create the main callable function
+    const callableFunction = data => {
       const nativePromise = this.native.httpsCallable(
         this._useFunctionsEmulatorHost,
         this._useFunctionsEmulatorPort,
@@ -112,9 +123,53 @@ class FirebaseFunctionsModule extends FirebaseModule {
         );
       });
     };
+
+    // Add a streaming helper (callback-based)
+    // Usage: const stop = functions().httpsCallable('fn').stream(data, (evt) => {...}, options)
+    callableFunction.stream = (data, onEvent, options = {}) => {
+      if (options.timeout) {
+        if (isNumber(options.timeout)) {
+          options.timeout = options.timeout / 1000;
+        } else {
+          throw new Error('HttpsCallableOptions.timeout expected a Number in milliseconds');
+        }
+      }
+      const listenerId = this._id_functions_streaming_event++;
+      const eventName = this.eventNameForApp(`functions_streaming_event:${listenerId}`);
+      const subscription = this.emitter.addListener(eventName, event => {
+        const body = event.body;
+        if (onEvent) {
+          onEvent(body);
+        }
+        if (body && (body.done || body.error)) {
+          subscription.remove();
+          if (this.native.removeFunctionsStreaming) {
+            this.native.removeFunctionsStreaming(listenerId);
+          }
+        }
+      });
+      // Start native streaming on both platforms.
+      // Note: appName and customUrlOrRegion are automatically prepended by the native module wrapper
+      this.native.httpsCallableStream(
+        this._useFunctionsEmulatorHost || null,
+        this._useFunctionsEmulatorPort || -1,
+        name,
+        { data },
+        options,
+        listenerId,
+      );
+      return () => {
+        subscription.remove();
+        if (this.native.removeFunctionsStreaming) {
+          this.native.removeFunctionsStreaming(listenerId);
+        }
+      };
+    };
+
+    return callableFunction;
   }
 
-  httpsCallableFromUrl(url, options = {}) {
+  httpsCallableFromUrl(url, options = {}, _deprecationArg) {
     if (options.timeout) {
       if (isNumber(options.timeout)) {
         options.timeout = options.timeout / 1000;
@@ -123,7 +178,8 @@ class FirebaseFunctionsModule extends FirebaseModule {
       }
     }
 
-    return data => {
+    const callableFunction = data => {
+      // Note: appName and customUrlOrRegion are automatically prepended by the native module wrapper
       const nativePromise = this.native.httpsCallableFromUrl(
         this._useFunctionsEmulatorHost,
         this._useFunctionsEmulatorPort,
@@ -145,6 +201,48 @@ class FirebaseFunctionsModule extends FirebaseModule {
         );
       });
     };
+
+    // Add streaming support for URL-based callable
+    callableFunction.stream = (data, onEvent, streamOptions = {}) => {
+      if (streamOptions.timeout) {
+        if (isNumber(streamOptions.timeout)) {
+          streamOptions.timeout = streamOptions.timeout / 1000;
+        } else {
+          throw new Error('HttpsCallableOptions.timeout expected a Number in milliseconds');
+        }
+      }
+      const listenerId = this._id_functions_streaming_event++;
+      const eventName = this.eventNameForApp(`functions_streaming_event:${listenerId}`);
+      const subscription = this.emitter.addListener(eventName, event => {
+        const body = event.body;
+        if (onEvent) {
+          onEvent(body);
+        }
+        if (body && (body.done || body.error)) {
+          subscription.remove();
+          if (this.native.removeFunctionsStreaming) {
+            this.native.removeFunctionsStreaming(listenerId);
+          }
+        }
+      });
+      // Note: appName and customUrlOrRegion are automatically prepended by the native module wrapper
+      this.native.httpsCallableStreamFromUrl(
+        this._useFunctionsEmulatorHost || null,
+        this._useFunctionsEmulatorPort || -1,
+        url,
+        { data },
+        streamOptions,
+        listenerId,
+      );
+      return () => {
+        subscription.remove();
+        if (this.native.removeFunctionsStreaming) {
+          this.native.removeFunctionsStreaming(listenerId);
+        }
+      };
+    };
+
+    return callableFunction;
   }
 
   useFunctionsEmulator(origin) {
@@ -196,7 +294,7 @@ export default createModuleNamespace({
   version,
   namespace,
   nativeModuleName,
-  nativeEvents: false,
+  nativeEvents,
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: true,
   ModuleClass: FirebaseFunctionsModule,
