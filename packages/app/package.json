@@ -55,7 +55,7 @@
   ],
   "exports": {
     ".": {
-      "source": "./lib/index.js",
+      "source": "./lib/index.ts",
       "import": {
         "types": "./dist/typescript/module/lib/index.d.ts",
         "default": "./dist/module/index.js"
@@ -85,6 +85,50 @@
       "require": {
         "types": "./dist/typescript/commonjs/lib/internal/index.d.ts",
         "default": "./dist/commonjs/internal/index.js"
+      }
+    },
+    "./lib/internal/*": {
+      "source": "./lib/internal/*.ts",
+      "import": {
+        "types": "./dist/typescript/module/lib/internal/*.d.ts",
+        "default": "./dist/module/internal/*"
+      },
+      "require": {
+        "types": "./dist/typescript/commonjs/lib/internal/*.d.ts",
+        "default": "./dist/commonjs/internal/*"
+      }
+    },
+    "./lib/common": {
+      "source": "./lib/common/index.ts",
+      "import": {
+        "types": "./dist/typescript/module/lib/common/index.d.ts",
+        "default": "./dist/module/common/index.js"
+      },
+      "require": {
+        "types": "./dist/typescript/commonjs/lib/common/index.d.ts",
+        "default": "./dist/commonjs/common/index.js"
+      }
+    },
+    "./lib/common/*": {
+      "source": "./lib/common/*.ts",
+      "import": {
+        "types": "./dist/typescript/module/lib/common/*.d.ts",
+        "default": "./dist/module/common/*"
+      },
+      "require": {
+        "types": "./dist/typescript/commonjs/lib/common/*.d.ts",
+        "default": "./dist/commonjs/common/*"
+      }
+    },
+    "./common/*": {
+      "source": "./lib/common/*.ts",
+      "import": {
+        "types": "./dist/typescript/module/lib/common/*.d.ts",
+        "default": "./dist/module/common/*"
+      },
+      "require": {
+        "types": "./dist/typescript/commonjs/lib/common/*.d.ts",
+        "default": "./dist/commonjs/common/*"
       }
     },
     "./package.json": "./package.json"
