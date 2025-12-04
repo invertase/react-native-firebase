@@ -18,7 +18,6 @@
 import { type EmitterSubscription, NativeEventEmitter } from 'react-native';
 import { getReactNativeModule } from './nativeModule';
 import type { RNFBAppModuleInterface } from './NativeModules';
-import './global';
 
 /**
  * Type for the eventsNotifyReady native method

@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 import { NativeModules } from 'react-native';
-import './global';
 
 /**
  * This is used by Android and iOS to get a native module.

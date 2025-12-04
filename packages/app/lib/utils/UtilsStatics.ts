@@ -16,7 +16,7 @@
  */
 
 import { NativeModules } from 'react-native';
-import { stripTrailingSlash, isOther } from '../../lib/common';
+import { stripTrailingSlash, isOther } from '../common';
 import { Utils } from '../types';
 import { version } from '../version';
 
