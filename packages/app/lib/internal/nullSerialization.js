@@ -40,6 +40,35 @@ export function encodeNullValues(data) {
     return data;
   }
 
+  // Helper to process a child element and add it to the encoded container
+  function processChild(child, encoded, keyOrIndex, isArray, stack) {
+    if (child === null) {
+      // Arrays preserve nulls as null, objects convert to sentinel
+      encoded[keyOrIndex] = isArray ? null : NULL_SENTINEL;
+    } else if (typeof child !== 'object') {
+      encoded[keyOrIndex] = child;
+    } else if (Array.isArray(child)) {
+      const childEncoded = new Array(child.length);
+      encoded[keyOrIndex] = childEncoded;
+      stack.push({
+        type: 'array',
+        original: child,
+        encoded: childEncoded,
+        index: 0,
+      });
+    } else {
+      const childEncoded = {};
+      encoded[keyOrIndex] = childEncoded;
+      stack.push({
+        type: 'object',
+        original: child,
+        encoded: childEncoded,
+        keys: Object.keys(child),
+        index: 0,
+      });
+    }
+  }
+
   // Prepare root encoded container
   let rootEncoded;
   const stack = [];
@@ -77,30 +106,7 @@ export function encodeNullValues(data) {
 
       const i = frame.index++;
       const item = original[i];
-
-      if (item === null || typeof item !== 'object') {
-        // Arrays preserve nulls as null
-        encoded[i] = item;
-      } else if (Array.isArray(item)) {
-        const childEncoded = new Array(item.length);
-        encoded[i] = childEncoded;
-        stack.push({
-          type: 'array',
-          original: item,
-          encoded: childEncoded,
-          index: 0,
-        });
-      } else {
-        const childEncoded = {};
-        encoded[i] = childEncoded;
-        stack.push({
-          type: 'object',
-          original: item,
-          encoded: childEncoded,
-          keys: Object.keys(item),
-          index: 0,
-        });
-      }
+      processChild(item, encoded, i, true, stack);
     } else {
       // frame.type === 'object'
       const { original, encoded, keys } = frame;
@@ -113,31 +119,7 @@ export function encodeNullValues(data) {
 
       const key = keys[frame.index++];
       const value = original[key];
-
-      if (value === null) {
-        encoded[key] = NULL_SENTINEL;
-      } else if (typeof value !== 'object') {
-        encoded[key] = value;
-      } else if (Array.isArray(value)) {
-        const childEncoded = new Array(value.length);
-        encoded[key] = childEncoded;
-        stack.push({
-          type: 'array',
-          original: value,
-          encoded: childEncoded,
-          index: 0,
-        });
-      } else {
-        const childEncoded = {};
-        encoded[key] = childEncoded;
-        stack.push({
-          type: 'object',
-          original: value,
-          encoded: childEncoded,
-          keys: Object.keys(value),
-          index: 0,
-        });
-      }
+      processChild(value, encoded, key, false, stack);
     }
   }
 
