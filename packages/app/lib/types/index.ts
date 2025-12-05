@@ -15,8 +15,6 @@
  *
  */
 
-import type { WrappedNativeModule } from '../internal/NativeModules';
-
 /**
  * Core React Native Firebase package types.
  *
@@ -592,26 +590,5 @@ export namespace Utils {
      * @android Android only - iOS returns undefined
      */
     abstract resolutionForPlayServices(): Promise<void>;
-  }
-}
-
-/**
- * Internal module type definitions for consumption by other packages
- */
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace Internal {
-  export declare function createModuleNamespace(config: any): any;
-  export interface FirebaseModule {
-    native: WrappedNativeModule;
-    firebaseJson: Record<string, unknown>;
-    _customUrlOrRegion: string | null;
-  }
-  export declare function getFirebaseRoot(): any;
-  export interface NativeFirebaseError {
-    code?: string;
-    message?: string;
-  }
-  export interface NativeFirebaseErrorStatic {
-    getStackWithMessage(message: string, jsStack?: string): string;
   }
 }
