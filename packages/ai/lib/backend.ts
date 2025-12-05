@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { DEFAULT_LOCATION } from './constants';
+import { DEFAULT_API_VERSION, DEFAULT_LOCATION } from './constants';
 import { BackendType } from './public-types';
 
 /**
@@ -39,6 +39,16 @@ export abstract class Backend {
   protected constructor(type: BackendType) {
     this.backendType = type;
   }
+
+  /**
+   * @internal
+   */
+  abstract _getModelPath(project: string, model: string): string;
+
+  /**
+   * @internal
+   */
+  abstract _getTemplatePath(project: string, templateId: string): string;
 }
 
 /**
@@ -55,6 +65,20 @@ export class GoogleAIBackend extends Backend {
    */
   constructor() {
     super(BackendType.GOOGLE_AI);
+  }
+
+  /**
+   * @internal
+   */
+  _getModelPath(project: string, model: string): string {
+    return `/${DEFAULT_API_VERSION}/projects/${project}/${model}`;
+  }
+
+  /**
+   * @internal
+   */
+  _getTemplatePath(project: string, templateId: string): string {
+    return `/${DEFAULT_API_VERSION}/projects/${project}/templates/${templateId}`;
   }
 }
 
@@ -88,5 +112,19 @@ export class VertexAIBackend extends Backend {
     } else {
       this.location = location;
     }
+  }
+
+  /**
+   * @internal
+   */
+  _getModelPath(project: string, model: string): string {
+    return `/${DEFAULT_API_VERSION}/projects/${project}/locations/${this.location}/${model}`;
+  }
+
+  /**
+   * @internal
+   */
+  _getTemplatePath(project: string, templateId: string): string {
+    return `/${DEFAULT_API_VERSION}/projects/${project}/locations/${this.location}/templates/${templateId}`;
   }
 }
