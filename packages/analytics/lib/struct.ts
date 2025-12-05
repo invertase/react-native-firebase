@@ -22,6 +22,10 @@ export const validateStruct = (
   struct: any,
   prefix = '',
 ): Record<string, any> => {
+  // skip superstruct create in release for performance reasons
+  if (!__DEV__) {
+    return value;
+  }
   try {
     return create(value, struct) as Record<string, any>;
   } catch (e) {

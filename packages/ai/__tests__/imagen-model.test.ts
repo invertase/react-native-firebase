@@ -63,20 +63,24 @@ describe('ImagenModel', () => {
     const prompt = 'A photorealistic image of a toy boat at sea.';
     await imagenModel.generateImages(prompt);
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'publishers/google/models/my-model',
-      request.Task.PREDICT,
-      expect.anything(),
-      false,
+      expect.objectContaining({
+        model: 'publishers/google/models/my-model',
+        task: request.Task.PREDICT,
+        apiSettings: expect.anything(),
+        stream: false,
+        requestOptions: undefined,
+      }),
       expect.stringMatching(new RegExp(`"prompt":"${prompt}"`)),
-      undefined,
     );
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'publishers/google/models/my-model',
-      request.Task.PREDICT,
-      expect.anything(),
-      false,
+      expect.objectContaining({
+        model: 'publishers/google/models/my-model',
+        task: request.Task.PREDICT,
+        apiSettings: expect.anything(),
+        stream: false,
+        requestOptions: undefined,
+      }),
       expect.stringContaining(`"sampleCount":1`),
-      undefined,
     );
   });
 
@@ -106,28 +110,34 @@ describe('ImagenModel', () => {
     const prompt = 'A photorealistic image of a toy boat at sea.';
     await imagenModel.generateImages(prompt);
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'publishers/google/models/my-model',
-      request.Task.PREDICT,
-      expect.anything(),
-      false,
+      expect.objectContaining({
+        model: 'publishers/google/models/my-model',
+        task: request.Task.PREDICT,
+        apiSettings: expect.anything(),
+        stream: false,
+        requestOptions: undefined,
+      }),
       expect.stringContaining(`"negativePrompt":"${imagenModel.generationConfig?.negativePrompt}"`),
-      undefined,
     );
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'publishers/google/models/my-model',
-      request.Task.PREDICT,
-      expect.anything(),
-      false,
+      expect.objectContaining({
+        model: 'publishers/google/models/my-model',
+        task: request.Task.PREDICT,
+        apiSettings: expect.anything(),
+        stream: false,
+        requestOptions: undefined,
+      }),
       expect.stringContaining(`"sampleCount":${imagenModel.generationConfig?.numberOfImages}`),
-      undefined,
     );
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'publishers/google/models/my-model',
-      request.Task.PREDICT,
-      expect.anything(),
-      false,
+      expect.objectContaining({
+        model: 'publishers/google/models/my-model',
+        task: request.Task.PREDICT,
+        apiSettings: expect.anything(),
+        stream: false,
+        requestOptions: undefined,
+      }),
       expect.stringContaining(`"aspectRatio":"${imagenModel.generationConfig?.aspectRatio}"`),
-      undefined,
     );
   });
 

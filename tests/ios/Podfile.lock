@@ -1802,7 +1802,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNDeviceInfo (15.0.1):
+  - RNDeviceInfo (14.1.1):
     - React-Core
   - RNFBAnalytics (23.5.0):
     - FirebaseAnalytics/Core (= 12.6.0)

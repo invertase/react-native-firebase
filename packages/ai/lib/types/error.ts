@@ -101,4 +101,7 @@ export const enum AIErrorCode {
 
   /** An error occurred due an attempt to use an unsupported feature. */
   UNSUPPORTED = 'unsupported',
+
+  /** An error occurred due to a session being closed. */
+  SESSION_CLOSED = 'session-closed',
 }
