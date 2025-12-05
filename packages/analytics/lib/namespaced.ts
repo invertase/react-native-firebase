@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import {
   isAlphaNumericUnderscore,
   isE164PhoneNumber,
@@ -36,6 +36,10 @@ import {
 // Internal types are now available through module declarations in app package
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import { isBoolean } from '@react-native-firebase/app/lib/common';
+
+// Import internal types to register native module augmentation
+import './internal-types/native-modules';
+import './internal-types/web-modules';
 
 import { validateStruct, validateCompound } from './struct';
 import { RNFBAnalyticsModule } from './web/RNFBAnalyticsModule';
@@ -120,7 +124,7 @@ const namespace = 'analytics';
 
 const nativeModuleName = 'RNFBAnalyticsModule';
 
-class FirebaseAnalyticsModule extends FirebaseModule {
+class FirebaseAnalyticsModule extends FirebaseModule<'RNFBAnalyticsModule'> {
   logEvent(
     name: string,
     params: { [key: string]: any } = {},
@@ -879,13 +883,13 @@ export default createModuleNamespace({
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseAnalyticsModule,
-}) as typeof defaultExport;
+}) as unknown as typeof defaultExport;
 
 // Register the interop module for non-native platforms.
-setReactNativeModule(nativeModuleName, RNFBAnalyticsModule);
+setReactNativeModule(nativeModuleName, RNFBAnalyticsModule as unknown as Record<string, unknown>);
 
-export const firebase: FirebaseAnalyticsModule & {
+export const firebase = getFirebaseRoot() as unknown as typeof defaultExport & {
   analytics: typeof defaultExport;
   SDK_VERSION: string;
   app(name?: string): ReactNativeFirebase.FirebaseApp & { analytics(): FirebaseAnalyticsModule };
-} = getFirebaseRoot();
+};
