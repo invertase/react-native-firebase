@@ -193,6 +193,49 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
     return (dict.count == 1 && flag != nil && [flag boolValue]);
   };
 
+  // Helper to process a child element and add it to the parent container
+  void (^processChild)(id, id, id, BOOL, NSMutableArray *) =
+      ^void(id child, id parentMutable, id keyOrNil, BOOL isParentDict,
+            NSMutableArray *stack) {
+        id processedValue = nil;
+
+        if ([child isKindOfClass:[NSDictionary class]]) {
+          NSDictionary *childDict = (NSDictionary *)child;
+
+          if (isNullSentinel(childDict)) {
+            // Replace sentinel with NSNull
+            processedValue = [NSNull null];
+          } else {
+            // Process nested dictionary
+            NSMutableDictionary *childMut =
+                [NSMutableDictionary dictionaryWithCapacity:childDict.count];
+            processedValue = childMut;
+            [stack addObject:@{@"original" : childDict, @"mutable" : childMut}];
+          }
+        } else if ([child isKindOfClass:[NSArray class]]) {
+          // Process nested array
+          NSArray *childArray = (NSArray *)child;
+          NSMutableArray *childMut = [NSMutableArray arrayWithCapacity:childArray.count];
+          processedValue = childMut;
+          [stack addObject:@{@"original" : childArray, @"mutable" : childMut}];
+        } else {
+          // Preserve primitive values
+          processedValue = child ?: [NSNull null];
+        }
+
+        // Add to parent container based on type
+        if (isParentDict) {
+          NSMutableDictionary *mutDict = (NSMutableDictionary *)parentMutable;
+          if (processedValue) {
+            mutDict[keyOrNil] = processedValue;
+          }
+          // NSDictionary can't store nil, and original code wouldn't see nil values either.
+        } else {
+          NSMutableArray *mutArray = (NSMutableArray *)parentMutable;
+          [mutArray addObject:processedValue];
+        }
+      };
+
   // Root-level sentinel case
   if ([value isKindOfClass:[NSDictionary class]] && isNullSentinel((NSDictionary *)value)) {
     return [NSNull null];
@@ -223,67 +266,16 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
 
     if ([original isKindOfClass:[NSDictionary class]]) {
       NSDictionary *origDict = (NSDictionary *)original;
-      NSMutableDictionary *mutDict = (NSMutableDictionary *)mutable;
 
       for (id key in origDict) {
         id child = origDict[key];
-
-        if ([child isKindOfClass:[NSDictionary class]]) {
-          NSDictionary *childDict = (NSDictionary *)child;
-
-          if (isNullSentinel(childDict)) {
-            // Replace sentinel with NSNull
-            mutDict[key] = [NSNull null];
-          } else {
-            // Process nested dictionary
-            NSMutableDictionary *childMut =
-                [NSMutableDictionary dictionaryWithCapacity:childDict.count];
-            mutDict[key] = childMut;
-            [stack addObject:@{@"original" : childDict, @"mutable" : childMut}];
-          }
-        } else if ([child isKindOfClass:[NSArray class]]) {
-          // Process nested array
-          NSArray *childArray = (NSArray *)child;
-          NSMutableArray *childMut = [NSMutableArray arrayWithCapacity:childArray.count];
-          mutDict[key] = childMut;
-          [stack addObject:@{@"original" : childArray, @"mutable" : childMut}];
-        } else {
-          // Preserve primitive values
-          if (child) {
-            mutDict[key] = child;
-          } else {
-            // NSDictionary can't store nil, and original code wouldn't see nil values either.
-          }
-        }
+        processChild(child, mutable, key, YES, stack);
       }
     } else if ([original isKindOfClass:[NSArray class]]) {
       NSArray *origArray = (NSArray *)original;
-      NSMutableArray *mutArray = (NSMutableArray *)mutable;
 
       for (id child in origArray) {
-        if ([child isKindOfClass:[NSDictionary class]]) {
-          NSDictionary *childDict = (NSDictionary *)child;
-
-          if (isNullSentinel(childDict)) {
-            // Replace sentinel with NSNull
-            [mutArray addObject:[NSNull null]];
-          } else {
-            // Process nested dictionary
-            NSMutableDictionary *childMut =
-                [NSMutableDictionary dictionaryWithCapacity:childDict.count];
-            [mutArray addObject:childMut];
-            [stack addObject:@{@"original" : childDict, @"mutable" : childMut}];
-          }
-        } else if ([child isKindOfClass:[NSArray class]]) {
-          // Process nested array
-          NSArray *childArray = (NSArray *)child;
-          NSMutableArray *childMut = [NSMutableArray arrayWithCapacity:childArray.count];
-          [mutArray addObject:childMut];
-          [stack addObject:@{@"original" : childArray, @"mutable" : childMut}];
-        } else {
-          // Preserve primitive values and NSNull (which never became sentinels in arrays)
-          [mutArray addObject:child ?: [NSNull null]];
-        }
+        processChild(child, mutable, nil, NO, stack);
       }
     }
   }
