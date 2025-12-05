@@ -25,6 +25,3 @@ export * from './registry/namespace';
 export * from './registry/nativeModule';
 export { default as SharedEventEmitter } from './SharedEventEmitter';
 export { Logger } from './logger';
-
-// Export Internal types for use by other @react-native-firebase packages
-export type { Internal } from '../types';
