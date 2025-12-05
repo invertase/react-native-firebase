@@ -249,10 +249,12 @@ describe('request methods', () => {
         ok: true,
       } as Response);
       const response = await makeRequest(
-        'models/model-name',
-        Task.GENERATE_CONTENT,
-        fakeApiSettings,
-        false,
+        {
+          model: 'models/model-name',
+          task: Task.GENERATE_CONTENT,
+          apiSettings: fakeApiSettings,
+          stream: false,
+        },
         '',
       );
       expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -267,9 +269,18 @@ describe('request methods', () => {
       } as Response);
 
       try {
-        await makeRequest('models/model-name', Task.GENERATE_CONTENT, fakeApiSettings, false, '', {
-          timeout: 180000,
-        });
+        await makeRequest(
+          {
+            model: 'models/model-name',
+            task: Task.GENERATE_CONTENT,
+            apiSettings: fakeApiSettings,
+            stream: false,
+            requestOptions: {
+              timeout: 180000,
+            },
+          },
+          '',
+        );
       } catch (e) {
         expect((e as AIError).code).toBe(AIErrorCode.FETCH_ERROR);
         expect((e as AIError).customErrorData?.status).toBe(500);
@@ -287,7 +298,15 @@ describe('request methods', () => {
         statusText: 'Server Error',
       } as Response);
       try {
-        await makeRequest('models/model-name', Task.GENERATE_CONTENT, fakeApiSettings, false, '');
+        await makeRequest(
+          {
+            model: 'models/model-name',
+            task: Task.GENERATE_CONTENT,
+            apiSettings: fakeApiSettings,
+            stream: false,
+          },
+          '',
+        );
       } catch (e) {
         expect((e as AIError).code).toBe(AIErrorCode.FETCH_ERROR);
         expect((e as AIError).customErrorData?.status).toBe(500);
@@ -305,7 +324,15 @@ describe('request methods', () => {
         json: () => Promise.resolve({ error: { message: 'extra info' } }),
       } as Response);
       try {
-        await makeRequest('models/model-name', Task.GENERATE_CONTENT, fakeApiSettings, false, '');
+        await makeRequest(
+          {
+            model: 'models/model-name',
+            task: Task.GENERATE_CONTENT,
+            apiSettings: fakeApiSettings,
+            stream: false,
+          },
+          '',
+        );
       } catch (e) {
         expect((e as AIError).code).toBe(AIErrorCode.FETCH_ERROR);
         expect((e as AIError).customErrorData?.status).toBe(500);
@@ -336,7 +363,15 @@ describe('request methods', () => {
           }),
       } as Response);
       try {
-        await makeRequest('models/model-name', Task.GENERATE_CONTENT, fakeApiSettings, false, '');
+        await makeRequest(
+          {
+            model: 'models/model-name',
+            task: Task.GENERATE_CONTENT,
+            apiSettings: fakeApiSettings,
+            stream: false,
+          },
+          '',
+        );
       } catch (e) {
         expect((e as AIError).code).toBe(AIErrorCode.FETCH_ERROR);
         expect((e as AIError).customErrorData?.status).toBe(500);
@@ -356,7 +391,15 @@ describe('request methods', () => {
     );
     const fetchMock = jest.spyOn(globalThis, 'fetch').mockResolvedValue(mockResponse as Response);
     try {
-      await makeRequest('models/model-name', Task.GENERATE_CONTENT, fakeApiSettings, false, '');
+      await makeRequest(
+        {
+          model: 'models/model-name',
+          task: Task.GENERATE_CONTENT,
+          apiSettings: fakeApiSettings,
+          stream: false,
+        },
+        '',
+      );
     } catch (e) {
       expect((e as AIError).code).toBe(AIErrorCode.API_NOT_ENABLED);
       expect((e as AIError).message).toContain('my-project');

@@ -18,6 +18,10 @@ import { isUndefined } from '@react-native-firebase/app/lib/common/validate';
 import { create } from 'superstruct';
 
 export const validateStruct = (value = {}, struct, prefix = '') => {
+  // skip superstruct create in release for performance reasons
+  if (!__DEV__) {
+    return value;
+  }
   try {
     return create(value, struct);
   } catch (e) {

@@ -412,3 +412,95 @@ export interface CountTokensResponse {
    */
   promptTokensDetails?: ModalityTokenCount[];
 }
+
+/**
+ * An incremental content update from the model.
+ *
+ * @beta
+ */
+export interface LiveServerContent {
+  type: 'serverContent';
+  /**
+   * The content that the model has generated as part of the current conversation with the user.
+   */
+  modelTurn?: Content;
+  /**
+   * Indicates whether the turn is complete. This is `undefined` if the turn is not complete.
+   */
+  turnComplete?: boolean;
+  /**
+   * Indicates whether the model was interrupted by the client. An interruption occurs when
+   * the client sends a message before the model finishes it's turn. This is `undefined` if the
+   * model was not interrupted.
+   */
+  interrupted?: boolean;
+  /**
+   * Transcription of the audio that was input to the model.
+   */
+  inputTranscription?: Transcription;
+  /**
+   * Transcription of the audio output from the model.
+   */
+  outputTranscription?: Transcription;
+}
+
+/**
+ * Transcription of audio. This can be returned from a {@link LiveGenerativeModel} if transcription
+ * is enabled with the `inputAudioTranscription` or `outputAudioTranscription` properties on
+ * the {@link LiveGenerationConfig}.
+ *
+ * @beta
+ */
+
+export interface Transcription {
+  /**
+   * The text transcription of the audio.
+   */
+  text?: string;
+}
+
+/**
+ * A request from the model for the client to execute one or more functions.
+ *
+ * @beta
+ */
+export interface LiveServerToolCall {
+  type: 'toolCall';
+  /**
+   * An array of function calls to run.
+   */
+  functionCalls: FunctionCall[];
+}
+
+/**
+ * Notification to cancel a previous function call triggered by {@link LiveServerToolCall}.
+ *
+ * @beta
+ */
+export interface LiveServerToolCallCancellation {
+  type: 'toolCallCancellation';
+  /**
+   * IDs of function calls that were cancelled. These refer to the `id` property of a {@link FunctionCall}.
+   */
+  functionIds: string[];
+}
+
+/**
+ * The types of responses that can be returned by {@link LiveSession.receive}.
+ *
+ * @beta
+ */
+export const LiveResponseType = {
+  SERVER_CONTENT: 'serverContent',
+  TOOL_CALL: 'toolCall',
+  TOOL_CALL_CANCELLATION: 'toolCallCancellation',
+};
+
+/**
+ * The types of responses that can be returned by {@link LiveSession.receive}.
+ * This is a property on all messages that can be used for type narrowing. This property is not
+ * returned by the server, it is assigned to a server message object once it's parsed.
+ *
+ * @beta
+ */
+export type LiveResponseType = (typeof LiveResponseType)[keyof typeof LiveResponseType];

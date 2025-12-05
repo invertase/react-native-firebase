@@ -65,12 +65,14 @@ describe('GenerativeModel', () => {
       .mockResolvedValue(mockResponse as Response);
     await genModel.generateContent('hello');
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'publishers/google/models/my-model',
-      request.Task.GENERATE_CONTENT,
-      expect.anything(),
-      false,
+      expect.objectContaining({
+        model: 'publishers/google/models/my-model',
+        task: request.Task.GENERATE_CONTENT,
+        apiSettings: expect.anything(),
+        stream: false,
+        requestOptions: {},
+      }),
       expect.stringMatching(new RegExp(`myfunc|be friendly|${FunctionCallingMode.NONE}`)),
-      {},
     );
     makeRequestStub.mockRestore();
   });
@@ -90,12 +92,14 @@ describe('GenerativeModel', () => {
       .mockResolvedValue(mockResponse as Response);
     await genModel.generateContent('hello');
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'publishers/google/models/my-model',
-      request.Task.GENERATE_CONTENT,
-      expect.anything(),
-      false,
+      expect.objectContaining({
+        model: 'publishers/google/models/my-model',
+        task: request.Task.GENERATE_CONTENT,
+        apiSettings: expect.anything(),
+        stream: false,
+        requestOptions: {},
+      }),
       expect.stringContaining('be friendly'),
-      {},
     );
     makeRequestStub.mockRestore();
   });
@@ -137,12 +141,14 @@ describe('GenerativeModel', () => {
       systemInstruction: { role: 'system', parts: [{ text: 'be formal' }] },
     });
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'publishers/google/models/my-model',
-      request.Task.GENERATE_CONTENT,
-      expect.anything(),
-      false,
+      expect.objectContaining({
+        model: 'publishers/google/models/my-model',
+        task: request.Task.GENERATE_CONTENT,
+        apiSettings: expect.anything(),
+        stream: false,
+        requestOptions: {},
+      }),
       expect.stringMatching(new RegExp(`be formal|otherfunc|${FunctionCallingMode.AUTO}`)),
-      {},
     );
     makeRequestStub.mockRestore();
   });
@@ -196,12 +202,14 @@ describe('GenerativeModel', () => {
       .mockResolvedValue(mockResponse as Response);
     await genModel.startChat().sendMessage('hello');
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'publishers/google/models/my-model',
-      request.Task.GENERATE_CONTENT,
-      expect.anything(),
-      false,
+      expect.objectContaining({
+        model: 'publishers/google/models/my-model',
+        task: request.Task.GENERATE_CONTENT,
+        apiSettings: expect.anything(),
+        stream: false,
+        requestOptions: {},
+      }),
       expect.stringMatching(new RegExp(`myfunc|be friendly|${FunctionCallingMode.NONE}`)),
-      {},
     );
     makeRequestStub.mockRestore();
   });
@@ -221,12 +229,14 @@ describe('GenerativeModel', () => {
       .mockResolvedValue(mockResponse as Response);
     await genModel.startChat().sendMessage('hello');
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'publishers/google/models/my-model',
-      request.Task.GENERATE_CONTENT,
-      expect.anything(),
-      false,
+      expect.objectContaining({
+        model: 'publishers/google/models/my-model',
+        task: request.Task.GENERATE_CONTENT,
+        apiSettings: expect.anything(),
+        stream: false,
+        requestOptions: {},
+      }),
       expect.stringContaining('be friendly'),
-      {},
     );
     makeRequestStub.mockRestore();
   });
@@ -262,12 +272,14 @@ describe('GenerativeModel', () => {
       })
       .sendMessage('hello');
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'publishers/google/models/my-model',
-      request.Task.GENERATE_CONTENT,
-      expect.anything(),
-      false,
+      expect.objectContaining({
+        model: 'publishers/google/models/my-model',
+        task: request.Task.GENERATE_CONTENT,
+        apiSettings: expect.anything(),
+        stream: false,
+        requestOptions: {},
+      }),
       expect.stringMatching(new RegExp(`otherfunc|be formal|${FunctionCallingMode.AUTO}`)),
-      {},
     );
     makeRequestStub.mockRestore();
   });
@@ -280,12 +292,14 @@ describe('GenerativeModel', () => {
       .mockResolvedValue(mockResponse as Response);
     await genModel.countTokens('hello');
     expect(makeRequestStub).toHaveBeenCalledWith(
-      'publishers/google/models/my-model',
-      request.Task.COUNT_TOKENS,
-      expect.anything(),
-      false,
+      expect.objectContaining({
+        model: 'publishers/google/models/my-model',
+        task: request.Task.COUNT_TOKENS,
+        apiSettings: expect.anything(),
+        stream: false,
+        requestOptions: undefined,
+      }),
       expect.stringContaining('hello'),
-      undefined,
     );
     makeRequestStub.mockRestore();
   });
