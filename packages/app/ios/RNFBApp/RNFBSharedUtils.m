@@ -195,8 +195,7 @@ static NSString *const RNFBErrorDomain = @"RNFBErrorDomain";
 
   // Helper to process a child element and add it to the parent container
   void (^processChild)(id, id, id, BOOL, NSMutableArray *) =
-      ^void(id child, id parentMutable, id keyOrNil, BOOL isParentDict,
-            NSMutableArray *stack) {
+      ^void(id child, id parentMutable, id keyOrNil, BOOL isParentDict, NSMutableArray *stack) {
         id processedValue = nil;
 
         if ([child isKindOfClass:[NSDictionary class]]) {
