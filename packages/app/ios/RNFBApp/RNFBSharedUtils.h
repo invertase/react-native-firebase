@@ -60,6 +60,8 @@ extern NSString *const DEFAULT_APP_NAME;
 
 + (BOOL)getConfigBooleanValue:(NSString *)tag key:(NSString *)key defaultValue:(BOOL)defaultValue;
 
++ (id)decodeNullSentinels:(id)value;
+
 @end
 
 #endif

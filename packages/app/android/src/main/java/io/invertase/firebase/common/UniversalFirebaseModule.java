@@ -29,7 +29,7 @@ public class UniversalFirebaseModule {
   private final Context context;
   private final String serviceName;
 
-  protected UniversalFirebaseModule(Context context, String serviceName) {
+  public UniversalFirebaseModule(Context context, String serviceName) {
     this.context = context;
     this.serviceName = serviceName;
     this.executorService = new TaskExecutorService(getName());
@@ -43,7 +43,7 @@ public class UniversalFirebaseModule {
     return getContext().getApplicationContext();
   }
 
-  protected ExecutorService getExecutor() {
+  public ExecutorService getExecutor() {
     return executorService.getExecutor();
   }
 

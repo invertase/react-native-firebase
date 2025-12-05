@@ -16,9 +16,8 @@
  */
 
 #import <Foundation/Foundation.h>
+#import "NativeRNFBTurboFunctions.h"
 
-#import <React/RCTBridgeModule.h>
-
-@interface RNFBFunctionsModule : NSObject <RCTBridgeModule>
+@interface RNFBFunctionsModule : NSObject <NativeRNFBTurboFunctionsSpec>
 
 @end

@@ -17,8 +17,26 @@
 
 import { NativeFirebaseError } from '@react-native-firebase/app/lib/internal';
 
-export default class HttpsError extends Error {
-  constructor(code, message, details, nativeErrorInstance) {
+export interface NativeError {
+  userInfo?: {
+    code?: string;
+    message?: string;
+    details?: Record<string, string>;
+  };
+  jsStack?: string;
+  message?: string;
+}
+export class HttpsError extends Error {
+  readonly code!: string;
+  readonly details!: Record<string, string> | null;
+  readonly message!: string;
+
+  constructor(
+    code: string,
+    message?: string,
+    details?: Record<string, string> | null,
+    nativeErrorInstance?: NativeError,
+  ) {
     super(message);
 
     Object.defineProperty(this, 'code', {
@@ -37,8 +55,8 @@ export default class HttpsError extends Error {
     });
 
     this.stack = NativeFirebaseError.getStackWithMessage(
-      `Error: ${this.message}`,
-      nativeErrorInstance.jsStack,
+      `Error: ${message}`,
+      nativeErrorInstance?.jsStack,
     );
   }
 }
