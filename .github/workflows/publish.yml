@@ -54,13 +54,13 @@ jobs:
             echo "No changes detected, no versions bumped."
           fi
           echo "Syncing unpublished versions with package registry..."
-          yarn lerna publish from-package --yes --loglevel trace
+          # You do have to clear it from the actions/setup-node default value though,
+          # or publishing will fail, see: https://github.com/actions/setup-node/issues/1440
+          NODE_AUTH_TOKEN="" yarn lerna publish from-package --yes --loglevel trace
         env:
           # No NPM token needed, all of the packages have been configured
           # on npmjs.com with this workflow file as an OIDC "Trusted Publisher"
-          # You do have to clear it from the actions/setup-node default value though,
-          # or publishing will fail, see: https://github.com/actions/setup-node/issues/1440
-          NODE_AUTH_TOKEN: ""
+          #
           # org admin Github Token required for the changelog/tag commit+push
           # to work via an exception to branch protection rules
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
