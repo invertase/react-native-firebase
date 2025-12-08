@@ -2,9 +2,6 @@ name: Publish
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 jobs:
   publish_npm:
@@ -14,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write # enables OIDC for npmjs.com "Trusted Publisher" and provenance
+      contents: read
     steps:
       - uses: actions/checkout@v4
         with:
@@ -24,7 +22,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Install latest NPM  
+      - name: Install latest NPM
+        # OIDC publishing requires a very up to date npm version
         run: |
           npm --version
           npm install -g npm@latest
@@ -43,9 +42,17 @@ jobs:
           git config --global user.email 'oss@invertase.io'
       - name: Publish Packages
         run: |
+          npx envinfo
+          echo "Verifying working directory is clean..."
           git diff --exit-code
-          yarn lerna changed
-          yarn lerna version --yes --force-publish=*
+          echo "Displaying any current changes..."
+          if yarn lerna changed; then
+            echo "Changes detected, bumping versions..."
+            yarn lerna version --yes --force-publish=*
+          else
+            echo "No changes detected, no versions bumped."
+          fi
+          echo "Syncing unpublished versions with package registry..."
           yarn lerna publish from-package --yes --loglevel trace
         env:
           # No NPM token needed, all of the packages have been configured
