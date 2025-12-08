@@ -279,8 +279,21 @@ describe('validatePassword (modular API)', () => {
     validatePassword = modular.validatePassword;
 
     mockAuth = {
+      app: { name: '[DEFAULT]', options: { apiKey: 'test-api-key' } },
       validatePassword: jest.fn(),
     };
+  });
+
+  it('should throw error for undefined auth', async () => {
+    await expect(validatePassword(undefined, 'Password123$')).rejects.toThrow(
+      "firebase.auth().validatePassword(*) 'auth' must be a valid Auth instance with an 'app' property",
+    );
+  });
+
+  it('should throw error for auth without app property', async () => {
+    await expect(validatePassword({}, 'Password123$')).rejects.toThrow(
+      "firebase.auth().validatePassword(*) 'auth' must be a valid Auth instance with an 'app' property",
+    );
   });
 
   it('should throw error for null password', async () => {

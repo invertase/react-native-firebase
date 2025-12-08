@@ -635,6 +635,12 @@ export function getCustomAuthDomain(auth) {
  * @returns {Promise<PasswordValidationStatus>}
  */
 export async function validatePassword(auth, password) {
+  if (!auth || !auth.app) {
+    throw new Error(
+      "firebase.auth().validatePassword(*) 'auth' must be a valid Auth instance with an 'app' property. Received: undefined",
+    );
+  }
+
   if (password === null || password === undefined) {
     throw new Error(
       "firebase.auth().validatePassword(*) expected 'password' to be a non-null or a defined value.",
