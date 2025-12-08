@@ -13,13 +13,11 @@ jobs:
       id-token: write # enables OIDC for npmjs.com "Trusted Publisher" and provenance
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: 'main'
           fetch-depth: 0
-          # Repository admin required to evade PR+checks branch protection
-          token: ${{ secrets.GH_TOKEN }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: lts/*
           registry-url: 'https://registry.npmjs.org'
@@ -58,4 +56,8 @@ jobs:
         env:
           # No NPM token needed, all of the packages have been configured
           # on npmjs.com with this workflow file as an OIDC "Trusted Publisher"
+          # However as of 20251208 we still need an NPM token as OIDC failing...
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # org admin Github Token required for the changelog/tag commit+push
+          # to work via an exception to branch protection rules
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
