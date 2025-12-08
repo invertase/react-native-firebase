@@ -22,6 +22,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: lts/*
+          registry-url: 'https://registry.npmjs.org'
       - name: Install latest NPM
         # OIDC publishing requires a very up to date npm version
         run: |
