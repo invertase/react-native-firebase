@@ -15,8 +15,14 @@ declare module '@react-native-firebase/app/lib/common' {
 declare module '@react-native-firebase/app/lib/common/unitTestUtils' {
   export const getFirebaseApp: () => any;
   export const getMockNativeModule: (name: string) => any;
-  export function createCheckV9Deprecation(moduleName: string): CheckV9DeprecationFunction;
-  export type CheckV9DeprecationFunction = (methodName: string) => void;
+  export function createCheckV9Deprecation(moduleNames: string[]): CheckV9DeprecationFunction;
+  export type CheckV9DeprecationFunction = (
+    modularFunction: () => void,
+    nonModularFunction: () => void,
+    methodNameKey: string,
+    uniqueMessage?: string | null,
+    ignoreFirebaseAppDeprecationWarning?: boolean,
+  ) => void;
 }
 
 declare module '@react-native-firebase/app/lib/common/validate' {
