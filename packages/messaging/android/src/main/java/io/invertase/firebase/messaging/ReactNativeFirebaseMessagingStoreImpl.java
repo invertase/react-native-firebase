@@ -12,6 +12,8 @@ import com.google.firebase.messaging.RemoteMessage;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,35 +25,37 @@ import io.invertase.firebase.common.UniversalFirebasePreferences;
 
 public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebaseMessagingStore {
 
-  private static final String KEY_MAX_STORED_NOTIFICATIONS = "rn_firebase_messaging_max_stored_notifications";
+  private static final String TAG = "RNFirebaseMsgStore";
+  private static final String KEY_MAX_STORED_NOTIFICATIONS = "messaging_max_stored_notifications";
   private static final String S_KEY_ALL_NOTIFICATION_IDS = "all_notification_ids";
   private final String DELIMITER = ",";
   private static final int DEFAULT_MAX_SIZE_NOTIFICATIONS = 100;
-  private static final int MIN_SIZE_NOTIFICATIONS = 20;
   private static final int maxNotificationSize = resolveMaxNotificationSize();
 
   private static int resolveMaxNotificationSize() {
     int maxSize = DEFAULT_MAX_SIZE_NOTIFICATIONS;
+    String source = "default";
     ReactNativeFirebaseJSON json = ReactNativeFirebaseJSON.getSharedInstance();
     ReactNativeFirebaseMeta meta = ReactNativeFirebaseMeta.getSharedInstance();
     ReactNativeFirebasePreferences prefs = ReactNativeFirebasePreferences.getSharedInstance();
 
     try {
       // Priority: SharedPreferences -> firebase.json -> AndroidManifest
-      // Note: ReactNativeFirebaseMeta doesn't have getIntValue, so we check meta.contains
-      // and read from AndroidManifest directly if needed
       if (prefs.contains(KEY_MAX_STORED_NOTIFICATIONS)) {
         maxSize = prefs.getIntValue(KEY_MAX_STORED_NOTIFICATIONS, DEFAULT_MAX_SIZE_NOTIFICATIONS);
+        source = "SharedPreferences";
       } else if (json.contains(KEY_MAX_STORED_NOTIFICATIONS)) {
         maxSize = json.getIntValue(KEY_MAX_STORED_NOTIFICATIONS, DEFAULT_MAX_SIZE_NOTIFICATIONS);
+        source = "firebase.json";
       } else if (meta.contains(KEY_MAX_STORED_NOTIFICATIONS)) {
         maxSize = meta.getIntValue(KEY_MAX_STORED_NOTIFICATIONS, DEFAULT_MAX_SIZE_NOTIFICATIONS);
+        source = "AndroidManifest";
       }
 
-      // Clamp to allowed range to avoid OOM (upper) or mass deletions (lower)
-      return Math.max(MIN_SIZE_NOTIFICATIONS, Math.min(maxSize, DEFAULT_MAX_SIZE_NOTIFICATIONS));
+      Log.d(TAG, "messaging_max_stored_notifications: " + maxSize + " (from " + source + ")");
+      return maxSize;
     } catch (Exception e) {
-      // Ignore and use default
+      Log.w(TAG, "Error resolving max notification size, using default: " + DEFAULT_MAX_SIZE_NOTIFICATIONS, e);
       return DEFAULT_MAX_SIZE_NOTIFICATIONS;
     }
   }
