@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.6.0](https://github.com/invertase/react-native-firebase/compare/v23.5.0...v23.6.0) (2025-12-08)
+
+### Performance Improvements
+
+- **analytics:** skip validateStruct in release mode ([#8716](https://github.com/invertase/react-native-firebase/issues/8716)) ([2b7bbb1](https://github.com/invertase/react-native-firebase/commit/2b7bbb1a4d7d53dca289fcd24eb7010a82fe0eae))
+
 ## [23.5.0](https://github.com/invertase/react-native-firebase/compare/v23.4.1...v23.5.0) (2025-10-30)
 
 **Note:** Version bump only for package @react-native-firebase/analytics

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.6.0](https://github.com/invertase/react-native-firebase/compare/v23.5.0...v23.6.0) (2025-12-08)
+
+### Bug Fixes
+
+- **firestore:** remove inequality filter with orderBy limitation ([b388022](https://github.com/invertase/react-native-firebase/commit/b38802203086d30f5bb98e76892e5023e02b010e))
+- **firestore:** set firestore client language attribution to react-native ([4fa5141](https://github.com/invertase/react-native-firebase/commit/4fa5141be0049941de2fbe35d2569624f7b884d1))
+
 ## [23.5.0](https://github.com/invertase/react-native-firebase/compare/v23.4.1...v23.5.0) (2025-10-30)
 
 **Note:** Version bump only for package @react-native-firebase/firestore
