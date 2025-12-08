@@ -18,6 +18,17 @@
       android:name="firebase_crashlytics_ndk_enabled"
       android:value="${firebaseJsonCrashlyticsNdkEnabled}" />
     
+    <!-- GWP-ASan mode - 'default', 'never', or 'always' -->
+    <!-- Example (in Firebase.json): {
+        "react-native": {
+          "crashlytics_gwp_asan_mode": "default"
+        }
+      }
+    -->
+    <meta-data
+      android:name="com.google.firebase.crashlytics.ndk.gwp_asan_mode"
+      android:value="${firebaseJsonCrashlyticsGwpAsanMode}" />
+    
     <provider
       android:name="io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsInitProvider"
       android:authorities="${applicationId}.reactnativefirebasecrashlyticsinitprovider"

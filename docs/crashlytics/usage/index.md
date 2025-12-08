@@ -213,20 +213,46 @@ Because you have stack traces readily available while you're debugging your app,
 ## Crashlytics NDK
 
 React Native Firebase supports [Crashlytics NDK](https://firebase.google.com/docs/crashlytics/ndk-reports) reporting
-which is enabled by default but will require a change as described in that link to enable symbol upload.
+which allows Crashlytics to capture crashes originating from the Yoga layout engine used by React Native.
 
-This allows Crashlytics to capture crashes originating from the Yoga layout engine used by React Native.
+**Note:** NDK reporting is disabled by default due to memory usage concerns. 
 
-You can disable Crashlytics NDK in your `firebase.json` config.
+### Enable NDK Reporting
+
+To enable NDK crash reporting, add the following to your `firebase.json`:
 
 ```json
 // <project-root>/firebase.json
 {
   "react-native": {
-    "crashlytics_ndk_enabled": false
+    "crashlytics_ndk_enabled": true
   }
 }
 ```
+
+When enabled, React Native Firebase will automatically:
+- Enable NDK crash reporting in your Android app
+- Configure automatic native symbol upload for all release build variants
+
+For more details on Android setup, see the [Android Setup](/crashlytics/android-setup) documentation.
+
+### Configure GWP-ASan
+
+[GWP-ASan](https://developer.android.com/ndk/guides/gwp-asan) (GWP-AddressSanitizer) is a native memory allocator feature that helps detect heap memory errors. You can configure its behavior:
+
+```json
+// <project-root>/firebase.json
+{
+  "react-native": {
+    "crashlytics_gwp_asan_mode": "default"
+  }
+}
+```
+
+Available values:
+- `"default"` - System-determined (recommended for production)
+- `"never"` - Disable GWP-ASan completely
+- `"always"` - Enable on all devices (for testing only)
 
 ## Crashlytics Javascript stacktrace issue generation
 
