@@ -219,6 +219,7 @@ jobs:
           target: ${{ matrix.target }}
           disable-spellchecker: true
           arch: ${{ matrix.arch }}
+          emulator-build: 14214601  # needed as of 20251205 when emulator 36.3.10.0 (build_id 14472402) released
           pre-emulator-launch-script: |
             sudo mkdir /mnt/avd
             sudo chown $USER:$USER /mnt/avd
