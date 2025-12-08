@@ -11,8 +11,7 @@ export type OnDisconnect = FirebaseDatabaseTypes.OnDisconnect;
  * as the write to the backend completes.
  */
 export interface ThenableReference
-  extends DatabaseReference,
-    Pick<Promise<DatabaseReference>, 'then' | 'catch'> {}
+  extends DatabaseReference, Pick<Promise<DatabaseReference>, 'then' | 'catch'> {}
 
 export type Unsubscribe = () => void;
 
