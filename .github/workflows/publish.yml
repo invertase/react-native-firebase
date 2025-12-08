@@ -24,6 +24,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Install latest NPM  
+        run: |
+          npm --version
+          npm install -g npm@latest
+          npm --version
       - name: Yarn Install
         uses: nick-fields/retry@v3
         with:
