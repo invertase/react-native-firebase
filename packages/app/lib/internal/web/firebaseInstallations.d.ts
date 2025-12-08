@@ -38,7 +38,7 @@ export function getId(installations: Installations): Promise<string>;
 export function onIdChange(
   installations: Installations,
   observer: (installationId: string) => void,
-  onError?: (error: Error) => void
+  onError?: (error: Error) => void,
 ): Unsubscribe;
 
 // makeIDBAvailable function - makes IndexedDB available in environments that don't have it
