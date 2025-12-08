@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.7.0](https://github.com/invertase/react-native-firebase/compare/v23.6.0...v23.7.0) (2025-12-08)
+
+### Features
+
+- **auth:** cache password policy per-app in validatePassword ([cc29117](https://github.com/invertase/react-native-firebase/commit/cc291171e076d00dfde1fef9d03242379e567af4))
+
 ## [23.6.0](https://github.com/invertase/react-native-firebase/compare/v23.5.0...v23.6.0) (2025-12-08)
 
 ### Features
