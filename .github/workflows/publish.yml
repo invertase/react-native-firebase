@@ -22,7 +22,6 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: lts/*
-          registry-url: 'https://registry.npmjs.org'
       - name: Install latest NPM
         # OIDC publishing requires a very up to date npm version
         run: |
@@ -43,9 +42,6 @@ jobs:
           git config --global user.email 'oss@invertase.io'
       - name: Publish Packages
         run: |
-          # Clear NPM token from actions/setup-node default value,
-          # or token-less OIDC publishing will fail, see: https://github.com/actions/setup-node/issues/1440
-          unset NODE_AUTH_TOKEN
           npx envinfo
           echo "Verifying working directory is clean..."
           git diff --exit-code
