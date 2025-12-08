@@ -90,6 +90,8 @@ public class ReactNativeFirebaseMeta {
           map.putString(key, (String) value);
         } else if (value instanceof Boolean) {
           map.putBoolean(key, (Boolean) value);
+        } else if (value instanceof Integer) {
+          map.putInt(key, (Integer) value);
         }
       }
     }
