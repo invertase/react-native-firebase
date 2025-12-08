@@ -21,5 +21,6 @@
     "firebase-tools": "^14.27.0",
     "typescript": "^5.9.3"
   },
-  "private": true
+  "private": true,
+  "packageManager": "yarn@4.12.0"
 }
