@@ -1,6 +1,5 @@
-import defaultExport from './namespaced';
-
 export * from './modular';
 export * from './namespaced';
+export * from './types/analytics';
 
-export default defaultExport;
+export { default } from './namespaced';
