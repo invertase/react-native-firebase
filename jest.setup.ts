@@ -39,6 +39,20 @@ jest.doMock('react-native', () => {
         ...ReactNative.NativeModules,
         RNFBAnalyticsModule: {
           logEvent: jest.fn(),
+          setAnalyticsCollectionEnabled: jest.fn(),
+          setSessionTimeoutDuration: jest.fn(),
+          getAppInstanceId: jest.fn(),
+          getSessionId: jest.fn(),
+          setUserId: jest.fn(),
+          setUserProperty: jest.fn(),
+          setUserProperties: jest.fn(),
+          resetAnalyticsData: jest.fn(),
+          setConsent: jest.fn(),
+          setDefaultEventParameters: jest.fn(),
+          initiateOnDeviceConversionMeasurementWithEmailAddress: jest.fn(),
+          initiateOnDeviceConversionMeasurementWithHashedEmailAddress: jest.fn(),
+          initiateOnDeviceConversionMeasurementWithPhoneNumber: jest.fn(),
+          initiateOnDeviceConversionMeasurementWithHashedPhoneNumber: jest.fn(),
         },
         RNFBAppModule: {
           NATIVE_FIREBASE_APPS: [
