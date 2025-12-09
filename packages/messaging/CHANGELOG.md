@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.7.0](https://github.com/invertase/react-native-firebase/compare/v23.6.0...v23.7.0) (2025-12-08)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+## [23.6.0](https://github.com/invertase/react-native-firebase/compare/v23.5.0...v23.6.0) (2025-12-08)
+
+### Bug Fixes
+
+- **messaging, android:** properly remove remote message from prefs ([336901b](https://github.com/invertase/react-native-firebase/commit/336901b00f0553f57fa18ce416f513f915c9a8ed))
+- **messaging, android:** properly shrink stored messages to limit ([53fb8c8](https://github.com/invertase/react-native-firebase/commit/53fb8c86e0ab2559a69c1309e7a1c9afec4bcb1f))
+- **messaging, android:** purge message store to limit first, add second ([47ea774](https://github.com/invertase/react-native-firebase/commit/47ea774e2830c0ef3e95c06acfb3960a3ae0bc74))
+
 ## [23.5.0](https://github.com/invertase/react-native-firebase/compare/v23.4.1...v23.5.0) (2025-10-30)
 
 **Note:** Version bump only for package @react-native-firebase/messaging

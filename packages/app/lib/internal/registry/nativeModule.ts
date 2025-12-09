@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-
 import { APP_NATIVE_MODULE } from '../constants';
 import NativeFirebaseError, { type NativeError } from '../NativeFirebaseError';
 import RNFBNativeEventEmitter from '../RNFBNativeEventEmitter';
@@ -23,6 +22,7 @@ import { getReactNativeModule } from '../nativeModule';
 import { isAndroid, isIOS } from '../../common';
 import FirebaseModule from '../FirebaseModule';
 import type { WrappedNativeModule, RNFBAppModuleInterface } from '../NativeModules';
+import { encodeNullValues } from '../nullSerialization';
 
 interface NativeEvent {
   appName?: string;
@@ -50,9 +50,15 @@ function nativeModuleMethodWrapped(
   namespace: string,
   method: (...args: unknown[]) => unknown,
   argToPrepend: unknown[],
+  isTurboModule: boolean,
 ): (...args: unknown[]) => unknown {
   return (...args: unknown[]) => {
-    const possiblePromise = method(...[...argToPrepend, ...args]);
+    // For iOS TurboModules, encode null values in arguments to work around
+    // the limitation where null values in object properties get stripped during serialization
+    // See: https://github.com/facebook/react-native/issues/52802
+    const processedArgs = isIOS && isTurboModule ? args.map(arg => encodeNullValues(arg)) : args;
+    const allArgs = [...argToPrepend, ...processedArgs];
+    const possiblePromise = method(...allArgs);
 
     if (possiblePromise && typeof possiblePromise === 'object' && 'then' in possiblePromise) {
       const jsStack = new Error().stack;
@@ -76,6 +82,7 @@ function nativeModuleWrapped(
   namespace: string,
   NativeModule: Record<string, unknown> | undefined,
   argToPrepend: unknown[],
+  isTurboModule: boolean,
 ): WrappedNativeModule {
   const native: Record<string, unknown> = {};
   if (!NativeModule) {
@@ -94,6 +101,7 @@ function nativeModuleWrapped(
         namespace,
         nativeModuleObj[property] as (...args: unknown[]) => unknown,
         argToPrepend,
+        isTurboModule,
       );
     } else {
       native[property] = nativeModuleObj[property];
@@ -119,8 +127,10 @@ function initialiseNativeModule(module: FirebaseModule): WrappedNativeModule {
     hasMultiAppSupport,
     hasCustomUrlOrRegionSupport,
     disablePrependCustomUrlOrRegion,
+    turboModule,
   } = config;
   const multiModuleRoot: WrappedNativeModule = {};
+  const isTurboModule = !!turboModule;
   const multiModule = Array.isArray(nativeModuleName);
   const nativeModuleNames = multiModule
     ? nativeModuleName
@@ -154,7 +164,10 @@ function initialiseNativeModule(module: FirebaseModule): WrappedNativeModule {
       argToPrepend.push(module._customUrlOrRegion as string);
     }
 
-    Object.assign(multiModuleRoot, nativeModuleWrapped(namespace, nativeModule, argToPrepend));
+    Object.assign(
+      multiModuleRoot,
+      nativeModuleWrapped(namespace, nativeModule, argToPrepend, isTurboModule),
+    );
   }
 
   if (nativeEvents && Array.isArray(nativeEvents) && nativeEvents.length) {
@@ -260,7 +273,13 @@ export function getAppModule(): RNFBAppModuleInterface {
     throw new Error(getMissingModuleHelpText(namespace));
   }
 
-  NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE] = nativeModuleWrapped(namespace, nativeModule, []);
+  NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE] = nativeModuleWrapped(
+    namespace,
+    nativeModule,
+    [],
+    // TODO: change to true when we use TurboModules for app package
+    false,
+  );
 
   return NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE] as unknown as RNFBAppModuleInterface;
 }

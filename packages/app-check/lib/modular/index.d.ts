@@ -103,8 +103,7 @@ export interface ReactNativeFirebaseAppCheckProviderOptions {
   debugToken?: string;
 }
 
-export interface ReactNativeFirebaseAppCheckProviderWebOptions
-  extends ReactNativeFirebaseAppCheckProviderOptions {
+export interface ReactNativeFirebaseAppCheckProviderWebOptions extends ReactNativeFirebaseAppCheckProviderOptions {
   /**
    * The web provider to use, either `reCaptchaV3` or `reCaptchaEnterprise`, defaults to `reCaptchaV3`
    */
@@ -116,8 +115,7 @@ export interface ReactNativeFirebaseAppCheckProviderWebOptions
   siteKey?: string;
 }
 
-export interface ReactNativeFirebaseAppCheckProviderAppleOptions
-  extends ReactNativeFirebaseAppCheckProviderOptions {
+export interface ReactNativeFirebaseAppCheckProviderAppleOptions extends ReactNativeFirebaseAppCheckProviderOptions {
   /**
    * The apple provider to use, either `deviceCheck` or `appAttest`, or `appAttestWithDeviceCheckFallback`,
    * defaults to `DeviceCheck`. `appAttest` requires iOS 14+ or will fail, `appAttestWithDeviceCheckFallback`
@@ -126,8 +124,7 @@ export interface ReactNativeFirebaseAppCheckProviderAppleOptions
   provider?: 'debug' | 'deviceCheck' | 'appAttest' | 'appAttestWithDeviceCheckFallback';
 }
 
-export interface ReactNativeFirebaseAppCheckProviderAndroidOptions
-  extends ReactNativeFirebaseAppCheckProviderOptions {
+export interface ReactNativeFirebaseAppCheckProviderAndroidOptions extends ReactNativeFirebaseAppCheckProviderOptions {
   /**
    * The android provider to use, either `debug` or `playIntegrity`. default is `playIntegrity`.
    */

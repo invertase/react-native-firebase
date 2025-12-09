@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.7.0](https://github.com/invertase/react-native-firebase/compare/v23.6.0...v23.7.0) (2025-12-08)
+
+### Features
+
+- **auth:** cache password policy per-app in validatePassword ([cc29117](https://github.com/invertase/react-native-firebase/commit/cc291171e076d00dfde1fef9d03242379e567af4))
+
+## [23.6.0](https://github.com/invertase/react-native-firebase/compare/v23.5.0...v23.6.0) (2025-12-08)
+
+### Features
+
+- **ai:** firebase-js-sdk parity: template models and live API ([6572aa5](https://github.com/invertase/react-native-firebase/commit/6572aa5e06707ef47fad734b48c17da5d1ee943d))
+- **app, ios:** adopt firebase-ios-sdk 12.5.0 ([acc665c](https://github.com/invertase/react-native-firebase/commit/acc665ced443e0d245f30b54eb85e72bcc3d7bd2))
+
+### Bug Fixes
+
+- **app-distribution, android:** adopt beta17 of the native deps ([7b933c2](https://github.com/invertase/react-native-firebase/commit/7b933c2c21f624e1dc62e549e896230f222351c8))
+- **auth, ios:** append openURL changes only once in Expo plugin ([#8763](https://github.com/invertase/react-native-firebase/issues/8763)) ([5f74256](https://github.com/invertase/react-native-firebase/commit/5f74256d2b470456206a3655ff6986198d016790))
+- firebase-ios-sdk 12.6.0 / firebase-js-sdk 12.6.0 / firebase-android-sdk 34.6.0 ([dacdfa2](https://github.com/invertase/react-native-firebase/commit/dacdfa2b5961259c93ea948472be4b51ac78b1c5))
+- **firestore:** remove inequality filter with orderBy limitation ([b388022](https://github.com/invertase/react-native-firebase/commit/b38802203086d30f5bb98e76892e5023e02b010e))
+- **firestore:** set firestore client language attribution to react-native ([4fa5141](https://github.com/invertase/react-native-firebase/commit/4fa5141be0049941de2fbe35d2569624f7b884d1))
+- **messaging, android:** properly remove remote message from prefs ([336901b](https://github.com/invertase/react-native-firebase/commit/336901b00f0553f57fa18ce416f513f915c9a8ed))
+- **messaging, android:** properly shrink stored messages to limit ([53fb8c8](https://github.com/invertase/react-native-firebase/commit/53fb8c86e0ab2559a69c1309e7a1c9afec4bcb1f))
+- **messaging, android:** purge message store to limit first, add second ([47ea774](https://github.com/invertase/react-native-firebase/commit/47ea774e2830c0ef3e95c06acfb3960a3ae0bc74))
+
+### Performance Improvements
+
+- **analytics:** skip validateStruct in release mode ([#8716](https://github.com/invertase/react-native-firebase/issues/8716)) ([2b7bbb1](https://github.com/invertase/react-native-firebase/commit/2b7bbb1a4d7d53dca289fcd24eb7010a82fe0eae))
+
 ## [23.5.0](https://github.com/invertase/react-native-firebase/compare/v23.4.1...v23.5.0) (2025-10-30)
 
 ### Features

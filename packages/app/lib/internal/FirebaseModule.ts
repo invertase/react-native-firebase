@@ -36,6 +36,7 @@ export interface ModuleConfig {
   hasCustomUrlOrRegionSupport?: boolean;
   nativeEvents?: boolean | string[];
   disablePrependCustomUrlOrRegion?: boolean;
+  turboModule?: boolean;
 }
 
 export default class FirebaseModule<

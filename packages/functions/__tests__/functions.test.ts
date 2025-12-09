@@ -1,20 +1,26 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
 
-import functions, {
+import {
   firebase,
   getFunctions,
   connectFunctionsEmulator,
   httpsCallable,
   httpsCallableFromUrl,
   HttpsErrorCode,
+  type HttpsCallableOptions,
+  type HttpsCallable as HttpsCallableType,
+  type FunctionsModule,
+  type Functions,
+  type FirebaseApp,
 } from '../lib';
 
+import functions from '../lib/namespaced';
 import {
   createCheckV9Deprecation,
-  CheckV9DeprecationFunction,
+  type CheckV9DeprecationFunction,
 } from '../../app/lib/common/unitTestUtils';
 
-import { getApp } from '../../app';
+import { getApp } from '@react-native-firebase/app';
 
 // @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
@@ -94,6 +100,44 @@ describe('Cloud Functions', function () {
     it('`HttpsErrorCode` function is properly exposed to end user', function () {
       expect(HttpsErrorCode).toBeDefined();
     });
+
+    describe('types', function () {
+      it('`HttpsCallableOptions` type is properly exposed to end user', function () {
+        const options: HttpsCallableOptions = { timeout: 5000 };
+        expect(options).toBeDefined();
+        expect(options.timeout).toBe(5000);
+      });
+
+      it('`HttpsCallable` type is properly exposed to end user', function () {
+        // Type check - this will fail at compile time if type is not exported
+        const callable: HttpsCallableType<{ test: string }, { result: number }> = async () => {
+          return { data: { result: 42 } };
+        };
+        expect(callable).toBeDefined();
+      });
+
+      it('`FunctionsModule` type is properly exposed to end user', function () {
+        const functionsInstance: FunctionsModule = (
+          firebase.app() as unknown as FirebaseApp
+        ).functions();
+        expect(functionsInstance).toBeDefined();
+        expect(functionsInstance.httpsCallable).toBeDefined();
+        expect(functionsInstance.httpsCallableFromUrl).toBeDefined();
+        expect(functionsInstance.useFunctionsEmulator).toBeDefined();
+        expect(functionsInstance.useEmulator).toBeDefined();
+      });
+
+      it('`Functions` type is properly exposed to end user', function () {
+        const functionsInstance: Functions = (firebase.app() as unknown as FirebaseApp).functions();
+        expect(functionsInstance).toBeDefined();
+      });
+
+      it('`FirebaseApp` type is properly exposed to end user', function () {
+        const app = firebase.app() as unknown as FirebaseApp;
+        expect(app).toBeDefined();
+        expect(app.functions).toBeDefined();
+      });
+    });
   });
 
   describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
@@ -122,8 +166,7 @@ describe('Cloud Functions', function () {
 
     describe('Cloud Functions', function () {
       it('useFunctionsEmulator()', function () {
-        const app = getApp();
-        const functions = app.functions();
+        const functions = (getApp() as unknown as FirebaseApp).functions();
         functionsRefV9Deprecation(
           () => connectFunctionsEmulator(functions, 'localhost', 8080),
           () => functions.useEmulator('localhost', 8080),
@@ -132,8 +175,7 @@ describe('Cloud Functions', function () {
       });
 
       it('httpsCallable()', function () {
-        const app = getApp();
-        const functions = app.functions();
+        const functions = (getApp() as unknown as FirebaseApp).functions();
         functionsRefV9Deprecation(
           () => httpsCallable(functions, 'example'),
           () => functions.httpsCallable('example'),
@@ -142,8 +184,7 @@ describe('Cloud Functions', function () {
       });
 
       it('httpsCallableFromUrl()', function () {
-        const app = getApp();
-        const functions = app.functions();
+        const functions = (getApp() as unknown as FirebaseApp).functions();
         functionsRefV9Deprecation(
           () => httpsCallableFromUrl(functions, 'https://example.com/example'),
           () => functions.httpsCallableFromUrl('https://example.com/example'),

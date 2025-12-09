@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.7.0](https://github.com/invertase/react-native-firebase/compare/v23.6.0...v23.7.0) (2025-12-08)
+
+**Note:** Version bump only for package @react-native-firebase/app
+
+## [23.6.0](https://github.com/invertase/react-native-firebase/compare/v23.5.0...v23.6.0) (2025-12-08)
+
+### Features
+
+- **app, ios:** adopt firebase-ios-sdk 12.5.0 ([acc665c](https://github.com/invertase/react-native-firebase/commit/acc665ced443e0d245f30b54eb85e72bcc3d7bd2))
+
+### Bug Fixes
+
+- firebase-ios-sdk 12.6.0 / firebase-js-sdk 12.6.0 / firebase-android-sdk 34.6.0 ([dacdfa2](https://github.com/invertase/react-native-firebase/commit/dacdfa2b5961259c93ea948472be4b51ac78b1c5))
+- **messaging, android:** properly remove remote message from prefs ([336901b](https://github.com/invertase/react-native-firebase/commit/336901b00f0553f57fa18ce416f513f915c9a8ed))
+
 ## [23.5.0](https://github.com/invertase/react-native-firebase/compare/v23.4.1...v23.5.0) (2025-10-30)
 
 ### Bug Fixes

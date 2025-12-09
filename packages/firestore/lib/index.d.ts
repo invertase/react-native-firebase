@@ -599,8 +599,9 @@ export namespace FirebaseFirestoreTypes {
    * A QueryDocumentSnapshot offers the same API surface as a DocumentSnapshot.
    * Since query results contain only existing documents, the exists() method will always be true and data() will never return 'undefined'.
    */
-  export interface QueryDocumentSnapshot<T extends DocumentData = DocumentData>
-    extends DocumentSnapshot<T> {
+  export interface QueryDocumentSnapshot<
+    T extends DocumentData = DocumentData,
+  > extends DocumentSnapshot<T> {
     /**
      * A QueryDocumentSnapshot is always guaranteed to exist.
      */
