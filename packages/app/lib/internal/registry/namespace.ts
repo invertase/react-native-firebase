@@ -268,7 +268,7 @@ export function firebaseAppModuleProxy(app: FirebaseApp, moduleNamespace: string
  * @returns {*}
  */
 export function createFirebaseRoot(): FirebaseRoot {
-  FIREBASE_ROOT = {
+  const root: FirebaseRoot = {
     initializeApp,
     setReactNativeAsyncStorage,
     get app() {
@@ -284,14 +284,15 @@ export function createFirebaseRoot(): FirebaseRoot {
   for (let i = 0; i < KNOWN_NAMESPACES.length; i++) {
     const namespace = KNOWN_NAMESPACES[i];
     if (namespace) {
-      Object.defineProperty(FIREBASE_ROOT, namespace, {
+      Object.defineProperty(root, namespace, {
         enumerable: false,
-        get: firebaseRootModuleProxy.bind(null, FIREBASE_ROOT, namespace),
+        get: firebaseRootModuleProxy.bind(null, root, namespace),
       });
     }
   }
 
-  return FIREBASE_ROOT;
+  FIREBASE_ROOT = root;
+  return root;
 }
 
 /**
