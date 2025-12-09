@@ -75,6 +75,8 @@ const statics = {
   HttpsErrorCode,
 };
 
+const nativeEvents = ['functions_streaming_event'];
+
 // Export the complete FirebaseFunctionsTypes namespace
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace FirebaseFunctionsTypes {
@@ -155,12 +157,25 @@ class FirebaseFunctionsModule extends FirebaseModule {
   _customUrlOrRegion: string;
   private _useFunctionsEmulatorHost: string | null;
   private _useFunctionsEmulatorPort: number;
+  private _id_functions_streaming_event: number;
+  
   // TODO: config is app package (FirebaseModule) object to be typed in the future
   constructor(app: FirebaseApp, config: any, customUrlOrRegion: string | null) {
     super(app, config, customUrlOrRegion);
     this._customUrlOrRegion = customUrlOrRegion || 'us-central1';
     this._useFunctionsEmulatorHost = null;
     this._useFunctionsEmulatorPort = -1;
+    this._id_functions_streaming_event = 0;
+
+    // @ts-ignore - emitter and eventNameForApp exist on FirebaseModule
+    this.emitter.addListener(this.eventNameForApp('functions_streaming_event'), (event: { listenerId: any; }) => {
+      // @ts-ignore
+      this.emitter.emit(
+        // @ts-ignore
+        this.eventNameForApp(`functions_streaming_event:${event.listenerId}`),
+        event,
+      );
+    });
   }
 
   httpsCallable(name: string, options: HttpsCallableOptions = {}) {
@@ -172,7 +187,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
       }
     }
 
-    return (data?: any) => {
+    const callableFunction: any = (data?: any) => {
       const nativePromise = this.native.httpsCallable(
         this._useFunctionsEmulatorHost,
         this._useFunctionsEmulatorPort,
@@ -194,6 +209,56 @@ class FirebaseFunctionsModule extends FirebaseModule {
         );
       });
     };
+
+    // Add a streaming helper (callback-based)
+    // Usage: const stop = functions().httpsCallable('fn').stream(data, (evt) => {...}, options)
+    callableFunction.stream = (data?: any, onEvent?: (event: any) => void, streamOptions: HttpsCallableOptions = {}) => {
+      if (streamOptions.timeout) {
+        if (isNumber(streamOptions.timeout)) {
+          streamOptions.timeout = streamOptions.timeout / 1000;
+        } else {
+          throw new Error('HttpsCallableOptions.timeout expected a Number in milliseconds');
+        }
+      }
+
+      const listenerId = this._id_functions_streaming_event++;
+      // @ts-ignore
+      const eventName = this.eventNameForApp(`functions_streaming_event:${listenerId}`);
+
+      // @ts-ignore
+      const subscription = this.emitter.addListener(eventName, (event: any) => {
+        const body = event.body;
+        if (onEvent) {
+          onEvent(body);
+        }
+        if (body && (body.done || body.error)) {
+          subscription.remove();
+          if (this.native.removeFunctionsStreaming) {
+            this.native.removeFunctionsStreaming(listenerId);
+          }
+        }
+      });
+
+      // Start native streaming on both platforms.
+      // Note: appName and customUrlOrRegion are automatically prepended by the native module wrapper
+      this.native.httpsCallableStream(
+        this._useFunctionsEmulatorHost || null,
+        this._useFunctionsEmulatorPort || -1,
+        name,
+        { data },
+        streamOptions,
+        listenerId,
+      );
+
+      return () => {
+        subscription.remove();
+        if (this.native.removeFunctionsStreaming) {
+          this.native.removeFunctionsStreaming(listenerId);
+        }
+      };
+    };
+
+    return callableFunction;
   }
 
   httpsCallableFromUrl(url: string, options: HttpsCallableOptions = {}) {
