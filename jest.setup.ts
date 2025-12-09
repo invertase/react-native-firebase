@@ -81,53 +81,13 @@ jest.doMock('react-native', () => {
             '[DEFAULT]': 'en-US',
           },
           APP_USER: {
-            '[DEFAULT]': null,
+            '[DEFAULT]': 'jestUser',
           },
           addAuthStateListener: jest.fn(),
           addIdTokenListener: jest.fn(),
-          setLanguageCode: jest.fn(() => Promise.resolve()),
-          setTenantId: jest.fn(() => Promise.resolve()),
-          signOut: jest.fn(() => Promise.resolve()),
-          signInAnonymously: jest.fn(() => Promise.resolve({ user: null })),
-          createUserWithEmailAndPassword: jest.fn(() => Promise.resolve({ user: null })),
-          signInWithEmailAndPassword: jest.fn(() => Promise.resolve({ user: null })),
-          signInWithCustomToken: jest.fn(() => Promise.resolve({ user: null })),
-          signInWithCredential: jest.fn(() => Promise.resolve({ user: null })),
-          signInWithEmailLink: jest.fn(() => Promise.resolve({ user: null })),
-          signInWithProvider: jest.fn(() => Promise.resolve({ user: null })),
-          signInWithPhoneNumber: jest.fn(() => Promise.resolve({ verificationId: 'test-id' })),
-          verifyPhoneNumberWithMultiFactorInfo: jest.fn(() => Promise.resolve()),
-          verifyPhoneNumberForMultiFactor: jest.fn(() => Promise.resolve()),
-          resolveTotpSignIn: jest.fn(() => Promise.resolve({})),
-          revokeToken: jest.fn(() => Promise.resolve()),
-          sendPasswordResetEmail: jest.fn(() => Promise.resolve()),
-          sendSignInLinkToEmail: jest.fn(() => Promise.resolve()),
-          isSignInWithEmailLink: jest.fn(() => false),
-          applyActionCode: jest.fn(() => Promise.resolve(null)),
-          checkActionCode: jest.fn(() => Promise.resolve({})),
-          confirmPasswordReset: jest.fn(() => Promise.resolve()),
-          fetchSignInMethodsForEmail: jest.fn(() => Promise.resolve([])),
-          verifyPasswordResetCode: jest.fn(() => Promise.resolve('')),
-          useUserAccessGroup: jest.fn(() => Promise.resolve()),
+          setTenantId: jest.fn(),
           useEmulator: jest.fn(),
-          getCustomAuthDomain: jest.fn(() => Promise.resolve(null)),
-          configureAuthDomain: jest.fn(() => Promise.resolve()),
-          // User methods
-          delete: jest.fn(() => Promise.resolve()),
-          getIdToken: jest.fn(() => Promise.resolve('mock-token')),
-          getIdTokenResult: jest.fn(() => Promise.resolve({ token: 'mock-token' })),
-          linkWithCredential: jest.fn(() => Promise.resolve({ user: null })),
-          linkWithProvider: jest.fn(() => Promise.resolve({ user: null })),
-          reauthenticateWithCredential: jest.fn(() => Promise.resolve({ user: null })),
-          reauthenticateWithProvider: jest.fn(() => Promise.resolve({ user: null })),
-          reload: jest.fn(() => Promise.resolve(null)),
-          sendEmailVerification: jest.fn(() => Promise.resolve(null)),
-          unlink: jest.fn(() => Promise.resolve(null)),
-          updateEmail: jest.fn(() => Promise.resolve(null)),
-          updatePassword: jest.fn(() => Promise.resolve(null)),
-          updatePhoneNumber: jest.fn(() => Promise.resolve(null)),
-          updateProfile: jest.fn(() => Promise.resolve(null)),
-          verifyBeforeUpdateEmail: jest.fn(() => Promise.resolve(null)),
+          configureAuthDomain: jest.fn(),
         },
         RNFBAppCheckModule: {
           initializeAppCheck: jest.fn(),
@@ -159,57 +119,22 @@ jest.doMock('react-native', () => {
           setCrashlyticsCollectionEnabled: jest.fn(),
         },
         RNFBDatabaseModule: {
-          constants: {
-            isDatabaseCollectionEnabled: true,
-            url: 'https://test.firebaseio.com',
-            ref: 'ref()',
-          },
           on: jest.fn(),
-          off: jest.fn(),
-          once: jest.fn(
-            (_appName: any, _customUrl: any, path: any, _modifiers: any, eventType: any) => {
-              // Database native methods receive (appName, customUrlOrRegion, ...actualArgs)
-              let key = 'test';
-              if (path && typeof path === 'string') {
-                const parts = path.split('/').filter(p => p);
-                key = parts[parts.length - 1] || 'test';
-              }
-
-              const snapshotData = {
-                key,
-                value: null,
-                exists: false,
-                childKeys: [],
-                priority: null,
-              };
-
-              if (eventType === 'value') {
-                return Promise.resolve(snapshotData);
-              }
-
-              return Promise.resolve({
-                snapshot: snapshotData,
-                previousChildName: null,
-              });
-            },
-          ),
-          useEmulator: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          set: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          update: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          setWithPriority: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          remove: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          setPriority: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          keepSynced: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          transactionStart: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          transactionTryCommit: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          goOnline: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          goOffline: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          setPersistenceEnabled: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          setLoggingEnabled: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
-          setPersistenceCacheSizeBytes: jest.fn((_appName: any, _customUrl: any) =>
-            Promise.resolve(),
-          ),
-          getServerTime: jest.fn((_appName: any, _customUrl: any) => Promise.resolve(Date.now())),
+          once: jest.fn(() => Promise.resolve({ snapshot: {}, previousChildName: null })),
+          useEmulator: jest.fn(),
+          set: jest.fn(() => Promise.resolve()),
+          update: jest.fn(() => Promise.resolve()),
+          setWithPriority: jest.fn(() => Promise.resolve()),
+          remove: jest.fn(() => Promise.resolve()),
+          setPriority: jest.fn(() => Promise.resolve()),
+          keepSynced: jest.fn(() => Promise.resolve()),
+          transactionStart: jest.fn(),
+          transactionTryCommit: jest.fn(() => Promise.resolve()),
+          goOnline: jest.fn(() => Promise.resolve()),
+          goOffline: jest.fn(() => Promise.resolve()),
+          setPersistenceEnabled: jest.fn(() => Promise.resolve()),
+          setLoggingEnabled: jest.fn(() => Promise.resolve()),
+          setPersistenceCacheSizeBytes: jest.fn(() => Promise.resolve()),
         },
         RNFBFirestoreModule: {
           loadBundle: jest.fn(),
@@ -225,28 +150,11 @@ jest.doMock('react-native', () => {
           collectionOffSnapshot: jest.fn(),
           namedQueryOnSnapshot: jest.fn(),
           collectionOnSnapshot: jest.fn(),
-          collectionGet: jest.fn(() =>
-            Promise.resolve({
-              source: 'cache',
-              changes: [],
-              documents: [],
-              metadata: {},
-            }),
-          ),
-          collectionCount: jest.fn(() => Promise.resolve({ count: 0 })),
-          documentDelete: jest.fn(() => Promise.resolve()),
+          documentDelete: jest.fn(),
           documentOffSnapshot: jest.fn(),
           documentOnSnapshot: jest.fn(),
-          documentGet: jest.fn(() =>
-            Promise.resolve({
-              data: {},
-              metadata: {},
-              path: 'firestore/document',
-              exists: true,
-            }),
-          ),
-          documentSet: jest.fn(() => Promise.resolve()),
-          documentUpdate: jest.fn(() => Promise.resolve()),
+          documentSet: jest.fn(),
+          documentUpdate: jest.fn(),
           persistenceCacheIndexManager: jest.fn(),
           documentBatch: jest.fn(),
           transactionApplyBuffer: jest.fn(),
