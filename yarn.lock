@@ -21471,7 +21471,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-builder-bob@npm:^0.40.13, react-native-builder-bob@npm:^0.40.16":
+"react-native-builder-bob@npm:^0.40.12, react-native-builder-bob@npm:^0.40.13, react-native-builder-bob@npm:^0.40.16":
   version: 0.40.16
   resolution: "react-native-builder-bob@npm:0.40.16"
   dependencies:
