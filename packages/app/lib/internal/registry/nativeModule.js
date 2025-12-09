@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-
 import { APP_NATIVE_MODULE } from '../constants';
 import NativeFirebaseError from '../NativeFirebaseError';
 import RNFBNativeEventEmitter from '../RNFBNativeEventEmitter';
 import SharedEventEmitter from '../SharedEventEmitter';
 import { getReactNativeModule } from '../nativeModule';
 import { isAndroid, isIOS } from '../../common';
+import { encodeNullValues } from '../nullSerialization';
 
 const NATIVE_MODULE_REGISTRY = {};
 const NATIVE_MODULE_EVENT_SUBSCRIPTIONS = {};
@@ -38,9 +38,14 @@ function nativeModuleKey(module) {
  * @param argToPrepend
  * @returns {Function}
  */
-function nativeModuleMethodWrapped(namespace, method, argToPrepend) {
+function nativeModuleMethodWrapped(namespace, method, argToPrepend, isTurboModule) {
   return (...args) => {
-    const possiblePromise = method(...[...argToPrepend, ...args]);
+    // For iOS TurboModules, encode null values in arguments to work around
+    // the limitation where null values in object properties get stripped during serialization
+    // See: https://github.com/facebook/react-native/issues/52802
+    const processedArgs = isIOS && isTurboModule ? args.map(arg => encodeNullValues(arg)) : args;
+    const allArgs = [...argToPrepend, ...processedArgs];
+    const possiblePromise = method(...allArgs);
 
     if (possiblePromise && possiblePromise.then) {
       const jsStack = new Error().stack;
@@ -60,7 +65,7 @@ function nativeModuleMethodWrapped(namespace, method, argToPrepend) {
  * @param NativeModule
  * @param argToPrepend
  */
-function nativeModuleWrapped(namespace, NativeModule, argToPrepend) {
+function nativeModuleWrapped(namespace, NativeModule, argToPrepend, isTurboModule) {
   const native = {};
   if (!NativeModule) {
     return NativeModule;
@@ -72,7 +77,12 @@ function nativeModuleWrapped(namespace, NativeModule, argToPrepend) {
   for (let i = 0, len = properties.length; i < len; i++) {
     const property = properties[i];
     if (typeof NativeModule[property] === 'function') {
-      native[property] = nativeModuleMethodWrapped(namespace, NativeModule[property], argToPrepend);
+      native[property] = nativeModuleMethodWrapped(
+        namespace,
+        NativeModule[property],
+        argToPrepend,
+        isTurboModule,
+      );
     } else {
       native[property] = NativeModule[property];
     }
@@ -97,7 +107,9 @@ function initialiseNativeModule(module) {
     hasMultiAppSupport,
     hasCustomUrlOrRegionSupport,
     disablePrependCustomUrlOrRegion,
+    turboModule,
   } = config;
+  const isTurboModule = !!turboModule;
   const multiModuleRoot = {};
   const multiModule = Array.isArray(nativeModuleName);
   const nativeModuleNames = multiModule ? nativeModuleName : [nativeModuleName];
@@ -125,7 +137,10 @@ function initialiseNativeModule(module) {
       argToPrepend.push(module._customUrlOrRegion);
     }
 
-    Object.assign(multiModuleRoot, nativeModuleWrapped(namespace, nativeModule, argToPrepend));
+    Object.assign(
+      multiModuleRoot,
+      nativeModuleWrapped(namespace, nativeModule, argToPrepend, isTurboModule),
+    );
   }
 
   if (nativeEvents && nativeEvents.length) {
@@ -227,7 +242,13 @@ export function getAppModule() {
     throw new Error(getMissingModuleHelpText(namespace));
   }
 
-  NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE] = nativeModuleWrapped(namespace, nativeModule, []);
+  NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE] = nativeModuleWrapped(
+    namespace,
+    nativeModule,
+    [],
+    // TODO: change to true when we use TurboModules for app package
+    false,
+  );
 
   return NATIVE_MODULE_REGISTRY[APP_NATIVE_MODULE];
 }

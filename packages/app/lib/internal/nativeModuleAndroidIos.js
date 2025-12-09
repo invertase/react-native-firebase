@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import { NativeModules } from 'react-native';
+import { TurboModuleRegistry } from 'react-native';
 
 /**
  * This is used by Android and iOS to get a native module.
@@ -8,7 +9,7 @@ import { NativeModules } from 'react-native';
  * @param moduleName
  */
 export function getReactNativeModule(moduleName) {
-  const nativeModule = NativeModules[moduleName];
+  const nativeModule = NativeModules[moduleName] || TurboModuleRegistry.get(moduleName);
   if (!globalThis.RNFBDebug) {
     return nativeModule;
   }

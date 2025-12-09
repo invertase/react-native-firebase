@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,9 +15,18 @@
  *
  */
 
-#import <Foundation/Foundation.h>
-#import "NativeRNFBTurboFunctions.h"
+// Export types from types/functions
+export type {
+  HttpsCallableOptions,
+  HttpsCallable,
+  FunctionsModule,
+  Functions,
+  FirebaseApp,
+} from './types/functions';
 
-@interface RNFBFunctionsModule : NSObject <NativeRNFBTurboFunctionsSpec>
+// Export modular API functions
+export * from './modular';
 
-@end
+// Export namespaced API
+export * from './namespaced';
+export { default } from './namespaced';
