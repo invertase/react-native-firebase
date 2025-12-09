@@ -16,7 +16,7 @@
  */
 
 import { MODULAR_DEPRECATION_ARG } from './common';
-import type { ReactNativeFirebase } from './types/app';
+import type { ReactNativeFirebase, LogCallback, LogOptions } from './types/app';
 import {
   deleteApp as deleteAppCompat,
   getApp as getAppCompat,
@@ -28,19 +28,6 @@ import {
 import { setUserLogHandler } from './internal/logger';
 import { version as sdkVersion } from './version';
 import { NativeModules } from 'react-native';
-
-export interface LogCallbackParams {
-  level: ReactNativeFirebase.LogLevelString;
-  message: string;
-  args: unknown[];
-  type: string;
-}
-
-export type LogCallback = (callbackParams: LogCallbackParams) => void;
-
-export interface LogOptions {
-  level?: ReactNativeFirebase.LogLevelString;
-}
 
 /**
  * Renders this app unusable and frees the resources of all associated services.

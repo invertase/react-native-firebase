@@ -593,5 +593,18 @@ export namespace Utils {
   }
 }
 
+export interface LogCallbackParams {
+  level: ReactNativeFirebase.LogLevelString;
+  message: string;
+  args: unknown[];
+  type: string;
+}
+
+export type LogCallback = (callbackParams: LogCallbackParams) => void;
+
+export interface LogOptions {
+  level?: ReactNativeFirebase.LogLevelString;
+}
+
 // Re-export FirebaseApp as a named type for easier importing
 export type FirebaseApp = ReactNativeFirebase.FirebaseApp;
