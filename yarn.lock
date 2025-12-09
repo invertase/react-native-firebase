@@ -5046,6 +5046,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/analytics@workspace:packages/analytics"
   dependencies:
+    react-native-builder-bob: "npm:^0.40.13"
     superstruct: "npm:^2.0.2"
   peerDependencies:
     "@react-native-firebase/app": 23.7.0
@@ -5094,6 +5095,7 @@ __metadata:
     "@react-native-async-storage/async-storage": "npm:^2.2.0"
     expo: "npm:^54.0.27"
     firebase: "npm:12.6.0"
+    react-native-builder-bob: "npm:^0.40.13"
   peerDependencies:
     expo: ">=47.0.0"
     react: "*"
@@ -11119,7 +11121,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-glob@npm:^3.2.9, fast-glob@npm:^3.3.2, fast-glob@npm:^3.3.3":
+"fast-glob@npm:^3.2.9, fast-glob@npm:^3.3.2":
+  version: 3.3.2
+  resolution: "fast-glob@npm:3.3.2"
+  dependencies:
+    "@nodelib/fs.stat": "npm:^2.0.2"
+    "@nodelib/fs.walk": "npm:^1.2.3"
+    glob-parent: "npm:^5.1.2"
+    merge2: "npm:^1.3.0"
+    micromatch: "npm:^4.0.4"
+  checksum: 10/222512e9315a0efca1276af9adb2127f02105d7288fa746145bf45e2716383fb79eb983c89601a72a399a56b7c18d38ce70457c5466218c5f13fad957cee16df
+  languageName: node
+  linkType: hard
+
+"fast-glob@npm:^3.3.3":
   version: 3.3.3
   resolution: "fast-glob@npm:3.3.3"
   dependencies:
@@ -20265,7 +20280,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-builder-bob@npm:^0.40.12, react-native-builder-bob@npm:^0.40.16":
+"react-native-builder-bob@npm:^0.40.12, react-native-builder-bob@npm:^0.40.13, react-native-builder-bob@npm:^0.40.16":
   version: 0.40.16
   resolution: "react-native-builder-bob@npm:0.40.16"
   dependencies:
