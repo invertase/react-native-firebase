@@ -17,19 +17,21 @@
 
 const NULL_SENTINEL = { __rnfbNull: true };
 
-type NullSentinel = typeof NULL_SENTINEL;
+type Encodable = string | number | boolean | null | EncodableObject | EncodableArray;
+type EncodableObject = { [key: string]: Encodable };
+type EncodableArray = Encodable[];
 
 type ArrayFrame = {
   type: 'array';
-  original: any[];
-  encoded: any[];
+  original: unknown[];
+  encoded: unknown[];
   index: number;
 };
 
 type ObjectFrame = {
   type: 'object';
-  original: Record<string, any>;
-  encoded: Record<string, any>;
+  original: Record<string, unknown>;
+  encoded: Record<string, unknown>;
   keys: string[];
   index: number;
 };
@@ -47,10 +49,10 @@ type StackFrame = ArrayFrame | ObjectFrame;
  * Note: Null values in arrays are preserved by iOS TurboModules, so we don't
  * encode them (but we still process nested objects within arrays).
  *
- * @param {any} data - The data to encode
- * @returns {any} - The encoded data with null object properties replaced by sentinels
+ * @param data - The data to encode
+ * @returns The encoded data with null object properties replaced by sentinels
  */
-export function encodeNullValues(data: any): any {
+export function encodeNullValues(data: unknown): unknown {
   if (data === null) {
     // only null values within objects are encoded
     return null;
@@ -60,21 +62,20 @@ export function encodeNullValues(data: any): any {
   }
 
   // Helper to process a child element and add it to the encoded container
-  function processChild(
-    child: any,
-    encoded: any[] | Record<string, any>,
-    keyOrIndex: string | number,
-    isArray: boolean,
+  function processArrayChild(
+    child: unknown,
+    encoded: unknown[],
+    index: number,
     stack: StackFrame[],
   ): void {
     if (child === null) {
-      // Arrays preserve nulls as null, objects convert to sentinel
-      encoded[keyOrIndex] = isArray ? null : NULL_SENTINEL;
+      // Arrays preserve nulls as null
+      encoded[index] = null;
     } else if (typeof child !== 'object') {
-      encoded[keyOrIndex] = child;
+      encoded[index] = child;
     } else if (Array.isArray(child)) {
-      const childEncoded = new Array(child.length);
-      encoded[keyOrIndex] = childEncoded;
+      const childEncoded: unknown[] = new Array(child.length);
+      encoded[index] = childEncoded;
       stack.push({
         type: 'array',
         original: child,
@@ -82,11 +83,44 @@ export function encodeNullValues(data: any): any {
         index: 0,
       });
     } else {
-      const childEncoded: Record<string, any> = {};
-      encoded[keyOrIndex] = childEncoded;
+      const childEncoded: Record<string, unknown> = {};
+      encoded[index] = childEncoded;
       stack.push({
         type: 'object',
+        original: child as Record<string, unknown>,
+        encoded: childEncoded,
+        keys: Object.keys(child),
+        index: 0,
+      });
+    }
+  }
+
+  function processObjectChild(
+    child: unknown,
+    encoded: Record<string, unknown>,
+    key: string,
+    stack: StackFrame[],
+  ): void {
+    if (child === null) {
+      // Objects convert null to sentinel
+      encoded[key] = NULL_SENTINEL;
+    } else if (typeof child !== 'object') {
+      encoded[key] = child;
+    } else if (Array.isArray(child)) {
+      const childEncoded: unknown[] = new Array(child.length);
+      encoded[key] = childEncoded;
+      stack.push({
+        type: 'array',
         original: child,
+        encoded: childEncoded,
+        index: 0,
+      });
+    } else {
+      const childEncoded: Record<string, unknown> = {};
+      encoded[key] = childEncoded;
+      stack.push({
+        type: 'object',
+        original: child as Record<string, unknown>,
         encoded: childEncoded,
         keys: Object.keys(child),
         index: 0,
@@ -95,7 +129,7 @@ export function encodeNullValues(data: any): any {
   }
 
   // Prepare root encoded container
-  let rootEncoded: any[] | Record<string, any>;
+  let rootEncoded: unknown[] | Record<string, unknown>;
   const stack: StackFrame[] = [];
 
   if (Array.isArray(data)) {
@@ -110,7 +144,7 @@ export function encodeNullValues(data: any): any {
     rootEncoded = {};
     stack.push({
       type: 'object',
-      original: data,
+      original: data as Record<string, unknown>,
       encoded: rootEncoded,
       keys: Object.keys(data),
       index: 0,
@@ -118,7 +152,7 @@ export function encodeNullValues(data: any): any {
   }
 
   while (stack.length > 0) {
-    const frame = stack[stack.length - 1];
+    const frame = stack[stack.length - 1]!; // Non-null assertion safe due to while condition
 
     if (frame.type === 'array') {
       const { original, encoded } = frame;
@@ -131,7 +165,7 @@ export function encodeNullValues(data: any): any {
 
       const i = frame.index++;
       const item = original[i];
-      processChild(item, encoded, i, true, stack);
+      processArrayChild(item, encoded, i, stack);
     } else {
       // frame.type === 'object'
       const { original, encoded, keys } = frame;
@@ -142,12 +176,11 @@ export function encodeNullValues(data: any): any {
         continue;
       }
 
-      const key = keys[frame.index++];
+      const key = keys[frame.index++]!; // Non-null assertion safe due to length check above
       const value = original[key];
-      processChild(value, encoded, key, false, stack);
+      processObjectChild(value, encoded, key, stack);
     }
   }
 
   return rootEncoded;
 }
-
