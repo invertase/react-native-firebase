@@ -15,6 +15,18 @@
  *
  */
 
+// Export types from types/functions
+export type {
+  HttpsCallableOptions,
+  HttpsCallable,
+  FunctionsModule,
+  Functions,
+  FirebaseApp,
+} from './types/functions';
+
+// Export modular API functions
 export * from './modular';
+
+// Export namespaced API
 export * from './namespaced';
 export { default } from './namespaced';

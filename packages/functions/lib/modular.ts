@@ -22,11 +22,7 @@ import type {
   FirebaseApp,
   HttpsCallableOptions,
   HttpsCallable,
-  FunctionsModule,
 } from './types/functions';
-
-// Export types for use in modular API
-export type { HttpsCallableOptions, HttpsCallable, FunctionsModule, Functions, FirebaseApp };
 
 /**
  * Returns a Functions instance for the given app.

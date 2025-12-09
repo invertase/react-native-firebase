@@ -25,7 +25,7 @@ import { HttpsError, type NativeError } from './HttpsError';
 import { version } from './version';
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import fallBackModule from './web/RNFBFunctionsModule';
-import type { HttpsCallableOptions } from '.';
+import type { HttpsCallableOptions } from './types/functions';
 import type { FirebaseApp } from '@react-native-firebase/app';
 const namespace = 'functions';
 
@@ -105,9 +105,8 @@ export namespace FirebaseFunctionsTypes {
     (data?: RequestData | null): Promise<HttpsCallableResult<ResponseData>>;
   }
 
-  export interface HttpsCallableOptions {
-    timeout?: number;
-  }
+  // Re-export HttpsCallableOptions from types/functions
+  export type HttpsCallableOptions = import('./types/functions').HttpsCallableOptions;
 
   export interface HttpsError extends Error {
     readonly code: FunctionsErrorCode;
