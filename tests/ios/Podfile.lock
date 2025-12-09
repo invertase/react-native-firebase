@@ -1840,7 +1840,11 @@ PODS:
     - RNFBApp
   - RNFBFunctions (23.5.0):
     - Firebase/Functions (= 12.6.0)
+    - RCT-Folly
     - React-Core
+    - React-Fabric
+    - ReactAppDependencyProvider
+    - ReactCodegen
     - RNFBApp
   - RNFBInAppMessaging (23.5.0):
     - Firebase/InAppMessaging (= 12.6.0)

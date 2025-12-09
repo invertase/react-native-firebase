@@ -2880,9 +2880,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase-functions@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "firebase-functions@npm:7.0.0"
+"firebase-functions@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "firebase-functions@npm:7.0.1"
   dependencies:
     "@types/cors": "npm:^2.8.5"
     "@types/express": "npm:^4.17.21"
@@ -2893,13 +2893,13 @@ __metadata:
     firebase-admin: ^11.10.0 || ^12.0.0 || ^13.0.0
   bin:
     firebase-functions: lib/bin/firebase-functions.js
-  checksum: 10/ec676987de537c863023bd720ee142a2787bd7cd4a399500434419af227f4b35bc641d28a6a8ed2b02078a7c72bf9318f0bb19640ee6fe4234d3f7095576258c
+  checksum: 10/bd295c5687da4ed415c423f4899b4413979b91f347200850511e09e50c9e2da707b04ba22d6722885e2e6ddc4ee8ad1fcf6bea8c6ca9ab085e6e8e609007c969
   languageName: node
   linkType: hard
 
-"firebase-tools@npm:^14.24.2":
-  version: 14.24.2
-  resolution: "firebase-tools@npm:14.24.2"
+"firebase-tools@npm:^14.27.0":
+  version: 14.27.0
+  resolution: "firebase-tools@npm:14.27.0"
   dependencies:
     "@apphosting/build": "npm:^0.1.6"
     "@apphosting/common": "npm:^0.0.8"
@@ -2963,7 +2963,7 @@ __metadata:
     sql-formatter: "npm:^15.3.0"
     stream-chain: "npm:^2.2.4"
     stream-json: "npm:^1.7.3"
-    superstatic: "npm:^9.2.0"
+    superstatic: "npm:^10.0.0"
     tar: "npm:^6.1.11"
     tcp-port-used: "npm:^1.0.2"
     tmp: "npm:^0.2.3"
@@ -2979,7 +2979,7 @@ __metadata:
     zod-to-json-schema: "npm:^3.24.5"
   bin:
     firebase: lib/bin/firebase.js
-  checksum: 10/afbc94c67913075d878ef981029a635ddcd6051343d171f9098a5371430abfdbc49e7351a8312116cd8bcb6ed928bccd7915153e2e9cdcdb12be480176a99664
+  checksum: 10/bf769de5e7ba877f71000e39e27627b0e3aff7c72c9421ab669b4eacfd10378ceea432371ae5c3627856d195e8f0166cec4f9574390fede6d651e81aaf109c17
   languageName: node
   linkType: hard
 
@@ -3124,9 +3124,9 @@ __metadata:
   resolution: "functions@workspace:."
   dependencies:
     firebase-admin: "npm:^13.6.0"
-    firebase-functions: "npm:^7.0.0"
+    firebase-functions: "npm:^7.0.1"
     firebase-functions-test: "npm:^3.4.1"
-    firebase-tools: "npm:^14.24.2"
+    firebase-tools: "npm:^14.27.0"
     typescript: "npm:^5.9.3"
   languageName: unknown
   linkType: soft
@@ -6152,9 +6152,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"superstatic@npm:^9.2.0":
-  version: 9.2.0
-  resolution: "superstatic@npm:9.2.0"
+"superstatic@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "superstatic@npm:10.0.0"
   dependencies:
     basic-auth-connect: "npm:^1.1.0"
     commander: "npm:^10.0.0"
@@ -6179,7 +6179,7 @@ __metadata:
       optional: true
   bin:
     superstatic: lib/bin/server.js
-  checksum: 10/35bc84f07a5677046baa7c2a15c6da69d48f539fb807ead8bbabefa6d48882cf98388ad5420397bb07c86e8628d2d6d71957ec4d4a3b833512ebdfb01862fb8b
+  checksum: 10/9632820e2544cb85515f65a5f7d6dd7168f8b128221c93f3f980e35a808611116c9a2cc1536db8af94a5160e15d625cb18ed2bd3262123b5bd4785653003e7ec
   languageName: node
   linkType: hard
 
