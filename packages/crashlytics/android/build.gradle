@@ -125,70 +125,42 @@ ReactNative.module.applyAndroidVersions()
 ReactNative.module.applyReactNativeDependency("api")
 
 // Configure automatic NDK symbol upload for release variants if NDK is enabled
-if (rootProject.ext && rootProject.ext.firebaseJson) {
-  def rnfbConfig = rootProject.ext.firebaseJson
-  
-  if (rnfbConfig.isFlagEnabled('crashlytics_ndk_enabled', false) == true) {
-    rootProject.afterEvaluate {
+// This runs after all projects are evaluated to allow proper configuration
+gradle.projectsEvaluated {
+  if (rootProject.ext && rootProject.ext.firebaseJson) {
+    def rnfbConfig = rootProject.ext.firebaseJson
+    
+    if (rnfbConfig.isFlagEnabled('crashlytics_ndk_enabled', false) == true) {
       // Find the app project (the one with com.android.application plugin)
-      def appProject = rootProject.subprojects.find { 
+      def targetAppProject = rootProject.subprojects.find { 
         it.plugins.hasPlugin('com.android.application') 
       }
       
-      if (appProject != null) {
-        appProject.afterEvaluate {
-          try {
-            def android = appProject.extensions.findByName('android')
-            
-            if (android != null) {
-              // Try to configure all release-type variants
-              try {
-                android.applicationVariants.all { variant ->
-                  // Match variants with 'release' in the name (case insensitive)
-                  if (variant.name.toLowerCase().contains('release')) {
-                    try {
-                      // Access or create the firebaseCrashlytics extension for this variant
-                      def buildType = android.buildTypes.findByName(variant.buildType.name)
-                      if (buildType != null) {
-                        buildType.configure {
-                          // Check if firebaseCrashlytics extension exists
-                          try {
-                            firebaseCrashlytics {
-                              nativeSymbolUploadEnabled = true
-                            }
-                            appProject.logger.info("RNFirebase: Enabled Crashlytics NDK symbol upload for build type '${variant.buildType.name}'")
-                          } catch (Exception e) {
-                            // Extension might not exist if Crashlytics plugin not applied
-                            appProject.logger.warn("RNFirebase: Could not configure Crashlytics NDK symbol upload for build type '${variant.buildType.name}'. " +
-                              "Ensure the Crashlytics Gradle plugin is applied in your app/build.gradle: ${e.message}")
-                          }
-                        }
-                      }
-                    } catch (Exception e) {
-                      appProject.logger.warn("RNFirebase: Could not configure variant '${variant.name}': ${e.message}")
-                    }
-                  }
-                }
-              } catch (Exception e) {
-                // Fallback: just try to configure the 'release' build type directly
-                appProject.logger.info("RNFirebase: Using fallback approach for NDK symbol upload configuration")
+      if (targetAppProject != null) {
+        try {
+          def android = targetAppProject.extensions.findByName('android')
+          
+          if (android != null && android.hasProperty('buildTypes')) {
+            // Configure all build types that contain 'release' (case insensitive)
+            android.buildTypes.all { buildType ->
+              if (buildType.name.toLowerCase().contains('release')) {
                 try {
-                  android.buildTypes.release {
-                    firebaseCrashlytics {
-                      nativeSymbolUploadEnabled = true
-                    }
-                  }
-                  appProject.logger.info("RNFirebase: Enabled Crashlytics NDK symbol upload for 'release' build type")
-                } catch (Exception fallbackError) {
-                  appProject.logger.warn("RNFirebase: Could not automatically enable Crashlytics NDK symbol upload. " +
-                    "You may need to configure it manually in your app/build.gradle. " +
-                    "See: https://firebase.google.com/docs/crashlytics/android/get-started-ndk#set-up-automatic-native-symbols-upload")
+                  buildType.ext.set('firebaseCrashlytics', [:])
+                  buildType.firebaseCrashlytics = [
+                    nativeSymbolUploadEnabled: true
+                  ]
+                  targetAppProject.logger.info("RNFirebase: Enabled Crashlytics NDK symbol upload for build type '${buildType.name}'")
+                } catch (Exception e) {
+                  targetAppProject.logger.warn("RNFirebase: Could not automatically configure Crashlytics NDK symbol upload for build type '${buildType.name}'. " +
+                    "You may need to add it manually to your app/build.gradle. See: https://rnfirebase.io/crashlytics/android-setup")
                 }
               }
             }
-          } catch (Exception e) {
-            appProject.logger.warn("RNFirebase: Failed to configure automatic Crashlytics NDK symbol upload: ${e.message}")
           }
+        } catch (Exception e) {
+          targetAppProject.logger.warn("RNFirebase: Could not automatically enable Crashlytics NDK symbol upload: ${e.message}")
+          targetAppProject.logger.info("Please add the following to your android/app/build.gradle:")
+          targetAppProject.logger.info("  android { buildTypes { release { firebaseCrashlytics { nativeSymbolUploadEnabled true } } } }")
         }
       }
     }
