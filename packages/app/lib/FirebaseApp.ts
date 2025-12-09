@@ -18,7 +18,7 @@ import { warnIfNotModularCall } from './common';
 import { getAppModule } from './internal/registry/nativeModule';
 import type { ReactNativeFirebase, Utils } from './types/app';
 
-export default class FirebaseApp implements ReactNativeFirebase.FirebaseApp {
+export default class FirebaseApp implements ReactNativeFirebase.FirebaseAppBase {
   private _name: string;
   private _deleted: boolean;
   private _deleteApp: () => Promise<void>;

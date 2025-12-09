@@ -19,7 +19,8 @@ import { isString, createDeprecationProxy } from '../../common';
 import FirebaseApp from '../../FirebaseApp';
 import { version as SDK_VERSION } from '../../version';
 import { DEFAULT_APP_NAME, KNOWN_NAMESPACES, type KnownNamespace } from '../constants';
-import FirebaseModule, { type ModuleConfig } from '../FirebaseModule';
+import FirebaseModule from '../FirebaseModule';
+import type { ModuleGetter, FirebaseRoot, NamespaceConfig } from '../../types/app';
 import {
   getApp,
   getApps,
@@ -30,46 +31,11 @@ import {
   setOnAppDestroy,
 } from './app';
 
-/**
- * Type for a Firebase module getter function that can optionally accept
- * a custom URL/region/databaseId parameter
- */
-export type ModuleGetter = ((customUrlOrRegionOrDatabaseId?: string) => FirebaseModule) & {
-  [key: string]: unknown;
-};
-
-/**
- * Type for Firebase root object with module getters
- */
-export interface FirebaseRoot {
-  initializeApp: typeof initializeApp;
-  setReactNativeAsyncStorage: typeof setReactNativeAsyncStorage;
-  app: typeof getApp;
-  apps: FirebaseApp[];
-  SDK_VERSION: string;
-  setLogLevel: typeof setLogLevel;
-  [key: string]: unknown;
-}
-
-interface NamespaceConfig extends ModuleConfig {
-  nativeModuleName: string | string[];
-  nativeEvents: boolean | string[];
-  disablePrependCustomUrlOrRegion?: boolean;
-  // ModuleClass can be FirebaseModule or any subclass of it
-  ModuleClass: new (
-    app: FirebaseApp,
-    config: ModuleConfig,
-    customUrlOrRegion?: string | null,
-  ) => FirebaseModule;
-  statics?: object;
-  version?: string;
-}
-
 // firebase.X
 let FIREBASE_ROOT: FirebaseRoot | null = null;
 
 const NAMESPACE_REGISTRY: Record<string, NamespaceConfig | undefined> = {};
-const APP_MODULE_INSTANCE: Record<string, Record<string, FirebaseModule>> = {};
+const APP_MODULE_INSTANCE: Record<string, Record<string, FirebaseModule<any>>> = {};
 const MODULE_GETTER_FOR_APP: Record<string, Record<string, ModuleGetter>> = {};
 const MODULE_GETTER_FOR_ROOT: Record<string, ModuleGetter> = {};
 
@@ -134,7 +100,7 @@ function getOrCreateModuleForApp(app: FirebaseApp, moduleNamespace: KnownNamespa
   }
 
   // e.g. firebase.storage(customUrlOrRegion), firebase.functions(customUrlOrRegion), firebase.firestore(databaseId), firebase.database(url)
-  function firebaseModuleWithArgs(customUrlOrRegionOrDatabaseId?: string): FirebaseModule {
+  function firebaseModuleWithArgs(customUrlOrRegionOrDatabaseId?: string): FirebaseModule<any> {
     if (customUrlOrRegionOrDatabaseId !== undefined) {
       if (!hasCustomUrlOrRegionSupport) {
         // TODO throw Module does not support arguments error
@@ -160,7 +126,7 @@ function getOrCreateModuleForApp(app: FirebaseApp, moduleNamespace: KnownNamespa
       }
       const module = createDeprecationProxy(
         new ModuleClass(app, moduleConfig, customUrlOrRegionOrDatabaseId),
-      );
+      ) as FirebaseModule<any>;
 
       APP_MODULE_INSTANCE[app.name]![key] = module;
     }
@@ -168,7 +134,8 @@ function getOrCreateModuleForApp(app: FirebaseApp, moduleNamespace: KnownNamespa
     return APP_MODULE_INSTANCE[app.name]![key]!;
   }
 
-  MODULE_GETTER_FOR_APP[app.name]![moduleNamespace] = firebaseModuleWithArgs as ModuleGetter;
+  MODULE_GETTER_FOR_APP[app.name]![moduleNamespace] =
+    firebaseModuleWithArgs as unknown as ModuleGetter;
   return MODULE_GETTER_FOR_APP[app.name]![moduleNamespace]!;
 }
 
@@ -189,7 +156,7 @@ function getOrCreateModuleForRoot(moduleNamespace: KnownNamespace): ModuleGetter
   const { statics, hasMultiAppSupport, ModuleClass } = config;
 
   // e.g. firebase.storage(app)
-  function firebaseModuleWithApp(app?: FirebaseApp): FirebaseModule {
+  function firebaseModuleWithApp(app?: FirebaseApp): FirebaseModule<any> {
     const _app = app || getApp();
 
     if (!(_app instanceof FirebaseApp)) {
@@ -222,7 +189,9 @@ function getOrCreateModuleForRoot(moduleNamespace: KnownNamespace): ModuleGetter
       if (!moduleConfig) {
         throw new Error(`Module namespace '${moduleNamespace}' is not registered.`);
       }
-      const module = createDeprecationProxy(new ModuleClass(_app, moduleConfig));
+      const module = createDeprecationProxy(
+        new ModuleClass(_app, moduleConfig),
+      ) as FirebaseModule<any>;
       APP_MODULE_INSTANCE[_app.name]![moduleNamespace] = module;
     }
 
@@ -234,7 +203,7 @@ function getOrCreateModuleForRoot(moduleNamespace: KnownNamespace): ModuleGetter
   // Wrap around statics, e.g. firebase.firestore.FieldValue, removed freeze as it stops proxy working. it is deprecated anyway
   MODULE_GETTER_FOR_ROOT[moduleNamespace] = createDeprecationProxy(
     firebaseModuleWithApp,
-  ) as ModuleGetter;
+  ) as unknown as ModuleGetter;
 
   return MODULE_GETTER_FOR_ROOT[moduleNamespace]!;
 }
