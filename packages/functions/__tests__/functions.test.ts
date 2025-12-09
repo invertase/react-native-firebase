@@ -117,8 +117,9 @@ describe('Cloud Functions', function () {
       });
 
       it('`FunctionsModule` type is properly exposed to end user', function () {
-        // @ts-ignore - firebase.app() returns a wider type at runtime
-        const functionsInstance: FunctionsModule = firebase.app().functions();
+        const functionsInstance: FunctionsModule = (
+          firebase.app() as unknown as FirebaseApp
+        ).functions();
         expect(functionsInstance).toBeDefined();
         expect(functionsInstance.httpsCallable).toBeDefined();
         expect(functionsInstance.httpsCallableFromUrl).toBeDefined();
@@ -127,14 +128,12 @@ describe('Cloud Functions', function () {
       });
 
       it('`Functions` type is properly exposed to end user', function () {
-        // @ts-ignore - firebase.app() returns a wider type at runtime
-        const functionsInstance: Functions = firebase.app().functions();
+        const functionsInstance: Functions = (firebase.app() as unknown as FirebaseApp).functions();
         expect(functionsInstance).toBeDefined();
       });
 
       it('`FirebaseApp` type is properly exposed to end user', function () {
-        // @ts-ignore - This type augments the base FirebaseApp type
-        const app: FirebaseApp = firebase.app();
+        const app = firebase.app() as unknown as FirebaseApp;
         expect(app).toBeDefined();
         expect(app.functions).toBeDefined();
       });
@@ -167,9 +166,7 @@ describe('Cloud Functions', function () {
 
     describe('Cloud Functions', function () {
       it('useFunctionsEmulator()', function () {
-        const app = getApp();
-        // @ts-ignore - app has functions() at runtime
-        const functions = app.functions();
+        const functions = (getApp() as unknown as FirebaseApp).functions();
         functionsRefV9Deprecation(
           () => connectFunctionsEmulator(functions, 'localhost', 8080),
           () => functions.useEmulator('localhost', 8080),
@@ -178,9 +175,7 @@ describe('Cloud Functions', function () {
       });
 
       it('httpsCallable()', function () {
-        const app = getApp();
-        // @ts-ignore - app has functions() at runtime
-        const functions = app.functions();
+        const functions = (getApp() as unknown as FirebaseApp).functions();
         functionsRefV9Deprecation(
           () => httpsCallable(functions, 'example'),
           () => functions.httpsCallable('example'),
@@ -189,9 +184,7 @@ describe('Cloud Functions', function () {
       });
 
       it('httpsCallableFromUrl()', function () {
-        const app = getApp();
-        // @ts-ignore - app has functions() at runtime
-        const functions = app.functions();
+        const functions = (getApp() as unknown as FirebaseApp).functions();
         functionsRefV9Deprecation(
           () => httpsCallableFromUrl(functions, 'https://example.com/example'),
           () => functions.httpsCallableFromUrl('https://example.com/example'),

@@ -32,10 +32,10 @@ import type {
  */
 export function getFunctions(app?: FirebaseApp, regionOrCustomDomain?: string): Functions {
   if (app) {
-    return getApp(app.name).functions(regionOrCustomDomain) as Functions;
+    return (getApp(app.name) as unknown as FirebaseApp).functions(regionOrCustomDomain);
   }
 
-  return getApp().functions(regionOrCustomDomain) as Functions;
+  return (getApp() as unknown as FirebaseApp).functions(regionOrCustomDomain);
 }
 
 /**
