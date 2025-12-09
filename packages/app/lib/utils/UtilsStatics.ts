@@ -17,7 +17,7 @@
 
 import { NativeModules } from 'react-native';
 import { stripTrailingSlash, isOther } from '../common';
-import { Utils } from '../types';
+import { Utils } from '../types/app';
 import { version } from '../version';
 
 const PATH_NAMES = [

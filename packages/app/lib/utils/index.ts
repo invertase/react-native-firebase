@@ -18,7 +18,7 @@
 import { isIOS } from '../common';
 import { createModuleNamespace, FirebaseModule } from '../internal';
 import UtilsStatics from './UtilsStatics';
-import { Utils } from '../types';
+import { Utils } from '../types/app';
 
 const namespace = 'utils';
 const statics = UtilsStatics;

@@ -17,13 +17,8 @@
 
 import { getFirebaseRoot } from './internal/registry/namespace';
 import utils from './utils';
-import type { ReactNativeFirebase, Utils } from './types';
 
 export const firebase = getFirebaseRoot();
-export * from './modular';
 export { utils };
-
-// Export types
-export type { ReactNativeFirebase, Utils };
 
 export default firebase;
