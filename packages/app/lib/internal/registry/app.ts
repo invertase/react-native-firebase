@@ -92,7 +92,10 @@ export function initializeNativeApps(): void {
  *
  * @param name
  */
-export function getApp(name: string = DEFAULT_APP_NAME, _deprecationArg?: any): FirebaseApp {
+export function getApp(
+  name: string = DEFAULT_APP_NAME,
+  _deprecationArg?: any,
+): ReactNativeFirebase.FirebaseApp {
   warnIfNotModularCall(arguments, 'getApp()');
   if (!initializedNativeApps) {
     initializeNativeApps();
@@ -103,18 +106,18 @@ export function getApp(name: string = DEFAULT_APP_NAME, _deprecationArg?: any): 
     throw new Error(`No Firebase App '${name}' has been created - call firebase.initializeApp()`);
   }
 
-  return app;
+  return app as unknown as ReactNativeFirebase.FirebaseApp;
 }
 
 /**
  * Gets all app instances, used for `firebase.apps`
  */
-export function getApps(_deprecationArg?: any): FirebaseApp[] {
+export function getApps(_deprecationArg?: any): ReactNativeFirebase.FirebaseApp[] {
   warnIfNotModularCall(arguments, 'getApps()');
   if (!initializedNativeApps) {
     initializeNativeApps();
   }
-  return Object.values(APP_REGISTRY);
+  return Object.values(APP_REGISTRY) as unknown as ReactNativeFirebase.FirebaseApp[];
 }
 
 /**
@@ -126,7 +129,7 @@ export function initializeApp(
   options: Partial<FirebaseAppOptions> = {},
   configOrName?: string | FirebaseAppConfig,
   _deprecationArg?: any,
-): Promise<FirebaseApp> {
+): Promise<ReactNativeFirebase.FirebaseApp> {
   warnIfNotModularCall(arguments, 'initializeApp()');
   let appConfig: FirebaseAppConfig = configOrName as FirebaseAppConfig;
 
@@ -206,7 +209,7 @@ export function initializeApp(
     .initializeApp(options as FirebaseAppOptions, appConfig)
     .then(() => {
       app._initialized = true;
-      return app;
+      return app as unknown as ReactNativeFirebase.FirebaseApp;
     })
     .catch((e: any) => {
       // we need to clean the app entry from registry as the app does not actually exist
