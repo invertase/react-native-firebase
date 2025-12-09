@@ -129,7 +129,12 @@ export namespace ReactNativeFirebase {
     automaticResourceManagement?: boolean;
   }
 
-  export interface FirebaseApp {
+  /**
+   * Base interface for FirebaseApp containing core properties and methods.
+   * The concrete FirebaseApp class implements this interface.
+   * Module-specific methods (auth(), analytics(), etc.) are added to FirebaseApp via declaration merging.
+   */
+  export interface FirebaseAppBase {
     /**
      * The name (identifier) for this App. '[DEFAULT]' is the default App.
      */
@@ -151,6 +156,19 @@ export namespace ReactNativeFirebase {
     delete(): Promise<void>;
 
     utils(): Utils.Module;
+  }
+
+  /**
+   * Full FirebaseApp interface that extends the base interface.
+   * Module-specific methods (auth(), analytics(), etc.) are added here via declaration merging
+   * from individual package .d.ts files.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  export interface FirebaseApp extends FirebaseAppBase {
+    // Module methods are added here via declaration merging, e.g.:
+    // auth(): FirebaseAuthTypes.Module;
+    // analytics(): FirebaseAnalyticsTypes.Module;
+    // etc.
   }
 
   /**
@@ -608,3 +626,62 @@ export interface LogOptions {
 
 // Re-export FirebaseApp as a named type for easier importing
 export type FirebaseApp = ReactNativeFirebase.FirebaseApp;
+
+/**
+ * Internal namespace types for Firebase module registry
+ */
+
+/**
+ * Type for a Firebase module getter function that can optionally accept
+ * a custom URL/region/databaseId parameter
+ */
+export type ModuleGetter = {
+  (customUrlOrRegionOrDatabaseId?: string): ReactNativeFirebase.FirebaseModule;
+  [key: string]: unknown;
+};
+
+/**
+ * Type for Firebase root object with module getters
+ */
+export interface FirebaseRoot {
+  initializeApp: (
+    options: ReactNativeFirebase.FirebaseAppOptions,
+    configOrName?: string | ReactNativeFirebase.FirebaseAppConfig,
+  ) => Promise<ReactNativeFirebase.FirebaseApp>;
+  setReactNativeAsyncStorage: (asyncStorage: ReactNativeFirebase.ReactNativeAsyncStorage) => void;
+  app: (name?: string) => ReactNativeFirebase.FirebaseApp;
+  apps: ReactNativeFirebase.FirebaseApp[];
+  SDK_VERSION: string;
+  setLogLevel: (logLevel: ReactNativeFirebase.LogLevelString) => void;
+  [key: string]: unknown;
+}
+
+/**
+ * Configuration interface for module namespace registration
+ */
+export interface ModuleConfig {
+  namespace: string;
+  nativeModuleName?: string | string[];
+  hasMultiAppSupport?: boolean;
+  hasCustomUrlOrRegionSupport?: boolean;
+  nativeEvents?: boolean | string[];
+  disablePrependCustomUrlOrRegion?: boolean;
+  turboModule?: boolean;
+}
+
+/**
+ * Extended configuration for namespace registration including native module details
+ */
+export interface NamespaceConfig extends ModuleConfig {
+  nativeModuleName: string | string[];
+  nativeEvents: boolean | string[];
+  // ModuleClass can be FirebaseModule or any subclass of it
+  // Uses FirebaseAppBase (the concrete class type) rather than FirebaseApp (the augmented interface)
+  ModuleClass: new (
+    app: ReactNativeFirebase.FirebaseAppBase,
+    config: ModuleConfig,
+    customUrlOrRegion?: string | null,
+  ) => ReactNativeFirebase.FirebaseModule;
+  statics?: object;
+  version?: string;
+}
