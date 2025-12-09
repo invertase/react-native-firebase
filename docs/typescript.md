@@ -2,7 +2,7 @@
 title: TypeScript
 description: Using TypeScript with React Native Firebase
 next: /other-platforms
-previous: /migrating-to-v22
+previous: /migrating-to-v24
 ---
 
 The React Native Firebase project comes with support for TypeScript. The project provides
