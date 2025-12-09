@@ -6004,7 +6004,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/analytics@workspace:packages/analytics"
   dependencies:
-    react-native-builder-bob: "npm:^0.40.13"
     superstruct: "npm:^2.0.2"
   peerDependencies:
     "@react-native-firebase/app": 23.5.0
