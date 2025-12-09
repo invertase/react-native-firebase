@@ -15,37 +15,18 @@
  *
  */
 
-import { getApp, type ReactNativeFirebase } from '@react-native-firebase/app';
+import { getApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
-
-type Functions = FunctionsModule;
-type FirebaseApp = ReactNativeFirebase.FirebaseApp & {
-  functions(regionOrCustomDomain?: string): Functions;
-};
-
-interface HttpsCallableOptions {
-  timeout?: number;
-}
+import type {
+  Functions,
+  FirebaseApp,
+  HttpsCallableOptions,
+  HttpsCallable,
+  FunctionsModule,
+} from './types/functions';
 
 // Export types for use in modular API
-export type { HttpsCallableOptions };
-
-export interface HttpsCallable<RequestData = unknown, ResponseData = unknown> {
-  (data?: RequestData | null): Promise<{ data: ResponseData }>;
-}
-
-export interface FunctionsModule {
-  httpsCallable<RequestData = unknown, ResponseData = unknown>(
-    name: string,
-    options?: HttpsCallableOptions,
-  ): HttpsCallable<RequestData, ResponseData>;
-  httpsCallableFromUrl<RequestData = unknown, ResponseData = unknown>(
-    url: string,
-    options?: HttpsCallableOptions,
-  ): HttpsCallable<RequestData, ResponseData>;
-  useFunctionsEmulator(origin: string): void;
-  useEmulator(host: string, port: number): void;
-}
+export type { HttpsCallableOptions, HttpsCallable, FunctionsModule, Functions, FirebaseApp };
 
 /**
  * Returns a Functions instance for the given app.
