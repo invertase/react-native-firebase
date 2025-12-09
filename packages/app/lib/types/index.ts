@@ -592,3 +592,6 @@ export namespace Utils {
     abstract resolutionForPlayServices(): Promise<void>;
   }
 }
+
+// Re-export FirebaseApp as a named type for easier importing
+export type FirebaseApp = ReactNativeFirebase.FirebaseApp;
