@@ -310,7 +310,7 @@ export function isDeliveryMetricsExportToBigQueryEnabled(messaging: Messaging): 
  * @param messaging - Messaging instance.
  * @returns A boolean indicating if the APIs are supported.
  */
-export function isSupported(messaging: Messaging): boolean;
+export function isSupported(messaging: Messaging): Promise<boolean>;
 
 /**
  * Sets whether message delivery metrics are exported to BigQuery is enabled or disabled.
