@@ -17,7 +17,7 @@
 
 import { getAppModule, getNativeModule } from './registry/nativeModule';
 import SharedEventEmitter from './SharedEventEmitter';
-import type { ReactNativeFirebase } from '../types';
+import type { ReactNativeFirebase } from '../types/app';
 import type { ReactNativeFirebaseNativeModules } from './NativeModules';
 import type EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 

@@ -30,7 +30,7 @@ import { DEFAULT_APP_NAME } from '../constants';
 import { setReactNativeAsyncStorageInternal } from '../asyncStorage';
 import { getAppModule } from './nativeModule';
 import { setLogLevelInternal } from '../logger';
-import type { ReactNativeFirebase } from '../../types';
+import type { ReactNativeFirebase } from '../../types/app';
 
 type FirebaseAppConfig = ReactNativeFirebase.FirebaseAppConfig;
 type FirebaseAppOptions = ReactNativeFirebase.FirebaseAppOptions;

@@ -15,7 +15,7 @@
  *
  */
 
-import type { ReactNativeFirebase } from '../types';
+import type { ReactNativeFirebase } from '../types/app';
 
 /**
  * Base type for all React Native Firebase native modules.

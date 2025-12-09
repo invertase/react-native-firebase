@@ -16,7 +16,7 @@
  */
 
 import { MODULAR_DEPRECATION_ARG } from './common';
-import type { ReactNativeFirebase } from './types';
+import type { ReactNativeFirebase } from './types/app';
 import {
   deleteApp as deleteAppCompat,
   getApp as getAppCompat,
