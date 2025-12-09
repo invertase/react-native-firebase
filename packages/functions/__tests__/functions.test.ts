@@ -7,6 +7,11 @@ import {
   httpsCallable,
   httpsCallableFromUrl,
   HttpsErrorCode,
+  type HttpsCallableOptions,
+  type HttpsCallable as HttpsCallableType,
+  type FunctionsModule,
+  type Functions,
+  type FirebaseApp,
 } from '../lib';
 
 import functions from '../lib/namespaced';
@@ -95,6 +100,45 @@ describe('Cloud Functions', function () {
     it('`HttpsErrorCode` function is properly exposed to end user', function () {
       expect(HttpsErrorCode).toBeDefined();
     });
+
+    describe('types', function () {
+      it('`HttpsCallableOptions` type is properly exposed to end user', function () {
+        const options: HttpsCallableOptions = { timeout: 5000 };
+        expect(options).toBeDefined();
+        expect(options.timeout).toBe(5000);
+      });
+
+      it('`HttpsCallable` type is properly exposed to end user', function () {
+        // Type check - this will fail at compile time if type is not exported
+        const callable: HttpsCallableType<{ test: string }, { result: number }> = async () => {
+          return { data: { result: 42 } };
+        };
+        expect(callable).toBeDefined();
+      });
+
+      it('`FunctionsModule` type is properly exposed to end user', function () {
+        // @ts-ignore - firebase.app() returns a wider type at runtime
+        const functionsInstance: FunctionsModule = firebase.app().functions();
+        expect(functionsInstance).toBeDefined();
+        expect(functionsInstance.httpsCallable).toBeDefined();
+        expect(functionsInstance.httpsCallableFromUrl).toBeDefined();
+        expect(functionsInstance.useFunctionsEmulator).toBeDefined();
+        expect(functionsInstance.useEmulator).toBeDefined();
+      });
+
+      it('`Functions` type is properly exposed to end user', function () {
+        // @ts-ignore - firebase.app() returns a wider type at runtime
+        const functionsInstance: Functions = firebase.app().functions();
+        expect(functionsInstance).toBeDefined();
+      });
+
+      it('`FirebaseApp` type is properly exposed to end user', function () {
+        // @ts-ignore - This type augments the base FirebaseApp type
+        const app: FirebaseApp = firebase.app();
+        expect(app).toBeDefined();
+        expect(app.functions).toBeDefined();
+      });
+    });
   });
 
   describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
@@ -124,6 +168,7 @@ describe('Cloud Functions', function () {
     describe('Cloud Functions', function () {
       it('useFunctionsEmulator()', function () {
         const app = getApp();
+        // @ts-ignore - app has functions() at runtime
         const functions = app.functions();
         functionsRefV9Deprecation(
           () => connectFunctionsEmulator(functions, 'localhost', 8080),
@@ -134,6 +179,7 @@ describe('Cloud Functions', function () {
 
       it('httpsCallable()', function () {
         const app = getApp();
+        // @ts-ignore - app has functions() at runtime
         const functions = app.functions();
         functionsRefV9Deprecation(
           () => httpsCallable(functions, 'example'),
@@ -144,6 +190,7 @@ describe('Cloud Functions', function () {
 
       it('httpsCallableFromUrl()', function () {
         const app = getApp();
+        // @ts-ignore - app has functions() at runtime
         const functions = app.functions();
         functionsRefV9Deprecation(
           () => httpsCallableFromUrl(functions, 'https://example.com/example'),
