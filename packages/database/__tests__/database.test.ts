@@ -312,9 +312,10 @@ describe('Database', function () {
         once: jest.fn(
           (_appName: any, _customUrl: any, path: any, _modifiers: any, eventType: any) => {
             // Database native methods receive (appName, customUrlOrRegion, ...actualArgs)
+            // Extract key from path, ensuring it's never undefined
             let key = 'test';
             if (path && typeof path === 'string') {
-              const parts = path.split('/').filter(p => p);
+              const parts = path.split('/').filter(p => p); // Remove empty strings
               key = parts[parts.length - 1] || 'test';
             }
 
@@ -326,10 +327,12 @@ describe('Database', function () {
               priority: null,
             };
 
+            // For 'value' events, return snapshot data directly
             if (eventType === 'value') {
               return Promise.resolve(snapshotData);
             }
 
+            // For other events, return wrapped format
             return Promise.resolve({
               snapshot: snapshotData,
               previousChildName: null,
