@@ -18,15 +18,27 @@ package io.invertase.firebase.functions;
  */
 
 import android.content.Context;
+import android.util.SparseArray;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableReference;
+import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.UniversalFirebaseModule;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okio.BufferedSource;
 
 @SuppressWarnings("WeakerAccess")
 public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
@@ -34,6 +46,7 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
   public static final String CODE_KEY = "code";
   public static final String MSG_KEY = "message";
   public static final String DETAILS_KEY = "details";
+  private static SparseArray<Call> functionsStreamingListeners = new SparseArray<>();
 
   UniversalFirebaseFunctionsModule(Context context, String serviceName) {
     super(context, serviceName);
@@ -94,5 +107,55 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
 
           return Tasks.await(httpReference.call(data)).getData();
         });
+  }
+
+  Task<Object> httpsCallableStream(
+      String appName,
+      String region,
+      String host,
+      Integer port,
+      String name,
+      Object data,
+      ReadableMap options,
+      int listenerId) {
+    return Tasks.call(
+        getExecutor(),
+        () -> {
+          FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+          FirebaseFunctions functionsInstance = FirebaseFunctions.getInstance(firebaseApp, region);
+          HttpsCallableReference httpReference = functionsInstance.getHttpsCallable.(name, data, options);
+          httpReference.stream(data, options, (event) -> {
+            if (event.get("done")) {
+              removeFunctionsStreamingListener(appName, listenerId);
+            } else {
+              emitEvent(appName, listenerId, event);
+            }
+          });
+        });
+  }
+
+  private void addFunctionsStreamingListener(String appName, int listenerId) {
+    functionsStreamingListeners.put(listenerId, null);
+  }
+
+  private void removeFunctionsStreamingListener(String appName, int listenerId) {
+    functionsStreamingListeners.remove(listenerId);
+  }
+
+  private void emitError(String appName, int listenerId, String message) {
+    WritableMap body = Arguments.createMap();
+    body.putString("error", message != null ? message : "unknown_error");
+    emitEvent(appName, listenerId, body);
+  }
+
+  private void emitEvent(String appName, int listenerId, WritableMap body) {
+    ReactNativeFirebaseEventEmitter.emitEvent(
+        appName, "functions_streaming_event", Arguments.createMap().putMap("body", body));
+  }
+
+  private void emitDone(String appName, int listenerId) {
+    WritableMap body = Arguments.createMap();
+    body.putBoolean("done", true);
+    emitEvent(appName, listenerId, body);
   }
 }
