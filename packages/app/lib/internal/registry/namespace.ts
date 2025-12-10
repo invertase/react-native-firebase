@@ -126,7 +126,7 @@ function getOrCreateModuleForApp(app: FirebaseApp, moduleNamespace: KnownNamespa
       }
       const module = createDeprecationProxy(
         new ModuleClass(app, moduleConfig, customUrlOrRegionOrDatabaseId),
-      ) as FirebaseModule<any>;
+      ) as unknown as FirebaseModule<any>;
 
       APP_MODULE_INSTANCE[app.name]![key] = module;
     }
@@ -159,7 +159,14 @@ function getOrCreateModuleForRoot(moduleNamespace: KnownNamespace): ModuleGetter
   function firebaseModuleWithApp(app?: FirebaseApp): FirebaseModule<any> {
     const _app = app || getApp();
 
-    if (!(_app instanceof FirebaseApp)) {
+    // Duck-type check for FirebaseApp (checking for required properties)
+    if (
+      !_app ||
+      typeof _app !== 'object' ||
+      !('name' in _app) ||
+      !('options' in _app) ||
+      typeof _app.name !== 'string'
+    ) {
       throw new Error(
         [
           `"firebase.${moduleNamespace}(app)" arg expects a FirebaseApp instance or undefined.`,
@@ -191,7 +198,7 @@ function getOrCreateModuleForRoot(moduleNamespace: KnownNamespace): ModuleGetter
       }
       const module = createDeprecationProxy(
         new ModuleClass(_app, moduleConfig),
-      ) as FirebaseModule<any>;
+      ) as unknown as FirebaseModule<any>;
       APP_MODULE_INSTANCE[_app.name]![moduleNamespace] = module;
     }
 

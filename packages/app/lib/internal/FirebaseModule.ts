@@ -41,13 +41,13 @@ export interface ModuleConfig {
 export default class FirebaseModule<
   NativeModuleName extends keyof ReactNativeFirebaseNativeModules = any,
 > {
-  _app: ReactNativeFirebase.FirebaseApp;
+  _app: ReactNativeFirebase.FirebaseAppBase;
   _nativeModule: ReactNativeFirebaseNativeModules[NativeModuleName] | null;
   _customUrlOrRegion: string | null;
   _config: ModuleConfig;
 
   constructor(
-    app: ReactNativeFirebase.FirebaseApp,
+    app: ReactNativeFirebase.FirebaseAppBase,
     config: ModuleConfig,
     customUrlOrRegion?: string | null,
   ) {
@@ -58,7 +58,7 @@ export default class FirebaseModule<
   }
 
   get app(): ReactNativeFirebase.FirebaseApp {
-    return this._app;
+    return this._app as unknown as ReactNativeFirebase.FirebaseApp;
   }
 
   get firebaseJson(): FirebaseJsonConfig {
