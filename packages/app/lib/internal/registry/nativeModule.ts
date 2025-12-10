@@ -15,7 +15,8 @@
  *
  */
 import { APP_NATIVE_MODULE } from '../constants';
-import NativeFirebaseError, { type NativeError } from '../NativeFirebaseError';
+import NativeFirebaseError from '../NativeFirebaseError';
+import type { NativeError } from '../../types/internal';
 import RNFBNativeEventEmitter from '../RNFBNativeEventEmitter';
 import SharedEventEmitter from '../SharedEventEmitter';
 import { getReactNativeModule } from '../nativeModule';

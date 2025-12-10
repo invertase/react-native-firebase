@@ -17,11 +17,7 @@
 
 import { tryJSONParse, tryJSONStringify } from './index';
 import { isObject } from './validate';
-
-export interface SerializedValue {
-  type: string;
-  value: any;
-}
+import type { SerializedValue } from '../types/internal';
 
 export function serializeType(value: any): SerializedValue {
   if (isObject(value)) {

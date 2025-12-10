@@ -16,12 +16,7 @@
  */
 
 import { isFunction } from './validate';
-
-export interface Deferred<T> {
-  promise: Promise<T>;
-  resolve: ((value: T) => void) | null;
-  reject: ((reason?: any) => void) | null;
-}
+import type { Deferred, Callback } from '../types/internal';
 
 /**
  * Creates a deferred promise
@@ -40,8 +35,6 @@ export function promiseDefer<T = void>(): Deferred<T> {
 
   return deferred;
 }
-
-type Callback<T> = ((error: Error | null, result?: T) => void) | ((error: Error | null) => void);
 
 /**
  * Attaches an optional callback to a promise
