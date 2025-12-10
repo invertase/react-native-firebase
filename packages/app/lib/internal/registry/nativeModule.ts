@@ -86,7 +86,7 @@ function nativeModuleWrapped(
 ): WrappedNativeModule {
   const native: Record<string, unknown> = {};
   if (!NativeModule) {
-    return native;
+    return NativeModule as unknown as WrappedNativeModule;
   }
 
   const nativeModuleObj = NativeModule;
@@ -132,11 +132,7 @@ function initialiseNativeModule(module: FirebaseModule): WrappedNativeModule {
   const multiModuleRoot: WrappedNativeModule = {};
   const isTurboModule = !!turboModule;
   const multiModule = Array.isArray(nativeModuleName);
-  const nativeModuleNames = multiModule
-    ? nativeModuleName
-    : nativeModuleName
-      ? [nativeModuleName]
-      : [];
+  const nativeModuleNames = multiModule ? nativeModuleName : [nativeModuleName];
 
   for (let i = 0; i < nativeModuleNames.length; i++) {
     const moduleName = nativeModuleNames[i];
