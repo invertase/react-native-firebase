@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 
 import './global';
-// @ts-expect-error
 import RNFBAppModule from './web/RNFBAppModule';
 
 const nativeModuleRegistry: Record<string, Record<string, unknown>> = {};
