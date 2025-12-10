@@ -169,10 +169,9 @@ jest.doMock('react-native', () => {
           once: jest.fn(
             (_appName: any, _customUrl: any, path: any, _modifiers: any, eventType: any) => {
               // Database native methods receive (appName, customUrlOrRegion, ...actualArgs)
-              // Ensure key is always a string to prevent child() validation errors
               let key = 'test';
               if (path && typeof path === 'string') {
-                const parts = path.split('/').filter(p => p); // Remove empty strings
+                const parts = path.split('/').filter(p => p);
                 key = parts[parts.length - 1] || 'test';
               }
 
@@ -184,19 +183,16 @@ jest.doMock('react-native', () => {
                 priority: null,
               };
 
-              // For 'value' events, return snapshot data directly
               if (eventType === 'value') {
                 return Promise.resolve(snapshotData);
               }
 
-              // For other events, return wrapped format
               return Promise.resolve({
                 snapshot: snapshotData,
                 previousChildName: null,
               });
             },
           ),
-          // All database native methods receive (appName, customUrlOrRegion, ...actualArgs)
           useEmulator: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
           set: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
           update: jest.fn((_appName: any, _customUrl: any) => Promise.resolve()),
