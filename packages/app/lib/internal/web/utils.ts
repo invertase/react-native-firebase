@@ -16,6 +16,7 @@
  */
 
 import { DeviceEventEmitter } from 'react-native';
+import { type ReactNativeFirebase } from '../../index';
 
 // A general purpose guard function to catch errors and return a structured error object.
 export function guard<T>(fn: () => Promise<T>): Promise<T> {
@@ -24,34 +25,33 @@ export function guard<T>(fn: () => Promise<T>): Promise<T> {
 
 // Converts a thrown error to a structured error object
 // required by RNFirebase native module internals.
-export function getWebError(error: Error & { code?: string }): {
-  code: string;
-  message: string;
-  userInfo: { code: string; message: string };
-} {
-  const obj = {
-    code: error.code || 'unknown',
-    message: error.message,
-  };
+export function getWebError(
+  error: Error & { code?: string },
+): ReactNativeFirebase.NativeFirebaseError {
+  let code = error.code || 'unknown';
 
   // Some modules send codes as PERMISSION_DENIED, which is not
   // the same as the Firebase error code format.
-  obj.code = obj.code.toLowerCase();
+  code = code.toLowerCase();
   // Replace _ with - in code
-  obj.code = obj.code.replace(/_/g, '-');
+  code = code.replace(/_/g, '-');
 
   // Split out prefix, since we internally prefix all error codes already.
-  if (obj.code.includes('/')) {
-    const parts = obj.code.split('/');
-    obj.code = parts[1] || obj.code;
+  if (code.includes('/')) {
+    const parts = code.split('/');
+    code = parts[1] || code;
   }
 
   return {
-    ...obj,
-    userInfo: obj,
-  };
+    code,
+    message: error.message,
+    namespace: 'app',
+    nativeErrorCode: code,
+    nativeErrorMessage: error.message,
+    name: error.name,
+  } as ReactNativeFirebase.NativeFirebaseError;
 }
 
-export function emitEvent(eventName: string, event: unknown): void {
+export function emitEvent(eventName: string, event: any): void {
   setImmediate(() => DeviceEventEmitter.emit('rnfb_' + eventName, event));
 }
