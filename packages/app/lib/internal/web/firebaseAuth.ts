@@ -15,8 +15,7 @@
  *
  */
 
-import { ReactNativeFirebase } from '../../index';
-
-export function guard<T>(fn: () => Promise<T>): Promise<T>;
-export function getWebError(error: Error): ReactNativeFirebase.NativeFirebaseError;
-export function emitEvent(eventName: string, event: any): void;
+// We need to share firebase imports between modules, otherwise
+// apps and instances of the firebase modules are not shared.
+export * from 'firebase/app';
+export * from 'firebase/auth';
