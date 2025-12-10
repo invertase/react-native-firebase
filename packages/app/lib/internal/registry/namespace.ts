@@ -20,7 +20,7 @@ import FirebaseApp from '../../FirebaseApp';
 import { version as SDK_VERSION } from '../../version';
 import { DEFAULT_APP_NAME, KNOWN_NAMESPACES, type KnownNamespace } from '../constants';
 import FirebaseModule from '../FirebaseModule';
-import type { ModuleGetter, FirebaseRoot, NamespaceConfig } from '../../types/app';
+import type { ModuleGetter, FirebaseRoot, NamespaceConfig } from '../../types/internal';
 import {
   getApp,
   getApps,

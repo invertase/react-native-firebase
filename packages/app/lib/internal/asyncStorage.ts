@@ -15,12 +15,7 @@
  *
  */
 
-// AsyncStorage interface compatible with React Native AsyncStorage
-export interface AsyncStorageStatic {
-  setItem: (key: string, value: string) => Promise<void>;
-  getItem: (key: string) => Promise<string | null>;
-  removeItem: (key: string) => Promise<void>;
-}
+import type { AsyncStorageStatic } from '../types/internal';
 
 // Memory storage Map instance
 export const memoryStorage = new Map<string, string>();

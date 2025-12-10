@@ -17,6 +17,7 @@
 import { Platform } from 'react-native';
 import Base64 from './Base64';
 import { isFunction, isObject, isString } from './validate';
+import type { DataUrlParts, Observer } from '../types/internal';
 
 export * from './id';
 export * from './path';
@@ -26,10 +27,7 @@ export * from './validate';
 export { default as Base64 } from './Base64';
 export { default as ReferenceBase } from './ReferenceBase';
 
-export interface DataUrlParts {
-  base64String: string | undefined;
-  mediaType: string | undefined;
-}
+export type { DataUrlParts, Observer };
 
 export function getDataUrlParts(dataUrlString: string): DataUrlParts {
   const isBase64 = dataUrlString.includes(';base64');
@@ -109,12 +107,6 @@ export function tryJSONStringify(data: any): string | null {
   } catch (_) {
     return null;
   }
-}
-
-export interface Observer<T> {
-  next: (value: T) => void;
-  error?: (error: Error) => void;
-  complete?: () => void;
 }
 
 export function parseListenerOrObserver<T>(

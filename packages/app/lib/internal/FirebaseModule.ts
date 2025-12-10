@@ -18,25 +18,11 @@
 import { getAppModule, getNativeModule } from './registry/nativeModule';
 import SharedEventEmitter from './SharedEventEmitter';
 import type { ReactNativeFirebase } from '../types/app';
+import type { FirebaseJsonConfig, ModuleConfig } from '../types/internal';
 import type { ReactNativeFirebaseNativeModules } from './NativeModules';
 import type EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
-/**
- * Firebase JSON configuration from firebase.json file
- * Structure: { "react-native": { [key: string]: boolean | string }, ... }
- */
-export type FirebaseJsonConfig = Record<string, unknown>;
-
 let firebaseJson: FirebaseJsonConfig | null = null;
-
-export interface ModuleConfig {
-  namespace: string;
-  nativeModuleName?: string | string[];
-  hasMultiAppSupport?: boolean;
-  hasCustomUrlOrRegionSupport?: boolean;
-  nativeEvents?: boolean | string[];
-  disablePrependCustomUrlOrRegion?: boolean;
-}
 
 export default class FirebaseModule<
   NativeModuleName extends keyof ReactNativeFirebaseNativeModules = any,

@@ -15,7 +15,7 @@
  *
  */
 
-import type { ReactNativeFirebase, Utils } from './app';
+import type { ReactNativeFirebase } from './app';
 
 /**
  * Internal types for React Native Firebase
@@ -80,7 +80,6 @@ export interface FirebaseRoot {
   apps: ReactNativeFirebase.FirebaseApp[];
   SDK_VERSION: string;
   setLogLevel: (logLevel: ReactNativeFirebase.LogLevelString) => void;
-  utils: Utils.Statics & (() => Utils.Module);
   [key: string]: unknown;
 }
 

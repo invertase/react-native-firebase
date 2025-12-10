@@ -15,20 +15,7 @@
  *
  */
 
-export interface NativeErrorUserInfo {
-  code?: string;
-  message?: string;
-  nativeErrorCode?: string | number;
-  nativeErrorMessage?: string;
-  [key: string]: any;
-}
-
-export interface NativeError {
-  userInfo: NativeErrorUserInfo;
-  message?: string;
-  customData?: any;
-  operationType?: string;
-}
+import type { NativeErrorUserInfo, NativeError } from '../types/internal';
 
 export default class NativeFirebaseError extends Error {
   readonly namespace!: string;
