@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-import firebase, { utils } from '.';
+import firebase, { utils } from './lib';
 
 // checks module exists at root
 console.log(firebase.utils().app.name);
