@@ -275,7 +275,8 @@ export function firebaseAppModuleProxy(app: FirebaseApp, moduleNamespace: string
  * @returns {*}
  */
 export function createFirebaseRoot(): FirebaseRoot {
-  const root: FirebaseRoot = {
+  // Create partial root object - module namespaces like 'utils' are added dynamically below
+  const root = {
     initializeApp,
     setReactNativeAsyncStorage,
     get app() {
@@ -286,7 +287,7 @@ export function createFirebaseRoot(): FirebaseRoot {
     },
     SDK_VERSION,
     setLogLevel,
-  };
+  } as FirebaseRoot;
 
   for (let i = 0; i < KNOWN_NAMESPACES.length; i++) {
     const namespace = KNOWN_NAMESPACES[i];

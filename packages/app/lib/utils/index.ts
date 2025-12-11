@@ -91,4 +91,4 @@ export default createModuleNamespace({
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseUtilsModule,
-});
+}) as unknown as Utils.Statics & (() => Utils.Module);
