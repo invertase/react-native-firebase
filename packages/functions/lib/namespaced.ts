@@ -25,8 +25,8 @@ import { HttpsError, type NativeError } from './HttpsError';
 import { version } from './version';
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import fallBackModule from './web/RNFBFunctionsModule';
-import type { HttpsCallableOptions } from './types/functions';
-import type { FirebaseApp } from '@react-native-firebase/app';
+import type { HttpsCallableOptions, FunctionsModule } from './types/functions';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
 const namespace = 'functions';
 
 const nativeModuleName = 'NativeRNFBTurboFunctions';
@@ -75,88 +75,16 @@ const statics = {
   HttpsErrorCode,
 };
 
-// Export the complete FirebaseFunctionsTypes namespace
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace FirebaseFunctionsTypes {
-  export type FunctionsErrorCode =
-    | 'ok'
-    | 'cancelled'
-    | 'unknown'
-    | 'invalid-argument'
-    | 'deadline-exceeded'
-    | 'not-found'
-    | 'already-exists'
-    | 'permission-denied'
-    | 'resource-exhausted'
-    | 'failed-precondition'
-    | 'aborted'
-    | 'out-of-range'
-    | 'unimplemented'
-    | 'internal'
-    | 'unavailable'
-    | 'data-loss'
-    | 'unauthenticated';
-
-  export interface HttpsCallableResult<ResponseData = unknown> {
-    readonly data: ResponseData;
-  }
-
-  export interface HttpsCallable<RequestData = unknown, ResponseData = unknown> {
-    (data?: RequestData | null): Promise<HttpsCallableResult<ResponseData>>;
-  }
-
-  // Re-export HttpsCallableOptions from types/functions
-  export type HttpsCallableOptions = import('./types/functions').HttpsCallableOptions;
-
-  export interface HttpsError extends Error {
-    readonly code: FunctionsErrorCode;
-    readonly details?: any;
-  }
-
-  export interface HttpsErrorCode {
-    OK: 'ok';
-    CANCELLED: 'cancelled';
-    UNKNOWN: 'unknown';
-    INVALID_ARGUMENT: 'invalid-argument';
-    DEADLINE_EXCEEDED: 'deadline-exceeded';
-    NOT_FOUND: 'not-found';
-    ALREADY_EXISTS: 'already-exists';
-    PERMISSION_DENIED: 'permission-denied';
-    UNAUTHENTICATED: 'unauthenticated';
-    RESOURCE_EXHAUSTED: 'resource-exhausted';
-    FAILED_PRECONDITION: 'failed-precondition';
-    ABORTED: 'aborted';
-    OUT_OF_RANGE: 'out-of-range';
-    UNIMPLEMENTED: 'unimplemented';
-    INTERNAL: 'internal';
-    UNAVAILABLE: 'unavailable';
-    DATA_LOSS: 'data-loss';
-  }
-
-  export interface Statics {
-    HttpsErrorCode: HttpsErrorCode;
-  }
-
-  export interface Module {
-    httpsCallable<RequestData = unknown, ResponseData = unknown>(
-      name: string,
-      options?: HttpsCallableOptions,
-    ): HttpsCallable<RequestData, ResponseData>;
-    httpsCallableFromUrl<RequestData = unknown, ResponseData = unknown>(
-      url: string,
-      options?: HttpsCallableOptions,
-    ): HttpsCallable<RequestData, ResponseData>;
-    useFunctionsEmulator(origin: string): void;
-    useEmulator(host: string, port: number): void;
-  }
-}
-
 class FirebaseFunctionsModule extends FirebaseModule {
   _customUrlOrRegion: string;
   private _useFunctionsEmulatorHost: string | null;
   private _useFunctionsEmulatorPort: number;
 
-  constructor(app: FirebaseApp, config: any, customUrlOrRegion?: string | null) {
+  constructor(
+    app: ReactNativeFirebase.FirebaseAppBase,
+    config: any,
+    customUrlOrRegion?: string | null,
+  ) {
     super(app, config, customUrlOrRegion);
     this._customUrlOrRegion = customUrlOrRegion || 'us-central1';
     this._useFunctionsEmulatorHost = null;
@@ -285,7 +213,7 @@ export default createModuleNamespace({
   hasCustomUrlOrRegionSupport: true,
   ModuleClass: FirebaseFunctionsModule,
   turboModule: true,
-});
+}) as unknown as (customUrlOrRegion?: string) => FunctionsModule;
 
 // import functions, { firebase } from '@react-native-firebase/functions';
 // functions().logEvent(...);
