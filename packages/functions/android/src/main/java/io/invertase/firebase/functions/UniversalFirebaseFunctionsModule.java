@@ -31,14 +31,6 @@ import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.UniversalFirebaseModule;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
-import okio.BufferedSource;
 
 @SuppressWarnings("WeakerAccess")
 public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
@@ -46,7 +38,8 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
   public static final String CODE_KEY = "code";
   public static final String MSG_KEY = "message";
   public static final String DETAILS_KEY = "details";
-  private static SparseArray<Call> functionsStreamingListeners = new SparseArray<>();
+  private static final String STREAMING_EVENT = "functions_streaming_event";
+  private static SparseArray<Object> functionsStreamingListeners = new SparseArray<>();
 
   UniversalFirebaseFunctionsModule(Context context, String serviceName) {
     super(context, serviceName);
@@ -109,7 +102,7 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
         });
   }
 
-  Task<Object> httpsCallableStream(
+  void httpsCallableStream(
       String appName,
       String region,
       String host,
@@ -118,23 +111,57 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
       Object data,
       ReadableMap options,
       int listenerId) {
-    return Tasks.call(
-        getExecutor(),
-        () -> {
-          FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-          FirebaseFunctions functionsInstance = FirebaseFunctions.getInstance(firebaseApp, region);
-          HttpsCallableReference httpReference = functionsInstance.getHttpsCallable.(name, data, options);
-          httpReference.stream(data, options, (event) -> {
-            if (event.get("done")) {
-              removeFunctionsStreamingListener(appName, listenerId);
-            } else {
-              emitEvent(appName, listenerId, event);
-            }
-          });
-        });
+    getExecutor()
+        .execute(
+            () -> {
+              try {
+                FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+                FirebaseFunctions functionsInstance =
+                    FirebaseFunctions.getInstance(firebaseApp, region);
+
+                if (host != null) {
+                  functionsInstance.useEmulator(host, port);
+                }
+
+                HttpsCallableReference httpReference = functionsInstance.getHttpsCallable(name);
+
+                if (options.hasKey("timeout")) {
+                  httpReference.setTimeout((long) options.getInt("timeout"), TimeUnit.SECONDS);
+                }
+
+                // Store the listener reference
+                functionsStreamingListeners.put(listenerId, httpReference);
+
+                // Use the Firebase SDK's native .stream() method
+                httpReference
+                    .stream(data)
+                    .addOnSuccessListener(
+                        result -> {
+                          // Emit the stream data as it arrives
+                          emitStreamEvent(appName, listenerId, result.getData(), false, null);
+                        })
+                    .addOnFailureListener(
+                        exception -> {
+                          // Emit error event
+                          emitStreamEvent(appName, listenerId, null, true, exception.getMessage());
+                          removeFunctionsStreamingListener(listenerId);
+                        })
+                    .addOnCompleteListener(
+                        task -> {
+                          // Stream completed - emit done event
+                          if (task.isSuccessful()) {
+                            emitStreamDone(appName, listenerId);
+                          }
+                          removeFunctionsStreamingListener(listenerId);
+                        });
+              } catch (Exception e) {
+                emitStreamEvent(appName, listenerId, null, true, e.getMessage());
+                removeFunctionsStreamingListener(listenerId);
+              }
+            });
   }
 
-  Task<Object> httpsCallableStreamFromUrl(
+  void httpsCallableStreamFromUrl(
       String appName,
       String region,
       String host,
@@ -143,33 +170,99 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
       Object data,
       ReadableMap options,
       int listenerId) {
+    getExecutor()
+        .execute(
+            () -> {
+              try {
+                FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+                FirebaseFunctions functionsInstance =
+                    FirebaseFunctions.getInstance(firebaseApp, region);
 
-    return Tasks.call(
-        getExecutor(),
-        () -> {
-          FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-          FirebaseFunctions functionsInstance = FirebaseFunctions.getInstance(firebaseApp, region);
-          URL parsedUrl = new URL(url);
-          HttpsCallableReference httpReference = functionsInstance.getHttpsCallableFromUrl(parsedUrl);
-        httpReference.stream(data, options, (event) -> {
-            if (event.get("done")) {
-              removeFunctionsStreamingListener(appName, listenerId);
-            } else {
-              emitEvent(appName, listenerId, event);
-            }
-          });
-        return Tasks.await(httpReference.call(data)).getData();
-        });
-  } 
+                if (host != null) {
+                  functionsInstance.useEmulator(host, port);
+                }
 
-  private void emitEvent(String appName, int listenerId, WritableMap body) {
-    ReactNativeFirebaseEventEmitter.emitEvent(
-        appName, "functions_streaming_event", Arguments.createMap().putMap("body", body));
+                URL parsedUrl = new URL(url);
+                HttpsCallableReference httpReference =
+                    functionsInstance.getHttpsCallableFromUrl(parsedUrl);
+
+                if (options.hasKey("timeout")) {
+                  httpReference.setTimeout((long) options.getInt("timeout"), TimeUnit.SECONDS);
+                }
+
+                // Store the listener reference
+                functionsStreamingListeners.put(listenerId, httpReference);
+
+                // Use the Firebase SDK's native .stream() method
+                httpReference
+                    .stream(data)
+                    .addOnSuccessListener(
+                        result -> {
+                          // Emit the stream data as it arrives
+                          emitStreamEvent(appName, listenerId, result.getData(), false, null);
+                        })
+                    .addOnFailureListener(
+                        exception -> {
+                          // Emit error event
+                          emitStreamEvent(appName, listenerId, null, true, exception.getMessage());
+                          removeFunctionsStreamingListener(listenerId);
+                        })
+                    .addOnCompleteListener(
+                        task -> {
+                          // Stream completed - emit done event
+                          if (task.isSuccessful()) {
+                            emitStreamDone(appName, listenerId);
+                          }
+                          removeFunctionsStreamingListener(listenerId);
+                        });
+              } catch (Exception e) {
+                emitStreamEvent(appName, listenerId, null, true, e.getMessage());
+                removeFunctionsStreamingListener(listenerId);
+              }
+            });
   }
 
-  private void emitDone(String appName, int listenerId) {
+  void removeFunctionsStreamingListener(int listenerId) {
+    Object listener = functionsStreamingListeners.get(listenerId);
+    if (listener != null) {
+      functionsStreamingListeners.remove(listenerId);
+      // Cancel/cleanup if needed
+    }
+  }
+
+  private void emitStreamEvent(
+      String appName, int listenerId, Object data, boolean isError, String errorMessage) {
+    WritableMap eventBody = Arguments.createMap();
+    WritableMap body = Arguments.createMap();
+
+    if (isError) {
+      body.putString("error", errorMessage);
+    } else if (data != null) {
+      // Convert data to WritableMap/Array as needed
+      // Using RCTConvertFirebase from the common module
+      io.invertase.firebase.common.RCTConvertFirebase.mapPutValue("data", data, body);
+    }
+
+    eventBody.putInt("listenerId", listenerId);
+    eventBody.putMap("body", body);
+
+    FirebaseFunctionsStreamHandler handler =
+        new FirebaseFunctionsStreamHandler(STREAMING_EVENT, eventBody, appName, listenerId);
+
+    ReactNativeFirebaseEventEmitter.getSharedInstance().sendEvent(handler);
+  }
+
+  private void emitStreamDone(String appName, int listenerId) {
+    WritableMap eventBody = Arguments.createMap();
     WritableMap body = Arguments.createMap();
     body.putBoolean("done", true);
-    emitEvent(appName, listenerId, body);
+
+    eventBody.putInt("listenerId", listenerId);
+    eventBody.putMap("body", body);
+
+    FirebaseFunctionsStreamHandler handler =
+        new FirebaseFunctionsStreamHandler(STREAMING_EVENT, eventBody, appName, listenerId);
+
+    ReactNativeFirebaseEventEmitter.getSharedInstance().sendEvent(handler);
   }
 }

@@ -109,6 +109,51 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
         exception -> handleFunctionsException(exception, promise));
   }
 
+  @Override
+  public void httpsCallableStream(
+      String appName,
+      String region,
+      String emulatorHost,
+      double emulatorPort,
+      String name,
+      ReadableMap data,
+      ReadableMap options,
+      double listenerId) {
+
+    Object callableData = data.toHashMap().get(DATA_KEY);
+
+    // Convert emulatorPort to Integer (null if not using emulator)
+    Integer port = emulatorHost != null ? (int) emulatorPort : null;
+
+    module.httpsCallableStream(
+        appName, region, emulatorHost, port, name, callableData, options, (int) listenerId);
+  }
+
+  @Override
+  public void httpsCallableStreamFromUrl(
+      String appName,
+      String region,
+      String emulatorHost,
+      double emulatorPort,
+      String url,
+      ReadableMap data,
+      ReadableMap options,
+      double listenerId) {
+
+    Object callableData = data.toHashMap().get(DATA_KEY);
+
+    // Convert emulatorPort to Integer (null if not using emulator)
+    Integer port = emulatorHost != null ? (int) emulatorPort : null;
+
+    module.httpsCallableStreamFromUrl(
+        appName, region, emulatorHost, port, url, callableData, options, (int) listenerId);
+  }
+
+  @Override
+  public void removeFunctionsStreaming(double listenerId) {
+    module.removeFunctionsStreamingListener((int) listenerId);
+  }
+
   private void handleFunctionsException(Exception exception, Promise promise) {
     Object details = null;
     String code = "UNKNOWN";

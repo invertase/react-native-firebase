@@ -45,6 +45,55 @@ export interface Spec extends TurboModule {
     data: { data: RequestData },
     options: { timeout?: number },
   ): Promise<{ data: ResponseData }>;
+
+  /**
+   * Calls a Cloud Function with streaming support, emitting events as they arrive.
+   *
+   * @param emulatorHost - The emulator host (can be null)
+   * @param emulatorPort - The emulator port (can be -1 for no emulator)
+   * @param name - The name of the Cloud Function to call
+   * @param data - The data to pass to the function
+   * @param options - Additional options for the call
+   * @param listenerId - Unique identifier for this stream listener
+   */
+  httpsCallableStream(
+    appName: string,
+    region: string,
+    emulatorHost: string | null,
+    emulatorPort: number,
+    name: string,
+    data: { data: RequestData },
+    options: { timeout?: number },
+    listenerId: number,
+  ): void;
+
+  /**
+   * Calls a Cloud Function using a full URL with streaming support.
+   *
+   * @param emulatorHost - The emulator host (can be null)
+   * @param emulatorPort - The emulator port (can be -1 for no emulator)
+   * @param url - The full URL of the Cloud Function
+   * @param data - The data to pass to the function
+   * @param options - Additional options for the call
+   * @param listenerId - Unique identifier for this stream listener
+   */
+  httpsCallableStreamFromUrl(
+    appName: string,
+    region: string,
+    emulatorHost: string | null,
+    emulatorPort: number,
+    url: string,
+    data: { data: RequestData },
+    options: { timeout?: number },
+    listenerId: number,
+  ): void;
+
+  /**
+   * Removes/cancels a streaming listener.
+   *
+   * @param listenerId - The listener ID to remove
+   */
+  removeFunctionsStreaming(listenerId: number): void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('NativeRNFBTurboFunctions');
