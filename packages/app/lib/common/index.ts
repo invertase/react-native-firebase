@@ -548,11 +548,11 @@ export function deprecationConsoleWarning(
       const instanceMap = moduleMap[instanceName];
       const deprecatedMethod = instanceMap?.[methodName];
       if (instanceMap && deprecatedMethod) {
-        if (!(globalThis as any).RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS) {
+        if (!globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS) {
           // eslint-disable-next-line no-console
           console.warn(createMessage(nameSpace, methodName, instanceName));
 
-          if ((globalThis as any).RNFB_MODULAR_DEPRECATION_STRICT_MODE === true) {
+          if (globalThis.RNFB_MODULAR_DEPRECATION_STRICT_MODE === true) {
             throw new Error('Deprecated API usage detected while in strict mode.');
           }
         }
