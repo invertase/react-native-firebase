@@ -23,7 +23,7 @@ import type { Deferred, Callback } from '../types/internal';
  */
 export function promiseDefer<T = void>(): Deferred<T> {
   const deferred: Deferred<T> = {
-    promise: null as any,
+    promise: null as unknown as Promise<T>,
     resolve: null,
     reject: null,
   };

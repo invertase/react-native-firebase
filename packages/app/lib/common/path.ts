@@ -95,7 +95,7 @@ export const INVALID_PATH_REGEX = /[[\].#$\u0000-\u001F\u007F]/;
  * @param path
  * @returns {boolean}
  */
-export function isValidPath(path: any): boolean {
+export function isValidPath(path: unknown): boolean {
   return typeof path === 'string' && path.length !== 0 && !INVALID_PATH_REGEX.test(path);
 }
 
@@ -106,7 +106,7 @@ export const INVALID_KEY_REGEX = /[\[\].#$\/\u0000-\u001F\u007F]/;
  * @param key
  * @returns {boolean}
  */
-export function isValidKey(key: any): boolean {
+export function isValidKey(key: unknown): boolean {
   return typeof key === 'string' && key.length !== 0 && !INVALID_KEY_REGEX.test(key);
 }
 

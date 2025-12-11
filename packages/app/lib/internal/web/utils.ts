@@ -52,6 +52,6 @@ export function getWebError(
   } as ReactNativeFirebase.NativeFirebaseError;
 }
 
-export function emitEvent(eventName: string, event: any): void {
+export function emitEvent(eventName: string, event: unknown): void {
   setImmediate(() => DeviceEventEmitter.emit('rnfb_' + eventName, event));
 }
