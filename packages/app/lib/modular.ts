@@ -39,6 +39,7 @@ export function deleteApp(app: ReactNativeFirebase.FirebaseApp): Promise<void> {
     null,
     app.name,
     (app as any)._nativeInitialized,
+    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
     MODULAR_DEPRECATION_ARG,
   );
 }
@@ -73,7 +74,11 @@ export function onLog(logCallback: LogCallback | null, options?: LogOptions): vo
  * @returns An array of all initialized Firebase apps.
  */
 export function getApps(): ReactNativeFirebase.FirebaseApp[] {
-  return getAppsCompat.call(null, MODULAR_DEPRECATION_ARG);
+  return getAppsCompat.call(
+    null,
+    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -86,7 +91,13 @@ export function initializeApp(
   options: ReactNativeFirebase.FirebaseAppOptions,
   configOrName?: string | ReactNativeFirebase.FirebaseAppConfig,
 ): Promise<ReactNativeFirebase.FirebaseApp> {
-  return initializeAppCompat.call(null, options, configOrName, MODULAR_DEPRECATION_ARG);
+  return initializeAppCompat.call(
+    null,
+    options,
+    configOrName,
+    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -95,7 +106,12 @@ export function initializeApp(
  * @returns The requested Firebase app instance.
  */
 export function getApp(name?: string): ReactNativeFirebase.FirebaseApp {
-  return getAppCompat.call(null, name, MODULAR_DEPRECATION_ARG);
+  return getAppCompat.call(
+    null,
+    name,
+    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -104,7 +120,12 @@ export function getApp(name?: string): ReactNativeFirebase.FirebaseApp {
  * @returns void
  */
 export function setLogLevel(logLevel: ReactNativeFirebase.LogLevelString): void {
-  return setLogLevelCompat.call(null, logLevel, MODULAR_DEPRECATION_ARG);
+  return setLogLevelCompat.call(
+    null,
+    logLevel,
+    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -116,7 +137,12 @@ export function setLogLevel(logLevel: ReactNativeFirebase.LogLevelString): void 
 export function setReactNativeAsyncStorage(
   asyncStorage: ReactNativeFirebase.ReactNativeAsyncStorage,
 ): void {
-  return setReactNativeAsyncStorageCompat.call(null, asyncStorage, MODULAR_DEPRECATION_ARG);
+  return setReactNativeAsyncStorageCompat.call(
+    null,
+    asyncStorage,
+    // @ts-expect-error - Extra arg used by deprecation proxy to detect modular calls
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**

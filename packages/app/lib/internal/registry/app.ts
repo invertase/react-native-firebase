@@ -92,10 +92,7 @@ export function initializeNativeApps(): void {
  *
  * @param name
  */
-export function getApp(
-  name: string = DEFAULT_APP_NAME,
-  _deprecationArg?: any,
-): ReactNativeFirebase.FirebaseApp {
+export function getApp(name: string = DEFAULT_APP_NAME): ReactNativeFirebase.FirebaseApp {
   warnIfNotModularCall(arguments, 'getApp()');
   if (!initializedNativeApps) {
     initializeNativeApps();
@@ -112,7 +109,7 @@ export function getApp(
 /**
  * Gets all app instances, used for `firebase.apps`
  */
-export function getApps(_deprecationArg?: any): ReactNativeFirebase.FirebaseApp[] {
+export function getApps(): ReactNativeFirebase.FirebaseApp[] {
   warnIfNotModularCall(arguments, 'getApps()');
   if (!initializedNativeApps) {
     initializeNativeApps();
@@ -128,7 +125,6 @@ export function getApps(_deprecationArg?: any): ReactNativeFirebase.FirebaseApp[
 export function initializeApp(
   options: Partial<FirebaseAppOptions> = {},
   configOrName?: string | FirebaseAppConfig,
-  _deprecationArg?: any,
 ): Promise<ReactNativeFirebase.FirebaseApp> {
   warnIfNotModularCall(arguments, 'initializeApp()');
   let appConfig: FirebaseAppConfig = configOrName as FirebaseAppConfig;
@@ -223,10 +219,7 @@ export function initializeApp(
     });
 }
 
-export function setLogLevel(
-  logLevel: ReactNativeFirebase.LogLevelString,
-  _deprecationArg?: any,
-): void {
+export function setLogLevel(logLevel: ReactNativeFirebase.LogLevelString): void {
   warnIfNotModularCall(arguments, 'setLogLevel()');
   if (!['error', 'warn', 'info', 'debug', 'verbose'].includes(logLevel)) {
     throw new Error('LogLevel must be one of "error", "warn", "info", "debug", "verbose"');
@@ -239,10 +232,7 @@ export function setLogLevel(
   }
 }
 
-export function setReactNativeAsyncStorage(
-  asyncStorage: ReactNativeAsyncStorage,
-  _deprecationArg?: any,
-): void {
+export function setReactNativeAsyncStorage(asyncStorage: ReactNativeAsyncStorage): void {
   warnIfNotModularCall(arguments, 'setReactNativeAsyncStorage()');
 
   if (!isObject(asyncStorage)) {
@@ -267,11 +257,7 @@ export function setReactNativeAsyncStorage(
 /**
  *
  */
-export function deleteApp(
-  name: string,
-  nativeInitialized: boolean,
-  _deprecationArg?: any,
-): Promise<void> {
+export function deleteApp(name: string, nativeInitialized: boolean): Promise<void> {
   if (name === DEFAULT_APP_NAME && nativeInitialized) {
     return Promise.reject(new Error('Unable to delete the default native firebase app instance.'));
   }
