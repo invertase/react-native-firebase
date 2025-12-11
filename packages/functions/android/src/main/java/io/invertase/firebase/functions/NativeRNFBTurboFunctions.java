@@ -150,7 +150,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
   }
 
   @Override
-  public void removeFunctionsStreaming(double listenerId) {
+  public void removeFunctionsStreaming(String appName, String region, double listenerId) {
     module.removeFunctionsStreamingListener((int) listenerId);
   }
 

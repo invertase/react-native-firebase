@@ -22,6 +22,9 @@ protected:
 public:
   virtual jsi::Value httpsCallable(jsi::Runtime &rt, jsi::String appName, jsi::String region, std::optional<jsi::String> emulatorHost, double emulatorPort, jsi::String name, jsi::Object data, jsi::Object options) = 0;
   virtual jsi::Value httpsCallableFromUrl(jsi::Runtime &rt, jsi::String appName, jsi::String region, std::optional<jsi::String> emulatorHost, double emulatorPort, jsi::String url, jsi::Object data, jsi::Object options) = 0;
+  virtual void httpsCallableStream(jsi::Runtime &rt, jsi::String appName, jsi::String region, std::optional<jsi::String> emulatorHost, double emulatorPort, jsi::String name, jsi::Object data, jsi::Object options, double listenerId) = 0;
+  virtual void httpsCallableStreamFromUrl(jsi::Runtime &rt, jsi::String appName, jsi::String region, std::optional<jsi::String> emulatorHost, double emulatorPort, jsi::String url, jsi::Object data, jsi::Object options, double listenerId) = 0;
+  virtual void removeFunctionsStreaming(jsi::Runtime &rt, jsi::String appName, jsi::String region, double listenerId) = 0;
 
 };
 
@@ -67,6 +70,30 @@ private:
 
       return bridging::callFromJs<jsi::Value>(
           rt, &T::httpsCallableFromUrl, jsInvoker_, instance_, std::move(appName), std::move(region), std::move(emulatorHost), std::move(emulatorPort), std::move(url), std::move(data), std::move(options));
+    }
+    void httpsCallableStream(jsi::Runtime &rt, jsi::String appName, jsi::String region, std::optional<jsi::String> emulatorHost, double emulatorPort, jsi::String name, jsi::Object data, jsi::Object options, double listenerId) override {
+      static_assert(
+          bridging::getParameterCount(&T::httpsCallableStream) == 9,
+          "Expected httpsCallableStream(...) to have 9 parameters");
+
+      return bridging::callFromJs<void>(
+          rt, &T::httpsCallableStream, jsInvoker_, instance_, std::move(appName), std::move(region), std::move(emulatorHost), std::move(emulatorPort), std::move(name), std::move(data), std::move(options), std::move(listenerId));
+    }
+    void httpsCallableStreamFromUrl(jsi::Runtime &rt, jsi::String appName, jsi::String region, std::optional<jsi::String> emulatorHost, double emulatorPort, jsi::String url, jsi::Object data, jsi::Object options, double listenerId) override {
+      static_assert(
+          bridging::getParameterCount(&T::httpsCallableStreamFromUrl) == 9,
+          "Expected httpsCallableStreamFromUrl(...) to have 9 parameters");
+
+      return bridging::callFromJs<void>(
+          rt, &T::httpsCallableStreamFromUrl, jsInvoker_, instance_, std::move(appName), std::move(region), std::move(emulatorHost), std::move(emulatorPort), std::move(url), std::move(data), std::move(options), std::move(listenerId));
+    }
+    void removeFunctionsStreaming(jsi::Runtime &rt, jsi::String appName, jsi::String region, double listenerId) override {
+      static_assert(
+          bridging::getParameterCount(&T::removeFunctionsStreaming) == 4,
+          "Expected removeFunctionsStreaming(...) to have 4 parameters");
+
+      return bridging::callFromJs<void>(
+          rt, &T::removeFunctionsStreaming, jsInvoker_, instance_, std::move(appName), std::move(region), std::move(listenerId));
     }
 
   private:

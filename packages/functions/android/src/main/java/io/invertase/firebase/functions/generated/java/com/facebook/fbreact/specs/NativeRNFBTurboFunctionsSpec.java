@@ -52,5 +52,5 @@ public abstract class NativeRNFBTurboFunctionsSpec extends ReactContextBaseJavaM
 
   @ReactMethod
   @DoNotStrip
-  public abstract void removeFunctionsStreaming(double listenerId);
+  public abstract void removeFunctionsStreaming(String appName, String region, double listenerId);
 }

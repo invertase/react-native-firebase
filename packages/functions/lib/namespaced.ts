@@ -75,8 +75,6 @@ const statics = {
   HttpsErrorCode,
 };
 
-const nativeEvents = ['functions_streaming_event'];
-
 // Export the complete FirebaseFunctionsTypes namespace
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace FirebaseFunctionsTypes {
@@ -390,7 +388,7 @@ export default createModuleNamespace({
   version,
   namespace,
   nativeModuleName,
-  nativeEvents: false,
+  nativeEvents: ['functions_streaming_event'],
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: true,
   ModuleClass: FirebaseFunctionsModule,

@@ -91,9 +91,11 @@ export interface Spec extends TurboModule {
   /**
    * Removes/cancels a streaming listener.
    *
+   * @param appName - The app name
+   * @param region - The region
    * @param listenerId - The listener ID to remove
    */
-  removeFunctionsStreaming(listenerId: number): void;
+  removeFunctionsStreaming(appName: string, region: string, listenerId: number): void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('NativeRNFBTurboFunctions');
