@@ -25,7 +25,7 @@ import { HttpsError, type NativeError } from './HttpsError';
 import { version } from './version';
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import fallBackModule from './web/RNFBFunctionsModule';
-import type { HttpsCallableOptions, FunctionsModule } from './types/functions';
+import type { HttpsCallableOptions, FunctionsModule, FunctionsStatics } from './types/functions';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 const namespace = 'functions';
 
@@ -201,9 +201,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
 // import { SDK_VERSION } from '@react-native-firebase/functions';
 export const SDK_VERSION = version;
 
-// import functions from '@react-native-firebase/functions';
-// functions().logEvent(...);
-export default createModuleNamespace({
+const functionsNamespace = createModuleNamespace({
   statics,
   version,
   namespace,
@@ -213,12 +211,25 @@ export default createModuleNamespace({
   hasCustomUrlOrRegionSupport: true,
   ModuleClass: FirebaseFunctionsModule,
   turboModule: true,
-}) as unknown as (customUrlOrRegion?: string) => FunctionsModule;
+});
+
+// import functions from '@react-native-firebase/functions';
+// functions().httpsCallable(...);
+export default functionsNamespace as unknown as ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  FunctionsModule,
+  FunctionsStatics
+>;
 
 // import functions, { firebase } from '@react-native-firebase/functions';
-// functions().logEvent(...);
-// firebase.functions().logEvent(...);
-export const firebase = getFirebaseRoot();
+// functions().httpsCallable(...);
+// firebase.functions().httpsCallable(...);
+export const firebase =
+  getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
+    'functions',
+    FunctionsModule,
+    FunctionsStatics,
+    true
+  >;
 
 // Register the interop module for non-native platforms.
 setReactNativeModule(nativeModuleName, fallBackModule);

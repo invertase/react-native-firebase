@@ -299,6 +299,40 @@ export namespace ReactNativeFirebase {
      */
     readonly SDK_VERSION: string;
   } & S;
+
+  /**
+   * Type for the `firebase` named export from module packages.
+   * Provides complete typing for:
+   * - Root level access: `firebase.functions(app?)`
+   * - App level access: `firebase.app().functions(region?)`
+   * - Statics: `firebase.functions.HttpsErrorCode`
+   * - Root properties: `firebase.SDK_VERSION`, `firebase.app()`, etc.
+   *
+   * @typeParam Namespace - The module namespace (e.g., 'functions', 'auth', 'firestore')
+   * @typeParam M - The module instance type (must extend FirebaseModule with `app` property)
+   * @typeParam S - The module statics type
+   * @typeParam HasCustomArg - true if app-level accessor takes optional string (region/url/databaseId)
+   *
+   * @example
+   * // In functions package:
+   * export const firebase = getFirebaseRoot() as ReactNativeFirebase.FirebaseNamespacedExport<
+   *   'functions',
+   *   FunctionsModule,
+   *   FunctionsStatics,
+   *   true  // functions() takes regionOrCustomDomain
+   * >;
+   */
+  export type FirebaseNamespacedExport<
+    Namespace extends string,
+    M extends FirebaseModule,
+    S extends object = object,
+    HasCustomArg extends boolean = false,
+  > = Module &
+    Record<Namespace, FirebaseModuleWithStaticsAndApp<M, S>> & {
+      app(
+        name?: string,
+      ): FirebaseApp & Record<Namespace, HasCustomArg extends true ? (arg?: string) => M : () => M>;
+    };
 }
 
 /**
