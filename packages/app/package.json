@@ -65,17 +65,6 @@
         "default": "./dist/commonjs/index.js"
       }
     },
-    "./internal": {
-      "source": "./lib/internal/index.ts",
-      "import": {
-        "types": "./dist/typescript/module/lib/internal/index.d.ts",
-        "default": "./dist/module/internal/index.js"
-      },
-      "require": {
-        "types": "./dist/typescript/commonjs/lib/internal/index.d.ts",
-        "default": "./dist/commonjs/internal/index.js"
-      }
-    },
     "./lib/internal": {
       "source": "./lib/internal/index.ts",
       "import": {
@@ -110,17 +99,6 @@
       }
     },
     "./lib/common/*": {
-      "source": "./lib/common/*.ts",
-      "import": {
-        "types": "./dist/typescript/module/lib/common/*.d.ts",
-        "default": "./dist/module/common/*"
-      },
-      "require": {
-        "types": "./dist/typescript/commonjs/lib/common/*.d.ts",
-        "default": "./dist/commonjs/common/*"
-      }
-    },
-    "./common/*": {
       "source": "./lib/common/*.ts",
       "import": {
         "types": "./dist/typescript/module/lib/common/*.d.ts",
