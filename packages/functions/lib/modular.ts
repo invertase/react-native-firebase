@@ -95,3 +95,32 @@ export function httpsCallableFromUrl<RequestData = unknown, ResponseData = unkno
     MODULAR_DEPRECATION_ARG,
   ) as HttpsCallable<RequestData, ResponseData>;
 }
+
+
+export function httpsCallableStream<RequestData = unknown, ResponseData = unknown>(
+  functionsInstance: Functions,
+  name: string,
+  options?: HttpsCallableOptions,
+): HttpsCallable<RequestData, ResponseData> {
+  return functionsInstance.httpsCallableStream.call(
+    functionsInstance,
+    name,
+    options,
+    // @ts-ignore
+    MODULAR_DEPRECATION_ARG,
+  ) as HttpsCallable<RequestData, ResponseData>;
+}
+
+export function httpsCallableFromUrlStream<RequestData = unknown, ResponseData = unknown>(
+  functionsInstance: Functions,
+  url: string,
+  options?: HttpsCallableOptions,
+): HttpsCallable<RequestData, ResponseData> {
+  return functionsInstance.httpsCallableFromUrlStream.call(
+    functionsInstance,
+    url,
+    options,
+    // @ts-ignore
+    MODULAR_DEPRECATION_ARG,
+  ) as HttpsCallable<RequestData, ResponseData>;
+}

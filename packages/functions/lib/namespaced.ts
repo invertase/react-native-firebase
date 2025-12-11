@@ -270,7 +270,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
       }
     }
 
-    return (data?: any) => {
+    const callableFunction: any = (data?: any) => {
       const nativePromise = this.native.httpsCallableFromUrl(
         this._useFunctionsEmulatorHost,
         this._useFunctionsEmulatorPort,
@@ -292,6 +292,51 @@ class FirebaseFunctionsModule extends FirebaseModule {
         );
       });
     };
+
+    callableFunction.stream = (data?: any, onEvent?: (event: any) => void, streamOptions: HttpsCallableOptions = {}) => {
+      if (streamOptions.timeout) {
+        if (isNumber(streamOptions.timeout)) {
+          streamOptions.timeout = streamOptions.timeout / 1000;
+        } else {
+          throw new Error('HttpsCallableOptions.timeout expected a Number in milliseconds');
+        }
+      }
+
+      const listenerId = this._id_functions_streaming_event++;
+      // @ts-ignore
+      const eventName = this.eventNameForApp(`functions_streaming_event:${listenerId}`);
+
+      // @ts-ignore
+      const subscription = this.emitter.addListener(eventName, (event: any) => {
+        const body = event.body;
+        if (onEvent) {
+          onEvent(body);
+        }
+        if (body && (body.done || body.error)) {
+          subscription.remove();
+          if (this.native.removeFunctionsStreaming) {
+            this.native.removeFunctionsStreaming(listenerId);
+          }
+        }
+      });
+
+      this.native.httpsCallableStreamFromUrl(
+        this._useFunctionsEmulatorHost || null,
+        this._useFunctionsEmulatorPort || -1,
+        url,
+        { data },
+        streamOptions,
+        listenerId,
+      );
+
+      return () => {
+        subscription.remove();
+        if (this.native.removeFunctionsStreaming) {
+          this.native.removeFunctionsStreaming(listenerId);
+        }
+      };
+    };
+    return callableFunction;
   }
 
   useFunctionsEmulator(origin: string): void {

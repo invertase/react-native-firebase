@@ -34,6 +34,14 @@ export interface FunctionsModule {
     url: string,
     options?: HttpsCallableOptions,
   ): HttpsCallable<RequestData, ResponseData>;
+  httpsCallableStream<RequestData = unknown, ResponseData = unknown>(
+    name: string,
+    options?: HttpsCallableOptions,
+  ): HttpsCallable<RequestData, ResponseData>;
+  httpsCallableStreamFromUrl<RequestData = unknown, ResponseData = unknown>(
+    url: string,
+    options?: HttpsCallableOptions,
+  ): HttpsCallable<RequestData, ResponseData>;
   useFunctionsEmulator(origin: string): void;
   useEmulator(host: string, port: number): void;
 }

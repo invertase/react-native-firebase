@@ -7,6 +7,8 @@ import {
   httpsCallable,
   httpsCallableFromUrl,
   HttpsErrorCode,
+  httpsCallableStream,
+  httpsCallableFromUrlStream,
   type HttpsCallableOptions,
   type HttpsCallable as HttpsCallableType,
   type FunctionsModule,
@@ -101,6 +103,14 @@ describe('Cloud Functions', function () {
       expect(HttpsErrorCode).toBeDefined();
     });
 
+    it('`httpsCallableStream` function is properly exposed to end user', function () {
+      expect(httpsCallableStream).toBeDefined();
+    });
+
+    it('`httpsCallableFromUrlStream` function is properly exposed to end user', function () {
+      expect(httpsCallableFromUrlStream).toBeDefined();
+    });
+
     describe('types', function () {
       it('`HttpsCallableOptions` type is properly exposed to end user', function () {
         const options: HttpsCallableOptions = { timeout: 5000 };
@@ -189,6 +199,24 @@ describe('Cloud Functions', function () {
           () => httpsCallableFromUrl(functions, 'https://example.com/example'),
           () => functions.httpsCallableFromUrl('https://example.com/example'),
           'httpsCallableFromUrl',
+        );
+      });
+
+      it('httpsCallableStream()', function () {
+        const functions = (getApp() as unknown as FirebaseApp).functions();
+        functionsRefV9Deprecation(
+          () => httpsCallableStream(functions, 'example'),
+          () => functions.httpsCallableStream('example'),
+          'httpsCallableStream',
+        );
+      });
+
+      it('httpsCallableFromUrlStream()', function () {
+        const functions = (getApp() as unknown as FirebaseApp).functions();
+        functionsRefV9Deprecation(
+          () => httpsCallableFromUrlStream(functions, 'https://example.com/example'),
+          () => functions.httpsCallableFromUrlStream('https://example.com/example'),
+          'httpsCallableFromUrlStream',
         );
       });
     });

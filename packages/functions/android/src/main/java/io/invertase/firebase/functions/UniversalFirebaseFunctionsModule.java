@@ -134,19 +134,33 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
         });
   }
 
-  private void addFunctionsStreamingListener(String appName, int listenerId) {
-    functionsStreamingListeners.put(listenerId, null);
-  }
+  Task<Object> httpsCallableStreamFromUrl(
+      String appName,
+      String region,
+      String host,
+      Integer port,
+      String url,
+      Object data,
+      ReadableMap options,
+      int listenerId) {
 
-  private void removeFunctionsStreamingListener(String appName, int listenerId) {
-    functionsStreamingListeners.remove(listenerId);
-  }
-
-  private void emitError(String appName, int listenerId, String message) {
-    WritableMap body = Arguments.createMap();
-    body.putString("error", message != null ? message : "unknown_error");
-    emitEvent(appName, listenerId, body);
-  }
+    return Tasks.call(
+        getExecutor(),
+        () -> {
+          FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+          FirebaseFunctions functionsInstance = FirebaseFunctions.getInstance(firebaseApp, region);
+          URL parsedUrl = new URL(url);
+          HttpsCallableReference httpReference = functionsInstance.getHttpsCallableFromUrl(parsedUrl);
+        httpReference.stream(data, options, (event) -> {
+            if (event.get("done")) {
+              removeFunctionsStreamingListener(appName, listenerId);
+            } else {
+              emitEvent(appName, listenerId, event);
+            }
+          });
+        return Tasks.await(httpReference.call(data)).getData();
+        });
+  } 
 
   private void emitEvent(String appName, int listenerId, WritableMap body) {
     ReactNativeFirebaseEventEmitter.emitEvent(
