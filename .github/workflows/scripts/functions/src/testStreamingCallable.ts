@@ -1,4 +1,4 @@
-import { onCall, CallableRequest } from 'firebase-functions/v2/https';
+import { onCall, CallableRequest, CallableResponse } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions/v2';
 
 /**
@@ -6,28 +6,35 @@ import { logger } from 'firebase-functions/v2';
  * This function demonstrates Server-Sent Events (SSE) streaming
  */
 export const testStreamingCallable = onCall(
-  async (req: CallableRequest<{ count?: number; delay?: number }>) => {
+  async (
+    req: CallableRequest<{ count?: number; delay?: number }>,
+    response?: CallableResponse<any>,
+  ) => {
     const count = req.data.count || 5;
     const delay = req.data.delay || 500;
 
     logger.info('testStreamingCallable called', { count, delay });
 
-    // For streaming, we need to return a stream response
-    // The Firebase SDK will handle the streaming protocol
-    const chunks = [];
+    // Send chunks of data over time
     for (let i = 0; i < count; i++) {
-      chunks.push({
-        index: i,
-        message: `Chunk ${i + 1} of ${count}`,
-        timestamp: new Date().toISOString(),
-        data: {
-          value: i * 10,
-          isEven: i % 2 === 0,
-        },
-      });
+      // Wait for the specified delay
+      await new Promise(resolve => setTimeout(resolve, delay));
+      
+      if (response) {
+        await response.sendChunk({
+          index: i,
+          message: `Chunk ${i + 1} of ${count}`,
+          timestamp: new Date().toISOString(),
+          data: {
+            value: i * 10,
+            isEven: i % 2 === 0,
+          },
+        });
+      }
     }
 
-    return { chunks, totalCount: count };
+    // Return final result
+    return { totalCount: count, message: 'Stream complete' };
   },
 );
 
@@ -35,7 +42,10 @@ export const testStreamingCallable = onCall(
  * Test streaming callable that sends progressive updates
  */
 export const testProgressStream = onCall(
-  async (req: CallableRequest<{ task?: string }>) => {
+  async (
+    req: CallableRequest<{ task?: string }>,
+    response?: CallableResponse<any>,
+  ) => {
     const task = req.data.task || 'Processing';
 
     logger.info('testProgressStream called', { task });
@@ -48,18 +58,25 @@ export const testProgressStream = onCall(
       { progress: 100, status: 'Complete!', task },
     ];
 
-    return { updates };
+    for (const update of updates) {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      if (response) {
+        await response.sendChunk(update);
+      }
+    }
+
+    return { success: true };
   },
 );
 
 /**
  * Test streaming with complex data types
  */
-export const testComplexDataStream = onCall(async (req: CallableRequest) => {
-  logger.info('testComplexDataStream called');
+export const testComplexDataStream = onCall(
+  async (req: CallableRequest, response?: CallableResponse<any>) => {
+    logger.info('testComplexDataStream called');
 
-  return {
-    items: [
+    const items = [
       {
         id: 1,
         name: 'Item One',
@@ -87,31 +104,56 @@ export const testComplexDataStream = onCall(async (req: CallableRequest) => {
           version: '2.0.0',
         },
       },
-    ],
-    summary: {
-      totalItems: 3,
-      processedAt: new Date().toISOString(),
-    },
-  };
-});
+    ];
+
+    // Stream each item individually
+    for (const item of items) {
+      await new Promise(resolve => setTimeout(resolve, 200));
+      if (response) {
+        await response.sendChunk(item);
+      }
+    }
+
+    // Return summary
+    return {
+      summary: {
+        totalItems: items.length,
+        processedAt: new Date().toISOString(),
+      },
+    };
+  },
+);
 
 /**
  * Test streaming with error handling
  */
 export const testStreamWithError = onCall(
-  async (req: CallableRequest<{ shouldError?: boolean; errorAfter?: number }>) => {
-    const shouldError = req.data.shouldError || false;
+  async (
+    req: CallableRequest<{ shouldError?: boolean; errorAfter?: number }>,
+    response?: CallableResponse<any>,
+  ) => {
+    const shouldError = req.data.shouldError !== false;
     const errorAfter = req.data.errorAfter || 2;
 
     logger.info('testStreamWithError called', { shouldError, errorAfter });
 
-    if (shouldError) {
-      throw new Error('Simulated streaming error after chunk ' + errorAfter);
+    for (let i = 0; i < 5; i++) {
+      if (shouldError && i === errorAfter) {
+        throw new Error('Simulated streaming error after chunk ' + errorAfter);
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 300));
+      if (response) {
+        await response.sendChunk({
+          chunk: i,
+          message: `Processing chunk ${i + 1}`,
+        });
+      }
     }
 
     return {
       success: true,
-      message: 'No error occurred',
+      message: 'All chunks processed successfully',
     };
   },
 );
