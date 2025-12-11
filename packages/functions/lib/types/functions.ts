@@ -50,7 +50,9 @@ export type FunctionsErrorCode =
   | 'internal'
   | 'unavailable'
   | 'data-loss'
-  | 'unauthenticated';
+  | 'unauthenticated'
+  | 'unsupported-type'
+  | 'failed-to-parse-wrapped-number';
 
 export interface HttpsErrorCode {
   OK: 'ok';
@@ -70,6 +72,8 @@ export interface HttpsErrorCode {
   INTERNAL: 'internal';
   UNAVAILABLE: 'unavailable';
   DATA_LOSS: 'data-loss';
+  UNSUPPORTED_TYPE: 'unsupported-type';
+  FAILED_TO_PARSE_WRAPPED_NUMBER: 'failed-to-parse-wrapped-number';
 }
 
 export interface HttpsError extends Error {
@@ -168,22 +172,39 @@ declare module '@react-native-firebase/app' {
  */
 /* eslint-disable @typescript-eslint/no-namespace */
 export namespace FirebaseFunctionsTypes {
-  // Re-export types for backwards compatibility
+  // Short name aliases referencing top-level types
   export type ErrorCode = FunctionsErrorCode;
-  export interface CallableResult<ResponseData = unknown> {
-    readonly data: ResponseData;
+  export type CallableResult<ResponseData = unknown> = HttpsCallableResult<ResponseData>;
+  export type Callable<RequestData = unknown, ResponseData = unknown> = HttpsCallable<
+    RequestData,
+    ResponseData
+  >;
+  export type CallableOptions = HttpsCallableOptions;
+  export type Error = HttpsError;
+  export type ErrorCodeMap = HttpsErrorCode;
+  export type Statics = FunctionsStatics;
+  export type Module = FunctionsModule;
+}
+
+// Separate namespace block for Https* aliases to avoid naming conflicts
+// These provide backwards compatibility for code using FirebaseFunctionsTypes.HttpsCallableResult
+export namespace FirebaseFunctionsTypes {
+  // These must be inline definitions since TypeScript doesn't allow re-exporting
+  // with the same name as a type that already exists in scope
+  export interface HttpsCallableResult<T = unknown> {
+    readonly data: T;
   }
-  export interface Callable<RequestData = unknown, ResponseData = unknown> {
-    (data?: RequestData | null): Promise<CallableResult<ResponseData>>;
+  export interface HttpsCallable<RequestData = unknown, ResponseData = unknown> {
+    (data?: RequestData | null): Promise<HttpsCallableResult<ResponseData>>;
   }
-  export interface CallableOptions {
+  export interface HttpsCallableOptions {
     timeout?: number;
   }
-  export interface Error extends globalThis.Error {
-    readonly code: ErrorCode;
+  export interface HttpsError extends globalThis.Error {
+    readonly code: FunctionsErrorCode;
     readonly details?: unknown;
   }
-  export interface ErrorCodeMap {
+  export interface HttpsErrorCode {
     OK: 'ok';
     CANCELLED: 'cancelled';
     UNKNOWN: 'unknown';
@@ -201,28 +222,8 @@ export namespace FirebaseFunctionsTypes {
     INTERNAL: 'internal';
     UNAVAILABLE: 'unavailable';
     DATA_LOSS: 'data-loss';
+    UNSUPPORTED_TYPE: 'unsupported-type';
+    FAILED_TO_PARSE_WRAPPED_NUMBER: 'failed-to-parse-wrapped-number';
   }
-  export interface Statics {
-    HttpsErrorCode: ErrorCodeMap;
-  }
-  export interface Module extends ReactNativeFirebase.FirebaseModule {
-    app: ReactNativeFirebase.FirebaseApp;
-    httpsCallable<RequestData = unknown, ResponseData = unknown>(
-      name: string,
-      options?: CallableOptions,
-    ): Callable<RequestData, ResponseData>;
-    httpsCallableFromUrl<RequestData = unknown, ResponseData = unknown>(
-      url: string,
-      options?: CallableOptions,
-    ): Callable<RequestData, ResponseData>;
-    useFunctionsEmulator(origin: string): void;
-    useEmulator(host: string, port: number): void;
-  }
-  // Legacy aliases
-  export type HttpsCallableResult<T = unknown> = CallableResult<T>;
-  export type HttpsCallable<Req = unknown, Res = unknown> = Callable<Req, Res>;
-  export type HttpsCallableOptions = CallableOptions;
-  export type HttpsError = Error;
-  export type HttpsErrorCode = ErrorCodeMap;
 }
 /* eslint-enable @typescript-eslint/no-namespace */
