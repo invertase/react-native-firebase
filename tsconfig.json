@@ -20,8 +20,8 @@
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "baseUrl": ".",
-    "lib": ["es2015", "es2016", "esnext"],
-    "types": ["react-native"],
+    "lib": ["es2015", "es2016", "esnext", "dom"],
+    "types": ["react-native", "node"],
     "paths": {
       "@react-native-firebase/*": ["./packages/*/lib/index.d.ts"]
     }
