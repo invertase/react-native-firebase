@@ -213,12 +213,18 @@ const functionsNamespace = createModuleNamespace({
   turboModule: true,
 });
 
-// import functions from '@react-native-firebase/functions';
-// functions().httpsCallable(...);
-export default functionsNamespace as unknown as ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+type FunctionsNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
   FunctionsModule,
   FunctionsStatics
->;
+> & {
+  functions: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<FunctionsModule, FunctionsStatics>;
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+// import functions from '@react-native-firebase/functions';
+// functions().httpsCallable(...);
+export default functionsNamespace as unknown as FunctionsNamespace;
 
 // import functions, { firebase } from '@react-native-firebase/functions';
 // functions().httpsCallable(...);

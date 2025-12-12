@@ -1,6 +1,6 @@
-import firebase, { FirebaseFunctionsTypes } from '.';
+import functions, { firebase, FirebaseFunctionsTypes } from '.';
 
-console.log(firebase().app);
+console.log(functions().app);
 
 // checks module exists at root
 console.log(firebase.functions().app.name);
@@ -16,7 +16,7 @@ console.log(firebase.app().functions('some-string').httpsCallable('foo'));
 console.log(firebase.functions.SDK_VERSION);
 
 // checks statics exist on defaultExport
-console.log(firebase.firebase.SDK_VERSION);
+console.log(functions.firebase.SDK_VERSION);
 
 // checks root exists
 console.log(firebase.SDK_VERSION);
