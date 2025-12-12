@@ -1,12 +1,12 @@
 {
-  "include": ["packages/**/lib/*.d.ts", "packages/**/type-test.ts"],
+  "include": ["packages/**/lib/**/*.d.ts", "packages/functions/type-test.ts"],
   "compilerOptions": {
     "noEmit": true,
     "target": "es5",
     "module": "commonjs",
     "declaration": true,
     "importHelpers": true,
-    "jsx": "react",
+    "jsx": "react-native",
     "sourceMap": true,
     "strict": true,
     "noUnusedLocals": true,
@@ -15,10 +15,16 @@
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
     "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
-    "lib": ["es2015", "es2016", "esnext", "dom"]
+    "baseUrl": ".",
+    "lib": ["es2015", "es2016", "esnext"],
+    "types": ["react-native"],
+    "paths": {
+      "@react-native-firebase/*": ["./packages/*/lib/index.d.ts"]
+    }
   },
-  "exclude": ["node_modules", "**/*.spec.ts"]
+  "exclude": ["node_modules", "**/*.spec.ts", "packages/**/dist"]
 }
