@@ -268,6 +268,17 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
                        data:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamData &)data
                     options:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamOptions &)options
                  listenerId:(double)listenerId {
+  // Extract data from C++ struct BEFORE async block (struct won't be valid in async context)
+  id callableData = data.data();
+  
+  // Handle nil data
+  if (callableData == nil) {
+    callableData = [NSNull null];
+  }
+  
+  // Extract timeout
+  std::optional<double> timeout = options.timeout();
+  
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     @try {
       NSURL *url = [NSURL URLWithString:customUrlOrRegion];
@@ -277,14 +288,6 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
           (url && url.scheme && url.host)
               ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
               : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
-
-      id callableData = data.data();
-
-      if (callableData == nil) {
-        callableData = [NSNull null];
-      }
-
-      std::optional<double> timeout = options.timeout();
 
       if (emulatorHost != nil) {
         [functions useEmulatorWithHost:emulatorHost port:(int)emulatorPort];
@@ -368,6 +371,17 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
                            options:
                                (JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlOptions &)options
                         listenerId:(double)listenerId {
+  // Extract data from C++ struct BEFORE async block (struct won't be valid in async context)
+  id callableData = data.data();
+  
+  // Handle nil data
+  if (callableData == nil) {
+    callableData = [NSNull null];
+  }
+  
+  // Extract timeout
+  std::optional<double> timeout = options.timeout();
+  
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     @try {
       NSURL *customUrl = [NSURL URLWithString:customUrlOrRegion];
@@ -377,14 +391,6 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
           (customUrl && customUrl.scheme && customUrl.host)
               ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
               : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
-
-      id callableData = data.data();
-
-      if (callableData == nil) {
-        callableData = [NSNull null];
-      }
-
-      std::optional<double> timeout = options.timeout();
 
       if (emulatorHost != nil) {
         [functions useEmulatorWithHost:emulatorHost port:(int)emulatorPort];
