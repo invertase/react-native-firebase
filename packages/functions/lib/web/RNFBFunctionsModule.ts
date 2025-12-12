@@ -60,7 +60,7 @@ export default {
       if (host) {
         connectFunctionsEmulator(functionsInstance, host, port);
         // Hack to work around emulator origin not being set on the instance.
-        functionsInstance.emulatorOrigin = `http://${host}:${port}`;
+        (functionsInstance as any).emulatorOrigin = `http://${host}:${port}`;
       }
       let callable;
       if (Object.keys(options).length) {
@@ -125,7 +125,7 @@ export default {
       if (host) {
         connectFunctionsEmulator(functionsInstance, host, port);
         // Hack to work around emulator origin not being set on the instance.
-        functionsInstance.emulatorOrigin = `http://${host}:${port}`;
+        (functionsInstance as any).emulatorOrigin = `http://${host}:${port}`;
       }
       const callable = httpsCallableFromURL(functionsInstance, url, options);
       const result = await callable(wrapper['data']);

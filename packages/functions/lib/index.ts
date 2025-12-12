@@ -22,6 +22,7 @@ export type {
   FunctionsModule,
   Functions,
   FirebaseApp,
+  FirebaseFunctionsTypes,
 } from './types/functions';
 
 // Export modular API functions

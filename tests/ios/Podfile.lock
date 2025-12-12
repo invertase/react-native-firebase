@@ -1802,7 +1802,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNDeviceInfo (14.1.1):
+  - RNDeviceInfo (15.0.1):
     - React-Core
   - RNFBAnalytics (23.5.0):
     - FirebaseAnalytics/Core (= 12.6.0)
@@ -2298,24 +2298,24 @@ SPEC CHECKSUMS:
   ReactCodegen: 69c7aec61821e1860aaaf959189218ecca40e811
   ReactCommon: ef3e394efce4b78e9214587689c459cf82927368
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
-  RNCAsyncStorage: 6a8127b6987dc9fbce778669b252b14c8355c7ce
-  RNDeviceInfo: bcce8752b5043a623fe3c26789679b473f705d3c
-  RNFBAnalytics: 97c7df49a5316376c95fed222e219b811e7ee3d5
-  RNFBApp: 177e3a5210c6fb436f511cc4413dad0e7c428bfd
-  RNFBAppCheck: d26dabdff94eb45f90fb7c8aa767306c85cdd26d
-  RNFBAppDistribution: 9c78e3cd8087e9c2fb0852e03fb08ace1480e1d7
-  RNFBAuth: 4bcbf1b4b9e1024755dcab122d36a5dafba0e3f3
-  RNFBCrashlytics: 61932725c42d3fed9eb255253b6a833162d6ee08
-  RNFBDatabase: 4954117115f02550bb40ff0736017a60306e7775
-  RNFBFirestore: 2602dab917e06e091b275984722a46c84b88ec48
-  RNFBFunctions: 0bc8036021a91a9fbb4d28cae08c5b1089a307f3
-  RNFBInAppMessaging: 54c3765e20ac9ceaa87afb727e1f18fe4a6a92ac
-  RNFBInstallations: 11a5da460997ba084484222580fe61785b38083a
-  RNFBMessaging: 0835c2f99911197fe95689fea3b4c8725af723f1
-  RNFBML: 2cbc15122658e03c20f088a5c0b99dc116a417a4
-  RNFBPerf: a976bdc076ef268d1d4ccdae69829d4e11bbc172
-  RNFBRemoteConfig: ebca776a11b18ea0070cb3c6c9f29608e397caa3
-  RNFBStorage: fe423da7035c0848bd2a051ff03fb97d5bb1107a
+  RNCAsyncStorage: 481acf401089f312189e100815088ea5dafc583c
+  RNDeviceInfo: 53f9c84e28e854a308d3e548e25ef120b4615531
+  RNFBAnalytics: bd6653e12b1770b4f1b613adfb09f8966bc5156f
+  RNFBApp: d9e2a89c210b1f08fcf3096b15871d8dd896cdae
+  RNFBAppCheck: ceab2b24388cd1fd3a4e23de82e0c7a95bd4e210
+  RNFBAppDistribution: 753dfc0956a35d319eba78828a32ea32ceb53e1d
+  RNFBAuth: eb8385644c405668ef77dc8dfd260283b1bc8b8c
+  RNFBCrashlytics: 2242d1973d2b7d487a0f7cb7a95227f6f90df940
+  RNFBDatabase: 700462a4e6515b8ee80f3a20fbe872c57a9a42ad
+  RNFBFirestore: 4a305c200a7dc57aced0e0ef4ddbede79d758db3
+  RNFBFunctions: afc8ca2a11ff7a6380322ec5e63c58333ead5d79
+  RNFBInAppMessaging: c6a184af904d87614cec5952ff60fdc049200b0b
+  RNFBInstallations: a5ace09d4c76c0e1b929cc4650630bdefd7b3c96
+  RNFBMessaging: 53d0daa2ead6a94d0ae4bdb37bdbebd4ff26fcdd
+  RNFBML: 37c38ac8bff7a8d954b1ac9cc1a3685b9bfa227c
+  RNFBPerf: 859dbab3d443d38a08e28150a0c2ee612332a685
+  RNFBRemoteConfig: abb2609ebc25f2a2bdb3659ce88e4697985492be
+  RNFBStorage: fb85a107606e14f9d9fc919f6f52b9f3e717c79a
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 66a9fd80007d5d5fce19d1676ce17b4d5e16e9b1
 

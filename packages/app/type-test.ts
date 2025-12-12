@@ -19,6 +19,8 @@ import firebase, { utils } from '.';
 // checks module exists at root
 console.log(firebase.utils().app.name);
 console.log(utils().app.name);
+console.log(firebase.app().name);
+console.log(firebase.app('foo').name);
 
 // checks module exists at app level
 console.log(firebase.app().utils().app.name);
@@ -31,6 +33,19 @@ console.log(utils.FilePath.CACHES_DIRECTORY);
 
 console.log(firebase.utils.FilePath.CACHES_DIRECTORY);
 console.log(utils.FilePath.CACHES_DIRECTORY);
+
+// initialize app variants
+firebase.initializeApp({ apiKey: 'a', appId: 'b', projectId: 'c' });
+firebase.initializeApp({ apiKey: 'a', appId: 'b', projectId: 'c' }, 'foo');
+
+// utils instance API
+const u = firebase.utils();
+console.log(u.isRunningInTestLab);
+console.log(u.playServicesAvailability);
+u.getPlayServicesStatus();
+u.promptForPlayServices();
+u.makePlayServicesAvailable();
+u.resolutionForPlayServices();
 
 // checks root exists
 console.log(firebase.SDK_VERSION);

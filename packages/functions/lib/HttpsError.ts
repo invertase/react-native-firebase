@@ -56,7 +56,7 @@ export class HttpsError extends Error {
 
     this.stack = NativeFirebaseError.getStackWithMessage(
       `Error: ${message}`,
-      nativeErrorInstance?.jsStack,
+      nativeErrorInstance?.jsStack as string,
     );
   }
 }
