@@ -1,6 +1,4 @@
 /* eslint-disable no-console */
-
-import './global';
 import RNFBAppModule from './web/RNFBAppModule';
 
 const nativeModuleRegistry: Record<string, Record<string, unknown>> = {};
