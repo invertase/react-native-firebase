@@ -21,8 +21,19 @@ export interface HttpsCallableOptions {
   timeout?: number;
 }
 
+export interface StreamEvent<ResponseData = unknown> {
+  data?: ResponseData;
+  error?: string;
+  done?: boolean;
+}
+
 export interface HttpsCallable<RequestData = unknown, ResponseData = unknown> {
   (data?: RequestData | null): Promise<{ data: ResponseData }>;
+  stream(
+    data?: RequestData | null,
+    onEvent?: (event: StreamEvent<ResponseData>) => void,
+    options?: HttpsCallableOptions,
+  ): () => void;
 }
 
 export interface FunctionsModule {
@@ -31,6 +42,14 @@ export interface FunctionsModule {
     options?: HttpsCallableOptions,
   ): HttpsCallable<RequestData, ResponseData>;
   httpsCallableFromUrl<RequestData = unknown, ResponseData = unknown>(
+    url: string,
+    options?: HttpsCallableOptions,
+  ): HttpsCallable<RequestData, ResponseData>;
+  httpsCallableStream<RequestData = unknown, ResponseData = unknown>(
+    name: string,
+    options?: HttpsCallableOptions,
+  ): HttpsCallable<RequestData, ResponseData>;
+  httpsCallableStreamFromUrl<RequestData = unknown, ResponseData = unknown>(
     url: string,
     options?: HttpsCallableOptions,
   ): HttpsCallable<RequestData, ResponseData>;

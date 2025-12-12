@@ -7,6 +7,7 @@ import {
   httpsCallable,
   httpsCallableFromUrl,
   HttpsErrorCode,
+
   type HttpsCallableOptions,
   type HttpsCallable as HttpsCallableType,
   type FunctionsModule,
@@ -77,6 +78,38 @@ describe('Cloud Functions', function () {
           'HttpsCallableOptions.timeout expected a Number in milliseconds',
         );
       });
+
+      it('has stream method', function () {
+        const app = firebase.app();
+        const callable = app.functions().httpsCallable('example');
+        expect(callable.stream).toBeDefined();
+        expect(typeof callable.stream).toBe('function');
+      });
+
+      it('stream method returns unsubscribe function', function () {
+        const app = firebase.app();
+        const callable = app.functions().httpsCallable('example');
+        const unsubscribe = callable.stream({ test: 'data' }, () => {});
+        expect(typeof unsubscribe).toBe('function');
+        unsubscribe();
+      });
+    });
+
+    describe('httpsCallableFromUrl()', function () {
+      it('has stream method', function () {
+        const app = firebase.app();
+        const callable = app.functions().httpsCallableFromUrl('https://example.com/example');
+        expect(callable.stream).toBeDefined();
+        expect(typeof callable.stream).toBe('function');
+      });
+
+      it('stream method returns unsubscribe function', function () {
+        const app = firebase.app();
+        const callable = app.functions().httpsCallableFromUrl('https://example.com/example');
+        const unsubscribe = callable.stream({ test: 'data' }, () => {});
+        expect(typeof unsubscribe).toBe('function');
+        unsubscribe();
+      });
     });
   });
 
@@ -101,6 +134,32 @@ describe('Cloud Functions', function () {
       expect(HttpsErrorCode).toBeDefined();
     });
 
+    it('`httpsCallable().stream()` method is properly exposed to end user', function () {
+      const callable = httpsCallable(getFunctions(), 'example');
+      expect(callable.stream).toBeDefined();
+      expect(typeof callable.stream).toBe('function');
+    });
+
+    it('`httpsCallableFromUrl().stream()` method is properly exposed to end user', function () {
+      const callable = httpsCallableFromUrl(getFunctions(), 'https://example.com/example');
+      expect(callable.stream).toBeDefined();
+      expect(typeof callable.stream).toBe('function');
+    });
+
+    it('`httpsCallable().stream()` returns unsubscribe function', function () {
+      const callable = httpsCallable(getFunctions(), 'example');
+      const unsubscribe = callable.stream({ test: 'data' }, () => {});
+      expect(typeof unsubscribe).toBe('function');
+      unsubscribe();
+    });
+
+    it('`httpsCallableFromUrl().stream()` returns unsubscribe function', function () {
+      const callable = httpsCallableFromUrl(getFunctions(), 'https://example.com/example');
+      const unsubscribe = callable.stream({ test: 'data' }, () => {});
+      expect(typeof unsubscribe).toBe('function');
+      unsubscribe();
+    });
+
     describe('types', function () {
       it('`HttpsCallableOptions` type is properly exposed to end user', function () {
         const options: HttpsCallableOptions = { timeout: 5000 };
@@ -110,10 +169,18 @@ describe('Cloud Functions', function () {
 
       it('`HttpsCallable` type is properly exposed to end user', function () {
         // Type check - this will fail at compile time if type is not exported
-        const callable: HttpsCallableType<{ test: string }, { result: number }> = async () => {
-          return { data: { result: 42 } };
-        };
+        const callable: HttpsCallableType<{ test: string }, { result: number }> = Object.assign(
+          async () => {
+            return { data: { result: 42 } };
+          },
+          {
+            stream: (data?: any, onEvent?: any, options?: any) => {
+              return () => {};
+            },
+          }
+        );
         expect(callable).toBeDefined();
+        expect(callable.stream).toBeDefined();
       });
 
       it('`FunctionsModule` type is properly exposed to end user', function () {
@@ -188,6 +255,24 @@ describe('Cloud Functions', function () {
         functionsRefV9Deprecation(
           () => httpsCallableFromUrl(functions, 'https://example.com/example'),
           () => functions.httpsCallableFromUrl('https://example.com/example'),
+          'httpsCallableFromUrl',
+        );
+      });
+
+      it('httpsCallable().stream()', function () {
+        const functions = (getApp() as unknown as FirebaseApp).functions();
+        functionsRefV9Deprecation(
+          () => httpsCallable(functions, 'example').stream({ test: 'data' }, () => {}),
+          () => functions.httpsCallable('example').stream({ test: 'data' }, () => {}),
+          'httpsCallable',
+        );
+      });
+
+      it('httpsCallableFromUrl().stream()', function () {
+        const functions = (getApp() as unknown as FirebaseApp).functions();
+        functionsRefV9Deprecation(
+          () => httpsCallableFromUrl(functions, 'https://example.com/example').stream({ test: 'data' }, () => {}),
+          () => functions.httpsCallableFromUrl('https://example.com/example').stream({ test: 'data' }, () => {}),
           'httpsCallableFromUrl',
         );
       });
