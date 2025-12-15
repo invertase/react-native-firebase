@@ -115,8 +115,8 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
       Object data,
       ReadableMap options,
       int listenerId) {
-      getExecutor()
-          .execute(
+    getExecutor()
+        .execute(
             () -> {
               try {
                 android.util.Log.d(
