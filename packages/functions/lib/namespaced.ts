@@ -157,10 +157,6 @@ class FirebaseFunctionsModule extends FirebaseModule {
   private _useFunctionsEmulatorPort: number;
   private _id_functions_streaming_event: number;
   
-  // Inherited from FirebaseModule (typed here to avoid ts-ignore)
-  emitter: any;
-  eventNameForApp(...args: string[]): string;
-  
   // TODO: config is app package (FirebaseModule) object to be typed in the future
   constructor(app: FirebaseApp, config: any, customUrlOrRegion: string | null) {
     super(app, config, customUrlOrRegion);
@@ -169,10 +165,14 @@ class FirebaseFunctionsModule extends FirebaseModule {
     this._useFunctionsEmulatorPort = -1;
     this._id_functions_streaming_event = 0;
 
+    // @ts-ignore - emitter and eventNameForApp exist on FirebaseModule
     this.emitter.addListener(
+      // @ts-ignore
       this.eventNameForApp('functions_streaming_event'),
       (event: { listenerId: any }) => {
+        // @ts-ignore
         this.emitter.emit(
+          // @ts-ignore
           this.eventNameForApp(`functions_streaming_event:${event.listenerId}`),
           event,
         );
@@ -228,8 +228,10 @@ class FirebaseFunctionsModule extends FirebaseModule {
       }
 
       const listenerId = this._id_functions_streaming_event++;
+      // @ts-ignore
       const eventName = this.eventNameForApp(`functions_streaming_event:${listenerId}`);
 
+      // @ts-ignore
       const subscription = this.emitter.addListener(eventName, (event: any) => {
         const body = event.body;
         if (onEvent) {
@@ -311,8 +313,10 @@ class FirebaseFunctionsModule extends FirebaseModule {
       }
 
       const listenerId = this._id_functions_streaming_event++;
+      // @ts-ignore
       const eventName = this.eventNameForApp(`functions_streaming_event:${listenerId}`);
 
+      // @ts-ignore
       const subscription = this.emitter.addListener(eventName, (event: any) => {
         const body = event.body;
         if (onEvent) {
