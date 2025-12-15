@@ -156,7 +156,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
   private _useFunctionsEmulatorHost: string | null;
   private _useFunctionsEmulatorPort: number;
   private _id_functions_streaming_event: number;
-  
+
   // TODO: config is app package (FirebaseModule) object to be typed in the future
   constructor(app: FirebaseApp, config: any, customUrlOrRegion: string | null) {
     super(app, config, customUrlOrRegion);

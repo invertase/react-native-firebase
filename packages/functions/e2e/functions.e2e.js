@@ -458,7 +458,7 @@ describe('functions() modular', function () {
         functions.useEmulator('localhost', 5001);
         const functionRunner = functions.httpsCallable('testStreamingCallable');
 
-        const unsubscribe = functionRunner.stream({ count: 2, delay: 100 }, event => {
+        const unsubscribe = functionRunner.stream({ count: 2, delay: 100 }, _event => {
           // Callback will be invoked when streaming works
         });
 
@@ -939,10 +939,10 @@ describe('functions() modular', function () {
         connectFunctionsEmulator(functions, 'localhost', 5001);
 
         const functionRunner = httpsCallable(functions, 'testStreamingCallable');
-        let callbackInvoked = false;
+        let _callbackInvoked = false;
 
-        const unsubscribe = functionRunner.stream({ count: 2, delay: 100 }, event => {
-          callbackInvoked = true;
+        const unsubscribe = functionRunner.stream({ count: 2, delay: 100 }, _event => {
+          _callbackInvoked = true;
         });
 
         should.exist(unsubscribe);
