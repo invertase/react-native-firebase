@@ -99,14 +99,19 @@ const unsubscribeOnConfigUpdate = remoteConfigInstance.onConfigUpdate(remoteConf
 });
 unsubscribeOnConfigUpdate();
 
-const unsubscribeOnConfigUpdated = remoteConfigInstance.onConfigUpdated((event, error) => {
-  if (event) {
-    console.log(event.updatedKeys);
-  }
-  if (error) {
-    console.log(error);
-  }
-});
+const unsubscribeOnConfigUpdated = remoteConfigInstance.onConfigUpdated(
+  (
+    event?: { updatedKeys: string[] },
+    error?: { code: string; message: string; nativeErrorMessage: string },
+  ) => {
+    if (event) {
+      console.log(event.updatedKeys);
+    }
+    if (error) {
+      console.log(error);
+    }
+  },
+);
 unsubscribeOnConfigUpdated();
 
 remoteConfigInstance.activate().then((activated: boolean) => {
@@ -228,14 +233,20 @@ const modularUnsubscribeOnConfigUpdate = onConfigUpdate(modularRemoteConfig1, {
 });
 modularUnsubscribeOnConfigUpdate();
 
-const modularUnsubscribeOnConfigUpdated = onConfigUpdated(modularRemoteConfig1, (event, error) => {
-  if (event) {
-    console.log(event.updatedKeys);
-  }
-  if (error) {
-    console.log(error);
-  }
-});
+const modularUnsubscribeOnConfigUpdated = onConfigUpdated(
+  modularRemoteConfig1,
+  (
+    event?: { updatedKeys: string[] },
+    error?: { code: string; message: string; nativeErrorMessage: string },
+  ) => {
+    if (event) {
+      console.log(event.updatedKeys);
+    }
+    if (error) {
+      console.log(error);
+    }
+  },
+);
 modularUnsubscribeOnConfigUpdated();
 
 setCustomSignals(modularRemoteConfig1, { signal1: 'value1', signal2: 123 }).then(() => {
