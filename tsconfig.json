@@ -11,7 +11,8 @@
     "packages/in-app-messaging/type-test.ts",
     "packages/installations/type-test.ts",
     "packages/messaging/type-test.ts",
-    "packages/ml/type-test.ts"
+    "packages/ml/type-test.ts",
+    "packages/perf/type-test.ts"
   ],
   "compilerOptions": {
     "noEmit": true,
