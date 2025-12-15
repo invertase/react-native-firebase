@@ -110,6 +110,7 @@ export namespace FirebaseDatabaseTypes {
      * ```
      */
     ServerValue: ServerValue;
+    SDK_VERSION: string;
   }
 
   export interface TransactionResult {
@@ -1114,6 +1115,11 @@ export namespace FirebaseDatabaseTypes {
    */
   export class Module extends FirebaseModule {
     /**
+     * The current `FirebaseApp` instance for this Firebase service.
+     */
+    app: ReactNativeFirebase.FirebaseApp;
+
+    /**
      * Returns the current Firebase Database server time as a JavaScript Date object.
      */
     getServerTime(): Date;
@@ -1276,10 +1282,19 @@ export namespace FirebaseDatabaseTypes {
   }
 }
 
-declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+type DatabaseNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
   FirebaseDatabaseTypes.Module,
   FirebaseDatabaseTypes.Statics
->;
+> & {
+  database: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+    FirebaseDatabaseTypes.Module,
+    FirebaseDatabaseTypes.Statics
+  >;
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+declare const defaultExport: DatabaseNamespace;
 
 export const firebase: ReactNativeFirebase.Module & {
   database: typeof defaultExport;
