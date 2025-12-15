@@ -9,7 +9,8 @@
     "packages/database/type-test.ts",
     "packages/firestore/type-test.ts",
     "packages/in-app-messaging/type-test.ts",
-    "packages/installations/type-test.ts"
+    "packages/installations/type-test.ts",
+    "packages/messaging/type-test.ts"
   ],
   "compilerOptions": {
     "noEmit": true,

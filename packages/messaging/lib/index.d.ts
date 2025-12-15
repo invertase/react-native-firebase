@@ -61,6 +61,7 @@ export namespace FirebaseMessagingTypes {
     AuthorizationStatus: typeof AuthorizationStatus;
     NotificationAndroidPriority: typeof NotificationAndroidPriority;
     NotificationAndroidVisibility: typeof NotificationAndroidVisibility;
+    SDK_VERSION: string;
   }
 
   /**
@@ -649,6 +650,11 @@ export namespace FirebaseMessagingTypes {
    */
   export class Module extends FirebaseModule {
     /**
+     * The current `FirebaseApp` instance for this Firebase service.
+     */
+    app: ReactNativeFirebase.FirebaseApp;
+
+    /**
      * Returns whether messaging auto initialization is enabled or disabled for the device.
      *
      * #### Example
@@ -883,6 +889,30 @@ export namespace FirebaseMessagingTypes {
      * @platform ios
      */
     isDeviceRegisteredForRemoteMessages: boolean;
+
+    /**
+     * Returns whether remote notification delegation to Google Play Services is enabled or disabled.
+     *
+     * > You can safely access this property on iOS without platform checks. iOS returns `false` only.
+     *
+     * #### Example
+     *
+     * ```js
+     * const isNotificationDelegationEnabled = firebase.messaging().isNotificationDelegationEnabled;
+     * ```
+     */
+    isNotificationDelegationEnabled: boolean;
+
+    /**
+     * Returns whether message delivery metrics are exported to BigQuery.
+     *
+     * #### Example
+     *
+     * ```js
+     * const isDeliveryMetricsExportToBigQueryEnabled = firebase.messaging().isDeliveryMetricsExportToBigQueryEnabled;
+     * ```
+     */
+    isDeliveryMetricsExportToBigQueryEnabled: boolean;
     /**
      * Unregisters the app from receiving remote notifications.
      *
@@ -1197,10 +1227,15 @@ export namespace FirebaseMessagingTypes {
   }
 }
 
-declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
+type MessagingNamespace = ReactNativeFirebase.FirebaseModuleWithStatics<
   FirebaseMessagingTypes.Module,
   FirebaseMessagingTypes.Statics
->;
+> & {
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+declare const defaultExport: MessagingNamespace;
 
 export const firebase: ReactNativeFirebase.Module & {
   messaging: typeof defaultExport;
