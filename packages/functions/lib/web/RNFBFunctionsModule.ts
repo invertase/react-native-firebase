@@ -201,73 +201,73 @@ export default {
 
       // if data is undefined use null
       const data = wrapper['data'] ?? null;
-      
+
       // Defer streaming to next tick to ensure event listeners are set up
       setTimeout(() => {
         try {
           // Call the streaming version
           const callableWithStream = callable as any;
-      
-      if (typeof callableWithStream.stream === 'function') {
-        const subscription = callableWithStream.stream(data).subscribe({
-          next: (chunk: any) => {
-            RNFBAppModule.eventsSendEvent('functions_streaming_event', {
-              listenerId,
-              body: {
-                data: chunk.data ?? null,
-                error: null,
-                done: false,
+
+          if (typeof callableWithStream.stream === 'function') {
+            const subscription = callableWithStream.stream(data).subscribe({
+              next: (chunk: any) => {
+                RNFBAppModule.eventsSendEvent('functions_streaming_event', {
+                  listenerId,
+                  body: {
+                    data: chunk.data ?? null,
+                    error: null,
+                    done: false,
+                  },
+                });
+              },
+              error: (error: any) => {
+                const { code, message, details } = error;
+                RNFBAppModule.eventsSendEvent('functions_streaming_event', {
+                  listenerId,
+                  body: {
+                    data: null,
+                    error: {
+                      code: code ? code.replace('functions/', '') : 'unknown',
+                      message: message || error.toString(),
+                      details,
+                    },
+                    done: true,
+                  },
+                });
+              },
+              complete: () => {
+                RNFBAppModule.eventsSendEvent('functions_streaming_event', {
+                  listenerId,
+                  body: {
+                    data: null,
+                    error: null,
+                    done: true,
+                  },
+                });
               },
             });
-          },
-          error: (error: any) => {
-            const { code, message, details } = error;
+
+            // Store subscription for cleanup if needed
+            // (Could be extended with unsubscribe support)
+            if (typeof globalThis !== 'undefined') {
+              (globalThis as any).__rnfbFunctionsStreamSubscriptions =
+                (globalThis as any).__rnfbFunctionsStreamSubscriptions || {};
+              (globalThis as any).__rnfbFunctionsStreamSubscriptions[listenerId] = subscription;
+            }
+          } else {
+            // Fallback: streaming not supported, emit error
             RNFBAppModule.eventsSendEvent('functions_streaming_event', {
               listenerId,
               body: {
                 data: null,
                 error: {
-                  code: code ? code.replace('functions/', '') : 'unknown',
-                  message: message || error.toString(),
-                  details,
+                  code: 'unsupported',
+                  message: 'Streaming is not supported in this Firebase SDK version',
+                  details: null,
                 },
                 done: true,
               },
             });
-          },
-          complete: () => {
-            RNFBAppModule.eventsSendEvent('functions_streaming_event', {
-              listenerId,
-              body: {
-                data: null,
-                error: null,
-                done: true,
-              },
-            });
-          },
-        });
-
-        // Store subscription for cleanup if needed
-        // (Could be extended with unsubscribe support)
-        if (typeof globalThis !== 'undefined') {
-          (globalThis as any).__rnfbFunctionsStreamSubscriptions = 
-            (globalThis as any).__rnfbFunctionsStreamSubscriptions || {};
-          (globalThis as any).__rnfbFunctionsStreamSubscriptions[listenerId] = subscription;
-        }
-      } else {
-        // Fallback: streaming not supported, emit error
-        RNFBAppModule.eventsSendEvent('functions_streaming_event', {
-          listenerId,
-          body: {
-            data: null,
-            error: {
-              code: 'unsupported',
-              message: 'Streaming is not supported in this Firebase SDK version',
-              details: null,
-            },
-            done: true,
-          },
-        });
           }
         } catch (streamError: any) {
           // Error during streaming setup
@@ -349,72 +349,72 @@ export default {
 
       const callable = httpsCallableFromURL(functionsInstance, url, options);
       const data = wrapper['data'] ?? null;
-      
+
       // Defer streaming to next tick to ensure event listeners are set up
       setTimeout(() => {
         try {
           // Call the streaming version
           const callableWithStream = callable as any;
-      
+
           if (typeof callableWithStream.stream === 'function') {
-        const subscription = callableWithStream.stream(data).subscribe({
-          next: (chunk: any) => {
-            RNFBAppModule.eventsSendEvent('functions_streaming_event', {
-              listenerId,
-              body: {
-                data: chunk.data ?? null,
-                error: null,
-                done: false,
+            const subscription = callableWithStream.stream(data).subscribe({
+              next: (chunk: any) => {
+                RNFBAppModule.eventsSendEvent('functions_streaming_event', {
+                  listenerId,
+                  body: {
+                    data: chunk.data ?? null,
+                    error: null,
+                    done: false,
+                  },
+                });
+              },
+              error: (error: any) => {
+                const { code, message, details } = error;
+                RNFBAppModule.eventsSendEvent('functions_streaming_event', {
+                  listenerId,
+                  body: {
+                    data: null,
+                    error: {
+                      code: code ? code.replace('functions/', '') : 'unknown',
+                      message: message || error.toString(),
+                      details,
+                    },
+                    done: true,
+                  },
+                });
+              },
+              complete: () => {
+                RNFBAppModule.eventsSendEvent('functions_streaming_event', {
+                  listenerId,
+                  body: {
+                    data: null,
+                    error: null,
+                    done: true,
+                  },
+                });
               },
             });
-          },
-          error: (error: any) => {
-            const { code, message, details } = error;
+
+            // Store subscription for cleanup if needed
+            if (typeof globalThis !== 'undefined') {
+              (globalThis as any).__rnfbFunctionsStreamSubscriptions =
+                (globalThis as any).__rnfbFunctionsStreamSubscriptions || {};
+              (globalThis as any).__rnfbFunctionsStreamSubscriptions[listenerId] = subscription;
+            }
+          } else {
+            // Fallback: streaming not supported, emit error
             RNFBAppModule.eventsSendEvent('functions_streaming_event', {
               listenerId,
               body: {
                 data: null,
                 error: {
-                  code: code ? code.replace('functions/', '') : 'unknown',
-                  message: message || error.toString(),
-                  details,
+                  code: 'unsupported',
+                  message: 'Streaming is not supported in this Firebase SDK version',
+                  details: null,
                 },
                 done: true,
               },
             });
-          },
-          complete: () => {
-            RNFBAppModule.eventsSendEvent('functions_streaming_event', {
-              listenerId,
-              body: {
-                data: null,
-                error: null,
-                done: true,
-              },
-            });
-          },
-        });
-
-        // Store subscription for cleanup if needed
-        if (typeof globalThis !== 'undefined') {
-          (globalThis as any).__rnfbFunctionsStreamSubscriptions = 
-            (globalThis as any).__rnfbFunctionsStreamSubscriptions || {};
-          (globalThis as any).__rnfbFunctionsStreamSubscriptions[listenerId] = subscription;
-        }
-      } else {
-        // Fallback: streaming not supported, emit error
-        RNFBAppModule.eventsSendEvent('functions_streaming_event', {
-          listenerId,
-          body: {
-            data: null,
-            error: {
-              code: 'unsupported',
-              message: 'Streaming is not supported in this Firebase SDK version',
-              details: null,
-            },
-            done: true,
-          },
-        });
           }
         } catch (streamError: any) {
           // Error during streaming setup

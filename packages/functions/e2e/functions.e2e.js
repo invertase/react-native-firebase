@@ -458,12 +458,9 @@ describe('functions() modular', function () {
         functions.useEmulator('localhost', 5001);
         const functionRunner = functions.httpsCallable('testStreamingCallable');
 
-        const unsubscribe = functionRunner.stream(
-          { count: 2, delay: 100 },
-          event => {
-            // Callback will be invoked when streaming works
-          },
-        );
+        const unsubscribe = functionRunner.stream({ count: 2, delay: 100 }, event => {
+          // Callback will be invoked when streaming works
+        });
 
         should.exist(unsubscribe);
         unsubscribe();
@@ -474,11 +471,7 @@ describe('functions() modular', function () {
         functions.useEmulator('localhost', 5001);
         const functionRunner = functions.httpsCallable('testStreamingCallable');
 
-        const unsubscribe = functionRunner.stream(
-          { count: 2 },
-          () => {},
-          { timeout: 5000 },
-        );
+        const unsubscribe = functionRunner.stream({ count: 2 }, () => {}, { timeout: 5000 });
 
         should.exist(unsubscribe);
         unsubscribe();
@@ -948,12 +941,9 @@ describe('functions() modular', function () {
         const functionRunner = httpsCallable(functions, 'testStreamingCallable');
         let callbackInvoked = false;
 
-        const unsubscribe = functionRunner.stream(
-          { count: 2, delay: 100 },
-          event => {
-            callbackInvoked = true;
-          },
-        );
+        const unsubscribe = functionRunner.stream({ count: 2, delay: 100 }, event => {
+          callbackInvoked = true;
+        });
 
         should.exist(unsubscribe);
         unsubscribe();
@@ -966,11 +956,7 @@ describe('functions() modular', function () {
         connectFunctionsEmulator(functions, 'localhost', 5001);
 
         const functionRunner = httpsCallable(functions, 'testStreamingCallable');
-        const unsubscribe = functionRunner.stream(
-          { count: 2 },
-          () => {},
-          { timeout: 5000 },
-        );
+        const unsubscribe = functionRunner.stream({ count: 2 }, () => {}, { timeout: 5000 });
 
         should.exist(unsubscribe);
         unsubscribe();

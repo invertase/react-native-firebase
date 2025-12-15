@@ -7,7 +7,6 @@ import {
   httpsCallable,
   httpsCallableFromUrl,
   HttpsErrorCode,
-
   type HttpsCallableOptions,
   type HttpsCallable as HttpsCallableType,
   type FunctionsModule,
@@ -199,7 +198,7 @@ describe('Cloud Functions', function () {
             stream: (_data?: any, _onEvent?: any, _options?: any) => {
               return () => {};
             },
-          }
+          },
         );
         expect(callable).toBeDefined();
         expect(callable.stream).toBeDefined();
@@ -293,8 +292,15 @@ describe('Cloud Functions', function () {
       it('httpsCallableFromUrl().stream()', function () {
         const functions = (getApp() as unknown as FirebaseApp).functions();
         functionsRefV9Deprecation(
-          () => httpsCallableFromUrl(functions, 'https://example.com/example').stream({ test: 'data' }, () => {}),
-          () => functions.httpsCallableFromUrl('https://example.com/example').stream({ test: 'data' }, () => {}),
+          () =>
+            httpsCallableFromUrl(functions, 'https://example.com/example').stream(
+              { test: 'data' },
+              () => {},
+            ),
+          () =>
+            functions
+              .httpsCallableFromUrl('https://example.com/example')
+              .stream({ test: 'data' }, () => {}),
           'httpsCallableFromUrl',
         );
       });

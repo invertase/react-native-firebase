@@ -156,7 +156,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
   private _useFunctionsEmulatorHost: string | null;
   private _useFunctionsEmulatorPort: number;
   private _id_functions_streaming_event: number;
-  
+
   // TODO: config is app package (FirebaseModule) object to be typed in the future
   constructor(app: FirebaseApp, config: any, customUrlOrRegion: string | null) {
     super(app, config, customUrlOrRegion);
@@ -166,14 +166,17 @@ class FirebaseFunctionsModule extends FirebaseModule {
     this._id_functions_streaming_event = 0;
 
     // @ts-ignore - emitter and eventNameForApp exist on FirebaseModule
-    this.emitter.addListener(this.eventNameForApp('functions_streaming_event'), (event: { listenerId: any; }) => {
-      // @ts-ignore
-      this.emitter.emit(
+    this.emitter.addListener(
+      this.eventNameForApp('functions_streaming_event'),
+      (event: { listenerId: any }) => {
         // @ts-ignore
-        this.eventNameForApp(`functions_streaming_event:${event.listenerId}`),
-        event,
-      );
-    });
+        this.emitter.emit(
+          // @ts-ignore
+          this.eventNameForApp(`functions_streaming_event:${event.listenerId}`),
+          event,
+        );
+      },
+    );
   }
 
   httpsCallable(name: string, options: HttpsCallableOptions = {}) {
@@ -210,7 +213,11 @@ class FirebaseFunctionsModule extends FirebaseModule {
 
     // Add a streaming helper (callback-based)
     // Usage: const stop = functions().httpsCallable('fn').stream(data, (evt) => {...}, options)
-    callableFunction.stream = (data?: any, onEvent?: (event: any) => void, streamOptions: HttpsCallableOptions = {}) => {
+    callableFunction.stream = (
+      data?: any,
+      onEvent?: (event: any) => void,
+      streamOptions: HttpsCallableOptions = {},
+    ) => {
       if (streamOptions.timeout) {
         if (isNumber(streamOptions.timeout)) {
           streamOptions.timeout = streamOptions.timeout / 1000;
@@ -291,7 +298,11 @@ class FirebaseFunctionsModule extends FirebaseModule {
       });
     };
 
-    callableFunction.stream = (data?: any, onEvent?: (event: any) => void, streamOptions: HttpsCallableOptions = {}) => {
+    callableFunction.stream = (
+      data?: any,
+      onEvent?: (event: any) => void,
+      streamOptions: HttpsCallableOptions = {},
+    ) => {
       if (streamOptions.timeout) {
         if (isNumber(streamOptions.timeout)) {
           streamOptions.timeout = streamOptions.timeout / 1000;
