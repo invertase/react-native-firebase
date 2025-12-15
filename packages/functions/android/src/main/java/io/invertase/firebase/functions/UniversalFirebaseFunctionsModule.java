@@ -115,14 +115,14 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
       Object data,
       ReadableMap options,
       int listenerId) {
-    getExecutor()
-        .execute(
-              () -> {
-                try {
-                  android.util.Log.d(
-                      "RNFBFunctions",
-                      "httpsCallableStream starting for: " + name + ", listenerId: " + listenerId);
-                  FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+      getExecutor()
+          .execute(
+            () -> {
+              try {
+                android.util.Log.d(
+                    "RNFBFunctions",
+                    "httpsCallableStream starting for: " + name + ", listenerId: " + listenerId);
+                FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
                 FirebaseFunctions functionsInstance =
                     FirebaseFunctions.getInstance(firebaseApp, region);
 
@@ -182,13 +182,13 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
                         removeFunctionsStreamingListener(listenerId);
                       }
                     });
-                } catch (Exception e) {
-                  android.util.Log.e(
-                      "RNFBFunctions", "Exception in httpsCallableStream for " + name, e);
-                  String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
-                  emitStreamEvent(
-                      appName, listenerId, null, true, "Stream setup failed: " + errorMsg);
-                  removeFunctionsStreamingListener(listenerId);
+              } catch (Exception e) {
+                android.util.Log.e(
+                    "RNFBFunctions", "Exception in httpsCallableStream for " + name, e);
+                String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
+                emitStreamEvent(
+                    appName, listenerId, null, true, "Stream setup failed: " + errorMsg);
+                removeFunctionsStreamingListener(listenerId);
               }
             });
   }
@@ -204,15 +204,15 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
       int listenerId) {
     getExecutor()
         .execute(
-              () -> {
-                try {
-                  android.util.Log.d(
-                      "RNFBFunctions",
-                      "httpsCallableStreamFromUrl starting for: "
-                          + url
-                          + ", listenerId: "
-                          + listenerId);
-                  FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+            () -> {
+              try {
+                android.util.Log.d(
+                    "RNFBFunctions",
+                    "httpsCallableStreamFromUrl starting for: "
+                        + url
+                        + ", listenerId: "
+                        + listenerId);
+                FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
                 FirebaseFunctions functionsInstance =
                     FirebaseFunctions.getInstance(firebaseApp, region);
 
@@ -229,11 +229,11 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
                   httpReference.setTimeout((long) options.getInt("timeout"), TimeUnit.SECONDS);
                 }
 
-                  android.util.Log.d("RNFBFunctions", "About to call .stream() method on URL");
-                  // Use the Firebase SDK's native .stream() method which returns a Publisher
-                  Publisher<StreamResponse> publisher = httpReference.stream(data);
-                  android.util.Log.d(
-                      "RNFBFunctions", "Stream publisher created successfully from URL");
+                android.util.Log.d("RNFBFunctions", "About to call .stream() method on URL");
+                // Use the Firebase SDK's native .stream() method which returns a Publisher
+                Publisher<StreamResponse> publisher = httpReference.stream(data);
+                android.util.Log.d(
+                    "RNFBFunctions", "Stream publisher created successfully from URL");
 
                 // Subscribe to the publisher
                 publisher.subscribe(
@@ -275,13 +275,13 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
                         removeFunctionsStreamingListener(listenerId);
                       }
                     });
-                } catch (Exception e) {
-                  android.util.Log.e(
-                      "RNFBFunctions", "Exception in httpsCallableStreamFromUrl for " + url, e);
-                  String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
-                  emitStreamEvent(
-                      appName, listenerId, null, true, "Stream setup failed: " + errorMsg);
-                  removeFunctionsStreamingListener(listenerId);
+              } catch (Exception e) {
+                android.util.Log.e(
+                    "RNFBFunctions", "Exception in httpsCallableStreamFromUrl for " + url, e);
+                String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
+                emitStreamEvent(
+                    appName, listenerId, null, true, "Stream setup failed: " + errorMsg);
+                removeFunctionsStreamingListener(listenerId);
               }
             });
   }
