@@ -227,6 +227,11 @@ export namespace FirebaseAppCheckTypes {
    */
   export class Module extends FirebaseModule {
     /**
+     * The current `FirebaseApp` instance for this Firebase service.
+     */
+    app: ReactNativeFirebase.FirebaseApp;
+
+    /**
      * Create a ReactNativeFirebaseAppCheckProvider option for use in react-native-firebase
      */
     newReactNativeFirebaseAppCheckProvider(): ReactNativeFirebaseAppCheckProvider;
