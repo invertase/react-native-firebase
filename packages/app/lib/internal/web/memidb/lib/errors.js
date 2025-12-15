@@ -1,3 +1,20 @@
+// Polyfill DOMException for React Native environments (macOS, etc.)
+// This is needed because DOMException is a web API that doesn't exist in React Native
+if (typeof DOMException === 'undefined') {
+  const DOMExceptionPolyfill = class DOMException extends Error {
+    constructor(message = '', name = 'Error') {
+      super(message);
+      this.name = name;
+      this.message = message;
+    }
+  };
+  // Set on both global and globalThis for compatibility
+  global.DOMException = DOMExceptionPolyfill;
+  if (typeof globalThis !== 'undefined') {
+    globalThis.DOMException = DOMExceptionPolyfill;
+  }
+}
+
 const messages = {
   AbortError: 'A request was aborted, for example through a call to IDBTransaction.abort.',
   ConstraintError:
