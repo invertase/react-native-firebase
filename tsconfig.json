@@ -12,7 +12,8 @@
     "packages/installations/type-test.ts",
     "packages/messaging/type-test.ts",
     "packages/ml/type-test.ts",
-    "packages/perf/type-test.ts"
+    "packages/perf/type-test.ts",
+    "packages/remote-config/type-test.ts"
   ],
   "compilerOptions": {
     "noEmit": true,
