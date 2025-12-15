@@ -4,7 +4,8 @@
     "packages/functions/type-test.ts",
     "packages/app/type-test.ts",
     "packages/app-check/type-test.ts",
-    "packages/auth/type-test.ts"
+    "packages/auth/type-test.ts",
+    "packages/crashlytics/type-test.ts"
   ],
   "compilerOptions": {
     "noEmit": true,
