@@ -38,6 +38,17 @@ describe('Cloud Functions', function () {
       globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
     });
 
+    beforeEach(function () {
+      // Mock native module for streaming methods
+      // @ts-ignore test
+      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
+        return {
+          httpsCallableStream: jest.fn(),
+          httpsCallableStreamFromUrl: jest.fn(),
+        };
+      });
+    });
+
     it('accessible from firebase.app()', function () {
       const app = firebase.app();
       expect(app.functions).toBeDefined();
@@ -114,6 +125,17 @@ describe('Cloud Functions', function () {
   });
 
   describe('modular', function () {
+    beforeEach(function () {
+      // Mock native module for streaming methods
+      // @ts-ignore test
+      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
+        return {
+          httpsCallableStream: jest.fn(),
+          httpsCallableStreamFromUrl: jest.fn(),
+        };
+      });
+    });
+
     it('`getFunctions` function is properly exposed to end user', function () {
       expect(getFunctions).toBeDefined();
     });
@@ -174,7 +196,7 @@ describe('Cloud Functions', function () {
             return { data: { result: 42 } };
           },
           {
-            stream: (data?: any, onEvent?: any, options?: any) => {
+            stream: (_data?: any, _onEvent?: any, _options?: any) => {
               return () => {};
             },
           }
