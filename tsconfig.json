@@ -14,7 +14,8 @@
     "packages/ml/type-test.ts",
     "packages/perf/type-test.ts",
     "packages/remote-config/type-test.ts",
-    "packages/storage/type-test.ts"
+    "packages/storage/type-test.ts",
+    "packages/analytics/type-test.ts"
   ],
   "compilerOptions": {
     "noEmit": true,
