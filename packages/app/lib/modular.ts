@@ -27,8 +27,9 @@ import {
 } from './internal/registry/app';
 import { setUserLogHandler } from './internal/logger';
 import { version as sdkVersion } from './version';
-import { NativeModules } from 'react-native';
-
+import { getReactNativeModule } from './internal/nativeModule';
+import { APP_NATIVE_MODULE } from './internal/constants';
+import type { RNFBAppModuleInterface } from './internal/NativeModules';
 /**
  * Renders this app unusable and frees the resources of all associated services.
  * @param app - The app to delete.
@@ -150,7 +151,10 @@ export function setReactNativeAsyncStorage(
  * @returns map of key / value pairs containing native meta data
  */
 export function metaGetAll(): Promise<{ [key: string]: string | boolean }> {
-  return NativeModules.RNFBAppModule.metaGetAll();
+  const RNFBAppModule = getReactNativeModule(
+    APP_NATIVE_MODULE,
+  ) as unknown as RNFBAppModuleInterface;
+  return RNFBAppModule.metaGetAll();
 }
 
 /**
@@ -158,7 +162,10 @@ export function metaGetAll(): Promise<{ [key: string]: string | boolean }> {
  * @returns map of key / value pairs containing native firebase.json constants
  */
 export function jsonGetAll(): Promise<{ [key: string]: string | boolean }> {
-  return NativeModules.RNFBAppModule.jsonGetAll();
+  const RNFBAppModule = getReactNativeModule(
+    APP_NATIVE_MODULE,
+  ) as unknown as RNFBAppModuleInterface;
+  return RNFBAppModule.jsonGetAll();
 }
 
 /**
@@ -166,7 +173,10 @@ export function jsonGetAll(): Promise<{ [key: string]: string | boolean }> {
  * @returns Promise<void>
  */
 export function preferencesClearAll(): Promise<void> {
-  return NativeModules.RNFBAppModule.preferencesClearAll();
+  const RNFBAppModule = getReactNativeModule(
+    APP_NATIVE_MODULE,
+  ) as unknown as RNFBAppModuleInterface;
+  return RNFBAppModule.preferencesClearAll();
 }
 
 /**
@@ -174,7 +184,10 @@ export function preferencesClearAll(): Promise<void> {
  * @returns map of key / value pairs containing native preferences data
  */
 export function preferencesGetAll(): Promise<{ [key: string]: string | boolean }> {
-  return NativeModules.RNFBAppModule.preferencesGetAll();
+  const RNFBAppModule = getReactNativeModule(
+    APP_NATIVE_MODULE,
+  ) as unknown as RNFBAppModuleInterface;
+  return RNFBAppModule.preferencesGetAll();
 }
 
 /**
@@ -184,7 +197,10 @@ export function preferencesGetAll(): Promise<{ [key: string]: string | boolean }
  * @returns Promise<void>
  */
 export function preferencesSetBool(key: string, value: boolean): Promise<void> {
-  return NativeModules.RNFBAppModule.preferencesSetBool(key, value);
+  const RNFBAppModule = getReactNativeModule(
+    APP_NATIVE_MODULE,
+  ) as unknown as RNFBAppModuleInterface;
+  return RNFBAppModule.preferencesSetBool(key, value);
 }
 
 /**
@@ -194,7 +210,10 @@ export function preferencesSetBool(key: string, value: boolean): Promise<void> {
  * @returns Promise<void>
  */
 export function preferencesSetString(key: string, value: string): Promise<void> {
-  return NativeModules.RNFBAppModule.preferencesSetString(key, value);
+  const RNFBAppModule = getReactNativeModule(
+    APP_NATIVE_MODULE,
+  ) as unknown as RNFBAppModuleInterface;
+  return RNFBAppModule.preferencesSetString(key, value);
 }
 
 export const SDK_VERSION = sdkVersion;
