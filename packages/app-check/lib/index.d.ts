@@ -91,7 +91,7 @@ export namespace FirebaseAppCheckTypes {
      * The App Check provider to use. This can be either the built-in reCAPTCHA provider
      * or a custom provider.
      */
-    provider: CustomProvider;
+    provider: CustomProvider | ReactNativeFirebaseAppCheckProvider;
 
     /**
      * If true, enables SDK to automatically
@@ -113,6 +113,11 @@ export namespace FirebaseAppCheckTypes {
   }
 
   export type PartialObserver<T> = Partial<Observer<T>>;
+
+  /**
+   * A function that unsubscribes from token changes.
+   */
+  export type Unsubscribe = () => void;
 
   export interface ReactNativeFirebaseAppCheckProviderOptions {
     /**
@@ -169,7 +174,7 @@ export namespace FirebaseAppCheckTypes {
   /**
    * Result returned by `getToken()`.
    */
-  interface AppCheckTokenResult {
+  export interface AppCheckTokenResult {
     /**
      * The token string in JWT format.
      */
@@ -196,6 +201,7 @@ export namespace FirebaseAppCheckTypes {
   export interface Statics {
     // firebase.appCheck.* static props go here
     CustomProvider: typeof CustomProvider;
+    SDK_VERSION: string;
   }
 
   /**
@@ -323,10 +329,19 @@ export namespace FirebaseAppCheckTypes {
   }
 }
 
-declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+type AppCheckNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
   FirebaseAppCheckTypes.Module,
   FirebaseAppCheckTypes.Statics
->;
+> & {
+  appCheck: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+    FirebaseAppCheckTypes.Module,
+    FirebaseAppCheckTypes.Statics
+  >;
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+declare const defaultExport: AppCheckNamespace;
 
 export const firebase: ReactNativeFirebase.Module & {
   appCheck: typeof defaultExport;
