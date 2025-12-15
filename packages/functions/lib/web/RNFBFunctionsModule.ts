@@ -167,6 +167,7 @@ export default {
     options: HttpsCallableOptions,
     listenerId: number,
   ): void {
+    // Wrap entire function to catch any synchronous errors
     try {
       const app = getApp(appName);
       let functionsInstance;
@@ -201,8 +202,11 @@ export default {
       // if data is undefined use null
       const data = wrapper['data'] ?? null;
       
-      // Call the streaming version
-      const callableWithStream = callable as any;
+      // Defer streaming to next tick to ensure event listeners are set up
+      setTimeout(() => {
+        try {
+          // Call the streaming version
+          const callableWithStream = callable as any;
       
       if (typeof callableWithStream.stream === 'function') {
         const subscription = callableWithStream.stream(data).subscribe({
@@ -264,8 +268,26 @@ export default {
             done: true,
           },
         });
-      }
+          }
+        } catch (streamError: any) {
+          // Error during streaming setup
+          const { code, message, details } = streamError;
+          RNFBAppModule.eventsSendEvent('functions_streaming_event', {
+            listenerId,
+            body: {
+              data: null,
+              error: {
+                code: code ? code.replace('functions/', '') : 'unknown',
+                message: message || streamError.toString(),
+                details,
+              },
+              done: true,
+            },
+          });
+        }
+      }, 0); // Execute on next tick
     } catch (error: any) {
+      // Synchronous error during setup - emit immediately
       const { code, message, details } = error;
       RNFBAppModule.eventsSendEvent('functions_streaming_event', {
         listenerId,
@@ -328,10 +350,13 @@ export default {
       const callable = httpsCallableFromURL(functionsInstance, url, options);
       const data = wrapper['data'] ?? null;
       
-      // Call the streaming version
-      const callableWithStream = callable as any;
+      // Defer streaming to next tick to ensure event listeners are set up
+      setTimeout(() => {
+        try {
+          // Call the streaming version
+          const callableWithStream = callable as any;
       
-      if (typeof callableWithStream.stream === 'function') {
+          if (typeof callableWithStream.stream === 'function') {
         const subscription = callableWithStream.stream(data).subscribe({
           next: (chunk: any) => {
             RNFBAppModule.eventsSendEvent('functions_streaming_event', {
@@ -390,8 +415,26 @@ export default {
             done: true,
           },
         });
-      }
+          }
+        } catch (streamError: any) {
+          // Error during streaming setup
+          const { code, message, details } = streamError;
+          RNFBAppModule.eventsSendEvent('functions_streaming_event', {
+            listenerId,
+            body: {
+              data: null,
+              error: {
+                code: code ? code.replace('functions/', '') : 'unknown',
+                message: message || streamError.toString(),
+                details,
+              },
+              done: true,
+            },
+          });
+        }
+      }, 0); // Execute on next tick
     } catch (error: any) {
+      // Synchronous error during setup - emit immediately
       const { code, message, details } = error;
       RNFBAppModule.eventsSendEvent('functions_streaming_event', {
         listenerId,
