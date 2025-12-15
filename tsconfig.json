@@ -6,7 +6,8 @@
     "packages/app-check/type-test.ts",
     "packages/auth/type-test.ts",
     "packages/crashlytics/type-test.ts",
-    "packages/database/type-test.ts"
+    "packages/database/type-test.ts",
+    "packages/firestore/type-test.ts"
   ],
   "compilerOptions": {
     "noEmit": true,
