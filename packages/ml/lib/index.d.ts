@@ -55,16 +55,27 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
 export namespace FirebaseMLTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  export interface Statics {}
+  export interface Statics {
+    SDK_VERSION: string;
+  }
 
-  export class Module extends FirebaseModule {}
+  export class Module extends FirebaseModule {
+    /**
+     * The current `FirebaseApp` instance for this Firebase service.
+     */
+    app: ReactNativeFirebase.FirebaseApp;
+  }
 }
 
-declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+type MLNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
   FirebaseMLTypes.Module,
   FirebaseMLTypes.Statics
->;
+> & {
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+declare const defaultExport: MLNamespace;
 
 export const firebase: ReactNativeFirebase.Module & {
   ml: typeof defaultExport;
