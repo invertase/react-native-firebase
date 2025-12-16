@@ -50,7 +50,6 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
 export namespace FirebaseCrashlyticsTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export interface Statics {
     SDK_VERSION: string;
   }
