@@ -184,7 +184,3 @@ declare module '@react-native-firebase/app/lib/internal' {
   }
   export function getFirebaseRoot(): any;
 }
-
-declare module './version' {
-  export const version: string;
-}
