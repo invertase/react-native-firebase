@@ -52,25 +52,25 @@ export interface FirebaseAppDistributionModule {
    * Returns true if the App Distribution tester is signed in.
    * If not an iOS device, it always rejects, as neither false nor true seem like a sensible default.
    */
-  isTesterSignedIn(): Promise<boolean>;
+  isTesterSignedIn(_modularDeprecationArg?: any): Promise<boolean>;
 
   /**
    * Sign-in the App Distribution tester
    * If not an iOS device, it always rejects, as no defaults seem sensible.
    */
-  signInTester(): Promise<void>;
+  signInTester(_modularDeprecationArg?: any): Promise<void>;
 
   /**
    * Check to see whether a new distribution is available
    * If not an iOS device, it always rejects, as no default response seems sensible.
    */
-  checkForUpdate(): Promise<AppDistributionRelease>;
+  checkForUpdate(_modularDeprecationArg?: any): Promise<AppDistributionRelease>;
 
   /**
    * Sign out App Distribution tester
    * If not an iOS device, it always rejects, as no default response seems sensible.
    */
-  signOutTester(): Promise<void>;
+  signOutTester(_modularDeprecationArg?: any): Promise<void>;
 }
 
 export type FirebaseAppDistribution = FirebaseAppDistributionModule;

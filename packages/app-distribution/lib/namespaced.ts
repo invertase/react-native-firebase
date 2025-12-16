@@ -31,7 +31,7 @@ const namespace = 'appDistribution';
 const nativeModuleName = 'RNFBAppDistributionModule';
 
 class FirebaseAppDistributionModule extends FirebaseModule {
-  isTesterSignedIn(): Promise<boolean> {
+  isTesterSignedIn(_modularDeprecationArg?: any): Promise<boolean> {
     if (isIOS) {
       return this.native.isTesterSignedIn();
     }
@@ -39,7 +39,7 @@ class FirebaseAppDistributionModule extends FirebaseModule {
     return Promise.reject(new Error('App Distribution is not supported on this platform.'));
   }
 
-  signInTester(): Promise<void> {
+  signInTester(_modularDeprecationArg?: any): Promise<void> {
     if (isIOS) {
       return this.native.signInTester();
     }
@@ -47,7 +47,9 @@ class FirebaseAppDistributionModule extends FirebaseModule {
     return Promise.reject(new Error('App Distribution is not supported on this platform.'));
   }
 
-  checkForUpdate(): Promise<FirebaseAppDistributionTypes.AppDistributionRelease> {
+  checkForUpdate(
+    _modularDeprecationArg?: any,
+  ): Promise<FirebaseAppDistributionTypes.AppDistributionRelease> {
     if (isIOS) {
       return this.native.checkForUpdate();
     }
@@ -55,7 +57,7 @@ class FirebaseAppDistributionModule extends FirebaseModule {
     return Promise.reject(new Error('App Distribution is not supported on this platform.'));
   }
 
-  signOutTester(): Promise<void> {
+  signOutTester(_modularDeprecationArg?: any): Promise<void> {
     if (isIOS) {
       return this.native.signOutTester();
     }
