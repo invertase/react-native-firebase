@@ -3,10 +3,10 @@
   "version": "23.7.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - App Distribution",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "lib/index.ts",
+  "types": "lib/types.d.ts",
   "scripts": {
-    "build": "genversion --semi lib/version.js",
+    "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
     "build:plugin": "rimraf plugin/build && tsc --build plugin",
     "lint:plugin": "eslint plugin/src/*",

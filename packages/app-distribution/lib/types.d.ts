@@ -161,6 +161,30 @@ declare module '@react-native-firebase/app' {
     }
     interface FirebaseApp {
       appDistribution(): FirebaseAppDistributionTypes.Module;
+      readonly name: string;
     }
   }
+
+  export function getApp(appName?: string): ReactNativeFirebase.FirebaseApp;
+}
+
+declare module '@react-native-firebase/app/lib/common' {
+  export const MODULAR_DEPRECATION_ARG: string;
+  export const isIOS: boolean;
+}
+
+declare module '@react-native-firebase/app/lib/internal' {
+  export function createModuleNamespace(config: any): any;
+  export class FirebaseModule {
+    constructor(...args: any[]);
+    native: any;
+    app: any;
+    firebaseJson: any;
+    _customUrlOrRegion: string | null;
+  }
+  export function getFirebaseRoot(): any;
+}
+
+declare module './version' {
+  export const version: string;
 }
