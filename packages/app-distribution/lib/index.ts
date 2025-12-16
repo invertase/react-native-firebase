@@ -15,6 +15,13 @@
  *
  */
 
+// Export types from types/app-distribution
+export type {
+  AppDistributionRelease,
+  FirebaseAppDistribution,
+  FirebaseApp,
+} from './types/app-distribution';
+
 // Export types from types.d.ts
 export type { FirebaseAppDistributionTypes } from './types.d';
 

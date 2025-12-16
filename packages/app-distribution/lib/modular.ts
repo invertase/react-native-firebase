@@ -17,11 +17,11 @@
 
 import { getApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
-import type { FirebaseApp } from '@react-native-firebase/app';
-import type { FirebaseAppDistributionTypes } from './types.d';
-
-export type FirebaseAppDistribution = FirebaseAppDistributionTypes.Module;
-export type AppDistributionRelease = FirebaseAppDistributionTypes.AppDistributionRelease;
+import type {
+  FirebaseAppDistribution,
+  AppDistributionRelease,
+  FirebaseApp,
+} from './types/app-distribution';
 
 /**
  * Get an App Distribution instance for the specified app or current app.
