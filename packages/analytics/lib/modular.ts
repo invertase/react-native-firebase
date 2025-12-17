@@ -1,5 +1,5 @@
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
-import type { FirebaseAnalyticsModule } from './namespaced';
+import type { FirebaseAnalyticsModule } from './types/analytics';
 import { getApp } from '@react-native-firebase/app';
 import { Platform } from 'react-native';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';

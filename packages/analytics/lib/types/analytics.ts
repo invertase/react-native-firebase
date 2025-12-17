@@ -1,3 +1,5 @@
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
+
 /**
  * A currency amount.
  */
@@ -869,3 +871,135 @@ export declare type EventNameString =
   | 'view_item_list'
   | 'view_promotion'
   | 'view_search_results';
+
+// ============ Module Interface ============
+
+/**
+ * Analytics module instance - returned from firebase.analytics() or firebase.app().analytics()
+ */
+export interface AnalyticsModule extends ReactNativeFirebase.FirebaseModule {
+  /** The FirebaseApp this module is associated with */
+  app: ReactNativeFirebase.FirebaseApp;
+
+  logEvent(
+    name: string,
+    params?: { [key: string]: any },
+    options?: AnalyticsCallOptions,
+  ): Promise<void>;
+
+  setAnalyticsCollectionEnabled(enabled: boolean): Promise<void>;
+
+  setSessionTimeoutDuration(milliseconds?: number): Promise<void>;
+
+  getAppInstanceId(): Promise<string | null>;
+
+  getSessionId(): Promise<number | null>;
+
+  setUserId(id: string | null): Promise<void>;
+
+  setUserProperty(name: string, value: string | null): Promise<void>;
+
+  setUserProperties(
+    properties: { [key: string]: string | null },
+    options?: AnalyticsCallOptions,
+  ): Promise<void>;
+
+  resetAnalyticsData(): Promise<void>;
+
+  setConsent(consentSettings: ConsentSettings): Promise<void>;
+
+  setDefaultEventParameters(params?: { [key: string]: any }): Promise<void>;
+
+  // Event logging methods
+  logAddPaymentInfo(object: AddPaymentInfoEventParameters): Promise<void>;
+  logScreenView(object: ScreenViewParameters): Promise<void>;
+  logAddShippingInfo(object?: AddShippingInfoParameters): Promise<void>;
+  logAddToCart(object?: AddToCartEventParameters): Promise<void>;
+  logAddToWishlist(object?: AddToWishlistEventParameters): Promise<void>;
+  logAppOpen(): Promise<void>;
+  logBeginCheckout(object?: BeginCheckoutEventParameters): Promise<void>;
+  logCampaignDetails(object: CampaignDetailsEventParameters): Promise<void>;
+  logEarnVirtualCurrency(object: EarnVirtualCurrencyEventParameters): Promise<void>;
+  logGenerateLead(object?: GenerateLeadEventParameters): Promise<void>;
+  logJoinGroup(object: JoinGroupEventParameters): Promise<void>;
+  logLevelEnd(object: LevelEndEventParameters): Promise<void>;
+  logLevelStart(object: LevelStartEventParameters): Promise<void>;
+  logLevelUp(object: LevelUpEventParameters): Promise<void>;
+  logLogin(object: LoginEventParameters): Promise<void>;
+  logPostScore(object: PostScoreEventParameters): Promise<void>;
+  logSelectContent(object: SelectContentEventParameters): Promise<void>;
+  logPurchase(object?: PurchaseEventParameters): Promise<void>;
+  logRefund(object?: RefundEventParameters): Promise<void>;
+  logRemoveFromCart(object?: RemoveFromCartEventParameters): Promise<void>;
+  logSearch(object: SearchEventParameters): Promise<void>;
+  logSelectItem(object: SelectItemEventParameters): Promise<void>;
+  logSetCheckoutOption(object: SetCheckoutOptionEventParameters): Promise<void>;
+  logSelectPromotion(object: SelectPromotionEventParameters): Promise<void>;
+  logShare(object: ShareEventParameters): Promise<void>;
+  logSignUp(object: SignUpEventParameters): Promise<void>;
+  logSpendVirtualCurrency(object: SpendVirtualCurrencyEventParameters): Promise<void>;
+  logTutorialBegin(): Promise<void>;
+  logTutorialComplete(): Promise<void>;
+  logUnlockAchievement(object: UnlockAchievementEventParameters): Promise<void>;
+  logViewCart(object?: ViewCartEventParameters): Promise<void>;
+  logViewItem(object?: ViewItemEventParameters): Promise<void>;
+  logViewItemList(object?: ViewItemListEventParameters): Promise<void>;
+  logViewPromotion(object?: ViewPromotionEventParameters): Promise<void>;
+  logViewSearchResults(object: ViewSearchResultsParameters): Promise<void>;
+
+  // iOS-specific methods
+  initiateOnDeviceConversionMeasurementWithEmailAddress(emailAddress: string): Promise<void>;
+  initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
+    hashedEmailAddress: string,
+  ): Promise<void>;
+  initiateOnDeviceConversionMeasurementWithPhoneNumber(phoneNumber: string): Promise<void>;
+  initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
+    hashedPhoneNumber: string,
+  ): Promise<void>;
+}
+
+// ============ Type Aliases for Convenience ============
+
+export type Analytics = AnalyticsModule;
+
+/**
+ * @deprecated Use AnalyticsModule instead.
+ * FirebaseAnalyticsModule is kept for backwards compatibility.
+ */
+export type FirebaseAnalyticsModule = AnalyticsModule;
+
+/**
+ * Default export type for analytics module
+ */
+export type AnalyticsDefaultExport = ReactNativeFirebase.FirebaseModuleWithStatics<
+  AnalyticsModule,
+  Statics
+> & {
+  (): AnalyticsModule;
+  (app?: ReactNativeFirebase.FirebaseApp): AnalyticsModule;
+};
+
+/**
+ * Firebase root export type for analytics module
+ */
+export type AnalyticsFirebaseExport = AnalyticsModule & {
+  analytics: AnalyticsDefaultExport;
+  SDK_VERSION: string;
+  app(name?: string): ReactNativeFirebase.FirebaseApp & { analytics(): AnalyticsModule };
+};
+
+// ============ Backwards Compatibility Namespace ============
+
+/**
+ * @deprecated Use the exported types directly instead.
+ * FirebaseAnalyticsTypes namespace is kept for backwards compatibility.
+ */
+/* eslint-disable @typescript-eslint/no-namespace */
+export namespace FirebaseAnalyticsTypes {
+  // Short name aliases referencing top-level types
+  export type Module = AnalyticsModule;
+  export type CallOptions = AnalyticsCallOptions;
+  export type Consent = ConsentSettings;
+  export type Settings = AnalyticsSettings;
+}
+/* eslint-enable @typescript-eslint/no-namespace */

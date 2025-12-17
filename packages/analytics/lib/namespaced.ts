@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-import { ReactNativeFirebase } from '@react-native-firebase/app';
 import {
   isAlphaNumericUnderscore,
   isE164PhoneNumber,
@@ -77,6 +76,9 @@ import {
   type ViewItemListEventParameters,
   type ViewPromotionEventParameters,
   type ViewSearchResultsParameters,
+  type AnalyticsModule,
+  type AnalyticsDefaultExport,
+  type AnalyticsFirebaseExport,
 } from './types/analytics';
 
 const ReservedEventNames: readonly string[] = [
@@ -120,7 +122,7 @@ const namespace = 'analytics';
 
 const nativeModuleName = 'RNFBAnalyticsModule';
 
-class FirebaseAnalyticsModule extends FirebaseModule {
+class FirebaseAnalyticsModule extends FirebaseModule implements AnalyticsModule {
   logEvent(
     name: string,
     params: { [key: string]: any } = {},
@@ -850,8 +852,6 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 }
 
-export type { FirebaseAnalyticsModule };
-
 // import { SDK_VERSION } from '@react-native-firebase/analytics';
 export const SDK_VERSION: string = version;
 
@@ -862,13 +862,7 @@ export const SDK_VERSION: string = version;
 // analytics().logEvent(...);
 // firebase.analytics().logEvent(...);
 
-export declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
-  FirebaseAnalyticsModule,
-  Statics
-> & {
-  (): FirebaseAnalyticsModule;
-  (app?: ReactNativeFirebase.FirebaseApp): FirebaseAnalyticsModule;
-};
+type AnalyticsNamespace = AnalyticsDefaultExport;
 
 export default createModuleNamespace({
   statics,
@@ -879,13 +873,9 @@ export default createModuleNamespace({
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseAnalyticsModule,
-}) as typeof defaultExport;
+}) as unknown as AnalyticsNamespace;
 
 // Register the interop module for non-native platforms.
-setReactNativeModule(nativeModuleName, RNFBAnalyticsModule);
+setReactNativeModule(nativeModuleName, RNFBAnalyticsModule as unknown as Record<string, unknown>);
 
-export const firebase: FirebaseAnalyticsModule & {
-  analytics: typeof defaultExport;
-  SDK_VERSION: string;
-  app(name?: string): ReactNativeFirebase.FirebaseApp & { analytics(): FirebaseAnalyticsModule };
-} = getFirebaseRoot();
+export const firebase = getFirebaseRoot() as unknown as AnalyticsFirebaseExport;
