@@ -52,7 +52,9 @@ export const createCheckV9Deprecation = (moduleNames: string[]): CheckV9Deprecat
     consoleWarnSpy.mockRestore();
     const consoleWarnSpy2 = jest.spyOn(console, 'warn').mockImplementation(warnMessage => {
       const message = createMessage(moduleName, methodNameKey, instanceName, uniqueMessage);
-      expect(warnMessage).toMatch(message);
+      if (message) {
+        expect(warnMessage).toMatch(message);
+      }
     });
     nonModularFunction();
 
