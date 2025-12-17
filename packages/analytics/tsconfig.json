@@ -5,7 +5,7 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "react-jsx",
-    "lib": ["ESNext", "DOM"],
+    "lib": ["ESNext"],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "noFallthroughCasesInSwitch": true,
@@ -23,8 +23,16 @@
     "baseUrl": ".",
     "rootDir": ".",
     "paths": {
-      "@react-native-firebase/app/common/*": ["../app/lib/common/*"],
-      "@react-native-firebase/app": ["../app/lib"]
+      "@react-native-firebase/app/lib/common/*": ["../app/dist/typescript/commonjs/lib/common/*"],
+      "@react-native-firebase/app/lib/common": ["../app/dist/typescript/commonjs/lib/common"],
+      "@react-native-firebase/app/lib/internal/web/*": [
+        "../app/dist/typescript/commonjs/lib/internal/web/*"
+      ],
+      "@react-native-firebase/app/lib/internal/*": [
+        "../app/dist/typescript/commonjs/lib/internal/*"
+      ],
+      "@react-native-firebase/app/lib/internal": ["../app/dist/typescript/commonjs/lib/internal"],
+      "@react-native-firebase/app": ["../app/dist/typescript/commonjs/lib"]
     }
   },
   "include": ["lib/**/*"],
