@@ -53,8 +53,6 @@ import {
   createCheckV9Deprecation,
   CheckV9DeprecationFunction,
 } from '../../app/lib/common/unitTestUtils';
-
-// @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 
 describe('Database', function () {
@@ -303,38 +301,56 @@ describe('Database', function () {
       staticsV9Deprecation = createCheckV9Deprecation(['database', 'statics']);
       referenceV9Deprecation = createCheckV9Deprecation(['database', 'DatabaseReference']);
       // @ts-ignore test
-      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
-        return new Proxy(
-          {},
-          {
-            get: (_target, prop) => {
-              if (prop === 'constants') {
-                return {
-                  isDatabaseCollectionEnabled: true,
-                  url: 'https://test.firebaseio.com',
-                  ref: 'ref()',
-                };
-              }
-              // Mock the once method to return proper snapshot data
-              if (prop === 'once') {
-                return jest.fn().mockResolvedValue({
-                  key: 'test',
-                  value: 'mock_value',
-                  exists: true,
-                  childKeys: [],
-                  priority: null,
-                } as never);
-              }
-              return jest.fn().mockResolvedValue({
-                constants: {
-                  isDatabaseCollectionEnabled: true,
-                  url: 'https://test.firebaseio.com',
-                },
-              } as never);
-            },
+      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockReturnValue({
+        constants: {
+          isDatabaseCollectionEnabled: true,
+          url: 'https://test.firebaseio.com',
+          ref: 'ref()',
+        },
+        on: jest.fn(),
+        off: jest.fn(),
+        once: jest.fn(
+          (_appName: any, _customUrl: any, path: any, _modifiers: any, eventType: any) => {
+            // Database native methods receive (appName, customUrlOrRegion, ...actualArgs)
+            let key = 'test';
+            if (path && typeof path === 'string') {
+              const parts = path.split('/').filter(p => p);
+              key = parts[parts.length - 1] || 'test';
+            }
+
+            const snapshotData = {
+              key,
+              value: 'mock_value',
+              exists: true,
+              childKeys: [],
+              priority: null,
+            };
+
+            if (eventType === 'value') {
+              return Promise.resolve(snapshotData);
+            }
+
+            return Promise.resolve({
+              snapshot: snapshotData,
+              previousChildName: null,
+            });
           },
-        );
-      });
+        ),
+        set: jest.fn(() => Promise.resolve()),
+        update: jest.fn(() => Promise.resolve()),
+        setWithPriority: jest.fn(() => Promise.resolve()),
+        remove: jest.fn(() => Promise.resolve()),
+        setPriority: jest.fn(() => Promise.resolve()),
+        keepSynced: jest.fn(() => Promise.resolve()),
+        transactionStart: jest.fn(() => Promise.resolve()),
+        transactionTryCommit: jest.fn(() => Promise.resolve()),
+        goOnline: jest.fn(() => Promise.resolve()),
+        goOffline: jest.fn(() => Promise.resolve()),
+        setPersistenceEnabled: jest.fn(() => Promise.resolve()),
+        setLoggingEnabled: jest.fn(() => Promise.resolve()),
+        setPersistenceCacheSizeBytes: jest.fn(() => Promise.resolve()),
+        getServerTime: jest.fn(() => Promise.resolve(Date.now())),
+      } as any);
     });
 
     it('useEmulator', function () {

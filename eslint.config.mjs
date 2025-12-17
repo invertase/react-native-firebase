@@ -41,9 +41,8 @@ export default [
       '**/type-test.ts',
       'packages/**/modular/dist/**/*',
       'packages/ai/__tests__/test-utils',
+      'packages/**/dist/**/*',
       'packages/vertexai/__tests__/test-utils',
-      'packages/vertexai/dist',
-      'packages/ai/dist',
     ],
   },
   ...compat

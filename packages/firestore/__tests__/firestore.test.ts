@@ -778,21 +778,27 @@ describe('Firestore', function () {
 
       timestampV9Deprecation = createCheckV9Deprecation(['firestore', 'FirestoreTimestamp']);
 
-      // @ts-ignore test
-      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
-        return new Proxy(
-          {},
-          {
-            get: () =>
-              jest.fn().mockResolvedValue({
-                source: 'cache',
-                changes: [],
-                documents: [],
-                metadata: {},
-                path: 'foo',
-              } as never),
-          },
-        );
+      // Mock the native module directly to avoid getter caching issues
+      const mockNative = new Proxy(
+        {},
+        {
+          get: () =>
+            (jest.fn() as any).mockResolvedValue({
+              source: 'cache',
+              changes: [],
+              documents: [],
+              metadata: {},
+              path: 'foo',
+            }),
+        },
+      );
+
+      // Override the native getter on FirebaseModule prototype
+      Object.defineProperty(FirebaseModule.prototype, 'native', {
+        get: function () {
+          return mockNative;
+        },
+        configurable: true,
       });
 
       jest

@@ -1,0 +1,73 @@
+/*
+ * Copyright (c) 2016-present Invertase Limited & Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this library except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+import { NativeModules } from 'react-native';
+import { stripTrailingSlash, isOther } from '../common';
+import { Utils } from '../types/app';
+import { version } from '../version';
+
+const PATH_NAMES = [
+  'MAIN_BUNDLE',
+  'CACHES_DIRECTORY',
+  'DOCUMENT_DIRECTORY',
+  'EXTERNAL_DIRECTORY',
+  'EXTERNAL_STORAGE_DIRECTORY',
+  'TEMP_DIRECTORY',
+  'LIBRARY_DIRECTORY',
+  'PICTURES_DIRECTORY',
+  'MOVIES_DIRECTORY',
+] as const;
+
+const PATH_FILE_TYPES = ['FILE_TYPE_REGULAR', 'FILE_TYPE_DIRECTORY'] as const;
+
+const paths: Partial<Utils.FilePath> = {};
+let processedPathConstants = false;
+
+function processPathConstants(nativeModule: any): Utils.FilePath {
+  if (processedPathConstants || !nativeModule) {
+    return paths as Utils.FilePath;
+  }
+  processedPathConstants = true;
+
+  for (let i = 0; i < PATH_NAMES.length; i++) {
+    const path = PATH_NAMES[i];
+    if (path) {
+      (paths as any)[path] = nativeModule[path] ? stripTrailingSlash(nativeModule[path]) : null;
+    }
+  }
+
+  for (let i = 0; i < PATH_FILE_TYPES.length; i++) {
+    const pathFileType = PATH_FILE_TYPES[i];
+    if (pathFileType) {
+      (paths as any)[pathFileType] = stripTrailingSlash(nativeModule[pathFileType]);
+    }
+  }
+
+  Object.freeze(paths);
+
+  return paths as Utils.FilePath;
+}
+
+const statics: Utils.Statics = {
+  SDK_VERSION: version,
+  get FilePath(): Utils.FilePath {
+    // We don't support path constants on non-native platforms.
+    return processPathConstants(isOther ? {} : NativeModules.RNFBUtilsModule);
+  },
+};
+
+export default statics;
