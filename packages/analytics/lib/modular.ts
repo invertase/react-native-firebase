@@ -40,6 +40,8 @@ import type {
   ViewPromotionEventParameters,
   ViewSearchResultsParameters,
   SettingsOptions,
+  EventParams,
+  CustomEventName,
 } from './types/analytics';
 
 /**
@@ -77,6 +79,333 @@ export async function getGoogleAnalyticsClientId(analytics: Analytics): Promise<
 /**
  * Log a custom event with optional params.
  */
+// Overloads for standard event names
+export function logEvent(
+  analytics: Analytics,
+  name: 'add_payment_info',
+  params?: {
+    items?: EventParams['items'];
+    currency?: EventParams['currency'];
+    value?: EventParams['value'];
+    coupon?: EventParams['coupon'];
+    payment_type?: EventParams['payment_type'];
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'add_shipping_info',
+  params?: {
+    items?: EventParams['items'];
+    currency?: EventParams['currency'];
+    value?: EventParams['value'];
+    coupon?: EventParams['coupon'];
+    shipping_tier?: EventParams['shipping_tier'];
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'add_to_cart',
+  params?: {
+    items?: EventParams['items'];
+    currency?: EventParams['currency'];
+    value?: EventParams['value'];
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'add_to_wishlist',
+  params?: {
+    items?: EventParams['items'];
+    currency?: EventParams['currency'];
+    value?: EventParams['value'];
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'begin_checkout',
+  params?: {
+    currency?: EventParams['currency'];
+    value?: EventParams['value'];
+    coupon?: EventParams['coupon'];
+    items?: EventParams['items'];
+    [key: string]: any;
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'checkout_progress',
+  params?: {
+    checkout_step?: EventParams['checkout_step'];
+    checkout_option?: EventParams['checkout_option'];
+    [key: string]: any;
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'exception',
+  params?: {
+    description?: EventParams['description'];
+    fatal?: EventParams['fatal'];
+    [key: string]: any;
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'generate_lead',
+  params?: {
+    currency?: EventParams['currency'];
+    value?: EventParams['value'];
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'login',
+  params: {
+    method: EventParams['method'];
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'page_view',
+  params?: {
+    page_title?: EventParams['page_title'];
+    page_location?: EventParams['page_location'];
+    page_path?: EventParams['page_path'];
+    [key: string]: any;
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'purchase',
+  params?: {
+    affiliation?: EventParams['affiliation'];
+    coupon?: EventParams['coupon'];
+    currency?: EventParams['currency'];
+    items?: EventParams['items'];
+    shipping?: EventParams['shipping'];
+    tax?: EventParams['tax'];
+    value?: EventParams['value'];
+    transaction_id?: EventParams['transaction_id'];
+    [key: string]: any;
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'refund',
+  params?: {
+    affiliation?: EventParams['affiliation'];
+    coupon?: EventParams['coupon'];
+    currency?: EventParams['currency'];
+    items?: EventParams['items'];
+    shipping?: EventParams['shipping'];
+    tax?: EventParams['tax'];
+    value?: EventParams['value'];
+    transaction_id?: EventParams['transaction_id'];
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'remove_from_cart',
+  params?: {
+    items?: EventParams['items'];
+    value?: EventParams['value'];
+    currency?: EventParams['currency'];
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'screen_view',
+  params?: {
+    screen_name?: EventParams['screen_name'];
+    screen_class?: EventParams['screen_class'];
+    [key: string]: any;
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'search',
+  params: {
+    search_term: EventParams['search_term'];
+    number_of_nights?: number;
+    number_of_rooms?: number;
+    number_of_passengers?: number;
+    origin?: string;
+    destination?: string;
+    start_date?: string;
+    end_date?: string;
+    travel_class?: string;
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'select_content',
+  params: {
+    content_type: EventParams['content_type'];
+    item_id: EventParams['item_id'];
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'select_item',
+  params: {
+    items?: EventParams['items'];
+    content_type: EventParams['content_type'];
+    item_list_id: EventParams['item_list_id'];
+    item_list_name: EventParams['item_list_name'];
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'select_promotion',
+  params: {
+    creative_name: string;
+    creative_slot: string;
+    items?: EventParams['items'];
+    location_id: string;
+    promotion_id: EventParams['promotion_id'];
+    promotion_name: EventParams['promotion_name'];
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'set_checkout_option',
+  params?: {
+    checkout_step?: EventParams['checkout_step'];
+    checkout_option?: EventParams['checkout_option'];
+    [key: string]: any;
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'share',
+  params: {
+    content_type: EventParams['content_type'];
+    item_id: EventParams['item_id'];
+    method: EventParams['method'];
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'sign_up',
+  params: {
+    method: EventParams['method'];
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'timing_complete',
+  params?: {
+    [key: string]: any;
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'view_cart',
+  params?: {
+    items?: EventParams['items'];
+    currency?: EventParams['currency'];
+    value?: EventParams['value'];
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'view_item',
+  params?: {
+    items?: EventParams['items'];
+    currency?: EventParams['currency'];
+    value?: EventParams['value'];
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'view_item_list',
+  params?: {
+    items?: EventParams['items'];
+    item_list_id?: EventParams['item_list_id'];
+    item_list_name?: EventParams['item_list_name'];
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'view_promotion',
+  params?: {
+    items?: EventParams['items'];
+    location_id?: string;
+    creative_name?: string;
+    creative_slot?: string;
+    promotion_id?: EventParams['promotion_id'];
+    promotion_name?: EventParams['promotion_name'];
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+export function logEvent(
+  analytics: Analytics,
+  name: 'view_search_results',
+  params: {
+    search_term: EventParams['search_term'];
+  },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
+// Generic fallback for custom event names
+export function logEvent<T extends string>(
+  analytics: Analytics,
+  name: CustomEventName<T>,
+  params?: { [key: string]: any },
+  options?: AnalyticsCallOptions,
+): Promise<void>;
+
 export function logEvent(
   analytics: Analytics,
   name: string,

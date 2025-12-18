@@ -638,3 +638,170 @@ setConsent(analyticsModular, consentSettings).then(() => {
 });
 
 settings(settingsOptions);
+
+// Test logEvent with overloads for standard events
+logEvent(analyticsModular, 'add_payment_info', {
+  currency: 'USD',
+  value: 100,
+  payment_type: 'credit',
+}).then(() => {
+  console.log('logEvent add_payment_info completed');
+});
+
+logEvent(analyticsModular, 'add_shipping_info', {
+  currency: 'USD',
+  value: 50,
+  shipping_tier: 'ground',
+}).then(() => {
+  console.log('logEvent add_shipping_info completed');
+});
+
+logEvent(analyticsModular, 'add_to_cart', { currency: 'USD', value: 25 }).then(() => {
+  console.log('logEvent add_to_cart completed');
+});
+
+logEvent(analyticsModular, 'add_to_wishlist', { currency: 'USD', value: 30 }).then(() => {
+  console.log('logEvent add_to_wishlist completed');
+});
+
+logEvent(analyticsModular, 'begin_checkout', {
+  currency: 'USD',
+  value: 100,
+  coupon: 'SAVE10',
+}).then(() => {
+  console.log('logEvent begin_checkout completed');
+});
+
+logEvent(analyticsModular, 'checkout_progress', {
+  checkout_step: 2,
+  checkout_option: 'express',
+}).then(() => {
+  console.log('logEvent checkout_progress completed');
+});
+
+logEvent(analyticsModular, 'exception', { description: 'Error occurred', fatal: false }).then(
+  () => {
+    console.log('logEvent exception completed');
+  },
+);
+
+logEvent(analyticsModular, 'generate_lead', { currency: 'USD', value: 200 }).then(() => {
+  console.log('logEvent generate_lead completed');
+});
+
+logEvent(analyticsModular, 'login', { method: 'email' }).then(() => {
+  console.log('logEvent login completed');
+});
+
+logEvent(analyticsModular, 'page_view', { page_title: 'Home', page_location: '/home' }).then(() => {
+  console.log('logEvent page_view completed');
+});
+
+logEvent(analyticsModular, 'purchase', {
+  currency: 'USD',
+  value: 150,
+  transaction_id: 'tx123',
+}).then(() => {
+  console.log('logEvent purchase completed');
+});
+
+logEvent(analyticsModular, 'refund', { currency: 'USD', value: 50, transaction_id: 'tx123' }).then(
+  () => {
+    console.log('logEvent refund completed');
+  },
+);
+
+logEvent(analyticsModular, 'remove_from_cart', { currency: 'USD', value: 20 }).then(() => {
+  console.log('logEvent remove_from_cart completed');
+});
+
+logEvent(analyticsModular, 'screen_view', {
+  screen_name: 'HomeScreen',
+  screen_class: 'Screen',
+}).then(() => {
+  console.log('logEvent screen_view completed');
+});
+
+logEvent(analyticsModular, 'search', { search_term: 'shoes' }).then(() => {
+  console.log('logEvent search completed');
+});
+
+logEvent(analyticsModular, 'select_content', { content_type: 'product', item_id: 'item123' }).then(
+  () => {
+    console.log('logEvent select_content completed');
+  },
+);
+
+logEvent(analyticsModular, 'select_item', {
+  content_type: 'product',
+  item_list_id: 'list1',
+  item_list_name: 'Featured',
+}).then(() => {
+  console.log('logEvent select_item completed');
+});
+
+logEvent(analyticsModular, 'select_promotion', {
+  creative_name: 'Summer Sale',
+  creative_slot: 'banner',
+  location_id: 'loc1',
+  promotion_id: 'promo1',
+  promotion_name: 'Summer Sale',
+}).then(() => {
+  console.log('logEvent select_promotion completed');
+});
+
+logEvent(analyticsModular, 'set_checkout_option', {
+  checkout_step: 1,
+  checkout_option: 'standard',
+}).then(() => {
+  console.log('logEvent set_checkout_option completed');
+});
+
+logEvent(analyticsModular, 'share', {
+  content_type: 'article',
+  item_id: 'article123',
+  method: 'twitter',
+}).then(() => {
+  console.log('logEvent share completed');
+});
+
+logEvent(analyticsModular, 'sign_up', { method: 'email' }).then(() => {
+  console.log('logEvent sign_up completed');
+});
+
+logEvent(analyticsModular, 'timing_complete', { duration: 5000 }).then(() => {
+  console.log('logEvent timing_complete completed');
+});
+
+logEvent(analyticsModular, 'view_cart', { currency: 'USD', value: 75 }).then(() => {
+  console.log('logEvent view_cart completed');
+});
+
+logEvent(analyticsModular, 'view_item', { currency: 'USD', value: 40 }).then(() => {
+  console.log('logEvent view_item completed');
+});
+
+logEvent(analyticsModular, 'view_item_list', {
+  item_list_id: 'list1',
+  item_list_name: 'Featured Products',
+}).then(() => {
+  console.log('logEvent view_item_list completed');
+});
+
+logEvent(analyticsModular, 'view_promotion', {
+  promotion_id: 'promo1',
+  promotion_name: 'Summer Sale',
+}).then(() => {
+  console.log('logEvent view_promotion completed');
+});
+
+logEvent(analyticsModular, 'view_search_results', { search_term: 'shoes' }).then(() => {
+  console.log('logEvent view_search_results completed');
+});
+
+// Test custom event name (should use generic overload)
+logEvent(analyticsModular, 'custom_event_name' as CustomEventName<'custom_event_name'>, {
+  key: 'value',
+}).then(() => {
+  console.log('logEvent custom event completed');
+});
