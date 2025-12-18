@@ -344,7 +344,7 @@ export function setNotificationDelegationEnabled(messaging, enabled) {
 /**
  * Checks if all required APIs exist in the browser.
  * @param {Messaging} messaging - Messaging instance.
- * @returns {boolean}
+ * @returns {Promise<boolean>}
  */
 export function isSupported(messaging) {
   return messaging.isSupported.call(messaging, MODULAR_DEPRECATION_ARG);

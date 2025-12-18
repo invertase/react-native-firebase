@@ -1,7 +1,15 @@
 const fs = require('fs');
 const path = require('path');
 
-const version = require('../lib/version');
+// Read version from TypeScript file
+const versionFilePath = path.resolve(__dirname, '..', 'lib', 'version.ts');
+const versionFileContent = fs.readFileSync(versionFilePath, 'utf8');
+const versionMatch = versionFileContent.match(/version = ['"](.+?)['"]/);
+if (!versionMatch) {
+  throw new Error('Could not extract version from version.ts');
+}
+const version = versionMatch[1];
+
 const outputPath = path.resolve(__dirname, '..', 'ios', 'RNFBApp', 'RNFBVersion.m');
 const template = `/**
  * Copyright (c) 2016-present Invertase Limited & Contributors
