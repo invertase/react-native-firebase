@@ -18,7 +18,6 @@
 // Export types from types/analytics
 export type {
   Analytics,
-  Statics,
   AnalyticsCallOptions,
   ConsentSettings,
   AnalyticsSettings,
