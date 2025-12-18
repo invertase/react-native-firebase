@@ -19,7 +19,7 @@
 export type {
   HttpsCallableOptions,
   HttpsCallable,
-  FunctionsModule,
+  HttpsCallableResult,
   Functions,
   FirebaseApp,
   FirebaseFunctionsTypes,
