@@ -17,11 +17,7 @@
 
 // Export types from types/analytics
 export type {
-  AnalyticsModule,
   Analytics,
-  FirebaseAnalyticsModule,
-  AnalyticsDefaultExport,
-  AnalyticsFirebaseExport,
   Statics,
   AnalyticsCallOptions,
   ConsentSettings,

@@ -877,7 +877,7 @@ export declare type EventNameString =
 /**
  * Analytics module instance - returned from firebase.analytics() or firebase.app().analytics()
  */
-export interface AnalyticsModule extends ReactNativeFirebase.FirebaseModule {
+export interface Analytics extends ReactNativeFirebase.FirebaseModule {
   /** The FirebaseApp this module is associated with */
   app: ReactNativeFirebase.FirebaseApp;
 
@@ -958,37 +958,18 @@ export interface AnalyticsModule extends ReactNativeFirebase.FirebaseModule {
   ): Promise<void>;
 }
 
-// ============ Type Aliases for Convenience ============
-
-export type Analytics = AnalyticsModule;
-
-/**
- * @deprecated Use AnalyticsModule instead.
- * FirebaseAnalyticsModule is kept for backwards compatibility.
- */
-export type FirebaseAnalyticsModule = AnalyticsModule;
-
-/**
- * Default export type for analytics module
- */
-export type AnalyticsDefaultExport = ReactNativeFirebase.FirebaseModuleWithStatics<
-  AnalyticsModule,
-  Statics
-> & {
-  (): AnalyticsModule;
-  (app?: ReactNativeFirebase.FirebaseApp): AnalyticsModule;
-};
-
-/**
- * Firebase root export type for analytics module
- */
-export type AnalyticsFirebaseExport = AnalyticsModule & {
-  analytics: AnalyticsDefaultExport;
-  SDK_VERSION: string;
-  app(name?: string): ReactNativeFirebase.FirebaseApp & { analytics(): AnalyticsModule };
-};
-
-// ============ Backwards Compatibility Namespace ============
+/* eslint-disable @typescript-eslint/no-namespace */
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    interface Module {
+      analytics: FirebaseModuleWithStaticsAndApp<Analytics, Statics>;
+    }
+    interface FirebaseApp {
+      analytics(): Analytics;
+    }
+  }
+}
+/* eslint-enable @typescript-eslint/no-namespace */
 
 /**
  * @deprecated Use the exported types directly instead.
@@ -997,7 +978,7 @@ export type AnalyticsFirebaseExport = AnalyticsModule & {
 /* eslint-disable @typescript-eslint/no-namespace */
 export namespace FirebaseAnalyticsTypes {
   // Short name aliases referencing top-level types
-  export type Module = AnalyticsModule;
+  export type Module = Analytics;
   export type CallOptions = AnalyticsCallOptions;
   export type Consent = ConsentSettings;
   export type Settings = AnalyticsSettings;

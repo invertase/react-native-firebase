@@ -26,6 +26,8 @@ import {
   isUndefined,
 } from '@react-native-firebase/app/lib/common';
 
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
+
 import {
   createModuleNamespace,
   FirebaseModule,
@@ -76,9 +78,7 @@ import {
   type ViewItemListEventParameters,
   type ViewPromotionEventParameters,
   type ViewSearchResultsParameters,
-  type AnalyticsModule,
-  type AnalyticsDefaultExport,
-  type AnalyticsFirebaseExport,
+  type Analytics,
 } from './types/analytics';
 
 const ReservedEventNames: readonly string[] = [
@@ -122,7 +122,7 @@ const namespace = 'analytics';
 
 const nativeModuleName = 'RNFBAnalyticsModule';
 
-class FirebaseAnalyticsModule extends FirebaseModule implements AnalyticsModule {
+class FirebaseAnalyticsModule extends FirebaseModule {
   logEvent(
     name: string,
     params: { [key: string]: any } = {},
@@ -862,9 +862,7 @@ export const SDK_VERSION: string = version;
 // analytics().logEvent(...);
 // firebase.analytics().logEvent(...);
 
-type AnalyticsNamespace = AnalyticsDefaultExport;
-
-export default createModuleNamespace({
+const analyticsNamespace = createModuleNamespace({
   statics,
   version,
   namespace,
@@ -873,9 +871,26 @@ export default createModuleNamespace({
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseAnalyticsModule,
-}) as unknown as AnalyticsNamespace;
+});
+
+type AnalyticsNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  Analytics,
+  Statics
+> & {
+  analytics: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<Analytics, Statics>;
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+export default analyticsNamespace as unknown as AnalyticsNamespace;
 
 // Register the interop module for non-native platforms.
 setReactNativeModule(nativeModuleName, RNFBAnalyticsModule as unknown as Record<string, unknown>);
 
-export const firebase = getFirebaseRoot() as unknown as AnalyticsFirebaseExport;
+export const firebase =
+  getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
+    'analytics',
+    Analytics,
+    Statics,
+    false
+  >;
