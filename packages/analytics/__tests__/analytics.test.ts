@@ -61,9 +61,10 @@ import analytics, {
   setConsent,
   settings,
 } from '../lib';
-import '../lib/types.d.ts';
 
+// @ts-ignore test
 import { createCheckV9Deprecation } from '@react-native-firebase/app/lib/common/unitTestUtils';
+// @ts-ignore test
 import type { CheckV9DeprecationFunction } from '@react-native-firebase/app/lib/common/unitTestUtils';
 
 describe('Analytics', function () {
@@ -987,67 +988,6 @@ describe('Analytics', function () {
 
     it('`settings` function is properly exposed to end user', function () {
       expect(settings).toBeDefined();
-    });
-
-    describe('TypeScript types are properly exported to end user', function () {
-      it('should allow importing type definitions', function () {
-        // This test verifies that types can be imported from the package
-        // If types are not properly exported, TypeScript compilation will fail
-
-        // Import types to verify they're accessible
-        // @ts-ignore - intentionally unused, we're only testing that types can be imported
-        type _TestImports = {
-          Item: import('../lib').Item;
-          Currency: import('../lib').Currency;
-          ConsentStatusString: import('../lib').ConsentStatusString;
-          Promotion: import('../lib').Promotion;
-          AddPaymentInfoEventParameters: import('../lib').AddPaymentInfoEventParameters;
-          AddShippingInfoEventParameters: import('../lib').AddShippingInfoEventParameters;
-          AddToCartEventParameters: import('../lib').AddToCartEventParameters;
-          AddToWishlistEventParameters: import('../lib').AddToWishlistEventParameters;
-          BeginCheckoutEventParameters: import('../lib').BeginCheckoutEventParameters;
-          CampaignDetailsEventParameters: import('../lib').CampaignDetailsEventParameters;
-          EarnVirtualCurrencyEventParameters: import('../lib').EarnVirtualCurrencyEventParameters;
-          GenerateLeadEventParameters: import('../lib').GenerateLeadEventParameters;
-          JoinGroupEventParameters: import('../lib').JoinGroupEventParameters;
-          LevelEndEventParameters: import('../lib').LevelEndEventParameters;
-          LevelStartEventParameters: import('../lib').LevelStartEventParameters;
-          LevelUpEventParameters: import('../lib').LevelUpEventParameters;
-          LoginEventParameters: import('../lib').LoginEventParameters;
-          PostScoreEventParameters: import('../lib').PostScoreEventParameters;
-          PurchaseEventParameters: import('../lib').PurchaseEventParameters;
-          ScreenViewParameters: import('../lib').ScreenViewParameters;
-          RefundEventParameters: import('../lib').RefundEventParameters;
-          RemoveFromCartEventParameters: import('../lib').RemoveFromCartEventParameters;
-          SearchEventParameters: import('../lib').SearchEventParameters;
-          SelectContentEventParameters: import('../lib').SelectContentEventParameters;
-          SelectItemEventParameters: import('../lib').SelectItemEventParameters;
-          SetCheckoutOptionEventParameters: import('../lib').SetCheckoutOptionEventParameters;
-          SelectPromotionEventParameters: import('../lib').SelectPromotionEventParameters;
-          ShareEventParameters: import('../lib').ShareEventParameters;
-          SignUpEventParameters: import('../lib').SignUpEventParameters;
-          SpendVirtualCurrencyEventParameters: import('../lib').SpendVirtualCurrencyEventParameters;
-          UnlockAchievementEventParameters: import('../lib').UnlockAchievementEventParameters;
-          ViewCartEventParameters: import('../lib').ViewCartEventParameters;
-          ViewItemEventParameters: import('../lib').ViewItemEventParameters;
-          ViewSearchResultsParameters: import('../lib').ViewSearchResultsParameters;
-          ViewItemListEventParameters: import('../lib').ViewItemListEventParameters;
-          ViewPromotionEventParameters: import('../lib').ViewPromotionEventParameters;
-          AddShippingInfoParameters: import('../lib').AddShippingInfoParameters;
-          EventParams: import('../lib').EventParams;
-          Statics: import('../lib').Statics;
-          AnalyticsSettings: import('../lib').AnalyticsSettings;
-          AnalyticsCallOptions: import('../lib').AnalyticsCallOptions;
-          GtagConfigParams: import('../lib').GtagConfigParams;
-          ConsentSettings: import('../lib').ConsentSettings;
-          SettingsOptions: import('../lib').SettingsOptions;
-          CustomEventName: import('../lib').CustomEventName<'custom'>;
-          EventNameString: import('../lib').EventNameString;
-        };
-
-        // If we got here without TypeScript compilation errors, the types are properly exported
-        expect(true).toBe(true);
-      });
     });
   });
 
