@@ -971,6 +971,52 @@ declare module '@react-native-firebase/app' {
 }
 /* eslint-enable @typescript-eslint/no-namespace */
 
+// ============ Backwards Compatibility Namespace - to be removed with namespaced exports ============
+
+// Helper types to reference outer scope types within the namespace
+// These are needed because TypeScript can't directly alias types with the same name
+type _Item = Item;
+type _AddPaymentInfoEventParameters = AddPaymentInfoEventParameters;
+type _AddShippingInfoEventParameters = AddShippingInfoEventParameters;
+type _AddToCartEventParameters = AddToCartEventParameters;
+type _AddToWishlistEventParameters = AddToWishlistEventParameters;
+type _BeginCheckoutEventParameters = BeginCheckoutEventParameters;
+type _CampaignDetailsEventParameters = CampaignDetailsEventParameters;
+type _EarnVirtualCurrencyEventParameters = EarnVirtualCurrencyEventParameters;
+type _GenerateLeadEventParameters = GenerateLeadEventParameters;
+type _JoinGroupEventParameters = JoinGroupEventParameters;
+type _LevelEndEventParameters = LevelEndEventParameters;
+type _LevelStartEventParameters = LevelStartEventParameters;
+type _LevelUpEventParameters = LevelUpEventParameters;
+type _LoginEventParameters = LoginEventParameters;
+type _PostScoreEventParameters = PostScoreEventParameters;
+type _PurchaseEventParameters = PurchaseEventParameters;
+type _ScreenViewParameters = ScreenViewParameters;
+type _RefundEventParameters = RefundEventParameters;
+type _RemoveFromCartEventParameters = RemoveFromCartEventParameters;
+type _SearchEventParameters = SearchEventParameters;
+type _SelectContentEventParameters = SelectContentEventParameters;
+type _SelectItemEventParameters = SelectItemEventParameters;
+type _SetCheckoutOptionEventParameters = SetCheckoutOptionEventParameters;
+type _SelectPromotionEventParameters = SelectPromotionEventParameters;
+type _ShareEventParameters = ShareEventParameters;
+type _SignUpEventParameters = SignUpEventParameters;
+type _SpendVirtualCurrencyEventParameters = SpendVirtualCurrencyEventParameters;
+type _UnlockAchievementEventParameters = UnlockAchievementEventParameters;
+type _ViewCartEventParameters = ViewCartEventParameters;
+type _ViewItemEventParameters = ViewItemEventParameters;
+type _ViewSearchResultsParameters = ViewSearchResultsParameters;
+type _ViewItemListEventParameters = ViewItemListEventParameters;
+type _ViewPromotionEventParameters = ViewPromotionEventParameters;
+type _AddShippingInfoParameters = AddShippingInfoParameters;
+type _AnalyticsSettings = AnalyticsSettings;
+type _AnalyticsCallOptions = AnalyticsCallOptions;
+type _GtagConfigParams = GtagConfigParams;
+type _ConsentSettings = ConsentSettings;
+type _SettingsOptions = SettingsOptions;
+type _EventParams = EventParams;
+type _Statics = Statics;
+
 /**
  * @deprecated Use the exported types directly instead.
  * FirebaseAnalyticsTypes namespace is kept for backwards compatibility.
@@ -982,5 +1028,50 @@ export namespace FirebaseAnalyticsTypes {
   export type CallOptions = AnalyticsCallOptions;
   export type Consent = ConsentSettings;
   export type Settings = AnalyticsSettings;
+  export type Statics = _Statics;
+
+  // Event parameter interfaces
+  export type Item = _Item;
+  export type AddPaymentInfoEventParameters = _AddPaymentInfoEventParameters;
+  export type AddShippingInfoEventParameters = _AddShippingInfoEventParameters;
+  export type AddToCartEventParameters = _AddToCartEventParameters;
+  export type AddToWishlistEventParameters = _AddToWishlistEventParameters;
+  export type BeginCheckoutEventParameters = _BeginCheckoutEventParameters;
+  export type CampaignDetailsEventParameters = _CampaignDetailsEventParameters;
+  export type EarnVirtualCurrencyEventParameters = _EarnVirtualCurrencyEventParameters;
+  export type GenerateLeadEventParameters = _GenerateLeadEventParameters;
+  export type JoinGroupEventParameters = _JoinGroupEventParameters;
+  export type LevelEndEventParameters = _LevelEndEventParameters;
+  export type LevelStartEventParameters = _LevelStartEventParameters;
+  export type LevelUpEventParameters = _LevelUpEventParameters;
+  export type LoginEventParameters = _LoginEventParameters;
+  export type PostScoreEventParameters = _PostScoreEventParameters;
+  export type PurchaseEventParameters = _PurchaseEventParameters;
+  export type ScreenViewParameters = _ScreenViewParameters;
+  export type RefundEventParameters = _RefundEventParameters;
+  export type RemoveFromCartEventParameters = _RemoveFromCartEventParameters;
+  export type SearchEventParameters = _SearchEventParameters;
+  export type SelectContentEventParameters = _SelectContentEventParameters;
+  export type SelectItemEventParameters = _SelectItemEventParameters;
+  export type SetCheckoutOptionEventParameters = _SetCheckoutOptionEventParameters;
+  export type SelectPromotionEventParameters = _SelectPromotionEventParameters;
+  export type ShareEventParameters = _ShareEventParameters;
+  export type SignUpEventParameters = _SignUpEventParameters;
+  export type SpendVirtualCurrencyEventParameters = _SpendVirtualCurrencyEventParameters;
+  export type UnlockAchievementEventParameters = _UnlockAchievementEventParameters;
+  export type ViewCartEventParameters = _ViewCartEventParameters;
+  export type ViewItemEventParameters = _ViewItemEventParameters;
+  export type ViewSearchResultsParameters = _ViewSearchResultsParameters;
+  export type ViewItemListEventParameters = _ViewItemListEventParameters;
+  export type ViewPromotionEventParameters = _ViewPromotionEventParameters;
+  export type AddShippingInfoParameters = _AddShippingInfoParameters;
+
+  // Configuration and settings interfaces
+  export type AnalyticsSettings = _AnalyticsSettings;
+  export type AnalyticsCallOptions = _AnalyticsCallOptions;
+  export type GtagConfigParams = _GtagConfigParams;
+  export type ConsentSettings = _ConsentSettings;
+  export type SettingsOptions = _SettingsOptions;
+  export type EventParams = _EventParams;
 }
 /* eslint-enable @typescript-eslint/no-namespace */
