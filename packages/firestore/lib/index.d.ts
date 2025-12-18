@@ -2127,6 +2127,7 @@ export namespace FirebaseFirestoreTypes {
      * @param logLevel The verbosity you set for activity and error logging.
      */
     setLogLevel(logLevel: 'debug' | 'error' | 'silent'): void;
+    SDK_VERSION: string;
   }
 
   /**
@@ -2147,6 +2148,11 @@ export namespace FirebaseFirestoreTypes {
    *
    */
   export class Module extends FirebaseModule {
+    /**
+     * The current `FirebaseApp` instance for this Firebase service.
+     */
+    app: ReactNativeFirebase.FirebaseApp;
+
     /**
      * Creates a write batch, used for performing multiple writes as a single atomic operation.
      * The maximum number of writes allowed in a single WriteBatch is 500, but note that each usage
@@ -2371,10 +2377,19 @@ export namespace FirebaseFirestoreTypes {
       : T;
 }
 
-declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+type FirestoreNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
   FirebaseFirestoreTypes.Module,
   FirebaseFirestoreTypes.Statics
->;
+> & {
+  firestore: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+    FirebaseFirestoreTypes.Module,
+    FirebaseFirestoreTypes.Statics
+  >;
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+declare const defaultExport: FirestoreNamespace;
 
 export const firebase: ReactNativeFirebase.Module & {
   firestore: typeof defaultExport;

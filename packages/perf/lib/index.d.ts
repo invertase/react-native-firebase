@@ -398,8 +398,9 @@ export namespace FirebasePerformanceTypes {
     stop(): Promise<null>;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  export interface Statics {}
+  export interface Statics {
+    SDK_VERSION: string;
+  }
 
   /**
    * The Firebase Performance Monitoring service interface.
@@ -415,6 +416,10 @@ export namespace FirebasePerformanceTypes {
    * ```
    */
   export class Module extends FirebaseModule {
+    /**
+     * The current `FirebaseApp` instance for this Firebase service.
+     */
+    app: ReactNativeFirebase.FirebaseApp;
     /**
      * Determines whether performance monitoring is enabled or disabled.
      *
@@ -540,10 +545,15 @@ export namespace FirebasePerformanceTypes {
   }
 }
 
-declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
+type PerfNamespace = ReactNativeFirebase.FirebaseModuleWithStatics<
   FirebasePerformanceTypes.Module,
   FirebasePerformanceTypes.Statics
->;
+> & {
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+declare const defaultExport: PerfNamespace;
 
 export const firebase: ReactNativeFirebase.Module & {
   perf: typeof defaultExport;

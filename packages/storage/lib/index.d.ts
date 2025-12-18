@@ -236,6 +236,7 @@ export namespace FirebaseStorageTypes {
      * ```
      */
     TaskEvent: TaskEvent;
+    SDK_VERSION: string;
   }
 
   /**
@@ -1021,6 +1022,11 @@ export namespace FirebaseStorageTypes {
    */
   export class Module extends FirebaseModule {
     /**
+     * The current `FirebaseApp` instance for this Firebase service.
+     */
+    app: ReactNativeFirebase.FirebaseApp;
+
+    /**
      * Returns the current maximum time in milliseconds to retry an upload if a failure occurs.
      *
      * #### Example
@@ -1142,10 +1148,15 @@ export namespace FirebaseStorageTypes {
   }
 }
 
-declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+type StorageNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
   FirebaseStorageTypes.Module,
   FirebaseStorageTypes.Statics
->;
+> & {
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+declare const defaultExport: StorageNamespace;
 
 export const firebase: ReactNativeFirebase.Module & {
   storage: typeof defaultExport;

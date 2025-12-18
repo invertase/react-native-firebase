@@ -1,5 +1,22 @@
 {
-  "include": ["packages/**/lib/**/*.d.ts", "packages/functions/type-test.ts", "packages/app/type-test.ts", "packages/analytics/type-test.ts"],
+  "include": [
+    "packages/**/lib/**/*.d.ts",
+    "packages/functions/type-test.ts",
+    "packages/app/type-test.ts",
+    "packages/app-check/type-test.ts",
+    "packages/auth/type-test.ts",
+    "packages/crashlytics/type-test.ts",
+    "packages/database/type-test.ts",
+    "packages/firestore/type-test.ts",
+    "packages/in-app-messaging/type-test.ts",
+    "packages/installations/type-test.ts",
+    "packages/messaging/type-test.ts",
+    "packages/ml/type-test.ts",
+    "packages/perf/type-test.ts",
+    "packages/remote-config/type-test.ts",
+    "packages/storage/type-test.ts",
+    "packages/analytics/type-test.ts"
+  ],
   "compilerOptions": {
     "noEmit": true,
     "target": "es5",

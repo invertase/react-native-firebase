@@ -468,6 +468,7 @@ export namespace FirebaseAuthTypes {
      * A PhoneMultiFactorGenerator interface.
      */
     PhoneMultiFactorGenerator: PhoneMultiFactorGenerator;
+    SDK_VERSION: string;
   }
 
   /**
@@ -1648,6 +1649,11 @@ export namespace FirebaseAuthTypes {
    */
   export class Module extends FirebaseModule {
     /**
+     * The current `FirebaseApp` instance for this Firebase service.
+     */
+    app: ReactNativeFirebase.FirebaseApp;
+
+    /**
      * Returns the current tenant Id or null if it has never been set
      *
      * #### Example
@@ -2295,10 +2301,19 @@ export namespace FirebaseAuthTypes {
 
 export type CallbackOrObserver<T extends (...args: any[]) => any> = T | { next: T };
 
-declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+type AuthNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
   FirebaseAuthTypes.Module,
   FirebaseAuthTypes.Statics
->;
+> & {
+  auth: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+    FirebaseAuthTypes.Module,
+    FirebaseAuthTypes.Statics
+  >;
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+declare const defaultExport: AuthNamespace;
 
 export const firebase: ReactNativeFirebase.Module & {
   auth: typeof defaultExport;
