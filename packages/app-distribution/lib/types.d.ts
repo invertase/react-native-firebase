@@ -28,4 +28,3 @@ declare module '@react-native-firebase/app/lib/internal' {
   }
   export function getFirebaseRoot(): any;
 }
-

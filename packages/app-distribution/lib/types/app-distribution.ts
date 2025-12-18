@@ -83,6 +83,7 @@ export type FirebaseApp = ReactNativeFirebase.FirebaseApp & {
 type _AppDistributionRelease = AppDistributionRelease;
 type _FirebaseAppDistributionModule = FirebaseAppDistributionModule;
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace FirebaseAppDistributionTypes {
   export type AppDistributionRelease = _AppDistributionRelease;
   export type Module = _FirebaseAppDistributionModule;
