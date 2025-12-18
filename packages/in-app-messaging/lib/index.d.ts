@@ -56,8 +56,9 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
 export namespace FirebaseInAppMessagingTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  export interface Statics {}
+  export interface Statics {
+    SDK_VERSION: string;
+  }
 
   /**
    * The Firebase In-App Messaging service interface.
@@ -73,6 +74,11 @@ export namespace FirebaseInAppMessagingTypes {
    * ```
    */
   export class Module extends FirebaseModule {
+    /**
+     * The current `FirebaseApp` instance for this Firebase service.
+     */
+    app: ReactNativeFirebase.FirebaseApp;
+
     /**
      * Determines whether messages are suppressed or not.
      *
@@ -147,10 +153,15 @@ export namespace FirebaseInAppMessagingTypes {
   }
 }
 
-declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
+type InAppMessagingNamespace = ReactNativeFirebase.FirebaseModuleWithStatics<
   FirebaseInAppMessagingTypes.Module,
   FirebaseInAppMessagingTypes.Statics
->;
+> & {
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+declare const defaultExport: InAppMessagingNamespace;
 
 export const firebase: ReactNativeFirebase.Module & {
   inAppMessaging: typeof defaultExport;

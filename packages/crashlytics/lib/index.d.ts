@@ -50,8 +50,9 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
 export namespace FirebaseCrashlyticsTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  export interface Statics {}
+  export interface Statics {
+    SDK_VERSION: string;
+  }
 
   /**
    * The Firebase Crashlytics service interface.
@@ -67,6 +68,11 @@ export namespace FirebaseCrashlyticsTypes {
    * ```
    */
   export class Module extends FirebaseModule {
+    /**
+     * The current `FirebaseApp` instance for this Firebase service.
+     */
+    app: ReactNativeFirebase.FirebaseApp;
+
     /**
      * Whether Crashlytics reporting is enabled.
      *
@@ -252,10 +258,19 @@ export namespace FirebaseCrashlyticsTypes {
   }
 }
 
-declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
+type CrashlyticsNamespace = ReactNativeFirebase.FirebaseModuleWithStatics<
   FirebaseCrashlyticsTypes.Module,
   FirebaseCrashlyticsTypes.Statics
->;
+> & {
+  crashlytics: ReactNativeFirebase.FirebaseModuleWithStatics<
+    FirebaseCrashlyticsTypes.Module,
+    FirebaseCrashlyticsTypes.Statics
+  >;
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+declare const defaultExport: CrashlyticsNamespace;
 
 export const firebase: ReactNativeFirebase.Module & {
   crashlytics: typeof defaultExport;
