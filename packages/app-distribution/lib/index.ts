@@ -20,10 +20,8 @@ export type {
   AppDistributionRelease,
   FirebaseAppDistribution,
   FirebaseApp,
+  FirebaseAppDistributionTypes,
 } from './types/app-distribution';
-
-// Export types from types.d.ts
-export type { FirebaseAppDistributionTypes } from './types.d';
 
 // Export modular API functions
 export * from './modular';

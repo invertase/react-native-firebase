@@ -22,7 +22,7 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 import { version } from './version';
-import type { FirebaseAppDistributionTypes } from './types.d';
+import type { FirebaseAppDistributionTypes } from './types/app-distribution';
 
 const statics = {};
 
@@ -33,6 +33,7 @@ const nativeModuleName = 'RNFBAppDistributionModule';
 class FirebaseAppDistributionModule extends FirebaseModule {
   isTesterSignedIn(_modularDeprecationArg?: any): Promise<boolean> {
     if (isIOS) {
+      // @ts-ignore - native is inherited from FirebaseModule
       return this.native.isTesterSignedIn();
     }
 
@@ -41,6 +42,7 @@ class FirebaseAppDistributionModule extends FirebaseModule {
 
   signInTester(_modularDeprecationArg?: any): Promise<void> {
     if (isIOS) {
+      // @ts-ignore - native is inherited from FirebaseModule
       return this.native.signInTester();
     }
 
@@ -51,6 +53,7 @@ class FirebaseAppDistributionModule extends FirebaseModule {
     _modularDeprecationArg?: any,
   ): Promise<FirebaseAppDistributionTypes.AppDistributionRelease> {
     if (isIOS) {
+      // @ts-ignore - native is inherited from FirebaseModule
       return this.native.checkForUpdate();
     }
 
@@ -59,6 +62,7 @@ class FirebaseAppDistributionModule extends FirebaseModule {
 
   signOutTester(_modularDeprecationArg?: any): Promise<void> {
     if (isIOS) {
+      // @ts-ignore - native is inherited from FirebaseModule
       return this.native.signOutTester();
     }
 

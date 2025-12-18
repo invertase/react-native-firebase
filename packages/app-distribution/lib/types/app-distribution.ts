@@ -77,3 +77,13 @@ export type FirebaseAppDistribution = FirebaseAppDistributionModule;
 export type FirebaseApp = ReactNativeFirebase.FirebaseApp & {
   appDistribution(): FirebaseAppDistribution;
 };
+
+// Namespace export for backward compatibility
+// Using a workaround to create the namespace without circular references
+type _AppDistributionRelease = AppDistributionRelease;
+type _FirebaseAppDistributionModule = FirebaseAppDistributionModule;
+
+export namespace FirebaseAppDistributionTypes {
+  export type AppDistributionRelease = _AppDistributionRelease;
+  export type Module = _FirebaseAppDistributionModule;
+}

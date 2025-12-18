@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+      "allowUnreachableCode": false,
+      "allowUnusedLabels": false,
+      "esModuleInterop": true,
+      "forceConsistentCasingInFileNames": true,
+      "jsx": "react-jsx",
+      "lib": ["ESNext", "DOM"],
+      "module": "ESNext",
+      "moduleResolution": "bundler",
+      "noFallthroughCasesInSwitch": true,
+      "noImplicitReturns": true,
+      "noImplicitUseStrict": false,
+      "noStrictGenericChecks": false,
+      "noUncheckedIndexedAccess": true,
+      "noUnusedLocals": true,
+      "noUnusedParameters": true,
+      "resolveJsonModule": true,
+      "skipLibCheck": true,
+      "strict": true,
+      "target": "ESNext",
+      "verbatimModuleSyntax": true,
+      "baseUrl": ".",
+      "rootDir": ".",
+      "paths": {
+        "@react-native-firebase/app": ["../app/lib"],
+        "@react-native-firebase/app/lib/*": ["../app/lib/*"]
+      }
+    },
+    "include": ["lib/**/*"],
+    "exclude": ["node_modules", "dist", "__tests__", "**/*.test.ts"]
+  }
