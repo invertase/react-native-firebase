@@ -15,7 +15,7 @@
  *
  */
 
-import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { FirebaseApp as RNFirebaseApp } from '@react-native-firebase/app';
 
 /**
  * The release information returned by the update check when a new version is available.
@@ -74,7 +74,7 @@ export interface FirebaseAppDistributionModule {
 }
 
 export type FirebaseAppDistribution = FirebaseAppDistributionModule;
-export type FirebaseApp = ReactNativeFirebase.FirebaseApp & {
+export type FirebaseApp = RNFirebaseApp & {
   appDistribution(): FirebaseAppDistribution;
 };
 
