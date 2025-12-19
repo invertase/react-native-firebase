@@ -27,8 +27,6 @@ import { setReactNativeModule, getReactNativeModule } from '../../app/lib/intern
 
 // @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
-// @ts-ignore test
-import { getNativeModule } from '../../app/lib/internal/registry/nativeModule';
 
 // Ensure NativeRNFBTurboFunctions is registered - it should be registered by namespaced.ts
 // but we verify and add removeFunctionsStreaming if needed
@@ -37,7 +35,7 @@ try {
   if (module && !module.removeFunctionsStreaming) {
     module.removeFunctionsStreaming = () => {};
   }
-} catch (e) {
+} catch (_e) {
   // Module not registered yet - register it ourselves as fallback
   // This shouldn't happen if namespaced.ts imported correctly
   setReactNativeModule('NativeRNFBTurboFunctions', {
@@ -46,9 +44,7 @@ try {
     removeFunctionsStreaming: () => {},
   });
 }
-
 describe('Cloud Functions', function () {
-
   describe('namespace', function () {
     beforeAll(async function () {
       // @ts-ignore

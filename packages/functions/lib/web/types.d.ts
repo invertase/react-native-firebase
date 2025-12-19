@@ -20,7 +20,6 @@
  * which are set as workarounds for emulator configuration and region/custom domain on web.
  */
 declare module 'firebase/functions' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface Functions {
     emulatorOrigin?: string;
     region?: string;
@@ -52,7 +51,6 @@ declare module '@react-native-firebase/app/lib/internal/web/firebaseFunctions' {
     host: string,
     port: number,
   ): void;
-  
   // Re-export everything from firebase/app and firebase/functions
   export * from 'firebase/app';
   export * from 'firebase/functions';
@@ -86,4 +84,3 @@ declare module '@react-native-firebase/app/lib/internal/web/RNFBAppModule' {
   const RNFBAppModule: RNFBAppModuleType;
   export default RNFBAppModule;
 }
-
