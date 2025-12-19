@@ -15,7 +15,7 @@
  *
  */
 
-import { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Firebase App Check package for React Native.
@@ -333,31 +333,6 @@ export namespace FirebaseAppCheckTypes {
     ): () => void;
   }
 }
-
-type AppCheckNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
-  FirebaseAppCheckTypes.Module,
-  FirebaseAppCheckTypes.Statics
-> & {
-  appCheck: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
-    FirebaseAppCheckTypes.Module,
-    FirebaseAppCheckTypes.Statics
-  >;
-  firebase: ReactNativeFirebase.Module;
-  app(name?: string): ReactNativeFirebase.FirebaseApp;
-};
-
-declare const defaultExport: AppCheckNamespace;
-
-export const firebase: ReactNativeFirebase.Module & {
-  appCheck: typeof defaultExport;
-  app(
-    name?: string,
-  ): ReactNativeFirebase.FirebaseApp & { appCheck(): FirebaseAppCheckTypes.Module };
-};
-
-export default defaultExport;
-
-export * from './modular';
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
