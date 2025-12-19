@@ -144,6 +144,11 @@ jest.doMock('react-native', () => {
           checkForUpdate: jest.fn(),
           signOutTester: jest.fn(),
         },
+        RNFBFunctionsModule: {
+          httpsCallableStream: jest.fn(),
+          httpsCallableStreamFromUrl: jest.fn(),
+          removeFunctionsStreaming: jest.fn(),
+        },
         RNFBCrashlyticsModule: {
           isCrashlyticsCollectionEnabled: false,
           checkForUnsentReports: jest.fn(),

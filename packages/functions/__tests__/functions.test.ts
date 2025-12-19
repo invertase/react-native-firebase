@@ -39,12 +39,20 @@ describe('Cloud Functions', function () {
 
     beforeEach(function () {
       // Mock native module for streaming methods
-      // @ts-ignore test
-      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
-        return {
-          httpsCallableStream: jest.fn(),
-          httpsCallableStreamFromUrl: jest.fn(),
-        };
+      const mockNative = {
+        httpsCallableStream: jest.fn(),
+        httpsCallableStreamFromUrl: jest.fn(),
+        removeFunctionsStreaming: jest.fn(),
+      };
+
+      // Override the native getter on FirebaseModule prototype
+      Object.defineProperty(FirebaseModule.prototype, 'native', {
+        get: function (this: any) {
+          this._nativeModule = mockNative;
+          return mockNative;
+        },
+        configurable: true,
+        enumerable: true,
       });
     });
 
@@ -126,12 +134,20 @@ describe('Cloud Functions', function () {
   describe('modular', function () {
     beforeEach(function () {
       // Mock native module for streaming methods
-      // @ts-ignore test
-      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
-        return {
-          httpsCallableStream: jest.fn(),
-          httpsCallableStreamFromUrl: jest.fn(),
-        };
+      const mockNative = {
+        httpsCallableStream: jest.fn(),
+        httpsCallableStreamFromUrl: jest.fn(),
+        removeFunctionsStreaming: jest.fn(),
+      };
+
+      // Override the native getter on FirebaseModule prototype
+      Object.defineProperty(FirebaseModule.prototype, 'native', {
+        get: function (this: any) {
+          this._nativeModule = mockNative;
+          return mockNative;
+        },
+        configurable: true,
+        enumerable: true,
       });
     });
 
@@ -234,21 +250,23 @@ describe('Cloud Functions', function () {
     beforeEach(function () {
       functionsRefV9Deprecation = createCheckV9Deprecation(['functions']);
 
-      // @ts-ignore test
-      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
-        return new Proxy(
-          {},
-          {
-            get: () =>
-              jest.fn().mockResolvedValue({
-                source: 'cache',
-                changes: [],
-                documents: [],
-                metadata: {},
-                path: 'foo',
-              } as never),
-          },
-        );
+      // Mock the native module directly to avoid getter caching issues
+      const mockNative = {
+        httpsCallableStream: jest.fn(),
+        httpsCallableStreamFromUrl: jest.fn(),
+        removeFunctionsStreaming: jest.fn(),
+      };
+
+      // Override the native getter on FirebaseModule prototype using Object.defineProperty
+      // This ensures the mock is returned even if _nativeModule is cached
+      Object.defineProperty(FirebaseModule.prototype, 'native', {
+        get: function (this: any) {
+          // Always return the mock, clearing any cache
+          this._nativeModule = mockNative;
+          return mockNative;
+        },
+        configurable: true,
+        enumerable: true,
       });
     });
 
