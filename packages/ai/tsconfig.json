@@ -33,7 +33,7 @@
       "@react-native-firebase/app/lib/internal": ["../app/dist/typescript/commonjs/lib/internal"],
       "@react-native-firebase/app": ["../app/dist/typescript/commonjs/lib"],
       "@react-native-firebase/auth": ["../auth/lib"],
-      "@react-native-firebase/app-check": ["../app-check/lib"]
+      "@react-native-firebase/app-check": ["../app-check/dist/typescript/commonjs/lib"]
     }
   },
   "include": ["lib/**/*"],
