@@ -35,39 +35,18 @@ import ReactNativeFirebaseAppCheckProvider from './ReactNativeFirebaseAppCheckPr
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import fallBackModule from './web/RNFBAppCheckModule';
 import { version } from './version';
+import type {
+  CustomProviderOptions,
+  AppCheckProvider,
+  AppCheckTokenResult,
+  AppCheckOptions,
+  AppCheckListenerResult,
+  PartialObserver,
+} from './types/appcheck';
 
 const namespace = 'appCheck';
 
 const nativeModuleName = 'RNFBAppCheckModule';
-
-interface CustomProviderOptions {
-  getToken: () => Promise<{ token: string; expireTimeMillis: number }>;
-}
-
-interface AppCheckProvider {
-  getToken(): Promise<{ token: string; expireTimeMillis: number }>;
-}
-
-interface AppCheckTokenResult {
-  readonly token: string;
-}
-
-interface AppCheckOptions {
-  provider: AppCheckProvider | ReactNativeFirebaseAppCheckProvider;
-  isTokenAutoRefreshEnabled?: boolean;
-}
-
-interface AppCheckListenerResult {
-  readonly token: string;
-  readonly expireTimeMillis: number;
-  readonly appName: string;
-}
-
-type PartialObserver<T> = Partial<{
-  next: (value: T) => void;
-  error: (error: Error) => void;
-  complete: () => void;
-}>;
 
 export class CustomProvider implements AppCheckProvider {
   private _customProviderOptions: CustomProviderOptions;
@@ -82,7 +61,7 @@ export class CustomProvider implements AppCheckProvider {
     this._customProviderOptions = _customProviderOptions;
   }
 
-  async getToken(): Promise<{ token: string; expireTimeMillis: number }> {
+  async getToken() {
     return this._customProviderOptions.getToken();
   }
 }
