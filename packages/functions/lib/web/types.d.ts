@@ -16,14 +16,46 @@
  */
 
 /**
- * Augment the Firebase Functions SDK to include emulatorOrigin property
- * which is set as a workaround for emulator configuration on web.
+ * Augment the Firebase Functions SDK to include additional properties
+ * which are set as workarounds for emulator configuration and region/custom domain on web.
  */
 declare module 'firebase/functions' {
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface Functions {
     emulatorOrigin?: string;
+    region?: string;
+    customDomain?: string | null;
   }
+}
+
+/**
+ * Type declarations for firebaseFunctions module exports
+ * which re-exports from firebase/functions.
+ */
+declare module '@react-native-firebase/app/lib/internal/web/firebaseFunctions' {
+  import type { FirebaseApp } from 'firebase/app';
+  import type { Functions, HttpsCallable, HttpsCallableOptions } from 'firebase/functions';
+
+  export function getFunctions(app?: FirebaseApp, regionOrCustomDomain?: string): Functions;
+  export function httpsCallable<RequestData = unknown, ResponseData = unknown>(
+    functionsInstance: Functions,
+    name: string,
+    options?: HttpsCallableOptions,
+  ): HttpsCallable<RequestData, ResponseData>;
+  export function httpsCallableFromURL<RequestData = unknown, ResponseData = unknown>(
+    functionsInstance: Functions,
+    url: string,
+    options?: HttpsCallableOptions,
+  ): HttpsCallable<RequestData, ResponseData>;
+  export function connectFunctionsEmulator(
+    functionsInstance: Functions,
+    host: string,
+    port: number,
+  ): void;
+  
+  // Re-export everything from firebase/app and firebase/functions
+  export * from 'firebase/app';
+  export * from 'firebase/functions';
 }
 
 /**
