@@ -450,4 +450,12 @@ export default {
       });
     }
   },
+
+  /**
+   * Removes a streaming listener.
+   * @param listenerId - The listener ID to remove.
+   */
+  removeFunctionsStreaming(_listenerId: number): void {
+    // No-op for web platform - streaming is handled via RxJS subscriptions
+  },
 };

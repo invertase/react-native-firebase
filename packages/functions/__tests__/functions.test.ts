@@ -14,6 +14,7 @@ import {
   type FirebaseApp,
 } from '../lib';
 
+// Import namespaced to ensure NativeRNFBTurboFunctions is registered
 import functions from '../lib/namespaced';
 import {
   createCheckV9Deprecation,
@@ -21,11 +22,33 @@ import {
 } from '../../app/lib/common/unitTestUtils';
 
 import { getApp } from '@react-native-firebase/app';
+// @ts-ignore test
+import { setReactNativeModule, getReactNativeModule } from '../../app/lib/internal/nativeModule';
 
 // @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
+// @ts-ignore test
+import { getNativeModule } from '../../app/lib/internal/registry/nativeModule';
+
+// Ensure NativeRNFBTurboFunctions is registered - it should be registered by namespaced.ts
+// but we verify and add removeFunctionsStreaming if needed
+try {
+  const module = getReactNativeModule('NativeRNFBTurboFunctions');
+  if (module && !module.removeFunctionsStreaming) {
+    module.removeFunctionsStreaming = () => {};
+  }
+} catch (e) {
+  // Module not registered yet - register it ourselves as fallback
+  // This shouldn't happen if namespaced.ts imported correctly
+  setReactNativeModule('NativeRNFBTurboFunctions', {
+    httpsCallableStream: () => {},
+    httpsCallableStreamFromUrl: () => {},
+    removeFunctionsStreaming: () => {},
+  });
+}
 
 describe('Cloud Functions', function () {
+
   describe('namespace', function () {
     beforeAll(async function () {
       // @ts-ignore
@@ -38,22 +61,7 @@ describe('Cloud Functions', function () {
     });
 
     beforeEach(function () {
-      // Mock native module for streaming methods
-      const mockNative = {
-        httpsCallableStream: jest.fn(),
-        httpsCallableStreamFromUrl: jest.fn(),
-        removeFunctionsStreaming: jest.fn(),
-      };
-
-      // Override the native getter on FirebaseModule prototype
-      Object.defineProperty(FirebaseModule.prototype, 'native', {
-        get: function (this: any) {
-          this._nativeModule = mockNative;
-          return mockNative;
-        },
-        configurable: true,
-        enumerable: true,
-      });
+      // No need to mock here - RNFBFunctionsModule is already registered at module load time
     });
 
     it('accessible from firebase.app()', function () {
@@ -133,22 +141,7 @@ describe('Cloud Functions', function () {
 
   describe('modular', function () {
     beforeEach(function () {
-      // Mock native module for streaming methods
-      const mockNative = {
-        httpsCallableStream: jest.fn(),
-        httpsCallableStreamFromUrl: jest.fn(),
-        removeFunctionsStreaming: jest.fn(),
-      };
-
-      // Override the native getter on FirebaseModule prototype
-      Object.defineProperty(FirebaseModule.prototype, 'native', {
-        get: function (this: any) {
-          this._nativeModule = mockNative;
-          return mockNative;
-        },
-        configurable: true,
-        enumerable: true,
-      });
+      // No need to mock here - RNFBFunctionsModule is already registered at module load time
     });
 
     it('`getFunctions` function is properly exposed to end user', function () {

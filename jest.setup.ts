@@ -149,6 +149,11 @@ jest.doMock('react-native', () => {
           httpsCallableStreamFromUrl: jest.fn(),
           removeFunctionsStreaming: jest.fn(),
         },
+        NativeRNFBTurboFunctions: {
+          httpsCallableStream: jest.fn(),
+          httpsCallableStreamFromUrl: jest.fn(),
+          removeFunctionsStreaming: jest.fn(),
+        },
         RNFBCrashlyticsModule: {
           isCrashlyticsCollectionEnabled: false,
           checkForUnsentReports: jest.fn(),
