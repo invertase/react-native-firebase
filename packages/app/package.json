@@ -124,7 +124,7 @@
     "react-native": "*"
   },
   "dependencies": {
-    "firebase": "12.6.0"
+    "firebase": "12.7.0"
   },
   "devDependencies": {
     "@react-native-async-storage/async-storage": "^2.2.0",
@@ -142,7 +142,7 @@
   },
   "sdkVersions": {
     "ios": {
-      "firebase": "12.6.0",
+      "firebase": "12.7.0",
       "iosTarget": "15.0",
       "macosTarget": "10.15",
       "tvosTarget": "15.0"
