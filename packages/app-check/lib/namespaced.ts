@@ -42,7 +42,10 @@ import type {
   AppCheckOptions,
   AppCheckListenerResult,
   PartialObserver,
+  AppCheckModule,
+  AppCheckStatics,
 } from './types/appcheck';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
 const namespace = 'appCheck';
 
@@ -73,7 +76,11 @@ const statics = {
 class FirebaseAppCheckModule extends FirebaseModule {
   _listenerCount: number;
 
-  constructor(app: any, config: any, customUrlOrRegion?: string | null) {
+  constructor(
+    app: ReactNativeFirebase.FirebaseAppBase,
+    config: any,
+    customUrlOrRegion?: string | null,
+  ) {
     super(app, config, customUrlOrRegion);
 
     this.emitter.addListener(this.eventNameForApp('appCheck_token_changed'), event => {
@@ -244,12 +251,9 @@ class FirebaseAppCheckModule extends FirebaseModule {
   }
 }
 
-// import { SDK_VERSION } from '@react-native-firebase/app-check';
 export const SDK_VERSION = version;
 
-// import appCheck from '@react-native-firebase/app-check';
-// appCheck().X(...);
-export default createModuleNamespace({
+const appCheckNamespace = createModuleNamespace({
   statics,
   version,
   namespace,
@@ -260,10 +264,29 @@ export default createModuleNamespace({
   ModuleClass: FirebaseAppCheckModule,
 });
 
+type AppCheckNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  AppCheckModule,
+  AppCheckStatics
+> & {
+  appCheck: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<AppCheckModule, AppCheckStatics>;
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+// import appCheck from '@react-native-firebase/app-check';
+// appCheck().X(...);
+export default appCheckNamespace as unknown as AppCheckNamespace;
+
 // import appCheck, { firebase } from '@react-native-firebase/app-check';
 // appCheck().X(...);
 // firebase.appCheck().X(...);
-export const firebase = getFirebaseRoot();
+export const firebase =
+  getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
+    'appCheck',
+    AppCheckModule,
+    AppCheckStatics,
+    false
+  >;
 
 // Register the interop module for non-native platforms.
-setReactNativeModule(nativeModuleName, fallBackModule as unknown as Record<string, unknown>);
+setReactNativeModule(nativeModuleName, fallBackModule);
