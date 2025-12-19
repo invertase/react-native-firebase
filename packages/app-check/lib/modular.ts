@@ -18,16 +18,15 @@
 import { getApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 import ReactNativeFirebaseAppCheckProvider from './ReactNativeFirebaseAppCheckProvider';
-import type { FirebaseAppCheckTypes } from './types/appcheck';
-import type { ReactNativeFirebase } from '@react-native-firebase/app';
-
-type FirebaseApp = ReactNativeFirebase.FirebaseApp;
-type AppCheck = FirebaseAppCheckTypes.Module;
-type AppCheckOptions = FirebaseAppCheckTypes.AppCheckOptions;
-type AppCheckTokenResult = FirebaseAppCheckTypes.AppCheckTokenResult;
-type PartialObserver<T> = FirebaseAppCheckTypes.PartialObserver<T>;
-type Unsubscribe = FirebaseAppCheckTypes.Unsubscribe;
-type AppCheckListenerResult = FirebaseAppCheckTypes.AppCheckListenerResult;
+import type {
+  AppCheck,
+  FirebaseApp,
+  AppCheckOptions,
+  AppCheckTokenResult,
+  PartialObserver,
+  Unsubscribe,
+  AppCheckListenerResult,
+} from './types/appcheck';
 
 /**
  * Activate App Check for the given app. Can be called only once per app.

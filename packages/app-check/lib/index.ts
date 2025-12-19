@@ -34,7 +34,7 @@ export type {
   ReactNativeFirebaseAppCheckProviderAppleOptions,
   ReactNativeFirebaseAppCheckProviderAndroidOptions,
   ReactNativeFirebaseAppCheckProvider,
-  AppCheckModule,
+  AppCheck,
   AppCheckStatics,
   AppCheck,
   FirebaseAppCheckTypes,

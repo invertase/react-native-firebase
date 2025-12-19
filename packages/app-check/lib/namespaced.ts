@@ -43,7 +43,7 @@ import type {
   AppCheckOptions,
   AppCheckListenerResult,
   PartialObserver,
-  AppCheckModule,
+  AppCheck,
   AppCheckStatics,
 } from './types/appcheck';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
@@ -266,10 +266,10 @@ const appCheckNamespace = createModuleNamespace({
 });
 
 type AppCheckNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
-  AppCheckModule,
+  AppCheck,
   AppCheckStatics
 > & {
-  appCheck: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<AppCheckModule, AppCheckStatics>;
+  appCheck: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<AppCheck, AppCheckStatics>;
   firebase: ReactNativeFirebase.Module;
   app(name?: string): ReactNativeFirebase.FirebaseApp;
 };
@@ -284,7 +284,7 @@ export default appCheckNamespace as unknown as AppCheckNamespace;
 export const firebase =
   getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
     'appCheck',
-    AppCheckModule,
+    AppCheck,
     AppCheckStatics,
     false
   >;

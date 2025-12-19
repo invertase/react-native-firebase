@@ -175,7 +175,7 @@ export interface ReactNativeFirebaseAppCheckProvider extends AppCheckProvider {
 /**
  * App Check module instance - returned from firebase.appCheck() or firebase.app().appCheck()
  */
-export interface AppCheckModule extends ReactNativeFirebase.FirebaseModule {
+export interface AppCheck extends ReactNativeFirebase.FirebaseModule {
   /** The FirebaseApp this module is associated with */
   app: ReactNativeFirebase.FirebaseApp;
 
@@ -288,10 +288,6 @@ export interface AppCheckStatics {
   SDK_VERSION: string;
 }
 
-// ============ Type Aliases for Convenience ============
-
-export type AppCheck = AppCheckModule;
-
 /**
  * FirebaseApp type with appCheck() method.
  * @deprecated Import FirebaseApp from '@react-native-firebase/app' instead.
@@ -305,16 +301,27 @@ export type FirebaseApp = ReactNativeFirebase.FirebaseApp;
 declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     interface Module {
-      appCheck: FirebaseModuleWithStaticsAndApp<AppCheckModule, AppCheckStatics>;
+      appCheck: FirebaseModuleWithStaticsAndApp<AppCheck, AppCheckStatics>;
     }
     interface FirebaseApp {
-      appCheck(): AppCheckModule;
+      appCheck(): AppCheck;
     }
   }
 }
 /* eslint-enable @typescript-eslint/no-namespace */
 
 // ============ Backwards Compatibility Namespace ============
+
+// Helper types to reference outer scope types within the namespace
+// These are needed because TypeScript can't directly alias types with the same name
+type _AppCheckProvider = AppCheckProvider;
+type _CustomProviderOptions = CustomProviderOptions;
+type _AppCheckOptions = AppCheckOptions;
+type _AppCheckToken = AppCheckToken;
+type _AppCheckTokenResult = AppCheckTokenResult;
+type _AppCheckListenerResult = AppCheckListenerResult;
+type _AppCheck = AppCheck;
+type _AppCheckStatics = AppCheckStatics;
 
 /**
  * @deprecated Use the exported types directly instead.
@@ -329,19 +336,22 @@ export namespace FirebaseAppCheckTypes {
   export type Token = AppCheckToken;
   export type TokenResult = AppCheckTokenResult;
   export type ListenerResult = AppCheckListenerResult;
+  export type Statics = AppCheckStatics;
+  export type Module = AppCheck;
 
   // Re-export interfaces with original names for backwards compatibility
+  // These reference the exported types above via helper types
   export interface AppCheckProvider {
-    getToken(): Promise<AppCheckToken>;
+    getToken(): Promise<_AppCheckToken>;
   }
 
   export declare class CustomProvider implements AppCheckProvider {
-    constructor(customProviderOptions: CustomProviderOptions);
-    getToken(): Promise<AppCheckToken>;
+    constructor(customProviderOptions: _CustomProviderOptions);
+    getToken(): Promise<_AppCheckToken>;
   }
 
   export interface CustomProviderOptions {
-    getToken: () => Promise<AppCheckToken>;
+    getToken: () => Promise<_AppCheckToken>;
   }
 
   export interface AppCheckOptions {
@@ -358,7 +368,7 @@ export namespace FirebaseAppCheckTypes {
     readonly token: string;
   }
 
-  export type AppCheckListenerResult = AppCheckToken & { readonly appName: string };
+  export type AppCheckListenerResult = _AppCheckListenerResult;
 
   export type NextFn<T> = (value: T) => void;
   export type ErrorFn = (error: Error) => void;
@@ -399,28 +409,15 @@ export namespace FirebaseAppCheckTypes {
     }): void;
   }
 
-  export interface Statics {
-    CustomProvider: new (customProviderOptions: CustomProviderOptions) => CustomProvider;
-    SDK_VERSION: string;
-  }
-
-  export interface Module {
-    app: ReactNativeFirebase.FirebaseApp;
-    newReactNativeFirebaseAppCheckProvider(): ReactNativeFirebaseAppCheckProvider;
-    initializeAppCheck(options: AppCheckOptions): Promise<void>;
-    activate(
-      siteKeyOrProvider: string | AppCheckProvider,
-      isTokenAutoRefreshEnabled?: boolean,
-    ): Promise<void>;
-    setTokenAutoRefreshEnabled(isTokenAutoRefreshEnabled: boolean): void;
-    getToken(forceRefresh?: boolean): Promise<AppCheckTokenResult>;
-    getLimitedUseToken(): Promise<AppCheckTokenResult>;
-    onTokenChanged(observer: PartialObserver<AppCheckListenerResult>): () => void;
-    onTokenChanged(
-      onNext: (tokenResult: AppCheckListenerResult) => void,
-      onError?: (error: Error) => void,
-      onCompletion?: () => void,
-    ): () => void;
-  }
+  // AppCheck* aliases that reference the exported types above via helper types
+  // These provide backwards compatibility for code using FirebaseAppCheckTypes.AppCheckProvider
+  export type AppCheckProvider = _AppCheckProvider;
+  export type CustomProviderOptions = _CustomProviderOptions;
+  export type AppCheckOptions = _AppCheckOptions;
+  export type AppCheckToken = _AppCheckToken;
+  export type AppCheckTokenResult = _AppCheckTokenResult;
+  export type AppCheckListenerResult = _AppCheckListenerResult;
+  export type AppCheck = _AppCheck;
+  export type AppCheckStatics = _AppCheckStatics;
 }
 /* eslint-enable @typescript-eslint/no-namespace */
