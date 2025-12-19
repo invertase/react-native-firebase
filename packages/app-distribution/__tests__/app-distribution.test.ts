@@ -7,11 +7,14 @@ import {
   signInTester,
   checkForUpdate,
   signOutTester,
+  type FirebaseAppDistribution,
+  type AppDistributionRelease,
+  type FirebaseApp,
 } from '../lib';
 
 import {
   createCheckV9Deprecation,
-  CheckV9DeprecationFunction,
+  type CheckV9DeprecationFunction,
 } from '../../app/lib/common/unitTestUtils';
 
 // @ts-ignore test
@@ -63,6 +66,38 @@ describe('appDistribution()', function () {
 
     it('`signOutTester` function is properly exposed to end user', function () {
       expect(signOutTester).toBeDefined();
+    });
+
+    describe('types', function () {
+      it('`FirebaseAppDistribution` type is properly exposed to end user', function () {
+        const appDistribution: FirebaseAppDistribution = (
+          firebase.app() as unknown as FirebaseApp
+        ).appDistribution();
+        expect(appDistribution).toBeDefined();
+        expect(appDistribution.isTesterSignedIn).toBeDefined();
+        expect(appDistribution.signInTester).toBeDefined();
+        expect(appDistribution.checkForUpdate).toBeDefined();
+        expect(appDistribution.signOutTester).toBeDefined();
+      });
+
+      it('`AppDistributionRelease` type is properly exposed to end user', function () {
+        // Type check - this will fail at compile time if type is not exported
+        const release: AppDistributionRelease = {
+          displayVersion: '1.0.0',
+          buildVersion: '123',
+          releaseNotes: 'Test release notes',
+          downloadURL: 'https://example.com/download',
+          isExpired: false,
+        };
+        expect(release).toBeDefined();
+        expect(release.displayVersion).toBe('1.0.0');
+      });
+
+      it('`FirebaseApp` type is properly exposed to end user', function () {
+        const app = firebase.app() as unknown as FirebaseApp;
+        expect(app).toBeDefined();
+        expect(app.appDistribution).toBeDefined();
+      });
     });
   });
 
