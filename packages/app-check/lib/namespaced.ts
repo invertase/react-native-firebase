@@ -30,6 +30,7 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
+import type { ModuleConfig } from '@react-native-firebase/app/lib/types/internal';
 import { Platform } from 'react-native';
 import ReactNativeFirebaseAppCheckProvider from './ReactNativeFirebaseAppCheckProvider';
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
@@ -78,7 +79,7 @@ class FirebaseAppCheckModule extends FirebaseModule {
 
   constructor(
     app: ReactNativeFirebase.FirebaseAppBase,
-    config: any,
+    config: ModuleConfig,
     customUrlOrRegion?: string | null,
   ) {
     super(app, config, customUrlOrRegion);
