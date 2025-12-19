@@ -113,6 +113,21 @@ export interface FunctionsModule extends ReactNativeFirebase.FirebaseModule {
   ): HttpsCallable<RequestData, ResponseData>;
 
   /**
+   * Returns a reference to the callable HTTPS trigger with the given name.
+   *
+   * @param name The name of the trigger.
+   * @param options Optional settings for the callable function.
+   */
+  httpsCallableStream<RequestData = unknown, ResponseData = unknown>(name: string, options?: HttpsCallableOptions): HttpsCallable<RequestData, ResponseData>;
+  /**
+   * Returns a reference to the callable HTTPS trigger with the given URL.
+   *
+   * @param url The URL of the trigger.
+   * @param options Optional settings for the callable function.
+   */
+  httpsCallableStreamFromUrl<RequestData = unknown, ResponseData = unknown>(url: string, options?: HttpsCallableOptions): HttpsCallable<RequestData, ResponseData>;
+
+  /**
    * Changes this instance to point to a Cloud Functions emulator running locally.
    *
    * @deprecated Use useEmulator(host, port) instead.

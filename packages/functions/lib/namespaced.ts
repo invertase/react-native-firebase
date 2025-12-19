@@ -79,6 +79,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
   _customUrlOrRegion: string;
   private _useFunctionsEmulatorHost: string | null;
   private _useFunctionsEmulatorPort: number;
+  private _id_functions_streaming_event: number;
 
   constructor(
     app: ReactNativeFirebase.FirebaseAppBase,
