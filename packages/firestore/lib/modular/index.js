@@ -407,4 +407,5 @@ export * from './FieldPath';
 export * from './FieldValue';
 export * from './GeoPoint';
 export * from './Timestamp';
+export * from './VectorValue';
 export { Filter } from '../FirestoreFilter';

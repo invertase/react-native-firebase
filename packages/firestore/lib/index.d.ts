@@ -246,7 +246,8 @@ export namespace FirebaseFirestoreTypes {
     | FieldPath
     | FieldValue
     | DocumentReference
-    | CollectionReference;
+    | CollectionReference
+    | VectorValue;
 
   /**
    * A `DocumentReference` refers to a document location in a Firestore database and can be used to write, read, or listen
@@ -2106,6 +2107,16 @@ export namespace FirebaseFirestoreTypes {
     Filter: typeof Filter;
 
     /**
+     * Returns the `VectorValue` class.
+     */
+    VectorValue: typeof VectorValue;
+
+    /**
+     * Creates a new VectorValue from the provided numbers.
+     */
+    vector(values?: number[]): VectorValue;
+
+    /**
      * Used to set the cache size to unlimited when passing to `cacheSizeBytes` in
      * `firebase.firestore().settings()`.
      */
@@ -2375,6 +2386,24 @@ export namespace FirebaseFirestoreTypes {
           [P in keyof T]: SetValue<T[P]> | FieldValue; // allow FieldValue in place of values
         }
       : T;
+
+  /**
+   * An immutable object representing a vector in Firestore. The vector is a numeric array.
+   */
+  export class VectorValue {
+    constructor(values?: number[]);
+    /** The numeric values of this VectorValue. */
+    readonly values: number[];
+    /** Returns true if this `VectorValue` is equal to the provided one. */
+    isEqual(other: VectorValue): boolean;
+    /** Returns a JSON-serializable representation of this VectorValue. */
+    toJSON(): { values: number[] };
+  }
+
+  /**
+   * Creates a new VectorValue from the provided numbers.
+   */
+  export function vector(values?: number[]): VectorValue;
 }
 
 type FirestoreNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
