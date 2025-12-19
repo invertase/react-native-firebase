@@ -14,6 +14,7 @@ import {
   type FirebaseApp,
 } from '../lib';
 
+// Import namespaced to ensure NativeRNFBTurboFunctions is registered
 import functions from '../lib/namespaced';
 import {
   createCheckV9Deprecation,
@@ -21,10 +22,28 @@ import {
 } from '../../app/lib/common/unitTestUtils';
 
 import { getApp } from '@react-native-firebase/app';
+// @ts-ignore test
+import { setReactNativeModule, getReactNativeModule } from '../../app/lib/internal/nativeModule';
 
 // @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 
+// Ensure NativeRNFBTurboFunctions is registered - it should be registered by namespaced.ts
+// but we verify and add removeFunctionsStreaming if needed
+try {
+  const module = getReactNativeModule('NativeRNFBTurboFunctions');
+  if (module && !module.removeFunctionsStreaming) {
+    module.removeFunctionsStreaming = () => {};
+  }
+} catch (_e) {
+  // Module not registered yet - register it ourselves as fallback
+  // This shouldn't happen if namespaced.ts imported correctly
+  setReactNativeModule('NativeRNFBTurboFunctions', {
+    httpsCallableStream: () => {},
+    httpsCallableStreamFromUrl: () => {},
+    removeFunctionsStreaming: () => {},
+  });
+}
 describe('Cloud Functions', function () {
   describe('namespace', function () {
     beforeAll(async function () {
@@ -35,6 +54,10 @@ describe('Cloud Functions', function () {
     afterAll(async function () {
       // @ts-ignore
       globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
+    });
+
+    beforeEach(function () {
+      // No need to mock here - RNFBFunctionsModule is already registered at module load time
     });
 
     it('accessible from firebase.app()', function () {
@@ -77,10 +100,46 @@ describe('Cloud Functions', function () {
           'HttpsCallableOptions.timeout expected a Number in milliseconds',
         );
       });
+
+      it('has stream method', function () {
+        const app = firebase.app();
+        const callable = app.functions().httpsCallable('example');
+        expect(callable.stream).toBeDefined();
+        expect(typeof callable.stream).toBe('function');
+      });
+
+      it('stream method returns unsubscribe function', function () {
+        const app = firebase.app();
+        const callable = app.functions().httpsCallable('example');
+        const unsubscribe = callable.stream({ test: 'data' }, () => {});
+        expect(typeof unsubscribe).toBe('function');
+        unsubscribe();
+      });
+    });
+
+    describe('httpsCallableFromUrl()', function () {
+      it('has stream method', function () {
+        const app = firebase.app();
+        const callable = app.functions().httpsCallableFromUrl('https://example.com/example');
+        expect(callable.stream).toBeDefined();
+        expect(typeof callable.stream).toBe('function');
+      });
+
+      it('stream method returns unsubscribe function', function () {
+        const app = firebase.app();
+        const callable = app.functions().httpsCallableFromUrl('https://example.com/example');
+        const unsubscribe = callable.stream({ test: 'data' }, () => {});
+        expect(typeof unsubscribe).toBe('function');
+        unsubscribe();
+      });
     });
   });
 
   describe('modular', function () {
+    beforeEach(function () {
+      // No need to mock here - RNFBFunctionsModule is already registered at module load time
+    });
+
     it('`getFunctions` function is properly exposed to end user', function () {
       expect(getFunctions).toBeDefined();
     });
@@ -101,6 +160,32 @@ describe('Cloud Functions', function () {
       expect(HttpsErrorCode).toBeDefined();
     });
 
+    it('`httpsCallable().stream()` method is properly exposed to end user', function () {
+      const callable = httpsCallable(getFunctions(), 'example');
+      expect(callable.stream).toBeDefined();
+      expect(typeof callable.stream).toBe('function');
+    });
+
+    it('`httpsCallableFromUrl().stream()` method is properly exposed to end user', function () {
+      const callable = httpsCallableFromUrl(getFunctions(), 'https://example.com/example');
+      expect(callable.stream).toBeDefined();
+      expect(typeof callable.stream).toBe('function');
+    });
+
+    it('`httpsCallable().stream()` returns unsubscribe function', function () {
+      const callable = httpsCallable(getFunctions(), 'example');
+      const unsubscribe = callable.stream({ test: 'data' }, () => {});
+      expect(typeof unsubscribe).toBe('function');
+      unsubscribe();
+    });
+
+    it('`httpsCallableFromUrl().stream()` returns unsubscribe function', function () {
+      const callable = httpsCallableFromUrl(getFunctions(), 'https://example.com/example');
+      const unsubscribe = callable.stream({ test: 'data' }, () => {});
+      expect(typeof unsubscribe).toBe('function');
+      unsubscribe();
+    });
+
     describe('types', function () {
       it('`HttpsCallableOptions` type is properly exposed to end user', function () {
         const options: HttpsCallableOptions = { timeout: 5000 };
@@ -110,10 +195,18 @@ describe('Cloud Functions', function () {
 
       it('`HttpsCallable` type is properly exposed to end user', function () {
         // Type check - this will fail at compile time if type is not exported
-        const callable: HttpsCallableType<{ test: string }, { result: number }> = async () => {
-          return { data: { result: 42 } };
-        };
+        const callable: HttpsCallableType<{ test: string }, { result: number }> = Object.assign(
+          async () => {
+            return { data: { result: 42 } };
+          },
+          {
+            stream: (_data?: any, _onEvent?: any, _options?: any) => {
+              return () => {};
+            },
+          },
+        );
         expect(callable).toBeDefined();
+        expect(callable.stream).toBeDefined();
       });
 
       it('`FunctionsModule` type is properly exposed to end user', function () {
@@ -146,21 +239,23 @@ describe('Cloud Functions', function () {
     beforeEach(function () {
       functionsRefV9Deprecation = createCheckV9Deprecation(['functions']);
 
-      // @ts-ignore test
-      jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
-        return new Proxy(
-          {},
-          {
-            get: () =>
-              jest.fn().mockResolvedValue({
-                source: 'cache',
-                changes: [],
-                documents: [],
-                metadata: {},
-                path: 'foo',
-              } as never),
-          },
-        );
+      // Mock the native module directly to avoid getter caching issues
+      const mockNative = {
+        httpsCallableStream: jest.fn(),
+        httpsCallableStreamFromUrl: jest.fn(),
+        removeFunctionsStreaming: jest.fn(),
+      };
+
+      // Override the native getter on FirebaseModule prototype using Object.defineProperty
+      // This ensures the mock is returned even if _nativeModule is cached
+      Object.defineProperty(FirebaseModule.prototype, 'native', {
+        get: function (this: any) {
+          // Always return the mock, clearing any cache
+          this._nativeModule = mockNative;
+          return mockNative;
+        },
+        configurable: true,
+        enumerable: true,
       });
     });
 
@@ -188,6 +283,31 @@ describe('Cloud Functions', function () {
         functionsRefV9Deprecation(
           () => httpsCallableFromUrl(functions, 'https://example.com/example'),
           () => functions.httpsCallableFromUrl('https://example.com/example'),
+          'httpsCallableFromUrl',
+        );
+      });
+
+      it('httpsCallable().stream()', function () {
+        const functions = (getApp() as unknown as FirebaseApp).functions();
+        functionsRefV9Deprecation(
+          () => httpsCallable(functions, 'example').stream({ test: 'data' }, () => {}),
+          () => functions.httpsCallable('example').stream({ test: 'data' }, () => {}),
+          'httpsCallable',
+        );
+      });
+
+      it('httpsCallableFromUrl().stream()', function () {
+        const functions = (getApp() as unknown as FirebaseApp).functions();
+        functionsRefV9Deprecation(
+          () =>
+            httpsCallableFromUrl(functions, 'https://example.com/example').stream(
+              { test: 'data' },
+              () => {},
+            ),
+          () =>
+            functions
+              .httpsCallableFromUrl('https://example.com/example')
+              .stream({ test: 'data' }, () => {}),
           'httpsCallableFromUrl',
         );
       });
