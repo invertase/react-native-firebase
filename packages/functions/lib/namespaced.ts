@@ -25,7 +25,7 @@ import { HttpsError, type NativeError } from './HttpsError';
 import { version } from './version';
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import fallBackModule from './web/RNFBFunctionsModule';
-import type { HttpsCallableOptions, FunctionsModule, FunctionsStatics } from './types/functions';
+import type { HttpsCallableOptions, Functions, FunctionsStatics } from './types/functions';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 const namespace = 'functions';
 
@@ -214,10 +214,10 @@ const functionsNamespace = createModuleNamespace({
 });
 
 type FunctionsNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
-  FunctionsModule,
+  Functions,
   FunctionsStatics
 > & {
-  functions: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<FunctionsModule, FunctionsStatics>;
+  functions: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<Functions, FunctionsStatics>;
   firebase: ReactNativeFirebase.Module;
   app(name?: string): ReactNativeFirebase.FirebaseApp;
 };
@@ -232,7 +232,7 @@ export default functionsNamespace as unknown as FunctionsNamespace;
 export const firebase =
   getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
     'functions',
-    FunctionsModule,
+    Functions,
     FunctionsStatics,
     true
   >;

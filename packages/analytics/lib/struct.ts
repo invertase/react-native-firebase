@@ -15,33 +15,44 @@
  */
 
 import { isUndefined } from '@react-native-firebase/app/lib/common/validate';
-import { create } from 'superstruct';
+import { create, StructError } from 'superstruct';
 
-export const validateStruct = (value = {}, struct, prefix = '') => {
+export const validateStruct = (
+  value: Record<string, any> = {},
+  struct: any,
+  prefix = '',
+): Record<string, any> => {
   // skip superstruct create in release for performance reasons
   if (!__DEV__) {
     return value;
   }
   try {
-    return create(value, struct);
+    return create(value, struct) as Record<string, any>;
   } catch (e) {
-    const { path, message } = e;
+    const { path, message } = e as StructError;
 
     const key = path[0];
 
     if (message === undefined) {
       throw new Error(`${prefix} unknown property '${key}'.`);
     }
-    e.message = `${prefix} ${e.message}`;
+    (e as StructError).message = `${prefix} ${message}`;
 
     throw e;
   }
 };
 
-export const validateCompound = (source = {}, a, b, prefix = '') => {
+export const validateCompound = (
+  source: Record<string, any> = {},
+  a: string,
+  b: string,
+  prefix = '',
+): void => {
+  const sourceA = source[a];
+  const sourceB = source[b];
   if (
-    (isUndefined(source[a]) && !isUndefined(source[b])) ||
-    (!isUndefined(source[a]) && isUndefined(source[b]))
+    (isUndefined(sourceA) && !isUndefined(sourceB)) ||
+    (!isUndefined(sourceA) && isUndefined(sourceB))
   ) {
     throw new Error(
       `${prefix} if you supply the '${a}' parameter, you must also supply the '${b}' parameter.`,

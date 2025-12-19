@@ -187,9 +187,9 @@ export const SelectPromotion = object({
   promotion_name: string(),
 });
 
-export const SetCheckoutOption = object({
-  checkout_step: number(),
-  checkout_option: string(),
+export const SetCheckoutOption = type({
+  checkout_step: optional(number()),
+  checkout_option: optional(string()),
 });
 
 export const Share = object({
