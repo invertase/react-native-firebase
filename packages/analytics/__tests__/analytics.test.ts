@@ -1,9 +1,9 @@
 import { jest, afterAll, beforeAll, describe, expect, it, xit, beforeEach } from '@jest/globals';
 
 // @ts-ignore test
-import FirebaseModule from '../../app/lib/internal/FirebaseModule';
+import FirebaseModule from '@react-native-firebase/app/lib/internal/FirebaseModule';
 
-import {
+import analytics, {
   firebase,
   getAnalytics,
   initializeAnalytics,
@@ -62,10 +62,10 @@ import {
   settings,
 } from '../lib';
 
-import {
-  createCheckV9Deprecation,
-  CheckV9DeprecationFunction,
-} from '../../app/lib/common/unitTestUtils';
+// @ts-ignore test
+import { createCheckV9Deprecation } from '@react-native-firebase/app/lib/common/unitTestUtils';
+// @ts-ignore test
+import type { CheckV9DeprecationFunction } from '@react-native-firebase/app/lib/common/unitTestUtils';
 
 describe('Analytics', function () {
   describe('namespace', function () {
@@ -705,6 +705,49 @@ describe('Analytics', function () {
         ).toThrow(
           "firebase.analytics().initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(*) 'hashedPhoneNumber' expected a sha256-hashed value of a phone number in E.164 format.",
         );
+      });
+    });
+
+    describe('TypeScript migration maintains existing `analytics()` exports', function () {
+      it('`analytics()` is properly exposed to end user', function () {
+        expect(analytics().logAddToCart).toBeDefined();
+        expect(analytics().logAddPaymentInfo).toBeDefined();
+        expect(analytics().logAddShippingInfo).toBeDefined();
+        expect(analytics().logAddToWishlist).toBeDefined();
+        expect(analytics().logAppOpen).toBeDefined();
+        expect(analytics().logBeginCheckout).toBeDefined();
+        expect(analytics().logCampaignDetails).toBeDefined();
+        expect(analytics().logEarnVirtualCurrency).toBeDefined();
+        expect(analytics().logEvent).toBeDefined();
+        expect(analytics().logGenerateLead).toBeDefined();
+        expect(analytics().logJoinGroup).toBeDefined();
+        expect(analytics().logLevelEnd).toBeDefined();
+        expect(analytics().logLevelStart).toBeDefined();
+        expect(analytics().logLevelUp).toBeDefined();
+        expect(analytics().logLogin).toBeDefined();
+        expect(analytics().logPostScore).toBeDefined();
+        expect(analytics().logSelectContent).toBeDefined();
+        expect(analytics().logSetCheckoutOption).toBeDefined();
+        expect(analytics().logShare).toBeDefined();
+        expect(analytics().logSignUp).toBeDefined();
+        expect(analytics().logSpendVirtualCurrency).toBeDefined();
+        expect(analytics().logTutorialBegin).toBeDefined();
+        expect(analytics().logTutorialComplete).toBeDefined();
+        expect(analytics().logUnlockAchievement).toBeDefined();
+        expect(analytics().logViewItem).toBeDefined();
+        expect(analytics().logViewItemList).toBeDefined();
+        expect(analytics().resetAnalyticsData).toBeDefined();
+        expect(analytics().logViewCart).toBeDefined();
+        expect(analytics().setAnalyticsCollectionEnabled).toBeDefined();
+        expect(analytics().logSelectPromotion).toBeDefined();
+        expect(analytics().logScreenView).toBeDefined();
+        expect(analytics().logViewPromotion).toBeDefined();
+        expect(analytics().setSessionTimeoutDuration).toBeDefined();
+        expect(analytics().setUserId).toBeDefined();
+        expect(analytics().setUserProperties).toBeDefined();
+        expect(analytics().logViewSearchResults).toBeDefined();
+        expect(analytics().setUserProperty).toBeDefined();
+        expect(analytics().setConsent).toBeDefined();
       });
     });
   });

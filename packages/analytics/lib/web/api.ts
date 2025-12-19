@@ -13,12 +13,18 @@ import {
 } from '@react-native-firebase/app/lib/internal/asyncStorage';
 
 import { isNumber } from '@react-native-firebase/app/lib/common';
+import type {
+  AnalyticsEventParameters,
+  AnalyticsUserProperties,
+  AnalyticsConsent,
+  AnalyticsApi as IAnalyticsApi,
+} from '../types/web';
 
 /**
  * Generates a Google Analytics client ID.
  * @returns {string} The generated client ID.
  */
-function generateGAClientId() {
+function generateGAClientId(): string {
   const randomNumber = Math.round(Math.random() * 2147483647);
   // TODO: Don't seem to need this for now.
   // var hash = 1;
@@ -36,8 +42,30 @@ function generateGAClientId() {
   return randomPart + '.' + timestamp;
 }
 
-class AnalyticsApi {
-  constructor(appName, measurementId) {
+interface AnalyticsEvent {
+  name: string;
+  params: AnalyticsEventParameters;
+}
+
+class AnalyticsApi implements IAnalyticsApi {
+  public readonly appName: string;
+  public readonly measurementId: string;
+  private eventQueue: AnalyticsEvent[];
+  private queueTimer: number | null;
+  private readonly queueInterval: number;
+  private defaultEventParameters: AnalyticsEventParameters;
+  private userId: string | null;
+  private userProperties: AnalyticsUserProperties;
+  private consent: AnalyticsConsent;
+  private analyticsCollectionEnabled: boolean;
+  private started: boolean;
+  private installationId: string | null;
+  private debug: boolean;
+  private currentScreen: string | null;
+  private sessionId?: number;
+  private cid?: string | null;
+
+  constructor(appName: string, measurementId: string) {
     this.appName = appName;
     this.measurementId = measurementId;
     this.eventQueue = [];
@@ -54,7 +82,7 @@ class AnalyticsApi {
     this.currentScreen = null;
 
     this._getInstallationId().catch(error => {
-      if (globalThis.RNFBDebug) {
+      if ((globalThis as any).RNFBDebug) {
         console.debug('[RNFB->Analytics][🔴] Error getting Firebase Installation Id:', error);
       } else {
         // No-op. This is a non-critical error.
@@ -62,7 +90,7 @@ class AnalyticsApi {
     });
   }
 
-  setDefaultEventParameters(params) {
+  setDefaultEventParameters(params: AnalyticsEventParameters | null): void {
     if (params === null || params === undefined) {
       this.defaultEventParameters = {};
     } else {
@@ -75,36 +103,36 @@ class AnalyticsApi {
     }
   }
 
-  setDebug(enabled) {
+  setDebug(enabled: boolean): void {
     this.debug = enabled;
   }
 
-  setUserId(userId) {
+  setUserId(userId: string | null): void {
     this.userId = userId;
   }
 
-  setCurrentScreen(screenName) {
+  setCurrentScreen(screenName: string | null): void {
     this.currentScreen = screenName;
   }
 
-  setUserProperty(key, value) {
+  setUserProperty(key: string, value: string | null): void {
     this.userProperties[key] = value;
     if (value === null) {
       delete this.userProperties[key];
     }
   }
 
-  setUserProperties(properties) {
+  setUserProperties(properties: AnalyticsUserProperties): void {
     for (const [key, value] of Object.entries(properties)) {
-      this.setUserProperty(key, value);
+      this.setUserProperty(key, value as string | null);
     }
   }
 
-  setConsent(consentSettings) {
+  setConsent(consentSettings: AnalyticsConsent): void {
     this.consent = { ...this.consent, ...consentSettings };
   }
 
-  setAnalyticsCollectionEnabled(enabled) {
+  setAnalyticsCollectionEnabled(enabled: boolean): void {
     this.analyticsCollectionEnabled = enabled;
     if (!enabled) {
       this._stopQueueProcessing();
@@ -113,7 +141,7 @@ class AnalyticsApi {
     }
   }
 
-  logEvent(eventName, eventParams = {}) {
+  logEvent(eventName: string, eventParams: AnalyticsEventParameters = {}): void {
     if (!this.analyticsCollectionEnabled) return;
     this.eventQueue.push({
       name: eventName,
@@ -122,38 +150,44 @@ class AnalyticsApi {
     this._startQueueProcessing();
   }
 
-  async _getInstallationId() {
-    navigator.onLine = true;
+  private async _getInstallationId(): Promise<void> {
+    // @ts-ignore
+    if (navigator !== null) {
+      // @ts-ignore
+      (navigator as any).onLine = true;
+    }
     makeIDBAvailable();
     const app = getApp(this.appName);
     const installations = getInstallations(app);
     const id = await getId(installations);
-    if (globalThis.RNFBDebug) {
+    if ((globalThis as any).RNFBDebug) {
       console.debug('[RNFB->Analytics][📊] Firebase Installation Id:', id);
     }
     this.installationId = id;
-    onIdChange(installations, newId => {
+    onIdChange(installations, (newId: string) => {
       this.installationId = newId;
     });
   }
 
-  _startQueueProcessing() {
+  private _startQueueProcessing(): void {
     if (this.started) return;
     this.sessionId = Math.floor(Date.now() / 1000);
     this.started = true;
     this.queueTimer = setInterval(
       () => this._processQueue().catch(console.error),
       this.queueInterval,
-    );
+    ) as unknown as number;
   }
 
-  _stopQueueProcessing() {
+  private _stopQueueProcessing(): void {
     if (!this.started) return;
     this.started = false;
-    clearInterval(this.queueTimer);
+    if (this.queueTimer) {
+      clearInterval(this.queueTimer);
+    }
   }
 
-  async _processQueue() {
+  private async _processQueue(): Promise<void> {
     if (this.eventQueue.length === 0) return;
     const events = this.eventQueue.splice(0, 5);
     await this._sendEvents(events);
@@ -162,7 +196,7 @@ class AnalyticsApi {
     }
   }
 
-  async _getCid() {
+  async _getCid(): Promise<string> {
     this.cid = await getItem('analytics:cid');
     if (this.cid) {
       return this.cid;
@@ -192,7 +226,7 @@ class AnalyticsApi {
     return this.cid;
   }
 
-  async _sendEvents(events) {
+  private async _sendEvents(events: AnalyticsEvent[]): Promise<void> {
     const cid = this.cid || (await this._getCid());
     for (const event of events) {
       const queryParams = new URLSearchParams({
@@ -201,18 +235,18 @@ class AnalyticsApi {
         en: event.name,
         cid,
         pscdl: 'noapi',
-        sid: this.sessionId,
+        sid: String(this.sessionId),
         'ep.origin': 'firebase',
         _z: 'fetch',
         _p: '' + Date.now(),
-        _s: 1,
-        _ee: 1,
-        dma: 0,
-        tfd: Math.round(performance.now()),
-        are: 1,
-        sct: 2,
-        seg: 1,
-        frm: 0,
+        _s: '1',
+        _ee: '1',
+        dma: '0',
+        tfd: String(Math.round(performance.now())),
+        are: '1',
+        sct: '2',
+        seg: '1',
+        frm: '0',
       });
 
       if (this.debug) {
@@ -297,7 +331,7 @@ class AnalyticsApi {
 
       try {
         const url = `https://www.google-analytics.com/g/collect?${queryParams.toString()}`;
-        if (globalThis.RNFBDebug) {
+        if ((globalThis as any).RNFBDebug) {
           console.debug(`[RNFB-->Fetch][📊] Sending analytics call: ${url}`);
         }
         const response = await fetch(url, {
@@ -317,11 +351,11 @@ class AnalyticsApi {
             'user-agent': 'react-native-firebase',
           },
         });
-        if (globalThis.RNFBDebug) {
+        if ((globalThis as any).RNFBDebug) {
           console.debug(`[RNFB<--Fetch][📊] Response: ${response.status}`);
         }
       } catch (error) {
-        if (globalThis.RNFBDebug) {
+        if ((globalThis as any).RNFBDebug) {
           console.debug('[RNFB<--Fetch][🔴] Error sending Analytics event:', error);
         }
       }
