@@ -30,7 +30,7 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import type { ModuleConfig } from '@react-native-firebase/app/lib/types/internal';
+import type { ModuleConfig } from '@react-native-firebase/app/lib/internal';
 import { Platform } from 'react-native';
 import ReactNativeFirebaseAppCheckProvider from './ReactNativeFirebaseAppCheckProvider';
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
@@ -290,4 +290,4 @@ export const firebase =
   >;
 
 // Register the interop module for non-native platforms.
-setReactNativeModule(nativeModuleName, fallBackModule);
+setReactNativeModule(nativeModuleName, fallBackModule as unknown as Record<string, unknown>);

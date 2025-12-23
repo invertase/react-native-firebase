@@ -15,12 +15,12 @@
  *
  */
 
-import { getApp } from '@react-native-firebase/app';
+import { getApp, type ReactNativeFirebase } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 import ReactNativeFirebaseAppCheckProvider from './ReactNativeFirebaseAppCheckProvider';
+
 import type {
   AppCheck,
-  FirebaseApp,
   AppCheckOptions,
   AppCheckTokenResult,
   PartialObserver,
@@ -35,7 +35,7 @@ import type {
  * @returns Promise<AppCheck>
  */
 export async function initializeAppCheck(
-  app?: FirebaseApp,
+  app?: ReactNativeFirebase.FirebaseApp,
   options?: AppCheckOptions,
 ): Promise<AppCheck> {
   if (app) {

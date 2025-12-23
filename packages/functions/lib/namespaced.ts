@@ -21,7 +21,7 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import type { ModuleConfig } from '@react-native-firebase/app/lib/types/internal';
+import type { ModuleConfig } from '@react-native-firebase/app/lib/internal';
 import { HttpsError, type NativeError } from './HttpsError';
 import { version } from './version';
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
