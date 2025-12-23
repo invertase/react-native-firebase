@@ -1,17 +1,8 @@
 import type {
   AppCheckProvider,
   AppCheckToken,
-  ReactNativeFirebaseAppCheckProviderWebOptions,
-  ReactNativeFirebaseAppCheckProviderAndroidOptions,
-  ReactNativeFirebaseAppCheckProviderAppleOptions,
+  ReactNativeFirebaseAppCheckProviderOptionsMap as ProviderOptions,
 } from './types/appcheck';
-
-interface ProviderOptions {
-  web?: ReactNativeFirebaseAppCheckProviderWebOptions;
-  android?: ReactNativeFirebaseAppCheckProviderAndroidOptions;
-  apple?: ReactNativeFirebaseAppCheckProviderAppleOptions;
-  isTokenAutoRefreshEnabled?: boolean;
-}
 
 export default class ReactNativeFirebaseAppCheckProvider implements AppCheckProvider {
   providerOptions?: ProviderOptions;

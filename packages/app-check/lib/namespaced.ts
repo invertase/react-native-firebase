@@ -45,6 +45,7 @@ import type {
   PartialObserver,
   AppCheck,
   AppCheckStatics,
+  ProviderWithOptions,
 } from './types/appcheck';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
@@ -73,6 +74,20 @@ export class CustomProvider implements AppCheckProvider {
 const statics = {
   CustomProvider,
 };
+
+/**
+ * Type guard to check if a provider has providerOptions.
+ * This provides proper type narrowing for providers that support platform-specific configuration.
+ */
+function hasProviderOptions(
+  provider: AppCheckOptions['provider'],
+): provider is ProviderWithOptions {
+  return (
+    provider !== undefined &&
+    'providerOptions' in provider &&
+    provider.providerOptions !== undefined
+  );
+}
 
 class FirebaseAppCheckModule extends FirebaseModule {
   _listenerCount: number;
@@ -134,13 +149,10 @@ class FirebaseAppCheckModule extends FirebaseModule {
     }
     this.native.setTokenAutoRefreshEnabled(options.isTokenAutoRefreshEnabled);
 
-    if (
-      options.provider === undefined ||
-      (options.provider as ReactNativeFirebaseAppCheckProvider).providerOptions === undefined
-    ) {
+    if (!hasProviderOptions(options.provider)) {
       throw new Error('Invalid configuration: no provider or no provider options defined.');
     }
-    const provider = options.provider as ReactNativeFirebaseAppCheckProvider;
+    const provider = options.provider;
     if (Platform.OS === 'android') {
       if (!isString(provider.providerOptions?.android?.provider)) {
         throw new Error(

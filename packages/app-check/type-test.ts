@@ -187,7 +187,7 @@ initializeAppCheck(firebase.app(), {
 });
 
 // checks modular ReactNativeFirebaseAppCheckProvider class can be instantiated directly from modular import
-const rnfbProvider = new ReactNativeFirebaseAppCheckProvider();
+const rnfbProvider = appCheckInstance.newReactNativeFirebaseAppCheckProvider();
 // Test that configure method exists and can be called (reusing modularProvider for initializeAppCheck above)
 rnfbProvider.configure({
   android: { provider: 'playIntegrity' },

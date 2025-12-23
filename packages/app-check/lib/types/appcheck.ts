@@ -55,9 +55,13 @@ export declare class CustomProvider implements AppCheckProvider {
 export interface AppCheckOptions {
   /**
    * The App Check provider to use. This can be either the built-in reCAPTCHA provider
-   * or a custom provider.
+   * or a custom provider. For convenience, you can also pass an object with providerOptions
+   * directly, which will be accepted by the runtime.
    */
-  provider: CustomProvider | ReactNativeFirebaseAppCheckProvider;
+  provider:
+    | CustomProvider
+    | ReactNativeFirebaseAppCheckProvider
+    | ReactNativeFirebaseAppCheckProviderConfig;
 
   /**
    * If true, enables SDK to automatically
@@ -153,7 +157,33 @@ export interface ReactNativeFirebaseAppCheckProviderAndroidOptions extends React
   provider?: 'debug' | 'playIntegrity';
 }
 
+/**
+ * Platform-specific provider options configuration.
+ */
+export type ReactNativeFirebaseAppCheckProviderOptionsMap = {
+  web?: ReactNativeFirebaseAppCheckProviderWebOptions;
+  android?: ReactNativeFirebaseAppCheckProviderAndroidOptions;
+  apple?: ReactNativeFirebaseAppCheckProviderAppleOptions;
+  isTokenAutoRefreshEnabled?: boolean;
+};
+
+/**
+ * Configuration object for ReactNativeFirebaseAppCheckProvider
+ * that can be passed directly with providerOptions (for convenience in initialization).
+ * The runtime accepts objects with providerOptions even if they don't have
+ * getToken() and configure() methods.
+ */
+export interface ReactNativeFirebaseAppCheckProviderConfig {
+  providerOptions: ReactNativeFirebaseAppCheckProviderOptionsMap;
+}
+
 export interface ReactNativeFirebaseAppCheckProvider extends AppCheckProvider {
+  /**
+   * Provider options for platform-specific configuration.
+   * This is set when configure() is called.
+   */
+  providerOptions?: ReactNativeFirebaseAppCheckProviderOptionsMap;
+
   /**
    * Specify how the app check provider should be configured. The new configuration is
    * in effect when this call returns. You must call `getToken()`
@@ -162,13 +192,16 @@ export interface ReactNativeFirebaseAppCheckProvider extends AppCheckProvider {
    * so AppCheck has the same experience across all platforms, with the only difference being the native
    * providers you choose to use on each platform.
    */
-  configure(options: {
-    web?: ReactNativeFirebaseAppCheckProviderWebOptions;
-    android?: ReactNativeFirebaseAppCheckProviderAndroidOptions;
-    apple?: ReactNativeFirebaseAppCheckProviderAppleOptions;
-    isTokenAutoRefreshEnabled?: boolean;
-  }): void;
+  configure(options: ReactNativeFirebaseAppCheckProviderOptionsMap): void;
 }
+
+/**
+ * Type representing providers that have providerOptions.
+ * Used for type narrowing in runtime code.
+ */
+export type ProviderWithOptions =
+  | ReactNativeFirebaseAppCheckProvider
+  | ReactNativeFirebaseAppCheckProviderConfig;
 
 // ============ Module Interface ============
 

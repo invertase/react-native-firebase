@@ -24,7 +24,6 @@ import {
   ReactNativeFirebaseAppCheckProviderAndroidOptions,
   ReactNativeFirebaseAppCheckProviderAppleOptions,
   ReactNativeFirebaseAppCheckProviderWebOptions,
-  ReactNativeFirebaseAppCheckProvider,
 } from '../lib';
 
 describe('appCheck()', function () {
@@ -84,8 +83,8 @@ describe('appCheck()', function () {
     });
 
     it('`ReactNativeAppCheckProvider objects are properly exposed to end user', function () {
-      expect(ReactNativeFirebaseAppCheckProvider).toBeDefined();
-      const provider = new ReactNativeFirebaseAppCheckProvider();
+      expect(firebase.appCheck().newReactNativeFirebaseAppCheckProvider).toBeDefined();
+      const provider = firebase.appCheck().newReactNativeFirebaseAppCheckProvider();
       expect(provider.configure).toBeDefined();
       const options = { debugToken: 'foo' } as ReactNativeFirebaseAppCheckProviderOptions;
       const appleOptions = {
