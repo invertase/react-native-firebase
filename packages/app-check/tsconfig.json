@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "rootDir": ".",
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "esModuleInterop": true,
@@ -8,8 +7,7 @@
     "jsx": "react-jsx",
     "lib": ["ESNext"],
     "module": "ESNext",
-    "target": "ESNext",
-    "moduleResolution": "Bundler",
+    "moduleResolution": "bundler",
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noImplicitUseStrict": false,
@@ -20,7 +18,10 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
+    "target": "ESNext",
+    "verbatimModuleSyntax": true,
     "baseUrl": ".",
+    "rootDir": ".",
     "paths": {
       "@react-native-firebase/app/lib/common/*": ["../app/dist/typescript/commonjs/lib/common/*"],
       "@react-native-firebase/app/lib/common": ["../app/dist/typescript/commonjs/lib/common"],
@@ -31,9 +32,7 @@
         "../app/dist/typescript/commonjs/lib/internal/*"
       ],
       "@react-native-firebase/app/lib/internal": ["../app/dist/typescript/commonjs/lib/internal"],
-      "@react-native-firebase/app": ["../app/dist/typescript/commonjs/lib"],
-      "@react-native-firebase/auth": ["../auth/lib"],
-      "@react-native-firebase/app-check": ["../app-check/dist/typescript/commonjs/lib"]
+      "@react-native-firebase/app": ["../app/dist/typescript/commonjs/lib"]
     }
   },
   "include": ["lib/**/*"],
