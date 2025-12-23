@@ -1,6 +1,6 @@
 import { getApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
-import type { Crashlytics } from '../types/crashlytics';
+import type { Crashlytics } from './types/crashlytics';
 
 /**
  * Returns Crashlytics instance.
