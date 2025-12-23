@@ -15,12 +15,13 @@
  *
  */
 
-import { firebase } from '@react-native-firebase/app';
+import { firebase } from '.';
 import { isError, once } from '@react-native-firebase/app/lib/common';
 // @ts-ignore - No declaration file for promise/setimmediate/rejection-tracking
 import tracking from 'promise/setimmediate/rejection-tracking';
 import StackTrace from 'stacktrace-js';
-
+// Import minimal analytics augmentation for type support
+import './types/analytics-augmentation';
 export const FATAL_FLAG = 'com.firebase.crashlytics.reactnative.fatal';
 
 interface NativeErrorFrame {
