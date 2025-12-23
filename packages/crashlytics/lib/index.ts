@@ -16,11 +16,7 @@
  */
 
 // Export types from types/crashlytics
-export type {
-  Crashlytics,
-  CrashlyticsStatics,
-  FirebaseCrashlyticsTypes,
-} from './types/crashlytics';
+export type { Crashlytics, FirebaseCrashlyticsTypes } from './types/crashlytics';
 
 // Export modular API functions
 export * from './modular';

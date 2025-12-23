@@ -25,6 +25,7 @@ import {
   isOther,
   MODULAR_DEPRECATION_ARG,
 } from '@react-native-firebase/app/lib/common';
+import type { ModuleConfig } from '@react-native-firebase/app/lib/internal';
 import {
   createModuleNamespace,
   FirebaseModule,
@@ -51,7 +52,7 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
 
   constructor(
     app: ReactNativeFirebase.FirebaseAppBase,
-    config: any,
+    config: ModuleConfig,
     customUrlOrRegion?: string | null,
   ) {
     super(app, config, customUrlOrRegion);
