@@ -17,18 +17,47 @@
 
 import { firebase } from '@react-native-firebase/app';
 import { isError, once } from '@react-native-firebase/app/lib/common';
+// @ts-ignore - No declaration file for promise/setimmediate/rejection-tracking
 import tracking from 'promise/setimmediate/rejection-tracking';
 import StackTrace from 'stacktrace-js';
 
 export const FATAL_FLAG = 'com.firebase.crashlytics.reactnative.fatal';
 
-export function createNativeErrorObj(error, stackFrames, isUnhandledRejection, jsErrorName) {
-  const nativeObj = {};
+interface NativeErrorFrame {
+  src: string;
+  line: number;
+  col: number;
+  fn: string;
+  file: string;
+}
 
-  nativeObj.message = `${error.message}`;
-  nativeObj.isUnhandledRejection = isUnhandledRejection;
+interface NativeErrorObj {
+  message: string;
+  isUnhandledRejection: boolean;
+  frames: NativeErrorFrame[];
+}
 
-  nativeObj.frames = [];
+interface NativeModule {
+  isCrashlyticsCollectionEnabled: boolean;
+  isErrorGenerationOnJSCrashEnabled: boolean;
+  isCrashlyticsJavascriptExceptionHandlerChainingEnabled: boolean;
+  logPromise(message: string): Promise<void>;
+  setAttribute(name: string, value: string): Promise<void>;
+  recordErrorPromise(errorObj: NativeErrorObj): Promise<void>;
+  crashWithStackPromise(errorObj: NativeErrorObj): Promise<void>;
+}
+
+export function createNativeErrorObj(
+  error: Error,
+  stackFrames: StackTrace.StackFrame[],
+  isUnhandledRejection: boolean,
+  jsErrorName?: string,
+): NativeErrorObj {
+  const nativeObj: NativeErrorObj = {
+    message: `${error.message}`,
+    isUnhandledRejection,
+    frames: [],
+  };
 
   if (jsErrorName) {
     // Option to fix crashlytics display and alerting. You can add an error name to the recordError function
@@ -42,7 +71,10 @@ export function createNativeErrorObj(error, stackFrames, isUnhandledRejection, j
   }
 
   for (let i = 0; i < stackFrames.length; i++) {
-    const { columnNumber, lineNumber, fileName, functionName, source } = stackFrames[i];
+    const frame = stackFrames[i];
+    if (!frame) continue;
+
+    const { columnNumber, lineNumber, fileName, functionName, source } = frame;
     let fileNameParsed = '<unknown>';
     if (fileName) {
       const subStrLen = fileName.indexOf('?');
@@ -54,7 +86,7 @@ export function createNativeErrorObj(error, stackFrames, isUnhandledRejection, j
     }
 
     nativeObj.frames.push({
-      src: source,
+      src: source || '<unknown>',
       line: lineNumber || 0,
       col: columnNumber || 0,
       fn: functionName || '<unknown>',
@@ -65,10 +97,10 @@ export function createNativeErrorObj(error, stackFrames, isUnhandledRejection, j
   return nativeObj;
 }
 
-export const setGlobalErrorHandler = once(nativeModule => {
+export const setGlobalErrorHandler = once((nativeModule: NativeModule) => {
   const originalHandler = ErrorUtils.getGlobalHandler();
 
-  async function handler(error, fatal) {
+  async function handler(error: unknown, fatal?: boolean) {
     // If collection is disabled, just forward to the original handler
     if (!nativeModule.isCrashlyticsCollectionEnabled) {
       return originalHandler(error, fatal);
@@ -89,7 +121,7 @@ export const setGlobalErrorHandler = once(nativeModule => {
         // For that reason we always round up (`.ceil`) and add a second in case of latency
         //
         // Time is specified as seconds since start of Unix epoch as a baseline, as a string
-        const fatalTime = Math.ceil(new Date() / 1000) + 1 + '';
+        const fatalTime = Math.ceil(new Date().getTime() / 1000) + 1 + '';
 
         // Flag the Crashlytics backend that we have a fatal error, they will transform it
         await nativeModule.setAttribute(FATAL_FLAG, fatalTime);
@@ -143,8 +175,8 @@ export const setGlobalErrorHandler = once(nativeModule => {
   return handler;
 });
 
-export const setOnUnhandledPromiseRejectionHandler = once(nativeModule => {
-  async function onUnhandled(_id, error) {
+export const setOnUnhandledPromiseRejectionHandler = once((nativeModule: NativeModule) => {
+  async function onUnhandled(_id: number, error: Error) {
     if (!__DEV__) {
       // TODO(salakar): Option to disable
       try {

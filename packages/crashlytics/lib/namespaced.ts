@@ -36,28 +36,36 @@ import {
   setGlobalErrorHandler,
   setOnUnhandledPromiseRejectionHandler,
 } from './handlers';
-import version from './version';
+import { version } from './version';
+import type { Crashlytics, CrashlyticsStatics } from './types/crashlytics';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
-const statics = {};
+const statics: CrashlyticsStatics = {};
 
 const namespace = 'crashlytics';
 
 const nativeModuleName = 'RNFBCrashlyticsModule';
 
-class FirebaseCrashlyticsModule extends FirebaseModule {
-  constructor(...args) {
-    super(...args);
+class FirebaseCrashlyticsModule extends FirebaseModule implements Crashlytics {
+  _isCrashlyticsCollectionEnabled: boolean;
+
+  constructor(
+    app: ReactNativeFirebase.FirebaseAppBase,
+    config: any,
+    customUrlOrRegion?: string | null,
+  ) {
+    super(app, config, customUrlOrRegion);
     setGlobalErrorHandler(this.native);
     setOnUnhandledPromiseRejectionHandler(this.native);
     this._isCrashlyticsCollectionEnabled = this.native.isCrashlyticsCollectionEnabled;
   }
 
-  get isCrashlyticsCollectionEnabled() {
+  get isCrashlyticsCollectionEnabled(): boolean {
     // Purposefully did not deprecate this as I think it should remain a property rather than a method.
     return this._isCrashlyticsCollectionEnabled;
   }
 
-  checkForUnsentReports() {
+  checkForUnsentReports(): Promise<boolean> {
     if (this.isCrashlyticsCollectionEnabled) {
       throw new Error(
         "firebase.crashlytics().setCrashlyticsCollectionEnabled(*) has been set to 'true', all reports are automatically sent.",
@@ -66,23 +74,23 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
     return this.native.checkForUnsentReports();
   }
 
-  crash() {
+  crash(): void {
     this.native.crash();
   }
 
-  async deleteUnsentReports() {
+  async deleteUnsentReports(): Promise<void> {
     await this.native.deleteUnsentReports();
   }
 
-  didCrashOnPreviousExecution() {
+  didCrashOnPreviousExecution(): Promise<boolean> {
     return this.native.didCrashOnPreviousExecution();
   }
 
-  log(message) {
+  log(message: string): void {
     this.native.log(`${message}`);
   }
 
-  setAttribute(name, value) {
+  setAttribute(name: string, value: string): Promise<null> {
     if (!isString(name)) {
       throw new Error(
         'firebase.crashlytics().setAttribute(*, _): The supplied property name must be a string.',
@@ -98,7 +106,7 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
     return this.native.setAttribute(name, value);
   }
 
-  setAttributes(object) {
+  setAttributes(object: { [key: string]: string }): Promise<null> {
     if (!isObject(object)) {
       throw new Error(
         'firebase.crashlytics().setAttributes(*): The supplied arg must be an object of key value strings.',
@@ -108,7 +116,7 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
     return this.native.setAttributes(object);
   }
 
-  setUserId(userId) {
+  setUserId(userId: string): Promise<null> {
     if (!isString(userId)) {
       throw new Error(
         'firebase.crashlytics().setUserId(*): The supplied userId must be a string value.',
@@ -118,7 +126,7 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
     return this.native.setUserId(userId);
   }
 
-  recordError(error, jsErrorName) {
+  recordError(error: Error, jsErrorName?: string): void {
     if (isError(error)) {
       StackTrace.fromError(error, { offline: true }).then(stackFrames => {
         this.native.recordError(createNativeErrorObj(error, stackFrames, false, jsErrorName));
@@ -130,13 +138,13 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
     }
   }
 
-  sendUnsentReports() {
+  sendUnsentReports(): void {
     if (this.isCrashlyticsCollectionEnabled) {
       this.native.sendUnsentReports();
     }
   }
 
-  setCrashlyticsCollectionEnabled(enabled) {
+  setCrashlyticsCollectionEnabled(enabled: boolean): Promise<null> {
     if (!isBoolean(enabled)) {
       throw new Error(
         "firebase.crashlytics().setCrashlyticsCollectionEnabled(*) 'enabled' must be a boolean.",
@@ -148,14 +156,10 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   }
 }
 
-export * from './modular';
-
 // import { SDK_VERSION } from '@react-native-firebase/crashlytics';
 export const SDK_VERSION = version;
 
-// import crashlytics from '@react-native-firebase/crashlytics';
-// crashlytics().X(...);
-export default createModuleNamespace({
+const crashlyticsNamespace = createModuleNamespace({
   statics,
   version,
   namespace,
@@ -166,12 +170,36 @@ export default createModuleNamespace({
   ModuleClass: FirebaseCrashlyticsModule,
 });
 
+type CrashlyticsNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  Crashlytics,
+  CrashlyticsStatics
+> & {
+  crashlytics: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<Crashlytics, CrashlyticsStatics>;
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+// import crashlytics from '@react-native-firebase/crashlytics';
+// crashlytics().X(...);
+export default crashlyticsNamespace as unknown as CrashlyticsNamespace;
+
 // import crashlytics, { firebase } from '@react-native-firebase/crashlytics';
 // crashlytics().X(...);
 // firebase.crashlytics().X(...);
-export const firebase = getFirebaseRoot();
+export const firebase =
+  getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
+    'crashlytics',
+    Crashlytics,
+    CrashlyticsStatics,
+    false
+  >;
+
+// Register the interop module for non-native platforms.
+// Note: This package doesn't have a web fallback module like functions does
+// setReactNativeModule(nativeModuleName, fallBackModule);
 
 // This will throw with 'Default App Not initialized' if the default app is not configured.
 if (!isOther) {
+  // @ts-ignore - Extra arg used by deprecation proxy to detect namespaced calls
   firebase.crashlytics.call(null, getApp(), MODULAR_DEPRECATION_ARG);
 }

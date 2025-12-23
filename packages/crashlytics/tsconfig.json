@@ -35,6 +35,6 @@
       "@react-native-firebase/app": ["../app/dist/typescript/commonjs/lib"]
     }
   },
-  "include": ["lib/**/*"],
+  "include": ["lib/**/*",  "../app/lib/internal/global.d.ts"],
   "exclude": ["node_modules", "dist", "__tests__", "**/*.test.ts"]
 }
