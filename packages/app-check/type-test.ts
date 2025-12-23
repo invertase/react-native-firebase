@@ -7,7 +7,6 @@ import appCheck, {
   setTokenAutoRefreshEnabled,
   onTokenChanged,
   CustomProvider,
-  ReactNativeFirebaseAppCheckProvider,
 } from '.';
 
 console.log(appCheck().app);
