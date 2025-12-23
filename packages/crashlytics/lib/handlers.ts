@@ -140,6 +140,7 @@ export const setGlobalErrorHandler = once((nativeModule: NativeModule) => {
           // Did not matter if I did named imports above or dynamic require here.
           // So temporarily reverting and silencing warnings instead
           globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+          // @ts-ignore - analytics types not available in crashlytics
           await firebase.app().analytics().logEvent(
             'app_exception', // 'app_exception' is reserved but we make an exception for JS->fatal transforms
             {

@@ -46,7 +46,7 @@ const namespace = 'crashlytics';
 
 const nativeModuleName = 'RNFBCrashlyticsModule';
 
-class FirebaseCrashlyticsModule extends FirebaseModule implements Crashlytics {
+class FirebaseCrashlyticsModule extends FirebaseModule {
   _isCrashlyticsCollectionEnabled: boolean;
 
   constructor(
