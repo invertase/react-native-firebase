@@ -39,13 +39,15 @@ export async function initializeAppCheck(
   options?: AppCheckOptions,
 ): Promise<AppCheck> {
   if (app) {
-    const appInstance = getApp(app.name) as any;
+    const appInstance = getApp(app.name) as ReactNativeFirebase.FirebaseApp;
     const appCheck = appInstance.appCheck();
+    // @ts-ignore - Extra arg used by deprecation proxy to detect modular calls
     await appCheck.initializeAppCheck.call(appCheck, options, MODULAR_DEPRECATION_ARG);
     return appCheck;
   }
-  const appInstance = getApp() as any;
+  const appInstance = getApp() as ReactNativeFirebase.FirebaseApp;
   const appCheck = appInstance.appCheck();
+  // @ts-ignore - Extra arg used by deprecation proxy to detect modular calls
   await appCheck.initializeAppCheck.call(appCheck, options, MODULAR_DEPRECATION_ARG);
   return appCheck;
 }
@@ -61,9 +63,10 @@ export function getToken(
   appCheckInstance: AppCheck,
   forceRefresh?: boolean,
 ): Promise<AppCheckTokenResult> {
-  return (appCheckInstance.getToken as any).call(
+  return appCheckInstance.getToken.call(
     appCheckInstance,
     forceRefresh,
+    // @ts-ignore - Extra arg used by deprecation proxy to detect modular calls
     MODULAR_DEPRECATION_ARG,
   ) as Promise<AppCheckTokenResult>;
 }
@@ -75,8 +78,9 @@ export function getToken(
  * @returns Promise<AppCheckTokenResult>
  */
 export function getLimitedUseToken(appCheckInstance: AppCheck): Promise<AppCheckTokenResult> {
-  return (appCheckInstance.getLimitedUseToken as any).call(
+  return appCheckInstance.getLimitedUseToken.call(
     appCheckInstance,
+    // @ts-ignore - Extra arg used by deprecation proxy to detect modular calls
     MODULAR_DEPRECATION_ARG,
   ) as Promise<AppCheckTokenResult>;
 }
@@ -90,9 +94,10 @@ export function setTokenAutoRefreshEnabled(
   appCheckInstance: AppCheck,
   isAutoRefreshEnabled: boolean,
 ): void {
-  (appCheckInstance.setTokenAutoRefreshEnabled as any).call(
+  appCheckInstance.setTokenAutoRefreshEnabled.call(
     appCheckInstance,
     isAutoRefreshEnabled,
+    // @ts-ignore - Extra arg used by deprecation proxy to detect modular calls
     MODULAR_DEPRECATION_ARG,
   );
 }
@@ -139,11 +144,12 @@ export function onTokenChanged(
   onError?: (error: Error) => void,
   onCompletion?: () => void,
 ): Unsubscribe {
-  return (appCheckInstance.onTokenChanged as any).call(
+  return appCheckInstance.onTokenChanged.call(
     appCheckInstance,
     onNextOrObserver,
     onError,
     onCompletion,
+    // @ts-ignore - Extra arg used by deprecation proxy to detect modular calls
     MODULAR_DEPRECATION_ARG,
   ) as Unsubscribe;
 }
