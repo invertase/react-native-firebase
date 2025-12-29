@@ -24,9 +24,27 @@ import {
   isString,
   isUndefined,
 } from '@react-native-firebase/app/lib/common';
+import type { RemoteMessage } from './types/messaging';
 
-export default function remoteMessageOptions(messagingSenderId, remoteMessage) {
-  const out = {};
+interface RemoteMessageOptions {
+  to: string;
+  messageId: string;
+  ttl: number;
+  data: { [key: string]: string };
+  collapseKey?: string;
+  messageType?: string;
+}
+
+export default function remoteMessageOptions(
+  messagingSenderId: string,
+  remoteMessage: RemoteMessage,
+): RemoteMessageOptions {
+  const out: RemoteMessageOptions = {
+    to: '',
+    messageId: '',
+    ttl: 3600,
+    data: {},
+  };
 
   if (isUndefined(remoteMessage) || !isObject(remoteMessage)) {
     throw new Error("'remoteMessage' expected an object value");
@@ -54,10 +72,10 @@ export default function remoteMessageOptions(messagingSenderId, remoteMessage) {
     if (!isNumber(remoteMessage.ttl)) {
       throw new Error("'remoteMessage.ttl' expected a number value");
     }
-    if (remoteMessage.ttl < 0 || !isInteger(remoteMessage.ttl)) {
+    if (remoteMessage.ttl! < 0 || !isInteger(remoteMessage.ttl!)) {
       throw new Error("'remoteMessage.ttl' expected a positive integer value");
     }
-    out.ttl = remoteMessage.ttl;
+    out.ttl = remoteMessage.ttl!;
   }
 
   if (!remoteMessage.data) {
@@ -67,16 +85,13 @@ export default function remoteMessageOptions(messagingSenderId, remoteMessage) {
   } else {
     // Serialize all objects to strings
     out.data = {};
-    for (let key in remoteMessage.data) {
-      if (remoteMessage.data.hasOwnProperty(key)) {
-        if (
-          typeof remoteMessage.data[key] === 'object' &&
-          !Array.isArray(remoteMessage.data[key]) &&
-          remoteMessage.data[key] !== null
-        ) {
-          out.data[key] = JSON.stringify(remoteMessage.data[key]);
+    for (const key in remoteMessage.data) {
+      if (hasOwnProperty(remoteMessage.data, key)) {
+        const value = remoteMessage.data[key];
+        if (typeof value === 'object' && !Array.isArray(value) && value !== null) {
+          out.data[key] = JSON.stringify(value);
         } else {
-          out.data[key] = remoteMessage.data[key];
+          out.data[key] = String(value);
         }
       }
     }

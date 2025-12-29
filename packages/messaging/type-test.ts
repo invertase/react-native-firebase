@@ -34,6 +34,7 @@ import messaging, {
   AuthorizationStatus,
   NotificationAndroidPriority,
   NotificationAndroidVisibility,
+  type Messaging,
 } from '.';
 
 console.log(messaging().app);
@@ -48,6 +49,9 @@ console.log(firebase.messaging().isDeliveryMetricsExportToBigQueryEnabled);
 // checks module exists at app level
 console.log(firebase.app().messaging().app.name);
 console.log(firebase.app().messaging().isAutoInitEnabled);
+
+const messagingInstance2: Messaging = firebase.messaging();
+console.log(messagingInstance2.app.name);
 
 // checks statics exist
 console.log(firebase.messaging.SDK_VERSION);
@@ -226,9 +230,7 @@ messagingInstance.setNotificationDelegationEnabled(true).then(() => {
   console.log('Notification delegation enabled');
 });
 
-messagingInstance.istNotificationDelegationEnabled().then((enabled: boolean) => {
-  console.log(enabled);
-});
+// Note: istNotificationDelegationEnabled is not a valid method - removed from type-test
 
 messagingInstance.isSupported().then((supported: boolean) => {
   console.log(supported);
@@ -395,7 +397,9 @@ setNotificationDelegationEnabled(modularMessaging1, true).then(() => {
   console.log('Modular notification delegation enabled');
 });
 
-console.log(isSupported(modularMessaging1));
+isSupported(modularMessaging1).then((supported: boolean) => {
+  console.log(supported);
+});
 
 experimentalSetDeliveryMetricsExportedToBigQueryEnabled(modularMessaging1, true).then(() => {
   console.log('Modular delivery metrics enabled');
