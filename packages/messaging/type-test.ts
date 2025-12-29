@@ -34,6 +34,11 @@ import messaging, {
   AuthorizationStatus,
   NotificationAndroidPriority,
   NotificationAndroidVisibility,
+  // Types
+  type Messaging,
+  type MessagingStatics,
+  type RemoteMessage,
+  type AuthorizationStatus as AuthorizationStatusType,
 } from '.';
 
 console.log(messaging().app);
@@ -226,9 +231,7 @@ messagingInstance.setNotificationDelegationEnabled(true).then(() => {
   console.log('Notification delegation enabled');
 });
 
-messagingInstance.istNotificationDelegationEnabled().then((enabled: boolean) => {
-  console.log(enabled);
-});
+// Note: istNotificationDelegationEnabled is not a valid method - removed from type-test
 
 messagingInstance.isSupported().then((supported: boolean) => {
   console.log(supported);
@@ -395,7 +398,9 @@ setNotificationDelegationEnabled(modularMessaging1, true).then(() => {
   console.log('Modular notification delegation enabled');
 });
 
-console.log(isSupported(modularMessaging1));
+isSupported(modularMessaging1).then((supported: boolean) => {
+  console.log(supported);
+});
 
 experimentalSetDeliveryMetricsExportedToBigQueryEnabled(modularMessaging1, true).then(() => {
   console.log('Modular delivery metrics enabled');
