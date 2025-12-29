@@ -97,6 +97,8 @@ target 'testing' do
       target.build_configurations.each do |config|
         config.build_settings["GCC_WARN_INHIBIT_ALL_WARNINGS"] = "YES"
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_version_supported
+        # Disable explicit modules to fix libclang.dylib warnings with newer Xcode versions
+        config.build_settings['CLANG_ENABLE_MODULES_EXPLICIT'] = 'NO'
       end
     end
   end
