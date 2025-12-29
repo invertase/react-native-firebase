@@ -157,3 +157,49 @@ export const testStreamWithError = onCall(
     };
   },
 );
+
+/**
+ * Test streaming callable that returns the type of data sent
+ * Similar to Dart's testStreamResponse - sends back the type of input data
+ */
+export const testStreamResponse = onCall(
+  async (req: CallableRequest<any>, response?: CallableResponse<any>) => {
+    logger.info('testStreamResponse called', { data: req.data });
+
+    // Determine the type of the input data
+    let partialData: string;
+    if (req.data === null || req.data === undefined) {
+      partialData = 'null';
+    } else if (typeof req.data === 'string') {
+      partialData = 'string';
+    } else if (typeof req.data === 'number') {
+      partialData = 'number';
+    } else if (typeof req.data === 'boolean') {
+      partialData = 'boolean';
+    } else if (Array.isArray(req.data)) {
+      partialData = 'array';
+    } else if (typeof req.data === 'object') {
+      // For deep maps, check if it has the expected structure
+      if (req.data.type === 'deepMap' && req.data.inputData) {
+        partialData = req.data.inputData;
+      } else {
+        partialData = 'object';
+      }
+    } else {
+      partialData = 'unknown';
+    }
+
+    // Send chunk with the type information
+    if (response) {
+      await response.sendChunk({
+        partialData,
+      });
+    }
+
+    // Return final result
+    return {
+      partialData,
+      type: typeof req.data,
+    };
+  },
+);

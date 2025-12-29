@@ -5,14 +5,21 @@ import {
   httpsCallableFromURL,
   connectFunctionsEmulator,
 } from '@react-native-firebase/app/lib/internal/web/firebaseFunctions';
-// @ts-ignore - JS module
-import RNFBAppModule from '@react-native-firebase/app/lib/internal/web/RNFBAppModule';
+import { emitEvent } from '@react-native-firebase/app/lib/internal/web/utils';
 import type { HttpsCallableOptions } from '../index';
 import type { NativeError } from '../HttpsError';
 
 interface WrapperData {
   data?: any;
 }
+
+// Map to store active streaming subscriptions by listenerId
+// Subscription type from RxJS has an unsubscribe() method
+interface Subscription {
+  unsubscribe(): void;
+}
+
+const functionsStreamingListeners = new Map<number, Subscription>();
 
 /**
  * This is a 'NativeModule' for the web platform.
@@ -205,13 +212,19 @@ export default {
       // Defer streaming to next tick to ensure event listeners are set up
       setTimeout(() => {
         try {
+          // Ignore if the listener already exists
+          if (functionsStreamingListeners.has(listenerId)) {
+            return;
+          }
+
           // Call the streaming version
           const callableWithStream = callable as any;
 
           if (typeof callableWithStream.stream === 'function') {
             const subscription = callableWithStream.stream(data).subscribe({
               next: (chunk: any) => {
-                RNFBAppModule.eventsSendEvent('functions_streaming_event', {
+                emitEvent('functions_streaming_event', {
+                  eventName: 'functions_streaming_event',
                   listenerId,
                   body: {
                     data: chunk.data ?? null,
@@ -222,7 +235,8 @@ export default {
               },
               error: (error: any) => {
                 const { code, message, details } = error;
-                RNFBAppModule.eventsSendEvent('functions_streaming_event', {
+                emitEvent('functions_streaming_event', {
+                  eventName: 'functions_streaming_event',
                   listenerId,
                   body: {
                     data: null,
@@ -234,9 +248,12 @@ export default {
                     done: true,
                   },
                 });
+                // Remove listener on error
+                functionsStreamingListeners.delete(listenerId);
               },
               complete: () => {
-                RNFBAppModule.eventsSendEvent('functions_streaming_event', {
+                emitEvent('functions_streaming_event', {
+                  eventName: 'functions_streaming_event',
                   listenerId,
                   body: {
                     data: null,
@@ -244,19 +261,17 @@ export default {
                     done: true,
                   },
                 });
+                // Remove listener on completion
+                functionsStreamingListeners.delete(listenerId);
               },
             });
 
-            // Store subscription for cleanup if needed
-            // (Could be extended with unsubscribe support)
-            if (typeof globalThis !== 'undefined') {
-              (globalThis as any).__rnfbFunctionsStreamSubscriptions =
-                (globalThis as any).__rnfbFunctionsStreamSubscriptions || {};
-              (globalThis as any).__rnfbFunctionsStreamSubscriptions[listenerId] = subscription;
-            }
+            // Store subscription in the listeners map
+            functionsStreamingListeners.set(listenerId, subscription);
           } else {
             // Fallback: streaming not supported, emit error
-            RNFBAppModule.eventsSendEvent('functions_streaming_event', {
+            emitEvent('functions_streaming_event', {
+              eventName: 'functions_streaming_event',
               listenerId,
               body: {
                 data: null,
@@ -272,7 +287,8 @@ export default {
         } catch (streamError: any) {
           // Error during streaming setup
           const { code, message, details } = streamError;
-          RNFBAppModule.eventsSendEvent('functions_streaming_event', {
+          emitEvent('functions_streaming_event', {
+            eventName: 'functions_streaming_event',
             listenerId,
             body: {
               data: null,
@@ -289,7 +305,8 @@ export default {
     } catch (error: any) {
       // Synchronous error during setup - emit immediately
       const { code, message, details } = error;
-      RNFBAppModule.eventsSendEvent('functions_streaming_event', {
+      emitEvent('functions_streaming_event', {
+        eventName: 'functions_streaming_event',
         listenerId,
         body: {
           data: null,
@@ -353,13 +370,19 @@ export default {
       // Defer streaming to next tick to ensure event listeners are set up
       setTimeout(() => {
         try {
+          // Ignore if the listener already exists
+          if (functionsStreamingListeners.has(listenerId)) {
+            return;
+          }
+
           // Call the streaming version
           const callableWithStream = callable as any;
 
           if (typeof callableWithStream.stream === 'function') {
             const subscription = callableWithStream.stream(data).subscribe({
               next: (chunk: any) => {
-                RNFBAppModule.eventsSendEvent('functions_streaming_event', {
+                emitEvent('functions_streaming_event', {
+                  eventName: 'functions_streaming_event',
                   listenerId,
                   body: {
                     data: chunk.data ?? null,
@@ -370,7 +393,8 @@ export default {
               },
               error: (error: any) => {
                 const { code, message, details } = error;
-                RNFBAppModule.eventsSendEvent('functions_streaming_event', {
+                emitEvent('functions_streaming_event', {
+                  eventName: 'functions_streaming_event',
                   listenerId,
                   body: {
                     data: null,
@@ -382,9 +406,12 @@ export default {
                     done: true,
                   },
                 });
+                // Remove listener on error
+                functionsStreamingListeners.delete(listenerId);
               },
               complete: () => {
-                RNFBAppModule.eventsSendEvent('functions_streaming_event', {
+                emitEvent('functions_streaming_event', {
+                  eventName: 'functions_streaming_event',
                   listenerId,
                   body: {
                     data: null,
@@ -392,18 +419,17 @@ export default {
                     done: true,
                   },
                 });
+                // Remove listener on completion
+                functionsStreamingListeners.delete(listenerId);
               },
             });
 
-            // Store subscription for cleanup if needed
-            if (typeof globalThis !== 'undefined') {
-              (globalThis as any).__rnfbFunctionsStreamSubscriptions =
-                (globalThis as any).__rnfbFunctionsStreamSubscriptions || {};
-              (globalThis as any).__rnfbFunctionsStreamSubscriptions[listenerId] = subscription;
-            }
+            // Store subscription in the listeners map
+            functionsStreamingListeners.set(listenerId, subscription);
           } else {
             // Fallback: streaming not supported, emit error
-            RNFBAppModule.eventsSendEvent('functions_streaming_event', {
+            emitEvent('functions_streaming_event', {
+              eventName: 'functions_streaming_event',
               listenerId,
               body: {
                 data: null,
@@ -419,7 +445,8 @@ export default {
         } catch (streamError: any) {
           // Error during streaming setup
           const { code, message, details } = streamError;
-          RNFBAppModule.eventsSendEvent('functions_streaming_event', {
+          emitEvent('functions_streaming_event', {
+            eventName: 'functions_streaming_event',
             listenerId,
             body: {
               data: null,
@@ -436,7 +463,8 @@ export default {
     } catch (error: any) {
       // Synchronous error during setup - emit immediately
       const { code, message, details } = error;
-      RNFBAppModule.eventsSendEvent('functions_streaming_event', {
+      emitEvent('functions_streaming_event', {
+        eventName: 'functions_streaming_event',
         listenerId,
         body: {
           data: null,
@@ -455,7 +483,13 @@ export default {
    * Removes a streaming listener.
    * @param listenerId - The listener ID to remove.
    */
-  removeFunctionsStreaming(_listenerId: number): void {
-    // No-op for web platform - streaming is handled via RxJS subscriptions
+  removeFunctionsStreaming(listenerId: number): void {
+    const subscription = functionsStreamingListeners.get(listenerId);
+    if (subscription) {
+      // Unsubscribe from the RxJS stream
+      subscription.unsubscribe();
+      // Remove from the listeners map
+      functionsStreamingListeners.delete(listenerId);
+    }
   },
 };

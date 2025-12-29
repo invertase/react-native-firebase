@@ -156,13 +156,37 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
 
                       @Override
                       public void onNext(StreamResponse streamResponse) {
+                        // Extract data from StreamResponse
+                        Object responseData = null;
+                        boolean isFinalResult = false;
+                        
+                        // Check if it's a Message (chunk) or Result (final)
+                        // StreamResponse is a sealed class with Message and Result subtypes
+                        if (streamResponse instanceof StreamResponse.Message) {
+                          StreamResponse.Message message = (StreamResponse.Message) streamResponse;
+                          // Message has a getMessage() method that returns a Message object with getData()
+                          responseData = message.getMessage().getData();
+                          isFinalResult = false;
+                        } else if (streamResponse instanceof StreamResponse.Result) {
+                          StreamResponse.Result result = (StreamResponse.Result) streamResponse;
+                          // Result has a getResult() method that returns a Result object with getData()
+                          responseData = result.getResult().getData();
+                          isFinalResult = true;
+                        }
+                        
                         // Emit the stream data as it arrives
                         emitStreamEvent(
                             appName,
                             listenerId,
-                            null,
+                            responseData,
                             false,
-                            null); // TODO: Extract data from StreamResponse
+                            null);
+                        
+                        // If this is the final result, also emit done event
+                        if (isFinalResult) {
+                          emitStreamDone(appName, listenerId);
+                          removeFunctionsStreamingListener(listenerId);
+                        }
                       }
 
                       @Override
@@ -249,13 +273,37 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
 
                       @Override
                       public void onNext(StreamResponse streamResponse) {
+                        // Extract data from StreamResponse
+                        Object responseData = null;
+                        boolean isFinalResult = false;
+                        
+                        // Check if it's a Message (chunk) or Result (final)
+                        // StreamResponse is a sealed class with Message and Result subtypes
+                        if (streamResponse instanceof StreamResponse.Message) {
+                          StreamResponse.Message message = (StreamResponse.Message) streamResponse;
+                          // Message has a getMessage() method that returns a Message object with getData()
+                          responseData = message.getMessage().getData();
+                          isFinalResult = false;
+                        } else if (streamResponse instanceof StreamResponse.Result) {
+                          StreamResponse.Result result = (StreamResponse.Result) streamResponse;
+                          // Result has a getResult() method that returns a Result object with getData()
+                          responseData = result.getResult().getData();
+                          isFinalResult = true;
+                        }
+                        
                         // Emit the stream data as it arrives
                         emitStreamEvent(
                             appName,
                             listenerId,
-                            null,
+                            responseData,
                             false,
-                            null); // TODO: Extract data from StreamResponse
+                            null);
+                        
+                        // If this is the final result, also emit done event
+                        if (isFinalResult) {
+                          emitStreamDone(appName, listenerId);
+                          removeFunctionsStreamingListener(listenerId);
+                        }
                       }
 
                       @Override

@@ -37,4 +37,5 @@ export {
   testProgressStream,
   testComplexDataStream,
   testStreamWithError,
+  testStreamResponse,
 } from './testStreamingCallable';
