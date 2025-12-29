@@ -68,9 +68,24 @@
     "source": "lib",
     "output": "dist",
     "targets": [
-      ["module", { "esm": true }],
-      ["commonjs", { "esm": true }],
-      ["typescript", { "tsc": "../../node_modules/.bin/tsc" }]
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "commonjs",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "tsc": "../../node_modules/.bin/tsc"
+        }
+      ]
     ]
   }
 }
