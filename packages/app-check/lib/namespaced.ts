@@ -30,19 +30,33 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
+import type { ModuleConfig } from '@react-native-firebase/app/lib/internal';
 import { Platform } from 'react-native';
 import ReactNativeFirebaseAppCheckProvider from './ReactNativeFirebaseAppCheckProvider';
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
 import fallBackModule from './web/RNFBAppCheckModule';
-
-import version from './version';
+import { version } from './version';
+import type {
+  CustomProviderOptions,
+  AppCheckProvider,
+  AppCheckTokenResult,
+  AppCheckOptions,
+  AppCheckListenerResult,
+  PartialObserver,
+  AppCheck,
+  AppCheckStatics,
+  ProviderWithOptions,
+} from './types/appcheck';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
 const namespace = 'appCheck';
 
 const nativeModuleName = 'RNFBAppCheckModule';
 
-export class CustomProvider {
-  constructor(_customProviderOptions) {
+export class CustomProvider implements AppCheckProvider {
+  private _customProviderOptions: CustomProviderOptions;
+
+  constructor(_customProviderOptions: CustomProviderOptions) {
     if (!isObject(_customProviderOptions)) {
       throw new Error('Invalid configuration: no provider options defined.');
     }
@@ -61,9 +75,29 @@ const statics = {
   CustomProvider,
 };
 
+/**
+ * Type guard to check if a provider has providerOptions.
+ * This provides proper type narrowing for providers that support platform-specific configuration.
+ */
+function hasProviderOptions(
+  provider: AppCheckOptions['provider'],
+): provider is ProviderWithOptions {
+  return (
+    provider !== undefined &&
+    'providerOptions' in provider &&
+    provider.providerOptions !== undefined
+  );
+}
+
 class FirebaseAppCheckModule extends FirebaseModule {
-  constructor(...args) {
-    super(...args);
+  _listenerCount: number;
+
+  constructor(
+    app: ReactNativeFirebase.FirebaseAppBase,
+    config: ModuleConfig,
+    customUrlOrRegion?: string | null,
+  ) {
+    super(app, config, customUrlOrRegion);
 
     this.emitter.addListener(this.eventNameForApp('appCheck_token_changed'), event => {
       this.emitter.emit(this.eventNameForApp('onAppCheckTokenChanged'), event);
@@ -72,18 +106,18 @@ class FirebaseAppCheckModule extends FirebaseModule {
     this._listenerCount = 0;
   }
 
-  getIsTokenRefreshEnabledDefault() {
+  getIsTokenRefreshEnabledDefault(): boolean | undefined {
     // no default to start
-    isTokenAutoRefreshEnabled = undefined;
+    let isTokenAutoRefreshEnabled: boolean | undefined = undefined;
 
     return isTokenAutoRefreshEnabled;
   }
 
-  newReactNativeFirebaseAppCheckProvider() {
+  newReactNativeFirebaseAppCheckProvider(): ReactNativeFirebaseAppCheckProvider {
     return new ReactNativeFirebaseAppCheckProvider();
   }
 
-  initializeAppCheck(options) {
+  initializeAppCheck(options: AppCheckOptions): Promise<void> {
     if (isOther) {
       if (!isObject(options)) {
         throw new Error('Invalid configuration: no options defined.');
@@ -95,12 +129,18 @@ class FirebaseAppCheckModule extends FirebaseModule {
     }
     // determine token refresh setting, if not specified
     if (!isBoolean(options.isTokenAutoRefreshEnabled)) {
-      options.isTokenAutoRefreshEnabled = this.firebaseJson.app_check_token_auto_refresh;
+      const tokenRefresh = this.firebaseJson.app_check_token_auto_refresh;
+      if (isBoolean(tokenRefresh)) {
+        options.isTokenAutoRefreshEnabled = tokenRefresh;
+      }
     }
 
     // If that was not defined, attempt to use app-wide data collection setting per docs:
     if (!isBoolean(options.isTokenAutoRefreshEnabled)) {
-      options.isTokenAutoRefreshEnabled = this.firebaseJson.app_data_collection_default_enabled;
+      const dataCollection = this.firebaseJson.app_data_collection_default_enabled;
+      if (isBoolean(dataCollection)) {
+        options.isTokenAutoRefreshEnabled = dataCollection;
+      }
     }
 
     // If that also was not defined, the default is documented as true.
@@ -109,35 +149,39 @@ class FirebaseAppCheckModule extends FirebaseModule {
     }
     this.native.setTokenAutoRefreshEnabled(options.isTokenAutoRefreshEnabled);
 
-    if (options.provider === undefined || options.provider.providerOptions === undefined) {
+    if (!hasProviderOptions(options.provider)) {
       throw new Error('Invalid configuration: no provider or no provider options defined.');
     }
+    const provider = options.provider;
     if (Platform.OS === 'android') {
-      if (!isString(options.provider.providerOptions.android.provider)) {
+      if (!isString(provider.providerOptions?.android?.provider)) {
         throw new Error(
           'Invalid configuration: no android provider configured while on android platform.',
         );
       }
       return this.native.configureProvider(
-        options.provider.providerOptions.android.provider,
-        options.provider.providerOptions.android.debugToken,
+        provider.providerOptions.android.provider,
+        provider.providerOptions.android.debugToken,
       );
     }
     if (Platform.OS === 'ios' || Platform.OS === 'macos') {
-      if (!isString(options.provider.providerOptions.apple.provider)) {
+      if (!isString(provider.providerOptions?.apple?.provider)) {
         throw new Error(
           'Invalid configuration: no apple provider configured while on apple platform.',
         );
       }
       return this.native.configureProvider(
-        options.provider.providerOptions.apple.provider,
-        options.provider.providerOptions.apple.debugToken,
+        provider.providerOptions.apple.provider,
+        provider.providerOptions.apple.debugToken,
       );
     }
     throw new Error('Unsupported platform: ' + Platform.OS);
   }
 
-  activate(siteKeyOrProvider, isTokenAutoRefreshEnabled) {
+  activate(
+    siteKeyOrProvider: string | AppCheckProvider,
+    isTokenAutoRefreshEnabled?: boolean,
+  ): Promise<void> {
     if (isOther) {
       throw new Error('firebase.appCheck().activate(*) is not supported on other platforms');
     }
@@ -146,7 +190,7 @@ class FirebaseAppCheckModule extends FirebaseModule {
     }
 
     // We wrap our new flexible interface, with compatible defaults
-    rnfbProvider = new ReactNativeFirebaseAppCheckProvider();
+    const rnfbProvider = new ReactNativeFirebaseAppCheckProvider();
     rnfbProvider.configure({
       android: {
         provider: 'playIntegrity',
@@ -164,11 +208,11 @@ class FirebaseAppCheckModule extends FirebaseModule {
   }
 
   // TODO this is an async call
-  setTokenAutoRefreshEnabled(isTokenAutoRefreshEnabled) {
+  setTokenAutoRefreshEnabled(isTokenAutoRefreshEnabled: boolean): void {
     this.native.setTokenAutoRefreshEnabled(isTokenAutoRefreshEnabled);
   }
 
-  getToken(forceRefresh) {
+  getToken(forceRefresh?: boolean): Promise<AppCheckTokenResult> {
     if (!forceRefresh) {
       return this.native.getToken(false);
     } else {
@@ -176,19 +220,28 @@ class FirebaseAppCheckModule extends FirebaseModule {
     }
   }
 
-  getLimitedUseToken() {
+  getLimitedUseToken(): Promise<AppCheckTokenResult> {
     return this.native.getLimitedUseToken();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onTokenChanged(onNextOrObserver, onError, onCompletion) {
+  onTokenChanged(
+    onNextOrObserver:
+      | PartialObserver<AppCheckListenerResult>
+      | ((tokenResult: AppCheckListenerResult) => void),
+    _onError?: (error: Error) => void,
+    _onCompletion?: () => void,
+  ): () => void {
     // iOS does not provide any native listening feature
     if (isIOS) {
       // eslint-disable-next-line no-console
       console.warn('onTokenChanged is not implemented on IOS, only for Android');
       return () => {};
     }
-    const nextFn = parseListenerOrObserver(onNextOrObserver);
+    const nextFn = parseListenerOrObserver(
+      onNextOrObserver as
+        | ((value: AppCheckListenerResult) => void)
+        | { next: (value: AppCheckListenerResult) => void },
+    );
     // let errorFn = function () { };
     // if (onNextOrObserver.error != null) {
     //   errorFn = onNextOrObserver.error.bind(onNextOrObserver);
@@ -211,12 +264,9 @@ class FirebaseAppCheckModule extends FirebaseModule {
   }
 }
 
-// import { SDK_VERSION } from '@react-native-firebase/app-check';
 export const SDK_VERSION = version;
 
-// import appCheck from '@react-native-firebase/app-check';
-// appCheck().X(...);
-export default createModuleNamespace({
+const appCheckNamespace = createModuleNamespace({
   statics,
   version,
   namespace,
@@ -227,12 +277,29 @@ export default createModuleNamespace({
   ModuleClass: FirebaseAppCheckModule,
 });
 
-export * from './modular';
+type AppCheckNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  AppCheck,
+  AppCheckStatics
+> & {
+  appCheck: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<AppCheck, AppCheckStatics>;
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+// import appCheck from '@react-native-firebase/app-check';
+// appCheck().X(...);
+export default appCheckNamespace as unknown as AppCheckNamespace;
 
 // import appCheck, { firebase } from '@react-native-firebase/app-check';
 // appCheck().X(...);
 // firebase.appCheck().X(...);
-export const firebase = getFirebaseRoot();
+export const firebase =
+  getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
+    'appCheck',
+    AppCheck,
+    AppCheckStatics,
+    false
+  >;
 
 // Register the interop module for non-native platforms.
-setReactNativeModule(nativeModuleName, fallBackModule);
+setReactNativeModule(nativeModuleName, fallBackModule as unknown as Record<string, unknown>);
