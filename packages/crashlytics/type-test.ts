@@ -154,5 +154,3 @@ const namespaceInstance: FirebaseCrashlyticsTypes.Module = firebase.crashlytics(
 console.log(namespaceInstance.app.name);
 const namespaceStatics: FirebaseCrashlyticsTypes.Statics = firebase.crashlytics;
 console.log(namespaceStatics);
-const namespaceCrashlytics: FirebaseCrashlyticsTypes.Crashlytics = firebase.crashlytics();
-console.log(namespaceCrashlytics.app.name);
