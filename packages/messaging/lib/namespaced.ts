@@ -32,7 +32,7 @@ import {
 } from '@react-native-firebase/app/lib/internal';
 import { AppRegistry } from 'react-native';
 import remoteMessageOptions from './remoteMessageOptions';
-import version from './version';
+import { version } from './version';
 import {
   AuthorizationStatus,
   NotificationAndroidPriority,
