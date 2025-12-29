@@ -34,11 +34,7 @@ import messaging, {
   AuthorizationStatus,
   NotificationAndroidPriority,
   NotificationAndroidVisibility,
-  // Types
   type Messaging,
-  type MessagingStatics,
-  type RemoteMessage,
-  type AuthorizationStatus as AuthorizationStatusType,
 } from '.';
 
 console.log(messaging().app);
@@ -53,6 +49,9 @@ console.log(firebase.messaging().isDeliveryMetricsExportToBigQueryEnabled);
 // checks module exists at app level
 console.log(firebase.app().messaging().app.name);
 console.log(firebase.app().messaging().isAutoInitEnabled);
+
+const messagingInstance2: Messaging = firebase.messaging();
+console.log(messagingInstance2.app.name);
 
 // checks statics exist
 console.log(firebase.messaging.SDK_VERSION);

@@ -18,7 +18,6 @@
 // Export types from types/messaging
 export type {
   Messaging,
-  MessagingStatics,
   RemoteMessage,
   MessagePriority,
   FcmOptions,
@@ -26,12 +25,16 @@ export type {
   GetTokenOptions,
   Notification,
   NotificationIOSCriticalSound,
-  NotificationAndroidPriority,
-  NotificationAndroidVisibility,
   IOSPermissions,
-  AuthorizationStatus,
   SendErrorEvent,
   FirebaseMessagingTypes,
+} from './types/messaging';
+
+// Export static enums
+export {
+  AuthorizationStatus,
+  NotificationAndroidPriority,
+  NotificationAndroidVisibility,
 } from './types/messaging';
 
 // Export modular API functions
