@@ -126,7 +126,6 @@ export function requestPermission(
   iosPermissions?: IOSPermissions,
 ): Promise<AuthorizationStatus> {
   // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   return messaging.requestPermission.call(messaging, iosPermissions, MODULAR_DEPRECATION_ARG);
 }
 
@@ -146,7 +145,6 @@ export function isAutoInitEnabled(messaging: Messaging): boolean {
  * @returns Promise that resolves when the setting is updated.
  */
 export function setAutoInitEnabled(messaging: Messaging, enabled: boolean): Promise<void> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   return messaging.setAutoInitEnabled.call(messaging, enabled, MODULAR_DEPRECATION_ARG);
 }
@@ -171,7 +169,6 @@ export function getInitialNotification(messaging: Messaging): Promise<RemoteMess
  */
 export function getDidOpenSettingsForNotification(messaging: Messaging): Promise<boolean> {
   // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   return messaging.getDidOpenSettingsForNotification.call(messaging, MODULAR_DEPRECATION_ARG);
 }
 
@@ -183,7 +180,6 @@ export function getDidOpenSettingsForNotification(messaging: Messaging): Promise
  */
 export function getIsHeadless(messaging: Messaging): Promise<boolean> {
   // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   return messaging.getIsHeadless.call(messaging, MODULAR_DEPRECATION_ARG);
 }
 
@@ -194,7 +190,6 @@ export function getIsHeadless(messaging: Messaging): Promise<boolean> {
  * @returns Promise that resolves when the device is registered.
  */
 export function registerDeviceForRemoteMessages(messaging: Messaging): Promise<void> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   return messaging.registerDeviceForRemoteMessages.call(messaging, MODULAR_DEPRECATION_ARG);
 }
@@ -216,7 +211,6 @@ export function isDeviceRegisteredForRemoteMessages(messaging: Messaging): boole
  */
 export function unregisterDeviceForRemoteMessages(messaging: Messaging): Promise<void> {
   // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   return messaging.unregisterDeviceForRemoteMessages.call(messaging, MODULAR_DEPRECATION_ARG);
 }
 
@@ -227,7 +221,6 @@ export function unregisterDeviceForRemoteMessages(messaging: Messaging): Promise
  * @returns Promise that resolves with the APNs token or null.
  */
 export function getAPNSToken(messaging: Messaging): Promise<string | null> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   return messaging.getAPNSToken.call(messaging, MODULAR_DEPRECATION_ARG);
 }
@@ -257,7 +250,6 @@ export function getAPNSToken(messaging: Messaging): Promise<string | null> {
  */
 export function setAPNSToken(messaging: Messaging, token: string, type?: string): Promise<void> {
   // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   return messaging.setAPNSToken.call(messaging, token, type, MODULAR_DEPRECATION_ARG);
 }
 
@@ -267,7 +259,6 @@ export function setAPNSToken(messaging: Messaging, token: string, type?: string)
  * @returns Promise that resolves with the authorization status.
  */
 export function hasPermission(messaging: Messaging): Promise<AuthorizationStatus> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   return messaging.hasPermission.call(messaging, MODULAR_DEPRECATION_ARG);
 }
@@ -279,7 +270,6 @@ export function hasPermission(messaging: Messaging): Promise<AuthorizationStatus
  * @returns Function to unsubscribe from the deleted messages listener.
  */
 export function onDeletedMessages(messaging: Messaging, listener: () => void): () => void {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   return messaging.onDeletedMessages.call(messaging, listener, MODULAR_DEPRECATION_ARG);
 }
@@ -294,7 +284,6 @@ export function onMessageSent(
   messaging: Messaging,
   listener: (messageId: string) => any,
 ): () => void {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   return messaging.onMessageSent.call(messaging, listener, MODULAR_DEPRECATION_ARG);
 }
@@ -311,7 +300,6 @@ export function onSendError(
   listener: (evt: SendErrorEvent) => any,
 ): () => void {
   // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   return messaging.onSendError.call(messaging, listener, MODULAR_DEPRECATION_ARG);
 }
 
@@ -327,7 +315,6 @@ export function setBackgroundMessageHandler(
   messaging: Messaging,
   handler: (message: RemoteMessage) => Promise<any>,
 ): void {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   return messaging.setBackgroundMessageHandler.call(messaging, handler, MODULAR_DEPRECATION_ARG);
 }
@@ -359,7 +346,6 @@ export function setOpenSettingsForNotificationsHandler(
  */
 export function sendMessage(messaging: Messaging, message: RemoteMessage): Promise<void> {
   // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   return messaging.sendMessage.call(messaging, message, MODULAR_DEPRECATION_ARG);
 }
 
@@ -372,7 +358,6 @@ export function sendMessage(messaging: Messaging, message: RemoteMessage): Promi
  */
 export function subscribeToTopic(messaging: Messaging, topic: string): Promise<void> {
   // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   return messaging.subscribeToTopic.call(messaging, topic, MODULAR_DEPRECATION_ARG);
 }
 
@@ -383,7 +368,6 @@ export function subscribeToTopic(messaging: Messaging, topic: string): Promise<v
  * @returns Promise that resolves when the unsubscription is complete.
  */
 export function unsubscribeFromTopic(messaging: Messaging, topic: string): Promise<void> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   return messaging.unsubscribeFromTopic.call(messaging, topic, MODULAR_DEPRECATION_ARG);
 }
@@ -433,7 +417,6 @@ export function setNotificationDelegationEnabled(
  * @returns Promise that resolves with a boolean indicating if the APIs are supported.
  */
 export function isSupported(messaging: Messaging): Promise<boolean> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   // @ts-ignore - MODULAR_DEPRECATION_ARG is used internally
   return messaging.isSupported.call(messaging, MODULAR_DEPRECATION_ARG);
 }
