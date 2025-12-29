@@ -118,8 +118,9 @@ export interface Crashlytics extends ReactNativeFirebase.FirebaseModule {
 /**
  * Static properties available on firebase.crashlytics
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface CrashlyticsStatics {}
+export interface Statics {
+  SDK_VERSION: string;
+}
 
 /**
  * FirebaseApp type with crashlytics() method.
@@ -134,7 +135,7 @@ export type FirebaseApp = ReactNativeFirebase.FirebaseApp;
 declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     interface Module {
-      crashlytics: FirebaseModuleWithStaticsAndApp<Crashlytics, CrashlyticsStatics>;
+      crashlytics: FirebaseModuleWithStaticsAndApp<Crashlytics, Statics>;
     }
     interface FirebaseApp {
       crashlytics(): Crashlytics;
@@ -142,13 +143,8 @@ declare module '@react-native-firebase/app' {
   }
 }
 /* eslint-enable @typescript-eslint/no-namespace */
-
 // ============ Backwards Compatibility Namespace - to be removed with namespaced exports ============
-
-// Helper types to reference outer scope types within the namespace
-// These are needed because TypeScript can't directly alias types with the same name
-type _Crashlytics = Crashlytics;
-type _CrashlyticsStatics = CrashlyticsStatics;
+type _Statics = Statics;
 
 /**
  * @deprecated Use the exported types directly instead.
@@ -158,10 +154,6 @@ type _CrashlyticsStatics = CrashlyticsStatics;
 export namespace FirebaseCrashlyticsTypes {
   // Short name aliases referencing top-level types
   export type Module = Crashlytics;
-  export type Statics = CrashlyticsStatics;
-
-  // Full name aliases that reference the exported types above via helper types
-  export type Crashlytics = _Crashlytics;
-  export type CrashlyticsStatics = _CrashlyticsStatics;
+  export type Statics = _Statics;
 }
 /* eslint-enable @typescript-eslint/no-namespace */

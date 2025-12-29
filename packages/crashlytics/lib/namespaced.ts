@@ -38,10 +38,10 @@ import {
   setOnUnhandledPromiseRejectionHandler,
 } from './handlers';
 import { version } from './version';
-import type { Crashlytics, CrashlyticsStatics } from './types/crashlytics';
+import type { Crashlytics, Statics } from './types/crashlytics';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
-const statics: CrashlyticsStatics = {};
+const statics: Partial<Statics> = {};
 
 const namespace = 'crashlytics';
 
@@ -173,9 +173,9 @@ const crashlyticsNamespace = createModuleNamespace({
 
 type CrashlyticsNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
   Crashlytics,
-  CrashlyticsStatics
+  Statics
 > & {
-  crashlytics: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<Crashlytics, CrashlyticsStatics>;
+  crashlytics: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<Crashlytics, Statics>;
   firebase: ReactNativeFirebase.Module;
   app(name?: string): ReactNativeFirebase.FirebaseApp;
 };
@@ -191,7 +191,7 @@ export const firebase =
   getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
     'crashlytics',
     Crashlytics,
-    CrashlyticsStatics,
+    Statics,
     false
   >;
 

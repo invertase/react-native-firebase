@@ -34,6 +34,8 @@ console.log(firebase.crashlytics.SDK_VERSION);
 // checks statics exist on defaultExport
 console.log(crashlytics.firebase.SDK_VERSION);
 
+console.log(crashlytics.SDK_VERSION);
+
 // checks root exists
 console.log(firebase.SDK_VERSION);
 
