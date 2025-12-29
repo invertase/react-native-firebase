@@ -175,6 +175,7 @@ export namespace FirebaseRemoteConfigTypes {
      * ```
      */
     LastFetchStatus: LastFetchStatus;
+    SDK_VERSION: string;
   }
 
   /**
@@ -344,6 +345,11 @@ export namespace FirebaseRemoteConfigTypes {
    * ```
    */
   export class Module extends FirebaseModule {
+    /**
+     * The current `FirebaseApp` instance for this Firebase service.
+     */
+    app: ReactNativeFirebase.FirebaseApp;
+
     /**
      * The number of milliseconds since the last Remote RemoteConfig fetch was performed.
      */
@@ -613,10 +619,15 @@ export namespace FirebaseRemoteConfigTypes {
   ) => void;
 }
 
-declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
+type RemoteConfigNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
   FirebaseRemoteConfigTypes.Module,
   FirebaseRemoteConfigTypes.Statics
->;
+> & {
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+declare const defaultExport: RemoteConfigNamespace;
 
 export const firebase: ReactNativeFirebase.Module & {
   remoteConfig: typeof defaultExport;

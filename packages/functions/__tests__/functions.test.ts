@@ -1,5 +1,4 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
-
 import {
   firebase,
   getFunctions,
@@ -9,9 +8,7 @@ import {
   HttpsErrorCode,
   type HttpsCallableOptions,
   type HttpsCallable as HttpsCallableType,
-  type FunctionsModule,
   type Functions,
-  type FirebaseApp,
 } from '../lib';
 
 // Import namespaced to ensure NativeRNFBTurboFunctions is registered
@@ -21,9 +18,10 @@ import {
   type CheckV9DeprecationFunction,
 } from '../../app/lib/common/unitTestUtils';
 
-import { getApp } from '@react-native-firebase/app';
 // @ts-ignore test
-import { setReactNativeModule, getReactNativeModule } from '../../app/lib/internal/nativeModule';
+import { getApp, type ReactNativeFirebase } from '@react-native-firebase/app';
+
+type FirebaseApp = ReactNativeFirebase.FirebaseApp;
 
 // @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
@@ -210,9 +208,7 @@ describe('Cloud Functions', function () {
       });
 
       it('`FunctionsModule` type is properly exposed to end user', function () {
-        const functionsInstance: FunctionsModule = (
-          firebase.app() as unknown as FirebaseApp
-        ).functions();
+        const functionsInstance: Functions = (firebase.app() as unknown as FirebaseApp).functions();
         expect(functionsInstance).toBeDefined();
         expect(functionsInstance.httpsCallable).toBeDefined();
         expect(functionsInstance.httpsCallableFromUrl).toBeDefined();

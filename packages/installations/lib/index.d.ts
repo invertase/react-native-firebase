@@ -56,9 +56,8 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
 export namespace FirebaseInstallationsTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export interface Statics {
-    // firebase.installations.* static props go here
+    SDK_VERSION: string;
   }
 
   /**
@@ -83,6 +82,11 @@ export namespace FirebaseInstallationsTypes {
    *
    */
   export class Module extends FirebaseModule {
+    /**
+     * The current `FirebaseApp` instance for this Firebase service.
+     */
+    app: ReactNativeFirebase.FirebaseApp;
+
     /**
      * Creates a Firebase Installation if there isn't one for the app and
      * returns the Installation ID. The installation ID is a globally unique,
@@ -127,10 +131,15 @@ export namespace FirebaseInstallationsTypes {
   }
 }
 
-declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+type InstallationsNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
   FirebaseInstallationsTypes.Module,
   FirebaseInstallationsTypes.Statics
->;
+> & {
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+declare const defaultExport: InstallationsNamespace;
 
 export const firebase: ReactNativeFirebase.Module & {
   installations: typeof defaultExport;
