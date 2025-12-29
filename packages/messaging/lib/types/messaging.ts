@@ -827,7 +827,7 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
 export interface MessagingStatics {}
 
 // ============ Module Augmentation ============
-
+/* eslint-disable @typescript-eslint/no-namespace */
 declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
