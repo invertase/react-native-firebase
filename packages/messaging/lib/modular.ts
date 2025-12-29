@@ -26,7 +26,7 @@ import type {
   IOSPermissions,
   AuthorizationStatus,
   SendErrorEvent,
-} from '../types/messaging';
+} from './types/messaging';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
@@ -461,4 +461,4 @@ export {
   AuthorizationStatus,
   NotificationAndroidPriority,
   NotificationAndroidVisibility,
-} from '../statics';
+} from './statics';
