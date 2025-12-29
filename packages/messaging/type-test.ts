@@ -230,8 +230,6 @@ messagingInstance.setNotificationDelegationEnabled(true).then(() => {
   console.log('Notification delegation enabled');
 });
 
-// Note: istNotificationDelegationEnabled is not a valid method - removed from type-test
-
 messagingInstance.isSupported().then((supported: boolean) => {
   console.log(supported);
 });
