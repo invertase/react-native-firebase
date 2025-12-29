@@ -40,14 +40,14 @@ import {
 } from './statics';
 import type {
   Messaging,
-  MessagingStatics,
+  Statics,
   RemoteMessage,
   IOSPermissions,
   AuthorizationStatus as AuthorizationStatusType,
 } from './types/messaging';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
-const statics: MessagingStatics = {
+const statics: Partial<Statics> = {
   AuthorizationStatus,
   NotificationAndroidPriority,
   NotificationAndroidVisibility,
@@ -564,7 +564,7 @@ const messagingNamespace = createModuleNamespace({
 
 type MessagingNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
   Messaging,
-  MessagingStatics
+  Statics
 > & {
   firebase: ReactNativeFirebase.Module;
   app(name?: string): ReactNativeFirebase.FirebaseApp;
@@ -579,6 +579,6 @@ export const firebase =
   getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
     'messaging',
     Messaging,
-    MessagingStatics,
+    Statics,
     false
   >;

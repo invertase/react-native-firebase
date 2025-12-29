@@ -823,8 +823,13 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
 /**
  * Static properties available on firebase.messaging
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface MessagingStatics {}
+
+export interface Statics {
+  SDK_VERSION: string;
+  AuthorizationStatus: typeof AuthorizationStatus;
+  NotificationAndroidPriority: typeof NotificationAndroidPriority;
+  NotificationAndroidVisibility: typeof NotificationAndroidVisibility;
+}
 
 // ============ Module Augmentation ============
 /* eslint-disable @typescript-eslint/no-namespace */
@@ -832,7 +837,7 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
-      messaging: FirebaseModuleWithStaticsAndApp<Messaging, MessagingStatics>;
+      messaging: FirebaseModuleWithStaticsAndApp<Messaging, Statics>;
     }
     interface FirebaseApp {
       messaging(): Messaging;
@@ -844,7 +849,7 @@ declare module '@react-native-firebase/app' {
 
 /* eslint-disable @typescript-eslint/no-namespace */
 type _Messaging = Messaging;
-type _MessagingStatics = MessagingStatics;
+type _MessagingStatics = Statics;
 type _RemoteMessage = RemoteMessage;
 type _MessagePriority = MessagePriority;
 type _FcmOptions = FcmOptions;
