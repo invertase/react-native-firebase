@@ -156,35 +156,43 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
 
                       @Override
                       public void onNext(StreamResponse streamResponse) {
-                        // Extract data from StreamResponse
-                        Object responseData = null;
-                        boolean isFinalResult = false;
-                        
-                        // Check if it's a Message (chunk) or Result (final)
-                        // StreamResponse is a sealed class with Message and Result subtypes
-                        if (streamResponse instanceof StreamResponse.Message) {
-                          StreamResponse.Message message = (StreamResponse.Message) streamResponse;
-                          // Message has a getMessage() method that returns a Message object with getData()
-                          responseData = message.getMessage().getData();
-                          isFinalResult = false;
-                        } else if (streamResponse instanceof StreamResponse.Result) {
-                          StreamResponse.Result result = (StreamResponse.Result) streamResponse;
-                          // Result has a getResult() method that returns a Result object with getData()
-                          responseData = result.getResult().getData();
-                          isFinalResult = true;
-                        }
-                        
-                        // Emit the stream data as it arrives
-                        emitStreamEvent(
-                            appName,
-                            listenerId,
-                            responseData,
-                            false,
-                            null);
-                        
-                        // If this is the final result, also emit done event
-                        if (isFinalResult) {
-                          emitStreamDone(appName, listenerId);
+                        try {
+                          // Extract data from StreamResponse
+                          Object responseData = null;
+                          boolean isFinalResult = false;
+                          
+                          // Check if it's a Message (chunk) or Result (final)
+                          // StreamResponse is a sealed class with Message and Result subtypes
+                          if (streamResponse instanceof StreamResponse.Message) {
+                            StreamResponse.Message message = (StreamResponse.Message) streamResponse;
+                            // Message has a getMessage() method that returns a Message object with getData()
+                            responseData = message.getMessage().getData();
+                            isFinalResult = false;
+                          } else if (streamResponse instanceof StreamResponse.Result) {
+                            StreamResponse.Result result = (StreamResponse.Result) streamResponse;
+                            // Result has a getResult() method that returns a Result object with getData()
+                            responseData = result.getResult().getData();
+                            isFinalResult = true;
+                          }
+                          
+                          // Emit the stream data as it arrives
+                          emitStreamEvent(
+                              appName,
+                              listenerId,
+                              responseData,
+                              false,
+                              null);
+                          
+                          // If this is the final result, also emit done event
+                          if (isFinalResult) {
+                            emitStreamDone(appName, listenerId);
+                            removeFunctionsStreamingListener(listenerId);
+                          }
+                        } catch (Exception e) {
+                          // Handle any errors during data extraction
+                          android.util.Log.e("RNFBFunctions", "Error extracting data from StreamResponse for " + name, e);
+                          String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
+                          emitStreamEvent(appName, listenerId, null, true, "Data extraction error: " + errorMsg);
                           removeFunctionsStreamingListener(listenerId);
                         }
                       }
@@ -273,35 +281,43 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
 
                       @Override
                       public void onNext(StreamResponse streamResponse) {
-                        // Extract data from StreamResponse
-                        Object responseData = null;
-                        boolean isFinalResult = false;
-                        
-                        // Check if it's a Message (chunk) or Result (final)
-                        // StreamResponse is a sealed class with Message and Result subtypes
-                        if (streamResponse instanceof StreamResponse.Message) {
-                          StreamResponse.Message message = (StreamResponse.Message) streamResponse;
-                          // Message has a getMessage() method that returns a Message object with getData()
-                          responseData = message.getMessage().getData();
-                          isFinalResult = false;
-                        } else if (streamResponse instanceof StreamResponse.Result) {
-                          StreamResponse.Result result = (StreamResponse.Result) streamResponse;
-                          // Result has a getResult() method that returns a Result object with getData()
-                          responseData = result.getResult().getData();
-                          isFinalResult = true;
-                        }
-                        
-                        // Emit the stream data as it arrives
-                        emitStreamEvent(
-                            appName,
-                            listenerId,
-                            responseData,
-                            false,
-                            null);
-                        
-                        // If this is the final result, also emit done event
-                        if (isFinalResult) {
-                          emitStreamDone(appName, listenerId);
+                        try {
+                          // Extract data from StreamResponse
+                          Object responseData = null;
+                          boolean isFinalResult = false;
+                          
+                          // Check if it's a Message (chunk) or Result (final)
+                          // StreamResponse is a sealed class with Message and Result subtypes
+                          if (streamResponse instanceof StreamResponse.Message) {
+                            StreamResponse.Message message = (StreamResponse.Message) streamResponse;
+                            // Message has a getMessage() method that returns a Message object with getData()
+                            responseData = message.getMessage().getData();
+                            isFinalResult = false;
+                          } else if (streamResponse instanceof StreamResponse.Result) {
+                            StreamResponse.Result result = (StreamResponse.Result) streamResponse;
+                            // Result has a getResult() method that returns a Result object with getData()
+                            responseData = result.getResult().getData();
+                            isFinalResult = true;
+                          }
+                          
+                          // Emit the stream data as it arrives
+                          emitStreamEvent(
+                              appName,
+                              listenerId,
+                              responseData,
+                              false,
+                              null);
+                          
+                          // If this is the final result, also emit done event
+                          if (isFinalResult) {
+                            emitStreamDone(appName, listenerId);
+                            removeFunctionsStreamingListener(listenerId);
+                          }
+                        } catch (Exception e) {
+                          // Handle any errors during data extraction
+                          android.util.Log.e("RNFBFunctions", "Error extracting data from StreamResponse for URL: " + url, e);
+                          String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
+                          emitStreamEvent(appName, listenerId, null, true, "Data extraction error: " + errorMsg);
                           removeFunctionsStreamingListener(listenerId);
                         }
                       }
