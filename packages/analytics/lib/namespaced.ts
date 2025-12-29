@@ -116,7 +116,7 @@ const ReservedEventNames: readonly string[] = [
   'user_engagement',
 ] as const;
 
-const statics: Statics = {};
+const statics: Partial<Statics> = {};
 
 const namespace = 'analytics';
 

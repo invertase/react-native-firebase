@@ -713,8 +713,9 @@ export interface EventParams {
 //   search_term: string;
 // }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface Statics {}
+export interface Statics {
+  SDK_VERSION: string;
+}
 
 /**
  * Analytics instance initialization options. Web only.

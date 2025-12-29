@@ -15,14 +15,12 @@
  *
  */
 
-export { default as FirebaseApp } from '../FirebaseApp';
-export * from './constants';
-export { default as FirebaseModule } from './FirebaseModule';
-export { default as NativeFirebaseError } from './NativeFirebaseError';
-export * from './NativeModules';
-export * from './registry/app';
-export * from './registry/namespace';
-export * from './registry/nativeModule';
-export { default as SharedEventEmitter } from './SharedEventEmitter';
-export { Logger } from './logger';
-export type { ModuleConfig } from '../types/internal';
+// Export types from types/crashlytics
+export type { Crashlytics, FirebaseCrashlyticsTypes } from './types/crashlytics';
+
+// Export modular API functions
+export * from './modular';
+
+// Export namespaced API
+export * from './namespaced';
+export { default } from './namespaced';

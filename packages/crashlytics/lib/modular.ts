@@ -1,10 +1,6 @@
 import { getApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
-
-/**
- * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
- * @typedef {import('..').FirebaseCrashlyticsTypes.Module} FirebaseCrashlytics
- */
+import type { Crashlytics } from './types/crashlytics';
 
 /**
  * Returns Crashlytics instance.
@@ -12,10 +8,8 @@ import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
  * ```js
  * const crashlytics = getCrashlytics();
  * ```
- * @param {FirebaseApp} app
- * @returns {FirebaseCrashlytics}
  */
-export function getCrashlytics() {
+export function getCrashlytics(): Crashlytics {
   return getApp().crashlytics();
 }
 
@@ -34,10 +28,11 @@ export function getCrashlytics() {
  *
  * checkReports();
  * ```
- * @param {FirebaseCrashlytics} crashlytics
- * @returns {Promise<boolean>}
+ * @param crashlytics A crashlytics instance.
+ * @returns Promise that resolves to a boolean indicating if there are unsent reports.
  */
-export function checkForUnsentReports(crashlytics) {
+export function checkForUnsentReports(crashlytics: Crashlytics): Promise<boolean> {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is not defined in the global scope
   return crashlytics.checkForUnsentReports.call(crashlytics, MODULAR_DEPRECATION_ARG);
 }
 
@@ -51,10 +46,10 @@ export function checkForUnsentReports(crashlytics) {
  * const crashlytics = getCrashlytics();
  * deleteUnsentReports(crashlytics);
  * ```
- * @param {FirebaseCrashlytics} crashlytics
- * @returns {Promise<void>}
+ * @param crashlytics A crashlytics instance.
  */
-export function deleteUnsentReports(crashlytics) {
+export function deleteUnsentReports(crashlytics: Crashlytics): Promise<void> {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is not defined in the global scope
   return crashlytics.deleteUnsentReports.call(crashlytics, MODULAR_DEPRECATION_ARG);
 }
 
@@ -72,10 +67,11 @@ export function deleteUnsentReports(crashlytics) {
  *
  * didCrashPreviously();
  * ```
- * @param {FirebaseCrashlytics} crashlytics
- * @returns {Promise<boolean>}
+ * @param crashlytics A crashlytics instance.
+ * @returns Promise that resolves to a boolean indicating if the app crashed previously.
  */
-export function didCrashOnPreviousExecution(crashlytics) {
+export function didCrashOnPreviousExecution(crashlytics: Crashlytics): Promise<boolean> {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is not defined in the global scope
   return crashlytics.didCrashOnPreviousExecution.call(crashlytics, MODULAR_DEPRECATION_ARG);
 }
 
@@ -90,10 +86,10 @@ export function didCrashOnPreviousExecution(crashlytics) {
  * const crashlytics = getCrashlytics();
  * crash(crashlytics);
  * ```
- * @param {FirebaseCrashlytics} crashlytics
- * @returns {void}
+ * @param crashlytics A crashlytics instance.
  */
-export function crash(crashlytics) {
+export function crash(crashlytics: Crashlytics): void {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is not defined in the global scope
   return crashlytics.crash.call(crashlytics, MODULAR_DEPRECATION_ARG);
 }
 
@@ -107,11 +103,11 @@ export function crash(crashlytics) {
  * log(crashlytics, 'Testing a crash');
  * crash(crashlytics);
  * ```
- * @param {FirebaseCrashlytics} crashlytics
- * @param {string} message
- * @returns {void}
+ * @param crashlytics A crashlytics instance.
+ * @param message The message to log.
  */
-export function log(crashlytics, message) {
+export function log(crashlytics: Crashlytics, message: string): void {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is not defined in the global scope
   return crashlytics.log.call(crashlytics, message, MODULAR_DEPRECATION_ARG);
 }
 
@@ -131,12 +127,12 @@ export function log(crashlytics, message) {
  *  new Error('An error was caught')
  * );
  * ```
- * @param {FirebaseCrashlytics} crashlytics
- * @param {Error} error
- * @param {string | undefined} jsErrorName
- * @returns {void}
+ * @param crashlytics A crashlytics instance.
+ * @param error Expects an instance of Error; e.g. classes that extend Error will also be supported.
+ * @param jsErrorName Optional string containing Javascript error name
  */
-export function recordError(crashlytics, error, jsErrorName) {
+export function recordError(crashlytics: Crashlytics, error: Error, jsErrorName?: string): void {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is not defined in the global scope
   return crashlytics.recordError.call(crashlytics, error, jsErrorName, MODULAR_DEPRECATION_ARG);
 }
 
@@ -150,10 +146,10 @@ export function recordError(crashlytics, error, jsErrorName) {
  * const crashlytics = getCrashlytics();
  * sendUnsentReports(crashlytics);
  * ```
- * @param {FirebaseCrashlytics} crashlytics
- * @returns {void}
+ * @param crashlytics A crashlytics instance.
  */
-export function sendUnsentReports(crashlytics) {
+export function sendUnsentReports(crashlytics: Crashlytics): void {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is not defined in the global scope
   return crashlytics.sendUnsentReports.call(crashlytics, MODULAR_DEPRECATION_ARG);
 }
 
@@ -176,11 +172,11 @@ export function sendUnsentReports(crashlytics) {
  *  auth.currentUser.uid
  * );
  * ```
- * @param {FirebaseCrashlytics} crashlytics
- * @param {string} userId
- * @returns {Promise<null>}
+ * @param crashlytics A crashlytics instance.
+ * @param userId An arbitrary string that ties an end-user to a record in your system e.g. a database record id.
  */
-export function setUserId(crashlytics, userId) {
+export function setUserId(crashlytics: Crashlytics, userId: string): Promise<null> {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is not defined in the global scope
   return crashlytics.setUserId.call(crashlytics, userId, MODULAR_DEPRECATION_ARG);
 }
 
@@ -193,12 +189,12 @@ export function setUserId(crashlytics, userId) {
  * const crashlytics = getCrashlytics();
  * await setAttribute(crashlytics, 'role', 'admin');
  * ```
- * @param {FirebaseCrashlytics} crashlytics
- * @param {string} name
- * @param {string} value
- * @returns {Promise<null>}
+ * @param crashlytics A crashlytics instance.
+ * @param name The name of the attribute to set.
+ * @param value A string value for the given attribute.
  */
-export function setAttribute(crashlytics, name, value) {
+export function setAttribute(crashlytics: Crashlytics, name: string, value: string): Promise<null> {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is not defined in the global scope
   return crashlytics.setAttribute.call(crashlytics, name, value, MODULAR_DEPRECATION_ARG);
 }
 
@@ -214,11 +210,14 @@ export function setAttribute(crashlytics, name, value) {
  *   followers: '13',
  * });
  * ```
- * @param {FirebaseCrashlytics} crashlytics
- * @param {{ [key: string]: string }} attributes
- * @returns {Promise<null>}
+ * @param crashlytics A crashlytics instance.
+ * @param attributes An object of key/value attribute name and values.
  */
-export function setAttributes(crashlytics, attributes) {
+export function setAttributes(
+  crashlytics: Crashlytics,
+  attributes: { [key: string]: string },
+): Promise<null> {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is not defined in the global scope
   return crashlytics.setAttributes.call(crashlytics, attributes, MODULAR_DEPRECATION_ARG);
 }
 
@@ -234,14 +233,17 @@ export function setAttributes(crashlytics, attributes) {
  * // Disable crash reporting
  * await setCrashlyticsCollectionEnabled(crashlytics, false);
  * ```
- * @param {FirebaseCrashlytics} crashlytics
- * @param {boolean} enabled
- * @returns {Promise<null>}
+ * @param crashlytics A crashlytics instance.
+ * @param enabled A boolean value representing whether to enable Crashlytics error collection.
  */
-export function setCrashlyticsCollectionEnabled(crashlytics, enabled) {
+export function setCrashlyticsCollectionEnabled(
+  crashlytics: Crashlytics,
+  enabled: boolean,
+): Promise<null> {
   return crashlytics.setCrashlyticsCollectionEnabled.call(
     crashlytics,
     enabled,
+    // @ts-ignore - MODULAR_DEPRECATION_ARG is not defined in the global scope
     MODULAR_DEPRECATION_ARG,
   );
 }
