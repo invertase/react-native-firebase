@@ -427,6 +427,7 @@
 				DEVELOPMENT_TEAM = YYX2P3XVJ7;
 				EXCLUDED_ARCHS = i386;
 				"EXCLUDED_ARCHS[sdk=*]" = i386;
+				GENERATE_INFOPLIST_FILE = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-firebase/Firebase.framework/Headers/**",
@@ -434,6 +435,7 @@
 					"$(SRCROOT)/../../node_modules/react-native/React/**",
 				);
 				INFOPLIST_FILE = testing/Info.plist;
+				INFOPLIST_PREPROCESS = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
