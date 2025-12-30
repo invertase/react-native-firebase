@@ -119,7 +119,6 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
       ReadableMap data,
       ReadableMap options,
       double listenerId) {
-
     Object callableData = data.toHashMap().get(DATA_KEY);
 
     // Convert emulatorPort to Integer (null if not using emulator)

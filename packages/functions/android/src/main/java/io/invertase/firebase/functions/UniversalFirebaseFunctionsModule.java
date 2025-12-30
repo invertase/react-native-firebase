@@ -119,16 +119,12 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
         .execute(
             () -> {
               try {
-                android.util.Log.d(
-                    "RNFBFunctions",
-                    "httpsCallableStream starting for: " + name + ", listenerId: " + listenerId);
                 FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
                 FirebaseFunctions functionsInstance =
                     FirebaseFunctions.getInstance(firebaseApp, region);
 
                 if (host != null) {
                   functionsInstance.useEmulator(host, port);
-                  android.util.Log.d("RNFBFunctions", "Using emulator: " + host + ":" + port);
                 }
 
                 HttpsCallableReference httpReference = functionsInstance.getHttpsCallable(name);
@@ -137,10 +133,8 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
                   httpReference.setTimeout((long) options.getInt("timeout"), TimeUnit.SECONDS);
                 }
 
-                android.util.Log.d("RNFBFunctions", "About to call .stream() method");
                 // Use the Firebase SDK's native .stream() method which returns a Publisher
                 Publisher<StreamResponse> publisher = httpReference.stream(data);
-                android.util.Log.d("RNFBFunctions", "Stream publisher created successfully");
 
                 // Subscribe to the publisher
                 publisher.subscribe(
@@ -166,31 +160,34 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
                           if (streamResponse instanceof StreamResponse.Message) {
                             StreamResponse.Message message = (StreamResponse.Message) streamResponse;
                             // Message has a getMessage() method that returns a Message object with getData()
-                            responseData = message.getMessage().getData();
+                            if (message.getMessage() != null) {
+                              responseData = message.getMessage().getData();
+                            }
                             isFinalResult = false;
                           } else if (streamResponse instanceof StreamResponse.Result) {
                             StreamResponse.Result result = (StreamResponse.Result) streamResponse;
                             // Result has a getResult() method that returns a Result object with getData()
-                            responseData = result.getResult().getData();
+                            if (result.getResult() != null) {
+                              responseData = result.getResult().getData();
+                            }
                             isFinalResult = true;
                           }
                           
                           // Emit the stream data as it arrives
-                          emitStreamEvent(
-                              appName,
-                              listenerId,
-                              responseData,
-                              false,
-                              null);
-                          
-                          // If this is the final result, also emit done event
+                          // For final result, emit with done=true and include the data
                           if (isFinalResult) {
-                            emitStreamDone(appName, listenerId);
+                            emitStreamEventWithDone(appName, listenerId, responseData);
                             removeFunctionsStreamingListener(listenerId);
+                          } else {
+                            emitStreamEvent(
+                                appName,
+                                listenerId,
+                                responseData,
+                                false,
+                                null);
                           }
                         } catch (Exception e) {
                           // Handle any errors during data extraction
-                          android.util.Log.e("RNFBFunctions", "Error extracting data from StreamResponse for " + name, e);
                           String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
                           emitStreamEvent(appName, listenerId, null, true, "Data extraction error: " + errorMsg);
                           removeFunctionsStreamingListener(listenerId);
@@ -200,7 +197,6 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
                       @Override
                       public void onError(Throwable t) {
                         // Emit error event
-                        android.util.Log.e("RNFBFunctions", "Stream onError for " + name, t);
                         String errorMsg = t.getMessage() != null ? t.getMessage() : t.toString();
                         emitStreamEvent(appName, listenerId, null, true, errorMsg);
                         removeFunctionsStreamingListener(listenerId);
@@ -208,15 +204,16 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
 
                       @Override
                       public void onComplete() {
-                        // Stream completed - emit done event
-                        android.util.Log.d("RNFBFunctions", "Stream onComplete for " + name);
-                        emitStreamDone(appName, listenerId);
-                        removeFunctionsStreamingListener(listenerId);
+                        // Stream completed - emit done event only if we haven't already handled a Result
+                        // Only emit done if listener still exists (Result was not received in onNext)
+                        Object listener = functionsStreamingListeners.get(listenerId);
+                        if (listener != null) {
+                          emitStreamDone(appName, listenerId);
+                          removeFunctionsStreamingListener(listenerId);
+                        }
                       }
                     });
               } catch (Exception e) {
-                android.util.Log.e(
-                    "RNFBFunctions", "Exception in httpsCallableStream for " + name, e);
                 String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
                 emitStreamEvent(
                     appName, listenerId, null, true, "Stream setup failed: " + errorMsg);
@@ -286,6 +283,8 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
                           Object responseData = null;
                           boolean isFinalResult = false;
                           
+                          android.util.Log.d("RNFBFunctions", "onNext received for URL: " + url + ", listenerId: " + listenerId);
+                          
                           // Check if it's a Message (chunk) or Result (final)
                           // StreamResponse is a sealed class with Message and Result subtypes
                           if (streamResponse instanceof StreamResponse.Message) {
@@ -293,25 +292,31 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
                             // Message has a getMessage() method that returns a Message object with getData()
                             responseData = message.getMessage().getData();
                             isFinalResult = false;
+                            android.util.Log.d("RNFBFunctions", "Received Message chunk for URL, data: " + (responseData != null ? responseData.toString() : "null"));
                           } else if (streamResponse instanceof StreamResponse.Result) {
                             StreamResponse.Result result = (StreamResponse.Result) streamResponse;
                             // Result has a getResult() method that returns a Result object with getData()
                             responseData = result.getResult().getData();
                             isFinalResult = true;
+                            android.util.Log.d("RNFBFunctions", "Received Result (final) for URL, data: " + (responseData != null ? responseData.toString() : "null"));
+                          } else {
+                            android.util.Log.w("RNFBFunctions", "Unknown StreamResponse type for URL: " + streamResponse.getClass().getName());
                           }
                           
                           // Emit the stream data as it arrives
-                          emitStreamEvent(
-                              appName,
-                              listenerId,
-                              responseData,
-                              false,
-                              null);
-                          
-                          // If this is the final result, also emit done event
+                          // For final result, emit with done=true and include the data
                           if (isFinalResult) {
-                            emitStreamDone(appName, listenerId);
+                            android.util.Log.d("RNFBFunctions", "Emitting final result with done=true for URL");
+                            emitStreamEventWithDone(appName, listenerId, responseData);
                             removeFunctionsStreamingListener(listenerId);
+                          } else {
+                            android.util.Log.d("RNFBFunctions", "Emitting chunk for URL");
+                            emitStreamEvent(
+                                appName,
+                                listenerId,
+                                responseData,
+                                false,
+                                null);
                           }
                         } catch (Exception e) {
                           // Handle any errors during data extraction
@@ -333,10 +338,17 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
 
                       @Override
                       public void onComplete() {
-                        // Stream completed - emit done event
-                        android.util.Log.d("RNFBFunctions", "Stream onComplete for URL: " + url);
-                        emitStreamDone(appName, listenerId);
-                        removeFunctionsStreamingListener(listenerId);
+                        // Stream completed - emit done event only if we haven't already handled a Result
+                        android.util.Log.d("RNFBFunctions", "Stream onComplete for URL: " + url + ", listenerId: " + listenerId);
+                        // Only emit done if listener still exists (Result was not received in onNext)
+                        Object listener = functionsStreamingListeners.get(listenerId);
+                        if (listener != null) {
+                          android.util.Log.d("RNFBFunctions", "Emitting done event via onComplete for URL");
+                          emitStreamDone(appName, listenerId);
+                          removeFunctionsStreamingListener(listenerId);
+                        } else {
+                          android.util.Log.d("RNFBFunctions", "Listener already removed, skipping done event for URL");
+                        }
                       }
                     });
               } catch (Exception e) {
@@ -363,36 +375,51 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
 
   private void emitStreamEvent(
       String appName, int listenerId, Object data, boolean isError, String errorMessage) {
-    WritableMap eventBody = Arguments.createMap();
     WritableMap body = Arguments.createMap();
 
     if (isError) {
       body.putString("error", errorMessage);
-    } else if (data != null) {
-      // Convert data to WritableMap/Array as needed
-      // Using RCTConvertFirebase from the common module
-      io.invertase.firebase.common.RCTConvertFirebase.mapPutValue("data", data, body);
+      body.putBoolean("done", true);
+    } else {
+      // For non-error events, explicitly set done to false for chunks
+      body.putBoolean("done", false);
+      if (data != null) {
+        // Convert data to WritableMap/Array as needed
+        // Using RCTConvertFirebase from the common module
+        io.invertase.firebase.common.RCTConvertFirebase.mapPutValue("data", data, body);
+      }
     }
 
-    eventBody.putInt("listenerId", listenerId);
-    eventBody.putMap("body", body);
-
+    // FirebaseFunctionsStreamHandler.getEventBody() will wrap this with listenerId, appName, etc.
     FirebaseFunctionsStreamHandler handler =
-        new FirebaseFunctionsStreamHandler(STREAMING_EVENT, eventBody, appName, listenerId);
+        new FirebaseFunctionsStreamHandler(STREAMING_EVENT, body, appName, listenerId);
 
     ReactNativeFirebaseEventEmitter.getSharedInstance().sendEvent(handler);
   }
 
   private void emitStreamDone(String appName, int listenerId) {
-    WritableMap eventBody = Arguments.createMap();
     WritableMap body = Arguments.createMap();
     body.putBoolean("done", true);
 
-    eventBody.putInt("listenerId", listenerId);
-    eventBody.putMap("body", body);
-
+    // FirebaseFunctionsStreamHandler.getEventBody() will wrap this with listenerId, appName, etc.
     FirebaseFunctionsStreamHandler handler =
-        new FirebaseFunctionsStreamHandler(STREAMING_EVENT, eventBody, appName, listenerId);
+        new FirebaseFunctionsStreamHandler(STREAMING_EVENT, body, appName, listenerId);
+
+    ReactNativeFirebaseEventEmitter.getSharedInstance().sendEvent(handler);
+  }
+
+  private void emitStreamEventWithDone(String appName, int listenerId, Object data) {
+    WritableMap body = Arguments.createMap();
+    body.putBoolean("done", true);
+
+    if (data != null) {
+      // Convert data to WritableMap/Array as needed
+      io.invertase.firebase.common.RCTConvertFirebase.mapPutValue("data", data, body);
+    }
+
+    // FirebaseFunctionsStreamHandler.getEventBody() will wrap this with listenerId, appName, etc.
+    FirebaseFunctionsStreamHandler handler =
+        new FirebaseFunctionsStreamHandler(STREAMING_EVENT, body, appName, listenerId);
 
     ReactNativeFirebaseEventEmitter.getSharedInstance().sendEvent(handler);
   }
