@@ -478,8 +478,6 @@ describe('functions() modular', function () {
       });
 
       it('receives streaming data chunks', function (done) {
-        jest.setTimeout(10000);
-
         const functions = firebase.functions();
         functions.useEmulator('localhost', 5001);
         const events = [];
@@ -973,8 +971,6 @@ describe('functions() modular', function () {
       });
 
       it('receives streaming data chunks', function (done) {
-        jest.setTimeout(10000);
-
         const { getApp } = modular;
         const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
         const functions = getFunctions(getApp());
@@ -1020,8 +1016,6 @@ describe('functions() modular', function () {
       });
 
       it('handles streaming errors correctly', function (done) {
-        jest.setTimeout(10000);
-
         const { getApp } = modular;
         const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
         const functions = getFunctions(getApp());
@@ -1045,8 +1039,6 @@ describe('functions() modular', function () {
       });
 
       it('cancels stream when unsubscribe is called', function (done) {
-        jest.setTimeout(10000);
-
         const { getApp } = modular;
         const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
         const functions = getFunctions(getApp());
@@ -1095,8 +1087,6 @@ describe('functions() modular', function () {
       });
 
       it('httpsCallableFromUrl can stream data', function (done) {
-        jest.setTimeout(10000);
-
         const { getApp } = modular;
         const { getFunctions, httpsCallableFromUrl, connectFunctionsEmulator } = functionsModular;
         const functions = getFunctions(getApp());
@@ -1163,8 +1153,6 @@ describe('functions() modular', function () {
       });
 
       it('receives streaming data with string value', function (done) {
-        jest.setTimeout(10000);
-
         const { getApp } = modular;
         const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
         const functions = getFunctions(getApp());
@@ -1192,8 +1180,6 @@ describe('functions() modular', function () {
       });
 
       it('receives streaming data with number value', function (done) {
-        jest.setTimeout(10000);
-
         const { getApp } = modular;
         const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
         const functions = getFunctions(getApp());
@@ -1221,8 +1207,6 @@ describe('functions() modular', function () {
       });
 
       it('receives streaming data with boolean true value', function (done) {
-        jest.setTimeout(10000);
-
         const { getApp } = modular;
         const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
         const functions = getFunctions(getApp());
@@ -1250,8 +1234,6 @@ describe('functions() modular', function () {
       });
 
       it('receives streaming data with boolean false value', function (done) {
-        jest.setTimeout(10000);
-
         const { getApp } = modular;
         const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
         const functions = getFunctions(getApp());
@@ -1279,8 +1261,6 @@ describe('functions() modular', function () {
       });
 
       it('receives streaming data with null value', function (done) {
-        jest.setTimeout(10000);
-
         const { getApp } = modular;
         const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
         const functions = getFunctions(getApp());
@@ -1308,8 +1288,6 @@ describe('functions() modular', function () {
       });
 
       it('receives streaming data with no arguments', function (done) {
-        jest.setTimeout(10000);
-
         const { getApp } = modular;
         const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
         const functions = getFunctions(getApp());
@@ -1337,8 +1315,6 @@ describe('functions() modular', function () {
       });
 
       it('receives streaming data with array value', function (done) {
-        jest.setTimeout(10000);
-
         const { getApp } = modular;
         const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
         const functions = getFunctions(getApp());
@@ -1367,8 +1343,6 @@ describe('functions() modular', function () {
       });
 
       it('receives streaming data with deeply nested map', function (done) {
-        jest.setTimeout(10000);
-
         const { getApp } = modular;
         const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
         const functions = getFunctions(getApp());
@@ -1415,8 +1389,6 @@ describe('functions() modular', function () {
       });
 
       it('should emit a result as last value', function (done) {
-        jest.setTimeout(10000);
-
         const { getApp } = modular;
         const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
         const functions = getFunctions(getApp());
