@@ -2308,7 +2308,7 @@ SPEC CHECKSUMS:
   RNFBCrashlytics: 54a8bd396f3916c94dc5b9bb52bcb133bedb62c8
   RNFBDatabase: 1295d24be9755f24742e024dbb8cc0920f779ed1
   RNFBFirestore: 8ab47502dc29c78ad07a0d4241c6b2b818488d0d
-  RNFBFunctions: 76a4cbc857ca72f85a7ca1af2e102beda7e8c4a6
+  RNFBFunctions: a9475ec4ae37d6f6d12bcc6d6f3cbc0ab86159bf
   RNFBInAppMessaging: d08c39d4baf4a32b8a80bb2b57c3d55c8b109389
   RNFBInstallations: fc3e71b4a74bfbf5c8badd656dde29e98366dc76
   RNFBMessaging: 48ce2c56c359358d7c86a6d2348a754fc33e2990
