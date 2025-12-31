@@ -40,6 +40,7 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SnapshotMetadata;
+import com.google.firebase.firestore.VectorValue;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -405,34 +406,10 @@ public class ReactNativeFirebaseFirestoreSerialize {
       return typeArray;
     }
 
-    // VectorValue – detect via reflection to avoid compile-time dependency on newer SDKs
-    try {
-      Class<?> vectorClass = Class.forName("com.google.firebase.firestore.VectorValue");
-      if (vectorClass.isInstance(value)) {
-        typeArray.pushInt(INT_VECTOR);
-        WritableArray valuesArray = Arguments.createArray();
-        try {
-          double[] doubles = (double[]) vectorClass.getMethod("getValues").invoke(value);
-          if (doubles != null) {
-            for (double d : doubles) valuesArray.pushDouble(d);
-          }
-        } catch (Exception ignored) {
-          try {
-            Object result = vectorClass.getMethod("values").invoke(value);
-            if (result instanceof double[]) {
-              for (double d : (double[]) result) valuesArray.pushDouble(d);
-            } else if (result instanceof List) {
-              for (Object o : (List<?>) result) valuesArray.pushDouble(((Number) o).doubleValue());
-            }
-          } catch (Exception ignored2) {
-            // leave empty if not accessible
-          }
-        }
-        typeArray.pushArray(valuesArray);
-        return typeArray;
-      }
-    } catch (ClassNotFoundException e) {
-      // Older SDK without VectorValue – fall through
+    if (value instanceof VectorValue) {
+      typeArray.pushInt(INT_VECTOR);
+      typeArray.pushArray(Arguments.fromArray(((VectorValue) value).toArray()));
+      return typeArray;
     }
 
     Log.w(TAG, "Unknown object of type " + value.getClass());
@@ -552,25 +529,11 @@ public class ReactNativeFirebaseFirestoreSerialize {
       case INT_OBJECT:
         return parseReadableMap(firestore, typeArray.getMap(1));
       case INT_VECTOR:
-        try {
-          Class<?> vectorClass = Class.forName("com.google.firebase.firestore.VectorValue");
-          ReadableArray vals = typeArray.getArray(1);
-          if (vals == null) return null;
-          double[] doubles = new double[vals.size()];
-          for (int i = 0; i < vals.size(); i++) doubles[i] = vals.getDouble(i);
-          try {
-            // Prefer static factory if available
-            return vectorClass.getMethod("from", double[].class).invoke(null, (Object) doubles);
-          } catch (Exception noFactory) {
-            try {
-              return vectorClass.getConstructor(double[].class).newInstance((Object) doubles);
-            } catch (Exception noCtor) {
-              return null;
-            }
-          }
-        } catch (ClassNotFoundException e) {
-          return null;
-        }
+        ReadableArray vals = typeArray.getArray(1);
+        int length = vals != null ? vals.size() : 0;
+        double[] doubles = new double[length];
+        for (int i = 0; i < length; i++) doubles[i] = vals.getDouble(i);
+        return FieldValue.vector(doubles);
       case INT_UNKNOWN:
       default:
         return null;

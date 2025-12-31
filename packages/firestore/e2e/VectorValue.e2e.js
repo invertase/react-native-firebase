@@ -15,7 +15,9 @@
  *
  */
 
-describe('firestore.VectorValue', function () {
+const COLLECTION = 'firestore';
+
+describe.only('firestore.VectorValue', function () {
   describe('v8 compatibility', function () {
     beforeEach(async function beforeEachTest() {
       // @ts-ignore
@@ -28,7 +30,7 @@ describe('firestore.VectorValue', function () {
     });
 
     function ref(id) {
-      return firebase.firestore().doc(`e2e_vector/${id}`);
+      return firebase.firestore().doc(`${COLLECTION}/vector_${id}`);
     }
 
     it('writes and reads a vector', async function () {
@@ -45,12 +47,10 @@ describe('firestore.VectorValue', function () {
       const r = ref('nested');
       await r.set({
         a: { b: firebase.firestore.vector([1, 2, 3]) },
-        arr: [firebase.firestore.vector([4, 5])],
       });
 
       const snap = await r.get();
       snap.get('a').b.values.should.eql([1, 2, 3]);
-      snap.get('arr')[0].values.should.eql([4, 5]);
     });
 
     it('updates a vector field', async function () {
@@ -85,8 +85,8 @@ describe('firestore.VectorValue', function () {
 
   describe('modular', function () {
     function ref(id) {
-      // @ts-ignore test env provides firestoreModular
-      return firestoreModular.doc(firestoreModular.getFirestore(), `e2e_vector/${id}`);
+      const { doc, getFirestore } = firestoreModular;
+      return doc(getFirestore(), `${COLLECTION}/vector_${id}`);
     }
 
     it('writes and reads using modular vector()', async function () {

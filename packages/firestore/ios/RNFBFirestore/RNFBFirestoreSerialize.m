@@ -16,8 +16,10 @@
  *
  */
 
-#import "RNFBFirestoreSerialize.h"
+#import "FirebaseFirestore/FIRVectorValue.h"
+
 #import "RNFBFirestoreCommon.h"
+#import "RNFBFirestoreSerialize.h"
 #import "RNFBPreferences.h"
 
 @implementation RNFBFirestoreSerialize
@@ -359,21 +361,11 @@ enum TYPE_MAP {
     return typeArray;
   }
 
-  // VectorValue (FIRVectorValue) – detect reflectively to avoid hard dependency on symbol
-  Class vectorClass = NSClassFromString(@"FIRVectorValue");
-  if (vectorClass != nil && [value isKindOfClass:vectorClass]) {
+  // Vector
+  if ([value isKindOfClass:[FIRVectorValue class]]) {
+    FIRVectorValue *vector = (FIRVectorValue *)value;
     typeArray[0] = @(INT_VECTOR);
-    NSArray *values = nil;
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-    if ([value respondsToSelector:@selector(values)]) {
-      values = [value performSelector:@selector(values)];
-    }
-#pragma clang diagnostic pop
-    if (values == nil) {
-      values = @[];
-    }
-    typeArray[1] = values;
+    typeArray[1] = vector.array;
     return typeArray;
   }
 
@@ -485,23 +477,8 @@ enum TYPE_MAP {
     }
     case INT_OBJECT:
       return [self parseNSDictionary:firestore dictionary:typeMap[1]];
-    case INT_VECTOR: {
-      NSArray *values = typeMap[1];
-      Class vectorClass = NSClassFromString(@"FIRVectorValue");
-      if (vectorClass != nil) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-        if ([vectorClass respondsToSelector:@selector(vectorWithValues:)]) {
-          return [vectorClass performSelector:@selector(vectorWithValues:) withObject:values];
-        }
-        id instance = [vectorClass alloc];
-        if ([instance respondsToSelector:@selector(initWithValues:)]) {
-          return [instance performSelector:@selector(initWithValues:) withObject:values];
-        }
-#pragma clang diagnostic pop
-      }
-      return nil;
-    }
+    case INT_VECTOR:
+      return [FIRFieldValue vectorWithArray:typeMap[1]];
     case INT_UNKNOWN:
     default:
       return nil;
