@@ -60,7 +60,7 @@ describe.only('firestore.VectorValue', function () {
     });
 
     it('batch writes a vector', async function () {
-      const { writeBatch, getDoc, vector } = firestoreModular;
+      const { getFirestore, writeBatch, getDoc, vector } = firestoreModular;
       const r = ref('batch');
       const b = writeBatch(getFirestore());
       b.set(r, { embedding: vector([0.1, 0.2]) });
@@ -71,7 +71,7 @@ describe.only('firestore.VectorValue', function () {
     });
 
     it('transaction writes a vector', async function () {
-      const { runTransaction, getDoc, vector } = firestoreModular;
+      const { getFirestore, runTransaction, getDoc, vector } = firestoreModular;
       const r = ref('transaction');
       await runTransaction(getFirestore(), async tx => {
         tx.set(r, { embedding: vector([3.14, 2.72]) });

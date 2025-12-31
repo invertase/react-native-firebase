@@ -163,7 +163,7 @@ export function generateNativeData(value, ignoreUndefined) {
   }
 
   if (isObject(value)) {
-    if (FirestoreDocumentReference && value instanceof FirestoreDocumentReference) {
+    if (value instanceof FirestoreDocumentReference) {
       return getTypeMapInt('reference', value.path);
     }
 
@@ -186,7 +186,7 @@ export function generateNativeData(value, ignoreUndefined) {
       return getTypeMapInt('blob', value.toBase64());
     }
 
-    if (FirestoreFieldValue && value instanceof FirestoreFieldValue) {
+    if (value instanceof FirestoreFieldValue) {
       return getTypeMapInt('fieldvalue', [value._type, value._elements]);
     }
 
