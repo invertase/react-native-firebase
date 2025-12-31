@@ -154,42 +154,45 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
                           // Extract data from StreamResponse
                           Object responseData = null;
                           boolean isFinalResult = false;
-                          
+
                           // Check if it's a Message (chunk) or Result (final)
                           // StreamResponse is a sealed class with Message and Result subtypes
                           if (streamResponse instanceof StreamResponse.Message) {
-                            StreamResponse.Message message = (StreamResponse.Message) streamResponse;
-                            // Message has a getMessage() method that returns a Message object with getData()
+                            StreamResponse.Message message =
+                                (StreamResponse.Message) streamResponse;
+                            // Message has a getMessage() method that returns a Message object with
+                            // getData()
                             if (message.getMessage() != null) {
                               responseData = message.getMessage().getData();
                             }
                             isFinalResult = false;
                           } else if (streamResponse instanceof StreamResponse.Result) {
                             StreamResponse.Result result = (StreamResponse.Result) streamResponse;
-                            // Result has a getResult() method that returns a Result object with getData()
+                            // Result has a getResult() method that returns a Result object with
+                            // getData()
                             if (result.getResult() != null) {
                               responseData = result.getResult().getData();
                             }
                             isFinalResult = true;
                           }
-                          
+
                           // Emit the stream data as it arrives
                           // For final result, emit with done=true and include the data
                           if (isFinalResult) {
                             emitStreamEventWithDone(appName, listenerId, responseData);
                             removeFunctionsStreamingListener(listenerId);
                           } else {
-                            emitStreamEvent(
-                                appName,
-                                listenerId,
-                                responseData,
-                                false,
-                                null);
+                            emitStreamEvent(appName, listenerId, responseData, false, null);
                           }
                         } catch (Exception e) {
                           // Handle any errors during data extraction
                           String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
-                          emitStreamEvent(appName, listenerId, null, true, "Data extraction error: " + errorMsg);
+                          emitStreamEvent(
+                              appName,
+                              listenerId,
+                              null,
+                              true,
+                              "Data extraction error: " + errorMsg);
                           removeFunctionsStreamingListener(listenerId);
                         }
                       }
@@ -204,8 +207,10 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
 
                       @Override
                       public void onComplete() {
-                        // Stream completed - emit done event only if we haven't already handled a Result
-                        // Only emit done if listener still exists (Result was not received in onNext)
+                        // Stream completed - emit done event only if we haven't already handled a
+                        // Result
+                        // Only emit done if listener still exists (Result was not received in
+                        // onNext)
                         Object listener = functionsStreamingListeners.get(listenerId);
                         if (listener != null) {
                           emitStreamDone(appName, listenerId);
@@ -282,47 +287,65 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
                           // Extract data from StreamResponse
                           Object responseData = null;
                           boolean isFinalResult = false;
-                          
-                          android.util.Log.d("RNFBFunctions", "onNext received for URL: " + url + ", listenerId: " + listenerId);
-                          
+
+                          android.util.Log.d(
+                              "RNFBFunctions",
+                              "onNext received for URL: " + url + ", listenerId: " + listenerId);
+
                           // Check if it's a Message (chunk) or Result (final)
                           // StreamResponse is a sealed class with Message and Result subtypes
                           if (streamResponse instanceof StreamResponse.Message) {
-                            StreamResponse.Message message = (StreamResponse.Message) streamResponse;
-                            // Message has a getMessage() method that returns a Message object with getData()
+                            StreamResponse.Message message =
+                                (StreamResponse.Message) streamResponse;
+                            // Message has a getMessage() method that returns a Message object with
+                            // getData()
                             responseData = message.getMessage().getData();
                             isFinalResult = false;
-                            android.util.Log.d("RNFBFunctions", "Received Message chunk for URL, data: " + (responseData != null ? responseData.toString() : "null"));
+                            android.util.Log.d(
+                                "RNFBFunctions",
+                                "Received Message chunk for URL, data: "
+                                    + (responseData != null ? responseData.toString() : "null"));
                           } else if (streamResponse instanceof StreamResponse.Result) {
                             StreamResponse.Result result = (StreamResponse.Result) streamResponse;
-                            // Result has a getResult() method that returns a Result object with getData()
+                            // Result has a getResult() method that returns a Result object with
+                            // getData()
                             responseData = result.getResult().getData();
                             isFinalResult = true;
-                            android.util.Log.d("RNFBFunctions", "Received Result (final) for URL, data: " + (responseData != null ? responseData.toString() : "null"));
+                            android.util.Log.d(
+                                "RNFBFunctions",
+                                "Received Result (final) for URL, data: "
+                                    + (responseData != null ? responseData.toString() : "null"));
                           } else {
-                            android.util.Log.w("RNFBFunctions", "Unknown StreamResponse type for URL: " + streamResponse.getClass().getName());
+                            android.util.Log.w(
+                                "RNFBFunctions",
+                                "Unknown StreamResponse type for URL: "
+                                    + streamResponse.getClass().getName());
                           }
-                          
+
                           // Emit the stream data as it arrives
                           // For final result, emit with done=true and include the data
                           if (isFinalResult) {
-                            android.util.Log.d("RNFBFunctions", "Emitting final result with done=true for URL");
+                            android.util.Log.d(
+                                "RNFBFunctions", "Emitting final result with done=true for URL");
                             emitStreamEventWithDone(appName, listenerId, responseData);
                             removeFunctionsStreamingListener(listenerId);
                           } else {
                             android.util.Log.d("RNFBFunctions", "Emitting chunk for URL");
-                            emitStreamEvent(
-                                appName,
-                                listenerId,
-                                responseData,
-                                false,
-                                null);
+                            emitStreamEvent(appName, listenerId, responseData, false, null);
                           }
                         } catch (Exception e) {
                           // Handle any errors during data extraction
-                          android.util.Log.e("RNFBFunctions", "Error extracting data from StreamResponse for URL: " + url, e);
+                          android.util.Log.e(
+                              "RNFBFunctions",
+                              "Error extracting data from StreamResponse for URL: " + url,
+                              e);
                           String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
-                          emitStreamEvent(appName, listenerId, null, true, "Data extraction error: " + errorMsg);
+                          emitStreamEvent(
+                              appName,
+                              listenerId,
+                              null,
+                              true,
+                              "Data extraction error: " + errorMsg);
                           removeFunctionsStreamingListener(listenerId);
                         }
                       }
@@ -338,16 +361,23 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
 
                       @Override
                       public void onComplete() {
-                        // Stream completed - emit done event only if we haven't already handled a Result
-                        android.util.Log.d("RNFBFunctions", "Stream onComplete for URL: " + url + ", listenerId: " + listenerId);
-                        // Only emit done if listener still exists (Result was not received in onNext)
+                        // Stream completed - emit done event only if we haven't already handled a
+                        // Result
+                        android.util.Log.d(
+                            "RNFBFunctions",
+                            "Stream onComplete for URL: " + url + ", listenerId: " + listenerId);
+                        // Only emit done if listener still exists (Result was not received in
+                        // onNext)
                         Object listener = functionsStreamingListeners.get(listenerId);
                         if (listener != null) {
-                          android.util.Log.d("RNFBFunctions", "Emitting done event via onComplete for URL");
+                          android.util.Log.d(
+                              "RNFBFunctions", "Emitting done event via onComplete for URL");
                           emitStreamDone(appName, listenerId);
                           removeFunctionsStreamingListener(listenerId);
                         } else {
-                          android.util.Log.d("RNFBFunctions", "Listener already removed, skipping done event for URL");
+                          android.util.Log.d(
+                              "RNFBFunctions",
+                              "Listener already removed, skipping done event for URL");
                         }
                       }
                     });
