@@ -10,6 +10,7 @@ import {
   deleteField,
   arrayUnion,
   arrayRemove,
+  vector,
   VectorValue,
 } from '@react-native-firebase/app/lib/internal/web/firebaseFirestore';
 
@@ -179,8 +180,7 @@ export function buildTypeMap(value) {
 
   if (value instanceof VectorValue) {
     out.push(INT_VECTOR);
-    // Web VectorValue should expose its numeric array. Fallback to empty if not present.
-    out.push(value.values ?? []);
+    out.push(value.toArray());
     return out;
   }
 
@@ -263,7 +263,7 @@ export function parseTypeMap(firestore, typedArray) {
     case INT_OBJECT:
       return readableToObject(firestore, typedArray[1]);
     case INT_VECTOR:
-      return new VectorValue(typedArray[1]);
+      return vector(typedArray[1]);
     case INT_UNKNOWN:
     default:
       return null;
