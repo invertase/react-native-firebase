@@ -17,7 +17,7 @@
 
 const COLLECTION = 'firestore';
 
-describe.only('firestore.VectorValue', function () {
+describe('firestore.VectorValue', function () {
   describe('modular', function () {
     function ref(id) {
       const { doc, getFirestore } = firestoreModular;
