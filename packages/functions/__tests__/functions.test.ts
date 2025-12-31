@@ -91,6 +91,25 @@ describe('Cloud Functions', function () {
     });
 
     describe('httpcallable()', function () {
+      beforeEach(function () {
+        // Mock the native module streaming methods to prevent real network calls
+        const mockNative = {
+          httpsCallableStream: jest.fn(),
+          httpsCallableStreamFromUrl: jest.fn(),
+          removeFunctionsStreaming: jest.fn(),
+        };
+
+        // Override the native getter on FirebaseModule prototype
+        Object.defineProperty(FirebaseModule.prototype, 'native', {
+          get: function (this: any) {
+            this._nativeModule = mockNative;
+            return mockNative;
+          },
+          configurable: true,
+          enumerable: true,
+        });
+      });
+
       it('throws an error with an incorrect timeout', function () {
         const app = firebase.app();
 
@@ -117,6 +136,25 @@ describe('Cloud Functions', function () {
     });
 
     describe('httpsCallableFromUrl()', function () {
+      beforeEach(function () {
+        // Mock the native module streaming methods to prevent real network calls
+        const mockNative = {
+          httpsCallableStream: jest.fn(),
+          httpsCallableStreamFromUrl: jest.fn(),
+          removeFunctionsStreaming: jest.fn(),
+        };
+
+        // Override the native getter on FirebaseModule prototype
+        Object.defineProperty(FirebaseModule.prototype, 'native', {
+          get: function (this: any) {
+            this._nativeModule = mockNative;
+            return mockNative;
+          },
+          configurable: true,
+          enumerable: true,
+        });
+      });
+
       it('has stream method', function () {
         const app = firebase.app();
         const callable = app.functions().httpsCallableFromUrl('https://example.com/example');
@@ -136,7 +174,22 @@ describe('Cloud Functions', function () {
 
   describe('modular', function () {
     beforeEach(function () {
-      // No need to mock here - RNFBFunctionsModule is already registered at module load time
+      // Mock the native module streaming methods to prevent real network calls
+      const mockNative = {
+        httpsCallableStream: jest.fn(),
+        httpsCallableStreamFromUrl: jest.fn(),
+        removeFunctionsStreaming: jest.fn(),
+      };
+
+      // Override the native getter on FirebaseModule prototype
+      Object.defineProperty(FirebaseModule.prototype, 'native', {
+        get: function (this: any) {
+          this._nativeModule = mockNative;
+          return mockNative;
+        },
+        configurable: true,
+        enumerable: true,
+      });
     });
 
     it('`getFunctions` function is properly exposed to end user', function () {
