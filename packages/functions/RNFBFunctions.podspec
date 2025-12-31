@@ -33,9 +33,11 @@ Pod::Spec.new do |s|
   # Turbo modules require these compiler flags
   s.compiler_flags      = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -std=c++20'
   # Ensure C++ standard library headers are found when explicit modules are disabled
+  # Disable modules entirely for this pod to avoid dependency scanner issues with C++ headers
   s.pod_target_xcconfig = {
     'CLANG_CXX_LIBRARY' => 'libc++',
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++20',
+    'CLANG_ENABLE_MODULES' => 'NO',
     'OTHER_CPLUSPLUSFLAGS' => '$(inherited) -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -std=c++20'
   }
 
