@@ -25,6 +25,10 @@ type FirebaseApp = ReactNativeFirebase.FirebaseApp;
 
 // @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
+import {
+  getReactNativeModule,
+  setReactNativeModule,
+} from '../../app/lib/internal/nativeModule';
 
 // Ensure NativeRNFBTurboFunctions is registered - it should be registered by namespaced.ts
 // but we verify and add removeFunctionsStreaming if needed
