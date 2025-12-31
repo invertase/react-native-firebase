@@ -43,8 +43,9 @@ export default class FirestoreVectorValue {
     this._values = values.slice();
   }
 
-  get values() {
-    return this._values.slice();
+  static fromJSON(json) {
+    parsedVector = JSON.parse(json);
+    return new FirestoreVectorValue(parsedVector.vectorValues);
   }
 
   isEqual(other) {
@@ -64,11 +65,11 @@ export default class FirestoreVectorValue {
     return true;
   }
 
-  toJSON() {
-    return { values: this._values.slice() };
+  toArray() {
+    return this._values.slice();
   }
 
-  toString() {
-    return `FirestoreVectorValue(values=[${this._values.join(', ')}])`;
+  toJSON() {
+    return { vectorValues: this._values.slice() };
   }
 }

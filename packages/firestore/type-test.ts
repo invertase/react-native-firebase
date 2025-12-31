@@ -63,6 +63,8 @@ import firestore, {
   Bytes,
   GeoPoint,
   Timestamp,
+  VectorValue,
+  vector,
 } from '.';
 
 console.log(firestore().app);
@@ -487,6 +489,15 @@ console.log(timestamp1.toMillis());
 console.log(timestamp1.isEqual(timestamp2));
 console.log(timestamp1.toJSON());
 console.log(timestamp1.toString());
+
+// VectorValue
+const v1 = vector([3.14159]);
+const v2 = vector([1.618]);
+const v3 = VectorValue.fromJSON(v2.toJSON());
+console.log(v1.toArray());
+console.log(v2.toJSON());
+console.log(v2.isEqual(v1));
+console.log(v3.isEqual(v2));
 
 // Aggregate functions
 const sumField = sum('age');

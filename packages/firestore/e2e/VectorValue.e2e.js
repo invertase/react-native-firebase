@@ -18,86 +18,67 @@
 const COLLECTION = 'firestore';
 
 describe.only('firestore.VectorValue', function () {
-  describe('v8 compatibility', function () {
-    beforeEach(async function beforeEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-    });
-
-    afterEach(async function afterEachTest() {
-      // @ts-ignore
-      globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-    });
-
-    function ref(id) {
-      return firebase.firestore().doc(`${COLLECTION}/vector_${id}`);
-    }
-
-    it('writes and reads a vector', async function () {
-      const r = ref('basic');
-      await r.set({ embedding: firebase.firestore.vector([0.12, 0.34, 0.56]) });
-
-      const snap = await r.get();
-      const v = snap.get('embedding');
-      should.exist(v);
-      v.values.should.eql([0.12, 0.34, 0.56]);
-    });
-
-    it('supports vectors in nested structures', async function () {
-      const r = ref('nested');
-      await r.set({
-        a: { b: firebase.firestore.vector([1, 2, 3]) },
-      });
-
-      const snap = await r.get();
-      snap.get('a').b.values.should.eql([1, 2, 3]);
-    });
-
-    it('updates a vector field', async function () {
-      const r = ref('update');
-      await r.set({ x: 1 });
-      await r.update({ embedding: firebase.firestore.vector([9, 8, 7]) });
-
-      const snap = await r.get();
-      snap.get('embedding').values.should.eql([9, 8, 7]);
-    });
-
-    it('batch writes a vector', async function () {
-      const r = ref('batch');
-      const batch = firebase.firestore().batch();
-      batch.set(r, { embedding: firebase.firestore.vector([0.1, 0.2]) });
-      await batch.commit();
-
-      const snap = await r.get();
-      snap.get('embedding').values.should.eql([0.1, 0.2]);
-    });
-
-    it('transaction writes a vector', async function () {
-      const r = ref('transaction');
-      await firebase.firestore().runTransaction(async tx => {
-        tx.set(r, { embedding: firebase.firestore.vector([3.14, 2.72]) });
-      });
-
-      const snap = await r.get();
-      snap.get('embedding').values.should.eql([3.14, 2.72]);
-    });
-  });
-
   describe('modular', function () {
     function ref(id) {
       const { doc, getFirestore } = firestoreModular;
       return doc(getFirestore(), `${COLLECTION}/vector_${id}`);
     }
 
-    it('writes and reads using modular vector()', async function () {
-      // @ts-ignore test env provides firestoreModular
+    it('writes and reads a vector', async function () {
       const { setDoc, getDoc, vector } = firestoreModular;
-      const r = ref('modular-basic');
-      await setDoc(r, { embedding: vector([0.5, 0.25]) });
+
+      const r = ref('basic');
+      await setDoc(r, { embedding: vector([0.12, 0.34, 0.56]) });
+
       const snap = await getDoc(r);
       const v = snap.get('embedding');
       should.exist(v);
-      v.values.should.eql([0.5, 0.25]);
+      v.toArray().should.eql([0.12, 0.34, 0.56]);
+    });
+
+    it('supports vectors in nested structures', async function () {
+      const { setDoc, getDoc, vector } = firestoreModular;
+
+      const r = ref('nested');
+      await setDoc(r, {
+        a: { b: vector([1, 2, 3]) },
+      });
+
+      const snap = await getDoc(r);
+      snap.get('a').b.toArray().should.eql([1, 2, 3]);
+    });
+
+    it('updates a vector field', async function () {
+      const { setDoc, getDoc, updateDoc, vector } = firestoreModular;
+
+      const r = ref('update');
+      await setDoc(r, { x: 1 });
+      await updateDoc(r, { embedding: vector([9, 8, 7]) });
+
+      const snap = await getDoc(r);
+      snap.get('embedding').toArray().should.eql([9, 8, 7]);
+    });
+
+    it('batch writes a vector', async function () {
+      const { writeBatch, getDoc, vector } = firestoreModular;
+      const r = ref('batch');
+      const b = writeBatch(getFirestore());
+      b.set(r, { embedding: vector([0.1, 0.2]) });
+      await b.commit();
+
+      const snap = await getDoc(r);
+      snap.get('embedding').toArray().should.eql([0.1, 0.2]);
+    });
+
+    it('transaction writes a vector', async function () {
+      const { runTransaction, getDoc, vector } = firestoreModular;
+      const r = ref('transaction');
+      await runTransaction(getFirestore(), async tx => {
+        tx.set(r, { embedding: vector([3.14, 2.72]) });
+      });
+
+      const snap = await getDoc(r);
+      snap.get('embedding').toArray().should.eql([3.14, 2.72]);
     });
   });
 });

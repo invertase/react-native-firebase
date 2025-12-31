@@ -191,7 +191,7 @@ export function generateNativeData(value, ignoreUndefined) {
     }
 
     if (value instanceof FirestoreVectorValue) {
-      return getTypeMapInt('vector', value.values);
+      return getTypeMapInt('vector', value.toArray());
     }
 
     return getTypeMapInt('object', buildNativeMap(value, ignoreUndefined));

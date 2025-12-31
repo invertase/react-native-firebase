@@ -1,12 +1,29 @@
 /**
- * A `VectorValue` represents a vector in Firestore. The vector is a numeric array.
- * @param values - The numeric values of the vector.
- * @returns A new VectorValue instance.
+ * Represents a vector type in Firestore documents. Create an instance with vector().
  */
 export declare class VectorValue {
-  readonly values: number[];
-  constructor(values?: number[]);
+  // Note the values array and constructor are not public APIs.
+
+  /**
+   * Builds a VectorValue instance from a JSON object created by VectorValue.toJSON().
+   *
+   * @param json a JSON object represention of a VectorValue instance.
+   */
+  static fromJSON(json: object): VectorValue;
+
+  /**
+   * Returns true if the two VectorValue values have the same raw number arrays, returns false otherwise.
+   */
   isEqual(other: VectorValue): boolean;
+
+  /**
+   * Returns a copy of the raw number array form of the vector.
+   */
+  toArray(): number[];
+
+  /**
+   * Returns a JSON-serializable representation of this VectorValue instance.
+   */
   toJSON(): { values: number[] };
 }
 
