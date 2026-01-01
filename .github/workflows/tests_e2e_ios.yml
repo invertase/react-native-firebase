@@ -209,6 +209,8 @@ jobs:
         id: firestore-emulator-cache
         continue-on-error: true
         with:
+          # The firebase emulators are pure javascript and java, OS-independent
+          enableCrossOsArchive: true
           path: ~/.cache/firebase/emulators
           key: firebase-emulators-v1-${{ github.run_id }}
           restore-keys: firebase-emulators-v1
@@ -381,6 +383,8 @@ jobs:
         if: "${{ github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
+          # The firebase emulators are pure javascript and java, OS-independent
+          enableCrossOsArchive: true
           path: ~/.cache/firebase/emulators
           key: ${{ steps.firestore-emulator-cache.outputs.cache-primary-key }}
 
