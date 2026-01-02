@@ -27,10 +27,22 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = firebase_ios_target
   s.macos.deployment_target = firebase_macos_target
   s.tvos.deployment_target = firebase_tvos_target
-  s.source_files        = 'ios/**/*.{h,m,mm,cpp}'
+  s.swift_version = '5.0'
+  s.source_files        = 'ios/**/*.{h,m,mm,cpp,swift}'
   s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*'
   # Turbo modules require these compiler flags
-  s.compiler_flags      = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1'
+  s.compiler_flags      = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -std=c++20'
+  # Swift requires modules to be enabled, so we keep CLANG_ENABLE_MODULES=YES
+  # Only disable explicit modules to avoid libclang.dylib warnings
+  # C++ standard library headers should be found via the C++20 standard setting
+  s.pod_target_xcconfig = {
+    'CLANG_CXX_LIBRARY' => 'libc++',
+    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++20',
+    'CLANG_ENABLE_MODULES' => 'YES',
+    'CLANG_ENABLE_MODULES_EXPLICIT' => 'NO',
+    'OTHER_CPLUSPLUSFLAGS' => '$(inherited) -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -std=c++20',
+    'SWIFT_COMPILATION_MODE' => 'wholemodule'
+  }
 
   # React Native dependencies
   s.dependency          'React-Core'

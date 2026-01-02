@@ -92,6 +92,66 @@ namespace JS {
 @interface RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableFromUrlOptions)
 + (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableFromUrlOptions:(id)json;
 @end
+namespace JS {
+  namespace NativeRNFBTurboFunctions {
+    struct SpecHttpsCallableStreamData {
+      id<NSObject> data() const;
+
+      SpecHttpsCallableStreamData(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableStreamData)
++ (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableStreamData:(id)json;
+@end
+namespace JS {
+  namespace NativeRNFBTurboFunctions {
+    struct SpecHttpsCallableStreamOptions {
+      std::optional<double> timeout() const;
+
+      SpecHttpsCallableStreamOptions(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableStreamOptions)
++ (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableStreamOptions:(id)json;
+@end
+namespace JS {
+  namespace NativeRNFBTurboFunctions {
+    struct SpecHttpsCallableStreamFromUrlData {
+      id<NSObject> data() const;
+
+      SpecHttpsCallableStreamFromUrlData(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableStreamFromUrlData)
++ (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableStreamFromUrlData:(id)json;
+@end
+namespace JS {
+  namespace NativeRNFBTurboFunctions {
+    struct SpecHttpsCallableStreamFromUrlOptions {
+      std::optional<double> timeout() const;
+
+      SpecHttpsCallableStreamFromUrlOptions(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableStreamFromUrlOptions)
++ (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableStreamFromUrlOptions:(id)json;
+@end
 @protocol NativeRNFBTurboFunctionsSpec <RCTBridgeModule, RCTTurboModule>
 
 - (void)httpsCallable:(NSString *)appName
@@ -112,6 +172,25 @@ namespace JS {
                      options:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableFromUrlOptions &)options
                      resolve:(RCTPromiseResolveBlock)resolve
                       reject:(RCTPromiseRejectBlock)reject;
+- (void)httpsCallableStream:(NSString *)appName
+                     region:(NSString *)region
+               emulatorHost:(NSString * _Nullable)emulatorHost
+               emulatorPort:(double)emulatorPort
+                       name:(NSString *)name
+                       data:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamData &)data
+                    options:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamOptions &)options
+                 listenerId:(double)listenerId;
+- (void)httpsCallableStreamFromUrl:(NSString *)appName
+                            region:(NSString *)region
+                      emulatorHost:(NSString * _Nullable)emulatorHost
+                      emulatorPort:(double)emulatorPort
+                               url:(NSString *)url
+                              data:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlData &)data
+                           options:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlOptions &)options
+                        listenerId:(double)listenerId;
+- (void)removeFunctionsStreaming:(NSString *)appName
+                          region:(NSString *)region
+                      listenerId:(double)listenerId;
 
 @end
 
@@ -149,6 +228,26 @@ inline id<NSObject> JS::NativeRNFBTurboFunctions::SpecHttpsCallableFromUrlData::
   return p;
 }
 inline std::optional<double> JS::NativeRNFBTurboFunctions::SpecHttpsCallableFromUrlOptions::timeout() const
+{
+  id const p = _v[@"timeout"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline id<NSObject> JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamData::data() const
+{
+  id const p = _v[@"data"];
+  return p;
+}
+inline std::optional<double> JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamOptions::timeout() const
+{
+  id const p = _v[@"timeout"];
+  return RCTBridgingToOptionalDouble(p);
+}
+inline id<NSObject> JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlData::data() const
+{
+  id const p = _v[@"data"];
+  return p;
+}
+inline std::optional<double> JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlOptions::timeout() const
 {
   id const p = _v[@"timeout"];
   return RCTBridgingToOptionalDouble(p);
