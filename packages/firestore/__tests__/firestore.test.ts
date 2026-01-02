@@ -79,6 +79,8 @@ import firestore, {
   enablePersistentCacheIndexAutoCreation,
   onSnapshotsInSync,
   documentId,
+  vector,
+  VectorValue,
 } from '../lib';
 
 const COLLECTION = 'firestore';
@@ -745,6 +747,14 @@ describe('Firestore', function () {
 
     it('`documentId` is properly exposed to end user', function () {
       expect(documentId).toBeDefined();
+    });
+
+    it('`VectorValue` is properly exposed to end user', function () {
+      expect(VectorValue).toBeDefined();
+    });
+
+    it('`vector()` is properly exposed to end user', function () {
+      expect(vector).toBeDefined();
     });
   });
 
@@ -1435,6 +1445,39 @@ describe('Firestore', function () {
           'nanoseconds',
         );
       });
+    });
+  });
+
+  describe('VectorValue (unit serializer)', function () {
+    it('constructs and validates values', function () {
+      const v = vector([0, 1.5, -2]);
+      expect(v.toArray()).toEqual([0, 1.5, -2]);
+      expect(v.isEqual(vector([0, 1.5, -2]))).toBe(true);
+      expect(v.isEqual(vector([0, 1.5]))).toBe(false);
+    });
+
+    it('serializes to type map and parses back', function () {
+      const serialize = require('../lib/utils/serialize');
+      const { getTypeMapName } = require('../lib/utils/typemap');
+
+      const v = vector([0.1, 0.2, 0.3]);
+      const typed = serialize.generateNativeData(v, false);
+      expect(Array.isArray(typed)).toBe(true);
+      expect(getTypeMapName(typed[0])).toBe('vector');
+      const parsed = serialize.parseNativeData(null, typed);
+      expect(parsed.toArray()).toEqual([0.1, 0.2, 0.3]);
+    });
+
+    it('serializes inside objects and arrays', function () {
+      const serialize = require('../lib/utils/serialize');
+      const { getTypeMapName } = require('../lib/utils/typemap');
+
+      const v = vector([1, 2, 3]);
+      const map = serialize.buildNativeMap({ a: v }, false);
+      expect(getTypeMapName(map.a[0])).toBe('vector');
+
+      const arr = serialize.buildNativeArray([v], false);
+      expect(getTypeMapName(arr[0][0])).toBe('vector');
     });
   });
 });

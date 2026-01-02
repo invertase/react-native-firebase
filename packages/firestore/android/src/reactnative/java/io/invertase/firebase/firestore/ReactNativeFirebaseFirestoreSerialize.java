@@ -40,6 +40,7 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SnapshotMetadata;
+import com.google.firebase.firestore.VectorValue;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,6 +72,7 @@ public class ReactNativeFirebaseFirestoreSerialize {
   private static final int INT_OBJECT = 16;
   private static final int INT_INTEGER = 17;
   private static final int INT_NEGATIVE_ZERO = 18;
+  private static final int INT_VECTOR = 19;
   private static final int INT_UNKNOWN = -999;
 
   // Keys
@@ -404,6 +406,12 @@ public class ReactNativeFirebaseFirestoreSerialize {
       return typeArray;
     }
 
+    if (value instanceof VectorValue) {
+      typeArray.pushInt(INT_VECTOR);
+      typeArray.pushArray(Arguments.fromArray(((VectorValue) value).toArray()));
+      return typeArray;
+    }
+
     Log.w(TAG, "Unknown object of type " + value.getClass());
 
     typeArray.pushInt(INT_UNKNOWN);
@@ -520,6 +528,12 @@ public class ReactNativeFirebaseFirestoreSerialize {
         }
       case INT_OBJECT:
         return parseReadableMap(firestore, typeArray.getMap(1));
+      case INT_VECTOR:
+        ReadableArray vals = typeArray.getArray(1);
+        int length = vals != null ? vals.size() : 0;
+        double[] doubles = new double[length];
+        for (int i = 0; i < length; i++) doubles[i] = vals.getDouble(i);
+        return FieldValue.vector(doubles);
       case INT_UNKNOWN:
       default:
         return null;

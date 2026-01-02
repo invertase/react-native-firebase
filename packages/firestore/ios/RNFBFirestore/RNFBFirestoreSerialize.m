@@ -16,8 +16,10 @@
  *
  */
 
-#import "RNFBFirestoreSerialize.h"
+#import "FirebaseFirestore/FIRVectorValue.h"
+
 #import "RNFBFirestoreCommon.h"
+#import "RNFBFirestoreSerialize.h"
 #import "RNFBPreferences.h"
 
 @implementation RNFBFirestoreSerialize
@@ -58,6 +60,7 @@ enum TYPE_MAP {
   INT_OBJECT,
   INT_INTEGER,
   INT_NEGATIVE_ZERO,
+  INT_VECTOR,
   INT_UNKNOWN = -999,
 };
 
@@ -358,6 +361,14 @@ enum TYPE_MAP {
     return typeArray;
   }
 
+  // Vector
+  if ([value isKindOfClass:[FIRVectorValue class]]) {
+    FIRVectorValue *vector = (FIRVectorValue *)value;
+    typeArray[0] = @(INT_VECTOR);
+    typeArray[1] = vector.array;
+    return typeArray;
+  }
+
   typeArray[0] = @(INT_UNKNOWN);
   return typeArray;
 }
@@ -466,6 +477,8 @@ enum TYPE_MAP {
     }
     case INT_OBJECT:
       return [self parseNSDictionary:firestore dictionary:typeMap[1]];
+    case INT_VECTOR:
+      return [FIRFieldValue vectorWithArray:typeMap[1]];
     case INT_UNKNOWN:
     default:
       return nil;

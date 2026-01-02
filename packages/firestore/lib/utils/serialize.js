@@ -32,6 +32,7 @@ import FirestorePath from '../FirestorePath';
 import FirestoreTimestamp from '../FirestoreTimestamp';
 import { getTypeMapInt, getTypeMapName } from './typemap';
 import { Bytes } from '../modular/Bytes';
+import FirestoreVectorValue from '../FirestoreVectorValue';
 
 // To avoid React Native require cycle warnings
 let FirestoreDocumentReference = null;
@@ -189,6 +190,10 @@ export function generateNativeData(value, ignoreUndefined) {
       return getTypeMapInt('fieldvalue', [value._type, value._elements]);
     }
 
+    if (value instanceof FirestoreVectorValue) {
+      return getTypeMapInt('vector', value.toArray());
+    }
+
     return getTypeMapInt('object', buildNativeMap(value, ignoreUndefined));
   }
 
@@ -279,6 +284,8 @@ export function parseNativeData(firestore, nativeArray) {
       return new FirestoreTimestamp(value[0], value[1]);
     case 'blob':
       return Bytes.fromBase64String(value);
+    case 'vector':
+      return new FirestoreVectorValue(value);
     default:
       // eslint-disable-next-line no-console
       console.warn(`Unknown data type received from native channel: ${type}`);
