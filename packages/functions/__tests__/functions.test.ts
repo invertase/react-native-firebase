@@ -99,7 +99,10 @@ describe('Cloud Functions', function () {
           removeFunctionsStreaming: jest.fn(),
         };
 
-        // Override the native getter on FirebaseModule prototype
+        // Override the registered native module (for web platform)
+        setReactNativeModule('NativeRNFBTurboFunctions', mockNative);
+
+        // Override the native getter on FirebaseModule prototype (for native platforms)
         Object.defineProperty(FirebaseModule.prototype, 'native', {
           get: function (this: any) {
             this._nativeModule = mockNative;
@@ -144,7 +147,10 @@ describe('Cloud Functions', function () {
           removeFunctionsStreaming: jest.fn(),
         };
 
-        // Override the native getter on FirebaseModule prototype
+        // Override the registered native module (for web platform)
+        setReactNativeModule('NativeRNFBTurboFunctions', mockNative);
+
+        // Override the native getter on FirebaseModule prototype (for native platforms)
         Object.defineProperty(FirebaseModule.prototype, 'native', {
           get: function (this: any) {
             this._nativeModule = mockNative;
@@ -181,7 +187,10 @@ describe('Cloud Functions', function () {
         removeFunctionsStreaming: jest.fn(),
       };
 
-      // Override the native getter on FirebaseModule prototype
+      // Override the registered native module (for web platform)
+      setReactNativeModule('NativeRNFBTurboFunctions', mockNative);
+
+      // Override the native getter on FirebaseModule prototype (for native platforms)
       Object.defineProperty(FirebaseModule.prototype, 'native', {
         get: function (this: any) {
           this._nativeModule = mockNative;
@@ -295,6 +304,9 @@ describe('Cloud Functions', function () {
         httpsCallableStreamFromUrl: jest.fn(),
         removeFunctionsStreaming: jest.fn(),
       };
+
+      // Override the registered native module (for web platform)
+      setReactNativeModule('NativeRNFBTurboFunctions', mockNative);
 
       // Override the native getter on FirebaseModule prototype using Object.defineProperty
       // This ensures the mock is returned even if _nativeModule is cached
