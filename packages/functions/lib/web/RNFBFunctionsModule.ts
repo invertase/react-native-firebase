@@ -232,15 +232,18 @@ export default {
           if (typeof callableWithStream.stream === 'function') {
             const subscription = callableWithStream.stream(data).subscribe({
               next: (chunk: any) => {
-                emitEvent('functions_streaming_event', {
-                  eventName: 'functions_streaming_event',
-                  listenerId,
-                  body: {
-                    data: chunk.data ?? null,
-                    error: null,
-                    done: false,
-                  },
-                });
+                // Check if still active before emitting
+                if (functionsStreamingListeners.has(listenerId)) {
+                  emitEvent('functions_streaming_event', {
+                    eventName: 'functions_streaming_event',
+                    listenerId,
+                    body: {
+                      data: chunk.data ?? null,
+                      error: null,
+                      done: false,
+                    },
+                  });
+                }
               },
               error: (error: any) => {
                 const { code, message, details } = error;
@@ -274,6 +277,16 @@ export default {
                 functionsStreamingListeners.delete(listenerId);
               },
             });
+
+            // Check if was cancelled during subscription creation (before storing)
+            // If removeFunctionsStreaming was called, it would have set it to null
+            const checkBeforeStorage = functionsStreamingListeners.get(listenerId);
+            if (checkBeforeStorage === null) {
+              // Was cancelled during subscription creation, unsubscribe immediately
+              subscription.unsubscribe();
+              functionsStreamingListeners.delete(listenerId);
+              return;
+            }
 
             // Store subscription in the listeners map
             functionsStreamingListeners.set(listenerId, subscription);
@@ -398,15 +411,18 @@ export default {
           if (typeof callableWithStream.stream === 'function') {
             const subscription = callableWithStream.stream(data).subscribe({
               next: (chunk: any) => {
-                emitEvent('functions_streaming_event', {
-                  eventName: 'functions_streaming_event',
-                  listenerId,
-                  body: {
-                    data: chunk.data ?? null,
-                    error: null,
-                    done: false,
-                  },
-                });
+                // Check if still active before emitting
+                if (functionsStreamingListeners.has(listenerId)) {
+                  emitEvent('functions_streaming_event', {
+                    eventName: 'functions_streaming_event',
+                    listenerId,
+                    body: {
+                      data: chunk.data ?? null,
+                      error: null,
+                      done: false,
+                    },
+                  });
+                }
               },
               error: (error: any) => {
                 const { code, message, details } = error;
@@ -440,6 +456,16 @@ export default {
                 functionsStreamingListeners.delete(listenerId);
               },
             });
+
+            // Check if was cancelled during subscription creation (before storing)
+            // If removeFunctionsStreaming was called, it would have set it to null
+            const checkBeforeStorage = functionsStreamingListeners.get(listenerId);
+            if (checkBeforeStorage === null) {
+              // Was cancelled during subscription creation, unsubscribe immediately
+              subscription.unsubscribe();
+              functionsStreamingListeners.delete(listenerId);
+              return;
+            }
 
             // Store subscription in the listeners map
             functionsStreamingListeners.set(listenerId, subscription);
