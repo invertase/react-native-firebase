@@ -163,6 +163,7 @@ jobs:
         name: Xcode Compile Cache
         with:
           key: ${{ runner.os }}-${{ matrix.buildmode }}-ios-v3 # makes a unique key w/related restore key internally
+          save: "${{ github.ref == 'refs/heads/main' }}"
           create-symlink: true
           max-size: 1500M
 

@@ -148,6 +148,7 @@ jobs:
         name: Xcode Compile Cache
         with:
           key: ${{ runner.os }}-macos-v2
+          save: "${{ github.ref == 'refs/heads/main' }}"
           create-symlink: true
           max-size: 1500M
 
