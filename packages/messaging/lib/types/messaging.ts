@@ -835,7 +835,6 @@ export interface Statics {
 /* eslint-disable @typescript-eslint/no-namespace */
 declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
-    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
       messaging: FirebaseModuleWithStaticsAndApp<Messaging, Statics>;
     }

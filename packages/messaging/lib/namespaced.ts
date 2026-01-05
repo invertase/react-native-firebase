@@ -566,6 +566,7 @@ type MessagingNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
   Messaging,
   Statics
 > & {
+  messaging: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<Messaging, Statics>;
   firebase: ReactNativeFirebase.Module;
   app(name?: string): ReactNativeFirebase.FirebaseApp;
 };
