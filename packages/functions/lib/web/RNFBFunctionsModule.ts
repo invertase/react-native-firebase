@@ -19,7 +19,8 @@ interface Subscription {
   unsubscribe(): void;
 }
 
-const functionsStreamingListeners = new Map<number, Subscription>();
+const functionsStreamingListeners = new Map<number, Subscription | null>();
+// null value in map indicates listener was cancelled before subscription was created
 
 /**
  * This is a 'NativeModule' for the web platform.
@@ -212,8 +213,16 @@ export default {
       // Defer streaming to next tick to ensure event listeners are set up
       setTimeout(() => {
         try {
-          // Ignore if the listener already exists
-          if (functionsStreamingListeners.has(listenerId)) {
+          // Check if listener was cancelled before subscription creation (null marker)
+          // or if subscription already exists
+          const existing = functionsStreamingListeners.get(listenerId);
+          if (existing === null) {
+            // Was cancelled, remove the marker and don't create subscription
+            functionsStreamingListeners.delete(listenerId);
+            return;
+          }
+          if (existing !== undefined) {
+            // Subscription already exists
             return;
           }
 
@@ -370,8 +379,16 @@ export default {
       // Defer streaming to next tick to ensure event listeners are set up
       setTimeout(() => {
         try {
-          // Ignore if the listener already exists
-          if (functionsStreamingListeners.has(listenerId)) {
+          // Check if listener was cancelled before subscription creation (null marker)
+          // or if subscription already exists
+          const existing = functionsStreamingListeners.get(listenerId);
+          if (existing === null) {
+            // Was cancelled, remove the marker and don't create subscription
+            functionsStreamingListeners.delete(listenerId);
+            return;
+          }
+          if (existing !== undefined) {
+            // Subscription already exists
             return;
           }
 
@@ -490,6 +507,11 @@ export default {
       subscription.unsubscribe();
       // Remove from the listeners map
       functionsStreamingListeners.delete(listenerId);
+    } else if (subscription === undefined) {
+      // Subscription hasn't been created yet (setTimeout hasn't executed)
+      // Mark as cancelled with null marker so it won't be created
+      functionsStreamingListeners.set(listenerId, null);
     }
+    // If subscription === null, it was already cancelled, do nothing
   },
 };
