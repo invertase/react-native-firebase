@@ -295,12 +295,29 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
 
       NSNumber *listenerIdNumber = @((int)listenerId);
 
+      // Check if listener was cancelled before async block executed
+      id existingHandler = self.streamSubscriptions[listenerIdNumber];
+      if (existingHandler == [NSNull null]) {
+        // Was cancelled, don't start stream
+        return;
+      }
+
       // Check iOS version and Swift availability
       if (@available(iOS 15.0, macOS 12.0, *)) {
 #if __has_include("RNFBFunctions-Swift.h")
+        // Mark as in progress first to prevent race condition
+        self.streamSubscriptions[listenerIdNumber] = [NSNull null];
+        
         // Use Firebase SDK's native streaming via Swift wrapper
         RNFBFunctionsStreamHandler *handler = [[RNFBFunctionsStreamHandler alloc] init];
-        self.streamSubscriptions[listenerIdNumber] = handler;
+        
+        // Check again if cancelled during handler creation
+        if (self.streamSubscriptions[listenerIdNumber] == [NSNull null]) {
+          self.streamSubscriptions[listenerIdNumber] = handler;
+        } else {
+          // Was cancelled, don't start stream
+          return;
+        }
 
         double timeoutValue = timeout.has_value() ? timeout.value() : 0;
 
@@ -402,12 +419,29 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
 
       NSNumber *listenerIdNumber = @((int)listenerId);
 
+      // Check if listener was cancelled before async block executed
+      id existingHandler = self.streamSubscriptions[listenerIdNumber];
+      if (existingHandler == [NSNull null]) {
+        // Was cancelled, don't start stream
+        return;
+      }
+
       // Check iOS version and Swift availability
       if (@available(iOS 15.0, macOS 12.0, *)) {
 #if __has_include("RNFBFunctions-Swift.h")
+        // Mark as in progress first to prevent race condition
+        self.streamSubscriptions[listenerIdNumber] = [NSNull null];
+        
         // Use Firebase SDK's native streaming via Swift wrapper
         RNFBFunctionsStreamHandler *handler = [[RNFBFunctionsStreamHandler alloc] init];
-        self.streamSubscriptions[listenerIdNumber] = handler;
+        
+        // Check again if cancelled during handler creation
+        if (self.streamSubscriptions[listenerIdNumber] == [NSNull null]) {
+          self.streamSubscriptions[listenerIdNumber] = handler;
+        } else {
+          // Was cancelled, don't start stream
+          return;
+        }
 
         double timeoutValue = timeout.has_value() ? timeout.value() : 0;
 
@@ -476,7 +510,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
   NSNumber *listenerIdNumber = @((int)listenerId);
   id handler = self.streamSubscriptions[listenerIdNumber];
 
-  if (handler != nil) {
+  if (handler != nil && handler != [NSNull null]) {
     if (@available(iOS 15.0, macOS 12.0, *)) {
 #if __has_include("RNFBFunctions-Swift.h")
       if ([handler respondsToSelector:@selector(cancel)]) {
@@ -485,7 +519,12 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
 #endif
     }
     [self.streamSubscriptions removeObjectForKey:listenerIdNumber];
+  } else if (handler == nil) {
+    // Handler hasn't been created yet (async block hasn't executed)
+    // Mark as cancelled so it won't be created
+    self.streamSubscriptions[listenerIdNumber] = [NSNull null];
   }
+  // If handler == [NSNull null], it was already cancelled, do nothing
 }
 
 @end
