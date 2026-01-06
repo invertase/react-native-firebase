@@ -39,12 +39,7 @@ export default function remoteMessageOptions(
   messagingSenderId: string,
   remoteMessage: RemoteMessage,
 ): RemoteMessageOptions {
-  const out: RemoteMessageOptions = {
-    to: '',
-    messageId: '',
-    ttl: 3600,
-    data: {},
-  };
+  const out: Partial<RemoteMessageOptions> = {};
 
   if (isUndefined(remoteMessage) || !isObject(remoteMessage)) {
     throw new Error("'remoteMessage' expected an object value");
@@ -111,5 +106,5 @@ export default function remoteMessageOptions(
     out.messageType = remoteMessage.messageType;
   }
 
-  return out;
+  return out as RemoteMessageOptions;
 }
