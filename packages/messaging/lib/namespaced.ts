@@ -201,9 +201,7 @@ class FirebaseMessagingModule extends FirebaseModule implements Messaging {
 
     const appName = options?.appName || this.app.name;
     const senderId = options?.senderId || this.app.options.messagingSenderId;
-    if (!senderId) {
-      throw new Error("firebase.messaging().getToken(*) 'senderId' is required.");
-    }
+
     return this.native.getToken(appName, senderId);
   }
 
@@ -218,9 +216,7 @@ class FirebaseMessagingModule extends FirebaseModule implements Messaging {
 
     const appName = options?.appName || this.app.name;
     const senderId = options?.senderId || this.app.options.messagingSenderId;
-    if (!senderId) {
-      throw new Error("firebase.messaging().deleteToken(*) 'senderId' is required.");
-    }
+
     return this.native.deleteToken(appName, senderId);
   }
 
