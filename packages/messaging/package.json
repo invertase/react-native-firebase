@@ -58,7 +58,7 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "lib/modular",
+    "lib",
     "dist",
     "!**/__tests__",
     "!**/__fixtures__",
@@ -87,5 +87,9 @@
         }
       ]
     ]
-  }
+  },
+  "eslintIgnore": [
+    "node_modules/",
+    "dist/"
+  ]
 }
