@@ -28,8 +28,15 @@ Pod::Spec.new do |s|
   s.macos.deployment_target = firebase_macos_target
   s.tvos.deployment_target = firebase_tvos_target
   s.swift_version = '5.0'
-  s.source_files        = 'ios/**/*.{h,m,mm,cpp,swift}'
+  # Exclude Swift from source_files to avoid C++ dependency scanner issues
+  # Swift files must be added via Podfile post_install hook (see README or Podfile example)
+  # This is required because CocoaPods doesn't support automatic hooks from podspecs
+  s.source_files        = 'ios/**/*.{h,m,mm,cpp}'
   s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*'
+  
+  # Preserve Swift files so they're available for the Podfile hook
+  s.preserve_paths = 'ios/**/*.swift'
+  
   # Turbo modules require these compiler flags
   s.compiler_flags      = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -std=c++20'
   # Swift requires modules to be enabled, so we keep CLANG_ENABLE_MODULES=YES
