@@ -16,6 +16,11 @@
  */
 
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import {
+  AuthorizationStatus as AuthorizationStatusConst,
+  NotificationAndroidPriority as NotificationAndroidPriorityConst,
+  NotificationAndroidVisibility as NotificationAndroidVisibilityConst,
+} from '../statics';
 
 // ============ Types ============
 
@@ -324,12 +329,7 @@ export interface Notification {
      * Note; on devices which have channel support (Android 8.0 (API level 26) +),
      * this value will be ignored. Instead, the channel "importance" level is used.
      */
-    priority?:
-      | NotificationAndroidPriority.PRIORITY_MIN
-      | NotificationAndroidPriority.PRIORITY_LOW
-      | NotificationAndroidPriority.PRIORITY_DEFAULT
-      | NotificationAndroidPriority.PRIORITY_HIGH
-      | NotificationAndroidPriority.PRIORITY_MAX;
+    priority?: NotificationAndroidPriority;
 
     /**
      * Ticker text set on the notification.
@@ -342,10 +342,7 @@ export interface Notification {
      * The visibility of a notification. This value determines how the notification is shown on the users
      * devices (e.g. on the lock-screen).
      */
-    visibility?:
-      | NotificationAndroidVisibility.VISIBILITY_SECRET
-      | NotificationAndroidVisibility.VISIBILITY_PRIVATE
-      | NotificationAndroidVisibility.VISIBILITY_PUBLIC;
+    visibility?: NotificationAndroidVisibility;
   };
 }
 
@@ -374,64 +371,25 @@ export interface NotificationIOSCriticalSound {
 }
 
 /**
- * The enum representing a notification priority.
+ * The type representing a notification priority.
  *
  * Note; on devices which have channel support (Android 8.0 (API level 26) +),
  * this value will be ignored. Instead, the channel "importance" level is used.
  */
-export enum NotificationAndroidPriority {
-  /**
-   The application small icon will not show up in the status bar, or alert the user. The notification
-   will be in a collapsed state in the notification shade and placed at the bottom of the list.
-   */
-  PRIORITY_MIN = -2,
-
-  /**
-   * The application small icon will show in the device status bar, however the notification will
-   * not alert the user (no sound or vibration). The notification will show in it's expanded state
-   * when the notification shade is pulled down.
-   */
-  PRIORITY_LOW = -1,
-
-  /**
-   * When a notification is received, the device smallIcon will appear in the notification shade.
-   * When the user pulls down the notification shade, the content of the notification will be shown
-   * in it's expanded state.
-   */
-  PRIORITY_DEFAULT = 0,
-
-  /**
-   * Notifications will appear on-top of applications, allowing direct interaction without pulling
-   * own the notification shade. This level is used for urgent notifications, such as
-   * incoming phone calls, messages etc, which require immediate attention.
-   */
-  PRIORITY_HIGH = 1,
-
-  /**
-   * The priority highest level a notification can be set at.
-   */
-  PRIORITY_MAX = 2,
-}
+export type NotificationAndroidPriority =
+  | -2 // PRIORITY_MIN - The application small icon will not show up in the status bar, or alert the user. The notification will be in a collapsed state in the notification shade and placed at the bottom of the list.
+  | -1 // PRIORITY_LOW - The application small icon will show in the device status bar, however the notification will not alert the user (no sound or vibration). The notification will show in it's expanded state when the notification shade is pulled down.
+  | 0 // PRIORITY_DEFAULT - When a notification is received, the device smallIcon will appear in the notification shade. When the user pulls down the notification shade, the content of the notification will be shown in it's expanded state.
+  | 1 // PRIORITY_HIGH - Notifications will appear on-top of applications, allowing direct interaction without pulling own the notification shade. This level is used for urgent notifications, such as incoming phone calls, messages etc, which require immediate attention.
+  | 2; // PRIORITY_MAX - The priority highest level a notification can be set at.
 
 /**
- * The enum representing the visibility of a notification.
+ * The type representing the visibility of a notification.
  */
-export enum NotificationAndroidVisibility {
-  /**
-   * Do not reveal any part of this notification on a secure lock-screen.
-   */
-  VISIBILITY_SECRET = -1,
-
-  /**
-   * Show this notification on all lock-screens, but conceal sensitive or private information on secure lock-screens.
-   */
-  VISIBILITY_PRIVATE = 0,
-
-  /**
-   * Show this notification in its entirety on all lock-screens.
-   */
-  VISIBILITY_PUBLIC = 1,
-}
+export type NotificationAndroidVisibility =
+  | -1 // VISIBILITY_SECRET - Do not reveal any part of this notification on a secure lock-screen.
+  | 0 // VISIBILITY_PRIVATE - Show this notification on all lock-screens, but conceal sensitive or private information on secure lock-screens.
+  | 1; // VISIBILITY_PUBLIC - Show this notification in its entirety on all lock-screens.
 
 /**
  * An interface representing all the available permissions that can be requested by your app via
@@ -502,43 +460,17 @@ export interface IOSPermissions {
 }
 
 /**
- * An enum representing the notification authorization status for this app on the device.
+ * A type representing the notification authorization status for this app on the device.
  *
  * Value is truthy if authorized, compare against an exact status (e.g. iOS PROVISIONAL) for a more
  * granular status.
  */
-export enum AuthorizationStatus {
-  /**
-   * The app user has not yet chosen whether to allow the application to create notifications. Usually
-   * this status is returned prior to the first call of `requestPermission`.
-   *
-   * @platform ios iOS
-   */
-  NOT_DETERMINED = -1,
-
-  /**
-   * The app is not authorized to create notifications.
-   */
-  DENIED = 0,
-
-  /**
-   * The app is authorized to create notifications.
-   */
-  AUTHORIZED = 1,
-
-  /**
-   * The app is currently authorized to post non-interrupting user notifications
-   * @platform ios iOS >= 12
-   */
-  PROVISIONAL = 2,
-
-  /**
-   * The app is authorized to create notifications for a limited amount of time.
-   * Used in App Clips.
-   * @platform ios iOS >= 14
-   */
-  EPHEMERAL = 3,
-}
+export type AuthorizationStatus =
+  | -1 // NOT_DETERMINED - The app user has not yet chosen whether to allow the application to create notifications. Usually this status is returned prior to the first call of `requestPermission`. @platform ios iOS
+  | 0 // DENIED - The app is not authorized to create notifications.
+  | 1 // AUTHORIZED - The app is authorized to create notifications.
+  | 2 // PROVISIONAL - The app is currently authorized to post non-interrupting user notifications @platform ios iOS >= 12
+  | 3; // EPHEMERAL - The app is authorized to create notifications for a limited amount of time. Used in App Clips. @platform ios iOS >= 14
 
 /**
  * An event that is received when a message fails to send.
@@ -826,9 +758,9 @@ export interface Messaging extends ReactNativeFirebase.FirebaseModule {
 
 export interface Statics {
   SDK_VERSION: string;
-  AuthorizationStatus: typeof AuthorizationStatus;
-  NotificationAndroidPriority: typeof NotificationAndroidPriority;
-  NotificationAndroidVisibility: typeof NotificationAndroidVisibility;
+  AuthorizationStatus: typeof AuthorizationStatusConst;
+  NotificationAndroidPriority: typeof NotificationAndroidPriorityConst;
+  NotificationAndroidVisibility: typeof NotificationAndroidVisibilityConst;
 }
 
 // ============ Module Augmentation ============

@@ -1,30 +1,24 @@
 // shared between namespaced and modular API
 
-import {
-  AuthorizationStatus as AuthorizationStatusEnum,
-  NotificationAndroidPriority as NotificationAndroidPriorityEnum,
-  NotificationAndroidVisibility as NotificationAndroidVisibilityEnum,
-} from './types/messaging';
-
 // Export as objects for runtime use (matching the old statics.js pattern)
 export const AuthorizationStatus = {
-  NOT_DETERMINED: AuthorizationStatusEnum.NOT_DETERMINED,
-  DENIED: AuthorizationStatusEnum.DENIED,
-  AUTHORIZED: AuthorizationStatusEnum.AUTHORIZED,
-  PROVISIONAL: AuthorizationStatusEnum.PROVISIONAL,
-  EPHEMERAL: AuthorizationStatusEnum.EPHEMERAL,
+  NOT_DETERMINED: -1,
+  DENIED: 0,
+  AUTHORIZED: 1,
+  PROVISIONAL: 2,
+  EPHEMERAL: 3,
 } as const;
 
 export const NotificationAndroidPriority = {
-  PRIORITY_MIN: NotificationAndroidPriorityEnum.PRIORITY_MIN,
-  PRIORITY_LOW: NotificationAndroidPriorityEnum.PRIORITY_LOW,
-  PRIORITY_DEFAULT: NotificationAndroidPriorityEnum.PRIORITY_DEFAULT,
-  PRIORITY_HIGH: NotificationAndroidPriorityEnum.PRIORITY_HIGH,
-  PRIORITY_MAX: NotificationAndroidPriorityEnum.PRIORITY_MAX,
+  PRIORITY_MIN: -2,
+  PRIORITY_LOW: -1,
+  PRIORITY_DEFAULT: 0,
+  PRIORITY_HIGH: 1,
+  PRIORITY_MAX: 2,
 } as const;
 
 export const NotificationAndroidVisibility = {
-  VISIBILITY_SECRET: NotificationAndroidVisibilityEnum.VISIBILITY_SECRET,
-  VISIBILITY_PRIVATE: NotificationAndroidVisibilityEnum.VISIBILITY_PRIVATE,
-  VISIBILITY_PUBLIC: NotificationAndroidVisibilityEnum.VISIBILITY_PUBLIC,
+  VISIBILITY_SECRET: -1,
+  VISIBILITY_PRIVATE: 0,
+  VISIBILITY_PUBLIC: 1,
 } as const;

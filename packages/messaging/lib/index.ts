@@ -30,12 +30,11 @@ export type {
   FirebaseMessagingTypes,
 } from './types/messaging';
 
-// Export static enums
 export {
   AuthorizationStatus,
   NotificationAndroidPriority,
   NotificationAndroidVisibility,
-} from './types/messaging';
+} from './statics';
 
 // Export modular API functions
 export * from './modular';
