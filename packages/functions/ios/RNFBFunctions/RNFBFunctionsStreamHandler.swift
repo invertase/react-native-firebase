@@ -28,23 +28,69 @@ public class RNFBFunctionsStreamHandler: NSObject {
   
   /// Start streaming from a Firebase Function
   /// - Parameters:
-  ///   - functions: Firebase Functions instance
+  ///   - app: Firebase App instance (can be FIRApp or FirebaseApp)
+  ///   - regionOrCustomDomain: Region string or custom domain URL
+  ///   - emulatorHost: Emulator host (optional)
+  ///   - emulatorPort: Emulator port (optional)
   ///   - functionName: Name of the function (mutually exclusive with functionUrl)
   ///   - functionUrl: URL of the function (mutually exclusive with functionName)
   ///   - parameters: Data to pass to the function
   ///   - timeout: Timeout in milliseconds
   ///   - eventCallback: Callback for each stream event
   @objc public func startStream(
-    functions: Functions,
+    app: Any,
+    regionOrCustomDomain: String?,
+    emulatorHost: String?,
+    emulatorPort: Int,
     functionName: String?,
     functionUrl: String?,
     parameters: Any?,
     timeout: Double,
     eventCallback: @escaping ([AnyHashable: Any]) -> Void
   ) {
-    streamTask = Task {
+    // Create Task with explicit priority and detached context for macOS compatibility
+    streamTask = Task.detached(priority: .userInitiated) {
+      // Convert app to Swift FirebaseApp
+      let swiftApp: FirebaseApp
+      if let firApp = app as? FIRApp {
+        // Convert FIRApp to FirebaseApp
+        swiftApp = FirebaseApp.app(named: firApp.name) ?? FirebaseApp.app()!
+      } else if let firebaseApp = app as? FirebaseApp {
+        swiftApp = firebaseApp
+      } else {
+        // Use DispatchQueue instead of MainActor for macOS compatibility
+        DispatchQueue.main.async {
+          eventCallback([
+            "data": NSNull(),
+            "error": "Invalid Firebase App instance",
+            "done": false
+          ])
+        }
+        return
+      }
+      
+      // Create Swift Functions instance directly (required for macOS streaming)
+      let swiftFunctions: Functions
+      if let regionOrCustomDomain = regionOrCustomDomain,
+         let url = URL(string: regionOrCustomDomain),
+         url.scheme != nil && url.host != nil {
+        // Custom domain
+        swiftFunctions = Functions.functions(app: swiftApp, customDomain: regionOrCustomDomain)
+      } else if let region = regionOrCustomDomain {
+        // Region
+        swiftFunctions = Functions.functions(app: swiftApp, region: region)
+      } else {
+        // Default
+        swiftFunctions = Functions.functions(app: swiftApp)
+      }
+      
+      // Configure emulator if provided
+      if let emulatorHost = emulatorHost, emulatorPort > 0 {
+        swiftFunctions.useEmulator(withHost: emulatorHost, port: emulatorPort)
+      }
+      
       await performStream(
-        functions: functions,
+        functions: swiftFunctions,
         functionName: functionName,
         functionUrl: functionUrl,
         parameters: parameters,
@@ -76,7 +122,8 @@ public class RNFBFunctionsStreamHandler: NSObject {
     } else if let functionUrl = functionUrl, let url = URL(string: functionUrl) {
       callable = functions.httpsCallable(url)
     } else {
-      await MainActor.run {
+      // Use DispatchQueue instead of MainActor for macOS compatibility
+      DispatchQueue.main.async {
         eventCallback([
           "data": NSNull(),
           "error": "Either functionName or functionUrl must be provided",
@@ -98,33 +145,76 @@ public class RNFBFunctionsStreamHandler: NSObject {
       // Start streaming using Firebase SDK's native stream() method
       let stream = try callable.stream(encodedParams)
       
-      // Iterate over stream responses
-      for try await response in stream {
-        await MainActor.run {
+      // Iterate over stream responses with cancellation check
+      var streamCompleted = false
+      do {
+        for try await response in stream {
+          // Check if task was cancelled (throws CancellationError on macOS if cancelled)
+          try Task.checkCancellation()
+          
+          // Process response - build event dictionary first
+          let event: [AnyHashable: Any]
           switch response {
           case .message(let message):
             // This is a data chunk from sendChunk()
-            eventCallback([
+            event = [
               "data": message.value ?? NSNull(),
               "error": NSNull(),
               "done": false
-            ])
+            ]
           case .result(let result):
-            // This is the final result
-            eventCallback([
+            // This is the final result - stream ends after this
+            event = [
               "data": result.value ?? NSNull(),
               "error": NSNull(),
               "done": true
-            ])
+            ]
+            streamCompleted = true
           }
+          
+          // Emit event on main queue (use DispatchQueue instead of MainActor for macOS compatibility)
+          // Don't await - just dispatch and continue to avoid blocking the stream iteration
+          DispatchQueue.main.async {
+            eventCallback(event)
+          }
+          
+          // Break after final result - stream should complete naturally
+          if streamCompleted {
+            break
+          }
+        }
+      } catch is CancellationError {
+        // Task was cancelled - emit cancellation event
+        DispatchQueue.main.async {
+          eventCallback([
+            "data": NSNull(),
+            "error": "Stream cancelled",
+            "done": true
+          ])
+        }
+        return
+      }
+      
+      // If we reach here without a .result case, emit final done event
+      // This shouldn't happen with Firebase Functions, but handle it anyway
+      if !streamCompleted {
+        DispatchQueue.main.async {
+          eventCallback([
+            "data": NSNull(),
+            "error": NSNull(),
+            "done": true
+          ])
         }
       }
     } catch {
-      await MainActor.run {
+      // Check if error is due to cancellation
+      let isCancelled = error is CancellationError || (error as NSError).code == NSURLErrorCancelled
+      
+      DispatchQueue.main.async {
         eventCallback([
           "data": NSNull(),
           "error": error.localizedDescription,
-          "done": false
+          "done": isCancelled ? true : false
         ])
       }
     }

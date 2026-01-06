@@ -309,6 +309,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
         self.streamSubscriptions[listenerIdNumber] = [NSNull null];
         
         // Use Firebase SDK's native streaming via Swift wrapper
+        // On macOS, we need to use Swift Functions API directly, so pass app/region info
         RNFBFunctionsStreamHandler *handler = [[RNFBFunctionsStreamHandler alloc] init];
         
         // Check again if cancelled during handler creation
@@ -321,23 +322,26 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
 
         double timeoutValue = timeout.has_value() ? timeout.value() : 0;
 
-        [handler startStreamWithFunctions:functions
-                             functionName:name
-                              functionUrl:nil
-                               parameters:callableData
-                                  timeout:timeoutValue
-                            eventCallback:^(NSDictionary *event) {
-                              NSDictionary *eventBody =
-                                  @{@"listenerId" : listenerIdNumber, @"body" : event};
-                              [[RNFBRCTEventEmitter shared]
-                                  sendEventWithName:@"functions_streaming_event"
-                                               body:eventBody];
+        [handler startStreamWithApp:firebaseApp
+                 regionOrCustomDomain:customUrlOrRegion
+                         emulatorHost:emulatorHost
+                         emulatorPort:(int)emulatorPort
+                         functionName:name
+                          functionUrl:nil
+                           parameters:callableData
+                              timeout:timeoutValue
+                        eventCallback:^(NSDictionary *event) {
+                          NSDictionary *eventBody =
+                              @{@"listenerId" : listenerIdNumber, @"body" : event};
+                          [[RNFBRCTEventEmitter shared]
+                              sendEventWithName:@"functions_streaming_event"
+                                           body:eventBody];
 
-                              // Remove handler when done
-                              if ([event[@"done"] boolValue]) {
-                                [self.streamSubscriptions removeObjectForKey:listenerIdNumber];
-                              }
-                            }];
+                          // Remove handler when done
+                          if ([event[@"done"] boolValue]) {
+                            [self.streamSubscriptions removeObjectForKey:listenerIdNumber];
+                          }
+                        }];
 #else
           // Swift bridging not available
           NSDictionary *eventBody = @{
@@ -433,6 +437,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
         self.streamSubscriptions[listenerIdNumber] = [NSNull null];
         
         // Use Firebase SDK's native streaming via Swift wrapper
+        // On macOS, we need to use Swift Functions API directly, so pass app/region info
         RNFBFunctionsStreamHandler *handler = [[RNFBFunctionsStreamHandler alloc] init];
         
         // Check again if cancelled during handler creation
@@ -445,23 +450,26 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
 
         double timeoutValue = timeout.has_value() ? timeout.value() : 0;
 
-        [handler startStreamWithFunctions:functions
-                             functionName:nil
-                              functionUrl:urlString
-                               parameters:callableData
-                                  timeout:timeoutValue
-                            eventCallback:^(NSDictionary *event) {
-                              NSDictionary *eventBody =
-                                  @{@"listenerId" : listenerIdNumber, @"body" : event};
-                              [[RNFBRCTEventEmitter shared]
-                                  sendEventWithName:@"functions_streaming_event"
-                                               body:eventBody];
+        [handler startStreamWithApp:firebaseApp
+                 regionOrCustomDomain:customUrlOrRegion
+                         emulatorHost:emulatorHost
+                         emulatorPort:(int)emulatorPort
+                         functionName:nil
+                          functionUrl:urlString
+                           parameters:callableData
+                              timeout:timeoutValue
+                        eventCallback:^(NSDictionary *event) {
+                          NSDictionary *eventBody =
+                              @{@"listenerId" : listenerIdNumber, @"body" : event};
+                          [[RNFBRCTEventEmitter shared]
+                              sendEventWithName:@"functions_streaming_event"
+                                           body:eventBody];
 
-                              // Remove handler when done
-                              if ([event[@"done"] boolValue]) {
-                                [self.streamSubscriptions removeObjectForKey:listenerIdNumber];
-                              }
-                            }];
+                          // Remove handler when done
+                          if ([event[@"done"] boolValue]) {
+                            [self.streamSubscriptions removeObjectForKey:listenerIdNumber];
+                          }
+                        }];
 #else
           // Swift bridging not available
           NSDictionary *eventBody = @{
