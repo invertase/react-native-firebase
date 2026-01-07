@@ -24,6 +24,7 @@
     "packages/firestore/lib/modular/index.d.ts",
     "packages/firestore/lib/modular/query.d.ts",
     "packages/firestore/lib/modular/snapshot.d.ts",
+    "packages/firestore/lib/modular/VectorValue.d.ts",
     "packages/in-app-messaging/lib/index.d.ts",
     "packages/in-app-messaging/lib/modular/index.d.ts",
     "packages/installations/lib/index.d.ts",
