@@ -524,7 +524,9 @@ class FirebaseMessagingModule extends FirebaseModule implements Messaging {
   async isSupported(): Promise<boolean> {
     if (isAndroid) {
       const firebase = getFirebaseRoot();
-      playServicesAvailability = firebase.utils().playServicesAvailability;
+      const app = this.app;
+      // @ts-ignore - secret "app" argument to avoid deprecation warning when getApp() is called under the hood
+      playServicesAvailability = firebase.utils(app).playServicesAvailability;
       return playServicesAvailability.isAvailable;
     }
     // Always return "true" for iOS. Web will be implemented when it is supported
