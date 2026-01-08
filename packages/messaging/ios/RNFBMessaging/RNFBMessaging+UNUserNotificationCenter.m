@@ -44,17 +44,24 @@ struct {
   __weak RNFBMessagingUNUserNotificationCenter *weakSelf = self;
   dispatch_once(&once, ^{
     RNFBMessagingUNUserNotificationCenter *strongSelf = weakSelf;
-    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    UNUserNotificationCenter *center =
+        [UNUserNotificationCenter currentNotificationCenter];
     if (center.delegate != nil) {
       _originalDelegate = center.delegate;
-      originalDelegateRespondsTo.openSettingsForNotification = (unsigned int)[_originalDelegate
-          respondsToSelector:@selector(userNotificationCenter:openSettingsForNotification:)];
-      originalDelegateRespondsTo.willPresentNotification = (unsigned int)[_originalDelegate
-          respondsToSelector:@selector(userNotificationCenter:
-                                      willPresentNotification:withCompletionHandler:)];
-      originalDelegateRespondsTo.didReceiveNotificationResponse = (unsigned int)[_originalDelegate
-          respondsToSelector:@selector(userNotificationCenter:
-                                 didReceiveNotificationResponse:withCompletionHandler:)];
+      originalDelegateRespondsTo.openSettingsForNotification =
+          (unsigned int)[_originalDelegate
+              respondsToSelector:@selector(userNotificationCenter:
+                                      openSettingsForNotification:)];
+      originalDelegateRespondsTo.willPresentNotification =
+          (unsigned int)[_originalDelegate
+              respondsToSelector:@selector
+              (userNotificationCenter:
+                  willPresentNotification:withCompletionHandler:)];
+      originalDelegateRespondsTo.didReceiveNotificationResponse =
+          (unsigned int)[_originalDelegate
+              respondsToSelector:@selector
+              (userNotificationCenter:
+                  didReceiveNotificationResponse:withCompletionHandler:)];
     }
     center.delegate = strongSelf;
   });
@@ -82,12 +89,14 @@ struct {
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
        willPresentNotification:(UNNotification *)notification
          withCompletionHandler:
-             (void (^)(UNNotificationPresentationOptions options))completionHandler {
-  NSArray *presentationOptionsConfig =
-      [[RNFBJSON shared] getArrayValue:@"messaging_ios_foreground_presentation_options"
-                          defaultValue:@[]];
+             (void (^)(UNNotificationPresentationOptions options))
+                 completionHandler {
+  NSArray *presentationOptionsConfig = [[RNFBJSON shared]
+      getArrayValue:@"messaging_ios_foreground_presentation_options"
+       defaultValue:@[]];
 
-  UNNotificationPresentationOptions presentationOptions = UNNotificationPresentationOptionNone;
+  UNNotificationPresentationOptions presentationOptions =
+      UNNotificationPresentationOptionNone;
 
   BOOL badge = [presentationOptionsConfig containsObject:@"badge"];
   BOOL sound = [presentationOptionsConfig containsObject:@"sound"];
@@ -128,39 +137,47 @@ struct {
   }
 
   if (notification.request.content.userInfo[@"gcm.message_id"]) {
-    NSDictionary *notificationDict = [RNFBMessagingSerializer notificationToDict:notification];
+    NSDictionary *notificationDict =
+        [RNFBMessagingSerializer notificationToDict:notification];
 
-    // Don't send an event if contentAvailable is true - application:didReceiveRemoteNotification
-    // will send the event for us, we don't want to duplicate them
+    // Don't send an event if contentAvailable is true -
+    // application:didReceiveRemoteNotification will send the event for us, we
+    // don't want to duplicate them
     if (!notificationDict[@"contentAvailable"]) {
-      [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received"
-                                                 body:notificationDict];
+      [[RNFBRCTEventEmitter shared]
+          sendEventWithName:@"messaging_message_received"
+                       body:notificationDict];
     }
-    completionHandler(presentationOptions);
   }
 
-  if (_originalDelegate != nil && originalDelegateRespondsTo.willPresentNotification) {
+  if (_originalDelegate != nil &&
+      originalDelegateRespondsTo.willPresentNotification) {
     [_originalDelegate userNotificationCenter:center
                       willPresentNotification:notification
                         withCompletionHandler:completionHandler];
-  } else {
-    completionHandler(presentationOptions);
   }
+
+  // Don't consume completionHandler before the _originalDelegate has been
+  // processed
+  completionHandler(presentationOptions);
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
     didReceiveNotificationResponse:(UNNotificationResponse *)response
              withCompletionHandler:(void (^)(void))completionHandler {
-  NSDictionary *remoteNotification = response.notification.request.content.userInfo;
+  NSDictionary *remoteNotification =
+      response.notification.request.content.userInfo;
   if (remoteNotification[@"gcm.message_id"]) {
-    NSDictionary *notificationDict =
-        [RNFBMessagingSerializer remoteMessageUserInfoToDict:remoteNotification];
-    [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_notification_opened"
-                                               body:notificationDict];
+    NSDictionary *notificationDict = [RNFBMessagingSerializer
+        remoteMessageUserInfoToDict:remoteNotification];
+    [[RNFBRCTEventEmitter shared]
+        sendEventWithName:@"messaging_notification_opened"
+                     body:notificationDict];
     _initialNotification = notificationDict;
   }
 
-  if (_originalDelegate != nil && originalDelegateRespondsTo.didReceiveNotificationResponse) {
+  if (_originalDelegate != nil &&
+      originalDelegateRespondsTo.didReceiveNotificationResponse) {
     [_originalDelegate userNotificationCenter:center
                didReceiveNotificationResponse:response
                         withCompletionHandler:completionHandler];
@@ -171,12 +188,16 @@ struct {
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
     openSettingsForNotification:(nullable UNNotification *)notification {
-  if (_originalDelegate != nil && originalDelegateRespondsTo.openSettingsForNotification) {
-    [_originalDelegate userNotificationCenter:center openSettingsForNotification:notification];
+  if (_originalDelegate != nil &&
+      originalDelegateRespondsTo.openSettingsForNotification) {
+    [_originalDelegate userNotificationCenter:center
+                  openSettingsForNotification:notification];
   } else {
-    NSDictionary *notificationDict = [RNFBMessagingSerializer notificationToDict:notification];
-    [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_settings_for_notification_opened"
-                                               body:notificationDict];
+    NSDictionary *notificationDict =
+        [RNFBMessagingSerializer notificationToDict:notification];
+    [[RNFBRCTEventEmitter shared]
+        sendEventWithName:@"messaging_settings_for_notification_opened"
+                     body:notificationDict];
 
     _didOpenSettingsForNotification = YES;
   }
