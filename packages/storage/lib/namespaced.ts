@@ -34,7 +34,6 @@ import StorageReference from './StorageReference';
 import { StringFormat, TaskEvent, TaskState } from './StorageStatics';
 import { getGsUrlParts, getHttpUrlParts, handleStorageEvent } from './utils';
 import { version } from './version';
-// @ts-ignore - Web fallback module
 import fallBackModule from './web/RNFBStorageModule';
 import type { Storage, StorageStatics, Reference, EmulatorMockTokenOptions } from './types/storage';
 

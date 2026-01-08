@@ -15,17 +15,59 @@ import {
 import { guard, getWebError, emitEvent } from '@react-native-firebase/app/lib/internal/web/utils';
 import { Base64 } from '@react-native-firebase/app/lib/common';
 
-function rejectWithCodeAndMessage(code, message) {
-  return Promise.reject(
-    getWebError({
-      code,
-      message,
-    }),
-  );
+interface EmulatorConfig {
+  host: string;
+  port: number;
 }
 
-function metadataToObject(metadata) {
-  const out = {
+interface Metadata {
+  bucket?: string;
+  generation?: string;
+  metageneration?: string;
+  fullPath?: string;
+  name?: string;
+  size?: number;
+  timeCreated?: string;
+  updated?: string;
+  md5Hash?: string;
+  cacheControl?: string;
+  contentLanguage?: string;
+  contentDisposition?: string;
+  contentEncoding?: string;
+  contentType?: string;
+  customMetadata?: Record<string, string>;
+}
+
+interface SettableMetadata {
+  cacheControl?: string;
+  contentDisposition?: string;
+  contentEncoding?: string;
+  contentType?: string;
+  contentLanguage?: string;
+  customMetadata?: Record<string, string>;
+  md5Hash?: string;
+}
+
+interface UploadTaskSnapshot {
+  totalBytes: number;
+  bytesTransferred: number;
+  state: string;
+  metadata: Metadata;
+}
+
+interface ListOptions {
+  maxResults?: number;
+  pageToken?: string;
+}
+
+function rejectWithCodeAndMessage(code: string, message: string): Promise<never> {
+  const error = new Error(message);
+  (error as Error & { code?: string }).code = code;
+  return Promise.reject(getWebError(error));
+}
+
+function metadataToObject(metadata: Metadata): Metadata & { metadata?: Record<string, string> } {
+  const out: Metadata & { metadata?: Record<string, string> } = {
     bucket: metadata.bucket,
     generation: metadata.generation,
     metageneration: metadata.metageneration,
@@ -66,7 +108,7 @@ function metadataToObject(metadata) {
   return out;
 }
 
-function uploadTaskErrorToObject(error, snapshot) {
+function uploadTaskErrorToObject(error: any, snapshot: any): UploadTaskSnapshot & { error: any } {
   return {
     ...uploadTaskSnapshotToObject(snapshot),
     state: 'error',
@@ -74,7 +116,7 @@ function uploadTaskErrorToObject(error, snapshot) {
   };
 }
 
-function uploadTaskSnapshotToObject(snapshot) {
+function uploadTaskSnapshotToObject(snapshot: any): UploadTaskSnapshot {
   return {
     totalBytes: snapshot ? snapshot.totalBytes : 0,
     bytesTransferred: snapshot ? snapshot.bytesTransferred : 0,
@@ -83,19 +125,19 @@ function uploadTaskSnapshotToObject(snapshot) {
   };
 }
 
-function taskStateToString(state) {
-  const override = {
+function taskStateToString(state: string): string {
+  const override: Record<string, string> = {
     canceled: 'cancelled',
   };
 
   if (state in override) {
-    return override[state];
+    return override[state]!;
   }
 
   return state;
 }
 
-function makeSettableMetadata(metadata) {
+function makeSettableMetadata(metadata: SettableMetadata): SettableMetadata {
   return {
     cacheControl: metadata.cacheControl,
     contentDisposition: metadata.contentDisposition,
@@ -106,7 +148,7 @@ function makeSettableMetadata(metadata) {
   };
 }
 
-function listResultToObject(result) {
+function listResultToObject(result: { nextPageToken?: string; items: any[]; prefixes: any[] }) {
   return {
     nextPageToken: result.nextPageToken,
     items: result.items.map(ref => ref.fullPath),
@@ -114,37 +156,37 @@ function listResultToObject(result) {
   };
 }
 
-const emulatorForApp = {};
-const appInstances = {};
-const storageInstances = {};
-const tasks = {};
+const emulatorForApp: Record<string, EmulatorConfig> = {};
+const appInstances: Record<string, any> = {};
+const storageInstances: Record<string, any> = {};
+const tasks: Record<string, any> = {};
 
-function getBucketFromUrl(url) {
+function getBucketFromUrl(url: string): string {
   // Check if the URL starts with "gs://"
   if (url.startsWith('gs://')) {
     // Return the bucket name by extracting everything up to the first slash after "gs://"
     // and removing the "gs://" prefix
-    return url.substring(5).split('/')[0];
+    return url.substring(5).split('/')[0]!;
   } else {
     // Assume the URL is a path format, strip the leading slash if it exists and extract the bucket name
     const strippedUrl = url.startsWith('/') ? url.substring(1) : url;
     // Extract the bucket from the path, assuming it ends at the first slash after the domain
-    return strippedUrl.split('/')[0];
+    return strippedUrl.split('/')[0]!;
   }
 }
 
-function getCachedAppInstance(appName) {
+function getCachedAppInstance(appName: string): any {
   return (appInstances[appName] ??= getApp(appName));
 }
 
-function emulatorKey(appName, url) {
+function emulatorKey(appName: string, url: string): string {
   const bucket = getBucketFromUrl(url);
   return `${appName}|${bucket}`;
 }
 
 // Returns a cached Storage instance.
-function getCachedStorageInstance(appName, url) {
-  let instance;
+function getCachedStorageInstance(appName: string, url?: string | null): any {
+  let instance: any;
   const bucket = url ? getBucketFromUrl(url) : getCachedAppInstance(appName).options.storageBucket;
 
   if (!url) {
@@ -167,13 +209,17 @@ function getCachedStorageInstance(appName, url) {
 }
 
 // Returns a Storage Reference.
-function getReferenceFromUrl(appName, url) {
+function getReferenceFromUrl(appName: string, url: string): any {
   const path = url.substring(url.indexOf('/') + 1);
   const instance = getCachedStorageInstance(appName, path);
   return firebaseStorageRef(instance, url);
 }
 
-const CONSTANTS = {};
+const CONSTANTS: {
+  maxDownloadRetryTime?: number;
+  maxOperationRetryTime?: number;
+  maxUploadRetryTime?: number;
+} = {};
 const defaultAppInstance = getApps()[0];
 
 if (defaultAppInstance) {
@@ -187,11 +233,11 @@ export default {
 
   /**
    * Delete an object at the path.
-   * @param {string} appName - The app name.
-   * @param {string} url - The path to the object.
+   * @param appName - The app name.
+   * @param url - The path to the object.
    * @return {Promise<void>}
    */
-  delete(appName, url) {
+  delete(appName: string, url: string): Promise<void> {
     return guard(async () => {
       const ref = getReferenceFromUrl(appName, url);
       await deleteObject(ref);
@@ -200,11 +246,11 @@ export default {
 
   /**
    * Get the download URL for an object.
-   * @param {string} appName - The app name.
-   * @param {string} url - The path to the object.
+   * @param appName - The app name.
+   * @param url - The path to the object.
    * @return {Promise<string>} The download URL.
    */
-  getDownloadURL(appName, url) {
+  getDownloadURL(appName: string, url: string): Promise<string> {
     return guard(async () => {
       const ref = getReferenceFromUrl(appName, url);
       const downloadURL = await getDownloadURL(ref);
@@ -214,11 +260,14 @@ export default {
 
   /**
    * Get the metadata for an object.
-   * @param {string} appName - The app name.
-   * @param {string} url - The path to the object.
+   * @param appName - The app name.
+   * @param url - The path to the object.
    * @return {Promise<Object>} The metadata.
    */
-  getMetadata(appName, url) {
+  getMetadata(
+    appName: string,
+    url: string,
+  ): Promise<Metadata & { metadata?: Record<string, string> }> {
     return guard(async () => {
       const ref = getReferenceFromUrl(appName, url);
       const metadata = await getMetadata(ref);
@@ -228,12 +277,20 @@ export default {
 
   /**
    * List objects at the path.
-   * @param {string} appName - The app name.
-   * @param {string} url - The path to the object.
-   * @param {Object} listOptions - The list options.
+   * @param appName - The app name.
+   * @param url - The path to the object.
+   * @param listOptions - The list options.
    * @return {Promise<Object>} The list result.
    */
-  list(appName, url, listOptions) {
+  list(
+    appName: string,
+    url: string,
+    listOptions?: ListOptions,
+  ): Promise<{
+    nextPageToken?: string;
+    items: string[];
+    prefixes: string[];
+  }> {
     return guard(async () => {
       const ref = getReferenceFromUrl(appName, url);
       const listResult = await list(ref, listOptions);
@@ -243,11 +300,18 @@ export default {
 
   /**
    * List all objects at the path.
-   * @param {string} appName - The app name.
-   * @param {string} url - The path to the object.
+   * @param appName - The app name.
+   * @param url - The path to the object.
    * @return {Promise<Object>} The list result.
    */
-  listAll(appName, url) {
+  listAll(
+    appName: string,
+    url: string,
+  ): Promise<{
+    nextPageToken?: string;
+    items: string[];
+    prefixes: string[];
+  }> {
     return guard(async () => {
       const ref = getReferenceFromUrl(appName, url);
       const listResult = await listAll(ref);
@@ -257,11 +321,15 @@ export default {
 
   /**
    * Update the metadata for an object.
-   * @param {string} appName - The app name.
-   * @param {string} url - The path to the object.
-   * @param {Object} metadata - The metadata (SettableMetadata).
+   * @param appName - The app name.
+   * @param url - The path to the object.
+   * @param metadata - The metadata (SettableMetadata).
    */
-  updateMetadata(appName, url, metadata) {
+  updateMetadata(
+    appName: string,
+    url: string,
+    metadata: SettableMetadata,
+  ): Promise<Metadata & { metadata?: Record<string, string> }> {
     return guard(async () => {
       const ref = getReferenceFromUrl(appName, url);
       const updated = await updateMetadata(ref, makeSettableMetadata(metadata));
@@ -269,7 +337,7 @@ export default {
     });
   },
 
-  setMaxDownloadRetryTime() {
+  setMaxDownloadRetryTime(): void {
     if (__DEV__) {
       // eslint-disable-next-line no-console
       console.warn(
@@ -281,11 +349,11 @@ export default {
 
   /**
    * Set the maximum operation retry time.
-   * @param {string} appName - The app name.
-   * @param {number} milliseconds - The maximum operation retry time.
+   * @param appName - The app name.
+   * @param milliseconds - The maximum operation retry time.
    * @return {Promise<void>}
    */
-  setMaxOperationRetryTime(appName, milliseconds) {
+  setMaxOperationRetryTime(appName: string, milliseconds: number): Promise<void> {
     return guard(async () => {
       const storage = getCachedStorageInstance(appName);
       storage.maxOperationRetryTime = milliseconds;
@@ -294,11 +362,11 @@ export default {
 
   /**
    * Set the maximum upload retry time.
-   * @param {string} appName - The app name.
-   * @param {number} milliseconds - The maximum upload retry time.
+   * @param appName - The app name.
+   * @param milliseconds - The maximum upload retry time.
    * @return {Promise<void>}
    */
-  setMaxUploadRetryTime(appName, milliseconds) {
+  setMaxUploadRetryTime(appName: string, milliseconds: number): Promise<void> {
     return guard(async () => {
       const storage = getCachedStorageInstance(appName);
       storage.maxUploadRetryTime = milliseconds;
@@ -307,12 +375,12 @@ export default {
 
   /**
    * Use the Firebase Storage emulator.
-   * @param {string} appName - The app name.
-   * @param {string} host - The emulator host.
-   * @param {number} port - The emulator port.
+   * @param appName - The app name.
+   * @param host - The emulator host.
+   * @param port - The emulator port.
    * @return {Promise<void>}
    */
-  useEmulator(appName, host, port, url) {
+  useEmulator(appName: string, host: string, port: number, url: string): Promise<void> {
     return guard(async () => {
       const instance = getCachedStorageInstance(appName, url);
       connectStorageEmulator(instance, host, port);
@@ -321,7 +389,7 @@ export default {
     });
   },
 
-  writeToFile() {
+  writeToFile(): Promise<never> {
     return rejectWithCodeAndMessage(
       'unsupported',
       'This operation is not supported in this environment.',
@@ -330,18 +398,25 @@ export default {
 
   /**
    * Put a string to the path.
-   * @param {string} appName - The app name.
-   * @param {string} url - The path to the object.
-   * @param {string} string - The string to put.
-   * @param {string} format - The format of the string.
-   * @param {Object} metadata - The metadata (SettableMetadata).
-   * @param {string} taskId - The task ID.
+   * @param appName - The app name.
+   * @param url - The path to the object.
+   * @param string - The string to put.
+   * @param format - The format of the string.
+   * @param metadata - The metadata (SettableMetadata).
+   * @param taskId - The task ID.
    * @return {Promise<Object>} The upload snapshot.
    */
-  putString(appName, url, string, format, metadata = {}, taskId) {
+  putString(
+    appName: string,
+    url: string,
+    string: string,
+    format: string,
+    metadata: SettableMetadata = {},
+    taskId: string,
+  ): Promise<UploadTaskSnapshot> {
     return guard(async () => {
       const ref = getReferenceFromUrl(appName, url);
-      let decodedString = null;
+      let decodedString: string | null = null;
 
       // This is always either base64 or base64url
       switch (format) {
@@ -353,7 +428,7 @@ export default {
           break;
       }
 
-      const arrayBuffer = new Uint8Array([...decodedString].map(c => c.charCodeAt(0)));
+      const arrayBuffer = new Uint8Array([...decodedString!].map(c => c.charCodeAt(0)));
 
       const task = uploadBytesResumable(ref, arrayBuffer, {
         ...makeSettableMetadata(metadata),
@@ -363,7 +438,7 @@ export default {
       // Store the task in the tasks map.
       tasks[taskId] = task;
 
-      const snapshot = await new Promise((resolve, reject) => {
+      const snapshot = await new Promise<any>((resolve, reject) => {
         task.on(
           'state_changed',
           snapshot => {
@@ -419,7 +494,7 @@ export default {
     });
   },
 
-  putFile() {
+  putFile(): Promise<never> {
     return rejectWithCodeAndMessage(
       'unsupported',
       'This operation is not supported in this environment.',
@@ -428,12 +503,12 @@ export default {
 
   /**
    * Set the status of a task.
-   * @param {string} appName - The app name.
-   * @param {string} taskId - The task ID.
-   * @param {number} status - The status.
+   * @param appName - The app name.
+   * @param taskId - The task ID.
+   * @param status - The status.
    * @return {Promise<boolean>} Whether the status was set.
    */
-  setTaskStatus(appName, taskId, status) {
+  setTaskStatus(appName: string, taskId: string, status: number): Promise<boolean> {
     // TODO this function implementation cannot
     // be tested right now since we're unable
     // to create a big enough upload to be able to
@@ -461,7 +536,7 @@ export default {
       }
 
       emitEvent('storage_event', {
-        data: buildUploadSnapshotMap(task.snapshot),
+        data: uploadTaskSnapshotToObject(task.snapshot),
         appName,
         taskId,
       });
