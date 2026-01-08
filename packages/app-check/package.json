@@ -59,7 +59,10 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "lib/modular",
+    "lib",
+    "plugin/src",
+    "tsconfig.json",
+    "plugin/tsconfig.json",
     "dist",
     "!**/__tests__",
     "!**/__fixtures__",
