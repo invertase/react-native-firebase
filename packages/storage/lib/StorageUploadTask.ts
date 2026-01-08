@@ -16,12 +16,12 @@
  */
 
 import StorageTask from './StorageTask';
-import type { Reference } from './types/storage';
+import type { Reference, TaskSnapshot } from './types/storage';
 
 const UPLOAD_TASK = 'upload';
 
 export default class StorageUploadTask extends StorageTask {
-  constructor(storageRef: Reference, beginTaskFn: (task: StorageTask) => Promise<any>) {
+  constructor(storageRef: Reference, beginTaskFn: (task: StorageTask) => Promise<TaskSnapshot>) {
     super(UPLOAD_TASK, storageRef, beginTaskFn);
   }
 }

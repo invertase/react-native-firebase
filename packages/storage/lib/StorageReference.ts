@@ -36,11 +36,12 @@ import { StringFormat } from './StorageStatics';
 import StorageUploadTask from './StorageUploadTask';
 import { validateMetadata } from './utils';
 import type { Reference, SettableMetadata, ListOptions, FullMetadata, Task } from './types/storage';
+import type { StoragePrivate } from './types/internal';
 
 export default class StorageReference extends ReferenceBase implements Reference {
-  declare _storage: any; // Will be properly typed when Storage module is converted
+  _storage: StoragePrivate;
 
-  constructor(storage: any, path: string) {
+  constructor(storage: StoragePrivate, path: string) {
     super(path);
     this._storage = storage;
   }
@@ -49,6 +50,7 @@ export default class StorageReference extends ReferenceBase implements Reference
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#bucket
    */
   get bucket(): string {
+    // @ts-ignore
     return this._storage._customUrlOrRegion.replace('gs://', '');
   }
 

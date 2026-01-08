@@ -36,6 +36,7 @@ import { getGsUrlParts, getHttpUrlParts, handleStorageEvent } from './utils';
 import { version } from './version';
 import fallBackModule from './web/RNFBStorageModule';
 import type { Storage, StorageStatics, Reference, EmulatorMockTokenOptions } from './types/storage';
+import type { StoragePrivate } from './types/internal';
 
 const statics: StorageStatics = {
   StringFormat,
@@ -48,12 +49,12 @@ const nativeEvents = ['storage_event'];
 const nativeModuleName = 'RNFBStorageModule';
 
 class FirebaseStorageModule extends FirebaseModule {
-  declare _customUrlOrRegion: string;
-  declare emulatorHost: string | undefined;
-  declare emulatorPort: number;
-  declare _maxUploadRetryTime: number;
-  declare _maxDownloadRetryTime: number;
-  declare _maxOperationRetryTime: number;
+  _customUrlOrRegion: string = '';
+  emulatorHost: string | undefined;
+  emulatorPort: number;
+  _maxUploadRetryTime: number;
+  _maxDownloadRetryTime: number;
+  _maxOperationRetryTime: number;
 
   constructor(
     app: ReactNativeFirebase.FirebaseAppBase,
@@ -139,7 +140,7 @@ class FirebaseStorageModule extends FirebaseModule {
     }
 
     const storageInstance = this.app.storage(bucket);
-    return new StorageReference(storageInstance, path);
+    return new StorageReference(storageInstance as StoragePrivate, path);
   }
 
   /**

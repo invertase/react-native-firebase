@@ -15,7 +15,7 @@
  *
  */
 
-import type { Reference } from './types/storage';
+import type { Reference, Storage } from './types/storage';
 
 // To avoid React Native require cycle warnings
 let StorageReference: (new (storage: any, path: string) => Reference) | null = null;
@@ -32,7 +32,7 @@ export default class StorageListResult {
   private _prefixes: Reference[];
 
   constructor(
-    storage: any,
+    storage: Storage,
     nativeData: { nextPageToken?: string | null; items: string[]; prefixes: string[] },
   ) {
     this._nextPageToken = nativeData.nextPageToken || null;

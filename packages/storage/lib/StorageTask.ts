@@ -159,13 +159,13 @@ function subscribeToEvents(
 }
 
 export default class StorageTask {
-  declare _type: string;
-  declare _id: number;
-  declare _promise: Promise<any> | null;
-  declare _ref: Reference;
-  declare _beginTask: (task: StorageTask) => Promise<any>;
-  declare _storage: any; // Will be properly typed when Storage module is converted
-  declare _snapshot: TaskSnapshot | null;
+  _type: string;
+  _id: number;
+  _promise: Promise<any> | null;
+  _ref: Reference;
+  _beginTask: (task: StorageTask) => Promise<any>;
+  _storage: any; // Will be properly typed when Storage module is converted
+  _snapshot: TaskSnapshot | null;
 
   constructor(
     type: string,
