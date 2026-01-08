@@ -115,18 +115,59 @@ export interface Reference {
 /**
  * Storage task for uploads or downloads.
  */
-export interface Task extends Promise<TaskSnapshot> {
+export interface Task {
+  /**
+   * Initial state of Task.snapshot is `null`. Once uploading begins, it updates to a `TaskSnapshot` object.
+   */
   snapshot: TaskSnapshot | null;
+
+  /**
+   * Pause the current Download or Upload task.
+   */
+  pause(): Promise<boolean>;
+
+  /**
+   * Resume the current Download or Upload task.
+   */
+  resume(): Promise<boolean>;
+
+  /**
+   * Cancel the current Download or Upload task.
+   */
+  cancel(): Promise<boolean>;
+
+  /**
+   * Subscribe to task state changes.
+   *
+   * @param event The event name to handle, always `state_changed`.
+   * @param nextOrObserver The optional event observer function or object.
+   * @param error An optional JavaScript error handler.
+   * @param complete An optional complete handler function.
+   */
   on(
     event: string,
     nextOrObserver?: ((snapshot: TaskSnapshot) => void) | null,
     error?: ((error: Error) => void) | null,
     complete?: ((snapshot: TaskSnapshot) => void) | null,
   ): () => void;
-  pause(): Promise<void>;
-  resume(): Promise<boolean>;
-  cancel(): Promise<boolean>;
-  catch(onRejected: (error: Error) => void | PromiseLike<void>): Promise<void>;
+
+  /**
+   * Attaches callbacks for the resolution and/or rejection of the Task.
+   *
+   * @param onFulfilled Optional callback for when the task completes successfully.
+   * @param onRejected Optional callback for when the task fails.
+   */
+  then(
+    onFulfilled?: ((snapshot: TaskSnapshot) => any) | null,
+    onRejected?: ((error: Error) => any) | null,
+  ): Promise<any>;
+
+  /**
+   * Attaches a callback for only the rejection of the Task.
+   *
+   * @param onRejected Callback for when the task fails.
+   */
+  catch(onRejected: (error: Error) => any): Promise<any>;
 }
 
 /**
