@@ -1,27 +1,9 @@
 {
+  "extends": "../../tsconfig.packages.base.json",
   "compilerOptions": {
-    "allowUnreachableCode": false,
-    "allowUnusedLabels": false,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "jsx": "react-jsx",
-    "lib": ["ESNext", "DOM"],
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "noImplicitUseStrict": false,
-    "noStrictGenericChecks": false,
-    "noUncheckedIndexedAccess": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "target": "ESNext",
-    "verbatimModuleSyntax": true,
     "baseUrl": ".",
-    "rootDir": "."
+    "rootDir": ".",
+    "lib": ["ESNext", "DOM"]
   },
   "include": ["lib/**/*"],
   "exclude": ["node_modules", "dist", "__tests__", "**/*.test.ts"]

@@ -5127,7 +5127,9 @@ __metadata:
   resolution: "@react-native-firebase/crashlytics@workspace:packages/crashlytics"
   dependencies:
     expo: "npm:^54.0.27"
+    react-native-builder-bob: "npm:^0.40.12"
     stacktrace-js: "npm:^2.0.2"
+    typescript: "npm:^5.8.3"
   peerDependencies:
     "@react-native-firebase/app": 23.7.0
     expo: ">=47.0.0"
