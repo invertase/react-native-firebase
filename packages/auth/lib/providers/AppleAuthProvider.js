@@ -26,11 +26,12 @@ export default class AppleAuthProvider {
     return providerId;
   }
 
-  static credential(token, secret) {
+  static credential(token, secret, fullName) {
     return {
       token,
       secret,
       providerId,
+      fullName,
     };
   }
 }
