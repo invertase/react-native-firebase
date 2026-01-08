@@ -21,8 +21,8 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-
-import version from './version';
+import { version } from './version';
+import type { FirebaseAppDistributionTypes } from './types/app-distribution';
 
 const statics = {};
 
@@ -31,40 +31,44 @@ const namespace = 'appDistribution';
 const nativeModuleName = 'RNFBAppDistributionModule';
 
 class FirebaseAppDistributionModule extends FirebaseModule {
-  isTesterSignedIn() {
+  isTesterSignedIn(_modularDeprecationArg?: any): Promise<boolean> {
     if (isIOS) {
+      // @ts-ignore - native is inherited from FirebaseModule
       return this.native.isTesterSignedIn();
     }
 
-    Promise.reject(new Error('App Distribution is not supported on this platform.'));
+    return Promise.reject(new Error('App Distribution is not supported on this platform.'));
   }
 
-  signInTester() {
+  signInTester(_modularDeprecationArg?: any): Promise<void> {
     if (isIOS) {
+      // @ts-ignore - native is inherited from FirebaseModule
       return this.native.signInTester();
     }
 
-    Promise.reject(new Error('App Distribution is not supported on this platform.'));
+    return Promise.reject(new Error('App Distribution is not supported on this platform.'));
   }
 
-  checkForUpdate() {
+  checkForUpdate(
+    _modularDeprecationArg?: any,
+  ): Promise<FirebaseAppDistributionTypes.AppDistributionRelease> {
     if (isIOS) {
+      // @ts-ignore - native is inherited from FirebaseModule
       return this.native.checkForUpdate();
     }
 
-    Promise.reject(new Error('App Distribution is not supported on this platform.'));
+    return Promise.reject(new Error('App Distribution is not supported on this platform.'));
   }
 
-  signOutTester() {
+  signOutTester(_modularDeprecationArg?: any): Promise<void> {
     if (isIOS) {
+      // @ts-ignore - native is inherited from FirebaseModule
       return this.native.signOutTester();
     }
 
-    Promise.reject(new Error('App Distribution is not supported on this platform.'));
+    return Promise.reject(new Error('App Distribution is not supported on this platform.'));
   }
 }
-
-export * from './modular';
 
 // import { SDK_VERSION } from '@react-native-firebase/app-distribution';
 export const SDK_VERSION = version;
