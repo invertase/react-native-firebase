@@ -59,6 +59,9 @@
   },
   "files": [
     "lib",
+    "plugin/src",
+    "tsconfig.json",
+    "plugin/tsconfig.json",
     "dist",
     "!**/__tests__",
     "!**/__fixtures__",
