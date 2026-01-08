@@ -37,6 +37,7 @@ const MAP = {
   object: 16,
   integer: 17,
   negativeZero: 18,
+  vector: 19,
   unknown: -999,
 };
 

@@ -3,14 +3,16 @@
   "version": "23.7.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Firebase Crashlytics is a lightweight, realtime crash reporter that helps you track, prioritize, and fix stability issues that erode your app quality. React Native Firebase provides automatic crash reporting for both native and JavaScript errors, including unhandled promise rejections.",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "./dist/commonjs/index.js",
+  "module": "./dist/module/index.js",
+  "types": "./dist/typescript/commonjs/lib/index.d.ts",
   "scripts": {
-    "build": "genversion --semi lib/version.js",
+    "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
     "build:plugin": "rimraf plugin/build && tsc --build plugin",
     "lint:plugin": "eslint plugin/src/*",
-    "prepare": "yarn run build && yarn run build:plugin"
+    "compile": "bob build",
+    "prepare": "yarn run build && yarn run build:plugin && yarn compile"
   },
   "repository": {
     "type": "git",
@@ -36,7 +38,9 @@
     "stacktrace-js": "^2.0.2"
   },
   "devDependencies": {
-    "expo": "^54.0.27"
+    "expo": "^54.0.27",
+    "react-native-builder-bob": "^0.40.12",
+    "typescript": "^5.8.3"
   },
   "peerDependenciesMeta": {
     "expo": {
@@ -46,5 +50,53 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
+  },
+  "exports": {
+    ".": {
+      "source": "./lib/index.ts",
+      "import": {
+        "types": "./dist/typescript/module/lib/index.d.ts",
+        "default": "./dist/module/index.js"
+      },
+      "require": {
+        "types": "./dist/typescript/commonjs/lib/index.d.ts",
+        "default": "./dist/commonjs/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "plugin/src",
+    "tsconfig.json",
+    "plugin/tsconfig.json",
+    "dist",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__"
+  ],
+  "react-native-builder-bob": {
+    "source": "lib",
+    "output": "dist",
+    "targets": [
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "commonjs",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "tsc": "../../node_modules/.bin/tsc"
+        }
+      ]
+    ]
   }
 }
