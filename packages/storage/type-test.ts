@@ -1,6 +1,9 @@
 import storage, {
   firebase,
-  FirebaseStorageTypes,
+  // Types
+  type Storage,
+  type FirebaseStorageTypes,
+  // Modular API
   getStorage,
   connectStorageEmulator,
   ref,
@@ -285,3 +288,31 @@ setMaxDownloadRetryTime(modularStorage1, 25000).then(() => {
 console.log(StringFormat.RAW);
 console.log(TaskEvent.STATE_CHANGED);
 console.log(TaskState.SUCCESS);
+
+// Test type usage
+const storageInstance2: Storage = firebase.storage();
+console.log(storageInstance2.app.name);
+
+// Test backwards compatibility types
+const legacyType: FirebaseStorageTypes.Module = storageInstance2;
+console.log(legacyType.app.name);
+const legacyStatics: FirebaseStorageTypes.Statics = storage;
+console.log(legacyStatics.SDK_VERSION);
+const legacyReference: FirebaseStorageTypes.Reference = storageInstance2.ref('test');
+console.log(legacyReference.fullPath);
+const legacyMetadata: FirebaseStorageTypes.FullMetadata = {} as FirebaseStorageTypes.FullMetadata;
+console.log(legacyMetadata);
+const legacySettableMetadata: FirebaseStorageTypes.SettableMetadata =
+  {} as FirebaseStorageTypes.SettableMetadata;
+console.log(legacySettableMetadata);
+const legacyListResult: FirebaseStorageTypes.ListResult = {} as FirebaseStorageTypes.ListResult;
+console.log(legacyListResult);
+const legacyTaskSnapshot: FirebaseStorageTypes.TaskSnapshot =
+  {} as FirebaseStorageTypes.TaskSnapshot;
+console.log(legacyTaskSnapshot);
+const legacyTask: FirebaseStorageTypes.Task = {} as FirebaseStorageTypes.Task;
+console.log(legacyTask);
+
+// Test SDK_VERSION
+const sdkVersion: string = storage.SDK_VERSION;
+console.log(sdkVersion);
