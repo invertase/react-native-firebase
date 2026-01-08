@@ -9,10 +9,8 @@
   "scripts": {
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
-    "build:plugin": "rimraf plugin/build && tsc --build plugin",
-    "lint:plugin": "eslint plugin/src/*",
     "compile": "bob build",
-    "prepare": "yarn run build && yarn run build:plugin && yarn compile"
+    "prepare": "yarn run build && yarn compile"
   },
   "repository": {
     "type": "git",
@@ -39,6 +37,9 @@
     "access": "public",
     "provenance": true
   },
+  "devDependencies": {
+    "react-native-builder-bob": "^0.40.13"
+  },
   "exports": {
     ".": {
       "source": "./lib/index.ts",
@@ -55,9 +56,7 @@
   },
   "files": [
     "lib",
-    "plugin/src",
     "tsconfig.json",
-    "plugin/tsconfig.json",
     "dist",
     "!**/__tests__",
     "!**/__fixtures__",

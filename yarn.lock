@@ -5251,6 +5251,8 @@ __metadata:
 "@react-native-firebase/storage@npm:23.7.0, @react-native-firebase/storage@workspace:packages/storage":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/storage@workspace:packages/storage"
+  dependencies:
+    react-native-builder-bob: "npm:^0.40.13"
   peerDependencies:
     "@react-native-firebase/app": 23.7.0
   languageName: unknown
