@@ -243,6 +243,7 @@ export interface Storage extends ReactNativeFirebase.FirebaseModule {
    * @param host - The host of the emulator, e.g. "localhost" or "10.0.2.2" for Android.
    * @param port - The port of the emulator, e.g. 9199.
    * @param options - Optional settings for the emulator connection (web only).
+   * @returns {void} - Undocumented return, just used to unit test android host remapping.
    */
   useEmulator(host: string, port: number, options?: EmulatorMockTokenOptions): void;
 }
