@@ -5192,6 +5192,8 @@ __metadata:
   resolution: "@react-native-firebase/messaging@workspace:packages/messaging"
   dependencies:
     expo: "npm:^54.0.27"
+    react-native-builder-bob: "npm:^0.40.12"
+    typescript: "npm:^5.8.3"
   peerDependencies:
     "@react-native-firebase/app": 23.7.0
     expo: ">=47.0.0"

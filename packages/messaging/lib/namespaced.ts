@@ -30,26 +30,48 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import { AppRegistry, Platform } from 'react-native';
+import { AppRegistry } from 'react-native';
 import remoteMessageOptions from './remoteMessageOptions';
-import version from './version';
+import { version } from './version';
 import {
   AuthorizationStatus,
   NotificationAndroidPriority,
   NotificationAndroidVisibility,
 } from './statics';
+import type {
+  Messaging,
+  Statics,
+  RemoteMessage,
+  IOSPermissions,
+  AuthorizationStatus as AuthorizationStatusType,
+} from './types/messaging';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
-const statics = { AuthorizationStatus, NotificationAndroidPriority, NotificationAndroidVisibility };
+const statics: Partial<Statics> = {
+  AuthorizationStatus,
+  NotificationAndroidPriority,
+  NotificationAndroidVisibility,
+};
 const namespace = 'messaging';
 
 const nativeModuleName = 'RNFBMessagingModule';
 
-let backgroundMessageHandler;
-let openSettingsForNotificationHandler;
+let backgroundMessageHandler: ((remoteMessage: RemoteMessage) => Promise<any>) | undefined;
+let openSettingsForNotificationHandler: ((remoteMessage: RemoteMessage) => any) | undefined;
+let playServicesAvailability: any;
 
-class FirebaseMessagingModule extends FirebaseModule {
-  constructor(...args) {
-    super(...args);
+class FirebaseMessagingModule extends FirebaseModule implements Messaging {
+  _isAutoInitEnabled: boolean;
+  _isDeliveryMetricsExportToBigQueryEnabled: boolean;
+  _isRegisteredForRemoteNotifications: boolean;
+  _isNotificationDelegationEnabled: boolean;
+
+  constructor(
+    app: ReactNativeFirebase.FirebaseAppBase,
+    config: any,
+    customUrlOrRegion?: string | null,
+  ) {
+    super(app, config, customUrlOrRegion);
     this._isAutoInitEnabled =
       this.native.isAutoInitEnabled != null ? this.native.isAutoInitEnabled : true;
     this._isDeliveryMetricsExportToBigQueryEnabled =
@@ -73,51 +95,57 @@ class FirebaseMessagingModule extends FirebaseModule {
         );
         return () => Promise.resolve();
       }
-      return remoteMessage => backgroundMessageHandler(remoteMessage);
+      return (remoteMessage: RemoteMessage) => backgroundMessageHandler!(remoteMessage);
     });
 
     if (isIOS) {
-      this.emitter.addListener('messaging_message_received_background', remoteMessage => {
-        if (!backgroundMessageHandler) {
-          // eslint-disable-next-line no-console
-          console.warn(
-            'No background message handler has been set. Set a handler via the "setBackgroundMessageHandler" method.',
-          );
-          return Promise.resolve();
-        }
+      this.emitter.addListener(
+        'messaging_message_received_background',
+        (remoteMessage: RemoteMessage) => {
+          if (!backgroundMessageHandler) {
+            // eslint-disable-next-line no-console
+            console.warn(
+              'No background message handler has been set. Set a handler via the "setBackgroundMessageHandler" method.',
+            );
+            return Promise.resolve();
+          }
 
-        // Ensure the handler is a promise
-        const handlerPromise = Promise.resolve(backgroundMessageHandler(remoteMessage));
-        handlerPromise.finally(() => {
-          this.native.completeNotificationProcessing();
-        });
+          // Ensure the handler is a promise
+          const handlerPromise = Promise.resolve(backgroundMessageHandler(remoteMessage));
+          handlerPromise.finally(() => {
+            this.native.completeNotificationProcessing();
+          });
 
-        return handlerPromise;
-      });
+          return handlerPromise;
+        },
+      );
 
-      this.emitter.addListener('messaging_settings_for_notification_opened', remoteMessage => {
-        if (!openSettingsForNotificationHandler) {
-          // eslint-disable-next-line no-console
-          console.warn(
-            'No handler for notification settings link has been set. Set a handler via the "setOpenSettingsForNotificationsHandler" method',
-          );
+      this.emitter.addListener(
+        'messaging_settings_for_notification_opened',
+        (remoteMessage: RemoteMessage) => {
+          if (!openSettingsForNotificationHandler) {
+            // eslint-disable-next-line no-console
+            console.warn(
+              'No handler for notification settings link has been set. Set a handler via the "setOpenSettingsForNotificationsHandler" method',
+            );
 
-          return Promise.resolve();
-        }
+            return Promise.resolve();
+          }
 
-        return openSettingsForNotificationHandler(remoteMessage);
-      });
+          return openSettingsForNotificationHandler(remoteMessage);
+        },
+      );
     }
   }
 
-  get isAutoInitEnabled() {
+  get isAutoInitEnabled(): boolean {
     return this._isAutoInitEnabled;
   }
 
   /**
    * @ios
    */
-  get isDeviceRegisteredForRemoteMessages() {
+  get isDeviceRegisteredForRemoteMessages(): boolean {
     if (isAndroid) {
       return true;
     }
@@ -125,15 +153,15 @@ class FirebaseMessagingModule extends FirebaseModule {
     return this._isRegisteredForRemoteNotifications;
   }
 
-  get isNotificationDelegationEnabled() {
+  get isNotificationDelegationEnabled(): boolean {
     return this._isNotificationDelegationEnabled;
   }
 
-  get isDeliveryMetricsExportToBigQueryEnabled() {
+  get isDeliveryMetricsExportToBigQueryEnabled(): boolean {
     return this._isDeliveryMetricsExportToBigQueryEnabled;
   }
 
-  setAutoInitEnabled(enabled) {
+  setAutoInitEnabled(enabled: boolean): Promise<void> {
     if (!isBoolean(enabled)) {
       throw new Error(
         "firebase.messaging().setAutoInitEnabled(*) 'enabled' expected a boolean value.",
@@ -144,8 +172,8 @@ class FirebaseMessagingModule extends FirebaseModule {
     return this.native.setAutoInitEnabled(enabled);
   }
 
-  getInitialNotification() {
-    return this.native.getInitialNotification().then(value => {
+  getInitialNotification(): Promise<RemoteMessage | null> {
+    return this.native.getInitialNotification().then((value: RemoteMessage | null) => {
       if (value) {
         return value;
       }
@@ -153,46 +181,46 @@ class FirebaseMessagingModule extends FirebaseModule {
     });
   }
 
-  getDidOpenSettingsForNotification() {
+  getDidOpenSettingsForNotification(): Promise<boolean> {
     if (!isIOS) return Promise.resolve(false);
-    return this.native.getDidOpenSettingsForNotification().then(value => value);
+    return this.native.getDidOpenSettingsForNotification().then((value: boolean) => value);
   }
 
-  getIsHeadless() {
+  getIsHeadless(): Promise<boolean> {
     return this.native.getIsHeadless();
   }
 
-  getToken({ appName, senderId } = {}) {
-    if (!isUndefined(appName) && !isString(appName)) {
+  getToken(options?: { appName?: string; senderId?: string }): Promise<string> {
+    if (!isUndefined(options?.appName) && !isString(options?.appName)) {
       throw new Error("firebase.messaging().getToken(*) 'appName' expected a string.");
     }
 
-    if (!isUndefined(senderId) && !isString(senderId)) {
+    if (!isUndefined(options?.senderId) && !isString(options?.senderId)) {
       throw new Error("firebase.messaging().getToken(*) 'senderId' expected a string.");
     }
 
-    return this.native.getToken(
-      appName || this.app.name,
-      senderId || this.app.options.messagingSenderId,
-    );
+    const appName = options?.appName || this.app.name;
+    const senderId = options?.senderId || this.app.options.messagingSenderId;
+
+    return this.native.getToken(appName, senderId);
   }
 
-  deleteToken({ appName, senderId } = {}) {
-    if (!isUndefined(appName) && !isString(appName)) {
+  deleteToken(options?: { appName?: string; senderId?: string }): Promise<void> {
+    if (!isUndefined(options?.appName) && !isString(options?.appName)) {
       throw new Error("firebase.messaging().deleteToken(*) 'appName' expected a string.");
     }
 
-    if (!isUndefined(senderId) && !isString(senderId)) {
+    if (!isUndefined(options?.senderId) && !isString(options?.senderId)) {
       throw new Error("firebase.messaging().deleteToken(*) 'senderId' expected a string.");
     }
 
-    return this.native.deleteToken(
-      appName || this.app.name,
-      senderId || this.app.options.messagingSenderId,
-    );
+    const appName = options?.appName || this.app.name;
+    const senderId = options?.senderId || this.app.options.messagingSenderId;
+
+    return this.native.deleteToken(appName, senderId);
   }
 
-  onMessage(listener) {
+  onMessage(listener: (message: RemoteMessage) => any): () => void {
     if (!isFunction(listener)) {
       throw new Error("firebase.messaging().onMessage(*) 'listener' expected a function.");
     }
@@ -201,7 +229,7 @@ class FirebaseMessagingModule extends FirebaseModule {
     return () => subscription.remove();
   }
 
-  onNotificationOpenedApp(listener) {
+  onNotificationOpenedApp(listener: (message: RemoteMessage) => any): () => void {
     if (!isFunction(listener)) {
       throw new Error(
         "firebase.messaging().onNotificationOpenedApp(*) 'listener' expected a function.",
@@ -212,27 +240,30 @@ class FirebaseMessagingModule extends FirebaseModule {
     return () => subscription.remove();
   }
 
-  onTokenRefresh(listener) {
+  onTokenRefresh(listener: (token: string) => any): () => void {
     if (!isFunction(listener)) {
       throw new Error("firebase.messaging().onTokenRefresh(*) 'listener' expected a function.");
     }
 
-    const subscription = this.emitter.addListener('messaging_token_refresh', event => {
-      const { token } = event;
-      listener(token);
-    });
+    const subscription = this.emitter.addListener(
+      'messaging_token_refresh',
+      (event: { token: string }) => {
+        const { token } = event;
+        listener(token);
+      },
+    );
     return () => subscription.remove();
   }
 
   /**
    * @platform ios
    */
-  requestPermission(permissions) {
+  requestPermission(permissions?: IOSPermissions): Promise<AuthorizationStatusType> {
     if (isAndroid) {
-      return Promise.resolve(1);
+      return Promise.resolve(AuthorizationStatus.AUTHORIZED);
     }
 
-    const defaultPermissions = {
+    const defaultPermissions: IOSPermissions = {
       alert: true,
       announcement: false,
       badge: true,
@@ -264,13 +295,13 @@ class FirebaseMessagingModule extends FirebaseModule {
         );
       }
 
-      defaultPermissions[key] = value;
+      (defaultPermissions as any)[key] = value;
     });
 
     return this.native.requestPermission(defaultPermissions);
   }
 
-  registerDeviceForRemoteMessages() {
+  registerDeviceForRemoteMessages(): Promise<void> {
     if (isAndroid) {
       return Promise.resolve();
     }
@@ -286,10 +317,11 @@ class FirebaseMessagingModule extends FirebaseModule {
     this._isRegisteredForRemoteNotifications = true;
     return this.native.registerForRemoteNotifications();
   }
+
   /**
    * @platform ios
    */
-  unregisterDeviceForRemoteMessages() {
+  unregisterDeviceForRemoteMessages(): Promise<void> {
     if (isAndroid) {
       return Promise.resolve();
     }
@@ -300,7 +332,7 @@ class FirebaseMessagingModule extends FirebaseModule {
   /**
    * @platform ios
    */
-  getAPNSToken() {
+  getAPNSToken(): Promise<string | null> {
     if (isAndroid) {
       return Promise.resolve(null);
     }
@@ -310,7 +342,7 @@ class FirebaseMessagingModule extends FirebaseModule {
   /**
    * @platform ios
    */
-  setAPNSToken(token, type) {
+  setAPNSToken(token: string, type?: string): Promise<void> {
     if (isUndefined(token) || !isString(token)) {
       throw new Error("firebase.messaging().setAPNSToken(*) 'token' expected a string value.");
     }
@@ -322,18 +354,18 @@ class FirebaseMessagingModule extends FirebaseModule {
     }
 
     if (isAndroid) {
-      return Promise.resolve(null);
+      return Promise.resolve();
     }
 
     return this.native.setAPNSToken(token, type);
   }
 
-  hasPermission() {
+  hasPermission(): Promise<AuthorizationStatusType> {
     return this.native.hasPermission();
   }
 
   // https://firebase.google.com/docs/reference/android/com/google/firebase/messaging/FirebaseMessagingService.html#public-void-ondeletedmessages-
-  onDeletedMessages(listener) {
+  onDeletedMessages(listener: () => void): () => void {
     if (!isFunction(listener)) {
       throw new Error("firebase.messaging().onDeletedMessages(*) 'listener' expected a function.");
     }
@@ -343,7 +375,7 @@ class FirebaseMessagingModule extends FirebaseModule {
   }
 
   // https://firebase.google.com/docs/reference/android/com/google/firebase/messaging/FirebaseMessagingService.html#onMessageSent(java.lang.String)
-  onMessageSent(listener) {
+  onMessageSent(listener: (messageId: string) => any): () => void {
     if (!isFunction(listener)) {
       throw new Error("firebase.messaging().onMessageSent(*) 'listener' expected a function.");
     }
@@ -355,7 +387,9 @@ class FirebaseMessagingModule extends FirebaseModule {
   }
 
   // https://firebase.google.com/docs/reference/android/com/google/firebase/messaging/FirebaseMessagingService.html#onSendError(java.lang.String,%20java.lang.Exception)
-  onSendError(listener) {
+  onSendError(
+    listener: (evt: { messageId: string; error: ReactNativeFirebase.NativeFirebaseError }) => any,
+  ): () => void {
     if (!isFunction(listener)) {
       throw new Error("firebase.messaging().onSendError(*) 'listener' expected a function.");
     }
@@ -370,7 +404,7 @@ class FirebaseMessagingModule extends FirebaseModule {
    * An app is considered to be in the background if no active window is displayed.
    * @param handler called with an argument of type messaging.RemoteMessage that must be async and return a Promise
    */
-  setBackgroundMessageHandler(handler) {
+  setBackgroundMessageHandler(handler: (message: RemoteMessage) => Promise<any>): void {
     if (!isFunction(handler)) {
       throw new Error(
         "firebase.messaging().setBackgroundMessageHandler(*) 'handler' expected a function.",
@@ -383,7 +417,7 @@ class FirebaseMessagingModule extends FirebaseModule {
     }
   }
 
-  setOpenSettingsForNotificationsHandler(handler) {
+  setOpenSettingsForNotificationsHandler(handler: (message: RemoteMessage) => any): void {
     if (!isIOS) {
       return;
     }
@@ -397,21 +431,25 @@ class FirebaseMessagingModule extends FirebaseModule {
     openSettingsForNotificationHandler = handler;
   }
 
-  sendMessage(remoteMessage) {
+  sendMessage(remoteMessage: RemoteMessage): Promise<void> {
     if (isIOS) {
       throw new Error(`firebase.messaging().sendMessage() is only supported on Android devices.`);
     }
     let options;
     try {
-      options = remoteMessageOptions(this.app.options.messagingSenderId, remoteMessage);
-    } catch (e) {
+      const senderId = this.app.options.messagingSenderId;
+      if (!senderId) {
+        throw new Error("'messagingSenderId' is required in Firebase app options.");
+      }
+      options = remoteMessageOptions(senderId, remoteMessage);
+    } catch (e: any) {
       throw new Error(`firebase.messaging().sendMessage(*) ${e.message}.`);
     }
 
     return this.native.sendMessage(options);
   }
 
-  subscribeToTopic(topic) {
+  subscribeToTopic(topic: string): Promise<void> {
     if (!isString(topic)) {
       throw new Error("firebase.messaging().subscribeToTopic(*) 'topic' expected a string value.");
     }
@@ -423,7 +461,7 @@ class FirebaseMessagingModule extends FirebaseModule {
     return this.native.subscribeToTopic(topic);
   }
 
-  unsubscribeFromTopic(topic) {
+  unsubscribeFromTopic(topic: string): Promise<void> {
     if (!isString(topic)) {
       throw new Error(
         "firebase.messaging().unsubscribeFromTopic(*) 'topic' expected a string value.",
@@ -443,21 +481,21 @@ class FirebaseMessagingModule extends FirebaseModule {
    * unsupported
    */
 
-  useServiceWorker() {
+  useServiceWorker(): void {
     // eslint-disable-next-line no-console
     console.warn(
       'firebase.messaging().useServiceWorker() is not supported on react-native-firebase.',
     );
   }
 
-  usePublicVapidKey() {
+  usePublicVapidKey(): void {
     // eslint-disable-next-line no-console
     console.warn(
       'firebase.messaging().usePublicVapidKey() is not supported on react-native-firebase.',
     );
   }
 
-  setDeliveryMetricsExportToBigQuery(enabled) {
+  setDeliveryMetricsExportToBigQuery(enabled: boolean): Promise<void> {
     if (!isBoolean(enabled)) {
       throw new Error(
         "firebase.messaging().setDeliveryMetricsExportToBigQuery(*) 'enabled' expected a boolean value.",
@@ -468,7 +506,7 @@ class FirebaseMessagingModule extends FirebaseModule {
     return this.native.setDeliveryMetricsExportToBigQuery(enabled);
   }
 
-  setNotificationDelegationEnabled(enabled) {
+  setNotificationDelegationEnabled(enabled: boolean): Promise<void> {
     if (!isBoolean(enabled)) {
       throw new Error(
         "firebase.messaging().setNotificationDelegationEnabled(*) 'enabled' expected a boolean value.",
@@ -477,15 +515,18 @@ class FirebaseMessagingModule extends FirebaseModule {
 
     this._isNotificationDelegationEnabled = enabled;
     if (isIOS) {
-      return;
+      return Promise.resolve();
     }
 
     return this.native.setNotificationDelegationEnabled(enabled);
   }
 
-  async isSupported() {
-    if (Platform.isAndroid) {
-      playServicesAvailability = firebase.utils().playServicesAvailability;
+  async isSupported(): Promise<boolean> {
+    if (isAndroid) {
+      const firebase = getFirebaseRoot();
+      const app = this.app;
+      // @ts-ignore - secret "app" argument to avoid deprecation warning when getApp() is called under the hood
+      playServicesAvailability = firebase.utils(app).playServicesAvailability;
       return playServicesAvailability.isAvailable;
     }
     // Always return "true" for iOS. Web will be implemented when it is supported
@@ -498,7 +539,7 @@ export const SDK_VERSION = version;
 
 // import messaging from '@react-native-firebase/messaging';
 // messaging().X(...);
-export default createModuleNamespace({
+const messagingNamespace = createModuleNamespace({
   statics,
   version,
   namespace,
@@ -519,9 +560,24 @@ export default createModuleNamespace({
   ModuleClass: FirebaseMessagingModule,
 });
 
-export * from './modular';
+type MessagingNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  Messaging,
+  Statics
+> & {
+  messaging: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<Messaging, Statics>;
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+export default messagingNamespace as unknown as MessagingNamespace;
 
 // import messaging, { firebase } from '@react-native-firebase/messaging';
 // messaging().X(...);
 // firebase.messaging().X(...);
-export const firebase = getFirebaseRoot();
+export const firebase =
+  getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
+    'messaging',
+    Messaging,
+    Statics,
+    false
+  >;

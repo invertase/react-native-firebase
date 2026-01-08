@@ -10,8 +10,7 @@
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
     "compile": "bob build",
-    "prepare": "yarn run build && yarn compile",
-    "tsc": "../../node_modules/.bin/tsc"
+    "prepare": "yarn run build && yarn compile"
   },
   "repository": {
     "type": "git",
@@ -39,7 +38,7 @@
   },
   "exports": {
     ".": {
-      "source": "./lib/index.js",
+      "source": "./lib/index.ts",
       "import": {
         "types": "./dist/typescript/module/lib/index.d.ts",
         "default": "./dist/module/index.js"
