@@ -1,25 +1,6 @@
 {
+  "extends": "../../tsconfig.packages.base.json",
   "compilerOptions": {
-    "allowUnreachableCode": false,
-    "allowUnusedLabels": false,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "jsx": "react-jsx",
-    "lib": ["ESNext"],
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "noImplicitUseStrict": false,
-    "noStrictGenericChecks": false,
-    "noUncheckedIndexedAccess": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "target": "ESNext",
-    "verbatimModuleSyntax": true,
     "baseUrl": ".",
     "rootDir": ".",
     "paths": {
@@ -35,6 +16,6 @@
       "@react-native-firebase/app": ["../app/dist/typescript/commonjs/lib"]
     }
   },
-  "include": ["lib/**/*"],
+  "include": ["lib/**/*", "../app/lib/internal/global.d.ts"],
   "exclude": ["node_modules", "dist", "__tests__", "**/*.test.ts"]
 }
