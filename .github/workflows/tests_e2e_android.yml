@@ -142,9 +142,10 @@ jobs:
           echo "metro-cache=$HOME/.metro" >> $GITHUB_OUTPUT
           echo "tempdir=$TMPDIR" >> $GITHUB_OUTPUT
 
-      - uses: actions/cache@v4
-        name: Yarn Cache
+      - name: Yarn Cache Restore
+        uses: actions/cache/restore@v4
         id: yarn-cache
+        continue-on-error: true
         with:
           path: .yarn/cache
           key: ${{ runner.os }}-android-yarn-v1-${{ hashFiles('yarn.lock') }}
@@ -158,9 +159,13 @@ jobs:
           max_attempts: 3
           command: DETOX_DISABLE_POSTINSTALL=1 yarn
 
-      - name: Cache Firestore Emulator
-        uses: actions/cache@v4
+      - name: Firestore Emulator Restore
+        uses: actions/cache/restore@v4
+        id: firestore-emulator-cache
+        continue-on-error: true
         with:
+          # The firebase emulators are pure javascript and java, OS-independent
+          enableCrossOsArchive: true
           path: ~/.cache/firebase/emulators
           key: firebase-emulators-v1-${{ github.run_id }}
           restore-keys: firebase-emulators-v1
@@ -168,8 +173,10 @@ jobs:
       - name: Start Firestore Emulator
         run: yarn tests:emulator:start-ci
 
-      - uses: actions/cache@v4
-        name: Gradle Cache
+      - name: Gradle Cache Restore
+        uses: actions/cache/restore@v4
+        id: gradle-cache
+        continue-on-error: true
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-v1-${{ hashFiles('yarn.lock', 'tests/android/build.gradle', 'tests/android/app/build.gradle') }}
@@ -183,8 +190,10 @@ jobs:
           max_attempts: 3
           command: yarn tests:android:build
 
-      - name: Metro Bundler Cache
-        uses: actions/cache@v4
+      - name: Metro Bundler Cache Restore
+        uses: actions/cache/restore@v4
+        id: metro-bundler-cache
+        continue-on-error: true
         with:
           path: ${{ steps.workflow-variables.outputs.metro-cache }}
           key: ${{ runner.os }}-metro-v1-${{ github.run_id }}
@@ -241,3 +250,37 @@ jobs:
         with:
           name: adb_logs_${{ matrix.api-level}}_${{ matrix.arch }}_${{ matrix.target }}_${{ matrix.iteration }}
           path: adb-*.txt
+
+      - name: Yarn Cache Save
+        uses: actions/cache/save@v4
+        if: "${{ github.ref == 'refs/heads/main' }}"
+        continue-on-error: true
+        with:
+          path: .yarn/cache
+          key: ${{ steps.yarn-cache.outputs.cache-primary-key }}
+
+      - name: Firestore Emulator Cache Save
+        uses: actions/cache/save@v4
+        if: "${{ github.ref == 'refs/heads/main' }}"
+        continue-on-error: true
+        with:
+          # The firebase emulators are pure javascript and java, OS-independent
+          enableCrossOsArchive: true
+          path: ~/.cache/firebase/emulators
+          key: ${{ steps.firestore-emulator-cache.outputs.cache-primary-key }}
+
+      - name: Gradle Cache Save
+        uses: actions/cache/save@v4
+        if: "${{ github.ref == 'refs/heads/main' }}"
+        continue-on-error: true
+        with:
+          path: ~/.gradle/caches
+          key: ${{ steps.gradle-cache.outputs.cache-primary-key }}
+
+      - name: Metro Bundler Cache Save
+        uses: actions/cache/save@v4
+        if: "${{ github.ref == 'refs/heads/main' }}"
+        continue-on-error: true
+        with:
+          path: ${{ steps.workflow-variables.outputs.metro-cache }}
+          key: ${{ steps.metro-bundler-cache.outputs.cache-primary-key }}
