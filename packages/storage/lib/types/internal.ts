@@ -6,5 +6,5 @@ import type { Storage } from './storage';
  */
 export type StoragePrivate = Storage & {
   native: any;
-  _customUrlOrRegion: string;
+  _customUrlOrRegion: string | null;
 };
