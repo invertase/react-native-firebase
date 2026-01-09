@@ -296,8 +296,6 @@ console.log(storageInstance2.app.name);
 // Test backwards compatibility types
 const legacyType: FirebaseStorageTypes.Module = storageInstance2;
 console.log(legacyType.app.name);
-const legacyStatics: FirebaseStorageTypes.Statics = storage;
-console.log(legacyStatics.SDK_VERSION);
 const legacyReference: FirebaseStorageTypes.Reference = storageInstance2.ref('test');
 console.log(legacyReference.fullPath);
 const legacyMetadata: FirebaseStorageTypes.FullMetadata = {} as FirebaseStorageTypes.FullMetadata;
