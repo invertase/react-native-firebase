@@ -50,8 +50,7 @@ export default class StorageReference extends ReferenceBase implements Reference
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#bucket
    */
   get bucket(): string {
-    // @ts-ignore
-    return this._storage._customUrlOrRegion.replace('gs://', '');
+    return this._storage._customUrlOrRegion!.replace('gs://', '');
   }
 
   /**
@@ -209,7 +208,11 @@ export default class StorageReference extends ReferenceBase implements Reference
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putString
    */
-  putString(string: string, format: string = StringFormat.RAW, metadata?: SettableMetadata): Task {
+  putString(
+    string: string,
+    format: (typeof StringFormat)[keyof typeof StringFormat] = StringFormat.RAW,
+    metadata?: SettableMetadata,
+  ): Task {
     const { _string, _format, _metadata } = this._updateString(string, format, metadata, false);
 
     return new StorageUploadTask(this, task =>
@@ -276,7 +279,7 @@ export default class StorageReference extends ReferenceBase implements Reference
 
   _updateString(
     string: string,
-    format: string,
+    format: (typeof StringFormat)[keyof typeof StringFormat],
     metadata: SettableMetadata | undefined,
     update = false,
   ): { _string: string; _format: string; _metadata: SettableMetadata | undefined } {
@@ -286,7 +289,7 @@ export default class StorageReference extends ReferenceBase implements Reference
       );
     }
 
-    if (!Object.values(StringFormat).includes(format as any)) {
+    if (!Object.values(StringFormat).includes(format)) {
       throw new Error(
         `firebase.storage.StorageReference.putString(_, *, _) 'format' provided is invalid, must be one of ${Object.values(
           StringFormat,
