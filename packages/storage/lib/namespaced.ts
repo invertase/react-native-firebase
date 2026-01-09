@@ -222,7 +222,7 @@ const storageNamespace = createModuleNamespace({
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: true,
   disablePrependCustomUrlOrRegion: true,
-  ModuleClass: FirebaseStorageModule as any,
+  ModuleClass: FirebaseStorageModule,
 });
 
 type StorageNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<

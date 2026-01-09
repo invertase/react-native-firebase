@@ -18,10 +18,10 @@
 import type { Reference, Storage } from './types/storage';
 
 // To avoid React Native require cycle warnings
-let StorageReference: (new (storage: any, path: string) => Reference) | null = null;
+let StorageReference: (new (storage: Storage, path: string) => Reference) | null = null;
 
 export function provideStorageReferenceClass(
-  storageReference: new (storage: any, path: string) => Reference,
+  storageReference: new (storage: Storage, path: string) => Reference,
 ): void {
   StorageReference = storageReference;
 }
@@ -36,10 +36,17 @@ export default class StorageListResult {
     nativeData: { nextPageToken?: string | null; items: string[]; prefixes: string[] },
   ) {
     this._nextPageToken = nativeData.nextPageToken || null;
-    // @ts-ignore - StorageReference is set by provideStorageReferenceClass before use
-    this._items = nativeData.items.map(path => new StorageReference(storage, path));
-    // @ts-ignore - StorageReference is set by provideStorageReferenceClass before use
-    this._prefixes = nativeData.prefixes.map(path => new StorageReference(storage, path));
+
+    if (!StorageReference) {
+      throw new Error(
+        'StorageReference class has not been provided. This is likely a module initialization issue.',
+      );
+    }
+
+    // TypeScript doesn't narrow the type after the null check, so we assign to a const
+    const StorageReferenceClass = StorageReference;
+    this._items = nativeData.items.map(path => new StorageReferenceClass(storage, path));
+    this._prefixes = nativeData.prefixes.map(path => new StorageReferenceClass(storage, path));
   }
 
   get items(): Reference[] {
