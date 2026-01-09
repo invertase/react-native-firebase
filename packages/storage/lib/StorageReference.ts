@@ -319,10 +319,8 @@ export default class StorageReference extends ReferenceBase implements Reference
       if (isUndefined(metadata) || isUndefined(metadata.contentType)) {
         if (isUndefined(metadata)) {
           _metadata = {};
-        } else {
-          _metadata = { ...metadata };
         }
-        _metadata.contentType = mediaType;
+        _metadata!.contentType = mediaType;
         _string = base64String;
         _format = StringFormat.BASE64;
       }
