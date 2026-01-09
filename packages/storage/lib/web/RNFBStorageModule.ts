@@ -12,6 +12,16 @@ import {
   uploadBytesResumable,
   ref as firebaseStorageRef,
 } from '@react-native-firebase/app/lib/internal/web/firebaseStorage';
+import type { FirebaseApp } from 'firebase/app';
+import type {
+  StorageReference,
+  UploadTask,
+  UploadTaskSnapshot as FirebaseUploadTaskSnapshot,
+  FullMetadata,
+  ListResult as FirebaseListResult,
+} from 'firebase/storage';
+
+type Storage = ReturnType<typeof getStorage>;
 import { guard, getWebError, emitEvent } from '@react-native-firebase/app/lib/internal/web/utils';
 import { Base64 } from '@react-native-firebase/app/lib/common';
 
@@ -66,7 +76,9 @@ function rejectWithCodeAndMessage(code: string, message: string): Promise<never>
   return Promise.reject(getWebError(error));
 }
 
-function metadataToObject(metadata: Metadata): Metadata & { metadata?: Record<string, string> } {
+function metadataToObject(
+  metadata: Metadata | FullMetadata,
+): Metadata & { metadata?: Record<string, string> } {
   const out: Metadata & { metadata?: Record<string, string> } = {
     bucket: metadata.bucket,
     generation: metadata.generation,
@@ -108,7 +120,10 @@ function metadataToObject(metadata: Metadata): Metadata & { metadata?: Record<st
   return out;
 }
 
-function uploadTaskErrorToObject(error: any, snapshot: any): UploadTaskSnapshot & { error: any } {
+function uploadTaskErrorToObject(
+  error: Error,
+  snapshot: FirebaseUploadTaskSnapshot | null,
+): UploadTaskSnapshot & { error: ReturnType<typeof getWebError> } {
   return {
     ...uploadTaskSnapshotToObject(snapshot),
     state: 'error',
@@ -116,12 +131,14 @@ function uploadTaskErrorToObject(error: any, snapshot: any): UploadTaskSnapshot 
   };
 }
 
-function uploadTaskSnapshotToObject(snapshot: any): UploadTaskSnapshot {
+function uploadTaskSnapshotToObject(
+  snapshot: FirebaseUploadTaskSnapshot | null,
+): UploadTaskSnapshot {
   return {
     totalBytes: snapshot ? snapshot.totalBytes : 0,
     bytesTransferred: snapshot ? snapshot.bytesTransferred : 0,
     state: snapshot ? taskStateToString(snapshot.state) : 'unknown',
-    metadata: snapshot ? metadataToObject(snapshot.metadata) : {},
+    metadata: snapshot && snapshot.metadata ? metadataToObject(snapshot.metadata as Metadata) : {},
   };
 }
 
@@ -148,18 +165,18 @@ function makeSettableMetadata(metadata: SettableMetadata): SettableMetadata {
   };
 }
 
-function listResultToObject(result: { nextPageToken?: string; items: any[]; prefixes: any[] }) {
+function listResultToObject(result: FirebaseListResult) {
   return {
-    nextPageToken: result.nextPageToken,
+    nextPageToken: result.nextPageToken ?? undefined,
     items: result.items.map(ref => ref.fullPath),
     prefixes: result.prefixes.map(ref => ref.fullPath),
   };
 }
 
 const emulatorForApp: Record<string, EmulatorConfig> = {};
-const appInstances: Record<string, any> = {};
-const storageInstances: Record<string, any> = {};
-const tasks: Record<string, any> = {};
+const appInstances: Record<string, FirebaseApp> = {};
+const storageInstances: Record<string, Storage> = {};
+const tasks: Record<string, UploadTask> = {};
 
 function getBucketFromUrl(url: string): string {
   // Check if the URL starts with "gs://"
@@ -175,7 +192,7 @@ function getBucketFromUrl(url: string): string {
   }
 }
 
-function getCachedAppInstance(appName: string): any {
+function getCachedAppInstance(appName: string): FirebaseApp {
   return (appInstances[appName] ??= getApp(appName));
 }
 
@@ -185,31 +202,32 @@ function emulatorKey(appName: string, url: string): string {
 }
 
 // Returns a cached Storage instance.
-function getCachedStorageInstance(appName: string, url?: string | null): any {
-  let instance: any;
-  const bucket = url ? getBucketFromUrl(url) : getCachedAppInstance(appName).options.storageBucket;
+function getCachedStorageInstance(appName: string, url?: string | null): Storage {
+  let instance: Storage;
+  const app = getCachedAppInstance(appName);
+  const bucket = url ? getBucketFromUrl(url) : (app.options.storageBucket ?? undefined);
 
-  if (!url) {
-    instance = getCachedStorageInstance(
-      appName,
-      getCachedAppInstance(appName).options.storageBucket,
-    );
+  if (!url || !bucket) {
+    const defaultBucket = app.options.storageBucket;
+    if (!defaultBucket) {
+      throw new Error(`No storage bucket configured for app ${appName}`);
+    }
+    instance = getCachedStorageInstance(appName, defaultBucket);
   } else {
-    instance = storageInstances[`${appName}|${bucket}`] ??= getStorage(
-      getCachedAppInstance(appName),
-      bucket,
-    );
+    instance = storageInstances[`${appName}|${bucket}`] ??= getStorage(app, bucket);
   }
 
-  const key = emulatorKey(appName, bucket);
-  if (emulatorForApp[key]) {
-    connectStorageEmulator(instance, emulatorForApp[key].host, emulatorForApp[key].port);
+  if (bucket) {
+    const key = emulatorKey(appName, bucket);
+    if (emulatorForApp[key]) {
+      connectStorageEmulator(instance, emulatorForApp[key].host, emulatorForApp[key].port);
+    }
   }
   return instance;
 }
 
 // Returns a Storage Reference.
-function getReferenceFromUrl(appName: string, url: string): any {
+function getReferenceFromUrl(appName: string, url: string): StorageReference {
   const path = url.substring(url.indexOf('/') + 1);
   const instance = getCachedStorageInstance(appName, path);
   return firebaseStorageRef(instance, url);
@@ -438,10 +456,10 @@ export default {
       // Store the task in the tasks map.
       tasks[taskId] = task;
 
-      const snapshot = await new Promise<any>((resolve, reject) => {
+      const snapshot = await new Promise<FirebaseUploadTaskSnapshot>((resolve, reject) => {
         task.on(
           'state_changed',
-          snapshot => {
+          (snapshot: FirebaseUploadTaskSnapshot) => {
             const event = {
               body: uploadTaskSnapshotToObject(snapshot),
               appName,
@@ -450,7 +468,7 @@ export default {
             };
             emitEvent('storage_event', event);
           },
-          error => {
+          (error: Error) => {
             const errorSnapshot = uploadTaskErrorToObject(error, task.snapshot);
             const event = {
               body: {
@@ -473,7 +491,7 @@ export default {
             delete tasks[taskId];
             const event = {
               body: {
-                ...uploadTaskSnapshotToObject(snapshot),
+                ...uploadTaskSnapshotToObject(task.snapshot),
                 state: 'success',
               },
               appName,
