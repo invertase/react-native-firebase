@@ -35,9 +35,13 @@ import StorageListResult, { provideStorageReferenceClass } from './StorageListRe
 import { StringFormat } from './StorageStatics';
 import StorageUploadTask from './StorageUploadTask';
 import { validateMetadata } from './utils';
+import type { Reference, SettableMetadata, ListOptions, FullMetadata, Task } from './types/storage';
+import type { StoragePrivate } from './types/internal';
 
-export default class StorageReference extends ReferenceBase {
-  constructor(storage, path) {
+export default class StorageReference extends ReferenceBase implements Reference {
+  _storage: StoragePrivate;
+
+  constructor(storage: StoragePrivate, path: string) {
     super(path);
     this._storage = storage;
   }
@@ -45,28 +49,29 @@ export default class StorageReference extends ReferenceBase {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#bucket
    */
-  get bucket() {
+  get bucket(): string {
+    // @ts-ignore
     return this._storage._customUrlOrRegion.replace('gs://', '');
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#fullPath
    */
-  get fullPath() {
+  get fullPath(): string {
     return this.path;
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#name
    */
-  get name() {
+  get name(): string {
     return pathLastComponent(this.path);
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#parent
    */
-  get parent() {
+  get parent(): Reference | null {
     const parentPath = pathParent(this.path);
     if (parentPath === null) {
       return parentPath;
@@ -77,21 +82,21 @@ export default class StorageReference extends ReferenceBase {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#root
    */
-  get root() {
+  get root(): Reference {
     return new StorageReference(this._storage, '/');
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#storage
    */
-  get storage() {
+  get storage(): any {
     return this._storage;
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#child
    */
-  child(path) {
+  child(path: string): Reference {
     const childPath = pathChild(this.path, path);
     return new StorageReference(this._storage, childPath);
   }
@@ -99,53 +104,54 @@ export default class StorageReference extends ReferenceBase {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#delete
    */
-  delete() {
+  delete(): Promise<void> {
     return this._storage.native.delete(this.toString());
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getDownloadURL
    */
-  getDownloadURL() {
+  getDownloadURL(): Promise<string> {
     return this._storage.native.getDownloadURL(this.toString());
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getMetadata
    */
-  getMetadata() {
+  getMetadata(): Promise<FullMetadata> {
     return this._storage.native.getMetadata(this.toString());
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#list
    */
-  list(options) {
+  list(options?: ListOptions): Promise<StorageListResult> {
     if (!isUndefined(options) && !isObject(options)) {
       throw new Error(
         "firebase.storage.StorageReference.list(*) 'options' expected an object value.",
       );
     }
 
-    const listOptions = {
+    const listOptions: { maxResults: number; pageToken?: string } = {
       maxResults: 1000,
     };
 
     if (options) {
       if (hasOwnProperty(options, 'maxResults')) {
-        if (!isNumber(options.maxResults) || !isInteger(options.maxResults)) {
+        const maxResults = options.maxResults;
+        if (!isNumber(maxResults) || !isInteger(maxResults)) {
           throw new Error(
             "firebase.storage.StorageReference.list(*) 'options.maxResults' expected a number value.",
           );
         }
 
-        if (options.maxResults < 1 || options.maxResults > 1000) {
+        if (maxResults < 1 || maxResults > 1000) {
           throw new Error(
             "firebase.storage.StorageReference.list(*) 'options.maxResults' expected a number value between 1-1000.",
           );
         }
 
-        listOptions.maxResults = options.maxResults;
+        listOptions.maxResults = maxResults;
       }
 
       if (options.pageToken) {
@@ -161,29 +167,34 @@ export default class StorageReference extends ReferenceBase {
 
     return this._storage.native
       .list(this.toString(), listOptions)
-      .then(data => new StorageListResult(this._storage, data));
+      .then((data: any) => new StorageListResult(this._storage, data));
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#listAll
    */
-  listAll() {
+  listAll(): Promise<StorageListResult> {
     return this._storage.native
       .listAll(this.toString())
-      .then(data => new StorageListResult(this._storage, data));
+      .then((data: any) => new StorageListResult(this._storage, data));
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#put
    */
-  put(data, metadata) {
+  put(data: Blob | Uint8Array | ArrayBuffer, metadata?: SettableMetadata): Task {
     if (!isUndefined(metadata)) {
       validateMetadata(metadata, false);
     }
 
     return new StorageUploadTask(this, task =>
       Base64.fromData(data).then(({ string, format }) => {
-        const { _string, _format, _metadata } = this._updateString(string, format, metadata, false);
+        const { _string, _format, _metadata } = this._updateString(
+          string as string,
+          format,
+          metadata,
+          false,
+        );
         return this._storage.native.putString(
           this.toString(),
           _string,
@@ -192,24 +203,24 @@ export default class StorageReference extends ReferenceBase {
           task._id,
         );
       }),
-    );
+    ) as unknown as Task;
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putString
    */
-  putString(string, format = StringFormat.RAW, metadata) {
+  putString(string: string, format: string = StringFormat.RAW, metadata?: SettableMetadata): Task {
     const { _string, _format, _metadata } = this._updateString(string, format, metadata, false);
 
     return new StorageUploadTask(this, task =>
       this._storage.native.putString(this.toString(), _string, _format, _metadata, task._id),
-    );
+    ) as unknown as Task;
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#fullPath
    */
-  toString() {
+  toString(): string {
     if (this.path.length <= 1) {
       return `${this._storage._customUrlOrRegion}`;
     }
@@ -220,7 +231,7 @@ export default class StorageReference extends ReferenceBase {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#updateMetadata
    */
-  updateMetadata(metadata) {
+  updateMetadata(metadata: SettableMetadata): Promise<FullMetadata> {
     validateMetadata(metadata);
     return this._storage.native.updateMetadata(this.toString(), metadata);
   }
@@ -232,7 +243,7 @@ export default class StorageReference extends ReferenceBase {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference
    */
-  writeToFile(filePath) {
+  writeToFile(filePath: string): Task {
     if (!isString(filePath)) {
       throw new Error(
         "firebase.storage.StorageReference.writeToFile(*) 'filePath' expects a string value.",
@@ -241,13 +252,13 @@ export default class StorageReference extends ReferenceBase {
 
     return new StorageDownloadTask(this, task =>
       this._storage.native.writeToFile(this.toString(), toFilePath(filePath), task._id),
-    );
+    ) as unknown as Task;
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference
    */
-  putFile(filePath, metadata) {
+  putFile(filePath: string, metadata?: SettableMetadata): Task {
     if (!isUndefined(metadata)) {
       validateMetadata(metadata, false);
     }
@@ -260,17 +271,22 @@ export default class StorageReference extends ReferenceBase {
 
     return new StorageUploadTask(this, task =>
       this._storage.native.putFile(this.toString(), toFilePath(filePath), metadata, task._id),
-    );
+    ) as unknown as Task;
   }
 
-  _updateString(string, format, metadata, update = false) {
+  _updateString(
+    string: string,
+    format: string,
+    metadata: SettableMetadata | undefined,
+    update = false,
+  ): { _string: string; _format: string; _metadata: SettableMetadata | undefined } {
     if (!isString(string)) {
       throw new Error(
         "firebase.storage.StorageReference.putString(*, _, _) 'string' expects a string value.",
       );
     }
 
-    if (!Object.values(StringFormat).includes(format)) {
+    if (!Object.values(StringFormat).includes(format as any)) {
       throw new Error(
         `firebase.storage.StorageReference.putString(_, *, _) 'format' provided is invalid, must be one of ${Object.values(
           StringFormat,
@@ -300,6 +316,8 @@ export default class StorageReference extends ReferenceBase {
       if (isUndefined(metadata) || isUndefined(metadata.contentType)) {
         if (isUndefined(metadata)) {
           _metadata = {};
+        } else {
+          _metadata = { ...metadata };
         }
         _metadata.contentType = mediaType;
         _string = base64String;

@@ -15,28 +15,42 @@
  *
  */
 
+import type { Reference, Storage } from './types/storage';
+
 // To avoid React Native require cycle warnings
-let StorageReference = null;
-export function provideStorageReferenceClass(storageReference) {
+let StorageReference: (new (storage: any, path: string) => Reference) | null = null;
+
+export function provideStorageReferenceClass(
+  storageReference: new (storage: any, path: string) => Reference,
+): void {
   StorageReference = storageReference;
 }
 
 export default class StorageListResult {
-  constructor(storage, nativeData) {
+  private _nextPageToken: string | null;
+  private _items: Reference[];
+  private _prefixes: Reference[];
+
+  constructor(
+    storage: Storage,
+    nativeData: { nextPageToken?: string | null; items: string[]; prefixes: string[] },
+  ) {
     this._nextPageToken = nativeData.nextPageToken || null;
+    // @ts-ignore - StorageReference is set by provideStorageReferenceClass before use
     this._items = nativeData.items.map(path => new StorageReference(storage, path));
+    // @ts-ignore - StorageReference is set by provideStorageReferenceClass before use
     this._prefixes = nativeData.prefixes.map(path => new StorageReference(storage, path));
   }
 
-  get items() {
+  get items(): Reference[] {
     return this._items;
   }
 
-  get nextPageToken() {
+  get nextPageToken(): string | null {
     return this._nextPageToken;
   }
 
-  get prefixes() {
+  get prefixes(): Reference[] {
     return this._prefixes;
   }
 }
