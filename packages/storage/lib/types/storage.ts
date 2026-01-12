@@ -44,7 +44,7 @@ export interface FullMetadata extends SettableMetadata {
   size: number;
   timeCreated: string;
   updated: string;
-  md5Hash: string;
+  md5Hash: string | null;
   metadata?: { [key: string]: string };
 }
 
@@ -75,6 +75,10 @@ export interface TaskSnapshot {
   metadata: FullMetadata | null;
   task: Task;
   ref: Reference;
+  /**
+   * If the state is `error`, returns a JavaScript error of the current task snapshot.
+   */
+  error?: Error;
 }
 
 /**
@@ -105,11 +109,35 @@ export interface Reference {
   list(options?: ListOptions): Promise<ListResult>;
   listAll(): Promise<ListResult>;
   put(data: Blob | Uint8Array | ArrayBuffer, metadata?: SettableMetadata): Task;
-  putString(string: string, format?: string, metadata?: SettableMetadata): Task;
+  putString(
+    string: string,
+    format?: 'raw' | 'base64' | 'base64url' | 'data_url',
+    metadata?: SettableMetadata,
+  ): Task;
   toString(): string;
   updateMetadata(metadata: SettableMetadata): Promise<FullMetadata>;
   writeToFile(filePath: string): Task;
   putFile(filePath: string, metadata?: SettableMetadata): Task;
+}
+
+/**
+ * Observer object for task state changes.
+ */
+export interface TaskSnapshotObserver {
+  /**
+   * Called when the task state changes.
+   */
+  next?: (snapshot: TaskSnapshot) => void;
+
+  /**
+   * Called when the task errors.
+   */
+  error?: (error: Error) => void;
+
+  /**
+   * Called when the task has completed successfully.
+   */
+  complete?: () => void;
 }
 
 /**
@@ -145,10 +173,10 @@ export interface Task {
    * @param complete An optional complete handler function.
    */
   on(
-    event: string,
-    nextOrObserver?: ((snapshot: TaskSnapshot) => void) | null,
+    event: 'state_changed',
+    nextOrObserver?: TaskSnapshotObserver | null | ((snapshot: TaskSnapshot) => void),
     error?: ((error: Error) => void) | null,
-    complete?: ((snapshot: TaskSnapshot) => void) | null,
+    complete?: (() => void) | null,
   ): () => void;
 
   /**

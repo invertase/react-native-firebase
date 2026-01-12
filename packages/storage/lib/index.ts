@@ -25,6 +25,7 @@ export type {
   ListResult,
   ListOptions,
   TaskSnapshot,
+  TaskSnapshotObserver,
   TaskResult,
   Task,
   EmulatorMockTokenOptions,
