@@ -5031,6 +5031,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/ai@workspace:packages/ai"
   dependencies:
+    "@react-native-firebase/app-check": "npm:23.8.0"
+    "@react-native-firebase/auth": "npm:23.8.0"
     "@types/text-encoding": "npm:^0.0.40"
     react-native-builder-bob: "npm:^0.40.16"
     react-native-fetch-api: "npm:^3.0.0"

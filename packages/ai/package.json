@@ -34,6 +34,8 @@
     "provenance": true
   },
   "devDependencies": {
+    "@react-native-firebase/app-check": "23.8.0",
+    "@react-native-firebase/auth": "23.8.0",
     "@types/text-encoding": "^0.0.40",
     "react-native-builder-bob": "^0.40.16",
     "typescript": "^5.9.3"
