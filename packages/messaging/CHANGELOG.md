@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.8.0](https://github.com/invertase/react-native-firebase/compare/v23.7.0...v23.8.0) (2026-01-13)
+
+### Bug Fixes
+
+- **messaging, types:** isSupported signature should be `Promise<boolean>` not `boolean` ([#8798](https://github.com/invertase/react-native-firebase/issues/8798)) ([4d54636](https://github.com/invertase/react-native-firebase/commit/4d5463609edd2831edc34cfe8a39b0fd1f6fe8fa))
+
 ## [23.7.0](https://github.com/invertase/react-native-firebase/compare/v23.6.0...v23.7.0) (2025-12-08)
 
 **Note:** Version bump only for package @react-native-firebase/messaging

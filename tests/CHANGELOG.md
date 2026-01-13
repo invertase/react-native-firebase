@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.8.0](https://github.com/invertase/react-native-firebase/compare/v23.7.0...v23.8.0) (2026-01-13)
+
+### Features
+
+- **functions:** turbo modules implementation ([#8603](https://github.com/invertase/react-native-firebase/issues/8603)) ([ad09a9b](https://github.com/invertase/react-native-firebase/commit/ad09a9bad791391a5d97f99d890149e5ea7d13bf))
+
+### Bug Fixes
+
+- **app:** firebase-ios-sdk 12.7.0 / firebase-js-sdk 12.7.0 ([#8810](https://github.com/invertase/react-native-firebase/issues/8810)) ([e00bd87](https://github.com/invertase/react-native-firebase/commit/e00bd876db750eeec13d9204be8b6603700b2a8d))
+
 ## [23.7.0](https://github.com/invertase/react-native-firebase/compare/v23.6.0...v23.7.0) (2025-12-08)
 
 **Note:** Version bump only for package react-native-firebase-tests

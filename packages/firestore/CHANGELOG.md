@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.8.0](https://github.com/invertase/react-native-firebase/compare/v23.7.0...v23.8.0) (2026-01-13)
+
+### Features
+
+- **firestore:** add VectorValue type and vector() API ([8de9b68](https://github.com/invertase/react-native-firebase/commit/8de9b68dbe5288b7a5c05e607e34f9713f2d7fd2))
+
 ## [23.7.0](https://github.com/invertase/react-native-firebase/compare/v23.6.0...v23.7.0) (2025-12-08)
 
 **Note:** Version bump only for package @react-native-firebase/firestore
