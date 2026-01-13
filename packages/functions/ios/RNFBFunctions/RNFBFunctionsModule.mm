@@ -305,20 +305,19 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
       // Check iOS version and Swift availability
       if (@available(iOS 15.0, macOS 12.0, *)) {
 #if __has_include("RNFBFunctions-Swift.h")
-        // Mark as in progress first to prevent race condition
-        self.streamSubscriptions[listenerIdNumber] = [NSNull null];
-        
         // Use Firebase SDK's native streaming via Swift wrapper
         // On macOS, we need to use Swift Functions API directly, so pass app/region info
         RNFBFunctionsStreamHandler *handler = [[RNFBFunctionsStreamHandler alloc] init];
         
         // Check again if cancelled during handler creation
-        if (self.streamSubscriptions[listenerIdNumber] == [NSNull null]) {
-          self.streamSubscriptions[listenerIdNumber] = handler;
-        } else {
+        id existingHandler = self.streamSubscriptions[listenerIdNumber];
+        if (existingHandler == [NSNull null]) {
           // Was cancelled, don't start stream
           return;
         }
+        
+        // Store handler to prevent race condition
+        self.streamSubscriptions[listenerIdNumber] = handler;
 
         double timeoutValue = timeout.has_value() ? timeout.value() : 0;
 
@@ -433,20 +432,19 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
       // Check iOS version and Swift availability
       if (@available(iOS 15.0, macOS 12.0, *)) {
 #if __has_include("RNFBFunctions-Swift.h")
-        // Mark as in progress first to prevent race condition
-        self.streamSubscriptions[listenerIdNumber] = [NSNull null];
-        
         // Use Firebase SDK's native streaming via Swift wrapper
         // On macOS, we need to use Swift Functions API directly, so pass app/region info
         RNFBFunctionsStreamHandler *handler = [[RNFBFunctionsStreamHandler alloc] init];
         
         // Check again if cancelled during handler creation
-        if (self.streamSubscriptions[listenerIdNumber] == [NSNull null]) {
-          self.streamSubscriptions[listenerIdNumber] = handler;
-        } else {
+        id existingHandler = self.streamSubscriptions[listenerIdNumber];
+        if (existingHandler == [NSNull null]) {
           // Was cancelled, don't start stream
           return;
         }
+        
+        // Store handler to prevent race condition
+        self.streamSubscriptions[listenerIdNumber] = handler;
 
         double timeoutValue = timeout.has_value() ? timeout.value() : 0;
 
