@@ -31,8 +31,8 @@
   },
   "devDependencies": {
     "expo": "^54.0.27",
-    "react-native-builder-bob": "^0.40.12",
-    "typescript": "^5.8.3"
+    "react-native-builder-bob": "^0.40.17",
+    "typescript": "^5.9.3"
   },
   "peerDependenciesMeta": {
     "expo": {

@@ -34,7 +34,7 @@
     "superstruct": "^2.0.2"
   },
   "devDependencies": {
-    "react-native-builder-bob": "^0.40.13"
+    "react-native-builder-bob": "^0.40.17"
   },
   "exports": {
     ".": {

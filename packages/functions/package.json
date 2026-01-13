@@ -48,8 +48,8 @@
   "devDependencies": {
     "@react-native-firebase/private-tests-firebase-functions": "^0.0.1",
     "react-native": "^0.80.1",
-    "react-native-builder-bob": "^0.40.12",
-    "typescript": "^5.8.3"
+    "react-native-builder-bob": "^0.40.17",
+    "typescript": "^5.9.3"
   },
   "publishConfig": {
     "access": "public",
