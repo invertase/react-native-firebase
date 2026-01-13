@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.8.1](https://github.com/invertase/react-native-firebase/compare/v23.8.0...v23.8.1) (2026-01-13)
+
+### Bug Fixes
+
+- **app-check:** remove javascript files from web post-typescript migration ([b729417](https://github.com/invertase/react-native-firebase/commit/b72941767fb8e61ba4b50d9ec0bc5c45d9e67a4d))
+- remove newly-added files array from package.json ([474036d](https://github.com/invertase/react-native-firebase/commit/474036d0d82191401539a8fc91bd8f177a617d36))
+
 ## [23.8.0](https://github.com/invertase/react-native-firebase/compare/v23.7.0...v23.8.0) (2026-01-13)
 
 **Note:** Version bump only for package @react-native-firebase/app-check
