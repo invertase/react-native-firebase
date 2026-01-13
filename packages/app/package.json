@@ -111,13 +111,6 @@
     },
     "./package.json": "./package.json"
   },
-  "files": [
-    "lib",
-    "dist",
-    "!**/__tests__",
-    "!**/__fixtures__",
-    "!**/__mocks__"
-  ],
   "peerDependencies": {
     "expo": ">=47.0.0",
     "react": "*",

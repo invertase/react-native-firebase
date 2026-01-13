@@ -57,16 +57,6 @@
     },
     "./package.json": "./package.json"
   },
-  "files": [
-    "lib",
-    "plugin/src",
-    "tsconfig.json",
-    "plugin/tsconfig.json",
-    "dist",
-    "!**/__tests__",
-    "!**/__fixtures__",
-    "!**/__mocks__"
-  ],
   "react-native-builder-bob": {
     "source": "lib",
     "output": "dist",
