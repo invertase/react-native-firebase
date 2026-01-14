@@ -412,6 +412,124 @@ describe('functions() modular', function () {
         }
       });
     });
+
+    describe('httpsCallable.stream()', function () {
+      // NOTE: The Firebase Functions emulator does not currently support streaming callables,
+      // even though the SDK APIs exist. These tests verify the API surface exists and will
+      // be updated to test actual streaming behavior once emulator support is added.
+      // See: packages/functions/STREAMING_STATUS.md
+
+      it('stream method exists on httpsCallable', function () {
+        const functionRunner = firebase.functions().httpsCallable('testStreamingCallable');
+
+        should.exist(functionRunner.stream);
+        functionRunner.stream.should.be.a.Function();
+      });
+
+      it('stream method returns a function (unsubscribe)', function () {
+        const functions = firebase.functions();
+        functions.useEmulator('localhost', 5001);
+        const functionRunner = functions.httpsCallable('testStreamingCallable');
+
+        const unsubscribe = functionRunner.stream({ count: 2 }, () => {});
+
+        should.exist(unsubscribe);
+        unsubscribe.should.be.a.Function();
+
+        // Clean up
+        unsubscribe();
+      });
+
+      it('unsubscribe function can be called multiple times safely', function () {
+        const functions = firebase.functions();
+        functions.useEmulator('localhost', 5001);
+        const functionRunner = functions.httpsCallable('testStreamingCallable');
+
+        const unsubscribe = functionRunner.stream({ count: 2 }, () => {});
+
+        // Should not throw
+        unsubscribe();
+        unsubscribe();
+        unsubscribe();
+      });
+
+      it('stream method accepts data and callback parameters', function () {
+        const functions = firebase.functions();
+        functions.useEmulator('localhost', 5001);
+        const functionRunner = functions.httpsCallable('testStreamingCallable');
+
+        const unsubscribe = functionRunner.stream({ count: 2, delay: 100 }, _event => {
+          // Callback will be invoked when streaming works
+        });
+
+        should.exist(unsubscribe);
+        unsubscribe();
+      });
+
+      it('stream method accepts options parameter', function () {
+        const functions = firebase.functions();
+        functions.useEmulator('localhost', 5001);
+        const functionRunner = functions.httpsCallable('testStreamingCallable');
+
+        const unsubscribe = functionRunner.stream({ count: 2 }, () => {}, { timeout: 5000 });
+
+        should.exist(unsubscribe);
+        unsubscribe();
+      });
+
+      it('receives streaming data chunks', function (done) {
+        const functions = firebase.functions();
+        functions.useEmulator('localhost', 5001);
+        const events = [];
+        const functionRunner = functions.httpsCallable('testStreamingCallable');
+
+        const unsubscribe = functionRunner.stream({ count: 3, delay: 200 }, event => {
+          events.push(event);
+
+          if (event.done) {
+            try {
+              events.length.should.be.greaterThan(1);
+              const dataEvents = events.filter(e => e.data && !e.done);
+              dataEvents.length.should.be.greaterThan(0);
+              // Verify we actually received data in the chunks
+              dataEvents.forEach(dataEvent => {
+                should.exist(dataEvent.data);
+                dataEvent.data.should.be.an.Object();
+                should.exist(dataEvent.data.index);
+                should.exist(dataEvent.data.message);
+              });
+              const doneEvent = events[events.length - 1];
+              doneEvent.done.should.equal(true);
+              // Final result should also have data
+              should.exist(doneEvent.data);
+              doneEvent.data.should.be.an.Object();
+              should.exist(doneEvent.data.totalCount);
+              unsubscribe();
+              done();
+            } catch (e) {
+              unsubscribe();
+              done(e);
+            }
+          }
+        });
+      });
+
+      it('stream method exists on httpsCallableFromUrl', function () {
+        let hostname = 'localhost';
+        if (Platform.android) {
+          hostname = '10.0.2.2';
+        }
+
+        const functionRunner = firebase
+          .functions()
+          .httpsCallableFromUrl(
+            `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,
+          );
+
+        should.exist(functionRunner.stream);
+        functionRunner.stream.should.be.a.Function();
+      });
+    });
   });
 
   describe('modular', function () {
@@ -772,6 +890,532 @@ describe('functions() modular', function () {
           }
           return Promise.resolve();
         }
+      });
+    });
+
+    describe('httpsCallable.stream()', function () {
+      // NOTE: The Firebase Functions emulator does not currently support streaming callables,
+      // even though the SDK APIs exist. These tests verify the API surface exists and will
+      // be updated to test actual streaming behavior once emulator support is added.
+      // See: packages/functions/STREAMING_STATUS.md
+
+      it('stream method exists on httpsCallable', function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functions = getFunctions(getApp());
+        const functionRunner = httpsCallable(functions, 'testStreamingCallable');
+
+        should.exist(functionRunner.stream);
+        functionRunner.stream.should.be.a.Function();
+      });
+
+      it('stream method returns a function (unsubscribe)', function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
+        const functions = getFunctions(getApp());
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+
+        const functionRunner = httpsCallable(functions, 'testStreamingCallable');
+        const unsubscribe = functionRunner.stream({ count: 2 }, () => {});
+
+        should.exist(unsubscribe);
+        unsubscribe.should.be.a.Function();
+
+        // Clean up
+        unsubscribe();
+      });
+
+      it('unsubscribe function can be called multiple times safely', function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
+        const functions = getFunctions(getApp());
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+
+        const functionRunner = httpsCallable(functions, 'testStreamingCallable');
+        const unsubscribe = functionRunner.stream({ count: 2 }, () => {});
+
+        // Should not throw
+        unsubscribe();
+        unsubscribe();
+        unsubscribe();
+      });
+
+      it('stream method accepts data and callback parameters', function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
+        const functions = getFunctions(getApp());
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+
+        const functionRunner = httpsCallable(functions, 'testStreamingCallable');
+        let _callbackInvoked = false;
+
+        const unsubscribe = functionRunner.stream({ count: 2, delay: 100 }, _event => {
+          _callbackInvoked = true;
+        });
+
+        should.exist(unsubscribe);
+        unsubscribe();
+      });
+
+      it('stream method accepts options parameter', function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
+        const functions = getFunctions(getApp());
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+
+        const functionRunner = httpsCallable(functions, 'testStreamingCallable');
+        const unsubscribe = functionRunner.stream({ count: 2 }, () => {}, { timeout: 5000 });
+
+        should.exist(unsubscribe);
+        unsubscribe();
+      });
+
+      it('receives streaming data chunks', function (done) {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
+        const functions = getFunctions(getApp());
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+
+        const events = [];
+        const functionRunner = httpsCallable(functions, 'testStreamingCallable');
+
+        const unsubscribe = functionRunner.stream({ count: 3, delay: 200 }, event => {
+          events.push(event);
+
+          if (event.done) {
+            try {
+              // Should have received data events before done
+              events.length.should.be.greaterThan(1);
+
+              const dataEvents = events.filter(e => e.data && !e.done);
+              dataEvents.length.should.be.greaterThan(0);
+
+              // Verify we actually received data in the chunks
+              dataEvents.forEach(dataEvent => {
+                should.exist(dataEvent.data);
+                dataEvent.data.should.be.an.Object();
+                should.exist(dataEvent.data.index);
+                should.exist(dataEvent.data.message);
+              });
+
+              const doneEvent = events[events.length - 1];
+              doneEvent.done.should.equal(true);
+              // Final result should also have data
+              should.exist(doneEvent.data);
+              doneEvent.data.should.be.an.Object();
+              should.exist(doneEvent.data.totalCount);
+
+              unsubscribe();
+              done();
+            } catch (e) {
+              unsubscribe();
+              done(e);
+            }
+          }
+        });
+      });
+
+      it('handles streaming errors correctly', function (done) {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
+        const functions = getFunctions(getApp());
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+
+        const functionRunner = httpsCallable(functions, 'testStreamWithError');
+
+        const unsubscribe = functionRunner.stream({ failAfter: 2 }, event => {
+          if (event.error) {
+            try {
+              should.exist(event.error);
+              event.error.should.be.a.String();
+              unsubscribe();
+              done();
+            } catch (e) {
+              unsubscribe();
+              done(e);
+            }
+          }
+        });
+      });
+
+      it('cancels stream when unsubscribe is called', function (done) {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
+        const functions = getFunctions(getApp());
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+
+        const events = [];
+        const functionRunner = httpsCallable(functions, 'testStreamingCallable');
+
+        const unsubscribe = functionRunner.stream({ count: 10, delay: 200 }, event => {
+          events.push(event);
+
+          // Cancel after first event
+          if (events.length === 1) {
+            unsubscribe();
+            // Wait a bit to ensure no more events arrive
+            setTimeout(() => {
+              try {
+                // Should not have received all 10 events
+                events.length.should.be.lessThan(10);
+                done();
+              } catch (e) {
+                done(e);
+              }
+            }, 1000);
+          }
+        });
+      });
+
+      it('stream method exists on httpsCallableFromUrl', function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallableFromUrl } = functionsModular;
+        const functions = getFunctions(getApp());
+
+        let hostname = 'localhost';
+        if (Platform.android) {
+          hostname = '10.0.2.2';
+        }
+
+        const functionRunner = httpsCallableFromUrl(
+          functions,
+          `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,
+        );
+
+        should.exist(functionRunner.stream);
+        functionRunner.stream.should.be.a.Function();
+      });
+
+      it('httpsCallableFromUrl can stream data', function (done) {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallableFromUrl, connectFunctionsEmulator } = functionsModular;
+        const functions = getFunctions(getApp());
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+
+        let hostname = 'localhost';
+        if (Platform.android) {
+          hostname = '10.0.2.2';
+        }
+
+        const events = [];
+        const functionRunner = httpsCallableFromUrl(
+          functions,
+          `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,
+        );
+
+        const unsubscribe = functionRunner.stream({ count: 3, delay: 200 }, event => {
+          events.push(event);
+
+          if (event.done) {
+            try {
+              events.length.should.be.greaterThan(1);
+              const dataEvents = events.filter(e => e.data && !e.done);
+              dataEvents.length.should.be.greaterThan(0);
+              // Verify we actually received data in the chunks
+              dataEvents.forEach(dataEvent => {
+                should.exist(dataEvent.data);
+                dataEvent.data.should.be.an.Object();
+                should.exist(dataEvent.data.index);
+                should.exist(dataEvent.data.message);
+              });
+              // Final result should also have data
+              const doneEvent = events[events.length - 1];
+              should.exist(doneEvent.data);
+              doneEvent.data.should.be.an.Object();
+              should.exist(doneEvent.data.totalCount);
+              unsubscribe();
+              done();
+            } catch (e) {
+              unsubscribe();
+              done(e);
+            }
+          }
+        });
+      });
+
+      it('stream handles complex data structures', function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
+        const functions = getFunctions(getApp());
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+
+        const functionRunner = httpsCallable(functions, 'testComplexDataStream');
+        const complexData = {
+          nested: { value: 123 },
+          array: [1, 2, 3],
+          string: 'test',
+        };
+
+        const unsubscribe = functionRunner.stream(complexData, () => {});
+
+        should.exist(unsubscribe);
+        unsubscribe();
+      });
+
+      it('receives streaming data with string value', function (done) {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
+        const functions = getFunctions(getApp());
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+
+        const functionRunner = httpsCallable(functions, 'testStreamResponse');
+        const events = [];
+
+        const unsubscribe = functionRunner.stream('foo', event => {
+          events.push(event);
+
+          if (event.done) {
+            try {
+              const dataEvents = events.filter(e => e.data && !e.done);
+              dataEvents.length.should.be.greaterThan(0);
+              dataEvents[0].data.partialData.should.equal('string');
+              unsubscribe();
+              done();
+            } catch (e) {
+              unsubscribe();
+              done(e);
+            }
+          }
+        });
+      });
+
+      it('receives streaming data with number value', function (done) {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
+        const functions = getFunctions(getApp());
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+
+        const functionRunner = httpsCallable(functions, 'testStreamResponse');
+        const events = [];
+
+        const unsubscribe = functionRunner.stream(123, event => {
+          events.push(event);
+
+          if (event.done) {
+            try {
+              const dataEvents = events.filter(e => e.data && !e.done);
+              dataEvents.length.should.be.greaterThan(0);
+              dataEvents[0].data.partialData.should.equal('number');
+              unsubscribe();
+              done();
+            } catch (e) {
+              unsubscribe();
+              done(e);
+            }
+          }
+        });
+      });
+
+      it('receives streaming data with boolean true value', function (done) {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
+        const functions = getFunctions(getApp());
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+
+        const functionRunner = httpsCallable(functions, 'testStreamResponse');
+        const events = [];
+
+        const unsubscribe = functionRunner.stream(true, event => {
+          events.push(event);
+
+          if (event.done) {
+            try {
+              const dataEvents = events.filter(e => e.data && !e.done);
+              dataEvents.length.should.be.greaterThan(0);
+              dataEvents[0].data.partialData.should.equal('boolean');
+              unsubscribe();
+              done();
+            } catch (e) {
+              unsubscribe();
+              done(e);
+            }
+          }
+        });
+      });
+
+      it('receives streaming data with boolean false value', function (done) {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
+        const functions = getFunctions(getApp());
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+
+        const functionRunner = httpsCallable(functions, 'testStreamResponse');
+        const events = [];
+
+        const unsubscribe = functionRunner.stream(false, event => {
+          events.push(event);
+
+          if (event.done) {
+            try {
+              const dataEvents = events.filter(e => e.data && !e.done);
+              dataEvents.length.should.be.greaterThan(0);
+              dataEvents[0].data.partialData.should.equal('boolean');
+              unsubscribe();
+              done();
+            } catch (e) {
+              unsubscribe();
+              done(e);
+            }
+          }
+        });
+      });
+
+      it('receives streaming data with null value', function (done) {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
+        const functions = getFunctions(getApp());
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+
+        const functionRunner = httpsCallable(functions, 'testStreamResponse');
+        const events = [];
+
+        const unsubscribe = functionRunner.stream(null, event => {
+          events.push(event);
+
+          if (event.done) {
+            try {
+              const dataEvents = events.filter(e => e.data && !e.done);
+              dataEvents.length.should.be.greaterThan(0);
+              dataEvents[0].data.partialData.should.equal('null');
+              unsubscribe();
+              done();
+            } catch (e) {
+              unsubscribe();
+              done(e);
+            }
+          }
+        });
+      });
+
+      it('receives streaming data with no arguments', function (done) {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
+        const functions = getFunctions(getApp());
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+
+        const functionRunner = httpsCallable(functions, 'testStreamResponse');
+        const events = [];
+
+        const unsubscribe = functionRunner.stream(undefined, event => {
+          events.push(event);
+
+          if (event.done) {
+            try {
+              const dataEvents = events.filter(e => e.data && !e.done);
+              dataEvents.length.should.be.greaterThan(0);
+              dataEvents[0].data.partialData.should.equal('null');
+              unsubscribe();
+              done();
+            } catch (e) {
+              unsubscribe();
+              done(e);
+            }
+          }
+        });
+      });
+
+      it('receives streaming data with array value', function (done) {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
+        const functions = getFunctions(getApp());
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+
+        const functionRunner = httpsCallable(functions, 'testStreamResponse');
+        const events = [];
+        const testArray = [1, 2, 3, 'test', true];
+
+        const unsubscribe = functionRunner.stream(testArray, event => {
+          events.push(event);
+
+          if (event.done) {
+            try {
+              const dataEvents = events.filter(e => e.data && !e.done);
+              dataEvents.length.should.be.greaterThan(0);
+              dataEvents[0].data.partialData.should.equal('array');
+              unsubscribe();
+              done();
+            } catch (e) {
+              unsubscribe();
+              done(e);
+            }
+          }
+        });
+      });
+
+      it('receives streaming data with deeply nested map', function (done) {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
+        const functions = getFunctions(getApp());
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+
+        const functionRunner = httpsCallable(functions, 'testStreamResponse');
+        const events = [];
+        const deepMap = {
+          number: 123,
+          string: 'foo',
+          booleanTrue: true,
+          booleanFalse: false,
+          null: null,
+          list: ['1', 2, true, false],
+          map: {
+            number: 123,
+            string: 'foo',
+            booleanTrue: true,
+            booleanFalse: false,
+            null: null,
+          },
+        };
+
+        const unsubscribe = functionRunner.stream(
+          { type: 'deepMap', inputData: deepMap },
+          event => {
+            events.push(event);
+
+            if (event.done) {
+              try {
+                const dataEvents = events.filter(e => e.data && !e.done);
+                dataEvents.length.should.be.greaterThan(0);
+                // Verify we received the deep map data
+                should.exist(dataEvents[0].data.partialData);
+                unsubscribe();
+                done();
+              } catch (e) {
+                unsubscribe();
+                done(e);
+              }
+            }
+          },
+        );
+      });
+
+      it('should emit a result as last value', function (done) {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
+        const functions = getFunctions(getApp());
+        connectFunctionsEmulator(functions, 'localhost', 5001);
+
+        const functionRunner = httpsCallable(functions, 'testStreamingCallable');
+        const events = [];
+
+        const unsubscribe = functionRunner.stream({ count: 2, delay: 100 }, event => {
+          events.push(event);
+
+          if (event.done) {
+            try {
+              // Last event should be the final result
+              const lastEvent = events[events.length - 1];
+              lastEvent.done.should.equal(true);
+              should.exist(lastEvent.data);
+              lastEvent.data.should.be.an.Object();
+              should.exist(lastEvent.data.totalCount);
+              unsubscribe();
+              done();
+            } catch (e) {
+              unsubscribe();
+              done(e);
+            }
+          }
+        });
       });
     });
   });

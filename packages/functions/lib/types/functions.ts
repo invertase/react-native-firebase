@@ -29,6 +29,18 @@ export interface HttpsCallableResult<ResponseData = unknown> {
 
 export interface HttpsCallable<RequestData = unknown, ResponseData = unknown> {
   (data?: RequestData | null): Promise<HttpsCallableResult<ResponseData>>;
+  /**
+   * Streams data from a callable function.
+   * @param data The data to send to the function.
+   * @param onEvent Callback function called when streaming events are received.
+   * @param streamOptions Optional settings for the streaming callable function.
+   * @returns A function to unsubscribe from the stream.
+   */
+  stream(
+    data?: RequestData | null,
+    onEvent?: (event: any) => void,
+    streamOptions?: HttpsCallableOptions,
+  ): () => void;
 }
 
 // ============ Error Code Types ============
@@ -108,6 +120,27 @@ export interface Functions extends ReactNativeFirebase.FirebaseModule {
    * @param options Optional settings for the callable function.
    */
   httpsCallableFromUrl<RequestData = unknown, ResponseData = unknown>(
+    url: string,
+    options?: HttpsCallableOptions,
+  ): HttpsCallable<RequestData, ResponseData>;
+
+  /**
+   * Returns a reference to the callable HTTPS trigger with the given name.
+   *
+   * @param name The name of the trigger.
+   * @param options Optional settings for the callable function.
+   */
+  httpsCallableStream<RequestData = unknown, ResponseData = unknown>(
+    name: string,
+    options?: HttpsCallableOptions,
+  ): HttpsCallable<RequestData, ResponseData>;
+  /**
+   * Returns a reference to the callable HTTPS trigger with the given URL.
+   *
+   * @param url The URL of the trigger.
+   * @param options Optional settings for the callable function.
+   */
+  httpsCallableStreamFromUrl<RequestData = unknown, ResponseData = unknown>(
     url: string,
     options?: HttpsCallableOptions,
   ): HttpsCallable<RequestData, ResponseData>;
