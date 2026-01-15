@@ -32,15 +32,14 @@ Pod::Spec.new do |s|
   # Turbo modules require these compiler flags
   s.compiler_flags      = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1'
 
-  # React Native dependencies
-  s.dependency          'React-Core'
   s.dependency          'RNFBApp'
-  # Turbo module code generated podspecs
-  s.dependency          'ReactCodegen'
-  s.dependency          'ReactAppDependencyProvider'
-  # Turbo modules requires these dependencies
-  s.dependency          'RCT-Folly'
-  s.dependency          'React-Fabric'
+
+  # React Native dependencies
+  if defined?(install_modules_dependencies()) != nil
+    install_modules_dependencies(s);
+  else
+    s.dependency "React-Core"
+  end
 
   if defined?($FirebaseSDKVersion)
     Pod::UI.puts "#{s.name}: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"

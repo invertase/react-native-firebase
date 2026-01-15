@@ -1804,76 +1804,376 @@ PODS:
     - Yoga
   - RNDeviceInfo (15.0.1):
     - React-Core
-  - RNFBAnalytics (23.8.1):
+  - RNFBAnalytics (23.8.2):
+    - DoubleConversion
     - FirebaseAnalytics/Core (= 12.8.0)
     - FirebaseAnalytics/IdentitySupport (= 12.8.0)
+    - glog
     - GoogleAdsOnDeviceConversion
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
     - RNFBApp
-  - RNFBApp (23.8.1):
+    - Yoga
+  - RNFBApp (23.8.2):
+    - DoubleConversion
     - Firebase/CoreOnly (= 12.8.0)
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
-  - RNFBAppCheck (23.8.1):
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - RNFBAppCheck (23.8.2):
+    - DoubleConversion
     - Firebase/AppCheck (= 12.8.0)
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
     - RNFBApp
-  - RNFBAppDistribution (23.8.1):
+    - Yoga
+  - RNFBAppDistribution (23.8.2):
+    - DoubleConversion
     - Firebase/AppDistribution (= 12.8.0)
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
     - RNFBApp
-  - RNFBAuth (23.8.1):
+    - Yoga
+  - RNFBAuth (23.8.2):
+    - DoubleConversion
     - Firebase/Auth (= 12.8.0)
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
     - RNFBApp
-  - RNFBCrashlytics (23.8.1):
+    - Yoga
+  - RNFBCrashlytics (23.8.2):
+    - DoubleConversion
     - Firebase/Crashlytics (= 12.8.0)
     - FirebaseCoreExtension
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
-    - RNFBApp
-  - RNFBDatabase (23.8.1):
-    - Firebase/Database (= 12.8.0)
-    - React-Core
-    - RNFBApp
-  - RNFBFirestore (23.8.1):
-    - Firebase/Firestore (= 12.8.0)
-    - React-Core
-    - RNFBApp
-  - RNFBFunctions (23.8.1):
-    - Firebase/Functions (= 12.8.0)
-    - RCT-Folly
-    - React-Core
+    - React-debug
     - React-Fabric
-    - ReactAppDependencyProvider
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
     - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
     - RNFBApp
-  - RNFBInAppMessaging (23.8.1):
+    - Yoga
+  - RNFBDatabase (23.8.2):
+    - DoubleConversion
+    - Firebase/Database (= 12.8.0)
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - RNFBApp
+    - Yoga
+  - RNFBFirestore (23.8.2):
+    - DoubleConversion
+    - Firebase/Firestore (= 12.8.0)
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - RNFBApp
+    - Yoga
+  - RNFBFunctions (23.8.2):
+    - DoubleConversion
+    - Firebase/Functions (= 12.8.0)
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - RNFBApp
+    - Yoga
+  - RNFBInAppMessaging (23.8.2):
+    - DoubleConversion
     - Firebase/InAppMessaging (= 12.8.0)
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
     - RNFBApp
-  - RNFBInstallations (23.8.1):
+    - Yoga
+  - RNFBInstallations (23.8.2):
+    - DoubleConversion
     - Firebase/Installations (= 12.8.0)
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
     - RNFBApp
-  - RNFBMessaging (23.8.1):
+    - Yoga
+  - RNFBMessaging (23.8.2):
+    - DoubleConversion
     - Firebase/Messaging (= 12.8.0)
     - FirebaseCoreExtension
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
     - RNFBApp
-  - RNFBML (23.8.1):
+    - Yoga
+  - RNFBML (23.8.2):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
     - RNFBApp
-  - RNFBPerf (23.8.1):
+    - Yoga
+  - RNFBPerf (23.8.2):
+    - DoubleConversion
     - Firebase/Performance (= 12.8.0)
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
     - RNFBApp
-  - RNFBRemoteConfig (23.8.1):
+    - Yoga
+  - RNFBRemoteConfig (23.8.2):
+    - DoubleConversion
     - Firebase/RemoteConfig (= 12.8.0)
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
     - RNFBApp
-  - RNFBStorage (23.8.1):
+    - Yoga
+  - RNFBStorage (23.8.2):
+    - DoubleConversion
     - Firebase/Storage (= 12.8.0)
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
     - RNFBApp
+    - Yoga
   - SocketRocket (0.7.1)
   - Yoga (0.0.0)
 
@@ -2300,22 +2600,22 @@ SPEC CHECKSUMS:
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
   RNCAsyncStorage: 6a8127b6987dc9fbce778669b252b14c8355c7ce
   RNDeviceInfo: 36d7f232bfe7c9b5c494cb7793230424ed32c388
-  RNFBAnalytics: aa853c9777e919aed30799f32e9942f0df49b31b
-  RNFBApp: 0714f4bf6f309647c61222f5e4281cfc02adefaf
-  RNFBAppCheck: 209fab360e4f07e401605145cde7a1e6c0550d3f
-  RNFBAppDistribution: 29f209f4c949b92d561c587218ac92abf07e411a
-  RNFBAuth: 9695dc9e676ed91ba43a0bcfba45121688cc485c
-  RNFBCrashlytics: e21ba19868de250aae41c3e10e6828f1dc6e73ba
-  RNFBDatabase: f3c731c35161174a46b63bad1c139b3ca4bfe4b2
-  RNFBFirestore: d3728bea3d206815251ffaa46235974ec1bd6aab
-  RNFBFunctions: 241dd16561cc527d4353089bf3118aae39328011
-  RNFBInAppMessaging: ba9df71bc744a16d950fb32d7392f28e2a170814
-  RNFBInstallations: 4598b8eceea7a73e9bfbd211a7fb04ef022f96ae
-  RNFBMessaging: 8b93eab795d79ceec89215fff8d8d5d4d230e594
-  RNFBML: 38034b44067f732977a9b544c28d98c3605fd193
-  RNFBPerf: dc6958b64c6166a31487a930a7d876c4ba06203a
-  RNFBRemoteConfig: cbbd2b7e68a29601dac3e1ce1b3bb8ce3c9b7ad7
-  RNFBStorage: 6409a9507ab74b35ef2303e8c62844c25095d0e4
+  RNFBAnalytics: 6f52cb67a7a7e6d4a9bababd4e3544ff480016b4
+  RNFBApp: 8cfdfb73d4073f9ca83ce1cb53750480652cca64
+  RNFBAppCheck: 5564b6ee1232d554201ae53eea0fbc4455b767c9
+  RNFBAppDistribution: 8a95a968bc5e7053e70c87b6b8f89cd7a267414d
+  RNFBAuth: 35a2d0379b369225514ee4cea7935f498e9ebd24
+  RNFBCrashlytics: a170250e2b35aedd93cb7dbd69b56ae6fff67f74
+  RNFBDatabase: cfcbd1f35df1c0edecc79e3143260ed3963f0c5a
+  RNFBFirestore: d7f9e3b3547608a8fd11aa09237d23f5b7efd5f8
+  RNFBFunctions: 683176a3f3a780f207f365a67f23099468fdb291
+  RNFBInAppMessaging: acfb60bacb29a18e2d0c418287893f797edbbe01
+  RNFBInstallations: 1c4a4a0be5ee1a720b8a8efd94d44ea5de256379
+  RNFBMessaging: a07f01a589fe43ed7995d0d707953adc934905dc
+  RNFBML: 282151ed10cb79998b68196886b0805eef3765c2
+  RNFBPerf: d592301b90bb1a1448bb31fded843a4193187d28
+  RNFBRemoteConfig: 33080141a2d8675fd359f50394893feb185bd033
+  RNFBStorage: e50a8905143fb9ab21f8ab25f68e91fd7c8a0aeb
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 3bb1ee33b5133befbd33872601fa46efdd48e841
 

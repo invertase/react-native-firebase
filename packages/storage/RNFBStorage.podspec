@@ -29,9 +29,14 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target = firebase_tvos_target
   s.source_files        = 'ios/**/*.{h,m}'
 
-  # React Native dependencies
-  s.dependency          'React-Core'
   s.dependency          'RNFBApp'
+
+  # React Native dependencies
+  if defined?(install_modules_dependencies()) != nil
+    install_modules_dependencies(s);
+  else
+    s.dependency "React-Core"
+  end
 
   if defined?($FirebaseSDKVersion)
     Pod::UI.puts "#{s.name}: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"
