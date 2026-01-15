@@ -25,7 +25,11 @@ Pod::Spec.new do |s|
   s.source_files        = "ios/**/*.{h,m}"
 
   # React Native dependencies
-  s.dependency          'React-Core'
+  if defined?(install_modules_dependencies()) != nil
+    install_modules_dependencies(s);
+  else
+    s.dependency "React-Core"
+  end
 
   if (ENV.include?('FIREBASE_SDK_VERSION'))
     Pod::UI.puts "#{s.name}: Found Firebase SDK version in environment '#{ENV['FIREBASE_SDK_VERSION']}'"
