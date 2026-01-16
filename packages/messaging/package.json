@@ -55,6 +55,7 @@
         "default": "./dist/commonjs/index.js"
       }
     },
+    "./app.plugin.js": "./app.plugin.js",
     "./package.json": "./package.json"
   },
   "react-native-builder-bob": {
