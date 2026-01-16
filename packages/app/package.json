@@ -109,6 +109,7 @@
         "default": "./dist/commonjs/common/*"
       }
     },
+    "./app.plugin.js": "./app.plugin.js",
     "./package.json": "./package.json"
   },
   "peerDependencies": {
