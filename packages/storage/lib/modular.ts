@@ -14,22 +14,21 @@
  * limitations under the License.
  *
  */
-/**
- * @typedef {import('..').FirebaseStorageTypes} FirebaseStorageTypes
- * @typedef {import('..').FirebaseStorageTypes.Module} Storage
- * @typedef {import('..').FirebaseStorageTypes.Reference} Reference
- * @typedef {import('..').FirebaseStorageTypes.FullMetadata} FullMetadata
- * @typedef {import('..').FirebaseStorageTypes.ListResult} ListResult
- * @typedef {import('..').FirebaseStorageTypes.TaskResult} TaskResult
- * @typedef {import('..').FirebaseStorageTypes.Task} Task
- * @typedef {import('..').FirebaseStorageTypes.ListOptions} ListOptions
- * @typedef {import('..').FirebaseStorageTypes.SettableMetadata} SettableMetadata
- * @typedef {import('..').FirebaseStorageTypes.EmulatorMockTokenOptions} EmulatorMockTokenOptions
- * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
- */
 
 import { getApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
+import type { FirebaseApp } from '@react-native-firebase/app';
+import type {
+  Storage,
+  Reference,
+  FullMetadata,
+  ListResult,
+  ListOptions,
+  TaskResult,
+  Task,
+  SettableMetadata,
+  EmulatorMockTokenOptions,
+} from './types/storage';
 
 /**
  * Returns a Storage instance for the given app.
@@ -37,7 +36,7 @@ import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
  * @param bucketUrl - Storage bucket URL. Optional.
  * @returns {Storage}
  */
-export function getStorage(app, bucketUrl) {
+export function getStorage(app?: FirebaseApp, bucketUrl?: string): Storage {
   if (app) {
     if (bucketUrl != null) {
       return getApp(app.name).storage(bucketUrl);
@@ -61,7 +60,13 @@ export function getStorage(app, bucketUrl) {
  * @param options - `EmulatorMockTokenOptions` instance. Optional. Web only.
  * @returns {void}
  */
-export function connectStorageEmulator(storage, host, port, options) {
+export function connectStorageEmulator(
+  storage: Storage,
+  host: string,
+  port: number,
+  options?: EmulatorMockTokenOptions,
+): void {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return storage.useEmulator.call(storage, host, port, options, MODULAR_DEPRECATION_ARG);
 }
 
@@ -72,7 +77,8 @@ export function connectStorageEmulator(storage, host, port, options) {
  * is provided, the returned reference will be the bucket root path. Optional.
  * @returns {Reference}
  */
-export function ref(storage, path) {
+export function ref(storage: Storage, path?: string): Reference {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return storage.ref.call(storage, path, MODULAR_DEPRECATION_ARG);
 }
 
@@ -81,7 +87,8 @@ export function ref(storage, path) {
  * @param storageRef - Storage `Reference` instance.
  * @returns {Promise<void>}
  */
-export function deleteObject(storageRef) {
+export function deleteObject(storageRef: Reference): Promise<void> {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return storageRef.delete.call(storageRef, MODULAR_DEPRECATION_ARG);
 }
 
@@ -90,8 +97,7 @@ export function deleteObject(storageRef) {
  * @param storageRef - Storage `Reference` instance.
  * @returns {Promise<Blob>}
  */
-// eslint-disable-next-line
-export function getBlob(storageRef, maxDownloadSizeBytes) {
+export function getBlob(_storageRef: Reference, _maxDownloadSizeBytes?: number): Promise<Blob> {
   throw new Error('`getBlob()` is not implemented');
 }
 
@@ -101,8 +107,10 @@ export function getBlob(storageRef, maxDownloadSizeBytes) {
  * @param maxDownloadSizeBytes - The maximum allowed size in bytes to retrieve. Web only.
  * @returns {Promise<ArrayBuffer>}
  */
-// eslint-disable-next-line
-export function getBytes(storageRef, maxDownloadSizeBytes) {
+export function getBytes(
+  _storageRef: Reference,
+  _maxDownloadSizeBytes?: number,
+): Promise<ArrayBuffer> {
   throw new Error('`getBytes()` is not implemented');
 }
 
@@ -111,7 +119,8 @@ export function getBytes(storageRef, maxDownloadSizeBytes) {
  * @param storageRef - Storage `Reference` instance.
  * @returns {Promise<string>}
  */
-export function getDownloadURL(storageRef) {
+export function getDownloadURL(storageRef: Reference): Promise<string> {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return storageRef.getDownloadURL.call(storageRef, MODULAR_DEPRECATION_ARG);
 }
 
@@ -120,7 +129,8 @@ export function getDownloadURL(storageRef) {
  * @param storageRef - Storage `Reference` instance.
  * @returns {Promise<FullMetadata>}
  */
-export function getMetadata(storageRef) {
+export function getMetadata(storageRef: Reference): Promise<FullMetadata> {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return storageRef.getMetadata.call(storageRef, MODULAR_DEPRECATION_ARG);
 }
 
@@ -130,8 +140,10 @@ export function getMetadata(storageRef) {
  * @param maxDownloadSizeBytes - The maximum allowed size in bytes to retrieve. Web only.
  * @returns {NodeJS.ReadableStream;}
  */
-// eslint-disable-next-line
-export function getStream(storageRef, maxDownloadSizeBytes) {
+export function getStream(
+  _storageRef: Reference,
+  _maxDownloadSizeBytes?: number,
+): NodeJS.ReadableStream {
   throw new Error('`getStream()` is not implemented');
 }
 
@@ -141,7 +153,8 @@ export function getStream(storageRef, maxDownloadSizeBytes) {
  * @param options - Storage `ListOptions` instance. The options list() accepts.
  * @returns {Promise<ListResult>}
  */
-export function list(storageRef, options) {
+export function list(storageRef: Reference, options?: ListOptions): Promise<ListResult> {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return storageRef.list.call(storageRef, options, MODULAR_DEPRECATION_ARG);
 }
 
@@ -150,7 +163,8 @@ export function list(storageRef, options) {
  * @param storageRef - Storage `Reference` instance.
  * @returns {Promise<ListResult>}
  */
-export function listAll(storageRef) {
+export function listAll(storageRef: Reference): Promise<ListResult> {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return storageRef.listAll.call(storageRef, MODULAR_DEPRECATION_ARG);
 }
 
@@ -160,7 +174,11 @@ export function listAll(storageRef) {
  * @param metadata - A Storage `SettableMetadata` instance to update.
  * @returns {Promise<FullMetadata>}
  */
-export function updateMetadata(storageRef, metadata) {
+export function updateMetadata(
+  storageRef: Reference,
+  metadata: SettableMetadata,
+): Promise<FullMetadata> {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return storageRef.updateMetadata.call(storageRef, metadata, MODULAR_DEPRECATION_ARG);
 }
 
@@ -171,8 +189,11 @@ export function updateMetadata(storageRef, metadata) {
  * @param metadata - A Storage `SettableMetadata` instance to update. Optional.
  * @returns {Promise<TaskResult>}
  */
-// eslint-disable-next-line
-export async function uploadBytes(storageRef, data, metadata) {
+export async function uploadBytes(
+  _storageRef: Reference,
+  _data: Blob | Uint8Array | ArrayBuffer,
+  _metadata?: SettableMetadata,
+): Promise<TaskResult> {
   throw new Error('`uploadBytes()` is not implemented');
 }
 
@@ -183,7 +204,12 @@ export async function uploadBytes(storageRef, data, metadata) {
  * @param metadata - A Storage `SettableMetadata` instance to update. Optional.
  * @returns {Task}
  */
-export function uploadBytesResumable(storageRef, data, metadata) {
+export function uploadBytesResumable(
+  storageRef: Reference,
+  data: Blob | Uint8Array | ArrayBuffer,
+  metadata?: SettableMetadata,
+): Task {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return storageRef.put.call(storageRef, data, metadata, MODULAR_DEPRECATION_ARG);
 }
 
@@ -195,7 +221,13 @@ export function uploadBytesResumable(storageRef, data, metadata) {
  * @param metadata - A Storage `SettableMetadata` instance to update. Optional.
  * @returns {Task}
  */
-export function uploadString(storageRef, data, format, metadata) {
+export function uploadString(
+  storageRef: Reference,
+  data: string,
+  format?: string,
+  metadata?: SettableMetadata,
+): Task {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return storageRef.putString.call(storageRef, data, format, metadata, MODULAR_DEPRECATION_ARG);
 }
 
@@ -207,7 +239,8 @@ export function uploadString(storageRef, data, format, metadata) {
  * @param url - A storage bucket URL pointing to a single file or location. Must be either a `gs://` url or an `http` url. Not available on web.
  * @returns {Reference}
  */
-export function refFromURL(storage, url) {
+export function refFromURL(storage: Storage, url: string): Reference {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return storage.refFromURL.call(storage, url, MODULAR_DEPRECATION_ARG);
 }
 
@@ -217,7 +250,8 @@ export function refFromURL(storage, url) {
  * @param time - The new maximum operation retry time in milliseconds.
  * @returns {Promise<void>}
  */
-export function setMaxOperationRetryTime(storage, time) {
+export function setMaxOperationRetryTime(storage: Storage, time: number): Promise<void> {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return storage.setMaxOperationRetryTime.call(storage, time, MODULAR_DEPRECATION_ARG);
 }
 
@@ -227,7 +261,8 @@ export function setMaxOperationRetryTime(storage, time) {
  * @param time - The new maximum operation retry time in milliseconds.
  * @returns {Promise<void>}
  */
-export function setMaxUploadRetryTime(storage, time) {
+export function setMaxUploadRetryTime(storage: Storage, time: number): Promise<void> {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return storage.setMaxUploadRetryTime.call(storage, time, MODULAR_DEPRECATION_ARG);
 }
 
@@ -238,7 +273,12 @@ export function setMaxUploadRetryTime(storage, time) {
  * @param metadata Any additional `SettableMetadata` for this task.
  * @returns {Task}
  */
-export function putFile(storageRef, filePath, metadata) {
+export function putFile(
+  storageRef: Reference,
+  filePath: string,
+  metadata?: SettableMetadata,
+): Task {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return storageRef.putFile.call(storageRef, filePath, metadata, MODULAR_DEPRECATION_ARG);
 }
 
@@ -248,7 +288,8 @@ export function putFile(storageRef, filePath, metadata) {
  * @param localFilePath The local file path to upload to on the device.
  * @returns {Task}
  */
-export function writeToFile(storageRef, filePath) {
+export function writeToFile(storageRef: Reference, filePath: string): Task {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return storageRef.writeToFile.call(storageRef, filePath, MODULAR_DEPRECATION_ARG);
 }
 
@@ -257,7 +298,8 @@ export function writeToFile(storageRef, filePath) {
  * @param storageRef - Storage Reference instance.
  * @returns {String}
  */
-export function toString(storageRef) {
+export function toString(storageRef: Reference): string {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return storageRef.toString.call(storageRef, MODULAR_DEPRECATION_ARG);
 }
 
@@ -267,7 +309,8 @@ export function toString(storageRef) {
  * @param path - The relative path from this reference. Leading, trailing, and consecutive slashes are removed.
  * @returns {String}
  */
-export function child(storageRef, path) {
+export function child(storageRef: Reference, path: string): Reference {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return storageRef.child.call(storageRef, path, MODULAR_DEPRECATION_ARG);
 }
 
@@ -277,8 +320,9 @@ export function child(storageRef, path) {
  * @param time - The new maximum download retry time in milliseconds.
  * @returns {Promise<void>}
  */
-export function setMaxDownloadRetryTime(storage, time) {
+export function setMaxDownloadRetryTime(storage: Storage, time: number): Promise<void> {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return storage.setMaxDownloadRetryTime.call(storage, time, MODULAR_DEPRECATION_ARG);
 }
 
-export { StringFormat, TaskEvent, TaskState } from '../StorageStatics';
+export { StringFormat, TaskEvent, TaskState } from './StorageStatics';
