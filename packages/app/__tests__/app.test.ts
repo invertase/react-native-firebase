@@ -10,6 +10,7 @@ import firebase, {
   setLogLevel,
 } from '../lib';
 import { Logger } from '../lib/internal/logger';
+import { NativeFirebaseError } from '../lib/internal';
 
 describe('App', function () {
   describe('modular', function () {
@@ -119,6 +120,22 @@ describe('App', function () {
           return;
         },
       );
+    });
+  });
+
+  describe('`NativeFirebaseError` can cope with missing properties', function () {
+    it('missing `userInfo.code` does not error', function () {
+      const testNativeError = {
+        userInfo: undefined,
+      };
+      const testNativeFirebaseError = new NativeFirebaseError(
+        // @ts-ignore - using malformed object to test handling of malformed objects
+        testNativeError,
+        new Error().stack!,
+        'testNamespace',
+      );
+      expect(testNativeFirebaseError.namespace).toBe('testNamespace');
+      expect(testNativeFirebaseError.code).toBe('testNamespace/unknown');
     });
   });
 });
