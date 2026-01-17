@@ -145,7 +145,7 @@
       "minSdk": 23,
       "targetSdk": 34,
       "compileSdk": 34,
-      "firebase": "34.6.0",
+      "firebase": "34.7.0",
       "firebaseCrashlyticsGradle": "3.0.6",
       "firebasePerfGradle": "2.0.2",
       "gmsGoogleServicesGradle": "4.4.4",
