@@ -177,6 +177,7 @@ To configure the react-native-firebase custom provider, first obtain one, then c
 import { getApp } from '@react-native-firebase/app';
 
 const rnfbProvider = getApp().appCheck().newReactNativeFirebaseAppCheckProvider();
+
 rnfbProvider.configure({
   android: {
     provider: __DEV__ ? 'debug' : 'playIntegrity',
