@@ -174,9 +174,9 @@ So AppCheck module initialization is done in two steps in react-native-firebase 
 To configure the react-native-firebase custom provider, first obtain one, then configure it according to the providers you want to use on each platform.
 
 ```javascript
-import { ReactNativeFirebaseAppCheckProvider } from '@react-native-firebase/app-check';
+import { getApp } from '@react-native-firebase/app';
 
-const rnfbProvider = new ReactNativeFirebaseAppCheckProvider();
+const rnfbProvider = getApp().appCheck().newReactNativeFirebaseAppCheckProvider();
 rnfbProvider.configure({
   android: {
     provider: __DEV__ ? 'debug' : 'playIntegrity',
