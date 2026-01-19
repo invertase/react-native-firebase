@@ -21,6 +21,7 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
+import type { ModuleConfig } from '@react-native-firebase/app/lib/internal';
 import { HttpsError, type NativeError } from './HttpsError';
 import { version } from './version';
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
@@ -83,7 +84,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
 
   constructor(
     app: ReactNativeFirebase.FirebaseAppBase,
-    config: any,
+    config: ModuleConfig,
     customUrlOrRegion?: string | null,
   ) {
     super(app, config, customUrlOrRegion);

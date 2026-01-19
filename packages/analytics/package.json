@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/analytics",
-  "version": "23.7.0",
+  "version": "23.8.3",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - The analytics module provides out of the box support with Google Analytics for Firebase. Integration with the Android & iOS allows for in-depth analytical insight reporting, such as device information, location, user actions and more.",
   "main": "./dist/commonjs/index.js",
@@ -10,8 +10,7 @@
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
     "compile": "bob build",
-    "prepare": "yarn run build && yarn compile",
-    "tsc": "../../node_modules/.bin/tsc"
+    "prepare": "yarn run build && yarn compile"
   },
   "repository": {
     "type": "git",
@@ -25,7 +24,7 @@
     "analytics"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "23.7.0"
+    "@react-native-firebase/app": "23.8.3"
   },
   "publishConfig": {
     "access": "public",
@@ -35,11 +34,11 @@
     "superstruct": "^2.0.2"
   },
   "devDependencies": {
-    "react-native-builder-bob": "^0.40.13"
+    "react-native-builder-bob": "^0.40.17"
   },
   "exports": {
     ".": {
-      "source": "./lib/index.js",
+      "source": "./lib/index.ts",
       "import": {
         "types": "./dist/typescript/module/lib/index.d.ts",
         "default": "./dist/module/index.js"
@@ -51,13 +50,6 @@
     },
     "./package.json": "./package.json"
   },
-  "files": [
-    "lib",
-    "dist",
-    "!**/__tests__",
-    "!**/__fixtures__",
-    "!**/__mocks__"
-  ],
   "react-native-builder-bob": {
     "source": "lib",
     "output": "dist",

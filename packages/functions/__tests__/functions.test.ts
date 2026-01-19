@@ -271,7 +271,7 @@ describe('Cloud Functions', function () {
       });
 
       it('`FunctionsModule` type is properly exposed to end user', function () {
-        const functionsInstance: Functions = (firebase.app() as unknown as FirebaseApp).functions();
+        const functionsInstance: Functions = getFunctions();
         expect(functionsInstance).toBeDefined();
         expect(functionsInstance.httpsCallable).toBeDefined();
         expect(functionsInstance.httpsCallableFromUrl).toBeDefined();
@@ -280,12 +280,12 @@ describe('Cloud Functions', function () {
       });
 
       it('`Functions` type is properly exposed to end user', function () {
-        const functionsInstance: Functions = (firebase.app() as unknown as FirebaseApp).functions();
+        const functionsInstance: Functions = getFunctions();
         expect(functionsInstance).toBeDefined();
       });
 
       it('`FirebaseApp` type is properly exposed to end user', function () {
-        const app = firebase.app() as unknown as FirebaseApp;
+        const app = getApp();
         expect(app).toBeDefined();
         expect(app.functions).toBeDefined();
       });

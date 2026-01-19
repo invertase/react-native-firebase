@@ -40,6 +40,7 @@ jobs:
       - uses: actions/cache/restore@v4
         name: Yarn Cache Restore
         id: yarn-cache
+        continue-on-error: true
         with:
           path: .yarn/cache
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
@@ -102,6 +103,7 @@ jobs:
       - uses: actions/cache/save@v4
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
+        continue-on-error: true
         with:
           path: .yarn/cache
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}

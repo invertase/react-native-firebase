@@ -1,5 +1,9 @@
 import crashlytics, {
   firebase,
+  FirebaseCrashlyticsTypes,
+  // Types
+  type Crashlytics,
+  // Modular API
   getCrashlytics,
   checkForUnsentReports,
   deleteUnsentReports,
@@ -30,13 +34,17 @@ console.log(firebase.crashlytics.SDK_VERSION);
 // checks statics exist on defaultExport
 console.log(crashlytics.firebase.SDK_VERSION);
 
+console.log(crashlytics.SDK_VERSION);
+
 // checks root exists
 console.log(firebase.SDK_VERSION);
 
-// checks Module instance APIs
-const crashlyticsInstance = firebase.crashlytics();
+// test type usage
+const crashlyticsInstance: Crashlytics = firebase.crashlytics();
+console.log(crashlyticsInstance.app.name);
 console.log(crashlyticsInstance.isCrashlyticsCollectionEnabled);
 
+// checks Module instance APIs
 crashlyticsInstance.checkForUnsentReports().then((hasUnsent: boolean) => {
   console.log(hasUnsent);
 });
@@ -74,7 +82,33 @@ crashlyticsInstance.setCrashlyticsCollectionEnabled(true).then(() => {
   console.log('Collection enabled');
 });
 
-// checks modular API functions
+// checks all methods exist on firebase.crashlytics()
+console.log(firebase.crashlytics().checkForUnsentReports);
+console.log(firebase.crashlytics().deleteUnsentReports);
+console.log(firebase.crashlytics().didCrashOnPreviousExecution);
+console.log(firebase.crashlytics().crash);
+console.log(firebase.crashlytics().log);
+console.log(firebase.crashlytics().recordError);
+console.log(firebase.crashlytics().sendUnsentReports);
+console.log(firebase.crashlytics().setUserId);
+console.log(firebase.crashlytics().setAttribute);
+console.log(firebase.crashlytics().setAttributes);
+console.log(firebase.crashlytics().setCrashlyticsCollectionEnabled);
+
+// checks all methods exist on default export
+console.log(crashlytics().checkForUnsentReports);
+console.log(crashlytics().deleteUnsentReports);
+console.log(crashlytics().didCrashOnPreviousExecution);
+console.log(crashlytics().crash);
+console.log(crashlytics().log);
+console.log(crashlytics().recordError);
+console.log(crashlytics().sendUnsentReports);
+console.log(crashlytics().setUserId);
+console.log(crashlytics().setAttribute);
+console.log(crashlytics().setAttributes);
+console.log(crashlytics().setCrashlyticsCollectionEnabled);
+
+// test modular API functions
 const crashlyticsModular = getCrashlytics();
 console.log(crashlyticsModular.app.name);
 
@@ -114,3 +148,9 @@ setAttributes(crashlyticsInstance, { key1: 'value1', key2: 'value2' }).then(() =
 setCrashlyticsCollectionEnabled(crashlyticsInstance, true).then(() => {
   console.log('Collection enabled');
 });
+
+// test FirebaseCrashlyticsTypes namespace
+const namespaceInstance: FirebaseCrashlyticsTypes.Module = firebase.crashlytics();
+console.log(namespaceInstance.app.name);
+const namespaceStatics: FirebaseCrashlyticsTypes.Statics = firebase.crashlytics;
+console.log(namespaceStatics);

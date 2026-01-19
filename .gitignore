@@ -585,3 +585,5 @@ website/public
 # vertexai test data
 vertexai-sdk-test-data*
 mocks-lookup.ts
+
+.nx/
