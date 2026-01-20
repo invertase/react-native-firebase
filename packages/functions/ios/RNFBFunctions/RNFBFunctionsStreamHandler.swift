@@ -17,41 +17,19 @@
 
 import Foundation
 import FirebaseFunctions
+import FirebaseCore
 
 /// Swift wrapper for Firebase Functions streaming that's accessible from Objective-C
 /// This is necessary because Firebase's streaming API uses Swift's AsyncStream which
 /// doesn't have Objective-C bridging
 @available(iOS 15.0, macOS 12.0, *)
-@objc(RNFBFunctionsStreamHandler)
-public class RNFBFunctionsStreamHandler: NSObject {
+@objcMembers public class RNFBFunctionsStreamHandler: NSObject {
   private var streamTask: Task<Void, Never>?
   
   /// Helper function to log to both NSLog and a file
   private func log(_ message: String) {
     let logMessage = "RNFBFunctions: \(message)"
     NSLog("%@", logMessage)
-    
-    // Also write to a file for easier access (in home directory)
-    let homeDir = FileManager.default.homeDirectoryForCurrentUser
-    let logFile = homeDir.appendingPathComponent("rnfb-functions-stream-debug.log")
-    
-    let formatter = DateFormatter()
-    formatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
-    let timestamp = formatter.string(from: Date())
-    let fileMessage = "[\(timestamp)] \(message)\n"
-    
-    if let data = fileMessage.data(using: .utf8) {
-      if FileManager.default.fileExists(atPath: logFile.path) {
-        if let fileHandle = try? FileHandle(forWritingTo: logFile) {
-          fileHandle.seekToEndOfFile()
-          fileHandle.write(data)
-          fileHandle.closeFile()
-        }
-      } else {
-        // File doesn't exist, create it
-        try? data.write(to: logFile)
-      }
-    }
   }
   
   /// Start streaming from a Firebase Function
@@ -78,9 +56,9 @@ public class RNFBFunctionsStreamHandler: NSObject {
   ) {
     // Convert app to Swift FirebaseApp synchronously (called from background queue already)
     let swiftApp: FirebaseApp
-    if let firApp = app as? FIRApp {
+    if let firApp = app as? FirebaseApp {
       // Convert FIRApp to FirebaseApp
-      swiftApp = FirebaseApp.app(named: firApp.name) ?? FirebaseApp.app()!
+      swiftApp = FirebaseApp.app(name: firApp.name) ?? FirebaseApp.app()!
     } else if let firebaseApp = app as? FirebaseApp {
       swiftApp = firebaseApp
     } else {

@@ -23,11 +23,7 @@
 #import "RNFBApp/RNFBRCTEventEmitter.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBFunctionsModule.h"
-
-// Import Swift-generated Objective-C header for streaming
-#if __has_include("RNFBFunctions-Swift.h")
-#import "RNFBFunctions-Swift.h"
-#endif
+#import <RNFBFunctions/RNFBFunctions-Swift.h>
 
 @interface RNFBFunctionsModule ()
 @property(nonatomic, strong) NSMutableDictionary<NSNumber *, id> *streamSubscriptions;
@@ -304,7 +300,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
 
       // Check iOS version and Swift availability
       if (@available(iOS 15.0, macOS 12.0, *)) {
-#if __has_include("RNFBFunctions-Swift.h")
+
         // Use Firebase SDK's native streaming via Swift wrapper
         // On macOS, we need to use Swift Functions API directly, so pass app/region info
         RNFBFunctionsStreamHandler *handler = [[RNFBFunctionsStreamHandler alloc] init];
@@ -341,18 +337,6 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
                             [self.streamSubscriptions removeObjectForKey:listenerIdNumber];
                           }
                         }];
-#else
-          // Swift bridging not available
-          NSDictionary *eventBody = @{
-            @"listenerId" : listenerIdNumber,
-            @"body" : @{
-              @"data" : [NSNull null],
-              @"error" : @"Swift streaming bridge not available. Ensure RNFBFunctionsStreamHandler.swift is included in the Xcode project.",
-              @"done" : @NO
-            }
-          };
-          [[RNFBRCTEventEmitter shared] sendEventWithName:@"functions_streaming_event" body:eventBody];
-#endif
       } else {
         // iOS version too old
         NSDictionary *eventBody = @{

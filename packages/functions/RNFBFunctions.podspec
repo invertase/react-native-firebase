@@ -29,6 +29,7 @@ Pod::Spec.new do |s|
   s.tvos.deployment_target = firebase_tvos_target
   s.swift_version = '5.0'
   s.source_files        = 'ios/**/*.{h,m,mm,cpp,swift}'
+  s.private_header_files = "ios/**/*.h"
   s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*'
   # Turbo modules require these compiler flags
   s.compiler_flags      = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1'
