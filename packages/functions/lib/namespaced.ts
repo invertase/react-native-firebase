@@ -165,8 +165,8 @@ class FirebaseFunctionsModule extends FirebaseModule {
       const subscription = this.emitter.addListener(eventName, (event: any) => {
         const body = event.body;
 
-        if (event.body.error) {
-          const { code, message, details } = event.body.error || {};
+        if (body.error) {
+          const { code, message, details } = body.error || {};
           error = new HttpsError(
             HttpsErrorCode[code as keyof typeof HttpsErrorCode] || HttpsErrorCode.UNKNOWN,
             message || 'Unknown error',
