@@ -16,12 +16,12 @@
  */
 
 import { isAndroid, isNumber } from '@react-native-firebase/app/lib/common';
+import type { ModuleConfig } from '@react-native-firebase/app/lib/internal';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import type { ModuleConfig } from '@react-native-firebase/app/lib/internal';
 import { HttpsError, type NativeError } from './HttpsError';
 import { version } from './version';
 import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
@@ -140,13 +140,9 @@ class FirebaseFunctionsModule extends FirebaseModule {
       });
     };
 
-    // Add a streaming helper (callback-based)
-    // Usage: const stop = functions().httpsCallable('fn').stream(data, (evt) => {...}, options)
-    callableFunction.stream = (
-      data?: any,
-      onEvent?: (event: any) => void,
-      streamOptions: HttpsCallableOptions = {},
-    ) => {
+    // Add async iterable streaming helper
+    // Usage: const { stream, data } = await functions().httpsCallable('fn').stream(data, options)
+    callableFunction.stream = async (data?: any, streamOptions: HttpsCallableOptions = {}) => {
       if (streamOptions.timeout) {
         if (isNumber(streamOptions.timeout)) {
           streamOptions.timeout = streamOptions.timeout / 1000;
@@ -156,26 +152,63 @@ class FirebaseFunctionsModule extends FirebaseModule {
       }
 
       const listenerId = this._id_functions_streaming_event++;
-      // @ts-ignore
       const eventName = this.eventNameForApp(`functions_streaming_event:${listenerId}`);
+      const nativeModule = this.native;
 
-      // @ts-ignore
+      // Queue to buffer events before iteration starts
+      const eventQueue: any[] = [];
+      let resolveNext: ((value: IteratorResult<any>) => void) | null = null;
+      let error: Error | null = null;
+      let done = false;
+      let finalData: any = null;
+
       const subscription = this.emitter.addListener(eventName, (event: any) => {
         const body = event.body;
-        if (onEvent) {
-          onEvent(body);
-        }
-        if (body && (body.done || body.error)) {
+
+        if (event.body.error) {
+          const { code, message, details } = event.body.error || {};
+          error = new HttpsError(
+            HttpsErrorCode[code as keyof typeof HttpsErrorCode] || HttpsErrorCode.UNKNOWN,
+            message || 'Unknown error',
+            details || null,
+            event.body.error,
+          );
+          done = true;
           subscription.remove();
-          if (this.native.removeFunctionsStreaming) {
-            this.native.removeFunctionsStreaming(listenerId);
+          if (nativeModule.removeFunctionsStreaming) {
+            nativeModule.removeFunctionsStreaming(listenerId);
+          }
+          if (resolveNext) {
+            resolveNext({ done: true, value: undefined });
+            resolveNext = null;
+          }
+          return;
+        }
+
+        if (body.done) {
+          finalData = body.data;
+          done = true;
+          subscription.remove();
+          if (nativeModule.removeFunctionsStreaming) {
+            nativeModule.removeFunctionsStreaming(listenerId);
+          }
+          if (resolveNext) {
+            resolveNext({ done: true, value: undefined });
+            resolveNext = null;
+          }
+        } else if (body.data !== null && body.data !== undefined) {
+          // This is a chunk
+          if (resolveNext) {
+            resolveNext({ done: false, value: body.data });
+            resolveNext = null;
+          } else {
+            eventQueue.push(body.data);
           }
         }
       });
 
-      // Start native streaming on both platforms.
-      // Note: appName and customUrlOrRegion are automatically prepended by the native module wrapper
-      this.native.httpsCallableStream(
+      // Start native streaming
+      nativeModule.httpsCallableStream(
         this._useFunctionsEmulatorHost || null,
         this._useFunctionsEmulatorPort || -1,
         name,
@@ -184,11 +217,53 @@ class FirebaseFunctionsModule extends FirebaseModule {
         listenerId,
       );
 
-      return () => {
-        subscription.remove();
-        if (this.native.removeFunctionsStreaming) {
-          this.native.removeFunctionsStreaming(listenerId);
-        }
+      const asyncIterator = {
+        [Symbol.asyncIterator]() {
+          return this;
+        },
+        async next(): Promise<IteratorResult<any>> {
+          if (error) {
+            throw error;
+          }
+
+          if (eventQueue.length > 0) {
+            return { done: false, value: eventQueue.shift() };
+          }
+
+          if (done) {
+            return { done: true, value: undefined };
+          }
+
+          return new Promise<IteratorResult<any>>(resolve => {
+            resolveNext = resolve;
+          });
+        },
+        async return(): Promise<IteratorResult<any>> {
+          subscription.remove();
+          if (nativeModule.removeFunctionsStreaming) {
+            nativeModule.removeFunctionsStreaming(listenerId);
+          }
+          return { done: true, value: undefined };
+        },
+      };
+
+      // Create a promise that resolves with the final data
+      const dataPromise = new Promise<any>((resolve, reject) => {
+        const checkComplete = () => {
+          if (error) {
+            reject(error);
+          } else if (done) {
+            resolve(finalData);
+          } else {
+            setTimeout(checkComplete, 10);
+          }
+        };
+        checkComplete();
+      });
+
+      return {
+        stream: asyncIterator,
+        data: dataPromise,
       };
     };
 
@@ -227,11 +302,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
       });
     };
 
-    callableFunction.stream = (
-      data?: any,
-      onEvent?: (event: any) => void,
-      streamOptions: HttpsCallableOptions = {},
-    ) => {
+    callableFunction.stream = async (data?: any, streamOptions: HttpsCallableOptions = {}) => {
       if (streamOptions.timeout) {
         if (isNumber(streamOptions.timeout)) {
           streamOptions.timeout = streamOptions.timeout / 1000;
@@ -241,24 +312,62 @@ class FirebaseFunctionsModule extends FirebaseModule {
       }
 
       const listenerId = this._id_functions_streaming_event++;
-      // @ts-ignore
       const eventName = this.eventNameForApp(`functions_streaming_event:${listenerId}`);
+      const nativeModule = this.native;
 
-      // @ts-ignore
+      // Queue to buffer events before iteration starts
+      const eventQueue: any[] = [];
+      let resolveNext: ((value: IteratorResult<any>) => void) | null = null;
+      let error: Error | null = null;
+      let done = false;
+      let finalData: any = null;
+
       const subscription = this.emitter.addListener(eventName, (event: any) => {
         const body = event.body;
-        if (onEvent) {
-          onEvent(body);
-        }
-        if (body && (body.done || body.error)) {
+
+        if (event.body.error) {
+          const { code, message, details } = event.body.error || {};
+          error = new HttpsError(
+            HttpsErrorCode[code as keyof typeof HttpsErrorCode] || HttpsErrorCode.UNKNOWN,
+            message || 'Unknown error',
+            details || null,
+            event.body.error,
+          );
+          done = true;
           subscription.remove();
-          if (this.native.removeFunctionsStreaming) {
-            this.native.removeFunctionsStreaming(listenerId);
+          if (nativeModule.removeFunctionsStreaming) {
+            nativeModule.removeFunctionsStreaming(listenerId);
+          }
+          if (resolveNext) {
+            resolveNext({ done: true, value: undefined });
+            resolveNext = null;
+          }
+          return;
+        }
+
+        if (body.done) {
+          finalData = body.data;
+          done = true;
+          subscription.remove();
+          if (nativeModule.removeFunctionsStreaming) {
+            nativeModule.removeFunctionsStreaming(listenerId);
+          }
+          if (resolveNext) {
+            resolveNext({ done: true, value: undefined });
+            resolveNext = null;
+          }
+        } else if (body.data !== null && body.data !== undefined) {
+          // This is a chunk
+          if (resolveNext) {
+            resolveNext({ done: false, value: body.data });
+            resolveNext = null;
+          } else {
+            eventQueue.push(body.data);
           }
         }
       });
 
-      this.native.httpsCallableStreamFromUrl(
+      nativeModule.httpsCallableStreamFromUrl(
         this._useFunctionsEmulatorHost || null,
         this._useFunctionsEmulatorPort || -1,
         url,
@@ -267,11 +376,53 @@ class FirebaseFunctionsModule extends FirebaseModule {
         listenerId,
       );
 
-      return () => {
-        subscription.remove();
-        if (this.native.removeFunctionsStreaming) {
-          this.native.removeFunctionsStreaming(listenerId);
-        }
+      const asyncIterator = {
+        [Symbol.asyncIterator]() {
+          return this;
+        },
+        async next(): Promise<IteratorResult<any>> {
+          if (error) {
+            throw error;
+          }
+
+          if (eventQueue.length > 0) {
+            return { done: false, value: eventQueue.shift() };
+          }
+
+          if (done) {
+            return { done: true, value: undefined };
+          }
+
+          return new Promise<IteratorResult<any>>(resolve => {
+            resolveNext = resolve;
+          });
+        },
+        async return(): Promise<IteratorResult<any>> {
+          subscription.remove();
+          if (nativeModule.removeFunctionsStreaming) {
+            nativeModule.removeFunctionsStreaming(listenerId);
+          }
+          return { done: true, value: undefined };
+        },
+      };
+
+      // Create a promise that resolves with the final data
+      const dataPromise = new Promise<any>((resolve, reject) => {
+        const checkComplete = () => {
+          if (error) {
+            reject(error);
+          } else if (done) {
+            resolve(finalData);
+          } else {
+            setTimeout(checkComplete, 10);
+          }
+        };
+        checkComplete();
+      });
+
+      return {
+        stream: asyncIterator,
+        data: dataPromise,
       };
     };
     return callableFunction;
