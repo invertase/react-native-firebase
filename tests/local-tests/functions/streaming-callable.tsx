@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { Button, Text, View, ScrollView, StyleSheet } from 'react-native';
-
-import { getApp } from '@react-native-firebase/app';
 import {
   getFunctions,
   connectFunctionsEmulator,
@@ -13,264 +11,172 @@ const functions = getFunctions();
 connectFunctionsEmulator(functions, 'localhost', 5001);
 
 export function StreamingCallableTestComponent(): React.JSX.Element {
-  const [logs, setLogs] = useState<string[]>([]);
+  const [output, setOutput] = useState<string>('');
   const [isStreaming, setIsStreaming] = useState(false);
-  const [stopFunction, setStopFunction] = useState<(() => void) | null>(null);
 
-  const addLog = (message: string) => {
-    const timestamp = new Date().toLocaleTimeString();
-    setLogs(prev => [`[${timestamp}] ${message}`, ...prev].slice(0, 50));
-    console.log(`[StreamingTest] ${message}`);
-  };
-
-  const clearLogs = () => {
-    setLogs([]);
+  const addOutput = (message: string) => {
+    setOutput(prev => prev + message + '\n');
   };
 
   const testBasicStream = async () => {
     try {
-      addLog('🚀 Starting basic streaming test...');
       setIsStreaming(true);
+      setOutput('');
+      addOutput('Starting basic stream test...');
 
-      const functionRunner = httpsCallable(functions, 'testStreamingCallable');
+      const callable = httpsCallable(functions, 'testStreamingCallable') as any;
+      const { stream, data } = await callable.stream({ count: 5, delay: 500 });
 
-      // Use the .stream() method
-      const stop = functionRunner.stream(
-        { count: 5, delay: 500 },
-        event => {
-          addLog(`📦 Received event: ${JSON.stringify(event)}`);
+      for await (const chunk of stream) {
+        addOutput(`Chunk: ${JSON.stringify(chunk)}`);
+      }
 
-          if (event.done) {
-            addLog('✅ Stream completed');
-            setIsStreaming(false);
-            setStopFunction(null);
-          } else if (event.error) {
-            addLog(`❌ Stream error: ${event.error}`);
-            setIsStreaming(false);
-            setStopFunction(null);
-          } else if (event.data) {
-            addLog(`📊 Data chunk: ${JSON.stringify(event.data)}`);
-          }
-        },
-      );
-
-      setStopFunction(() => stop);
+      const result = await data;
+      addOutput(`Final result: ${JSON.stringify(result)}`);
+      addOutput('✅ Stream completed');
     } catch (e: any) {
-      addLog(`❌ Error: ${e.message}`);
+      addOutput(`❌ Error: ${e.message}`);
+    } finally {
       setIsStreaming(false);
     }
   };
 
   const testProgressStream = async () => {
     try {
-      addLog('📈 Starting progress streaming test...');
       setIsStreaming(true);
+      setOutput('');
+      addOutput('Starting progress stream test...');
 
-      const functionRunner = httpsCallable(functions, 'testProgressStream');
+      const callable = httpsCallable(functions, 'testProgressStream') as any;
+      const { stream, data } = await callable.stream({ task: 'TestTask' });
 
-      const stop = functionRunner.stream({ task: 'TestTask' }, event => {
-        if (event.done) {
-          addLog('✅ Progress stream completed');
-          setIsStreaming(false);
-          setStopFunction(null);
-        } else if (event.error) {
-          addLog(`❌ Progress error: ${event.error}`);
-          setIsStreaming(false);
-          setStopFunction(null);
-        } else if (event.data) {
-          const data = event.data;
-          if (data.progress !== undefined) {
-            addLog(`⏳ Progress: ${data.progress}% - ${data.status}`);
-          } else {
-            addLog(`📊 Progress data: ${JSON.stringify(data)}`);
-          }
+      for await (const chunk of stream) {
+        if (chunk.progress !== undefined) {
+          addOutput(`Progress: ${chunk.progress}% - ${chunk.status}`);
+        } else {
+          addOutput(`Data: ${JSON.stringify(chunk)}`);
         }
-      });
+      }
 
-      setStopFunction(() => stop);
+      const result = await data;
+      addOutput(`Final result: ${JSON.stringify(result)}`);
+      addOutput('✅ Progress stream completed');
     } catch (e: any) {
-      addLog(`❌ Error: ${e.message}`);
+      addOutput(`❌ Error: ${e.message}`);
+    } finally {
       setIsStreaming(false);
     }
   };
 
   const testComplexDataStream = async () => {
     try {
-      addLog('🔧 Starting complex data streaming test...');
       setIsStreaming(true);
+      setOutput('');
+      addOutput('Starting complex data stream test...');
 
-      const functionRunner = httpsCallable(functions, 'testComplexDataStream');
+      const callable = httpsCallable(functions, 'testComplexDataStream') as any;
+      const { stream, data } = await callable.stream({});
 
-      const stop = functionRunner.stream({}, event => {
-        if (event.done) {
-          addLog('✅ Complex data stream completed');
-          setIsStreaming(false);
-          setStopFunction(null);
-        } else if (event.error) {
-          addLog(`❌ Complex data error: ${event.error}`);
-          setIsStreaming(false);
-          setStopFunction(null);
-        } else if (event.data) {
-          addLog(`🗂️ Complex data: ${JSON.stringify(event.data, null, 2)}`);
-        }
-      });
+      for await (const chunk of stream) {
+        addOutput(`Complex data: ${JSON.stringify(chunk, null, 2)}`);
+      }
 
-      setStopFunction(() => stop);
+      const result = await data;
+      addOutput(`Final result: ${JSON.stringify(result)}`);
+      addOutput('✅ Complex data stream completed');
     } catch (e: any) {
-      addLog(`❌ Error: ${e.message}`);
+      addOutput(`❌ Error: ${e.message}`);
+    } finally {
       setIsStreaming(false);
     }
   };
 
   const testStreamFromUrl = async () => {
     try {
-      addLog('🌐 Testing httpsCallableFromUrl streaming...');
       setIsStreaming(true);
+      setOutput('');
+      addOutput('Starting URL stream test...');
 
-      // Test httpsCallableFromUrl streaming with modular API
-      // For emulator: http://localhost:5001/{projectId}/{region}/{functionName}
       const url = 'http://localhost:5001/test-project/us-central1/testStreamingCallable';
-      const callableRef = httpsCallableFromUrl(functions, url);
+      const callable = httpsCallableFromUrl(functions, url) as any;
+      const { stream, data } = await callable.stream({ count: 3, delay: 400 });
 
-      const stop = callableRef.stream({ count: 3, delay: 400 }, event => {
-        if (event.done) {
-          addLog('✅ URL stream completed');
-          setIsStreaming(false);
-          setStopFunction(null);
-        } else if (event.error) {
-          addLog(`❌ URL stream error: ${event.error}`);
-          setIsStreaming(false);
-          setStopFunction(null);
-        } else if (event.data) {
-          addLog(`📦 URL data: ${JSON.stringify(event.data)}`);
-        }
-      });
+      for await (const chunk of stream) {
+        addOutput(`URL chunk: ${JSON.stringify(chunk)}`);
+      }
 
-      setStopFunction(() => stop);
+      const result = await data;
+      addOutput(`Final result: ${JSON.stringify(result)}`);
+      addOutput('✅ URL stream completed');
     } catch (e: any) {
-      addLog(`❌ Error: ${e.message}`);
+      addOutput(`❌ Error: ${e.message}`);
+    } finally {
       setIsStreaming(false);
     }
   };
 
   const testStreamWithOptions = async () => {
     try {
-      addLog('⚙️ Testing stream with timeout option...');
       setIsStreaming(true);
+      setOutput('');
+      addOutput('Starting stream with timeout option...');
 
-      const callableRef = httpsCallable(functions, 'testStreamingCallable');
+      const callable = httpsCallable(functions, 'testStreamingCallable') as any;
+      const { stream, data } = await callable.stream({ count: 3 }, { timeout: 30000 });
 
-      const stop = callableRef.stream(
-        { count: 3 },
-        event => {
-          if (event.done) {
-            addLog('✅ Options stream completed');
-            setIsStreaming(false);
-            setStopFunction(null);
-          } else if (event.error) {
-            addLog(`❌ Options stream error: ${event.error}`);
-            setIsStreaming(false);
-            setStopFunction(null);
-          } else if (event.data) {
-            addLog(`📦 Options data: ${JSON.stringify(event.data)}`);
-          }
-        },
-        { timeout: 30000 } // 30 second timeout
-      );
+      for await (const chunk of stream) {
+        addOutput(`Chunk: ${JSON.stringify(chunk)}`);
+      }
 
-      setStopFunction(() => stop);
+      const result = await data;
+      addOutput(`Final result: ${JSON.stringify(result)}`);
+      addOutput('✅ Options stream completed');
     } catch (e: any) {
-      addLog(`❌ Error: ${e.message}`);
-      setIsStreaming(false);
-    }
-  };
-
-  const stopStream = () => {
-    if (stopFunction) {
-      addLog('🛑 Stopping stream...');
-      stopFunction();
-      setStopFunction(null);
+      addOutput(`❌ Error: ${e.message}`);
+    } finally {
       setIsStreaming(false);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>🌊 Cloud Functions Streaming Tests</Text>
+      <Text style={styles.title}>Cloud Functions Streaming Tests</Text>
       <Text style={styles.subtitle}>Ensure Emulator is running on localhost:5001</Text>
 
       <View style={styles.buttonContainer}>
-        <Button
-          title="📦 Basic Stream (5 chunks)"
-          onPress={testBasicStream}
-          disabled={isStreaming}
-          color="#4CAF50"
-        />
+        <Button title="Basic Stream (5 chunks)" onPress={testBasicStream} disabled={isStreaming} />
+      </View>
+
+      <View style={styles.buttonContainer}>
+        <Button title="Progress Stream" onPress={testProgressStream} disabled={isStreaming} />
       </View>
 
       <View style={styles.buttonContainer}>
         <Button
-          title="📈 Progress Stream"
-          onPress={testProgressStream}
-          disabled={isStreaming}
-          color="#2196F3"
-        />
-      </View>
-
-      <View style={styles.buttonContainer}>
-        <Button
-          title="🔧 Complex Data Stream"
+          title="Complex Data Stream"
           onPress={testComplexDataStream}
           disabled={isStreaming}
-          color="#FF9800"
         />
       </View>
 
       <View style={styles.buttonContainer}>
-        <Button
-          title="🌐 Stream from URL"
-          onPress={testStreamFromUrl}
-          disabled={isStreaming}
-          color="#9C27B0"
-        />
+        <Button title="Stream from URL" onPress={testStreamFromUrl} disabled={isStreaming} />
       </View>
 
       <View style={styles.buttonContainer}>
         <Button
-          title="⚙️ Stream with Options"
+          title="Stream with Options"
           onPress={testStreamWithOptions}
           disabled={isStreaming}
-          color="#00BCD4"
         />
       </View>
 
-      {isStreaming && (
-        <View style={styles.buttonContainer}>
-          <Button title="🛑 Stop Stream" onPress={stopStream} color="#D32F2F" />
-        </View>
-      )}
+      {isStreaming && <Text style={styles.status}>Streaming...</Text>}
 
-      <View style={styles.buttonContainer}>
-        <Button title="🗑️ Clear Logs" onPress={clearLogs} color="#757575" />
-      </View>
-
-      {logs.length > 0 && (
-        <>
-          <Text style={styles.logsTitle}>📜 Event Log:</Text>
-          <ScrollView style={styles.logsContainer}>
-            {logs.map((log, index) => (
-              <Text key={index} style={styles.logEntry}>
-                {log}
-              </Text>
-            ))}
-          </ScrollView>
-        </>
-      )}
-
-      {logs.length === 0 && (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyText}>No events yet. Start a stream test!</Text>
-        </View>
+      {output && (
+        <ScrollView style={styles.outputContainer}>
+          <Text style={styles.outputText}>{output}</Text>
+        </ScrollView>
       )}
     </View>
   );
@@ -287,7 +193,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 8,
     textAlign: 'center',
-    color: '#333',
   },
   subtitle: {
     fontSize: 13,
@@ -298,38 +203,23 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginVertical: 6,
   },
-  logsTitle: {
+  status: {
+    marginTop: 20,
+    textAlign: 'center',
     fontSize: 16,
     fontWeight: 'bold',
-    marginTop: 20,
-    marginBottom: 10,
-    color: '#333',
+    color: '#2196F3',
   },
-  logsContainer: {
-    flex: 1,
+  outputContainer: {
+    marginTop: 20,
+    padding: 12,
     backgroundColor: '#1e1e1e',
     borderRadius: 8,
-    padding: 12,
     maxHeight: 400,
   },
-  logEntry: {
+  outputText: {
     fontFamily: 'monospace',
-    fontSize: 11,
+    fontSize: 12,
     color: '#00ff00',
-    paddingVertical: 2,
-    borderBottomWidth: 1,
-    borderBottomColor: '#333',
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 40,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: '#999',
-    fontStyle: 'italic',
   },
 });
-
