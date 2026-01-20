@@ -51,14 +51,16 @@ import FirebaseCore
     timeout: Double,
     eventCallback: @escaping ([AnyHashable: Any]) -> Void
   ) {
-    let callable: Callable<AnyEncodable, StreamResponse<AnyDecodable, AnyDecodable>> = functions.httpsCallable(functionName)
-      self.performStream(
-        functions: functions,
-        callable: callable,
-        parameters: parameters,
-        timeout: timeout,
-        eventCallback: eventCallback
-      )
+    streamTask = Task {
+      let callable: Callable<AnyEncodable, StreamResponse<AnyDecodable, AnyDecodable>> = functions.httpsCallable(functionName)
+      await self.performStream(
+          functions: functions,
+          callable: callable,
+          parameters: parameters,
+          timeout: timeout,
+          eventCallback: eventCallback
+        )
+    }
   }
   
   @objc public func startStream(
@@ -69,16 +71,17 @@ import FirebaseCore
     timeout: Double,
     eventCallback: @escaping ([AnyHashable: Any]) -> Void
   ) {
-    
-   let callable: Callable<AnyEncodable, StreamResponse<AnyDecodable, AnyDecodable>> = functions.httpsCallable(functionUrl)
-    
-      self.performStream(
-        functions: functions,
-        callable: callable,
-        parameters: parameters,
-        timeout: timeout,
-        eventCallback: eventCallback
-      )
+    streamTask = Task {
+      let callable: Callable<AnyEncodable, StreamResponse<AnyDecodable, AnyDecodable>> = functions.httpsCallable(functionUrl)
+      
+      await self.performStream(
+          functions: functions,
+          callable: callable,
+          parameters: parameters,
+          timeout: timeout,
+          eventCallback: eventCallback
+        )
+    }
   }
   
   /// Cancel the streaming task
@@ -184,7 +187,7 @@ import FirebaseCore
       eventCallback([
         "data": NSNull(),
         "error": errorDict,
-        "done": isCancelled ? true : false
+        "done": true
       ])
     }
   }
