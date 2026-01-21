@@ -155,6 +155,9 @@ class FirebaseFunctionsModule extends FirebaseModule {
       const eventName = this.eventNameForApp(`functions_streaming_event:${listenerId}`);
       const nativeModule = this.native;
 
+      // Capture JavaScript stack at stream creation time so an error can be thrown with the correct stack trace
+      const capturedStack = new Error().stack;
+
       // Queue to buffer events before iteration starts
       const eventQueue: any[] = [];
       let resolveNext: ((value: IteratorResult<any>) => void) | null = null;
@@ -171,7 +174,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
             HttpsErrorCode[code as keyof typeof HttpsErrorCode] || HttpsErrorCode.UNKNOWN,
             message || 'Unknown error',
             details || null,
-            event.body.error,
+            { ...body.error, jsStack: capturedStack },
           );
           done = true;
           subscription.remove();
@@ -327,6 +330,9 @@ class FirebaseFunctionsModule extends FirebaseModule {
       const eventName = this.eventNameForApp(`functions_streaming_event:${listenerId}`);
       const nativeModule = this.native;
 
+      // Capture JavaScript stack at stream creation time so an error can be thrown with the correct stack trace
+      const capturedStack = new Error().stack;
+
       // Queue to buffer events before iteration starts
       const eventQueue: any[] = [];
       let resolveNext: ((value: IteratorResult<any>) => void) | null = null;
@@ -337,13 +343,13 @@ class FirebaseFunctionsModule extends FirebaseModule {
       const subscription = this.emitter.addListener(eventName, (event: any) => {
         const body = event.body;
 
-        if (event.body.error) {
-          const { code, message, details } = event.body.error || {};
+        if (body.error) {
+          const { code, message, details } = body.error || {};
           error = new HttpsError(
             HttpsErrorCode[code as keyof typeof HttpsErrorCode] || HttpsErrorCode.UNKNOWN,
             message || 'Unknown error',
             details || null,
-            event.body.error,
+            { ...body.error, jsStack: capturedStack },
           );
           done = true;
           subscription.remove();
