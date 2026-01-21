@@ -166,6 +166,23 @@ import FirebaseCore
         }
         }
     } catch {
+      // Check if the stream was cancelled
+      if error is CancellationError {
+        let errorDict: [String: Any] = [
+          // Same code/message as in firestore
+          "code": "cancelled",
+          "message": "The operation was cancelled (typically by the caller).",
+          "details": NSNull()
+        ]
+        
+        eventCallback([
+          "data": NSNull(),
+          "error": errorDict,
+          "done": true
+        ])
+        return
+      }
+      
       let nsError = error as NSError
       
       // Construct error object similar to httpsCallable

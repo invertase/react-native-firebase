@@ -191,54 +191,60 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
                        data:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamData &)data
                     options:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamOptions &)options
                  listenerId:(double)listenerId {
-  NSURL *url = [NSURL URLWithString:customUrlOrRegion];
-  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+  [self streamSetup:appName region:customUrlOrRegion emulatorHost:emulatorHost emulatorPort:emulatorPort urlOrName:name data:data.data() timeout:options.timeout() listenerId:listenerId];
+}
 
-  FIRFunctions *functions =
-      (url && url.scheme && url.host)
-          ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
-          : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
+- (void)
+    httpsCallableStreamFromUrl:(NSString *)appName
+                        region:(NSString *)customUrlOrRegion
+                  emulatorHost:(NSString *_Nullable)emulatorHost
+                  emulatorPort:(double)emulatorPort
+                           url:(NSString *)url
+                          data:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlData &)
+                                   data
+                       options:
+                           (JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlOptions &)
+                               options
+                    listenerId:(double)listenerId {
+  [self streamSetup:appName region:customUrlOrRegion emulatorHost:emulatorHost emulatorPort:emulatorPort urlOrName:url data:data.data() timeout:options.timeout() listenerId:listenerId];
+}
 
-  id callableData = data.data();
-
-  // In reality, this value is always null, because we always call it with null data
-  // on the javascript side for some reason. Check for that case (which should be 100% of the time)
-  // and set it to an `NSNull` (versus the `Optional<Any>` Swift will see from `valueForKey` so that
-  // FirebaseFunctions serializer won't have a validation failure for an unknown type.
-  if (callableData == nil) {
-    callableData = [NSNull null];
-  }
-
-  std::optional<double> timeout = options.timeout();
-
-  if (emulatorHost != nil) {
-    [functions useEmulatorWithHost:emulatorHost port:(int)emulatorPort];
-  }
-
+- (void)streamSetup:(NSString *)appName
+             region:(NSString *)customUrlOrRegion
+       emulatorHost:(NSString *_Nullable)emulatorHost
+       emulatorPort:(double)emulatorPort
+                urlOrName:(NSString *)urlOrName
+               data:(id)data
+            timeout:(std::optional<double>)timeout
+         listenerId:(double)listenerId {
   NSNumber *listenerIdNumber = @((int)listenerId);
 
-  // Check if listener was cancelled before async block executed
-  id existingHandler = self.streamSubscriptions[listenerIdNumber];
-  if (existingHandler == [NSNull null]) {
-    // Was cancelled, don't start stream
-    return;
-  }
-
-  // Check iOS version and Swift availability
   if (@available(iOS 15.0, macOS 12.0, *)) {
-    // Use Firebase SDK's native streaming via Swift wrapper
-    // On macOS, we need to use Swift Functions API directly, so pass app/region info
-    RNFBFunctionsStreamHandler *handler = [[RNFBFunctionsStreamHandler alloc] init];
+    NSURL *url = [NSURL URLWithString:customUrlOrRegion];
+    FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
-    // Store handler to prevent race condition
-    self.streamSubscriptions[listenerIdNumber] = handler;
+    FIRFunctions *functions =
+        (url && url.scheme && url.host)
+            ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
+            : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
+
+
+    if (data == nil) {
+      data = [NSNull null];
+    }
+
+    if (emulatorHost != nil) {
+      [functions useEmulatorWithHost:emulatorHost port:(int)emulatorPort];
+    }
+
+    RNFBFunctionsStreamHandler *handler = [[RNFBFunctionsStreamHandler alloc] init];
 
     double timeoutValue = timeout.has_value() ? timeout.value() : 0;
 
     [handler startStreamWithApp:firebaseApp
                       functions:functions
-                   functionName:name
-                     parameters:callableData
+                   functionName:urlOrName
+                     parameters:data
                         timeout:timeoutValue
                   eventCallback:^(NSDictionary *event) {
                     NSMutableDictionary *normalisedEvent = @{
@@ -255,144 +261,24 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
                       [self.streamSubscriptions removeObjectForKey:listenerIdNumber];
                     }
                   }];
+
+    self.streamSubscriptions[listenerIdNumber] = handler;
   } else {
-    // iOS version too old
     NSDictionary *eventBody = @{
+      @"appName" : appName,
+      @"eventName" : @"functions_streaming_event",
       @"listenerId" : listenerIdNumber,
       @"body" : @{
         @"data" : [NSNull null],
-        @"error" : @"Streaming requires iOS 15.0+ or macOS 12.0+",
+        @"error" : @{
+          @"code" : @"cancelled",
+          @"message" : @"callable streams require minimum iOS 15 or macOS 12"
+        },
         @"done" : @NO
       }
     };
     [[RNFBRCTEventEmitter shared] sendEventWithName:@"functions_streaming_event" body:eventBody];
   }
-}
-
-- (void)
-    httpsCallableStreamFromUrl:(NSString *)appName
-                        region:(NSString *)customUrlOrRegion
-                  emulatorHost:(NSString *_Nullable)emulatorHost
-                  emulatorPort:(double)emulatorPort
-                           url:(NSString *)urlString
-                          data:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlData &)
-                                   data
-                       options:
-                           (JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlOptions &)
-                               options
-                    listenerId:(double)listenerId {
-  // Extract data from C++ struct BEFORE async block (struct won't be valid in async context)
-  id callableData = data.data();
-
-  // Handle nil data
-  if (callableData == nil) {
-    callableData = [NSNull null];
-  }
-
-  // Extract timeout
-  std::optional<double> timeout = options.timeout();
-
-  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    @try {
-      NSURL *customUrl = [NSURL URLWithString:customUrlOrRegion];
-      FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
-
-      FIRFunctions *functions =
-          (customUrl && customUrl.scheme && customUrl.host)
-              ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
-              : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
-
-      if (emulatorHost != nil) {
-        [functions useEmulatorWithHost:emulatorHost port:(int)emulatorPort];
-      }
-
-      NSNumber *listenerIdNumber = @((int)listenerId);
-
-      // Check if listener was cancelled before async block executed
-      id existingHandler = self.streamSubscriptions[listenerIdNumber];
-      if (existingHandler == [NSNull null]) {
-        // Was cancelled, don't start stream
-        return;
-      }
-
-      // Check iOS version and Swift availability
-      if (@available(iOS 15.0, macOS 12.0, *)) {
-#if __has_include("RNFBFunctions-Swift.h")
-        // Use Firebase SDK's native streaming via Swift wrapper
-        // On macOS, we need to use Swift Functions API directly, so pass app/region info
-        RNFBFunctionsStreamHandler *handler = [[RNFBFunctionsStreamHandler alloc] init];
-
-        // Check again if cancelled during handler creation
-        id existingHandler = self.streamSubscriptions[listenerIdNumber];
-        if (existingHandler == [NSNull null]) {
-          // Was cancelled, don't start stream
-          return;
-        }
-
-        // Store handler to prevent race condition
-        self.streamSubscriptions[listenerIdNumber] = handler;
-
-        double timeoutValue = timeout.has_value() ? timeout.value() : 0;
-
-        [handler startStreamWithApp:firebaseApp
-               regionOrCustomDomain:customUrlOrRegion
-                       emulatorHost:emulatorHost
-                       emulatorPort:(int)emulatorPort
-                       functionName:nil
-                        functionUrl:urlString
-                         parameters:callableData
-                            timeout:timeoutValue
-                      eventCallback:^(NSDictionary *event) {
-                        NSDictionary *eventBody =
-                            @{@"listenerId" : listenerIdNumber, @"body" : event};
-                        [[RNFBRCTEventEmitter shared] sendEventWithName:@"functions_streaming_event"
-                                                                   body:eventBody];
-
-                        // Remove handler when done
-                        if ([event[@"done"] boolValue]) {
-                          [self.streamSubscriptions removeObjectForKey:listenerIdNumber];
-                        }
-                      }];
-#else
-          // Swift bridging not available
-          NSDictionary *eventBody = @{
-            @"listenerId" : listenerIdNumber,
-            @"body" : @{
-              @"data" : [NSNull null],
-              @"error" : @"Swift streaming bridge not available. Ensure RNFBFunctionsStreamHandler.swift is included in the Xcode project.",
-              @"done" : @NO
-            }
-          };
-          [[RNFBRCTEventEmitter shared] sendEventWithName:@"functions_streaming_event" body:eventBody];
-#endif
-      } else {
-        // iOS version too old
-        NSDictionary *eventBody = @{
-          @"listenerId" : listenerIdNumber,
-          @"body" : @{
-            @"data" : [NSNull null],
-            @"error" : @"Streaming requires iOS 15.0+ or macOS 12.0+",
-            @"done" : @NO
-          }
-        };
-        [[RNFBRCTEventEmitter shared] sendEventWithName:@"functions_streaming_event"
-                                                   body:eventBody];
-      }
-
-    } @catch (NSException *exception) {
-      NSNumber *listenerIdNumber = @((int)listenerId);
-      NSDictionary *eventBody = @{
-        @"listenerId" : listenerIdNumber,
-        @"body" : @{
-          @"data" : [NSNull null],
-          @"error" : exception.reason ?: @"Unknown error",
-          @"done" : @NO
-        }
-      };
-      [[RNFBRCTEventEmitter shared] sendEventWithName:@"functions_streaming_event" body:eventBody];
-      [self.streamSubscriptions removeObjectForKey:listenerIdNumber];
-    }
-  });
 }
 
 - (void)removeFunctionsStreaming:(NSString *)appName
