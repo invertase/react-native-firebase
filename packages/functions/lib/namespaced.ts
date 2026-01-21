@@ -108,6 +108,136 @@ class FirebaseFunctionsModule extends FirebaseModule {
     );
   }
 
+  /**
+   * Private helper method to create a streaming handler for callable functions.
+   * This method encapsulates the common streaming logic used by both
+   * httpsCallable and httpsCallableFromUrl.
+   */
+  private async _createStreamHandler(initiateStream: (listenerId: number) => void) {
+    const listenerId = this._id_functions_streaming_event++;
+    const eventName = this.eventNameForApp(`functions_streaming_event:${listenerId}`);
+    const nativeModule = this.native;
+
+    // Capture JavaScript stack at stream creation time so an error can be thrown with the correct stack trace
+    const capturedStack = new Error().stack;
+
+    // Queue to buffer events before iteration starts
+    const eventQueue: any[] = [];
+    let resolveNext: ((value: IteratorResult<any>) => void) | null = null;
+    let error: Error | null = null;
+    let done = false;
+    let finalData: any = null;
+
+    const subscription = this.emitter.addListener(eventName, (event: any) => {
+      const body = event.body;
+
+      if (body.error) {
+        const { code, message, details } = body.error || {};
+        error = new HttpsError(
+          HttpsErrorCode[code as keyof typeof HttpsErrorCode] || HttpsErrorCode.UNKNOWN,
+          message || 'Unknown error',
+          details || null,
+          { ...body.error, jsStack: capturedStack },
+        );
+        done = true;
+        subscription.remove();
+        if (nativeModule.removeFunctionsStreaming) {
+          nativeModule.removeFunctionsStreaming(listenerId);
+        }
+        if (resolveNext) {
+          resolveNext({ done: true, value: undefined });
+          resolveNext = null;
+        }
+        return;
+      }
+
+      if (body.done) {
+        finalData = body.data;
+        done = true;
+        subscription.remove();
+        if (nativeModule.removeFunctionsStreaming) {
+          nativeModule.removeFunctionsStreaming(listenerId);
+        }
+        if (resolveNext) {
+          resolveNext({ done: true, value: undefined });
+          resolveNext = null;
+        }
+      } else if (body.data !== null && body.data !== undefined) {
+        // This is a chunk
+        if (resolveNext) {
+          resolveNext({ done: false, value: body.data });
+          resolveNext = null;
+        } else {
+          eventQueue.push(body.data);
+        }
+      }
+    });
+
+    // Start native streaming via the provided callback
+    initiateStream(listenerId);
+
+    // Use async generator function for better compatibility with Hermes/React Native
+    async function* streamGenerator() {
+      try {
+        while (true) {
+          if (error) {
+            throw error;
+          }
+
+          if (eventQueue.length > 0) {
+            yield eventQueue.shift();
+            continue;
+          }
+
+          if (done) {
+            return;
+          }
+
+          // Wait for next event
+          const result = await new Promise<IteratorResult<any>>(resolve => {
+            resolveNext = resolve;
+          });
+
+          // Check result after promise resolves
+          if (result.done || done) {
+            return;
+          }
+
+          if (result.value !== undefined && result.value !== null) {
+            yield result.value;
+          }
+        }
+      } finally {
+        // Cleanup when generator is closed/returned
+        subscription.remove();
+        if (nativeModule.removeFunctionsStreaming) {
+          nativeModule.removeFunctionsStreaming(listenerId);
+        }
+      }
+    }
+
+    const asyncIterator = streamGenerator();
+
+    // Create a promise that resolves with the final data
+    const dataPromise = new Promise<any>((resolve, reject) => {
+      const checkComplete = () => {
+        if (error) {
+          reject(error);
+        } else if (done) {
+          resolve(finalData);
+        } else {
+          setTimeout(checkComplete, 10);
+        }
+      };
+      checkComplete();
+    });
+
+    return {
+      stream: asyncIterator,
+      data: dataPromise,
+    };
+  }
+
   httpsCallable(name: string, options: HttpsCallableOptions = {}) {
     if (options.timeout) {
       if (isNumber(options.timeout)) {
@@ -151,135 +281,16 @@ class FirebaseFunctionsModule extends FirebaseModule {
         }
       }
 
-      const listenerId = this._id_functions_streaming_event++;
-      const eventName = this.eventNameForApp(`functions_streaming_event:${listenerId}`);
-      const nativeModule = this.native;
-
-      // Capture JavaScript stack at stream creation time so an error can be thrown with the correct stack trace
-      const capturedStack = new Error().stack;
-
-      // Queue to buffer events before iteration starts
-      const eventQueue: any[] = [];
-      let resolveNext: ((value: IteratorResult<any>) => void) | null = null;
-      let error: Error | null = null;
-      let done = false;
-      let finalData: any = null;
-
-      const subscription = this.emitter.addListener(eventName, (event: any) => {
-        const body = event.body;
-
-        if (body.error) {
-          const { code, message, details } = body.error || {};
-          error = new HttpsError(
-            HttpsErrorCode[code as keyof typeof HttpsErrorCode] || HttpsErrorCode.UNKNOWN,
-            message || 'Unknown error',
-            details || null,
-            { ...body.error, jsStack: capturedStack },
-          );
-          done = true;
-          subscription.remove();
-          if (nativeModule.removeFunctionsStreaming) {
-            nativeModule.removeFunctionsStreaming(listenerId);
-          }
-          if (resolveNext) {
-            resolveNext({ done: true, value: undefined });
-            resolveNext = null;
-          }
-          return;
-        }
-
-        if (body.done) {
-          finalData = body.data;
-          done = true;
-          subscription.remove();
-          if (nativeModule.removeFunctionsStreaming) {
-            nativeModule.removeFunctionsStreaming(listenerId);
-          }
-          if (resolveNext) {
-            resolveNext({ done: true, value: undefined });
-            resolveNext = null;
-          }
-        } else if (body.data !== null && body.data !== undefined) {
-          // This is a chunk
-          if (resolveNext) {
-            resolveNext({ done: false, value: body.data });
-            resolveNext = null;
-          } else {
-            eventQueue.push(body.data);
-          }
-        }
+      return this._createStreamHandler(listenerId => {
+        this.native.httpsCallableStream(
+          this._useFunctionsEmulatorHost || null,
+          this._useFunctionsEmulatorPort || -1,
+          name,
+          { data },
+          streamOptions,
+          listenerId,
+        );
       });
-
-      // Start native streaming
-      nativeModule.httpsCallableStream(
-        this._useFunctionsEmulatorHost || null,
-        this._useFunctionsEmulatorPort || -1,
-        name,
-        { data },
-        streamOptions,
-        listenerId,
-      );
-
-      // Use async generator function for better compatibility with Hermes/React Native
-      async function* streamGenerator() {
-        try {
-          while (true) {
-            if (error) {
-              throw error;
-            }
-
-            if (eventQueue.length > 0) {
-              yield eventQueue.shift();
-              continue;
-            }
-
-            if (done) {
-              return;
-            }
-
-            // Wait for next event
-            const result = await new Promise<IteratorResult<any>>(resolve => {
-              resolveNext = resolve;
-            });
-
-            // Check result after promise resolves
-            if (result.done || done) {
-              return;
-            }
-
-            if (result.value !== undefined && result.value !== null) {
-              yield result.value;
-            }
-          }
-        } finally {
-          // Cleanup when generator is closed/returned
-          subscription.remove();
-          if (nativeModule.removeFunctionsStreaming) {
-            nativeModule.removeFunctionsStreaming(listenerId);
-          }
-        }
-      }
-
-      const asyncIterator = streamGenerator();
-
-      // Create a promise that resolves with the final data
-      const dataPromise = new Promise<any>((resolve, reject) => {
-        const checkComplete = () => {
-          if (error) {
-            reject(error);
-          } else if (done) {
-            resolve(finalData);
-          } else {
-            setTimeout(checkComplete, 10);
-          }
-        };
-        checkComplete();
-      });
-
-      return {
-        stream: asyncIterator,
-        data: dataPromise,
-      };
     };
 
     return callableFunction;
@@ -326,134 +337,16 @@ class FirebaseFunctionsModule extends FirebaseModule {
         }
       }
 
-      const listenerId = this._id_functions_streaming_event++;
-      const eventName = this.eventNameForApp(`functions_streaming_event:${listenerId}`);
-      const nativeModule = this.native;
-
-      // Capture JavaScript stack at stream creation time so an error can be thrown with the correct stack trace
-      const capturedStack = new Error().stack;
-
-      // Queue to buffer events before iteration starts
-      const eventQueue: any[] = [];
-      let resolveNext: ((value: IteratorResult<any>) => void) | null = null;
-      let error: Error | null = null;
-      let done = false;
-      let finalData: any = null;
-
-      const subscription = this.emitter.addListener(eventName, (event: any) => {
-        const body = event.body;
-
-        if (body.error) {
-          const { code, message, details } = body.error || {};
-          error = new HttpsError(
-            HttpsErrorCode[code as keyof typeof HttpsErrorCode] || HttpsErrorCode.UNKNOWN,
-            message || 'Unknown error',
-            details || null,
-            { ...body.error, jsStack: capturedStack },
-          );
-          done = true;
-          subscription.remove();
-          if (nativeModule.removeFunctionsStreaming) {
-            nativeModule.removeFunctionsStreaming(listenerId);
-          }
-          if (resolveNext) {
-            resolveNext({ done: true, value: undefined });
-            resolveNext = null;
-          }
-          return;
-        }
-
-        if (body.done) {
-          finalData = body.data;
-          done = true;
-          subscription.remove();
-          if (nativeModule.removeFunctionsStreaming) {
-            nativeModule.removeFunctionsStreaming(listenerId);
-          }
-          if (resolveNext) {
-            resolveNext({ done: true, value: undefined });
-            resolveNext = null;
-          }
-        } else if (body.data !== null && body.data !== undefined) {
-          // This is a chunk
-          if (resolveNext) {
-            resolveNext({ done: false, value: body.data });
-            resolveNext = null;
-          } else {
-            eventQueue.push(body.data);
-          }
-        }
+      return this._createStreamHandler(listenerId => {
+        this.native.httpsCallableStreamFromUrl(
+          this._useFunctionsEmulatorHost || null,
+          this._useFunctionsEmulatorPort || -1,
+          url,
+          { data },
+          streamOptions,
+          listenerId,
+        );
       });
-
-      nativeModule.httpsCallableStreamFromUrl(
-        this._useFunctionsEmulatorHost || null,
-        this._useFunctionsEmulatorPort || -1,
-        url,
-        { data },
-        streamOptions,
-        listenerId,
-      );
-
-      // Use async generator function for better compatibility with Hermes/React Native
-      async function* streamGenerator() {
-        try {
-          while (true) {
-            if (error) {
-              throw error;
-            }
-
-            if (eventQueue.length > 0) {
-              yield eventQueue.shift();
-              continue;
-            }
-
-            if (done) {
-              return;
-            }
-
-            // Wait for next event
-            const result = await new Promise<IteratorResult<any>>(resolve => {
-              resolveNext = resolve;
-            });
-
-            // Check result after promise resolves
-            if (result.done || done) {
-              return;
-            }
-
-            if (result.value !== undefined && result.value !== null) {
-              yield result.value;
-            }
-          }
-        } finally {
-          // Cleanup when generator is closed/returned
-          subscription.remove();
-          if (nativeModule.removeFunctionsStreaming) {
-            nativeModule.removeFunctionsStreaming(listenerId);
-          }
-        }
-      }
-
-      const asyncIterator = streamGenerator();
-
-      // Create a promise that resolves with the final data
-      const dataPromise = new Promise<any>((resolve, reject) => {
-        const checkComplete = () => {
-          if (error) {
-            reject(error);
-          } else if (done) {
-            resolve(finalData);
-          } else {
-            setTimeout(checkComplete, 10);
-          }
-        };
-        checkComplete();
-      });
-
-      return {
-        stream: asyncIterator,
-        data: dataPromise,
-      };
     };
     return callableFunction;
   }
