@@ -50,7 +50,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
   private static final String DETAILS_KEY = "details";
   private static final String STREAMING_EVENT = "functions_streaming_event";
 
-  private static SparseArray<Object> functionsStreamingListeners = new SparseArray<>();
+  private static final SparseArray<Object> functionsStreamingListeners = new SparseArray<>();
   private final TaskExecutorService executorService;
 
   public NativeRNFBTurboFunctions(ReactApplicationContext reactContext) {
@@ -81,9 +81,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
 
     callMethodTask.addOnSuccessListener(
         getExecutor(),
-        result -> {
-          promise.resolve(RCTConvertFirebase.mapPutValue(DATA_KEY, result, Arguments.createMap()));
-        });
+        result -> promise.resolve(RCTConvertFirebase.mapPutValue(DATA_KEY, result, Arguments.createMap())));
 
     callMethodTask.addOnFailureListener(
         getExecutor(), exception -> handleFunctionsException(exception, promise));
@@ -109,9 +107,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
 
     callMethodTask.addOnSuccessListener(
         getExecutor(),
-        result -> {
-          promise.resolve(RCTConvertFirebase.mapPutValue(DATA_KEY, result, Arguments.createMap()));
-        });
+        result -> promise.resolve(RCTConvertFirebase.mapPutValue(DATA_KEY, result, Arguments.createMap())));
 
     callMethodTask.addOnFailureListener(
         getExecutor(), exception -> handleFunctionsException(exception, promise));
@@ -176,7 +172,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
           HttpsCallableReference httpReference = functionsInstance.getHttpsCallable(name);
 
           if (options.hasKey("timeout")) {
-            httpReference.setTimeout((long) options.getInt("timeout"), TimeUnit.SECONDS);
+            httpReference.setTimeout(options.getInt("timeout"), TimeUnit.SECONDS);
           }
 
           if (host != null) {
@@ -205,7 +201,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
               functionsInstance.getHttpsCallableFromUrl(parsedUrl);
 
           if (options.hasKey("timeout")) {
-            httpReference.setTimeout((long) options.getInt("timeout"), TimeUnit.SECONDS);
+            httpReference.setTimeout(options.getInt("timeout"), TimeUnit.SECONDS);
           }
 
           if (host != null) {
@@ -225,99 +221,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
       Object data,
       ReadableMap options,
       int listenerId) {
-    getExecutor()
-        .execute(
-            () -> {
-              try {
-                FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-                FirebaseFunctions functionsInstance =
-                    FirebaseFunctions.getInstance(firebaseApp, region);
-
-                if (host != null) {
-                  functionsInstance.useEmulator(host, port);
-                }
-
-                HttpsCallableReference httpReference = functionsInstance.getHttpsCallable(name);
-
-                if (options.hasKey("timeout")) {
-                  httpReference.setTimeout((long) options.getInt("timeout"), TimeUnit.SECONDS);
-                }
-
-                Publisher<StreamResponse> publisher = httpReference.stream(data);
-
-                publisher.subscribe(
-                    new Subscriber<StreamResponse>() {
-                      private Subscription subscription;
-
-                      @Override
-                      public void onSubscribe(Subscription s) {
-                        subscription = s;
-                        functionsStreamingListeners.put(listenerId, subscription);
-                        s.request(Long.MAX_VALUE);
-                      }
-
-                      @Override
-                      public void onNext(StreamResponse streamResponse) {
-                        try {
-                          Object responseData = null;
-                          boolean isFinalResult = false;
-
-                          if (streamResponse instanceof StreamResponse.Message) {
-                            StreamResponse.Message message =
-                                (StreamResponse.Message) streamResponse;
-                            if (message.getMessage() != null) {
-                              responseData = message.getMessage().getData();
-                            }
-                            isFinalResult = false;
-                          } else if (streamResponse instanceof StreamResponse.Result) {
-                            StreamResponse.Result result = (StreamResponse.Result) streamResponse;
-                            if (result.getResult() != null) {
-                              responseData = result.getResult().getData();
-                            }
-                            isFinalResult = true;
-                          }
-
-                          if (isFinalResult) {
-                            emitStreamEventWithDone(appName, listenerId, responseData);
-                            removeFunctionsStreamingListener(listenerId);
-                          } else {
-                            emitStreamEvent(appName, listenerId, responseData, false, null);
-                          }
-                        } catch (Exception e) {
-                          String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
-                          emitStreamEvent(
-                              appName,
-                              listenerId,
-                              null,
-                              true,
-                              "Data extraction error: " + errorMsg);
-                          removeFunctionsStreamingListener(listenerId);
-                        }
-                      }
-
-                      @Override
-                      public void onError(Throwable t) {
-                        String errorMsg = t.getMessage() != null ? t.getMessage() : t.toString();
-                        emitStreamEvent(appName, listenerId, null, true, errorMsg);
-                        removeFunctionsStreamingListener(listenerId);
-                      }
-
-                      @Override
-                      public void onComplete() {
-                        Object listener = functionsStreamingListeners.get(listenerId);
-                        if (listener != null) {
-                          emitStreamDone(appName, listenerId);
-                          removeFunctionsStreamingListener(listenerId);
-                        }
-                      }
-                    });
-              } catch (Exception e) {
-                String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
-                emitStreamEvent(
-                    appName, listenerId, null, true, "Stream setup failed: " + errorMsg);
-                removeFunctionsStreamingListener(listenerId);
-              }
-            });
+    httpsCallableStreamSetup(appName, region, host, port, name, null, data, options, listenerId);
   }
 
   private void httpsCallableStreamFromUrlInternal(
@@ -329,137 +233,103 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
       Object data,
       ReadableMap options,
       int listenerId) {
+    httpsCallableStreamSetup(appName, region, host, port, null, url, data, options, listenerId);
+  }
+
+  private void httpsCallableStreamSetup(
+      String appName,
+      String region,
+      String host,
+      Integer port,
+      String name,
+      String url,
+      Object data,
+      ReadableMap options,
+      int listenerId) {
     getExecutor()
         .execute(
             () -> {
               try {
-                android.util.Log.d(
-                    "RNFBFunctions",
-                    "httpsCallableStreamFromUrl starting for: "
-                        + url
-                        + ", listenerId: "
-                        + listenerId);
                 FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
                 FirebaseFunctions functionsInstance =
                     FirebaseFunctions.getInstance(firebaseApp, region);
 
                 if (host != null) {
                   functionsInstance.useEmulator(host, port);
-                  android.util.Log.d("RNFBFunctions", "Using emulator: " + host + ":" + port);
                 }
 
-                URL parsedUrl = new URL(url);
-                HttpsCallableReference httpReference =
-                    functionsInstance.getHttpsCallableFromUrl(parsedUrl);
+                // Create reference based on which parameter is provided
+                HttpsCallableReference httpReference;
+                if (url != null) {
+                  URL parsedUrl = new URL(url);
+                  httpReference = functionsInstance.getHttpsCallableFromUrl(parsedUrl);
+                } else {
+                  httpReference = functionsInstance.getHttpsCallable(name);
+                }
 
                 if (options.hasKey("timeout")) {
-                  httpReference.setTimeout((long) options.getInt("timeout"), TimeUnit.SECONDS);
+                  httpReference.setTimeout(options.getInt("timeout"), TimeUnit.SECONDS);
                 }
 
-                android.util.Log.d("RNFBFunctions", "About to call .stream() method on URL");
                 Publisher<StreamResponse> publisher = httpReference.stream(data);
-                android.util.Log.d(
-                    "RNFBFunctions", "Stream publisher created successfully from URL");
 
                 publisher.subscribe(
-                    new Subscriber<StreamResponse>() {
-                      private Subscription subscription;
+                  new Subscriber<>() {
 
-                      @Override
-                      public void onSubscribe(Subscription s) {
-                        subscription = s;
-                        functionsStreamingListeners.put(listenerId, subscription);
-                        s.request(Long.MAX_VALUE);
-                      }
+                    @Override
+                    public void onSubscribe(Subscription s) {
+                      functionsStreamingListeners.put(listenerId, s);
+                      s.request(Long.MAX_VALUE);
+                    }
 
-                      @Override
-                      public void onNext(StreamResponse streamResponse) {
-                        try {
-                          Object responseData = null;
-                          boolean isFinalResult = false;
+                    @Override
+                    public void onNext(StreamResponse streamResponse) {
+                      try {
+                        Object responseData = null;
+                        boolean isFinalResult = false;
 
-                          android.util.Log.d(
-                              "RNFBFunctions",
-                              "onNext received for URL: " + url + ", listenerId: " + listenerId);
-
-                          if (streamResponse instanceof StreamResponse.Message) {
-                            StreamResponse.Message message =
-                                (StreamResponse.Message) streamResponse;
-                            responseData = message.getMessage().getData();
-                            isFinalResult = false;
-                            android.util.Log.d(
-                                "RNFBFunctions",
-                                "Received Message chunk for URL, data: "
-                                    + (responseData != null ? responseData.toString() : "null"));
-                          } else if (streamResponse instanceof StreamResponse.Result) {
-                            StreamResponse.Result result = (StreamResponse.Result) streamResponse;
-                            responseData = result.getResult().getData();
-                            isFinalResult = true;
-                            android.util.Log.d(
-                                "RNFBFunctions",
-                                "Received Result (final) for URL, data: "
-                                    + (responseData != null ? responseData.toString() : "null"));
-                          } else {
-                            android.util.Log.w(
-                                "RNFBFunctions",
-                                "Unknown StreamResponse type for URL: "
-                                    + streamResponse.getClass().getName());
-                          }
-
-                          if (isFinalResult) {
-                            android.util.Log.d(
-                                "RNFBFunctions", "Emitting final result with done=true for URL");
-                            emitStreamEventWithDone(appName, listenerId, responseData);
-                            removeFunctionsStreamingListener(listenerId);
-                          } else {
-                            android.util.Log.d("RNFBFunctions", "Emitting chunk for URL");
-                            emitStreamEvent(appName, listenerId, responseData, false, null);
-                          }
-                        } catch (Exception e) {
-                          android.util.Log.e(
-                              "RNFBFunctions",
-                              "Error extracting data from StreamResponse for URL: " + url,
-                              e);
-                          String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
-                          emitStreamEvent(
-                              appName,
-                              listenerId,
-                              null,
-                              true,
-                              "Data extraction error: " + errorMsg);
-                          removeFunctionsStreamingListener(listenerId);
+                        if (streamResponse instanceof StreamResponse.Message message) {
+                          responseData = message.getMessage().getData();
+                        } else if (streamResponse instanceof StreamResponse.Result result) {
+                          responseData = result.getResult().getData();
+                          isFinalResult = true;
                         }
-                      }
 
-                      @Override
-                      public void onError(Throwable t) {
-                        android.util.Log.e("RNFBFunctions", "Stream onError for URL: " + url, t);
-                        String errorMsg = t.getMessage() != null ? t.getMessage() : t.toString();
-                        emitStreamEvent(appName, listenerId, null, true, errorMsg);
-                        removeFunctionsStreamingListener(listenerId);
-                      }
-
-                      @Override
-                      public void onComplete() {
-                        android.util.Log.d(
-                            "RNFBFunctions",
-                            "Stream onComplete for URL: " + url + ", listenerId: " + listenerId);
-                        Object listener = functionsStreamingListeners.get(listenerId);
-                        if (listener != null) {
-                          android.util.Log.d(
-                              "RNFBFunctions", "Emitting done event via onComplete for URL");
-                          emitStreamDone(appName, listenerId);
+                        if (isFinalResult) {
+                          emitStreamEventWithDone(appName, listenerId, responseData);
                           removeFunctionsStreamingListener(listenerId);
                         } else {
-                          android.util.Log.d(
-                              "RNFBFunctions",
-                              "Listener already removed, skipping done event for URL");
+                          emitStreamEvent(appName, listenerId, responseData, false, null);
                         }
+                      } catch (Exception e) {
+                        String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
+                        emitStreamEvent(
+                          appName,
+                          listenerId,
+                          null,
+                          true,
+                          "Data extraction error: " + errorMsg);
+                        removeFunctionsStreamingListener(listenerId);
                       }
-                    });
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                      String errorMsg = t.getMessage() != null ? t.getMessage() : t.toString();
+                      emitStreamEvent(appName, listenerId, null, true, errorMsg);
+                      removeFunctionsStreamingListener(listenerId);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                      Object listener = functionsStreamingListeners.get(listenerId);
+                      if (listener != null) {
+                        emitStreamDone(appName, listenerId);
+                        removeFunctionsStreamingListener(listenerId);
+                      }
+                    }
+                  });
               } catch (Exception e) {
-                android.util.Log.e(
-                    "RNFBFunctions", "Exception in httpsCallableStreamFromUrl for " + url, e);
                 String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
                 emitStreamEvent(
                     appName, listenerId, null, true, "Stream setup failed: " + errorMsg);
@@ -535,7 +405,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
       code = functionsException.getCode().name();
       message = functionsException.getMessage();
       String timeout = FirebaseFunctionsException.Code.DEADLINE_EXCEEDED.name();
-      Boolean isTimeout = code.contains(timeout);
+      boolean isTimeout = code.contains(timeout);
 
       if (functionsException.getCause() instanceof IOException && !isTimeout) {
         code = FirebaseFunctionsException.Code.UNAVAILABLE.name();
