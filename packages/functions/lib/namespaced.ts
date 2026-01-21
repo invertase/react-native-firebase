@@ -217,35 +217,47 @@ class FirebaseFunctionsModule extends FirebaseModule {
         listenerId,
       );
 
-      const asyncIterator = {
-        [Symbol.asyncIterator]() {
-          return this;
-        },
-        async next(): Promise<IteratorResult<any>> {
-          if (error) {
-            throw error;
-          }
+      // Use async generator function for better compatibility with Hermes/React Native
+      async function* streamGenerator() {
+        try {
+          while (true) {
+            if (error) {
+              throw error;
+            }
 
-          if (eventQueue.length > 0) {
-            return { done: false, value: eventQueue.shift() };
-          }
+            if (eventQueue.length > 0) {
+              yield eventQueue.shift();
+              continue;
+            }
 
-          if (done) {
-            return { done: true, value: undefined };
-          }
+            if (done) {
+              return;
+            }
 
-          return new Promise<IteratorResult<any>>(resolve => {
-            resolveNext = resolve;
-          });
-        },
-        async return(): Promise<IteratorResult<any>> {
+            // Wait for next event
+            const result = await new Promise<IteratorResult<any>>(resolve => {
+              resolveNext = resolve;
+            });
+
+            // Check result after promise resolves
+            if (result.done || done) {
+              return;
+            }
+
+            if (result.value !== undefined && result.value !== null) {
+              yield result.value;
+            }
+          }
+        } finally {
+          // Cleanup when generator is closed/returned
           subscription.remove();
           if (nativeModule.removeFunctionsStreaming) {
             nativeModule.removeFunctionsStreaming(listenerId);
           }
-          return { done: true, value: undefined };
-        },
-      };
+        }
+      }
+
+      const asyncIterator = streamGenerator();
 
       // Create a promise that resolves with the final data
       const dataPromise = new Promise<any>((resolve, reject) => {
@@ -376,35 +388,47 @@ class FirebaseFunctionsModule extends FirebaseModule {
         listenerId,
       );
 
-      const asyncIterator = {
-        [Symbol.asyncIterator]() {
-          return this;
-        },
-        async next(): Promise<IteratorResult<any>> {
-          if (error) {
-            throw error;
-          }
+      // Use async generator function for better compatibility with Hermes/React Native
+      async function* streamGenerator() {
+        try {
+          while (true) {
+            if (error) {
+              throw error;
+            }
 
-          if (eventQueue.length > 0) {
-            return { done: false, value: eventQueue.shift() };
-          }
+            if (eventQueue.length > 0) {
+              yield eventQueue.shift();
+              continue;
+            }
 
-          if (done) {
-            return { done: true, value: undefined };
-          }
+            if (done) {
+              return;
+            }
 
-          return new Promise<IteratorResult<any>>(resolve => {
-            resolveNext = resolve;
-          });
-        },
-        async return(): Promise<IteratorResult<any>> {
+            // Wait for next event
+            const result = await new Promise<IteratorResult<any>>(resolve => {
+              resolveNext = resolve;
+            });
+
+            // Check result after promise resolves
+            if (result.done || done) {
+              return;
+            }
+
+            if (result.value !== undefined && result.value !== null) {
+              yield result.value;
+            }
+          }
+        } finally {
+          // Cleanup when generator is closed/returned
           subscription.remove();
           if (nativeModule.removeFunctionsStreaming) {
             nativeModule.removeFunctionsStreaming(listenerId);
           }
-          return { done: true, value: undefined };
-        },
-      };
+        }
+      }
+
+      const asyncIterator = streamGenerator();
 
       // Create a promise that resolves with the final data
       const dataPromise = new Promise<any>((resolve, reject) => {
