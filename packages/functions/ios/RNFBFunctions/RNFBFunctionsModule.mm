@@ -25,9 +25,7 @@
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBFunctionsModule.h"
 
-@interface RNFBFunctionsModule ()
-@property(nonatomic, strong) NSMutableDictionary<NSNumber *, id> *streamSubscriptions;
-@end
+static __strong NSMutableDictionary *streamListeners;
 
 @implementation RNFBFunctionsModule
 #pragma mark -
@@ -38,7 +36,10 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _streamSubscriptions = [NSMutableDictionary dictionary];
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      streamListeners = [[NSMutableDictionary alloc] init];
+    });
   }
   return self;
 }
@@ -191,7 +192,14 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
                        data:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamData &)data
                     options:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamOptions &)options
                  listenerId:(double)listenerId {
-  [self streamSetup:appName region:customUrlOrRegion emulatorHost:emulatorHost emulatorPort:emulatorPort urlOrName:name data:data.data() timeout:options.timeout() listenerId:listenerId];
+  [self streamSetup:appName
+             region:customUrlOrRegion
+       emulatorHost:emulatorHost
+       emulatorPort:emulatorPort
+          urlOrName:name
+               data:data.data()
+            timeout:options.timeout()
+         listenerId:listenerId];
 }
 
 - (void)
@@ -206,14 +214,21 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
                            (JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlOptions &)
                                options
                     listenerId:(double)listenerId {
-  [self streamSetup:appName region:customUrlOrRegion emulatorHost:emulatorHost emulatorPort:emulatorPort urlOrName:url data:data.data() timeout:options.timeout() listenerId:listenerId];
+  [self streamSetup:appName
+             region:customUrlOrRegion
+       emulatorHost:emulatorHost
+       emulatorPort:emulatorPort
+          urlOrName:url
+               data:data.data()
+            timeout:options.timeout()
+         listenerId:listenerId];
 }
 
 - (void)streamSetup:(NSString *)appName
              region:(NSString *)customUrlOrRegion
        emulatorHost:(NSString *_Nullable)emulatorHost
        emulatorPort:(double)emulatorPort
-                urlOrName:(NSString *)urlOrName
+          urlOrName:(NSString *)urlOrName
                data:(id)data
             timeout:(std::optional<double>)timeout
          listenerId:(double)listenerId {
@@ -227,7 +242,6 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
         (url && url.scheme && url.host)
             ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
             : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
-
 
     if (data == nil) {
       data = [NSNull null];
@@ -258,11 +272,11 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
 
                     // Remove handler when done
                     if ([event[@"done"] boolValue]) {
-                      [self.streamSubscriptions removeObjectForKey:listenerIdNumber];
+                      [streamListeners removeObjectForKey:listenerIdNumber];
                     }
                   }];
 
-    self.streamSubscriptions[listenerIdNumber] = handler;
+    streamListeners[listenerIdNumber] = handler;
   } else {
     NSDictionary *eventBody = @{
       @"appName" : appName,
@@ -285,23 +299,12 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
                           region:(NSString *)region
                       listenerId:(double)listenerId {
   NSNumber *listenerIdNumber = @((int)listenerId);
-  id handler = self.streamSubscriptions[listenerIdNumber];
-
-  if (handler != nil && handler != [NSNull null]) {
-    if (@available(iOS 15.0, macOS 12.0, *)) {
-#if __has_include("RNFBFunctions-Swift.h")
-      if ([handler respondsToSelector:@selector(cancel)]) {
-        [handler performSelector:@selector(cancel)];
-      }
-#endif
-    }
-    [self.streamSubscriptions removeObjectForKey:listenerIdNumber];
-  } else if (handler == nil) {
-    // Handler hasn't been created yet (async block hasn't executed)
-    // Mark as cancelled so it won't be created
-    self.streamSubscriptions[listenerIdNumber] = [NSNull null];
+  id handler = streamListeners[listenerIdNumber];
+  if (handler) {
+    [handler cancel];
   }
-  // If handler == [NSNull null], it was already cancelled, do nothing
+
+  [streamListeners removeObjectForKey:listenerIdNumber];
 }
 
 #pragma mark -
