@@ -241,9 +241,14 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
                      parameters:callableData
                         timeout:timeoutValue
                   eventCallback:^(NSDictionary *event) {
-                    NSDictionary *eventBody = @{@"listenerId" : listenerIdNumber, @"body" : event};
+                    NSMutableDictionary *normalisedEvent = @{
+                      @"appName" : appName,
+                      @"eventName" : @"functions_streaming_event",
+                      @"listenerId" : listenerIdNumber,
+                      @"body" : event
+                    };
                     [[RNFBRCTEventEmitter shared] sendEventWithName:@"functions_streaming_event"
-                                                               body:eventBody];
+                                                               body:normalisedEvent];
 
                     // Remove handler when done
                     if ([event[@"done"] boolValue]) {
