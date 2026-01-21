@@ -196,7 +196,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
              region:customUrlOrRegion
        emulatorHost:emulatorHost
        emulatorPort:emulatorPort
-          urlOrName:name
+               name:name
+                url:nil
                data:data.data()
             timeout:options.timeout()
          listenerId:listenerId];
@@ -218,7 +219,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
              region:customUrlOrRegion
        emulatorHost:emulatorHost
        emulatorPort:emulatorPort
-          urlOrName:url
+               name:nil
+                url:url
                data:data.data()
             timeout:options.timeout()
          listenerId:listenerId];
@@ -228,18 +230,19 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
              region:(NSString *)customUrlOrRegion
        emulatorHost:(NSString *_Nullable)emulatorHost
        emulatorPort:(double)emulatorPort
-          urlOrName:(NSString *)urlOrName
+               name:(NSString *_Nullable)name
+                url:(NSString *_Nullable)url
                data:(id)data
             timeout:(std::optional<double>)timeout
          listenerId:(double)listenerId {
   NSNumber *listenerIdNumber = @((int)listenerId);
 
   if (@available(iOS 15.0, macOS 12.0, *)) {
-    NSURL *url = [NSURL URLWithString:customUrlOrRegion];
+    NSURL *customUrl = [NSURL URLWithString:customUrlOrRegion];
     FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
     FIRFunctions *functions =
-        (url && url.scheme && url.host)
+        (customUrl && customUrl.scheme && customUrl.host)
             ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
             : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
 
@@ -255,26 +258,38 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
 
     double timeoutValue = timeout.has_value() ? timeout.value() : 0;
 
-    [handler startStreamWithApp:firebaseApp
-                      functions:functions
-                   functionName:urlOrName
-                     parameters:data
-                        timeout:timeoutValue
-                  eventCallback:^(NSDictionary *event) {
-                    NSMutableDictionary *normalisedEvent = @{
-                      @"appName" : appName,
-                      @"eventName" : @"functions_streaming_event",
-                      @"listenerId" : listenerIdNumber,
-                      @"body" : event
-                    };
-                    [[RNFBRCTEventEmitter shared] sendEventWithName:@"functions_streaming_event"
-                                                               body:normalisedEvent];
+    void (^eventCallback)(NSDictionary *) = ^(NSDictionary *event) {
+      NSMutableDictionary *normalisedEvent = @{
+        @"appName" : appName,
+        @"eventName" : @"functions_streaming_event",
+        @"listenerId" : listenerIdNumber,
+        @"body" : event
+      };
+      [[RNFBRCTEventEmitter shared] sendEventWithName:@"functions_streaming_event"
+                                                 body:normalisedEvent];
 
-                    // Remove handler when done
-                    if ([event[@"done"] boolValue]) {
-                      [streamListeners removeObjectForKey:listenerIdNumber];
-                    }
-                  }];
+      // Remove handler when done
+      if ([event[@"done"] boolValue]) {
+        [streamListeners removeObjectForKey:listenerIdNumber];
+      }
+    };
+
+    // Call based on whether url or name is provided
+    if (url != nil) {
+      [handler startStreamWithApp:firebaseApp
+                        functions:functions
+                      functionUrl:url
+                       parameters:data
+                          timeout:timeoutValue
+                    eventCallback:eventCallback];
+    } else {
+      [handler startStreamWithApp:firebaseApp
+                        functions:functions
+                     functionName:name
+                       parameters:data
+                          timeout:timeoutValue
+                    eventCallback:eventCallback];
+    }
 
     streamListeners[listenerIdNumber] = handler;
   } else {

@@ -71,8 +71,10 @@ import FirebaseCore
     timeout: Double,
     eventCallback: @escaping ([AnyHashable: Any]) -> Void
   ) {
+    let url = URL(string: functionUrl)!
+    
     streamTask = Task {
-      let callable: Callable<AnyEncodable, StreamResponse<AnyDecodable, AnyDecodable>> = functions.httpsCallable(functionUrl)
+      let callable: Callable<AnyEncodable, StreamResponse<AnyDecodable, AnyDecodable>> = functions.httpsCallable(url)
       
       await self.performStream(
           functions: functions,
