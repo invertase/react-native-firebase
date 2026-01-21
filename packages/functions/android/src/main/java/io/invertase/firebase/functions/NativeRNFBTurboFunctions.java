@@ -25,6 +25,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.functions.FirebaseFunctions;
@@ -163,24 +164,34 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
       String name,
       Object data,
       ReadableMap options) {
-    return Tasks.call(
-        getExecutor(),
-        () -> {
-          FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-          FirebaseFunctions functionsInstance = FirebaseFunctions.getInstance(firebaseApp, region);
+    TaskCompletionSource<Object> taskCompletionSource = new TaskCompletionSource<>();
 
-          HttpsCallableReference httpReference = functionsInstance.getHttpsCallable(name);
+    getExecutor()
+        .execute(
+            () -> {
+              try {
+                FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+                FirebaseFunctions functionsInstance =
+                    FirebaseFunctions.getInstance(firebaseApp, region);
 
-          if (options.hasKey("timeout")) {
-            httpReference.setTimeout(options.getInt("timeout"), TimeUnit.SECONDS);
-          }
+                HttpsCallableReference httpReference = functionsInstance.getHttpsCallable(name);
 
-          if (host != null) {
-            functionsInstance.useEmulator(host, port);
-          }
+                if (options.hasKey("timeout")) {
+                  httpReference.setTimeout(options.getInt("timeout"), TimeUnit.SECONDS);
+                }
 
-          return Tasks.await(httpReference.call(data)).getData();
-        });
+                if (host != null) {
+                  functionsInstance.useEmulator(host, port);
+                }
+
+                Object result = Tasks.await(httpReference.call(data)).getData();
+                taskCompletionSource.setResult(result);
+              } catch (Exception e) {
+                taskCompletionSource.setException(e);
+              }
+            });
+
+    return taskCompletionSource.getTask();
   }
 
   private Task<Object> httpsCallableFromUrlInternal(
@@ -191,25 +202,35 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
       String url,
       Object data,
       ReadableMap options) {
-    return Tasks.call(
-        getExecutor(),
-        () -> {
-          FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-          FirebaseFunctions functionsInstance = FirebaseFunctions.getInstance(firebaseApp, region);
-          URL parsedUrl = new URL(url);
-          HttpsCallableReference httpReference =
-              functionsInstance.getHttpsCallableFromUrl(parsedUrl);
+    TaskCompletionSource<Object> taskCompletionSource = new TaskCompletionSource<>();
 
-          if (options.hasKey("timeout")) {
-            httpReference.setTimeout(options.getInt("timeout"), TimeUnit.SECONDS);
-          }
+    getExecutor()
+        .execute(
+            () -> {
+              try {
+                FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+                FirebaseFunctions functionsInstance =
+                    FirebaseFunctions.getInstance(firebaseApp, region);
+                URL parsedUrl = new URL(url);
+                HttpsCallableReference httpReference =
+                    functionsInstance.getHttpsCallableFromUrl(parsedUrl);
 
-          if (host != null) {
-            functionsInstance.useEmulator(host, port);
-          }
+                if (options.hasKey("timeout")) {
+                  httpReference.setTimeout(options.getInt("timeout"), TimeUnit.SECONDS);
+                }
 
-          return Tasks.await(httpReference.call(data)).getData();
-        });
+                if (host != null) {
+                  functionsInstance.useEmulator(host, port);
+                }
+
+                Object result = Tasks.await(httpReference.call(data)).getData();
+                taskCompletionSource.setResult(result);
+              } catch (Exception e) {
+                taskCompletionSource.setException(e);
+              }
+            });
+
+    return taskCompletionSource.getTask();
   }
 
   private void httpsCallableStreamInternal(
