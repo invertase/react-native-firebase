@@ -97,7 +97,8 @@ export function StreamingCallableTestComponent(): React.JSX.Element {
       setOutput('');
       addOutput('Starting URL stream test...');
 
-      const url = 'http://localhost:5001/test-project/us-central1/testStreamingCallable';
+      const url =
+        'http://localhost:5001/react-native-firebase-testing/us-central1/testStreamingCallable';
       const callable = httpsCallableFromUrl(functions, url) as any;
       const { stream, data } = await callable.stream({ count: 3, delay: 400 });
 
