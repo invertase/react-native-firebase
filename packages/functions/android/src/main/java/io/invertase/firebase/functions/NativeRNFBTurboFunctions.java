@@ -379,30 +379,12 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
   }
 
   private void handleFunctionsException(Exception exception, Promise promise) {
-    Object details = null;
-    String code = "UNKNOWN";
-    String message = exception.getMessage();
-    WritableMap userInfo = Arguments.createMap();
-
-    if (exception.getCause() != null) {
-      FirebaseFunctionsException functionsException =
-          (FirebaseFunctionsException) exception.getCause();
-      details = functionsException.getDetails();
-      code = functionsException.getCode().name();
-      message = functionsException.getMessage();
-      String timeout = FirebaseFunctionsException.Code.DEADLINE_EXCEEDED.name();
-      boolean isTimeout = code.contains(timeout);
-
-      if (functionsException.getCause() instanceof IOException && !isTimeout) {
-        code = FirebaseFunctionsException.Code.UNAVAILABLE.name();
-        message = FirebaseFunctionsException.Code.UNAVAILABLE.name();
-      }
-    }
-
-    RCTConvertFirebase.mapPutValue(CODE_KEY, code, userInfo);
-    RCTConvertFirebase.mapPutValue(MSG_KEY, message, userInfo);
-    RCTConvertFirebase.mapPutValue(DETAILS_KEY, details, userInfo);
-    promise.reject(code, message, exception, userInfo);
+    WritableMap errorMap = createErrorMap(exception);
+    
+    String code = errorMap.getString(CODE_KEY);
+    String message = errorMap.getString(MSG_KEY);
+    
+    promise.reject(code, message, exception, errorMap);
   }
 
   private WritableMap createErrorMap(Throwable throwable) {
