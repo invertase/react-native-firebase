@@ -127,8 +127,8 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
     Object callableData = data.toHashMap().get(DATA_KEY);
     Integer port = emulatorHost != null ? (int) emulatorPort : null;
 
-    httpsCallableStreamInternal(
-        appName, region, emulatorHost, port, name, callableData, options, (int) listenerId);
+    httpsCallableStreamSetup(
+        appName, region, emulatorHost, port, name, null, callableData, options, (int) listenerId);
   }
 
   @Override
@@ -145,8 +145,8 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
     Object callableData = data.toHashMap().get(DATA_KEY);
     Integer port = emulatorHost != null ? (int) emulatorPort : null;
 
-    httpsCallableStreamFromUrlInternal(
-        appName, region, emulatorHost, port, url, callableData, options, (int) listenerId);
+    httpsCallableStreamSetup(
+        appName, region, emulatorHost, port, null, url, callableData, options, (int) listenerId);
   }
 
   @Override
@@ -231,30 +231,6 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
             });
 
     return taskCompletionSource.getTask();
-  }
-
-  private void httpsCallableStreamInternal(
-      String appName,
-      String region,
-      String host,
-      Integer port,
-      String name,
-      Object data,
-      ReadableMap options,
-      int listenerId) {
-    httpsCallableStreamSetup(appName, region, host, port, name, null, data, options, listenerId);
-  }
-
-  private void httpsCallableStreamFromUrlInternal(
-      String appName,
-      String region,
-      String host,
-      Integer port,
-      String url,
-      Object data,
-      ReadableMap options,
-      int listenerId) {
-    httpsCallableStreamSetup(appName, region, host, port, null, url, data, options, listenerId);
   }
 
   private void httpsCallableStreamSetup(
