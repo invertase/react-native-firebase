@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Text, View, ScrollView, StyleSheet } from 'react-native';
+import { Button, Text, View, ScrollView, StyleSheet, Platform } from 'react-native';
 import {
   getFunctions,
   connectFunctionsEmulator,
@@ -97,8 +97,8 @@ export function StreamingCallableTestComponent(): React.JSX.Element {
       setOutput('');
       addOutput('Starting URL stream test...');
 
-      const url =
-        'http://localhost:5001/react-native-firebase-testing/us-central1/testStreamingCallable';
+      const host = Platform.OS === 'android' ? '10.0.2.2' : '127.0.0.1';
+      const url = `http://${host}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`;
       const callable = httpsCallableFromUrl(functions, url) as any;
       const { stream, data } = await callable.stream({ count: 3, delay: 400 });
 
