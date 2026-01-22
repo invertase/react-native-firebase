@@ -78,7 +78,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
     Integer port = emulatorHost != null ? (int) emulatorPort : null;
 
     Task<Object> callMethodTask =
-        httpsCallableInternal(appName, region, emulatorHost, port, name, callableData, options);
+        httpsCallableInternal(appName, region, emulatorHost, port, name, null, callableData, options);
 
     callMethodTask.addOnSuccessListener(
         getExecutor(),
@@ -103,8 +103,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
     Integer port = emulatorHost != null ? (int) emulatorPort : null;
 
     Task<Object> callMethodTask =
-        httpsCallableFromUrlInternal(
-            appName, region, emulatorHost, port, url, callableData, options);
+        httpsCallableInternal(appName, region, emulatorHost, port, null, url, callableData, options);
 
     callMethodTask.addOnSuccessListener(
         getExecutor(),
@@ -162,43 +161,6 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
       String host,
       Integer port,
       String name,
-      Object data,
-      ReadableMap options) {
-    TaskCompletionSource<Object> taskCompletionSource = new TaskCompletionSource<>();
-
-    getExecutor()
-        .execute(
-            () -> {
-              try {
-                FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-                FirebaseFunctions functionsInstance =
-                    FirebaseFunctions.getInstance(firebaseApp, region);
-
-                HttpsCallableReference httpReference = functionsInstance.getHttpsCallable(name);
-
-                if (options.hasKey("timeout")) {
-                  httpReference.setTimeout(options.getInt("timeout"), TimeUnit.SECONDS);
-                }
-
-                if (host != null) {
-                  functionsInstance.useEmulator(host, port);
-                }
-
-                Object result = Tasks.await(httpReference.call(data)).getData();
-                taskCompletionSource.setResult(result);
-              } catch (Exception e) {
-                taskCompletionSource.setException(e);
-              }
-            });
-
-    return taskCompletionSource.getTask();
-  }
-
-  private Task<Object> httpsCallableFromUrlInternal(
-      String appName,
-      String region,
-      String host,
-      Integer port,
       String url,
       Object data,
       ReadableMap options) {
@@ -211,9 +173,15 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
                 FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
                 FirebaseFunctions functionsInstance =
                     FirebaseFunctions.getInstance(firebaseApp, region);
-                URL parsedUrl = new URL(url);
-                HttpsCallableReference httpReference =
-                    functionsInstance.getHttpsCallableFromUrl(parsedUrl);
+
+                // Create reference based on which parameter is provided
+                HttpsCallableReference httpReference;
+                if (url != null) {
+                  URL parsedUrl = new URL(url);
+                  httpReference = functionsInstance.getHttpsCallableFromUrl(parsedUrl);
+                } else {
+                  httpReference = functionsInstance.getHttpsCallable(name);
+                }
 
                 if (options.hasKey("timeout")) {
                   httpReference.setTimeout(options.getInt("timeout"), TimeUnit.SECONDS);
