@@ -388,6 +388,17 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
   @Override
   public void invalidate() {
     super.invalidate();
+
+    // Cancel all active streaming listeners before shutdown
+    for (int i = 0; i < functionsStreamingListeners.size(); i++) {
+      int listenerId = functionsStreamingListeners.keyAt(i);
+      Object listener = functionsStreamingListeners.get(listenerId);
+      if (listener instanceof Subscription) {
+        ((Subscription) listener).cancel();
+      }
+    }
+    functionsStreamingListeners.clear();
+
     executorService.shutdown();
   }
 }
