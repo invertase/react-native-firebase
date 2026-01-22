@@ -44,6 +44,20 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
   return self;
 }
 
+- (void)dealloc {
+  [self invalidate];
+}
+
+- (void)invalidate {
+  for (NSString *key in [streamListeners allKeys]) {
+    id handler = streamListeners[key];
+    if (handler && [handler respondsToSelector:@selector(cancel)]) {
+      [handler cancel];
+    }
+    [streamListeners removeObjectForKey:key];
+  }
+}
+
 #pragma mark -
 #pragma mark Firebase Functions Methods
 
