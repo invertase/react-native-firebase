@@ -311,7 +311,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
                     public void onComplete() {
                       Object listener = functionsStreamingListeners.get(listenerId);
                       if (listener != null) {
-                        emitStreamDone(appName, listenerId);
+                        emitStreamEventWithDone(appName, listenerId, null);
                         removeFunctionsStreamingListener(listenerId);
                       }
                     }
@@ -347,16 +347,6 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
         RCTConvertFirebase.mapPutValue("data", data, body);
       }
     }
-
-    FirebaseFunctionsStreamHandler handler =
-        new FirebaseFunctionsStreamHandler(STREAMING_EVENT, body, appName, listenerId);
-
-    ReactNativeFirebaseEventEmitter.getSharedInstance().sendEvent(handler);
-  }
-
-  private void emitStreamDone(String appName, int listenerId) {
-    WritableMap body = Arguments.createMap();
-    body.putBoolean("done", true);
 
     FirebaseFunctionsStreamHandler handler =
         new FirebaseFunctionsStreamHandler(STREAMING_EVENT, body, appName, listenerId);
