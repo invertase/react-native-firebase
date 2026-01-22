@@ -302,8 +302,8 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
 
                     @Override
                     public void onError(Throwable t) {
-                      String errorMsg = t.getMessage() != null ? t.getMessage() : t.toString();
-                      emitStreamEvent(appName, listenerId, null, true, errorMsg);
+                      WritableMap errorMap = createErrorMap(t);
+                      emitStreamEvent(appName, listenerId, null, true, errorMap);
                       removeFunctionsStreamingListener(listenerId);
                     }
 
@@ -317,9 +317,8 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
                     }
                   });
               } catch (Exception e) {
-                String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
-                emitStreamEvent(
-                    appName, listenerId, null, true, "Stream setup failed: " + errorMsg);
+                WritableMap errorMap = createErrorMap(e);
+                emitStreamEvent(appName, listenerId, null, true, errorMap);
                 removeFunctionsStreamingListener(listenerId);
               }
             });
@@ -336,11 +335,11 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
   }
 
   private void emitStreamEvent(
-      String appName, int listenerId, Object data, boolean isError, String errorMessage) {
+      String appName, int listenerId, Object data, boolean isError, WritableMap errorMap) {
     WritableMap body = Arguments.createMap();
 
     if (isError) {
-      body.putString("error", errorMessage);
+      body.putMap("error", errorMap);
       body.putBoolean("done", true);
     } else {
       body.putBoolean("done", false);
@@ -404,6 +403,46 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
     RCTConvertFirebase.mapPutValue(MSG_KEY, message, userInfo);
     RCTConvertFirebase.mapPutValue(DETAILS_KEY, details, userInfo);
     promise.reject(code, message, exception, userInfo);
+  }
+
+  private WritableMap createErrorMap(Throwable throwable) {
+    Object details = null;
+    String code = "UNKNOWN";
+    String message = throwable.getMessage() != null ? throwable.getMessage() : throwable.toString();
+
+    // Check if the throwable contains a FirebaseFunctionsException
+    if (throwable.getCause() != null && throwable.getCause() instanceof FirebaseFunctionsException) {
+      FirebaseFunctionsException functionsException = (FirebaseFunctionsException) throwable.getCause();
+      details = functionsException.getDetails();
+      code = functionsException.getCode().name();
+      message = functionsException.getMessage();
+      String timeout = FirebaseFunctionsException.Code.DEADLINE_EXCEEDED.name();
+      boolean isTimeout = code.contains(timeout);
+
+      if (functionsException.getCause() instanceof IOException && !isTimeout) {
+        code = FirebaseFunctionsException.Code.UNAVAILABLE.name();
+        message = FirebaseFunctionsException.Code.UNAVAILABLE.name();
+      }
+    } else if (throwable instanceof FirebaseFunctionsException) {
+      FirebaseFunctionsException functionsException = (FirebaseFunctionsException) throwable;
+      details = functionsException.getDetails();
+      code = functionsException.getCode().name();
+      message = functionsException.getMessage();
+      String timeout = FirebaseFunctionsException.Code.DEADLINE_EXCEEDED.name();
+      boolean isTimeout = code.contains(timeout);
+
+      if (functionsException.getCause() instanceof IOException && !isTimeout) {
+        code = FirebaseFunctionsException.Code.UNAVAILABLE.name();
+        message = FirebaseFunctionsException.Code.UNAVAILABLE.name();
+      }
+    }
+
+    WritableMap errorMap = Arguments.createMap();
+    errorMap.putString(CODE_KEY, code);
+    errorMap.putString(MSG_KEY, message);
+    RCTConvertFirebase.mapPutValue(DETAILS_KEY, details, errorMap);
+    
+    return errorMap;
   }
 
   @Override
