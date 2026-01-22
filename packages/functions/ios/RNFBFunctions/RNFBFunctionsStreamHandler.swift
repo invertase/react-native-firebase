@@ -26,12 +26,6 @@ import FirebaseCore
 @objcMembers public class RNFBFunctionsStreamHandler: NSObject {
   private var streamTask: Task<Void, Never>?
   
-  /// Helper function to log to both NSLog and a file
-  private func log(_ message: String) {
-    let logMessage = "RNFBFunctions: \(message)"
-    NSLog("%@", logMessage)
-  }
-  
   /// Start streaming from a Firebase Function
   /// - Parameters:
   ///   - app: Firebase App instance (can be FIRApp or FirebaseApp)
