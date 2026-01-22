@@ -21,26 +21,47 @@ import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
 export interface HttpsCallableOptions {
   timeout?: number;
+  /**
+   * If set to true, uses a limited-use App Check token for callable function requests from this
+   * instance of {@link Functions}. You must use limited-use tokens to call functions with
+   * replay protection enabled. By default, this is false.
+   */
+  limitedUseAppCheckTokens?: boolean;
+}
+
+export interface HttpsCallableStreamOptions {
+  /**
+   * An `AbortSignal` that can be used to cancel the streaming response. When the signal is aborted,
+   * the underlying HTTP connection will be terminated.
+   */
+  signal?: AbortSignal;
+  /**
+   * If set to true, uses a limited-use App Check token for callable function requests from this
+   * instance of {@link Functions}. You must use limited-use tokens to call functions with
+   * replay protection enabled. By default, this is false.
+   */
+  limitedUseAppCheckTokens?: boolean;
 }
 
 export interface HttpsCallableResult<ResponseData = unknown> {
   readonly data: ResponseData;
 }
 
-export interface HttpsCallable<RequestData = unknown, ResponseData = unknown> {
+export interface HttpsCallableStreamResult<ResponseData = unknown, StreamData = unknown> {
+  readonly data: Promise<ResponseData>;
+  readonly stream: AsyncIterable<StreamData>;
+}
+
+export interface HttpsCallable<
+  RequestData = unknown,
+  ResponseData = unknown,
+  StreamData = unknown,
+> {
   (data?: RequestData | null): Promise<HttpsCallableResult<ResponseData>>;
-  /**
-   * Streams data from a callable function.
-   * @param data The data to send to the function.
-   * @param onEvent Callback function called when streaming events are received.
-   * @param streamOptions Optional settings for the streaming callable function.
-   * @returns A function to unsubscribe from the stream.
-   */
-  stream(
+  stream: (
     data?: RequestData | null,
-    onEvent?: (event: any) => void,
-    streamOptions?: HttpsCallableOptions,
-  ): () => void;
+    options?: HttpsCallableStreamOptions,
+  ) => Promise<HttpsCallableStreamResult<ResponseData, StreamData>>;
 }
 
 // ============ Error Code Types ============
@@ -108,10 +129,10 @@ export interface Functions extends ReactNativeFirebase.FirebaseModule {
    * @param name The name of the trigger.
    * @param options Optional settings for the callable function.
    */
-  httpsCallable<RequestData = unknown, ResponseData = unknown>(
+  httpsCallable<RequestData = unknown, ResponseData = unknown, StreamData = unknown>(
     name: string,
     options?: HttpsCallableOptions,
-  ): HttpsCallable<RequestData, ResponseData>;
+  ): HttpsCallable<RequestData, ResponseData, StreamData>;
 
   /**
    * Returns a reference to the callable HTTPS trigger with the given URL.
@@ -119,10 +140,10 @@ export interface Functions extends ReactNativeFirebase.FirebaseModule {
    * @param url The URL of the trigger.
    * @param options Optional settings for the callable function.
    */
-  httpsCallableFromUrl<RequestData = unknown, ResponseData = unknown>(
+  httpsCallableFromUrl<RequestData = unknown, ResponseData = unknown, StreamData = unknown>(
     url: string,
     options?: HttpsCallableOptions,
-  ): HttpsCallable<RequestData, ResponseData>;
+  ): HttpsCallable<RequestData, ResponseData, StreamData>;
 
   /**
    * Returns a reference to the callable HTTPS trigger with the given name.
@@ -130,20 +151,20 @@ export interface Functions extends ReactNativeFirebase.FirebaseModule {
    * @param name The name of the trigger.
    * @param options Optional settings for the callable function.
    */
-  httpsCallableStream<RequestData = unknown, ResponseData = unknown>(
+  httpsCallableStream<RequestData = unknown, ResponseData = unknown, StreamData = unknown>(
     name: string,
     options?: HttpsCallableOptions,
-  ): HttpsCallable<RequestData, ResponseData>;
+  ): HttpsCallable<RequestData, ResponseData, StreamData>;
   /**
    * Returns a reference to the callable HTTPS trigger with the given URL.
    *
    * @param url The URL of the trigger.
    * @param options Optional settings for the callable function.
    */
-  httpsCallableStreamFromUrl<RequestData = unknown, ResponseData = unknown>(
+  httpsCallableStreamFromUrl<RequestData = unknown, ResponseData = unknown, StreamData = unknown>(
     url: string,
     options?: HttpsCallableOptions,
-  ): HttpsCallable<RequestData, ResponseData>;
+  ): HttpsCallable<RequestData, ResponseData, StreamData>;
 
   /**
    * Changes this instance to point to a Cloud Functions emulator running locally.
@@ -198,8 +219,17 @@ declare module '@react-native-firebase/app' {
 // Helper types to reference outer scope types within the namespace
 // These are needed because TypeScript can't directly alias types with the same name
 type _HttpsCallableResult<T> = HttpsCallableResult<T>;
-type _HttpsCallable<RequestData, ResponseData> = HttpsCallable<RequestData, ResponseData>;
+type _HttpsCallableStreamResult<ResponseData, StreamData> = HttpsCallableStreamResult<
+  ResponseData,
+  StreamData
+>;
+type _HttpsCallable<RequestData, ResponseData, StreamData> = HttpsCallable<
+  RequestData,
+  ResponseData,
+  StreamData
+>;
 type _HttpsCallableOptions = HttpsCallableOptions;
+type _HttpsCallableStreamOptions = HttpsCallableStreamOptions;
 type _HttpsError = HttpsError;
 type _HttpsErrorCode = HttpsErrorCode;
 
@@ -212,11 +242,17 @@ export namespace FirebaseFunctionsTypes {
   // Short name aliases referencing top-level types
   export type ErrorCode = FunctionsErrorCode;
   export type CallableResult<ResponseData = unknown> = HttpsCallableResult<ResponseData>;
-  export type Callable<RequestData = unknown, ResponseData = unknown> = HttpsCallable<
-    RequestData,
-    ResponseData
-  >;
+  export type CallableStreamResult<
+    ResponseData = unknown,
+    StreamData = unknown,
+  > = HttpsCallableStreamResult<ResponseData, StreamData>;
+  export type Callable<
+    RequestData = unknown,
+    ResponseData = unknown,
+    StreamData = unknown,
+  > = HttpsCallable<RequestData, ResponseData, StreamData>;
   export type CallableOptions = HttpsCallableOptions;
+  export type CallableStreamOptions = HttpsCallableStreamOptions;
   export type Error = HttpsError;
   export type ErrorCodeMap = HttpsErrorCode;
   export type Statics = FunctionsStatics;
@@ -225,11 +261,17 @@ export namespace FirebaseFunctionsTypes {
   // Https* aliases that reference the exported types above via helper types
   // These provide backwards compatibility for code using FirebaseFunctionsTypes.HttpsCallableResult
   export type HttpsCallableResult<T = unknown> = _HttpsCallableResult<T>;
-  export type HttpsCallable<RequestData = unknown, ResponseData = unknown> = _HttpsCallable<
-    RequestData,
-    ResponseData
-  >;
+  export type HttpsCallableStreamResult<
+    ResponseData = unknown,
+    StreamData = unknown,
+  > = _HttpsCallableStreamResult<ResponseData, StreamData>;
+  export type HttpsCallable<
+    RequestData = unknown,
+    ResponseData = unknown,
+    StreamData = unknown,
+  > = _HttpsCallable<RequestData, ResponseData, StreamData>;
   export type HttpsCallableOptions = _HttpsCallableOptions;
+  export type HttpsCallableStreamOptions = _HttpsCallableStreamOptions;
   export type HttpsError = _HttpsError;
   export type HttpsErrorCode = _HttpsErrorCode;
 }
