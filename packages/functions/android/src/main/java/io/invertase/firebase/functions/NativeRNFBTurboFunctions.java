@@ -281,7 +281,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
 
                     @Override
                     public void onNext(StreamResponse streamResponse) {
-                      try {
+
                         Object responseData = null;
                         boolean isFinalResult = false;
 
@@ -298,16 +298,6 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
                         } else {
                           emitStreamEvent(appName, listenerId, responseData, false, null);
                         }
-                      } catch (Exception e) {
-                        String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
-                        emitStreamEvent(
-                          appName,
-                          listenerId,
-                          null,
-                          true,
-                          "Data extraction error: " + errorMsg);
-                        removeFunctionsStreamingListener(listenerId);
-                      }
                     }
 
                     @Override
