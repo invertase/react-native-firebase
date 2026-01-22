@@ -301,7 +301,8 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
         @"data" : [NSNull null],
         @"error" : @{
           @"code" : @"cancelled",
-          @"message" : @"callable streams require minimum iOS 15 or macOS 12"
+          @"message" : @"callable streams require minimum iOS 15 or macOS 12",
+          @"details" : [NSNull null]
         },
         @"done" : @NO
       }
