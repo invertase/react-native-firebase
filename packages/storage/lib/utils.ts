@@ -17,6 +17,7 @@
 
 import { isNull, isObject, isString } from '@react-native-firebase/app/lib/common';
 import { NativeFirebaseError } from '@react-native-firebase/app/lib/internal';
+import type { SettableMetadata } from './types/storage';
 
 const SETTABLE_FIELDS = [
   'cacheControl',
@@ -26,9 +27,16 @@ const SETTABLE_FIELDS = [
   'contentType',
   'customMetadata',
   'md5hash',
-];
+] as const;
 
-export async function handleStorageEvent(storageInstance, event) {
+export async function handleStorageEvent(
+  storageInstance: any,
+  event: {
+    taskId: string;
+    eventName: string;
+    body?: { error?: any };
+  },
+): Promise<void> {
   const { taskId, eventName } = event;
   const body = event.body || {};
 
@@ -39,7 +47,7 @@ export async function handleStorageEvent(storageInstance, event) {
   storageInstance.emitter.emit(storageInstance.eventNameForApp(taskId, eventName), body);
 }
 
-export function getHttpUrlParts(url) {
+export function getHttpUrlParts(url: string): { bucket: string; path: string } | null {
   const decoded = decodeURIComponent(url);
   const parts = decoded.match(/\/b\/(.*)\/o\/([a-zA-Z0-9./\-_]+)(.*)/);
 
@@ -47,10 +55,10 @@ export function getHttpUrlParts(url) {
     return null;
   }
 
-  return { bucket: `gs://${parts[1]}`, path: parts[2] };
+  return { bucket: `gs://${parts[1]}`, path: parts[2]! };
 }
 
-export function getGsUrlParts(url) {
+export function getGsUrlParts(url: string): { bucket: string; path: string } {
   const bucket = url.substring(0, url.indexOf('/', 5)) || url;
   const path =
     (url.indexOf('/', 5) > -1 ? url.substring(url.indexOf('/', 5) + 1, url.length) : '/') || '/';
@@ -58,7 +66,7 @@ export function getGsUrlParts(url) {
   return { bucket, path };
 }
 
-export function validateMetadata(metadata, update = true) {
+export function validateMetadata(metadata: any, update = true): SettableMetadata {
   if (!isObject(metadata)) {
     throw new Error('firebase.storage.SettableMetadata must be an object value if provided.');
   }
@@ -66,9 +74,11 @@ export function validateMetadata(metadata, update = true) {
   const metadataEntries = Object.entries(metadata);
 
   for (let i = 0; i < metadataEntries.length; i++) {
-    const [key, value] = metadataEntries[i];
+    const entry = metadataEntries[i];
+    if (!entry) continue;
+    const [key, value] = entry;
     // validate keys
-    if (!SETTABLE_FIELDS.includes(key)) {
+    if (!SETTABLE_FIELDS.includes(key as (typeof SETTABLE_FIELDS)[number])) {
       throw new Error(
         `firebase.storage.SettableMetadata unknown property '${key}' provided for metadata.`,
       );
@@ -95,5 +105,5 @@ export function validateMetadata(metadata, update = true) {
     }
   }
 
-  return metadata;
+  return metadata as SettableMetadata;
 }
