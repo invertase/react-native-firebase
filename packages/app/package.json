@@ -80,11 +80,11 @@
       "source": "./lib/internal/*.ts",
       "import": {
         "types": "./dist/typescript/module/lib/internal/*.d.ts",
-        "default": "./dist/module/internal/*"
+        "default": "./dist/module/internal/*.js"
       },
       "require": {
         "types": "./dist/typescript/commonjs/lib/internal/*.d.ts",
-        "default": "./dist/commonjs/internal/*"
+        "default": "./dist/commonjs/internal/*.js"
       }
     },
     "./lib/common": {
@@ -102,11 +102,11 @@
       "source": "./lib/common/*.ts",
       "import": {
         "types": "./dist/typescript/module/lib/common/*.d.ts",
-        "default": "./dist/module/common/*"
+        "default": "./dist/module/common/*.js"
       },
       "require": {
         "types": "./dist/typescript/commonjs/lib/common/*.d.ts",
-        "default": "./dist/commonjs/common/*"
+        "default": "./dist/commonjs/common/*.js"
       }
     },
     "./app.plugin.js": "./app.plugin.js",
