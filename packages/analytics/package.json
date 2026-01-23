@@ -3,9 +3,8 @@
   "version": "23.8.3",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - The analytics module provides out of the box support with Google Analytics for Firebase. Integration with the Android & iOS allows for in-depth analytical insight reporting, such as device information, location, user actions and more.",
-  "main": "./dist/commonjs/index.js",
-  "module": "./dist/module/index.js",
-  "types": "./dist/typescript/commonjs/lib/index.d.ts",
+  "main": "./dist/module/index.js",
+  "types": "./dist/typescript/lib/index.d.ts",
   "scripts": {
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
@@ -39,14 +38,8 @@
   "exports": {
     ".": {
       "source": "./lib/index.ts",
-      "import": {
-        "types": "./dist/typescript/module/lib/index.d.ts",
-        "default": "./dist/module/index.js"
-      },
-      "require": {
-        "types": "./dist/typescript/commonjs/lib/index.d.ts",
-        "default": "./dist/commonjs/index.js"
-      }
+      "types": "./dist/typescript/lib/index.d.ts",
+      "default": "./dist/module/index.js"
     },
     "./package.json": "./package.json"
   },
@@ -56,12 +49,6 @@
     "targets": [
       [
         "module",
-        {
-          "esm": true
-        }
-      ],
-      [
-        "commonjs",
         {
           "esm": true
         }
