@@ -17,6 +17,7 @@
 
 import { getApp } from '@react-native-firebase/app';
 import { MultiFactorUser } from '../multiFactor';
+import { TokenType } from '../Token';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
 
 /**
@@ -190,13 +191,84 @@ export function onIdTokenChanged(auth, nextOrObserver) {
 }
 
 /**
- * Revoke the given access token, Currently only supports Apple OAuth access tokens.
- * @param auth - The Auth Instance.
- * @param token - The Access Token
+ * Revokes access tokens using different token types
+ * @param {Object} auth - The Firebase Auth instance
+ * @param {TokenType} tokenType - The token type containing revocation details
+ * @returns {Promise<void>}
  */
-export async function revokeAccessToken(auth, token) {
-  throw new Error('revokeAccessToken() is only supported on Web');
-} //TO DO: Add Support
+export async function revokeAccessToken(auth, tokenType) {
+  if (!(tokenType instanceof TokenType)) {
+    throw new Error('tokenType must be an instance of TokenType or its subclasses');
+  }
+
+  const type = tokenType.getType();
+  const token = tokenType.getValue();
+
+  switch (type) {
+    case 'authorization_code':
+      return await auth.revokeToken(token);
+
+    case 'access_token':
+      // Let the SDK handle access token revocation
+      return await auth.revokeAccessToken(token);
+
+    default:
+      throw new Error(`Unsupported token type: ${type}`);
+  }
+}
+
+/**
+ * Base class for token types used in revocation
+ */
+export class TokenType {
+  constructor(token) {
+    if (this.constructor === TokenType) {
+      throw new Error('TokenType is abstract and cannot be instantiated directly');
+    }
+    this.token = token;
+  }
+
+  /**
+   * Abstract method to be implemented by subclasses
+   * @returns {string} The type identifier for this token
+   */
+  getType() {
+    throw new Error('getType() must be implemented by subclasses');
+  }
+
+  /**
+   * @returns {string} The token value
+   */
+  getValue() {
+    return this.token;
+  }
+}
+
+/**
+ * Authorization Code token type for Apple Sign-in revocation
+ */
+export class AuthorizationCodeToken extends TokenType {
+  constructor(authorizationCode) {
+    super(authorizationCode);
+  }
+
+  getType() {
+    return 'authorization_code';
+  }
+}
+
+/**
+ * Access Token type for Apple API revocation
+ */
+export class AccessToken extends TokenType {
+  constructor(accessToken) {
+    super(accessToken);
+  }
+
+  getType() {
+    return 'access_token';
+  }
+}
 
 /**
  * Sends a password reset email to the given email address.
