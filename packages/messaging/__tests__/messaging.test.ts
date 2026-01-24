@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 
 // Mock getFirebaseRoot before any imports that use it
-jest.mock('@react-native-firebase/app/lib/internal', () => {
-  const actual = jest.requireActual('@react-native-firebase/app/lib/internal');
+jest.mock('@react-native-firebase/app/dist/module/internal', () => {
+  const actual = jest.requireActual('@react-native-firebase/app/dist/module/internal');
   return Object.assign({}, actual, {
     getFirebaseRoot: jest.fn(() => ({
       utils: jest.fn(() => ({

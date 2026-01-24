@@ -15,7 +15,7 @@
  *
  */
 
-import { isDate, isNumber } from '@react-native-firebase/app/lib/common';
+import { isDate, isNumber } from '@react-native-firebase/app/dist/module/common';
 
 // The earlist date supported by Firestore timestamps (0001-01-01T00:00:00Z).
 const MIN_SECONDS = -62135596800;

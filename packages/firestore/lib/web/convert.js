@@ -12,7 +12,7 @@ import {
   arrayRemove,
   vector,
   VectorValue,
-} from '@react-native-firebase/app/lib/internal/web/firebaseFirestore';
+} from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
 
 const INT_NAN = 0;
 const INT_NEGATIVE_INFINITY = 1;

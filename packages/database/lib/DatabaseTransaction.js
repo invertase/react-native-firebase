@@ -15,8 +15,8 @@
  *
  */
 
-import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
-import { isOther } from '@react-native-firebase/app/lib/common';
+import NativeError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
+import { isOther } from '@react-native-firebase/app/dist/module/common';
 
 let transactionId = 0;
 

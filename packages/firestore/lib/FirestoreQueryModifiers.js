@@ -15,7 +15,7 @@
  *
  */
 
-import { isNumber } from '@react-native-firebase/app/lib/common';
+import { isNumber } from '@react-native-firebase/app/dist/module/common';
 import FirestoreFieldPath, { DOCUMENT_ID } from './FirestoreFieldPath';
 import { buildNativeArray, generateNativeData } from './utils/serialize';
 

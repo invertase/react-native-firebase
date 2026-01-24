@@ -24,14 +24,14 @@ import {
   isIOS,
   isFunction,
   parseListenerOrObserver,
-} from '@react-native-firebase/app/lib/common';
+} from '@react-native-firebase/app/dist/module/common';
 import Value from './RemoteConfigValue';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
-} from '@react-native-firebase/app/lib/internal';
-import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
+} from '@react-native-firebase/app/dist/module/internal';
+import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import fallBackModule from './web/RNFBConfigModule';
 import version from './version';
 import { LastFetchStatus, ValueSource } from './statics';

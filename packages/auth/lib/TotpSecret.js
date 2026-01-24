@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isString } from '@react-native-firebase/app/lib/common';
+import { isString } from '@react-native-firebase/app/dist/module/common';
 
 export class TotpSecret {
   constructor(secretKey, auth) {

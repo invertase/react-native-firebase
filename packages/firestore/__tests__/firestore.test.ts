@@ -8,7 +8,7 @@ import FirestoreQuery from '../lib/FirestoreQuery';
 // @ts-ignore test
 import FirestoreDocumentSnapshot from '../lib/FirestoreDocumentSnapshot';
 // @ts-ignore test
-import * as nativeModule from '@react-native-firebase/app/lib/internal/nativeModuleAndroidIos';
+import * as nativeModule from '@react-native-firebase/app/dist/module/internal/nativeModuleAndroidIos';
 
 import {
   createCheckV9Deprecation,

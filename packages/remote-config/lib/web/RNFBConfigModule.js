@@ -10,8 +10,12 @@ import {
   makeIDBAvailable,
   onConfigUpdate,
   setCustomSignals,
-} from '@react-native-firebase/app/lib/internal/web/firebaseRemoteConfig';
-import { guard, getWebError, emitEvent } from '@react-native-firebase/app/lib/internal/web/utils';
+} from '@react-native-firebase/app/dist/module/internal/web/firebaseRemoteConfig';
+import {
+  guard,
+  getWebError,
+  emitEvent,
+} from '@react-native-firebase/app/dist/module/internal/web/utils';
 
 let configSettingsForInstance = {
   // [APP_NAME]: RemoteConfigSettings

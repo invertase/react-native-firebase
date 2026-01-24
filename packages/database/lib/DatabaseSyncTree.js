@@ -15,10 +15,10 @@
  *
  */
 
-import { createDeprecationProxy, isString } from '@react-native-firebase/app/lib/common';
-import { getReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
-import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
-import SharedEventEmitter from '@react-native-firebase/app/lib/internal/SharedEventEmitter';
+import { createDeprecationProxy, isString } from '@react-native-firebase/app/dist/module/common';
+import { getReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
+import NativeError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
+import SharedEventEmitter from '@react-native-firebase/app/dist/module/internal/SharedEventEmitter';
 import DatabaseDataSnapshot from './DatabaseDataSnapshot';
 
 class DatabaseSyncTree {

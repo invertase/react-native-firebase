@@ -10,7 +10,7 @@ import {
   endBefore,
   startAt,
   startAfter,
-} from '@react-native-firebase/app/lib/internal/web/firebaseDatabase';
+} from '@react-native-firebase/app/dist/module/internal/web/firebaseDatabase';
 
 export function getQueryInstance(dbRef, modifiers) {
   const constraints = [];

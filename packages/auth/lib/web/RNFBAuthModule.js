@@ -42,12 +42,16 @@ import {
   GithubAuthProvider,
   PhoneAuthProvider,
   OAuthProvider,
-} from '@react-native-firebase/app/lib/internal/web/firebaseAuth';
-import { guard, getWebError, emitEvent } from '@react-native-firebase/app/lib/internal/web/utils';
+} from '@react-native-firebase/app/dist/module/internal/web/firebaseAuth';
+import {
+  guard,
+  getWebError,
+  emitEvent,
+} from '@react-native-firebase/app/dist/module/internal/web/utils';
 import {
   getReactNativeAsyncStorageInternal,
   isMemoryStorage,
-} from '@react-native-firebase/app/lib/internal/asyncStorage';
+} from '@react-native-firebase/app/dist/module/internal/asyncStorage';
 
 /**
  * Resolves or rejects an auth method promise without a user (user was missing).

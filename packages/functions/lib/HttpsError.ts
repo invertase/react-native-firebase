@@ -15,7 +15,7 @@
  *
  */
 
-import { NativeFirebaseError } from '@react-native-firebase/app/lib/internal';
+import { NativeFirebaseError } from '@react-native-firebase/app/dist/module/internal';
 
 export interface NativeError {
   userInfo?: {
