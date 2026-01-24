@@ -15,7 +15,7 @@
  *
  */
 
-import { createDeprecationProxy } from '@react-native-firebase/app/lib/common';
+import { createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
 // To avoid React Native require cycle warnings
 let DatabaseReference = null;
 export function provideReferenceClass(databaseReference) {

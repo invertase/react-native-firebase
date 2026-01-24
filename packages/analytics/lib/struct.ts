@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-import { isUndefined } from '@react-native-firebase/app/lib/common/validate';
+import { isUndefined } from '@react-native-firebase/app/dist/module/common/validate';
 import { create, StructError } from 'superstruct';
 
 export const validateStruct = (

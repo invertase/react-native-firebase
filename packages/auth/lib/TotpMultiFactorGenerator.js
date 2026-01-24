@@ -15,7 +15,7 @@
  *
  */
 
-import { isOther } from '@react-native-firebase/app/lib/common';
+import { isOther } from '@react-native-firebase/app/dist/module/common';
 import { TotpSecret } from './TotpSecret';
 import { getAuth } from './modular';
 

@@ -1,4 +1,9 @@
-import { isString, isNull, isUndefined, isArray } from '@react-native-firebase/app/lib/common';
+import {
+  isString,
+  isNull,
+  isUndefined,
+  isArray,
+} from '@react-native-firebase/app/dist/module/common';
 import { fromDotSeparatedString } from './FirestoreFieldPath';
 import { generateNativeData } from './utils/serialize';
 import { OPERATORS } from './FirestoreQueryModifiers';

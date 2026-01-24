@@ -22,10 +22,10 @@ import {
   isObject,
   isString,
   isNumber,
-} from '@react-native-firebase/app/lib/common';
-import { deepGet } from '@react-native-firebase/app/lib/common/deeps';
+} from '@react-native-firebase/app/dist/module/common';
+import { deepGet } from '@react-native-firebase/app/dist/module/common/deeps';
 
-import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 export default class DatabaseDataSnapshot {
   constructor(reference, snapshot) {
     this._snapshot = snapshot;

@@ -4,7 +4,7 @@ import {
   httpsCallable,
   httpsCallableFromURL,
   connectFunctionsEmulator,
-} from '@react-native-firebase/app/lib/internal/web/firebaseFunctions';
+} from '@react-native-firebase/app/dist/module/internal/web/firebaseFunctions';
 import type { HttpsCallableOptions } from '../index';
 import type { NativeError } from '../HttpsError';
 

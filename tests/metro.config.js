@@ -61,24 +61,6 @@ const config = {
         },
       },
     ),
-    resolveRequest: (context, moduleName, platform) => {
-      // For @react-native-firebase/app subpath imports, redirect lib/* to dist/module/*
-      if (moduleName.startsWith('@react-native-firebase/app/lib/')) {
-        const subpath = moduleName.replace('@react-native-firebase/app/lib/', '');
-        const newModuleName = `@react-native-firebase/app/dist/module/${subpath}`;
-        return context.resolveRequest(context, newModuleName, platform);
-      }
-
-      // For @react-native-firebase/app/common/*, redirect to dist/module/common/*
-      if (moduleName.startsWith('@react-native-firebase/app/common/')) {
-        const subpath = moduleName.replace('@react-native-firebase/app/common/', '');
-        const newModuleName = `@react-native-firebase/app/dist/module/common/${subpath}`;
-        return context.resolveRequest(context, newModuleName, platform);
-      }
-
-      // Let Metro resolve normally
-      return context.resolveRequest(context, moduleName, platform);
-    },
   },
   transformer: {
     unstable_allowRequireContext: true,

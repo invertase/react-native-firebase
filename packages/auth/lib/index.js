@@ -24,13 +24,13 @@ import {
   isString,
   isValidUrl,
   parseListenerOrObserver,
-} from '@react-native-firebase/app/lib/common';
-import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
+} from '@react-native-firebase/app/dist/module/common';
+import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import {
   FirebaseModule,
   createModuleNamespace,
   getFirebaseRoot,
-} from '@react-native-firebase/app/lib/internal';
+} from '@react-native-firebase/app/dist/module/internal';
 import ConfirmationResult from './ConfirmationResult';
 import PhoneAuthListener from './PhoneAuthListener';
 import PhoneMultiFactorGenerator from './PhoneMultiFactorGenerator';

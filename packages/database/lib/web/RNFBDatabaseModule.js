@@ -18,8 +18,12 @@ import {
   onChildMoved,
   onChildRemoved,
   runTransaction,
-} from '@react-native-firebase/app/lib/internal/web/firebaseDatabase';
-import { guard, getWebError, emitEvent } from '@react-native-firebase/app/lib/internal/web/utils';
+} from '@react-native-firebase/app/dist/module/internal/web/firebaseDatabase';
+import {
+  guard,
+  getWebError,
+  emitEvent,
+} from '@react-native-firebase/app/dist/module/internal/web/utils';
 import { getQueryInstance } from './query';
 
 function rejectWithCodeAndMessage(code, message) {

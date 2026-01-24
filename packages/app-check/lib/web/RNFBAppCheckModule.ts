@@ -7,8 +7,8 @@ import {
   CustomProvider,
   onTokenChanged,
   makeIDBAvailable,
-} from '@react-native-firebase/app/lib/internal/web/firebaseAppCheck';
-import { guard, emitEvent } from '@react-native-firebase/app/lib/internal/web/utils';
+} from '@react-native-firebase/app/dist/module/internal/web/firebaseAppCheck';
+import { guard, emitEvent } from '@react-native-firebase/app/dist/module/internal/web/utils';
 import type { FirebaseAppCheckTypes } from '../types/appcheck';
 
 let appCheckInstances: Record<string, any> = {};

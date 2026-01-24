@@ -24,16 +24,16 @@ import {
   isUndefined,
   isOther,
   parseListenerOrObserver,
-} from '@react-native-firebase/app/lib/common';
+} from '@react-native-firebase/app/dist/module/common';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
-} from '@react-native-firebase/app/lib/internal';
-import type { ModuleConfig } from '@react-native-firebase/app/lib/internal';
+} from '@react-native-firebase/app/dist/module/internal';
+import type { ModuleConfig } from '@react-native-firebase/app/dist/module/internal';
 import { Platform } from 'react-native';
 import ReactNativeFirebaseAppCheckProvider from './ReactNativeFirebaseAppCheckProvider';
-import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
+import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import fallBackModule from './web/RNFBAppCheckModule';
 import { version } from './version';
 import type {

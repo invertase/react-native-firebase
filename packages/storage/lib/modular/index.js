@@ -29,7 +29,7 @@
  */
 
 import { getApp } from '@react-native-firebase/app';
-import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 
 /**
  * Returns a Storage instance for the given app.

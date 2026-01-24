@@ -15,7 +15,7 @@
  *
  */
 
-import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
+import NativeError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
 import FirestoreTransaction from './FirestoreTransaction';
 
 let transactionId = 0;

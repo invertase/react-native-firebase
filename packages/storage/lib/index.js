@@ -20,14 +20,14 @@ import {
   isNumber,
   isString,
   createDeprecationProxy,
-} from '@react-native-firebase/app/lib/common';
+} from '@react-native-firebase/app/dist/module/common';
 
-import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
+import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
-} from '@react-native-firebase/app/lib/internal';
+} from '@react-native-firebase/app/dist/module/internal';
 import StorageReference from './StorageReference';
 import { StringFormat, TaskEvent, TaskState } from './StorageStatics';
 import { getGsUrlParts, getHttpUrlParts, handleStorageEvent } from './utils';

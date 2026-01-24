@@ -15,6 +15,6 @@
  * limitations under the License.
  */
 // @ts-ignore
-import { Logger } from '@react-native-firebase/app/lib/internal/logger';
+import { Logger } from '@react-native-firebase/app/dist/module/internal/logger';
 
 export const logger = new Logger('@firebase/ai');

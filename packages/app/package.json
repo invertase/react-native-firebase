@@ -58,22 +58,22 @@
       "types": "./dist/typescript/lib/index.d.ts",
       "default": "./dist/module/index.js"
     },
-    "./lib/internal": {
+    "./dist/module/internal": {
       "source": "./lib/internal/index.ts",
       "types": "./dist/typescript/lib/internal/index.d.ts",
       "default": "./dist/module/internal/index.js"
     },
-    "./lib/internal/*": {
+    "./dist/module/internal/*": {
       "source": "./lib/internal/*.ts",
       "types": "./dist/typescript/lib/internal/*.d.ts",
       "default": "./dist/module/internal/*.js"
     },
-    "./lib/common": {
+    "./dist/module/common": {
       "source": "./lib/common/index.ts",
       "types": "./dist/typescript/lib/common/index.d.ts",
       "default": "./dist/module/common/index.js"
     },
-    "./lib/common/*": {
+    "./dist/module/common/*": {
       "source": "./lib/common/*.ts",
       "types": "./dist/typescript/lib/common/*.d.ts",
       "default": "./dist/module/common/*.js"

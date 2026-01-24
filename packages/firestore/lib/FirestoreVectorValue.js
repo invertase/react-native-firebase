@@ -15,7 +15,7 @@
  *
  */
 
-import { isArray, isNumber } from '@react-native-firebase/app/lib/common';
+import { isArray, isNumber } from '@react-native-firebase/app/dist/module/common';
 
 export default class FirestoreVectorValue {
   constructor(values) {

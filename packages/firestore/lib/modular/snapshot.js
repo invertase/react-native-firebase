@@ -4,7 +4,7 @@
  * @typedef {import('snapshot').Unsubscribe} Unsubscribe
  */
 
-import { MODULAR_DEPRECATION_ARG } from '../../../app/lib/common';
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 
 /**
  * @param {Query | DocumentReference} reference

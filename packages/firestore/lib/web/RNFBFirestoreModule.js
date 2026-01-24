@@ -20,8 +20,12 @@ import {
   updateDoc,
   writeBatch,
   terminate,
-} from '@react-native-firebase/app/lib/internal/web/firebaseFirestore';
-import { guard, getWebError, emitEvent } from '@react-native-firebase/app/lib/internal/web/utils';
+} from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
+import {
+  guard,
+  getWebError,
+  emitEvent,
+} from '@react-native-firebase/app/dist/module/internal/web/utils';
 import { objectToWriteable, readableToObject, parseDocumentBatches } from './convert';
 import { buildQuery } from './query';
 

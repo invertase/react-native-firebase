@@ -7,7 +7,7 @@ import {
   removeItem,
   setReactNativeAsyncStorageInternal,
   prefix,
-} from '@react-native-firebase/app/lib/internal/asyncStorage';
+} from '@react-native-firebase/app/dist/module/internal/asyncStorage';
 
 describe('firebase.setReactNativeAsyncStorage()', function () {
   beforeEach(async function () {

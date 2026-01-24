@@ -21,20 +21,20 @@ import {
   isNumber,
   isString,
   MODULAR_DEPRECATION_ARG,
-} from '@react-native-firebase/app/lib/common';
+} from '@react-native-firebase/app/dist/module/common';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
-} from '@react-native-firebase/app/lib/internal';
-import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
+} from '@react-native-firebase/app/dist/module/internal';
+import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import DatabaseReference from './DatabaseReference';
 import DatabaseStatics from './DatabaseStatics';
 import DatabaseTransaction from './DatabaseTransaction';
 import version from './version';
 import fallBackModule from './web/RNFBDatabaseModule';
 
-import { createDeprecationProxy } from '@react-native-firebase/app/lib/common';
+import { createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
 
 const namespace = 'database';
 

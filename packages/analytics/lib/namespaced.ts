@@ -24,7 +24,7 @@ import {
   isOneOf,
   isString,
   isUndefined,
-} from '@react-native-firebase/app/lib/common';
+} from '@react-native-firebase/app/dist/module/common';
 
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
@@ -32,11 +32,11 @@ import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
-} from '@react-native-firebase/app/lib/internal';
+} from '@react-native-firebase/app/dist/module/internal';
 
 // Internal types are now available through module declarations in app package
-import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
-import { isBoolean } from '@react-native-firebase/app/lib/common';
+import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
+import { isBoolean } from '@react-native-firebase/app/dist/module/common';
 
 import { validateStruct, validateCompound } from './struct';
 import { RNFBAnalyticsModule } from './web/RNFBAnalyticsModule';

@@ -2,7 +2,7 @@ import { getApp } from '@react-native-firebase/app';
 import DatabaseStatics from '../DatabaseStatics';
 
 const { ServerValue } = DatabaseStatics;
-import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 
 /**
  * @typedef {import("..").FirebaseApp} FirebaseApp

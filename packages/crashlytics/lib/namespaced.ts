@@ -24,13 +24,13 @@ import {
   isString,
   isOther,
   MODULAR_DEPRECATION_ARG,
-} from '@react-native-firebase/app/lib/common';
-import type { ModuleConfig } from '@react-native-firebase/app/lib/internal';
+} from '@react-native-firebase/app/dist/module/common';
+import type { ModuleConfig } from '@react-native-firebase/app/dist/module/internal';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
-} from '@react-native-firebase/app/lib/internal';
+} from '@react-native-firebase/app/dist/module/internal';
 import StackTrace from 'stacktrace-js';
 import {
   createNativeErrorObj,

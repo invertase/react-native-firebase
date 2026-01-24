@@ -16,7 +16,7 @@
  */
 
 import { firebase } from '.';
-import { isError, once } from '@react-native-firebase/app/lib/common';
+import { isError, once } from '@react-native-firebase/app/dist/module/common';
 // @ts-ignore - No declaration file for promise/setimmediate/rejection-tracking
 import tracking from 'promise/setimmediate/rejection-tracking';
 import StackTrace from 'stacktrace-js';
