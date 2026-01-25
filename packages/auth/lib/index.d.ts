@@ -92,6 +92,52 @@ export namespace FirebaseAuthTypes {
   }
 
   /**
+   * An optional full name shared by the user when using Sign In With Apple.
+   *
+   * These fields are populated with values that the user authorized.
+   *
+   * @platform ios iOS
+   */
+  interface AppleRequestResponseFullName {
+    /**
+     * Pre-nominal letters denoting title, salutation, or honorific, e.g. Dr., Mr.
+     */
+    namePrefix: string | null;
+
+    /**
+     * Name bestowed upon an individual by one's parents, e.g. Johnathan
+     */
+    givenName: string | null;
+
+    /**
+     * Secondary given name chosen to differentiate those with the same first name, e.g. Maple
+     */
+    middleName: string | null;
+
+    /**
+     * Name passed from one generation to another to indicate lineage, e.g. Appleseed
+     */
+    familyName: string | null;
+
+    /**
+     * Post-nominal letters denoting degree, accreditation, or other honor, e.g. Esq., Jr., Ph.D.
+     */
+    nameSuffix: string | null;
+
+    /**
+     * Name substituted for the purposes of familiarity, e.g. "Johnny"
+     */
+    nickname: string | null;
+  }
+
+  export interface AppleAuthCredential {
+    providerId: string;
+    token: string;
+    secret: string;
+    fullName: AppleRequestResponseFullName;
+  }
+
+  /**
    * Interface that represents an auth provider. Implemented by other providers.
    */
   export interface AuthProvider {
@@ -234,6 +280,31 @@ export namespace FirebaseAuthTypes {
      * @param emailLink Sign-in email link.
      */
     credentialWithLink: (email: string, emailLink: string) => AuthCredential;
+  }
+
+  /**
+   * Interface that represents an Apple auth provider.
+   */
+  export interface AppleAuthProvider extends AuthProvider {
+    /**
+     * The provider ID of the provider.
+     *
+     * @platform ios iOS
+     */
+    PROVIDER_ID: string;
+    /**
+     * Creates a new `AuthCredential`.
+     *
+     * @returns {@link auth.AuthCredential}.
+     * @param token A provider token.
+     * @param secret A provider secret.
+     * @param fullName An `AppleRequestResponseFullName` object
+     */
+    credential: (
+      token: string | null,
+      secret: string,
+      fullName?: AppleRequestResponseFullName | null,
+    ) => AuthCredential;
   }
 
   /**
@@ -402,7 +473,7 @@ export namespace FirebaseAuthTypes {
      * firebase.auth.AppleAuthProvider;
      * ```
      */
-    AppleAuthProvider: AuthProvider;
+    AppleAuthProvider: AppleAuthProvider;
     /**
      * Github auth provider implementation.
      *
@@ -1966,6 +2037,36 @@ export namespace FirebaseAuthTypes {
      * @param credential A generated `AuthCredential`, for example from social auth.
      */
     signInWithCredential(credential: AuthCredential): Promise<UserCredential>;
+
+    /**
+     * Signs the user in with a generated Apple-specific credential.
+     *
+     * @platform ios iOS
+     *
+     * #### Example
+     *
+     * ```js
+     * // Generate an Apple credential
+     * const appleCredential = (
+     *   auth.AppleAuthProvider.credential(identityToken, nonce, fullName)
+     * );
+     * // Sign the user in with the credential
+     * const userCredential = await firebase.auth().signInWithAppleCredential(appleCredential);
+     * ```
+     *
+     * @error auth/account-exists-with-different-credential Thrown if there already exists an account with the email address asserted by the credential.
+     * @error auth/invalid-credential Thrown if the credential is malformed or has expired.
+     * @error auth/operation-not-allowed Thrown if the type of account corresponding to the credential is not enabled. Enable the account type in the Firebase Console, under the Auth tab.
+     * @error auth/user-disabled Thrown if the user corresponding to the given credential has been disabled.
+     * @error auth/user-not-found Thrown if signing in with a credential from firebase.auth.EmailAuthProvider.credential and there is no user corresponding to the given email.
+     * @error auth/wrong-password Thrown if signing in with a credential from firebase.auth.EmailAuthProvider.credential and the password is invalid for the given email, or if the account corresponding to the email does not have a password set.
+     * @error auth/invalid-verification-code Thrown if the credential is a firebase.auth.PhoneAuthProvider.credential and the verification code of the credential is not valid.
+     * @error auth/invalid-verification-id Thrown if the credential is a firebase.auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid.
+     * @param credential A generated `AuthCredential`, for example from social auth.
+     */
+    signInWithAppleCredential(
+      credential: AuthCredential | AppleAuthCredential,
+    ): Promise<UserCredential>;
 
     /**
      * Signs the user in with a specified provider. This is a web-compatible API along with signInWithRedirect.
