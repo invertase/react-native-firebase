@@ -11,7 +11,7 @@ import {
   endBefore,
   and,
   or,
-} from '@react-native-firebase/app/lib/internal/web/firebaseFirestore';
+} from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
 import { parseTypeMap, readableToArray } from './convert';
 
 export function buildQuery(queryInstance, filters, orders, options) {

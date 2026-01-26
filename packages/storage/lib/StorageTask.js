@@ -15,7 +15,7 @@
  *
  */
 
-import { isFunction, isNull, isObject } from '@react-native-firebase/app/lib/common';
+import { isFunction, isNull, isObject } from '@react-native-firebase/app/dist/module/common';
 import { TaskEvent } from './StorageStatics';
 
 let TASK_ID = 0;

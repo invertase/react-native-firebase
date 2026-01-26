@@ -15,7 +15,7 @@
  *
  */
 
-import { hasOwnProperty } from '@react-native-firebase/app/lib/common';
+import { hasOwnProperty } from '@react-native-firebase/app/dist/module/common';
 
 const MAP = {
   nan: 0,

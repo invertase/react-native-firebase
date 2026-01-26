@@ -1,11 +1,10 @@
 {
   "name": "@react-native-firebase/crashlytics",
-  "version": "23.8.3",
+  "version": "23.8.4",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Firebase Crashlytics is a lightweight, realtime crash reporter that helps you track, prioritize, and fix stability issues that erode your app quality. React Native Firebase provides automatic crash reporting for both native and JavaScript errors, including unhandled promise rejections.",
-  "main": "./dist/commonjs/index.js",
-  "module": "./dist/module/index.js",
-  "types": "./dist/typescript/commonjs/lib/index.d.ts",
+  "main": "./dist/module/index.js",
+  "types": "./dist/typescript/lib/index.d.ts",
   "scripts": {
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
@@ -31,7 +30,7 @@
     "crashlytics"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "23.8.3",
+    "@react-native-firebase/app": "23.8.4",
     "expo": ">=47.0.0"
   },
   "dependencies": {
@@ -54,14 +53,8 @@
   "exports": {
     ".": {
       "source": "./lib/index.ts",
-      "import": {
-        "types": "./dist/typescript/module/lib/index.d.ts",
-        "default": "./dist/module/index.js"
-      },
-      "require": {
-        "types": "./dist/typescript/commonjs/lib/index.d.ts",
-        "default": "./dist/commonjs/index.js"
-      }
+      "types": "./dist/typescript/lib/index.d.ts",
+      "default": "./dist/module/index.js"
     },
     "./app.plugin.js": "./app.plugin.js",
     "./package.json": "./package.json"
@@ -72,12 +65,6 @@
     "targets": [
       [
         "module",
-        {
-          "esm": true
-        }
-      ],
-      [
-        "commonjs",
         {
           "esm": true
         }

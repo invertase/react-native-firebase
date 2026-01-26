@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.8.4](https://github.com/invertase/react-native-firebase/compare/v23.8.3...v23.8.4) (2026-01-24)
+
+### Bug Fixes
+
+- **android:** adopt firebase-android-sdk 34.7.0 ([c11f162](https://github.com/invertase/react-native-firebase/commit/c11f162ca5a3b37ac229812a0f7a64001a2e0c98))
+- **app:** tolerate missing `userInfo` in NativeError ([9239445](https://github.com/invertase/react-native-firebase/commit/9239445626c49fec1242f4004a7f065415dd9f91))
+- internal cross-module references to transpiled code must be dist not src ([b03db0a](https://github.com/invertase/react-native-firebase/commit/b03db0aa3fb748ee039826ccd9c7e73bc3c78f6f))
+- **other:** adopt firebase-js-sdk 12.8.0 ([4b8b7eb](https://github.com/invertase/react-native-firebase/commit/4b8b7eb311b41638f587fc458dd598ae60f9540a))
+- transpile typescript to module only, not module and commonjs ([c1ba2a8](https://github.com/invertase/react-native-firebase/commit/c1ba2a8ae84b564679dec82253cea728b2a7aabe))
+
 ## [23.8.3](https://github.com/invertase/react-native-firebase/compare/v23.8.2...v23.8.3) (2026-01-16)
 
 ### Bug Fixes

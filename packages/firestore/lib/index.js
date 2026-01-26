@@ -24,13 +24,13 @@ import {
   isUndefined,
   isAndroid,
   createDeprecationProxy,
-} from '@react-native-firebase/app/lib/common';
-import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
+} from '@react-native-firebase/app/dist/module/common';
+import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
-} from '@react-native-firebase/app/lib/internal';
+} from '@react-native-firebase/app/dist/module/internal';
 import FirestoreCollectionReference from './FirestoreCollectionReference';
 import FirestoreDocumentReference from './FirestoreDocumentReference';
 import FirestorePath from './FirestorePath';

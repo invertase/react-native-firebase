@@ -1,11 +1,10 @@
 {
   "name": "@react-native-firebase/ai",
-  "version": "23.8.3",
+  "version": "23.8.4",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Firebase AI is a fully-managed, unified AI development platform for building and using generative AI",
-  "main": "./dist/commonjs/index.js",
-  "module": "./dist/module/index.js",
-  "types": "./dist/typescript/module/lib/index.d.ts",
+  "main": "./dist/module/index.js",
+  "types": "./dist/typescript/lib/index.d.ts",
   "scripts": {
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf dist",
@@ -27,15 +26,15 @@
     "generative-ai"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "23.8.3"
+    "@react-native-firebase/app": "23.8.4"
   },
   "publishConfig": {
     "access": "public",
     "provenance": true
   },
   "devDependencies": {
-    "@react-native-firebase/app-check": "23.8.3",
-    "@react-native-firebase/auth": "23.8.3",
+    "@react-native-firebase/app-check": "23.8.4",
+    "@react-native-firebase/auth": "23.8.4",
     "@types/text-encoding": "^0.0.40",
     "react-native-builder-bob": "^0.40.17",
     "typescript": "^5.9.3"
@@ -43,14 +42,8 @@
   "source": "./lib/index.ts",
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/typescript/module/lib/index.d.ts",
-        "default": "./dist/module/index.js"
-      },
-      "require": {
-        "types": "./dist/typescript/commonjs/lib/index.d.ts",
-        "default": "./dist/commonjs/index.js"
-      }
+      "types": "./dist/typescript/lib/index.d.ts",
+      "default": "./dist/module/index.js"
     }
   },
   "files": [
@@ -64,12 +57,6 @@
     "source": "lib",
     "output": "dist",
     "targets": [
-      [
-        "commonjs",
-        {
-          "esm": true
-        }
-      ],
       [
         "module",
         {

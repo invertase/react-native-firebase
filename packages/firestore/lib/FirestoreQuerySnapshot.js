@@ -21,7 +21,7 @@ import {
   isObject,
   isUndefined,
   createDeprecationProxy,
-} from '@react-native-firebase/app/lib/common';
+} from '@react-native-firebase/app/dist/module/common';
 import FirestoreDocumentChange from './FirestoreDocumentChange';
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 import FirestoreSnapshotMetadata from './FirestoreSnapshotMetadata';

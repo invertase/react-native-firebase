@@ -1,7 +1,7 @@
 import { jest, afterAll, beforeAll, describe, expect, it, xit, beforeEach } from '@jest/globals';
 
 // @ts-ignore test
-import FirebaseModule from '@react-native-firebase/app/lib/internal/FirebaseModule';
+import FirebaseModule from '@react-native-firebase/app/dist/module/internal/FirebaseModule';
 
 import analytics, {
   firebase,
@@ -63,9 +63,9 @@ import analytics, {
 } from '../lib';
 
 // @ts-ignore test
-import { createCheckV9Deprecation } from '@react-native-firebase/app/lib/common/unitTestUtils';
+import { createCheckV9Deprecation } from '@react-native-firebase/app/dist/module/common/unitTestUtils';
 // @ts-ignore test
-import type { CheckV9DeprecationFunction } from '@react-native-firebase/app/lib/common/unitTestUtils';
+import type { CheckV9DeprecationFunction } from '@react-native-firebase/app/dist/module/common/unitTestUtils';
 
 describe('Analytics', function () {
   describe('namespace', function () {

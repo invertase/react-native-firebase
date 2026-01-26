@@ -22,18 +22,18 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@react-native-firebase/app/lib/common/*": ["../app/dist/typescript/commonjs/lib/common/*"],
-      "@react-native-firebase/app/lib/common": ["../app/dist/typescript/commonjs/lib/common"],
+      "@react-native-firebase/app/lib/common/*": ["../app/dist/typescript/lib/common/*"],
+      "@react-native-firebase/app/lib/common": ["../app/dist/typescript/lib/common"],
       "@react-native-firebase/app/lib/internal/web/*": [
-        "../app/dist/typescript/commonjs/lib/internal/web/*"
+        "../app/dist/typescript/lib/internal/web/*"
       ],
       "@react-native-firebase/app/lib/internal/*": [
-        "../app/dist/typescript/commonjs/lib/internal/*"
+        "../app/dist/typescript/lib/internal/*"
       ],
-      "@react-native-firebase/app/lib/internal": ["../app/dist/typescript/commonjs/lib/internal"],
-      "@react-native-firebase/app": ["../app/dist/typescript/commonjs/lib"],
+      "@react-native-firebase/app/lib/internal": ["../app/dist/typescript/lib/internal"],
+      "@react-native-firebase/app": ["../app/dist/typescript/lib"],
       "@react-native-firebase/auth": ["../auth/lib"],
-      "@react-native-firebase/app-check": ["../app-check/dist/typescript/commonjs/lib"]
+      "@react-native-firebase/app-check": ["../app-check/dist/typescript/lib"]
     }
   },
   "include": ["lib/**/*"],

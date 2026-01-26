@@ -21,8 +21,8 @@ import {
   isUndefined,
   createDeprecationProxy,
   filterModularArgument,
-} from '@react-native-firebase/app/lib/common';
-import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
+} from '@react-native-firebase/app/dist/module/common';
+import NativeError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
 import { parseSetOptions, parseSnapshotArgs, parseUpdateArgs } from './utils';
 import { buildNativeMap, provideDocumentReferenceClass } from './utils/serialize';
 

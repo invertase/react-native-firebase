@@ -15,7 +15,7 @@
  * @typedef {import('./query').QueryOrderByConstraint} QueryOrderByConstraint
  * @typedef {import('./query').QueryStartAtConstraint} QueryStartAtConstraint
  */
-import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 import { _Filter, Filter } from '../FirestoreFilter';
 
 /**

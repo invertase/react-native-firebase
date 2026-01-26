@@ -15,7 +15,7 @@
  *
  */
 
-import { hasOwnProperty, isString } from '@react-native-firebase/app/lib/common';
+import { hasOwnProperty, isString } from '@react-native-firebase/app/dist/module/common';
 
 let id = 0;
 

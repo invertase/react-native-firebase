@@ -13,7 +13,7 @@
  */
 
 import { getApp, setLogLevel as appSetLogLevel } from '@react-native-firebase/app';
-import { isObject } from '@react-native-firebase/app/lib/common';
+import { isObject, MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 import {
   FirestoreAggregateQuerySnapshot,
   AggregateField,
@@ -21,7 +21,6 @@ import {
   fieldPathFromArgument,
 } from '../FirestoreAggregate';
 import FirestoreQuery from '../FirestoreQuery';
-import { MODULAR_DEPRECATION_ARG } from '../../../app/lib/common';
 
 /**
  * @param {FirebaseApp?} app

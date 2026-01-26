@@ -11,9 +11,13 @@ import {
   updateMetadata,
   uploadBytesResumable,
   ref as firebaseStorageRef,
-} from '@react-native-firebase/app/lib/internal/web/firebaseStorage';
-import { guard, getWebError, emitEvent } from '@react-native-firebase/app/lib/internal/web/utils';
-import { Base64 } from '@react-native-firebase/app/lib/common';
+} from '@react-native-firebase/app/dist/module/internal/web/firebaseStorage';
+import {
+  guard,
+  getWebError,
+  emitEvent,
+} from '@react-native-firebase/app/dist/module/internal/web/utils';
+import { Base64 } from '@react-native-firebase/app/dist/module/common';
 
 function rejectWithCodeAndMessage(code, message) {
   return Promise.reject(

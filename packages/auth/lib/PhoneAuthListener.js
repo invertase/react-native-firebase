@@ -15,8 +15,13 @@
  *
  */
 
-import { isAndroid, isFunction, isIOS, promiseDefer } from '@react-native-firebase/app/lib/common';
-import NativeFirebaseError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
+import {
+  isAndroid,
+  isFunction,
+  isIOS,
+  promiseDefer,
+} from '@react-native-firebase/app/dist/module/common';
+import NativeFirebaseError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
 
 let REQUEST_ID = 0;
 

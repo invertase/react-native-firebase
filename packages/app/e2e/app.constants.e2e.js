@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import { getAppModule } from '@react-native-firebase/app/lib/internal/registry/nativeModule';
+import { getAppModule } from '@react-native-firebase/app/dist/module/internal/registry/nativeModule';
 
 describe('App -> NativeModules -> Constants', function () {
   describe('.apps', function () {
