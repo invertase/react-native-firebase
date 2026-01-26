@@ -14,14 +14,62 @@ interface WrapperData {
   data: unknown;
 }
 
-// Map to store active streaming subscriptions by listenerId
-// Subscription type from RxJS has an unsubscribe() method
-interface Subscription {
-  unsubscribe(): void;
-}
+/**
+ * Helper function to handle streaming callable execution.
+ * @param callable - The callable instance to stream from
+ * @param appName - The app name for event emission
+ * @param callableData - The data to pass to the callable
+ * @param listenerId - The listener ID for this stream
+ */
+async function executeCallableStream(
+  callable: any,
+  appName: string,
+  callableData: unknown,
+  listenerId: number,
+): Promise<void> {
+  try {
+    const callableStream = callableData ? callable.stream(callableData) : callable.stream();
+    const { stream } = await callableStream;
 
-const functionsStreamingListeners = new Map<number, Subscription | null>();
-// null value in map indicates listener was cancelled before subscription was created
+    for await (const chunk of stream) {
+      emitEvent('functions_streaming_event', {
+        appName,
+        listenerId,
+        body: {
+          data: chunk,
+          error: null,
+          done: false,
+        },
+      });
+    }
+
+    // Emit final result with done: true
+    emitEvent('functions_streaming_event', {
+      appName,
+      listenerId,
+      body: {
+        data: null,
+        error: null,
+        done: true,
+      },
+    });
+  } catch (error: any) {
+    const { code, message, details } = error;
+    emitEvent('functions_streaming_event', {
+      appName,
+      listenerId,
+      body: {
+        data: null,
+        error: {
+          code: code ? code.replace('functions/', '') : 'unknown',
+          message: message,
+          details: details,
+        },
+        done: true,
+      },
+    });
+  }
+}
 
 /**
  * This is a 'NativeModule' for the web platform.
@@ -176,81 +224,37 @@ export default {
     options: HttpsCallableOptions,
     listenerId: number,
   ): Promise<void> {
-    try {
-      const app = getApp(appName);
-      let functionsInstance: FunctionsWebInternal;
-      if (regionOrCustomDomain) {
-        functionsInstance = getFunctions(app, regionOrCustomDomain);
-        // Hack to work around custom domain and region not being set on the instance.
-        if (regionOrCustomDomain.startsWith('http')) {
-          functionsInstance.customDomain = regionOrCustomDomain;
-          functionsInstance.region = 'us-central1';
-        } else {
-          functionsInstance.region = regionOrCustomDomain;
-          functionsInstance.customDomain = null;
-        }
-      } else {
-        functionsInstance = getFunctions(app);
+    const app = getApp(appName);
+    let functionsInstance: FunctionsWebInternal;
+    if (regionOrCustomDomain) {
+      functionsInstance = getFunctions(app, regionOrCustomDomain);
+      // Hack to work around custom domain and region not being set on the instance.
+      if (regionOrCustomDomain.startsWith('http')) {
+        functionsInstance.customDomain = regionOrCustomDomain;
         functionsInstance.region = 'us-central1';
+      } else {
+        functionsInstance.region = regionOrCustomDomain;
         functionsInstance.customDomain = null;
       }
-      if (host) {
-        connectFunctionsEmulator(functionsInstance, host, port);
-        // Hack to work around emulator origin not being set on the instance.
-        functionsInstance.emulatorOrigin = `http://${host}:${port}`;
-      }
-
-      let callable;
-      if (Object.keys(options).length) {
-        callable = httpsCallable(functionsInstance, name, options);
-      } else {
-        callable = httpsCallable(functionsInstance, name);
-      }
-
-      const callableData = wrapper.data;
-
-      callable = callableData ? callable.stream(callableData) : callable.stream();
-
-      const { stream } = await callable;
-
-      for await (const chunk of stream) {
-        emitEvent('functions_streaming_event', {
-          appName,
-          listenerId,
-          body: {
-            data: chunk,
-            error: null,
-            done: false,
-          },
-        });
-      }
-
-      // Emit final result with done: true
-      emitEvent('functions_streaming_event', {
-        appName,
-        listenerId,
-        body: {
-          data: null,
-          error: null,
-          done: true,
-        },
-      });
-    } catch (error: any) {
-      const { code, message, details } = error;
-      emitEvent('functions_streaming_event', {
-        appName,
-        listenerId,
-        body: {
-          data: null,
-          error: {
-            code: code ? code.replace('functions/', '') : 'unknown',
-            message: message,
-            details: details,
-          },
-          done: true,
-        },
-      });
+    } else {
+      functionsInstance = getFunctions(app);
+      functionsInstance.region = 'us-central1';
+      functionsInstance.customDomain = null;
     }
+    if (host) {
+      connectFunctionsEmulator(functionsInstance, host, port);
+      // Hack to work around emulator origin not being set on the instance.
+      functionsInstance.emulatorOrigin = `http://${host}:${port}`;
+    }
+
+    let callable;
+    if (Object.keys(options).length) {
+      callable = httpsCallable(functionsInstance, name, options);
+    } else {
+      callable = httpsCallable(functionsInstance, name);
+    }
+
+    await executeCallableStream(callable, appName, wrapper.data, listenerId);
   },
 
   /**
@@ -264,7 +268,7 @@ export default {
    * @param options - The options to use for the functions callable.
    * @param listenerId - The listener ID for this stream.
    */
-  httpsCallableStreamFromUrl(
+  async httpsCallableStreamFromUrl(
     appName: string,
     regionOrCustomDomain: string | null,
     host: string | null,
@@ -273,181 +277,39 @@ export default {
     wrapper: WrapperData,
     options: HttpsCallableOptions,
     listenerId: number,
-  ): void {
-    try {
-      const app = getApp(appName);
-      let functionsInstance: FunctionsWebInternal;
-      if (regionOrCustomDomain) {
-        functionsInstance = getFunctions(app, regionOrCustomDomain);
-        // Hack to work around custom domain and region not being set on the instance.
-        if (regionOrCustomDomain.startsWith('http')) {
-          functionsInstance.customDomain = regionOrCustomDomain;
-        } else {
-          functionsInstance.region = regionOrCustomDomain;
-        }
-      } else {
-        functionsInstance = getFunctions(app);
+  ): Promise<void> {
+    const app = getApp(appName);
+    let functionsInstance: FunctionsWebInternal;
+    if (regionOrCustomDomain) {
+      functionsInstance = getFunctions(app, regionOrCustomDomain);
+      // Hack to work around custom domain and region not being set on the instance.
+      if (regionOrCustomDomain.startsWith('http')) {
+        functionsInstance.customDomain = regionOrCustomDomain;
         functionsInstance.region = 'us-central1';
+      } else {
+        functionsInstance.region = regionOrCustomDomain;
         functionsInstance.customDomain = null;
       }
-      if (host) {
-        connectFunctionsEmulator(functionsInstance, host, port);
-        // Hack to work around emulator origin not being set on the instance.
-        functionsInstance.emulatorOrigin = `http://${host}:${port}`;
-      }
-
-      const callable = httpsCallableFromURL(functionsInstance, url, options);
-      const data = wrapper['data'] ?? null;
-
-      // Defer streaming to next tick to ensure event listeners are set up
-      setTimeout(() => {
-        try {
-          // Check if listener was cancelled before subscription creation (null marker)
-          // or if subscription already exists
-          const existing = functionsStreamingListeners.get(listenerId);
-          if (existing === null) {
-            // Was cancelled, remove the marker and don't create subscription
-            functionsStreamingListeners.delete(listenerId);
-            return;
-          }
-          if (existing !== undefined) {
-            // Subscription already exists
-            return;
-          }
-
-          // Call the streaming version
-          const callableWithStream = callable as any;
-
-          if (typeof callableWithStream.stream === 'function') {
-            const subscription = callableWithStream.stream(data).subscribe({
-              next: (chunk: any) => {
-                // Check if still active before emitting
-                if (functionsStreamingListeners.has(listenerId)) {
-                  emitEvent('functions_streaming_event', {
-                    eventName: 'functions_streaming_event',
-                    listenerId,
-                    body: {
-                      data: chunk.data ?? null,
-                      error: null,
-                      done: false,
-                    },
-                  });
-                }
-              },
-              error: (error: any) => {
-                const { code, message, details } = error;
-                emitEvent('functions_streaming_event', {
-                  eventName: 'functions_streaming_event',
-                  listenerId,
-                  body: {
-                    data: null,
-                    error: {
-                      code: code ? code.replace('functions/', '') : 'unknown',
-                      message: message || error.toString(),
-                      details,
-                    },
-                    done: true,
-                  },
-                });
-                // Remove listener on error
-                functionsStreamingListeners.delete(listenerId);
-              },
-              complete: () => {
-                emitEvent('functions_streaming_event', {
-                  eventName: 'functions_streaming_event',
-                  listenerId,
-                  body: {
-                    data: null,
-                    error: null,
-                    done: true,
-                  },
-                });
-                // Remove listener on completion
-                functionsStreamingListeners.delete(listenerId);
-              },
-            });
-
-            // Check if was cancelled during subscription creation (before storing)
-            // If removeFunctionsStreaming was called, it would have set it to null
-            const checkBeforeStorage = functionsStreamingListeners.get(listenerId);
-            if (checkBeforeStorage === null) {
-              // Was cancelled during subscription creation, unsubscribe immediately
-              subscription.unsubscribe();
-              functionsStreamingListeners.delete(listenerId);
-              return;
-            }
-
-            // Store subscription in the listeners map
-            functionsStreamingListeners.set(listenerId, subscription);
-          } else {
-            // Fallback: streaming not supported, emit error
-            emitEvent('functions_streaming_event', {
-              eventName: 'functions_streaming_event',
-              listenerId,
-              body: {
-                data: null,
-                error: {
-                  code: 'unsupported',
-                  message: 'Streaming is not supported in this Firebase SDK version',
-                  details: null,
-                },
-                done: true,
-              },
-            });
-          }
-        } catch (streamError: any) {
-          // Error during streaming setup
-          const { code, message, details } = streamError;
-          emitEvent('functions_streaming_event', {
-            eventName: 'functions_streaming_event',
-            listenerId,
-            body: {
-              data: null,
-              error: {
-                code: code ? code.replace('functions/', '') : 'unknown',
-                message: message || streamError.toString(),
-                details,
-              },
-              done: true,
-            },
-          });
-        }
-      }, 0); // Execute on next tick
-    } catch (error: any) {
-      // Synchronous error during setup - emit immediately
-      const { code, message, details } = error;
-      emitEvent('functions_streaming_event', {
-        eventName: 'functions_streaming_event',
-        listenerId,
-        body: {
-          data: null,
-          error: {
-            code: code ? code.replace('functions/', '') : 'unknown',
-            message: message || error.toString(),
-            details,
-          },
-          done: true,
-        },
-      });
+    } else {
+      functionsInstance = getFunctions(app);
+      functionsInstance.region = 'us-central1';
+      functionsInstance.customDomain = null;
     }
+    if (host) {
+      connectFunctionsEmulator(functionsInstance, host, port);
+      // Hack to work around emulator origin not being set on the instance.
+      functionsInstance.emulatorOrigin = `http://${host}:${port}`;
+    }
+
+    const callable = httpsCallableFromURL(functionsInstance, url, options);
+    await executeCallableStream(callable, appName, wrapper.data, listenerId);
   },
 
   /**
    * Removes a streaming listener.
+   * Note: With the async/await stream implementation, cancellation is not currently supported.
+   * This method is kept for API compatibility.
    * @param listenerId - The listener ID to remove.
    */
-  removeFunctionsStreaming(listenerId: number): void {
-    const subscription = functionsStreamingListeners.get(listenerId);
-    if (subscription) {
-      // Unsubscribe from the RxJS stream
-      subscription.unsubscribe();
-      // Remove from the listeners map
-      functionsStreamingListeners.delete(listenerId);
-    } else if (subscription === undefined) {
-      // Subscription hasn't been created yet (setTimeout hasn't executed)
-      // Mark as cancelled with null marker so it won't be created
-      functionsStreamingListeners.set(listenerId, null);
-    }
-    // If subscription === null, it was already cancelled, do nothing
-  },
+  removeFunctionsStreaming(listenerId: number): void {},
 };
