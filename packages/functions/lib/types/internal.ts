@@ -15,6 +15,8 @@
  *
  */
 
+import type { Functions } from 'firebase/functions';
+
 export interface FunctionsStreamingEventBody {
   data?: unknown;
   done?: boolean;
@@ -29,4 +31,13 @@ export interface FunctionsStreamingEvent {
   eventName: string;
   listenerId: number;
   body: FunctionsStreamingEventBody;
+}
+
+/**
+ * Internal type for web Functions instance with additional internal properties.
+ * Extends the Firebase Functions type to include properties that may be set
+ * internally but are not part of the public API.
+ */
+export interface FunctionsWebInternal extends Functions {
+  emulatorOrigin?: string;
 }

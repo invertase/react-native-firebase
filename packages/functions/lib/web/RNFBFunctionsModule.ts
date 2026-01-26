@@ -8,6 +8,7 @@ import {
 import { emitEvent } from '@react-native-firebase/app/dist/module/internal/web/utils';
 import type { HttpsCallableOptions } from '../index';
 import type { NativeError } from '../HttpsError';
+import type { FunctionsWebInternal } from '../types/internal';
 
 interface WrapperData {
   data?: any;
@@ -51,7 +52,7 @@ export default {
   ): Promise<any> {
     try {
       const app = getApp(appName);
-      let functionsInstance;
+      let functionsInstance: FunctionsWebInternal;
       if (regionOrCustomDomain) {
         functionsInstance = getFunctions(app, regionOrCustomDomain);
         // Hack to work around custom domain and region not being set on the instance.
@@ -70,7 +71,7 @@ export default {
       if (host) {
         connectFunctionsEmulator(functionsInstance, host, port);
         // Hack to work around emulator origin not being set on the instance.
-        (functionsInstance as any).emulatorOrigin = `http://${host}:${port}`;
+        functionsInstance.emulatorOrigin = `http://${host}:${port}`;
       }
       let callable;
       if (Object.keys(options).length) {
@@ -118,7 +119,7 @@ export default {
   ): Promise<any> {
     try {
       const app = getApp(appName);
-      let functionsInstance;
+      let functionsInstance: FunctionsWebInternal;
       if (regionOrCustomDomain) {
         functionsInstance = getFunctions(app, regionOrCustomDomain);
         // Hack to work around custom domain and region not being set on the instance.
@@ -135,7 +136,7 @@ export default {
       if (host) {
         connectFunctionsEmulator(functionsInstance, host, port);
         // Hack to work around emulator origin not being set on the instance.
-        (functionsInstance as any).emulatorOrigin = `http://${host}:${port}`;
+        functionsInstance.emulatorOrigin = `http://${host}:${port}`;
       }
       const callable = httpsCallableFromURL(functionsInstance, url, options);
       const result = await callable(wrapper['data']);
@@ -178,7 +179,7 @@ export default {
     // Wrap entire function to catch any synchronous errors
     try {
       const app = getApp(appName);
-      let functionsInstance;
+      let functionsInstance: FunctionsWebInternal;
       if (regionOrCustomDomain) {
         functionsInstance = getFunctions(app, regionOrCustomDomain);
         // Hack to work around custom domain and region not being set on the instance.
@@ -366,7 +367,7 @@ export default {
   ): void {
     try {
       const app = getApp(appName);
-      let functionsInstance;
+      let functionsInstance: FunctionsWebInternal;
       if (regionOrCustomDomain) {
         functionsInstance = getFunctions(app, regionOrCustomDomain);
         // Hack to work around custom domain and region not being set on the instance.
