@@ -11,7 +11,7 @@ import type { NativeError } from '../HttpsError';
 import type { FunctionsWebInternal } from '../types/internal';
 
 interface WrapperData {
-  data?: any;
+  data: unknown;
 }
 
 // Map to store active streaming subscriptions by listenerId
@@ -166,7 +166,7 @@ export default {
    * @param options - The options to use for the functions callable.
    * @param listenerId - The listener ID for this stream.
    */
-  httpsCallableStream(
+  async httpsCallableStream(
     appName: string,
     regionOrCustomDomain: string | null,
     host: string | null,
@@ -175,8 +175,7 @@ export default {
     wrapper: WrapperData,
     options: HttpsCallableOptions,
     listenerId: number,
-  ): void {
-    // Wrap entire function to catch any synchronous errors
+  ): Promise<void> {
     try {
       const app = getApp(appName);
       let functionsInstance: FunctionsWebInternal;
@@ -208,135 +207,45 @@ export default {
         callable = httpsCallable(functionsInstance, name);
       }
 
-      // if data is undefined use null
-      const data = wrapper['data'] ?? null;
+      const callableData = wrapper.data;
 
-      // Defer streaming to next tick to ensure event listeners are set up
-      setTimeout(() => {
-        try {
-          // Check if listener was cancelled before subscription creation (null marker)
-          // or if subscription already exists
-          const existing = functionsStreamingListeners.get(listenerId);
-          if (existing === null) {
-            // Was cancelled, remove the marker and don't create subscription
-            functionsStreamingListeners.delete(listenerId);
-            return;
-          }
-          if (existing !== undefined) {
-            // Subscription already exists
-            return;
-          }
+      callable = callableData ? callable.stream(callableData) : callable.stream();
 
-          // Call the streaming version
-          const callableWithStream = callable as any;
+      const { stream } = await callable;
 
-          if (typeof callableWithStream.stream === 'function') {
-            const subscription = callableWithStream.stream(data).subscribe({
-              next: (chunk: any) => {
-                // Check if still active before emitting
-                if (functionsStreamingListeners.has(listenerId)) {
-                  emitEvent('functions_streaming_event', {
-                    eventName: 'functions_streaming_event',
-                    listenerId,
-                    body: {
-                      data: chunk.data ?? null,
-                      error: null,
-                      done: false,
-                    },
-                  });
-                }
-              },
-              error: (error: any) => {
-                const { code, message, details } = error;
-                emitEvent('functions_streaming_event', {
-                  eventName: 'functions_streaming_event',
-                  listenerId,
-                  body: {
-                    data: null,
-                    error: {
-                      code: code ? code.replace('functions/', '') : 'unknown',
-                      message: message || error.toString(),
-                      details,
-                    },
-                    done: true,
-                  },
-                });
-                // Remove listener on error
-                functionsStreamingListeners.delete(listenerId);
-              },
-              complete: () => {
-                emitEvent('functions_streaming_event', {
-                  eventName: 'functions_streaming_event',
-                  listenerId,
-                  body: {
-                    data: null,
-                    error: null,
-                    done: true,
-                  },
-                });
-                // Remove listener on completion
-                functionsStreamingListeners.delete(listenerId);
-              },
-            });
+      for await (const chunk of stream) {
+        emitEvent('functions_streaming_event', {
+          appName,
+          listenerId,
+          body: {
+            data: chunk,
+            error: null,
+            done: false,
+          },
+        });
+      }
 
-            // Check if was cancelled during subscription creation (before storing)
-            // If removeFunctionsStreaming was called, it would have set it to null
-            const checkBeforeStorage = functionsStreamingListeners.get(listenerId);
-            if (checkBeforeStorage === null) {
-              // Was cancelled during subscription creation, unsubscribe immediately
-              subscription.unsubscribe();
-              functionsStreamingListeners.delete(listenerId);
-              return;
-            }
-
-            // Store subscription in the listeners map
-            functionsStreamingListeners.set(listenerId, subscription);
-          } else {
-            // Fallback: streaming not supported, emit error
-            emitEvent('functions_streaming_event', {
-              eventName: 'functions_streaming_event',
-              listenerId,
-              body: {
-                data: null,
-                error: {
-                  code: 'unsupported',
-                  message: 'Streaming is not supported in this Firebase SDK version',
-                  details: null,
-                },
-                done: true,
-              },
-            });
-          }
-        } catch (streamError: any) {
-          // Error during streaming setup
-          const { code, message, details } = streamError;
-          emitEvent('functions_streaming_event', {
-            eventName: 'functions_streaming_event',
-            listenerId,
-            body: {
-              data: null,
-              error: {
-                code: code ? code.replace('functions/', '') : 'unknown',
-                message: message || streamError.toString(),
-                details,
-              },
-              done: true,
-            },
-          });
-        }
-      }, 0); // Execute on next tick
+      // Emit final result with done: true
+      emitEvent('functions_streaming_event', {
+        appName,
+        listenerId,
+        body: {
+          data: null,
+          error: null,
+          done: true,
+        },
+      });
     } catch (error: any) {
-      // Synchronous error during setup - emit immediately
       const { code, message, details } = error;
       emitEvent('functions_streaming_event', {
-        eventName: 'functions_streaming_event',
+        appName,
         listenerId,
         body: {
           data: null,
           error: {
             code: code ? code.replace('functions/', '') : 'unknown',
-            message: message || error.toString(),
-            details,
+            message: message,
+            details: details,
           },
           done: true,
         },
