@@ -74,14 +74,23 @@ export interface Module extends ReactNativeFirebase.FirebaseModule {
   signOutTester(): Promise<void>;
 }
 
+// Helper types to reference outer scope types within the namespace
+// These are needed because TypeScript can't directly alias types with the same name
+type _AppDistributionRelease = AppDistributionRelease;
+type _Statics = Statics;
+type _Module = Module;
+
 /**
  * Firebase AppDistribution package types for React Native.
  */
+/* eslint-disable @typescript-eslint/no-namespace */
 export namespace FirebaseAppDistributionTypes {
-  export type { AppDistributionRelease };
-  export type { Statics };
-  export type { Module };
+  // Type aliases referencing top-level types
+  export type AppDistributionRelease = _AppDistributionRelease;
+  export type Statics = _Statics;
+  export type Module = _Module;
 }
+/* eslint-enable @typescript-eslint/no-namespace */
 
 /* eslint-disable @typescript-eslint/no-namespace */
 declare module '@react-native-firebase/app' {

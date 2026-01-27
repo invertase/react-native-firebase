@@ -25,10 +25,17 @@
     "app-distribution"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "23.8.4"
+    "@react-native-firebase/app": "23.8.4",
+    "expo": ">=47.0.0"
   },
   "devDependencies": {
+    "expo": "^54.0.27",
     "react-native-builder-bob": "^0.40.17"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
   },
   "exports": {
     ".": {
@@ -41,6 +48,7 @@
   "react-native-builder-bob": {
     "source": "lib",
     "output": "dist",
+    "exclude": "**/types/**",
     "targets": [
       [
         "module",
