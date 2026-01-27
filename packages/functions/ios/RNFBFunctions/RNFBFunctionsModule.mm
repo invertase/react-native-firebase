@@ -99,34 +99,23 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
     [functions useEmulatorWithHost:emulatorHost port:(int)emulatorPort];
   }
 
-  FIRHTTPSCallable *callable = [functions HTTPSCallableWithName:name];
-
-  if (timeout.has_value()) {
-    callable.timeoutInterval = timeout.value();
-  }
-
-  [callable callWithObject:callableData
-                completion:^(FIRHTTPSCallableResult *_Nullable result, NSError *_Nullable error) {
-                  if (error) {
-                    NSObject *details = [NSNull null];
-                    NSString *message = error.localizedDescription;
-                    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-                    if ([error.domain isEqual:@"com.firebase.functions"]) {
-                      details = error.userInfo[@"details"];
-                      if (details == nil) {
-                        details = [NSNull null];
+  RNFBFunctionsCallHandler *handler = [[RNFBFunctionsCallHandler alloc] init];
+  
+  double timeoutValue = timeout.has_value() ? timeout.value() : 0;
+  
+  [handler callFunctionWithApp:firebaseApp
+                     functions:functions
+                          name:name
+                          data:callableData
+                       timeout:timeoutValue
+                    completion:^(NSDictionary *_Nullable result, NSDictionary *_Nullable error) {
+                      if (error) {
+                        NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:error];
+                        [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:userInfo];
+                      } else {
+                        resolve(result);
                       }
-                    }
-
-                    userInfo[@"code"] = [self getErrorCodeName:error];
-                    userInfo[@"message"] = message;
-                    userInfo[@"details"] = details;
-
-                    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:userInfo];
-                  } else {
-                    resolve(@{@"data" : [result data]});
-                  }
-                }];
+                    }];
 }
 
 - (void)httpsCallableFromUrl:(NSString *)appName
@@ -163,36 +152,23 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
     [functions useEmulatorWithHost:emulatorHost port:(int)emulatorPort];
   }
 
-  NSURL *functionUrl = [NSURL URLWithString:url];
-
-  FIRHTTPSCallable *callable = [functions HTTPSCallableWithURL:functionUrl];
-
-  if (timeout.has_value()) {
-    callable.timeoutInterval = timeout.value();
-  }
-
-  [callable callWithObject:callableData
-                completion:^(FIRHTTPSCallableResult *_Nullable result, NSError *_Nullable error) {
-                  if (error) {
-                    NSObject *details = [NSNull null];
-                    NSString *message = error.localizedDescription;
-                    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-                    if ([error.domain isEqual:@"com.firebase.functions"]) {
-                      details = error.userInfo[@"details"];
-                      if (details == nil) {
-                        details = [NSNull null];
-                      }
-                    }
-
-                    userInfo[@"code"] = [self getErrorCodeName:error];
-                    userInfo[@"message"] = message;
-                    userInfo[@"details"] = details;
-
-                    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:userInfo];
-                  } else {
-                    resolve(@{@"data" : [result data]});
-                  }
-                }];
+  RNFBFunctionsCallHandler *handler = [[RNFBFunctionsCallHandler alloc] init];
+  
+  double timeoutValue = timeout.has_value() ? timeout.value() : 0;
+  
+  [handler callFunctionWithURLWithApp:firebaseApp
+                            functions:functions
+                                  url:url
+                                 data:callableData
+                              timeout:timeoutValue
+                           completion:^(NSDictionary *_Nullable result, NSDictionary *_Nullable error) {
+                             if (error) {
+                               NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:error];
+                               [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:userInfo];
+                             } else {
+                               resolve(result);
+                             }
+                           }];
 }
 
 #pragma mark -
