@@ -28,6 +28,13 @@ export interface HttpsCallableOptions {
    * The timeout for the callable function or stream request.
    */
   timeout?: number;
+  /**
+   * iOS and Android, for web specific options, used `HttpsCallableStreamOptions`.
+   * If set to true, uses a limited-use App Check token for callable function or stream requests from this
+   * instance of {@link Functions}. You must use limited-use tokens to call functions with
+   * replay protection enabled. By default, this is false.
+   */
+  limitedUseAppCheckTokens?: boolean;
 }
 
 /**

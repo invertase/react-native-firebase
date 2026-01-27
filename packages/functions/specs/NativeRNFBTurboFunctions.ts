@@ -1,5 +1,6 @@
 import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
+import { HttpsCallableOptions } from '../lib/types/functions';
 
 // Define generic types outside the interface
 export type RequestData = unknown;
@@ -23,7 +24,8 @@ export interface Spec extends TurboModule {
     emulatorPort: number,
     name: string,
     data: { data: RequestData },
-    options: { timeout?: number },
+    // "other" platforms receives HttpsCallableStreamOptions as it is for web only
+    options: HttpsCallableOptions,
   ): Promise<{ data: ResponseData }>;
 
   /**
@@ -43,7 +45,8 @@ export interface Spec extends TurboModule {
     emulatorPort: number,
     url: string,
     data: { data: RequestData },
-    options: { timeout?: number },
+    // "other" platforms receives HttpsCallableStreamOptions as it is for web only
+    options: HttpsCallableOptions,
   ): Promise<{ data: ResponseData }>;
 
   /**
@@ -63,7 +66,8 @@ export interface Spec extends TurboModule {
     emulatorPort: number,
     name: string,
     data: { data: RequestData },
-    options: { timeout?: number },
+    // "other" platforms receives HttpsCallableStreamOptions as it is for web only
+    options: HttpsCallableOptions,
     listenerId: number,
   ): void;
 
@@ -84,7 +88,8 @@ export interface Spec extends TurboModule {
     emulatorPort: number,
     url: string,
     data: { data: RequestData },
-    options: { timeout?: number },
+    // "other" platforms receives HttpsCallableStreamOptions as it is for web only
+    options: HttpsCallableOptions,
     listenerId: number,
   ): void;
 
