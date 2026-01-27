@@ -51,6 +51,7 @@ namespace JS {
   namespace NativeRNFBTurboFunctions {
     struct SpecHttpsCallableOptions {
       std::optional<double> timeout() const;
+      std::optional<bool> limitedUseAppCheckTokens() const;
 
       SpecHttpsCallableOptions(NSDictionary *const v) : _v(v) {}
     private:
@@ -81,6 +82,7 @@ namespace JS {
   namespace NativeRNFBTurboFunctions {
     struct SpecHttpsCallableFromUrlOptions {
       std::optional<double> timeout() const;
+      std::optional<bool> limitedUseAppCheckTokens() const;
 
       SpecHttpsCallableFromUrlOptions(NSDictionary *const v) : _v(v) {}
     private:
@@ -111,6 +113,7 @@ namespace JS {
   namespace NativeRNFBTurboFunctions {
     struct SpecHttpsCallableStreamOptions {
       std::optional<double> timeout() const;
+      std::optional<bool> limitedUseAppCheckTokens() const;
 
       SpecHttpsCallableStreamOptions(NSDictionary *const v) : _v(v) {}
     private:
@@ -141,6 +144,7 @@ namespace JS {
   namespace NativeRNFBTurboFunctions {
     struct SpecHttpsCallableStreamFromUrlOptions {
       std::optional<double> timeout() const;
+      std::optional<bool> limitedUseAppCheckTokens() const;
 
       SpecHttpsCallableStreamFromUrlOptions(NSDictionary *const v) : _v(v) {}
     private:
@@ -222,6 +226,11 @@ inline std::optional<double> JS::NativeRNFBTurboFunctions::SpecHttpsCallableOpti
   id const p = _v[@"timeout"];
   return RCTBridgingToOptionalDouble(p);
 }
+inline std::optional<bool> JS::NativeRNFBTurboFunctions::SpecHttpsCallableOptions::limitedUseAppCheckTokens() const
+{
+  id const p = _v[@"limitedUseAppCheckTokens"];
+  return RCTBridgingToOptionalBool(p);
+}
 inline id<NSObject> JS::NativeRNFBTurboFunctions::SpecHttpsCallableFromUrlData::data() const
 {
   id const p = _v[@"data"];
@@ -231,6 +240,11 @@ inline std::optional<double> JS::NativeRNFBTurboFunctions::SpecHttpsCallableFrom
 {
   id const p = _v[@"timeout"];
   return RCTBridgingToOptionalDouble(p);
+}
+inline std::optional<bool> JS::NativeRNFBTurboFunctions::SpecHttpsCallableFromUrlOptions::limitedUseAppCheckTokens() const
+{
+  id const p = _v[@"limitedUseAppCheckTokens"];
+  return RCTBridgingToOptionalBool(p);
 }
 inline id<NSObject> JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamData::data() const
 {
@@ -242,6 +256,11 @@ inline std::optional<double> JS::NativeRNFBTurboFunctions::SpecHttpsCallableStre
   id const p = _v[@"timeout"];
   return RCTBridgingToOptionalDouble(p);
 }
+inline std::optional<bool> JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamOptions::limitedUseAppCheckTokens() const
+{
+  id const p = _v[@"limitedUseAppCheckTokens"];
+  return RCTBridgingToOptionalBool(p);
+}
 inline id<NSObject> JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlData::data() const
 {
   id const p = _v[@"data"];
@@ -251,6 +270,11 @@ inline std::optional<double> JS::NativeRNFBTurboFunctions::SpecHttpsCallableStre
 {
   id const p = _v[@"timeout"];
   return RCTBridgingToOptionalDouble(p);
+}
+inline std::optional<bool> JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlOptions::limitedUseAppCheckTokens() const
+{
+  id const p = _v[@"limitedUseAppCheckTokens"];
+  return RCTBridgingToOptionalBool(p);
 }
 NS_ASSUME_NONNULL_END
 #endif // NativeRNFBTurboFunctions_H
