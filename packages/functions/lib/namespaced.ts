@@ -33,7 +33,7 @@ import type {
   FunctionsStatics,
   HttpsCallable,
 } from './types/functions';
-import type { FunctionsStreamingEvent } from './types/internal';
+import type { CustomHttpsCallableOptions, FunctionsStreamingEvent } from './types/internal';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 const namespace = 'functions';
 
@@ -279,13 +279,17 @@ class FirebaseFunctionsModule extends FirebaseModule {
       });
     }) as HttpsCallable<unknown, unknown, unknown>;
 
-    // Add async iterable streaming helper
-    // Usage: const { stream, data } = await functions().httpsCallable('fn').stream(data, options)
     callableFunction.stream = async (
       data?: unknown,
       streamOptions?: HttpsCallableStreamOptions,
     ) => {
-      const platformOptions = isAndroid || isIOS ? options : streamOptions;
+      const platformOptions =
+        isAndroid || isIOS
+          ? options
+          : ({
+              ...options,
+              httpsCallableStreamOptions: streamOptions,
+            } as CustomHttpsCallableOptions);
       return this._createStreamHandler(listenerId => {
         this.native.httpsCallableStream(
           this._useFunctionsEmulatorHost || null,
@@ -337,7 +341,13 @@ class FirebaseFunctionsModule extends FirebaseModule {
       data?: unknown,
       streamOptions?: HttpsCallableStreamOptions,
     ) => {
-      const platformOptions = isAndroid || isIOS ? options : streamOptions;
+      const platformOptions =
+        isAndroid || isIOS
+          ? options
+          : ({
+              ...options,
+              httpsCallableStreamOptions: streamOptions,
+            } as CustomHttpsCallableOptions);
       return this._createStreamHandler(listenerId => {
         this.native.httpsCallableStreamFromUrl(
           this._useFunctionsEmulatorHost || null,

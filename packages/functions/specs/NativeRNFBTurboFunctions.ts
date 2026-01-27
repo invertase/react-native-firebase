@@ -24,7 +24,6 @@ export interface Spec extends TurboModule {
     emulatorPort: number,
     name: string,
     data: { data: RequestData },
-    // "other" platforms receives HttpsCallableStreamOptions as it is for web only
     options: { timeout?: number; limitedUseAppCheckTokens?: boolean },
   ): Promise<{ data: ResponseData }>;
 
@@ -45,7 +44,6 @@ export interface Spec extends TurboModule {
     emulatorPort: number,
     url: string,
     data: { data: RequestData },
-    // "other" platforms receives HttpsCallableStreamOptions as it is for web only
     options: { timeout?: number; limitedUseAppCheckTokens?: boolean },
   ): Promise<{ data: ResponseData }>;
 
@@ -66,8 +64,15 @@ export interface Spec extends TurboModule {
     emulatorPort: number,
     name: string,
     data: { data: RequestData },
-    // "other" platforms receives HttpsCallableStreamOptions as it is for web only
-    options: { timeout?: number; limitedUseAppCheckTokens?: boolean },
+    options: {
+      timeout?: number;
+      limitedUseAppCheckTokens?: boolean;
+      httpsCallableStreamOptions: {
+        /** cannot put AbortSignal here as it is for web only, but it will be passed in the options */
+        signal?: unknown;
+        limitedUseAppCheckTokens?: boolean;
+      };
+    },
     listenerId: number,
   ): void;
 
@@ -88,8 +93,15 @@ export interface Spec extends TurboModule {
     emulatorPort: number,
     url: string,
     data: { data: RequestData },
-    // "other" platforms receives HttpsCallableStreamOptions as it is for web only
-    options: { timeout?: number; limitedUseAppCheckTokens?: boolean },
+    options: {
+      timeout?: number;
+      limitedUseAppCheckTokens?: boolean;
+      httpsCallableStreamOptions: {
+        /** cannot put AbortSignal here as it is for web only, but it will be passed in the options */
+        signal?: unknown;
+        limitedUseAppCheckTokens?: boolean;
+      };
+    },
     listenerId: number,
   ): void;
 

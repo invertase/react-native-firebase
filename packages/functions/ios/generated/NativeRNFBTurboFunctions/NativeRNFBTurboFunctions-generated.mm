@@ -65,6 +65,12 @@
   return facebook::react::managedPointer<JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlData>(json);
 }
 @end
+@implementation RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableStreamFromUrlOptionsHttpsCallableStreamOptions)
++ (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableStreamFromUrlOptionsHttpsCallableStreamOptions:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlOptionsHttpsCallableStreamOptions>(json);
+}
+@end
 @implementation RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableStreamFromUrlOptions)
 + (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableStreamFromUrlOptions:(id)json
 {

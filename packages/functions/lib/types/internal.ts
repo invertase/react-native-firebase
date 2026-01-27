@@ -16,6 +16,7 @@
  */
 
 import type { Functions } from 'firebase/functions';
+import type { HttpsCallableOptions, HttpsCallableStreamOptions } from './functions';
 
 export interface FunctionsStreamingEventBody {
   data?: unknown;
@@ -40,4 +41,12 @@ export interface FunctionsStreamingEvent {
  */
 export interface FunctionsWebInternal extends Functions {
   emulatorOrigin?: string;
+}
+
+/**
+ * Internal type for custom https callable options.
+ * Extends the HttpsCallableOptions type to include the httpsCallableStreamOptions property.
+ */
+export interface CustomHttpsCallableOptions extends HttpsCallableOptions {
+  httpsCallableStreamOptions: HttpsCallableStreamOptions;
 }

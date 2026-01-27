@@ -142,9 +142,26 @@ namespace JS {
 @end
 namespace JS {
   namespace NativeRNFBTurboFunctions {
+    struct SpecHttpsCallableStreamFromUrlOptionsHttpsCallableStreamOptions {
+      id<NSObject> _Nullable signal() const;
+      std::optional<bool> limitedUseAppCheckTokens() const;
+
+      SpecHttpsCallableStreamFromUrlOptionsHttpsCallableStreamOptions(NSDictionary *const v) : _v(v) {}
+    private:
+      NSDictionary *_v;
+    };
+  }
+}
+
+@interface RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableStreamFromUrlOptionsHttpsCallableStreamOptions)
++ (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableStreamFromUrlOptionsHttpsCallableStreamOptions:(id)json;
+@end
+namespace JS {
+  namespace NativeRNFBTurboFunctions {
     struct SpecHttpsCallableStreamFromUrlOptions {
       std::optional<double> timeout() const;
       std::optional<bool> limitedUseAppCheckTokens() const;
+      JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlOptionsHttpsCallableStreamOptions httpsCallableStreamOptions() const;
 
       SpecHttpsCallableStreamFromUrlOptions(NSDictionary *const v) : _v(v) {}
     private:
@@ -266,6 +283,16 @@ inline id<NSObject> JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrl
   id const p = _v[@"data"];
   return p;
 }
+inline id<NSObject> _Nullable JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlOptionsHttpsCallableStreamOptions::signal() const
+{
+  id const p = _v[@"signal"];
+  return p;
+}
+inline std::optional<bool> JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlOptionsHttpsCallableStreamOptions::limitedUseAppCheckTokens() const
+{
+  id const p = _v[@"limitedUseAppCheckTokens"];
+  return RCTBridgingToOptionalBool(p);
+}
 inline std::optional<double> JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlOptions::timeout() const
 {
   id const p = _v[@"timeout"];
@@ -275,6 +302,11 @@ inline std::optional<bool> JS::NativeRNFBTurboFunctions::SpecHttpsCallableStream
 {
   id const p = _v[@"limitedUseAppCheckTokens"];
   return RCTBridgingToOptionalBool(p);
+}
+inline JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlOptionsHttpsCallableStreamOptions JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlOptions::httpsCallableStreamOptions() const
+{
+  id const p = _v[@"httpsCallableStreamOptions"];
+  return JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlOptionsHttpsCallableStreamOptions(p);
 }
 NS_ASSUME_NONNULL_END
 #endif // NativeRNFBTurboFunctions_H

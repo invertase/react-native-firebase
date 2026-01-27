@@ -20,16 +20,19 @@ import type { ReactNativeFirebase } from '@react-native-firebase/app';
 // ============ Options & Result Types ============
 
 /**
- * Use for iOS and Android, for web specific options, used `HttpsCallableStreamOptions`.
+ * Use for iOS, Android and web for https callable only. For streaming, this is for android and iOS only.
+ * For web streaming, use `HttpsCallableStreamOptions` instead.
  **/
 export interface HttpsCallableOptions {
   /**
-   * iOS and Android, for web specific options, used `HttpsCallableStreamOptions`.
+   * Use for iOS, Android and web for https callable only. For streaming, this is for android and iOS only.
+   * For web streaming, use `HttpsCallableStreamOptions` instead.
    * The timeout for the callable function or stream request.
    */
   timeout?: number;
   /**
-   * iOS and Android, for web specific options, used `HttpsCallableStreamOptions`.
+   * Use for iOS, Android and web for https callable only. For streaming, this is for android and iOS only.
+   * For web streaming, use `HttpsCallableStreamOptions` instead.
    * If set to true, uses a limited-use App Check token for callable function or stream requests from this
    * instance of {@link Functions}. You must use limited-use tokens to call functions with
    * replay protection enabled. By default, this is false.
@@ -38,7 +41,7 @@ export interface HttpsCallableOptions {
 }
 
 /**
- * Use for web only, for iOS and Android specific options, used `HttpsCallableOptions`.
+ * Use for web only, for iOS and Android specific options, use `HttpsCallableOptions`.
  **/
 export interface HttpsCallableStreamOptions {
   /**

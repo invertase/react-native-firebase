@@ -4,11 +4,13 @@ import {
   httpsCallable,
   httpsCallableFromURL,
   connectFunctionsEmulator,
+  type HttpsCallableStreamOptions,
+  type HttpsCallableResult,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseFunctions';
 import { emitEvent } from '@react-native-firebase/app/dist/module/internal/web/utils';
 import type { HttpsCallableOptions } from '../index';
 import type { NativeError } from '../HttpsError';
-import type { FunctionsWebInternal } from '../types/internal';
+import type { CustomHttpsCallableOptions, FunctionsWebInternal } from '../types/internal';
 
 interface WrapperData {
   data: unknown;
@@ -38,11 +40,22 @@ async function executeCallableStream(
   region: string,
   callableData: unknown,
   listenerId: number,
+  options: HttpsCallableStreamOptions,
 ): Promise<void> {
   const streamKey = getStreamKey(appName, region, listenerId);
 
   try {
-    const callableStream = callableData ? callable.stream(callableData) : callable.stream();
+    const streamOptions: HttpsCallableStreamOptions = {};
+    if (options.signal) {
+      streamOptions.signal = options.signal;
+    }
+    if (options.limitedUseAppCheckTokens) {
+      streamOptions.limitedUseAppCheckTokens = options.limitedUseAppCheckTokens;
+    }
+    const callableStream = Object.keys(streamOptions).length
+      ? callable.stream(callableData || null, streamOptions)
+      : callable.stream(callableData || null);
+
     const { stream } = await callableStream;
 
     // Get the iterator and store it for potential cancellation
@@ -168,7 +181,7 @@ export default {
     name: string,
     wrapper: WrapperData,
     options: HttpsCallableOptions,
-  ): Promise<any> {
+  ): Promise<HttpsCallableResult<unknown>> {
     try {
       const functionsInstance = getConfiguredFunctionsInstance(
         appName,
@@ -218,7 +231,7 @@ export default {
     url: string,
     wrapper: WrapperData,
     options: HttpsCallableOptions,
-  ): Promise<any> {
+  ): Promise<HttpsCallableResult<unknown>> {
     try {
       const functionsInstance = getConfiguredFunctionsInstance(
         appName,
@@ -262,7 +275,7 @@ export default {
     port: number,
     name: string,
     wrapper: WrapperData,
-    options: HttpsCallableOptions,
+    options: CustomHttpsCallableOptions,
     listenerId: number,
   ): Promise<void> {
     const functionsInstance = getConfiguredFunctionsInstance(
@@ -277,7 +290,14 @@ export default {
       : httpsCallable(functionsInstance, name);
 
     const region = regionOrCustomDomain || 'us-central1';
-    await executeCallableStream(callable, appName, region, wrapper.data, listenerId);
+    await executeCallableStream(
+      callable,
+      appName,
+      region,
+      wrapper.data,
+      listenerId,
+      options.httpsCallableStreamOptions,
+    );
   },
 
   /**
@@ -298,7 +318,7 @@ export default {
     port: number,
     url: string,
     wrapper: WrapperData,
-    options: HttpsCallableOptions,
+    options: CustomHttpsCallableOptions,
     listenerId: number,
   ): Promise<void> {
     const functionsInstance = getConfiguredFunctionsInstance(
@@ -308,9 +328,24 @@ export default {
       port,
     );
 
-    const callable = httpsCallableFromURL(functionsInstance, url, options);
+    const httpsCallableOptions: HttpsCallableOptions = {};
+    if (options.timeout) {
+      httpsCallableOptions.timeout = options.timeout;
+    }
+    if (options.limitedUseAppCheckTokens) {
+      httpsCallableOptions.limitedUseAppCheckTokens = options.limitedUseAppCheckTokens;
+    }
+
+    const callable = httpsCallableFromURL(functionsInstance, url, httpsCallableOptions);
     const region = regionOrCustomDomain || 'us-central1';
-    await executeCallableStream(callable, appName, region, wrapper.data, listenerId);
+    await executeCallableStream(
+      callable,
+      appName,
+      region,
+      wrapper.data,
+      listenerId,
+      options.httpsCallableStreamOptions,
+    );
   },
 
   /**
