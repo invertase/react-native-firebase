@@ -288,7 +288,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
           ? options
           : ({
               ...options,
-              httpsCallableStreamOptions: streamOptions,
+              httpsCallableStreamOptions: streamOptions || {},
             } as CustomHttpsCallableOptions);
       return this._createStreamHandler(listenerId => {
         this.native.httpsCallableStream(
@@ -346,7 +346,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
           ? options
           : ({
               ...options,
-              httpsCallableStreamOptions: streamOptions,
+              httpsCallableStreamOptions: streamOptions || {},
             } as CustomHttpsCallableOptions);
       return this._createStreamHandler(listenerId => {
         this.native.httpsCallableStreamFromUrl(
