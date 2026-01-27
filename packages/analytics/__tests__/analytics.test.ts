@@ -205,7 +205,7 @@ describe('Analytics', function () {
     it('throws if security_storage of consentSettings is not one of granted or denied', function () {
       // @ts-ignore test
       expect(() => firebase.analytics().setConsent({ security_storage: 'invalid' })).toThrow(
-        "'consentSettings' value for parameter 'security_storage' is invalid, expected one of 'granted', 'denied', or 'unknown'.",
+        "'consentSettings' value for parameter 'security_storage' is invalid, expected one of 'granted' or 'denied'.",
       );
     });
 
