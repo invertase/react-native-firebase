@@ -202,6 +202,18 @@ describe('Analytics', function () {
       );
     });
 
+    it('throws if security_storage of consentSettings is not one of granted or denied', function () {
+      // @ts-ignore test
+      expect(() => firebase.analytics().setConsent({ security_storage: 'invalid' })).toThrow(
+        "'consentSettings' value for parameter 'security_storage' is invalid, expected one of 'granted' or 'denied'.",
+      );
+    });
+
+    it('accepts security_storage of consentSettings is one of granted or denied', function () {
+      expect(() => firebase.analytics().setConsent({ security_storage: 'granted' })).not.toThrow();
+      expect(() => firebase.analytics().setConsent({ security_storage: 'denied' })).not.toThrow();
+    });
+
     it('errors when no parameters are set', function () {
       // @ts-ignore test
       expect(() => firebase.analytics().logSearch()).toThrow(

@@ -274,6 +274,14 @@ class FirebaseAnalyticsModule extends FirebaseModule {
       const entry = entries[i];
       if (!entry) continue;
       const [key, value] = entry;
+      if (key === 'security_storage') {
+        if (!isOneOf(value, ['granted', 'denied'])) {
+          throw new Error(
+            `firebase.analytics().setConsent(*) 'consentSettings' value for parameter '${key}' is invalid, expected one of 'granted' or 'denied'.`,
+          );
+        }
+        continue;
+      }
       if (!isBoolean(value)) {
         throw new Error(
           `firebase.analytics().setConsent(*) 'consentSettings' value for parameter '${key}' is invalid, expected a boolean.`,
