@@ -1,6 +1,5 @@
 import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
-import { HttpsCallableOptions } from '../lib/types/functions';
 
 // Define generic types outside the interface
 export type RequestData = unknown;
