@@ -30,6 +30,7 @@ import FirebaseCore
   ///   - name: Name of the function
   ///   - data: Data to pass to the function
   ///   - timeout: Timeout in milliseconds
+  ///   - limitedUseAppCheckToken: Optional boolean for limited use App Check tokens
   ///   - completion: Completion handler with result or error
   @objc public func callFunction(
     app: FirebaseApp,
@@ -37,9 +38,12 @@ import FirebaseCore
     name: String,
     data: Any?,
     timeout: Double,
+    limitedUseAppCheckToken: NSNumber?,
     completion: @escaping ([AnyHashable: Any]?, [AnyHashable: Any]?) -> Void
   ) {
-    let callable = functions.httpsCallable(name)
+    let options = HTTPSCallableOptions(requireLimitedUseAppCheckTokens: limitedUseAppCheckToken?.boolValue ?? false)
+    
+    let callable = functions.httpsCallable(name, options: options)
     performCall(callable: callable, data: data, timeout: timeout, completion: completion)
   }
   
@@ -50,6 +54,7 @@ import FirebaseCore
   ///   - url: URL of the function
   ///   - data: Data to pass to the function
   ///   - timeout: Timeout in milliseconds
+  ///   - limitedUseAppCheckToken: Optional boolean for limited use App Check tokens
   ///   - completion: Completion handler with result or error
   @objc public func callFunctionWithURL(
     app: FirebaseApp,
@@ -57,6 +62,7 @@ import FirebaseCore
     url: String,
     data: Any?,
     timeout: Double,
+    limitedUseAppCheckToken: NSNumber?,
     completion: @escaping ([AnyHashable: Any]?, [AnyHashable: Any]?) -> Void
   ) {
     guard let functionURL = URL(string: url) else {
@@ -69,7 +75,9 @@ import FirebaseCore
       return
     }
     
-    let callable = functions.httpsCallable(functionURL)
+    let options = HTTPSCallableOptions(requireLimitedUseAppCheckTokens: limitedUseAppCheckToken?.boolValue ?? false)
+    
+    let callable = functions.httpsCallable(functionURL, options: options)
     performCall(callable: callable, data: data, timeout: timeout, completion: completion)
   }
   

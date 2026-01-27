@@ -102,12 +102,17 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
   RNFBFunctionsCallHandler *handler = [[RNFBFunctionsCallHandler alloc] init];
   
   double timeoutValue = timeout.has_value() ? timeout.value() : 0;
+  std::optional<bool> limitedUseAppCheckToken = options.limitedUseAppCheckTokens();
+  NSNumber *limitedUseAppCheckTokenNumber = limitedUseAppCheckToken.has_value() 
+    ? @(limitedUseAppCheckToken.value()) 
+    : @(NO);
   
   [handler callFunctionWithApp:firebaseApp
                      functions:functions
                           name:name
                           data:callableData
                        timeout:timeoutValue
+      limitedUseAppCheckToken:limitedUseAppCheckTokenNumber
                     completion:^(NSDictionary *_Nullable result, NSDictionary *_Nullable error) {
                       if (error) {
                         NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:error];
@@ -147,6 +152,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
   }
 
   std::optional<double> timeout = options.timeout();
+  std::optional<bool> limitedUseAppCheckToken = options.limitedUseAppCheckTokens();
 
   if (emulatorHost != nil) {
     [functions useEmulatorWithHost:emulatorHost port:(int)emulatorPort];
@@ -155,12 +161,16 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
   RNFBFunctionsCallHandler *handler = [[RNFBFunctionsCallHandler alloc] init];
   
   double timeoutValue = timeout.has_value() ? timeout.value() : 0;
+  NSNumber *limitedUseAppCheckTokenNumber = limitedUseAppCheckToken.has_value() 
+    ? @(limitedUseAppCheckToken.value()) 
+    : @(NO);
   
   [handler callFunctionWithURLWithApp:firebaseApp
                             functions:functions
                                   url:url
                                  data:callableData
                               timeout:timeoutValue
+             limitedUseAppCheckToken:limitedUseAppCheckTokenNumber
                            completion:^(NSDictionary *_Nullable result, NSDictionary *_Nullable error) {
                              if (error) {
                                NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:error];
