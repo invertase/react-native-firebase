@@ -16,62 +16,63 @@
  */
 
 import { isIOS } from '@react-native-firebase/app/dist/module/common';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/dist/module/internal';
 
-import version from './version';
+import { version } from './version';
+import type { Statics, Module, AppDistributionRelease } from './types/app-distribution';
 
-const statics = {};
+const statics: Partial<Statics> = {};
 
 const namespace = 'appDistribution';
 
 const nativeModuleName = 'RNFBAppDistributionModule';
 
 class FirebaseAppDistributionModule extends FirebaseModule {
-  isTesterSignedIn() {
+  isTesterSignedIn(): Promise<boolean> {
     if (isIOS) {
       return this.native.isTesterSignedIn();
     }
 
-    Promise.reject(new Error('App Distribution is not supported on this platform.'));
+    return Promise.reject(new Error('App Distribution is not supported on this platform.'));
   }
 
-  signInTester() {
+  signInTester(): Promise<void> {
     if (isIOS) {
       return this.native.signInTester();
     }
 
-    Promise.reject(new Error('App Distribution is not supported on this platform.'));
+    return Promise.reject(new Error('App Distribution is not supported on this platform.'));
   }
 
-  checkForUpdate() {
+  checkForUpdate(): Promise<AppDistributionRelease> {
     if (isIOS) {
       return this.native.checkForUpdate();
     }
 
-    Promise.reject(new Error('App Distribution is not supported on this platform.'));
+    return Promise.reject(new Error('App Distribution is not supported on this platform.'));
   }
 
-  signOutTester() {
+  signOutTester(): Promise<void> {
     if (isIOS) {
       return this.native.signOutTester();
     }
 
-    Promise.reject(new Error('App Distribution is not supported on this platform.'));
+    return Promise.reject(new Error('App Distribution is not supported on this platform.'));
   }
 }
 
-export * from './modular';
-
 // import { SDK_VERSION } from '@react-native-firebase/app-distribution';
-export const SDK_VERSION = version;
+export const SDK_VERSION: string = version;
 
 // import appDistribution from '@react-native-firebase/app-distribution';
 // appDistribution().X(...);
-export default createModuleNamespace({
+
+const appDistributionNamespace = createModuleNamespace({
   statics,
   version,
   namespace,
@@ -82,7 +83,25 @@ export default createModuleNamespace({
   ModuleClass: FirebaseAppDistributionModule,
 });
 
+type AppDistributionNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  Module,
+  Statics
+> & {
+  appDistribution: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<Module, Statics>;
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+export default appDistributionNamespace as unknown as AppDistributionNamespace;
+
 // import appDistribution, { firebase } from '@react-native-firebase/app-distribution';
 // appDistribution().X(...);
 // firebase.appDistribution().X(...);
-export const firebase = getFirebaseRoot();
+export const firebase =
+  getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
+    'appDistribution',
+    Module,
+    Statics,
+    false
+  >;
+
