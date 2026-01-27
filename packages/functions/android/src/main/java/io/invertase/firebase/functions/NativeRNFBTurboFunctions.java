@@ -30,6 +30,7 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.FirebaseFunctionsException;
+import com.google.firebase.functions.HttpsCallableOptions;
 import com.google.firebase.functions.HttpsCallableReference;
 import com.google.firebase.functions.StreamResponse;
 import io.invertase.firebase.common.RCTConvertFirebase;
@@ -174,13 +175,24 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
                 FirebaseFunctions functionsInstance =
                     FirebaseFunctions.getInstance(firebaseApp, region);
 
+                // Get limitedUseAppCheckTokens from options (defaults to false)
+                boolean limitedUseAppCheckTokens = false;
+                if (options.hasKey("limitedUseAppCheckTokens")) {
+                  limitedUseAppCheckTokens = options.getBoolean("limitedUseAppCheckTokens");
+                }
+
+                // Create HttpsCallableOptions with limitedUseAppCheckTokens
+                HttpsCallableOptions callableOptions = new HttpsCallableOptions.Builder()
+                    .setLimitedUseAppCheckTokens(limitedUseAppCheckTokens)
+                    .build();
+
                 // Create reference based on which parameter is provided
                 HttpsCallableReference httpReference;
                 if (url != null) {
                   URL parsedUrl = new URL(url);
-                  httpReference = functionsInstance.getHttpsCallableFromUrl(parsedUrl);
+                  httpReference = functionsInstance.getHttpsCallableFromUrl(parsedUrl, callableOptions);
                 } else {
-                  httpReference = functionsInstance.getHttpsCallable(name);
+                  httpReference = functionsInstance.getHttpsCallable(name, callableOptions);
                 }
 
                 if (options.hasKey("timeout")) {
@@ -223,13 +235,24 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
                   functionsInstance.useEmulator(host, port);
                 }
 
+                // Get limitedUseAppCheckTokens from options (defaults to false)
+                boolean limitedUseAppCheckTokens = false;
+                if (options.hasKey("limitedUseAppCheckTokens")) {
+                  limitedUseAppCheckTokens = options.getBoolean("limitedUseAppCheckTokens");
+                }
+
+                // Create HttpsCallableOptions with limitedUseAppCheckTokens
+                HttpsCallableOptions callableOptions = new HttpsCallableOptions.Builder()
+                    .setLimitedUseAppCheckTokens(limitedUseAppCheckTokens)
+                    .build();
+
                 // Create reference based on which parameter is provided
                 HttpsCallableReference httpReference;
                 if (url != null) {
                   URL parsedUrl = new URL(url);
-                  httpReference = functionsInstance.getHttpsCallableFromUrl(parsedUrl);
+                  httpReference = functionsInstance.getHttpsCallableFromUrl(parsedUrl, callableOptions);
                 } else {
-                  httpReference = functionsInstance.getHttpsCallable(name);
+                  httpReference = functionsInstance.getHttpsCallable(name, callableOptions);
                 }
 
                 if (options.hasKey("timeout")) {
