@@ -14,45 +14,70 @@ interface WrapperData {
   data: unknown;
 }
 
+// Store active stream iterators for cancellation
+let activeStreamIterators: Record<string, AsyncIterator<any>> = {};
+
+/**
+ * Helper function to generate a unique key for a stream.
+ */
+function getStreamKey(appName: string, region: string, listenerId: number): string {
+  return `${appName}-${region}-${listenerId}`;
+}
+
 /**
  * Helper function to handle streaming callable execution.
  * @param callable - The callable instance to stream from
  * @param appName - The app name for event emission
+ * @param region - The region for the stream key
  * @param callableData - The data to pass to the callable
  * @param listenerId - The listener ID for this stream
  */
 async function executeCallableStream(
   callable: any,
   appName: string,
+  region: string,
   callableData: unknown,
   listenerId: number,
 ): Promise<void> {
+  const streamKey = getStreamKey(appName, region, listenerId);
+
   try {
     const callableStream = callableData ? callable.stream(callableData) : callable.stream();
     const { stream } = await callableStream;
 
-    for await (const chunk of stream) {
+    // Get the iterator and store it for potential cancellation
+    const iterator = stream[Symbol.asyncIterator]();
+    activeStreamIterators[streamKey] = iterator;
+
+    // Manual iteration to allow proper cancellation
+    while (true) {
+      const result = await iterator.next();
+
+      if (result.done) {
+        // Emit final result with done: true
+        emitEvent('functions_streaming_event', {
+          appName,
+          listenerId,
+          body: {
+            data: null,
+            error: null,
+            done: true,
+          },
+        });
+        break;
+      }
+
+      // Emit chunk data
       emitEvent('functions_streaming_event', {
         appName,
         listenerId,
         body: {
-          data: chunk,
+          data: result.value,
           error: null,
           done: false,
         },
       });
     }
-
-    // Emit final result with done: true
-    emitEvent('functions_streaming_event', {
-      appName,
-      listenerId,
-      body: {
-        data: null,
-        error: null,
-        done: true,
-      },
-    });
   } catch (error: any) {
     const { code, message, details } = error;
     emitEvent('functions_streaming_event', {
@@ -68,6 +93,9 @@ async function executeCallableStream(
         done: true,
       },
     });
+  } finally {
+    // Clean up the iterator reference
+    delete activeStreamIterators[streamKey];
   }
 }
 
@@ -254,7 +282,8 @@ export default {
       callable = httpsCallable(functionsInstance, name);
     }
 
-    await executeCallableStream(callable, appName, wrapper.data, listenerId);
+    const region = regionOrCustomDomain || 'us-central1';
+    await executeCallableStream(callable, appName, region, wrapper.data, listenerId);
   },
 
   /**
@@ -302,14 +331,24 @@ export default {
     }
 
     const callable = httpsCallableFromURL(functionsInstance, url, options);
-    await executeCallableStream(callable, appName, wrapper.data, listenerId);
+    const region = regionOrCustomDomain || 'us-central1';
+    await executeCallableStream(callable, appName, region, wrapper.data, listenerId);
   },
 
   /**
-   * Removes a streaming listener.
-   * Note: With the async/await stream implementation, cancellation is not currently supported.
-   * This method is kept for API compatibility.
+   * Removes a streaming listener and cancels the underlying stream.
+   * @param appName - The app name for the stream.
+   * @param region - The region for the stream.
    * @param listenerId - The listener ID to remove.
    */
-  removeFunctionsStreaming(listenerId: number): void {},
+  removeFunctionsStreaming(appName: string, region: string, listenerId: number): void {
+    const streamKey = getStreamKey(appName, region, listenerId);
+    const iterator = activeStreamIterators[streamKey];
+
+    if (iterator && typeof iterator.return === 'function') {
+      // Call return() to signal the stream to close
+      iterator.return();
+      delete activeStreamIterators[streamKey];
+    }
+  },
 };
