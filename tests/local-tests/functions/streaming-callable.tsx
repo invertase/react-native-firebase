@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Text, View, ScrollView, StyleSheet, Platform } from 'react-native';
+import { getApp } from '@react-native-firebase/app';
 import {
   getFunctions,
   connectFunctionsEmulator,
@@ -7,7 +8,7 @@ import {
   httpsCallableFromUrl,
 } from '@react-native-firebase/functions';
 
-const functions = getFunctions();
+const functions = getFunctions(getApp());
 connectFunctionsEmulator(functions, 'localhost', 5001);
 
 export function StreamingCallableTestComponent(): React.JSX.Element {
@@ -30,7 +31,6 @@ export function StreamingCallableTestComponent(): React.JSX.Element {
       for await (const chunk of stream) {
         addOutput(`Chunk: ${JSON.stringify(chunk)}`);
       }
-
       const result = await data;
       addOutput(`Final result: ${JSON.stringify(result)}`);
       addOutput('✅ Stream completed');
@@ -74,7 +74,7 @@ export function StreamingCallableTestComponent(): React.JSX.Element {
       setOutput('');
       addOutput('Starting complex data stream test...');
 
-      const callable = httpsCallable(functions, 'testComplexDataStream') as any;
+      const callable = httpsCallable(functions, 'testComplexDataStream');
       const { stream, data } = await callable.stream({});
 
       for await (const chunk of stream) {
@@ -122,8 +122,11 @@ export function StreamingCallableTestComponent(): React.JSX.Element {
       setOutput('');
       addOutput('Starting stream with timeout option...');
 
-      const callable = httpsCallable(functions, 'testStreamingCallable') as any;
-      const { stream, data } = await callable.stream({ count: 3 }, { timeout: 30000 });
+      const callable = httpsCallable(functions, 'testStreamingCallable', { timeout: 4000 });
+      const { stream, data } = await callable.stream(
+        { count: 3 },
+        { limitedUseAppCheckTokens: false },
+      );
 
       for await (const chunk of stream) {
         addOutput(`Chunk: ${JSON.stringify(chunk)}`);
