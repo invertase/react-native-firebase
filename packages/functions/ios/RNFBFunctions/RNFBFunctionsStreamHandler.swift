@@ -86,45 +86,10 @@ import FirebaseCore
     streamTask = nil
   }
   
-  /// Get error code name from NSError
+  /// Get error code name from NSError (delegates to shared utility)
   private func getErrorCodeName(_ error: Error) -> String {
     let nsError = error as NSError
-    var code = "UNKNOWN"
-    
-    if nsError.domain == "com.firebase.functions" {
-      switch nsError.code {
-        case 0: code = "OK"
-        case 1: code = "CANCELLED"
-        case 2: code = "UNKNOWN"
-        case 3: code = "INVALID_ARGUMENT"
-        case 4: code = "DEADLINE_EXCEEDED"
-        case 5: code = "NOT_FOUND"
-        case 6: code = "ALREADY_EXISTS"
-        case 7: code = "PERMISSION_DENIED"
-        case 8: code = "RESOURCE_EXHAUSTED"
-        case 9: code = "FAILED_PRECONDITION"
-        case 10: code = "ABORTED"
-        case 11: code = "OUT_OF_RANGE"
-        case 12: code = "UNIMPLEMENTED"
-        case 13: code = "INTERNAL"
-        case 14: code = "UNAVAILABLE"
-        case 15: code = "DATA_LOSS"
-        case 16: code = "UNAUTHENTICATED"
-        default: break
-      }
-    }
-    
-    if nsError.domain == "FirebaseFunctions.FunctionsSerializer.Error" {
-      let errorDescription = nsError.description
-      if errorDescription.contains("unsupportedType") {
-        code = "UNSUPPORTED_TYPE"
-      }
-      if errorDescription.contains("failedToParseWrappedNumber") {
-        code = "FAILED_TO_PARSE_WRAPPED_NUMBER"
-      }
-    }
-    
-    return code
+    return RNFBFunctionsCallHandler.getErrorCodeName(nsError)
   }
   
   private func performStream(

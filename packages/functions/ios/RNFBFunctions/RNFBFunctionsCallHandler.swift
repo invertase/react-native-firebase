@@ -116,6 +116,13 @@ import FirebaseCore
   /// - Parameter error: The error to format
   /// - Returns: Dictionary containing error code, message, and details
   private func formatError(_ error: NSError) -> [AnyHashable: Any] {
+    return RNFBFunctionsCallHandler.formatError(error)
+  }
+  
+  /// Static method to format error for JavaScript (shared utility)
+  /// - Parameter error: The error to format
+  /// - Returns: Dictionary containing error code, message, and details
+  @objc public static func formatError(_ error: NSError) -> [AnyHashable: Any] {
     var details: Any = NSNull()
     let message = error.localizedDescription
     
@@ -132,10 +139,10 @@ import FirebaseCore
     ]
   }
   
-  /// Get error code name from NSError
+  /// Static method to get error code name from NSError (shared utility)
   /// - Parameter error: The error
   /// - Returns: String representation of the error code
-  private func getErrorCodeName(_ error: NSError) -> String {
+  @objc public static func getErrorCodeName(_ error: NSError) -> String {
     var code = "UNKNOWN"
     
     if error.domain == "com.firebase.functions" {
