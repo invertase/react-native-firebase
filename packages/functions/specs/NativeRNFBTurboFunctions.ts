@@ -25,7 +25,7 @@ export interface Spec extends TurboModule {
     name: string,
     data: { data: RequestData },
     // "other" platforms receives HttpsCallableStreamOptions as it is for web only
-    options: HttpsCallableOptions,
+    options: { timeout?: number; limitedUseAppCheckTokens?: boolean },
   ): Promise<{ data: ResponseData }>;
 
   /**
@@ -46,7 +46,7 @@ export interface Spec extends TurboModule {
     url: string,
     data: { data: RequestData },
     // "other" platforms receives HttpsCallableStreamOptions as it is for web only
-    options: HttpsCallableOptions,
+    options: { timeout?: number; limitedUseAppCheckTokens?: boolean },
   ): Promise<{ data: ResponseData }>;
 
   /**
@@ -67,7 +67,7 @@ export interface Spec extends TurboModule {
     name: string,
     data: { data: RequestData },
     // "other" platforms receives HttpsCallableStreamOptions as it is for web only
-    options: HttpsCallableOptions,
+    options: { timeout?: number; limitedUseAppCheckTokens?: boolean },
     listenerId: number,
   ): void;
 
@@ -89,7 +89,7 @@ export interface Spec extends TurboModule {
     url: string,
     data: { data: RequestData },
     // "other" platforms receives HttpsCallableStreamOptions as it is for web only
-    options: HttpsCallableOptions,
+    options: { timeout?: number; limitedUseAppCheckTokens?: boolean },
     listenerId: number,
   ): void;
 
