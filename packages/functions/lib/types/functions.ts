@@ -19,24 +19,28 @@ import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
 // ============ Options & Result Types ============
 
+/**
+ * Use for iOS and Android, for web specific options, used `HttpsCallableStreamOptions`.
+ **/
 export interface HttpsCallableOptions {
-  timeout?: number;
   /**
-   * If set to true, uses a limited-use App Check token for callable function requests from this
-   * instance of {@link Functions}. You must use limited-use tokens to call functions with
-   * replay protection enabled. By default, this is false.
+   * iOS and Android, for web specific options, used `HttpsCallableStreamOptions`.
+   * The timeout for the callable function or stream request.
    */
-  limitedUseAppCheckTokens?: boolean;
+  timeout?: number;
 }
 
+/**
+ * Use for web only, for iOS and Android specific options, used `HttpsCallableOptions`.
+ **/
 export interface HttpsCallableStreamOptions {
   /**
    * Web only. An `AbortSignal` that can be used to cancel the streaming response. When the signal is aborted,
-   * the underlying HTTP connection will be terminated.
+   * the underlying HTTP connection will be terminated. `AbortSignal` is only available on React Native >= v0.82.
    */
   signal?: AbortSignal;
   /**
-   * If set to true, uses a limited-use App Check token for callable function requests from this
+   * Web only. If set to true, uses a limited-use App Check token for callable function requests from this
    * instance of {@link Functions}. You must use limited-use tokens to call functions with
    * replay protection enabled. By default, this is false.
    */
