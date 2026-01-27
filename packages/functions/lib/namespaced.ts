@@ -15,7 +15,7 @@
  *
  */
 
-import { isAndroid, isNumber } from '@react-native-firebase/app/dist/module/common';
+import { isAndroid, isIOS, isNumber } from '@react-native-firebase/app/dist/module/common';
 import {
   createModuleNamespace,
   FirebaseModule,
@@ -285,13 +285,14 @@ class FirebaseFunctionsModule extends FirebaseModule {
       data?: unknown,
       streamOptions?: HttpsCallableStreamOptions,
     ) => {
+      const platformOptions = isAndroid || isIOS ? options : streamOptions;
       return this._createStreamHandler(listenerId => {
         this.native.httpsCallableStream(
           this._useFunctionsEmulatorHost || null,
           this._useFunctionsEmulatorPort || -1,
           name,
           { data },
-          streamOptions || {},
+          platformOptions || {},
           listenerId,
         );
       });
@@ -336,13 +337,14 @@ class FirebaseFunctionsModule extends FirebaseModule {
       data?: unknown,
       streamOptions?: HttpsCallableStreamOptions,
     ) => {
+      const platformOptions = isAndroid || isIOS ? options : streamOptions;
       return this._createStreamHandler(listenerId => {
         this.native.httpsCallableStreamFromUrl(
           this._useFunctionsEmulatorHost || null,
           this._useFunctionsEmulatorPort || -1,
           url,
           { data },
-          streamOptions || {},
+          platformOptions || {},
           listenerId,
         );
       });
