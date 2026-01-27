@@ -31,8 +31,7 @@ import FirebaseCore
   ///   - data: Data to pass to the function
   ///   - timeout: Timeout in milliseconds
   ///   - completion: Completion handler with result or error
-  @objc(callFunctionWithApp:functions:name:data:timeout:completion:)
-  public func callFunction(
+  @objc public func callFunction(
     app: FirebaseApp,
     functions: Functions,
     name: String,
@@ -52,8 +51,7 @@ import FirebaseCore
   ///   - data: Data to pass to the function
   ///   - timeout: Timeout in milliseconds
   ///   - completion: Completion handler with result or error
-  @objc(callFunctionWithURLWithApp:functions:url:data:timeout:completion:)
-  public func callFunctionWithURL(
+  @objc public func callFunctionWithURL(
     app: FirebaseApp,
     functions: Functions,
     url: String,
