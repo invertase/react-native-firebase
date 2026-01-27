@@ -100,6 +100,49 @@ async function executeCallableStream(
 }
 
 /**
+ * Helper function to get a configured Functions instance.
+ * Handles app retrieval, region/custom domain configuration, and emulator connection.
+ * @param appName - The name of the app to get the functions instance for.
+ * @param regionOrCustomDomain - The region or custom domain to use for the functions instance.
+ * @param host - The host to use for the functions emulator.
+ * @param port - The port to use for the functions emulator.
+ * @returns A configured FunctionsWebInternal instance.
+ */
+function getConfiguredFunctionsInstance(
+  appName: string,
+  regionOrCustomDomain: string | null,
+  host: string | null,
+  port: number,
+): FunctionsWebInternal {
+  const app = getApp(appName);
+  let functionsInstance: FunctionsWebInternal;
+
+  if (regionOrCustomDomain) {
+    functionsInstance = getFunctions(app, regionOrCustomDomain);
+    // Hack to work around custom domain and region not being set on the instance.
+    if (regionOrCustomDomain.startsWith('http')) {
+      functionsInstance.customDomain = regionOrCustomDomain;
+      functionsInstance.region = 'us-central1';
+    } else {
+      functionsInstance.region = regionOrCustomDomain;
+      functionsInstance.customDomain = null;
+    }
+  } else {
+    functionsInstance = getFunctions(app);
+    functionsInstance.region = 'us-central1';
+    functionsInstance.customDomain = null;
+  }
+
+  if (host) {
+    connectFunctionsEmulator(functionsInstance, host, port);
+    // Hack to work around emulator origin not being set on the instance.
+    functionsInstance.emulatorOrigin = `http://${host}:${port}`;
+  }
+
+  return functionsInstance;
+}
+
+/**
  * This is a 'NativeModule' for the web platform.
  * Methods here are identical to the ones found in
  * the native android/ios modules e.g. `@ReactMethod` annotated
@@ -127,34 +170,17 @@ export default {
     options: HttpsCallableOptions,
   ): Promise<any> {
     try {
-      const app = getApp(appName);
-      let functionsInstance: FunctionsWebInternal;
-      if (regionOrCustomDomain) {
-        functionsInstance = getFunctions(app, regionOrCustomDomain);
-        // Hack to work around custom domain and region not being set on the instance.
-        if (regionOrCustomDomain.startsWith('http')) {
-          functionsInstance.customDomain = regionOrCustomDomain;
-          functionsInstance.region = 'us-central1';
-        } else {
-          functionsInstance.region = regionOrCustomDomain;
-          functionsInstance.customDomain = null;
-        }
-      } else {
-        functionsInstance = getFunctions(app);
-        functionsInstance.region = 'us-central1';
-        functionsInstance.customDomain = null;
-      }
-      if (host) {
-        connectFunctionsEmulator(functionsInstance, host, port);
-        // Hack to work around emulator origin not being set on the instance.
-        functionsInstance.emulatorOrigin = `http://${host}:${port}`;
-      }
-      let callable;
-      if (Object.keys(options).length) {
-        callable = httpsCallable(functionsInstance, name, options);
-      } else {
-        callable = httpsCallable(functionsInstance, name);
-      }
+      const functionsInstance = getConfiguredFunctionsInstance(
+        appName,
+        regionOrCustomDomain,
+        host,
+        port,
+      );
+
+      const callable = Object.keys(options).length
+        ? httpsCallable(functionsInstance, name, options)
+        : httpsCallable(functionsInstance, name);
+
       // if data is undefined use null,
       const data = wrapper['data'] ?? null;
       const result = await callable(data);
@@ -194,26 +220,13 @@ export default {
     options: HttpsCallableOptions,
   ): Promise<any> {
     try {
-      const app = getApp(appName);
-      let functionsInstance: FunctionsWebInternal;
-      if (regionOrCustomDomain) {
-        functionsInstance = getFunctions(app, regionOrCustomDomain);
-        // Hack to work around custom domain and region not being set on the instance.
-        if (regionOrCustomDomain.startsWith('http')) {
-          functionsInstance.customDomain = regionOrCustomDomain;
-        } else {
-          functionsInstance.region = regionOrCustomDomain;
-        }
-      } else {
-        functionsInstance = getFunctions(app);
-        functionsInstance.region = 'us-central1';
-        functionsInstance.customDomain = null;
-      }
-      if (host) {
-        connectFunctionsEmulator(functionsInstance, host, port);
-        // Hack to work around emulator origin not being set on the instance.
-        functionsInstance.emulatorOrigin = `http://${host}:${port}`;
-      }
+      const functionsInstance = getConfiguredFunctionsInstance(
+        appName,
+        regionOrCustomDomain,
+        host,
+        port,
+      );
+
       const callable = httpsCallableFromURL(functionsInstance, url, options);
       const result = await callable(wrapper['data']);
       return result;
@@ -252,35 +265,16 @@ export default {
     options: HttpsCallableOptions,
     listenerId: number,
   ): Promise<void> {
-    const app = getApp(appName);
-    let functionsInstance: FunctionsWebInternal;
-    if (regionOrCustomDomain) {
-      functionsInstance = getFunctions(app, regionOrCustomDomain);
-      // Hack to work around custom domain and region not being set on the instance.
-      if (regionOrCustomDomain.startsWith('http')) {
-        functionsInstance.customDomain = regionOrCustomDomain;
-        functionsInstance.region = 'us-central1';
-      } else {
-        functionsInstance.region = regionOrCustomDomain;
-        functionsInstance.customDomain = null;
-      }
-    } else {
-      functionsInstance = getFunctions(app);
-      functionsInstance.region = 'us-central1';
-      functionsInstance.customDomain = null;
-    }
-    if (host) {
-      connectFunctionsEmulator(functionsInstance, host, port);
-      // Hack to work around emulator origin not being set on the instance.
-      functionsInstance.emulatorOrigin = `http://${host}:${port}`;
-    }
+    const functionsInstance = getConfiguredFunctionsInstance(
+      appName,
+      regionOrCustomDomain,
+      host,
+      port,
+    );
 
-    let callable;
-    if (Object.keys(options).length) {
-      callable = httpsCallable(functionsInstance, name, options);
-    } else {
-      callable = httpsCallable(functionsInstance, name);
-    }
+    const callable = Object.keys(options).length
+      ? httpsCallable(functionsInstance, name, options)
+      : httpsCallable(functionsInstance, name);
 
     const region = regionOrCustomDomain || 'us-central1';
     await executeCallableStream(callable, appName, region, wrapper.data, listenerId);
@@ -307,28 +301,12 @@ export default {
     options: HttpsCallableOptions,
     listenerId: number,
   ): Promise<void> {
-    const app = getApp(appName);
-    let functionsInstance: FunctionsWebInternal;
-    if (regionOrCustomDomain) {
-      functionsInstance = getFunctions(app, regionOrCustomDomain);
-      // Hack to work around custom domain and region not being set on the instance.
-      if (regionOrCustomDomain.startsWith('http')) {
-        functionsInstance.customDomain = regionOrCustomDomain;
-        functionsInstance.region = 'us-central1';
-      } else {
-        functionsInstance.region = regionOrCustomDomain;
-        functionsInstance.customDomain = null;
-      }
-    } else {
-      functionsInstance = getFunctions(app);
-      functionsInstance.region = 'us-central1';
-      functionsInstance.customDomain = null;
-    }
-    if (host) {
-      connectFunctionsEmulator(functionsInstance, host, port);
-      // Hack to work around emulator origin not being set on the instance.
-      functionsInstance.emulatorOrigin = `http://${host}:${port}`;
-    }
+    const functionsInstance = getConfiguredFunctionsInstance(
+      appName,
+      regionOrCustomDomain,
+      host,
+      port,
+    );
 
     const callable = httpsCallableFromURL(functionsInstance, url, options);
     const region = regionOrCustomDomain || 'us-central1';
