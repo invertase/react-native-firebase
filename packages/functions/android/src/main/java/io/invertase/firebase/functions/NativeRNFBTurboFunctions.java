@@ -79,11 +79,14 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
     Integer port = emulatorHost != null ? (int) emulatorPort : null;
 
     Task<Object> callMethodTask =
-        httpsCallableInternal(appName, region, emulatorHost, port, name, null, callableData, options);
+        httpsCallableInternal(
+            appName, region, emulatorHost, port, name, null, callableData, options);
 
     callMethodTask.addOnSuccessListener(
         getExecutor(),
-        result -> promise.resolve(RCTConvertFirebase.mapPutValue(DATA_KEY, result, Arguments.createMap())));
+        result ->
+            promise.resolve(
+                RCTConvertFirebase.mapPutValue(DATA_KEY, result, Arguments.createMap())));
 
     callMethodTask.addOnFailureListener(
         getExecutor(), exception -> handleFunctionsException(exception, promise));
@@ -104,11 +107,14 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
     Integer port = emulatorHost != null ? (int) emulatorPort : null;
 
     Task<Object> callMethodTask =
-        httpsCallableInternal(appName, region, emulatorHost, port, null, url, callableData, options);
+        httpsCallableInternal(
+            appName, region, emulatorHost, port, null, url, callableData, options);
 
     callMethodTask.addOnSuccessListener(
         getExecutor(),
-        result -> promise.resolve(RCTConvertFirebase.mapPutValue(DATA_KEY, result, Arguments.createMap())));
+        result ->
+            promise.resolve(
+                RCTConvertFirebase.mapPutValue(DATA_KEY, result, Arguments.createMap())));
 
     callMethodTask.addOnFailureListener(
         getExecutor(), exception -> handleFunctionsException(exception, promise));
@@ -182,15 +188,17 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
                 }
 
                 // Create HttpsCallableOptions with limitedUseAppCheckTokens
-                HttpsCallableOptions callableOptions = new HttpsCallableOptions.Builder()
-                    .setLimitedUseAppCheckTokens(limitedUseAppCheckTokens)
-                    .build();
+                HttpsCallableOptions callableOptions =
+                    new HttpsCallableOptions.Builder()
+                        .setLimitedUseAppCheckTokens(limitedUseAppCheckTokens)
+                        .build();
 
                 // Create reference based on which parameter is provided
                 HttpsCallableReference httpReference;
                 if (url != null) {
                   URL parsedUrl = new URL(url);
-                  httpReference = functionsInstance.getHttpsCallableFromUrl(parsedUrl, callableOptions);
+                  httpReference =
+                      functionsInstance.getHttpsCallableFromUrl(parsedUrl, callableOptions);
                 } else {
                   httpReference = functionsInstance.getHttpsCallable(name, callableOptions);
                 }
@@ -242,15 +250,17 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
                 }
 
                 // Create HttpsCallableOptions with limitedUseAppCheckTokens
-                HttpsCallableOptions callableOptions = new HttpsCallableOptions.Builder()
-                    .setLimitedUseAppCheckTokens(limitedUseAppCheckTokens)
-                    .build();
+                HttpsCallableOptions callableOptions =
+                    new HttpsCallableOptions.Builder()
+                        .setLimitedUseAppCheckTokens(limitedUseAppCheckTokens)
+                        .build();
 
                 // Create reference based on which parameter is provided
                 HttpsCallableReference httpReference;
                 if (url != null) {
                   URL parsedUrl = new URL(url);
-                  httpReference = functionsInstance.getHttpsCallableFromUrl(parsedUrl, callableOptions);
+                  httpReference =
+                      functionsInstance.getHttpsCallableFromUrl(parsedUrl, callableOptions);
                 } else {
                   httpReference = functionsInstance.getHttpsCallable(name, callableOptions);
                 }
@@ -262,16 +272,16 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
                 Publisher<StreamResponse> publisher = httpReference.stream(data);
 
                 publisher.subscribe(
-                  new Subscriber<>() {
+                    new Subscriber<>() {
 
-                    @Override
-                    public void onSubscribe(Subscription s) {
-                      functionsStreamingListeners.put(listenerId, s);
-                      s.request(Long.MAX_VALUE);
-                    }
+                      @Override
+                      public void onSubscribe(Subscription s) {
+                        functionsStreamingListeners.put(listenerId, s);
+                        s.request(Long.MAX_VALUE);
+                      }
 
-                    @Override
-                    public void onNext(StreamResponse streamResponse) {
+                      @Override
+                      public void onNext(StreamResponse streamResponse) {
 
                         Object responseData = null;
                         boolean isFinalResult = false;
@@ -289,24 +299,24 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
                         } else {
                           emitStreamEvent(appName, listenerId, responseData, false, null);
                         }
-                    }
+                      }
 
-                    @Override
-                    public void onError(Throwable t) {
-                      WritableMap errorMap = createErrorMap(t);
-                      emitStreamEvent(appName, listenerId, null, true, errorMap);
-                      removeFunctionsStreamingListener(listenerId);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                      Object listener = functionsStreamingListeners.get(listenerId);
-                      if (listener != null) {
-                        emitStreamEventWithDone(appName, listenerId, null);
+                      @Override
+                      public void onError(Throwable t) {
+                        WritableMap errorMap = createErrorMap(t);
+                        emitStreamEvent(appName, listenerId, null, true, errorMap);
                         removeFunctionsStreamingListener(listenerId);
                       }
-                    }
-                  });
+
+                      @Override
+                      public void onComplete() {
+                        Object listener = functionsStreamingListeners.get(listenerId);
+                        if (listener != null) {
+                          emitStreamEventWithDone(appName, listenerId, null);
+                          removeFunctionsStreamingListener(listenerId);
+                        }
+                      }
+                    });
               } catch (Exception e) {
                 WritableMap errorMap = createErrorMap(e);
                 emitStreamEvent(appName, listenerId, null, true, errorMap);
@@ -361,10 +371,10 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
 
   private void handleFunctionsException(Exception exception, Promise promise) {
     WritableMap errorMap = createErrorMap(exception);
-    
+
     String code = errorMap.getString(CODE_KEY);
     String message = errorMap.getString(MSG_KEY);
-    
+
     promise.reject(code, message, exception, errorMap);
   }
 
@@ -374,8 +384,10 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
     String message = throwable.getMessage() != null ? throwable.getMessage() : throwable.toString();
 
     // Check if the throwable contains a FirebaseFunctionsException
-    if (throwable.getCause() != null && throwable.getCause() instanceof FirebaseFunctionsException) {
-      FirebaseFunctionsException functionsException = (FirebaseFunctionsException) throwable.getCause();
+    if (throwable.getCause() != null
+        && throwable.getCause() instanceof FirebaseFunctionsException) {
+      FirebaseFunctionsException functionsException =
+          (FirebaseFunctionsException) throwable.getCause();
       details = functionsException.getDetails();
       code = functionsException.getCode().name();
       message = functionsException.getMessage();
@@ -404,7 +416,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
     errorMap.putString(CODE_KEY, code);
     errorMap.putString(MSG_KEY, message);
     RCTConvertFirebase.mapPutValue(DETAILS_KEY, details, errorMap);
-    
+
     return errorMap;
   }
 
