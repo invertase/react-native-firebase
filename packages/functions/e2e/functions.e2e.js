@@ -414,120 +414,268 @@ describe('functions() modular', function () {
     });
 
     describe('httpsCallable.stream()', function () {
-      // NOTE: The Firebase Functions emulator does not currently support streaming callables,
-      // even though the SDK APIs exist. These tests verify the API surface exists and will
-      // be updated to test actual streaming behavior once emulator support is added.
-      // See: packages/functions/STREAMING_STATUS.md
-
-      it('stream method exists on httpsCallable', function () {
+      it('should stream data chunks from a basic streaming function', async function () {
         const functionRunner = firebase.functions().httpsCallable('testStreamingCallable');
+        const { stream, data } = await functionRunner.stream({ count: 5, delay: 500 });
 
-        should.exist(functionRunner.stream);
-        functionRunner.stream.should.be.a.Function();
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.length.should.be.greaterThan(0);
+
+        const result = await data;
+        result.should.be.an.Object();
       });
 
-      it('stream method returns a function (unsubscribe)', function () {
-        const functions = firebase.functions();
-        functions.useEmulator('localhost', 5001);
-        const functionRunner = functions.httpsCallable('testStreamingCallable');
+      it('should stream progress updates', async function () {
+        const functionRunner = firebase.functions().httpsCallable('testProgressStream');
+        const { stream, data } = await functionRunner.stream({ task: 'TestTask' });
 
-        const unsubscribe = functionRunner.stream({ count: 2 }, () => {});
-
-        should.exist(unsubscribe);
-        unsubscribe.should.be.a.Function();
-
-        // Clean up
-        unsubscribe();
-      });
-
-      it('unsubscribe function can be called multiple times safely', function () {
-        const functions = firebase.functions();
-        functions.useEmulator('localhost', 5001);
-        const functionRunner = functions.httpsCallable('testStreamingCallable');
-
-        const unsubscribe = functionRunner.stream({ count: 2 }, () => {});
-
-        // Should not throw
-        unsubscribe();
-        unsubscribe();
-        unsubscribe();
-      });
-
-      it('stream method accepts data and callback parameters', function () {
-        const functions = firebase.functions();
-        functions.useEmulator('localhost', 5001);
-        const functionRunner = functions.httpsCallable('testStreamingCallable');
-
-        const unsubscribe = functionRunner.stream({ count: 2, delay: 100 }, _event => {
-          // Callback will be invoked when streaming works
-        });
-
-        should.exist(unsubscribe);
-        unsubscribe();
-      });
-
-      it('stream method accepts options parameter', function () {
-        const functions = firebase.functions();
-        functions.useEmulator('localhost', 5001);
-        const functionRunner = functions.httpsCallable('testStreamingCallable');
-
-        const unsubscribe = functionRunner.stream({ count: 2 }, () => {}, { timeout: 5000 });
-
-        should.exist(unsubscribe);
-        unsubscribe();
-      });
-
-      it('receives streaming data chunks', function (done) {
-        const functions = firebase.functions();
-        functions.useEmulator('localhost', 5001);
-        const events = [];
-        const functionRunner = functions.httpsCallable('testStreamingCallable');
-
-        const unsubscribe = functionRunner.stream({ count: 3, delay: 200 }, event => {
-          events.push(event);
-
-          if (event.done) {
-            try {
-              events.length.should.be.greaterThan(1);
-              const dataEvents = events.filter(e => e.data && !e.done);
-              dataEvents.length.should.be.greaterThan(0);
-              // Verify we actually received data in the chunks
-              dataEvents.forEach(dataEvent => {
-                should.exist(dataEvent.data);
-                dataEvent.data.should.be.an.Object();
-                should.exist(dataEvent.data.index);
-                should.exist(dataEvent.data.message);
-              });
-              const doneEvent = events[events.length - 1];
-              doneEvent.done.should.equal(true);
-              // Final result should also have data
-              should.exist(doneEvent.data);
-              doneEvent.data.should.be.an.Object();
-              should.exist(doneEvent.data.totalCount);
-              unsubscribe();
-              done();
-            } catch (e) {
-              unsubscribe();
-              done(e);
-            }
+        const progressUpdates = [];
+        for await (const chunk of stream) {
+          if (chunk.progress !== undefined) {
+            progressUpdates.push(chunk.progress);
           }
-        });
+        }
+
+        progressUpdates.length.should.be.greaterThan(0);
+
+        const result = await data;
+        result.should.be.an.Object();
       });
 
-      it('stream method exists on httpsCallableFromUrl', function () {
+      it('should handle complex data structures in stream', async function () {
+        const functionRunner = firebase.functions().httpsCallable('testComplexDataStream');
+        const { stream, data } = await functionRunner.stream({});
+
+        const complexChunks = [];
+        for await (const chunk of stream) {
+          complexChunks.push(chunk);
+        }
+
+        complexChunks.length.should.be.greaterThan(0);
+
+        const result = await data;
+        result.should.be.an.Object();
+      });
+
+      it('should work with HttpsCallableOptions.timeout', async function () {
+        const functionRunner = firebase.functions().httpsCallable('testStreamingCallable', {
+          timeout: 10000,
+        });
+        const { stream, data } = await functionRunner.stream({ count: 3, delay: 300 });
+
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.length.should.be.greaterThan(0);
+
+        const result = await data;
+        result.should.be.an.Object();
+      });
+
+      it('should accept stream options as second parameter', async function () {
+        const functionRunner = firebase.functions().httpsCallable('testStreamingCallable');
+        const { stream, data } = await functionRunner.stream(
+          { count: 3, delay: 300 },
+          { limitedUseAppCheckTokens: false },
+        );
+
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.length.should.be.greaterThan(0);
+
+        const result = await data;
+        result.should.be.an.Object();
+      });
+
+      it('should handle empty data parameter', async function () {
+        const functionRunner = firebase.functions().httpsCallable('testComplexDataStream');
+        const { stream, data } = await functionRunner.stream();
+
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.length.should.be.greaterThan(0);
+
+        const result = await data;
+        result.should.be.an.Object();
+      });
+
+      it('should handle null data parameter', async function () {
+        const functionRunner = firebase.functions().httpsCallable('testStreamingCallableWithNull');
+        const { stream, data } = await functionRunner.stream(null);
+
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        const result = await data;
+        result.should.be.an.Object();
+        result.should.have.property('success');
+        result.success.should.equal(true);
+      });
+
+      it('should return both stream and data promise', async function () {
+        const functionRunner = firebase.functions().httpsCallable('testStreamingCallable');
+        const result = await functionRunner.stream({ count: 2, delay: 200 });
+
+        result.should.have.property('stream');
+        result.should.have.property('data');
+        result.stream.should.be.an.Object();
+        result.data.should.be.a.Promise();
+
+        // Consume the stream
+        for await (const chunk of result.stream) {
+          // Just consume
+        }
+
+        const finalData = await result.data;
+        finalData.should.be.an.Object();
+      });
+
+      it('should work with multiple streams in parallel', async function () {
+        const functionRunner1 = firebase.functions().httpsCallable('testStreamingCallable');
+        const functionRunner2 = firebase.functions().httpsCallable('testStreamingCallable');
+
+        const [result1, result2] = await Promise.all([
+          functionRunner1.stream({ count: 2, delay: 200 }),
+          functionRunner2.stream({ count: 2, delay: 200 }),
+        ]);
+
+        const chunks1 = [];
+        const chunks2 = [];
+
+        const [_, __] = await Promise.all([
+          (async () => {
+            for await (const chunk of result1.stream) {
+              chunks1.push(chunk);
+            }
+          })(),
+          (async () => {
+            for await (const chunk of result2.stream) {
+              chunks2.push(chunk);
+            }
+          })(),
+        ]);
+
+        chunks1.length.should.be.greaterThan(0);
+        chunks2.length.should.be.greaterThan(0);
+
+        const [data1, data2] = await Promise.all([result1.data, result2.data]);
+        data1.should.be.an.Object();
+        data2.should.be.an.Object();
+      });
+    });
+
+    describe('httpsCallableFromUrl.stream()', function () {
+      it('should stream data chunks from URL', async function () {
         let hostname = 'localhost';
         if (Platform.android) {
           hostname = '10.0.2.2';
         }
-
         const functionRunner = firebase
           .functions()
           .httpsCallableFromUrl(
             `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,
           );
+        const { stream, data } = await functionRunner.stream({ count: 3, delay: 400 });
 
-        should.exist(functionRunner.stream);
-        functionRunner.stream.should.be.a.Function();
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.length.should.be.greaterThan(0);
+
+        const result = await data;
+        result.should.be.an.Object();
+      });
+
+      it('should work with HttpsCallableOptions.timeout on URL stream', async function () {
+        let hostname = 'localhost';
+        if (Platform.android) {
+          hostname = '10.0.2.2';
+        }
+        const functionRunner = firebase
+          .functions()
+          .httpsCallableFromUrl(
+            `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,
+            { timeout: 10000 },
+          );
+        const { stream, data } = await functionRunner.stream({ count: 2, delay: 300 });
+
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.length.should.be.greaterThan(0);
+
+        const result = await data;
+        result.should.be.an.Object();
+      });
+
+      it('should accept stream options as second parameter for URL', async function () {
+        let hostname = 'localhost';
+        if (Platform.android) {
+          hostname = '10.0.2.2';
+        }
+        const functionRunner = firebase
+          .functions()
+          .httpsCallableFromUrl(
+            `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,
+          );
+        const { stream, data } = await functionRunner.stream(
+          { count: 2, delay: 300 },
+          { limitedUseAppCheckTokens: false },
+        );
+
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.length.should.be.greaterThan(0);
+
+        const result = await data;
+        result.should.be.an.Object();
+      });
+
+      it('should return both stream and data promise for URL', async function () {
+        let hostname = 'localhost';
+        if (Platform.android) {
+          hostname = '10.0.2.2';
+        }
+        const functionRunner = firebase
+          .functions()
+          .httpsCallableFromUrl(
+            `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,
+          );
+        const result = await functionRunner.stream({ count: 2, delay: 200 });
+
+        result.should.have.property('stream');
+        result.should.have.property('data');
+        result.stream.should.be.an.Object();
+        result.data.should.be.a.Promise();
+
+        // Consume the stream
+        for await (const chunk of result.stream) {
+          // Just consume
+        }
+
+        const finalData = await result.data;
+        finalData.should.be.an.Object();
       });
     });
   });
