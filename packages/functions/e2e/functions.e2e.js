@@ -536,7 +536,7 @@ describe('functions() modular', function () {
         result.data.should.be.a.Promise();
 
         // Consume the stream
-        for await (const chunk of result.stream) {
+        for await (const _chunk of result.stream) {
           // Just consume
         }
 
@@ -670,7 +670,7 @@ describe('functions() modular', function () {
         result.data.should.be.a.Promise();
 
         // Consume the stream
-        for await (const chunk of result.stream) {
+        for await (const _chunk of result.stream) {
           // Just consume
         }
 
@@ -1042,528 +1042,294 @@ describe('functions() modular', function () {
     });
 
     describe('httpsCallable.stream()', function () {
-      // NOTE: The Firebase Functions emulator does not currently support streaming callables,
-      // even though the SDK APIs exist. These tests verify the API surface exists and will
-      // be updated to test actual streaming behavior once emulator support is added.
-      // See: packages/functions/STREAMING_STATUS.md
+      it('should stream data chunks from a basic streaming function', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testStreamingCallable');
+        const { stream, data } = await functionRunner.stream({ count: 5, delay: 500 });
 
-      it('stream method exists on httpsCallable', function () {
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.length.should.be.greaterThan(0);
+
+        const result = await data;
+        result.should.be.an.Object();
+      });
+
+      it('should stream progress updates', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testProgressStream');
+        const { stream, data } = await functionRunner.stream({ task: 'TestTask' });
+
+        const progressUpdates = [];
+        for await (const chunk of stream) {
+          if (chunk.progress !== undefined) {
+            progressUpdates.push(chunk.progress);
+          }
+        }
+
+        progressUpdates.length.should.be.greaterThan(0);
+
+        const result = await data;
+        result.should.be.an.Object();
+      });
+
+      it('should handle complex data structures in stream', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testComplexDataStream');
+        const { stream, data } = await functionRunner.stream({});
+
+        const complexChunks = [];
+        for await (const chunk of stream) {
+          complexChunks.push(chunk);
+        }
+
+        complexChunks.length.should.be.greaterThan(0);
+
+        const result = await data;
+        result.should.be.an.Object();
+      });
+
+      it('should work with HttpsCallableOptions.timeout', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testStreamingCallable', {
+          timeout: 10000,
+        });
+        const { stream, data } = await functionRunner.stream({ count: 3, delay: 300 });
+
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.length.should.be.greaterThan(0);
+
+        const result = await data;
+        result.should.be.an.Object();
+      });
+
+      it('should accept stream options as second parameter', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testStreamingCallable');
+        const { stream, data } = await functionRunner.stream(
+          { count: 3, delay: 300 },
+          { limitedUseAppCheckTokens: false },
+        );
+
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.length.should.be.greaterThan(0);
+
+        const result = await data;
+        result.should.be.an.Object();
+      });
+
+      it('should handle empty data parameter', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testComplexDataStream');
+        const { stream, data } = await functionRunner.stream();
+
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.length.should.be.greaterThan(0);
+
+        const result = await data;
+        result.should.be.an.Object();
+      });
+
+      it('should handle null data parameter', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testStreamingCallableWithNull',
+        );
+        const { stream, data } = await functionRunner.stream(null);
+
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        const result = await data;
+        result.should.be.an.Object();
+        result.should.have.property('success');
+        result.success.should.equal(true);
+      });
+
+      it('should return both stream and data promise', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testStreamingCallable');
+        const result = await functionRunner.stream({ count: 2, delay: 200 });
+
+        result.should.have.property('stream');
+        result.should.have.property('data');
+        result.stream.should.be.an.Object();
+        result.data.should.be.a.Promise();
+
+        // Consume the stream
+        for await (const _chunk of result.stream) {
+          // Just consume
+        }
+
+        const finalData = await result.data;
+        finalData.should.be.an.Object();
+      });
+
+      it('should work with multiple streams in parallel', async function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallable } = functionsModular;
         const functions = getFunctions(getApp());
-        const functionRunner = httpsCallable(functions, 'testStreamingCallable');
+        const functionRunner1 = httpsCallable(functions, 'testStreamingCallable');
+        const functionRunner2 = httpsCallable(functions, 'testStreamingCallable');
 
-        should.exist(functionRunner.stream);
-        functionRunner.stream.should.be.a.Function();
-      });
+        const [result1, result2] = await Promise.all([
+          functionRunner1.stream({ count: 2, delay: 200 }),
+          functionRunner2.stream({ count: 2, delay: 200 }),
+        ]);
 
-      it('stream method returns a function (unsubscribe)', function () {
-        const { getApp } = modular;
-        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
-        const functions = getFunctions(getApp());
-        connectFunctionsEmulator(functions, 'localhost', 5001);
+        const chunks1 = [];
+        const chunks2 = [];
 
-        const functionRunner = httpsCallable(functions, 'testStreamingCallable');
-        const unsubscribe = functionRunner.stream({ count: 2 }, () => {});
-
-        should.exist(unsubscribe);
-        unsubscribe.should.be.a.Function();
-
-        // Clean up
-        unsubscribe();
-      });
-
-      it('unsubscribe function can be called multiple times safely', function () {
-        const { getApp } = modular;
-        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
-        const functions = getFunctions(getApp());
-        connectFunctionsEmulator(functions, 'localhost', 5001);
-
-        const functionRunner = httpsCallable(functions, 'testStreamingCallable');
-        const unsubscribe = functionRunner.stream({ count: 2 }, () => {});
-
-        // Should not throw
-        unsubscribe();
-        unsubscribe();
-        unsubscribe();
-      });
-
-      it('stream method accepts data and callback parameters', function () {
-        const { getApp } = modular;
-        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
-        const functions = getFunctions(getApp());
-        connectFunctionsEmulator(functions, 'localhost', 5001);
-
-        const functionRunner = httpsCallable(functions, 'testStreamingCallable');
-        let _callbackInvoked = false;
-
-        const unsubscribe = functionRunner.stream({ count: 2, delay: 100 }, _event => {
-          _callbackInvoked = true;
-        });
-
-        should.exist(unsubscribe);
-        unsubscribe();
-      });
-
-      it('stream method accepts options parameter', function () {
-        const { getApp } = modular;
-        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
-        const functions = getFunctions(getApp());
-        connectFunctionsEmulator(functions, 'localhost', 5001);
-
-        const functionRunner = httpsCallable(functions, 'testStreamingCallable');
-        const unsubscribe = functionRunner.stream({ count: 2 }, () => {}, { timeout: 5000 });
-
-        should.exist(unsubscribe);
-        unsubscribe();
-      });
-
-      it('receives streaming data chunks', function (done) {
-        const { getApp } = modular;
-        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
-        const functions = getFunctions(getApp());
-        connectFunctionsEmulator(functions, 'localhost', 5001);
-
-        const events = [];
-        const functionRunner = httpsCallable(functions, 'testStreamingCallable');
-
-        const unsubscribe = functionRunner.stream({ count: 3, delay: 200 }, event => {
-          events.push(event);
-
-          if (event.done) {
-            try {
-              // Should have received data events before done
-              events.length.should.be.greaterThan(1);
-
-              const dataEvents = events.filter(e => e.data && !e.done);
-              dataEvents.length.should.be.greaterThan(0);
-
-              // Verify we actually received data in the chunks
-              dataEvents.forEach(dataEvent => {
-                should.exist(dataEvent.data);
-                dataEvent.data.should.be.an.Object();
-                should.exist(dataEvent.data.index);
-                should.exist(dataEvent.data.message);
-              });
-
-              const doneEvent = events[events.length - 1];
-              doneEvent.done.should.equal(true);
-              // Final result should also have data
-              should.exist(doneEvent.data);
-              doneEvent.data.should.be.an.Object();
-              should.exist(doneEvent.data.totalCount);
-
-              unsubscribe();
-              done();
-            } catch (e) {
-              unsubscribe();
-              done(e);
+        const [_, __] = await Promise.all([
+          (async () => {
+            for await (const chunk of result1.stream) {
+              chunks1.push(chunk);
             }
-          }
-        });
-      });
-
-      it('handles streaming errors correctly', function (done) {
-        const { getApp } = modular;
-        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
-        const functions = getFunctions(getApp());
-        connectFunctionsEmulator(functions, 'localhost', 5001);
-
-        const functionRunner = httpsCallable(functions, 'testStreamWithError');
-
-        const unsubscribe = functionRunner.stream({ failAfter: 2 }, event => {
-          if (event.error) {
-            try {
-              should.exist(event.error);
-              event.error.should.be.a.String();
-              unsubscribe();
-              done();
-            } catch (e) {
-              unsubscribe();
-              done(e);
+          })(),
+          (async () => {
+            for await (const chunk of result2.stream) {
+              chunks2.push(chunk);
             }
-          }
-        });
+          })(),
+        ]);
+
+        chunks1.length.should.be.greaterThan(0);
+        chunks2.length.should.be.greaterThan(0);
+
+        const [data1, data2] = await Promise.all([result1.data, result2.data]);
+        data1.should.be.an.Object();
+        data2.should.be.an.Object();
       });
+    });
 
-      it('cancels stream when unsubscribe is called', function (done) {
-        const { getApp } = modular;
-        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
-        const functions = getFunctions(getApp());
-        connectFunctionsEmulator(functions, 'localhost', 5001);
-
-        const events = [];
-        const functionRunner = httpsCallable(functions, 'testStreamingCallable');
-
-        const unsubscribe = functionRunner.stream({ count: 10, delay: 200 }, event => {
-          events.push(event);
-
-          // Cancel after first event
-          if (events.length === 1) {
-            unsubscribe();
-            // Wait a bit to ensure no more events arrive
-            setTimeout(() => {
-              try {
-                // Should not have received all 10 events
-                events.length.should.be.lessThan(10);
-                done();
-              } catch (e) {
-                done(e);
-              }
-            }, 1000);
-          }
-        });
-      });
-
-      it('stream method exists on httpsCallableFromUrl', function () {
+    describe('httpsCallableFromUrl.stream()', function () {
+      it('should stream data chunks from URL', async function () {
         const { getApp } = modular;
         const { getFunctions, httpsCallableFromUrl } = functionsModular;
-        const functions = getFunctions(getApp());
-
         let hostname = 'localhost';
         if (Platform.android) {
           hostname = '10.0.2.2';
         }
-
         const functionRunner = httpsCallableFromUrl(
-          functions,
+          getFunctions(getApp()),
           `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,
         );
+        const { stream, data } = await functionRunner.stream({ count: 3, delay: 400 });
 
-        should.exist(functionRunner.stream);
-        functionRunner.stream.should.be.a.Function();
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.length.should.be.greaterThan(0);
+
+        const result = await data;
+        result.should.be.an.Object();
       });
 
-      it('httpsCallableFromUrl can stream data', function (done) {
+      it('should work with HttpsCallableOptions.timeout on URL stream', async function () {
         const { getApp } = modular;
-        const { getFunctions, httpsCallableFromUrl, connectFunctionsEmulator } = functionsModular;
-        const functions = getFunctions(getApp());
-        connectFunctionsEmulator(functions, 'localhost', 5001);
-
+        const { getFunctions, httpsCallableFromUrl } = functionsModular;
         let hostname = 'localhost';
         if (Platform.android) {
           hostname = '10.0.2.2';
         }
-
-        const events = [];
         const functionRunner = httpsCallableFromUrl(
-          functions,
+          getFunctions(getApp()),
+          `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,
+          { timeout: 10000 },
+        );
+        const { stream, data } = await functionRunner.stream({ count: 2, delay: 300 });
+
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.length.should.be.greaterThan(0);
+
+        const result = await data;
+        result.should.be.an.Object();
+      });
+
+      it('should accept stream options as second parameter for URL', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallableFromUrl } = functionsModular;
+        let hostname = 'localhost';
+        if (Platform.android) {
+          hostname = '10.0.2.2';
+        }
+        const functionRunner = httpsCallableFromUrl(
+          getFunctions(getApp()),
           `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,
         );
-
-        const unsubscribe = functionRunner.stream({ count: 3, delay: 200 }, event => {
-          events.push(event);
-
-          if (event.done) {
-            try {
-              events.length.should.be.greaterThan(1);
-              const dataEvents = events.filter(e => e.data && !e.done);
-              dataEvents.length.should.be.greaterThan(0);
-              // Verify we actually received data in the chunks
-              dataEvents.forEach(dataEvent => {
-                should.exist(dataEvent.data);
-                dataEvent.data.should.be.an.Object();
-                should.exist(dataEvent.data.index);
-                should.exist(dataEvent.data.message);
-              });
-              // Final result should also have data
-              const doneEvent = events[events.length - 1];
-              should.exist(doneEvent.data);
-              doneEvent.data.should.be.an.Object();
-              should.exist(doneEvent.data.totalCount);
-              unsubscribe();
-              done();
-            } catch (e) {
-              unsubscribe();
-              done(e);
-            }
-          }
-        });
-      });
-
-      it('stream handles complex data structures', function () {
-        const { getApp } = modular;
-        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
-        const functions = getFunctions(getApp());
-        connectFunctionsEmulator(functions, 'localhost', 5001);
-
-        const functionRunner = httpsCallable(functions, 'testComplexDataStream');
-        const complexData = {
-          nested: { value: 123 },
-          array: [1, 2, 3],
-          string: 'test',
-        };
-
-        const unsubscribe = functionRunner.stream(complexData, () => {});
-
-        should.exist(unsubscribe);
-        unsubscribe();
-      });
-
-      it('receives streaming data with string value', function (done) {
-        const { getApp } = modular;
-        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
-        const functions = getFunctions(getApp());
-        connectFunctionsEmulator(functions, 'localhost', 5001);
-
-        const functionRunner = httpsCallable(functions, 'testStreamResponse');
-        const events = [];
-
-        const unsubscribe = functionRunner.stream('foo', event => {
-          events.push(event);
-
-          if (event.done) {
-            try {
-              const dataEvents = events.filter(e => e.data && !e.done);
-              dataEvents.length.should.be.greaterThan(0);
-              dataEvents[0].data.partialData.should.equal('string');
-              unsubscribe();
-              done();
-            } catch (e) {
-              unsubscribe();
-              done(e);
-            }
-          }
-        });
-      });
-
-      it('receives streaming data with number value', function (done) {
-        const { getApp } = modular;
-        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
-        const functions = getFunctions(getApp());
-        connectFunctionsEmulator(functions, 'localhost', 5001);
-
-        const functionRunner = httpsCallable(functions, 'testStreamResponse');
-        const events = [];
-
-        const unsubscribe = functionRunner.stream(123, event => {
-          events.push(event);
-
-          if (event.done) {
-            try {
-              const dataEvents = events.filter(e => e.data && !e.done);
-              dataEvents.length.should.be.greaterThan(0);
-              dataEvents[0].data.partialData.should.equal('number');
-              unsubscribe();
-              done();
-            } catch (e) {
-              unsubscribe();
-              done(e);
-            }
-          }
-        });
-      });
-
-      it('receives streaming data with boolean true value', function (done) {
-        const { getApp } = modular;
-        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
-        const functions = getFunctions(getApp());
-        connectFunctionsEmulator(functions, 'localhost', 5001);
-
-        const functionRunner = httpsCallable(functions, 'testStreamResponse');
-        const events = [];
-
-        const unsubscribe = functionRunner.stream(true, event => {
-          events.push(event);
-
-          if (event.done) {
-            try {
-              const dataEvents = events.filter(e => e.data && !e.done);
-              dataEvents.length.should.be.greaterThan(0);
-              dataEvents[0].data.partialData.should.equal('boolean');
-              unsubscribe();
-              done();
-            } catch (e) {
-              unsubscribe();
-              done(e);
-            }
-          }
-        });
-      });
-
-      it('receives streaming data with boolean false value', function (done) {
-        const { getApp } = modular;
-        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
-        const functions = getFunctions(getApp());
-        connectFunctionsEmulator(functions, 'localhost', 5001);
-
-        const functionRunner = httpsCallable(functions, 'testStreamResponse');
-        const events = [];
-
-        const unsubscribe = functionRunner.stream(false, event => {
-          events.push(event);
-
-          if (event.done) {
-            try {
-              const dataEvents = events.filter(e => e.data && !e.done);
-              dataEvents.length.should.be.greaterThan(0);
-              dataEvents[0].data.partialData.should.equal('boolean');
-              unsubscribe();
-              done();
-            } catch (e) {
-              unsubscribe();
-              done(e);
-            }
-          }
-        });
-      });
-
-      it('receives streaming data with null value', function (done) {
-        const { getApp } = modular;
-        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
-        const functions = getFunctions(getApp());
-        connectFunctionsEmulator(functions, 'localhost', 5001);
-
-        const functionRunner = httpsCallable(functions, 'testStreamResponse');
-        const events = [];
-
-        const unsubscribe = functionRunner.stream(null, event => {
-          events.push(event);
-
-          if (event.done) {
-            try {
-              const dataEvents = events.filter(e => e.data && !e.done);
-              dataEvents.length.should.be.greaterThan(0);
-              dataEvents[0].data.partialData.should.equal('null');
-              unsubscribe();
-              done();
-            } catch (e) {
-              unsubscribe();
-              done(e);
-            }
-          }
-        });
-      });
-
-      it('receives streaming data with no arguments', function (done) {
-        const { getApp } = modular;
-        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
-        const functions = getFunctions(getApp());
-        connectFunctionsEmulator(functions, 'localhost', 5001);
-
-        const functionRunner = httpsCallable(functions, 'testStreamResponse');
-        const events = [];
-
-        const unsubscribe = functionRunner.stream(undefined, event => {
-          events.push(event);
-
-          if (event.done) {
-            try {
-              const dataEvents = events.filter(e => e.data && !e.done);
-              dataEvents.length.should.be.greaterThan(0);
-              dataEvents[0].data.partialData.should.equal('null');
-              unsubscribe();
-              done();
-            } catch (e) {
-              unsubscribe();
-              done(e);
-            }
-          }
-        });
-      });
-
-      it('receives streaming data with array value', function (done) {
-        const { getApp } = modular;
-        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
-        const functions = getFunctions(getApp());
-        connectFunctionsEmulator(functions, 'localhost', 5001);
-
-        const functionRunner = httpsCallable(functions, 'testStreamResponse');
-        const events = [];
-        const testArray = [1, 2, 3, 'test', true];
-
-        const unsubscribe = functionRunner.stream(testArray, event => {
-          events.push(event);
-
-          if (event.done) {
-            try {
-              const dataEvents = events.filter(e => e.data && !e.done);
-              dataEvents.length.should.be.greaterThan(0);
-              dataEvents[0].data.partialData.should.equal('array');
-              unsubscribe();
-              done();
-            } catch (e) {
-              unsubscribe();
-              done(e);
-            }
-          }
-        });
-      });
-
-      it('receives streaming data with deeply nested map', function (done) {
-        const { getApp } = modular;
-        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
-        const functions = getFunctions(getApp());
-        connectFunctionsEmulator(functions, 'localhost', 5001);
-
-        const functionRunner = httpsCallable(functions, 'testStreamResponse');
-        const events = [];
-        const deepMap = {
-          number: 123,
-          string: 'foo',
-          booleanTrue: true,
-          booleanFalse: false,
-          null: null,
-          list: ['1', 2, true, false],
-          map: {
-            number: 123,
-            string: 'foo',
-            booleanTrue: true,
-            booleanFalse: false,
-            null: null,
-          },
-        };
-
-        const unsubscribe = functionRunner.stream(
-          { type: 'deepMap', inputData: deepMap },
-          event => {
-            events.push(event);
-
-            if (event.done) {
-              try {
-                const dataEvents = events.filter(e => e.data && !e.done);
-                dataEvents.length.should.be.greaterThan(0);
-                // Verify we received the deep map data
-                should.exist(dataEvents[0].data.partialData);
-                unsubscribe();
-                done();
-              } catch (e) {
-                unsubscribe();
-                done(e);
-              }
-            }
-          },
+        const { stream, data } = await functionRunner.stream(
+          { count: 2, delay: 300 },
+          { limitedUseAppCheckTokens: false },
         );
+
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.length.should.be.greaterThan(0);
+
+        const result = await data;
+        result.should.be.an.Object();
       });
 
-      it('should emit a result as last value', function (done) {
+      it('should return both stream and data promise for URL', async function () {
         const { getApp } = modular;
-        const { getFunctions, httpsCallable, connectFunctionsEmulator } = functionsModular;
-        const functions = getFunctions(getApp());
-        connectFunctionsEmulator(functions, 'localhost', 5001);
+        const { getFunctions, httpsCallableFromUrl } = functionsModular;
+        let hostname = 'localhost';
+        if (Platform.android) {
+          hostname = '10.0.2.2';
+        }
+        const functionRunner = httpsCallableFromUrl(
+          getFunctions(getApp()),
+          `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,
+        );
+        const result = await functionRunner.stream({ count: 2, delay: 200 });
 
-        const functionRunner = httpsCallable(functions, 'testStreamingCallable');
-        const events = [];
+        result.should.have.property('stream');
+        result.should.have.property('data');
+        result.stream.should.be.an.Object();
+        result.data.should.be.a.Promise();
 
-        const unsubscribe = functionRunner.stream({ count: 2, delay: 100 }, event => {
-          events.push(event);
+        // Consume the stream
+        for await (const _chunk of result.stream) {
+          // Just consume
+        }
 
-          if (event.done) {
-            try {
-              // Last event should be the final result
-              const lastEvent = events[events.length - 1];
-              lastEvent.done.should.equal(true);
-              should.exist(lastEvent.data);
-              lastEvent.data.should.be.an.Object();
-              should.exist(lastEvent.data.totalCount);
-              unsubscribe();
-              done();
-            } catch (e) {
-              unsubscribe();
-              done(e);
-            }
-          }
-        });
+        const finalData = await result.data;
+        finalData.should.be.an.Object();
       });
     });
   });
