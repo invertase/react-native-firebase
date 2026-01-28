@@ -6,6 +6,7 @@ import {
   connectFunctionsEmulator,
   type HttpsCallableStreamOptions,
   type HttpsCallableResult,
+  type HttpsCallable,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseFunctions';
 import { emitEvent } from '@react-native-firebase/app/dist/module/internal/web/utils';
 import type { HttpsCallableOptions } from '../index';
@@ -17,7 +18,7 @@ interface WrapperData {
 }
 
 // Store active stream iterators for cancellation
-let activeStreamIterators: Record<string, AsyncIterator<any>> = {};
+let activeStreamIterators: Record<string, AsyncIterator<unknown>> = {};
 
 /**
  * Helper function to generate a unique key for a stream.
@@ -35,7 +36,7 @@ function getStreamKey(appName: string, region: string, listenerId: number): stri
  * @param listenerId - The listener ID for this stream
  */
 async function executeCallableStream(
-  callable: any,
+  callable: HttpsCallable<unknown, unknown, unknown>,
   appName: string,
   region: string,
   callableData: unknown,
@@ -56,7 +57,7 @@ async function executeCallableStream(
       ? callable.stream(callableData || null, streamOptions)
       : callable.stream(callableData || null);
 
-    const { stream } = await callableStream;
+    const { stream, data } = await callableStream;
 
     // Get the iterator and store it for potential cancellation
     const iterator = stream[Symbol.asyncIterator]();
@@ -67,12 +68,12 @@ async function executeCallableStream(
       const result = await iterator.next();
 
       if (result.done) {
-        // Emit final result with done: true
+        const finalData = await data;
         emitEvent('functions_streaming_event', {
           appName,
           listenerId,
           body: {
-            data: null,
+            data: finalData,
             error: null,
             done: true,
           },
