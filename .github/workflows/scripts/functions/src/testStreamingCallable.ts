@@ -203,3 +203,24 @@ export const testStreamResponse = onCall(
     };
   },
 );
+
+/**
+ * Test streaming callable that handles null data
+ * This function specifically accepts null and returns success: true
+ */
+export const testStreamingCallableWithNull = onCall(
+  async (req: CallableRequest<any>, response?: CallableResponse<any>) => {
+    logger.info('testStreamingCallableWithNull called', { data: req.data });
+
+    // Send a chunk indicating null data was received
+    if (response) {
+      await response.sendChunk({
+        message: 'Null data received',
+        dataType: req.data === null || req.data === undefined ? 'null' : typeof req.data,
+      });
+    }
+
+    // Return success
+    return { success: true };
+  },
+);

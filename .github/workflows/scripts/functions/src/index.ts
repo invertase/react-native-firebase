@@ -38,4 +38,5 @@ export {
   testComplexDataStream,
   testStreamWithError,
   testStreamResponse,
+  testStreamingCallableWithNull,
 } from './testStreamingCallable';
