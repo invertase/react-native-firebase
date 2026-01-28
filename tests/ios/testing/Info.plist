@@ -59,7 +59,7 @@
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>This app requires access to your location for testing purposes.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
