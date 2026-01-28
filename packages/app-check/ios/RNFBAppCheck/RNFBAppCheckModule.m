@@ -51,7 +51,7 @@ RCT_EXPORT_METHOD(activate
                   : (FIRApp *)firebaseApp
                   : (nonnull NSString *)siteKeyOrProvider
                   : (BOOL)isTokenAutoRefreshEnabled
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   DLog(@"deprecated API, provider will be deviceCheck / token refresh %d for app %@",
        isTokenAutoRefreshEnabled, firebaseApp.name);
@@ -68,7 +68,7 @@ RCT_EXPORT_METHOD(configureProvider
                   : (FIRApp *)firebaseApp
                   : (nonnull NSString *)providerName
                   : (nullable NSString *)debugToken
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   DLog(@"appName/providerName/debugToken: %@/%@/%@", firebaseApp.name, providerName,
        (debugToken == nil ? @"null" : @"(not shown)"));
@@ -90,7 +90,7 @@ RCT_EXPORT_METHOD(setTokenAutoRefreshEnabled
 // index.d.ts
 RCT_EXPORT_METHOD(isTokenAutoRefreshEnabled
                   : (FIRApp *)firebaseApp
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   FIRAppCheck *appCheck = [FIRAppCheck appCheckWithApp:firebaseApp];
   BOOL isTokenAutoRefreshEnabled = appCheck.isTokenAutoRefreshEnabled;
