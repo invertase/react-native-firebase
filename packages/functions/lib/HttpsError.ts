@@ -54,9 +54,9 @@ export class HttpsError extends Error {
       value: message,
     });
 
-    this.stack = NativeFirebaseError.getStackWithMessage(
-      `Error: ${message}`,
-      nativeErrorInstance?.jsStack as string,
-    );
+    // Build stack trace, falling back to basic Error stack if jsStack is not available
+    this.stack = nativeErrorInstance?.jsStack
+      ? NativeFirebaseError.getStackWithMessage(`Error: ${message}`, nativeErrorInstance.jsStack)
+      : new Error(message).stack || '';
   }
 }

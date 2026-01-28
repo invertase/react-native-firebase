@@ -31,3 +31,12 @@ export { fetchAppCheckTokenV2 } from './fetchAppCheckToken';
 export { sendFCM } from './sendFCM';
 
 export { testFetchStream, testFetch } from './vertexaiFunctions';
+
+export {
+  testStreamingCallable,
+  testProgressStream,
+  testComplexDataStream,
+  testStreamWithError,
+  testStreamResponse,
+  testStreamingCallableWithNull,
+} from './testStreamingCallable';
