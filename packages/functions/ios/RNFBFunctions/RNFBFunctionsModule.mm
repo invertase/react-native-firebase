@@ -100,22 +100,22 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
   }
 
   RNFBFunctionsCallHandler *handler = [[RNFBFunctionsCallHandler alloc] init];
-  
+
   double timeoutValue = timeout.has_value() ? timeout.value() : 0;
   std::optional<bool> limitedUseAppCheckToken = options.limitedUseAppCheckTokens();
-  NSNumber *limitedUseAppCheckTokenNumber = limitedUseAppCheckToken.has_value() 
-    ? @(limitedUseAppCheckToken.value()) 
-    : @(NO);
-  
+  NSNumber *limitedUseAppCheckTokenNumber =
+      limitedUseAppCheckToken.has_value() ? @(limitedUseAppCheckToken.value()) : @(NO);
+
   [handler callFunctionWithApp:firebaseApp
                      functions:functions
                           name:name
                           data:callableData
                        timeout:timeoutValue
-      limitedUseAppCheckToken:limitedUseAppCheckTokenNumber
+       limitedUseAppCheckToken:limitedUseAppCheckTokenNumber
                     completion:^(NSDictionary *_Nullable result, NSDictionary *_Nullable error) {
                       if (error) {
-                        NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:error];
+                        NSMutableDictionary *userInfo =
+                            [NSMutableDictionary dictionaryWithDictionary:error];
                         [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:userInfo];
                       } else {
                         resolve(result);
@@ -159,26 +159,27 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
   }
 
   RNFBFunctionsCallHandler *handler = [[RNFBFunctionsCallHandler alloc] init];
-  
+
   double timeoutValue = timeout.has_value() ? timeout.value() : 0;
-  NSNumber *limitedUseAppCheckTokenNumber = limitedUseAppCheckToken.has_value() 
-    ? @(limitedUseAppCheckToken.value()) 
-    : @(NO);
-  
-  [handler callFunctionWithURLWithApp:firebaseApp
-                            functions:functions
-                                  url:url
-                                 data:callableData
-                              timeout:timeoutValue
-             limitedUseAppCheckToken:limitedUseAppCheckTokenNumber
-                           completion:^(NSDictionary *_Nullable result, NSDictionary *_Nullable error) {
-                             if (error) {
-                               NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:error];
-                               [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:userInfo];
-                             } else {
-                               resolve(result);
-                             }
-                           }];
+  NSNumber *limitedUseAppCheckTokenNumber =
+      limitedUseAppCheckToken.has_value() ? @(limitedUseAppCheckToken.value()) : @(NO);
+
+  [handler
+      callFunctionWithURLWithApp:firebaseApp
+                       functions:functions
+                             url:url
+                            data:callableData
+                         timeout:timeoutValue
+         limitedUseAppCheckToken:limitedUseAppCheckTokenNumber
+                      completion:^(NSDictionary *_Nullable result, NSDictionary *_Nullable error) {
+                        if (error) {
+                          NSMutableDictionary *userInfo =
+                              [NSMutableDictionary dictionaryWithDictionary:error];
+                          [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:userInfo];
+                        } else {
+                          resolve(result);
+                        }
+                      }];
 }
 
 #pragma mark -
