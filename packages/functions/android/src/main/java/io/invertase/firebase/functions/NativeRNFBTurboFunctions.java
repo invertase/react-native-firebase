@@ -130,11 +130,8 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
       ReadableMap data,
       ReadableMap options,
       double listenerId) {
-    Object callableData = data.toHashMap().get(DATA_KEY);
-    Integer port = emulatorHost != null ? (int) emulatorPort : null;
-
     httpsCallableStreamSetup(
-        appName, region, emulatorHost, port, name, null, callableData, options, (int) listenerId);
+        appName, region, emulatorHost, emulatorPort, name, null, data, options, (int) listenerId);
   }
 
   @Override
@@ -147,12 +144,8 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
       ReadableMap data,
       ReadableMap options,
       double listenerId) {
-
-    Object callableData = data.toHashMap().get(DATA_KEY);
-    Integer port = emulatorHost != null ? (int) emulatorPort : null;
-
     httpsCallableStreamSetup(
-        appName, region, emulatorHost, port, null, url, callableData, options, (int) listenerId);
+        appName, region, emulatorHost, emulatorPort, null, url, data, options, (int) listenerId);
   }
 
   @Override
@@ -225,16 +218,19 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
       String appName,
       String region,
       String host,
-      Integer port,
+      double emulatorPort,
       String name,
       String url,
-      Object data,
+      ReadableMap data,
       ReadableMap options,
       int listenerId) {
     getExecutor()
         .execute(
             () -> {
               try {
+                Object callableData = data.toHashMap().get(DATA_KEY);
+                Integer port = host != null ? (int) emulatorPort : null;
+
                 FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
                 FirebaseFunctions functionsInstance =
                     FirebaseFunctions.getInstance(firebaseApp, region);
@@ -269,7 +265,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
                   httpReference.setTimeout(options.getInt("timeout"), TimeUnit.SECONDS);
                 }
 
-                Publisher<StreamResponse> publisher = httpReference.stream(data);
+                Publisher<StreamResponse> publisher = httpReference.stream(callableData);
 
                 publisher.subscribe(
                     new Subscriber<>() {
@@ -385,9 +381,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
 
     // Check if the throwable contains a FirebaseFunctionsException
     if (throwable.getCause() != null
-        && throwable.getCause() instanceof FirebaseFunctionsException) {
-      FirebaseFunctionsException functionsException =
-          (FirebaseFunctionsException) throwable.getCause();
+        && throwable.getCause() instanceof FirebaseFunctionsException functionsException) {
       details = functionsException.getDetails();
       code = functionsException.getCode().name();
       message = functionsException.getMessage();
@@ -398,8 +392,7 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
         code = FirebaseFunctionsException.Code.UNAVAILABLE.name();
         message = FirebaseFunctionsException.Code.UNAVAILABLE.name();
       }
-    } else if (throwable instanceof FirebaseFunctionsException) {
-      FirebaseFunctionsException functionsException = (FirebaseFunctionsException) throwable;
+    } else if (throwable instanceof FirebaseFunctionsException functionsException) {
       details = functionsException.getDetails();
       code = functionsException.getCode().name();
       message = functionsException.getMessage();
