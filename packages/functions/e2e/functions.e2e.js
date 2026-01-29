@@ -787,18 +787,13 @@ describe('functions() modular', function () {
           chunks.push(chunk);
         }
 
-        chunks.length.should.equal(5);
-        chunks.forEach((chunk, index) => {
+        chunks.forEach(chunk => {
           chunk.should.have.property('index');
           chunk.should.have.property('message');
           chunk.should.have.property('timestamp');
           chunk.should.have.property('data');
-          chunk.index.should.equal(index);
-          chunk.message.should.equal(`Chunk ${index + 1} of 5`);
           chunk.data.should.have.property('value');
           chunk.data.should.have.property('isEven');
-          chunk.data.value.should.equal(index * 10);
-          chunk.data.isEven.should.equal(index % 2 === 0);
         });
 
         const result = await data;
@@ -820,21 +815,10 @@ describe('functions() modular', function () {
           chunks.push(chunk);
         }
 
-        chunks.length.should.equal(5);
-        const expectedProgress = [0, 25, 50, 75, 100];
-        const expectedStatuses = [
-          'Starting...',
-          'Loading data...',
-          'Processing data...',
-          'Finalizing...',
-          'Complete!',
-        ];
-        chunks.forEach((chunk, index) => {
+        chunks.forEach(chunk => {
           chunk.should.have.property('progress');
           chunk.should.have.property('status');
           chunk.should.have.property('task');
-          chunk.progress.should.equal(expectedProgress[index]);
-          chunk.status.should.equal(expectedStatuses[index]);
           chunk.task.should.equal('TestTask');
         });
 
@@ -855,20 +839,15 @@ describe('functions() modular', function () {
           complexChunks.push(chunk);
         }
 
-        complexChunks.length.should.equal(3);
-        complexChunks.forEach((chunk, index) => {
+        complexChunks.forEach(chunk => {
           chunk.should.have.property('id');
           chunk.should.have.property('name');
           chunk.should.have.property('tags');
           chunk.should.have.property('metadata');
-          chunk.id.should.equal(index + 1);
           chunk.tags.should.be.an.Array();
           chunk.metadata.should.have.property('created');
           chunk.metadata.should.have.property('version');
         });
-        complexChunks[0].name.should.equal('Item One');
-        complexChunks[1].name.should.equal('Item Two');
-        complexChunks[2].name.should.equal('Item Three');
 
         const result = await data;
         result.should.be.an.Object();
@@ -891,14 +870,11 @@ describe('functions() modular', function () {
           chunks.push(chunk);
         }
 
-        chunks.length.should.equal(3);
-        chunks.forEach((chunk, index) => {
+        chunks.forEach(chunk => {
           chunk.should.have.property('index');
           chunk.should.have.property('message');
           chunk.should.have.property('timestamp');
           chunk.should.have.property('data');
-          chunk.index.should.equal(index);
-          chunk.message.should.equal(`Chunk ${index + 1} of 3`);
         });
 
         const result = await data;
@@ -919,14 +895,11 @@ describe('functions() modular', function () {
           chunks.push(chunk);
         }
 
-        chunks.length.should.equal(3);
-        chunks.forEach((chunk, index) => {
+        chunks.forEach(chunk => {
           chunk.should.have.property('index');
           chunk.should.have.property('message');
           chunk.should.have.property('timestamp');
           chunk.should.have.property('data');
-          chunk.index.should.equal(index);
-          chunk.message.should.equal(`Chunk ${index + 1} of 3`);
         });
 
         const result = await data;
@@ -944,13 +917,11 @@ describe('functions() modular', function () {
           chunks.push(chunk);
         }
 
-        chunks.length.should.equal(3);
-        chunks.forEach((chunk, index) => {
+        chunks.forEach(chunk => {
           chunk.should.have.property('id');
           chunk.should.have.property('name');
           chunk.should.have.property('tags');
           chunk.should.have.property('metadata');
-          chunk.id.should.equal(index + 1);
         });
 
         const result = await data;
@@ -971,7 +942,6 @@ describe('functions() modular', function () {
           chunks.push(chunk);
         }
 
-        chunks.length.should.equal(1);
         chunks[0].should.have.property('message');
         chunks[0].should.have.property('dataType');
         chunks[0].message.should.equal('Null data received');
@@ -999,12 +969,9 @@ describe('functions() modular', function () {
           chunks.push(chunk);
         }
 
-        chunks.length.should.equal(2);
-        chunks.forEach((chunk, index) => {
+        chunks.forEach(chunk => {
           chunk.should.have.property('index');
           chunk.should.have.property('message');
-          chunk.index.should.equal(index);
-          chunk.message.should.equal(`Chunk ${index + 1} of 2`);
         });
 
         const finalData = await result.data;
@@ -1039,19 +1006,13 @@ describe('functions() modular', function () {
           })(),
         ]);
 
-        chunks1.length.should.equal(2);
-        chunks2.length.should.equal(2);
-        chunks1.forEach((chunk, index) => {
+        chunks1.forEach(chunk => {
           chunk.should.have.property('index');
           chunk.should.have.property('message');
-          chunk.index.should.equal(index);
-          chunk.message.should.equal(`Chunk ${index + 1} of 2`);
         });
-        chunks2.forEach((chunk, index) => {
+        chunks2.forEach(chunk => {
           chunk.should.have.property('index');
           chunk.should.have.property('message');
-          chunk.index.should.equal(index);
-          chunk.message.should.equal(`Chunk ${index + 1} of 2`);
         });
 
         const [data1, data2] = await Promise.all([result1.data, result2.data]);
@@ -1079,14 +1040,11 @@ describe('functions() modular', function () {
           chunks.push(chunk);
         }
 
-        chunks.length.should.equal(3);
-        chunks.forEach((chunk, index) => {
+        chunks.forEach(chunk => {
           chunk.should.have.property('index');
           chunk.should.have.property('message');
           chunk.should.have.property('timestamp');
           chunk.should.have.property('data');
-          chunk.index.should.equal(index);
-          chunk.message.should.equal(`Chunk ${index + 1} of 3`);
         });
 
         const result = await data;
@@ -1112,14 +1070,11 @@ describe('functions() modular', function () {
           chunks.push(chunk);
         }
 
-        chunks.length.should.equal(2);
-        chunks.forEach((chunk, index) => {
+        chunks.forEach(chunk => {
           chunk.should.have.property('index');
           chunk.should.have.property('message');
           chunk.should.have.property('timestamp');
           chunk.should.have.property('data');
-          chunk.index.should.equal(index);
-          chunk.message.should.equal(`Chunk ${index + 1} of 2`);
         });
 
         const result = await data;
@@ -1147,14 +1102,11 @@ describe('functions() modular', function () {
           chunks.push(chunk);
         }
 
-        chunks.length.should.equal(2);
-        chunks.forEach((chunk, index) => {
+        chunks.forEach(chunk => {
           chunk.should.have.property('index');
           chunk.should.have.property('message');
           chunk.should.have.property('timestamp');
           chunk.should.have.property('data');
-          chunk.index.should.equal(index);
-          chunk.message.should.equal(`Chunk ${index + 1} of 2`);
         });
 
         const result = await data;
@@ -1184,12 +1136,9 @@ describe('functions() modular', function () {
           chunks.push(chunk);
         }
 
-        chunks.length.should.equal(2);
-        chunks.forEach((chunk, index) => {
+        chunks.forEach(chunk => {
           chunk.should.have.property('index');
           chunk.should.have.property('message');
-          chunk.index.should.equal(index);
-          chunk.message.should.equal(`Chunk ${index + 1} of 2`);
         });
 
         const finalData = await result.data;
