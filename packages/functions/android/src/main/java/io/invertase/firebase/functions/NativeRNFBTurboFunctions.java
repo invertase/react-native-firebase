@@ -180,13 +180,11 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
                   limitedUseAppCheckTokens = options.getBoolean("limitedUseAppCheckTokens");
                 }
 
-                // Create HttpsCallableOptions with limitedUseAppCheckTokens
                 HttpsCallableOptions callableOptions =
                     new HttpsCallableOptions.Builder()
                         .setLimitedUseAppCheckTokens(limitedUseAppCheckTokens)
                         .build();
 
-                // Create reference based on which parameter is provided
                 HttpsCallableReference httpReference;
                 if (url != null) {
                   URL parsedUrl = new URL(url);
@@ -245,13 +243,11 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
                   limitedUseAppCheckTokens = options.getBoolean("limitedUseAppCheckTokens");
                 }
 
-                // Create HttpsCallableOptions with limitedUseAppCheckTokens
                 HttpsCallableOptions callableOptions =
                     new HttpsCallableOptions.Builder()
                         .setLimitedUseAppCheckTokens(limitedUseAppCheckTokens)
                         .build();
 
-                // Create reference based on which parameter is provided
                 HttpsCallableReference httpReference;
                 if (url != null) {
                   URL parsedUrl = new URL(url);
@@ -290,17 +286,17 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
                         }
 
                         if (isFinalResult) {
-                          emitStreamEventWithDone(appName, listenerId, responseData);
+                          emitStreamEvent(appName, listenerId, responseData, true, false, null);
                           removeFunctionsStreamingListener(listenerId);
                         } else {
-                          emitStreamEvent(appName, listenerId, responseData, false, null);
+                          emitStreamEvent(appName, listenerId, responseData, false, false, null);
                         }
                       }
 
                       @Override
                       public void onError(Throwable t) {
                         WritableMap errorMap = createErrorMap(t);
-                        emitStreamEvent(appName, listenerId, null, true, errorMap);
+                        emitStreamEvent(appName, listenerId, null, true, true, errorMap);
                         removeFunctionsStreamingListener(listenerId);
                       }
 
@@ -308,14 +304,14 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
                       public void onComplete() {
                         Object listener = functionsStreamingListeners.get(listenerId);
                         if (listener != null) {
-                          emitStreamEventWithDone(appName, listenerId, null);
+                          emitStreamEvent(appName, listenerId, null, true, false, null);
                           removeFunctionsStreamingListener(listenerId);
                         }
                       }
                     });
               } catch (Exception e) {
                 WritableMap errorMap = createErrorMap(e);
-                emitStreamEvent(appName, listenerId, null, true, errorMap);
+                emitStreamEvent(appName, listenerId, null, true, true, errorMap);
                 removeFunctionsStreamingListener(listenerId);
               }
             });
@@ -332,30 +328,14 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
   }
 
   private void emitStreamEvent(
-      String appName, int listenerId, Object data, boolean isError, WritableMap errorMap) {
+      String appName, int listenerId, Object data, boolean done, boolean isError, WritableMap errorMap) {
     WritableMap body = Arguments.createMap();
+
+    body.putBoolean("done", done);
 
     if (isError) {
       body.putMap("error", errorMap);
-      body.putBoolean("done", true);
-    } else {
-      body.putBoolean("done", false);
-      if (data != null) {
-        RCTConvertFirebase.mapPutValue("data", data, body);
-      }
-    }
-
-    FirebaseFunctionsStreamHandler handler =
-        new FirebaseFunctionsStreamHandler(STREAMING_EVENT, body, appName, listenerId);
-
-    ReactNativeFirebaseEventEmitter.getSharedInstance().sendEvent(handler);
-  }
-
-  private void emitStreamEventWithDone(String appName, int listenerId, Object data) {
-    WritableMap body = Arguments.createMap();
-    body.putBoolean("done", true);
-
-    if (data != null) {
+    } else if (data != null) {
       RCTConvertFirebase.mapPutValue("data", data, body);
     }
 
