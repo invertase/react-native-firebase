@@ -271,7 +271,7 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
 
       // Remove handler when done
       if ([event[@"done"] boolValue]) {
-        [streamListeners removeObjectForKey:listenerIdNumber];
+        [self removeFunctionsStreamingListener:listenerIdNumber];
       }
     };
 
@@ -316,11 +316,14 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
                           region:(NSString *)region
                       listenerId:(double)listenerId {
   NSNumber *listenerIdNumber = @((int)listenerId);
+  [self removeFunctionsStreamingListener:listenerIdNumber];
+}
+
+- (void)removeFunctionsStreamingListener:(NSNumber *)listenerIdNumber {
   id handler = streamListeners[listenerIdNumber];
   if (handler) {
     [handler cancel];
   }
-
   [streamListeners removeObjectForKey:listenerIdNumber];
 }
 
