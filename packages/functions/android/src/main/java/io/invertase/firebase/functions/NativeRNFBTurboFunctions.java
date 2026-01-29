@@ -343,6 +343,10 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
         new FirebaseFunctionsStreamHandler(STREAMING_EVENT, body, appName, listenerId);
 
     ReactNativeFirebaseEventEmitter.getSharedInstance().sendEvent(handler);
+
+    if (done) {
+      removeFunctionsStreamingListener(listenerId);
+    }
   }
 
   private void handleFunctionsException(Exception exception, Promise promise) {
