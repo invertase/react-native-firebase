@@ -83,11 +83,12 @@ const statics = {
   HttpsErrorCode,
 };
 
+let _id_functions_streaming_event = 0;
+
 class FirebaseFunctionsModule extends FirebaseModule {
   _customUrlOrRegion: string;
   private _useFunctionsEmulatorHost: string | null;
   private _useFunctionsEmulatorPort: number;
-  private _id_functions_streaming_event: number;
 
   constructor(
     app: ReactNativeFirebase.FirebaseAppBase,
@@ -98,7 +99,6 @@ class FirebaseFunctionsModule extends FirebaseModule {
     this._customUrlOrRegion = customUrlOrRegion || 'us-central1';
     this._useFunctionsEmulatorHost = null;
     this._useFunctionsEmulatorPort = -1;
-    this._id_functions_streaming_event = 0;
 
     // @ts-ignore - emitter and eventNameForApp exist on FirebaseModule
     this.emitter.addListener(
@@ -123,7 +123,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
   private async _createStreamHandler(
     initiateStream: (listenerId: number) => void,
   ): Promise<{ stream: AsyncGenerator<unknown, void, unknown>; data: Promise<unknown> }> {
-    const listenerId = this._id_functions_streaming_event++;
+    const listenerId = _id_functions_streaming_event++;
     const eventName = this.eventNameForApp(`functions_streaming_event:${listenerId}`);
     const nativeModule = this.native;
 
