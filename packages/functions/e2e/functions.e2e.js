@@ -787,10 +787,26 @@ describe('functions() modular', function () {
           chunks.push(chunk);
         }
 
-        chunks.length.should.be.greaterThan(0);
+        chunks.length.should.equal(5);
+        chunks.forEach((chunk, index) => {
+          chunk.should.have.property('index');
+          chunk.should.have.property('message');
+          chunk.should.have.property('timestamp');
+          chunk.should.have.property('data');
+          chunk.index.should.equal(index);
+          chunk.message.should.equal(`Chunk ${index + 1} of 5`);
+          chunk.data.should.have.property('value');
+          chunk.data.should.have.property('isEven');
+          chunk.data.value.should.equal(index * 10);
+          chunk.data.isEven.should.equal(index % 2 === 0);
+        });
 
         const result = await data;
         result.should.be.an.Object();
+        result.should.have.property('totalCount');
+        result.should.have.property('message');
+        result.totalCount.should.equal(5);
+        result.message.should.equal('Stream complete');
       });
 
       it('should stream progress updates', async function () {
@@ -799,17 +815,33 @@ describe('functions() modular', function () {
         const functionRunner = httpsCallable(getFunctions(getApp()), 'testProgressStream');
         const { stream, data } = await functionRunner.stream({ task: 'TestTask' });
 
-        const progressUpdates = [];
+        const chunks = [];
         for await (const chunk of stream) {
-          if (chunk.progress !== undefined) {
-            progressUpdates.push(chunk.progress);
-          }
+          chunks.push(chunk);
         }
 
-        progressUpdates.length.should.be.greaterThan(0);
+        chunks.length.should.equal(5);
+        const expectedProgress = [0, 25, 50, 75, 100];
+        const expectedStatuses = [
+          'Starting...',
+          'Loading data...',
+          'Processing data...',
+          'Finalizing...',
+          'Complete!',
+        ];
+        chunks.forEach((chunk, index) => {
+          chunk.should.have.property('progress');
+          chunk.should.have.property('status');
+          chunk.should.have.property('task');
+          chunk.progress.should.equal(expectedProgress[index]);
+          chunk.status.should.equal(expectedStatuses[index]);
+          chunk.task.should.equal('TestTask');
+        });
 
         const result = await data;
         result.should.be.an.Object();
+        result.should.have.property('success');
+        result.success.should.equal(true);
       });
 
       it('should handle complex data structures in stream', async function () {
@@ -823,10 +855,27 @@ describe('functions() modular', function () {
           complexChunks.push(chunk);
         }
 
-        complexChunks.length.should.be.greaterThan(0);
+        complexChunks.length.should.equal(3);
+        complexChunks.forEach((chunk, index) => {
+          chunk.should.have.property('id');
+          chunk.should.have.property('name');
+          chunk.should.have.property('tags');
+          chunk.should.have.property('metadata');
+          chunk.id.should.equal(index + 1);
+          chunk.tags.should.be.an.Array();
+          chunk.metadata.should.have.property('created');
+          chunk.metadata.should.have.property('version');
+        });
+        complexChunks[0].name.should.equal('Item One');
+        complexChunks[1].name.should.equal('Item Two');
+        complexChunks[2].name.should.equal('Item Three');
 
         const result = await data;
         result.should.be.an.Object();
+        result.should.have.property('summary');
+        result.summary.should.have.property('totalItems');
+        result.summary.should.have.property('processedAt');
+        result.summary.totalItems.should.equal(3);
       });
 
       it('should work with HttpsCallableOptions.timeout', async function () {
@@ -842,7 +891,15 @@ describe('functions() modular', function () {
           chunks.push(chunk);
         }
 
-        chunks.length.should.be.greaterThan(0);
+        chunks.length.should.equal(3);
+        chunks.forEach((chunk, index) => {
+          chunk.should.have.property('index');
+          chunk.should.have.property('message');
+          chunk.should.have.property('timestamp');
+          chunk.should.have.property('data');
+          chunk.index.should.equal(index);
+          chunk.message.should.equal(`Chunk ${index + 1} of 3`);
+        });
 
         const result = await data;
         result.should.be.an.Object();
@@ -862,7 +919,15 @@ describe('functions() modular', function () {
           chunks.push(chunk);
         }
 
-        chunks.length.should.be.greaterThan(0);
+        chunks.length.should.equal(3);
+        chunks.forEach((chunk, index) => {
+          chunk.should.have.property('index');
+          chunk.should.have.property('message');
+          chunk.should.have.property('timestamp');
+          chunk.should.have.property('data');
+          chunk.index.should.equal(index);
+          chunk.message.should.equal(`Chunk ${index + 1} of 3`);
+        });
 
         const result = await data;
         result.should.be.an.Object();
@@ -879,7 +944,14 @@ describe('functions() modular', function () {
           chunks.push(chunk);
         }
 
-        chunks.length.should.be.greaterThan(0);
+        chunks.length.should.equal(3);
+        chunks.forEach((chunk, index) => {
+          chunk.should.have.property('id');
+          chunk.should.have.property('name');
+          chunk.should.have.property('tags');
+          chunk.should.have.property('metadata');
+          chunk.id.should.equal(index + 1);
+        });
 
         const result = await data;
         result.should.be.an.Object();
@@ -899,6 +971,12 @@ describe('functions() modular', function () {
           chunks.push(chunk);
         }
 
+        chunks.length.should.equal(1);
+        chunks[0].should.have.property('message');
+        chunks[0].should.have.property('dataType');
+        chunks[0].message.should.equal('Null data received');
+        chunks[0].dataType.should.equal('null');
+
         const result = await data;
         result.should.be.an.Object();
         result.should.have.property('success');
@@ -916,10 +994,18 @@ describe('functions() modular', function () {
         result.stream.should.be.an.Object();
         result.data.should.be.a.Promise();
 
-        // Consume the stream
-        for await (const _chunk of result.stream) {
-          // Just consume
+        const chunks = [];
+        for await (const chunk of result.stream) {
+          chunks.push(chunk);
         }
+
+        chunks.length.should.equal(2);
+        chunks.forEach((chunk, index) => {
+          chunk.should.have.property('index');
+          chunk.should.have.property('message');
+          chunk.index.should.equal(index);
+          chunk.message.should.equal(`Chunk ${index + 1} of 2`);
+        });
 
         const finalData = await result.data;
         finalData.should.be.an.Object();
@@ -953,8 +1039,20 @@ describe('functions() modular', function () {
           })(),
         ]);
 
-        chunks1.length.should.be.greaterThan(0);
-        chunks2.length.should.be.greaterThan(0);
+        chunks1.length.should.equal(2);
+        chunks2.length.should.equal(2);
+        chunks1.forEach((chunk, index) => {
+          chunk.should.have.property('index');
+          chunk.should.have.property('message');
+          chunk.index.should.equal(index);
+          chunk.message.should.equal(`Chunk ${index + 1} of 2`);
+        });
+        chunks2.forEach((chunk, index) => {
+          chunk.should.have.property('index');
+          chunk.should.have.property('message');
+          chunk.index.should.equal(index);
+          chunk.message.should.equal(`Chunk ${index + 1} of 2`);
+        });
 
         const [data1, data2] = await Promise.all([result1.data, result2.data]);
         data1.should.be.an.Object();
@@ -981,7 +1079,15 @@ describe('functions() modular', function () {
           chunks.push(chunk);
         }
 
-        chunks.length.should.be.greaterThan(0);
+        chunks.length.should.equal(3);
+        chunks.forEach((chunk, index) => {
+          chunk.should.have.property('index');
+          chunk.should.have.property('message');
+          chunk.should.have.property('timestamp');
+          chunk.should.have.property('data');
+          chunk.index.should.equal(index);
+          chunk.message.should.equal(`Chunk ${index + 1} of 3`);
+        });
 
         const result = await data;
         result.should.be.an.Object();
@@ -1006,7 +1112,15 @@ describe('functions() modular', function () {
           chunks.push(chunk);
         }
 
-        chunks.length.should.be.greaterThan(0);
+        chunks.length.should.equal(2);
+        chunks.forEach((chunk, index) => {
+          chunk.should.have.property('index');
+          chunk.should.have.property('message');
+          chunk.should.have.property('timestamp');
+          chunk.should.have.property('data');
+          chunk.index.should.equal(index);
+          chunk.message.should.equal(`Chunk ${index + 1} of 2`);
+        });
 
         const result = await data;
         result.should.be.an.Object();
@@ -1033,7 +1147,15 @@ describe('functions() modular', function () {
           chunks.push(chunk);
         }
 
-        chunks.length.should.be.greaterThan(0);
+        chunks.length.should.equal(2);
+        chunks.forEach((chunk, index) => {
+          chunk.should.have.property('index');
+          chunk.should.have.property('message');
+          chunk.should.have.property('timestamp');
+          chunk.should.have.property('data');
+          chunk.index.should.equal(index);
+          chunk.message.should.equal(`Chunk ${index + 1} of 2`);
+        });
 
         const result = await data;
         result.should.be.an.Object();
@@ -1057,10 +1179,18 @@ describe('functions() modular', function () {
         result.stream.should.be.an.Object();
         result.data.should.be.a.Promise();
 
-        // Consume the stream
-        for await (const _chunk of result.stream) {
-          // Just consume
+        const chunks = [];
+        for await (const chunk of result.stream) {
+          chunks.push(chunk);
         }
+
+        chunks.length.should.equal(2);
+        chunks.forEach((chunk, index) => {
+          chunk.should.have.property('index');
+          chunk.should.have.property('message');
+          chunk.index.should.equal(index);
+          chunk.message.should.equal(`Chunk ${index + 1} of 2`);
+        });
 
         const finalData = await result.data;
         finalData.should.be.an.Object();
