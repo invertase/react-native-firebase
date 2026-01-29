@@ -100,14 +100,10 @@ class FirebaseFunctionsModule extends FirebaseModule {
     this._useFunctionsEmulatorHost = null;
     this._useFunctionsEmulatorPort = -1;
 
-    // @ts-ignore - emitter and eventNameForApp exist on FirebaseModule
     this.emitter.addListener(
-      // @ts-ignore
       this.eventNameForApp('functions_streaming_event'),
       (event: FunctionsStreamingEvent) => {
-        // @ts-ignore
         this.emitter.emit(
-          // @ts-ignore
           this.eventNameForApp(`functions_streaming_event:${event.listenerId}`),
           event,
         );
