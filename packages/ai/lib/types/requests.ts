@@ -250,7 +250,7 @@ export interface RequestOptions {
  * Defines a tool that model can call to access external knowledge.
  * @public
  */
-export type Tool = FunctionDeclarationsTool | GoogleSearchTool;
+export type Tool = FunctionDeclarationsTool | GoogleSearchTool | CodeExecutionTool;
 
 /**
  * Structured representation of a function declaration as defined by the
@@ -315,6 +315,20 @@ export interface GoogleSearchTool {
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface GoogleSearch {}
+
+/**
+ * A tool that enables the model to use code execution.
+ *
+ * @beta
+ */
+export interface CodeExecutionTool {
+  /**
+   * Specifies the code execution configuration.
+   * Currently, this is an empty object, but it's reserved for future configuration options.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  codeExecution: {};
+}
 
 /**
  * A `FunctionDeclarationsTool` is a piece of code that enables the system to
