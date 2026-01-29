@@ -132,6 +132,8 @@ class FirebaseFunctionsModule extends FirebaseModule {
     let error: Error | null = null;
     let done = false;
     let finalData: unknown = null;
+    let resolveDataPromise: ((value: unknown) => void) | null = null;
+    let rejectDataPromise: ((reason: Error) => void) | null = null;
 
     const subscription = this.emitter.addListener(eventName, (event: FunctionsStreamingEvent) => {
       const body = event.body;
@@ -153,6 +155,10 @@ class FirebaseFunctionsModule extends FirebaseModule {
           resolveNext({ done: true, value: undefined });
           resolveNext = null;
         }
+        if (rejectDataPromise) {
+          rejectDataPromise(error);
+          rejectDataPromise = null;
+        }
         return;
       }
 
@@ -166,6 +172,10 @@ class FirebaseFunctionsModule extends FirebaseModule {
         if (resolveNext) {
           resolveNext({ done: true, value: undefined });
           resolveNext = null;
+        }
+        if (resolveDataPromise) {
+          resolveDataPromise(finalData);
+          resolveDataPromise = null;
         }
       } else if (body.data !== null && body.data !== undefined) {
         // This is a chunk
@@ -223,18 +233,17 @@ class FirebaseFunctionsModule extends FirebaseModule {
 
     const asyncIterator = streamGenerator();
 
-    // Create a promise that resolves with the final data
+    // Create a promise that resolves with the final data when the listener receives done/error
     const dataPromise = new Promise<unknown>((resolve, reject) => {
-      const checkComplete = () => {
-        if (error) {
-          reject(error);
-        } else if (done) {
-          resolve(finalData);
-        } else {
-          setTimeout(checkComplete, 10);
-        }
-      };
-      checkComplete();
+      resolveDataPromise = resolve;
+      rejectDataPromise = reject;
+      if (error) {
+        rejectDataPromise = null;
+        reject(error);
+      } else if (done) {
+        resolveDataPromise = null;
+        resolve(finalData);
+      }
     });
 
     return {
