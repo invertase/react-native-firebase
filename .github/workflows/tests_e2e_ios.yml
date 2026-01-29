@@ -237,6 +237,12 @@ jobs:
           max_attempts: 3
           command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew && HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils xcbeautify
 
+      - name: Workaround Simulator Availability issues
+        # Apparently just listing the installed simulators fixes availability inconsistency
+        # Without this, runs fail *intermittently* with build target not available because simulators not available
+        # See https://github.com/actions/runner-images/issues/13459#issuecomment-3681674842
+        run: xcrun simctl list
+
       - name: Build iOS App Debug
         if: contains(matrix.buildmode, 'debug')
         run: |
