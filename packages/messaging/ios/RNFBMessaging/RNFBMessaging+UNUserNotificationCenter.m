@@ -130,22 +130,24 @@ struct {
   if (notification.request.content.userInfo[@"gcm.message_id"]) {
     NSDictionary *notificationDict = [RNFBMessagingSerializer notificationToDict:notification];
 
-    // Don't send an event if contentAvailable is true - application:didReceiveRemoteNotification
-    // will send the event for us, we don't want to duplicate them
+    // Don't send an event if contentAvailable is true -
+    // application:didReceiveRemoteNotification will send the event for us, we
+    // don't want to duplicate them
     if (!notificationDict[@"contentAvailable"]) {
       [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received"
                                                  body:notificationDict];
     }
-    completionHandler(presentationOptions);
   }
 
   if (_originalDelegate != nil && originalDelegateRespondsTo.willPresentNotification) {
     [_originalDelegate userNotificationCenter:center
                       willPresentNotification:notification
                         withCompletionHandler:completionHandler];
-  } else {
-    completionHandler(presentationOptions);
   }
+
+  // Don't consume completionHandler before the _originalDelegate has been
+  // processed
+  completionHandler(presentationOptions);
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
