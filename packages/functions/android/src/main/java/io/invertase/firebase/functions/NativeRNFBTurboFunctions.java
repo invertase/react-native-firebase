@@ -328,7 +328,12 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
   }
 
   private void emitStreamEvent(
-      String appName, int listenerId, Object data, boolean done, boolean isError, WritableMap errorMap) {
+      String appName,
+      int listenerId,
+      Object data,
+      boolean done,
+      boolean isError,
+      WritableMap errorMap) {
     WritableMap body = Arguments.createMap();
 
     body.putBoolean("done", done);
