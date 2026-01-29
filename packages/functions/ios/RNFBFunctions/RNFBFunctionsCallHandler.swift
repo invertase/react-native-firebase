@@ -154,43 +154,7 @@ import FirebaseCore
     var code = "UNKNOWN"
     
     if error.domain == "com.firebase.functions" {
-      switch error.code {
-        case 0: // FIRFunctionsErrorCodeOK
-          code = "OK"
-        case 1: // FIRFunctionsErrorCodeCancelled
-          code = "CANCELLED"
-        case 2: // FIRFunctionsErrorCodeUnknown
-          code = "UNKNOWN"
-        case 3: // FIRFunctionsErrorCodeInvalidArgument
-          code = "INVALID_ARGUMENT"
-        case 4: // FIRFunctionsErrorCodeDeadlineExceeded
-          code = "DEADLINE_EXCEEDED"
-        case 5: // FIRFunctionsErrorCodeNotFound
-          code = "NOT_FOUND"
-        case 6: // FIRFunctionsErrorCodeAlreadyExists
-          code = "ALREADY_EXISTS"
-        case 7: // FIRFunctionsErrorCodePermissionDenied
-          code = "PERMISSION_DENIED"
-        case 8: // FIRFunctionsErrorCodeResourceExhausted
-          code = "RESOURCE_EXHAUSTED"
-        case 9: // FIRFunctionsErrorCodeFailedPrecondition
-          code = "FAILED_PRECONDITION"
-        case 10: // FIRFunctionsErrorCodeAborted
-          code = "ABORTED"
-        case 11: // FIRFunctionsErrorCodeOutOfRange
-          code = "OUT_OF_RANGE"
-        case 12: // FIRFunctionsErrorCodeUnimplemented
-          code = "UNIMPLEMENTED"
-        case 13: // FIRFunctionsErrorCodeInternal
-          code = "INTERNAL"
-        case 14: // FIRFunctionsErrorCodeUnavailable
-          code = "UNAVAILABLE"
-        case 15: // FIRFunctionsErrorCodeDataLoss
-          code = "DATA_LOSS"
-        case 16: // FIRFunctionsErrorCodeUnauthenticated
-          code = "UNAUTHENTICATED"
-        default: break
-      }
+      code = mapFunctionsErrorCode(error.code)
     }
     
     if error.domain == "FirebaseFunctions.FunctionsSerializer.Error" {
@@ -205,5 +169,27 @@ import FirebaseCore
     }
     
     return code
+  }
+  
+  private static func mapFunctionsErrorCode(_ code: Int) -> String {
+    switch code {
+    case FunctionsErrorCode.aborted.rawValue: return "ABORTED"
+    case FunctionsErrorCode.alreadyExists.rawValue: return "ALREADY_EXISTS"
+    case FunctionsErrorCode.cancelled.rawValue: return "CANCELLED"
+    case FunctionsErrorCode.dataLoss.rawValue: return "DATA_LOSS"
+    case FunctionsErrorCode.deadlineExceeded.rawValue: return "DEADLINE_EXCEEDED"
+    case FunctionsErrorCode.failedPrecondition.rawValue: return "FAILED_PRECONDITION"
+    case FunctionsErrorCode.internal.rawValue: return "INTERNAL"
+    case FunctionsErrorCode.invalidArgument.rawValue: return "INVALID_ARGUMENT"
+    case FunctionsErrorCode.notFound.rawValue: return "NOT_FOUND"
+    case FunctionsErrorCode.OK.rawValue: return "OK"
+    case FunctionsErrorCode.outOfRange.rawValue: return "OUT_OF_RANGE"
+    case FunctionsErrorCode.permissionDenied.rawValue: return "PERMISSION_DENIED"
+    case FunctionsErrorCode.resourceExhausted.rawValue: return "RESOURCE_EXHAUSTED"
+    case FunctionsErrorCode.unauthenticated.rawValue: return "UNAUTHENTICATED"
+    case FunctionsErrorCode.unavailable.rawValue: return "UNAVAILABLE"
+    case FunctionsErrorCode.unimplemented.rawValue: return "UNIMPLEMENTED"
+    default: return "UNKNOWN"
+    }
   }
 }
