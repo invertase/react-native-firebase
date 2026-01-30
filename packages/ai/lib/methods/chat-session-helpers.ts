@@ -82,6 +82,8 @@ export function validateChatHistory(history: Content[]): void {
       functionResponse: 0,
       thought: 0,
       thoughtSignature: 0,
+      executableCode: 0,
+      codeExecutionResult: 0,
     };
 
     for (const part of parts) {
