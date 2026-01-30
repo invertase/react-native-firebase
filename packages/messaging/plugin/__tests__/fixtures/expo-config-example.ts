@@ -12,4 +12,41 @@ const expoConfigExample: ExpoConfig = {
   },
 };
 
-export default expoConfigExample;
+const expoNotificationsConfigExample: ExpoConfig = {
+  name: 'FirebaseMessagingTest',
+  slug: 'fire-base-messaging-test',
+  plugins: [
+    [
+      'expo-notifications',
+      {
+        icon: `IconAsset`,
+        color: '#1D172D',
+      },
+    ],
+  ],
+};
+
+const expoNotificationsConfigWithoutColorExample: ExpoConfig = {
+  name: 'FirebaseMessagingTest',
+  slug: 'fire-base-messaging-test',
+  plugins: [
+    [
+      'expo-notifications',
+      {
+        icon: `IconAsset`,
+      },
+    ],
+  ],
+};
+
+const expoNotificationsConfigWithoutPluginExample: ExpoConfig = {
+  name: 'FirebaseMessagingTest',
+  slug: 'fire-base-messaging-test',
+};
+
+export {
+  expoConfigExample,
+  expoNotificationsConfigExample,
+  expoNotificationsConfigWithoutColorExample,
+  expoNotificationsConfigWithoutPluginExample,
+};
