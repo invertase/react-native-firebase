@@ -327,12 +327,12 @@ jobs:
           max_attempts: 3
           command: ./.github/workflows/scripts/boot-simulator.sh
 
-      - name: Detox Test
+      - name: Detox Test Debug
         if: contains(matrix.buildmode, 'debug')
         timeout-minutes: 50
         run: yarn tests:ios:test-cover
 
-      - name: Detox Test
+      - name: Detox Test Release
         if: contains(matrix.buildmode, 'release')
         timeout-minutes: 50
         run: yarn tests:ios:test:release
