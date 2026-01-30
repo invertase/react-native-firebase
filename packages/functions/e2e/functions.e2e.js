@@ -1019,6 +1019,159 @@ describe('functions() modular', function () {
         data1.should.be.an.Object();
         data2.should.be.an.Object();
       });
+
+      describe('HttpsError', function () {
+        it('HttpsError when calling stream by name', async function () {
+          const { getApp } = modular;
+          const { getFunctions, httpsCallable } = functionsModular;
+          const functionRunner = httpsCallable(getFunctions(getApp()), 'testStreamWithHttpsError');
+
+          try {
+            const { stream } = await functionRunner.stream(null);
+            for await (const _ of stream) {
+            }
+            return Promise.reject(new Error('Function did not reject with error.'));
+          } catch (e) {
+            e.code.should.equal('invalid-argument');
+            e.message.should.equal('Invalid test requested.');
+          }
+
+          let type = 'deepObject';
+          let inputData = SAMPLE_DATA[type];
+          try {
+            const { stream: s1 } = await functionRunner.stream({
+              type,
+              inputData,
+              asError: true,
+            });
+            for await (const _chunk of s1) {
+            }
+            return Promise.reject(new Error('Function did not reject with error.'));
+          } catch (e) {
+            e.code.should.equal('cancelled');
+            e.message.should.equal(
+              'Response data was requested to be sent as part of an Error payload, so here we are!',
+            );
+          }
+
+          type = 'deepArray';
+          inputData = SAMPLE_DATA[type];
+          try {
+            const { stream: s2 } = await functionRunner.stream({
+              type,
+              inputData,
+              asError: true,
+            });
+            for await (const _chunk of s2) {
+            }
+            return Promise.reject(new Error('Function did not reject with error.'));
+          } catch (e) {
+            e.code.should.equal('cancelled');
+            e.message.should.equal(
+              'Response data was requested to be sent as part of an Error payload, so here we are!',
+            );
+          }
+
+          type = 'number';
+          inputData = SAMPLE_DATA[type];
+          try {
+            const { stream: s3 } = await functionRunner.stream({
+              type,
+              inputData,
+              asError: true,
+            });
+            for await (const _chunk of s3) {
+            }
+            return Promise.reject(new Error('Function did not reject with error.'));
+          } catch (e) {
+            e.code.should.equal('cancelled');
+            e.message.should.equal(
+              'Response data was requested to be sent as part of an Error payload, so here we are!',
+            );
+          }
+
+          return Promise.resolve();
+        });
+
+        it('HttpsError when calling stream from URL', async function () {
+          const { getApp } = modular;
+          const { getFunctions, httpsCallableFromUrl } = functionsModular;
+          let hostname = 'localhost';
+          if (Platform.android) {
+            hostname = '10.0.2.2';
+          }
+          const functionRunner = httpsCallableFromUrl(
+            getFunctions(getApp()),
+            `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamWithHttpsErrorFromUrl`,
+          );
+
+          try {
+            const { stream } = await functionRunner.stream(null);
+            for await (const _chunk of stream) {
+            }
+            return Promise.reject(new Error('Function did not reject with error.'));
+          } catch (e) {
+            e.code.should.equal('invalid-argument');
+            e.message.should.equal('Invalid test requested.');
+          }
+
+          let type = 'number';
+          let inputData = SAMPLE_DATA[type];
+          try {
+            const { stream: s1 } = await functionRunner.stream({
+              type,
+              inputData,
+              asError: true,
+            });
+            for await (const _chunk of s1) {
+            }
+            return Promise.reject(new Error('Function did not reject with error.'));
+          } catch (e) {
+            e.code.should.equal('cancelled');
+            e.message.should.equal(
+              'Response data was requested to be sent as part of an Error payload, so here we are!',
+            );
+          }
+
+          type = 'deepObject';
+          inputData = SAMPLE_DATA[type];
+          try {
+            const { stream: s2 } = await functionRunner.stream({
+              type,
+              inputData,
+              asError: true,
+            });
+            for await (const _chunk of s2) {
+            }
+            return Promise.reject(new Error('Function did not reject with error.'));
+          } catch (e) {
+            e.code.should.equal('cancelled');
+            e.message.should.equal(
+              'Response data was requested to be sent as part of an Error payload, so here we are!',
+            );
+          }
+
+          type = 'string';
+          inputData = SAMPLE_DATA[type];
+          try {
+            const { stream: s3 } = await functionRunner.stream({
+              type,
+              inputData,
+              asError: true,
+            });
+            for await (const _chunk of s3) {
+            }
+            return Promise.reject(new Error('Function did not reject with error.'));
+          } catch (e) {
+            e.code.should.equal('cancelled');
+            e.message.should.equal(
+              'Response data was requested to be sent as part of an Error payload, so here we are!',
+            );
+          }
+
+          return Promise.resolve();
+        });
+      });
     });
 
     describe('httpsCallableFromUrl.stream()', function () {

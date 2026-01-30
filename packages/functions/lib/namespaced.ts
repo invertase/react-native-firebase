@@ -129,7 +129,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
     // Queue to buffer events before iteration starts
     const eventQueue: unknown[] = [];
     let resolveNext: ((value: IteratorResult<unknown>) => void) | null = null;
-    let error: Error | null = null;
+    let error: HttpsError | null = null;
     let done = false;
     let finalData: unknown = null;
     let resolveDataPromise: ((value: unknown) => void) | null = null;
@@ -196,7 +196,15 @@ class FirebaseFunctionsModule extends FirebaseModule {
       try {
         while (true) {
           if (error) {
-            throw error;
+            const err = error as HttpsError;
+            throw new HttpsError(
+              HttpsErrorCode[err.code as keyof typeof HttpsErrorCode] || HttpsErrorCode.UNKNOWN,
+              err.message,
+              err.details ?? null,
+              {
+                jsStack: capturedStack,
+              },
+            );
           }
 
           if (eventQueue.length > 0) {
@@ -204,6 +212,17 @@ class FirebaseFunctionsModule extends FirebaseModule {
             continue;
           }
 
+          if (error) {
+            const err = error as HttpsError;
+            throw new HttpsError(
+              HttpsErrorCode[err.code as keyof typeof HttpsErrorCode] || HttpsErrorCode.UNKNOWN,
+              err.message,
+              err.details ?? null,
+              {
+                jsStack: capturedStack,
+              },
+            );
+          }
           if (done) {
             return;
           }
@@ -214,6 +233,12 @@ class FirebaseFunctionsModule extends FirebaseModule {
           });
 
           // Check result after promise resolves
+          if (error) {
+            const err = error as HttpsError;
+            throw new HttpsError(err.code, err.message, err.details ?? null, {
+              jsStack: capturedStack,
+            });
+          }
           if (result.done || done) {
             return;
           }
@@ -292,9 +317,9 @@ class FirebaseFunctionsModule extends FirebaseModule {
         isAndroid || isIOS
           ? options
           : ({
-              ...options,
-              httpsCallableStreamOptions: streamOptions || {},
-            } as CustomHttpsCallableOptions);
+            ...options,
+            httpsCallableStreamOptions: streamOptions || {},
+          } as CustomHttpsCallableOptions);
       return this._createStreamHandler(listenerId => {
         this.native.httpsCallableStream(
           this._useFunctionsEmulatorHost || null,
@@ -350,9 +375,9 @@ class FirebaseFunctionsModule extends FirebaseModule {
         isAndroid || isIOS
           ? options
           : ({
-              ...options,
-              httpsCallableStreamOptions: streamOptions || {},
-            } as CustomHttpsCallableOptions);
+            ...options,
+            httpsCallableStreamOptions: streamOptions || {},
+          } as CustomHttpsCallableOptions);
       return this._createStreamHandler(listenerId => {
         this.native.httpsCallableStreamFromUrl(
           this._useFunctionsEmulatorHost || null,

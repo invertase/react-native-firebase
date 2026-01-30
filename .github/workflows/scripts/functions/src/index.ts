@@ -39,4 +39,6 @@ export {
   testStreamWithError,
   testStreamResponse,
   testStreamingCallableWithNull,
+  testStreamWithHttpsError,
+  testStreamWithHttpsErrorFromUrl,
 } from './testStreamingCallable';

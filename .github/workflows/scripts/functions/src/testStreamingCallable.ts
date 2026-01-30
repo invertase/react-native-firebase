@@ -1,5 +1,6 @@
-import { onCall, CallableRequest, CallableResponse } from 'firebase-functions/v2/https';
+import { onCall, CallableRequest, CallableResponse, HttpsError } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions/v2';
+import SAMPLE_DATA from './sample-data';
 
 /**
  * Test streaming callable function that sends multiple chunks of data
@@ -222,5 +223,75 @@ export const testStreamingCallableWithNull = onCall(
 
     // Return success
     return { success: true };
+  },
+);
+
+/**
+ * Streaming callable that throws HttpsError (for testing stream-by-name).
+ * Only throws: invalid-argument (bad/missing type), or cancelled with details (when asError).
+ */
+export const testStreamWithHttpsError = onCall(
+  async (
+    req: CallableRequest<{ type?: string; asError?: boolean; inputData?: any }>,
+    response?: CallableResponse<any>,
+  ) => {
+    logger.info('testStreamWithHttpsError called', { data: req.data });
+
+    const data = req.data;
+    if (data === undefined || data === null || typeof data !== 'object' || Array.isArray(data)) {
+      throw new HttpsError('invalid-argument', 'Invalid test requested.');
+    }
+
+    const { type, asError } = data;
+    if (!type || !Object.hasOwnProperty.call(SAMPLE_DATA, type)) {
+      throw new HttpsError('invalid-argument', 'Invalid test requested.');
+    }
+
+    const outputData = SAMPLE_DATA[type as keyof typeof SAMPLE_DATA];
+
+    if (asError) {
+      throw new HttpsError(
+        'cancelled',
+        'Response data was requested to be sent as part of an Error payload, so here we are!',
+        outputData,
+      );
+    }
+
+    return outputData;
+  },
+);
+
+/**
+ * Streaming callable that throws HttpsError (for testing stream-from-URL).
+ * Same behaviour as testStreamWithHttpsError; separate export for httpsCallableFromUrl.stream() e2e.
+ */
+export const testStreamWithHttpsErrorFromUrl = onCall(
+  async (
+    req: CallableRequest<{ type?: string; asError?: boolean; inputData?: any }>,
+    response?: CallableResponse<any>,
+  ) => {
+    logger.info('testStreamWithHttpsErrorFromUrl called', { data: req.data });
+
+    const data = req.data;
+    if (data === undefined || data === null || typeof data !== 'object' || Array.isArray(data)) {
+      throw new HttpsError('invalid-argument', 'Invalid test requested.');
+    }
+
+    const { type, asError } = data;
+    if (!type || !Object.hasOwnProperty.call(SAMPLE_DATA, type)) {
+      throw new HttpsError('invalid-argument', 'Invalid test requested.');
+    }
+
+    const outputData = SAMPLE_DATA[type as keyof typeof SAMPLE_DATA];
+
+    if (asError) {
+      throw new HttpsError(
+        'cancelled',
+        'Response data was requested to be sent as part of an Error payload, so here we are!',
+        outputData,
+      );
+    }
+
+    return outputData;
   },
 );
