@@ -7,9 +7,10 @@ import {
   httpsCallableFromUrl,
   HttpsErrorCode,
   type HttpsCallableOptions,
-  type HttpsCallable as HttpsCallableType,
+  type HttpsCallable,
   type Functions,
 } from '../lib';
+import type { HttpsCallableStreamOptions, HttpsCallableStreamResult } from '../lib/types/functions';
 
 import functions from '../lib/namespaced';
 import {
@@ -110,8 +111,19 @@ describe('Cloud Functions', function () {
 
       it('`HttpsCallable` type is properly exposed to end user', function () {
         // Type check - this will fail at compile time if type is not exported
-        const callable: HttpsCallableType<{ test: string }, { result: number }> = async () => {
+        const callable = (async () => {
           return { data: { result: 42 } };
+        }) as HttpsCallable<{ test: string }, { result: number }>;
+        callable.stream = async (
+          _data?: { test: string } | null,
+          _options?: HttpsCallableStreamOptions,
+        ): Promise<HttpsCallableStreamResult<{ result: number }, unknown>> => {
+          return {
+            data: Promise.resolve({ result: 42 }),
+            stream: (async function* () {
+              // Empty async generator for stream
+            })(),
+          };
         };
         expect(callable).toBeDefined();
       });
