@@ -89,7 +89,7 @@ jobs:
     runs-on: macos-15
     needs: matrix_prep
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
-    timeout-minutes: 70
+    timeout-minutes: 80
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
@@ -331,12 +331,12 @@ jobs:
 
       - name: Detox Test Debug
         if: contains(matrix.buildmode, 'debug')
-        timeout-minutes: 50
+        timeout-minutes: 55
         run: yarn tests:ios:test-cover
 
       - name: Detox Test Release
         if: contains(matrix.buildmode, 'release')
-        timeout-minutes: 50
+        timeout-minutes: 55
         run: yarn tests:ios:test:release
 
       - name: Stop Screen and App Video and System Logging
