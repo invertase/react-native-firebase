@@ -97,6 +97,9 @@ jobs:
       CCACHE_DEPEND: true
       CCACHE_INODECACHE: true
       CCACHE_LIMIT_MULTIPLE: 0.95
+      # pin to 26.0.1 until newer Xcode/Simulators don't have awful performance
+      # Last tested with 26.2 on 20260130 and performance-based flakes made it unusable
+      XCODE_VERSION: 26.0.1
     strategy:
       fail-fast: false
       matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
@@ -128,7 +131,24 @@ jobs:
 
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '26.0.1' # temporarily pinning version until simulators are defined 'latest-stable'
+          xcode-version: ${{ env.XCODE_VERSION }}
+
+      - name: Workaround Simulator Availability issues
+        run: |
+          # If using `latest-stable` xcode-version above, this is likely not needed.
+          # If you use *anything* but latest-stable, you may inadvertently be using a SimRuntime that is no longer installed.
+          # This will install the needed SimRuntime if it is missing.
+          if [[ "$XCODE_VERSION" != "latest-stable" ]] && ! xcrun simctl list | grep "^iOS $XCODE_VERSION"; then
+            # note if you specify the build version to be exactly same as xcode version
+            # you may see "iOS <version> is not available for download"
+            #xcodebuild -downloadPlatform iOS -buildVersion "$XCODE_VERSION"
+            xcodebuild -downloadPlatform iOS
+          fi
+
+          # Apparently just listing the installed simulators fixes availability inconsistency
+          # Without this, runs fail *intermittently* with build target not available because simulators not available
+          # See https://github.com/actions/runner-images/issues/13459#issuecomment-3681674842
+          xcrun simctl list
 
       - uses: actions/checkout@v4
         with:
@@ -236,12 +256,6 @@ jobs:
           retry_wait_seconds: 60
           max_attempts: 3
           command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew && HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils xcbeautify
-
-      - name: Workaround Simulator Availability issues
-        # Apparently just listing the installed simulators fixes availability inconsistency
-        # Without this, runs fail *intermittently* with build target not available because simulators not available
-        # See https://github.com/actions/runner-images/issues/13459#issuecomment-3681674842
-        run: xcrun simctl list
 
       - name: Build iOS App Debug
         if: contains(matrix.buildmode, 'debug')
