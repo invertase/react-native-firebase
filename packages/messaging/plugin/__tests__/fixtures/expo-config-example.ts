@@ -1,15 +1,25 @@
 import { ExpoConfig } from '@expo/config-types';
 
+const notificationConfig = {
+  icon: 'IconAsset',
+  color: '#1D172D',
+};
+
 /**
  * @type {import('@expo/config-types').ExpoConfig}
  */
-const expoConfigExample: ExpoConfig = {
+export const expoConfigExample: ExpoConfig = {
   name: 'FirebaseMessagingTest',
   slug: 'fire-base-messaging-test',
-  notification: {
-    icon: 'IconAsset',
-    color: '#1D172D',
-  },
+  notification: notificationConfig,
 };
 
-export default expoConfigExample;
+/**
+ * @type {import('@expo/config-types').ExpoConfig}
+ */
+export const expoConfigExampleWithExpoNotificationsPlugins: ExpoConfig = {
+  name: 'FirebaseMessagingTest',
+  slug: 'fire-base-messaging-test',
+  notification: notificationConfig,
+  plugins: [['expo-notifications', notificationConfig], '../test-plugin', ['expo-camera']],
+};
