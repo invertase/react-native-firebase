@@ -283,6 +283,7 @@ jobs:
         shell: bash
 
       - name: Metro Bundler Cache Restore
+        if: contains(matrix.buildmode, 'debug')
         uses: actions/cache/restore@v4
         id: metro-bundler-cache
         continue-on-error: true
@@ -292,6 +293,7 @@ jobs:
           restore-keys: ${{ runner.os }}-ios-metro-v1
 
       - name: Pre-fetch Javascript bundle
+        if: contains(matrix.buildmode, 'debug')
         run: |
           nohup yarn tests:packager:jet-ci &
           printf 'Waiting for packager to come online'
@@ -411,7 +413,7 @@ jobs:
 
       - name: Metro Bundler Cache Save
         uses: actions/cache/save@v4
-        if: "${{ github.ref == 'refs/heads/main' }}"
+        if: "${{ contains(matrix.buildmode, 'debug') && github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
           path: ${{ steps.workflow-variables.outputs.metro-cache }}
