@@ -83,13 +83,18 @@ export function modifySwiftBridgingHeader(projectRoot: string): void {
     const bridgingHeader = path.join(iosDir, entry.name, `${entry.name}-Bridging-Header.h`);
     if (fs.existsSync(bridgingHeader)) {
       let contents = fs.readFileSync(bridgingHeader, 'utf-8');
-      if (!contents.includes('#import <RNFBAppCheckModule.h>')) {
-        contents += '\n#import <RNFBAppCheckModule.h>\n';
-        fs.writeFileSync(bridgingHeader, contents);
-      }
+      contents = modifySwiftBridgingHeaderContents(contents);
+      fs.writeFileSync(bridgingHeader, contents);
       break;
     }
   }
+}
+
+export function modifySwiftBridgingHeaderContents(contents: string): string {
+  if (!contents.includes('#import <RNFBAppCheckModule.h>')) {
+    contents += '\n#import <RNFBAppCheckModule.h>\n';
+  }
+  return contents;
 }
 
 export function modifySwiftAppDelegate(contents: string): string {
