@@ -2,6 +2,7 @@ import { ConfigPlugin, IOSConfig, WarningAggregator, withDangerousMod } from '@e
 import { AppDelegateProjectFile } from '@expo/config-plugins/build/ios/Paths';
 import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
 import fs from 'fs';
+import path from 'path';
 
 const methodInvocationBlock = `[RNFBAppCheckModule sharedInstance];`;
 // https://regex101.com/r/mPgaq6/1
@@ -68,25 +69,34 @@ export function modifyObjcAppDelegate(contents: string): string {
   }
 }
 
-export function modifySwiftAppDelegate(contents: string): string {
-  // Add imports for Swift
-  if (!contents.includes('import RNFBAppCheck')) {
-    // Try to add after FirebaseCore if it exists
-    if (contents.includes('import FirebaseCore')) {
-      contents = contents.replace(
-        /import FirebaseCore/g,
-        `import FirebaseCore
-import RNFBAppCheck`,
-      );
-    } else {
-      // Otherwise add after Expo
-      contents = contents.replace(
-        /import Expo/g,
-        `import Expo
-import RNFBAppCheck`,
-      );
+export function modifySwiftBridgingHeader(projectRoot: string): void {
+  // RNFBAppCheck is an Obj-C pod without a Swift module map, so
+  // `import RNFBAppCheck` in Swift fails. Instead, expose the
+  // Obj-C header via the bridging header.
+  const iosDir = path.join(projectRoot, 'ios');
+  if (!fs.existsSync(iosDir)) return;
+
+  // Find the bridging header (ProjectName-Bridging-Header.h)
+  const entries = fs.readdirSync(iosDir, { withFileTypes: true });
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    const bridgingHeader = path.join(iosDir, entry.name, `${entry.name}-Bridging-Header.h`);
+    if (fs.existsSync(bridgingHeader)) {
+      let contents = fs.readFileSync(bridgingHeader, 'utf-8');
+      if (!contents.includes('#import <RNFBAppCheckModule.h>')) {
+        contents += '\n#import <RNFBAppCheckModule.h>\n';
+        fs.writeFileSync(bridgingHeader, contents);
+      }
+      break;
     }
   }
+}
+
+export function modifySwiftAppDelegate(contents: string): string {
+  // Remove any previously added `import RNFBAppCheck` since the pod
+  // is Obj-C only and doesn't produce a Swift module. The class is
+  // made available to Swift via the bridging header instead.
+  contents = contents.replace(/import RNFBAppCheck\n/g, '');
 
   // Check if App Check code is already added to avoid duplication
   if (contents.includes('RNFBAppCheckModule.sharedInstance()')) {
@@ -140,19 +150,25 @@ import RNFBAppCheck`,
   }
 }
 
-export async function modifyAppDelegateAsync(appDelegateFileInfo: AppDelegateProjectFile) {
-  const { language, path, contents } = appDelegateFileInfo;
+export async function modifyAppDelegateAsync(
+  appDelegateFileInfo: AppDelegateProjectFile,
+  projectRoot?: string,
+) {
+  const { language, path: filePath, contents } = appDelegateFileInfo;
 
   let newContents;
   if (['objc', 'objcpp'].includes(language)) {
     newContents = modifyObjcAppDelegate(contents);
   } else if (language === 'swift') {
     newContents = modifySwiftAppDelegate(contents);
+    if (projectRoot) {
+      modifySwiftBridgingHeader(projectRoot);
+    }
   } else {
     throw new Error(`Cannot add Firebase code to AppDelegate of language "${language}"`);
   }
 
-  await fs.promises.writeFile(path, newContents);
+  await fs.promises.writeFile(filePath, newContents);
 }
 
 export const withFirebaseAppDelegate: ConfigPlugin = config => {
@@ -160,7 +176,7 @@ export const withFirebaseAppDelegate: ConfigPlugin = config => {
     'ios',
     async config => {
       const fileInfo = IOSConfig.Paths.getAppDelegate(config.modRequest.projectRoot);
-      await modifyAppDelegateAsync(fileInfo);
+      await modifyAppDelegateAsync(fileInfo, config.modRequest.projectRoot);
       return config;
     },
   ]);
