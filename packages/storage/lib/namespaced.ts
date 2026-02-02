@@ -36,7 +36,7 @@ import { getGsUrlParts, getHttpUrlParts, handleStorageEvent } from './utils';
 import { version } from './version';
 import fallBackModule from './web/RNFBStorageModule';
 import type { Storage, StorageStatics, Reference, EmulatorMockTokenOptions } from './types/storage';
-import type { StoragePrivate } from './types/internal';
+import type { StorageInternal } from './types/internal';
 
 const statics: StorageStatics = {
   StringFormat,
@@ -140,7 +140,7 @@ class FirebaseStorageModule extends FirebaseModule {
     }
 
     const storageInstance = this.app.storage(bucket);
-    return new StorageReference(storageInstance as StoragePrivate, path);
+    return new StorageReference(storageInstance as StorageInternal, path);
   }
 
   /**

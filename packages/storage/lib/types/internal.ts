@@ -22,7 +22,7 @@ import type EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitte
  * Internal Storage type with access to private properties.
  * Used internally by StorageReference and other internal classes.
  */
-export type StoragePrivate = Storage & {
+export type StorageInternal = Storage & {
   native: any;
   _customUrlOrRegion: string | null;
   emitter: EventEmitter;
@@ -33,6 +33,16 @@ export type StoragePrivate = Storage & {
  * Internal Reference type with access to private properties.
  * Used internally by StorageTask and other internal classes.
  */
-export type ReferencePrivate = Reference & {
-  _storage: StoragePrivate;
+export type ReferenceInternal = Reference & {
+  _storage: StorageInternal;
+};
+
+/**
+ * Internal ListResult type with access to private properties.
+ * Used internally by StorageListResult and other internal classes.
+ */
+export type ListResultInternal = {
+  nextPageToken?: string | null;
+  items: string[];
+  prefixes: string[];
 };

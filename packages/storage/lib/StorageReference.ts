@@ -35,13 +35,20 @@ import StorageListResult, { provideStorageReferenceClass } from './StorageListRe
 import { StringFormat } from './StorageStatics';
 import StorageUploadTask from './StorageUploadTask';
 import { validateMetadata } from './utils';
-import type { Reference, SettableMetadata, ListOptions, FullMetadata, Task } from './types/storage';
-import type { StoragePrivate } from './types/internal';
+import type {
+  Reference,
+  SettableMetadata,
+  ListOptions,
+  FullMetadata,
+  Task,
+  Storage,
+} from './types/storage';
+import type { ListResultInternal, StorageInternal } from './types/internal';
 
 export default class StorageReference extends ReferenceBase implements Reference {
-  _storage: StoragePrivate;
+  _storage: StorageInternal;
 
-  constructor(storage: StoragePrivate, path: string) {
+  constructor(storage: StorageInternal, path: string) {
     super(path);
     this._storage = storage;
   }
@@ -88,7 +95,7 @@ export default class StorageReference extends ReferenceBase implements Reference
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#storage
    */
-  get storage(): any {
+  get storage(): Storage {
     return this._storage;
   }
 
@@ -166,7 +173,7 @@ export default class StorageReference extends ReferenceBase implements Reference
 
     return this._storage.native
       .list(this.toString(), listOptions)
-      .then((data: any) => new StorageListResult(this._storage, data));
+      .then((data: ListResultInternal) => new StorageListResult(this._storage, data));
   }
 
   /**
@@ -175,7 +182,7 @@ export default class StorageReference extends ReferenceBase implements Reference
   listAll(): Promise<StorageListResult> {
     return this._storage.native
       .listAll(this.toString())
-      .then((data: any) => new StorageListResult(this._storage, data));
+      .then((data: ListResultInternal) => new StorageListResult(this._storage, data));
   }
 
   /**

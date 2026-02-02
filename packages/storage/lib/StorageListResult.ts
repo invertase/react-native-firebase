@@ -16,13 +16,13 @@
  */
 
 import type { Reference } from './types/storage';
-import type { StoragePrivate } from './types/internal';
+import type { ListResultInternal, StorageInternal } from './types/internal';
 
 // To avoid React Native require cycle warnings
-let StorageReference: (new (storage: StoragePrivate, path: string) => Reference) | null = null;
+let StorageReference: (new (storage: StorageInternal, path: string) => Reference) | null = null;
 
 export function provideStorageReferenceClass(
-  storageReference: new (storage: StoragePrivate, path: string) => Reference,
+  storageReference: new (storage: StorageInternal, path: string) => Reference,
 ): void {
   StorageReference = storageReference;
 }
@@ -32,10 +32,7 @@ export default class StorageListResult {
   private _items: Reference[];
   private _prefixes: Reference[];
 
-  constructor(
-    storage: StoragePrivate,
-    nativeData: { nextPageToken?: string | null; items: string[]; prefixes: string[] },
-  ) {
+  constructor(storage: StorageInternal, nativeData: ListResultInternal) {
     this._nextPageToken = nativeData.nextPageToken || null;
 
     if (!StorageReference) {
