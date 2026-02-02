@@ -76,7 +76,7 @@ export function getGsUrlParts(url: string): { bucket: string; path: string } {
   return { bucket, path };
 }
 
-export function validateMetadata(metadata: any, update = true): SettableMetadata {
+export function validateMetadata(metadata: SettableMetadata, update = true): SettableMetadata {
   if (!isObject(metadata)) {
     throw new Error('firebase.storage.SettableMetadata must be an object value if provided.');
   }
@@ -115,5 +115,5 @@ export function validateMetadata(metadata: any, update = true): SettableMetadata
     }
   }
 
-  return metadata as SettableMetadata;
+  return metadata;
 }
