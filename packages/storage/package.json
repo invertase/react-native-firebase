@@ -3,9 +3,8 @@
   "version": "23.8.5",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - React Native Firebase provides native integration with Cloud Storage, providing support to upload and download files directly from your device and from your Firebase Cloud Storage bucket.",
-  "main": "./dist/commonjs/index.js",
-  "module": "./dist/module/index.js",
-  "types": "./dist/typescript/commonjs/lib/index.d.ts",
+  "main": "./dist/module/index.js",
+  "types": "./dist/typescript/lib/index.d.ts",
   "scripts": {
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
@@ -43,25 +42,11 @@
   "exports": {
     ".": {
       "source": "./lib/index.ts",
-      "import": {
-        "types": "./dist/typescript/module/lib/index.d.ts",
-        "default": "./dist/module/index.js"
-      },
-      "require": {
-        "types": "./dist/typescript/commonjs/lib/index.d.ts",
-        "default": "./dist/commonjs/index.js"
-      }
+      "types": "./dist/typescript/lib/index.d.ts",
+      "default": "./dist/module/index.js"
     },
     "./package.json": "./package.json"
   },
-  "files": [
-    "lib",
-    "tsconfig.json",
-    "dist",
-    "!**/__tests__",
-    "!**/__fixtures__",
-    "!**/__mocks__"
-  ],
   "react-native-builder-bob": {
     "source": "lib",
     "output": "dist",
@@ -73,17 +58,15 @@
         }
       ],
       [
-        "commonjs",
-        {
-          "esm": true
-        }
-      ],
-      [
         "typescript",
         {
           "tsc": "../../node_modules/.bin/tsc"
         }
       ]
     ]
-  }
+  },
+  "eslintIgnore": [
+    "node_modules/",
+    "dist/"
+  ]
 }
