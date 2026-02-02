@@ -18,6 +18,8 @@
 import { isNull, isObject, isString } from '@react-native-firebase/app/dist/module/common';
 import { NativeFirebaseError } from '@react-native-firebase/app/dist/module/internal';
 import type { SettableMetadata } from './types/storage';
+import type { StorageInternal } from './types/internal';
+import type { NativeErrorUserInfo } from '@react-native-firebase/app/dist/module/types/internal';
 
 const SETTABLE_FIELDS = [
   'cacheControl',
@@ -30,18 +32,26 @@ const SETTABLE_FIELDS = [
 ] as const;
 
 export async function handleStorageEvent(
-  storageInstance: any,
+  storageInstance: StorageInternal,
   event: {
     taskId: string;
     eventName: string;
-    body?: { error?: any };
+    body?: { error?: NativeErrorUserInfo };
   },
 ): Promise<void> {
   const { taskId, eventName } = event;
   const body = event.body || {};
 
   if (body.error) {
-    body.error = await NativeFirebaseError.fromEvent(body.error, storageInstance._config.namespace);
+    // Convert NativeErrorUserInfo to NativeFirebaseError instance
+    const nativeError = NativeFirebaseError.fromEvent(
+      body.error,
+      storageInstance._config.namespace,
+    );
+    // Assign NativeFirebaseError (Error instance) to body.error for consumers
+    // Type assertion needed because body.error is typed as NativeErrorUserInfo in input,
+    // but consumers expect Error instance
+    (body as { error?: Error }).error = nativeError;
   }
 
   storageInstance.emitter.emit(storageInstance.eventNameForApp(taskId, eventName), body);

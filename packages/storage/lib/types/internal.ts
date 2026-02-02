@@ -15,6 +15,7 @@
  *
  */
 
+import type { ModuleConfig } from '@react-native-firebase/app/dist/module/types/internal';
 import type { Storage, Reference } from './storage';
 import type EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
@@ -27,6 +28,7 @@ export type StorageInternal = Storage & {
   _customUrlOrRegion: string | null;
   emitter: EventEmitter;
   eventNameForApp: (...args: Array<string | number>) => string;
+  _config: ModuleConfig;
 };
 
 /**
