@@ -249,6 +249,4 @@ export const firebase =
     true
   >;
 
-export * from './modular';
-
 setReactNativeModule(nativeModuleName, fallBackModule);
