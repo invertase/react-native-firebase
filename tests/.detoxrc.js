@@ -20,7 +20,7 @@ module.exports = {
       type: 'ios.app',
       binaryPath: 'ios/build/Build/Products/Release-iphonesimulator/testing.app',
       build:
-        'export RCT_NO_LAUNCH_PACKAGER=true && set -o pipefail && xcodebuild  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build | xcbeautify',
+        'export RCT_NO_LAUNCH_PACKAGER=true && set -o pipefail && xcodebuild VALID_ARCHS="`uname -m`"  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build | xcbeautify',
     },
     'android.debug': {
       type: 'android.apk',
