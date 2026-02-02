@@ -4,10 +4,10 @@
     "baseUrl": ".",
     "paths": {
       "@react-native-firebase/app": ["packages/app/lib"],
-      "@react-native-firebase/app/lib/common": ["packages/app/lib/common"],
-      "@react-native-firebase/app/lib/common/*": ["packages/app/lib/common/*"],
-      "@react-native-firebase/app/lib/internal": ["packages/app/lib/internal"],
-      "@react-native-firebase/app/lib/internal/*": ["packages/app/lib/internal/*"],
+      "@react-native-firebase/app/dist/module/common": ["packages/app/lib/common"],
+      "@react-native-firebase/app/dist/module/common/*": ["packages/app/lib/common/*"],
+      "@react-native-firebase/app/dist/module/internal": ["packages/app/lib/internal"],
+      "@react-native-firebase/app/dist/module/internal/*": ["packages/app/lib/internal/*"],
       "@react-native-firebase/auth": ["packages/auth/lib"],
       "@react-native-firebase/app-check": ["packages/app-check/lib"],
       "@react-native-firebase/ai": ["packages/ai/lib"]

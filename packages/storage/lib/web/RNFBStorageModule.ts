@@ -11,7 +11,7 @@ import {
   updateMetadata,
   uploadBytesResumable,
   ref as firebaseStorageRef,
-} from '@react-native-firebase/app/lib/internal/web/firebaseStorage';
+} from '@react-native-firebase/app/dist/module/internal/web/firebaseStorage';
 import type { FirebaseApp } from 'firebase/app';
 import type {
   StorageReference,
@@ -21,10 +21,14 @@ import type {
   ListResult as FirebaseListResult,
 } from 'firebase/storage';
 
-type Storage = ReturnType<typeof getStorage>;
-import { guard, getWebError, emitEvent } from '@react-native-firebase/app/lib/internal/web/utils';
-import { Base64 } from '@react-native-firebase/app/lib/common';
+import {
+  guard,
+  getWebError,
+  emitEvent,
+} from '@react-native-firebase/app/dist/module/internal/web/utils';
+import { Base64 } from '@react-native-firebase/app/dist/module/common';
 
+type Storage = ReturnType<typeof getStorage>;
 interface EmulatorConfig {
   host: string;
   port: number;

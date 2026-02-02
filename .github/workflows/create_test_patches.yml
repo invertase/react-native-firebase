@@ -59,24 +59,15 @@ jobs:
           # yarn3+ by default disables lockfile alteration in CI. We want it.
           YARN_ENABLE_IMMUTABLE_INSTALLS: false
         run: |
-          PACKAGE_LIST=`find packages -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | egrep -v 'template|invites'`
-          mkdir $HOME/packages
-          for PACKAGE in $PACKAGE_LIST; do
-            echo "Packing PR version of package $PACKAGE"
-            pushd packages/$PACKAGE;
-            yarn pack;
-            mv package.tgz $HOME/packages/react-native-firebase-${PACKAGE}.tgz;
-            ls -la $HOME/packages/*${PACKAGE}*
-            popd;
-          done
-          ls -la $HOME/packages/
+          ./.github/workflows/scripts/create_npm_packages.sh ./packages $HOME/packages
           cd $HOME
           npx @react-native-community/cli init template --skip-install --skip-git-init
           cd template
           yarn
           yarn add patch-package --dev
           mkdir patches || true
-          for PACKAGE in $PACKAGE_LIST; do
+          PACKED_PACKAGE_LIST=`find $HOME/packages/ -maxdepth 1 -mindepth 1 -type f -exec basename -s .tgz {} \; | cut -d'-' -f4-10 | sort`
+          for PACKAGE in $PACKED_PACKAGE_LIST; do
             echo "Installing package $PACKAGE into fresh template app, then clobbering with PR version"
             yarn add @react-native-firebase/$PACKAGE || true
             if [ -d node_modules/@react-native-firebase/$PACKAGE ]; then

@@ -90,7 +90,7 @@ import {
   CheckV9DeprecationFunction,
 } from '../../app/lib/common/unitTestUtils';
 // @ts-ignore
-import { createDeprecationProxy } from '@react-native-firebase/app/lib/common';
+import { createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
 
 describe('Auth', function () {
   describe('namespace', function () {

@@ -1,7 +1,7 @@
 import { jest, afterAll, beforeAll, describe, expect, it, xit, beforeEach } from '@jest/globals';
 
 // @ts-ignore test
-import FirebaseModule from '@react-native-firebase/app/lib/internal/FirebaseModule';
+import FirebaseModule from '@react-native-firebase/app/dist/module/internal/FirebaseModule';
 
 import analytics, {
   firebase,
@@ -63,9 +63,9 @@ import analytics, {
 } from '../lib';
 
 // @ts-ignore test
-import { createCheckV9Deprecation } from '@react-native-firebase/app/lib/common/unitTestUtils';
+import { createCheckV9Deprecation } from '@react-native-firebase/app/dist/module/common/unitTestUtils';
 // @ts-ignore test
-import type { CheckV9DeprecationFunction } from '@react-native-firebase/app/lib/common/unitTestUtils';
+import type { CheckV9DeprecationFunction } from '@react-native-firebase/app/dist/module/common/unitTestUtils';
 
 describe('Analytics', function () {
   describe('namespace', function () {
@@ -200,6 +200,18 @@ describe('Analytics', function () {
       expect(() => firebase.analytics().setConsent({ ad_storage: 123 })).toThrow(
         "'consentSettings' value for parameter 'ad_storage' is invalid, expected a boolean.",
       );
+    });
+
+    it('throws if security_storage of consentSettings is not one of granted or denied', function () {
+      // @ts-ignore test
+      expect(() => firebase.analytics().setConsent({ security_storage: 'invalid' })).toThrow(
+        "'consentSettings' value for parameter 'security_storage' is invalid, expected one of 'granted' or 'denied'.",
+      );
+    });
+
+    it('accepts security_storage of consentSettings is one of granted or denied', function () {
+      expect(() => firebase.analytics().setConsent({ security_storage: 'granted' })).not.toThrow();
+      expect(() => firebase.analytics().setConsent({ security_storage: 'denied' })).not.toThrow();
     });
 
     it('errors when no parameters are set', function () {

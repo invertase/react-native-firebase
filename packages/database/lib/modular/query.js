@@ -14,7 +14,7 @@
  * @implements {IQueryConstraint}
  */
 
-import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 
 class QueryConstraint {
   constructor(type, ...args) {

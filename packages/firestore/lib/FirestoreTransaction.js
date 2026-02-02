@@ -15,7 +15,7 @@
  *
  */
 
-import { isObject, createDeprecationProxy } from '@react-native-firebase/app/lib/common';
+import { isObject, createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
 import FirestoreDocumentReference from './FirestoreDocumentReference';
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 import { parseSetOptions, parseUpdateArgs } from './utils';

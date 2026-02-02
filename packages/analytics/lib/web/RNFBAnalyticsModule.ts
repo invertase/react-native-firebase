@@ -1,5 +1,5 @@
-import { getApp } from '@react-native-firebase/app/lib/internal/web/firebaseApp';
-import { guard } from '@react-native-firebase/app/lib/internal/web/utils';
+import { getApp } from '@react-native-firebase/app/dist/module/internal/web/firebaseApp';
+import { guard } from '@react-native-firebase/app/dist/module/internal/web/utils';
 
 import { AnalyticsApi } from './api';
 import type {

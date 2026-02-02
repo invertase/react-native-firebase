@@ -20,15 +20,15 @@ import {
   isNumber,
   isString,
   createDeprecationProxy,
-} from '@react-native-firebase/app/lib/common';
+} from '@react-native-firebase/app/dist/module/common';
 
-import { setReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
+import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
-} from '@react-native-firebase/app/lib/internal';
-import type { ModuleConfig } from '@react-native-firebase/app/lib/internal';
+  type ModuleConfig,
+} from '@react-native-firebase/app/dist/module/internal';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import StorageReference from './StorageReference';
 import { StringFormat, TaskEvent, TaskState } from './StorageStatics';

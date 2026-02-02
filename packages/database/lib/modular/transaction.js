@@ -11,7 +11,7 @@
  * @returns {Promise<TransactionResult>}
  */
 
-import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 
 export function runTransaction(ref, transactionUpdate, options) {
   return ref.transaction.call(

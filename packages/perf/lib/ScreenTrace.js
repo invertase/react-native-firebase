@@ -15,7 +15,7 @@
  *
  */
 
-import { isIOS } from '@react-native-firebase/app/lib/common';
+import { isIOS } from '@react-native-firebase/app/dist/module/common';
 
 let id = 0;
 

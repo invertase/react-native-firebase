@@ -15,8 +15,8 @@
  *
  */
 
-import { isNull, isObject, isString } from '@react-native-firebase/app/lib/common';
-import { NativeFirebaseError } from '@react-native-firebase/app/lib/internal';
+import { isNull, isObject, isString } from '@react-native-firebase/app/dist/module/common';
+import { NativeFirebaseError } from '@react-native-firebase/app/dist/module/internal';
 import type { SettableMetadata } from './types/storage';
 
 const SETTABLE_FIELDS = [

@@ -1,4 +1,4 @@
-import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/lib/common';
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 import { getApp } from '@react-native-firebase/app';
 import type { Analytics } from './types/analytics';
 import { Platform } from 'react-native';

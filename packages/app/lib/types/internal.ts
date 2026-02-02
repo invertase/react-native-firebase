@@ -96,7 +96,7 @@ export interface NativeErrorUserInfo {
 }
 
 export interface NativeError {
-  userInfo: NativeErrorUserInfo;
+  userInfo?: NativeErrorUserInfo;
   message?: string;
   customData?: any;
   operationType?: string;

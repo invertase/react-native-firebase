@@ -15,12 +15,12 @@
  *
  */
 
-import { isBoolean, isOneOf, isString } from '@react-native-firebase/app/lib/common';
+import { isBoolean, isOneOf, isString } from '@react-native-firebase/app/dist/module/common';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
-} from '@react-native-firebase/app/lib/internal';
+} from '@react-native-firebase/app/dist/module/internal';
 import { Platform } from 'react-native';
 import HttpMetric from './HttpMetric';
 import Trace from './Trace';

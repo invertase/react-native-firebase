@@ -1,11 +1,10 @@
 {
   "name": "@react-native-firebase/messaging",
-  "version": "23.7.0",
+  "version": "23.8.5",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - React Native Firebase provides native integration of Firebase Cloud Messaging (FCM) for both Android & iOS. FCM is a cost free service, allowing for server-device and device-device communication. The React Native Firebase Messaging module provides a simple JavaScript API to interact with FCM.",
-  "main": "./dist/commonjs/index.js",
-  "module": "./dist/module/index.js",
-  "types": "./dist/typescript/commonjs/lib/index.d.ts",
+  "main": "./dist/module/index.js",
+  "types": "./dist/typescript/lib/index.d.ts",
   "scripts": {
     "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
@@ -26,13 +25,13 @@
     "messaging"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "23.7.0",
+    "@react-native-firebase/app": "23.8.5",
     "expo": ">=47.0.0"
   },
   "devDependencies": {
     "expo": "^54.0.27",
-    "react-native-builder-bob": "^0.40.12",
-    "typescript": "^5.8.3"
+    "react-native-builder-bob": "^0.40.17",
+    "typescript": "^5.9.3"
   },
   "peerDependenciesMeta": {
     "expo": {
@@ -46,39 +45,18 @@
   "exports": {
     ".": {
       "source": "./lib/index.ts",
-      "import": {
-        "types": "./dist/typescript/module/lib/index.d.ts",
-        "default": "./dist/module/index.js"
-      },
-      "require": {
-        "types": "./dist/typescript/commonjs/lib/index.d.ts",
-        "default": "./dist/commonjs/index.js"
-      }
+      "types": "./dist/typescript/lib/index.d.ts",
+      "default": "./dist/module/index.js"
     },
+    "./app.plugin.js": "./app.plugin.js",
     "./package.json": "./package.json"
   },
-  "files": [
-    "lib",
-    "plugin/src",
-    "tsconfig.json",
-    "plugin/tsconfig.json",
-    "dist",
-    "!**/__tests__",
-    "!**/__fixtures__",
-    "!**/__mocks__"
-  ],
   "react-native-builder-bob": {
     "source": "lib",
     "output": "dist",
     "targets": [
       [
         "module",
-        {
-          "esm": true
-        }
-      ],
-      [
-        "commonjs",
         {
           "esm": true
         }

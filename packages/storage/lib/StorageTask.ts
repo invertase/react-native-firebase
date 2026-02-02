@@ -15,7 +15,7 @@
  *
  */
 
-import { isFunction, isNull, isObject } from '@react-native-firebase/app/lib/common';
+import { isFunction, isNull, isObject } from '@react-native-firebase/app/dist/module/common';
 import type { EmitterSubscription } from 'react-native';
 import { TaskEvent } from './StorageStatics';
 import type { TaskSnapshot, Reference, Task, TaskSnapshotObserver } from './types/storage';

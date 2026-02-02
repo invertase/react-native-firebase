@@ -15,8 +15,8 @@
  *
  */
 
-import { createDeprecationProxy } from '@react-native-firebase/app/lib/common';
-import { getReactNativeModule } from '@react-native-firebase/app/lib/internal/nativeModule';
+import { createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
+import { getReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import FirestoreBlob from './FirestoreBlob';
 import FirestoreFieldPath from './FirestoreFieldPath';
 import FirestoreFieldValue from './FirestoreFieldValue';

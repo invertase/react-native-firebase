@@ -5,14 +5,14 @@ import {
   onIdChange,
   getInstallations,
   makeIDBAvailable,
-} from '@react-native-firebase/app/lib/internal/web/firebaseInstallations';
+} from '@react-native-firebase/app/dist/module/internal/web/firebaseInstallations';
 import {
   getItem,
   setItem,
   isMemoryStorage,
-} from '@react-native-firebase/app/lib/internal/asyncStorage';
+} from '@react-native-firebase/app/dist/module/internal/asyncStorage';
 
-import { isNumber } from '@react-native-firebase/app/lib/common';
+import { isNumber } from '@react-native-firebase/app/dist/module/common';
 import type {
   AnalyticsEventParameters,
   AnalyticsUserProperties,

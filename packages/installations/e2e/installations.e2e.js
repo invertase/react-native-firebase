@@ -15,7 +15,7 @@
  *
  */
 
-import { Base64 } from '@react-native-firebase/app/lib/common';
+import { Base64 } from '@react-native-firebase/app/dist/module/common';
 
 function decodeJWT(token) {
   // Split the token into its parts

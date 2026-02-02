@@ -34,7 +34,7 @@ export default class NativeFirebaseError extends Error {
   ): NativeFirebaseError {
     return new NativeFirebaseError(
       { userInfo: errorEvent },
-      stack || new Error().stack!,
+      stack ?? new Error().stack!,
       namespace,
     );
   }
@@ -50,12 +50,12 @@ export default class NativeFirebaseError extends Error {
 
     Object.defineProperty(this, 'code', {
       enumerable: false,
-      value: `${this.namespace}/${userInfo.code || 'unknown'}`,
+      value: `${this.namespace}/${userInfo?.code ?? 'unknown'}`,
     });
 
     Object.defineProperty(this, 'message', {
       enumerable: false,
-      value: `[${this.code}] ${userInfo.message || nativeError.message}`,
+      value: `[${this.code}] ${userInfo?.message ?? nativeError.message}`,
     });
 
     Object.defineProperty(this, 'jsStack', {
@@ -71,23 +71,23 @@ export default class NativeFirebaseError extends Error {
     // Needed for MFA processing of errors on web
     Object.defineProperty(this, 'customData', {
       enumerable: false,
-      value: nativeError.customData || null,
+      value: nativeError.customData ?? null,
     });
 
     // Needed for MFA processing of errors on web
     Object.defineProperty(this, 'operationType', {
       enumerable: false,
-      value: nativeError.operationType || null,
+      value: nativeError.operationType ?? null,
     });
 
     Object.defineProperty(this, 'nativeErrorCode', {
       enumerable: false,
-      value: userInfo.nativeErrorCode || null,
+      value: userInfo?.nativeErrorCode ?? null,
     });
 
     Object.defineProperty(this, 'nativeErrorMessage', {
       enumerable: false,
-      value: userInfo.nativeErrorMessage || null,
+      value: userInfo?.nativeErrorMessage ?? null,
     });
 
     this.stack = NativeFirebaseError.getStackWithMessage(

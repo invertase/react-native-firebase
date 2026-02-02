@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import { createDeprecationProxy } from '@react-native-firebase/app/lib/common';
+import { createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 
 const TYPE_MAP = {

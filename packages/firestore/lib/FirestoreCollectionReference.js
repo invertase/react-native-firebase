@@ -15,7 +15,7 @@
  *
  */
 
-import { generateFirestoreId, isObject } from '@react-native-firebase/app/lib/common';
+import { generateFirestoreId, isObject } from '@react-native-firebase/app/dist/module/common';
 import FirestoreDocumentReference, {
   provideCollectionReferenceClass,
 } from './FirestoreDocumentReference';

@@ -15,7 +15,12 @@
  *
  */
 
-import { isObject, isString, isUndefined, isBoolean } from '@react-native-firebase/app/lib/common';
+import {
+  isObject,
+  isString,
+  isUndefined,
+  isBoolean,
+} from '@react-native-firebase/app/dist/module/common';
 
 export default class User {
   constructor(auth, user) {

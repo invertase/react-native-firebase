@@ -15,7 +15,7 @@
  *
  */
 
-import { Base64 } from '@react-native-firebase/app/lib/common';
+import { Base64 } from '@react-native-firebase/app/dist/module/common';
 
 const tokenUUIDs = [
   'fd650953-e806-4293-b5df-edfe544d82a8',

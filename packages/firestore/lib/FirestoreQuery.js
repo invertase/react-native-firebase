@@ -23,8 +23,8 @@ import {
   isUndefined,
   filterModularArgument,
   createDeprecationProxy,
-} from '@react-native-firebase/app/lib/common';
-import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
+} from '@react-native-firebase/app/dist/module/common';
+import NativeError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
 import { FirestoreAggregateQuery } from './FirestoreAggregate';
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';

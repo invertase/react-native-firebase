@@ -24,7 +24,7 @@ import {
   isUndefined,
   isValidPath,
   promiseWithOptionalCallback,
-} from '@react-native-firebase/app/lib/common';
+} from '@react-native-firebase/app/dist/module/common';
 
 export default class DatabaseOnDisconnect {
   constructor(reference) {

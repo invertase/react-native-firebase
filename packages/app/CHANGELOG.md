@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.8.5](https://github.com/invertase/react-native-firebase/compare/v23.8.4...v23.8.5) (2026-01-31)
+
+**Note:** Version bump only for package @react-native-firebase/app
+
+## [23.8.4](https://github.com/invertase/react-native-firebase/compare/v23.8.3...v23.8.4) (2026-01-24)
+
+### Bug Fixes
+
+- **android:** adopt firebase-android-sdk 34.7.0 ([c11f162](https://github.com/invertase/react-native-firebase/commit/c11f162ca5a3b37ac229812a0f7a64001a2e0c98))
+- **app:** tolerate missing `userInfo` in NativeError ([9239445](https://github.com/invertase/react-native-firebase/commit/9239445626c49fec1242f4004a7f065415dd9f91))
+- internal cross-module references to transpiled code must be dist not src ([b03db0a](https://github.com/invertase/react-native-firebase/commit/b03db0aa3fb748ee039826ccd9c7e73bc3c78f6f))
+- **other:** adopt firebase-js-sdk 12.8.0 ([4b8b7eb](https://github.com/invertase/react-native-firebase/commit/4b8b7eb311b41638f587fc458dd598ae60f9540a))
+- transpile typescript to module only, not module and commonjs ([c1ba2a8](https://github.com/invertase/react-native-firebase/commit/c1ba2a8ae84b564679dec82253cea728b2a7aabe))
+
+## [23.8.3](https://github.com/invertase/react-native-firebase/compare/v23.8.2...v23.8.3) (2026-01-16)
+
+### Bug Fixes
+
+- **expo:** export app.plugin.js entry points for typescript packages ([7ae0872](https://github.com/invertase/react-native-firebase/commit/7ae0872850358f3b29c7d232ad7039fec08f9f5c))
+- **ios:** use react-native podspec module infra for deps ([c66eb63](https://github.com/invertase/react-native-firebase/commit/c66eb63f60cfbabdeb73a3bb1eff8735f11ad391))
+
+## [23.8.2](https://github.com/invertase/react-native-firebase/compare/v23.8.1...v23.8.2) (2026-01-14)
+
+### Bug Fixes
+
+- **app:** adopt firebase-ios-sdk 12.8.0 ([dbff0c9](https://github.com/invertase/react-native-firebase/commit/dbff0c96d6f0b5e3442545e6141213f39450739c))
+
+## [23.8.1](https://github.com/invertase/react-native-firebase/compare/v23.8.0...v23.8.1) (2026-01-13)
+
+### Bug Fixes
+
+- remove newly-added files array from package.json ([474036d](https://github.com/invertase/react-native-firebase/commit/474036d0d82191401539a8fc91bd8f177a617d36))
+
+## [23.8.0](https://github.com/invertase/react-native-firebase/compare/v23.7.0...v23.8.0) (2026-01-13)
+
+### Features
+
+- **functions:** turbo modules implementation ([#8603](https://github.com/invertase/react-native-firebase/issues/8603)) ([ad09a9b](https://github.com/invertase/react-native-firebase/commit/ad09a9bad791391a5d97f99d890149e5ea7d13bf))
+
+### Bug Fixes
+
+- **app:** firebase-ios-sdk 12.7.0 / firebase-js-sdk 12.7.0 ([#8810](https://github.com/invertase/react-native-firebase/issues/8810)) ([e00bd87](https://github.com/invertase/react-native-firebase/commit/e00bd876db750eeec13d9204be8b6603700b2a8d))
+
 ## [23.7.0](https://github.com/invertase/react-native-firebase/compare/v23.6.0...v23.7.0) (2025-12-08)
 
 **Note:** Version bump only for package @react-native-firebase/app
