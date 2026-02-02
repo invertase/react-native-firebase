@@ -104,4 +104,3 @@ export const firebase =
     Statics,
     false
   >;
-

@@ -29,4 +29,3 @@ export * from './modular';
 // Export namespaced API
 export * from './namespaced';
 export { default } from './namespaced';
-

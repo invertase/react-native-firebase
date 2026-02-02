@@ -105,4 +105,3 @@ declare module '@react-native-firebase/app' {
   }
 }
 /* eslint-enable @typescript-eslint/no-namespace */
-

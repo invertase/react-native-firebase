@@ -8,9 +8,7 @@ export type FirebaseAppDistribution = Module;
 /**
  * Get an App Distribution instance for the specified app or current app.
  */
-export function getAppDistribution(
-  app?: ReactNativeFirebase.FirebaseApp,
-): FirebaseAppDistribution {
+export function getAppDistribution(app?: ReactNativeFirebase.FirebaseApp): FirebaseAppDistribution {
   if (app) {
     return getApp(app.name).appDistribution() as unknown as FirebaseAppDistribution;
   }
@@ -54,4 +52,3 @@ export function signOutTester(appDistribution: FirebaseAppDistribution): Promise
   // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return appDistribution.signOutTester.call(appDistribution, MODULAR_DEPRECATION_ARG);
 }
-
