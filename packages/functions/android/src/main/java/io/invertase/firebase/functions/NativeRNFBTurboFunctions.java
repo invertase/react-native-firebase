@@ -374,6 +374,20 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
       details = functionsException.getDetails();
       code = functionsException.getCode().name();
       message = functionsException.getMessage();
+
+      // For streaming callables, check if details contains a "status" & "message" field with the
+      // correct values
+      if (details instanceof java.util.Map) {
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, Object> detailsMap = (java.util.Map<String, Object>) details;
+        if (detailsMap.containsKey("status") && detailsMap.get("status") instanceof String) {
+          code = (String) detailsMap.get("status");
+        }
+        if (detailsMap.containsKey("message") && detailsMap.get("message") instanceof String) {
+          message = (String) detailsMap.get("message");
+        }
+      }
+
       String timeout = FirebaseFunctionsException.Code.DEADLINE_EXCEEDED.name();
       boolean isTimeout = code.contains(timeout);
 
@@ -385,6 +399,20 @@ public class NativeRNFBTurboFunctions extends NativeRNFBTurboFunctionsSpec {
       details = functionsException.getDetails();
       code = functionsException.getCode().name();
       message = functionsException.getMessage();
+
+      // For streaming callables, check if details contains a "status" & "message" field with the
+      // correct values
+      if (details instanceof java.util.Map) {
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, Object> detailsMap = (java.util.Map<String, Object>) details;
+        if (detailsMap.containsKey("status") && detailsMap.get("status") instanceof String) {
+          code = (String) detailsMap.get("status");
+        }
+        if (detailsMap.containsKey("message") && detailsMap.get("message") instanceof String) {
+          message = (String) detailsMap.get("message");
+        }
+      }
+
       String timeout = FirebaseFunctionsException.Code.DEADLINE_EXCEEDED.name();
       boolean isTimeout = code.contains(timeout);
 
