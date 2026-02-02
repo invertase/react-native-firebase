@@ -12,14 +12,14 @@ import {
   uploadBytesResumable,
   ref as firebaseStorageRef,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseStorage';
-import type { FirebaseApp } from 'firebase/app';
 import type {
   StorageReference,
   UploadTask,
   UploadTaskSnapshot as FirebaseUploadTaskSnapshot,
   FullMetadata,
   ListResult as FirebaseListResult,
-} from 'firebase/storage';
+} from '@react-native-firebase/app/dist/module/internal/web/firebaseStorage';
+import type { FirebaseApp } from '@react-native-firebase/app/dist/module/internal/web/firebaseApp';
 
 import {
   guard,
