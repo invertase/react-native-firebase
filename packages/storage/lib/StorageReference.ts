@@ -209,7 +209,7 @@ export default class StorageReference extends ReferenceBase implements Reference
           task._id,
         );
       }),
-    ) as unknown as Task;
+    );
   }
 
   /**
@@ -224,7 +224,7 @@ export default class StorageReference extends ReferenceBase implements Reference
 
     return new StorageUploadTask(this, task =>
       this._storage.native.putString(this.toString(), _string, _format, _metadata, task._id),
-    ) as unknown as Task;
+    );
   }
 
   /**
@@ -262,7 +262,7 @@ export default class StorageReference extends ReferenceBase implements Reference
 
     return new StorageDownloadTask(this, task =>
       this._storage.native.writeToFile(this.toString(), toFilePath(filePath), task._id),
-    ) as unknown as Task;
+    );
   }
 
   /**
@@ -281,7 +281,7 @@ export default class StorageReference extends ReferenceBase implements Reference
 
     return new StorageUploadTask(this, task =>
       this._storage.native.putFile(this.toString(), toFilePath(filePath), metadata, task._id),
-    ) as unknown as Task;
+    );
   }
 
   _updateString(
