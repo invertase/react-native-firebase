@@ -88,6 +88,7 @@ export namespace FirebaseAppDistributionTypes {
   export type AppDistributionRelease = _AppDistributionRelease;
   export type Statics = _Statics;
   export type AppDistribution = _AppDistribution;
+  export type Module = AppDistribution;
 }
 /* eslint-enable @typescript-eslint/no-namespace */
 

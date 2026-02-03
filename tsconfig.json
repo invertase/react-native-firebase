@@ -2,7 +2,7 @@
   "include": [
     "packages/ai/lib/types/polyfills.d.ts",
     "packages/app-check/lib/index.d.ts",
-    "packages/app-check/lib/modular/index.d.ts",
+    "packages/app-check/lib/modular.d.ts",
     "packages/app-distribution/lib/index.d.ts",
     "packages/app-distribution/lib/modular.d.ts",
     "packages/app/lib/internal/global.d.ts",
