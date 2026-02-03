@@ -125,12 +125,12 @@ function subscribeToEvents(
 
   if (isFunction(nextOrObserver)) {
     _error = wrapErrorEventListener(error, unsubscribe);
-    _next = wrapSnapshotEventListener(task, nextOrObserver, unsubscribe);
+    _next = wrapSnapshotEventListener(task, nextOrObserver, null);
     _complete = wrapSnapshotEventListener(task, complete, unsubscribe);
   } else if (isObject(nextOrObserver)) {
     const observer = nextOrObserver as TaskSnapshotObserver;
     _error = wrapErrorEventListener(observer.error, unsubscribe);
-    _next = wrapSnapshotEventListener(task, observer.next, unsubscribe);
+    _next = wrapSnapshotEventListener(task, observer.next, null);
     _complete = wrapSnapshotEventListener(task, observer.complete, unsubscribe);
   } else if (isNull(nextOrObserver)) {
     _error = wrapErrorEventListener(error, unsubscribe);
