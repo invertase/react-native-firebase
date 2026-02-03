@@ -49,7 +49,6 @@ const nativeEvents = ['storage_event'];
 const nativeModuleName = 'RNFBStorageModule';
 
 class FirebaseStorageModule extends FirebaseModule {
-  _customUrlOrRegion: string | null = null;
   emulatorHost: string | undefined;
   emulatorPort: number;
   _maxUploadRetryTime: number;
