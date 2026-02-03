@@ -31,8 +31,7 @@ export interface AppDistributionRelease {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface Statics {
-}
+export interface Statics {}
 
 /**
  * The Firebase AppDistribution service interface.
