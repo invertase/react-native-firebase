@@ -18,67 +18,55 @@
 #import <Firebase/Firebase.h>
 #import <React/RCTUtils.h>
 
-#import "NativeRNFBTurboFunctions.h"
-#import "RNFBApp/RCTConvert+FIRApp.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBFunctionsModule.h"
-
-@interface RNFBFunctionsModule ()
-@end
 
 @implementation RNFBFunctionsModule
 #pragma mark -
 #pragma mark Module Setup
 
-RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
+RCT_EXPORT_MODULE();
+
 #pragma mark -
 #pragma mark Firebase Functions Methods
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
-    (const facebook::react::ObjCTurboModule::InitParams &)params {
-  return std::make_shared<facebook::react::NativeRNFBTurboFunctionsSpecJSI>(params);
-}
-
-- (void)httpsCallable:(NSString *)appName
-               region:(NSString *)customUrlOrRegion
-         emulatorHost:(NSString *_Nullable)emulatorHost
-         emulatorPort:(double)emulatorPort
-                 name:(NSString *)name
-                 data:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableData &)data
-              options:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableOptions &)options
-              resolve:(RCTPromiseResolveBlock)resolve
-               reject:(RCTPromiseRejectBlock)reject {
+RCT_EXPORT_METHOD(httpsCallable
+                  : (FIRApp *)firebaseApp customUrlOrRegion
+                  : (NSString *)customUrlOrRegion host
+                  : (NSString *)host port
+                  : (NSNumber *_Nonnull)port name
+                  : (NSString *)name wrapper
+                  : (NSDictionary *)wrapper options
+                  : (NSDictionary *)options resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
   NSURL *url = [NSURL URLWithString:customUrlOrRegion];
-  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
-
   FIRFunctions *functions =
       (url && url.scheme && url.host)
           ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
           : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
 
-  id callableData = data.data();
+  if (host != nil) {
+    [functions useEmulatorWithHost:host port:[port intValue]];
+  }
+
+  FIRHTTPSCallable *callable = [functions HTTPSCallableWithName:name];
+
+  if (options[@"timeout"]) {
+    callable.timeoutInterval = [options[@"timeout"] doubleValue];
+  }
 
   // In reality, this value is always null, because we always call it with null data
   // on the javascript side for some reason. Check for that case (which should be 100% of the time)
   // and set it to an `NSNull` (versus the `Optional<Any>` Swift will see from `valueForKey` so that
   // FirebaseFunctions serializer won't have a validation failure for an unknown type.
-  if (callableData == nil) {
-    callableData = [NSNull null];
+  id data = [wrapper valueForKey:@"data"];
+  NSLog(@"RNFBFUNCTIONS pulled data from 'wrapper', has type %@", [data class]);
+  if (data == nil) {
+    data = [NSNull null];
   }
 
-  std::optional<double> timeout = options.timeout();
-
-  if (emulatorHost != nil) {
-    [functions useEmulatorWithHost:emulatorHost port:(int)emulatorPort];
-  }
-
-  FIRHTTPSCallable *callable = [functions HTTPSCallableWithName:name];
-
-  if (timeout.has_value()) {
-    callable.timeoutInterval = timeout.value();
-  }
-
-  [callable callWithObject:callableData
+  [callable callWithObject:data
                 completion:^(FIRHTTPSCallableResult *_Nullable result, NSError *_Nullable error) {
                   if (error) {
                     NSObject *details = [NSNull null];
@@ -102,49 +90,44 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
                 }];
 }
 
-- (void)httpsCallableFromUrl:(NSString *)appName
-                      region:(NSString *)customUrlOrRegion
-                emulatorHost:(NSString *_Nullable)emulatorHost
-                emulatorPort:(double)emulatorPort
-                         url:(NSString *)url
-                        data:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableFromUrlData &)data
-                     options:
-                         (JS::NativeRNFBTurboFunctions::SpecHttpsCallableFromUrlOptions &)options
-                     resolve:(RCTPromiseResolveBlock)resolve
-                      reject:(RCTPromiseRejectBlock)reject {
+RCT_EXPORT_METHOD(httpsCallableFromUrl
+                  : (FIRApp *)firebaseApp customUrlOrRegion
+                  : (NSString *)customUrlOrRegion host
+                  : (NSString *)host port
+                  : (NSNumber *_Nonnull)port url
+                  : (NSString *)url wrapper
+                  : (NSDictionary *)wrapper options
+                  : (NSDictionary *)options resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
   NSURL *customUrl = [NSURL URLWithString:customUrlOrRegion];
-  FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
-
   FIRFunctions *functions =
       (customUrl && customUrl.scheme && customUrl.host)
           ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
           : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
 
-  id callableData = data.data();
-
-  // In reality, this value is always null, because we always call it with null data
-  // on the javascript side for some reason. Check for that case (which should be 100% of the time)
-  // and set it to an `NSNull` (versus the `Optional<Any>` Swift will see from `valueForKey` so that
-  // FirebaseFunctions serializer won't have a validation failure for an unknown type.
-  if (callableData == nil) {
-    callableData = [NSNull null];
-  }
-
-  std::optional<double> timeout = options.timeout();
-
-  if (emulatorHost != nil) {
-    [functions useEmulatorWithHost:emulatorHost port:(int)emulatorPort];
+  if (host != nil) {
+    [functions useEmulatorWithHost:host port:[port intValue]];
   }
 
   NSURL *functionUrl = [NSURL URLWithString:url];
 
   FIRHTTPSCallable *callable = [functions HTTPSCallableWithURL:functionUrl];
 
-  if (timeout.has_value()) {
-    callable.timeoutInterval = timeout.value();
+  if (options[@"timeout"]) {
+    callable.timeoutInterval = [options[@"timeout"] doubleValue];
   }
 
-  [callable callWithObject:callableData
+  // In reality, this value is always null, because we always call it with null data
+  // on the javascript side for some reason. Check for that case (which should be 100% of the time)
+  // and set it to an `NSNull` (versus the `Optional<Any>` Swift will see from `valueForKey` so that
+  // FirebaseFunctions serializer won't have a validation failure for an unknown type.
+  id data = [wrapper valueForKey:@"data"];
+  if (data == nil) {
+    data = [NSNull null];
+  }
+
+  [callable callWithObject:data
                 completion:^(FIRHTTPSCallableResult *_Nullable result, NSError *_Nullable error) {
                   if (error) {
                     NSObject *details = [NSNull null];

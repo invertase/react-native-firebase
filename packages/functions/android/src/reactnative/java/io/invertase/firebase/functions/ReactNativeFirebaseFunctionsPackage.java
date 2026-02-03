@@ -27,12 +27,12 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 @SuppressWarnings("unused")
-public class NativeFunctionsPackage implements ReactPackage {
+public class ReactNativeFirebaseFunctionsPackage implements ReactPackage {
   @Nonnull
   @Override
   public List<NativeModule> createNativeModules(@Nonnull ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
-    modules.add(new NativeRNFBTurboFunctions(reactContext));
+    modules.add(new ReactNativeFirebaseFunctionsModule(reactContext));
     return modules;
   }
 

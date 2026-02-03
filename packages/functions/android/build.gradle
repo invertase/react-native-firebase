@@ -81,8 +81,6 @@ android {
   sourceSets {
     main {
       java.srcDirs = ['src/main/java', 'src/reactnative/java']
-      // Exclude generated JNI files from compilation
-      java.excludes = ['**/generated/jni/**']
     }
   }
 }

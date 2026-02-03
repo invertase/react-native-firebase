@@ -30,7 +30,7 @@ import type { HttpsCallableOptions, Functions, FunctionsStatics } from './types/
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 const namespace = 'functions';
 
-const nativeModuleName = 'NativeRNFBTurboFunctions';
+const nativeModuleName = 'RNFBFunctionsModule';
 
 export const HttpsErrorCode = {
   OK: 'ok',
@@ -211,7 +211,7 @@ const functionsNamespace = createModuleNamespace({
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: true,
   ModuleClass: FirebaseFunctionsModule,
-  turboModule: true,
+  turboModule: false,
 });
 
 type FunctionsNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
