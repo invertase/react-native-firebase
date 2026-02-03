@@ -27,15 +27,23 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = firebase_ios_target
   s.macos.deployment_target = firebase_macos_target
   s.tvos.deployment_target = firebase_tvos_target
-  s.source_files        = 'ios/**/*.{h,m}'
+  s.source_files        = 'ios/**/*.{h,m,mm,cpp}'
+  s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*'
 
   s.dependency          'RNFBApp'
 
   # React Native dependencies
   if defined?(install_modules_dependencies()) != nil
+    # This set all the dependencies and compile flags correctly for old architecture or new architecture
     install_modules_dependencies(s);
   else
     s.dependency "React-Core"
+  end
+
+  # Fail fast for old architecture users, but safely in case the variable goes away
+  # completely in future react-native versions
+  if defined?(ENV["RCT_NEW_ARCH_ENABLED"]) != nil && (ENV["RCT_NEW_ARCH_ENABLED"] == '0')
+     raise "#{s.name} requires New Architecture. Enable New Architecture to use this module"
   end
 
   if defined?($FirebaseSDKVersion)
