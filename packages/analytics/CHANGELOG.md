@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.8.6](https://github.com/invertase/react-native-firebase/compare/v23.8.5...v23.8.6) (2026-02-03)
+
+### Bug Fixes
+
+- **analytics, ios:** correct hex string to NSData conversion for hashed conversion methods ([#8870](https://github.com/invertase/react-native-firebase/issues/8870)) ([7df6130](https://github.com/invertase/react-native-firebase/commit/7df61307f19db84df72c4d3587a8994aeb7d3fce))
+
 ## [23.8.5](https://github.com/invertase/react-native-firebase/compare/v23.8.4...v23.8.5) (2026-01-31)
 
 ### Bug Fixes
