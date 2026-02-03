@@ -8,6 +8,7 @@ import {
   modifyAppDelegateAsync,
   modifyObjcAppDelegate,
   modifySwiftAppDelegate,
+  modifySwiftBridgingHeaderContents,
 } from '../src/ios/appDelegate';
 import { platform } from 'os';
 
@@ -89,6 +90,7 @@ describe('Config Plugin iOS Tests', function () {
       .mockImplementation(async () => {}) as jest.MockedFunction<typeof fs.writeFile>;
 
     const swiftContents = `import Expo
+import RNFBAppCheck
 import React
 
 @UIApplicationMain
@@ -115,8 +117,8 @@ class AppDelegate: ExpoAppDelegate {
     // Get the modified content with explicit string type assertion
     const modifiedContents = writeFileMock.mock.calls[0][1] as string;
 
-    // Verify import was added
-    expect(modifiedContents).toContain('import RNFBAppCheck');
+    // Verify import was removed to clean the file
+    expect(modifiedContents).not.toContain('import RNFBAppCheck');
 
     // Verify initialization code was added
     expect(modifiedContents).toContain('RNFBAppCheckModule.sharedInstance()');
@@ -148,7 +150,26 @@ class AppDelegate: ExpoAppDelegate {
     expect(twiceModifiedAppDelegate).not.toContain(doubleImport);
   });
 
-  it('does not add the swift import multiple times', async function () {
+  it('makes sure bridging header is added', async function () {
+    const swiftBridgingHeader = `//
+// Use this file to import your target's public headers that you would like to expose to Swift.
+//
+`;
+    const onceModifiedContents = modifySwiftBridgingHeaderContents(swiftBridgingHeader);
+    expect(onceModifiedContents).toContain('#import <RNFBAppCheckModule.h>');
+
+    // Count occurrences of the import
+    const importCount = (onceModifiedContents.match(/import <RNFBAppCheckModule.h>/g) || []).length;
+    expect(importCount).toBe(1);
+
+    // Modify a second time and ensure imports aren't duplicated
+    const twiceModifiedContents = modifySwiftBridgingHeaderContents(onceModifiedContents);
+    const secondImportCount = (twiceModifiedContents.match(/import <RNFBAppCheckModule.h>/g) || [])
+      .length;
+    expect(secondImportCount).toBe(1);
+  });
+
+  it('makes sure the app delegate import is not added', async function () {
     const swiftContents = `import Expo
 import React
 
@@ -162,15 +183,15 @@ class AppDelegate: ExpoAppDelegate {
 }`;
 
     const onceModifiedContents = modifySwiftAppDelegate(swiftContents);
-    expect(onceModifiedContents).toContain('import RNFBAppCheck');
+    expect(onceModifiedContents).not.toContain('import RNFBAppCheck');
 
     // Count occurrences of the import
     const importCount = (onceModifiedContents.match(/import RNFBAppCheck/g) || []).length;
-    expect(importCount).toBe(1);
+    expect(importCount).toBe(0);
 
     // Modify a second time and ensure imports aren't duplicated
     const twiceModifiedContents = modifySwiftAppDelegate(onceModifiedContents);
     const secondImportCount = (twiceModifiedContents.match(/import RNFBAppCheck/g) || []).length;
-    expect(secondImportCount).toBe(1);
+    expect(secondImportCount).toBe(0);
   });
 });

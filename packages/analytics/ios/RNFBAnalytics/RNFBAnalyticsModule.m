@@ -176,7 +176,7 @@ RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithHashedEmailAddress
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject) {
   @try {
-    NSData *emailAddress = [hashedEmailAddress dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *emailAddress = [self dataFromHexString:hashedEmailAddress];
     [FIRAnalytics initiateOnDeviceConversionMeasurementWithHashedEmailAddress:emailAddress];
   } @catch (NSException *exception) {
     return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
@@ -203,7 +203,7 @@ RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithHashedPhoneNumber
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject) {
   @try {
-    NSData *phoneNumber = [hashedPhoneNumber dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *phoneNumber = [self dataFromHexString:hashedPhoneNumber];
     [FIRAnalytics initiateOnDeviceConversionMeasurementWithHashedPhoneNumber:phoneNumber];
   } @catch (NSException *exception) {
     return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
@@ -263,6 +263,22 @@ RCT_EXPORT_METHOD(setConsent
 /// @param value Nullable string value
 - (NSString *)convertNSNullToNil:(NSString *)value {
   return [value isEqual:[NSNull null]] ? nil : value;
+}
+
+/// Converts a hex string to NSData
+/// @param hexString A hex string (e.g., SHA256 hash as 64-character hex string)
+/// @return NSData containing the decoded bytes (e.g., 32 bytes for SHA256)
+- (NSData *)dataFromHexString:(NSString *)hexString {
+  NSMutableData *data = [NSMutableData dataWithCapacity:hexString.length / 2];
+  unsigned char wholeByte;
+  char byteChars[3] = {'\0', '\0', '\0'};
+  for (NSUInteger i = 0; i < hexString.length; i += 2) {
+    byteChars[0] = [hexString characterAtIndex:i];
+    byteChars[1] = [hexString characterAtIndex:i + 1];
+    wholeByte = strtol(byteChars, NULL, 16);
+    [data appendBytes:&wholeByte length:1];
+  }
+  return data;
 }
 
 @end
