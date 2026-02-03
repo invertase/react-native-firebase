@@ -24,9 +24,9 @@ import {
 } from '@react-native-firebase/app/dist/module/internal';
 
 import { version } from './version';
-import type { Statics, Module, AppDistributionRelease } from './types/app-distribution';
+import type { Statics, AppDistribution, AppDistributionRelease } from './types/app-distribution';
 
-const statics: Partial<Statics> = {};
+const statics: Statics = {};
 
 const namespace = 'appDistribution';
 
@@ -84,10 +84,10 @@ const appDistributionNamespace = createModuleNamespace({
 });
 
 type AppDistributionNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
-  Module,
+  AppDistribution,
   Statics
 > & {
-  appDistribution: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<Module, Statics>;
+  appDistribution: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<AppDistribution, Statics>;
   firebase: ReactNativeFirebase.Module;
   app(name?: string): ReactNativeFirebase.FirebaseApp;
 };
@@ -100,7 +100,7 @@ export default appDistributionNamespace as unknown as AppDistributionNamespace;
 export const firebase =
   getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
     'appDistribution',
-    Module,
+    AppDistribution,
     Statics,
     false
   >;

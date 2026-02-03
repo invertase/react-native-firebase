@@ -48,7 +48,6 @@
   "react-native-builder-bob": {
     "source": "lib",
     "output": "dist",
-    "exclude": "**/types/**",
     "targets": [
       [
         "module",

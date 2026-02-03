@@ -32,7 +32,6 @@ export interface AppDistributionRelease {
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface Statics {
-  // firebase.appDistribution.* static props go here
 }
 
 /**
@@ -48,7 +47,7 @@ export interface Statics {
  * const defaultAppAppDistribution = firebase.appDistribution();
  * ```
  */
-export interface Module extends ReactNativeFirebase.FirebaseModule {
+export interface AppDistribution extends ReactNativeFirebase.FirebaseModule {
   /**
    * Returns true if the App Distribution tester is signed in.
    * If not an iOS device, it always rejects, as neither false nor true seem like a sensible default.
