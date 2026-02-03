@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.8.5](https://github.com/invertase/react-native-firebase/compare/v23.8.4...v23.8.5) (2026-01-31)
+
+### Bug Fixes
+
+- **analytics:** verify security_storage consent param is a ConsentStatusString ([#8861](https://github.com/invertase/react-native-firebase/issues/8861)) ([00df346](https://github.com/invertase/react-native-firebase/commit/00df346e6f6249585b752c76e9c3a259045798e9))
+- **app-check:** use bridging header instead of Swift module import ([#8867](https://github.com/invertase/react-native-firebase/issues/8867)) ([320ba01](https://github.com/invertase/react-native-firebase/commit/320ba0104f2260a9a1645b70249f3b2e5a2f6358)), closes [#8700](https://github.com/invertase/react-native-firebase/issues/8700) [#8757](https://github.com/invertase/react-native-firebase/issues/8757)
+- **messaging, ios:** prioritize delegate call order in willPresentNotification ([#8786](https://github.com/invertase/react-native-firebase/issues/8786)) ([d6f403a](https://github.com/invertase/react-native-firebase/commit/d6f403adcd0333cf9cd8876578aba200be20e8bd))
+
 ## [23.8.4](https://github.com/invertase/react-native-firebase/compare/v23.8.3...v23.8.4) (2026-01-24)
 
 ### Bug Fixes
