@@ -19,7 +19,7 @@
 export type {
   AppDistributionRelease,
   Statics,
-  Module,
+  AppDistribution,
   FirebaseAppDistributionTypes,
 } from './types/app-distribution';
 

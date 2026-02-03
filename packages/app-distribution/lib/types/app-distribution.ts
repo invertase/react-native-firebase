@@ -77,7 +77,7 @@ export interface AppDistribution extends ReactNativeFirebase.FirebaseModule {
 // These are needed because TypeScript can't directly alias types with the same name
 type _AppDistributionRelease = AppDistributionRelease;
 type _Statics = Statics;
-type _Module = Module;
+type _AppDistribution = AppDistribution;
 
 /**
  * Firebase AppDistribution package types for React Native.
@@ -87,7 +87,7 @@ export namespace FirebaseAppDistributionTypes {
   // Type aliases referencing top-level types
   export type AppDistributionRelease = _AppDistributionRelease;
   export type Statics = _Statics;
-  export type Module = _Module;
+  export type AppDistribution = _AppDistribution;
 }
 /* eslint-enable @typescript-eslint/no-namespace */
 
@@ -96,10 +96,10 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
-      appDistribution: FirebaseModuleWithStaticsAndApp<Module, Statics>;
+      appDistribution: FirebaseModuleWithStaticsAndApp<AppDistribution, Statics>;
     }
     interface FirebaseApp {
-      appDistribution(): Module;
+      appDistribution(): AppDistribution;
     }
   }
 }
