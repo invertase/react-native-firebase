@@ -89,7 +89,7 @@ jobs:
     runs-on: macos-15
     needs: matrix_prep
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
-    timeout-minutes: 70
+    timeout-minutes: 80
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       CCACHE_SLOPPINESS: clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
@@ -97,6 +97,9 @@ jobs:
       CCACHE_DEPEND: true
       CCACHE_INODECACHE: true
       CCACHE_LIMIT_MULTIPLE: 0.95
+      # pin to 26.0.1 until newer Xcode/Simulators don't have awful performance
+      # Last tested with 26.2 on 20260130 and performance-based flakes made it unusable
+      XCODE_VERSION: 26.0.1
     strategy:
       fail-fast: false
       matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
@@ -128,7 +131,24 @@ jobs:
 
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '26.2.0' # temporarily pinning version until simulators are defined 'latest-stable'
+          xcode-version: ${{ env.XCODE_VERSION }}
+
+      - name: Workaround Simulator Availability issues
+        run: |
+          # If using `latest-stable` xcode-version above, this is likely not needed.
+          # If you use *anything* but latest-stable, you may inadvertently be using a SimRuntime that is no longer installed.
+          # This will install the needed SimRuntime if it is missing.
+          if [[ "$XCODE_VERSION" != "latest-stable" ]] && ! xcrun simctl list | grep "^iOS $XCODE_VERSION"; then
+            # note if you specify the build version to be exactly same as xcode version
+            # you may see "iOS <version> is not available for download"
+            #xcodebuild -downloadPlatform iOS -buildVersion "$XCODE_VERSION"
+            xcodebuild -downloadPlatform iOS
+          fi
+
+          # Apparently just listing the installed simulators fixes availability inconsistency
+          # Without this, runs fail *intermittently* with build target not available because simulators not available
+          # See https://github.com/actions/runner-images/issues/13459#issuecomment-3681674842
+          xcrun simctl list
 
       - uses: actions/checkout@v4
         with:
@@ -263,6 +283,7 @@ jobs:
         shell: bash
 
       - name: Metro Bundler Cache Restore
+        if: contains(matrix.buildmode, 'debug')
         uses: actions/cache/restore@v4
         id: metro-bundler-cache
         continue-on-error: true
@@ -272,6 +293,7 @@ jobs:
           restore-keys: ${{ runner.os }}-ios-metro-v1
 
       - name: Pre-fetch Javascript bundle
+        if: contains(matrix.buildmode, 'debug')
         run: |
           nohup yarn tests:packager:jet-ci &
           printf 'Waiting for packager to come online'
@@ -307,14 +329,14 @@ jobs:
           max_attempts: 3
           command: ./.github/workflows/scripts/boot-simulator.sh
 
-      - name: Detox Test
+      - name: Detox Test Debug
         if: contains(matrix.buildmode, 'debug')
-        timeout-minutes: 50
+        timeout-minutes: 55
         run: yarn tests:ios:test-cover
 
-      - name: Detox Test
+      - name: Detox Test Release
         if: contains(matrix.buildmode, 'release')
-        timeout-minutes: 50
+        timeout-minutes: 55
         run: yarn tests:ios:test:release
 
       - name: Stop Screen and App Video and System Logging
@@ -391,7 +413,7 @@ jobs:
 
       - name: Metro Bundler Cache Save
         uses: actions/cache/save@v4
-        if: "${{ github.ref == 'refs/heads/main' }}"
+        if: "${{ contains(matrix.buildmode, 'debug') && github.ref == 'refs/heads/main' }}"
         continue-on-error: true
         with:
           path: ${{ steps.workflow-variables.outputs.metro-cache }}

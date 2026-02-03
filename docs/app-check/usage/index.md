@@ -89,6 +89,23 @@ For instructions on how to generate required keys and register an app for the de
 
 You must call initialize the AppCheck module prior to calling any firebase back-end services for App Check to function.
 
+#### All react-native >= 0.77 with AppDelegate.swift
+
+The AppCheck pod does not define a module map for integration, so importing it in the Swift file does not work.
+You need to alter the bridging header file that should be in `<your project name>/ios/<your project-name>-Bridging-Header.h`
+
+You will need to add the line indicated in the example below:
+
+```diff
+//
+// Use this file to import your target's public headers that you would like to expose to Swift.
+//
+
++ #import "RNFBAppCheckModule.h" // <-- new for AppCheck to work
+```
+
+After doing that, follow the instructions below to add AppCheck initialization to your `AppDelegate.swift` file depending on the react-native version you use.
+
 #### Configure AppCheck with iOS credentials (react-native 0.79+)
 
 To do that, edit your `ios/ProjectName/AppDelegate.swift` and add the following two lines:
@@ -98,7 +115,6 @@ And within your existing `didFinishLaunchingWithOptions` method, add the followi
 
 ```diff
 import UIKit
-+ import RNFBAppCheck  // <-- This is the import for AppCheck to work
 + import FirebaseCore  // <-- From App/Core integration, no other Firebase items needed
 import React
 import React_RCTAppDelegate
