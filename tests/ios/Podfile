@@ -27,8 +27,8 @@ $RNFirebaseAnalyticsEnableAdSupport = true
 # react-native 0.76 is currently iOS 15.1 as a minimum
 min_ios_version_supported = 15.1
 
-# Uncomment this to test new architecture
-ENV['RCT_NEW_ARCH_ENABLED'] = '0'
+# We need new arch support in the iOS test runner now
+ENV['RCT_NEW_ARCH_ENABLED'] = '1'
 
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',

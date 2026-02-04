@@ -3,6 +3,12 @@ require_relative '../node_modules/react-native-macos/scripts/react_native_pods'
 
 prepare_react_native_project!
 
+# The "Other" platform react-native-macos tests is non-native, so
+# new arch changes should not affect it. Test it specifically with
+# old architecture (until that goes away completely) to make sure
+# we work with no react-native-firebase native modules
+ENV['RCT_NEW_ARCH_ENABLED'] = '0'
+
 target 'io.invertase.testing-macOS' do
   platform :macos, '11.0'
   # use_native_modules!
