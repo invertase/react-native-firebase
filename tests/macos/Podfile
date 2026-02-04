@@ -27,16 +27,6 @@ target 'io.invertase.testing-macOS' do
   pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-async-storage/async-storage'
 
   post_install do |installer|
-    # Remove this script for React-Fabric macOS 0.74.1
-    installer.pods_project.targets.each do |target|
-      if target.name == 'React-Fabric'
-        target.build_phases.each do |phase|
-          if phase.display_name == '[CP-User] [RN]Check rncore'
-            target.build_phases.delete(phase)
-          end
-        end
-      end
-    end
     react_native_post_install(installer)
   end
 end
