@@ -141,7 +141,8 @@ public class SharedUtils {
           if (taskInfo.size() > 0) {
             ActivityManager.RecentTaskInfo task = taskInfo.get(0).getTaskInfo();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-              currentActivity = task.baseActivity.getShortClassName();
+              currentActivity =
+                  task.baseActivity != null ? task.baseActivity.getShortClassName() : "";
             } else {
               currentActivity =
                   task.origActivity != null
