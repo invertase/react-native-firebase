@@ -15,19 +15,13 @@
  *
  */
 
-export const StringFormat = {
-  RAW: 'raw',
-  BASE64: 'base64',
-  BASE64URL: 'base64url',
-  DATA_URL: 'data_url',
-};
-export const TaskEvent = {
-  STATE_CHANGED: 'state_changed',
-};
-export const TaskState = {
-  RUNNING: 'running',
-  PAUSED: 'paused',
-  SUCCESS: 'success',
-  CANCELLED: 'cancelled',
-  ERROR: 'error',
-};
+import StorageTask from './StorageTask';
+import type { Reference, TaskSnapshot } from './types/storage';
+
+const UPLOAD_TASK = 'upload';
+
+export default class StorageUploadTask extends StorageTask {
+  constructor(storageRef: Reference, beginTaskFn: (task: StorageTask) => Promise<TaskSnapshot>) {
+    super(UPLOAD_TASK, storageRef, beginTaskFn);
+  }
+}
