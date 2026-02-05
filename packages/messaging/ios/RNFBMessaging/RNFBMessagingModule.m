@@ -64,8 +64,16 @@ RCT_EXPORT_MODULE();
   NSMutableDictionary *constants = [NSMutableDictionary new];
   constants[@"isAutoInitEnabled"] =
       @([RCTConvert BOOL:@([FIRMessaging messaging].autoInitEnabled)]);
+#if TARGET_IPHONE_SIMULATOR
+  // `isRegisteredForRemoteNotifications` is flaky and hangs on the simulator sometimes
+  // It is reasonably safe to return a "NO" to avoid the simulator hang
+  // Reasoning: registering multiple times is not harmful so if an app relies on this
+  // constant, sees a "NO" and then re-register, that is fine.
+  constants[@"isRegisteredForRemoteNotifications"] = NO;
+#else
   constants[@"isRegisteredForRemoteNotifications"] = @(
       [RCTConvert BOOL:@([[UIApplication sharedApplication] isRegisteredForRemoteNotifications])]);
+#endif
   constants[@"isDeliveryMetricsExportToBigQueryEnabled"] =
       @([RCTConvert BOOL:@(_isDeliveryMetricsExportToBigQueryEnabled)]);
   return constants;
