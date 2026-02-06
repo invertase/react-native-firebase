@@ -44,9 +44,6 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
   return self;
 }
 
-- (void)dealloc {
-  [self invalidate];
-}
 
 - (void)invalidate {
   for (NSString *key in [streamListeners allKeys]) {

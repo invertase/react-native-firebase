@@ -17,7 +17,9 @@
 
 #import <Foundation/Foundation.h>
 #import "NativeRNFBTurboFunctions.h"
+#import <React/RCTInvalidating.h>
 
-@interface RNFBFunctionsModule : NSObject <NativeRNFBTurboFunctionsSpec>
+
+@interface RNFBFunctionsModule : NSObject <NativeRNFBTurboFunctionsSpec, RCTInvalidating>
 
 @end
