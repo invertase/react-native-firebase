@@ -44,7 +44,6 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
   return self;
 }
 
-
 - (void)invalidate {
   for (NSString *key in [streamListeners allKeys]) {
     id handler = streamListeners[key];
