@@ -19,16 +19,63 @@ import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
 // ============ Options & Result Types ============
 
+/**
+ * Use for iOS, Android and web for https callable only. For streaming, this is for android and iOS only.
+ * For web streaming, use `HttpsCallableStreamOptions` instead.
+ **/
 export interface HttpsCallableOptions {
+  /**
+   * Use for iOS, Android and web for https callable only. For streaming, this is for android and iOS only.
+   * For web streaming, use `HttpsCallableStreamOptions` instead.
+   * The timeout for the callable function or stream request.
+   */
   timeout?: number;
+  /**
+   * Use for iOS, Android and web for https callable only. For streaming, this is for android and iOS only.
+   * For web streaming, use `HttpsCallableStreamOptions` instead.
+   * If set to true, uses a limited-use App Check token for callable function or stream requests from this
+   * instance of {@link Functions}. You must use limited-use tokens to call functions with
+   * replay protection enabled. By default, this is false.
+   */
+  limitedUseAppCheckTokens?: boolean;
+}
+
+/**
+ * Use for web only, for iOS and Android specific options, use `HttpsCallableOptions`.
+ **/
+export interface HttpsCallableStreamOptions {
+  /**
+   * Web only. An `AbortSignal` that can be used to cancel the streaming response. When the signal is aborted,
+   * the underlying HTTP connection will be terminated. `AbortSignal` is only available on React Native >= v0.82.
+   */
+  signal?: AbortSignal;
+  /**
+   * Web only. If set to true, uses a limited-use App Check token for callable function requests from this
+   * instance of {@link Functions}. You must use limited-use tokens to call functions with
+   * replay protection enabled. By default, this is false.
+   */
+  limitedUseAppCheckTokens?: boolean;
 }
 
 export interface HttpsCallableResult<ResponseData = unknown> {
   readonly data: ResponseData;
 }
 
-export interface HttpsCallable<RequestData = unknown, ResponseData = unknown> {
+export interface HttpsCallableStreamResult<ResponseData = unknown, StreamData = unknown> {
+  readonly data: Promise<ResponseData>;
+  readonly stream: AsyncIterable<StreamData>;
+}
+
+export interface HttpsCallable<
+  RequestData = unknown,
+  ResponseData = unknown,
+  StreamData = unknown,
+> {
   (data?: RequestData | null): Promise<HttpsCallableResult<ResponseData>>;
+  stream: (
+    data?: RequestData | null,
+    options?: HttpsCallableStreamOptions,
+  ) => Promise<HttpsCallableStreamResult<ResponseData, StreamData>>;
 }
 
 // ============ Error Code Types ============
@@ -96,10 +143,10 @@ export interface Functions extends ReactNativeFirebase.FirebaseModule {
    * @param name The name of the trigger.
    * @param options Optional settings for the callable function.
    */
-  httpsCallable<RequestData = unknown, ResponseData = unknown>(
+  httpsCallable<RequestData = unknown, ResponseData = unknown, StreamData = unknown>(
     name: string,
     options?: HttpsCallableOptions,
-  ): HttpsCallable<RequestData, ResponseData>;
+  ): HttpsCallable<RequestData, ResponseData, StreamData>;
 
   /**
    * Returns a reference to the callable HTTPS trigger with the given URL.
@@ -107,10 +154,10 @@ export interface Functions extends ReactNativeFirebase.FirebaseModule {
    * @param url The URL of the trigger.
    * @param options Optional settings for the callable function.
    */
-  httpsCallableFromUrl<RequestData = unknown, ResponseData = unknown>(
+  httpsCallableFromUrl<RequestData = unknown, ResponseData = unknown, StreamData = unknown>(
     url: string,
     options?: HttpsCallableOptions,
-  ): HttpsCallable<RequestData, ResponseData>;
+  ): HttpsCallable<RequestData, ResponseData, StreamData>;
 
   /**
    * Changes this instance to point to a Cloud Functions emulator running locally.
@@ -165,8 +212,17 @@ declare module '@react-native-firebase/app' {
 // Helper types to reference outer scope types within the namespace
 // These are needed because TypeScript can't directly alias types with the same name
 type _HttpsCallableResult<T> = HttpsCallableResult<T>;
-type _HttpsCallable<RequestData, ResponseData> = HttpsCallable<RequestData, ResponseData>;
+type _HttpsCallableStreamResult<ResponseData, StreamData> = HttpsCallableStreamResult<
+  ResponseData,
+  StreamData
+>;
+type _HttpsCallable<RequestData, ResponseData, StreamData> = HttpsCallable<
+  RequestData,
+  ResponseData,
+  StreamData
+>;
 type _HttpsCallableOptions = HttpsCallableOptions;
+type _HttpsCallableStreamOptions = HttpsCallableStreamOptions;
 type _HttpsError = HttpsError;
 type _HttpsErrorCode = HttpsErrorCode;
 
@@ -179,11 +235,17 @@ export namespace FirebaseFunctionsTypes {
   // Short name aliases referencing top-level types
   export type ErrorCode = FunctionsErrorCode;
   export type CallableResult<ResponseData = unknown> = HttpsCallableResult<ResponseData>;
-  export type Callable<RequestData = unknown, ResponseData = unknown> = HttpsCallable<
-    RequestData,
-    ResponseData
-  >;
+  export type CallableStreamResult<
+    ResponseData = unknown,
+    StreamData = unknown,
+  > = HttpsCallableStreamResult<ResponseData, StreamData>;
+  export type Callable<
+    RequestData = unknown,
+    ResponseData = unknown,
+    StreamData = unknown,
+  > = HttpsCallable<RequestData, ResponseData, StreamData>;
   export type CallableOptions = HttpsCallableOptions;
+  export type CallableStreamOptions = HttpsCallableStreamOptions;
   export type Error = HttpsError;
   export type ErrorCodeMap = HttpsErrorCode;
   export type Statics = FunctionsStatics;
@@ -192,11 +254,17 @@ export namespace FirebaseFunctionsTypes {
   // Https* aliases that reference the exported types above via helper types
   // These provide backwards compatibility for code using FirebaseFunctionsTypes.HttpsCallableResult
   export type HttpsCallableResult<T = unknown> = _HttpsCallableResult<T>;
-  export type HttpsCallable<RequestData = unknown, ResponseData = unknown> = _HttpsCallable<
-    RequestData,
-    ResponseData
-  >;
+  export type HttpsCallableStreamResult<
+    ResponseData = unknown,
+    StreamData = unknown,
+  > = _HttpsCallableStreamResult<ResponseData, StreamData>;
+  export type HttpsCallable<
+    RequestData = unknown,
+    ResponseData = unknown,
+    StreamData = unknown,
+  > = _HttpsCallable<RequestData, ResponseData, StreamData>;
   export type HttpsCallableOptions = _HttpsCallableOptions;
+  export type HttpsCallableStreamOptions = _HttpsCallableStreamOptions;
   export type HttpsError = _HttpsError;
   export type HttpsErrorCode = _HttpsErrorCode;
 }

@@ -27,7 +27,9 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = firebase_ios_target
   s.macos.deployment_target = firebase_macos_target
   s.tvos.deployment_target = firebase_tvos_target
-  s.source_files        = 'ios/**/*.{h,m,mm,cpp}'
+  s.swift_version = '5.0'
+  s.source_files        = 'ios/**/*.{h,m,mm,cpp,swift}'
+  s.private_header_files = "ios/**/*.h"
   s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*'
 
   s.dependency          'RNFBApp'

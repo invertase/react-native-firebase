@@ -18,19 +18,42 @@
 #import <Firebase/Firebase.h>
 #import <React/RCTUtils.h>
 
+#import <RNFBFunctions/RNFBFunctions-Swift.h>
 #import "NativeRNFBTurboFunctions.h"
 #import "RNFBApp/RCTConvert+FIRApp.h"
+#import "RNFBApp/RNFBRCTEventEmitter.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBFunctionsModule.h"
 
-@interface RNFBFunctionsModule ()
-@end
+static __strong NSMutableDictionary *streamListeners;
 
 @implementation RNFBFunctionsModule
 #pragma mark -
 #pragma mark Module Setup
 
 RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+      streamListeners = [[NSMutableDictionary alloc] init];
+    });
+  }
+  return self;
+}
+
+- (void)invalidate {
+  for (NSString *key in [streamListeners allKeys]) {
+    id handler = streamListeners[key];
+    if (handler && [handler respondsToSelector:@selector(cancel)]) {
+      [handler cancel];
+    }
+    [streamListeners removeObjectForKey:key];
+  }
+}
+
 #pragma mark -
 #pragma mark Firebase Functions Methods
 
@@ -72,34 +95,28 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
     [functions useEmulatorWithHost:emulatorHost port:(int)emulatorPort];
   }
 
-  FIRHTTPSCallable *callable = [functions HTTPSCallableWithName:name];
+  RNFBFunctionsCallHandler *handler = [[RNFBFunctionsCallHandler alloc] init];
 
-  if (timeout.has_value()) {
-    callable.timeoutInterval = timeout.value();
-  }
+  double timeoutValue = timeout.has_value() ? timeout.value() : 0;
+  std::optional<bool> limitedUseAppCheckToken = options.limitedUseAppCheckTokens();
+  NSNumber *limitedUseAppCheckTokenNumber =
+      limitedUseAppCheckToken.has_value() ? @(limitedUseAppCheckToken.value()) : @(NO);
 
-  [callable callWithObject:callableData
-                completion:^(FIRHTTPSCallableResult *_Nullable result, NSError *_Nullable error) {
-                  if (error) {
-                    NSObject *details = [NSNull null];
-                    NSString *message = error.localizedDescription;
-                    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-                    if ([error.domain isEqual:@"com.firebase.functions"]) {
-                      details = error.userInfo[@"details"];
-                      if (details == nil) {
-                        details = [NSNull null];
+  [handler callFunctionWithApp:firebaseApp
+                     functions:functions
+                          name:name
+                          data:callableData
+                       timeout:timeoutValue
+       limitedUseAppCheckToken:limitedUseAppCheckTokenNumber
+                    completion:^(NSDictionary *_Nullable result, NSDictionary *_Nullable error) {
+                      if (error) {
+                        NSMutableDictionary *userInfo =
+                            [NSMutableDictionary dictionaryWithDictionary:error];
+                        [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:userInfo];
+                      } else {
+                        resolve(result);
                       }
-                    }
-
-                    userInfo[@"code"] = [self getErrorCodeName:error];
-                    userInfo[@"message"] = message;
-                    userInfo[@"details"] = details;
-
-                    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:userInfo];
-                  } else {
-                    resolve(@{@"data" : [result data]});
-                  }
-                }];
+                    }];
 }
 
 - (void)httpsCallableFromUrl:(NSString *)appName
@@ -131,114 +148,179 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
   }
 
   std::optional<double> timeout = options.timeout();
+  std::optional<bool> limitedUseAppCheckToken = options.limitedUseAppCheckTokens();
 
   if (emulatorHost != nil) {
     [functions useEmulatorWithHost:emulatorHost port:(int)emulatorPort];
   }
 
-  NSURL *functionUrl = [NSURL URLWithString:url];
+  RNFBFunctionsCallHandler *handler = [[RNFBFunctionsCallHandler alloc] init];
 
-  FIRHTTPSCallable *callable = [functions HTTPSCallableWithURL:functionUrl];
+  double timeoutValue = timeout.has_value() ? timeout.value() : 0;
+  NSNumber *limitedUseAppCheckTokenNumber =
+      limitedUseAppCheckToken.has_value() ? @(limitedUseAppCheckToken.value()) : @(NO);
 
-  if (timeout.has_value()) {
-    callable.timeoutInterval = timeout.value();
-  }
-
-  [callable callWithObject:callableData
-                completion:^(FIRHTTPSCallableResult *_Nullable result, NSError *_Nullable error) {
-                  if (error) {
-                    NSObject *details = [NSNull null];
-                    NSString *message = error.localizedDescription;
-                    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-                    if ([error.domain isEqual:@"com.firebase.functions"]) {
-                      details = error.userInfo[@"details"];
-                      if (details == nil) {
-                        details = [NSNull null];
-                      }
-                    }
-
-                    userInfo[@"code"] = [self getErrorCodeName:error];
-                    userInfo[@"message"] = message;
-                    userInfo[@"details"] = details;
-
-                    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:userInfo];
-                  } else {
-                    resolve(@{@"data" : [result data]});
-                  }
-                }];
+  [handler
+      callFunctionWithURLWithApp:firebaseApp
+                       functions:functions
+                             url:url
+                            data:callableData
+                         timeout:timeoutValue
+         limitedUseAppCheckToken:limitedUseAppCheckTokenNumber
+                      completion:^(NSDictionary *_Nullable result, NSDictionary *_Nullable error) {
+                        if (error) {
+                          NSMutableDictionary *userInfo =
+                              [NSMutableDictionary dictionaryWithDictionary:error];
+                          [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:userInfo];
+                        } else {
+                          resolve(result);
+                        }
+                      }];
 }
 
-- (NSString *)getErrorCodeName:(NSError *)error {
-  NSString *code = @"UNKNOWN";
+#pragma mark -
+#pragma mark Firebase Functions Streaming Methods
 
-  if ([error.domain isEqual:@"com.firebase.functions"]) {
-    switch (error.code) {
-      case FIRFunctionsErrorCodeOK:
-        code = @"OK";
-        break;
-      case FIRFunctionsErrorCodeCancelled:
-        code = @"CANCELLED";
-        break;
-      case FIRFunctionsErrorCodeUnknown:
-        code = @"UNKNOWN";
-        break;
-      case FIRFunctionsErrorCodeInvalidArgument:
-        code = @"INVALID_ARGUMENT";
-        break;
-      case FIRFunctionsErrorCodeDeadlineExceeded:
-        code = @"DEADLINE_EXCEEDED";
-        break;
-      case FIRFunctionsErrorCodeNotFound:
-        code = @"NOT_FOUND";
-        break;
-      case FIRFunctionsErrorCodeAlreadyExists:
-        code = @"ALREADY_EXISTS";
-        break;
-      case FIRFunctionsErrorCodePermissionDenied:
-        code = @"PERMISSION_DENIED";
-        break;
-      case FIRFunctionsErrorCodeResourceExhausted:
-        code = @"RESOURCE_EXHAUSTED";
-        break;
-      case FIRFunctionsErrorCodeFailedPrecondition:
-        code = @"FAILED_PRECONDITION";
-        break;
-      case FIRFunctionsErrorCodeAborted:
-        code = @"ABORTED";
-        break;
-      case FIRFunctionsErrorCodeOutOfRange:
-        code = @"OUT_OF_RANGE";
-        break;
-      case FIRFunctionsErrorCodeUnimplemented:
-        code = @"UNIMPLEMENTED";
-        break;
-      case FIRFunctionsErrorCodeInternal:
-        code = @"INTERNAL";
-        break;
-      case FIRFunctionsErrorCodeUnavailable:
-        code = @"UNAVAILABLE";
-        break;
-      case FIRFunctionsErrorCodeDataLoss:
-        code = @"DATA_LOSS";
-        break;
-      case FIRFunctionsErrorCodeUnauthenticated:
-        code = @"UNAUTHENTICATED";
-        break;
-      default:
-        break;
-    }
-  }
-  if ([error.domain isEqual:@"FirebaseFunctions.FunctionsSerializer.Error"]) {
-    NSLog(@"RNFBFUNCTIONS error description: %@", error.description);
-    if ([error.description containsString:@"unsupportedType"]) {
-      code = @"UNSUPPORTED_TYPE";
-    }
-    if ([error.description containsString:@"failedToParseWrappedNumber"]) {
-      code = @"FAILED_TO_PARSE_WRAPPED_NUMBER";
-    }
-  }
+- (void)httpsCallableStream:(NSString *)appName
+                     region:(NSString *)customUrlOrRegion
+               emulatorHost:(NSString *_Nullable)emulatorHost
+               emulatorPort:(double)emulatorPort
+                       name:(NSString *)name
+                       data:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamData &)data
+                    options:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamOptions &)options
+                 listenerId:(double)listenerId {
+  [self streamSetup:appName
+             region:customUrlOrRegion
+       emulatorHost:emulatorHost
+       emulatorPort:emulatorPort
+               name:name
+                url:nil
+               data:data.data()
+            timeout:options.timeout()
+         listenerId:listenerId];
+}
 
-  return code;
+- (void)
+    httpsCallableStreamFromUrl:(NSString *)appName
+                        region:(NSString *)customUrlOrRegion
+                  emulatorHost:(NSString *_Nullable)emulatorHost
+                  emulatorPort:(double)emulatorPort
+                           url:(NSString *)url
+                          data:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlData &)
+                                   data
+                       options:
+                           (JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlOptions &)
+                               options
+                    listenerId:(double)listenerId {
+  [self streamSetup:appName
+             region:customUrlOrRegion
+       emulatorHost:emulatorHost
+       emulatorPort:emulatorPort
+               name:nil
+                url:url
+               data:data.data()
+            timeout:options.timeout()
+         listenerId:listenerId];
+}
+
+- (void)streamSetup:(NSString *)appName
+             region:(NSString *)customUrlOrRegion
+       emulatorHost:(NSString *_Nullable)emulatorHost
+       emulatorPort:(double)emulatorPort
+               name:(NSString *_Nullable)name
+                url:(NSString *_Nullable)url
+               data:(id)data
+            timeout:(std::optional<double>)timeout
+         listenerId:(double)listenerId {
+  NSNumber *listenerIdNumber = @((int)listenerId);
+
+  if (@available(iOS 15.0, macOS 12.0, *)) {
+    NSURL *customUrl = [NSURL URLWithString:customUrlOrRegion];
+    FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
+
+    FIRFunctions *functions =
+        (customUrl && customUrl.scheme && customUrl.host)
+            ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
+            : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
+
+    if (data == nil) {
+      data = [NSNull null];
+    }
+
+    if (emulatorHost != nil) {
+      [functions useEmulatorWithHost:emulatorHost port:(int)emulatorPort];
+    }
+
+    RNFBFunctionsStreamHandler *handler = [[RNFBFunctionsStreamHandler alloc] init];
+
+    double timeoutValue = timeout.has_value() ? timeout.value() : 0;
+
+    void (^eventCallback)(NSDictionary *) = ^(NSDictionary *event) {
+      NSMutableDictionary *normalisedEvent = @{
+        @"appName" : appName,
+        @"eventName" : @"functions_streaming_event",
+        @"listenerId" : listenerIdNumber,
+        @"body" : event
+      };
+      [[RNFBRCTEventEmitter shared] sendEventWithName:@"functions_streaming_event"
+                                                 body:normalisedEvent];
+
+      // Remove handler when done
+      if ([event[@"done"] boolValue]) {
+        [self removeFunctionsStreamingListener:listenerIdNumber];
+      }
+    };
+
+    // Call based on whether url or name is provided
+    if (url != nil) {
+      [handler startStreamWithApp:firebaseApp
+                        functions:functions
+                      functionUrl:url
+                       parameters:data
+                          timeout:timeoutValue
+                    eventCallback:eventCallback];
+    } else {
+      [handler startStreamWithApp:firebaseApp
+                        functions:functions
+                     functionName:name
+                       parameters:data
+                          timeout:timeoutValue
+                    eventCallback:eventCallback];
+    }
+
+    streamListeners[listenerIdNumber] = handler;
+  } else {
+    NSDictionary *eventBody = @{
+      @"appName" : appName,
+      @"eventName" : @"functions_streaming_event",
+      @"listenerId" : listenerIdNumber,
+      @"body" : @{
+        @"data" : [NSNull null],
+        @"error" : @{
+          @"code" : @"cancelled",
+          @"message" : @"callable streams require minimum iOS 15 or macOS 12",
+          @"details" : [NSNull null]
+        },
+        @"done" : @NO
+      }
+    };
+    [[RNFBRCTEventEmitter shared] sendEventWithName:@"functions_streaming_event" body:eventBody];
+  }
+}
+
+- (void)removeFunctionsStreaming:(NSString *)appName
+                          region:(NSString *)region
+                      listenerId:(double)listenerId {
+  NSNumber *listenerIdNumber = @((int)listenerId);
+  [self removeFunctionsStreamingListener:listenerIdNumber];
+}
+
+- (void)removeFunctionsStreamingListener:(NSNumber *)listenerIdNumber {
+  id handler = streamListeners[listenerIdNumber];
+  if (handler) {
+    [handler cancel];
+  }
+  [streamListeners removeObjectForKey:listenerIdNumber];
 }
 
 @end
