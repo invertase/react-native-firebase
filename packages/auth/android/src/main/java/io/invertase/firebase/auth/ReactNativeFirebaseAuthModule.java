@@ -1005,7 +1005,11 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    */
   @ReactMethod
   public void signInWithPhoneNumber(
-      String appName, final String phoneNumber, final boolean forceResend, final Promise promise) {
+      String appName,
+      final String phoneNumber,
+      final boolean forceResend,
+      final boolean autoOTPVerify,
+      final Promise promise) {
     Log.d(TAG, "signInWithPhoneNumber");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -1104,10 +1108,16 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       if (forceResend && mForceResendingToken != null) {
         PhoneAuthProvider.getInstance(firebaseAuth)
             .verifyPhoneNumber(
-                phoneNumber, 60, TimeUnit.SECONDS, activity, callbacks, mForceResendingToken);
+                phoneNumber,
+                autoOTPVerify ? 60 : 0,
+                TimeUnit.SECONDS,
+                activity,
+                callbacks,
+                mForceResendingToken);
       } else {
         PhoneAuthProvider.getInstance(firebaseAuth)
-            .verifyPhoneNumber(phoneNumber, 60, TimeUnit.SECONDS, activity, callbacks);
+            .verifyPhoneNumber(
+                phoneNumber, autoOTPVerify ? 60 : 0, TimeUnit.SECONDS, activity, callbacks);
       }
     }
   }
@@ -1157,7 +1167,12 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
   @ReactMethod
   public void verifyPhoneNumberWithMultiFactorInfo(
-      final String appName, final String hintUid, final String sessionKey, final Promise promise) {
+      final String appName,
+      final String hintUid,
+      final String sessionKey,
+      final boolean autoOTPVerify,
+      final Promise promise
+      ) {
     final MultiFactorResolver resolver = mCachedResolvers.get(sessionKey);
     if (resolver == null) {
       // See https://firebase.google.com/docs/reference/node/firebase.auth.multifactorresolver for
@@ -1197,7 +1212,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
         PhoneAuthOptions.newBuilder(firebaseAuth)
             .setActivity(activity)
             .setMultiFactorHint((PhoneMultiFactorInfo) selectedHint)
-            .setTimeout(30L, TimeUnit.SECONDS)
+            .setTimeout(autoOTPVerify ? 30L : 0L, TimeUnit.SECONDS)
             .setMultiFactorSession(resolver.getSession())
             .setCallbacks(
                 new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -1229,7 +1244,9 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       final String appName,
       final String phoneNumber,
       final String sessionKey,
-      final Promise promise) {
+      final boolean autoOTPVerify,
+      final Promise promise
+      ) {
     final MultiFactorSession multiFactorSession = mMultiFactorSessions.get(sessionKey);
     if (multiFactorSession == null) {
       rejectPromiseWithCodeAndMessage(
@@ -1242,7 +1259,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
         PhoneAuthOptions.newBuilder(firebaseAuth)
             .setPhoneNumber(phoneNumber)
             .setActivity(getCurrentActivity())
-            .setTimeout(30L, TimeUnit.SECONDS)
+            .setTimeout(autoOTPVerify ? 30L : 0L, TimeUnit.SECONDS)
             .setMultiFactorSession(multiFactorSession)
             .requireSmsValidation(true)
             .setCallbacks(
