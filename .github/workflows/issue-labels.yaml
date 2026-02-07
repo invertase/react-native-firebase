@@ -40,7 +40,7 @@ jobs:
         if: env.op_comment == 'true' && github.event.issue.state == 'closed'
         uses: actions-ecosystem/action-create-comment@v1
         with:
-          github-token: ${{ secrets.GH_TOKEN }}
+          github_token: ${{ secrets.GH_TOKEN }}
           body: |
             In order to prioritize work in this repository, closed issues and pull requests do not regularly receive attention.
 
