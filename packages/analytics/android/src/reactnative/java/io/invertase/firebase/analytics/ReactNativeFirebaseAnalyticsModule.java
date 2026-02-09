@@ -197,13 +197,27 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
     if (bundle == null) {
       return null;
     }
+
     ArrayList itemsArray = (ArrayList) bundle.getSerializable(FirebaseAnalytics.Param.ITEMS);
-    for (Object item : itemsArray != null ? itemsArray : new ArrayList()) {
-      if (item instanceof Bundle && ((Bundle) item).containsKey(FirebaseAnalytics.Param.QUANTITY)) {
-        double number = ((Bundle) item).getDouble(FirebaseAnalytics.Param.QUANTITY);
-        ((Bundle) item).putInt(FirebaseAnalytics.Param.QUANTITY, (int) number);
+    if (itemsArray != null) {
+      if (itemsArray.isEmpty()) {
+        bundle.putParcelableArray(FirebaseAnalytics.Param.ITEMS, new Bundle[0]);
+      } else {
+        ArrayList<Bundle> validBundles = new ArrayList<>();
+        for (Object item : itemsArray) {
+          if (item instanceof Bundle) {
+            Bundle itemBundle = (Bundle) item;
+            if (itemBundle.containsKey(FirebaseAnalytics.Param.QUANTITY)) {
+              double number = itemBundle.getDouble(FirebaseAnalytics.Param.QUANTITY);
+              itemBundle.putInt(FirebaseAnalytics.Param.QUANTITY, (int) number);
+            }
+            validBundles.add(itemBundle);
+          }
+        }
+        bundle.putParcelableArray(FirebaseAnalytics.Param.ITEMS, validBundles.toArray(new Bundle[0]));
       }
     }
+
     if (bundle.containsKey(FirebaseAnalytics.Param.EXTEND_SESSION)) {
       double number = bundle.getDouble(FirebaseAnalytics.Param.EXTEND_SESSION);
       bundle.putLong(FirebaseAnalytics.Param.EXTEND_SESSION, (long) number);
