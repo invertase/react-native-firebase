@@ -5894,6 +5894,9 @@ __metadata:
 "@react-native-firebase/in-app-messaging@npm:23.8.6, @react-native-firebase/in-app-messaging@workspace:packages/in-app-messaging":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/in-app-messaging@workspace:packages/in-app-messaging"
+  dependencies:
+    react-native-builder-bob: "npm:^0.40.17"
+    typescript: "npm:^5.9.3"
   peerDependencies:
     "@react-native-firebase/analytics": 23.8.6
     "@react-native-firebase/app": 23.8.6
