@@ -6,9 +6,7 @@ import type { Installations } from './types/installations';
 /**
  * Returns an instance of Installations associated with the given FirebaseApp instance.
  */
-export function getInstallations(
-  app?: ReactNativeFirebase.FirebaseApp,
-): Installations {
+export function getInstallations(app?: ReactNativeFirebase.FirebaseApp): Installations {
   if (app) {
     return getApp(app.name).installations();
   }
@@ -34,10 +32,7 @@ export function getId(installations: Installations): Promise<string> {
 /**
  * Returns a Firebase Installations auth token, identifying the current Firebase Installation.
  */
-export function getToken(
-  installations: Installations,
-  forceRefresh?: boolean,
-): Promise<string> {
+export function getToken(installations: Installations, forceRefresh?: boolean): Promise<string> {
   // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return installations.getToken.call(installations, forceRefresh, MODULAR_DEPRECATION_ARG);
 }
