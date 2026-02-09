@@ -22,6 +22,7 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/dist/module/internal';
+import type { ModuleConfig } from '@react-native-firebase/app/dist/module/internal';
 
 import { version } from './version';
 import type { Statics, Installations } from './types/installations';
@@ -35,6 +36,14 @@ const namespace = 'installations';
 const nativeModuleName = 'RNFBInstallationsModule';
 
 class FirebaseInstallationsModule extends FirebaseModule implements Installations {
+  constructor(
+    app: ReactNativeFirebase.FirebaseAppBase,
+    config: ModuleConfig,
+    customUrlOrRegion?: string | null,
+  ) {
+    super(app, config, customUrlOrRegion);
+  }
+
   getId(): Promise<string> {
     return this.native.getId();
   }

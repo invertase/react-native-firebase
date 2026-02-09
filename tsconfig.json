@@ -4,7 +4,7 @@
     "packages/app-check/lib/index.d.ts",
     "packages/app-check/lib/modular/index.d.ts",
     "packages/app-distribution/lib/index.d.ts",
-    "packages/app-distribution/lib/modular/index.d.ts",
+    "packages/app-distribution/lib/modular.d.ts",
     "packages/app/lib/internal/global.d.ts",
     "packages/app/lib/internal/web/memidb/index.d.ts",
     "packages/auth/lib/index.d.ts",
@@ -76,7 +76,13 @@
     "lib": ["es2015", "es2016", "esnext", "dom"],
     "types": ["react-native", "node"],
     "paths": {
-      "@react-native-firebase/*": ["./packages/*/lib/index.d.ts"]
+      "@react-native-firebase/*": ["./packages/*/lib/index.d.ts"],
+      "@react-native-firebase/app": ["./packages/app/dist/typescript/lib"],
+      "@react-native-firebase/app/dist/module/common": ["./packages/app/dist/typescript/lib/common"],
+      "@react-native-firebase/app/dist/module/common/*": ["./packages/app/dist/typescript/lib/common/*"],
+      "@react-native-firebase/app/dist/module/internal": ["./packages/app/dist/typescript/lib/internal"],
+      "@react-native-firebase/app/dist/module/internal/*": ["./packages/app/dist/typescript/lib/internal/*"],
+      "@react-native-firebase/app/dist/module/internal/web/*": ["./packages/app/dist/typescript/lib/internal/web/*"]
     }
   },
   "exclude": ["node_modules", "**/*.spec.ts", "packages/**/dist"]
