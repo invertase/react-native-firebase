@@ -18,7 +18,6 @@
 // Export types from types/storage
 export type {
   Storage,
-  FirebaseStorageTypes,
   Reference,
   FullMetadata,
   SettableMetadata,
@@ -30,6 +29,9 @@ export type {
   Task,
   EmulatorMockTokenOptions,
 } from './types/storage';
+
+// Backwards-compatible namespaced types
+export type { FirebaseStorageTypes } from './types/namespaced';
 
 // Export modular API functions
 export * from './modular';
