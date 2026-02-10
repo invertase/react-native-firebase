@@ -268,25 +268,3 @@ export interface StorageStatics {
   TaskEvent: TaskEvent;
   TaskState: TaskState;
 }
-
-/**
- * FirebaseApp type with storage() method.
- * @deprecated Import FirebaseApp from '@react-native-firebase/app' instead.
- * The storage() method is added via module augmentation.
- */
-export type FirebaseApp = ReactNativeFirebase.FirebaseApp;
-
-// ============ Module Augmentation ============
-
-/* eslint-disable @typescript-eslint/no-namespace */
-declare module '@react-native-firebase/app' {
-  namespace ReactNativeFirebase {
-    interface Module {
-      storage: FirebaseModuleWithStaticsAndApp<Storage, StorageStatics>;
-    }
-    interface FirebaseApp {
-      storage(bucketUrl?: string): Storage;
-    }
-  }
-}
-/* eslint-enable @typescript-eslint/no-namespace */
