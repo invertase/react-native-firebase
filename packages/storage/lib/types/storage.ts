@@ -60,8 +60,8 @@ export interface ListOptions {
  * Result of listing files and folders.
  */
 export interface ListResult {
-  items: Reference[];
-  prefixes: Reference[];
+  items: StorageReference[];
+  prefixes: StorageReference[];
   nextPageToken: string | null;
 }
 
@@ -74,7 +74,7 @@ export interface TaskSnapshot {
   state: string;
   metadata: FullMetadata | null;
   task: Task;
-  ref: Reference;
+  ref: StorageReference;
   /**
    * If the state is `error`, returns a JavaScript error of the current task snapshot.
    */
@@ -94,11 +94,11 @@ export interface TaskResult {
 /**
  * Storage reference to a file or folder location.
  */
-export interface Reference {
+export interface StorageReference {
   /**
    * A reference to the root of this object's bucket.
    */
-  root: Reference;
+  root: StorageReference;
   /**
    * The name of the bucket containing this reference's object.
    */
@@ -120,7 +120,7 @@ export interface Reference {
    * A reference pointing to the parent location of this reference, or null if
    * this reference is the root.
    */
-  parent: Reference | null;
+  parent: StorageReference | null;
   /**
    * Returns the full URL string for this object in the form
    * @returns The full URL string.

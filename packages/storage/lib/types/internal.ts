@@ -18,7 +18,7 @@
 import type { ModuleConfig } from '@react-native-firebase/app/dist/module/types/internal';
 import type {
   Storage,
-  Reference,
+  StorageReference,
   EmulatorMockTokenOptions,
   SettableMetadata,
   Task,
@@ -44,14 +44,14 @@ export type StorageInternal = Storage & {
    * @param path - An optional string pointing to a location on the storage bucket. If no path
    * is provided, the returned reference will be the bucket root path.
    */
-  ref(path?: string): Reference;
+  ref(path?: string): StorageReference;
 
   /**
    * Returns a reference to the object at the specified URL.
    *
    * @param url - A storage bucket URL pointing to a single file or location. Must be either a `gs://` url or an `http` url.
    */
-  refFromURL(url: string): Reference;
+  refFromURL(url: string): StorageReference;
 
   /**
    * Sets the maximum time in milliseconds to retry operations if a failure occurs.
@@ -89,9 +89,9 @@ export type StorageInternal = Storage & {
  * Internal Reference type with access to private properties.
  * Used internally by StorageTask and other internal classes.
  */
-export type ReferenceInternal = Reference & {
+export type ReferenceInternal = StorageReference & {
   _storage: StorageInternal;
-  child(path: string): Reference;
+  child(path: string): StorageReference;
   delete(): Promise<void>;
   getDownloadURL(): Promise<string>;
   getMetadata(): Promise<FullMetadata>;

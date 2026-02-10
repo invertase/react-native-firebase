@@ -36,7 +36,7 @@ import { StringFormat } from './StorageStatics';
 import StorageUploadTask from './StorageUploadTask';
 import { validateMetadata } from './utils';
 import type {
-  Reference,
+  StorageReference,
   SettableMetadata,
   ListOptions,
   FullMetadata,
@@ -45,7 +45,7 @@ import type {
 } from './types/storage';
 import type { ListResultInternal, StorageInternal } from './types/internal';
 
-export default class StorageReference extends ReferenceBase implements Reference {
+export default class StorageReference extends ReferenceBase implements StorageReference {
   _storage: StorageInternal;
 
   constructor(storage: StorageInternal, path: string) {
@@ -77,7 +77,7 @@ export default class StorageReference extends ReferenceBase implements Reference
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#parent
    */
-  get parent(): Reference | null {
+  get parent(): StorageReference | null {
     const parentPath = pathParent(this.path);
     if (parentPath === null) {
       return parentPath;
@@ -88,7 +88,7 @@ export default class StorageReference extends ReferenceBase implements Reference
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#root
    */
-  get root(): Reference {
+  get root(): StorageReference {
     return new StorageReference(this._storage, '/');
   }
 
@@ -102,7 +102,7 @@ export default class StorageReference extends ReferenceBase implements Reference
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#child
    */
-  child(path: string): Reference {
+  child(path: string): StorageReference {
     const childPath = pathChild(this.path, path);
     return new StorageReference(this._storage, childPath);
   }

@@ -18,7 +18,7 @@
 // Export modular types from types/storage
 export type {
   Storage,
-  Reference,
+  StorageReference as Reference,
   FullMetadata,
   SettableMetadata,
   ListResult,
