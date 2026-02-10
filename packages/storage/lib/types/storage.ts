@@ -15,37 +15,90 @@
  *
  */
 
-import type { FirebaseApp } from '@react-native-firebase/app';
+import type { FirebaseApp, ReactNativeFirebase } from '@react-native-firebase/app';
 
 // ============ Options & Result Types ============
 
+export type NativeFirebaseError = ReactNativeFirebase.NativeFirebaseError;
 /**
- * Metadata that can be set when uploading or updating a file.
+ * Object metadata that can be set at any time.
  */
 export interface SettableMetadata {
-  cacheControl?: string | null;
-  contentDisposition?: string | null;
-  contentEncoding?: string | null;
-  contentLanguage?: string | null;
-  contentType?: string | null;
-  customMetadata?: { [key: string]: string } | null;
-  md5hash?: string | null;
+  cacheControl?: string | undefined;
+  contentDisposition?: string | undefined;
+  contentEncoding?: string | undefined;
+  contentLanguage?: string | undefined;
+  contentType?: string | undefined;
+  customMetadata?: { [key: string]: string } | undefined;
 }
 
 /**
- * Full metadata for a file, including read-only properties.
+ * Object metadata that can be set at upload.
+ * @public
  */
-export interface FullMetadata extends SettableMetadata {
+export interface UploadMetadata extends SettableMetadata {
+  /**
+   * A Base64-encoded MD5 hash of the object being uploaded.
+   */
+  md5Hash?: string | undefined;
+}
+
+/**
+ * The full set of object metadata, including read-only properties.
+ */
+export interface FullMetadata extends UploadMetadata {
+  /**
+   * The bucket this object is contained in.
+   */
   bucket: string;
-  generation: string;
-  metageneration: string;
+
+  /**
+   * The full path of this object.
+   */
   fullPath: string;
+
+  /**
+   * The object's generation.
+   * {@link https://cloud.google.com/storage/docs/metadata#generation-number}
+   */
+  generation: string;
+
+  /**
+   * The object's metageneration.
+   * {@link https://cloud.google.com/storage/docs/metadata#generation-number}
+   */
+  metageneration: string;
+
+  /**
+   * The short name of this object, which is the last component of the full path.
+   * For example, if fullPath is 'full/path/image.png', name is 'image.png'.
+   */
   name: string;
+
+  /**
+   * The size of this object, in bytes.
+   */
   size: number;
+
+  /**
+   * A date string representing when this object was created.
+   */
   timeCreated: string;
+
+  /**
+   * A date string representing when this object was last updated.
+   */
   updated: string;
-  md5Hash: string | null;
-  metadata?: { [key: string]: string };
+
+  /**
+   * Tokens to allow access to the download URL.
+   */
+  downloadTokens: string[] | undefined;
+
+  /**
+   * `StorageReference` associated with this upload.
+   */
+  ref?: StorageReference | undefined;
 }
 
 /**
@@ -61,7 +114,7 @@ export interface ListOptions {
    * The `nextPageToken` from a previous call to `list()`. If provided,
    * listing is resumed from the previous position.
    */
-  pageToken?: string | null;
+  pageToken?: string;
 }
 
 /**
@@ -94,24 +147,29 @@ export interface ListResult {
 export interface TaskSnapshot {
   bytesTransferred: number;
   totalBytes: number;
-  state: string;
-  metadata: FullMetadata | null;
+  state: 'cancelled' | 'error' | 'paused' | 'running' | 'success';
+  metadata: FullMetadata;
   task: Task;
   ref: StorageReference;
   /**
    * If the state is `error`, returns a JavaScript error of the current task snapshot.
    */
-  error?: Error;
+  error?: NativeFirebaseError;
 }
 
 /**
  * Result of a completed task.
  */
 export interface TaskResult {
-  bytesTransferred: number;
-  totalBytes: number;
-  state: string;
-  metadata: FullMetadata | null;
+  /**
+   * The metadata of the tasks via a {@link FullMetadata} interface.
+   */
+  metadata: FullMetadata;
+
+  /**
+   * The {@link StorageReference} of the task.
+   */
+  ref: StorageReference;
 }
 
 /**
@@ -163,7 +221,7 @@ export interface TaskSnapshotObserver {
   /**
    * Called when the task errors.
    */
-  error?: (error: Error) => void;
+  error?: (error: NativeFirebaseError) => void;
 
   /**
    * Called when the task has completed successfully.
@@ -206,7 +264,7 @@ export interface Task {
   on(
     event: 'state_changed',
     nextOrObserver?: TaskSnapshotObserver | null | ((snapshot: TaskSnapshot) => void),
-    error?: ((error: Error) => void) | null,
+    error?: ((error: NativeFirebaseError) => void) | null,
     complete?: (() => void) | null,
   ): () => void;
 
@@ -218,7 +276,7 @@ export interface Task {
    */
   then(
     onFulfilled?: ((snapshot: TaskSnapshot) => any) | null,
-    onRejected?: ((error: Error) => any) | null,
+    onRejected?: ((error: NativeFirebaseError) => any) | null,
   ): Promise<unknown>;
 
   /**
@@ -226,7 +284,7 @@ export interface Task {
    *
    * @param onRejected Callback for when the task fails.
    */
-  catch(onRejected: (error: Error) => any): Promise<any>;
+  catch(onRejected: (error: NativeFirebaseError) => any): Promise<any>;
 }
 
 /**

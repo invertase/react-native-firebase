@@ -27,6 +27,7 @@ import type {
   TaskResult,
   Task,
   SettableMetadata,
+  UploadMetadata,
   EmulatorMockTokenOptions,
 } from './types/storage';
 import type { StorageReferenceInternal, StorageInternal } from './types/internal';
@@ -235,7 +236,7 @@ export function updateMetadata(
 export async function uploadBytes(
   _storageRef: StorageReference,
   _data: Blob | Uint8Array | ArrayBuffer,
-  _metadata?: SettableMetadata,
+  _metadata?: UploadMetadata,
 ): Promise<TaskResult> {
   throw new Error('`uploadBytes()` is not implemented');
 }
@@ -250,7 +251,7 @@ export async function uploadBytes(
 export function uploadBytesResumable(
   storageRef: StorageReference,
   data: Blob | Uint8Array | ArrayBuffer,
-  metadata?: SettableMetadata,
+  metadata?: UploadMetadata,
 ): Task {
   return (
     (storageRef as StorageReferenceInternal).put as unknown as WithModularDeprecationArg<
@@ -271,7 +272,7 @@ export function uploadString(
   storageRef: StorageReference,
   data: string,
   format?: 'raw' | 'base64' | 'base64url' | 'data_url',
-  metadata?: SettableMetadata,
+  metadata?: UploadMetadata,
 ): Task {
   return (
     (storageRef as StorageReferenceInternal).putString as unknown as WithModularDeprecationArg<

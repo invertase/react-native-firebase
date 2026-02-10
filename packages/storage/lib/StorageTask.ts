@@ -20,11 +20,12 @@ import type { EmitterSubscription } from 'react-native';
 import { TaskEvent } from './StorageStatics';
 import type { TaskSnapshot, StorageReference, Task, TaskSnapshotObserver } from './types/storage';
 import type { StorageReferenceInternal, StorageInternal } from './types/internal';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
 let TASK_ID = 0;
 
 function wrapErrorEventListener(
-  listenerFn: ((error: Error) => void) | null | undefined,
+  listenerFn: ((error: ReactNativeFirebase.NativeFirebaseError) => void) | null | undefined,
   unsubscribe: (() => void) | null | undefined,
 ): (snapshot: TaskSnapshot) => void {
   return (snapshot: TaskSnapshot) => {
@@ -32,7 +33,9 @@ function wrapErrorEventListener(
       setTimeout(() => unsubscribe(), 0);
     } // 1 frame = 16ms, pushing to next frame
     if (isFunction(listenerFn)) {
-      const errorEvent = snapshot as TaskSnapshot & { error?: Error };
+      const errorEvent = snapshot as TaskSnapshot & {
+        error?: ReactNativeFirebase.NativeFirebaseError;
+      };
       if (errorEvent.error) {
         listenerFn(errorEvent.error);
       }
@@ -99,7 +102,7 @@ function addTaskEventListener(
 function subscribeToEvents(
   task: StorageTask,
   nextOrObserver?: ((snapshot: TaskSnapshot) => void) | TaskSnapshotObserver | null,
-  error?: ((error: Error) => void) | null,
+  error?: ((error: ReactNativeFirebase.NativeFirebaseError) => void) | null,
   complete?: (() => void) | null,
 ): () => void {
   let _error: ((snapshot: TaskSnapshot) => void) | undefined;
@@ -184,7 +187,7 @@ export default class StorageTask {
    */
   get then(): (
     onFulfilled?: ((snapshot: TaskSnapshot) => TaskSnapshot) | null,
-    onRejected?: ((error: Error) => any) | null,
+    onRejected?: ((error: ReactNativeFirebase.NativeFirebaseError) => any) | null,
   ) => Promise<TaskSnapshot> {
     if (!this._promise) {
       this._promise = this._beginTask(this);
@@ -193,7 +196,7 @@ export default class StorageTask {
     const promise = this._promise;
     return (
       onFulfilled?: ((snapshot: TaskSnapshot) => any) | null,
-      onRejected?: ((error: Error) => any) | null,
+      onRejected?: ((error: ReactNativeFirebase.NativeFirebaseError) => any) | null,
     ) => {
       return new Promise((resolve, reject) => {
         promise
@@ -205,7 +208,7 @@ export default class StorageTask {
               resolve(response);
             }
           })
-          .catch((error: Error) => {
+          .catch((error: ReactNativeFirebase.NativeFirebaseError) => {
             if (onRejected) {
               resolve(onRejected(error));
             } else {
@@ -219,7 +222,9 @@ export default class StorageTask {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask#catch
    */
-  get catch(): (onRejected: (error: Error) => any) => Promise<any> {
+  get catch(): (
+    onRejected: (error: ReactNativeFirebase.NativeFirebaseError) => any,
+  ) => Promise<any> {
     if (!this._promise) {
       this._promise = this._beginTask(this);
     }
@@ -245,7 +250,7 @@ export default class StorageTask {
   on(
     event: 'state_changed',
     nextOrObserver?: TaskSnapshotObserver | null | ((snapshot: TaskSnapshot) => void),
-    error?: ((error: Error) => void) | null,
+    error?: ((error: ReactNativeFirebase.NativeFirebaseError) => void) | null,
     complete?: (() => void) | null,
   ): () => void {
     if (event !== TaskEvent.STATE_CHANGED) {

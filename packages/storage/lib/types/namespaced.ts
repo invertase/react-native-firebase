@@ -253,7 +253,7 @@ export namespace FirebaseStorageTypes {
   }
 
   /**
-   * An interface representing all the metadata properties that can be set.
+   * Object metadata that can be set at any time.
    *
    * This is used in updateMetadata, put, putString & putFile.
    *
@@ -285,28 +285,28 @@ export namespace FirebaseStorageTypes {
      *
      * [Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control)
      */
-    cacheControl?: string | null;
+    cacheControl?: string | undefined;
 
     /**
      * The 'Content-Disposition' HTTP header that will be set on the storage object when it's requested.
      *
      * [Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)
      */
-    contentDisposition?: string | null;
+    contentDisposition?: string | undefined;
 
     /**
      * The 'Content-Encoding' HTTP header that will be used on the storage object when it's requested.
      *
      * [Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding)
      */
-    contentEncoding?: string | null;
+    contentEncoding?: string | undefined;
 
     /**
      * The 'Content-Language' HTTP header that will be set on the storage object when it's requested.
      *
      * [Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Language)
      */
-    contentLanguage?: string | null;
+    contentLanguage?: string | undefined;
 
     /**
      * The 'Content-Type' HTTP header that will be set on the object when it's requested.
@@ -329,17 +329,12 @@ export namespace FirebaseStorageTypes {
      *
      * [Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type)
      */
-    contentType?: string | null;
-
-    /**
-     * You may specify the md5hash of the file in metadata on upload only. It may not be updated via updateMetadata
-     */
-    md5hash?: string | null;
+    contentType?: string | undefined;
 
     /**
      * Additional user-defined custom metadata for this storage object.
      *
-     * All values must be strings. Set to null to delete all. Any keys ommitted during update will be removed.
+     * All values must be strings.
      *
      * #### Example
      *
@@ -352,9 +347,23 @@ export namespace FirebaseStorageTypes {
      *   },
      * }
      */
-    customMetadata?: {
-      [key: string]: string;
-    } | null;
+    customMetadata?:
+      | {
+          [key: string]: string;
+        }
+      | undefined;
+  }
+
+  /**
+   * Object metadata that can be set at upload.
+   *
+   * @deprecated Use the exported types directly instead. FirebaseStorageTypes namespace is kept for backwards compatibility.
+   */
+  export interface UploadMetadata extends SettableMetadata {
+    /**
+     * A Base64-encoded MD5 hash of the object being uploaded.
+     */
+    md5Hash?: string | undefined;
   }
 
   /**
@@ -362,12 +371,7 @@ export namespace FirebaseStorageTypes {
    *
    * @deprecated Use the exported types directly instead. FirebaseStorageTypes namespace is kept for backwards compatibility.
    */
-  export interface FullMetadata extends SettableMetadata {
-    /**
-     * A Base64-encoded MD5 hash of the storage object being uploaded.
-     */
-    md5Hash: string | null;
-
+  export interface FullMetadata extends UploadMetadata {
     /**
      * The bucket this storage object is contained in.
      *
@@ -441,6 +445,16 @@ export namespace FirebaseStorageTypes {
      * ```
      */
     updated: string;
+
+    /**
+     * Tokens to allow access to the download URL.
+     */
+    downloadTokens: string[] | undefined;
+
+    /**
+     * `StorageReference` associated with this upload.
+     */
+    ref?: Reference | undefined;
   }
 
   /**
@@ -721,19 +735,19 @@ export namespace FirebaseStorageTypes {
      *
      * @param taskSnapshot A `TaskSnapshot` for the event.
      */
-    next: (taskSnapshot: TaskSnapshot) => void;
+    next?: (taskSnapshot: TaskSnapshot) => void;
 
     /**
      * Called when the task errors.
      *
      * @param error A JavaScript error.
      */
-    error: (error: NativeFirebaseError) => void;
+    error?: (error: NativeFirebaseError) => void;
 
     /**
      * Called when the task has completed successfully.
      */
-    complete: () => void;
+    complete?: () => void;
   }
 
   /**
