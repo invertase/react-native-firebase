@@ -35,10 +35,11 @@ import { StringFormat, TaskEvent, TaskState } from './StorageStatics';
 import { getGsUrlParts, getHttpUrlParts, handleStorageEvent } from './utils';
 import { version } from './version';
 import fallBackModule from './web/RNFBStorageModule';
-import type { Storage, StorageStatics, EmulatorMockTokenOptions } from './types/storage';
+import type { Storage, EmulatorMockTokenOptions } from './types/storage';
 import type { StorageInternal } from './types/internal';
+import type { FirebaseStorageTypes } from './types/namespaced';
 
-const statics: StorageStatics = {
+const statics = {
   StringFormat,
   TaskEvent,
   TaskState,
@@ -226,9 +227,12 @@ const storageNamespace = createModuleNamespace({
 
 type StorageNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
   Storage,
-  StorageStatics
+  FirebaseStorageTypes.Statics
 > & {
-  storage: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<Storage, StorageStatics>;
+  storage: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+    Storage,
+    FirebaseStorageTypes.Statics
+  >;
   firebase: ReactNativeFirebase.Module;
   app(name?: string): ReactNativeFirebase.FirebaseApp;
 };
@@ -244,7 +248,7 @@ export const firebase =
   getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
     'storage',
     Storage,
-    StorageStatics,
+    FirebaseStorageTypes.Statics,
     true
   >;
 
