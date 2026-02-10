@@ -95,29 +95,37 @@ export interface TaskResult {
  * Storage reference to a file or folder location.
  */
 export interface Reference {
-  bucket: string;
-  fullPath: string;
-  name: string;
-  parent: Reference | null;
+  /**
+   * A reference to the root of this object's bucket.
+   */
   root: Reference;
+  /**
+   * The name of the bucket containing this reference's object.
+   */
+  bucket: string;
+  /**
+   * The full path of this object.
+   */
+  fullPath: string;
+  /**
+   * The short name of this object, which is the last component of the full path.
+   * For example, if fullPath is 'full/path/image.png', name is 'image.png'.
+   */
+  name: string;
+  /**
+   * The {@link FirebaseStorage} instance associated with this reference.
+   */
   storage: Storage;
-
-  child(path: string): Reference;
-  delete(): Promise<void>;
-  getDownloadURL(): Promise<string>;
-  getMetadata(): Promise<FullMetadata>;
-  list(options?: ListOptions): Promise<ListResult>;
-  listAll(): Promise<ListResult>;
-  put(data: Blob | Uint8Array | ArrayBuffer, metadata?: SettableMetadata): Task;
-  putString(
-    string: string,
-    format?: 'raw' | 'base64' | 'base64url' | 'data_url',
-    metadata?: SettableMetadata,
-  ): Task;
+  /**
+   * A reference pointing to the parent location of this reference, or null if
+   * this reference is the root.
+   */
+  parent: Reference | null;
+  /**
+   * Returns the full URL string for this object in the form
+   * @returns The full URL string.
+   */
   toString(): string;
-  updateMetadata(metadata: SettableMetadata): Promise<FullMetadata>;
-  writeToFile(filePath: string): Task;
-  putFile(filePath: string, metadata?: SettableMetadata): Task;
 }
 
 /**
@@ -208,7 +216,7 @@ export interface EmulatorMockTokenOptions {
 // ============ Module Interface ============
 
 /**
- * Storage module instance - returned from firebase.storage() or firebase.app().storage()
+ * Storage module instance
  */
 export interface Storage {
   /** The FirebaseApp this module is associated with */

@@ -16,7 +16,16 @@
  */
 
 import type { ModuleConfig } from '@react-native-firebase/app/dist/module/types/internal';
-import type { Storage, Reference, EmulatorMockTokenOptions } from './storage';
+import type {
+  Storage,
+  Reference,
+  EmulatorMockTokenOptions,
+  SettableMetadata,
+  Task,
+  FullMetadata,
+  ListResult,
+  ListOptions,
+} from './storage';
 import type EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
 /**
@@ -82,6 +91,21 @@ export type StorageInternal = Storage & {
  */
 export type ReferenceInternal = Reference & {
   _storage: StorageInternal;
+  child(path: string): Reference;
+  delete(): Promise<void>;
+  getDownloadURL(): Promise<string>;
+  getMetadata(): Promise<FullMetadata>;
+  list(options?: ListOptions): Promise<ListResult>;
+  listAll(): Promise<ListResult>;
+  put(data: Blob | Uint8Array | ArrayBuffer, metadata?: SettableMetadata): Task;
+  putString(
+    string: string,
+    format?: 'raw' | 'base64' | 'base64url' | 'data_url',
+    metadata?: SettableMetadata,
+  ): Task;
+  updateMetadata(metadata: SettableMetadata): Promise<FullMetadata>;
+  writeToFile(filePath: string): Task;
+  putFile(filePath: string, metadata?: SettableMetadata): Task;
 };
 
 /**
