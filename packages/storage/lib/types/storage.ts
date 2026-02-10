@@ -188,7 +188,7 @@ export interface Task {
   then(
     onFulfilled?: ((snapshot: TaskSnapshot) => any) | null,
     onRejected?: ((error: Error) => any) | null,
-  ): Promise<any>;
+  ): Promise<unknown>;
 
   /**
    * Attaches a callback for only the rejection of the Task.
@@ -228,52 +228,6 @@ export interface Storage extends ReactNativeFirebase.FirebaseModule {
    * The maximum time in milliseconds to retry operations if a failure occurs.
    */
   readonly maxOperationRetryTime: number;
-
-  /**
-   * Returns a reference to the object at the specified path.
-   *
-   * @param path - An optional string pointing to a location on the storage bucket. If no path
-   * is provided, the returned reference will be the bucket root path.
-   */
-  ref(path?: string): Reference;
-
-  /**
-   * Returns a reference to the object at the specified URL.
-   *
-   * @param url - A storage bucket URL pointing to a single file or location. Must be either a `gs://` url or an `http` url.
-   */
-  refFromURL(url: string): Reference;
-
-  /**
-   * Sets the maximum time in milliseconds to retry operations if a failure occurs.
-   *
-   * @param time - The new maximum operation retry time in milliseconds.
-   */
-  setMaxOperationRetryTime(time: number): Promise<void>;
-
-  /**
-   * Sets the maximum time in milliseconds to retry an upload if a failure occurs.
-   *
-   * @param time - The new maximum upload retry time in milliseconds.
-   */
-  setMaxUploadRetryTime(time: number): Promise<void>;
-
-  /**
-   * Sets the maximum time in milliseconds to retry a download if a failure occurs.
-   *
-   * @param time - The new maximum download retry time in milliseconds.
-   */
-  setMaxDownloadRetryTime(time: number): Promise<void>;
-
-  /**
-   * Changes this instance to point to a Cloud Storage emulator running locally.
-   *
-   * @param host - The host of the emulator, e.g. "localhost" or "10.0.2.2" for Android.
-   * @param port - The port of the emulator, e.g. 9199.
-   * @param options - Optional settings for the emulator connection (web only).
-   * @returns {void} - Undocumented return, just used to unit test android host remapping.
-   */
-  useEmulator(host: string, port: number, options?: EmulatorMockTokenOptions): void;
 }
 
 // ============ Statics Interface ============

@@ -16,7 +16,7 @@
  */
 
 import type { ModuleConfig } from '@react-native-firebase/app/dist/module/types/internal';
-import type { Storage, Reference } from './storage';
+import type { Storage, Reference, EmulatorMockTokenOptions } from './storage';
 import type EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
 /**
@@ -29,6 +29,51 @@ export type StorageInternal = Storage & {
   emitter: EventEmitter;
   eventNameForApp: (...args: Array<string | number>) => string;
   _config: ModuleConfig;
+  /**
+   * Returns a reference to the object at the specified path.
+   *
+   * @param path - An optional string pointing to a location on the storage bucket. If no path
+   * is provided, the returned reference will be the bucket root path.
+   */
+  ref(path?: string): Reference;
+
+  /**
+   * Returns a reference to the object at the specified URL.
+   *
+   * @param url - A storage bucket URL pointing to a single file or location. Must be either a `gs://` url or an `http` url.
+   */
+  refFromURL(url: string): Reference;
+
+  /**
+   * Sets the maximum time in milliseconds to retry operations if a failure occurs.
+   *
+   * @param time - The new maximum operation retry time in milliseconds.
+   */
+  setMaxOperationRetryTime(time: number): Promise<void>;
+
+  /**
+   * Sets the maximum time in milliseconds to retry an upload if a failure occurs.
+   *
+   * @param time - The new maximum upload retry time in milliseconds.
+   */
+  setMaxUploadRetryTime(time: number): Promise<void>;
+
+  /**
+   * Sets the maximum time in milliseconds to retry a download if a failure occurs.
+   *
+   * @param time - The new maximum download retry time in milliseconds.
+   */
+  setMaxDownloadRetryTime(time: number): Promise<void>;
+
+  /**
+   * Changes this instance to point to a Cloud Storage emulator running locally.
+   *
+   * @param host - The host of the emulator, e.g. "localhost" or "10.0.2.2" for Android.
+   * @param port - The port of the emulator, e.g. 9199.
+   * @param options - Optional settings for the emulator connection (web only).
+   * @returns {void} - Undocumented return, just used to unit test android host remapping.
+   */
+  useEmulator(host: string, port: number, options?: EmulatorMockTokenOptions): void;
 };
 
 /**

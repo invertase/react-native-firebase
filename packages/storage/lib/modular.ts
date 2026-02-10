@@ -29,6 +29,11 @@ import type {
   SettableMetadata,
   EmulatorMockTokenOptions,
 } from './types/storage';
+import type { StorageInternal } from './types/internal';
+
+type WithModularDeprecationArg<F> = F extends (...args: infer P) => infer R
+  ? (...args: [...P, typeof MODULAR_DEPRECATION_ARG]) => R
+  : never;
 
 /**
  * Returns a Storage instance for the given app.
@@ -66,8 +71,11 @@ export function connectStorageEmulator(
   port: number,
   options?: EmulatorMockTokenOptions,
 ): void {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return storage.useEmulator.call(storage, host, port, options, MODULAR_DEPRECATION_ARG);
+  return (
+    (storage as StorageInternal).useEmulator as unknown as WithModularDeprecationArg<
+      StorageInternal['useEmulator']
+    >
+  ).call(storage, host, port, options, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -78,8 +86,9 @@ export function connectStorageEmulator(
  * @returns {Reference}
  */
 export function ref(storage: Storage, path?: string): Reference {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return storage.ref.call(storage, path, MODULAR_DEPRECATION_ARG);
+  return (
+    (storage as StorageInternal).ref as unknown as WithModularDeprecationArg<StorageInternal['ref']>
+  ).call(storage, path, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -88,8 +97,10 @@ export function ref(storage: Storage, path?: string): Reference {
  * @returns {Promise<void>}
  */
 export function deleteObject(storageRef: Reference): Promise<void> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return storageRef.delete.call(storageRef, MODULAR_DEPRECATION_ARG);
+  return (storageRef.delete as unknown as WithModularDeprecationArg<typeof storageRef.delete>).call(
+    storageRef,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -120,8 +131,11 @@ export function getBytes(
  * @returns {Promise<string>}
  */
 export function getDownloadURL(storageRef: Reference): Promise<string> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return storageRef.getDownloadURL.call(storageRef, MODULAR_DEPRECATION_ARG);
+  return (
+    storageRef.getDownloadURL as unknown as WithModularDeprecationArg<
+      typeof storageRef.getDownloadURL
+    >
+  ).call(storageRef, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -130,8 +144,9 @@ export function getDownloadURL(storageRef: Reference): Promise<string> {
  * @returns {Promise<FullMetadata>}
  */
 export function getMetadata(storageRef: Reference): Promise<FullMetadata> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return storageRef.getMetadata.call(storageRef, MODULAR_DEPRECATION_ARG);
+  return (
+    storageRef.getMetadata as unknown as WithModularDeprecationArg<typeof storageRef.getMetadata>
+  ).call(storageRef, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -154,8 +169,11 @@ export function getStream(
  * @returns {Promise<ListResult>}
  */
 export function list(storageRef: Reference, options?: ListOptions): Promise<ListResult> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return storageRef.list.call(storageRef, options, MODULAR_DEPRECATION_ARG);
+  return (storageRef.list as unknown as WithModularDeprecationArg<typeof storageRef.list>).call(
+    storageRef,
+    options,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -164,8 +182,9 @@ export function list(storageRef: Reference, options?: ListOptions): Promise<List
  * @returns {Promise<ListResult>}
  */
 export function listAll(storageRef: Reference): Promise<ListResult> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return storageRef.listAll.call(storageRef, MODULAR_DEPRECATION_ARG);
+  return (
+    storageRef.listAll as unknown as WithModularDeprecationArg<typeof storageRef.listAll>
+  ).call(storageRef, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -178,8 +197,11 @@ export function updateMetadata(
   storageRef: Reference,
   metadata: SettableMetadata,
 ): Promise<FullMetadata> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return storageRef.updateMetadata.call(storageRef, metadata, MODULAR_DEPRECATION_ARG);
+  return (
+    storageRef.updateMetadata as unknown as WithModularDeprecationArg<
+      typeof storageRef.updateMetadata
+    >
+  ).call(storageRef, metadata, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -209,8 +231,12 @@ export function uploadBytesResumable(
   data: Blob | Uint8Array | ArrayBuffer,
   metadata?: SettableMetadata,
 ): Task {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return storageRef.put.call(storageRef, data, metadata, MODULAR_DEPRECATION_ARG);
+  return (storageRef.put as unknown as WithModularDeprecationArg<typeof storageRef.put>).call(
+    storageRef,
+    data,
+    metadata,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -224,11 +250,12 @@ export function uploadBytesResumable(
 export function uploadString(
   storageRef: Reference,
   data: string,
-  format?: string,
+  format?: 'raw' | 'base64' | 'base64url' | 'data_url',
   metadata?: SettableMetadata,
 ): Task {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return storageRef.putString.call(storageRef, data, format, metadata, MODULAR_DEPRECATION_ARG);
+  return (
+    storageRef.putString as unknown as WithModularDeprecationArg<typeof storageRef.putString>
+  ).call(storageRef, data, format, metadata, MODULAR_DEPRECATION_ARG);
 }
 
 // Methods not on the Firebase JS SDK below
@@ -240,8 +267,11 @@ export function uploadString(
  * @returns {Reference}
  */
 export function refFromURL(storage: Storage, url: string): Reference {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return storage.refFromURL.call(storage, url, MODULAR_DEPRECATION_ARG);
+  return (
+    (storage as StorageInternal).refFromURL as unknown as WithModularDeprecationArg<
+      StorageInternal['refFromURL']
+    >
+  ).call(storage, url, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -251,8 +281,11 @@ export function refFromURL(storage: Storage, url: string): Reference {
  * @returns {Promise<void>}
  */
 export function setMaxOperationRetryTime(storage: Storage, time: number): Promise<void> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return storage.setMaxOperationRetryTime.call(storage, time, MODULAR_DEPRECATION_ARG);
+  return (
+    (storage as StorageInternal).setMaxOperationRetryTime as unknown as WithModularDeprecationArg<
+      StorageInternal['setMaxOperationRetryTime']
+    >
+  ).call(storage, time, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -262,8 +295,11 @@ export function setMaxOperationRetryTime(storage: Storage, time: number): Promis
  * @returns {Promise<void>}
  */
 export function setMaxUploadRetryTime(storage: Storage, time: number): Promise<void> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return storage.setMaxUploadRetryTime.call(storage, time, MODULAR_DEPRECATION_ARG);
+  return (
+    (storage as StorageInternal).setMaxUploadRetryTime as unknown as WithModularDeprecationArg<
+      StorageInternal['setMaxUploadRetryTime']
+    >
+  ).call(storage, time, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -278,8 +314,9 @@ export function putFile(
   filePath: string,
   metadata?: SettableMetadata,
 ): Task {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return storageRef.putFile.call(storageRef, filePath, metadata, MODULAR_DEPRECATION_ARG);
+  return (
+    storageRef.putFile as unknown as WithModularDeprecationArg<typeof storageRef.putFile>
+  ).call(storageRef, filePath, metadata, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -289,8 +326,9 @@ export function putFile(
  * @returns {Task}
  */
 export function writeToFile(storageRef: Reference, filePath: string): Task {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return storageRef.writeToFile.call(storageRef, filePath, MODULAR_DEPRECATION_ARG);
+  return (
+    storageRef.writeToFile as unknown as WithModularDeprecationArg<typeof storageRef.writeToFile>
+  ).call(storageRef, filePath, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -299,8 +337,9 @@ export function writeToFile(storageRef: Reference, filePath: string): Task {
  * @returns {String}
  */
 export function toString(storageRef: Reference): string {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return storageRef.toString.call(storageRef, MODULAR_DEPRECATION_ARG);
+  return (
+    storageRef.toString as unknown as WithModularDeprecationArg<typeof storageRef.toString>
+  ).call(storageRef, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -310,8 +349,11 @@ export function toString(storageRef: Reference): string {
  * @returns {String}
  */
 export function child(storageRef: Reference, path: string): Reference {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return storageRef.child.call(storageRef, path, MODULAR_DEPRECATION_ARG);
+  return (storageRef.child as unknown as WithModularDeprecationArg<typeof storageRef.child>).call(
+    storageRef,
+    path,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -321,8 +363,11 @@ export function child(storageRef: Reference, path: string): Reference {
  * @returns {Promise<void>}
  */
 export function setMaxDownloadRetryTime(storage: Storage, time: number): Promise<void> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return storage.setMaxDownloadRetryTime.call(storage, time, MODULAR_DEPRECATION_ARG);
+  return (
+    (storage as StorageInternal).setMaxDownloadRetryTime as unknown as WithModularDeprecationArg<
+      StorageInternal['setMaxDownloadRetryTime']
+    >
+  ).call(storage, time, MODULAR_DEPRECATION_ARG);
 }
 
 export { StringFormat, TaskEvent, TaskState } from './StorageStatics';
