@@ -29,7 +29,7 @@ import type {
   SettableMetadata,
   EmulatorMockTokenOptions,
 } from './types/storage';
-import type { StorageInternal } from './types/internal';
+import type { StorageReferenceInternal, StorageInternal } from './types/internal';
 
 type WithModularDeprecationArg<F> = F extends (...args: infer P) => infer R
   ? (...args: [...P, typeof MODULAR_DEPRECATION_ARG]) => R
@@ -97,10 +97,11 @@ export function ref(storage: Storage, path?: string): StorageReference {
  * @returns {Promise<void>}
  */
 export function deleteObject(storageRef: StorageReference): Promise<void> {
-  return (storageRef.delete as unknown as WithModularDeprecationArg<typeof storageRef.delete>).call(
-    storageRef,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (
+    (storageRef as StorageReferenceInternal).delete as unknown as WithModularDeprecationArg<
+      StorageReferenceInternal['delete']
+    >
+  ).call(storageRef, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -108,7 +109,10 @@ export function deleteObject(storageRef: StorageReference): Promise<void> {
  * @param storageRef - Storage `Reference` instance.
  * @returns {Promise<Blob>}
  */
-export function getBlob(_storageRef: StorageReference, _maxDownloadSizeBytes?: number): Promise<Blob> {
+export function getBlob(
+  _storageRef: StorageReference,
+  _maxDownloadSizeBytes?: number,
+): Promise<Blob> {
   throw new Error('`getBlob()` is not implemented');
 }
 
@@ -132,8 +136,8 @@ export function getBytes(
  */
 export function getDownloadURL(storageRef: StorageReference): Promise<string> {
   return (
-    storageRef.getDownloadURL as unknown as WithModularDeprecationArg<
-      typeof storageRef.getDownloadURL
+    (storageRef as StorageReferenceInternal).getDownloadURL as unknown as WithModularDeprecationArg<
+      StorageReferenceInternal['getDownloadURL']
     >
   ).call(storageRef, MODULAR_DEPRECATION_ARG);
 }
@@ -145,7 +149,9 @@ export function getDownloadURL(storageRef: StorageReference): Promise<string> {
  */
 export function getMetadata(storageRef: StorageReference): Promise<FullMetadata> {
   return (
-    storageRef.getMetadata as unknown as WithModularDeprecationArg<typeof storageRef.getMetadata>
+    (storageRef as StorageReferenceInternal).getMetadata as unknown as WithModularDeprecationArg<
+      StorageReferenceInternal['getMetadata']
+    >
   ).call(storageRef, MODULAR_DEPRECATION_ARG);
 }
 
@@ -169,11 +175,11 @@ export function getStream(
  * @returns {Promise<ListResult>}
  */
 export function list(storageRef: StorageReference, options?: ListOptions): Promise<ListResult> {
-  return (storageRef.list as unknown as WithModularDeprecationArg<typeof storageRef.list>).call(
-    storageRef,
-    options,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (
+    (storageRef as StorageReferenceInternal).list as unknown as WithModularDeprecationArg<
+      StorageReferenceInternal['list']
+    >
+  ).call(storageRef, options, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -183,7 +189,9 @@ export function list(storageRef: StorageReference, options?: ListOptions): Promi
  */
 export function listAll(storageRef: StorageReference): Promise<ListResult> {
   return (
-    storageRef.listAll as unknown as WithModularDeprecationArg<typeof storageRef.listAll>
+    (storageRef as StorageReferenceInternal).listAll as unknown as WithModularDeprecationArg<
+      StorageReferenceInternal['listAll']
+    >
   ).call(storageRef, MODULAR_DEPRECATION_ARG);
 }
 
@@ -198,8 +206,8 @@ export function updateMetadata(
   metadata: SettableMetadata,
 ): Promise<FullMetadata> {
   return (
-    storageRef.updateMetadata as unknown as WithModularDeprecationArg<
-      typeof storageRef.updateMetadata
+    (storageRef as StorageReferenceInternal).updateMetadata as unknown as WithModularDeprecationArg<
+      StorageReferenceInternal['updateMetadata']
     >
   ).call(storageRef, metadata, MODULAR_DEPRECATION_ARG);
 }
@@ -231,12 +239,11 @@ export function uploadBytesResumable(
   data: Blob | Uint8Array | ArrayBuffer,
   metadata?: SettableMetadata,
 ): Task {
-  return (storageRef.put as unknown as WithModularDeprecationArg<typeof storageRef.put>).call(
-    storageRef,
-    data,
-    metadata,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (
+    (storageRef as StorageReferenceInternal).put as unknown as WithModularDeprecationArg<
+      StorageReferenceInternal['put']
+    >
+  ).call(storageRef, data, metadata, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -254,7 +261,9 @@ export function uploadString(
   metadata?: SettableMetadata,
 ): Task {
   return (
-    storageRef.putString as unknown as WithModularDeprecationArg<typeof storageRef.putString>
+    (storageRef as StorageReferenceInternal).putString as unknown as WithModularDeprecationArg<
+      StorageReferenceInternal['putString']
+    >
   ).call(storageRef, data, format, metadata, MODULAR_DEPRECATION_ARG);
 }
 
@@ -315,7 +324,9 @@ export function putFile(
   metadata?: SettableMetadata,
 ): Task {
   return (
-    storageRef.putFile as unknown as WithModularDeprecationArg<typeof storageRef.putFile>
+    (storageRef as StorageReferenceInternal).putFile as unknown as WithModularDeprecationArg<
+      StorageReferenceInternal['putFile']
+    >
   ).call(storageRef, filePath, metadata, MODULAR_DEPRECATION_ARG);
 }
 
@@ -327,7 +338,9 @@ export function putFile(
  */
 export function writeToFile(storageRef: StorageReference, filePath: string): Task {
   return (
-    storageRef.writeToFile as unknown as WithModularDeprecationArg<typeof storageRef.writeToFile>
+    (storageRef as StorageReferenceInternal).writeToFile as unknown as WithModularDeprecationArg<
+      StorageReferenceInternal['writeToFile']
+    >
   ).call(storageRef, filePath, MODULAR_DEPRECATION_ARG);
 }
 
@@ -349,11 +362,11 @@ export function toString(storageRef: StorageReference): string {
  * @returns {String}
  */
 export function child(storageRef: StorageReference, path: string): StorageReference {
-  return (storageRef.child as unknown as WithModularDeprecationArg<typeof storageRef.child>).call(
-    storageRef,
-    path,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (
+    (storageRef as StorageReferenceInternal).child as unknown as WithModularDeprecationArg<
+      StorageReferenceInternal['child']
+    >
+  ).call(storageRef, path, MODULAR_DEPRECATION_ARG);
 }
 
 /**
