@@ -1,14 +1,17 @@
 /**
- * @typedef {import('..').FirebaseFirestoreTypes} FirebaseFirestoreTypes
- * @typedef {import('..').FirebaseFirestoreTypes.CollectionReference} CollectionReference
- * @typedef {import('..').FirebaseFirestoreTypes.DocumentData} DocumentData
- * @typedef {import('..').FirebaseFirestoreTypes.DocumentReference} DocumentReference
- * @typedef {import('..').FirebaseFirestoreTypes.FieldPath} FieldPath
  * @typedef {import('..').FirebaseFirestoreTypes.Module} Firestore
- * @typedef {import('..').FirebaseFirestoreTypes.Query} Query
- * @typedef {import('..').FirebaseFirestoreTypes.SetOptions} SetOptions
  * @typedef {import('..').FirebaseFirestoreTypes.Settings} FirestoreSettings
- * @typedef {import('..').FirebaseFirestoreTypes.PersistentCacheIndexManager} PersistentCacheIndexManager
+ * @typedef {import('.').AggregateQuerySnapshot} AggregateQuerySnapshot
+ * @typedef {import('.').CollectionReference} CollectionReference
+ * @typedef {import('.').DocumentData} DocumentData
+ * @typedef {import('.').DocumentReference} DocumentReference
+ * @typedef {import('.').FieldPath} FieldPath
+ * @typedef {import('.').PersistentCacheIndexManager} PersistentCacheIndexManager
+ * @typedef {import('.').Query} Query
+ * @typedef {import('.').SetOptions} SetOptions
+ * @typedef {import('.').Transaction} Transaction
+ * @typedef {import('.').WriteBatch} WriteBatch
+
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
  */
 
@@ -43,7 +46,7 @@ export function getFirestore(app, databaseId) {
 }
 
 /**
- * @param {Firestore | CollectionReference | DocumentReference<unknown>} parent
+ * @param {Firestore | CollectionReference | DocumentReference} parent
  * @param {string?} path
  * @param {string?} pathSegments
  * @returns {DocumentReference}
@@ -57,7 +60,7 @@ export function doc(parent, path, ...pathSegments) {
 }
 
 /**
- * @param {Firestore | DocumentReference<unknown> | CollectionReference<unknown>} parent
+ * @param {Firestore | DocumentReference | CollectionReference} parent
  * @param {string} path
  * @param {string?} pathSegments
  * @returns {CollectionReference<DocumentData>}
@@ -230,7 +233,7 @@ export function setLogLevel(logLevel) {
 
 /**
  * @param {Firestore} firestore
- * @param {(transaction: FirebaseFirestoreTypes.Transaction) => Promise} updateFunction
+ * @param {(transaction: Transaction) => Promise} updateFunction
  * @returns {Promise}
  */
 export function runTransaction(firestore, updateFunction) {
@@ -239,7 +242,7 @@ export function runTransaction(firestore, updateFunction) {
 
 /**
  * @param {Query} query
- * @returns {Promise<FirebaseFirestoreTypes.AggregateQuerySnapshot>}
+ * @returns {Promise<AggregateQuerySnapshot>}
  */
 export function getCountFromServer(query) {
   return query.count.call(query, MODULAR_DEPRECATION_ARG).get();
@@ -350,7 +353,7 @@ export function namedQuery(firestore, name) {
 
 /**
  * @param {Firestore} firestore
- * @returns {FirebaseFirestoreTypes.WriteBatch}
+ * @returns {WriteBatch}
  */
 export function writeBatch(firestore) {
   return firestore.batch.call(firestore, MODULAR_DEPRECATION_ARG);
