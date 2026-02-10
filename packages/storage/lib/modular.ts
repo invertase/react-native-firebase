@@ -174,12 +174,20 @@ export function getStream(
  * @param options - Storage `ListOptions` instance. The options list() accepts.
  * @returns {Promise<ListResult>}
  */
-export function list(storageRef: StorageReference, options?: ListOptions): Promise<ListResult> {
-  return (
+export async function list(
+  storageRef: StorageReference,
+  options?: ListOptions,
+): Promise<ListResult> {
+  const result = await (
     (storageRef as StorageReferenceInternal).list as unknown as WithModularDeprecationArg<
       StorageReferenceInternal['list']
     >
   ).call(storageRef, options, MODULAR_DEPRECATION_ARG);
+
+  if (result.nextPageToken === null) {
+    delete result.nextPageToken;
+  }
+  return result;
 }
 
 /**
@@ -187,12 +195,17 @@ export function list(storageRef: StorageReference, options?: ListOptions): Promi
  * @param storageRef - Storage `Reference` instance.
  * @returns {Promise<ListResult>}
  */
-export function listAll(storageRef: StorageReference): Promise<ListResult> {
-  return (
+export async function listAll(storageRef: StorageReference): Promise<ListResult> {
+  const result = await (
     (storageRef as StorageReferenceInternal).listAll as unknown as WithModularDeprecationArg<
       StorageReferenceInternal['listAll']
     >
   ).call(storageRef, MODULAR_DEPRECATION_ARG);
+
+  if (result.nextPageToken === null) {
+    delete result.nextPageToken;
+  }
+  return result;
 }
 
 /**
