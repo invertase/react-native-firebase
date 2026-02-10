@@ -340,12 +340,3 @@ export type TaskEvent = 'state_changed';
  * Represents the current state of a running upload.
  */
 export type TaskState = 'running' | 'paused' | 'success' | 'canceled' | 'cancelled' | 'error';
-
-/**
- * Static properties available on firebase.storage
- */
-export interface StorageStatics {
-  StringFormat: StringFormat;
-  TaskEvent: typeof import('../StorageStatics').TaskEvent;
-  TaskState: typeof import('../StorageStatics').TaskState;
-}
