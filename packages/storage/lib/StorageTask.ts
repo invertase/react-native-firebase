@@ -19,7 +19,7 @@ import { isFunction, isNull, isObject } from '@react-native-firebase/app/dist/mo
 import type { EmitterSubscription } from 'react-native';
 import { TaskEvent } from './StorageStatics';
 import type { TaskSnapshot, StorageReference, Task, TaskSnapshotObserver } from './types/storage';
-import type { ReferenceInternal, StorageInternal } from './types/internal';
+import type { StorageReferenceInternal, StorageInternal } from './types/internal';
 
 let TASK_ID = 0;
 
@@ -175,7 +175,7 @@ export default class StorageTask {
     this._promise = null;
     this._ref = storageRef;
     this._beginTask = beginTaskFn;
-    this._storage = (storageRef as ReferenceInternal)._storage;
+    this._storage = (storageRef as StorageReferenceInternal)._storage;
     this._snapshot = null;
   }
 

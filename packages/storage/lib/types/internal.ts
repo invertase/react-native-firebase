@@ -89,7 +89,7 @@ export type StorageInternal = Storage & {
  * Internal Reference type with access to private properties.
  * Used internally by StorageTask and other internal classes.
  */
-export type ReferenceInternal = StorageReference & {
+export type StorageReferenceInternal = StorageReference & {
   _storage: StorageInternal;
   child(path: string): StorageReference;
   delete(): Promise<void>;
