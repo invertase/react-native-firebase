@@ -156,16 +156,12 @@ export namespace FirebaseStorageTypes {
    * firebase.storage.TaskEvent;
    * ```
    */
-  export interface TaskEvent {
-    /**
-     * An event that indicates that the tasks state has changed.
-     *
-     * ```js
-     * firebase.storage.TaskEvent.STATE_CHANGED;
-     * ```
-     */
-    STATE_CHANGED: 'state_changed';
-  }
+  /**
+   * An event that is triggered on a task.
+   *
+   * @deprecated Use the exported types directly instead. FirebaseStorageTypes namespace is kept for backwards compatibility.
+   */
+  export type TaskEvent = 'state_changed';
 
   /**
    * A collection of properties that indicates the current tasks state.
@@ -204,6 +200,15 @@ export namespace FirebaseStorageTypes {
      */
     SUCCESS: 'success';
   }
+
+  /**
+   * Represents the current state of a running upload.
+   *
+   * Note: The Firebase JS SDK uses "canceled" (one L). React Native Firebase historically used "cancelled" (two L).
+   *
+   * @deprecated Use the exported types directly instead. FirebaseStorageTypes namespace is kept for backwards compatibility.
+   */
+  export type TaskStateType = 'running' | 'paused' | 'success' | 'canceled' | 'error';
 
   /**
    * Cloud Storage statics.
@@ -945,7 +950,7 @@ export namespace FirebaseStorageTypes {
     /**
      * The current state of the task snapshot.
      */
-    state: 'cancelled' | 'error' | 'paused' | 'running' | 'success';
+    state: TaskState;
 
     /**
      * The parent {@link storage.Task} of this snapshot.

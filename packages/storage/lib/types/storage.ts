@@ -147,7 +147,7 @@ export interface ListResult {
 export interface TaskSnapshot {
   bytesTransferred: number;
   totalBytes: number;
-  state: 'cancelled' | 'error' | 'paused' | 'running' | 'success';
+  state: TaskState;
   metadata: FullMetadata;
   task: Task;
   ref: StorageReference;
@@ -332,28 +332,20 @@ export interface StringFormat {
 }
 
 /**
- * Task events.
+ * An event that is triggered on a task.
  */
-export interface TaskEvent {
-  STATE_CHANGED: 'state_changed';
-}
+export type TaskEvent = 'state_changed';
 
 /**
- * Task states.
+ * Represents the current state of a running upload.
  */
-export interface TaskState {
-  RUNNING: 'running';
-  PAUSED: 'paused';
-  SUCCESS: 'success';
-  CANCELLED: 'cancelled';
-  ERROR: 'error';
-}
+export type TaskState = 'running' | 'paused' | 'success' | 'canceled' | 'cancelled' | 'error';
 
 /**
  * Static properties available on firebase.storage
  */
 export interface StorageStatics {
   StringFormat: StringFormat;
-  TaskEvent: TaskEvent;
-  TaskState: TaskState;
+  TaskEvent: typeof import('../StorageStatics').TaskEvent;
+  TaskState: typeof import('../StorageStatics').TaskState;
 }

@@ -31,6 +31,7 @@ import storage, {
   TaskEvent,
   TaskState,
 } from '.';
+import { FullMetadata, ListResult, TaskResult, TaskSnapshot } from './lib/types/storage';
 
 console.log(storage().app);
 
@@ -213,29 +214,29 @@ getDownloadURL(modularRef1).then((url: string) => {
   console.log(url);
 });
 
-getMetadata(modularRef1).then((metadata: FirebaseStorageTypes.FullMetadata) => {
+getMetadata(modularRef1).then((metadata: FullMetadata) => {
   console.log(metadata);
 });
 
 const modularStream = getStream(modularRef1);
 console.log(modularStream);
 
-list(modularRef1, { maxResults: 10 }).then((result: FirebaseStorageTypes.ListResult) => {
+list(modularRef1, { maxResults: 10 }).then((result: ListResult) => {
   console.log(result.items);
 });
 
-listAll(modularRef1).then((result: FirebaseStorageTypes.ListResult) => {
+listAll(modularRef1).then((result: ListResult) => {
   console.log(result.items);
 });
 
 updateMetadata(modularRef1, { cacheControl: 'no-cache' }).then(
-  (metadata: FirebaseStorageTypes.FullMetadata) => {
+  (metadata: FullMetadata) => {
     console.log(metadata);
   },
 );
 
 uploadBytes(modularRef1, new Blob(), { cacheControl: 'no-cache' }).then(
-  (result: FirebaseStorageTypes.TaskResult) => {
+  (result: TaskResult) => {
     console.log(result);
   },
 );
@@ -250,7 +251,7 @@ modularUploadBytesResumable.pause().then(() => {
 const modularUploadString = uploadString(modularRef1, 'modular-data', 'base64', {
   cacheControl: 'no-cache',
 });
-modularUploadString.then((snapshot: FirebaseStorageTypes.TaskSnapshot) => {
+modularUploadString.then((snapshot: TaskSnapshot) => {
   console.log(snapshot);
 });
 
@@ -266,12 +267,12 @@ setMaxUploadRetryTime(modularStorage1, 25000).then(() => {
 });
 
 const modularPutFile = putFile(modularRef1, '/local/path', { cacheControl: 'no-cache' });
-modularPutFile.then((snapshot: FirebaseStorageTypes.TaskSnapshot) => {
+modularPutFile.then((snapshot: TaskSnapshot) => {
   console.log(snapshot);
 });
 
 const modularWriteToFile = writeToFile(modularRef1, '/local/path');
-modularWriteToFile.then((snapshot: FirebaseStorageTypes.TaskSnapshot) => {
+modularWriteToFile.then((snapshot: TaskSnapshot) => {
   console.log(snapshot);
 });
 
@@ -294,9 +295,9 @@ const storageInstance2: Storage = firebase.storage();
 console.log(storageInstance2.app.name);
 
 // Test backwards compatibility types
-const legacyType: FirebaseStorageTypes.Module = storageInstance2;
+const legacyType: FirebaseStorageTypes.Module = firebase.storage();
 console.log(legacyType.app.name);
-const legacyReference: FirebaseStorageTypes.Reference = storageInstance2.ref('test');
+const legacyReference: FirebaseStorageTypes.Reference = firebase.storage().ref('test');
 console.log(legacyReference.fullPath);
 const legacyMetadata: FirebaseStorageTypes.FullMetadata = {} as FirebaseStorageTypes.FullMetadata;
 console.log(legacyMetadata);
