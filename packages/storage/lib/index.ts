@@ -31,11 +31,11 @@ export type {
 } from './types/storage';
 
 // Backwards-compatible namespaced types
-export type { FirebaseStorageTypes } from './types/namespaced';
 
 // Export modular API functions
 export * from './modular';
 
 // Export namespaced API
+export type { FirebaseStorageTypes } from './types/namespaced';
 export * from './namespaced';
 export { default } from './namespaced';
