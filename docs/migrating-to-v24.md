@@ -6,11 +6,11 @@ previous: /migrate-to-v23
 
 # Firestore
 
-Version 24 introduces `withConverter` functionality from Firebase JS SDK. Due to the differences in types between references and queries in namespace vs modular API, you will need to make the following changes:
+Version 24 introduces `withConverter` functionality from Firebase JS SDK. Due to the differences in types between references and queries in namespace vs modular API, and the namespaced APIs deprecation cycle being effectively complete with the API set for removal, we have adopted the modular API typing in general for firestore APIs.
 
-### modular API
+Reference and query types have been updated to support input of two generic types (`AppModelType`, `DbModelType`).
 
-Modular reference and query types have been updated to support input of two generic types (`AppModelType`, `DbModelType`). Additionally, to match the JS SDK, they are now exported separately at the root, instead of through `FirebaseFirestoreTypes`.
+Additionally, to match the JS SDK, they are now exported separately at the root, instead of through `FirebaseFirestoreTypes`.
 
 Most commonly these types will be affected: `CollectionReference`, `DocumentReference`, `DocumentSnapshot`, `QueryDocumentSnapshot`, `QuerySnapshot`, `Query`.
 
@@ -35,7 +35,3 @@ onSnapshot(doc(getFirestore(), 'foo', 'foo'), {
   },
 });
 ```
-
-### namespace API
-
-No changes required for older namespace API.
