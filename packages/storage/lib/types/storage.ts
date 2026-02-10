@@ -15,7 +15,7 @@
  *
  */
 
-import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { FirebaseApp } from '@react-native-firebase/app';
 
 // ============ Options & Result Types ============
 
@@ -210,9 +210,9 @@ export interface EmulatorMockTokenOptions {
 /**
  * Storage module instance - returned from firebase.storage() or firebase.app().storage()
  */
-export interface Storage extends ReactNativeFirebase.FirebaseModule {
+export interface Storage {
   /** The FirebaseApp this module is associated with */
-  app: ReactNativeFirebase.FirebaseApp;
+  app: FirebaseApp;
 
   /**
    * The maximum time in milliseconds to retry an upload if a failure occurs.
