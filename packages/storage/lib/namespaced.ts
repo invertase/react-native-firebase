@@ -30,12 +30,12 @@ import {
   type ModuleConfig,
 } from '@react-native-firebase/app/dist/module/internal';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
-import StorageReference from './StorageReference';
+import Reference from './StorageReference';
 import { StringFormat, TaskEvent, TaskState } from './StorageStatics';
 import { getGsUrlParts, getHttpUrlParts, handleStorageEvent } from './utils';
 import { version } from './version';
 import fallBackModule from './web/RNFBStorageModule';
-import type { Storage, StorageStatics, StorageReference, EmulatorMockTokenOptions } from './types/storage';
+import type { Storage, StorageStatics, EmulatorMockTokenOptions } from './types/storage';
 import type { StorageInternal } from './types/internal';
 
 const statics: StorageStatics = {
@@ -106,17 +106,17 @@ class FirebaseStorageModule extends FirebaseModule {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#ref
    */
-  ref(path: string = '/'): StorageReference {
+  ref(path: string = '/'): Reference {
     if (!isString(path)) {
       throw new Error("firebase.storage().ref(*) 'path' must be a string value.");
     }
-    return createDeprecationProxy(new StorageReference(this, path)) as unknown as StorageReference;
+    return createDeprecationProxy(new Reference(this, path)) as unknown as Reference;
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#refFromURL
    */
-  refFromURL(url: string): StorageReference {
+  refFromURL(url: string): Reference {
     if (!isString(url) || (!url.startsWith('gs://') && !url.startsWith('http'))) {
       throw new Error(
         "firebase.storage().refFromURL(*) 'url' must be a string value and begin with 'gs://' or 'https://'.",
@@ -139,7 +139,7 @@ class FirebaseStorageModule extends FirebaseModule {
     }
 
     const storageInstance = this.app.storage(bucket);
-    return new StorageReference(storageInstance as StorageInternal, path);
+    return new Reference(storageInstance as unknown as StorageInternal, path);
   }
 
   /**

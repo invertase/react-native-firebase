@@ -45,7 +45,7 @@ import type {
 } from './types/storage';
 import type { ListResultInternal, StorageInternal } from './types/internal';
 
-export default class StorageReference extends ReferenceBase implements StorageReference {
+export default class Reference extends ReferenceBase implements StorageReference {
   _storage: StorageInternal;
 
   constructor(storage: StorageInternal, path: string) {
@@ -82,14 +82,14 @@ export default class StorageReference extends ReferenceBase implements StorageRe
     if (parentPath === null) {
       return parentPath;
     }
-    return new StorageReference(this._storage, parentPath);
+    return new Reference(this._storage, parentPath);
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#root
    */
   get root(): StorageReference {
-    return new StorageReference(this._storage, '/');
+    return new Reference(this._storage, '/');
   }
 
   /**
@@ -104,7 +104,7 @@ export default class StorageReference extends ReferenceBase implements StorageRe
    */
   child(path: string): StorageReference {
     const childPath = pathChild(this.path, path);
-    return new StorageReference(this._storage, childPath);
+    return new Reference(this._storage, childPath);
   }
 
   /**
@@ -336,4 +336,4 @@ export default class StorageReference extends ReferenceBase implements StorageRe
   }
 }
 
-provideStorageReferenceClass(StorageReference);
+provideStorageReferenceClass(Reference);
