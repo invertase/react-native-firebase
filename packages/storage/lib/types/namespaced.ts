@@ -65,6 +65,8 @@ export namespace FirebaseStorageTypes {
   /**
    * Possible string formats used for uploading via `StorageReference.putString()`
    *
+   * @deprecated Use the exported types directly instead. FirebaseStorageTypes namespace is kept for backwards compatibility.
+   *
    * ```js
    * firebase.storage.StringFormat;
    * ```
@@ -148,6 +150,8 @@ export namespace FirebaseStorageTypes {
    *
    * Event subscription is created via `StorageTask.on()`.
    *
+   * @deprecated Use the exported types directly instead. FirebaseStorageTypes namespace is kept for backwards compatibility.
+   *
    * ```js
    * firebase.storage.TaskEvent;
    * ```
@@ -167,6 +171,8 @@ export namespace FirebaseStorageTypes {
    * A collection of properties that indicates the current tasks state.
    *
    * An event subscription is created via `StorageTask.on()`.
+   *
+   * @deprecated Use the exported types directly instead. FirebaseStorageTypes namespace is kept for backwards compatibility.
    *
    * ```js
    * firebase.storage.TaskEvent;
@@ -201,6 +207,8 @@ export namespace FirebaseStorageTypes {
 
   /**
    * Cloud Storage statics.
+   *
+   * @deprecated Use the exported types directly instead. FirebaseStorageTypes namespace is kept for backwards compatibility.
    *
    * #### Example
    *
@@ -248,6 +256,8 @@ export namespace FirebaseStorageTypes {
    * An interface representing all the metadata properties that can be set.
    *
    * This is used in updateMetadata, put, putString & putFile.
+   *
+   * @deprecated Use the exported types directly instead. FirebaseStorageTypes namespace is kept for backwards compatibility.
    */
   export interface SettableMetadata {
     /**
@@ -349,6 +359,8 @@ export namespace FirebaseStorageTypes {
 
   /**
    * The full readable metadata returned by `TaskSnapshot.metadata` or `StorageReference.getMetadata()`.
+   *
+   * @deprecated Use the exported types directly instead. FirebaseStorageTypes namespace is kept for backwards compatibility.
    */
   export interface FullMetadata extends SettableMetadata {
     /**
@@ -435,6 +447,8 @@ export namespace FirebaseStorageTypes {
    * Represents a reference to a Google Cloud Storage object in React Native Firebase.
    *
    * A reference can be used to upload and download storage objects, get/set storage object metadata, retrieve storage object download urls and delete storage objects.
+   *
+   * @deprecated Use the exported types directly instead. FirebaseStorageTypes namespace is kept for backwards compatibility.
    *
    * #### Example 1
    *
@@ -682,6 +696,8 @@ export namespace FirebaseStorageTypes {
    *
    * #### Example
    *
+   * @deprecated Use the exported types directly instead. FirebaseStorageTypes namespace is kept for backwards compatibility.
+   *
    * ```js
    * const ref = firebase.storage().ref(...);
    * const task = ref.put(...)
@@ -724,6 +740,8 @@ export namespace FirebaseStorageTypes {
    * Storage Task used for Uploading or Downloading files.
    *
    * #### Example 1
+   *
+   * @deprecated Use the exported types directly instead. FirebaseStorageTypes namespace is kept for backwards compatibility.
    *
    * Get a Upload Storage task to upload a string:
    *
@@ -864,6 +882,8 @@ export namespace FirebaseStorageTypes {
    *
    * #### Example 1
    *
+   * @deprecated Use the exported types directly instead. FirebaseStorageTypes namespace is kept for backwards compatibility.
+   *
    * ```js
    * firebase
    *   .storage()
@@ -932,6 +952,8 @@ export namespace FirebaseStorageTypes {
 
   /**
    * Result returned from a non-resumable upload.
+   *
+   * @deprecated Use the exported types directly instead. FirebaseStorageTypes namespace is kept for backwards compatibility.
    */
   export interface TaskResult {
     /**
@@ -947,6 +969,8 @@ export namespace FirebaseStorageTypes {
 
   /**
    * The options `list()` accepts.
+   *
+   * @deprecated Use the exported types directly instead. FirebaseStorageTypes namespace is kept for backwards compatibility.
    */
   export interface ListOptions {
     /**
@@ -962,6 +986,8 @@ export namespace FirebaseStorageTypes {
 
   /**
    * Result returned by `list()`.
+   *
+   * @deprecated Use the exported types directly instead. FirebaseStorageTypes namespace is kept for backwards compatibility.
    */
   export interface ListResult {
     /**
@@ -984,6 +1010,8 @@ export namespace FirebaseStorageTypes {
 
   /**
    * Storage Emulator options. Web only.
+   *
+   * @deprecated Use the exported types directly instead. FirebaseStorageTypes namespace is kept for backwards compatibility.
    */
   export interface EmulatorMockTokenOptions {
     /**
@@ -996,6 +1024,8 @@ export namespace FirebaseStorageTypes {
    * The Cloud Storage service is available for the default app, a given app or a specific storage bucket.
    *
    * #### Example 1
+   *
+   * @deprecated Use the exported types directly instead. FirebaseStorageTypes namespace is kept for backwards compatibility.
    *
    * Get the storage instance for the **default app**:
    *
@@ -1173,6 +1203,7 @@ export default defaultExport;
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
+
 declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
