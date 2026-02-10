@@ -19,12 +19,12 @@ import type { StorageReference } from './types/storage';
 import type { ListResultInternal, StorageInternal } from './types/internal';
 
 // To avoid React Native require cycle warnings
-let StorageReference: (new (storage: StorageInternal, path: string) => StorageReference) | null = null;
+let Reference: (new (storage: StorageInternal, path: string) => StorageReference) | null = null;
 
 export function provideStorageReferenceClass(
   storageReference: new (storage: StorageInternal, path: string) => StorageReference,
 ): void {
-  StorageReference = storageReference;
+  Reference = storageReference;
 }
 
 export default class StorageListResult {
@@ -35,14 +35,14 @@ export default class StorageListResult {
   constructor(storage: StorageInternal, nativeData: ListResultInternal) {
     this._nextPageToken = nativeData.nextPageToken || null;
 
-    if (!StorageReference) {
+    if (!Reference) {
       throw new Error(
-        'StorageReference class has not been provided. This is likely a module initialization issue.',
+        'Reference class has not been provided. This is likely a module initialization issue.',
       );
     }
 
     // TypeScript doesn't narrow the type after the null check, so we assign to a const
-    const StorageReferenceClass = StorageReference;
+    const StorageReferenceClass = Reference;
     this._items = nativeData.items.map(path => new StorageReferenceClass(storage, path));
     this._prefixes = nativeData.prefixes.map(path => new StorageReferenceClass(storage, path));
   }
