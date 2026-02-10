@@ -52,8 +52,16 @@ export interface FullMetadata extends SettableMetadata {
  * Options for listing files and folders.
  */
 export interface ListOptions {
-  maxResults?: number;
-  pageToken?: string;
+  /**
+   * If set, limits the total number of `prefixes` and `items` to return.
+   * The default and maximum maxResults is 1000.
+   */
+  maxResults?: number | null;
+  /**
+   * The `nextPageToken` from a previous call to `list()`. If provided,
+   * listing is resumed from the previous position.
+   */
+  pageToken?: string | null;
 }
 
 /**

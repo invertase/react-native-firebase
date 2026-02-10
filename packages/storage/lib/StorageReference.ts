@@ -29,6 +29,7 @@ import {
   pathParent,
   ReferenceBase,
   toFilePath,
+  isModularCall,
 } from '@react-native-firebase/app/dist/module/common';
 import StorageDownloadTask from './StorageDownloadTask';
 import StorageListResult, { provideStorageReferenceClass } from './StorageListResult';
@@ -142,32 +143,45 @@ export default class Reference extends ReferenceBase implements StorageReference
       maxResults: 1000,
     };
 
+    const isModular = isModularCall(arguments);
+
     if (options) {
       if (hasOwnProperty(options, 'maxResults')) {
         const maxResults = options.maxResults;
-        if (!isNumber(maxResults) || !isInteger(maxResults)) {
-          throw new Error(
-            "firebase.storage.StorageReference.list(*) 'options.maxResults' expected a number value.",
-          );
-        }
+        // Modular typings allow `null` for omission - ignore safely.
+        if (isModular && (maxResults === null || isUndefined(maxResults))) {
+          // no-op (keep default)
+        } else {
+          if (!isNumber(maxResults) || !isInteger(maxResults)) {
+            throw new Error(
+              "firebase.storage.StorageReference.list(*) 'options.maxResults' expected a number value.",
+            );
+          }
 
-        if (maxResults < 1 || maxResults > 1000) {
-          throw new Error(
-            "firebase.storage.StorageReference.list(*) 'options.maxResults' expected a number value between 1-1000.",
-          );
-        }
+          if (maxResults < 1 || maxResults > 1000) {
+            throw new Error(
+              "firebase.storage.StorageReference.list(*) 'options.maxResults' expected a number value between 1-1000.",
+            );
+          }
 
-        listOptions.maxResults = maxResults;
+          listOptions.maxResults = maxResults;
+        }
       }
 
-      if (options.pageToken) {
-        if (!isString(options.pageToken)) {
-          throw new Error(
-            "firebase.storage.StorageReference.list(*) 'options.pageToken' expected a string value.",
-          );
-        }
+      if (hasOwnProperty(options, 'pageToken')) {
+        const pageToken = options.pageToken;
+        // Modular typings allow `null` for omission - ignore safely.
+        if (isModular && (pageToken === null || isUndefined(pageToken))) {
+          // no-op
+        } else if (!isUndefined(pageToken) && pageToken !== null) {
+          if (!isString(pageToken)) {
+            throw new Error(
+              "firebase.storage.StorageReference.list(*) 'options.pageToken' expected a string value.",
+            );
+          }
 
-        listOptions.pageToken = options.pageToken;
+          listOptions.pageToken = pageToken;
+        }
       }
     }
 

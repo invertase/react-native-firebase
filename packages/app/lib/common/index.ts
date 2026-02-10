@@ -796,3 +796,8 @@ export function warnIfNotModularCall(args: IArguments, replacementMethodName: st
     }
   }
 }
+
+export function isModularCall(args: IArguments): boolean {
+  const argsArray = Array.from(args);
+  return argsArray.includes(MODULAR_DEPRECATION_ARG);
+}
