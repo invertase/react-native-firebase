@@ -15,7 +15,7 @@
  *
  */
 
-// Export types from types/storage
+// Export modular types from types/storage
 export type {
   Storage,
   Reference,
@@ -29,8 +29,6 @@ export type {
   Task,
   EmulatorMockTokenOptions,
 } from './types/storage';
-
-// Backwards-compatible namespaced types
 
 // Export modular API functions
 export * from './modular';
