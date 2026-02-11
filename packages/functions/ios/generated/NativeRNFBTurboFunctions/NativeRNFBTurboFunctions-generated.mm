@@ -47,6 +47,36 @@
   return facebook::react::managedPointer<JS::NativeRNFBTurboFunctions::SpecHttpsCallableFromUrlOptions>(json);
 }
 @end
+@implementation RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableStreamData)
++ (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableStreamData:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamData>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableStreamOptions)
++ (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableStreamOptions:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamOptions>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableStreamFromUrlData)
++ (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableStreamFromUrlData:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlData>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableStreamFromUrlOptionsHttpsCallableStreamOptions)
++ (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableStreamFromUrlOptionsHttpsCallableStreamOptions:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlOptionsHttpsCallableStreamOptions>(json);
+}
+@end
+@implementation RCTCxxConvert (NativeRNFBTurboFunctions_SpecHttpsCallableStreamFromUrlOptions)
++ (RCTManagedPointer *)JS_NativeRNFBTurboFunctions_SpecHttpsCallableStreamFromUrlOptions:(id)json
+{
+  return facebook::react::managedPointer<JS::NativeRNFBTurboFunctions::SpecHttpsCallableStreamFromUrlOptions>(json);
+}
+@end
 namespace facebook::react {
   
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboFunctionsSpecJSI_httpsCallable(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
@@ -55,6 +85,18 @@ namespace facebook::react {
 
     static facebook::jsi::Value __hostFunction_NativeRNFBTurboFunctionsSpecJSI_httpsCallableFromUrl(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
       return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, PromiseKind, "httpsCallableFromUrl", @selector(httpsCallableFromUrl:region:emulatorHost:emulatorPort:url:data:options:resolve:reject:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeRNFBTurboFunctionsSpecJSI_httpsCallableStream(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "httpsCallableStream", @selector(httpsCallableStream:region:emulatorHost:emulatorPort:name:data:options:listenerId:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeRNFBTurboFunctionsSpecJSI_httpsCallableStreamFromUrl(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "httpsCallableStreamFromUrl", @selector(httpsCallableStreamFromUrl:region:emulatorHost:emulatorPort:url:data:options:listenerId:), args, count);
+    }
+
+    static facebook::jsi::Value __hostFunction_NativeRNFBTurboFunctionsSpecJSI_removeFunctionsStreaming(facebook::jsi::Runtime& rt, TurboModule &turboModule, const facebook::jsi::Value* args, size_t count) {
+      return static_cast<ObjCTurboModule&>(turboModule).invokeObjCMethod(rt, VoidKind, "removeFunctionsStreaming", @selector(removeFunctionsStreaming:region:listenerId:), args, count);
     }
 
   NativeRNFBTurboFunctionsSpecJSI::NativeRNFBTurboFunctionsSpecJSI(const ObjCTurboModule::InitParams &params)
@@ -67,5 +109,16 @@ namespace facebook::react {
         methodMap_["httpsCallableFromUrl"] = MethodMetadata {7, __hostFunction_NativeRNFBTurboFunctionsSpecJSI_httpsCallableFromUrl};
         setMethodArgConversionSelector(@"httpsCallableFromUrl", 5, @"JS_NativeRNFBTurboFunctions_SpecHttpsCallableFromUrlData:");
         setMethodArgConversionSelector(@"httpsCallableFromUrl", 6, @"JS_NativeRNFBTurboFunctions_SpecHttpsCallableFromUrlOptions:");
+        
+        methodMap_["httpsCallableStream"] = MethodMetadata {8, __hostFunction_NativeRNFBTurboFunctionsSpecJSI_httpsCallableStream};
+        setMethodArgConversionSelector(@"httpsCallableStream", 5, @"JS_NativeRNFBTurboFunctions_SpecHttpsCallableStreamData:");
+        setMethodArgConversionSelector(@"httpsCallableStream", 6, @"JS_NativeRNFBTurboFunctions_SpecHttpsCallableStreamOptions:");
+        
+        methodMap_["httpsCallableStreamFromUrl"] = MethodMetadata {8, __hostFunction_NativeRNFBTurboFunctionsSpecJSI_httpsCallableStreamFromUrl};
+        setMethodArgConversionSelector(@"httpsCallableStreamFromUrl", 5, @"JS_NativeRNFBTurboFunctions_SpecHttpsCallableStreamFromUrlData:");
+        setMethodArgConversionSelector(@"httpsCallableStreamFromUrl", 6, @"JS_NativeRNFBTurboFunctions_SpecHttpsCallableStreamFromUrlOptions:");
+        
+        methodMap_["removeFunctionsStreaming"] = MethodMetadata {3, __hostFunction_NativeRNFBTurboFunctionsSpecJSI_removeFunctionsStreaming};
+        
   }
 } // namespace facebook::react

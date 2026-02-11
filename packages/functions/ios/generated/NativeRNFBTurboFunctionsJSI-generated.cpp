@@ -35,11 +35,51 @@ static jsi::Value __hostFunction_NativeRNFBTurboFunctionsCxxSpecJSI_httpsCallabl
     count <= 6 ? throw jsi::JSError(rt, "Expected argument in position 6 to be passed") : args[6].asObject(rt)
   );
 }
+static jsi::Value __hostFunction_NativeRNFBTurboFunctionsCxxSpecJSI_httpsCallableStream(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  static_cast<NativeRNFBTurboFunctionsCxxSpecJSI *>(&turboModule)->httpsCallableStream(
+    rt,
+    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+    count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+    count <= 2 || args[2].isNull() || args[2].isUndefined() ? std::nullopt : std::make_optional(args[2].asString(rt)),
+    count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asNumber(),
+    count <= 4 ? throw jsi::JSError(rt, "Expected argument in position 4 to be passed") : args[4].asString(rt),
+    count <= 5 ? throw jsi::JSError(rt, "Expected argument in position 5 to be passed") : args[5].asObject(rt),
+    count <= 6 ? throw jsi::JSError(rt, "Expected argument in position 6 to be passed") : args[6].asObject(rt),
+    count <= 7 ? throw jsi::JSError(rt, "Expected argument in position 7 to be passed") : args[7].asNumber()
+  );
+  return jsi::Value::undefined();
+}
+static jsi::Value __hostFunction_NativeRNFBTurboFunctionsCxxSpecJSI_httpsCallableStreamFromUrl(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  static_cast<NativeRNFBTurboFunctionsCxxSpecJSI *>(&turboModule)->httpsCallableStreamFromUrl(
+    rt,
+    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+    count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+    count <= 2 || args[2].isNull() || args[2].isUndefined() ? std::nullopt : std::make_optional(args[2].asString(rt)),
+    count <= 3 ? throw jsi::JSError(rt, "Expected argument in position 3 to be passed") : args[3].asNumber(),
+    count <= 4 ? throw jsi::JSError(rt, "Expected argument in position 4 to be passed") : args[4].asString(rt),
+    count <= 5 ? throw jsi::JSError(rt, "Expected argument in position 5 to be passed") : args[5].asObject(rt),
+    count <= 6 ? throw jsi::JSError(rt, "Expected argument in position 6 to be passed") : args[6].asObject(rt),
+    count <= 7 ? throw jsi::JSError(rt, "Expected argument in position 7 to be passed") : args[7].asNumber()
+  );
+  return jsi::Value::undefined();
+}
+static jsi::Value __hostFunction_NativeRNFBTurboFunctionsCxxSpecJSI_removeFunctionsStreaming(jsi::Runtime &rt, TurboModule &turboModule, const jsi::Value* args, size_t count) {
+  static_cast<NativeRNFBTurboFunctionsCxxSpecJSI *>(&turboModule)->removeFunctionsStreaming(
+    rt,
+    count <= 0 ? throw jsi::JSError(rt, "Expected argument in position 0 to be passed") : args[0].asString(rt),
+    count <= 1 ? throw jsi::JSError(rt, "Expected argument in position 1 to be passed") : args[1].asString(rt),
+    count <= 2 ? throw jsi::JSError(rt, "Expected argument in position 2 to be passed") : args[2].asNumber()
+  );
+  return jsi::Value::undefined();
+}
 
 NativeRNFBTurboFunctionsCxxSpecJSI::NativeRNFBTurboFunctionsCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
   : TurboModule("NativeRNFBTurboFunctions", jsInvoker) {
   methodMap_["httpsCallable"] = MethodMetadata {7, __hostFunction_NativeRNFBTurboFunctionsCxxSpecJSI_httpsCallable};
   methodMap_["httpsCallableFromUrl"] = MethodMetadata {7, __hostFunction_NativeRNFBTurboFunctionsCxxSpecJSI_httpsCallableFromUrl};
+  methodMap_["httpsCallableStream"] = MethodMetadata {8, __hostFunction_NativeRNFBTurboFunctionsCxxSpecJSI_httpsCallableStream};
+  methodMap_["httpsCallableStreamFromUrl"] = MethodMetadata {8, __hostFunction_NativeRNFBTurboFunctionsCxxSpecJSI_httpsCallableStreamFromUrl};
+  methodMap_["removeFunctionsStreaming"] = MethodMetadata {3, __hostFunction_NativeRNFBTurboFunctionsCxxSpecJSI_removeFunctionsStreaming};
 }
 
 

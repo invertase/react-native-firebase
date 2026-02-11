@@ -37,7 +37,7 @@ public class TaskExecutorService {
   private final int keepAliveSeconds;
   private static final Map<String, ExecutorService> executors = new HashMap<>();
 
-  TaskExecutorService(String name) {
+  public TaskExecutorService(String name) {
     this.name = name;
     ReactNativeFirebaseJSON json = ReactNativeFirebaseJSON.getSharedInstance();
     this.maximumPoolSize = json.getIntValue(MAXIMUM_POOL_SIZE_KEY, 1);
