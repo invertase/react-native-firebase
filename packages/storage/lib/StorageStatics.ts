@@ -30,6 +30,8 @@ export const TaskState = {
   RUNNING: 'running',
   PAUSED: 'paused',
   SUCCESS: 'success',
-  CANCELLED: 'cancelled',
+  CANCELED: 'canceled',
+  // Backwards-compat alias
+  CANCELLED: 'canceled',
   ERROR: 'error',
 } as const;

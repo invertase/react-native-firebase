@@ -141,21 +141,9 @@ function uploadTaskSnapshotToObject(
   return {
     totalBytes: snapshot ? snapshot.totalBytes : 0,
     bytesTransferred: snapshot ? snapshot.bytesTransferred : 0,
-    state: snapshot ? taskStateToString(snapshot.state) : 'unknown',
+    state: snapshot ? snapshot.state : 'unknown',
     metadata: snapshot && snapshot.metadata ? metadataToObject(snapshot.metadata as Metadata) : {},
   };
-}
-
-function taskStateToString(state: string): string {
-  const override: Record<string, string> = {
-    canceled: 'cancelled',
-  };
-
-  if (state in override) {
-    return override[state]!;
-  }
-
-  return state;
 }
 
 function makeSettableMetadata(metadata: SettableMetadata): SettableMetadata {

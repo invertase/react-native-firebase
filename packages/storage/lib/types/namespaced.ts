@@ -164,6 +164,15 @@ export namespace FirebaseStorageTypes {
   export type TaskEvent = 'state_changed';
 
   /**
+   * Static properties for task events (runtime object).
+   *
+   * @deprecated Use the exported types directly instead. FirebaseStorageTypes namespace is kept for backwards compatibility.
+   */
+  export interface TaskEventStatic {
+    STATE_CHANGED: TaskEvent;
+  }
+
+  /**
    * A collection of properties that indicates the current tasks state.
    *
    * An event subscription is created via `StorageTask.on()`.
@@ -178,7 +187,7 @@ export namespace FirebaseStorageTypes {
     /**
      * Task has been cancelled by the user.
      */
-    CANCELLED: 'cancelled';
+    CANCELLED: 'canceled';
 
     /**
      * An Error occurred, see TaskSnapshot.error for details.
@@ -253,7 +262,7 @@ export namespace FirebaseStorageTypes {
      * firebase.storage.TaskEvent;
      * ```
      */
-    TaskEvent: TaskEvent;
+    TaskEvent: TaskEventStatic;
     SDK_VERSION: string;
   }
 

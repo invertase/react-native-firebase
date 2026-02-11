@@ -20,6 +20,139 @@ import type { FirebaseApp, ReactNativeFirebase } from '@react-native-firebase/ap
 // ============ Options & Result Types ============
 
 export type NativeFirebaseError = ReactNativeFirebase.NativeFirebaseError;
+
+export type NextFn<T> = (value: T) => unknown;
+export type CompleteFn = () => void;
+export type Unsubscribe = () => void;
+export type Subscribe<T> = (
+  nextOrObserver?: StorageObserver<T> | null | NextFn<T>,
+  error?: ((error: NativeFirebaseError) => unknown) | null,
+  complete?: CompleteFn | null,
+) => Unsubscribe;
+
+/**
+ * A stream observer for Firebase Storage.
+ * @public
+ */
+export interface StorageObserver<T> {
+  next?: NextFn<T> | null;
+  error?: ((error: NativeFirebaseError) => void) | null;
+  complete?: CompleteFn | null;
+}
+
+/**
+ * Holds data about the current state of the upload task.
+ * @public
+ */
+export interface UploadTaskSnapshot {
+  /**
+   * The number of bytes that have been successfully uploaded so far.
+   */
+  bytesTransferred: number;
+
+  /**
+   * Before the upload completes, contains the metadata sent to the server.
+   * After the upload completes, contains the metadata sent back from the server.
+   */
+  metadata: FullMetadata;
+
+  /**
+   * The reference that spawned this snapshot's upload task.
+   */
+  ref: StorageReference;
+
+  /**
+   * The current state of the task.
+   */
+  state: TaskState;
+
+  /**
+   * The task of which this is a snapshot.
+   */
+  task: UploadTask;
+
+  /**
+   * The total number of bytes to be uploaded.
+   */
+  totalBytes: number;
+}
+
+/**
+ * Result returned from a non-resumable upload.
+ * @public
+ */
+export interface UploadResult {
+  /**
+   * Contains the metadata sent back from the server.
+   */
+  readonly metadata: FullMetadata;
+
+  /**
+   * The reference that spawned this upload.
+   */
+  readonly ref: StorageReference;
+}
+
+/**
+ * Represents the process of uploading an object. Allows you to monitor and manage the upload.
+ *
+ * Note: React Native Firebase returns Promises for pause/resume/cancel to communicate with native iOS/Android.
+ *
+ * @public
+ */
+export interface UploadTask {
+  /**
+   * Cancels a running task. Has no effect on a complete or failed task.
+   * @returns True if the cancel had an effect.
+   */
+  cancel(): Promise<boolean>;
+
+  /**
+   * Equivalent to calling `then(null, onRejected)`.
+   */
+  catch(onRejected: (error: NativeFirebaseError) => unknown): Promise<unknown>;
+
+  /**
+   * Listens for events on this task.
+   *
+   * @returns If only the event argument is passed, returns a function you can use to add callbacks.
+   * Otherwise returns a function you can call to unregister the callbacks.
+   */
+  on(
+    event: TaskEvent,
+    nextOrObserver?:
+      | StorageObserver<UploadTaskSnapshot>
+      | null
+      | ((snapshot: UploadTaskSnapshot) => unknown),
+    error?: ((error: NativeFirebaseError) => unknown) | null,
+    complete?: CompleteFn | null,
+  ): Unsubscribe | Subscribe<UploadTaskSnapshot>;
+
+  /**
+   * Pauses a currently running task. Has no effect on a paused or failed task.
+   * @returns True if the operation took effect, false if ignored.
+   */
+  pause(): Promise<boolean>;
+
+  /**
+   * Resumes a paused task. Has no effect on a currently running or failed task.
+   * @returns True if the operation took effect, false if ignored.
+   */
+  resume(): Promise<boolean>;
+
+  /**
+   * A snapshot of the current task state.
+   */
+  snapshot: UploadTaskSnapshot;
+
+  /**
+   * This object behaves like a Promise, and resolves with its snapshot data when the upload completes.
+   */
+  then(
+    onFulfilled?: ((snapshot: UploadTaskSnapshot) => unknown) | null,
+    onRejected?: ((error: NativeFirebaseError) => unknown) | null,
+  ): Promise<unknown>;
+}
 /**
  * Object metadata that can be set at any time.
  */
@@ -144,13 +277,7 @@ export interface ListResult {
 /**
  * Snapshot of a storage task (upload or download).
  */
-export interface TaskSnapshot {
-  bytesTransferred: number;
-  totalBytes: number;
-  state: TaskState;
-  metadata: FullMetadata;
-  task: Task;
-  ref: StorageReference;
+export interface TaskSnapshot extends UploadTaskSnapshot {
   /**
    * If the state is `error`, returns a JavaScript error of the current task snapshot.
    */
@@ -160,17 +287,7 @@ export interface TaskSnapshot {
 /**
  * Result of a completed task.
  */
-export interface TaskResult {
-  /**
-   * The metadata of the tasks via a {@link FullMetadata} interface.
-   */
-  metadata: FullMetadata;
-
-  /**
-   * The {@link StorageReference} of the task.
-   */
-  ref: StorageReference;
-}
+export type TaskResult = UploadResult;
 
 /**
  * Storage reference to a file or folder location.
@@ -212,80 +329,12 @@ export interface StorageReference {
 /**
  * Observer object for task state changes.
  */
-export interface TaskSnapshotObserver {
-  /**
-   * Called when the task state changes.
-   */
-  next?: (snapshot: TaskSnapshot) => void;
-
-  /**
-   * Called when the task errors.
-   */
-  error?: (error: NativeFirebaseError) => void;
-
-  /**
-   * Called when the task has completed successfully.
-   */
-  complete?: () => void;
-}
+export type TaskSnapshotObserver = StorageObserver<TaskSnapshot>;
 
 /**
  * Storage task for uploads or downloads.
  */
-export interface Task {
-  /**
-   * Initial state of Task.snapshot is `null`. Once uploading begins, it updates to a `TaskSnapshot` object.
-   */
-  snapshot: TaskSnapshot | null;
-
-  /**
-   * Pause the current Download or Upload task.
-   */
-  pause(): Promise<boolean>;
-
-  /**
-   * Resume the current Download or Upload task.
-   */
-  resume(): Promise<boolean>;
-
-  /**
-   * Cancel the current Download or Upload task.
-   */
-  cancel(): Promise<boolean>;
-
-  /**
-   * Subscribe to task state changes.
-   *
-   * @param event The event name to handle, always `state_changed`.
-   * @param nextOrObserver The optional event observer function or object.
-   * @param error An optional JavaScript error handler.
-   * @param complete An optional complete handler function.
-   */
-  on(
-    event: 'state_changed',
-    nextOrObserver?: TaskSnapshotObserver | null | ((snapshot: TaskSnapshot) => void),
-    error?: ((error: NativeFirebaseError) => void) | null,
-    complete?: (() => void) | null,
-  ): () => void;
-
-  /**
-   * Attaches callbacks for the resolution and/or rejection of the Task.
-   *
-   * @param onFulfilled Optional callback for when the task completes successfully.
-   * @param onRejected Optional callback for when the task fails.
-   */
-  then(
-    onFulfilled?: ((snapshot: TaskSnapshot) => any) | null,
-    onRejected?: ((error: NativeFirebaseError) => any) | null,
-  ): Promise<unknown>;
-
-  /**
-   * Attaches a callback for only the rejection of the Task.
-   *
-   * @param onRejected Callback for when the task fails.
-   */
-  catch(onRejected: (error: NativeFirebaseError) => any): Promise<any>;
-}
+export type Task = UploadTask;
 
 /**
  * Options for connecting to the storage emulator (web only).
@@ -339,4 +388,4 @@ export type TaskEvent = 'state_changed';
 /**
  * Represents the current state of a running upload.
  */
-export type TaskState = 'running' | 'paused' | 'success' | 'canceled' | 'cancelled' | 'error';
+export type TaskState = 'running' | 'paused' | 'success' | 'canceled' | 'error';

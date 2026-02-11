@@ -18,11 +18,40 @@
 import { isFunction, isNull, isObject } from '@react-native-firebase/app/dist/module/common';
 import type { EmitterSubscription } from 'react-native';
 import { TaskEvent } from './StorageStatics';
-import type { TaskSnapshot, StorageReference, Task, TaskSnapshotObserver } from './types/storage';
-import type { StorageReferenceInternal, StorageInternal } from './types/internal';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import type {
+  FullMetadata,
+  StorageObserver,
+  StorageReference,
+  Subscribe,
+  Task,
+  TaskEvent as TaskEventType,
+  TaskSnapshot,
+  TaskState,
+  Unsubscribe,
+} from './types/storage';
+import type { StorageReferenceInternal, StorageInternal } from './types/internal';
 
 let TASK_ID = 0;
+
+function createEmptyMetadata(ref: StorageReference): FullMetadata {
+  return {
+    bucket: ref.bucket,
+    fullPath: ref.fullPath,
+    generation: '',
+    metageneration: '',
+    name: ref.name,
+    size: 0,
+    timeCreated: '',
+    updated: '',
+    downloadTokens: undefined,
+    ref,
+  };
+}
+
+function normalizeTaskState(state: TaskState): TaskState {
+  return state;
+}
 
 function wrapErrorEventListener(
   listenerFn: ((error: ReactNativeFirebase.NativeFirebaseError) => void) | null | undefined,
@@ -45,7 +74,7 @@ function wrapErrorEventListener(
 
 function wrapSnapshotEventListener(
   task: StorageTask,
-  listenerFn: ((snapshot: TaskSnapshot) => void) | null | undefined,
+  listenerFn: ((snapshot: TaskSnapshot) => unknown) | null | undefined,
   unsubscribe: (() => void) | null | undefined,
 ): ((snapshot: TaskSnapshot) => void) | null {
   if (!isFunction(listenerFn)) {
@@ -59,20 +88,17 @@ function wrapSnapshotEventListener(
       const taskSnapshot = Object.assign({}, snapshot);
       taskSnapshot.task = task as unknown as Task;
       taskSnapshot.ref = task._ref;
+      taskSnapshot.state = normalizeTaskState(taskSnapshot.state);
 
-      if (taskSnapshot.metadata) {
-        if (!taskSnapshot.metadata.generation) {
-          taskSnapshot.metadata.generation = '';
-        }
-        if (!taskSnapshot.metadata.bucket) {
-          taskSnapshot.metadata.bucket = task._ref.bucket;
-        }
-        if (!taskSnapshot.metadata.metageneration) {
-          taskSnapshot.metadata.metageneration = '';
-        }
-        // // TODO(salakar): these are always here, cannot repro without, remove in 6.1.0 if no issues:
-        // if (!taskSnapshot.metadata.name) taskSnapshot.metadata.name = task._ref.name;
-        // if (!taskSnapshot.metadata.fullPath) taskSnapshot.metadata.fullPath = task._ref.fullPath;
+      if (!taskSnapshot.metadata) {
+        taskSnapshot.metadata = createEmptyMetadata(task._ref);
+      } else {
+        if (!taskSnapshot.metadata.generation) taskSnapshot.metadata.generation = '';
+        if (!taskSnapshot.metadata.bucket) taskSnapshot.metadata.bucket = task._ref.bucket;
+        if (!taskSnapshot.metadata.metageneration) taskSnapshot.metadata.metageneration = '';
+        if (!taskSnapshot.metadata.fullPath) taskSnapshot.metadata.fullPath = task._ref.fullPath;
+        if (!taskSnapshot.metadata.name) taskSnapshot.metadata.name = task._ref.name;
+        if (!taskSnapshot.metadata.ref) taskSnapshot.metadata.ref = task._ref;
       }
 
       Object.freeze(taskSnapshot);
@@ -101,9 +127,9 @@ function addTaskEventListener(
 
 function subscribeToEvents(
   task: StorageTask,
-  nextOrObserver?: ((snapshot: TaskSnapshot) => void) | TaskSnapshotObserver | null,
-  error?: ((error: ReactNativeFirebase.NativeFirebaseError) => void) | null,
-  complete?: (() => void) | null,
+  nextOrObserver?: ((snapshot: TaskSnapshot) => unknown) | StorageObserver<TaskSnapshot> | null,
+  error?: ((error: ReactNativeFirebase.NativeFirebaseError) => unknown) | null,
+  complete?: (() => unknown) | null,
 ): () => void {
   let _error: ((snapshot: TaskSnapshot) => void) | undefined;
   let _errorSubscription: EmitterSubscription | undefined;
@@ -131,7 +157,7 @@ function subscribeToEvents(
     _next = wrapSnapshotEventListener(task, nextOrObserver, null);
     _complete = wrapSnapshotEventListener(task, complete, unsubscribe);
   } else if (isObject(nextOrObserver)) {
-    const observer = nextOrObserver as TaskSnapshotObserver;
+    const observer = nextOrObserver as StorageObserver<TaskSnapshot>;
     _error = wrapErrorEventListener(observer.error, unsubscribe);
     _next = wrapSnapshotEventListener(task, observer.next, null);
     _complete = wrapSnapshotEventListener(task, observer.complete, unsubscribe);
@@ -166,7 +192,7 @@ export default class StorageTask {
   _ref: StorageReference;
   _beginTask: (task: StorageTask) => Promise<TaskSnapshot>;
   _storage: StorageInternal;
-  _snapshot: TaskSnapshot | null;
+  _snapshot: TaskSnapshot;
 
   constructor(
     type: string,
@@ -179,7 +205,14 @@ export default class StorageTask {
     this._ref = storageRef;
     this._beginTask = beginTaskFn;
     this._storage = (storageRef as StorageReferenceInternal)._storage;
-    this._snapshot = null;
+    this._snapshot = {
+      bytesTransferred: 0,
+      totalBytes: 0,
+      state: 'running',
+      metadata: createEmptyMetadata(storageRef),
+      task: this as unknown as Task,
+      ref: storageRef,
+    };
   }
 
   /**
@@ -201,7 +234,13 @@ export default class StorageTask {
       return new Promise((resolve, reject) => {
         promise
           .then((response: any) => {
-            this._snapshot = { ...response, ref: this._ref, task: this } as TaskSnapshot;
+            this._snapshot = {
+              ...response,
+              ref: this._ref,
+              task: this as unknown as Task,
+              state: normalizeTaskState((response?.state ?? this._snapshot.state) as TaskState),
+              metadata: response?.metadata ? response.metadata : createEmptyMetadata(this._ref),
+            } as TaskSnapshot;
             if (onFulfilled) {
               resolve(onFulfilled(this._snapshot!));
             } else {
@@ -231,7 +270,7 @@ export default class StorageTask {
     return this._promise!.catch.bind(this._promise);
   }
 
-  get snapshot(): TaskSnapshot | null {
+  get snapshot(): TaskSnapshot {
     return this._snapshot;
   }
 
@@ -247,12 +286,19 @@ export default class StorageTask {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask#on
    */
+  on(event: TaskEventType): Subscribe<TaskSnapshot>;
   on(
-    event: 'state_changed',
-    nextOrObserver?: TaskSnapshotObserver | null | ((snapshot: TaskSnapshot) => void),
-    error?: ((error: ReactNativeFirebase.NativeFirebaseError) => void) | null,
-    complete?: (() => void) | null,
-  ): () => void {
+    event: TaskEventType,
+    nextOrObserver?: StorageObserver<TaskSnapshot> | null | ((snapshot: TaskSnapshot) => unknown),
+    error?: ((error: ReactNativeFirebase.NativeFirebaseError) => unknown) | null,
+    complete?: (() => unknown) | null,
+  ): Unsubscribe;
+  on(
+    event: TaskEventType,
+    nextOrObserver?: StorageObserver<TaskSnapshot> | null | ((snapshot: TaskSnapshot) => unknown),
+    error?: ((error: ReactNativeFirebase.NativeFirebaseError) => unknown) | null,
+    complete?: (() => unknown) | null,
+  ): Unsubscribe | Subscribe<TaskSnapshot> {
     if (event !== TaskEvent.STATE_CHANGED) {
       throw new Error(
         `firebase.storage.StorageTask.on event argument must be a string with a value of '${TaskEvent.STATE_CHANGED}'`,
@@ -265,7 +311,8 @@ export default class StorageTask {
 
     // if only event provided return the subscriber function
     if (!nextOrObserver && !error && !complete) {
-      return ((...args: any[]) => subscribeToEvents(this, ...args)) as () => void;
+      return ((...args: Parameters<Subscribe<TaskSnapshot>>) =>
+        subscribeToEvents(this, ...args)) as Subscribe<TaskSnapshot>;
     }
 
     return subscribeToEvents(this, nextOrObserver, error, complete);
