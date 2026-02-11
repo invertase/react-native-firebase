@@ -27,7 +27,7 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = firebase_ios_target
   s.macos.deployment_target = firebase_macos_target
   s.tvos.deployment_target = firebase_tvos_target
-  s.swift_version = '5.0'
+  s.swift_version = '5.4'
   s.source_files        = 'ios/**/*.{h,m,mm,cpp,swift}'
   s.private_header_files = "ios/**/*.h"
   s.exclude_files       = 'ios/generated/RCTThirdPartyComponentsProvider.*', 'ios/generated/RCTAppDependencyProvider.*', 'ios/generated/RCTModuleProviders.*', 'ios/generated/RCTModulesConformingToProtocolsProvider.*', 'ios/generated/RCTUnstableModulesRequiringMainQueueSetupProvider.*'
@@ -36,12 +36,7 @@ Pod::Spec.new do |s|
 
   s.dependency          'RNFBApp'
 
-  # React Native dependencies
-  if defined?(install_modules_dependencies()) != nil
-    install_modules_dependencies(s);
-  else
-    s.dependency "React-Core"
-  end
+  install_modules_dependencies(s);
 
   if defined?($FirebaseSDKVersion)
     Pod::UI.puts "#{s.name}: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"
