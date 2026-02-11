@@ -1,13 +1,194 @@
-import { FirebaseFirestoreTypes } from '../index';
-
-import DocumentReference = FirebaseFirestoreTypes.DocumentReference;
-import DocumentSnapshot = FirebaseFirestoreTypes.DocumentSnapshot;
-import SnapshotListenOptions = FirebaseFirestoreTypes.SnapshotListenOptions;
-import QuerySnapshot = FirebaseFirestoreTypes.QuerySnapshot;
-import Query = FirebaseFirestoreTypes.Query;
+import { DocumentReference, Query, DocumentData, SnapshotListenOptions } from './index';
 
 export type Unsubscribe = () => void;
 export type FirestoreError = Error;
+
+/**
+ * A DocumentSnapshot contains data read from a document in your Firestore database. The data can be extracted with
+ * .`data()` or `.get(:field)` to get a specific field.
+ *
+ * For a DocumentSnapshot that points to a non-existing document, any data access will return 'undefined'.
+ * You can use the `exists()` method to explicitly verify a document's existence.
+ */
+export interface DocumentSnapshot<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+> {
+  /**
+   * Method of the `DocumentSnapshot` that signals whether or not the data exists. True if the document exists.
+   */
+  exists(): this is QueryDocumentSnapshot<AppModelType, DbModelType>;
+
+  /**
+   * Property of the `DocumentSnapshot` that provides the document's ID.
+   */
+  id: string;
+
+  /**
+   * Metadata about the `DocumentSnapshot`, including information about its source and local modifications.
+   */
+  metadata: SnapshotMetadata;
+
+  /**
+   * The `DocumentReference` for the document included in the `DocumentSnapshot`.
+   */
+  ref: DocumentReference<AppModelType, DbModelType>;
+
+  /**
+   * Retrieves all fields in the document as an Object. Returns 'undefined' if the document doesn't exist.
+   *
+   * #### Example
+   *
+   * ```js
+   * const user = await firebase.firestore().doc('users/alovelace').get();
+   *
+   * console.log('User', user.data());
+   * ```
+   */
+  data(): AppModelType | undefined;
+
+  /**
+   * Retrieves the field specified by fieldPath. Returns undefined if the document or field doesn't exist.
+   *
+   * #### Example
+   *
+   * ```js
+   * const user = await firebase.firestore().doc('users/alovelace').get();
+   *
+   * console.log('Address ZIP Code', user.get('address.zip'));
+   * ```
+   *
+   * @param fieldPath The path (e.g. 'foo' or 'foo.bar') to a specific field.
+   */
+  get<fieldType extends DbModelType[keyof DbModelType]>(
+    fieldPath: keyof DbModelType | string | FieldPath,
+  ): fieldType;
+
+  /**
+   * Returns true if this `DocumentSnapshot` is equal to the provided one.
+   *
+   * #### Example
+   *
+   * ```js
+   * const user1 = await firebase.firestore().doc('users/alovelace').get();
+   * const user2 = await firebase.firestore().doc('users/dsmith').get();
+   *
+   * // false
+   * user1.isEqual(user2);
+   * ```
+   *
+   * @param other The `DocumentSnapshot` to compare against.
+   */
+  isEqual(other: DocumentSnapshot): boolean;
+}
+
+/**
+ * A QueryDocumentSnapshot contains data read from a document in your Firestore database as part of a query.
+ * The document is guaranteed to exist and its data can be extracted with .data() or .get(:field) to get a specific field.
+ *
+ * A QueryDocumentSnapshot offers the same API surface as a DocumentSnapshot.
+ * Since query results contain only existing documents, the exists() method will always be true and data() will never return 'undefined'.
+ */
+export class QueryDocumentSnapshot<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+> extends DocumentSnapshot<AppModelType, DbModelType> {
+  /**
+   * A QueryDocumentSnapshot is always guaranteed to exist.
+   */
+  exists(): true;
+
+  /**
+   * Retrieves all fields in the document as an Object.
+   *
+   * #### Example
+   *
+   * ```js
+   * const users = await firebase.firestore().collection('users').get();
+   *
+   * for (const user of users.docs) {
+   *   console.log('User', user.data());
+   * }
+   * ```
+   */
+  data(): AppModelType;
+}
+
+/**
+ * A `QuerySnapshot` contains zero or more `QueryDocumentSnapshot` objects representing the results of a query. The documents
+ * can be accessed as an array via the `docs` property or enumerated using the `forEach` method. The number of documents
+ * can be determined via the `empty` and `size` properties.
+ */
+export interface QuerySnapshot<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+> {
+  /**
+   * An array of all the documents in the `QuerySnapshot`.
+   */
+  docs: QueryDocumentSnapshot<AppModelType, DbModelType>[];
+
+  /**
+   * True if there are no documents in the `QuerySnapshot`.
+   */
+  empty: boolean;
+
+  /**
+   * Metadata about this snapshot, concerning its source and if it has local modifications.
+   */
+  metadata: SnapshotMetadata;
+
+  /**
+   * The query on which you called get or `onSnapshot` in order to `get` this `QuerySnapshot`.
+   */
+  query: Query<AppModelType, DbModelType>;
+
+  /**
+   * The number of documents in the `QuerySnapshot`.
+   */
+  size: number;
+
+  /**
+   * Enumerates all of the documents in the `QuerySnapshot`.
+   *
+   * #### Example
+   *
+   * ```js
+   * const querySnapshot = await firebase.firestore().collection('users').get();
+   *
+   * querySnapshot.forEach((queryDocumentSnapshot) => {
+   *   console.log('User', queryDocumentSnapshot.data());
+   * })
+   * ```
+   *
+   * @param callback A callback to be called with a `QueryDocumentSnapshot` for each document in the snapshot.
+   * @param thisArg The `this` binding for the callback.
+   */
+
+  forEach(
+    callback: (result: QueryDocumentSnapshot<AppModelType, DbModelType>, index: number) => void,
+    thisArg?: any,
+  ): void;
+
+  /**
+   * Returns true if this `QuerySnapshot` is equal to the provided one.
+   *
+   * #### Example
+   *
+   * ```js
+   * const querySnapshot1 = await firebase.firestore().collection('users').limit(5).get();
+   * const querySnapshot2 = await firebase.firestore().collection('users').limit(10).get();
+   *
+   * // false
+   * querySnapshot1.isEqual(querySnapshot2);
+   * ```
+   *
+   * > This operation can be resource intensive when dealing with large datasets.
+   *
+   * @param other The `QuerySnapshot` to compare against.
+   */
+  isEqual(other: QuerySnapshot): boolean;
+}
 
 /**
  * Attaches a listener for `DocumentSnapshot` events. You may either pass
@@ -22,10 +203,10 @@ export type FirestoreError = Error;
  * @returns An unsubscribe function that can be called to cancel
  * the snapshot listener.
  */
-export function onSnapshot<T>(
-  reference: DocumentReference<T>,
+export function onSnapshot<AppModelType, DbModelType extends DocumentData>(
+  reference: DocumentReference<AppModelType, DbModelType>,
   observer: {
-    next?: (snapshot: DocumentSnapshot<T>) => void;
+    next?: (snapshot: DocumentSnapshot<AppModelType, DbModelType>) => void;
     error?: (error: FirestoreError) => void;
     complete?: () => void;
   },
@@ -44,11 +225,11 @@ export function onSnapshot<T>(
  * @returns An unsubscribe function that can be called to cancel
  * the snapshot listener.
  */
-export function onSnapshot<T>(
-  reference: DocumentReference<T>,
+export function onSnapshot<AppModelType, DbModelType extends DocumentData>(
+  reference: DocumentReference<AppModelType, DbModelType>,
   options: SnapshotListenOptions,
   observer: {
-    next?: (snapshot: DocumentSnapshot<T>) => void;
+    next?: (snapshot: DocumentSnapshot<AppModelType, DbModelType>) => void;
     error?: (error: FirestoreError) => void;
     complete?: () => void;
   },
@@ -71,9 +252,9 @@ export function onSnapshot<T>(
  * @returns An unsubscribe function that can be called to cancel
  * the snapshot listener.
  */
-export function onSnapshot<T>(
-  reference: DocumentReference<T>,
-  onNext: (snapshot: DocumentSnapshot<T>) => void,
+export function onSnapshot<AppModelType, DbModelType extends DocumentData>(
+  reference: DocumentReference<AppModelType, DbModelType>,
+  onNext: (snapshot: DocumentSnapshot<AppModelType, DbModelType>) => void,
   onError?: (error: FirestoreError) => void,
   onCompletion?: () => void,
 ): Unsubscribe;
@@ -96,10 +277,10 @@ export function onSnapshot<T>(
  * @returns An unsubscribe function that can be called to cancel
  * the snapshot listener.
  */
-export function onSnapshot<T>(
-  reference: DocumentReference<T>,
+export function onSnapshot<AppModelType, DbModelType extends DocumentData>(
+  reference: DocumentReference<AppModelType, DbModelType>,
   options: SnapshotListenOptions,
-  onNext: (snapshot: DocumentSnapshot<T>) => void,
+  onNext: (snapshot: DocumentSnapshot<AppModelType, DbModelType>) => void,
   onError?: (error: FirestoreError) => void,
   onCompletion?: () => void,
 ): Unsubscribe;

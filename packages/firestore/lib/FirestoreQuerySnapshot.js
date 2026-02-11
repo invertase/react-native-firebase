@@ -16,24 +16,26 @@
  */
 
 import {
+  createDeprecationProxy,
   isBoolean,
   isFunction,
   isObject,
   isUndefined,
-  createDeprecationProxy,
 } from '@react-native-firebase/app/dist/module/common';
 import FirestoreDocumentChange from './FirestoreDocumentChange';
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 import FirestoreSnapshotMetadata from './FirestoreSnapshotMetadata';
 
 export default class FirestoreQuerySnapshot {
-  constructor(firestore, query, nativeData) {
+  constructor(firestore, query, nativeData, converter) {
     this._query = query;
     this._source = nativeData.source;
     this._excludesMetadataChanges = nativeData.excludesMetadataChanges;
-    this._changes = nativeData.changes.map($ => new FirestoreDocumentChange(firestore, $));
+    this._changes = nativeData.changes.map(
+      $ => new FirestoreDocumentChange(firestore, $, converter),
+    );
     this._docs = nativeData.documents.map($ =>
-      createDeprecationProxy(new FirestoreDocumentSnapshot(firestore, $)),
+      createDeprecationProxy(new FirestoreDocumentSnapshot(firestore, $, converter)),
     );
     this._metadata = new FirestoreSnapshotMetadata(nativeData.metadata);
   }

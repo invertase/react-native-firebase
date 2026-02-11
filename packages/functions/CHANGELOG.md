@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.8.6](https://github.com/invertase/react-native-firebase/compare/v23.8.5...v23.8.6) (2026-02-03)
+
+### Bug Fixes
+
+- **functions:** revert TurboModules implementation / restore old architecture compatibility ([fb0787c](https://github.com/invertase/react-native-firebase/commit/fb0787c538f8245f710e6751bd05651b417c6ddd))
+
 ## [23.8.5](https://github.com/invertase/react-native-firebase/compare/v23.8.4...v23.8.5) (2026-01-31)
 
 **Note:** Version bump only for package @react-native-firebase/functions
