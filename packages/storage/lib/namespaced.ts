@@ -35,7 +35,6 @@ import { StringFormat, TaskEvent, TaskState } from './StorageStatics';
 import { getGsUrlParts, getHttpUrlParts, handleStorageEvent } from './utils';
 import { version } from './version';
 import fallBackModule from './web/RNFBStorageModule';
-import type { Storage, EmulatorMockTokenOptions } from './types/storage';
 import type { StorageInternal } from './types/internal';
 import type { FirebaseStorageTypes } from './types/namespaced';
 
@@ -183,7 +182,11 @@ class FirebaseStorageModule extends FirebaseModule {
     return this.native.setMaxDownloadRetryTime(time);
   }
 
-  useEmulator(host: string, port: number, _options?: EmulatorMockTokenOptions): void {
+  useEmulator(
+    host: string,
+    port: number,
+    _options?: FirebaseStorageTypes.EmulatorMockTokenOptions,
+  ): void {
     if (!host || !isString(host) || !port || !isNumber(port)) {
       throw new Error('firebase.storage().useEmulator() takes a non-empty host and port');
     }
