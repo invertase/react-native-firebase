@@ -226,11 +226,11 @@ const storageNamespace = createModuleNamespace({
 });
 
 type StorageNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
-  Storage,
+  FirebaseStorageTypes.Module,
   FirebaseStorageTypes.Statics
 > & {
   storage: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
-    Storage,
+    FirebaseStorageTypes.Module,
     FirebaseStorageTypes.Statics
   >;
   firebase: ReactNativeFirebase.Module;
@@ -247,7 +247,7 @@ export default storageNamespace as unknown as StorageNamespace;
 export const firebase =
   getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
     'storage',
-    Storage,
+    FirebaseStorageTypes.Module,
     FirebaseStorageTypes.Statics,
     true
   >;
