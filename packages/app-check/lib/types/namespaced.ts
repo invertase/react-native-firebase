@@ -50,7 +50,7 @@ import type { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * // firebase.appCheck().X
  * ```
- *
+ * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
  * @firebase app-check
  */
 /* eslint-disable @typescript-eslint/no-namespace */
@@ -61,6 +61,7 @@ export namespace FirebaseAppCheckTypes {
    * An App Check provider. This can be either the built-in reCAPTCHA provider
    * or a custom provider. For more on custom providers, see
    * https://firebase.google.com/docs/app-check/web-custom-provider
+   * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
    */
   export interface AppCheckProvider {
     /**
@@ -71,13 +72,16 @@ export namespace FirebaseAppCheckTypes {
 
   /**
    * Custom provider class.
+   * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
    * @public
    */
   export declare class CustomProvider implements AppCheckProvider {
     constructor(customProviderOptions: CustomProviderOptions);
     getToken(): Promise<AppCheckToken>;
   }
-
+  /**
+   * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
+   */
   export interface CustomProviderOptions {
     /**
      * Function to get an App Check token through a custom provider
@@ -87,6 +91,7 @@ export namespace FirebaseAppCheckTypes {
   }
   /**
    * Options for App Check initialization.
+   * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
    */
   export interface AppCheckOptions {
     /**
@@ -104,16 +109,25 @@ export namespace FirebaseAppCheckTypes {
     isTokenAutoRefreshEnabled?: boolean;
   }
 
+  /**
+   * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
+   */
   export type NextFn<T> = (value: T) => void;
   export type ErrorFn = (error: Error) => void;
   export type CompleteFn = () => void;
 
+  /**
+   * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
+   */
   export interface Observer<T> {
     next: NextFn<T>;
     error: ErrorFn;
     complete: CompleteFn;
   }
 
+  /**
+   * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
+   */
   export type PartialObserver<T> = Partial<Observer<T>>;
 
   /**
@@ -121,6 +135,9 @@ export namespace FirebaseAppCheckTypes {
    */
   export type Unsubscribe = () => void;
 
+  /**
+   * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
+   */
   export interface ReactNativeFirebaseAppCheckProviderOptions {
     /**
      * debug token to use, if any. Defaults to undefined, pre-configure tokens in firebase web console if needed
@@ -128,6 +145,9 @@ export namespace FirebaseAppCheckTypes {
     debugToken?: string;
   }
 
+  /**
+   * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
+   */
   export interface ReactNativeFirebaseAppCheckProviderWebOptions extends ReactNativeFirebaseAppCheckProviderOptions {
     /**
      * The web provider to use, either `reCaptchaV3` or `reCaptchaEnterprise`, defaults to `reCaptchaV3`
@@ -140,6 +160,9 @@ export namespace FirebaseAppCheckTypes {
     siteKey?: string;
   }
 
+  /**
+   * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
+   */
   export interface ReactNativeFirebaseAppCheckProviderAppleOptions extends ReactNativeFirebaseAppCheckProviderOptions {
     /**
      * The apple provider to use, either `deviceCheck` or `appAttest`, or `appAttestWithDeviceCheckFallback`,
@@ -149,6 +172,9 @@ export namespace FirebaseAppCheckTypes {
     provider?: 'debug' | 'deviceCheck' | 'appAttest' | 'appAttestWithDeviceCheckFallback';
   }
 
+  /**
+   * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
+   */
   export interface ReactNativeFirebaseAppCheckProviderAndroidOptions extends ReactNativeFirebaseAppCheckProviderOptions {
     /**
      * The android provider to use, either `debug` or `playIntegrity`. default is `playIntegrity`.
@@ -156,6 +182,9 @@ export namespace FirebaseAppCheckTypes {
     provider?: 'debug' | 'playIntegrity';
   }
 
+  /**
+   * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
+   */
   export interface ReactNativeFirebaseAppCheckProvider extends AppCheckProvider {
     /**
      * Specify how the app check provider should be configured. The new configuration is
@@ -175,6 +204,7 @@ export namespace FirebaseAppCheckTypes {
 
   /**
    * Result returned by `getToken()`.
+   * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
    */
   export interface AppCheckTokenResult {
     /**
@@ -184,6 +214,7 @@ export namespace FirebaseAppCheckTypes {
   }
   /**
    * The token returned from an `AppCheckProvider`.
+   * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
    */
   export interface AppCheckToken {
     /**
@@ -197,9 +228,13 @@ export namespace FirebaseAppCheckTypes {
   }
   /**
    * The result return from `onTokenChanged`
+   * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
    */
   export type AppCheckListenerResult = AppCheckToken & { readonly appName: string };
 
+  /**
+   * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
+   */
   export interface Statics {
     // firebase.appCheck.* static props go here
     CustomProvider: typeof CustomProvider;
@@ -226,6 +261,7 @@ export namespace FirebaseAppCheckTypes {
    * const appCheckForOtherApp = firebase.appCheck(otherApp);
    * ```
    *
+   * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
    */
   export interface Module extends FirebaseModule {
     /**
@@ -235,6 +271,7 @@ export namespace FirebaseAppCheckTypes {
 
     /**
      * Create a ReactNativeFirebaseAppCheckProvider option for use in react-native-firebase
+     * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
      */
     newReactNativeFirebaseAppCheckProvider(): ReactNativeFirebaseAppCheckProvider;
 
@@ -245,6 +282,7 @@ export namespace FirebaseAppCheckTypes {
      * requirements. This must be called prior to interacting with any firebase services protected by AppCheck
      *
      * @param options an AppCheckOptions with a configured ReactNativeFirebaseAppCheckProvider as the provider
+     * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
      */
     // TODO wrong types
     initializeAppCheck(options: AppCheckOptions): Promise<void>;
@@ -266,6 +304,7 @@ export namespace FirebaseAppCheckTypes {
      * refresh AppCheck token as needed. If undefined, the value will default
      * to the value of `app.automaticDataCollectionEnabled`. That property
      * defaults to false and can be set in the app config.
+     * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
      */
     activate(
       siteKeyOrProvider: string | AppCheckProvider,
@@ -277,6 +316,7 @@ export namespace FirebaseAppCheckTypes {
      * @param isTokenAutoRefreshEnabled - If true, the SDK automatically
      * refreshes App Check tokens as needed. This overrides any value set
      * during `activate()` or taken by default from automaticDataCollectionEnabled in plist / android manifest
+     * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
      */
     setTokenAutoRefreshEnabled(isTokenAutoRefreshEnabled: boolean): void;
 
@@ -288,6 +328,7 @@ export namespace FirebaseAppCheckTypes {
      * @param forceRefresh - If true, a new Firebase App Check token is requested and the token cache is ignored.
      * If false, the cached token is used if it exists and has not expired yet.
      * In most cases, false should be used. True should only be used if the server explicitly returns an error, indicating a revoked token.
+     * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
      */
     getToken(forceRefresh?: boolean): Promise<AppCheckTokenResult>;
 
@@ -296,6 +337,7 @@ export namespace FirebaseAppCheckTypes {
      * to a non-Firebase backend. Returns limited-use tokens that are intended for use with your non-Firebase
      * backend endpoints that are protected with Replay Protection (https://firebase.google.com/docs/app-check/custom-resource-backend#replay-protection).
      * This method does not affect the token generation behavior of the getAppCheckToken() method.
+     * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
      */
     getLimitedUseToken(): Promise<AppCheckTokenResult>;
 
@@ -305,6 +347,7 @@ export namespace FirebaseAppCheckTypes {
      * App Check instances. The listeners call back on the UI thread whenever
      * the current token associated with this App Check instance changes.
      *
+     * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
      * @returns A function that unsubscribes this listener.
      */
     // TODO wrong types
@@ -325,6 +368,7 @@ export namespace FirebaseAppCheckTypes {
      * NOTE: Although an `onCompletion` callback can be provided, it will
      * never be called because the token stream is never-ending.
      *
+     * @deprecated Use the exported types directly instead. FirebaseAppCheckTypes namespace is kept for backwards compatibility.
      * @returns A function that unsubscribes this listener.
      */
     // TODO wrong types
