@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.8.6](https://github.com/invertase/react-native-firebase/compare/v23.8.5...v23.8.6) (2026-02-03)
+
+### Bug Fixes
+
+- **analytics, ios:** correct hex string to NSData conversion for hashed conversion methods ([#8870](https://github.com/invertase/react-native-firebase/issues/8870)) ([7df6130](https://github.com/invertase/react-native-firebase/commit/7df61307f19db84df72c4d3587a8994aeb7d3fce))
+- **app, android:** adopt firebase-android-sdk 34.8.0 ([36f787f](https://github.com/invertase/react-native-firebase/commit/36f787fc0e4dc2d8da99f5b4848f50b80d96d1a8))
+- **functions:** revert TurboModules implementation / restore old architecture compatibility ([fb0787c](https://github.com/invertase/react-native-firebase/commit/fb0787c538f8245f710e6751bd05651b417c6ddd))
+
 ## [23.8.5](https://github.com/invertase/react-native-firebase/compare/v23.8.4...v23.8.5) (2026-01-31)
 
 ### Bug Fixes

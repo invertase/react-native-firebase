@@ -1,13 +1,13 @@
-import { FirebaseFirestoreTypes } from '../..';
+import {
+  DocumentReference,
+  DocumentSnapshot,
+  Query,
+  DocumentData,
+  QueryCompositeFilterConstraint,
+  WhereFilterOp,
+} from './index';
 
-import Query = FirebaseFirestoreTypes.Query;
-import QueryCompositeFilterConstraint = FirebaseFirestoreTypes.QueryCompositeFilterConstraint;
-import WhereFilterOp = FirebaseFirestoreTypes.WhereFilterOp;
-import FieldPath = FirebaseFirestoreTypes.FieldPath;
-import QuerySnapshot = FirebaseFirestoreTypes.QuerySnapshot;
-import DocumentReference = FirebaseFirestoreTypes.DocumentReference;
-import DocumentSnapshot = FirebaseFirestoreTypes.DocumentSnapshot;
-import DocumentData = FirebaseFirestoreTypes.DocumentData;
+import { FieldPath } from './FieldPath';
 
 /** Describes the different query constraints available in this SDK. */
 export type QueryConstraintType =
@@ -24,12 +24,14 @@ export type QueryConstraintType =
  * An `AppliableConstraint` is an abstraction of a constraint that can be applied
  * to a Firestore query.
  */
-export interface AppliableConstraint {
+export abstract class AppliableConstraint {
   /**
    * Takes the provided {@link Query} and returns a copy of the {@link Query} with this
    * {@link AppliableConstraint} applied.
    */
-  _apply<T>(query: Query<T>): Query<T>;
+  _apply<AppModelType, DbModelType extends DocumentData>(
+    query: Query<AppModelType, DbModelType>,
+  ): Query<AppModelType, DbModelType>;
 }
 
 /**
@@ -40,15 +42,17 @@ export interface AppliableConstraint {
  * can then be passed to {@link (query:1)} to create a new query instance that
  * also contains this `QueryConstraint`.
  */
-export interface QueryConstraint extends AppliableConstraint {
+export abstract class QueryConstraint extends AppliableConstraint {
   /** The type of this query constraint */
-  readonly type: QueryConstraintType;
+  abstract readonly type: QueryConstraintType;
 
   /**
    * Takes the provided {@link Query} and returns a copy of the {@link Query} with this
    * {@link AppliableConstraint} applied.
    */
-  _apply<T>(query: Query<T>): Query<T>;
+  _apply<AppModelType, DbModelType extends DocumentData>(
+    query: Query<AppModelType, DbModelType>,
+  ): Query<AppModelType, DbModelType>;
 }
 
 export class QueryOrderByConstraint extends QueryConstraint {
@@ -112,7 +116,7 @@ export declare function query<AppModelType, DbModelType extends DocumentData>(
  *
  * @param query - The {@link Query} instance to use as a base for the new
  * constraints.
- * @param queryConstraints - The list of {@link IQueryConstraint}s to apply.
+ * @param queryConstraints - The list of {@link QueryConstraint}s to apply.
  * @throws if any of the provided query constraints cannot be combined with the
  * existing or new constraints.
  */
@@ -120,12 +124,6 @@ export declare function query<AppModelType, DbModelType extends DocumentData>(
   query: Query<AppModelType, DbModelType>,
   ...queryConstraints: QueryConstraint[]
 ): Query<AppModelType, DbModelType>;
-
-export function query<T>(
-  query: Query<T>,
-  queryConstraint: QueryCompositeFilterConstraint | IQueryConstraint | undefined,
-  ...additionalQueryConstraints: Array<IQueryConstraint | QueryNonFilterConstraint>
-): Query<T>;
 
 /**
  * Creates a {@link QueryFieldFilterConstraint} that enforces that documents
@@ -188,7 +186,7 @@ export function orderBy(
  * @param snapshot - The snapshot of the document to start at.
  * @returns A {@link QueryStartAtConstraint} to pass to `query()`.
  */
-export function startAt(snapshot: DocumentSnapshot<unknown>): QueryStartAtConstraint;
+export function startAt(snapshot: DocumentSnapshot): QueryStartAtConstraint;
 /**
  *
  * Creates a {@link QueryStartAtConstraint} that modifies the result set to
@@ -201,9 +199,7 @@ export function startAt(snapshot: DocumentSnapshot<unknown>): QueryStartAtConstr
  */
 export function startAt(...fieldValues: unknown[]): QueryStartAtConstraint;
 
-export function startAt(
-  ...docOrFields: Array<unknown | DocumentSnapshot<unknown>>
-): QueryStartAtConstraint;
+export function startAt(...docOrFields: Array<unknown | DocumentSnapshot>): QueryStartAtConstraint;
 
 /**
  * Creates a {@link QueryStartAtConstraint} that modifies the result set to
@@ -254,7 +250,9 @@ export function limit(limit: number): QueryLimitConstraint;
  * @returns A Promise resolved with a `DocumentSnapshot` containing the
  * current document contents.
  */
-export declare function getDoc<T>(reference: DocumentReference<T>): Promise<DocumentSnapshot<T>>;
+export declare function getDoc<AppModelType, DbModelType extends DocumentData>(
+  reference: DocumentReference<AppModelType, DbModelType>,
+): Promise<DocumentSnapshot<AppModelType, DbModelType>>;
 
 /**
  * Reads the document referred to by this `DocumentReference` from cache.
@@ -263,9 +261,9 @@ export declare function getDoc<T>(reference: DocumentReference<T>): Promise<Docu
  * @returns A `Promise` resolved with a `DocumentSnapshot` containing the
  * current document contents.
  */
-export declare function getDocFromCache<T>(
-  reference: DocumentReference<T>,
-): Promise<DocumentSnapshot<T>>;
+export declare function getDocFromCache<AppModelType, DbModelType extends DocumentData>(
+  reference: DocumentReference<AppModelType, DbModelType>,
+): Promise<DocumentSnapshot<AppModelType, DbModelType>>;
 
 /**
  * Reads the document referred to by this `DocumentReference` from the server.
@@ -274,9 +272,9 @@ export declare function getDocFromCache<T>(
  * @returns A `Promise` resolved with a `DocumentSnapshot` containing the
  * current document contents.
  */
-export declare function getDocFromServer<T>(
-  reference: DocumentReference<T>,
-): Promise<DocumentSnapshot<T>>;
+export declare function getDocFromServer<AppModelType, DbModelType extends DocumentData>(
+  reference: DocumentReference<AppModelType, DbModelType>,
+): Promise<DocumentSnapshot<AppModelType, DbModelType>>;
 
 /**
  * Executes the query and returns the results as a `QuerySnapshot`.

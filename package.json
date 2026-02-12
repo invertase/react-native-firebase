@@ -58,6 +58,7 @@
     "tests:macos:build": "cd tests && yarn build:macos",
     "tests:macos:pod:install": "cd tests && rm -f macos/Podfile.lock && cd macos && pod install",
     "tests:macos:manual": "cd tests && yarn react-native run-macos",
+    "tests:macos:test": "cd tests && npx jet --target=macos --coverage",
     "tests:macos:test-cover": "cd tests && npx jet --target=macos --coverage",
     "format:js": "prettier --write \"packages/**/*.{js,ts,tsx}\"",
     "format:markdown": "prettier --write \"docs/**/*.md\""

@@ -19,11 +19,18 @@ import {
   isObject,
   isString,
   isUndefined,
+  isNull,
   createDeprecationProxy,
   filterModularArgument,
 } from '@react-native-firebase/app/dist/module/common';
 import NativeError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
-import { parseSetOptions, parseSnapshotArgs, parseUpdateArgs } from './utils';
+import {
+  parseSetOptions,
+  parseSnapshotArgs,
+  parseUpdateArgs,
+  validateWithConverter,
+  applyFirestoreDataConverter,
+} from './utils';
 import { buildNativeMap, provideDocumentReferenceClass } from './utils/serialize';
 
 // To avoid React Native require cycle warnings
@@ -40,13 +47,18 @@ export function provideDocumentSnapshotClass(documentSnapshot) {
 let _id = 0;
 
 export default class FirestoreDocumentReference {
-  constructor(firestore, documentPath) {
+  constructor(firestore, documentPath, converter) {
     this._firestore = firestore;
     this._documentPath = documentPath;
+    this._converter = converter;
   }
 
   get firestore() {
     return this._firestore;
+  }
+
+  get converter() {
+    return this._converter;
   }
 
   get id() {
@@ -55,7 +67,7 @@ export default class FirestoreDocumentReference {
 
   get parent() {
     const parentPath = this._documentPath.parent();
-    return new FirestoreCollectionReference(this._firestore, parentPath);
+    return new FirestoreCollectionReference(this._firestore, parentPath, this._converter);
   }
 
   get path() {
@@ -109,7 +121,11 @@ export default class FirestoreDocumentReference {
 
     return this._firestore.native
       .documentGet(this.path, options)
-      .then(data => createDeprecationProxy(new FirestoreDocumentSnapshot(this._firestore, data)));
+      .then(data =>
+        createDeprecationProxy(
+          new FirestoreDocumentSnapshot(this._firestore, data, this._converter),
+        ),
+      );
   }
 
   isEqual(other) {
@@ -122,7 +138,8 @@ export default class FirestoreDocumentReference {
     return !(
       this.path !== other.path ||
       this.firestore.app.name !== other.firestore.app.name ||
-      this.firestore.app.options.projectId !== other.firestore.app.options.projectId
+      this.firestore.app.options.projectId !== other.firestore.app.options.projectId ||
+      this.converter !== other.converter
     );
   }
 
@@ -161,7 +178,7 @@ export default class FirestoreDocumentReference {
           handleError(NativeError.fromEvent(event.body.error, 'firestore'));
         } else {
           const documentSnapshot = createDeprecationProxy(
-            new FirestoreDocumentSnapshot(this._firestore, event.body.snapshot),
+            new FirestoreDocumentSnapshot(this._firestore, event.body.snapshot, this._converter),
           );
           handleSuccess(documentSnapshot);
         }
@@ -179,10 +196,6 @@ export default class FirestoreDocumentReference {
   }
 
   set(data, options) {
-    if (!isObject(data)) {
-      throw new Error("firebase.firestore().doc().set(*) 'data' must be an object.");
-    }
-
     let setOptions;
     try {
       setOptions = parseSetOptions(options);
@@ -190,9 +203,22 @@ export default class FirestoreDocumentReference {
       throw new Error(`firebase.firestore().doc().set(_, *) ${e.message}.`);
     }
 
+    let converted = data;
+    try {
+      converted = applyFirestoreDataConverter(data, this._converter, setOptions);
+    } catch (e) {
+      throw new Error(
+        `firebase.firestore().doc().set(*) 'withConverter.toFirestore' threw an error: ${e.message}.`,
+      );
+    }
+
+    if (!isObject(converted)) {
+      throw new Error("firebase.firestore().doc().set(*) 'data' must be an object.");
+    }
+
     return this._firestore.native.documentSet(
       this.path,
-      buildNativeMap(data, this._firestore._settings.ignoreUndefinedProperties),
+      buildNativeMap(converted, this._firestore._settings.ignoreUndefinedProperties),
       setOptions,
     );
   }
@@ -216,6 +242,20 @@ export default class FirestoreDocumentReference {
       this.path,
       buildNativeMap(data, this._firestore._settings.ignoreUndefinedProperties),
     );
+  }
+
+  withConverter(converter) {
+    if (isUndefined(converter) || isNull(converter)) {
+      return new FirestoreDocumentReference(this._firestore, this._documentPath, null);
+    }
+
+    try {
+      validateWithConverter(converter);
+    } catch (e) {
+      throw new Error(`firebase.firestore().doc().withConverter() ${e.message}`);
+    }
+
+    return new FirestoreDocumentReference(this._firestore, this._documentPath, converter);
   }
 }
 

@@ -774,5 +774,529 @@ describe('functions() modular', function () {
         }
       });
     });
+
+    describe('httpsCallable.stream()', function () {
+      it('should stream data chunks from a basic streaming function', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testStreamingCallable');
+        const { stream, data } = await functionRunner.stream({ count: 5, delay: 500 });
+
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.forEach(chunk => {
+          chunk.should.have.property('index');
+          chunk.should.have.property('message');
+          chunk.should.have.property('timestamp');
+          chunk.should.have.property('data');
+          chunk.data.should.have.property('value');
+          chunk.data.should.have.property('isEven');
+        });
+
+        const result = await data;
+        result.should.be.an.Object();
+        result.should.have.property('totalCount');
+        result.should.have.property('message');
+        result.totalCount.should.equal(5);
+        result.message.should.equal('Stream complete');
+      });
+
+      it('should stream progress updates', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testProgressStream');
+        const { stream, data } = await functionRunner.stream({ task: 'TestTask' });
+
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.forEach(chunk => {
+          chunk.should.have.property('progress');
+          chunk.should.have.property('status');
+          chunk.should.have.property('task');
+          chunk.task.should.equal('TestTask');
+        });
+
+        const result = await data;
+        result.should.be.an.Object();
+        result.should.have.property('success');
+        result.success.should.equal(true);
+      });
+
+      it('should handle complex data structures in stream', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testComplexDataStream');
+        const { stream, data } = await functionRunner.stream({});
+
+        const complexChunks = [];
+        for await (const chunk of stream) {
+          complexChunks.push(chunk);
+        }
+
+        complexChunks.forEach(chunk => {
+          chunk.should.have.property('id');
+          chunk.should.have.property('name');
+          chunk.should.have.property('tags');
+          chunk.should.have.property('metadata');
+          chunk.tags.should.be.an.Array();
+          chunk.metadata.should.have.property('created');
+          chunk.metadata.should.have.property('version');
+        });
+
+        const result = await data;
+        result.should.be.an.Object();
+        result.should.have.property('summary');
+        result.summary.should.have.property('totalItems');
+        result.summary.should.have.property('processedAt');
+        result.summary.totalItems.should.equal(3);
+      });
+
+      it('should work with HttpsCallableOptions.timeout', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testStreamingCallable', {
+          timeout: 10000,
+        });
+        const { stream, data } = await functionRunner.stream({ count: 3, delay: 300 });
+
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.forEach(chunk => {
+          chunk.should.have.property('index');
+          chunk.should.have.property('message');
+          chunk.should.have.property('timestamp');
+          chunk.should.have.property('data');
+        });
+
+        const result = await data;
+        result.should.be.an.Object();
+      });
+
+      it('should accept stream options as second parameter', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testStreamingCallable');
+        const { stream, data } = await functionRunner.stream(
+          { count: 3, delay: 300 },
+          { limitedUseAppCheckTokens: false },
+        );
+
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.forEach(chunk => {
+          chunk.should.have.property('index');
+          chunk.should.have.property('message');
+          chunk.should.have.property('timestamp');
+          chunk.should.have.property('data');
+        });
+
+        const result = await data;
+        result.should.be.an.Object();
+      });
+
+      it('should handle empty data parameter', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testComplexDataStream');
+        const { stream, data } = await functionRunner.stream();
+
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.forEach(chunk => {
+          chunk.should.have.property('id');
+          chunk.should.have.property('name');
+          chunk.should.have.property('tags');
+          chunk.should.have.property('metadata');
+        });
+
+        const result = await data;
+        result.should.be.an.Object();
+      });
+
+      it('should handle null data parameter', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functionRunner = httpsCallable(
+          getFunctions(getApp()),
+          'testStreamingCallableWithNull',
+        );
+        const { stream, data } = await functionRunner.stream(null);
+
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks[0].should.have.property('message');
+        chunks[0].should.have.property('dataType');
+        chunks[0].message.should.equal('Null data received');
+        chunks[0].dataType.should.equal('null');
+
+        const result = await data;
+        result.should.be.an.Object();
+        result.should.have.property('success');
+        result.success.should.equal(true);
+      });
+
+      it('should return both stream and data promise', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functionRunner = httpsCallable(getFunctions(getApp()), 'testStreamingCallable');
+        const result = await functionRunner.stream({ count: 2, delay: 200 });
+
+        result.should.have.property('stream');
+        result.should.have.property('data');
+        result.stream.should.be.an.Object();
+        result.data.should.be.a.Promise();
+
+        const chunks = [];
+        for await (const chunk of result.stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.forEach(chunk => {
+          chunk.should.have.property('index');
+          chunk.should.have.property('message');
+        });
+
+        const finalData = await result.data;
+        finalData.should.be.an.Object();
+      });
+
+      it('should work with multiple streams in parallel', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallable } = functionsModular;
+        const functions = getFunctions(getApp());
+        const functionRunner1 = httpsCallable(functions, 'testStreamingCallable');
+        const functionRunner2 = httpsCallable(functions, 'testStreamingCallable');
+
+        const [result1, result2] = await Promise.all([
+          functionRunner1.stream({ count: 2, delay: 200 }),
+          functionRunner2.stream({ count: 2, delay: 200 }),
+        ]);
+
+        const chunks1 = [];
+        const chunks2 = [];
+
+        const [_, __] = await Promise.all([
+          (async () => {
+            for await (const chunk of result1.stream) {
+              chunks1.push(chunk);
+            }
+          })(),
+          (async () => {
+            for await (const chunk of result2.stream) {
+              chunks2.push(chunk);
+            }
+          })(),
+        ]);
+
+        chunks1.forEach(chunk => {
+          chunk.should.have.property('index');
+          chunk.should.have.property('message');
+        });
+        chunks2.forEach(chunk => {
+          chunk.should.have.property('index');
+          chunk.should.have.property('message');
+        });
+
+        const [data1, data2] = await Promise.all([result1.data, result2.data]);
+        data1.should.be.an.Object();
+        data2.should.be.an.Object();
+      });
+
+      describe('HttpsError', function () {
+        it('HttpsError when calling stream by name', async function () {
+          const { getApp } = modular;
+          const { getFunctions, httpsCallable } = functionsModular;
+          const functionRunner = httpsCallable(getFunctions(getApp()), 'testStreamWithHttpsError');
+
+          try {
+            const { stream } = await functionRunner.stream(null);
+            for await (const _ of stream) {
+            }
+            return Promise.reject(new Error('Function did not reject with error.'));
+          } catch (e) {
+            e.code.should.equal('invalid-argument');
+            e.message.should.equal('Invalid test requested.');
+          }
+
+          let type = 'deepObject';
+          let inputData = SAMPLE_DATA[type];
+          try {
+            const { stream: s1 } = await functionRunner.stream({
+              type,
+              inputData,
+              asError: true,
+            });
+            for await (const _chunk of s1) {
+            }
+            return Promise.reject(new Error('Function did not reject with error.'));
+          } catch (e) {
+            e.code.should.equal('cancelled');
+            e.message.should.equal(
+              'Response data was requested to be sent as part of an Error payload, so here we are!',
+            );
+          }
+
+          type = 'deepArray';
+          inputData = SAMPLE_DATA[type];
+          try {
+            const { stream: s2 } = await functionRunner.stream({
+              type,
+              inputData,
+              asError: true,
+            });
+            for await (const _chunk of s2) {
+            }
+            return Promise.reject(new Error('Function did not reject with error.'));
+          } catch (e) {
+            e.code.should.equal('cancelled');
+            e.message.should.equal(
+              'Response data was requested to be sent as part of an Error payload, so here we are!',
+            );
+          }
+
+          type = 'number';
+          inputData = SAMPLE_DATA[type];
+          try {
+            const { stream: s3 } = await functionRunner.stream({
+              type,
+              inputData,
+              asError: true,
+            });
+            for await (const _chunk of s3) {
+            }
+            return Promise.reject(new Error('Function did not reject with error.'));
+          } catch (e) {
+            e.code.should.equal('cancelled');
+            e.message.should.equal(
+              'Response data was requested to be sent as part of an Error payload, so here we are!',
+            );
+          }
+
+          return Promise.resolve();
+        });
+
+        it('HttpsError when calling stream from URL', async function () {
+          const { getApp } = modular;
+          const { getFunctions, httpsCallableFromUrl } = functionsModular;
+          let hostname = 'localhost';
+          if (Platform.android) {
+            hostname = '10.0.2.2';
+          }
+          const functionRunner = httpsCallableFromUrl(
+            getFunctions(getApp()),
+            `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamWithHttpsErrorFromUrl`,
+          );
+
+          try {
+            const { stream } = await functionRunner.stream(null);
+            for await (const _chunk of stream) {
+            }
+            return Promise.reject(new Error('Function did not reject with error.'));
+          } catch (e) {
+            e.code.should.equal('invalid-argument');
+            e.message.should.equal('Invalid test requested.');
+          }
+
+          let type = 'number';
+          let inputData = SAMPLE_DATA[type];
+          try {
+            const { stream: s1 } = await functionRunner.stream({
+              type,
+              inputData,
+              asError: true,
+            });
+            for await (const _chunk of s1) {
+            }
+            return Promise.reject(new Error('Function did not reject with error.'));
+          } catch (e) {
+            e.code.should.equal('cancelled');
+            e.message.should.equal(
+              'Response data was requested to be sent as part of an Error payload, so here we are!',
+            );
+          }
+
+          type = 'deepObject';
+          inputData = SAMPLE_DATA[type];
+          try {
+            const { stream: s2 } = await functionRunner.stream({
+              type,
+              inputData,
+              asError: true,
+            });
+            for await (const _chunk of s2) {
+            }
+            return Promise.reject(new Error('Function did not reject with error.'));
+          } catch (e) {
+            e.code.should.equal('cancelled');
+            e.message.should.equal(
+              'Response data was requested to be sent as part of an Error payload, so here we are!',
+            );
+          }
+
+          type = 'string';
+          inputData = SAMPLE_DATA[type];
+          try {
+            const { stream: s3 } = await functionRunner.stream({
+              type,
+              inputData,
+              asError: true,
+            });
+            for await (const _chunk of s3) {
+            }
+            return Promise.reject(new Error('Function did not reject with error.'));
+          } catch (e) {
+            e.code.should.equal('cancelled');
+            e.message.should.equal(
+              'Response data was requested to be sent as part of an Error payload, so here we are!',
+            );
+          }
+
+          return Promise.resolve();
+        });
+      });
+    });
+
+    describe('httpsCallableFromUrl.stream()', function () {
+      it('should stream data chunks from URL', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallableFromUrl } = functionsModular;
+        let hostname = 'localhost';
+        if (Platform.android) {
+          hostname = '10.0.2.2';
+        }
+        const functionRunner = httpsCallableFromUrl(
+          getFunctions(getApp()),
+          `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,
+        );
+        const { stream, data } = await functionRunner.stream({ count: 3, delay: 400 });
+
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.forEach(chunk => {
+          chunk.should.have.property('index');
+          chunk.should.have.property('message');
+          chunk.should.have.property('timestamp');
+          chunk.should.have.property('data');
+        });
+
+        const result = await data;
+        result.should.be.an.Object();
+      });
+
+      it('should work with HttpsCallableOptions.timeout on URL stream', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallableFromUrl } = functionsModular;
+        let hostname = 'localhost';
+        if (Platform.android) {
+          hostname = '10.0.2.2';
+        }
+        const functionRunner = httpsCallableFromUrl(
+          getFunctions(getApp()),
+          `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,
+          { timeout: 10000 },
+        );
+        const { stream, data } = await functionRunner.stream({ count: 2, delay: 300 });
+
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.forEach(chunk => {
+          chunk.should.have.property('index');
+          chunk.should.have.property('message');
+          chunk.should.have.property('timestamp');
+          chunk.should.have.property('data');
+        });
+
+        const result = await data;
+        result.should.be.an.Object();
+      });
+
+      it('should accept stream options as second parameter for URL', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallableFromUrl } = functionsModular;
+        let hostname = 'localhost';
+        if (Platform.android) {
+          hostname = '10.0.2.2';
+        }
+        const functionRunner = httpsCallableFromUrl(
+          getFunctions(getApp()),
+          `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,
+        );
+        const { stream, data } = await functionRunner.stream(
+          { count: 2, delay: 300 },
+          { limitedUseAppCheckTokens: false },
+        );
+
+        const chunks = [];
+        for await (const chunk of stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.forEach(chunk => {
+          chunk.should.have.property('index');
+          chunk.should.have.property('message');
+          chunk.should.have.property('timestamp');
+          chunk.should.have.property('data');
+        });
+
+        const result = await data;
+        result.should.be.an.Object();
+      });
+
+      it('should return both stream and data promise for URL', async function () {
+        const { getApp } = modular;
+        const { getFunctions, httpsCallableFromUrl } = functionsModular;
+        let hostname = 'localhost';
+        if (Platform.android) {
+          hostname = '10.0.2.2';
+        }
+        const functionRunner = httpsCallableFromUrl(
+          getFunctions(getApp()),
+          `http://${hostname}:5001/react-native-firebase-testing/us-central1/testStreamingCallable`,
+        );
+        const result = await functionRunner.stream({ count: 2, delay: 200 });
+
+        result.should.have.property('stream');
+        result.should.have.property('data');
+        result.stream.should.be.an.Object();
+        result.data.should.be.a.Promise();
+
+        const chunks = [];
+        for await (const chunk of result.stream) {
+          chunks.push(chunk);
+        }
+
+        chunks.forEach(chunk => {
+          chunk.should.have.property('index');
+          chunk.should.have.property('message');
+        });
+
+        const finalData = await result.data;
+        finalData.should.be.an.Object();
+      });
+    });
   });
 });

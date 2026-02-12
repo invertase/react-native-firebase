@@ -127,3 +127,17 @@ ReactNative.shared.applyPackageVersion()
 ReactNative.shared.applyDefaultExcludes()
 ReactNative.module.applyAndroidVersions()
 ReactNative.module.applyReactNativeDependency("api")
+
+def isNewArchitectureDisabled() {
+  return project.hasProperty("newArchEnabled") && project.newArchEnabled != "true"
+}
+
+if (isNewArchitectureDisabled() && System.getenv('RNFB_SUPPRESS_NEW_ARCHITECTURE_WARNING') != 1) {
+  def ANSI_YELLOW = "\u001B[33m";
+  def ANSI_RESET = "\u001B[0m";
+
+  println(ANSI_YELLOW + " [react-native-firebase] Legacy Architecture support is deprecated for all modules")
+  println(ANSI_YELLOW + " [react-native-firebase] New Architecture support is already required for some modules")
+  println(ANSI_YELLOW + " [react-native-firebase] all modules will require it in the future.")
+  println(ANSI_YELLOW + " [react-native-firebase] Suppress this with environment variable RNFB_SUPPRESS_NEW_ARCHITECTURE_WARNING=1" + ANSI_RESET)
+}

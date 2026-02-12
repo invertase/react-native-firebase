@@ -41,4 +41,16 @@ public abstract class NativeRNFBTurboFunctionsSpec extends ReactContextBaseJavaM
   @ReactMethod
   @DoNotStrip
   public abstract void httpsCallableFromUrl(String appName, String region, @Nullable String emulatorHost, double emulatorPort, String url, ReadableMap data, ReadableMap options, Promise promise);
+
+  @ReactMethod
+  @DoNotStrip
+  public abstract void httpsCallableStream(String appName, String region, @Nullable String emulatorHost, double emulatorPort, String name, ReadableMap data, ReadableMap options, double listenerId);
+
+  @ReactMethod
+  @DoNotStrip
+  public abstract void httpsCallableStreamFromUrl(String appName, String region, @Nullable String emulatorHost, double emulatorPort, String url, ReadableMap data, ReadableMap options, double listenerId);
+
+  @ReactMethod
+  @DoNotStrip
+  public abstract void removeFunctionsStreaming(String appName, String region, double listenerId);
 }

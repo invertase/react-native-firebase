@@ -1,13 +1,13 @@
 /**
- * @typedef {import('..').FirebaseFirestoreTypes.DocumentReference} DocumentReference
- * @typedef {import('..').FirebaseFirestoreTypes.DocumentSnapshot} DocumentSnapshot
- * @typedef {import('..').FirebaseFirestoreTypes.FieldPath} FieldPath
- * @typedef {import('..').FirebaseFirestoreTypes.QueryCompositeFilterConstraint} QueryCompositeFilterConstraint
- * @typedef {import('..').FirebaseFirestoreTypes.QuerySnapshot} QuerySnapshot
- * @typedef {import('..').FirebaseFirestoreTypes.Query} Query
- * @typedef {import('..').FirebaseFirestoreTypes.WhereFilterOp} WhereFilterOp
  * @typedef {import('../FirestoreFilter')._Filter} _Filter
- * @typedef {import('./query').IQueryConstraint} IQueryConstraint
+ * @typedef {import('.').FieldPath} FieldPath
+ * @typedef {import('.').QueryCompositeFilterConstraint} QueryCompositeFilterConstraint
+ * @typedef {import('.').WhereFilterOp} WhereFilterOp
+ * @typedef {import('.').DocumentReference} DocumentReference
+ * @typedef {import('.').Query} Query
+ * @typedef {import('./snapshot').QuerySnapshot} QuerySnapshot
+ * @typedef {import('./snapshot').DocumentSnapshot} DocumentSnapshot
+ * @typedef {import('./query').QueryConstraint} IQueryConstraint
  * @typedef {import('./query').OrderByDirection} OrderByDirection
  * @typedef {import('./query').QueryFieldFilterConstraint} QueryFieldFilterConstraint
  * @typedef {import('./query').QueryLimitConstraint} QueryLimitConstraint
@@ -168,7 +168,7 @@ export function limitToLast(limit) {
 }
 
 /**
- * @param {DocumentReference} query
+ * @param {DocumentReference} reference
  * @returns {Promise<DocumentSnapshot>}
  */
 export function getDoc(reference) {
@@ -176,7 +176,7 @@ export function getDoc(reference) {
 }
 
 /**
- * @param {DocumentReference} query
+ * @param {DocumentReference} reference
  * @returns {Promise<DocumentSnapshot>}
  */
 export function getDocFromCache(reference) {
@@ -184,7 +184,7 @@ export function getDocFromCache(reference) {
 }
 
 /**
- * @param {DocumentReference} query
+ * @param {DocumentReference} reference
  * @returns {Promise<DocumentSnapshot>}
  */
 export function getDocFromServer(reference) {

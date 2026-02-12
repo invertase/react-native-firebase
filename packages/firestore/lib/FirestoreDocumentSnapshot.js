@@ -26,11 +26,13 @@ import { extractFieldPathData } from './utils';
 import { parseNativeMap } from './utils/serialize';
 
 export default class FirestoreDocumentSnapshot {
-  constructor(firestore, nativeData) {
+  constructor(firestore, nativeData, converter) {
+    this._nativeData = nativeData;
     this._data = parseNativeMap(firestore, nativeData.data);
     this._metadata = new FirestoreSnapshotMetadata(nativeData.metadata);
     this._ref = new FirestoreDocumentReference(firestore, FirestorePath.fromName(nativeData.path));
     this._exists = nativeData.exists;
+    this._converter = converter;
   }
 
   get id() {
@@ -72,6 +74,17 @@ export default class FirestoreDocumentSnapshot {
     //   }
     // }
 
+    if (this._converter && this._converter.fromFirestore) {
+      try {
+        return this._converter.fromFirestore(
+          new FirestoreDocumentSnapshot(this._firestore, this._nativeData, null),
+        );
+      } catch (e) {
+        throw new Error(
+          `firebase.firestore() DocumentSnapshot.data(*) 'withConverter.fromFirestore' threw an error: ${e.message}.`,
+        );
+      }
+    }
     return this._data;
   }
 
