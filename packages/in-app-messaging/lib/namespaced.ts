@@ -1,50 +1,45 @@
-/*
- * Copyright (c) 2016-present Invertase Limited & Contributors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this library except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
 import { isBoolean, isString } from '@react-native-firebase/app/dist/module/common';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/dist/module/internal';
-import version from './version';
+import type { ModuleConfig } from '@react-native-firebase/app/dist/module/internal';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import { version } from './version';
+import type { InAppMessaging, Statics } from './types/in-app-messaging';
 
-const statics = {};
+const statics: Statics = {
+  SDK_VERSION: version,
+};
 
 const namespace = 'inAppMessaging';
 
 const nativeModuleName = 'RNFBFiamModule';
 
-class FirebaseFiamModule extends FirebaseModule {
-  constructor(...args) {
-    super(...args);
+class FirebaseFiamModule extends FirebaseModule implements InAppMessaging {
+  _isMessagesDisplaySuppressed: boolean;
+  _isAutomaticDataCollectionEnabled: boolean;
+
+  constructor(
+    app: ReactNativeFirebase.FirebaseAppBase,
+    config: ModuleConfig,
+    customUrlOrRegion?: string | null,
+  ) {
+    super(app, config, customUrlOrRegion);
     this._isMessagesDisplaySuppressed = this.native.isMessagesDisplaySuppressed;
     this._isAutomaticDataCollectionEnabled = this.native.isAutomaticDataCollectionEnabled;
   }
 
-  get isMessagesDisplaySuppressed() {
+  get isMessagesDisplaySuppressed(): boolean {
     return this._isMessagesDisplaySuppressed;
   }
 
-  get isAutomaticDataCollectionEnabled() {
+  get isAutomaticDataCollectionEnabled(): boolean {
     return this._isAutomaticDataCollectionEnabled;
   }
 
-  setMessagesDisplaySuppressed(enabled) {
+  setMessagesDisplaySuppressed(enabled: boolean): Promise<null> {
     if (!isBoolean(enabled)) {
       throw new Error(
         "firebase.inAppMessaging().setMessagesDisplaySuppressed(*) 'enabled' must be a boolean.",
@@ -55,7 +50,7 @@ class FirebaseFiamModule extends FirebaseModule {
     return this.native.setMessagesDisplaySuppressed(enabled);
   }
 
-  setAutomaticDataCollectionEnabled(enabled) {
+  setAutomaticDataCollectionEnabled(enabled: boolean): Promise<null> {
     if (!isBoolean(enabled)) {
       throw new Error(
         "firebase.inAppMessaging().setAutomaticDataCollectionEnabled(*) 'enabled' must be a boolean.",
@@ -66,7 +61,7 @@ class FirebaseFiamModule extends FirebaseModule {
     return this.native.setAutomaticDataCollectionEnabled(enabled);
   }
 
-  triggerEvent(eventId) {
+  triggerEvent(eventId: string): Promise<null> {
     if (!isString(eventId)) {
       throw new Error("firebase.inAppMessaging().triggerEvent(*) 'eventId' must be a string.");
     }
@@ -74,13 +69,8 @@ class FirebaseFiamModule extends FirebaseModule {
   }
 }
 
-export * from './modular';
-
-// import { SDK_VERSION } from '@react-native-firebase/in-app-messaging';
 export const SDK_VERSION = version;
 
-// import inAppMessaging from '@react-native-firebase/in-app-messaging';
-// inAppMessaging().X(...);
 export default createModuleNamespace({
   statics,
   version,
@@ -92,7 +82,4 @@ export default createModuleNamespace({
   ModuleClass: FirebaseFiamModule,
 });
 
-// import inAppMessaging, { firebase } from '@react-native-firebase/in-app-messaging';
-// inAppMessaging().X(...);
-// firebase.inAppMessaging().X(...);
 export const firebase = getFirebaseRoot();

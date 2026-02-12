@@ -3,12 +3,13 @@
   "version": "23.8.6",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Firebase In-App Messaging helps you engage your app's active users by sending them targeted, contextual messages that encourage them to use key app features. React Native Firebase provides support for both native Android & iOS integration with a simple JavaScript API.",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "./dist/module/index.js",
+  "types": "./dist/typescript/lib/index.d.ts",
   "scripts": {
-    "build": "genversion --semi lib/version.js",
+    "build": "genversion --esm --semi lib/version.ts",
     "build:clean": "rimraf android/build && rimraf ios/build",
-    "prepare": "yarn run build"
+    "compile": "bob build",
+    "prepare": "yarn run build && yarn compile"
   },
   "repository": {
     "type": "git",
@@ -30,8 +31,38 @@
     "@react-native-firebase/analytics": "23.8.6",
     "@react-native-firebase/app": "23.8.6"
   },
+  "devDependencies": {
+    "react-native-builder-bob": "^0.40.17",
+    "typescript": "^5.9.3"
+  },
   "publishConfig": {
     "access": "public",
     "provenance": true
+  },
+  "exports": {
+    ".": {
+      "source": "./lib/index.ts",
+      "types": "./dist/typescript/lib/index.d.ts",
+      "default": "./dist/module/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "react-native-builder-bob": {
+    "source": "lib",
+    "output": "dist",
+    "targets": [
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "tsc": "../../node_modules/.bin/tsc"
+        }
+      ]
+    ]
   }
 }
