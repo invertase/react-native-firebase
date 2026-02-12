@@ -245,10 +245,10 @@ describe('storage() -> StorageReference', function () {
         result.should.have.property('nextPageToken');
         result.items.should.be.Array();
         result.items.length.should.be.greaterThan(0);
-        result.items[0].constructor.name.should.eql('StorageReference');
+        result.items[0].constructor.name.should.eql('Reference');
         result.prefixes.should.be.Array();
         result.prefixes.length.should.be.greaterThan(0);
-        result.prefixes[0].constructor.name.should.eql('StorageReference');
+        result.prefixes[0].constructor.name.should.eql('Reference');
       });
 
       it('throws if options is not an object', function () {
@@ -271,7 +271,7 @@ describe('storage() -> StorageReference', function () {
           result.nextPageToken.should.be.String();
           result.items.should.be.Array();
           result.items.length.should.eql(1);
-          result.items[0].constructor.name.should.eql('StorageReference');
+          result.items[0].constructor.name.should.eql('Reference');
           result.prefixes.should.be.Array();
           // todo length?
         });
@@ -344,10 +344,10 @@ describe('storage() -> StorageReference', function () {
         should.equal(result.nextPageToken, null);
         result.items.should.be.Array();
         result.items.length.should.be.greaterThan(0);
-        result.items[0].constructor.name.should.eql('StorageReference');
+        result.items[0].constructor.name.should.eql('Reference');
         result.prefixes.should.be.Array();
         result.prefixes.length.should.be.greaterThan(0);
-        result.prefixes[0].constructor.name.should.eql('StorageReference');
+        result.prefixes[0].constructor.name.should.eql('Reference');
       });
 
       it('should not crash if the user is not allowed to list the directory', async function () {
@@ -983,18 +983,18 @@ describe('storage() -> StorageReference', function () {
 
         result.items.should.be.Array();
         result.items.length.should.be.greaterThan(0);
-        result.items[0].constructor.name.should.eql('StorageReference');
+        result.items[0].constructor.name.should.eql('Reference');
 
         result.prefixes.should.be.Array();
         result.prefixes.length.should.be.greaterThan(0);
-        result.prefixes[0].constructor.name.should.eql('StorageReference');
+        result.prefixes[0].constructor.name.should.eql('Reference');
       });
 
-      it('throws if options is not an object', function () {
+      it('throws if options is not an object', async function () {
         try {
           const { getStorage, ref, list } = storageModular;
           const storageReference = ref(getStorage(), `${PATH}/ok.jpeg`);
-          list(storageReference, 123);
+          await list(storageReference, 123);
           return Promise.reject(new Error('Did not throw'));
         } catch (error) {
           error.message.should.containEql("'options' expected an object value");
@@ -1015,7 +1015,7 @@ describe('storage() -> StorageReference', function () {
 
           result.items.should.be.Array();
           result.items.length.should.eql(1);
-          result.items[0].constructor.name.should.eql('StorageReference');
+          result.items[0].constructor.name.should.eql('Reference');
 
           result.prefixes.should.be.Array();
           // todo length?
@@ -1101,11 +1101,11 @@ describe('storage() -> StorageReference', function () {
 
         result.items.should.be.Array();
         result.items.length.should.be.greaterThan(0);
-        result.items[0].constructor.name.should.eql('StorageReference');
+        result.items[0].constructor.name.should.eql('Reference');
 
         result.prefixes.should.be.Array();
         result.prefixes.length.should.be.greaterThan(0);
-        result.prefixes[0].constructor.name.should.eql('StorageReference');
+        result.prefixes[0].constructor.name.should.eql('Reference');
       });
 
       it('should not crash if the user is not allowed to list the directory', async function () {
