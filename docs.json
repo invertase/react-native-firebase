@@ -22,7 +22,7 @@
         { "title": "Migration Guide to v22", "href": "/migrating-to-v22" },
         { "title": "TypeScript", "href": "/typescript" },
         { "title": "Platforms", "href": "/platforms" },
-        { "title": "Release Notes", "href": "/releases" },
+        { "title": "Release Notes", "href": "https://github.com/invertase/react-native-firebase/blob/main/CHANGELOG.md" },
         { "title": "FAQs and Tips", "href": "/faqs-and-tips" },
         { "title": "Feature Requests", "href": "https://invertase.canny.io/react-native-firebase" },
         { "title": "Contributing", "href": "https://github.com/invertase/react-native-firebase/blob/main/CONTRIBUTING.md" }
