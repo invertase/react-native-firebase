@@ -510,7 +510,7 @@ const mapOfDeprecationReplacements: DeprecationMap = {
       setMaxUploadRetryTime: 'setMaxUploadRetryTime()',
       setMaxDownloadRetryTime: 'setMaxDownloadRetryTime()',
     },
-    StorageReference: {
+    Reference: {
       delete: 'deleteObject()',
       getDownloadURL: 'getDownloadURL()',
       getMetadata: 'getMetadata()',
@@ -602,7 +602,7 @@ function getNamespace(target: any): string | undefined {
   if (target._config && target._config.namespace) {
     return target._config.namespace;
   }
-  if (target.constructor.name === 'StorageReference') {
+  if (target.constructor.name === 'Reference') {
     return 'storage';
   }
   const className = target.name ? target.name : target.constructor.name;
@@ -627,7 +627,7 @@ function getInstanceName(target: any): string {
     return 'default';
   }
 
-  if (target.constructor.name === 'StorageReference') {
+  if (target.constructor.name === 'Reference') {
     // if path passed into ref(), it will pass in the arg as target.name
     return target.constructor.name;
   }
