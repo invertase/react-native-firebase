@@ -5903,6 +5903,8 @@ __metadata:
 "@react-native-firebase/installations@npm:23.8.6, @react-native-firebase/installations@workspace:packages/installations":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/installations@workspace:packages/installations"
+  dependencies:
+    react-native-builder-bob: "npm:^0.40.17"
   peerDependencies:
     "@react-native-firebase/app": 23.8.6
   languageName: unknown
