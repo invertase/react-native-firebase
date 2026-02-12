@@ -9,6 +9,7 @@ export function getReactNativeModule(moduleName: string): Record<string, unknown
   if (!nativeModule) {
     throw new Error(`Native module ${moduleName} is not registered.`);
   }
+  // @ts-ignore - globalThis is a collection of arbitrary types
   if (!globalThis.RNFBDebug) {
     return nativeModule;
   }
