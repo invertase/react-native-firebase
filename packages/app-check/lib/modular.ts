@@ -15,7 +15,7 @@
  *
  */
 
-import { getApp, type ReactNativeFirebase } from '@react-native-firebase/app';
+import { getApp, type FirebaseApp, type ReactNativeFirebase } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 import ReactNativeFirebaseAppCheckProvider from './ReactNativeFirebaseAppCheckProvider';
 
@@ -29,6 +29,10 @@ import type {
 } from './types/appcheck';
 import type { AppCheckInternal } from './types/internal';
 
+type WithModularDeprecationArg<F> = F extends (...args: infer P) => infer R
+  ? (...args: [...P, typeof MODULAR_DEPRECATION_ARG]) => R
+  : never;
+
 /**
  * Activate App Check for the given app. Can be called only once per app.
  * @param app - The app to initialize App Check for. Optional.
@@ -40,16 +44,22 @@ export async function initializeAppCheck(
   options?: AppCheckOptions,
 ): Promise<AppCheck> {
   if (app) {
-    const appInstance = getApp(app.name) as ReactNativeFirebase.FirebaseApp;
+    const appInstance = getApp(app.name) as FirebaseApp;
     const appCheck = appInstance.appCheck();
-    // @ts-ignore - Extra arg used by deprecation proxy to detect modular calls
-    await appCheck.initializeAppCheck.call(appCheck, options, MODULAR_DEPRECATION_ARG);
+    await (
+      (appCheck as AppCheckInternal).initializeAppCheck as WithModularDeprecationArg<
+        AppCheckInternal['initializeAppCheck']
+      >
+    ).call(appCheck, options as AppCheckOptions, MODULAR_DEPRECATION_ARG);
     return appCheck;
   }
-  const appInstance = getApp() as ReactNativeFirebase.FirebaseApp;
+  const appInstance = getApp() as FirebaseApp;
   const appCheck = appInstance.appCheck();
-  // @ts-ignore - Extra arg used by deprecation proxy to detect modular calls
-  await appCheck.initializeAppCheck.call(appCheck, options, MODULAR_DEPRECATION_ARG);
+  await (
+    (appCheck as AppCheckInternal).initializeAppCheck as WithModularDeprecationArg<
+      AppCheckInternal['initializeAppCheck']
+    >
+  ).call(appCheck, options as AppCheckOptions, MODULAR_DEPRECATION_ARG);
   return appCheck;
 }
 
@@ -64,12 +74,11 @@ export function getToken(
   appCheckInstance: AppCheck,
   forceRefresh?: boolean,
 ): Promise<AppCheckTokenResult> {
-  return (appCheckInstance as AppCheckInternal).getToken.call(
-    appCheckInstance,
-    forceRefresh,
-    // @ts-ignore - Extra arg used by deprecation proxy to detect modular calls
-    MODULAR_DEPRECATION_ARG,
-  ) as Promise<AppCheckTokenResult>;
+  return (
+    (appCheckInstance as AppCheckInternal).getToken as WithModularDeprecationArg<
+      AppCheckInternal['getToken']
+    >
+  ).call(appCheckInstance, forceRefresh, MODULAR_DEPRECATION_ARG) as Promise<AppCheckTokenResult>;
 }
 
 /**
@@ -79,11 +88,11 @@ export function getToken(
  * @returns Promise<AppCheckTokenResult>
  */
 export function getLimitedUseToken(appCheckInstance: AppCheck): Promise<AppCheckTokenResult> {
-  return (appCheckInstance as AppCheckInternal).getLimitedUseToken.call(
-    appCheckInstance,
-    // @ts-ignore - Extra arg used by deprecation proxy to detect modular calls
-    MODULAR_DEPRECATION_ARG,
-  ) as Promise<AppCheckTokenResult>;
+  return (
+    (appCheckInstance as AppCheckInternal).getLimitedUseToken as WithModularDeprecationArg<
+      AppCheckInternal['getLimitedUseToken']
+    >
+  ).call(appCheckInstance, MODULAR_DEPRECATION_ARG) as Promise<AppCheckTokenResult>;
 }
 
 /**
@@ -95,12 +104,11 @@ export function setTokenAutoRefreshEnabled(
   appCheckInstance: AppCheck,
   isAutoRefreshEnabled: boolean,
 ): void {
-  (appCheckInstance as AppCheckInternal).setTokenAutoRefreshEnabled.call(
-    appCheckInstance,
-    isAutoRefreshEnabled,
-    // @ts-ignore - Extra arg used by deprecation proxy to detect modular calls
-    MODULAR_DEPRECATION_ARG,
-  );
+  (
+    (appCheckInstance as AppCheckInternal).setTokenAutoRefreshEnabled as WithModularDeprecationArg<
+      AppCheckInternal['setTokenAutoRefreshEnabled']
+    >
+  ).call(appCheckInstance, isAutoRefreshEnabled, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -145,12 +153,15 @@ export function onTokenChanged(
   onError?: (error: Error) => void,
   onCompletion?: () => void,
 ): Unsubscribe {
-  return (appCheckInstance as AppCheckInternal).onTokenChanged.call(
+  return (
+    (appCheckInstance as AppCheckInternal).onTokenChanged as WithModularDeprecationArg<
+      AppCheckInternal['onTokenChanged']
+    >
+  ).call(
     appCheckInstance,
     onNextOrObserver,
     onError,
     onCompletion,
-    // @ts-ignore - Extra arg used by deprecation proxy to detect modular calls
     MODULAR_DEPRECATION_ARG,
   ) as Unsubscribe;
 }
