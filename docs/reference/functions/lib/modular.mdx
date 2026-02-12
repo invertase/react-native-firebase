@@ -1,0 +1,172 @@
+[**react-native-firebase**](../../README.mdx)
+
+***
+
+[react-native-firebase](../../modules.mdx) / functions/lib/modular
+
+# functions/lib/modular
+
+## Functions
+
+### connectFunctionsEmulator()
+
+> **connectFunctionsEmulator**(`functionsInstance`, `host`, `port`): `void`
+
+Defined in: [functions/lib/modular.ts:43](https://github.com/invertase/react-native-firebase/blob/main/packages/functions/lib/modular.ts#L43)
+
+Modify this instance to communicate with the Cloud Functions emulator.
+Note: this must be called before this instance has been used to do any operations.
+
+#### Parameters
+
+##### functionsInstance
+
+`Functions`
+
+A functions instance.
+
+##### host
+
+`string`
+
+The emulator host. (ex: localhost)
+
+##### port
+
+`number`
+
+The emulator port. (ex: 5001)
+
+#### Returns
+
+`void`
+
+***
+
+### getFunctions()
+
+> **getFunctions**(`app?`, `regionOrCustomDomain?`): `Functions`
+
+Defined in: [functions/lib/modular.ts:28](https://github.com/invertase/react-native-firebase/blob/main/packages/functions/lib/modular.ts#L28)
+
+Returns a Functions instance for the given app.
+
+#### Parameters
+
+##### app?
+
+`FirebaseApp`
+
+The FirebaseApp to use. Optional.
+
+##### regionOrCustomDomain?
+
+`string`
+
+One of: a) The region the callable functions are located in (ex: us-central1) b) A custom domain hosting the callable functions (ex: https://mydomain.com). Optional.
+
+#### Returns
+
+`Functions`
+
+Functions instance for the given app.
+
+***
+
+### httpsCallable()
+
+> **httpsCallable**\<`RequestData`, `ResponseData`, `StreamData`\>(`functionsInstance`, `name`, `options?`): `HttpsCallable`\<`RequestData`, `ResponseData`, `StreamData`\>
+
+Defined in: [functions/lib/modular.ts:59](https://github.com/invertase/react-native-firebase/blob/main/packages/functions/lib/modular.ts#L59)
+
+Returns a reference to the callable HTTPS trigger with the given name.
+
+#### Type Parameters
+
+##### RequestData
+
+`RequestData` = `unknown`
+
+##### ResponseData
+
+`ResponseData` = `unknown`
+
+##### StreamData
+
+`StreamData` = `unknown`
+
+#### Parameters
+
+##### functionsInstance
+
+`Functions`
+
+A functions instance.
+
+##### name
+
+`string`
+
+The name of the trigger.
+
+##### options?
+
+`HttpsCallableOptions`
+
+An interface for metadata about how calls should be executed.
+
+#### Returns
+
+`HttpsCallable`\<`RequestData`, `ResponseData`, `StreamData`\>
+
+HttpsCallable instance
+
+***
+
+### httpsCallableFromUrl()
+
+> **httpsCallableFromUrl**\<`RequestData`, `ResponseData`, `StreamData`\>(`functionsInstance`, `url`, `options?`): `HttpsCallable`\<`RequestData`, `ResponseData`, `StreamData`\>
+
+Defined in: [functions/lib/modular.ts:80](https://github.com/invertase/react-native-firebase/blob/main/packages/functions/lib/modular.ts#L80)
+
+Returns a reference to the callable HTTPS trigger with the specified url.
+
+#### Type Parameters
+
+##### RequestData
+
+`RequestData` = `unknown`
+
+##### ResponseData
+
+`ResponseData` = `unknown`
+
+##### StreamData
+
+`StreamData` = `unknown`
+
+#### Parameters
+
+##### functionsInstance
+
+`Functions`
+
+A functions instance.
+
+##### url
+
+`string`
+
+The url of the trigger.
+
+##### options?
+
+`HttpsCallableOptions`
+
+An instance of HttpsCallableOptions containing metadata about how calls should be executed.
+
+#### Returns
+
+`HttpsCallable`\<`RequestData`, `ResponseData`, `StreamData`\>
+
+HttpsCallable instance

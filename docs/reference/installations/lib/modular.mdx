@@ -1,0 +1,147 @@
+[**react-native-firebase**](../../README.mdx)
+
+***
+
+[react-native-firebase](../../modules.mdx) / installations/lib/modular
+
+# installations/lib/modular
+
+## Type Aliases
+
+### IdChangeCallbackFn()
+
+> **IdChangeCallbackFn** = (`installationId`) => `void`
+
+Defined in: [installations/lib/modular/index.d.ts:30](https://github.com/invertase/react-native-firebase/blob/main/packages/installations/lib/modular/index.d.ts#L30)
+
+#### Parameters
+
+##### installationId
+
+`string`
+
+#### Returns
+
+`void`
+
+***
+
+### IdChangeUnsubscribeFn()
+
+> **IdChangeUnsubscribeFn** = () => `void`
+
+Defined in: [installations/lib/modular/index.d.ts:31](https://github.com/invertase/react-native-firebase/blob/main/packages/installations/lib/modular/index.d.ts#L31)
+
+#### Returns
+
+`void`
+
+## Functions
+
+### deleteInstallations()
+
+> **deleteInstallations**(`installations?`): `Promise`\<`void`\>
+
+Defined in: [installations/lib/modular/index.d.ts:15](https://github.com/invertase/react-native-firebase/blob/main/packages/installations/lib/modular/index.d.ts#L15)
+
+Deletes the Firebase Installation and all associated data.
+
+#### Parameters
+
+##### installations?
+
+`Module`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### getId()
+
+> **getId**(`installations`): `Promise`\<`string`\>
+
+Defined in: [installations/lib/modular/index.d.ts:20](https://github.com/invertase/react-native-firebase/blob/main/packages/installations/lib/modular/index.d.ts#L20)
+
+Creates a Firebase Installation if there isn't one for the app and returns the Installation ID.
+
+#### Parameters
+
+##### installations
+
+`Module`
+
+#### Returns
+
+`Promise`\<`string`\>
+
+***
+
+### getInstallations()
+
+> **getInstallations**(`app?`): `Module`
+
+Defined in: [installations/lib/modular/index.d.ts:8](https://github.com/invertase/react-native-firebase/blob/main/packages/installations/lib/modular/index.d.ts#L8)
+
+Returns an instance of Installations associated with the given FirebaseApp instance.
+
+#### Parameters
+
+##### app?
+
+`FirebaseApp`
+
+#### Returns
+
+`Module`
+
+***
+
+### getToken()
+
+> **getToken**(`installations`, `forceRefresh?`): `Promise`\<`string`\>
+
+Defined in: [installations/lib/modular/index.d.ts:25](https://github.com/invertase/react-native-firebase/blob/main/packages/installations/lib/modular/index.d.ts#L25)
+
+Returns a Firebase Installations auth token, identifying the current Firebase Installation.
+
+#### Parameters
+
+##### installations
+
+`Module`
+
+##### forceRefresh?
+
+`boolean`
+
+#### Returns
+
+`Promise`\<`string`\>
+
+***
+
+### onIdChange()
+
+> **onIdChange**(`installations`, `callback`): [`IdChangeUnsubscribeFn`](#idchangeunsubscribefn)
+
+Defined in: [installations/lib/modular/index.d.ts:38](https://github.com/invertase/react-native-firebase/blob/main/packages/installations/lib/modular/index.d.ts#L38)
+
+Throw an error since react-native-firebase does not support this method.
+
+Sets a new callback that will get called when Installation ID changes. Returns an unsubscribe function that will remove the callback when called.
+
+#### Parameters
+
+##### installations
+
+`Module`
+
+##### callback
+
+[`IdChangeCallbackFn`](#idchangecallbackfn)
+
+#### Returns
+
+[`IdChangeUnsubscribeFn`](#idchangeunsubscribefn)

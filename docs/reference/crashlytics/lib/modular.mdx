@@ -1,0 +1,433 @@
+[**react-native-firebase**](../../README.mdx)
+
+***
+
+[react-native-firebase](../../modules.mdx) / crashlytics/lib/modular
+
+# crashlytics/lib/modular
+
+## Functions
+
+### checkForUnsentReports()
+
+> **checkForUnsentReports**(`crashlytics`): `Promise`\<`boolean`\>
+
+Defined in: [crashlytics/lib/modular.ts:34](https://github.com/invertase/react-native-firebase/blob/main/packages/crashlytics/lib/modular.ts#L34)
+
+Determines whether there are any unsent crash reports cached on the device. The callback only executes
+if automatic data collection is disabled.
+
+#### Example
+
+```js
+async checkReports() {
+// returns boolean value
+ const crashlytics = getCrashlytics();
+ const unsentReports = await checkForUnsentReports(crashlytics);
+}
+
+checkReports();
+```
+
+#### Parameters
+
+##### crashlytics
+
+`Crashlytics`
+
+A crashlytics instance.
+
+#### Returns
+
+`Promise`\<`boolean`\>
+
+Promise that resolves to a boolean indicating if there are unsent reports.
+
+***
+
+### crash()
+
+> **crash**(`crashlytics`): `void`
+
+Defined in: [crashlytics/lib/modular.ts:91](https://github.com/invertase/react-native-firebase/blob/main/packages/crashlytics/lib/modular.ts#L91)
+
+Cause your app to crash for testing purposes. This is a native crash and will not contain a javascript stack trace.
+Note that crashes are intercepted by debuggers on iOS so no report will be seen under those conditions. Additionally
+if it is a debug build you will need to ensure your firebase.json is configured to enable crashlytics even in debug mode.
+
+#### Example
+
+```js
+const crashlytics = getCrashlytics();
+crash(crashlytics);
+```
+
+#### Parameters
+
+##### crashlytics
+
+`Crashlytics`
+
+A crashlytics instance.
+
+#### Returns
+
+`void`
+
+***
+
+### deleteUnsentReports()
+
+> **deleteUnsentReports**(`crashlytics`): `Promise`\<`void`\>
+
+Defined in: [crashlytics/lib/modular.ts:51](https://github.com/invertase/react-native-firebase/blob/main/packages/crashlytics/lib/modular.ts#L51)
+
+Deletes any unsent reports on the device. This method only applies if automatic data collection is
+disabled.
+
+#### Example
+
+```js
+const crashlytics = getCrashlytics();
+deleteUnsentReports(crashlytics);
+```
+
+#### Parameters
+
+##### crashlytics
+
+`Crashlytics`
+
+A crashlytics instance.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### didCrashOnPreviousExecution()
+
+> **didCrashOnPreviousExecution**(`crashlytics`): `Promise`\<`boolean`\>
+
+Defined in: [crashlytics/lib/modular.ts:73](https://github.com/invertase/react-native-firebase/blob/main/packages/crashlytics/lib/modular.ts#L73)
+
+Returns a boolean value indicating whether the app crashed during the previous execution.
+
+#### Example
+
+```js
+async didCrashPreviously() {
+// returns boolean value
+const crashlytics = getCrashlytics();
+const didCrash = await didCrashOnPreviousExecution(crashlytics);
+}
+
+didCrashPreviously();
+```
+
+#### Parameters
+
+##### crashlytics
+
+`Crashlytics`
+
+A crashlytics instance.
+
+#### Returns
+
+`Promise`\<`boolean`\>
+
+Promise that resolves to a boolean indicating if the app crashed previously.
+
+***
+
+### getCrashlytics()
+
+> **getCrashlytics**(): `Crashlytics`
+
+Defined in: [crashlytics/lib/modular.ts:12](https://github.com/invertase/react-native-firebase/blob/main/packages/crashlytics/lib/modular.ts#L12)
+
+Returns Crashlytics instance.
+#### Example
+```js
+const crashlytics = getCrashlytics();
+```
+
+#### Returns
+
+`Crashlytics`
+
+***
+
+### log()
+
+> **log**(`crashlytics`, `message`): `void`
+
+Defined in: [crashlytics/lib/modular.ts:109](https://github.com/invertase/react-native-firebase/blob/main/packages/crashlytics/lib/modular.ts#L109)
+
+Log a message that will appear in any subsequent Crash or Non-fatal error reports.
+
+#### Example
+
+```js
+const crashlytics = getCrashlytics();
+log(crashlytics, 'Testing a crash');
+crash(crashlytics);
+```
+
+#### Parameters
+
+##### crashlytics
+
+`Crashlytics`
+
+A crashlytics instance.
+
+##### message
+
+`string`
+
+The message to log.
+
+#### Returns
+
+`void`
+
+***
+
+### recordError()
+
+> **recordError**(`crashlytics`, `error`, `jsErrorName?`): `void`
+
+Defined in: [crashlytics/lib/modular.ts:134](https://github.com/invertase/react-native-firebase/blob/main/packages/crashlytics/lib/modular.ts#L134)
+
+Record a JavaScript Error.
+
+The JavaScript stack trace is converted into a mock native iOS or Android exception before submission.
+The line numbers in the stack trace (if available) will be relative to the javascript bundle built by your packager,
+after whatever transpilation or minimization steps happen. You will need to maintain sourcemaps to decode them if desired.
+
+#### Example
+
+```js
+const crashlytics = getCrashlytics();
+recordError(
+ crashlytics,
+ new Error('An error was caught')
+);
+```
+
+#### Parameters
+
+##### crashlytics
+
+`Crashlytics`
+
+A crashlytics instance.
+
+##### error
+
+`Error`
+
+Expects an instance of Error; e.g. classes that extend Error will also be supported.
+
+##### jsErrorName?
+
+`string`
+
+Optional string containing Javascript error name
+
+#### Returns
+
+`void`
+
+***
+
+### sendUnsentReports()
+
+> **sendUnsentReports**(`crashlytics`): `void`
+
+Defined in: [crashlytics/lib/modular.ts:151](https://github.com/invertase/react-native-firebase/blob/main/packages/crashlytics/lib/modular.ts#L151)
+
+Enqueues any unsent reports on the device to upload to Crashlytics. This method only applies if
+automatic data collection is disabled.
+
+#### Example
+
+```js
+const crashlytics = getCrashlytics();
+sendUnsentReports(crashlytics);
+```
+
+#### Parameters
+
+##### crashlytics
+
+`Crashlytics`
+
+A crashlytics instance.
+
+#### Returns
+
+`void`
+
+***
+
+### setAttribute()
+
+> **setAttribute**(`crashlytics`, `name`, `value`): `Promise`\<`null`\>
+
+Defined in: [crashlytics/lib/modular.ts:196](https://github.com/invertase/react-native-firebase/blob/main/packages/crashlytics/lib/modular.ts#L196)
+
+Sets a string value to be associated with the given attribute name which will be visible in the Firebase Crashlytics console.
+
+#### Example
+
+```js
+const crashlytics = getCrashlytics();
+await setAttribute(crashlytics, 'role', 'admin');
+```
+
+#### Parameters
+
+##### crashlytics
+
+`Crashlytics`
+
+A crashlytics instance.
+
+##### name
+
+`string`
+
+The name of the attribute to set.
+
+##### value
+
+`string`
+
+A string value for the given attribute.
+
+#### Returns
+
+`Promise`\<`null`\>
+
+***
+
+### setAttributes()
+
+> **setAttributes**(`crashlytics`, `attributes`): `Promise`\<`null`\>
+
+Defined in: [crashlytics/lib/modular.ts:216](https://github.com/invertase/react-native-firebase/blob/main/packages/crashlytics/lib/modular.ts#L216)
+
+Like `setAttribute` but for multiple attributes.
+
+#### Example
+
+```js
+const crashlytics = getCrashlytics();
+await setAttributes(crashlytics, {
+  role: 'admin',
+  followers: '13',
+});
+```
+
+#### Parameters
+
+##### crashlytics
+
+`Crashlytics`
+
+A crashlytics instance.
+
+##### attributes
+
+An object of key/value attribute name and values.
+
+#### Returns
+
+`Promise`\<`null`\>
+
+***
+
+### setCrashlyticsCollectionEnabled()
+
+> **setCrashlyticsCollectionEnabled**(`crashlytics`, `enabled`): `Promise`\<`null`\>
+
+Defined in: [crashlytics/lib/modular.ts:239](https://github.com/invertase/react-native-firebase/blob/main/packages/crashlytics/lib/modular.ts#L239)
+
+Enable/disable Crashlytics reporting.
+
+Use this for opt-in first user data collection flows combined with `firebase.json` settings to disable auto collection.
+
+#### Example
+
+```js
+const crashlytics = getCrashlytics();
+// Disable crash reporting
+await setCrashlyticsCollectionEnabled(crashlytics, false);
+```
+
+#### Parameters
+
+##### crashlytics
+
+`Crashlytics`
+
+A crashlytics instance.
+
+##### enabled
+
+`boolean`
+
+A boolean value representing whether to enable Crashlytics error collection.
+
+#### Returns
+
+`Promise`\<`null`\>
+
+***
+
+### setUserId()
+
+> **setUserId**(`crashlytics`, `userId`): `Promise`\<`null`\>
+
+Defined in: [crashlytics/lib/modular.ts:178](https://github.com/invertase/react-native-firebase/blob/main/packages/crashlytics/lib/modular.ts#L178)
+
+Specify a user identifier which will be visible in the Firebase Crashlytics console.
+
+It is recommended for privacy purposes that this value be a value that's meaningless to a third-party
+observer; such as an arbitrary string that ties an end-user to a record in your system e.g. a database record id.
+
+#### Example
+
+```js
+const auth = getAuth();
+const crashlytics = getCrashlytics();
+// Custom user id
+await setUserId(crashlytics, '123456789');
+// Firebase auth uid
+await setUserId(
+ crashlytics,
+ auth.currentUser.uid
+);
+```
+
+#### Parameters
+
+##### crashlytics
+
+`Crashlytics`
+
+A crashlytics instance.
+
+##### userId
+
+`string`
+
+An arbitrary string that ties an end-user to a record in your system e.g. a database record id.
+
+#### Returns
+
+`Promise`\<`null`\>

@@ -1,0 +1,71 @@
+[**react-native-firebase**](../../../README.mdx)
+
+***
+
+[react-native-firebase](../../../modules.mdx) / firestore/lib/modular/FieldPath
+
+# firestore/lib/modular/FieldPath
+
+## Classes
+
+### FieldPath
+
+Defined in: [firestore/lib/modular/FieldPath.d.ts:9](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/FieldPath.d.ts#L9)
+
+A `FieldPath` refers to a field in a document. The path may consist of a
+single field name (referring to a top-level field in the document), or a
+list of field names (referring to a nested field in the document).
+
+Create a `FieldPath` by providing field names. If more than one field
+name is provided, the path will point to a nested field in a document.
+
+#### Constructors
+
+##### Constructor
+
+> **new FieldPath**(...`fieldNames`): [`FieldPath`](#fieldpath)
+
+Defined in: [firestore/lib/modular/FieldPath.d.ts:10](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/FieldPath.d.ts#L10)
+
+###### Parameters
+
+###### fieldNames
+
+...`string`[]
+
+###### Returns
+
+[`FieldPath`](#fieldpath)
+
+#### Methods
+
+##### isEqual()
+
+> **isEqual**(`other`): `boolean`
+
+Defined in: [firestore/lib/modular/FieldPath.d.ts:12](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/FieldPath.d.ts#L12)
+
+###### Parameters
+
+###### other
+
+[`FieldPath`](#fieldpath)
+
+###### Returns
+
+`boolean`
+
+## Functions
+
+### documentId()
+
+> **documentId**(): [`FieldPath`](#fieldpath)
+
+Defined in: [firestore/lib/modular/FieldPath.d.ts:20](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/FieldPath.d.ts#L20)
+
+Returns a special sentinel FieldPath to refer to the ID of a document
+It can be used in queries to sort or filter by the document ID
+
+#### Returns
+
+[`FieldPath`](#fieldpath)

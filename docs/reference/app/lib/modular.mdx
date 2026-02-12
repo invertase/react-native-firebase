@@ -1,0 +1,346 @@
+[**react-native-firebase**](../../README.mdx)
+
+***
+
+[react-native-firebase](../../modules.mdx) / app/lib/modular
+
+# app/lib/modular
+
+## Variables
+
+### SDK\_VERSION
+
+> `const` **SDK\_VERSION**: `"23.8.6"` = `sdkVersion`
+
+Defined in: [app/lib/modular.ts:219](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/modular.ts#L219)
+
+## Functions
+
+### deleteApp()
+
+> **deleteApp**(`app`): `Promise`\<`void`\>
+
+Defined in: [app/lib/modular.ts:38](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/modular.ts#L38)
+
+Renders this app unusable and frees the resources of all associated services.
+
+#### Parameters
+
+##### app
+
+`FirebaseApp`
+
+The app to delete.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+Promise<void>
+
+***
+
+### getApp()
+
+> **getApp**(`name?`): `FirebaseApp`
+
+Defined in: [app/lib/modular.ts:109](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/modular.ts#L109)
+
+Retrieves an instance of a Firebase app.
+
+#### Parameters
+
+##### name?
+
+`string`
+
+The optional name of the app to return ('[DEFAULT]' if omitted).
+
+#### Returns
+
+`FirebaseApp`
+
+The requested Firebase app instance.
+
+***
+
+### getApps()
+
+> **getApps**(): `FirebaseApp`[]
+
+Defined in: [app/lib/modular.ts:77](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/modular.ts#L77)
+
+Gets the list of all initialized apps.
+
+#### Returns
+
+`FirebaseApp`[]
+
+An array of all initialized Firebase apps.
+
+***
+
+### initializeApp()
+
+> **initializeApp**(`options`, `configOrName?`): `Promise`\<`FirebaseApp`\>
+
+Defined in: [app/lib/modular.ts:91](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/modular.ts#L91)
+
+Initializes a Firebase app with the provided options and name.
+
+#### Parameters
+
+##### options
+
+`FirebaseAppOptions`
+
+Options to configure the services used in the app.
+
+##### configOrName?
+
+The optional name of the app, or config for the app to initialize (a name of '[DEFAULT]' will be used if omitted).
+
+`string` | `FirebaseAppConfig`
+
+#### Returns
+
+`Promise`\<`FirebaseApp`\>
+
+The initialized Firebase app.
+
+***
+
+### jsonGetAll()
+
+> **jsonGetAll**(): `Promise`\<\{\[`key`: `string`\]: `string` \| `boolean`; \}\>
+
+Defined in: [app/lib/modular.ts:164](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/modular.ts#L164)
+
+Gets react-native-firebase specific "firebase.json" data
+
+#### Returns
+
+`Promise`\<\{\[`key`: `string`\]: `string` \| `boolean`; \}\>
+
+map of key / value pairs containing native firebase.json constants
+
+***
+
+### metaGetAll()
+
+> **metaGetAll**(): `Promise`\<\{\[`key`: `string`\]: `string` \| `boolean`; \}\>
+
+Defined in: [app/lib/modular.ts:153](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/modular.ts#L153)
+
+Gets react-native-firebase specific "meta" data from native Info.plist / AndroidManifest.xml
+
+#### Returns
+
+`Promise`\<\{\[`key`: `string`\]: `string` \| `boolean`; \}\>
+
+map of key / value pairs containing native meta data
+
+***
+
+### onLog()
+
+> **onLog**(`logCallback`, `options?`): `void`
+
+Defined in: [app/lib/modular.ts:69](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/modular.ts#L69)
+
+Sets log handler for VertexAI only currently.
+
+#### Parameters
+
+##### logCallback
+
+The callback function to handle logs.
+
+`LogCallback` | `null`
+
+##### options?
+
+`LogOptions`
+
+Optional settings for log handling.
+
+#### Returns
+
+`void`
+
+void
+
+***
+
+### preferencesClearAll()
+
+> **preferencesClearAll**(): `Promise`\<`void`\>
+
+Defined in: [app/lib/modular.ts:175](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/modular.ts#L175)
+
+Clears react-native-firebase specific native preferences
+
+#### Returns
+
+`Promise`\<`void`\>
+
+Promise<void>
+
+***
+
+### preferencesGetAll()
+
+> **preferencesGetAll**(): `Promise`\<\{\[`key`: `string`\]: `string` \| `boolean`; \}\>
+
+Defined in: [app/lib/modular.ts:186](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/modular.ts#L186)
+
+Gets react-native-firebase specific native preferences
+
+#### Returns
+
+`Promise`\<\{\[`key`: `string`\]: `string` \| `boolean`; \}\>
+
+map of key / value pairs containing native preferences data
+
+***
+
+### preferencesSetBool()
+
+> **preferencesSetBool**(`key`, `value`): `Promise`\<`void`\>
+
+Defined in: [app/lib/modular.ts:199](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/modular.ts#L199)
+
+Sets react-native-firebase specific native boolean preference
+
+#### Parameters
+
+##### key
+
+`string`
+
+the name of the native preference to set
+
+##### value
+
+`boolean`
+
+the value of the native preference to set
+
+#### Returns
+
+`Promise`\<`void`\>
+
+Promise<void>
+
+***
+
+### preferencesSetString()
+
+> **preferencesSetString**(`key`, `value`): `Promise`\<`void`\>
+
+Defined in: [app/lib/modular.ts:212](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/modular.ts#L212)
+
+Sets react-native-firebase specific native string preference
+
+#### Parameters
+
+##### key
+
+`string`
+
+the name of the native preference to set
+
+##### value
+
+`string`
+
+the value of the native preference to set
+
+#### Returns
+
+`Promise`\<`void`\>
+
+Promise<void>
+
+***
+
+### registerVersion()
+
+> **registerVersion**(`_libraryKeyOrName`, `_version`, `_variant?`): `Promise`\<`void`\>
+
+Defined in: [app/lib/modular.ts:55](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/modular.ts#L55)
+
+Registers a library's name and version for platform logging purposes.
+
+#### Parameters
+
+##### \_libraryKeyOrName
+
+`string`
+
+library name or key.
+
+##### \_version
+
+`string`
+
+library version.
+
+##### \_variant?
+
+`string`
+
+library variant. Optional.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+Promise<void>
+
+***
+
+### setLogLevel()
+
+> **setLogLevel**(`logLevel`): `void`
+
+Defined in: [app/lib/modular.ts:123](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/modular.ts#L123)
+
+Sets the log level across all Firebase SDKs.
+
+#### Parameters
+
+##### logLevel
+
+`LogLevelString`
+
+The log level to set ('debug', 'verbose', 'info', 'warn', 'error', 'silent').
+
+#### Returns
+
+`void`
+
+void
+
+***
+
+### setReactNativeAsyncStorage()
+
+> **setReactNativeAsyncStorage**(`asyncStorage`): `void`
+
+Defined in: [app/lib/modular.ts:138](https://github.com/invertase/react-native-firebase/blob/main/packages/app/lib/modular.ts#L138)
+
+The `AsyncStorage` implementation to use for persisting data on 'Other' platforms.
+If not specified, in memory persistence is used.
+
+This is required if you want to persist things like Auth sessions, Analytics device IDs, etc.
+
+#### Parameters
+
+##### asyncStorage
+
+`ReactNativeAsyncStorage`
+
+#### Returns
+
+`void`
