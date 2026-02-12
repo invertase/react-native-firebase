@@ -1021,12 +1021,12 @@ describe('storage() -> StorageReference', function () {
           // todo length?
         });
 
-        it('throws if maxResults is not a number', function () {
+        it('throws if maxResults is not a number', async function () {
           try {
             const { getStorage, ref, list } = storageModular;
             const storageReference = ref(getStorage(), `${PATH}/list`);
 
-            list(storageReference, {
+            await list(storageReference, {
               maxResults: '123',
             });
             return Promise.reject(new Error('Did not throw'));
@@ -1036,11 +1036,11 @@ describe('storage() -> StorageReference', function () {
           }
         });
 
-        it('throws if maxResults is not a valid number', function () {
+        it('throws if maxResults is not a valid number', async function () {
           try {
             const { getStorage, ref, list } = storageModular;
             const storageReference = ref(getStorage(), `${PATH}/list`);
-            list(storageReference, {
+            await list(storageReference, {
               maxResults: 2000,
             });
             return Promise.reject(new Error('Did not throw'));
@@ -1054,11 +1054,11 @@ describe('storage() -> StorageReference', function () {
       });
 
       describe('pageToken', function () {
-        it('throws if pageToken is not a string', function () {
+        it('throws if pageToken is not a string', async function () {
           try {
             const { getStorage, ref, list } = storageModular;
             const storageReference = ref(getStorage(), `${PATH}/list`);
-            list(storageReference, {
+            await list(storageReference, {
               pageToken: 123,
             });
             return Promise.reject(new Error('Did not throw'));
