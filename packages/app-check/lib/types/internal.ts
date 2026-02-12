@@ -7,6 +7,7 @@ import type {
   AppCheckTokenResult,
   PartialObserver,
   ReactNativeFirebaseAppCheckProvider,
+  Unsubscribe,
 } from './appcheck';
 
 export type AppCheckInternal = AppCheck & {
@@ -109,5 +110,16 @@ export type AppCheckInternal = AppCheck & {
     onNext: (tokenResult: AppCheckListenerResult) => void,
     onError?: (error: Error) => void,
     onCompletion?: () => void,
-  ): () => void;
+  ): Unsubscribe;
+
+  /**
+   * Implementation signature used by modular wrappers.
+   */
+  onTokenChanged(
+    onNextOrObserver:
+      | PartialObserver<AppCheckTokenResult>
+      | ((tokenResult: AppCheckTokenResult) => void),
+    onError?: (error: Error) => void,
+    onCompletion?: () => void,
+  ): Unsubscribe;
 };
