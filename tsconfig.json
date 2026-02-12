@@ -70,7 +70,8 @@
     "lib": ["es2015", "es2016", "esnext", "dom"],
     "types": ["react-native", "node"],
     "paths": {
-      "@react-native-firebase/*": ["./packages/*/lib/index.d.ts"]
+      "@react-native-firebase/*": ["./packages/*/lib/index.d.ts"],
+      "@react-native-firebase/app": ["packages/app/dist/typescript/lib"],
     }
   },
   "exclude": ["node_modules", "**/*.spec.ts", "packages/**/dist"]
