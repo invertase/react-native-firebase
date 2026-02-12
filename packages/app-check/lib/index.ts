@@ -33,7 +33,6 @@ export type {
   ReactNativeFirebaseAppCheckProviderWebOptions,
   ReactNativeFirebaseAppCheckProviderAppleOptions,
   ReactNativeFirebaseAppCheckProviderAndroidOptions,
-  ReactNativeFirebaseAppCheckProvider,
   AppCheck,
   FirebaseAppCheckTypes,
 } from './types/appcheck';
