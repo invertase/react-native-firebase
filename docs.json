@@ -31,6 +31,30 @@
       ]
     },
     {
+      "group": "Reference API",
+      "pages": [
+        { "title": "ai", "href": "/reference/ai/lib" },
+        { "title": "analytics", "href": "/reference/analytics/lib/modular" },
+        { "title": "app", "href": "/reference/app/lib/modular" },
+        { "title": "app utils", "href": "/reference/app/lib/utils" },
+        { "title": "app-check", "href": "/reference/app-check/lib/modular" },
+        { "title": "app-distribution", "href": "/reference/app-distribution/lib/modular" },
+        { "title": "auth", "href": "/reference/auth/lib/modular" },
+        { "title": "crashlytics", "href": "/reference/crashlytics/lib/modular" },
+        { "title": "database", "href": "/reference/database/lib/modular" },
+        { "title": "firestore", "href": "/reference/firestore/lib/modular" },
+        { "title": "functions", "href": "/reference/functions/lib/modular" },
+        { "title": "in-app-messaging", "href": "/reference/in-app-messaging/lib/modular" },
+        { "title": "installations", "href": "/reference/installations/lib/modular" },
+        { "title": "messaging", "href": "/reference/messaging/lib/modular" },
+        { "title": "ml", "href": "/reference/ml/lib/modular" },
+        { "title": "perf", "href": "/reference/perf/lib/modular" },
+        { "title": "remote-config", "href": "/reference/remote-config/lib/modular" },
+        { "title": "storage", "href": "/reference/storage/lib/modular" },
+        { "title": "vertexai", "href": "/reference/vertexai/lib" }
+      ]
+    },
+    {
       "group": "Analytics",
       "icon": "//static.invertase.io/assets/firebase/analytics.svg",
       "pages": [
