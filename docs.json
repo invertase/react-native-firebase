@@ -20,6 +20,8 @@
       "pages": [
         { "title": "Getting Started", "href": "/" },
         { "title": "Migration Guide to v22", "href": "/migrating-to-v22" },
+        { "title": "Migration Guide to v23", "href": "/migrating-to-v23" },
+        { "title": "Migration Guide to v24", "href": "/migrating-to-v24" },
         { "title": "TypeScript", "href": "/typescript" },
         { "title": "Platforms", "href": "/platforms" },
         { "title": "Release Notes", "href": "https://github.com/invertase/react-native-firebase/blob/main/CHANGELOG.md" },
