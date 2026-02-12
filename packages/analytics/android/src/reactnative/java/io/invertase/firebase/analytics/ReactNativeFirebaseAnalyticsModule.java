@@ -214,7 +214,8 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
             validBundles.add(itemBundle);
           }
         }
-        bundle.putParcelableArray(FirebaseAnalytics.Param.ITEMS, validBundles.toArray(new Bundle[0]));
+        bundle.putParcelableArray(
+            FirebaseAnalytics.Param.ITEMS, validBundles.toArray(new Bundle[0]));
       }
     }
 
