@@ -27,6 +27,7 @@ import type {
   Unsubscribe,
   AppCheckListenerResult,
 } from './types/appcheck';
+import type { AppCheckInternal } from './types/internal';
 
 /**
  * Activate App Check for the given app. Can be called only once per app.
@@ -63,7 +64,7 @@ export function getToken(
   appCheckInstance: AppCheck,
   forceRefresh?: boolean,
 ): Promise<AppCheckTokenResult> {
-  return appCheckInstance.getToken.call(
+  return (appCheckInstance as AppCheckInternal).getToken.call(
     appCheckInstance,
     forceRefresh,
     // @ts-ignore - Extra arg used by deprecation proxy to detect modular calls
@@ -78,7 +79,7 @@ export function getToken(
  * @returns Promise<AppCheckTokenResult>
  */
 export function getLimitedUseToken(appCheckInstance: AppCheck): Promise<AppCheckTokenResult> {
-  return appCheckInstance.getLimitedUseToken.call(
+  return (appCheckInstance as AppCheckInternal).getLimitedUseToken.call(
     appCheckInstance,
     // @ts-ignore - Extra arg used by deprecation proxy to detect modular calls
     MODULAR_DEPRECATION_ARG,
@@ -94,7 +95,7 @@ export function setTokenAutoRefreshEnabled(
   appCheckInstance: AppCheck,
   isAutoRefreshEnabled: boolean,
 ): void {
-  appCheckInstance.setTokenAutoRefreshEnabled.call(
+  (appCheckInstance as AppCheckInternal).setTokenAutoRefreshEnabled.call(
     appCheckInstance,
     isAutoRefreshEnabled,
     // @ts-ignore - Extra arg used by deprecation proxy to detect modular calls
@@ -144,7 +145,7 @@ export function onTokenChanged(
   onError?: (error: Error) => void,
   onCompletion?: () => void,
 ): Unsubscribe {
-  return appCheckInstance.onTokenChanged.call(
+  return (appCheckInstance as AppCheckInternal).onTokenChanged.call(
     appCheckInstance,
     onNextOrObserver,
     onError,
