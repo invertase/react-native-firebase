@@ -1,0 +1,1008 @@
+[**react-native-firebase**](../../README.mdx)
+
+***
+
+[react-native-firebase](../../modules.mdx) / messaging/lib/modular
+
+# messaging/lib/modular
+
+## Variables
+
+### AuthorizationStatus
+
+> `const` **AuthorizationStatus**: `object`
+
+Defined in: [messaging/lib/statics.ts:4](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/statics.ts#L4)
+
+#### Type Declaration
+
+##### AUTHORIZED
+
+> `readonly` **AUTHORIZED**: `1` = `1`
+
+##### DENIED
+
+> `readonly` **DENIED**: `0` = `0`
+
+##### EPHEMERAL
+
+> `readonly` **EPHEMERAL**: `3` = `3`
+
+##### NOT\_DETERMINED
+
+> `readonly` **NOT\_DETERMINED**: `-1` = `-1`
+
+##### PROVISIONAL
+
+> `readonly` **PROVISIONAL**: `2` = `2`
+
+***
+
+### NotificationAndroidPriority
+
+> `const` **NotificationAndroidPriority**: `object`
+
+Defined in: [messaging/lib/statics.ts:12](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/statics.ts#L12)
+
+#### Type Declaration
+
+##### PRIORITY\_DEFAULT
+
+> `readonly` **PRIORITY\_DEFAULT**: `0` = `0`
+
+##### PRIORITY\_HIGH
+
+> `readonly` **PRIORITY\_HIGH**: `1` = `1`
+
+##### PRIORITY\_LOW
+
+> `readonly` **PRIORITY\_LOW**: `-1` = `-1`
+
+##### PRIORITY\_MAX
+
+> `readonly` **PRIORITY\_MAX**: `2` = `2`
+
+##### PRIORITY\_MIN
+
+> `readonly` **PRIORITY\_MIN**: `-2` = `-2`
+
+***
+
+### NotificationAndroidVisibility
+
+> `const` **NotificationAndroidVisibility**: `object`
+
+Defined in: [messaging/lib/statics.ts:20](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/statics.ts#L20)
+
+#### Type Declaration
+
+##### VISIBILITY\_PRIVATE
+
+> `readonly` **VISIBILITY\_PRIVATE**: `0` = `0`
+
+##### VISIBILITY\_PUBLIC
+
+> `readonly` **VISIBILITY\_PUBLIC**: `1` = `1`
+
+##### VISIBILITY\_SECRET
+
+> `readonly` **VISIBILITY\_SECRET**: `-1` = `-1`
+
+## Functions
+
+### deleteToken()
+
+> **deleteToken**(`messaging`, `tokenOptions?`): `Promise`\<`void`\>
+
+Defined in: [messaging/lib/modular.ts:52](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L52)
+
+Removes access to an FCM token previously authorized by its scope.
+Messages sent by the server to this token will fail.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+##### tokenOptions?
+
+`NativeTokenOptions`
+
+Options to override senderId (iOS) and projectId (Android).
+
+#### Returns
+
+`Promise`\<`void`\>
+
+Promise that resolves when the token is deleted.
+
+***
+
+### experimentalSetDeliveryMetricsExportedToBigQueryEnabled()
+
+> **experimentalSetDeliveryMetricsExportedToBigQueryEnabled**(`messaging`, `enabled`): `Promise`\<`void`\>
+
+Defined in: [messaging/lib/modular.ts:431](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L431)
+
+Sets whether message delivery metrics are exported to BigQuery is enabled or disabled.
+The value is false by default. Set this to true to allow exporting of message delivery metrics to BigQuery.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+##### enabled
+
+`boolean`
+
+A boolean value to enable or disable exporting of message delivery metrics to BigQuery.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+Promise that resolves when the setting is updated.
+
+***
+
+### getAPNSToken()
+
+> **getAPNSToken**(`messaging`): `Promise`\<`string` \| `null`\>
+
+Defined in: [messaging/lib/modular.ts:223](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L223)
+
+On iOS, it is possible to get the users APNs token. This may be required if you want to send messages to your
+iOS devices without using the FCM service.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+#### Returns
+
+`Promise`\<`string` \| `null`\>
+
+Promise that resolves with the APNs token or null.
+
+***
+
+### getDidOpenSettingsForNotification()
+
+> **getDidOpenSettingsForNotification**(`messaging`): `Promise`\<`boolean`\>
+
+Defined in: [messaging/lib/modular.ts:170](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L170)
+
+When the app is opened from iOS notifications settings from a quit state,
+this method will return `true` or `false` if the app was opened via another method.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+#### Returns
+
+`Promise`\<`boolean`\>
+
+Promise that resolves with a boolean indicating if the app was opened from settings.
+
+***
+
+### getInitialNotification()
+
+> **getInitialNotification**(`messaging`): `Promise`\<`RemoteMessage` \| `null`\>
+
+Defined in: [messaging/lib/modular.ts:159](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L159)
+
+When a notification from FCM has triggered the application to open from a quit state,
+this method will return a `RemoteMessage` containing the notification data, or `null` if
+the app was opened via another method.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+#### Returns
+
+`Promise`\<`RemoteMessage` \| `null`\>
+
+Promise that resolves with the initial notification or null.
+
+***
+
+### getIsHeadless()
+
+> **getIsHeadless**(`messaging`): `Promise`\<`boolean`\>
+
+Defined in: [messaging/lib/modular.ts:181](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L181)
+
+Returns whether the root view is headless or not
+i.e true if the app was launched in the background (for example, by data-only cloud message)
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+#### Returns
+
+`Promise`\<`boolean`\>
+
+Promise that resolves with a boolean indicating if the app is headless.
+
+***
+
+### getMessaging()
+
+> **getMessaging**(`app?`): `Messaging`
+
+Defined in: [messaging/lib/modular.ts:37](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L37)
+
+Returns a Messaging instance for the given app.
+
+#### Parameters
+
+##### app?
+
+`FirebaseApp`
+
+FirebaseApp. Optional.
+
+#### Returns
+
+`Messaging`
+
+Messaging instance
+
+***
+
+### getToken()
+
+> **getToken**(`messaging`, `options?`): `Promise`\<`string`\>
+
+Defined in: [messaging/lib/modular.ts:66](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L66)
+
+Returns an FCM token for this device. Optionally, you can specify custom options for your own use case.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+##### options?
+
+`GetTokenOptions` & `NativeTokenOptions`
+
+Options to override senderId (iOS) and appName.
+
+#### Returns
+
+`Promise`\<`string`\>
+
+Promise that resolves with the FCM token.
+
+***
+
+### hasPermission()
+
+> **hasPermission**(`messaging`): `Promise`\<`AuthorizationStatus`\>
+
+Defined in: [messaging/lib/modular.ts:261](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L261)
+
+Returns a `AuthorizationStatus` as to whether the user has messaging permission for this app.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+#### Returns
+
+`Promise`\<`AuthorizationStatus`\>
+
+Promise that resolves with the authorization status.
+
+***
+
+### isAutoInitEnabled()
+
+> **isAutoInitEnabled**(`messaging`): `boolean`
+
+Defined in: [messaging/lib/modular.ts:137](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L137)
+
+Returns whether messaging auto initialization is enabled or disabled for the device.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+#### Returns
+
+`boolean`
+
+Boolean indicating whether auto initialization is enabled.
+
+***
+
+### isDeliveryMetricsExportToBigQueryEnabled()
+
+> **isDeliveryMetricsExportToBigQueryEnabled**(`messaging`): `boolean`
+
+Defined in: [messaging/lib/modular.ts:380](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L380)
+
+Returns a boolean whether message delivery metrics are exported to BigQuery.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+#### Returns
+
+`boolean`
+
+Boolean indicating if message delivery metrics are exported to BigQuery.
+
+***
+
+### isDeviceRegisteredForRemoteMessages()
+
+> **isDeviceRegisteredForRemoteMessages**(`messaging`): `boolean`
+
+Defined in: [messaging/lib/modular.ts:203](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L203)
+
+Returns a boolean value whether the user has registered for remote notifications via
+`registerDeviceForRemoteMessages()`. For iOS. Android always returns `true`.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+#### Returns
+
+`boolean`
+
+Boolean indicating if the device is registered for remote messages.
+
+***
+
+### isNotificationDelegationEnabled()
+
+> **isNotificationDelegationEnabled**(`messaging`): `boolean`
+
+Defined in: [messaging/lib/modular.ts:390](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L390)
+
+Returns a boolean whether message delegation is enabled. Android only,
+always returns false on iOS
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+#### Returns
+
+`boolean`
+
+Boolean indicating if notification delegation is enabled.
+
+***
+
+### isSupported()
+
+> **isSupported**(`messaging`): `Promise`\<`boolean`\>
+
+Defined in: [messaging/lib/modular.ts:419](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L419)
+
+Checks if all required APIs exist in the browser.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+#### Returns
+
+`Promise`\<`boolean`\>
+
+Promise that resolves with a boolean indicating if the APIs are supported.
+
+***
+
+### onDeletedMessages()
+
+> **onDeletedMessages**(`messaging`, `listener`): () => `void`
+
+Defined in: [messaging/lib/modular.ts:272](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L272)
+
+Called when the FCM server deletes pending messages.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+##### listener
+
+() => `void`
+
+Called when the FCM deletes pending messages.
+
+#### Returns
+
+Function to unsubscribe from the deleted messages listener.
+
+> (): `void`
+
+##### Returns
+
+`void`
+
+***
+
+### onMessage()
+
+> **onMessage**(`messaging`, `listener`): () => `void`
+
+Defined in: [messaging/lib/modular.ts:81](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L81)
+
+When any FCM payload is received, the listener callback is called with a `RemoteMessage`.
+> This subscriber method is only called when the app is active (in the foreground).
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+##### listener
+
+(`message`) => `any`
+
+Called with a `RemoteMessage` when a new FCM payload is received from the server.
+
+#### Returns
+
+Function to unsubscribe from the message listener.
+
+> (): `void`
+
+##### Returns
+
+`void`
+
+***
+
+### onMessageSent()
+
+> **onMessageSent**(`messaging`, `listener`): () => `void`
+
+Defined in: [messaging/lib/modular.ts:283](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L283)
+
+When sending a `RemoteMessage`, this listener is called when the message has been sent to FCM.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+##### listener
+
+(`messageId`) => `any`
+
+Called when the FCM sends the remote message to FCM.
+
+#### Returns
+
+Function to unsubscribe from the message sent listener.
+
+> (): `void`
+
+##### Returns
+
+`void`
+
+***
+
+### onNotificationOpenedApp()
+
+> **onNotificationOpenedApp**(`messaging`, `listener`): () => `void`
+
+Defined in: [messaging/lib/modular.ts:96](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L96)
+
+When the user presses a notification displayed via FCM, this listener will be called if the app
+has opened from a background state.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+##### listener
+
+(`message`) => `any`
+
+Called with a `RemoteMessage` when a notification press opens the application.
+
+#### Returns
+
+Function to unsubscribe from the notification opened listener.
+
+> (): `void`
+
+##### Returns
+
+`void`
+
+***
+
+### onSendError()
+
+> **onSendError**(`messaging`, `listener`): () => `void`
+
+Defined in: [messaging/lib/modular.ts:298](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L298)
+
+When sending a `RemoteMessage`, this listener is called when an error is thrown and the
+message could not be sent.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+##### listener
+
+(`evt`) => `any`
+
+Called when the FCM sends the remote message to FCM.
+
+#### Returns
+
+Function to unsubscribe from the send error listener.
+
+> (): `void`
+
+##### Returns
+
+`void`
+
+***
+
+### onTokenRefresh()
+
+> **onTokenRefresh**(`messaging`, `listener`): () => `void`
+
+Defined in: [messaging/lib/modular.ts:112](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L112)
+
+Called when a new registration token is generated for the device. For example, this event can happen when a
+token expires or when the server invalidates the token.
+> This subscriber method is only called when the app is active (in the foreground).
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+##### listener
+
+(`token`) => `any`
+
+Called with a FCM token when the token is refreshed.
+
+#### Returns
+
+Function to unsubscribe from the token refresh listener.
+
+> (): `void`
+
+##### Returns
+
+`void`
+
+***
+
+### registerDeviceForRemoteMessages()
+
+> **registerDeviceForRemoteMessages**(`messaging`): `Promise`\<`void`\>
+
+Defined in: [messaging/lib/modular.ts:192](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L192)
+
+On iOS, if your app wants to receive remote messages from FCM (via APNs), you must explicitly register
+with APNs if auto-registration has been disabled.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+Promise that resolves when the device is registered.
+
+***
+
+### requestPermission()
+
+> **requestPermission**(`messaging`, `iosPermissions?`): `Promise`\<`AuthorizationStatus`\>
+
+Defined in: [messaging/lib/modular.ts:124](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L124)
+
+On iOS, messaging permission must be requested by the current application before messages can
+be received or sent.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+##### iosPermissions?
+
+`IOSPermissions`
+
+All the available permissions for iOS that can be requested.
+
+#### Returns
+
+`Promise`\<`AuthorizationStatus`\>
+
+Promise that resolves with the authorization status.
+
+***
+
+### sendMessage()
+
+> **sendMessage**(`messaging`, `message`): `Promise`\<`void`\>
+
+Defined in: [messaging/lib/modular.ts:347](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L347)
+
+Send a new `RemoteMessage` to the FCM server.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+##### message
+
+`RemoteMessage`
+
+A `RemoteMessage` interface.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+Promise that resolves when the message is sent.
+
+***
+
+### setAPNSToken()
+
+> **setAPNSToken**(`messaging`, `token`, `type?`): `Promise`\<`void`\>
+
+Defined in: [messaging/lib/modular.ts:251](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L251)
+
+On iOS, This method is used to set the APNs Token received by the application delegate.
+Note that the token is expected to be a hexadecimal string, as it is an NSData type in
+the underlying native firebase SDK, and raw data may only be passed as a string if it is
+hex encoded. Calling code is responsible for correct encoding, you should verify by comparing
+the results of `getAPNSToken()` with your token parameter to make sure they are equivalent.
+
+Messaging uses method swizzling to ensure that the APNs token is set automatically.
+However, if you have disabled swizzling by setting FirebaseAppDelegateProxyEnabled to NO
+in your app's Info.plist, you should manually set the APNs token in your application
+delegate's application(_:didRegisterForRemoteNotificationsWithDeviceToken:) method.
+
+If you would like to set the type of the APNs token, rather than relying on automatic
+detection, provide a type of either 'prod', 'sandbox'. Omitting the type parameter
+or specifying 'unknown' will rely on automatic type detection based on provisioning profile.
+
+At a native level you may also call objective-c `[FIRMessaging setAPNSToken];` as needed.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+##### token
+
+`string`
+
+A hexadecimal string representing your APNs token.
+
+##### type?
+
+`string`
+
+Optional. A string specifying 'prod', 'sandbox' or 'unknown' token type.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+Promise that resolves when the APNs token is set.
+
+***
+
+### setAutoInitEnabled()
+
+> **setAutoInitEnabled**(`messaging`, `enabled`): `Promise`\<`void`\>
+
+Defined in: [messaging/lib/modular.ts:147](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L147)
+
+Sets whether messaging auto initialization is enabled or disabled for the device.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+##### enabled
+
+`boolean`
+
+A boolean value to enable or disable auto initialization.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+Promise that resolves when the setting is updated.
+
+***
+
+### setBackgroundMessageHandler()
+
+> **setBackgroundMessageHandler**(`messaging`, `handler`): `void`
+
+Defined in: [messaging/lib/modular.ts:314](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L314)
+
+Set a message handler function which is called when the app is in the background
+or terminated. In Android, a headless task is created, allowing you to access the React Native environment
+to perform tasks such as updating local storage, or sending a network request.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+##### handler
+
+(`message`) => `Promise`\<`any`\>
+
+Called when a message is sent and the application is in a background or terminated state.
+
+#### Returns
+
+`void`
+
+void
+
+***
+
+### setNotificationDelegationEnabled()
+
+> **setNotificationDelegationEnabled**(`messaging`, `enabled`): `Promise`\<`void`\>
+
+Defined in: [messaging/lib/modular.ts:402](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L402)
+
+Sets whether message notification delegation is enabled or disabled.
+The value is false by default. Set this to true to allow delegation of notification to Google Play Services.
+Note if true message handlers will not function on Android, and it has no effect on iOS
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+##### enabled
+
+`boolean`
+
+A boolean value to enable or disable delegation of messages to Google Play Services.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+Promise that resolves when the setting is updated.
+
+***
+
+### setOpenSettingsForNotificationsHandler()
+
+> **setOpenSettingsForNotificationsHandler**(`messaging`, `handler`): `void`
+
+Defined in: [messaging/lib/modular.ts:329](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L329)
+
+Set a handler function which is called when the `${App Name} notifications settings`
+link in iOS settings is clicked.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+##### handler
+
+(`message`) => `any`
+
+Called when link in iOS settings is clicked.
+
+#### Returns
+
+`void`
+
+void
+
+***
+
+### subscribeToTopic()
+
+> **subscribeToTopic**(`messaging`, `topic`): `Promise`\<`void`\>
+
+Defined in: [messaging/lib/modular.ts:359](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L359)
+
+Apps can subscribe to a topic, which allows the FCM server to send targeted messages to only those
+devices subscribed to that topic.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+##### topic
+
+`string`
+
+The topic name.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+Promise that resolves when the subscription is complete.
+
+***
+
+### unregisterDeviceForRemoteMessages()
+
+> **unregisterDeviceForRemoteMessages**(`messaging`): `Promise`\<`void`\>
+
+Defined in: [messaging/lib/modular.ts:212](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L212)
+
+Unregisters the app from receiving remote notifications.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+Promise that resolves when the device is unregistered.
+
+***
+
+### unsubscribeFromTopic()
+
+> **unsubscribeFromTopic**(`messaging`, `topic`): `Promise`\<`void`\>
+
+Defined in: [messaging/lib/modular.ts:370](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/lib/modular.ts#L370)
+
+Unsubscribe the device from a topic.
+
+#### Parameters
+
+##### messaging
+
+`Messaging`
+
+Messaging instance.
+
+##### topic
+
+`string`
+
+The topic name.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+Promise that resolves when the unsubscription is complete.

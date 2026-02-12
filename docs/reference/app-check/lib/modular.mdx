@@ -1,0 +1,263 @@
+[**react-native-firebase**](../../README.mdx)
+
+***
+
+[react-native-firebase](../../modules.mdx) / app-check/lib/modular
+
+# app-check/lib/modular
+
+## Classes
+
+### ReactNativeFirebaseAppCheckProvider
+
+Defined in: [app-check/lib/ReactNativeFirebaseAppCheckProvider.ts:7](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/ReactNativeFirebaseAppCheckProvider.ts#L7)
+
+#### Implements
+
+- `AppCheckProvider`
+
+#### Constructors
+
+##### Constructor
+
+> **new ReactNativeFirebaseAppCheckProvider**(): [`ReactNativeFirebaseAppCheckProvider`](#reactnativefirebaseappcheckprovider)
+
+Defined in: [app-check/lib/ReactNativeFirebaseAppCheckProvider.ts:10](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/ReactNativeFirebaseAppCheckProvider.ts#L10)
+
+###### Returns
+
+[`ReactNativeFirebaseAppCheckProvider`](#reactnativefirebaseappcheckprovider)
+
+#### Properties
+
+##### providerOptions?
+
+> `optional` **providerOptions**: `ReactNativeFirebaseAppCheckProviderOptionsMap`
+
+Defined in: [app-check/lib/ReactNativeFirebaseAppCheckProvider.ts:8](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/ReactNativeFirebaseAppCheckProvider.ts#L8)
+
+#### Methods
+
+##### configure()
+
+> **configure**(`options`): `void`
+
+Defined in: [app-check/lib/ReactNativeFirebaseAppCheckProvider.ts:12](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/ReactNativeFirebaseAppCheckProvider.ts#L12)
+
+###### Parameters
+
+###### options
+
+`ReactNativeFirebaseAppCheckProviderOptionsMap`
+
+###### Returns
+
+`void`
+
+##### getToken()
+
+> **getToken**(): `Promise`\<`AppCheckToken`\>
+
+Defined in: [app-check/lib/ReactNativeFirebaseAppCheckProvider.ts:16](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/ReactNativeFirebaseAppCheckProvider.ts#L16)
+
+Returns an AppCheck token.
+
+###### Returns
+
+`Promise`\<`AppCheckToken`\>
+
+###### Implementation of
+
+`AppCheckProvider.getToken`
+
+## Functions
+
+### getLimitedUseToken()
+
+> **getLimitedUseToken**(`appCheckInstance`): `Promise`\<`AppCheckTokenResult`\>
+
+Defined in: [app-check/lib/modular.ts:80](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/modular.ts#L80)
+
+Get a limited-use (consumable) App Check token.
+For use with server calls to firebase functions or custom backends using the firebase admin SDK.
+
+#### Parameters
+
+##### appCheckInstance
+
+`AppCheck`
+
+The App Check instance.
+
+#### Returns
+
+`Promise`\<`AppCheckTokenResult`\>
+
+Promise<AppCheckTokenResult>
+
+***
+
+### getToken()
+
+> **getToken**(`appCheckInstance`, `forceRefresh?`): `Promise`\<`AppCheckTokenResult`\>
+
+Defined in: [app-check/lib/modular.ts:62](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/modular.ts#L62)
+
+Get the current App Check token. Attaches to the most recent in-flight request if one is present.
+Returns null if no token is present and no token requests are in-flight.
+
+#### Parameters
+
+##### appCheckInstance
+
+`AppCheck`
+
+The App Check instance.
+
+##### forceRefresh?
+
+`boolean`
+
+Whether to force refresh the token. Optional
+
+#### Returns
+
+`Promise`\<`AppCheckTokenResult`\>
+
+Promise<AppCheckTokenResult>
+
+***
+
+### initializeAppCheck()
+
+> **initializeAppCheck**(`app?`, `options?`): `Promise`\<`AppCheck`\>
+
+Defined in: [app-check/lib/modular.ts:37](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/modular.ts#L37)
+
+Activate App Check for the given app. Can be called only once per app.
+
+#### Parameters
+
+##### app?
+
+`FirebaseApp`
+
+The app to initialize App Check for. Optional.
+
+##### options?
+
+`AppCheckOptions`
+
+App Check options.
+
+#### Returns
+
+`Promise`\<`AppCheck`\>
+
+Promise<AppCheck>
+
+***
+
+### onTokenChanged()
+
+#### Call Signature
+
+> **onTokenChanged**(`appCheckInstance`, `listener`): `Unsubscribe`
+
+Defined in: [app-check/lib/modular.ts:115](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/modular.ts#L115)
+
+Registers a listener to changes in the token state. There can be more
+than one listener registered at the same time for one or more
+App Check instances. The listeners call back on the UI thread whenever
+the current token associated with this App Check instance changes.
+
+##### Parameters
+
+###### appCheckInstance
+
+`AppCheck`
+
+The App Check instance.
+
+###### listener
+
+`PartialObserver`\<`AppCheckTokenResult`\>
+
+The listener to register.
+
+##### Returns
+
+`Unsubscribe`
+
+Unsubscribe
+
+#### Call Signature
+
+> **onTokenChanged**(`appCheckInstance`, `onNext`, `onError?`, `onCompletion?`): `Unsubscribe`
+
+Defined in: [app-check/lib/modular.ts:132](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/modular.ts#L132)
+
+Registers a listener to changes in the token state. There can be more
+than one listener registered at the same time for one or more
+App Check instances. The listeners call back on the UI thread whenever
+the current token associated with this App Check instance changes.
+
+##### Parameters
+
+###### appCheckInstance
+
+`AppCheck`
+
+The App Check instance.
+
+###### onNext
+
+(`tokenResult`) => `void`
+
+The callback function for token changes.
+
+###### onError?
+
+(`error`) => `void`
+
+Optional error callback.
+
+###### onCompletion?
+
+() => `void`
+
+Optional completion callback.
+
+##### Returns
+
+`Unsubscribe`
+
+Unsubscribe
+
+***
+
+### setTokenAutoRefreshEnabled()
+
+> **setTokenAutoRefreshEnabled**(`appCheckInstance`, `isAutoRefreshEnabled`): `void`
+
+Defined in: [app-check/lib/modular.ts:93](https://github.com/invertase/react-native-firebase/blob/main/packages/app-check/lib/modular.ts#L93)
+
+Set whether App Check will automatically refresh tokens as needed.
+
+#### Parameters
+
+##### appCheckInstance
+
+`AppCheck`
+
+The App Check instance.
+
+##### isAutoRefreshEnabled
+
+`boolean`
+
+Whether to enable auto-refresh.
+
+#### Returns
+
+`void`

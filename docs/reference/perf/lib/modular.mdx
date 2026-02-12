@@ -1,0 +1,201 @@
+[**react-native-firebase**](../../README.mdx)
+
+***
+
+[react-native-firebase](../../modules.mdx) / perf/lib/modular
+
+# perf/lib/modular
+
+## Type Aliases
+
+### PerformanceSettings
+
+> **PerformanceSettings** = `object`
+
+Defined in: [perf/lib/modular/index.d.ts:35](https://github.com/invertase/react-native-firebase/blob/main/packages/perf/lib/modular/index.d.ts#L35)
+
+#### Properties
+
+##### dataCollectionEnabled
+
+> **dataCollectionEnabled**: `boolean`
+
+Defined in: [perf/lib/modular/index.d.ts:36](https://github.com/invertase/react-native-firebase/blob/main/packages/perf/lib/modular/index.d.ts#L36)
+
+## Functions
+
+### getPerformance()
+
+> **getPerformance**(`app?`): `Module`
+
+Defined in: [perf/lib/modular/index.d.ts:33](https://github.com/invertase/react-native-firebase/blob/main/packages/perf/lib/modular/index.d.ts#L33)
+
+Returns a Performance instance for the given app.
+
+#### Parameters
+
+##### app?
+
+`FirebaseApp`
+
+FirebaseApp. Optional.
+
+#### Returns
+
+`Module`
+
+***
+
+### httpMetric()
+
+> **httpMetric**(`perf`, `identifier`, `httpMethod`): `HttpMetric`
+
+Defined in: [perf/lib/modular/index.d.ts:65](https://github.com/invertase/react-native-firebase/blob/main/packages/perf/lib/modular/index.d.ts#L65)
+
+Returns a HttpMetric instance.
+
+#### Parameters
+
+##### perf
+
+`Module`
+
+Performance instance.
+
+##### identifier
+
+`string`
+
+A String to identify the HttpMetric instance.
+
+##### httpMethod
+
+`HttpMethod`
+
+The HTTP method for the HttpMetric instance.
+
+#### Returns
+
+`HttpMetric`
+
+***
+
+### initializePerformance()
+
+> **initializePerformance**(`app`, `settings?`): `Promise`\<`Module`\>
+
+Defined in: [perf/lib/modular/index.d.ts:45](https://github.com/invertase/react-native-firebase/blob/main/packages/perf/lib/modular/index.d.ts#L45)
+
+Returns a Performance instance for the given app.
+
+#### Parameters
+
+##### app
+
+`FirebaseApp`
+
+FirebaseApp. Required.
+
+##### settings?
+
+[`PerformanceSettings`](#performancesettings)
+
+Optional PerformanceSettings. Set "dataCollectionEnabled" which will enable/disable Performance collection.
+
+#### Returns
+
+`Promise`\<`Module`\>
+
+***
+
+### newScreenTrace()
+
+> **newScreenTrace**(`perf`, `identifier`): `ScreenTrace`
+
+Defined in: [perf/lib/modular/index.d.ts:79](https://github.com/invertase/react-native-firebase/blob/main/packages/perf/lib/modular/index.d.ts#L79)
+
+Creates a ScreenTrace instance with the given identifier.
+Throws if hardware acceleration is disabled or if Android is 9.0 or 9.1.
+
+#### Parameters
+
+##### perf
+
+`Module`
+
+Performance instance.
+
+##### identifier
+
+`string`
+
+Name of the trace, no leading or trailing whitespace allowed, no leading underscore '_' character allowed, max length is 100.
+
+#### Returns
+
+`ScreenTrace`
+
+#### Platform
+
+android Android !== 9.0.0 && Android !== 9.1.0
+
+***
+
+### startScreenTrace()
+
+> **startScreenTrace**(`perf`, `identifier`): `Promise`\<`ScreenTrace`\>
+
+Defined in: [perf/lib/modular/index.d.ts:89](https://github.com/invertase/react-native-firebase/blob/main/packages/perf/lib/modular/index.d.ts#L89)
+
+Creates a ScreenTrace instance with the given identifier and immediately starts it.
+Throws if hardware acceleration is disabled or if Android is 9.0 or 9.1.
+
+#### Parameters
+
+##### perf
+
+`Module`
+
+Performance instance.
+
+##### identifier
+
+`string`
+
+Name of the screen.
+
+#### Returns
+
+`Promise`\<`ScreenTrace`\>
+
+#### Platform
+
+android Android !== 9.0.0 && Android !== 9.1.0
+
+***
+
+### trace()
+
+> **trace**(`perf`, `identifier`): `Trace`
+
+Defined in: [perf/lib/modular/index.d.ts:56](https://github.com/invertase/react-native-firebase/blob/main/packages/perf/lib/modular/index.d.ts#L56)
+
+Returns a Trace instance.
+
+#### Parameters
+
+##### perf
+
+`Module`
+
+Performance instance.
+
+##### identifier
+
+`string`
+
+A String to identify the Trace instance.
+
+#### Returns
+
+`Trace`

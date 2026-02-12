@@ -1,0 +1,2089 @@
+[**react-native-firebase**](../../README.mdx)
+
+***
+
+[react-native-firebase](../../modules.mdx) / auth/lib/modular
+
+# auth/lib/modular
+
+## Interfaces
+
+### ApplicationVerifier
+
+Defined in: [auth/lib/modular/index.d.ts:318](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L318)
+
+Interface representing an application verifier.
+
+#### Properties
+
+##### type
+
+> `readonly` **type**: `string`
+
+Defined in: [auth/lib/modular/index.d.ts:319](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L319)
+
+#### Methods
+
+##### verify()
+
+> **verify**(): `Promise`\<`string`\>
+
+Defined in: [auth/lib/modular/index.d.ts:320](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L320)
+
+###### Returns
+
+`Promise`\<`string`\>
+
+***
+
+### PasswordValidationStatus
+
+Defined in: [auth/lib/modular/index.d.ts:753](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L753)
+
+A structure indicating which password policy requirements were met or violated and what the
+requirements are.
+
+#### Properties
+
+##### containsLowercaseLetter?
+
+> `readonly` `optional` **containsLowercaseLetter**: `boolean`
+
+Defined in: [auth/lib/modular/index.d.ts:769](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L769)
+
+Whether the password contains a lowercase letter, or undefined if not required.
+
+##### containsNonAlphanumericCharacter?
+
+> `readonly` `optional` **containsNonAlphanumericCharacter**: `boolean`
+
+Defined in: [auth/lib/modular/index.d.ts:781](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L781)
+
+Whether the password contains a non-alphanumeric character, or undefined if not required.
+
+##### containsNumericCharacter?
+
+> `readonly` `optional` **containsNumericCharacter**: `boolean`
+
+Defined in: [auth/lib/modular/index.d.ts:777](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L777)
+
+Whether the password contains a numeric character, or undefined if not required.
+
+##### containsUppercaseLetter?
+
+> `readonly` `optional` **containsUppercaseLetter**: `boolean`
+
+Defined in: [auth/lib/modular/index.d.ts:773](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L773)
+
+Whether the password contains an uppercase letter, or undefined if not required.
+
+##### isValid
+
+> `readonly` **isValid**: `boolean`
+
+Defined in: [auth/lib/modular/index.d.ts:757](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L757)
+
+Whether the password meets all requirements.
+
+##### meetsMaxPasswordLength?
+
+> `readonly` `optional` **meetsMaxPasswordLength**: `boolean`
+
+Defined in: [auth/lib/modular/index.d.ts:765](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L765)
+
+Whether the password meets the maximum password length, or undefined if not required.
+
+##### meetsMinPasswordLength?
+
+> `readonly` `optional` **meetsMinPasswordLength**: `boolean`
+
+Defined in: [auth/lib/modular/index.d.ts:761](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L761)
+
+Whether the password meets the minimum password length, or undefined if not required.
+
+##### passwordPolicy
+
+> `readonly` **passwordPolicy**: `PasswordPolicy`
+
+Defined in: [auth/lib/modular/index.d.ts:785](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L785)
+
+The policy used to validate the password.
+
+***
+
+### PopupRedirectResolver
+
+Defined in: [auth/lib/modular/index.d.ts:158](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L158)
+
+## Type Aliases
+
+### Persistence
+
+> **Persistence** = `object`
+
+Defined in: [auth/lib/modular/index.d.ts:242](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L242)
+
+Type of Persistence.
+- 'SESSION' is used for temporary persistence such as `sessionStorage`.
+- 'LOCAL' is used for long term persistence such as `localStorage` or `IndexedDB`.
+- 'NONE' is used for in-memory, or no persistence.
+
+#### Properties
+
+##### type
+
+> `readonly` **type**: `"SESSION"` \| `"LOCAL"` \| `"NONE"`
+
+Defined in: [auth/lib/modular/index.d.ts:243](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L243)
+
+## Variables
+
+### AppleAuthProvider
+
+> **AppleAuthProvider**: `any`
+
+## Functions
+
+### applyActionCode()
+
+> **applyActionCode**(`auth`, `oobCode`): `Promise`\<`void`\>
+
+Defined in: [auth/lib/modular/index.d.ts:53](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L53)
+
+Applies a verification code sent to the user by email or other out-of-band mechanism.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### oobCode
+
+`string`
+
+The out-of-band code sent to the user.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A promise that resolves when the code is applied successfully.
+
+***
+
+### beforeAuthStateChanged()
+
+> **beforeAuthStateChanged**(`auth`, `callback`, `onAbort?`): `void`
+
+Defined in: [auth/lib/modular/index.d.ts:63](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L63)
+
+Adds a blocking callback that runs before an auth state change sets a new user.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### callback
+
+(`user`) => `void`
+
+A callback function to run before the auth state changes.
+
+##### onAbort?
+
+() => `void`
+
+Optional. A callback function to run if the operation is aborted.
+
+#### Returns
+
+`void`
+
+***
+
+### checkActionCode()
+
+> **checkActionCode**(`auth`, `oobCode`): `Promise`\<`ActionCodeInfo`\>
+
+Defined in: [auth/lib/modular/index.d.ts:76](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L76)
+
+Checks a verification code sent to the user by email or other out-of-band mechanism.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### oobCode
+
+`string`
+
+The out-of-band code sent to the user.
+
+#### Returns
+
+`Promise`\<`ActionCodeInfo`\>
+
+A promise that resolves with the action code information.
+
+***
+
+### confirmPasswordReset()
+
+> **confirmPasswordReset**(`auth`, `oobCode`, `newPassword`): `Promise`\<`void`\>
+
+Defined in: [auth/lib/modular/index.d.ts:89](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L89)
+
+Completes the password reset process, given a confirmation code and new password.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### oobCode
+
+`string`
+
+The out-of-band code sent to the user.
+
+##### newPassword
+
+`string`
+
+The new password.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A promise that resolves when the password is reset.
+
+***
+
+### connectAuthEmulator()
+
+> **connectAuthEmulator**(`auth`, `url`, `options?`): `void`
+
+Defined in: [auth/lib/modular/index.d.ts:104](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L104)
+
+Changes the Auth instance to communicate with the Firebase Auth Emulator, instead of production Firebase Auth services.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### url
+
+`string`
+
+The URL of the Firebase Auth Emulator.
+
+##### options?
+
+Optional. Options for the emulator connection.
+
+This must be called synchronously immediately following the first call to initializeAuth(). Do not use with production credentials as emulator traffic is not encrypted.
+
+###### disableWarnings
+
+`boolean`
+
+#### Returns
+
+`void`
+
+***
+
+### createUserWithEmailAndPassword()
+
+> **createUserWithEmailAndPassword**(`auth`, `email`, `password`): `Promise`\<`UserCredential`\>
+
+Defined in: [auth/lib/modular/index.d.ts:118](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L118)
+
+Creates a new user account associated with the specified email address and password.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### email
+
+`string`
+
+The user's email address.
+
+##### password
+
+`string`
+
+The user's password.
+
+#### Returns
+
+`Promise`\<`UserCredential`\>
+
+A promise that resolves with the user credentials.
+
+***
+
+### deleteUser()
+
+> **deleteUser**(`user`): `Promise`\<`void`\>
+
+Defined in: [auth/lib/modular/index.d.ts:463](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L463)
+
+Deletes and signs out the user.
+
+#### Parameters
+
+##### user
+
+`User`
+
+The user to delete.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A promise that resolves when the user is deleted.
+
+***
+
+### fetchSignInMethodsForEmail()
+
+> **fetchSignInMethodsForEmail**(`auth`, `email`): `Promise`\<`string`[]\>
+
+Defined in: [auth/lib/modular/index.d.ts:131](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L131)
+
+Gets the list of possible sign in methods for the given email address.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### email
+
+`string`
+
+The user's email address.
+
+#### Returns
+
+`Promise`\<`string`[]\>
+
+A promise that resolves with the list of sign-in methods.
+
+***
+
+### getAdditionalUserInfo()
+
+> **getAdditionalUserInfo**(`userCredential`): `AdditionalUserInfo` \| `null`
+
+Defined in: [auth/lib/modular/index.d.ts:696](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L696)
+
+Extracts provider specific AdditionalUserInfo for the given credential.
+
+#### Parameters
+
+##### userCredential
+
+`UserCredential`
+
+The user credential.
+
+#### Returns
+
+`AdditionalUserInfo` \| `null`
+
+The additional user information, or null if none is available.
+
+***
+
+### getAuth()
+
+> **getAuth**(`app?`): `Module`
+
+Defined in: [auth/lib/modular/index.d.ts:30](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L30)
+
+Returns the Auth instance associated with the provided FirebaseApp.
+
+#### Parameters
+
+##### app?
+
+`FirebaseApp`
+
+The Firebase app instance.
+
+#### Returns
+
+`Module`
+
+The Auth instance.
+
+***
+
+### getCustomAuthDomain()
+
+> **getCustomAuthDomain**(`auth`): `Promise`\<`string`\>
+
+Defined in: [auth/lib/modular/index.d.ts:706](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L706)
+
+Returns the custom auth domain for the auth instance.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+#### Returns
+
+`Promise`\<`string`\>
+
+A promise that resolves with the custom auth domain.
+
+***
+
+### getIdToken()
+
+> **getIdToken**(`user`, `forceRefresh?`): `Promise`\<`string`\>
+
+Defined in: [auth/lib/modular/index.d.ts:472](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L472)
+
+Returns a JSON Web Token (JWT) used to identify the user to a Firebase service.
+
+#### Parameters
+
+##### user
+
+`User`
+
+The user to get the token for.
+
+##### forceRefresh?
+
+`boolean`
+
+Optional. Whether to force refresh the token.
+
+#### Returns
+
+`Promise`\<`string`\>
+
+A promise that resolves with the token.
+
+***
+
+### getIdTokenResult()
+
+> **getIdTokenResult**(`user`, `forceRefresh?`): `Promise`\<`IdTokenResult`\>
+
+Defined in: [auth/lib/modular/index.d.ts:481](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L481)
+
+Returns a deserialized JSON Web Token (JWT) used to identify the user to a Firebase service.
+
+#### Parameters
+
+##### user
+
+`User`
+
+The user to get the token result for.
+
+##### forceRefresh?
+
+`boolean`
+
+Optional. Whether to force refresh the token.
+
+#### Returns
+
+`Promise`\<`IdTokenResult`\>
+
+A promise that resolves with the token result.
+
+***
+
+### getMultiFactorResolver()
+
+> **getMultiFactorResolver**(`auth`, `error`): `MultiFactorResolver`
+
+Defined in: [auth/lib/modular/index.d.ts:140](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L140)
+
+Provides a MultiFactorResolver suitable for completion of a multi-factor flow.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### error
+
+`MultiFactorError`
+
+The multi-factor error.
+
+#### Returns
+
+`MultiFactorResolver`
+
+The MultiFactorResolver instance.
+
+***
+
+### getRedirectResult()
+
+> **getRedirectResult**(`auth`, `resolver?`): `Promise`\<`UserCredential` \| `null`\>
+
+Defined in: [auth/lib/modular/index.d.ts:152](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L152)
+
+Returns a UserCredential from the redirect-based sign-in flow.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### resolver?
+
+[`PopupRedirectResolver`](#popupredirectresolver)
+
+Optional. The popup redirect resolver.
+
+#### Returns
+
+`Promise`\<`UserCredential` \| `null`\>
+
+A promise that resolves with the user credentials or null.
+
+***
+
+### initializeAuth()
+
+> **initializeAuth**(`app`, `deps?`): `Module`
+
+Defined in: [auth/lib/modular/index.d.ts:44](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L44)
+
+This function allows more control over the Auth instance than getAuth().
+
+#### Parameters
+
+##### app
+
+`FirebaseApp`
+
+The Firebase app instance.
+
+##### deps?
+
+`any`
+
+Optional. Dependencies for the Auth instance.
+
+#### Returns
+
+`Module`
+
+The Auth instance.
+
+getAuth uses platform-specific defaults to supply the Dependencies.
+In general, getAuth is the easiest way to initialize Auth and works for most use cases.
+Use initializeAuth if you need control over which persistence layer is used, or to minimize bundle size
+if you're not using either signInWithPopup or signInWithRedirect.
+
+***
+
+### initializeRecaptchaConfig()
+
+> **initializeRecaptchaConfig**(`auth`): `Promise`\<`void`\>
+
+Defined in: [auth/lib/modular/index.d.ts:165](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L165)
+
+Loads the reCAPTCHA configuration into the Auth instance.
+Does not work in a Node.js environment
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### isSignInWithEmailLink()
+
+> **isSignInWithEmailLink**(`auth`, `emailLink`): `Promise`\<`boolean`\>
+
+Defined in: [auth/lib/modular/index.d.ts:175](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L175)
+
+Checks if an incoming link is a sign-in with email link suitable for signInWithEmailLink.
+Note that android and other platforms require `apiKey` link parameter for signInWithEmailLink
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### emailLink
+
+`string`
+
+The email link to check.
+
+#### Returns
+
+`Promise`\<`boolean`\>
+
+A promise that resolves if the link is a sign-in with email link.
+
+***
+
+### linkWithCredential()
+
+> **linkWithCredential**(`user`, `credential`): `Promise`\<`UserCredential`\>
+
+Defined in: [auth/lib/modular/index.d.ts:493](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L493)
+
+Links the user account with the given credentials.
+
+#### Parameters
+
+##### user
+
+`User`
+
+The user to link the credentials with.
+
+##### credential
+
+`AuthCredential`
+
+The auth credentials.
+
+#### Returns
+
+`Promise`\<`UserCredential`\>
+
+A promise that resolves with the user credentials.
+
+***
+
+### linkWithPhoneNumber()
+
+> **linkWithPhoneNumber**(`user`, `phoneNumber`, `appVerifier?`): `Promise`\<`ConfirmationResult`\>
+
+Defined in: [auth/lib/modular/index.d.ts:506](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L506)
+
+Links the user account with the given phone number.
+
+#### Parameters
+
+##### user
+
+`User`
+
+The user to link the phone number with.
+
+##### phoneNumber
+
+`string`
+
+The phone number.
+
+##### appVerifier?
+
+[`ApplicationVerifier`](#applicationverifier)
+
+The application verifier.
+
+#### Returns
+
+`Promise`\<`ConfirmationResult`\>
+
+A promise that resolves with the confirmation result.
+
+***
+
+### linkWithPopup()
+
+> **linkWithPopup**(`user`, `provider`, `resolver?`): `Promise`\<`UserCredential`\>
+
+Defined in: [auth/lib/modular/index.d.ts:520](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L520)
+
+Links the authenticated provider to the user account using a pop-up based OAuth flow.
+
+#### Parameters
+
+##### user
+
+`User`
+
+The user to link the provider with.
+
+##### provider
+
+`AuthProvider`
+
+The auth provider.
+
+##### resolver?
+
+[`PopupRedirectResolver`](#popupredirectresolver)
+
+Optional. The popup redirect resolver.
+
+#### Returns
+
+`Promise`\<`UserCredential`\>
+
+A promise that resolves with the user credentials.
+
+***
+
+### linkWithRedirect()
+
+> **linkWithRedirect**(`user`, `provider`, `resolver?`): `Promise`\<`void`\>
+
+Defined in: [auth/lib/modular/index.d.ts:534](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L534)
+
+Links the OAuthProvider to the user account using a full-page redirect flow.
+
+#### Parameters
+
+##### user
+
+`User`
+
+The user to link the provider with.
+
+##### provider
+
+`AuthProvider`
+
+The auth provider.
+
+##### resolver?
+
+[`PopupRedirectResolver`](#popupredirectresolver)
+
+Optional. The popup redirect resolver.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A promise that resolves when the redirect is complete.
+
+***
+
+### multiFactor()
+
+> **multiFactor**(`user`): `MultiFactorUser`
+
+Defined in: [auth/lib/modular/index.d.ts:546](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L546)
+
+The MultiFactorUser corresponding to the user.
+
+#### Parameters
+
+##### user
+
+`User`
+
+The user to get the multi-factor user for.
+
+#### Returns
+
+`MultiFactorUser`
+
+The MultiFactorUser instance.
+
+***
+
+### onAuthStateChanged()
+
+> **onAuthStateChanged**(`auth`, `nextOrObserver`): () => `void`
+
+Defined in: [auth/lib/modular/index.d.ts:184](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L184)
+
+Adds an observer for changes to the user's sign-in state.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### nextOrObserver
+
+`CallbackOrObserver`\<`AuthListenerCallback`\>
+
+A callback function or observer for auth state changes.
+
+#### Returns
+
+A function to unsubscribe from the auth state changes.
+
+> (): `void`
+
+##### Returns
+
+`void`
+
+***
+
+### onIdTokenChanged()
+
+> **onIdTokenChanged**(`auth`, `nextOrObserver`): () => `void`
+
+Defined in: [auth/lib/modular/index.d.ts:196](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L196)
+
+Adds an observer for changes to the signed-in user's ID token.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### nextOrObserver
+
+`CallbackOrObserver`\<`AuthListenerCallback`\>
+
+A callback function or observer for ID token changes.
+
+#### Returns
+
+A function to unsubscribe from the ID token changes.
+
+> (): `void`
+
+##### Returns
+
+`void`
+
+***
+
+### parseActionCodeURL()
+
+> **parseActionCodeURL**(`link`): `any`
+
+Defined in: [auth/lib/modular/index.d.ts:455](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L455)
+
+Parses the email action link string and returns an ActionCodeURL if the link is valid, otherwise returns null.
+
+#### Parameters
+
+##### link
+
+`string`
+
+The email action link string.
+
+#### Returns
+
+`any`
+
+The ActionCodeURL if the link is valid, otherwise null.
+
+***
+
+### reauthenticateWithCredential()
+
+> **reauthenticateWithCredential**(`user`, `credential`): `Promise`\<`UserCredential`\>
+
+Defined in: [auth/lib/modular/index.d.ts:555](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L555)
+
+Re-authenticates a user using a fresh credential.
+
+#### Parameters
+
+##### user
+
+`User`
+
+The user to re-authenticate.
+
+##### credential
+
+`AuthCredential`
+
+The auth credentials.
+
+#### Returns
+
+`Promise`\<`UserCredential`\>
+
+A promise that resolves with the user credentials.
+
+***
+
+### reauthenticateWithPhoneNumber()
+
+> **reauthenticateWithPhoneNumber**(`user`, `phoneNumber`, `appVerifier?`): `Promise`\<`ConfirmationResult`\>
+
+Defined in: [auth/lib/modular/index.d.ts:568](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L568)
+
+Re-authenticates a user using a fresh phone credential.
+
+#### Parameters
+
+##### user
+
+`User`
+
+The user to re-authenticate.
+
+##### phoneNumber
+
+`string`
+
+The phone number.
+
+##### appVerifier?
+
+[`ApplicationVerifier`](#applicationverifier)
+
+The application verifier.
+
+#### Returns
+
+`Promise`\<`ConfirmationResult`\>
+
+A promise that resolves with the confirmation result.
+
+***
+
+### reauthenticateWithPopup()
+
+> **reauthenticateWithPopup**(`user`, `provider`, `resolver?`): `Promise`\<`UserCredential`\>
+
+Defined in: [auth/lib/modular/index.d.ts:582](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L582)
+
+Re-authenticate a user with a federated authentication provider (Microsoft, Yahoo). For native platforms, this will open a browser window.
+
+#### Parameters
+
+##### user
+
+`User`
+
+The user to re-authenticate.
+
+##### provider
+
+`AuthProvider`
+
+The auth provider.
+
+##### resolver?
+
+[`PopupRedirectResolver`](#popupredirectresolver)
+
+Optional. The popup redirect resolver. Web only.
+
+#### Returns
+
+`Promise`\<`UserCredential`\>
+
+A promise that resolves with the user credentials.
+
+***
+
+### reauthenticateWithRedirect()
+
+> **reauthenticateWithRedirect**(`user`, `provider`, `resolver?`): `Promise`\<`void`\>
+
+Defined in: [auth/lib/modular/index.d.ts:596](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L596)
+
+Re-authenticate a user with a federated authentication provider (Microsoft, Yahoo). For native platforms, this will open a browser window.
+
+#### Parameters
+
+##### user
+
+`User`
+
+The user to re-authenticate.
+
+##### provider
+
+`AuthProvider`
+
+The auth provider.
+
+##### resolver?
+
+[`PopupRedirectResolver`](#popupredirectresolver)
+
+Optional. The popup redirect resolver. Web only.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A promise that resolves with no value.
+
+***
+
+### reload()
+
+> **reload**(`user`): `Promise`\<`void`\>
+
+Defined in: [auth/lib/modular/index.d.ts:608](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L608)
+
+Reloads user account data, if signed in.
+
+#### Parameters
+
+##### user
+
+`User`
+
+The user to reload data for.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A promise that resolves when the data is reloaded.
+
+***
+
+### revokeAccessToken()
+
+> **revokeAccessToken**(`auth`, `token`): `Promise`\<`void`\>
+
+Defined in: [auth/lib/modular/index.d.ts:206](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L206)
+
+Revoke the given access token, Currently only supports Apple OAuth access tokens.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+##### token
+
+`string`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### sendEmailVerification()
+
+> **sendEmailVerification**(`user`, `actionCodeSettings?`): `Promise`\<`void`\>
+
+Defined in: [auth/lib/modular/index.d.ts:617](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L617)
+
+Sends a verification email to a user.
+
+#### Parameters
+
+##### user
+
+`User`
+
+The user to send the email to.
+
+##### actionCodeSettings?
+
+`ActionCodeSettings`
+
+Optional. Action code settings.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A promise that resolves when the email is sent.
+
+***
+
+### sendPasswordResetEmail()
+
+> **sendPasswordResetEmail**(`auth`, `email`, `actionCodeSettings?`): `Promise`\<`void`\>
+
+Defined in: [auth/lib/modular/index.d.ts:216](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L216)
+
+Sends a password reset email to the given email address.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### email
+
+`string`
+
+The user's email address.
+
+##### actionCodeSettings?
+
+`ActionCodeSettings`
+
+Optional. Action code settings.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A promise that resolves when the email is sent.
+
+***
+
+### sendSignInLinkToEmail()
+
+> **sendSignInLinkToEmail**(`auth`, `email`, `actionCodeSettings?`): `Promise`\<`void`\>
+
+Defined in: [auth/lib/modular/index.d.ts:230](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L230)
+
+Sends a sign-in email link to the user with the specified email.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### email
+
+`string`
+
+The user's email address.
+
+##### actionCodeSettings?
+
+`ActionCodeSettings`
+
+Optional, Action code settings.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A promise that resolves when the email is sent.
+
+***
+
+### setLanguageCode()
+
+> **setLanguageCode**(`auth`, `languageCode`): `Promise`\<`void`\>
+
+Defined in: [auth/lib/modular/index.d.ts:420](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L420)
+
+Sets the language code.
+
+#### Example
+
+```js
+// Set language to French
+await firebase.auth().setLanguageCode('fr');
+```
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### languageCode
+
+An ISO language code.
+'null' value will set the language code to the app's current language.
+
+`string` | `null`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### setPersistence()
+
+> **setPersistence**(`auth`, `persistence`): `Promise`\<`void`\>
+
+Defined in: [auth/lib/modular/index.d.ts:253](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L253)
+
+Changes the type of persistence on the Auth instance for the currently saved Auth session and applies this type of persistence for future sign-in requests, including sign-in with redirect requests.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### persistence
+
+[`Persistence`](#persistence)
+
+The persistence type.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A promise that resolves when the persistence is set.
+
+***
+
+### signInAnonymously()
+
+> **signInAnonymously**(`auth`): `Promise`\<`UserCredential`\>
+
+Defined in: [auth/lib/modular/index.d.ts:261](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L261)
+
+Asynchronously signs in as an anonymous user.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+#### Returns
+
+`Promise`\<`UserCredential`\>
+
+A promise that resolves with the user credentials.
+
+***
+
+### signInWithCredential()
+
+> **signInWithCredential**(`auth`, `credential`): `Promise`\<`UserCredential`\>
+
+Defined in: [auth/lib/modular/index.d.ts:270](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L270)
+
+Asynchronously signs in with the given credentials.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### credential
+
+`AuthCredential`
+
+The auth credentials.
+
+#### Returns
+
+`Promise`\<`UserCredential`\>
+
+A promise that resolves with the user credentials.
+
+***
+
+### signInWithCustomToken()
+
+> **signInWithCustomToken**(`auth`, `customToken`): `Promise`\<`UserCredential`\>
+
+Defined in: [auth/lib/modular/index.d.ts:282](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L282)
+
+Asynchronously signs in using a custom token.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### customToken
+
+`string`
+
+The custom token.
+
+#### Returns
+
+`Promise`\<`UserCredential`\>
+
+A promise that resolves with the user credentials.
+
+***
+
+### signInWithEmailAndPassword()
+
+> **signInWithEmailAndPassword**(`auth`, `email`, `password`): `Promise`\<`UserCredential`\>
+
+Defined in: [auth/lib/modular/index.d.ts:295](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L295)
+
+Asynchronously signs in using an email and password.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### email
+
+`string`
+
+The user's email address.
+
+##### password
+
+`string`
+
+The user's password.
+
+#### Returns
+
+`Promise`\<`UserCredential`\>
+
+A promise that resolves with the user credentials.
+
+***
+
+### signInWithEmailLink()
+
+> **signInWithEmailLink**(`auth`, `email`, `emailLink`): `Promise`\<`UserCredential`\>
+
+Defined in: [auth/lib/modular/index.d.ts:309](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L309)
+
+Asynchronously signs in using an email and sign-in email link.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### email
+
+`string`
+
+The user's email address.
+
+##### emailLink
+
+`string`
+
+The email link.
+
+#### Returns
+
+`Promise`\<`UserCredential`\>
+
+A promise that resolves with the user credentials.
+
+***
+
+### signInWithPhoneNumber()
+
+> **signInWithPhoneNumber**(`auth`, `phoneNumber`, `appVerifier?`, `forceResend?`): `Promise`\<`ConfirmationResult`\>
+
+Defined in: [auth/lib/modular/index.d.ts:332](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L332)
+
+Asynchronously signs in using a phone number.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### phoneNumber
+
+`string`
+
+The user's phone number.
+
+##### appVerifier?
+
+[`ApplicationVerifier`](#applicationverifier)
+
+Optional. The application verifier.
+
+##### forceResend?
+
+`boolean`
+
+Optional. (Native only) Forces a new message to be sent if it was already recently sent.
+
+#### Returns
+
+`Promise`\<`ConfirmationResult`\>
+
+A promise that resolves with the confirmation result.
+
+***
+
+### signInWithPopup()
+
+> **signInWithPopup**(`auth`, `provider`, `resolver?`): `Promise`\<`UserCredential`\>
+
+Defined in: [auth/lib/modular/index.d.ts:363](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L363)
+
+Authenticates a Firebase client using a popup-based OAuth authentication flow.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### provider
+
+`AuthProvider`
+
+The auth provider.
+
+##### resolver?
+
+[`PopupRedirectResolver`](#popupredirectresolver)
+
+Optional. The popup redirect resolver.
+
+#### Returns
+
+`Promise`\<`UserCredential`\>
+
+A promise that resolves with the user credentials.
+
+***
+
+### signInWithRedirect()
+
+> **signInWithRedirect**(`auth`, `provider`, `resolver?`): `Promise`\<`never`\>
+
+Defined in: [auth/lib/modular/index.d.ts:377](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L377)
+
+Authenticates a Firebase client using a full-page redirect flow.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### provider
+
+`AuthProvider`
+
+The auth provider.
+
+##### resolver?
+
+[`PopupRedirectResolver`](#popupredirectresolver)
+
+Optional. The popup redirect resolver.
+
+#### Returns
+
+`Promise`\<`never`\>
+
+A promise that resolves when the redirect is complete.
+
+***
+
+### signOut()
+
+> **signOut**(`auth`): `Promise`\<`void`\>
+
+Defined in: [auth/lib/modular/index.d.ts:389](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L389)
+
+Signs out the current user.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A promise that resolves when the user is signed out.
+
+***
+
+### unlink()
+
+> **unlink**(`user`, `providerId`): `Promise`\<`User`\>
+
+Defined in: [auth/lib/modular/index.d.ts:629](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L629)
+
+Unlinks a provider from a user account.
+
+#### Parameters
+
+##### user
+
+`User`
+
+The user to unlink the provider from.
+
+##### providerId
+
+`string`
+
+The provider ID.
+
+#### Returns
+
+`Promise`\<`User`\>
+
+A promise that resolves with the user.
+
+***
+
+### updateCurrentUser()
+
+> **updateCurrentUser**(`auth`, `user`): `Promise`\<`void`\>
+
+Defined in: [auth/lib/modular/index.d.ts:398](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L398)
+
+Asynchronously sets the provided user as Auth.currentUser on the Auth instance.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### user
+
+The user to set as the current user.
+
+`User` | `null`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A promise that resolves when the user is set.
+
+***
+
+### updateEmail()
+
+> **updateEmail**(`user`, `newEmail`): `Promise`\<`void`\>
+
+Defined in: [auth/lib/modular/index.d.ts:641](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L641)
+
+Updates the user's email address.
+
+#### Parameters
+
+##### user
+
+`User`
+
+The user to update the email for.
+
+##### newEmail
+
+`string`
+
+The new email address.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A promise that resolves when the email is updated.
+
+***
+
+### updatePassword()
+
+> **updatePassword**(`user`, `newPassword`): `Promise`\<`void`\>
+
+Defined in: [auth/lib/modular/index.d.ts:650](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L650)
+
+Updates the user's password.
+
+#### Parameters
+
+##### user
+
+`User`
+
+The user to update the password for.
+
+##### newPassword
+
+`string`
+
+The new password.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A promise that resolves when the password is updated.
+
+***
+
+### updatePhoneNumber()
+
+> **updatePhoneNumber**(`user`, `credential`): `Promise`\<`void`\>
+
+Defined in: [auth/lib/modular/index.d.ts:659](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L659)
+
+Updates the user's phone number.
+
+#### Parameters
+
+##### user
+
+`User`
+
+The user to update the phone number for.
+
+##### credential
+
+`AuthCredential`
+
+The auth credentials.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A promise that resolves when the phone number is updated.
+
+***
+
+### updateProfile()
+
+> **updateProfile**(`user`, `profile`): `Promise`\<`void`\>
+
+Defined in: [auth/lib/modular/index.d.ts:671](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L671)
+
+Updates a user's profile data.
+
+#### Parameters
+
+##### user
+
+`User`
+
+The user to update the profile for.
+
+##### profile
+
+An object containing the profile data to update.
+
+###### displayName?
+
+`string` \| `null`
+
+###### photoURL?
+
+`string` \| `null`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A promise that resolves when the profile is updated.
+
+***
+
+### useDeviceLanguage()
+
+> **useDeviceLanguage**(`auth`): `void`
+
+Defined in: [auth/lib/modular/index.d.ts:405](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L405)
+
+Sets the current language to the default device/browser preference.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+#### Returns
+
+`void`
+
+***
+
+### useUserAccessGroup()
+
+> **useUserAccessGroup**(`auth`, `userAccessGroup`): `Promise`\<`void`\>
+
+Defined in: [auth/lib/modular/index.d.ts:438](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L438)
+
+Configures a shared user access group to sync auth state across multiple apps via the Keychain.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### userAccessGroup
+
+`string`
+
+The user access group.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A promise that resolves when the user access group is set.
+
+***
+
+### validatePassword()
+
+#### Call Signature
+
+> **validatePassword**(`auth`, `password`): `Promise`\<[`PasswordValidationStatus`](#passwordvalidationstatus)\>
+
+Defined in: [auth/lib/modular/index.d.ts:429](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L429)
+
+Validates the password against the password policy configured for the project or tenant.
+
+##### Parameters
+
+###### auth
+
+`Module`
+
+The Auth instance.
+
+###### password
+
+`string`
+
+The password to validate.
+
+##### Returns
+
+`Promise`\<[`PasswordValidationStatus`](#passwordvalidationstatus)\>
+
+#### Call Signature
+
+> **validatePassword**(`auth`, `password`): `Promise`\<[`PasswordValidationStatus`](#passwordvalidationstatus)\>
+
+Defined in: [auth/lib/modular/index.d.ts:745](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L745)
+
+Validates the password against the password policy configured for the project or tenant.
+
+##### Parameters
+
+###### auth
+
+`Module`
+
+The Auth instance.
+
+###### password
+
+`string`
+
+The password to validate.
+
+##### Returns
+
+`Promise`\<[`PasswordValidationStatus`](#passwordvalidationstatus)\>
+
+##### Remarks
+
+If no tenant ID is set on the `Auth` instance, then this method will use the password
+policy configured for the project. Otherwise, this method will use the policy configured
+for the tenant. If a password policy has not been configured, then the default policy
+configured for all projects will be used.
+
+If an auth flow fails because a submitted password does not meet the password policy
+requirements and this method has previously been called, then this method will use the
+most recent policy available when called again.
+
+When using this method, ensure you have the Identity Toolkit enabled on the
+Google Cloud Platform with the API Key for your application permitted to use it.
+
+##### Example
+
+``` js
+import { getAuth, validatePassword } from "firebase/auth";
+
+const status = await validatePassword(getAuth(), passwordFromUser);
+if (!status.isValid) {
+// Password could not be validated. Use the status to show what
+// requirements are met and which are missing.
+
+// If a criterion is undefined, it is not required by policy. If the
+// criterion is defined but false, it is required but not fulfilled by
+// the given password. For example:
+  const needsLowerCase = status.containsLowercaseLetter !== true;
+}
+```
+
+***
+
+### verifyBeforeUpdateEmail()
+
+> **verifyBeforeUpdateEmail**(`user`, `newEmail`, `actionCodeSettings?`): `Promise`\<`void`\>
+
+Defined in: [auth/lib/modular/index.d.ts:684](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L684)
+
+Sends a verification email to a new email address.
+
+#### Parameters
+
+##### user
+
+`User`
+
+The user to send the email to.
+
+##### newEmail
+
+`string`
+
+The new email address.
+
+##### actionCodeSettings?
+
+Optional. Action code settings.
+
+`ActionCodeSettings` | `null`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A promise that resolves when the email is sent.
+
+***
+
+### verifyPasswordResetCode()
+
+> **verifyPasswordResetCode**(`auth`, `code`): `Promise`\<`string`\>
+
+Defined in: [auth/lib/modular/index.d.ts:447](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L447)
+
+Verifies the password reset code sent to the user by email or other out-of-band mechanism.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### code
+
+`string`
+
+The password reset code.
+
+#### Returns
+
+`Promise`\<`string`\>
+
+A promise that resolves with the user's email address.
+
+***
+
+### verifyPhoneNumber()
+
+> **verifyPhoneNumber**(`auth`, `phoneNumber`, `autoVerifyTimeoutOrForceResend`, `forceResend?`): `PhoneAuthListener`
+
+Defined in: [auth/lib/modular/index.d.ts:348](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/modular/index.d.ts#L348)
+
+Asynchronously signs in using a phone number.
+
+#### Parameters
+
+##### auth
+
+`Module`
+
+The Auth instance.
+
+##### phoneNumber
+
+`string`
+
+The user's phone number.
+
+##### autoVerifyTimeoutOrForceResend
+
+The auto verify timeout or force resend flag.
+
+`number` | `boolean`
+
+##### forceResend?
+
+`boolean`
+
+Optional. Whether to force resend.
+
+#### Returns
+
+`PhoneAuthListener`
+
+A promise that resolves with the phone auth listener.
+
+## References
+
+### EmailAuthProvider
+
+Renames and re-exports [AppleAuthProvider](#appleauthprovider)
+
+***
+
+### FacebookAuthProvider
+
+Renames and re-exports [AppleAuthProvider](#appleauthprovider)
+
+***
+
+### GithubAuthProvider
+
+Renames and re-exports [AppleAuthProvider](#appleauthprovider)
+
+***
+
+### GoogleAuthProvider
+
+Renames and re-exports [AppleAuthProvider](#appleauthprovider)
+
+***
+
+### OAuthProvider
+
+Renames and re-exports [AppleAuthProvider](#appleauthprovider)
+
+***
+
+### OIDCAuthProvider
+
+Renames and re-exports [AppleAuthProvider](#appleauthprovider)
+
+***
+
+### PhoneAuthProvider
+
+Renames and re-exports [AppleAuthProvider](#appleauthprovider)
+
+***
+
+### PhoneAuthState
+
+Renames and re-exports [AppleAuthProvider](#appleauthprovider)
+
+***
+
+### PhoneMultiFactorGenerator
+
+Renames and re-exports [AppleAuthProvider](#appleauthprovider)
+
+***
+
+### TotpMultiFactorGenerator
+
+Renames and re-exports [AppleAuthProvider](#appleauthprovider)
+
+***
+
+### TotpSecret
+
+Renames and re-exports [AppleAuthProvider](#appleauthprovider)
+
+***
+
+### TwitterAuthProvider
+
+Renames and re-exports [AppleAuthProvider](#appleauthprovider)

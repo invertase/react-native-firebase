@@ -1,0 +1,3378 @@
+[**react-native-firebase**](../../README.mdx)
+
+***
+
+[react-native-firebase](../../modules.mdx) / firestore/lib/modular
+
+# firestore/lib/modular
+
+## Classes
+
+### AggregateField
+
+Defined in: [firestore/lib/modular/index.d.ts:1285](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1285)
+
+Represents an aggregation that can be performed by Firestore.
+
+#### Type Parameters
+
+##### T
+
+`T`
+
+#### Constructors
+
+##### Constructor
+
+> **new AggregateField**\<`T`\>(`aggregateType?`, `_internalFieldPath?`): [`AggregateField`](#aggregatefield)\<`T`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:1298](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1298)
+
+**`Internal`**
+
+Create a new AggregateField<T>
+
+###### Parameters
+
+###### aggregateType?
+
+`AggregateType` = `'count'`
+
+Specifies the type of aggregation operation to perform.
+
+###### \_internalFieldPath?
+
+`any`
+
+Optionally specifies the field that is aggregated.
+
+###### Returns
+
+[`AggregateField`](#aggregatefield)\<`T`\>
+
+#### Properties
+
+##### \_internalFieldPath?
+
+> `readonly` `optional` **\_internalFieldPath**: `any`
+
+Defined in: [firestore/lib/modular/index.d.ts:1300](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1300)
+
+Optionally specifies the field that is aggregated.
+
+##### aggregateType
+
+> `readonly` **aggregateType**: `AggregateType`
+
+Defined in: [firestore/lib/modular/index.d.ts:1290](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1290)
+
+Indicates the aggregation operation of this AggregateField.
+
+##### type
+
+> `readonly` **type**: `"AggregateField"` = `'AggregateField'`
+
+Defined in: [firestore/lib/modular/index.d.ts:1287](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1287)
+
+A type string to uniquely identify instances of this class.
+
+***
+
+### Transaction
+
+Defined in: [firestore/lib/modular/index.d.ts:663](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L663)
+
+A reference to a transaction.
+
+The `Transaction` object passed to a transaction's `updateFunction` provides
+the methods to read and write data within the transaction context. See
+[runTransaction](#runtransaction).
+
+#### Extends
+
+- `any`
+
+#### Constructors
+
+##### Constructor
+
+> **new Transaction**(): [`Transaction`](#transaction)
+
+###### Returns
+
+[`Transaction`](#transaction)
+
+###### Inherited from
+
+`LiteTransaction.constructor`
+
+#### Methods
+
+##### delete()
+
+> **delete**\<`AppModelType`, `DbModelType`\>(`documentRef`): `this`
+
+Defined in: [firestore/lib/modular/index.d.ts:754](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L754)
+
+Deletes the document referred to by the provided [DocumentReference](#documentreference).
+
+###### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### documentRef
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+A reference to the document to be deleted.
+
+###### Returns
+
+`this`
+
+This `Transaction` instance. Used for chaining method calls.
+
+##### get()
+
+> **get**\<`AppModelType`, `DbModelType`\>(`documentRef`): `Promise`\<`DocumentSnapshot`\<`AppModelType`, `DbModelType`\>\>
+
+Defined in: [firestore/lib/modular/index.d.ts:670](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L670)
+
+Reads the document referenced by the provided [DocumentReference](#documentreference).
+
+###### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### documentRef
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+A reference to the document to be read.
+
+###### Returns
+
+`Promise`\<`DocumentSnapshot`\<`AppModelType`, `DbModelType`\>\>
+
+A `DocumentSnapshot` with the read data.
+
+##### set()
+
+###### Call Signature
+
+> **set**\<`AppModelType`, `DbModelType`\>(`documentRef`, `data`): `this`
+
+Defined in: [firestore/lib/modular/index.d.ts:683](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L683)
+
+Writes to the document referred to by the provided [DocumentReference](#documentreference). If the document does not exist yet, it will be created.
+
+###### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### documentRef
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+A reference to the document to be set.
+
+###### data
+
+[`WithFieldValue`](#withfieldvalue)\<`AppModelType`\>
+
+An object of the fields and values for the document.
+
+###### Returns
+
+`this`
+
+This `Transaction` instance. Used for chaining method calls.
+
+###### Throws
+
+Error - If the provided input is not a valid Firestore document.
+
+###### Call Signature
+
+> **set**\<`AppModelType`, `DbModelType`\>(`documentRef`, `data`, `options`): `this`
+
+Defined in: [firestore/lib/modular/index.d.ts:699](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L699)
+
+Writes to the document referred to by the provided [DocumentReference](#documentreference). If the document does not exist yet, it will be created.
+If you provide `merge` or `mergeFields`, the provided data can be merged
+into an existing document.
+
+###### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### documentRef
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+A reference to the document to be set.
+
+###### data
+
+[`PartialWithFieldValue`](#partialwithfieldvalue)\<`AppModelType`\>
+
+An object of the fields and values for the document.
+
+###### options
+
+`SetOptions`
+
+An object to configure the set behavior.
+
+###### Returns
+
+`this`
+
+This `Transaction` instance. Used for chaining method calls.
+
+###### Throws
+
+Error - If the provided input is not a valid Firestore document.
+
+##### update()
+
+###### Call Signature
+
+> **update**\<`AppModelType`, `DbModelType`\>(`documentRef`, `data`): `this`
+
+Defined in: [firestore/lib/modular/index.d.ts:717](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L717)
+
+Updates fields in the document referred to by the provided [DocumentReference](#documentreference). The update will fail if applied to a document that does
+not exist.
+
+###### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### documentRef
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+A reference to the document to be updated.
+
+###### data
+
+[`UpdateData`](#updatedata)\<`DbModelType`\>
+
+An object containing the fields and values with which to
+update the document. Fields can contain dots to reference nested fields
+within the document.
+
+###### Returns
+
+`this`
+
+This `Transaction` instance. Used for chaining method calls.
+
+###### Throws
+
+Error - If the provided input is not valid Firestore data.
+
+###### Call Signature
+
+> **update**\<`AppModelType`, `DbModelType`\>(`documentRef`, `field`, `value`, ...`moreFieldsAndValues`): `this`
+
+Defined in: [firestore/lib/modular/index.d.ts:736](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L736)
+
+Updates fields in the document referred to by the provided [DocumentReference](#documentreference). The update will fail if applied to a document that does
+not exist.
+
+Nested fields can be updated by providing dot-separated field path
+strings or by providing `FieldPath` objects.
+
+###### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### documentRef
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+A reference to the document to be updated.
+
+###### field
+
+The first field to update.
+
+`string` | [`FieldPath`](modular/FieldPath.mdx#fieldpath)
+
+###### value
+
+`unknown`
+
+The first value.
+
+###### moreFieldsAndValues
+
+...`unknown`[]
+
+Additional key/value pairs.
+
+###### Returns
+
+`this`
+
+This `Transaction` instance. Used for chaining method calls.
+
+###### Throws
+
+Error - If the provided input is not valid Firestore data.
+
+###### Call Signature
+
+> **update**\<`AppModelType`, `DbModelType`\>(`documentRef`, `fieldOrUpdateData`, `value?`, ...`moreFieldsAndValues`): `this`
+
+Defined in: [firestore/lib/modular/index.d.ts:742](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L742)
+
+Updates fields in the document referred to by the provided [DocumentReference](#documentreference). The update will fail if applied to a document that does
+not exist.
+
+###### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### documentRef
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+A reference to the document to be updated.
+
+###### fieldOrUpdateData
+
+`string` | [`FieldPath`](modular/FieldPath.mdx#fieldpath) | [`UpdateData`](#updatedata)\<`DbModelType`\>
+
+###### value?
+
+`unknown`
+
+###### moreFieldsAndValues
+
+...`unknown`[]
+
+###### Returns
+
+`this`
+
+This `Transaction` instance. Used for chaining method calls.
+
+###### Throws
+
+Error - If the provided input is not valid Firestore data.
+
+***
+
+### WriteBatch
+
+Defined in: [firestore/lib/modular/index.d.ts:558](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L558)
+
+A write batch, used to perform multiple writes as a single atomic unit.
+
+A `WriteBatch` object can be acquired by calling [writeBatch](#writebatch-1). It
+provides methods for adding writes to the write batch. None of the writes
+will be committed (or visible locally) until [WriteBatch.commit](#commit) is
+called.
+
+#### Constructors
+
+##### Constructor
+
+> **new WriteBatch**(): [`WriteBatch`](#writebatch)
+
+###### Returns
+
+[`WriteBatch`](#writebatch)
+
+#### Methods
+
+##### commit()
+
+> **commit**(): `Promise`\<`void`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:653](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L653)
+
+Commits all of the writes in this write batch as a single atomic unit.
+
+The result of these writes will only be reflected in document reads that
+occur after the returned promise resolves. If the client is offline, the
+write fails. If you would like to see local modifications or buffer writes
+until the client is online, use the full Firestore SDK.
+
+###### Returns
+
+`Promise`\<`void`\>
+
+A `Promise` resolved once all of the writes in the batch have been
+successfully written to the backend as an atomic unit (note that it won't
+resolve while you're offline).
+
+##### delete()
+
+> **delete**\<`AppModelType`, `DbModelType`\>(`documentRef`): [`WriteBatch`](#writebatch)
+
+Defined in: [firestore/lib/modular/index.d.ts:638](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L638)
+
+Deletes the document referred to by the provided [DocumentReference](#documentreference).
+
+###### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### documentRef
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+A reference to the document to be deleted.
+
+###### Returns
+
+[`WriteBatch`](#writebatch)
+
+This `WriteBatch` instance. Used for chaining method calls.
+
+##### set()
+
+###### Call Signature
+
+> **set**\<`AppModelType`, `DbModelType`\>(`documentRef`, `data`): [`WriteBatch`](#writebatch)
+
+Defined in: [firestore/lib/modular/index.d.ts:567](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L567)
+
+Writes to the document referred to by the provided [DocumentReference](#documentreference). If the document does not exist yet, it will be created.
+
+###### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### documentRef
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+A reference to the document to be set.
+
+###### data
+
+[`WithFieldValue`](#withfieldvalue)\<`AppModelType`\>
+
+An object of the fields and values for the document.
+
+###### Returns
+
+[`WriteBatch`](#writebatch)
+
+This `WriteBatch` instance. Used for chaining method calls.
+
+###### Call Signature
+
+> **set**\<`AppModelType`, `DbModelType`\>(`documentRef`, `data`, `options`): [`WriteBatch`](#writebatch)
+
+Defined in: [firestore/lib/modular/index.d.ts:583](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L583)
+
+Writes to the document referred to by the provided [DocumentReference](#documentreference). If the document does not exist yet, it will be created.
+If you provide `merge` or `mergeFields`, the provided data can be merged
+into an existing document.
+
+###### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### documentRef
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+A reference to the document to be set.
+
+###### data
+
+[`PartialWithFieldValue`](#partialwithfieldvalue)\<`AppModelType`\>
+
+An object of the fields and values for the document.
+
+###### options
+
+`SetOptions`
+
+An object to configure the set behavior.
+
+###### Returns
+
+[`WriteBatch`](#writebatch)
+
+This `WriteBatch` instance. Used for chaining method calls.
+
+###### Throws
+
+Error - If the provided input is not a valid Firestore document.
+
+##### update()
+
+###### Call Signature
+
+> **update**\<`AppModelType`, `DbModelType`\>(`documentRef`, `data`): [`WriteBatch`](#writebatch)
+
+Defined in: [firestore/lib/modular/index.d.ts:600](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L600)
+
+Updates fields in the document referred to by the provided [DocumentReference](#documentreference). The update will fail if applied to a document that does
+not exist.
+
+###### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### documentRef
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+A reference to the document to be updated.
+
+###### data
+
+[`UpdateData`](#updatedata)\<`DbModelType`\>
+
+An object containing the fields and values with which to
+update the document. Fields can contain dots to reference nested fields
+within the document.
+
+###### Returns
+
+[`WriteBatch`](#writebatch)
+
+This `WriteBatch` instance. Used for chaining method calls.
+
+###### Throws
+
+Error - If the provided input is not valid Firestore data.
+
+###### Call Signature
+
+> **update**\<`AppModelType`, `DbModelType`\>(`documentRef`, `field`, `value`, ...`moreFieldsAndValues`): [`WriteBatch`](#writebatch)
+
+Defined in: [firestore/lib/modular/index.d.ts:619](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L619)
+
+Updates fields in the document referred to by this [DocumentReference](#documentreference). The update will fail if applied to a document that does
+not exist.
+
+Nested fields can be update by providing dot-separated field path strings
+or by providing `FieldPath` objects.
+
+###### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### documentRef
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+A reference to the document to be updated.
+
+###### field
+
+The first field to update.
+
+`string` | [`FieldPath`](modular/FieldPath.mdx#fieldpath)
+
+###### value
+
+`unknown`
+
+The first value.
+
+###### moreFieldsAndValues
+
+...`unknown`[]
+
+Additional key value pairs.
+
+###### Returns
+
+[`WriteBatch`](#writebatch)
+
+This `WriteBatch` instance. Used for chaining method calls.
+
+###### Throws
+
+Error - If the provided input is not valid Firestore data.
+
+###### Call Signature
+
+> **update**\<`AppModelType`, `DbModelType`\>(`documentRef`, `fieldOrUpdateData`, `value?`, ...`moreFieldsAndValues`): [`WriteBatch`](#writebatch)
+
+Defined in: [firestore/lib/modular/index.d.ts:625](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L625)
+
+Updates fields in the document referred to by the provided [DocumentReference](#documentreference). The update will fail if applied to a document that does
+not exist.
+
+###### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### documentRef
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+A reference to the document to be updated.
+
+###### fieldOrUpdateData
+
+`string` | [`FieldPath`](modular/FieldPath.mdx#fieldpath) | [`UpdateData`](#updatedata)\<`DbModelType`\>
+
+###### value?
+
+`unknown`
+
+###### moreFieldsAndValues
+
+...`unknown`[]
+
+###### Returns
+
+[`WriteBatch`](#writebatch)
+
+This `WriteBatch` instance. Used for chaining method calls.
+
+###### Throws
+
+Error - If the provided input is not valid Firestore data.
+
+## Interfaces
+
+### CollectionReference
+
+Defined in: [firestore/lib/modular/index.d.ts:450](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L450)
+
+A `CollectionReference` object can be used for adding documents, getting document references, and querying for
+documents (using the methods inherited from `Query`).
+
+#### Extends
+
+- [`Query`](#query)\<`AppModelType`, `DbModelType`\>
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+#### Properties
+
+##### converter
+
+> **converter**: [`FirestoreDataConverter`](#firestoredataconverter)\<`AppModelType`, `DbModelType`\> \| `null`
+
+Defined in: [firestore/lib/modular/index.d.ts:422](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L422)
+
+If provided, the [FirestoreDataConverter](#firestoredataconverter) associated with this instance.
+
+###### Inherited from
+
+[`Query`](#query).[`converter`](#converter-2)
+
+##### firestore
+
+> **firestore**: `Module`
+
+Defined in: [firestore/lib/modular/index.d.ts:417](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L417)
+
+The Firestore instance the document is in. This is useful for performing transactions, for example.
+
+###### Inherited from
+
+[`Query`](#query).[`firestore`](#firestore-2)
+
+##### id
+
+> **id**: `string`
+
+Defined in: [firestore/lib/modular/index.d.ts:457](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L457)
+
+The collection's identifier.
+
+##### parent
+
+> **parent**: [`DocumentReference`](#documentreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\> \| `null`
+
+Defined in: [firestore/lib/modular/index.d.ts:463](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L463)
+
+A reference to the containing `DocumentReference` if this is a subcollection. If this isn't a
+subcollection, the reference is null.
+
+##### path
+
+> **path**: `string`
+
+Defined in: [firestore/lib/modular/index.d.ts:468](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L468)
+
+A string representing the path of the referenced collection (relative to the root of the database).
+
+#### Methods
+
+##### withConverter()
+
+###### Call Signature
+
+> **withConverter**(`converter`): [`CollectionReference`](#collectionreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+Defined in: [firestore/lib/modular/index.d.ts:477](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L477)
+
+Removes the current converter.
+
+###### Parameters
+
+###### converter
+
+`null`
+
+`null` removes the current converter.
+
+###### Returns
+
+[`CollectionReference`](#collectionreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+A `CollectionReference<DocumentData, DocumentData>` that does not
+use a converter.
+
+###### Overrides
+
+[`Query`](#query).[`withConverter`](#withconverter-2)
+
+###### Call Signature
+
+> **withConverter**\<`NewAppModelType`, `NewDbModelType`\>(`converter`): [`CollectionReference`](#collectionreference)\<`NewAppModelType`, `NewDbModelType`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:488](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L488)
+
+Applies a custom data converter to this `CollectionReference`, allowing you
+to use your own custom model objects with Firestore. When you call [addDoc](#adddoc) with the returned `CollectionReference` instance, the provided
+converter will convert between Firestore data of type `NewDbModelType` and
+your custom type `NewAppModelType`.
+
+###### Type Parameters
+
+###### NewAppModelType
+
+`NewAppModelType`
+
+###### NewDbModelType
+
+`NewDbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### converter
+
+[`FirestoreDataConverter`](#firestoredataconverter)\<`NewAppModelType`, `NewDbModelType`\>
+
+Converts objects to and from Firestore.
+
+###### Returns
+
+[`CollectionReference`](#collectionreference)\<`NewAppModelType`, `NewDbModelType`\>
+
+A `CollectionReference` that uses the provided converter.
+
+###### Overrides
+
+[`Query`](#query).[`withConverter`](#withconverter-2)
+
+***
+
+### DocumentData
+
+Defined in: [firestore/lib/modular/index.d.ts:23](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L23)
+
+A `DocumentData` object represents the data in a document.
+- Same as FirebaseFirestoreTypes.DocumentData
+
+#### Indexable
+
+\[`key`: `string`\]: `any`
+
+***
+
+### DocumentReference
+
+Defined in: [firestore/lib/modular/index.d.ts:498](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L498)
+
+A `DocumentReference` refers to a document location in a Firestore database and can be used to write, read, or listen
+to the location. The document at the referenced location may or may not exist. A `DocumentReference` can also be used
+to create a `CollectionReference` to a subcollection.
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+#### Properties
+
+##### converter
+
+> **converter**: [`FirestoreDataConverter`](#firestoredataconverter)\<`AppModelType`, `DbModelType`\> \| `null`
+
+Defined in: [firestore/lib/modular/index.d.ts:510](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L510)
+
+If provided, the [FirestoreDataConverter](#firestoredataconverter) associated with this instance.
+
+##### firestore
+
+> **firestore**: `Module`
+
+Defined in: [firestore/lib/modular/index.d.ts:505](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L505)
+
+The Firestore instance the document is in. This is useful for performing transactions, for example.
+
+##### id
+
+> **id**: `string`
+
+Defined in: [firestore/lib/modular/index.d.ts:515](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L515)
+
+The document's identifier within its collection.
+
+##### parent
+
+> **parent**: [`CollectionReference`](#collectionreference)\<`AppModelType`, `DbModelType`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:520](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L520)
+
+The Collection this `DocumentReference` belongs to.
+
+##### path
+
+> **path**: `string`
+
+Defined in: [firestore/lib/modular/index.d.ts:525](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L525)
+
+A string representing the path of the referenced document (relative to the root of the database).
+
+#### Methods
+
+##### withConverter()
+
+###### Call Signature
+
+> **withConverter**(`converter`): [`DocumentReference`](#documentreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+Defined in: [firestore/lib/modular/index.d.ts:534](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L534)
+
+Removes the current converter.
+
+###### Parameters
+
+###### converter
+
+`null`
+
+`null` removes the current converter.
+
+###### Returns
+
+[`DocumentReference`](#documentreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+A `DocumentReference<DocumentData, DocumentData>` that does not
+use a converter.
+
+###### Call Signature
+
+> **withConverter**\<`NewAppModelType`, `NewDbModelType`\>(`converter`): [`DocumentReference`](#documentreference)\<`NewAppModelType`, `NewDbModelType`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:545](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L545)
+
+Applies a custom data converter to this `DocumentReference`, allowing you
+to use your own custom model objects with Firestore. When you call
+[:1](#setdoc), getDoc:1, etc. with the returned `DocumentReference`
+instance, the provided converter will convert between Firestore data of
+type `NewDbModelType` and your custom type `NewAppModelType`.
+
+###### Type Parameters
+
+###### NewAppModelType
+
+`NewAppModelType`
+
+###### NewDbModelType
+
+`NewDbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### converter
+
+[`FirestoreDataConverter`](#firestoredataconverter)\<`NewAppModelType`, `NewDbModelType`\>
+
+Converts objects to and from Firestore.
+
+###### Returns
+
+[`DocumentReference`](#documentreference)\<`NewAppModelType`, `NewDbModelType`\>
+
+A `DocumentReference` that uses the provided converter.
+
+***
+
+### FirestoreDataConverter
+
+Defined in: [firestore/lib/modular/index.d.ts:349](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L349)
+
+Converter used by `withConverter()` to transform user objects of type
+`AppModelType` into Firestore data of type `DbModelType`.
+
+Using the converter allows you to specify generic type arguments when
+storing and retrieving objects from Firestore.
+
+In this context, an "AppModel" is a class that is used in an application to
+package together related information and functionality. Such a class could,
+for example, have properties with complex, nested data types, properties used
+for memoization, properties of types not supported by Firestore (such as
+`symbol` and `bigint`), and helper functions that perform compound
+operations. Such classes are not suitable and/or possible to store into a
+Firestore database. Instead, instances of such classes need to be converted
+to "plain old JavaScript objects" (POJOs) with exclusively primitive
+properties, potentially nested inside other POJOs or arrays of POJOs. In this
+context, this type is referred to as the "DbModel" and would be an object
+suitable for persisting into Firestore. For convenience, applications can
+implement `FirestoreDataConverter` and register the converter with Firestore
+objects, such as `DocumentReference` or `Query`, to automatically convert
+`AppModel` to `DbModel` when storing into Firestore, and convert `DbModel`
+to `AppModel` when retrieving from Firestore.
+
+#### Example
+
+Simple Example
+
+```typescript
+const numberConverter = {
+    toFirestore(value: WithFieldValue<number>) {
+        return { value };
+    },
+    fromFirestore(snapshot: QueryDocumentSnapshot, options: SnapshotOptions) {
+        return snapshot.data(options).value as number;
+    }
+};
+
+async function simpleDemo(db: Firestore): Promise<void> {
+    const documentRef = doc(db, 'values/value123').withConverter(numberConverter);
+
+    // converters are used with `setDoc`, `addDoc`, and `getDoc`
+    await setDoc(documentRef, 42);
+    const snapshot1 = await getDoc(documentRef);
+    assertEqual(snapshot1.data(), 42);
+
+    // converters are not used when writing data with `updateDoc`
+    await updateDoc(documentRef, { value: 999 });
+    const snapshot2 = await getDoc(documentRef);
+    assertEqual(snapshot2.data(), 999);
+}
+```
+
+Advanced Example
+
+```typescript
+// The Post class is a model that is used by our application.
+// This class may have properties and methods that are specific
+// to our application execution, which do not need to be persisted
+// to Firestore.
+class Post {
+    constructor(
+        readonly title: string,
+        readonly author: string,
+        readonly lastUpdatedMillis: number
+    ) {}
+    toString(): string {
+        return `${this.title} by ${this.author}`;
+    }
+}
+
+// The PostDbModel represents how we want our posts to be stored
+// in Firestore. This DbModel has different properties (`ttl`,
+// `aut`, and `lut`) from the Post class we use in our application.
+interface PostDbModel {
+    ttl: string;
+    aut: { firstName: string; lastName: string };
+    lut: Timestamp;
+}
+
+// The `PostConverter` implements `FirestoreDataConverter` and specifies
+// how the Firestore SDK can convert `Post` objects to `PostDbModel`
+// objects and vice versa.
+class PostConverter implements FirestoreDataConverter<Post, PostDbModel> {
+    toFirestore(post: WithFieldValue<Post>): WithFieldValue<PostDbModel> {
+        return {
+            ttl: post.title,
+            aut: this._autFromAuthor(post.author),
+            lut: this._lutFromLastUpdatedMillis(post.lastUpdatedMillis)
+        };
+    }
+
+    fromFirestore(snapshot: QueryDocumentSnapshot, options: SnapshotOptions): Post {
+        const data = snapshot.data(options) as PostDbModel;
+        const author = `${data.aut.firstName} ${data.aut.lastName}`;
+        return new Post(data.ttl, author, data.lut.toMillis());
+    }
+
+    _autFromAuthor(
+        author: string | FieldValue
+    ): { firstName: string; lastName: string } | FieldValue {
+        if (typeof author !== 'string') {
+            // `author` is a FieldValue, so just return it.
+            return author;
+        }
+        const [firstName, lastName] = author.split(' ');
+        return {firstName, lastName};
+    }
+
+    _lutFromLastUpdatedMillis(
+        lastUpdatedMillis: number | FieldValue
+    ): Timestamp | FieldValue {
+        if (typeof lastUpdatedMillis !== 'number') {
+            // `lastUpdatedMillis` must be a FieldValue, so just return it.
+            return lastUpdatedMillis;
+        }
+        return Timestamp.fromMillis(lastUpdatedMillis);
+    }
+}
+
+async function advancedDemo(db: Firestore): Promise<void> {
+    // Create a `DocumentReference` with a `FirestoreDataConverter`.
+    const documentRef = doc(db, 'posts/post123').withConverter(new PostConverter());
+
+    // The `data` argument specified to `setDoc()` is type checked by the
+    // TypeScript compiler to be compatible with `Post`. Since the `data`
+    // argument is typed as `WithFieldValue<Post>` rather than just `Post`,
+    // this allows properties of the `data` argument to also be special
+    // Firestore values that perform server-side mutations, such as
+    // `arrayRemove()`, `deleteField()`, and `serverTimestamp()`.
+    await setDoc(documentRef, {
+        title: 'My Life',
+        author: 'Foo Bar',
+        lastUpdatedMillis: serverTimestamp()
+    });
+
+    // The TypeScript compiler will fail to compile if the `data` argument to
+    // `setDoc()` is _not_ compatible with `WithFieldValue<Post>`. This
+    // type checking prevents the caller from specifying objects with incorrect
+    // properties or property values.
+    // @ts-expect-error "Argument of type { ttl: string; } is not assignable
+    // to parameter of type WithFieldValue<Post>"
+    await setDoc(documentRef, { ttl: 'The Title' });
+
+    // When retrieving a document with `getDoc()` the `DocumentSnapshot`
+    // object's `data()` method returns a `Post`, rather than a generic object,
+    // which would have been returned if the `DocumentReference` did _not_ have a
+    // `FirestoreDataConverter` attached to it.
+    const snapshot1: DocumentSnapshot<Post> = await getDoc(documentRef);
+    const post1: Post = snapshot1.data()!;
+    if (post1) {
+        assertEqual(post1.title, 'My Life');
+        assertEqual(post1.author, 'Foo Bar');
+    }
+
+    // The `data` argument specified to `updateDoc()` is type checked by the
+    // TypeScript compiler to be compatible with `PostDbModel`. Note that
+    // unlike `setDoc()`, whose `data` argument must be compatible with `Post`,
+    // the `data` argument to `updateDoc()` must be compatible with
+    // `PostDbModel`. Similar to `setDoc()`, since the `data` argument is typed
+    // as `WithFieldValue<PostDbModel>` rather than just `PostDbModel`, this
+    // allows properties of the `data` argument to also be those special
+    // Firestore values, like `arrayRemove()`, `deleteField()`, and
+    // `serverTimestamp()`.
+    await updateDoc(documentRef, {
+        'aut.firstName': 'NewFirstName',
+        lut: serverTimestamp()
+    });
+
+    // The TypeScript compiler will fail to compile if the `data` argument to
+    // `updateDoc()` is _not_ compatible with `WithFieldValue<PostDbModel>`.
+    // This type checking prevents the caller from specifying objects with
+    // incorrect properties or property values.
+    // @ts-expect-error "Argument of type { title: string; } is not assignable
+    // to parameter of type WithFieldValue<PostDbModel>"
+    await updateDoc(documentRef, { title: 'New Title' });
+    const snapshot2: DocumentSnapshot<Post> = await getDoc(documentRef);
+    const post2: Post = snapshot2.data()!;
+    if (post2) {
+        assertEqual(post2.title, 'My Life');
+        assertEqual(post2.author, 'NewFirstName Bar');
+    }
+}
+```
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType`
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+#### Methods
+
+##### fromFirestore()
+
+> **fromFirestore**(`snapshot`, `options?`): `AppModelType`
+
+Defined in: [firestore/lib/modular/index.d.ts:400](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L400)
+
+Called by the Firestore SDK to convert Firestore data into an object of
+type `AppModelType`. You can access your data by calling:
+`snapshot.data(options)`.
+
+Generally, the data returned from `snapshot.data()` can be cast to
+`DbModelType`; however, this is not guaranteed because Firestore does not
+enforce a schema on the database. For example, writes from a previous
+version of the application or writes from another client that did not use a
+type converter could have written data with different properties and/or
+property types. The implementation will need to choose whether to
+gracefully recover from non-conforming data or throw an error.
+
+To override this method, see (FirestoreDataConverter.fromFirestore:1).
+
+###### Parameters
+
+###### snapshot
+
+`QueryDocumentSnapshot`\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+A `QueryDocumentSnapshot` containing your data and metadata.
+
+###### options?
+
+`any`
+
+The `SnapshotOptions` from the initial call to `data()`.
+
+###### Returns
+
+`AppModelType`
+
+##### toFirestore()
+
+###### Call Signature
+
+> **toFirestore**(`modelObject`): [`WithFieldValue`](#withfieldvalue)\<`DbModelType`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:363](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L363)
+
+Called by the Firestore SDK to convert a custom model object of type
+`AppModelType` into a plain JavaScript object (suitable for writing
+directly to the Firestore database) of type `DbModelType`. To use `set()`
+with `merge` and `mergeFields`, `toFirestore()` must be defined with
+`PartialWithFieldValue<AppModelType>`.
+
+The `WithFieldValue<T>` type extends `T` to also allow FieldValues such as
+(deleteField:1) to be used as property values.
+
+###### Parameters
+
+###### modelObject
+
+[`WithFieldValue`](#withfieldvalue)\<`AppModelType`\>
+
+###### Returns
+
+[`WithFieldValue`](#withfieldvalue)\<`DbModelType`\>
+
+###### Call Signature
+
+> **toFirestore**(`modelObject`, `options`): [`PartialWithFieldValue`](#partialwithfieldvalue)\<`DbModelType`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:377](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L377)
+
+Called by the Firestore SDK to convert a custom model object of type
+`AppModelType` into a plain JavaScript object (suitable for writing
+directly to the Firestore database) of type `DbModelType`. Used with
+(setDoc:1), (WriteBatch.set:1) and
+(Transaction.set:1) with `merge:true` or `mergeFields`.
+
+The `PartialWithFieldValue<T>` type extends `Partial<T>` to allow
+FieldValues such as (arrayUnion:1) to be used as property values.
+It also supports nested `Partial` by allowing nested fields to be
+omitted.
+
+###### Parameters
+
+###### modelObject
+
+[`PartialWithFieldValue`](#partialwithfieldvalue)\<`AppModelType`\>
+
+###### options
+
+`SetOptions`
+
+###### Returns
+
+[`PartialWithFieldValue`](#partialwithfieldvalue)\<`DbModelType`\>
+
+***
+
+### Query
+
+Defined in: [firestore/lib/modular/index.d.ts:410](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L410)
+
+A Query refers to a `Query` which you can read or listen to. You can also construct refined `Query` objects by
+adding filters and ordering.
+
+#### Extended by
+
+- [`CollectionReference`](#collectionreference)
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType` = [`DocumentData`](#documentdata)
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+#### Properties
+
+##### converter
+
+> **converter**: [`FirestoreDataConverter`](#firestoredataconverter)\<`AppModelType`, `DbModelType`\> \| `null`
+
+Defined in: [firestore/lib/modular/index.d.ts:422](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L422)
+
+If provided, the [FirestoreDataConverter](#firestoredataconverter) associated with this instance.
+
+##### firestore
+
+> **firestore**: `Module`
+
+Defined in: [firestore/lib/modular/index.d.ts:417](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L417)
+
+The Firestore instance the document is in. This is useful for performing transactions, for example.
+
+#### Methods
+
+##### withConverter()
+
+###### Call Signature
+
+> **withConverter**(`converter`): [`Query`](#query)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+Defined in: [firestore/lib/modular/index.d.ts:431](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L431)
+
+Removes the current converter.
+
+###### Parameters
+
+###### converter
+
+`null`
+
+`null` removes the current converter.
+
+###### Returns
+
+[`Query`](#query)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+A `Query<DocumentData, DocumentData>` that does not use a
+converter.
+
+###### Call Signature
+
+> **withConverter**\<`NewAppModelType`, `NewDbModelType`\>(`converter`): [`Query`](#query)\<`NewAppModelType`, `NewDbModelType`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:441](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L441)
+
+Applies a custom data converter to this query, allowing you to use your own
+custom model objects with Firestore. When you call [getDocs](modular/query-1.mdx#getdocs) with
+the returned query, the provided converter will convert between Firestore
+data of type `NewDbModelType` and your custom type `NewAppModelType`.
+z
+
+###### Type Parameters
+
+###### NewAppModelType
+
+`NewAppModelType`
+
+###### NewDbModelType
+
+`NewDbModelType` *extends* [`DocumentData`](#documentdata) = [`DocumentData`](#documentdata)
+
+###### Parameters
+
+###### converter
+
+[`FirestoreDataConverter`](#firestoredataconverter)\<`NewAppModelType`, `NewDbModelType`\>
+
+Converts objects to and from Firestore.
+
+###### Returns
+
+[`Query`](#query)\<`NewAppModelType`, `NewDbModelType`\>
+
+A `Query` that uses the provided converter.
+
+## Type Aliases
+
+### AddPrefixToKeys
+
+> **AddPrefixToKeys**\<`Prefix`, `T`\> = `` { [K in keyof T & string as `${Prefix}.${K}`]?: T[K] } ``
+
+Defined in: [firestore/lib/modular/index.d.ts:57](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L57)
+
+Returns a new map where every key is prefixed with the outer key appended to a dot.
+
+#### Type Parameters
+
+##### Prefix
+
+`Prefix` *extends* `string`
+
+##### T
+
+`T` *extends* `Record`\<`string`, `unknown`\>
+
+***
+
+### AggregateFieldType
+
+> **AggregateFieldType** = `ReturnType`\<*typeof* [`sum`](#sum)\> \| `ReturnType`\<*typeof* [`average`](#average)\> \| `ReturnType`\<*typeof* [`count`](#count)\>
+
+Defined in: [firestore/lib/modular/index.d.ts:1247](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1247)
+
+The union of all `AggregateField` types that are supported by Firestore.
+
+***
+
+### AggregateQuerySnapshot
+
+> **AggregateQuerySnapshot** = `FirebaseFirestoreTypes.AggregateQuerySnapshot`
+
+Defined in: [firestore/lib/modular/index.d.ts:10](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L10)
+
+***
+
+### ChildUpdateFields
+
+> **ChildUpdateFields**\<`K`, `V`\> = `V` *extends* `Record`\<`string`, `unknown`\> ? [`AddPrefixToKeys`](#addprefixtokeys)\<`K`, [`UpdateData`](#updatedata)\<`V`\>\> : `never`
+
+Defined in: [firestore/lib/modular/index.d.ts:70](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L70)
+
+Helper for calculating the nested fields for a given type `T1`. This is needed to distribute
+union types such as `undefined | {...}` (happens for optional props) or `{a: A} | {b: B}`.
+
+In this use case, `V` is used to distribute the union types of `T[K]` on Record, since `T[K]`
+is evaluated as an expression and not distributed.
+
+See https://www.typescriptlang.org/docs/handbook/advanced-types.html#distributive-conditional-types
+
+#### Type Parameters
+
+##### K
+
+`K` *extends* `string`
+
+##### V
+
+`V`
+
+***
+
+### EmulatorMockTokenOptions
+
+> **EmulatorMockTokenOptions** = \{ `user_id`: `string`; \} \| \{ `sub`: `string`; \} & `Partial`\<`FirebaseIdToken`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:108](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L108)
+
+***
+
+### NestedUpdateFields
+
+> **NestedUpdateFields**\<`T`\> = [`UnionToIntersection`](#uniontointersection)\<`{ [K in keyof T & string]: ChildUpdateFields<K, T[K]> }`\[keyof `T` & `string`\]\>
+
+Defined in: [firestore/lib/modular/index.d.ts:77](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L77)
+
+For each field (e.g. 'bar'), find all nested keys (e.g. {'bar.baz': T1, 'bar.qux': T2}).
+Intersect them together to make a single map containing all possible keys that are all marked as optional
+
+#### Type Parameters
+
+##### T
+
+`T` *extends* `Record`\<`string`, `unknown`\>
+
+***
+
+### PartialWithFieldValue
+
+> **PartialWithFieldValue**\<`T`\> = `Partial`\<`T`\> \| `T` *extends* [`Primitive`](#primitive) ? `T` : `T` *extends* `object` ? \{ \[K in keyof T\]?: PartialWithFieldValue\<T\[K\]\> \| FieldValue \} : `never`
+
+Defined in: [firestore/lib/modular/index.d.ts:31](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L31)
+
+Similar to Typescript's `Partial<T>`, but allows nested fields to be
+omitted and FieldValues to be passed in as property values.
+
+#### Type Parameters
+
+##### T
+
+`T`
+
+***
+
+### PersistentCacheIndexManager
+
+> **PersistentCacheIndexManager** = `FirebaseFirestoreTypes.PersistentCacheIndexManager`
+
+Defined in: [firestore/lib/modular/index.d.ts:9](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L9)
+
+***
+
+### Primitive
+
+> **Primitive** = `string` \| `number` \| `boolean` \| `undefined` \| `null`
+
+Defined in: [firestore/lib/modular/index.d.ts:17](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L17)
+
+Primitive types.
+
+***
+
+### QueryCompositeFilterConstraint
+
+> **QueryCompositeFilterConstraint** = `FirebaseFirestoreTypes.QueryCompositeFilterConstraint`
+
+Defined in: [firestore/lib/modular/index.d.ts:14](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L14)
+
+***
+
+### SetOptions
+
+> **SetOptions** = `FirebaseFirestoreTypes.SetOptions`
+
+Defined in: [firestore/lib/modular/index.d.ts:11](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L11)
+
+***
+
+### SnapshotListenOptions
+
+> **SnapshotListenOptions** = `FirebaseFirestoreTypes.SnapshotListenOptions`
+
+Defined in: [firestore/lib/modular/index.d.ts:12](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L12)
+
+***
+
+### UnionToIntersection
+
+> **UnionToIntersection**\<`U`\> = `U` *extends* `unknown` ? (`k`) => `void` : `never` *extends* (`k`) => `void` ? `I` : `never`
+
+Defined in: [firestore/lib/modular/index.d.ts:48](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L48)
+
+Given a union type `U = T1 | T2 | ...`, returns an intersected type (`T1 & T2 & ...`).
+
+Uses distributive conditional types and inference from conditional types.
+This works because multiple candidates for the same type variable in contra-variant positions
+causes an intersection type to be inferred.
+https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-inference-in-conditional-types
+https://stackoverflow.com/questions/50374908/transform-union-type-to-intersection-type
+
+#### Type Parameters
+
+##### U
+
+`U`
+
+***
+
+### UpdateData
+
+> **UpdateData**\<`T`\> = `T` *extends* [`Primitive`](#primitive) ? `T` : `T` *extends* `object` ? \{ \[K in keyof T\]?: UpdateData\<T\[K\]\> \| FieldValue \} & [`NestedUpdateFields`](#nestedupdatefields)\<`T`\> : `Partial`\<`T`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:88](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L88)
+
+Update data (for use with [updateDoc](#updatedoc)) that consists of field paths (e.g. 'foo' or 'foo.baz')
+mapped to values. Fields that contain dots reference nested fields within the document.
+FieldValues can be passed in as property values.
+
+#### Type Parameters
+
+##### T
+
+`T`
+
+***
+
+### WhereFilterOp
+
+> **WhereFilterOp** = `FirebaseFirestoreTypes.WhereFilterOp`
+
+Defined in: [firestore/lib/modular/index.d.ts:13](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L13)
+
+***
+
+### WithFieldValue
+
+> **WithFieldValue**\<`T`\> = `T` \| `T` *extends* [`Primitive`](#primitive) ? `T` : `T` *extends* `object` ? \{ \[K in keyof T\]: WithFieldValue\<T\[K\]\> \| FieldValue \} : `never`
+
+Defined in: [firestore/lib/modular/index.d.ts:100](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L100)
+
+Allows FieldValues to be passed in as a property value while maintaining
+type safety.
+
+#### Type Parameters
+
+##### T
+
+`T`
+
+## Functions
+
+### addDoc()
+
+> **addDoc**\<`AppModelType`, `DbModelType`\>(`reference`, `data`): `Promise`\<[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>\>
+
+Defined in: [firestore/lib/modular/index.d.ts:1022](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1022)
+
+Add a new document to specified `CollectionReference` with the given data,
+assigning it a document ID automatically.
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType`
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+#### Parameters
+
+##### reference
+
+[`CollectionReference`](#collectionreference)\<`AppModelType`, `DbModelType`\>
+
+A reference to the collection to add this document to.
+
+##### data
+
+[`WithFieldValue`](#withfieldvalue)\<`AppModelType`\>
+
+An Object containing the data for the new document.
+
+#### Returns
+
+`Promise`\<[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>\>
+
+A `Promise` resolved with a `DocumentReference` pointing to the
+newly created document after it has been written to the backend (Note that it
+won't resolve while you're offline).
+
+***
+
+### average()
+
+> **average**(`field`): [`AggregateField`](#aggregatefield)\<`number` \| `null`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:1273](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1273)
+
+Create an AggregateField object that can be used to compute the average of
+a specified field over a range of documents in the result set of a query.
+
+#### Parameters
+
+##### field
+
+Specifies the field to average across the result set.
+
+`string` | [`FieldPath`](modular/FieldPath.mdx#fieldpath)
+
+#### Returns
+
+[`AggregateField`](#aggregatefield)\<`number` \| `null`\>
+
+***
+
+### clearIndexedDbPersistence()
+
+> **clearIndexedDbPersistence**(`firestore`): `Promise`\<`void`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:1060](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1060)
+
+Aimed primarily at clearing up any data cached from running tests. Needs to be executed before any database calls
+are made.
+
+#### Parameters
+
+##### firestore
+
+`Module`
+
+A reference to the root `Firestore` instance.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### clearPersistence()
+
+> **clearPersistence**(`firestore`): `Promise`\<`void`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:1052](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1052)
+
+Aimed primarily at clearing up any data cached from running tests. Needs to be executed before any database calls
+are made.
+
+Deprecated, please use `clearIndexedDbPersistence` instead.
+
+#### Parameters
+
+##### firestore
+
+`Module`
+
+A reference to the root `Firestore` instance.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### collection()
+
+#### Call Signature
+
+> **collection**(`firestore`, `path`, ...`pathSegments`): [`CollectionReference`](#collectionreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+Defined in: [firestore/lib/modular/index.d.ts:853](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L853)
+
+Gets a `CollectionReference` instance that refers to the collection at
+the specified absolute path.
+
+##### Parameters
+
+###### firestore
+
+`Module`
+
+A reference to the root `Firestore` instance.
+
+###### path
+
+`string`
+
+A slash-separated path to a collection.
+
+###### pathSegments
+
+...`string`[]
+
+Additional path segments to apply relative to the first
+argument.
+
+##### Returns
+
+[`CollectionReference`](#collectionreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+The `CollectionReference` instance.
+
+##### Throws
+
+If the final path has an even number of segments and does not point
+to a collection.
+
+#### Call Signature
+
+> **collection**\<`AppModelType`, `DbModelType`\>(`reference`, `path`, ...`pathSegments`): [`CollectionReference`](#collectionreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+Defined in: [firestore/lib/modular/index.d.ts:871](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L871)
+
+Gets a `CollectionReference` instance that refers to a subcollection of
+`reference` at the specified relative path.
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### reference
+
+[`CollectionReference`](#collectionreference)\<`AppModelType`, `DbModelType`\>
+
+A reference to a collection.
+
+###### path
+
+`string`
+
+A slash-separated path to a collection.
+
+###### pathSegments
+
+...`string`[]
+
+Additional path segments to apply relative to the first
+argument.
+
+##### Returns
+
+[`CollectionReference`](#collectionreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+The `CollectionReference` instance.
+
+##### Throws
+
+If the final path has an even number of segments and does not point
+to a collection.
+
+#### Call Signature
+
+> **collection**\<`AppModelType`, `DbModelType`\>(`reference`, `path`, ...`pathSegments`): [`CollectionReference`](#collectionreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+Defined in: [firestore/lib/modular/index.d.ts:889](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L889)
+
+Gets a `CollectionReference` instance that refers to a subcollection of
+`reference` at the specified relative path.
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### reference
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+A reference to a document.
+
+###### path
+
+`string`
+
+A slash-separated path to a collection.
+
+###### pathSegments
+
+...`string`[]
+
+Additional path segments to apply relative to the first
+argument.
+
+##### Returns
+
+[`CollectionReference`](#collectionreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+The `CollectionReference` instance.
+
+##### Throws
+
+If the final path has an even number of segments and does not point
+to a collection.
+
+#### Call Signature
+
+> **collection**(`reference`, `path`, ...`pathSegments`): [`CollectionReference`](#collectionreference)\<[`DocumentData`](#documentdata)\>
+
+Defined in: [firestore/lib/modular/index.d.ts:907](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L907)
+
+Gets a `CollectionReference` instance that refers to a subcollection of
+`reference` at the specified relative path.
+
+##### Parameters
+
+###### reference
+
+[`DocumentReference`](#documentreference)
+
+A reference to a Firestore document.
+
+###### path
+
+`string`
+
+A slash-separated path to a collection.
+
+###### pathSegments
+
+...`string`[]
+
+Additional path segments that will be applied relative
+to the first argument.
+
+##### Returns
+
+[`CollectionReference`](#collectionreference)\<[`DocumentData`](#documentdata)\>
+
+The `CollectionReference` instance.
+
+##### Throws
+
+If the final path has an even number of segments and does not point
+to a collection.
+
+***
+
+### collectionGroup()
+
+> **collectionGroup**(`firestore`, `collectionId`): [`Query`](#query)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+Defined in: [firestore/lib/modular/index.d.ts:940](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L940)
+
+Creates and returns a new `Query` instance that includes all documents in the
+database that are contained in a collection or subcollection with the
+given `collectionId`.
+
+#### Parameters
+
+##### firestore
+
+`Module`
+
+A reference to the root `Firestore` instance.
+
+##### collectionId
+
+`string`
+
+Identifies the collections to query over. Every
+collection or subcollection with this ID as the last segment of its path
+will be included. Cannot contain a slash.
+
+#### Returns
+
+[`Query`](#query)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+The created `Query`.
+
+***
+
+### connectFirestoreEmulator()
+
+> **connectFirestoreEmulator**(`firestore`, `host`, `port`, `options?`): `void`
+
+Defined in: [firestore/lib/modular/index.d.ts:156](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L156)
+
+Modify this instance to communicate with the Cloud Firestore emulator.
+
+#### Parameters
+
+##### firestore
+
+`Module`
+
+A reference to the root `Firestore` instance.
+instance is associated with.
+
+##### host
+
+`string`
+
+##### port
+
+`number`
+
+##### options?
+
+###### mockUserToken?
+
+`string` \| [`EmulatorMockTokenOptions`](#emulatormocktokenoptions)
+
+the mock auth token to use for unit testing
+
+#### Returns
+
+`void`
+
+void.
+
+***
+
+### count()
+
+> **count**(): [`AggregateField`](#aggregatefield)\<`number`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:1279](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1279)
+
+Create an AggregateField object that can be used to compute the count of
+documents in the result set of a query.
+
+#### Returns
+
+[`AggregateField`](#aggregatefield)\<`number`\>
+
+***
+
+### deleteAllPersistentCacheIndexes()
+
+> **deleteAllPersistentCacheIndexes**(`indexManager`): `Promise`\<`void`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:1392](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1392)
+
+Removes all persistent cache indexes. Note this function also deletes indexes
+generated by `setIndexConfiguration()`, which is deprecated.
+
+#### Parameters
+
+##### indexManager
+
+`PersistentCacheIndexManager`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+- A promise that resolves when the operation is complete.
+
+***
+
+### disableNetwork()
+
+> **disableNetwork**(`firestore`): `Promise`\<`void`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:1043](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1043)
+
+Disables network usage for this instance. It can be re-enabled via [enableNetwork](#enablenetwork). While the network is disabled, any snapshot listeners,
+`getDoc()` or `getDocs()` calls will return results from cache, and any write
+operations will be queued until the network is restored.
+
+#### Parameters
+
+##### firestore
+
+`Module`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A `Promise` that is resolved once the network has been disabled.
+
+***
+
+### disablePersistentCacheIndexAutoCreation()
+
+> **disablePersistentCacheIndexAutoCreation**(`indexManager`): `Promise`\<`void`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:1383](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1383)
+
+Stops creating persistent cache indexes automatically for local query execution.
+The indexes which have been created by calling `enableIndexAutoCreation()` still take effect.
+
+#### Parameters
+
+##### indexManager
+
+`PersistentCacheIndexManager`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+- A promise that resolves when the operation is complete.
+
+***
+
+### doc()
+
+#### Call Signature
+
+> **doc**(`firestore`, `path`, ...`pathSegments`): [`DocumentReference`](#documentreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+Defined in: [firestore/lib/modular/index.d.ts:796](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L796)
+
+Gets a `DocumentReference` instance that refers to the document at the
+specified absolute path.
+
+##### Parameters
+
+###### firestore
+
+`Module`
+
+A reference to the root `Firestore` instance.
+
+###### path
+
+`string`
+
+A slash-separated path to a document.
+
+###### pathSegments
+
+...`string`[]
+
+Additional path segments that will be applied relative
+to the first argument.
+
+##### Returns
+
+[`DocumentReference`](#documentreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+The `DocumentReference` instance.
+
+##### Throws
+
+If the final path has an odd number of segments and does not point to
+a document.
+
+#### Call Signature
+
+> **doc**\<`AppModelType`, `DbModelType`\>(`reference`, `path?`, ...`pathSegments`): [`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:817](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L817)
+
+Gets a `DocumentReference` instance that refers to a document within
+`reference` at the specified relative path. If no path is specified, an
+automatically-generated unique ID will be used for the returned
+`DocumentReference`.
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### reference
+
+[`CollectionReference`](#collectionreference)\<`AppModelType`, `DbModelType`\>
+
+A reference to a collection.
+
+###### path?
+
+`string`
+
+A slash-separated path to a document. Has to be omitted to use
+auto-generated IDs.
+
+###### pathSegments
+
+...`string`[]
+
+Additional path segments that will be applied relative
+to the first argument.
+
+##### Returns
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+The `DocumentReference` instance.
+
+##### Throws
+
+If the final path has an odd number of segments and does not point to
+a document.
+
+#### Call Signature
+
+> **doc**\<`AppModelType`, `DbModelType`\>(`reference`, `path`, ...`pathSegments`): [`DocumentReference`](#documentreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+Defined in: [firestore/lib/modular/index.d.ts:835](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L835)
+
+Gets a `DocumentReference` instance that refers to a document within
+`reference` at the specified relative path.
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### reference
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+A reference to a Firestore document.
+
+###### path
+
+`string`
+
+A slash-separated path to a document.
+
+###### pathSegments
+
+...`string`[]
+
+Additional path segments that will be applied relative
+to the first argument.
+
+##### Returns
+
+[`DocumentReference`](#documentreference)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\>
+
+The `DocumentReference` instance.
+
+##### Throws
+
+If the final path has an odd number of segments and does not point to
+a document.
+
+***
+
+### enableNetwork()
+
+> **enableNetwork**(`firestore`): `Promise`\<`void`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:1033](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1033)
+
+Re-enables use of the network for this Firestore instance after a prior
+call to [disableNetwork](#disablenetwork).
+
+#### Parameters
+
+##### firestore
+
+`Module`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A `Promise` that is resolved once the network has been enabled.
+
+***
+
+### enablePersistentCacheIndexAutoCreation()
+
+> **enablePersistentCacheIndexAutoCreation**(`indexManager`): `Promise`\<`void`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:1374](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1374)
+
+Enables the SDK to create persistent cache indexes automatically for local query
+execution when the SDK believes cache indexes can help improves performance.
+This feature is disabled by default.
+
+#### Parameters
+
+##### indexManager
+
+`PersistentCacheIndexManager`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+- A promise that resolves when the operation is complete.
+
+***
+
+### getAggregateFromServer()
+
+> **getAggregateFromServer**\<`AggregateSpecType`, `AppModelType`, `DbModelType`\>(`query`, `aggregateSpec`): `Promise`\<`any`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:1252](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1252)
+
+#### Type Parameters
+
+##### AggregateSpecType
+
+`AggregateSpecType` *extends* `AggregateSpec`
+
+##### AppModelType
+
+`AppModelType`
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+#### Parameters
+
+##### query
+
+[`Query`](#query)\<`AppModelType`, `DbModelType`\>
+
+##### aggregateSpec
+
+`AggregateSpecType`
+
+#### Returns
+
+`Promise`\<`any`\>
+
+***
+
+### getCountFromServer()
+
+> **getCountFromServer**\<`AppModelType`, `DbModelType`\>(`query`): `Promise`\<`AggregateQuerySnapshot`\<\{ `count`: `AggregateField`\<`number`\>; \}, `AppModelType`, `DbModelType`\>\>
+
+Defined in: [firestore/lib/modular/index.d.ts:1171](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1171)
+
+Calculates the number of documents in the result set of the given query,
+without actually downloading the documents.
+
+Using this function to count the documents is efficient because only the
+final count, not the documents' data, is downloaded. This function can even
+count the documents if the result set would be prohibitively large to
+download entirely (e.g. thousands of documents).
+
+The result received from the server is presented, unaltered, without
+considering any local state. That is, documents in the local cache are not
+taken into consideration, neither are local modifications not yet
+synchronized with the server. Previously-downloaded results, if any, are not
+used: every request using this source necessarily involves a round trip to
+the server.
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType`
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+#### Parameters
+
+##### query
+
+[`Query`](#query)\<`AppModelType`, `DbModelType`\>
+
+The query whose result set size to calculate.
+
+#### Returns
+
+`Promise`\<`AggregateQuerySnapshot`\<\{ `count`: `AggregateField`\<`number`\>; \}, `AppModelType`, `DbModelType`\>\>
+
+A Promise that will be resolved with the count; the count can be
+retrieved from `snapshot.data().count`, where `snapshot` is the
+`AggregateQuerySnapshot` to which the returned Promise resolves.
+
+***
+
+### getFirestore()
+
+#### Call Signature
+
+> **getFirestore**(): `Module`
+
+Defined in: [firestore/lib/modular/index.d.ts:118](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L118)
+
+Returns the existing default Firestore instance that is associated with the
+default @firebase/app#FirebaseApp. If no instance exists, initializes a new
+instance with default settings.
+
+##### Returns
+
+`Module`
+
+The Firestore instance of the provided app.
+
+#### Call Signature
+
+> **getFirestore**(`app`): `Module`
+
+Defined in: [firestore/lib/modular/index.d.ts:130](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L130)
+
+**`Internal`**
+
+Returns the existing default Firestore instance that is associated with the
+provided @firebase/app#FirebaseApp. If no instance exists, initializes a new
+instance with default settings.
+
+##### Parameters
+
+###### app
+
+`FirebaseApp`
+
+The @firebase/app#FirebaseApp instance that the returned Firestore
+instance is associated with.
+
+##### Returns
+
+`Module`
+
+The Firestore instance of the provided app.
+
+#### Call Signature
+
+> **getFirestore**(`app?`): `Module`
+
+Defined in: [firestore/lib/modular/index.d.ts:132](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L132)
+
+Returns the existing default Firestore instance that is associated with the
+default @firebase/app#FirebaseApp. If no instance exists, initializes a new
+instance with default settings.
+
+##### Parameters
+
+###### app?
+
+`FirebaseApp`
+
+##### Returns
+
+`Module`
+
+The Firestore instance of the provided app.
+
+#### Call Signature
+
+> **getFirestore**(`app?`, `databaseId?`): `Module`
+
+Defined in: [firestore/lib/modular/index.d.ts:144](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L144)
+
+Returns the existing default Firestore instance that is associated with the
+provided @firebase/app#FirebaseApp and database ID. If no instance exists, initializes a new
+instance with default settings.
+
+##### Parameters
+
+###### app?
+
+`FirebaseApp`
+
+The @firebase/app#FirebaseApp instance that the returned Firestore
+instance is associated with.
+
+###### databaseId?
+
+`string`
+
+The ID of the Firestore database to use. If not provided, the default database is used.
+
+##### Returns
+
+`Module`
+
+The Firestore
+
+***
+
+### getPersistentCacheIndexManager()
+
+> **getPersistentCacheIndexManager**(`firestore`): `PersistentCacheIndexManager` \| `null`
+
+Defined in: [firestore/lib/modular/index.d.ts:1364](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1364)
+
+Gets the `PersistentCacheIndexManager` instance used by this Cloud Firestore instance.
+This is not the same as Cloud Firestore Indexes.
+Persistent cache indexes are optional indexes that only exist within the SDK to assist in local query execution.
+
+#### Parameters
+
+##### firestore
+
+`Module`
+
+#### Returns
+
+`PersistentCacheIndexManager` \| `null`
+
+- The `PersistentCacheIndexManager` instance or `null` if local persistent storage is not in use.
+
+***
+
+### initializeFirestore()
+
+> **initializeFirestore**(`app`, `settings`, `databaseId?`): `Promise`\<`Module`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:1108](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1108)
+
+#### Parameters
+
+##### app
+
+`FirebaseApp`
+
+##### settings
+
+`FirestoreSettings`
+
+##### databaseId?
+
+`string`
+
+#### Returns
+
+`Promise`\<`Module`\>
+
+***
+
+### loadBundle()
+
+> **loadBundle**(`firestore`, `bundleData`): `LoadBundleTask`
+
+Defined in: [firestore/lib/modular/index.d.ts:1323](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1323)
+
+Loads a Firestore bundle into the local cache.
+
+#### Parameters
+
+##### firestore
+
+`Module`
+
+The Firestore instance to load bundles for.
+
+##### bundleData
+
+An object representing the bundle to be loaded. Valid
+objects are `ArrayBuffer`, `ReadableStream<Uint8Array>` or `string`.
+
+`string` | `ArrayBuffer` | `ReadableStream`\<`Uint8Array`\<`ArrayBufferLike`\>\>
+
+#### Returns
+
+`LoadBundleTask`
+
+A `LoadBundleTask` object, which notifies callers with progress
+updates, and completion or error events. It can be used as a
+`Promise<LoadBundleTaskProgress>`.
+
+***
+
+### namedQuery()
+
+> **namedQuery**(`firestore`, `name`): `Promise`\<[`Query`](#query)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\> \| `null`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:1340](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1340)
+
+Reads a Firestore [Query](#query) from local cache, identified by the given
+name.
+
+The named queries are packaged  into bundles on the server side (along
+with resulting documents), and loaded to local cache using `loadBundle`. Once
+in local cache, use this method to extract a [Query](#query) by name.
+
+#### Parameters
+
+##### firestore
+
+`Module`
+
+The Firestore instance to read the query from.
+
+##### name
+
+`string`
+
+The name of the query.
+
+#### Returns
+
+`Promise`\<[`Query`](#query)\<[`DocumentData`](#documentdata), [`DocumentData`](#documentdata)\> \| `null`\>
+
+A named Query.
+
+***
+
+### refEqual()
+
+> **refEqual**\<`AppModelType`, `DbModelType`\>(`left`, `right`): `boolean`
+
+Defined in: [firestore/lib/modular/index.d.ts:920](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L920)
+
+Returns true if the provided references are equal.
+
+#### Type Parameters
+
+##### AppModelType
+
+`AppModelType`
+
+##### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+#### Parameters
+
+##### left
+
+DocumentReference<AppModelType, DbModelType> | CollectionReference<AppModelType, DbModelType>	A reference to compare.
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\> | [`CollectionReference`](#collectionreference)\<`AppModelType`, `DbModelType`\>
+
+##### right
+
+DocumentReference<AppModelType, DbModelType> | CollectionReference<AppModelType, DbModelType>	A reference to compare.
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\> | [`CollectionReference`](#collectionreference)\<`AppModelType`, `DbModelType`\>
+
+#### Returns
+
+`boolean`
+
+boolean true if the references point to the same location in the same Firestore database.
+
+***
+
+### runTransaction()
+
+#### Call Signature
+
+> **runTransaction**\<`T`\>(`firestore`, `updateFunction`, `options?`): `Promise`\<`T`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:778](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L778)
+
+Executes the given `updateFunction` and then attempts to commit the changes
+applied within the transaction. If any document read within the transaction
+has changed, Cloud Firestore retries the `updateFunction`. If it fails to
+commit after 5 attempts, the transaction fails.
+
+The maximum number of writes allowed in a single transaction is 500.
+
+##### Type Parameters
+
+###### T
+
+`T`
+
+##### Parameters
+
+###### firestore
+
+`Module`
+
+A reference to the Firestore database to run this
+transaction against.
+
+###### updateFunction
+
+(`transaction`) => `Promise`\<`T`\>
+
+The function to execute within the transaction
+context.
+
+###### options?
+
+`any`
+
+An options object to configure maximum number of attempts to
+commit.
+
+##### Returns
+
+`Promise`\<`T`\>
+
+If the transaction completed successfully or was explicitly aborted
+(the `updateFunction` returned a failed promise), the promise returned by the
+`updateFunction `is returned here. Otherwise, if the transaction failed, a
+rejected promise with the corresponding failure error is returned.
+
+#### Call Signature
+
+> **runTransaction**\<`T`\>(`firestore`, `updateFunction`): `Promise`\<`T`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:1145](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1145)
+
+Executes the given `updateFunction` and then attempts to commit the changes
+applied within the transaction. If any document read within the transaction
+has changed, Cloud Firestore retries the `updateFunction`. If it fails to
+commit after 5 attempts, the transaction fails.
+
+The maximum number of writes allowed in a single transaction is 500.
+
+##### Type Parameters
+
+###### T
+
+`T`
+
+##### Parameters
+
+###### firestore
+
+`Module`
+
+A reference to the Firestore database to run this
+transaction against.
+
+###### updateFunction
+
+(`transaction`) => `Promise`\<`T`\>
+
+The function to execute within the transaction
+context.
+
+##### Returns
+
+`Promise`\<`T`\>
+
+If the transaction completed successfully or was explicitly aborted
+(the `updateFunction` returned a failed promise), the promise returned by the
+`updateFunction `is returned here. Otherwise, if the transaction failed, a
+rejected promise with the corresponding failure error is returned.
+
+***
+
+### setDoc()
+
+#### Call Signature
+
+> **setDoc**\<`AppModelType`, `DbModelType`\>(`reference`, `data`): `Promise`\<`void`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:954](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L954)
+
+Writes to the document referred to by this `DocumentReference`. If the
+document does not yet exist, it will be created.
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### reference
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+A reference to the document to write.
+
+###### data
+
+[`WithFieldValue`](#withfieldvalue)\<`AppModelType`\>
+
+A map of the fields and values for the document.
+
+##### Returns
+
+`Promise`\<`void`\>
+
+A `Promise` resolved once the data has been successfully written
+to the backend (note that it won't resolve while you're offline).
+
+#### Call Signature
+
+> **setDoc**\<`AppModelType`, `DbModelType`\>(`reference`, `data`, `options`): `Promise`\<`void`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:970](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L970)
+
+Writes to the document referred to by the specified `DocumentReference`. If
+the document does not yet exist, it will be created. If you provide `merge`
+or `mergeFields`, the provided data can be merged into an existing document.
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### reference
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+A reference to the document to write.
+
+###### data
+
+[`PartialWithFieldValue`](#partialwithfieldvalue)\<`AppModelType`\>
+
+A map of the fields and values for the document.
+
+###### options
+
+`SetOptions`
+
+An object to configure the set behavior.
+
+##### Returns
+
+`Promise`\<`void`\>
+
+A Promise resolved once the data has been successfully written
+to the backend (note that it won't resolve while you're offline).
+
+***
+
+### setLogLevel()
+
+> **setLogLevel**(`logLevel`): `void`
+
+Defined in: [firestore/lib/modular/index.d.ts:1126](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1126)
+
+Sets the verbosity of Cloud Firestore logs (debug, error, or silent).
+
+#### Parameters
+
+##### logLevel
+
+`LogLevel`
+
+The verbosity you set for activity and error logging.
+
+#### Returns
+
+`void`
+
+***
+
+### sum()
+
+> **sum**(`field`): [`AggregateField`](#aggregatefield)\<`number`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:1266](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1266)
+
+Create an AggregateField object that can be used to compute the sum of
+a specified field over a range of documents in the result set of a query.
+
+#### Parameters
+
+##### field
+
+Specifies the field to sum across the result set.
+
+`string` | [`FieldPath`](modular/FieldPath.mdx#fieldpath)
+
+#### Returns
+
+[`AggregateField`](#aggregatefield)\<`number`\>
+
+***
+
+### terminate()
+
+> **terminate**(`firestore`): `Promise`\<`void`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:1081](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1081)
+
+Terminates the provided Firestore instance.
+
+To restart after termination, create a new instance of FirebaseFirestore with
+(getFirestore:1).
+
+Termination does not cancel any pending writes, and any promises that are
+awaiting a response from the server will not be resolved. If you have
+persistence enabled, the next time you start this instance, it will resume
+sending these writes to the server.
+
+Note: Under normal circumstances, calling `terminate()` is not required. This
+function is useful only when you want to force this instance to release all
+of its resources or in combination with `clearIndexedDbPersistence()` to
+ensure that all local state is destroyed between test runs.
+
+#### Parameters
+
+##### firestore
+
+`Module`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A `Promise` that is resolved when the instance has been successfully
+terminated.
+
+***
+
+### updateDoc()
+
+#### Call Signature
+
+> **updateDoc**\<`AppModelType`, `DbModelType`\>(`reference`, `data`): `Promise`\<`void`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:987](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L987)
+
+Updates fields in the document referred to by the specified
+`DocumentReference`. The update will fail if applied to a document that does
+not exist.
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### reference
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+A reference to the document to update.
+
+###### data
+
+[`UpdateData`](#updatedata)\<`DbModelType`\>
+
+An object containing the fields and values with which to
+update the document. Fields can contain dots to reference nested fields
+within the document.
+
+##### Returns
+
+`Promise`\<`void`\>
+
+A `Promise` resolved once the data has been successfully written
+to the backend (note that it won't resolve while you're offline).
+
+#### Call Signature
+
+> **updateDoc**\<`AppModelType`, `DbModelType`\>(`reference`, `field`, `value`, ...`moreFieldsAndValues`): `Promise`\<`void`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:1006](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1006)
+
+Updates fields in the document referred to by the specified
+`DocumentReference` The update will fail if applied to a document that does
+not exist.
+
+Nested fields can be updated by providing dot-separated field path
+strings or by providing `FieldPath` objects.
+
+##### Type Parameters
+
+###### AppModelType
+
+`AppModelType`
+
+###### DbModelType
+
+`DbModelType` *extends* [`DocumentData`](#documentdata)
+
+##### Parameters
+
+###### reference
+
+[`DocumentReference`](#documentreference)\<`AppModelType`, `DbModelType`\>
+
+A reference to the document to update.
+
+###### field
+
+The first field to update.
+
+`string` | [`FieldPath`](modular/FieldPath.mdx#fieldpath)
+
+###### value
+
+`unknown`
+
+The first value.
+
+###### moreFieldsAndValues
+
+...`unknown`[]
+
+Additional key value pairs.
+
+##### Returns
+
+`Promise`\<`void`\>
+
+A `Promise` resolved once the data has been successfully written
+to the backend (note that it won't resolve while you're offline).
+
+***
+
+### waitForPendingWrites()
+
+> **waitForPendingWrites**(`firestore`): `Promise`\<`void`\>
+
+Defined in: [firestore/lib/modular/index.d.ts:1099](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1099)
+
+Waits until all currently pending writes for the active user have been
+acknowledged by the backend.
+
+The returned promise resolves immediately if there are no outstanding writes.
+Otherwise, the promise waits for all previously issued writes (including
+those written in a previous app session), but it does not wait for writes
+that were added after the function is called. If you want to wait for
+additional writes, call `waitForPendingWrites()` again.
+
+Any outstanding `waitForPendingWrites()` promises are rejected during user
+changes.
+
+#### Parameters
+
+##### firestore
+
+`Module`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A `Promise` which resolves when all currently pending writes have been
+acknowledged by the backend.
+
+***
+
+### writeBatch()
+
+> **writeBatch**(`firestore`): [`WriteBatch`](#writebatch)
+
+Defined in: [firestore/lib/modular/index.d.ts:1355](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/index.d.ts#L1355)
+
+Creates a write batch, used for performing multiple writes as a single
+atomic operation. The maximum number of writes allowed in a single WriteBatch
+is 500.
+
+The result of these writes will only be reflected in document reads that
+occur after the returned promise resolves. If the client is offline, the
+write fails. If you would like to see local modifications or buffer writes
+until the client is online, use the full Firestore SDK.
+
+#### Parameters
+
+##### firestore
+
+`Module`
+
+#### Returns
+
+[`WriteBatch`](#writebatch)
+
+A `WriteBatch` that can be used to atomically execute multiple
+writes.
+
+## References
+
+### and
+
+Re-exports [and](modular/query-1.mdx#and)
+
+***
+
+### AppliableConstraint
+
+Re-exports [AppliableConstraint](modular/query-1.mdx#abstract-appliableconstraint)
+
+***
+
+### arrayRemove
+
+Re-exports [arrayRemove](modular/FieldValue.mdx#arrayremove)
+
+***
+
+### arrayUnion
+
+Re-exports [arrayUnion](modular/FieldValue.mdx#arrayunion)
+
+***
+
+### Bytes
+
+Re-exports [Bytes](modular/Bytes.mdx#bytes)
+
+***
+
+### deleteDoc
+
+Re-exports [deleteDoc](modular/query-1.mdx#deletedoc)
+
+***
+
+### deleteField
+
+Re-exports [deleteField](modular/FieldValue.mdx#deletefield)
+
+***
+
+### documentId
+
+Re-exports [documentId](modular/FieldPath.mdx#documentid)
+
+***
+
+### DocumentSnapshot
+
+Re-exports [DocumentSnapshot](modular/snapshot.mdx#documentsnapshot)
+
+***
+
+### endAt
+
+Re-exports [endAt](modular/query-1.mdx#endat)
+
+***
+
+### endBefore
+
+Re-exports [endBefore](modular/query-1.mdx#endbefore)
+
+***
+
+### FieldPath
+
+Re-exports [FieldPath](modular/FieldPath.mdx#fieldpath)
+
+***
+
+### FieldValue
+
+Re-exports [FieldValue](modular/FieldValue.mdx#fieldvalue)
+
+***
+
+### FirestoreError
+
+Re-exports [FirestoreError](modular/snapshot.mdx#firestoreerror)
+
+***
+
+### GeoPoint
+
+Re-exports [GeoPoint](modular/GeoPoint.mdx#geopoint)
+
+***
+
+### getDoc
+
+Re-exports [getDoc](modular/query-1.mdx#getdoc)
+
+***
+
+### getDocFromCache
+
+Re-exports [getDocFromCache](modular/query-1.mdx#getdocfromcache)
+
+***
+
+### getDocFromServer
+
+Re-exports [getDocFromServer](modular/query-1.mdx#getdocfromserver)
+
+***
+
+### getDocs
+
+Re-exports [getDocs](modular/query-1.mdx#getdocs)
+
+***
+
+### getDocsFromCache
+
+Re-exports [getDocsFromCache](modular/query-1.mdx#getdocsfromcache)
+
+***
+
+### getDocsFromServer
+
+Re-exports [getDocsFromServer](modular/query-1.mdx#getdocsfromserver)
+
+***
+
+### increment
+
+Re-exports [increment](modular/FieldValue.mdx#increment)
+
+***
+
+### limit
+
+Re-exports [limit](modular/query-1.mdx#limit)
+
+***
+
+### limitToLast
+
+Re-exports [limitToLast](modular/query-1.mdx#limittolast)
+
+***
+
+### onSnapshot
+
+Re-exports [onSnapshot](modular/snapshot.mdx#onsnapshot)
+
+***
+
+### onSnapshotsInSync
+
+Re-exports [onSnapshotsInSync](modular/snapshot.mdx#onsnapshotsinsync)
+
+***
+
+### or
+
+Re-exports [or](modular/query-1.mdx#or)
+
+***
+
+### orderBy
+
+Re-exports [orderBy](modular/query-1.mdx#orderby)
+
+***
+
+### OrderByDirection
+
+Re-exports [OrderByDirection](modular/query-1.mdx#orderbydirection)
+
+***
+
+### query
+
+Re-exports [query](modular/query-1.mdx#query)
+
+***
+
+### QueryConstraint
+
+Re-exports [QueryConstraint](modular/query-1.mdx#abstract-queryconstraint)
+
+***
+
+### QueryConstraintType
+
+Re-exports [QueryConstraintType](modular/query-1.mdx#queryconstrainttype-1)
+
+***
+
+### QueryDocumentSnapshot
+
+Re-exports [QueryDocumentSnapshot](modular/snapshot.mdx#querydocumentsnapshot)
+
+***
+
+### QueryEndAtConstraint
+
+Re-exports [QueryEndAtConstraint](modular/query-1.mdx#queryendatconstraint)
+
+***
+
+### queryEqual
+
+Re-exports [queryEqual](modular/snapshot.mdx#queryequal)
+
+***
+
+### QueryFieldFilterConstraint
+
+Re-exports [QueryFieldFilterConstraint](modular/query-1.mdx#queryfieldfilterconstraint)
+
+***
+
+### QueryLimitConstraint
+
+Re-exports [QueryLimitConstraint](modular/query-1.mdx#querylimitconstraint)
+
+***
+
+### QueryNonFilterConstraint
+
+Re-exports [QueryNonFilterConstraint](modular/query-1.mdx#querynonfilterconstraint)
+
+***
+
+### QueryOrderByConstraint
+
+Re-exports [QueryOrderByConstraint](modular/query-1.mdx#queryorderbyconstraint)
+
+***
+
+### QuerySnapshot
+
+Re-exports [QuerySnapshot](modular/snapshot.mdx#querysnapshot)
+
+***
+
+### QueryStartAtConstraint
+
+Re-exports [QueryStartAtConstraint](modular/query-1.mdx#querystartatconstraint)
+
+***
+
+### serverTimestamp
+
+Re-exports [serverTimestamp](modular/FieldValue.mdx#servertimestamp)
+
+***
+
+### snapshotEqual
+
+Re-exports [snapshotEqual](modular/snapshot.mdx#snapshotequal)
+
+***
+
+### startAfter
+
+Re-exports [startAfter](modular/query-1.mdx#startafter)
+
+***
+
+### startAt
+
+Re-exports [startAt](modular/query-1.mdx#startat)
+
+***
+
+### Timestamp
+
+Re-exports [Timestamp](modular/Timestamp.mdx#timestamp)
+
+***
+
+### Unsubscribe
+
+Re-exports [Unsubscribe](modular/snapshot.mdx#unsubscribe)
+
+***
+
+### vector
+
+Re-exports [vector](modular/VectorValue.mdx#vector)
+
+***
+
+### VectorValue
+
+Re-exports [VectorValue](modular/VectorValue.mdx#vectorvalue)
+
+***
+
+### where
+
+Re-exports [where](modular/query-1.mdx#where)

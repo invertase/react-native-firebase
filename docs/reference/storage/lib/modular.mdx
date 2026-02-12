@@ -1,0 +1,826 @@
+[**react-native-firebase**](../../README.mdx)
+
+***
+
+[react-native-firebase](../../modules.mdx) / storage/lib/modular
+
+# storage/lib/modular
+
+## Type Aliases
+
+### StringFormat
+
+> **StringFormat** = *typeof* [`StringFormat`](#stringformat-1)\[keyof *typeof* [`StringFormat`](#stringformat-1)\]
+
+Defined in: [storage/lib/modular/index.d.ts:32](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L32)
+
+Union of literal string values in StringFormat "enum" object
+
+## Variables
+
+### StringFormat
+
+> `const` **StringFormat**: `FirebaseStorageTypes.StringFormat`
+
+Defined in: [storage/lib/modular/index.d.ts:32](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L32)
+
+***
+
+### TaskEvent
+
+> `const` **TaskEvent**: `FirebaseStorageTypes.TaskEvent`
+
+Defined in: [storage/lib/modular/index.d.ts:33](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L33)
+
+***
+
+### TaskState
+
+> `const` **TaskState**: `FirebaseStorageTypes.TaskState`
+
+Defined in: [storage/lib/modular/index.d.ts:34](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L34)
+
+## Functions
+
+### child()
+
+> **child**(`storageRef`, `path`): `Reference`
+
+Defined in: [storage/lib/modular/index.d.ts:269](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L269)
+
+Returns a reference to a relative path from the given reference.
+
+#### Parameters
+
+##### storageRef
+
+`Reference`
+
+The Reference as the base.
+
+##### path
+
+`string`
+
+The relative path from the base reference.
+
+#### Returns
+
+`Reference`
+
+A new Reference.
+
+***
+
+### connectStorageEmulator()
+
+> **connectStorageEmulator**(`storage`, `host`, `port`, `options?`): `void`
+
+Defined in: [storage/lib/modular/index.d.ts:83](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L83)
+
+Connects a Storage instance to the Firebase Storage emulator.
+
+#### Parameters
+
+##### storage
+
+`Module`
+
+A reference to the `Storage` instance.
+
+##### host
+
+`string`
+
+Emulator host, e.g., 'localhost'.
+
+##### port
+
+`number`
+
+Emulator port, e.g., 9199.
+
+##### options?
+
+`EmulatorMockTokenOptions`
+
+Optional. EmulatorMockTokenOptions instance.
+
+#### Returns
+
+`void`
+
+***
+
+### deleteObject()
+
+> **deleteObject**(`storageRef`): `Promise`\<`void`\>
+
+Defined in: [storage/lib/modular/index.d.ts:103](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L103)
+
+Deletes the object at the given reference's location.
+
+#### Parameters
+
+##### storageRef
+
+`Reference`
+
+The Reference to the object to delete.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A promise that resolves when the delete is complete.
+
+***
+
+### getBlob()
+
+> **getBlob**(`storageRef`, `maxDownloadSizeBytes?`): `Promise`\<`Blob`\>
+
+Defined in: [storage/lib/modular/index.d.ts:111](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L111)
+
+Retrieves the blob at the given reference's location. Throws an error if the object is not found.
+
+#### Parameters
+
+##### storageRef
+
+`Reference`
+
+The Reference to the object.
+
+##### maxDownloadSizeBytes?
+
+`number`
+
+Optional. Maximum size in bytes to retrieve.
+
+#### Returns
+
+`Promise`\<`Blob`\>
+
+A promise resolving to the Blob.
+
+***
+
+### getBytes()
+
+> **getBytes**(`storageRef`, `maxDownloadSizeBytes?`): `Promise`\<`ArrayBuffer`\>
+
+Defined in: [storage/lib/modular/index.d.ts:120](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L120)
+
+Retrieves bytes (up to the specified max size) from an object at the given reference's location.
+Throws an error if the object is not found or if the size exceeds the maximum allowed.
+
+#### Parameters
+
+##### storageRef
+
+`Reference`
+
+The Reference to the object.
+
+##### maxDownloadSizeBytes?
+
+`number`
+
+Optional. Maximum size in bytes to retrieve.
+
+#### Returns
+
+`Promise`\<`ArrayBuffer`\>
+
+A promise resolving to an ArrayBuffer.
+
+***
+
+### getDownloadURL()
+
+> **getDownloadURL**(`storageRef`): `Promise`\<`string`\>
+
+Defined in: [storage/lib/modular/index.d.ts:130](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L130)
+
+Retrieves a long-lived download URL for the object at the given reference's location.
+
+#### Parameters
+
+##### storageRef
+
+`Reference`
+
+The Reference to the object.
+
+#### Returns
+
+`Promise`\<`string`\>
+
+A promise resolving to the URL string.
+
+***
+
+### getMetadata()
+
+> **getMetadata**(`storageRef`): `Promise`\<`FullMetadata`\>
+
+Defined in: [storage/lib/modular/index.d.ts:137](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L137)
+
+Retrieves metadata for the object at the given reference's location.
+
+#### Parameters
+
+##### storageRef
+
+`Reference`
+
+The Reference to the object.
+
+#### Returns
+
+`Promise`\<`FullMetadata`\>
+
+A promise resolving to the object's FullMetadata.
+
+***
+
+### getStorage()
+
+#### Call Signature
+
+> **getStorage**(`app?`, `bucketUrl?`): `Module`
+
+Defined in: [storage/lib/modular/index.d.ts:49](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L49)
+
+Returns the existing default Storage instance that is associated with the
+default FirebaseApp. The default storage bucket is used. If no instance exists, initializes a new
+instance with default settings.
+
+##### Parameters
+
+###### app?
+
+`FirebaseApp`
+
+Firebase app to get FirebaseStorage instance for.
+
+###### bucketUrl?
+
+`string`
+
+The gs:// url to your Firebase Storage Bucket. If not passed, uses the app's default Storage Bucket.
+
+##### Returns
+
+`Module`
+
+The Storage instance of the provided app.
+
+#### Call Signature
+
+> **getStorage**(`app?`): `Module`
+
+Defined in: [storage/lib/modular/index.d.ts:60](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L60)
+
+Returns the existing default Storage instance that is associated with the
+provided FirebaseApp. The default storage bucket is used. If no instance exists, initializes a new
+instance with default settings.
+
+##### Parameters
+
+###### app?
+
+`FirebaseApp`
+
+The FirebaseApp instance that the returned Storage
+instance is associated with.
+
+##### Returns
+
+`Module`
+
+The Firestore instance of the provided app.
+
+#### Call Signature
+
+> **getStorage**(`app?`, `bucketUrl?`): `Module`
+
+Defined in: [storage/lib/modular/index.d.ts:72](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L72)
+
+Returns the existing default Storage instance that is associated with the
+provided FirebaseApp. If no instance exists, initializes a new
+instance with default settings.
+
+##### Parameters
+
+###### app?
+
+`FirebaseApp`
+
+The FirebaseApp instance that the returned Storage
+instance is associated with. If `null` the default app is used.
+
+###### bucketUrl?
+
+`string`
+
+The gs:// url to the Firebase Storage Bucket. If `null` the default bucket is used.
+
+##### Returns
+
+`Module`
+
+The Firestore instance of the provided app.
+
+#### Call Signature
+
+> **getStorage**(`app?`, `bucketUrl?`): `Module`
+
+Defined in: [storage/lib/modular/index.d.ts:74](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L74)
+
+Returns the existing default Storage instance that is associated with the
+default FirebaseApp. The default storage bucket is used. If no instance exists, initializes a new
+instance with default settings.
+
+##### Parameters
+
+###### app?
+
+`FirebaseApp`
+
+Firebase app to get FirebaseStorage instance for.
+
+###### bucketUrl?
+
+`string`
+
+The gs:// url to your Firebase Storage Bucket. If not passed, uses the app's default Storage Bucket.
+
+##### Returns
+
+`Module`
+
+The Storage instance of the provided app.
+
+***
+
+### getStream()
+
+> **getStream**(`storageRef`, `maxDownloadSizeBytes?`): `ReadableStream`
+
+Defined in: [storage/lib/modular/index.d.ts:145](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L145)
+
+Retrieves a readable stream for the object at the given reference's location. This API is only available in Node.js.
+
+#### Parameters
+
+##### storageRef
+
+`Reference`
+
+The Reference to the object.
+
+##### maxDownloadSizeBytes?
+
+`number`
+
+Optional. Maximum size in bytes to retrieve.
+
+#### Returns
+
+`ReadableStream`
+
+A NodeJS ReadableStream.
+
+***
+
+### list()
+
+> **list**(`storageRef`, `options?`): `Promise`\<`ListResult`\>
+
+Defined in: [storage/lib/modular/index.d.ts:156](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L156)
+
+Lists items and prefixes under the given reference.
+
+#### Parameters
+
+##### storageRef
+
+`Reference`
+
+The Reference under which to list items.
+
+##### options?
+
+`ListOptions`
+
+Optional. Configuration for listing.
+
+#### Returns
+
+`Promise`\<`ListResult`\>
+
+A promise resolving to a ListResult.
+
+***
+
+### listAll()
+
+> **listAll**(`storageRef`): `Promise`\<`ListResult`\>
+
+Defined in: [storage/lib/modular/index.d.ts:163](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L163)
+
+Lists all items and prefixes under the given reference.
+
+#### Parameters
+
+##### storageRef
+
+`Reference`
+
+The Reference under which to list items.
+
+#### Returns
+
+`Promise`\<`ListResult`\>
+
+A promise resolving to a ListResult.
+
+***
+
+### putFile()
+
+> **putFile**(`storageRef`, `filePath`, `metadata?`): `Task`
+
+Defined in: [storage/lib/modular/index.d.ts:246](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L246)
+
+Puts a file from a local disk onto the storage bucket at the given reference.
+
+#### Parameters
+
+##### storageRef
+
+`Reference`
+
+The Reference where the file should be uploaded.
+
+##### filePath
+
+`string`
+
+The local file path of the file to upload.
+
+##### metadata?
+
+`SettableMetadata`
+
+Optional. Metadata to associate with the uploaded file.
+
+#### Returns
+
+`Task`
+
+A Task associated with the upload process.
+
+***
+
+### ref()
+
+> **ref**(`storage`, `path?`): `Reference`
+
+Defined in: [storage/lib/modular/index.d.ts:96](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L96)
+
+Creates a Reference from a given path or URL.
+
+#### Parameters
+
+##### storage
+
+`Module`
+
+The Storage instance.
+
+##### path?
+
+`string`
+
+Optional. A string pointing to a location within the storage bucket.
+
+#### Returns
+
+`Reference`
+
+A new Reference.
+
+***
+
+### refFromURL()
+
+> **refFromURL**(`storage`, `url`): `Reference`
+
+Defined in: [storage/lib/modular/index.d.ts:223](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L223)
+
+Creates a Reference from a storage bucket URL.
+
+#### Parameters
+
+##### storage
+
+`Module`
+
+The Storage instance.
+
+##### url
+
+`string`
+
+A URL pointing to a file or location in a storage bucket.
+
+#### Returns
+
+`Reference`
+
+A Reference pointing to the specified URL.
+
+***
+
+### setMaxDownloadRetryTime()
+
+> **setMaxDownloadRetryTime**(`storage`, `time`): `Promise`\<`void`\>
+
+Defined in: [storage/lib/modular/index.d.ts:276](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L276)
+
+Sets the maximum time in milliseconds to retry download operations if a failure occurs.
+
+#### Parameters
+
+##### storage
+
+`Module`
+
+The Storage instance.
+
+##### time
+
+`number`
+
+The new maximum download retry time in milliseconds.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### setMaxOperationRetryTime()
+
+> **setMaxOperationRetryTime**(`storage`, `time`): `Promise`\<`void`\>
+
+Defined in: [storage/lib/modular/index.d.ts:230](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L230)
+
+Sets the maximum time in milliseconds to retry operations other than upload and download if a failure occurs.
+
+#### Parameters
+
+##### storage
+
+`Module`
+
+The Storage instance.
+
+##### time
+
+`number`
+
+The new maximum operation retry time in milliseconds.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### setMaxUploadRetryTime()
+
+> **setMaxUploadRetryTime**(`storage`, `time`): `Promise`\<`void`\>
+
+Defined in: [storage/lib/modular/index.d.ts:237](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L237)
+
+Sets the maximum time in milliseconds to retry upload operations if a failure occurs.
+
+#### Parameters
+
+##### storage
+
+`Module`
+
+The Storage instance.
+
+##### time
+
+`number`
+
+The new maximum upload retry time in milliseconds.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### toString()
+
+> **toString**(`storageRef`): `string`
+
+Defined in: [storage/lib/modular/index.d.ts:261](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L261)
+
+Returns a gs:// URL for the object at the given reference.
+
+#### Parameters
+
+##### storageRef
+
+`Reference`
+
+The Reference to the object.
+
+#### Returns
+
+`string`
+
+The URL as a string.
+
+***
+
+### updateMetadata()
+
+> **updateMetadata**(`storageRef`, `metadata`): `Promise`\<`FullMetadata`\>
+
+Defined in: [storage/lib/modular/index.d.ts:171](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L171)
+
+Updates metadata for the object at the given reference.
+
+#### Parameters
+
+##### storageRef
+
+`Reference`
+
+The Reference to the object.
+
+##### metadata
+
+`SettableMetadata`
+
+The metadata to update.
+
+#### Returns
+
+`Promise`\<`FullMetadata`\>
+
+A promise resolving to the updated FullMetadata.
+
+***
+
+### uploadBytes()
+
+> **uploadBytes**(`storageRef`, `data`, `metadata?`): `Promise`\<`TaskResult`\>
+
+Defined in: [storage/lib/modular/index.d.ts:183](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L183)
+
+Uploads data to the object's location at the given reference. The upload is not resumable.
+
+#### Parameters
+
+##### storageRef
+
+`Reference`
+
+The Reference where the data should be uploaded.
+
+##### data
+
+The data to upload.
+
+`ArrayBuffer` | `Blob` | `Uint8Array`\<`ArrayBufferLike`\>
+
+##### metadata?
+
+`SettableMetadata`
+
+Optional. Metadata to associate with the uploaded object.
+
+#### Returns
+
+`Promise`\<`TaskResult`\>
+
+A promise resolving to a TaskResult.
+
+***
+
+### uploadBytesResumable()
+
+> **uploadBytesResumable**(`storageRef`, `data`, `metadata?`): `Task`
+
+Defined in: [storage/lib/modular/index.d.ts:196](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L196)
+
+Initiates a resumable upload session for the data to the object's location at the given reference.
+
+#### Parameters
+
+##### storageRef
+
+`Reference`
+
+The Reference where the data should be uploaded.
+
+##### data
+
+The data to upload.
+
+`ArrayBuffer` | `Blob` | `Uint8Array`\<`ArrayBufferLike`\>
+
+##### metadata?
+
+`SettableMetadata`
+
+Optional. Metadata to associate with the uploaded object.
+
+#### Returns
+
+`Task`
+
+A Task associated with the upload process.
+
+***
+
+### uploadString()
+
+> **uploadString**(`storageRef`, `data`, `format?`, `metadata?`): `Task`
+
+Defined in: [storage/lib/modular/index.d.ts:210](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L210)
+
+Uploads a string to the object's location at the given reference. The string format must be specified.
+
+#### Parameters
+
+##### storageRef
+
+`Reference`
+
+The Reference where the string should be uploaded.
+
+##### data
+
+`string`
+
+The string data to upload.
+
+##### format?
+
+[`StringFormat`](#stringformat)
+
+Optional. The format of the string ('raw', 'base64', 'base64url', 'data_url').
+
+##### metadata?
+
+`SettableMetadata`
+
+Optional. Metadata to associate with the uploaded object.
+
+#### Returns
+
+`Task`
+
+A Task associated with the upload process.
+
+***
+
+### writeToFile()
+
+> **writeToFile**(`storageRef`, `filePath`): `Task`
+
+Defined in: [storage/lib/modular/index.d.ts:254](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/modular/index.d.ts#L254)
+
+Downloads a file to the specified local file path on the device.
+
+#### Parameters
+
+##### storageRef
+
+`Reference`
+
+The Reference from which the file should be downloaded.
+
+##### filePath
+
+`string`
+
+The local file path where the file should be written.
+
+#### Returns
+
+`Task`
+
+A Task associated with the download process.

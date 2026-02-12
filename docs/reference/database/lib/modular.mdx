@@ -1,0 +1,734 @@
+[**react-native-firebase**](../../README.mdx)
+
+***
+
+[react-native-firebase](../../modules.mdx) / database/lib/modular
+
+# database/lib/modular
+
+## Variables
+
+### ServerValue
+
+> `const` **ServerValue**: `object`
+
+Defined in: [database/lib/modular/index.d.ts:226](https://github.com/invertase/react-native-firebase/blob/main/packages/database/lib/modular/index.d.ts#L226)
+
+Server specific values.
+
+#### Type Declaration
+
+##### TIMESTAMP
+
+> **TIMESTAMP**: `object`
+
+A placeholder value for auto-populating the current timestamp.
+
+##### increment()
+
+> **increment**(`delta`): `object`
+
+Returns a placeholder value that can be used to atomically increment the current database value.
+
+###### Parameters
+
+###### delta
+
+`number`
+
+###### Returns
+
+`object`
+
+## Functions
+
+### connectDatabaseEmulator()
+
+> **connectDatabaseEmulator**(`db`, `host`, `port`): `void`
+
+Defined in: [database/lib/modular/index.d.ts:34](https://github.com/invertase/react-native-firebase/blob/main/packages/database/lib/modular/index.d.ts#L34)
+
+Modify this Database instance to communicate with the Firebase Database emulator.
+This must be called synchronously immediately following the first call to firebase.database().
+Do not use with production credentials as emulator traffic is not encrypted.
+
+Note: on android, hosts 'localhost' and '127.0.0.1' are automatically remapped to '10.0.2.2' (the
+"host" computer IP address for android emulators) to make the standard development experience easy.
+If you want to use the emulator on a real android device, you will need to specify the actual host
+computer IP address.
+
+#### Parameters
+
+##### db
+
+`Module`
+
+##### host
+
+`string`
+
+##### port
+
+`number`
+
+#### Returns
+
+`void`
+
+***
+
+### enableLogging()
+
+> **enableLogging**(`enabled`, `persistent?`): `any`
+
+Defined in: [database/lib/modular/index.d.ts:243](https://github.com/invertase/react-native-firebase/blob/main/packages/database/lib/modular/index.d.ts#L243)
+
+Logs debugging information to the console. Not implemented on native.
+
+#### Parameters
+
+##### enabled
+
+`boolean`
+
+##### persistent?
+
+`boolean`
+
+#### Returns
+
+`any`
+
+***
+
+### forceLongPolling()
+
+> **forceLongPolling**(): `void`
+
+Defined in: [database/lib/modular/index.d.ts:196](https://github.com/invertase/react-native-firebase/blob/main/packages/database/lib/modular/index.d.ts#L196)
+
+Force the use of longPolling instead of websockets. This will be ignored if websocket protocol is used in databaseURL.
+
+#### Returns
+
+`void`
+
+***
+
+### forceWebSockets()
+
+> **forceWebSockets**(): `void`
+
+Defined in: [database/lib/modular/index.d.ts:201](https://github.com/invertase/react-native-firebase/blob/main/packages/database/lib/modular/index.d.ts#L201)
+
+Force the use of websockets instead of longPolling.
+
+#### Returns
+
+`void`
+
+***
+
+### getDatabase()
+
+> **getDatabase**(`app?`, `url?`): `Module`
+
+Defined in: [database/lib/modular/index.d.ts:18](https://github.com/invertase/react-native-firebase/blob/main/packages/database/lib/modular/index.d.ts#L18)
+
+Returns the instance of the Realtime Database SDK that is associated with
+the provided FirebaseApp. Initializes a new instance with
+default settings if no instance exists or if the existing
+instance uses a custom database URL.
+
+#### Parameters
+
+##### app?
+
+`FirebaseApp`
+
+The FirebaseApp instance that the returned Realtime Database instance is associated with.
+
+##### url?
+
+`string`
+
+#### Returns
+
+`Module`
+
+***
+
+### getServerTime()
+
+> **getServerTime**(`db`): `Promise`\<`number`\>
+
+Defined in: [database/lib/modular/index.d.ts:213](https://github.com/invertase/react-native-firebase/blob/main/packages/database/lib/modular/index.d.ts#L213)
+
+Returns the current Firebase Database server time as a JavaScript Date object.
+
+#### Parameters
+
+##### db
+
+`Module`
+
+#### Returns
+
+`Promise`\<`number`\>
+
+***
+
+### goOffline()
+
+> **goOffline**(`db`): `Promise`\<`void`\>
+
+Defined in: [database/lib/modular/index.d.ts:67](https://github.com/invertase/react-native-firebase/blob/main/packages/database/lib/modular/index.d.ts#L67)
+
+Disconnects from the server (all Database operations will be completed offline).
+
+The client automatically maintains a persistent connection to the Database server, which
+will remain active indefinitely and reconnect when disconnected. However, the `goOffline()` and
+`goOnline()` methods may be used to control the client connection in cases where a persistent
+connection is undesirable.
+
+While offline, the client will no longer receive data updates from the Database. However,
+all Database operations performed locally will continue to immediately fire events, allowing
+your application to continue behaving normally. Additionally, each operation performed locally
+will automatically be queued and retried upon reconnection to the Database server.
+
+To reconnect to the Database and begin receiving remote events, see `goOnline()`.
+
+#### Example
+
+```js
+const db = getDatabase();;
+await goOnline(db);
+```
+
+#### Parameters
+
+##### db
+
+`Module`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### goOnline()
+
+> **goOnline**(`db`): `Promise`\<`void`\>
+
+Defined in: [database/lib/modular/index.d.ts:83](https://github.com/invertase/react-native-firebase/blob/main/packages/database/lib/modular/index.d.ts#L83)
+
+Reconnects to the server and synchronizes the offline Database state with the server state.
+
+This method should be used after disabling the active connection with `goOffline()`. Once
+reconnected, the client will transmit the proper data and fire the appropriate events so that
+your client "catches up" automatically.
+
+#### Example
+
+```js
+const db = getDatabase();
+await goOnline(db);
+```
+
+#### Parameters
+
+##### db
+
+`Module`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### increment()
+
+> **increment**(`delta`): `object`
+
+Defined in: [database/lib/modular/index.d.ts:221](https://github.com/invertase/react-native-firebase/blob/main/packages/database/lib/modular/index.d.ts#L221)
+
+Returns a placeholder value that can be used to atomically increment the
+current database value by the provided delta.
+
+#### Parameters
+
+##### delta
+
+`number`
+
+the amount to modify the current value atomically.
+
+#### Returns
+
+`object`
+
+A placeholder value for modifying data atomically server-side.
+
+***
+
+### ref()
+
+> **ref**(`db`, `path?`): `Reference`
+
+Defined in: [database/lib/modular/index.d.ts:104](https://github.com/invertase/react-native-firebase/blob/main/packages/database/lib/modular/index.d.ts#L104)
+
+Returns a `Reference` representing the location in the Database corresponding to the provided path.
+If no path is provided, the Reference will point to the root of the Database.
+
+#### Example
+
+```js
+const db = getDatabase();
+
+// Get a reference to the root of the Database
+const rootRef = ref(db);
+
+// Get a reference to the /users/ada node
+const adaRef = ref(db, "users/ada");
+```
+
+#### Parameters
+
+##### db
+
+`Module`
+
+The Database instance.
+
+##### path?
+
+`string`
+
+Optional path representing the location the returned `Reference` will point. If not provided, the returned `Reference` will point to the root of the Database.
+
+#### Returns
+
+`Reference`
+
+***
+
+### refFromURL()
+
+> **refFromURL**(`db`, `url`): `Reference`
+
+Defined in: [database/lib/modular/index.d.ts:115](https://github.com/invertase/react-native-firebase/blob/main/packages/database/lib/modular/index.d.ts#L115)
+
+Generates a Reference from a database URL.
+Note domain must be the same.
+Any query parameters are stripped as per the web SDK.
+
+#### Parameters
+
+##### db
+
+`Module`
+
+The Database instance.
+
+##### url
+
+`string`
+
+The Firebase URL at which the returned Reference will point.
+
+#### Returns
+
+`Reference`
+
+***
+
+### serverTimestamp()
+
+> **serverTimestamp**(): `object`
+
+Defined in: [database/lib/modular/index.d.ts:208](https://github.com/invertase/react-native-firebase/blob/main/packages/database/lib/modular/index.d.ts#L208)
+
+Returns a placeholder value for auto-populating the current timestamp (time
+since the Unix epoch, in milliseconds) as determined by the Firebase
+servers.
+
+#### Returns
+
+`object`
+
+***
+
+### setLoggingEnabled()
+
+> **setLoggingEnabled**(`db`, `enabled`): `void`
+
+Defined in: [database/lib/modular/index.d.ts:163](https://github.com/invertase/react-native-firebase/blob/main/packages/database/lib/modular/index.d.ts#L163)
+
+Sets the native logging level for the database module. By default,
+only warnings and errors are logged natively. Setting this to true will log all
+database events.
+
+> Ensure logging is disabled for production apps, as excessive logging can cause performance issues.
+
+#### Example
+
+```js
+const db = getDatabase();
+
+// Set debug logging if developing
+if (__DEV__) {
+  setLoggingEnabled(db, true);
+}
+```
+
+#### Parameters
+
+##### db
+
+`Module`
+
+The Database instance.
+
+##### enabled
+
+`boolean`
+
+Whether debug logging is enabled.
+
+#### Returns
+
+`void`
+
+***
+
+### setPersistenceCacheSizeBytes()
+
+> **setPersistenceCacheSizeBytes**(`db`, `bytes`): `void`
+
+Defined in: [database/lib/modular/index.d.ts:191](https://github.com/invertase/react-native-firebase/blob/main/packages/database/lib/modular/index.d.ts#L191)
+
+By default, Firebase Database will use up to 10MB of disk space to cache data. If the cache grows beyond this size,
+Firebase Database will start removing data that hasn't been recently used. If you find that your application
+caches too little or too much data, call this method to change the cache size. This method must be called before
+creating your first Database reference and only needs to be called once per application.
+
+Note that the specified cache size is only an approximation and the size on disk may temporarily exceed it at times.
+Cache sizes smaller than 1 MB or greater than 100 MB are not supported.
+
+#### Example
+
+```js
+const db = getDatabase();
+
+setPersistenceEnabled(db, true);
+setPersistenceCacheSizeBytes(db, 2000000); // 2MB
+
+async function bootstrap() {
+  // Bootstrapping application
+  const snapshot = await ref(db, 'settings').once("value");
+}
+```
+
+#### Parameters
+
+##### db
+
+`Module`
+
+The Database instance.
+
+##### bytes
+
+`number`
+
+The new size of the cache in bytes.
+
+#### Returns
+
+`void`
+
+***
+
+### setPersistenceEnabled()
+
+> **setPersistenceEnabled**(`db`, `enabled`): `void`
+
+Defined in: [database/lib/modular/index.d.ts:139](https://github.com/invertase/react-native-firebase/blob/main/packages/database/lib/modular/index.d.ts#L139)
+
+Sets whether persistence is enabled for all database calls for the current app
+instance.
+
+> Ensure this is called before any database calls are performed, otherwise
+persistence will only come into effect when the app is next started.
+
+#### Example
+
+```js
+const db = getDatabase();
+setPersistenceEnabled(db, true);
+
+async function bootstrap() {
+  // Bootstrapping application
+  const snapshot = await ref(db, "settings").once("value");
+}
+```
+
+#### Parameters
+
+##### db
+
+`Module`
+
+The Database instance.
+
+##### enabled
+
+`boolean`
+
+Whether persistence is enabled for the Database service.
+
+#### Returns
+
+`void`
+
+## References
+
+### child
+
+Re-exports [child](modular/query.mdx#child-1)
+
+***
+
+### DatabaseReference
+
+Re-exports [DatabaseReference](modular/query.mdx#databasereference)
+
+***
+
+### DataSnapshot
+
+Re-exports [DataSnapshot](modular/query.mdx#datasnapshot)
+
+***
+
+### endAt
+
+Re-exports [endAt](modular/query.mdx#endat-1)
+
+***
+
+### endBefore
+
+Re-exports [endBefore](modular/query.mdx#endbefore)
+
+***
+
+### equalTo
+
+Re-exports [equalTo](modular/query.mdx#equalto-1)
+
+***
+
+### get
+
+Re-exports [get](modular/query.mdx#get)
+
+***
+
+### keepSynced
+
+Re-exports [keepSynced](modular/query.mdx#keepsynced-1)
+
+***
+
+### limitToFirst
+
+Re-exports [limitToFirst](modular/query.mdx#limittofirst-1)
+
+***
+
+### limitToLast
+
+Re-exports [limitToLast](modular/query.mdx#limittolast-1)
+
+***
+
+### ListenOptions
+
+Re-exports [ListenOptions](modular/query.mdx#listenoptions)
+
+***
+
+### off
+
+Re-exports [off](modular/query.mdx#off-1)
+
+***
+
+### onChildAdded
+
+Re-exports [onChildAdded](modular/query.mdx#onchildadded)
+
+***
+
+### onChildChanged
+
+Re-exports [onChildChanged](modular/query.mdx#onchildchanged)
+
+***
+
+### onChildMoved
+
+Re-exports [onChildMoved](modular/query.mdx#onchildmoved)
+
+***
+
+### onChildRemoved
+
+Re-exports [onChildRemoved](modular/query.mdx#onchildremoved)
+
+***
+
+### onDisconnect
+
+Re-exports [onDisconnect](modular/query.mdx#ondisconnect-2)
+
+***
+
+### OnDisconnect
+
+Re-exports [OnDisconnect](modular/query.mdx#ondisconnect-1)
+
+***
+
+### onValue
+
+Re-exports [onValue](modular/query.mdx#onvalue)
+
+***
+
+### orderByChild
+
+Re-exports [orderByChild](modular/query.mdx#orderbychild-1)
+
+***
+
+### orderByKey
+
+Re-exports [orderByKey](modular/query.mdx#orderbykey-1)
+
+***
+
+### orderByPriority
+
+Re-exports [orderByPriority](modular/query.mdx#orderbypriority-1)
+
+***
+
+### orderByValue
+
+Re-exports [orderByValue](modular/query.mdx#orderbyvalue-1)
+
+***
+
+### push
+
+Re-exports [push](modular/query.mdx#push-1)
+
+***
+
+### query
+
+Re-exports [query](modular/query.mdx#query-1)
+
+***
+
+### Query
+
+Re-exports [Query](modular/query.mdx#query)
+
+***
+
+### QueryConstraint
+
+Re-exports [QueryConstraint](modular/query.mdx#queryconstraint)
+
+***
+
+### QueryConstraintType
+
+Re-exports [QueryConstraintType](modular/query.mdx#queryconstrainttype)
+
+***
+
+### remove
+
+Re-exports [remove](modular/query.mdx#remove-1)
+
+***
+
+### runTransaction
+
+Re-exports [runTransaction](modular/transaction.mdx#runtransaction)
+
+***
+
+### set
+
+Re-exports [set](modular/query.mdx#set-1)
+
+***
+
+### setPriority
+
+Re-exports [setPriority](modular/query.mdx#setpriority-1)
+
+***
+
+### setWithPriority
+
+Re-exports [setWithPriority](modular/query.mdx#setwithpriority-1)
+
+***
+
+### startAfter
+
+Re-exports [startAfter](modular/query.mdx#startafter)
+
+***
+
+### startAt
+
+Re-exports [startAt](modular/query.mdx#startat-1)
+
+***
+
+### ThenableReference
+
+Re-exports [ThenableReference](modular/query.mdx#thenablereference)
+
+***
+
+### TransactionOptions
+
+Re-exports [TransactionOptions](modular/transaction.mdx#transactionoptions)
+
+***
+
+### TransactionResult
+
+Re-exports [TransactionResult](modular/transaction.mdx#transactionresult)
+
+***
+
+### Unsubscribe
+
+Re-exports [Unsubscribe](modular/query.mdx#unsubscribe)
+
+***
+
+### update
+
+Re-exports [update](modular/query.mdx#update-1)

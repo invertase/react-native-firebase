@@ -1,0 +1,640 @@
+[**react-native-firebase**](../../README.mdx)
+
+***
+
+[react-native-firebase](../../modules.mdx) / remote-config/lib/modular
+
+# remote-config/lib/modular
+
+## Interfaces
+
+### CustomSignals
+
+Defined in: [remote-config/lib/modular/index.d.ts:251](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L251)
+
+Defines the type for representing custom signals and their values.
+The values in CustomSignals must be one of the following types: string, number, or null.
+There are additional limitations on key and value length, for a full description see https://firebase.google.com/docs/remote-config/parameters?template_type=client#custom_signal_conditions
+Failing to stay within these limitations will result in a silent API failure with only a warning in device logs
+
+#### Indexable
+
+\[`key`: `string`\]: `string` \| `number` \| `null`
+
+## Variables
+
+### LastFetchStatus
+
+> `const` **LastFetchStatus**: `LastFetchStatusInterface`
+
+Defined in: [remote-config/lib/modular/index.d.ts:37](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L37)
+
+***
+
+### ValueSource
+
+> `const` **ValueSource**: `ValueSourceInterface`
+
+Defined in: [remote-config/lib/modular/index.d.ts:38](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L38)
+
+## Functions
+
+### activate()
+
+> **activate**(`remoteConfig`): `Promise`\<`boolean`\>
+
+Defined in: [remote-config/lib/modular/index.d.ts:53](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L53)
+
+Returns a Boolean which resolves to true if the current call
+activated the fetched configs.
+
+#### Parameters
+
+##### remoteConfig
+
+`Module`
+
+RemoteConfig instance
+
+#### Returns
+
+`Promise`\<`boolean`\>
+
+***
+
+### ensureInitialized()
+
+> **ensureInitialized**(`remoteConfig`): `Promise`\<`void`\>
+
+Defined in: [remote-config/lib/modular/index.d.ts:60](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L60)
+
+Ensures the last activated config are available to the getters.
+
+#### Parameters
+
+##### remoteConfig
+
+`Module`
+
+RemoteConfig instance
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### fetch()
+
+> **fetch**(`remoteConfig`, `expirationDurationSeconds?`): `Promise`\<`void`\>
+
+Defined in: [remote-config/lib/modular/index.d.ts:185](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L185)
+
+Fetches parameter values for your app.
+
+#### Parameters
+
+##### remoteConfig
+
+`Module`
+
+RemoteConfig instance
+
+##### expirationDurationSeconds?
+
+`number`
+
+number
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### fetchAndActivate()
+
+> **fetchAndActivate**(`remoteConfig`): `Promise`\<`boolean`\>
+
+Defined in: [remote-config/lib/modular/index.d.ts:68](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L68)
+
+Performs a fetch and returns a Boolean which resolves to true
+if the current call activated the fetched configs.
+
+#### Parameters
+
+##### remoteConfig
+
+`Module`
+
+RemoteConfig instance
+
+#### Returns
+
+`Promise`\<`boolean`\>
+
+***
+
+### fetchConfig()
+
+> **fetchConfig**(`remoteConfig`): `Promise`\<`void`\>
+
+Defined in: [remote-config/lib/modular/index.d.ts:75](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L75)
+
+Fetches and caches configuration from the Remote Config service.
+
+#### Parameters
+
+##### remoteConfig
+
+`Module`
+
+RemoteConfig instance
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### fetchTimeMillis()
+
+> **fetchTimeMillis**(`remoteConfig`): `number`
+
+Defined in: [remote-config/lib/modular/index.d.ts:141](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L141)
+
+Indicates the default value in milliseconds to abandon a pending fetch
+request made to the Remote Config server. Defaults to 60000 (One minute).
+
+#### Parameters
+
+##### remoteConfig
+
+`Module`
+
+RemoteConfig instance
+
+#### Returns
+
+`number`
+
+***
+
+### getAll()
+
+> **getAll**(`remoteConfig`): `ConfigValues`
+
+Defined in: [remote-config/lib/modular/index.d.ts:82](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L82)
+
+Gets all config.
+
+#### Parameters
+
+##### remoteConfig
+
+`Module`
+
+RemoteConfig instance
+
+#### Returns
+
+`ConfigValues`
+
+***
+
+### getBoolean()
+
+> **getBoolean**(`remoteConfig`, `key`): `boolean`
+
+Defined in: [remote-config/lib/modular/index.d.ts:90](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L90)
+
+Gets the value for the given key as a boolean.
+
+#### Parameters
+
+##### remoteConfig
+
+`Module`
+
+RemoteConfig instance
+
+##### key
+
+`string`
+
+key for boolean value
+
+#### Returns
+
+`boolean`
+
+***
+
+### getNumber()
+
+> **getNumber**(`remoteConfig`, `key`): `number`
+
+Defined in: [remote-config/lib/modular/index.d.ts:98](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L98)
+
+Gets the value for the given key as a number.
+
+#### Parameters
+
+##### remoteConfig
+
+`Module`
+
+RemoteConfig instance
+
+##### key
+
+`string`
+
+key for number value
+
+#### Returns
+
+`number`
+
+***
+
+### getRemoteConfig()
+
+> **getRemoteConfig**(`app?`): `Module`
+
+Defined in: [remote-config/lib/modular/index.d.ts:45](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L45)
+
+Returns a RemoteConfig instance for the given app.
+
+#### Parameters
+
+##### app?
+
+`FirebaseApp`
+
+FirebaseApp. Optional.
+
+#### Returns
+
+`Module`
+
+***
+
+### getString()
+
+> **getString**(`remoteConfig`, `key`): `string`
+
+Defined in: [remote-config/lib/modular/index.d.ts:106](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L106)
+
+Gets the value for the given key as a string.
+
+#### Parameters
+
+##### remoteConfig
+
+`Module`
+
+RemoteConfig instance
+
+##### key
+
+`string`
+
+key for string value
+
+#### Returns
+
+`string`
+
+***
+
+### getValue()
+
+> **getValue**(`remoteConfig`, `key`): `ConfigValue`
+
+Defined in: [remote-config/lib/modular/index.d.ts:114](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L114)
+
+Gets the value for the given key
+
+#### Parameters
+
+##### remoteConfig
+
+`Module`
+
+RemoteConfig instance
+
+##### key
+
+`string`
+
+key for the given value
+
+#### Returns
+
+`ConfigValue`
+
+***
+
+### isSupported()
+
+> **isSupported**(): `Promise`\<`boolean`\>
+
+Defined in: [remote-config/lib/modular/index.d.ts:133](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L133)
+
+Checks two different things.
+1. Check if IndexedDB exists in the browser environment.
+2. Check if the current browser context allows IndexedDB open() calls.
+
+#### Returns
+
+`Promise`\<`boolean`\>
+
+***
+
+### lastFetchStatus()
+
+> **lastFetchStatus**(`remoteConfig`): `LastFetchStatusType`
+
+Defined in: [remote-config/lib/modular/index.d.ts:156](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L156)
+
+The status of the latest Remote RemoteConfig fetch action.
+
+#### Parameters
+
+##### remoteConfig
+
+`Module`
+
+RemoteConfig instance
+
+#### Returns
+
+`LastFetchStatusType`
+
+***
+
+### onConfigUpdate()
+
+> **onConfigUpdate**(`remoteConfig`, `observer`): `Unsubscribe`
+
+Defined in: [remote-config/lib/modular/index.d.ts:226](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L226)
+
+Starts listening for real-time config updates from the Remote Config backend and automatically
+fetches updates from the Remote Config backend when they are available.
+
+#### Parameters
+
+##### remoteConfig
+
+`Module`
+
+The RemoteConfig instance.
+
+##### observer
+
+`ConfigUpdateObserver`
+
+The ConfigUpdateObserver to be notified of config updates.
+
+#### Returns
+
+`Unsubscribe`
+
+An Unsubscribe function to remove the listener.
+
+#### Remarks
+
+If a connection to the Remote Config backend is not already open, calling this method will
+open it. Multiple listeners can be added by calling this method again, but subsequent calls
+re-use the same connection to the backend.
+
+The list of updated keys passed to the callback will include all keys not currently active,
+and the config update process fetches the new config but does not automatically activate
+it for you. Typically you will activate the config in your callback to use the new values.
+
+***
+
+### ~~onConfigUpdated()~~
+
+> **onConfigUpdated**(`remoteConfig`, `callback`): () => `void`
+
+Defined in: [remote-config/lib/modular/index.d.ts:239](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L239)
+
+Registers a listener to changes in the configuration.
+
+#### Parameters
+
+##### remoteConfig
+
+`Module`
+
+RemoteConfig instance
+
+##### callback
+
+`CallbackOrObserver`\<`OnConfigUpdatedListenerCallback`\>
+
+function called on config change
+
+#### Returns
+
+unsubscribe listener
+
+> (): `void`
+
+##### Returns
+
+`void`
+
+#### Deprecated
+
+use official firebase-js-sdk onConfigUpdate now that web supports realtime
+
+***
+
+### reset()
+
+> **reset**(`remoteConfig`): `Promise`\<`void`\>
+
+Defined in: [remote-config/lib/modular/index.d.ts:165](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L165)
+
+Deletes all activated, fetched and defaults configs and
+resets all Firebase Remote Config settings.
+Android only. iOS does not reset anything.
+
+#### Parameters
+
+##### remoteConfig
+
+`Module`
+
+RemoteConfig instance
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### setConfigSettings()
+
+> **setConfigSettings**(`remoteConfig`, `settings`): `Promise`\<`void`\>
+
+Defined in: [remote-config/lib/modular/index.d.ts:174](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L174)
+
+Set the Remote RemoteConfig settings, currently able to set
+`fetchTimeMillis` & `minimumFetchIntervalMillis`
+
+#### Parameters
+
+##### remoteConfig
+
+`Module`
+
+RemoteConfig instance
+
+##### settings
+
+`ConfigSettings`
+
+ConfigSettings instance
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### setCustomSignals()
+
+> **setCustomSignals**(`remoteConfig`, `customSignals`): `Promise`\<`void`\>
+
+Defined in: [remote-config/lib/modular/index.d.ts:262](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L262)
+
+Sets the custom signals for the app instance.
+
+#### Parameters
+
+##### remoteConfig
+
+`Module`
+
+RemoteConfig instance
+
+##### customSignals
+
+[`CustomSignals`](#customsignals)
+
+CustomSignals
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### setDefaults()
+
+> **setDefaults**(`remoteConfig`, `defaults`): `Promise`\<`void`\>
+
+Defined in: [remote-config/lib/modular/index.d.ts:196](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L196)
+
+Fetches parameter values for your app.
+
+#### Parameters
+
+##### remoteConfig
+
+`Module`
+
+RemoteConfig instance
+
+##### defaults
+
+`ConfigDefaults`
+
+ConfigDefaults
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### setDefaultsFromResource()
+
+> **setDefaultsFromResource**(`remoteConfig`, `resourceName`): `Promise`\<`null`\>
+
+Defined in: [remote-config/lib/modular/index.d.ts:204](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L204)
+
+Fetches parameter values for your app.
+
+#### Parameters
+
+##### remoteConfig
+
+`Module`
+
+RemoteConfig instance
+
+##### resourceName
+
+`string`
+
+string
+
+#### Returns
+
+`Promise`\<`null`\>
+
+***
+
+### setLogLevel()
+
+> **setLogLevel**(`remoteConfig`, `logLevel`): `RemoteConfigLogLevel`
+
+Defined in: [remote-config/lib/modular/index.d.ts:122](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L122)
+
+Defines the log level to use.
+
+#### Parameters
+
+##### remoteConfig
+
+`Module`
+
+RemoteConfig instance
+
+##### logLevel
+
+`RemoteConfigLogLevel`
+
+The log level to set
+
+#### Returns
+
+`RemoteConfigLogLevel`
+
+***
+
+### settings()
+
+> **settings**(`remoteConfig`): `ConfigSettings`
+
+Defined in: [remote-config/lib/modular/index.d.ts:149](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L149)
+
+Returns a ConfigSettings object which provides the properties `minimumFetchIntervalMillis` & `fetchTimeMillis` if they have been set
+using setConfigSettings({ fetchTimeMillis: number, minimumFetchIntervalMillis: number }).
+
+#### Parameters
+
+##### remoteConfig
+
+`Module`
+
+RemoteConfig instance
+
+#### Returns
+
+`ConfigSettings`
