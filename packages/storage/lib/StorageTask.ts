@@ -86,7 +86,7 @@ function wrapSnapshotEventListener(
     } // 1 frame = 16ms, pushing to next frame
     if (isFunction(listenerFn)) {
       const taskSnapshot = Object.assign({}, snapshot);
-      taskSnapshot.task = task as unknown as Task;
+      taskSnapshot.task = task as Task;
       taskSnapshot.ref = task._ref;
       taskSnapshot.state = normalizeTaskState(taskSnapshot.state);
 
@@ -210,7 +210,7 @@ export default class StorageTask {
       totalBytes: 0,
       state: 'running',
       metadata: createEmptyMetadata(storageRef),
-      task: this as unknown as Task,
+      task: this as Task,
       ref: storageRef,
     };
   }
@@ -237,7 +237,7 @@ export default class StorageTask {
             this._snapshot = {
               ...response,
               ref: this._ref,
-              task: this as unknown as Task,
+              task: this as Task,
               state: normalizeTaskState((response?.state ?? this._snapshot.state) as TaskState),
               metadata: response?.metadata ? response.metadata : createEmptyMetadata(this._ref),
             } as TaskSnapshot;

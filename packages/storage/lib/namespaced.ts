@@ -110,7 +110,7 @@ class FirebaseStorageModule extends FirebaseModule {
     if (!isString(path)) {
       throw new Error("firebase.storage().ref(*) 'path' must be a string value.");
     }
-    return createDeprecationProxy(new Reference(this, path)) as unknown as Reference;
+    return createDeprecationProxy(new Reference(this, path)) as Reference;
   }
 
   /**

@@ -73,7 +73,7 @@ export function connectStorageEmulator(
   options?: EmulatorMockTokenOptions,
 ): void {
   return (
-    (storage as StorageInternal).useEmulator as unknown as WithModularDeprecationArg<
+    (storage as StorageInternal).useEmulator as WithModularDeprecationArg<
       StorageInternal['useEmulator']
     >
   ).call(storage, host, port, options, MODULAR_DEPRECATION_ARG);
@@ -88,7 +88,7 @@ export function connectStorageEmulator(
  */
 export function ref(storage: Storage, path?: string): StorageReference {
   return (
-    (storage as StorageInternal).ref as unknown as WithModularDeprecationArg<StorageInternal['ref']>
+    (storage as StorageInternal).ref as WithModularDeprecationArg<StorageInternal['ref']>
   ).call(storage, path, MODULAR_DEPRECATION_ARG);
 }
 
@@ -99,7 +99,7 @@ export function ref(storage: Storage, path?: string): StorageReference {
  */
 export function deleteObject(storageRef: StorageReference): Promise<void> {
   return (
-    (storageRef as StorageReferenceInternal).delete as unknown as WithModularDeprecationArg<
+    (storageRef as StorageReferenceInternal).delete as WithModularDeprecationArg<
       StorageReferenceInternal['delete']
     >
   ).call(storageRef, MODULAR_DEPRECATION_ARG);
@@ -137,7 +137,7 @@ export function getBytes(
  */
 export function getDownloadURL(storageRef: StorageReference): Promise<string> {
   return (
-    (storageRef as StorageReferenceInternal).getDownloadURL as unknown as WithModularDeprecationArg<
+    (storageRef as StorageReferenceInternal).getDownloadURL as WithModularDeprecationArg<
       StorageReferenceInternal['getDownloadURL']
     >
   ).call(storageRef, MODULAR_DEPRECATION_ARG);
@@ -150,7 +150,7 @@ export function getDownloadURL(storageRef: StorageReference): Promise<string> {
  */
 export function getMetadata(storageRef: StorageReference): Promise<FullMetadata> {
   return (
-    (storageRef as StorageReferenceInternal).getMetadata as unknown as WithModularDeprecationArg<
+    (storageRef as StorageReferenceInternal).getMetadata as WithModularDeprecationArg<
       StorageReferenceInternal['getMetadata']
     >
   ).call(storageRef, MODULAR_DEPRECATION_ARG);
@@ -180,7 +180,7 @@ export async function list(
   options?: ListOptions,
 ): Promise<ListResult> {
   const result = await (
-    (storageRef as StorageReferenceInternal).list as unknown as WithModularDeprecationArg<
+    (storageRef as StorageReferenceInternal).list as WithModularDeprecationArg<
       StorageReferenceInternal['list']
     >
   ).call(storageRef, options, MODULAR_DEPRECATION_ARG);
@@ -198,7 +198,7 @@ export async function list(
  */
 export async function listAll(storageRef: StorageReference): Promise<ListResult> {
   const result = await (
-    (storageRef as StorageReferenceInternal).listAll as unknown as WithModularDeprecationArg<
+    (storageRef as StorageReferenceInternal).listAll as WithModularDeprecationArg<
       StorageReferenceInternal['listAll']
     >
   ).call(storageRef, MODULAR_DEPRECATION_ARG);
@@ -220,7 +220,7 @@ export function updateMetadata(
   metadata: SettableMetadata,
 ): Promise<FullMetadata> {
   return (
-    (storageRef as StorageReferenceInternal).updateMetadata as unknown as WithModularDeprecationArg<
+    (storageRef as StorageReferenceInternal).updateMetadata as WithModularDeprecationArg<
       StorageReferenceInternal['updateMetadata']
     >
   ).call(storageRef, metadata, MODULAR_DEPRECATION_ARG);
@@ -254,7 +254,7 @@ export function uploadBytesResumable(
   metadata?: UploadMetadata,
 ): Task {
   return (
-    (storageRef as StorageReferenceInternal).put as unknown as WithModularDeprecationArg<
+    (storageRef as StorageReferenceInternal).put as WithModularDeprecationArg<
       StorageReferenceInternal['put']
     >
   ).call(storageRef, data, metadata, MODULAR_DEPRECATION_ARG);
@@ -275,7 +275,7 @@ export function uploadString(
   metadata?: UploadMetadata,
 ): Task {
   return (
-    (storageRef as StorageReferenceInternal).putString as unknown as WithModularDeprecationArg<
+    (storageRef as StorageReferenceInternal).putString as WithModularDeprecationArg<
       StorageReferenceInternal['putString']
     >
   ).call(storageRef, data, format, metadata, MODULAR_DEPRECATION_ARG);
@@ -291,7 +291,7 @@ export function uploadString(
  */
 export function refFromURL(storage: Storage, url: string): StorageReference {
   return (
-    (storage as StorageInternal).refFromURL as unknown as WithModularDeprecationArg<
+    (storage as StorageInternal).refFromURL as WithModularDeprecationArg<
       StorageInternal['refFromURL']
     >
   ).call(storage, url, MODULAR_DEPRECATION_ARG);
@@ -305,7 +305,7 @@ export function refFromURL(storage: Storage, url: string): StorageReference {
  */
 export function setMaxOperationRetryTime(storage: Storage, time: number): Promise<void> {
   return (
-    (storage as StorageInternal).setMaxOperationRetryTime as unknown as WithModularDeprecationArg<
+    (storage as StorageInternal).setMaxOperationRetryTime as WithModularDeprecationArg<
       StorageInternal['setMaxOperationRetryTime']
     >
   ).call(storage, time, MODULAR_DEPRECATION_ARG);
@@ -319,7 +319,7 @@ export function setMaxOperationRetryTime(storage: Storage, time: number): Promis
  */
 export function setMaxUploadRetryTime(storage: Storage, time: number): Promise<void> {
   return (
-    (storage as StorageInternal).setMaxUploadRetryTime as unknown as WithModularDeprecationArg<
+    (storage as StorageInternal).setMaxUploadRetryTime as WithModularDeprecationArg<
       StorageInternal['setMaxUploadRetryTime']
     >
   ).call(storage, time, MODULAR_DEPRECATION_ARG);
@@ -338,7 +338,7 @@ export function putFile(
   metadata?: SettableMetadata,
 ): Task {
   return (
-    (storageRef as StorageReferenceInternal).putFile as unknown as WithModularDeprecationArg<
+    (storageRef as StorageReferenceInternal).putFile as WithModularDeprecationArg<
       StorageReferenceInternal['putFile']
     >
   ).call(storageRef, filePath, metadata, MODULAR_DEPRECATION_ARG);
@@ -352,7 +352,7 @@ export function putFile(
  */
 export function writeToFile(storageRef: StorageReference, filePath: string): Task {
   return (
-    (storageRef as StorageReferenceInternal).writeToFile as unknown as WithModularDeprecationArg<
+    (storageRef as StorageReferenceInternal).writeToFile as WithModularDeprecationArg<
       StorageReferenceInternal['writeToFile']
     >
   ).call(storageRef, filePath, MODULAR_DEPRECATION_ARG);
@@ -364,9 +364,10 @@ export function writeToFile(storageRef: StorageReference, filePath: string): Tas
  * @returns {String}
  */
 export function toString(storageRef: StorageReference): string {
-  return (
-    storageRef.toString as unknown as WithModularDeprecationArg<typeof storageRef.toString>
-  ).call(storageRef, MODULAR_DEPRECATION_ARG);
+  return (storageRef.toString as WithModularDeprecationArg<typeof storageRef.toString>).call(
+    storageRef,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -377,7 +378,7 @@ export function toString(storageRef: StorageReference): string {
  */
 export function child(storageRef: StorageReference, path: string): StorageReference {
   return (
-    (storageRef as StorageReferenceInternal).child as unknown as WithModularDeprecationArg<
+    (storageRef as StorageReferenceInternal).child as WithModularDeprecationArg<
       StorageReferenceInternal['child']
     >
   ).call(storageRef, path, MODULAR_DEPRECATION_ARG);
@@ -391,7 +392,7 @@ export function child(storageRef: StorageReference, path: string): StorageRefere
  */
 export function setMaxDownloadRetryTime(storage: Storage, time: number): Promise<void> {
   return (
-    (storage as StorageInternal).setMaxDownloadRetryTime as unknown as WithModularDeprecationArg<
+    (storage as StorageInternal).setMaxDownloadRetryTime as WithModularDeprecationArg<
       StorageInternal['setMaxDownloadRetryTime']
     >
   ).call(storage, time, MODULAR_DEPRECATION_ARG);
