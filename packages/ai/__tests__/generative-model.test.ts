@@ -37,6 +37,50 @@ const fakeAI: AI = {
 };
 
 describe('GenerativeModel', () => {
+  it('passes CodeExecutionTool with other tools through to generateContent', async function () {
+    const genModel = new GenerativeModel(fakeAI, {
+      model: 'my-model',
+      tools: [
+        {
+          functionDeclarations: [
+            {
+              name: 'myfunc',
+              description: 'mydesc',
+            },
+          ],
+        },
+        { googleSearch: {} },
+        { codeExecution: {} },
+      ],
+      toolConfig: { functionCallingConfig: { mode: FunctionCallingMode.NONE } },
+      systemInstruction: { role: 'system', parts: [{ text: 'be friendly' }] },
+    });
+    expect(genModel.tools?.length).toBe(3);
+    expect(genModel.toolConfig?.functionCallingConfig?.mode).toBe(FunctionCallingMode.NONE);
+    expect(genModel.systemInstruction?.parts[0]!.text).toBe('be friendly');
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-success-basic-reply-short.json',
+    );
+    const makeRequestStub = jest
+      .spyOn(request, 'makeRequest')
+      .mockResolvedValue(mockResponse as Response);
+    await genModel.generateContent('hello');
+    expect(makeRequestStub).toHaveBeenCalledWith(
+      expect.objectContaining({
+        model: 'publishers/google/models/my-model',
+        task: request.Task.GENERATE_CONTENT,
+        apiSettings: expect.anything(),
+        stream: false,
+        requestOptions: {},
+      }),
+      expect.stringMatching(
+        new RegExp(`myfunc|googleSearch|codeExecution|${FunctionCallingMode.NONE}|be friendly`),
+      ),
+    );
+    makeRequestStub.mockRestore();
+  });
+
   it('passes params through to generateContent', async () => {
     const genModel = new GenerativeModel(fakeAI, {
       model: 'my-model',
@@ -210,6 +254,44 @@ describe('GenerativeModel', () => {
         requestOptions: {},
       }),
       expect.stringMatching(new RegExp(`myfunc|be friendly|${FunctionCallingMode.NONE}`)),
+    );
+    makeRequestStub.mockRestore();
+  });
+
+  it('passes CodeExecutionTool through to chat.sendMessage', async function () {
+    const genModel = new GenerativeModel(fakeAI, {
+      model: 'my-model',
+      tools: [
+        { functionDeclarations: [{ name: 'myfunc', description: 'mydesc' }] },
+        { googleSearch: {} },
+        { codeExecution: {} },
+      ],
+      toolConfig: { functionCallingConfig: { mode: FunctionCallingMode.NONE } },
+      systemInstruction: { role: 'system', parts: [{ text: 'be friendly' }] },
+      generationConfig: { topK: 1 },
+    });
+    expect(genModel.tools?.length).toBe(3);
+    const mockResponse = getMockResponse(
+      BackendName.VertexAI,
+      'unary-success-basic-reply-short.json',
+    );
+    const makeRequestStub = jest
+      .spyOn(request, 'makeRequest')
+      .mockResolvedValue(mockResponse as Response);
+    await genModel.startChat().sendMessage('hello');
+    expect(makeRequestStub).toHaveBeenCalledWith(
+      expect.objectContaining({
+        model: 'publishers/google/models/my-model',
+        task: request.Task.GENERATE_CONTENT,
+        apiSettings: expect.anything(),
+        stream: false,
+        requestOptions: {},
+      }),
+      expect.stringMatching(
+        new RegExp(
+          `myfunc|googleSearch|codeExecution|${FunctionCallingMode.NONE}|be friendly|topK`,
+        ),
+      ),
     );
     makeRequestStub.mockRestore();
   });
