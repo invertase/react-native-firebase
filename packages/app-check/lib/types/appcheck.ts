@@ -15,7 +15,7 @@
  *
  */
 
-import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { FirebaseApp } from '@react-native-firebase/app';
 
 // ============ Provider Types ============
 
@@ -203,8 +203,6 @@ export type ProviderWithOptions =
   | ReactNativeFirebaseAppCheckProvider
   | ReactNativeFirebaseAppCheckProviderConfig;
 
-// ============ Module Interface ============
-
 /**
  * The Firebase App Check service interface.
  *
@@ -226,67 +224,3 @@ export interface AppCheckStatics {
   CustomProvider: new (customProviderOptions: CustomProviderOptions) => CustomProvider;
   SDK_VERSION: string;
 }
-
-/**
- * FirebaseApp type with appCheck() method.
- * @deprecated Import FirebaseApp from '@react-native-firebase/app' instead.
- * The appCheck() method is added via module augmentation.
- */
-export type FirebaseApp = ReactNativeFirebase.FirebaseApp;
-
-// ============ Module Augmentation ============
-
-/* eslint-disable @typescript-eslint/no-namespace */
-declare module '@react-native-firebase/app' {
-  namespace ReactNativeFirebase {
-    interface Module {
-      appCheck: FirebaseModuleWithStaticsAndApp<AppCheck, AppCheckStatics>;
-    }
-    interface FirebaseApp {
-      appCheck(): AppCheck;
-    }
-  }
-}
-/* eslint-enable @typescript-eslint/no-namespace */
-
-// ============ Backwards Compatibility Namespace ============
-
-// Helper types to reference outer scope types within the namespace
-// These are needed because TypeScript can't directly alias types with the same name
-type _AppCheckProvider = AppCheckProvider;
-type _CustomProviderOptions = CustomProviderOptions;
-type _AppCheckOptions = AppCheckOptions;
-type _AppCheckToken = AppCheckToken;
-type _AppCheckTokenResult = AppCheckTokenResult;
-type _AppCheckListenerResult = AppCheckListenerResult;
-type _AppCheck = AppCheck;
-type _AppCheckStatics = AppCheckStatics;
-
-/**
- * @deprecated Use the exported types directly instead.
- * FirebaseAppCheckTypes namespace is kept for backwards compatibility.
- */
-/* eslint-disable @typescript-eslint/no-namespace */
-export namespace FirebaseAppCheckTypes {
-  // Short name aliases referencing top-level types
-  export type Provider = AppCheckProvider;
-  export type ProviderOptions = CustomProviderOptions;
-  export type Options = AppCheckOptions;
-  export type Token = AppCheckToken;
-  export type TokenResult = AppCheckTokenResult;
-  export type ListenerResult = AppCheckListenerResult;
-  export type Statics = AppCheckStatics;
-  export type Module = AppCheck;
-
-  // AppCheck* aliases that reference the exported types above via helper types
-  // These provide backwards compatibility for code using FirebaseAppCheckTypes.AppCheckProvider
-  export type AppCheckProvider = _AppCheckProvider;
-  export type CustomProviderOptions = _CustomProviderOptions;
-  export type AppCheckOptions = _AppCheckOptions;
-  export type AppCheckToken = _AppCheckToken;
-  export type AppCheckTokenResult = _AppCheckTokenResult;
-  export type AppCheckListenerResult = _AppCheckListenerResult;
-  export type AppCheck = _AppCheck;
-  export type AppCheckStatics = _AppCheckStatics;
-}
-/* eslint-enable @typescript-eslint/no-namespace */
