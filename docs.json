@@ -14,9 +14,22 @@
     "x": "@invertaseio",
     "github": "invertase/react-native-firebase"
   },
+  "tabs": [
+    {
+      "id": "root",
+      "title": "Documentation",
+      "href": "/"
+    },
+    {
+      "id": "reference",
+      "title": "Reference API",
+      "href": "/reference"
+    }
+  ],
   "sidebar": [
     {
       "group": "Getting Started",
+      "tab": "root",
       "pages": [
         { "title": "Getting Started", "href": "/" },
         { "title": "Migration Guide to v22", "href": "/migrating-to-v22" },
@@ -38,6 +51,7 @@
     },
     {
       "group": "Reference API",
+      "tab": "reference",
       "pages": [
         { "title": "ai", "href": "/reference/ai/lib" },
         { "title": "analytics", "href": "/reference/analytics/lib/modular" },
@@ -62,6 +76,7 @@
     },
     {
       "group": "Analytics",
+      "tab": "root",
       "icon": "//static.invertase.io/assets/firebase/analytics.svg",
       "pages": [
         { "title": "Usage", "href": "/analytics/usage" },
@@ -74,16 +89,19 @@
     },
     {
       "group": "App Check",
+      "tab": "root",
       "icon": "//static.invertase.io/assets/social/firebase-logo.png",
       "pages": [{ "title": "Usage", "href": "/app-check/usage" }]
     },
     {
       "group": "App Distribution",
+      "tab": "root",
       "icon": "//static.invertase.io/assets/firebase/app-distribution.svg",
       "pages": [{ "title": "Usage", "href": "/app-distribution/usage" }]
     },
     {
       "group": "Authentication",
+      "tab": "root",
       "icon": "//static.invertase.io/assets/firebase/authentication.svg",
       "pages": [
         { "title": "Usage", "href": "/auth/usage" },
@@ -95,6 +113,7 @@
     },
     {
       "group": "Cloud Firestore",
+      "tab": "root",
       "icon": "//static.invertase.io/assets/firebase/cloud-firestore.svg",
       "pages": [
         { "title": "Usage", "href": "/firestore/usage" },
@@ -109,6 +128,7 @@
     },
     {
       "group": "Cloud Functions",
+      "tab": "root",
       "icon": "//static.invertase.io/assets/firebase/cloud-functions.svg",
       "pages": [
         { "title": "Usage", "href": "/functions/usage" },
@@ -120,6 +140,7 @@
     },
     {
       "group": "Cloud Messaging",
+      "tab": "root",
       "icon": "//static.invertase.io/assets/firebase/cloud-messaging.svg",
       "pages": [
         { "title": "Usage", "href": "/messaging/usage" },
@@ -132,11 +153,13 @@
     },
     {
       "group": "Cloud Storage",
+      "tab": "root",
       "icon": "//static.invertase.io/assets/firebase/cloud-storage.svg",
       "pages": [{ "title": "Usage", "href": "/storage/usage" }]
     },
     {
       "group": "Core / App",
+      "tab": "root",
       "icon": "//static.invertase.io/assets/social/firebase-logo.png",
       "pages": [
         { "title": "Usage", "href": "/app/usage" },
@@ -146,6 +169,7 @@
     },
     {
       "group": "Crashlytics",
+      "tab": "root",
       "icon": "//static.invertase.io/assets/firebase/crashlytics.svg",
       "pages": [
         { "title": "Usage", "href": "/crashlytics/usage" },
@@ -154,6 +178,7 @@
     },
     {
       "group": "Realtime Database",
+      "tab": "root",
       "icon": "//static.invertase.io/assets/firebase/realtime-database.svg",
       "pages": [
         { "title": "Usage", "href": "/database/usage" },
@@ -163,26 +188,31 @@
     },
     {
       "group": "In-App Messaging",
+      "tab": "root",
       "icon": "//static.invertase.io/assets/firebase/in-app-messaging.svg",
       "pages": [{ "title": "Usage", "href": "/in-app-messaging/usage" }]
     },
     {
       "group": "Installations",
+      "tab": "root",
       "icon": "//static.invertase.io/assets/social/firebase-logo.png",
       "pages": [{ "title": "Usage", "href": "/installations/usage" }]
     },
     {
       "group": "ML",
+      "tab": "root",
       "icon": "//static.invertase.io/assets/firebase/ml-kit.svg",
       "pages": [{ "title": "Usage", "href": "/ml/usage" }]
     },
     {
       "group": "Remote Config",
+      "tab": "root",
       "icon": "//static.invertase.io/assets/firebase/remote-config.svg",
       "pages": [{ "title": "Usage", "href": "/remote-config/usage" }]
     },
     {
       "group": "Performance Monitoring",
+      "tab": "root",
       "icon": "//static.invertase.io/assets/firebase/performance-monitoring.svg",
       "pages": [
         { "title": "Usage", "href": "/perf/usage" },
@@ -192,11 +222,13 @@
     },
     {
       "group": "VertexAi",
+      "tab": "root",
       "icon": "//static.invertase.io/assets/social/firebase-logo.png",
       "pages": [{ "title": "Usage", "href": "/vertexai/usage" }]
     },
     {
       "group": "Legacy docs",
+      "tab": "root",
       "icon": "//static.invertase.io/assets/social/firebase-logo.png",
       "pages": [
         { "title": "Migrating to v6", "href": "/migrating-to-v6" },
