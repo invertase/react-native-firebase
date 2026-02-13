@@ -62,7 +62,7 @@
     "tests:macos:test-cover": "cd tests && npx jet --target=macos --coverage",
     "format:js": "prettier --write \"packages/**/*.{js,ts,tsx}\"",
     "format:markdown": "prettier --write \"docs/**/*.md\"",
-    "typedoc": "typedoc && mv docs/reference/README.mdx docs/reference/index.mdx"
+    "typedoc": "typedoc && rimraf docs/reference/README.mdx && echo '# Reference API Documentation' > docs/reference/index.mdx"
   },
   "devDependencies": {
     "@babel/core": "^7.28.6",
