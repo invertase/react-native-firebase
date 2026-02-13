@@ -510,7 +510,7 @@ const mapOfDeprecationReplacements: DeprecationMap = {
       setMaxUploadRetryTime: 'setMaxUploadRetryTime()',
       setMaxDownloadRetryTime: 'setMaxDownloadRetryTime()',
     },
-    StorageReference: {
+    Reference: {
       delete: 'deleteObject()',
       getDownloadURL: 'getDownloadURL()',
       getMetadata: 'getMetadata()',
@@ -602,7 +602,7 @@ function getNamespace(target: any): string | undefined {
   if (target._config && target._config.namespace) {
     return target._config.namespace;
   }
-  if (target.constructor.name === 'StorageReference') {
+  if (target.constructor.name === 'Reference') {
     return 'storage';
   }
   const className = target.name ? target.name : target.constructor.name;
@@ -627,7 +627,7 @@ function getInstanceName(target: any): string {
     return 'default';
   }
 
-  if (target.constructor.name === 'StorageReference') {
+  if (target.constructor.name === 'Reference') {
     // if path passed into ref(), it will pass in the arg as target.name
     return target.constructor.name;
   }
@@ -795,4 +795,9 @@ export function warnIfNotModularCall(args: IArguments, replacementMethodName: st
       throw new Error('Deprecated API usage detected while in strict mode.');
     }
   }
+}
+
+export function isModularCall(args: IArguments): boolean {
+  const argsArray = Array.from(args);
+  return argsArray.includes(MODULAR_DEPRECATION_ARG);
 }

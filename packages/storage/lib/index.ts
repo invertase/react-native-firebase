@@ -15,12 +15,25 @@
  *
  */
 
-import StorageTask from './StorageTask';
+// Export modular types from types/storage
+export type {
+  Storage,
+  StorageReference,
+  FullMetadata,
+  SettableMetadata,
+  ListResult,
+  ListOptions,
+  TaskSnapshot,
+  TaskSnapshotObserver,
+  TaskResult,
+  Task,
+  EmulatorMockTokenOptions,
+} from './types/storage';
 
-const DOWNLOAD_TASK = 'download';
+// Export modular API functions
+export * from './modular';
 
-export default class StorageDownloadTask extends StorageTask {
-  constructor(storageRef, beginTaskFn) {
-    super(DOWNLOAD_TASK, storageRef, beginTaskFn);
-  }
-}
+// Export namespaced API
+export type { FirebaseStorageTypes } from './types/namespaced';
+export * from './namespaced';
+export { default } from './namespaced';

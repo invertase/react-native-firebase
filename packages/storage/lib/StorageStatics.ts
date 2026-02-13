@@ -15,12 +15,23 @@
  *
  */
 
-import StorageTask from './StorageTask';
+export const StringFormat = {
+  RAW: 'raw',
+  BASE64: 'base64',
+  BASE64URL: 'base64url',
+  DATA_URL: 'data_url',
+} as const;
 
-const UPLOAD_TASK = 'upload';
+export const TaskEvent = {
+  STATE_CHANGED: 'state_changed',
+} as const;
 
-export default class StorageUploadTask extends StorageTask {
-  constructor(storageRef, beginTaskFn) {
-    super(UPLOAD_TASK, storageRef, beginTaskFn);
-  }
-}
+export const TaskState = {
+  RUNNING: 'running',
+  PAUSED: 'paused',
+  SUCCESS: 'success',
+  CANCELED: 'canceled',
+  // Backwards-compat alias
+  CANCELLED: 'canceled',
+  ERROR: 'error',
+} as const;

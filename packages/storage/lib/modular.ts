@@ -14,22 +14,27 @@
  * limitations under the License.
  *
  */
-/**
- * @typedef {import('..').FirebaseStorageTypes} FirebaseStorageTypes
- * @typedef {import('..').FirebaseStorageTypes.Module} Storage
- * @typedef {import('..').FirebaseStorageTypes.Reference} Reference
- * @typedef {import('..').FirebaseStorageTypes.FullMetadata} FullMetadata
- * @typedef {import('..').FirebaseStorageTypes.ListResult} ListResult
- * @typedef {import('..').FirebaseStorageTypes.TaskResult} TaskResult
- * @typedef {import('..').FirebaseStorageTypes.Task} Task
- * @typedef {import('..').FirebaseStorageTypes.ListOptions} ListOptions
- * @typedef {import('..').FirebaseStorageTypes.SettableMetadata} SettableMetadata
- * @typedef {import('..').FirebaseStorageTypes.EmulatorMockTokenOptions} EmulatorMockTokenOptions
- * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
- */
 
 import { getApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
+import type { FirebaseApp } from '@react-native-firebase/app';
+import type {
+  Storage,
+  StorageReference,
+  FullMetadata,
+  ListResult,
+  ListOptions,
+  TaskResult,
+  Task,
+  SettableMetadata,
+  UploadMetadata,
+  EmulatorMockTokenOptions,
+} from './types/storage';
+import type { StorageReferenceInternal, StorageInternal } from './types/internal';
+
+type WithModularDeprecationArg<F> = F extends (...args: infer P) => infer R
+  ? (...args: [...P, typeof MODULAR_DEPRECATION_ARG]) => R
+  : never;
 
 /**
  * Returns a Storage instance for the given app.
@@ -37,7 +42,7 @@ import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/
  * @param bucketUrl - Storage bucket URL. Optional.
  * @returns {Storage}
  */
-export function getStorage(app, bucketUrl) {
+export function getStorage(app?: FirebaseApp, bucketUrl?: string): Storage {
   if (app) {
     if (bucketUrl != null) {
       return getApp(app.name).storage(bucketUrl);
@@ -61,8 +66,17 @@ export function getStorage(app, bucketUrl) {
  * @param options - `EmulatorMockTokenOptions` instance. Optional. Web only.
  * @returns {void}
  */
-export function connectStorageEmulator(storage, host, port, options) {
-  return storage.useEmulator.call(storage, host, port, options, MODULAR_DEPRECATION_ARG);
+export function connectStorageEmulator(
+  storage: Storage,
+  host: string,
+  port: number,
+  options?: EmulatorMockTokenOptions,
+): void {
+  return (
+    (storage as StorageInternal).useEmulator as WithModularDeprecationArg<
+      StorageInternal['useEmulator']
+    >
+  ).call(storage, host, port, options, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -70,10 +84,12 @@ export function connectStorageEmulator(storage, host, port, options) {
  * @param storage - Storage instance.
  * @param path An optional string pointing to a location on the storage bucket. If no path
  * is provided, the returned reference will be the bucket root path. Optional.
- * @returns {Reference}
+ * @returns {StorageReference}
  */
-export function ref(storage, path) {
-  return storage.ref.call(storage, path, MODULAR_DEPRECATION_ARG);
+export function ref(storage: Storage, path?: string): StorageReference {
+  return (
+    (storage as StorageInternal).ref as WithModularDeprecationArg<StorageInternal['ref']>
+  ).call(storage, path, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -81,8 +97,12 @@ export function ref(storage, path) {
  * @param storageRef - Storage `Reference` instance.
  * @returns {Promise<void>}
  */
-export function deleteObject(storageRef) {
-  return storageRef.delete.call(storageRef, MODULAR_DEPRECATION_ARG);
+export function deleteObject(storageRef: StorageReference): Promise<void> {
+  return (
+    (storageRef as StorageReferenceInternal).delete as WithModularDeprecationArg<
+      StorageReferenceInternal['delete']
+    >
+  ).call(storageRef, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -90,8 +110,10 @@ export function deleteObject(storageRef) {
  * @param storageRef - Storage `Reference` instance.
  * @returns {Promise<Blob>}
  */
-// eslint-disable-next-line
-export function getBlob(storageRef, maxDownloadSizeBytes) {
+export function getBlob(
+  _storageRef: StorageReference,
+  _maxDownloadSizeBytes?: number,
+): Promise<Blob> {
   throw new Error('`getBlob()` is not implemented');
 }
 
@@ -101,8 +123,10 @@ export function getBlob(storageRef, maxDownloadSizeBytes) {
  * @param maxDownloadSizeBytes - The maximum allowed size in bytes to retrieve. Web only.
  * @returns {Promise<ArrayBuffer>}
  */
-// eslint-disable-next-line
-export function getBytes(storageRef, maxDownloadSizeBytes) {
+export function getBytes(
+  _storageRef: StorageReference,
+  _maxDownloadSizeBytes?: number,
+): Promise<ArrayBuffer> {
   throw new Error('`getBytes()` is not implemented');
 }
 
@@ -111,8 +135,12 @@ export function getBytes(storageRef, maxDownloadSizeBytes) {
  * @param storageRef - Storage `Reference` instance.
  * @returns {Promise<string>}
  */
-export function getDownloadURL(storageRef) {
-  return storageRef.getDownloadURL.call(storageRef, MODULAR_DEPRECATION_ARG);
+export function getDownloadURL(storageRef: StorageReference): Promise<string> {
+  return (
+    (storageRef as StorageReferenceInternal).getDownloadURL as WithModularDeprecationArg<
+      StorageReferenceInternal['getDownloadURL']
+    >
+  ).call(storageRef, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -120,8 +148,12 @@ export function getDownloadURL(storageRef) {
  * @param storageRef - Storage `Reference` instance.
  * @returns {Promise<FullMetadata>}
  */
-export function getMetadata(storageRef) {
-  return storageRef.getMetadata.call(storageRef, MODULAR_DEPRECATION_ARG);
+export function getMetadata(storageRef: StorageReference): Promise<FullMetadata> {
+  return (
+    (storageRef as StorageReferenceInternal).getMetadata as WithModularDeprecationArg<
+      StorageReferenceInternal['getMetadata']
+    >
+  ).call(storageRef, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -130,8 +162,10 @@ export function getMetadata(storageRef) {
  * @param maxDownloadSizeBytes - The maximum allowed size in bytes to retrieve. Web only.
  * @returns {NodeJS.ReadableStream;}
  */
-// eslint-disable-next-line
-export function getStream(storageRef, maxDownloadSizeBytes) {
+export function getStream(
+  _storageRef: StorageReference,
+  _maxDownloadSizeBytes?: number,
+): NodeJS.ReadableStream {
   throw new Error('`getStream()` is not implemented');
 }
 
@@ -141,8 +175,20 @@ export function getStream(storageRef, maxDownloadSizeBytes) {
  * @param options - Storage `ListOptions` instance. The options list() accepts.
  * @returns {Promise<ListResult>}
  */
-export function list(storageRef, options) {
-  return storageRef.list.call(storageRef, options, MODULAR_DEPRECATION_ARG);
+export async function list(
+  storageRef: StorageReference,
+  options?: ListOptions,
+): Promise<ListResult> {
+  const result = await (
+    (storageRef as StorageReferenceInternal).list as WithModularDeprecationArg<
+      StorageReferenceInternal['list']
+    >
+  ).call(storageRef, options, MODULAR_DEPRECATION_ARG);
+
+  if (result.nextPageToken === null) {
+    delete result.nextPageToken;
+  }
+  return result;
 }
 
 /**
@@ -150,8 +196,17 @@ export function list(storageRef, options) {
  * @param storageRef - Storage `Reference` instance.
  * @returns {Promise<ListResult>}
  */
-export function listAll(storageRef) {
-  return storageRef.listAll.call(storageRef, MODULAR_DEPRECATION_ARG);
+export async function listAll(storageRef: StorageReference): Promise<ListResult> {
+  const result = await (
+    (storageRef as StorageReferenceInternal).listAll as WithModularDeprecationArg<
+      StorageReferenceInternal['listAll']
+    >
+  ).call(storageRef, MODULAR_DEPRECATION_ARG);
+
+  if (result.nextPageToken === null) {
+    delete result.nextPageToken;
+  }
+  return result;
 }
 
 /**
@@ -160,8 +215,15 @@ export function listAll(storageRef) {
  * @param metadata - A Storage `SettableMetadata` instance to update.
  * @returns {Promise<FullMetadata>}
  */
-export function updateMetadata(storageRef, metadata) {
-  return storageRef.updateMetadata.call(storageRef, metadata, MODULAR_DEPRECATION_ARG);
+export function updateMetadata(
+  storageRef: StorageReference,
+  metadata: SettableMetadata,
+): Promise<FullMetadata> {
+  return (
+    (storageRef as StorageReferenceInternal).updateMetadata as WithModularDeprecationArg<
+      StorageReferenceInternal['updateMetadata']
+    >
+  ).call(storageRef, metadata, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -171,8 +233,11 @@ export function updateMetadata(storageRef, metadata) {
  * @param metadata - A Storage `SettableMetadata` instance to update. Optional.
  * @returns {Promise<TaskResult>}
  */
-// eslint-disable-next-line
-export async function uploadBytes(storageRef, data, metadata) {
+export async function uploadBytes(
+  _storageRef: StorageReference,
+  _data: Blob | Uint8Array | ArrayBuffer,
+  _metadata?: UploadMetadata,
+): Promise<TaskResult> {
   throw new Error('`uploadBytes()` is not implemented');
 }
 
@@ -183,8 +248,16 @@ export async function uploadBytes(storageRef, data, metadata) {
  * @param metadata - A Storage `SettableMetadata` instance to update. Optional.
  * @returns {Task}
  */
-export function uploadBytesResumable(storageRef, data, metadata) {
-  return storageRef.put.call(storageRef, data, metadata, MODULAR_DEPRECATION_ARG);
+export function uploadBytesResumable(
+  storageRef: StorageReference,
+  data: Blob | Uint8Array | ArrayBuffer,
+  metadata?: UploadMetadata,
+): Task {
+  return (
+    (storageRef as StorageReferenceInternal).put as WithModularDeprecationArg<
+      StorageReferenceInternal['put']
+    >
+  ).call(storageRef, data, metadata, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -195,8 +268,17 @@ export function uploadBytesResumable(storageRef, data, metadata) {
  * @param metadata - A Storage `SettableMetadata` instance to update. Optional.
  * @returns {Task}
  */
-export function uploadString(storageRef, data, format, metadata) {
-  return storageRef.putString.call(storageRef, data, format, metadata, MODULAR_DEPRECATION_ARG);
+export function uploadString(
+  storageRef: StorageReference,
+  data: string,
+  format?: 'raw' | 'base64' | 'base64url' | 'data_url',
+  metadata?: UploadMetadata,
+): Task {
+  return (
+    (storageRef as StorageReferenceInternal).putString as WithModularDeprecationArg<
+      StorageReferenceInternal['putString']
+    >
+  ).call(storageRef, data, format, metadata, MODULAR_DEPRECATION_ARG);
 }
 
 // Methods not on the Firebase JS SDK below
@@ -205,10 +287,14 @@ export function uploadString(storageRef, data, format, metadata) {
  *  Returns a new Storage `Reference` instance from a storage bucket URL.
  * @param storage - Storage instance.
  * @param url - A storage bucket URL pointing to a single file or location. Must be either a `gs://` url or an `http` url. Not available on web.
- * @returns {Reference}
+ * @returns {StorageReference}
  */
-export function refFromURL(storage, url) {
-  return storage.refFromURL.call(storage, url, MODULAR_DEPRECATION_ARG);
+export function refFromURL(storage: Storage, url: string): StorageReference {
+  return (
+    (storage as StorageInternal).refFromURL as WithModularDeprecationArg<
+      StorageInternal['refFromURL']
+    >
+  ).call(storage, url, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -217,8 +303,12 @@ export function refFromURL(storage, url) {
  * @param time - The new maximum operation retry time in milliseconds.
  * @returns {Promise<void>}
  */
-export function setMaxOperationRetryTime(storage, time) {
-  return storage.setMaxOperationRetryTime.call(storage, time, MODULAR_DEPRECATION_ARG);
+export function setMaxOperationRetryTime(storage: Storage, time: number): Promise<void> {
+  return (
+    (storage as StorageInternal).setMaxOperationRetryTime as WithModularDeprecationArg<
+      StorageInternal['setMaxOperationRetryTime']
+    >
+  ).call(storage, time, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -227,8 +317,12 @@ export function setMaxOperationRetryTime(storage, time) {
  * @param time - The new maximum operation retry time in milliseconds.
  * @returns {Promise<void>}
  */
-export function setMaxUploadRetryTime(storage, time) {
-  return storage.setMaxUploadRetryTime.call(storage, time, MODULAR_DEPRECATION_ARG);
+export function setMaxUploadRetryTime(storage: Storage, time: number): Promise<void> {
+  return (
+    (storage as StorageInternal).setMaxUploadRetryTime as WithModularDeprecationArg<
+      StorageInternal['setMaxUploadRetryTime']
+    >
+  ).call(storage, time, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -238,8 +332,16 @@ export function setMaxUploadRetryTime(storage, time) {
  * @param metadata Any additional `SettableMetadata` for this task.
  * @returns {Task}
  */
-export function putFile(storageRef, filePath, metadata) {
-  return storageRef.putFile.call(storageRef, filePath, metadata, MODULAR_DEPRECATION_ARG);
+export function putFile(
+  storageRef: StorageReference,
+  filePath: string,
+  metadata?: SettableMetadata,
+): Task {
+  return (
+    (storageRef as StorageReferenceInternal).putFile as WithModularDeprecationArg<
+      StorageReferenceInternal['putFile']
+    >
+  ).call(storageRef, filePath, metadata, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -248,8 +350,12 @@ export function putFile(storageRef, filePath, metadata) {
  * @param localFilePath The local file path to upload to on the device.
  * @returns {Task}
  */
-export function writeToFile(storageRef, filePath) {
-  return storageRef.writeToFile.call(storageRef, filePath, MODULAR_DEPRECATION_ARG);
+export function writeToFile(storageRef: StorageReference, filePath: string): Task {
+  return (
+    (storageRef as StorageReferenceInternal).writeToFile as WithModularDeprecationArg<
+      StorageReferenceInternal['writeToFile']
+    >
+  ).call(storageRef, filePath, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -257,8 +363,11 @@ export function writeToFile(storageRef, filePath) {
  * @param storageRef - Storage Reference instance.
  * @returns {String}
  */
-export function toString(storageRef) {
-  return storageRef.toString.call(storageRef, MODULAR_DEPRECATION_ARG);
+export function toString(storageRef: StorageReference): string {
+  return (storageRef.toString as WithModularDeprecationArg<typeof storageRef.toString>).call(
+    storageRef,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -267,8 +376,12 @@ export function toString(storageRef) {
  * @param path - The relative path from this reference. Leading, trailing, and consecutive slashes are removed.
  * @returns {String}
  */
-export function child(storageRef, path) {
-  return storageRef.child.call(storageRef, path, MODULAR_DEPRECATION_ARG);
+export function child(storageRef: StorageReference, path: string): StorageReference {
+  return (
+    (storageRef as StorageReferenceInternal).child as WithModularDeprecationArg<
+      StorageReferenceInternal['child']
+    >
+  ).call(storageRef, path, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -277,8 +390,12 @@ export function child(storageRef, path) {
  * @param time - The new maximum download retry time in milliseconds.
  * @returns {Promise<void>}
  */
-export function setMaxDownloadRetryTime(storage, time) {
-  return storage.setMaxDownloadRetryTime.call(storage, time, MODULAR_DEPRECATION_ARG);
+export function setMaxDownloadRetryTime(storage: Storage, time: number): Promise<void> {
+  return (
+    (storage as StorageInternal).setMaxDownloadRetryTime as WithModularDeprecationArg<
+      StorageInternal['setMaxDownloadRetryTime']
+    >
+  ).call(storage, time, MODULAR_DEPRECATION_ARG);
 }
 
-export { StringFormat, TaskEvent, TaskState } from '../StorageStatics';
+export { StringFormat, TaskEvent, TaskState } from './StorageStatics';
