@@ -33,7 +33,7 @@ import type { RNFBAppModuleInterface } from './internal/NativeModules';
 /**
  * Renders this app unusable and frees the resources of all associated services.
  * @param app - The app to delete.
- * @returns Promise<void>
+ * @returns `Promise<void>`
  */
 export function deleteApp(app: ReactNativeFirebase.FirebaseApp): Promise<void> {
   return deleteAppCompat.call(
@@ -50,7 +50,7 @@ export function deleteApp(app: ReactNativeFirebase.FirebaseApp): Promise<void> {
  * @param _libraryKeyOrName - library name or key.
  * @param _version - library version.
  * @param _variant - library variant. Optional.
- * @returns Promise<void>
+ * @returns `Promise<void>`
  */
 export function registerVersion(
   _libraryKeyOrName: string,
@@ -170,7 +170,7 @@ export function jsonGetAll(): Promise<{ [key: string]: string | boolean }> {
 
 /**
  * Clears react-native-firebase specific native preferences
- * @returns Promise<void>
+ * @returns `Promise<void>`
  */
 export function preferencesClearAll(): Promise<void> {
   const RNFBAppModule = getReactNativeModule(
@@ -194,7 +194,7 @@ export function preferencesGetAll(): Promise<{ [key: string]: string | boolean }
  * Sets react-native-firebase specific native boolean preference
  * @param key the name of the native preference to set
  * @param value the value of the native preference to set
- * @returns Promise<void>
+ * @returns `Promise<void>`
  */
 export function preferencesSetBool(key: string, value: boolean): Promise<void> {
   const RNFBAppModule = getReactNativeModule(
@@ -207,7 +207,7 @@ export function preferencesSetBool(key: string, value: boolean): Promise<void> {
  * Sets react-native-firebase specific native string preference
  * @param key the name of the native preference to set
  * @param value the value of the native preference to set
- * @returns Promise<void>
+ * @returns `Promise<void>`
  */
 export function preferencesSetString(key: string, value: string): Promise<void> {
   const RNFBAppModule = getReactNativeModule(
