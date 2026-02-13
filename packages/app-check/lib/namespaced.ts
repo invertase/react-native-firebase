@@ -20,7 +20,6 @@ import {
   isIOS,
   isString,
   isObject,
-  isFunction,
   isUndefined,
   isOther,
   parseListenerOrObserver,
@@ -37,39 +36,20 @@ import { setReactNativeModule } from '@react-native-firebase/app/dist/module/int
 import fallBackModule from './web/RNFBAppCheckModule';
 import { version } from './version';
 import type {
-  CustomProviderOptions,
   AppCheckProvider,
   AppCheckTokenResult,
   AppCheckOptions,
   AppCheckListenerResult,
   PartialObserver,
-  AppCheck,
-  AppCheckStatics,
   ProviderWithOptions,
 } from './types/appcheck';
+import type { FirebaseAppCheckTypes } from './types/namespaced';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import { CustomProvider } from './modular';
 
 const namespace = 'appCheck';
 
 const nativeModuleName = 'RNFBAppCheckModule';
-
-export class CustomProvider implements AppCheckProvider {
-  private _customProviderOptions: CustomProviderOptions;
-
-  constructor(_customProviderOptions: CustomProviderOptions) {
-    if (!isObject(_customProviderOptions)) {
-      throw new Error('Invalid configuration: no provider options defined.');
-    }
-    if (!isFunction(_customProviderOptions.getToken)) {
-      throw new Error('Invalid configuration: no getToken function defined.');
-    }
-    this._customProviderOptions = _customProviderOptions;
-  }
-
-  async getToken() {
-    return this._customProviderOptions.getToken();
-  }
-}
 
 const statics = {
   CustomProvider,
@@ -278,10 +258,13 @@ const appCheckNamespace = createModuleNamespace({
 });
 
 type AppCheckNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
-  AppCheck,
-  AppCheckStatics
+  FirebaseAppCheckTypes.Module,
+  FirebaseAppCheckTypes.Statics
 > & {
-  appCheck: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<AppCheck, AppCheckStatics>;
+  appCheck: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+    FirebaseAppCheckTypes.Module,
+    FirebaseAppCheckTypes.Statics
+  >;
   firebase: ReactNativeFirebase.Module;
   app(name?: string): ReactNativeFirebase.FirebaseApp;
 };
@@ -296,8 +279,8 @@ export default appCheckNamespace as unknown as AppCheckNamespace;
 export const firebase =
   getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
     'appCheck',
-    AppCheck,
-    AppCheckStatics,
+    FirebaseAppCheckTypes.Module,
+    FirebaseAppCheckTypes.Statics,
     false
   >;
 

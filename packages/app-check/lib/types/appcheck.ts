@@ -215,12 +215,3 @@ export interface AppCheck {
   app: FirebaseApp;
 }
 
-// ============ Statics Interface ============
-
-/**
- * Static properties available on firebase.appCheck
- */
-export interface AppCheckStatics {
-  CustomProvider: new (customProviderOptions: CustomProviderOptions) => CustomProvider;
-  SDK_VERSION: string;
-}

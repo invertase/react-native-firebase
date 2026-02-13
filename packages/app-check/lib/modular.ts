@@ -16,13 +16,18 @@
  */
 
 import { getApp, type FirebaseApp } from '@react-native-firebase/app';
-import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
-import ReactNativeFirebaseAppCheckProvider from './ReactNativeFirebaseAppCheckProvider';
+import {
+  isFunction,
+  isObject,
+  MODULAR_DEPRECATION_ARG,
+} from '@react-native-firebase/app/dist/module/common';
 
 import type {
   AppCheck,
   AppCheckOptions,
+  AppCheckProvider,
   AppCheckTokenResult,
+  CustomProviderOptions,
   PartialObserver,
   Unsubscribe,
 } from './types/appcheck';
@@ -155,4 +160,20 @@ export function onTokenChanged(
   ) as Unsubscribe;
 }
 
-export { ReactNativeFirebaseAppCheckProvider };
+export class CustomProvider implements AppCheckProvider {
+  private _customProviderOptions: CustomProviderOptions;
+
+  constructor(_customProviderOptions: CustomProviderOptions) {
+    if (!isObject(_customProviderOptions)) {
+      throw new Error('Invalid configuration: no provider options defined.');
+    }
+    if (!isFunction(_customProviderOptions.getToken)) {
+      throw new Error('Invalid configuration: no getToken function defined.');
+    }
+    this._customProviderOptions = _customProviderOptions;
+  }
+
+  async getToken() {
+    return this._customProviderOptions.getToken();
+  }
+}
