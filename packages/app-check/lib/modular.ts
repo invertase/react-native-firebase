@@ -15,7 +15,7 @@
  *
  */
 
-import { getApp, type FirebaseApp, type ReactNativeFirebase } from '@react-native-firebase/app';
+import { getApp, type FirebaseApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 import ReactNativeFirebaseAppCheckProvider from './ReactNativeFirebaseAppCheckProvider';
 
@@ -25,7 +25,6 @@ import type {
   AppCheckTokenResult,
   PartialObserver,
   Unsubscribe,
-  AppCheckListenerResult,
 } from './types/appcheck';
 import type { AppCheckInternal } from './types/internal';
 
@@ -40,20 +39,10 @@ type WithModularDeprecationArg<F> = F extends (...args: infer P) => infer R
  * @returns Promise<AppCheck>
  */
 export async function initializeAppCheck(
-  app?: ReactNativeFirebase.FirebaseApp,
+  app?: FirebaseApp,
   options?: AppCheckOptions,
 ): Promise<AppCheck> {
-  if (app) {
-    const appInstance = getApp(app.name) as FirebaseApp;
-    const appCheck = appInstance.appCheck();
-    await (
-      (appCheck as AppCheckInternal).initializeAppCheck as WithModularDeprecationArg<
-        AppCheckInternal['initializeAppCheck']
-      >
-    ).call(appCheck, options as AppCheckOptions, MODULAR_DEPRECATION_ARG);
-    return appCheck;
-  }
-  const appInstance = getApp() as FirebaseApp;
+  const appInstance = app ? (getApp(app.name) as FirebaseApp) : (getApp() as FirebaseApp);
   const appCheck = appInstance.appCheck();
   await (
     (appCheck as AppCheckInternal).initializeAppCheck as WithModularDeprecationArg<
@@ -140,7 +129,7 @@ export function onTokenChanged(
  */
 export function onTokenChanged(
   appCheckInstance: AppCheck,
-  onNext: (tokenResult: AppCheckListenerResult) => void,
+  onNext: (tokenResult: AppCheckTokenResult) => void,
   onError?: (error: Error) => void,
   onCompletion?: () => void,
 ): Unsubscribe;
@@ -149,7 +138,7 @@ export function onTokenChanged(
   appCheckInstance: AppCheck,
   onNextOrObserver:
     | PartialObserver<AppCheckTokenResult>
-    | ((tokenResult: AppCheckListenerResult) => void),
+    | ((tokenResult: AppCheckTokenResult) => void),
   onError?: (error: Error) => void,
   onCompletion?: () => void,
 ): Unsubscribe {
