@@ -1,0 +1,170 @@
+[**react-native-firebase**](../../../README.mdx)
+
+***
+
+[react-native-firebase](../../../modules.mdx) / firestore/lib/modular/FieldValue
+
+# firestore/lib/modular/FieldValue
+
+## Classes
+
+### FieldValue
+
+Defined in: [firestore/lib/modular/FieldValue.d.ts:5](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/FieldValue.d.ts#L5)
+
+Sentinel values that can be used when writing document fields with `set()`
+or `update()`.
+
+#### Constructors
+
+##### Constructor
+
+> **new FieldValue**(): [`FieldValue`](#fieldvalue)
+
+###### Returns
+
+[`FieldValue`](#fieldvalue)
+
+#### Methods
+
+##### isEqual()
+
+> **isEqual**(`other`): `boolean`
+
+Defined in: [firestore/lib/modular/FieldValue.d.ts:6](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/FieldValue.d.ts#L6)
+
+###### Parameters
+
+###### other
+
+[`FieldValue`](#fieldvalue)
+
+###### Returns
+
+`boolean`
+
+## Functions
+
+### arrayRemove()
+
+> **arrayRemove**(...`elements`): [`FieldValue`](#fieldvalue)
+
+Defined in: [firestore/lib/modular/FieldValue.d.ts:46](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/FieldValue.d.ts#L46)
+
+Returns a special value that can be used with `setDoc` or
+`updateDoc` that tells the server to remove the given elements from any
+array value that already exists on the server. All instances of each element
+specified will be removed from the array. If the field being modified is not
+already an array it will be overwritten with an empty array.
+
+#### Parameters
+
+##### elements
+
+...`unknown`[]
+
+The elements to remove from the array.
+
+#### Returns
+
+[`FieldValue`](#fieldvalue)
+
+The `FieldValue` sentinel for use in a call to `setDoc()` or
+`updateDoc()`
+
+***
+
+### arrayUnion()
+
+> **arrayUnion**(...`elements`): [`FieldValue`](#fieldvalue)
+
+Defined in: [firestore/lib/modular/FieldValue.d.ts:33](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/FieldValue.d.ts#L33)
+
+Returns a special value that can be used with `setDoc` or
+`updateDoc` that tells the server to union the given elements with any array
+value that already exists on the server. Each specified element that doesn't
+already exist in the array will be added to the end. If the field being
+modified is not already an array it will be overwritten with an array
+containing exactly the specified elements.
+
+#### Parameters
+
+##### elements
+
+...`unknown`[]
+
+The elements to union into the array.
+
+#### Returns
+
+[`FieldValue`](#fieldvalue)
+
+The `FieldValue` sentinel for use in a call to `setDoc()` or
+`updateDoc()`.
+
+***
+
+### deleteField()
+
+> **deleteField**(): [`FieldValue`](#fieldvalue)
+
+Defined in: [firestore/lib/modular/FieldValue.d.ts:13](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/FieldValue.d.ts#L13)
+
+Returns a sentinel for use with `updateDoc` or
+`setDoc` with `{merge: true}` to mark a field for deletion.
+
+#### Returns
+
+[`FieldValue`](#fieldvalue)
+
+***
+
+### increment()
+
+> **increment**(`n`): [`FieldValue`](#fieldvalue)
+
+Defined in: [firestore/lib/modular/FieldValue.d.ts:67](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/FieldValue.d.ts#L67)
+
+Returns a special value that can be used with `setDoc` or
+`updateDoc` that tells the server to increment the field's current value by
+the given value.
+
+If either the operand or the current field value uses floating point
+precision, all arithmetic follows IEEE 754 semantics. If both values are
+integers, values outside of JavaScript's safe number range
+(`Number.MIN_SAFE_INTEGER` to `Number.MAX_SAFE_INTEGER`) are also subject to
+precision loss. Furthermore, once processed by the Firestore backend, all
+integer operations are capped between `-2^63` and `2^63-1`.
+
+If the current field value is not of type `number`, or if the field does not
+yet exist, the transformation sets the field to the given value.
+
+#### Parameters
+
+##### n
+
+`number`
+
+The value to increment by.
+
+#### Returns
+
+[`FieldValue`](#fieldvalue)
+
+The `FieldValue` sentinel for use in a call to `setDoc()` or
+`updateDoc()`
+
+***
+
+### serverTimestamp()
+
+> **serverTimestamp**(): [`FieldValue`](#fieldvalue)
+
+Defined in: [firestore/lib/modular/FieldValue.d.ts:19](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/FieldValue.d.ts#L19)
+
+Returns a sentinel used with `setDoc` or `updateDoc` to
+include a server-generated timestamp in the written data.
+
+#### Returns
+
+[`FieldValue`](#fieldvalue)

@@ -61,7 +61,8 @@
     "tests:macos:test": "cd tests && npx jet --target=macos --coverage",
     "tests:macos:test-cover": "cd tests && npx jet --target=macos --coverage",
     "format:js": "prettier --write \"packages/**/*.{js,ts,tsx}\"",
-    "format:markdown": "prettier --write \"docs/**/*.md\""
+    "format:markdown": "prettier --write \"docs/**/*.md\"",
+    "typedoc": "typedoc && rimraf docs/reference/README.mdx && echo '# Reference API Documentation' > docs/reference/index.mdx"
   },
   "devDependencies": {
     "@babel/core": "^7.28.6",
@@ -105,6 +106,8 @@
     "spellchecker-cli": "^7.0.2",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
+    "typedoc": "^0.28.16",
+    "typedoc-plugin-markdown": "^4.10.0",
     "typescript": "^5.9.3"
   },
   "resolutions": {

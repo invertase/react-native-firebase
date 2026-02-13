@@ -10,7 +10,7 @@
  * 9999-12-31T23:59:59.999999999Z.
  *
  * For examples and further specifications, refer to the
- * {@link https://github.com/google/protobuf/blob/master/src/google/protobuf/timestamp.proto | Timestamp definition}.
+ * [https://github.com/google/protobuf/blob/master/src/google/protobuf/timestamp.proto].
  */
 export declare class Timestamp {
   readonly seconds: number;

@@ -71,7 +71,7 @@ export declare type ChildUpdateFields<K extends string, V> =
   V extends Record<string, unknown> ? AddPrefixToKeys<K, UpdateData<V>> : never;
 
 /**
- * For each field (e.g. 'bar'), find all nested keys (e.g. {'bar.baz': T1, 'bar.qux': T2}).
+ * For each field (e.g. 'bar'), find all nested keys (e.g. `{'bar.baz': T1, 'bar.qux': T2}`).
  * Intersect them together to make a single map containing all possible keys that are all marked as optional
  */
 export declare type NestedUpdateFields<T extends Record<string, unknown>> = UnionToIntersection<
@@ -113,7 +113,7 @@ export type EmulatorMockTokenOptions = ({ user_id: string } | { sub: string }) &
  * default {@link @firebase/app#FirebaseApp}. If no instance exists, initializes a new
  * instance with default settings.
  *
- * @returns The {@link Firestore} instance of the provided app.
+ * @returns The Firestore instance of the provided app.
  */
 export declare function getFirestore(): Firestore;
 
@@ -122,9 +122,9 @@ export declare function getFirestore(): Firestore;
  * provided {@link @firebase/app#FirebaseApp}. If no instance exists, initializes a new
  * instance with default settings.
  *
- * @param app - The {@link @firebase/app#FirebaseApp} instance that the returned {@link Firestore}
+ * @param app - The FirebaseApp instance that the returned Firestore
  * instance is associated with.
- * @returns The {@link Firestore} instance of the provided app.
+ * @returns The Firestore instance of the provided app.
  * @internal
  */
 export declare function getFirestore(app: FirebaseApp): Firestore;
@@ -136,10 +136,10 @@ export function getFirestore(app?: FirebaseApp): Firestore;
  * provided {@link @firebase/app#FirebaseApp} and database ID. If no instance exists, initializes a new
  * instance with default settings.
  *
- * @param app - The {@link @firebase/app#FirebaseApp} instance that the returned {@link Firestore}
+ * @param app - The FirebaseApp instance that the returned Firestore
  * instance is associated with.
  * @param databaseId - The ID of the Firestore database to use. If not provided, the default database is used.
- * @returns The {@link Firestore}
+ * @returns The Firestore
  */
 export declare function getFirestore(app?: FirebaseApp, databaseId?: string): Firestore;
 
@@ -358,7 +358,7 @@ export interface FirestoreDataConverter<
    * `PartialWithFieldValue<AppModelType>`.
    *
    * The `WithFieldValue<T>` type extends `T` to also allow FieldValues such as
-   * {@link (deleteField:1)} to be used as property values.
+   * deleteField to be used as property values.
    */
   toFirestore(modelObject: WithFieldValue<AppModelType>): WithFieldValue<DbModelType>;
 
@@ -913,8 +913,8 @@ export function collection(
 /**
  *Returns true if the provided references are equal.
  *
- * @param left	DocumentReference<AppModelType, DbModelType> | CollectionReference<AppModelType, DbModelType>	A reference to compare.
- * @param right	DocumentReference<AppModelType, DbModelType> | CollectionReference<AppModelType, DbModelType>	A reference to compare.
+ * @param left	`DocumentReference<AppModelType, DbModelType> | CollectionReference<AppModelType, DbModelType>`	A reference to compare.
+ * @param right	`DocumentReference<AppModelType, DbModelType> | CollectionReference<AppModelType, DbModelType>`	A reference to compare.
  * @return boolean true if the references point to the same location in the same Firestore database.
  */
 export declare function refEqual<AppModelType, DbModelType extends DocumentData>(
@@ -1290,7 +1290,7 @@ export class AggregateField<T> {
   readonly aggregateType: AggregateType;
 
   /**
-   * Create a new AggregateField<T>
+   * Create a new `AggregateField<T>`
    * @param aggregateType Specifies the type of aggregation operation to perform.
    * @param _internalFieldPath Optionally specifies the field that is aggregated.
    * @internal
@@ -1333,7 +1333,7 @@ export function loadBundle(
  * with resulting documents), and loaded to local cache using `loadBundle`. Once
  * in local cache, use this method to extract a {@link Query} by name.
  *
- * @param firestore - The {@link Firestore} instance to read the query from.
+ * @param firestore - The Firestore instance to read the query from.
  * @param name - The name of the query.
  * @returns A named Query.
  */
@@ -1358,8 +1358,8 @@ export function writeBatch(firestore: Firestore): WriteBatch;
  * Gets the `PersistentCacheIndexManager` instance used by this Cloud Firestore instance.
  * This is not the same as Cloud Firestore Indexes.
  * Persistent cache indexes are optional indexes that only exist within the SDK to assist in local query execution.
- * @param {Firestore} - The Firestore instance.
- * @return {PersistentCacheIndexManager | null} - The `PersistentCacheIndexManager` instance or `null` if local persistent storage is not in use.
+ * @param firestore The Firestore instance.
+ * @return `PersistentCacheIndexManager | null` - The `PersistentCacheIndexManager` instance or `null` if local persistent storage is not in use.
  */
 export function getPersistentCacheIndexManager(
   firestore: Firestore,
@@ -1368,8 +1368,8 @@ export function getPersistentCacheIndexManager(
  * Enables the SDK to create persistent cache indexes automatically for local query
  * execution when the SDK believes cache indexes can help improves performance.
  * This feature is disabled by default.
- * @param {PersistentCacheIndexManager} - The `PersistentCacheIndexManager` instance.
- * @return {Promise<void>} - A promise that resolves when the operation is complete.
+ * @param indexManager - The `PersistentCacheIndexManager` instance.
+ * @return `Promise<void>` - A promise that resolves when the operation is complete.
  */
 export function enablePersistentCacheIndexAutoCreation(
   indexManager: PersistentCacheIndexManager,
@@ -1377,8 +1377,8 @@ export function enablePersistentCacheIndexAutoCreation(
 /**
  * Stops creating persistent cache indexes automatically for local query execution.
  * The indexes which have been created by calling `enableIndexAutoCreation()` still take effect.
- * @param {PersistentCacheIndexManager} - The `PersistentCacheIndexManager` instance.
- * @return {Promise<void>} - A promise that resolves when the operation is complete.
+ * @param indexManager - The `PersistentCacheIndexManager` instance.
+ * @return `Promise<void>` - A promise that resolves when the operation is complete.
  */
 export function disablePersistentCacheIndexAutoCreation(
   indexManager: PersistentCacheIndexManager,
@@ -1386,8 +1386,8 @@ export function disablePersistentCacheIndexAutoCreation(
 /**
  * Removes all persistent cache indexes. Note this function also deletes indexes
  * generated by `setIndexConfiguration()`, which is deprecated.
- * @param {PersistentCacheIndexManager} - The `PersistentCacheIndexManager` instance.
- * @return {Promise<void>} - A promise that resolves when the operation is complete.
+ * @param indexManager - The `PersistentCacheIndexManager` instance.
+ * @return `Promise<void>`- A promise that resolves when the operation is complete.
  */
 export function deleteAllPersistentCacheIndexes(
   indexManager: PersistentCacheIndexManager,

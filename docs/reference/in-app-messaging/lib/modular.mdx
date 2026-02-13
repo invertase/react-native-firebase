@@ -1,0 +1,185 @@
+[**react-native-firebase**](../../README.mdx)
+
+***
+
+[react-native-firebase](../../modules.mdx) / in-app-messaging/lib/modular
+
+# in-app-messaging/lib/modular
+
+## Type Aliases
+
+### FirebaseInAppMessaging
+
+> **FirebaseInAppMessaging** = `FirebaseInAppMessagingTypes.Module`
+
+Defined in: [in-app-messaging/lib/modular/index.d.ts:3](https://github.com/invertase/react-native-firebase/blob/main/packages/in-app-messaging/lib/modular/index.d.ts#L3)
+
+## Functions
+
+### getInAppMessaging()
+
+> **getInAppMessaging**(): `Module`
+
+Defined in: [in-app-messaging/lib/modular/index.d.ts:5](https://github.com/invertase/react-native-firebase/blob/main/packages/in-app-messaging/lib/modular/index.d.ts#L5)
+
+#### Returns
+
+`Module`
+
+***
+
+### isAutomaticDataCollectionEnabled()
+
+> **isAutomaticDataCollectionEnabled**(`inAppMessaging`): `boolean`
+
+Defined in: [in-app-messaging/lib/modular/index.d.ts:50](https://github.com/invertase/react-native-firebase/blob/main/packages/in-app-messaging/lib/modular/index.d.ts#L50)
+
+Determines whether automatic data collection is enabled or not.
+
+#### Example
+
+```js
+const inAppMessaging = getInAppMessaging();
+const isDataCollectionEnabled = isAutomaticDataCollectionEnabled(inAppMessaging);
+```
+
+#### Parameters
+
+##### inAppMessaging
+
+`Module`
+
+#### Returns
+
+`boolean`
+
+***
+
+### isMessagesDisplaySuppressed()
+
+> **isMessagesDisplaySuppressed**(`inAppMessaging`): `boolean`
+
+Defined in: [in-app-messaging/lib/modular/index.d.ts:17](https://github.com/invertase/react-native-firebase/blob/main/packages/in-app-messaging/lib/modular/index.d.ts#L17)
+
+Determines whether messages are suppressed or not.
+
+#### Example
+
+```js
+const inAppMessaging = getInAppMessaging();
+const isSuppressed = isMessagesDisplaySuppressed(inAppMessaging);
+```
+
+#### Parameters
+
+##### inAppMessaging
+
+`Module`
+
+#### Returns
+
+`boolean`
+
+***
+
+### setAutomaticDataCollectionEnabled()
+
+> **setAutomaticDataCollectionEnabled**(`inAppMessaging`, `enabled`): `Promise`\<`null`\>
+
+Defined in: [in-app-messaging/lib/modular/index.d.ts:70](https://github.com/invertase/react-native-firebase/blob/main/packages/in-app-messaging/lib/modular/index.d.ts#L70)
+
+Enable or disable automatic data collection for Firebase In-App Messaging.
+
+When enabled, generates a registration token on app startup if there is no valid one and generates a new token
+when it is deleted (which prevents `deleteInstanceId()` from stopping the periodic sending of data).
+
+This setting is persisted across app restarts and overrides the setting specified in your manifest/plist file.
+
+#### Example
+
+```js
+// Disable data collection
+const inAppMessaging = getInAppMessaging();
+setAutomaticDataCollectionEnabled(inAppMessaging, false);
+```
+
+#### Parameters
+
+##### inAppMessaging
+
+`Module`
+
+##### enabled
+
+`boolean`
+
+#### Returns
+
+`Promise`\<`null`\>
+
+***
+
+### setMessagesDisplaySuppressed()
+
+> **setMessagesDisplaySuppressed**(`inAppMessaging`, `enabled`): `Promise`\<`null`\>
+
+Defined in: [in-app-messaging/lib/modular/index.d.ts:35](https://github.com/invertase/react-native-firebase/blob/main/packages/in-app-messaging/lib/modular/index.d.ts#L35)
+
+Enable or disable suppression of Firebase In App Messaging messages.
+
+When enabled, no in app messages will be rendered until either you disable suppression, or the app restarts.
+This state is not persisted between app restarts.
+
+#### Example
+
+```js
+// Suppress messages
+const inAppMessaging = getInAppMessaging();
+await setMessagesDisplaySuppressed(inAppMessaging, true);
+```
+
+#### Parameters
+
+##### inAppMessaging
+
+`Module`
+
+##### enabled
+
+`boolean`
+
+#### Returns
+
+`Promise`\<`null`\>
+
+***
+
+### triggerEvent()
+
+> **triggerEvent**(`inAppMessaging`, `eventId`): `Promise`\<`null`\>
+
+Defined in: [in-app-messaging/lib/modular/index.d.ts:86](https://github.com/invertase/react-native-firebase/blob/main/packages/in-app-messaging/lib/modular/index.d.ts#L86)
+
+Trigger in-app messages programmatically
+
+#### Example
+
+```js
+// Suppress messages
+const inAppMessaging = getInAppMessaging();
+await triggerEvent(inAppMessaging, "exampleTrigger");
+```
+
+#### Parameters
+
+##### inAppMessaging
+
+`Module`
+
+##### eventId
+
+`string`
+
+#### Returns
+
+`Promise`\<`null`\>

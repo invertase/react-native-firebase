@@ -1,0 +1,111 @@
+[**react-native-firebase**](../../../README.mdx)
+
+***
+
+[react-native-firebase](../../../modules.mdx) / firestore/lib/modular/VectorValue
+
+# firestore/lib/modular/VectorValue
+
+## Classes
+
+### VectorValue
+
+Defined in: [firestore/lib/modular/VectorValue.d.ts:4](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/VectorValue.d.ts#L4)
+
+Represents a vector type in Firestore documents. Create an instance with `vector()`.
+
+#### Constructors
+
+##### Constructor
+
+> **new VectorValue**(): [`VectorValue`](#vectorvalue)
+
+###### Returns
+
+[`VectorValue`](#vectorvalue)
+
+#### Methods
+
+##### isEqual()
+
+> **isEqual**(`other`): `boolean`
+
+Defined in: [firestore/lib/modular/VectorValue.d.ts:17](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/VectorValue.d.ts#L17)
+
+Returns true if the two VectorValue values have the same raw number arrays, returns false otherwise.
+
+###### Parameters
+
+###### other
+
+[`VectorValue`](#vectorvalue)
+
+###### Returns
+
+`boolean`
+
+##### toArray()
+
+> **toArray**(): `number`[]
+
+Defined in: [firestore/lib/modular/VectorValue.d.ts:22](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/VectorValue.d.ts#L22)
+
+Returns a copy of the raw number array form of the vector.
+
+###### Returns
+
+`number`[]
+
+##### toJSON()
+
+> **toJSON**(): `object`
+
+Defined in: [firestore/lib/modular/VectorValue.d.ts:27](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/VectorValue.d.ts#L27)
+
+Returns a JSON-serializable representation of this VectorValue instance.
+
+###### Returns
+
+`object`
+
+###### values
+
+> **values**: `number`[]
+
+##### fromJSON()
+
+> `static` **fromJSON**(`json`): [`VectorValue`](#vectorvalue)
+
+Defined in: [firestore/lib/modular/VectorValue.d.ts:12](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/VectorValue.d.ts#L12)
+
+Builds a VectorValue instance from a JSON object created by `VectorValue.toJSON()`.
+
+###### Parameters
+
+###### json
+
+`object`
+
+a JSON object represention of a VectorValue instance.
+
+###### Returns
+
+[`VectorValue`](#vectorvalue)
+
+## Functions
+
+### vector()
+
+> **vector**(`values?`): [`VectorValue`](#vectorvalue)
+
+Defined in: [firestore/lib/modular/VectorValue.d.ts:30](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/VectorValue.d.ts#L30)
+
+#### Parameters
+
+##### values?
+
+`number`[]
+
+#### Returns
+
+[`VectorValue`](#vectorvalue)

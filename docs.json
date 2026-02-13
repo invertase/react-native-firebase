@@ -1,0 +1,242 @@
+{
+  "$schema": "https://docs.page/schema.json",
+  "name": "React Native Firebase",
+  "description": "A well-tested feature-rich modular Firebase implementation for React Native. Supports both iOS & Android platforms for all Firebase services.",
+  "favicon": "/rnfb-logo.png",
+  "theme": {
+    "primary": "#e88533"
+  },
+  "logo": {
+    "light": "/rnfb-logo.png",
+    "dark": "/rnfb-logo.png"
+  },
+  "social": {
+    "x": "@invertaseio",
+    "github": "invertase/react-native-firebase"
+  },
+  "tabs": [
+    {
+      "id": "root",
+      "title": "Documentation",
+      "href": "/"
+    },
+    {
+      "id": "reference",
+      "title": "Reference API",
+      "href": "/reference"
+    }
+  ],
+  "sidebar": [
+    {
+      "group": "Getting Started",
+      "tab": "root",
+      "pages": [
+        { "title": "Getting Started", "href": "/" },
+        { "title": "Migration Guide to v22", "href": "/migrating-to-v22" },
+        { "title": "Migration Guide to v23", "href": "/migrating-to-v23" },
+        { "title": "Migration Guide to v24", "href": "/migrating-to-v24" },
+        { "title": "TypeScript", "href": "/typescript" },
+        { "title": "Platforms", "href": "/platforms" },
+        {
+          "title": "Release Notes",
+          "href": "https://github.com/invertase/react-native-firebase/blob/main/CHANGELOG.md"
+        },
+        { "title": "FAQs and Tips", "href": "/faqs-and-tips" },
+        { "title": "Feature Requests", "href": "https://invertase.canny.io/react-native-firebase" },
+        {
+          "title": "Contributing",
+          "href": "https://github.com/invertase/react-native-firebase/blob/main/CONTRIBUTING.md"
+        }
+      ]
+    },
+    {
+      "group": "Reference API",
+      "tab": "reference",
+      "pages": [
+        { "title": "ai", "href": "/reference/ai/lib" },
+        { "title": "analytics", "href": "/reference/analytics/lib/modular" },
+        { "title": "app", "href": "/reference/app/lib/modular" },
+        { "title": "app utils", "href": "/reference/app/lib/utils" },
+        { "title": "app-check", "href": "/reference/app-check/lib/modular" },
+        { "title": "app-distribution", "href": "/reference/app-distribution/lib/modular" },
+        { "title": "auth", "href": "/reference/auth/lib/modular" },
+        { "title": "crashlytics", "href": "/reference/crashlytics/lib/modular" },
+        { "title": "database", "href": "/reference/database/lib/modular" },
+        { "title": "firestore", "href": "/reference/firestore/lib/modular" },
+        { "title": "functions", "href": "/reference/functions/lib/modular" },
+        { "title": "in-app-messaging", "href": "/reference/in-app-messaging/lib/modular" },
+        { "title": "installations", "href": "/reference/installations/lib/modular" },
+        { "title": "messaging", "href": "/reference/messaging/lib/modular" },
+        { "title": "ml", "href": "/reference/ml/lib/modular" },
+        { "title": "perf", "href": "/reference/perf/lib/modular" },
+        { "title": "remote-config", "href": "/reference/remote-config/lib/modular" },
+        { "title": "storage", "href": "/reference/storage/lib/modular" },
+        { "title": "vertexai", "href": "/reference/vertexai/lib" }
+      ]
+    },
+    {
+      "group": "Analytics",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/firebase/analytics.svg",
+      "pages": [
+        { "title": "Usage", "href": "/analytics/usage" },
+        { "title": "Screen Tracking", "href": "/analytics/screen-tracking" },
+        {
+          "title": "Building an Analytics Funnel",
+          "href": "https://blog.theodo.com/2018/01/building-google-analytics-funnel-firebase-react-native"
+        }
+      ]
+    },
+    {
+      "group": "App Check",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/social/firebase-logo.png",
+      "pages": [{ "title": "Usage", "href": "/app-check/usage" }]
+    },
+    {
+      "group": "App Distribution",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/firebase/app-distribution.svg",
+      "pages": [{ "title": "Usage", "href": "/app-distribution/usage" }]
+    },
+    {
+      "group": "Authentication",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/firebase/authentication.svg",
+      "pages": [
+        { "title": "Usage", "href": "/auth/usage" },
+        { "title": "Social Auth", "href": "/auth/social-auth" },
+        { "title": "Phone Auth", "href": "/auth/phone-auth" },
+        { "title": "OpenID Connect Auth", "href": "/auth/oidc-auth" },
+        { "title": "Multi-factor Auth", "href": "/auth/multi-factor-auth" }
+      ]
+    },
+    {
+      "group": "Cloud Firestore",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/firebase/cloud-firestore.svg",
+      "pages": [
+        { "title": "Usage", "href": "/firestore/usage" },
+        { "title": "Usage with Emulator", "href": "/firestore/emulator" },
+        { "title": "Usage with FlatLists", "href": "/firestore/usage-with-flatlists" },
+        { "title": "Implementing Pagination", "href": "/firestore/pagination" },
+        {
+          "title": "Building a \"TODO\" app",
+          "href": "https://invertase.io/blog/getting-started-with-cloud-firestore-on-react-native"
+        }
+      ]
+    },
+    {
+      "group": "Cloud Functions",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/firebase/cloud-functions.svg",
+      "pages": [
+        { "title": "Usage", "href": "/functions/usage" },
+        {
+          "title": "Writing & Deploying Functions",
+          "href": "/functions/writing-deploying-functions"
+        }
+      ]
+    },
+    {
+      "group": "Cloud Messaging",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/firebase/cloud-messaging.svg",
+      "pages": [
+        { "title": "Usage", "href": "/messaging/usage" },
+        { "title": "iOS Project Setup", "href": "/messaging/usage/ios-setup" },
+        { "title": "iOS Permissions", "href": "/messaging/ios-permissions" },
+        { "title": "Notifications", "href": "/messaging/notifications" },
+        { "title": "iOS Notification Images", "href": "/messaging/ios-notification-images" },
+        { "title": "Server Integration", "href": "/messaging/server-integration" }
+      ]
+    },
+    {
+      "group": "Cloud Storage",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/firebase/cloud-storage.svg",
+      "pages": [{ "title": "Usage", "href": "/storage/usage" }]
+    },
+    {
+      "group": "Core / App",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/social/firebase-logo.png",
+      "pages": [
+        { "title": "Usage", "href": "/app/usage" },
+        { "title": "JSON Config", "href": "/app/json-config" },
+        { "title": "Utils", "href": "/app/utils" }
+      ]
+    },
+    {
+      "group": "Crashlytics",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/firebase/crashlytics.svg",
+      "pages": [
+        { "title": "Usage", "href": "/crashlytics/usage" },
+        { "title": "Viewing crash reports", "href": "/crashlytics/crash-reports" }
+      ]
+    },
+    {
+      "group": "Realtime Database",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/firebase/realtime-database.svg",
+      "pages": [
+        { "title": "Usage", "href": "/database/usage" },
+        { "title": "Offline Support", "href": "/database/offline-support" },
+        { "title": "Presence Detection", "href": "/database/presence-detection" }
+      ]
+    },
+    {
+      "group": "In-App Messaging",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/firebase/in-app-messaging.svg",
+      "pages": [{ "title": "Usage", "href": "/in-app-messaging/usage" }]
+    },
+    {
+      "group": "Installations",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/social/firebase-logo.png",
+      "pages": [{ "title": "Usage", "href": "/installations/usage" }]
+    },
+    {
+      "group": "ML",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/firebase/ml-kit.svg",
+      "pages": [{ "title": "Usage", "href": "/ml/usage" }]
+    },
+    {
+      "group": "Remote Config",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/firebase/remote-config.svg",
+      "pages": [{ "title": "Usage", "href": "/remote-config/usage" }]
+    },
+    {
+      "group": "Performance Monitoring",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/firebase/performance-monitoring.svg",
+      "pages": [
+        { "title": "Usage", "href": "/perf/usage" },
+        { "title": "Axios Integration", "href": "/perf/axios-integration" },
+        { "title": "KY Integration", "href": "/perf/ky-integration" }
+      ]
+    },
+    {
+      "group": "VertexAi",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/social/firebase-logo.png",
+      "pages": [{ "title": "Usage", "href": "/vertexai/usage" }]
+    },
+    {
+      "group": "Legacy docs",
+      "tab": "root",
+      "icon": "//static.invertase.io/assets/social/firebase-logo.png",
+      "pages": [
+        { "title": "Migrating to v6", "href": "/migrating-to-v6" },
+        {
+          "title": "Legacy Docs (<= v5)",
+          "href": "https://v5.rnfirebase.io/docs/v5.x.x/getting-started"
+        }
+      ]
+    }
+  ]
+}

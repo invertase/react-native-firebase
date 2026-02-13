@@ -1,0 +1,32 @@
+{
+  "include": ["packages/*/lib/index.ts", "packages/*/lib/*.d.ts"],
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "target": "es5",
+    "module": "commonjs",
+    "declaration": true,
+    "importHelpers": true,
+    "jsx": "react-native",
+    "sourceMap": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "lib": ["es2015", "es2016", "esnext", "dom"],
+    "types": ["react-native", "node"],
+    "paths": {
+      "@react-native-firebase/app/dist/module/*": ["./packages/app/lib/*"],
+      "@react-native-firebase/*": ["./packages/*/lib/index.d.ts"]
+    }
+  },
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}

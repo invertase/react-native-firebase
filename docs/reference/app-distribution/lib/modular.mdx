@@ -1,0 +1,119 @@
+[**react-native-firebase**](../../README.mdx)
+
+***
+
+[react-native-firebase](../../modules.mdx) / app-distribution/lib/modular
+
+# app-distribution/lib/modular
+
+## Type Aliases
+
+### FirebaseAppDistribution
+
+> **FirebaseAppDistribution** = `FirebaseAppDistributionTypes.Module`
+
+Defined in: [app-distribution/lib/modular/index.d.ts:4](https://github.com/invertase/react-native-firebase/blob/main/packages/app-distribution/lib/modular/index.d.ts#L4)
+
+## Functions
+
+### checkForUpdate()
+
+> **checkForUpdate**(`appDistribution`): `Promise`\<`AppDistributionRelease`\>
+
+Defined in: [app-distribution/lib/modular/index.d.ts:31](https://github.com/invertase/react-native-firebase/blob/main/packages/app-distribution/lib/modular/index.d.ts#L31)
+
+Check to see whether a new distribution is available
+If not an iOS device, it always rejects, as no default response seems sensible.
+
+#### Parameters
+
+##### appDistribution
+
+`Module`
+
+#### Returns
+
+`Promise`\<`AppDistributionRelease`\>
+
+***
+
+### getAppDistribution()
+
+> **getAppDistribution**(`app?`): `Module`
+
+Defined in: [app-distribution/lib/modular/index.d.ts:9](https://github.com/invertase/react-native-firebase/blob/main/packages/app-distribution/lib/modular/index.d.ts#L9)
+
+Get an App Distribution instance for the specified app or current app.
+
+#### Parameters
+
+##### app?
+
+`FirebaseApp`
+
+#### Returns
+
+`Module`
+
+***
+
+### isTesterSignedIn()
+
+> **isTesterSignedIn**(`appDistribution`): `Promise`\<`boolean`\>
+
+Defined in: [app-distribution/lib/modular/index.d.ts:17](https://github.com/invertase/react-native-firebase/blob/main/packages/app-distribution/lib/modular/index.d.ts#L17)
+
+Returns true if the App Distribution tester is signed in.
+If not an iOS device, it always rejects, as neither false nor true seem like a sensible default.
+
+#### Parameters
+
+##### appDistribution
+
+`Module`
+
+#### Returns
+
+`Promise`\<`boolean`\>
+
+***
+
+### signInTester()
+
+> **signInTester**(`appDistribution`): `Promise`\<`void`\>
+
+Defined in: [app-distribution/lib/modular/index.d.ts:25](https://github.com/invertase/react-native-firebase/blob/main/packages/app-distribution/lib/modular/index.d.ts#L25)
+
+Sign-in the App Distribution tester
+If not an iOS device, it always rejects, as no defaults seem sensible.
+
+#### Parameters
+
+##### appDistribution
+
+`Module`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### signOutTester()
+
+> **signOutTester**(`appDistribution`): `Promise`\<`void`\>
+
+Defined in: [app-distribution/lib/modular/index.d.ts:39](https://github.com/invertase/react-native-firebase/blob/main/packages/app-distribution/lib/modular/index.d.ts#L39)
+
+Sign out App Distribution tester
+If not an iOS device, it always rejects, as no default response seems sensible.
+
+#### Parameters
+
+##### appDistribution
+
+`Module`
+
+#### Returns
+
+`Promise`\<`void`\>

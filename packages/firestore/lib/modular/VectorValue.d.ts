@@ -1,11 +1,11 @@
 /**
- * Represents a vector type in Firestore documents. Create an instance with vector().
+ * Represents a vector type in Firestore documents. Create an instance with `vector()`.
  */
 export declare class VectorValue {
   // Note the values array and constructor are not public APIs.
 
   /**
-   * Builds a VectorValue instance from a JSON object created by VectorValue.toJSON().
+   * Builds a VectorValue instance from a JSON object created by `VectorValue.toJSON()`.
    *
    * @param json a JSON object represention of a VectorValue instance.
    */
