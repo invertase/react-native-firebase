@@ -51,7 +51,8 @@ Defined in: [firestore/lib/modular/FieldValue.d.ts:6](https://github.com/inverta
 
 Defined in: [firestore/lib/modular/FieldValue.d.ts:46](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/FieldValue.d.ts#L46)
 
-Returns a special value that can be used with (setDoc:1) or updateDoc:1 that tells the server to remove the given elements from any
+Returns a special value that can be used with `setDoc` or
+`updateDoc` that tells the server to remove the given elements from any
 array value that already exists on the server. All instances of each element
 specified will be removed from the array. If the field being modified is not
 already an array it will be overwritten with an empty array.
@@ -79,7 +80,8 @@ The `FieldValue` sentinel for use in a call to `setDoc()` or
 
 Defined in: [firestore/lib/modular/FieldValue.d.ts:33](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/FieldValue.d.ts#L33)
 
-Returns a special value that can be used with @firebase/firestore#(setDoc:1) or @firebase/firestore/lite#(updateDoc:1) that tells the server to union the given elements with any array
+Returns a special value that can be used with `setDoc` or
+`updateDoc` that tells the server to union the given elements with any array
 value that already exists on the server. Each specified element that doesn't
 already exist in the array will be added to the end. If the field being
 modified is not already an array it will be overwritten with an array
@@ -108,8 +110,8 @@ The `FieldValue` sentinel for use in a call to `setDoc()` or
 
 Defined in: [firestore/lib/modular/FieldValue.d.ts:13](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/FieldValue.d.ts#L13)
 
-Returns a sentinel for use with @firebase/firestore#(updateDoc:1) or
-@firebase/firestore/lite#(setDoc:1) with `{merge: true}` to mark a field for deletion.
+Returns a sentinel for use with `updateDoc` or
+`setDoc` with `{merge: true}` to mark a field for deletion.
 
 #### Returns
 
@@ -123,7 +125,8 @@ Returns a sentinel for use with @firebase/firestore#(updateDoc:1) or
 
 Defined in: [firestore/lib/modular/FieldValue.d.ts:67](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/FieldValue.d.ts#L67)
 
-Returns a special value that can be used with @firebase/firestore#(setDoc:1) or @firebase/firestore/lite#(updateDoc:1) that tells the server to increment the field's current value by
+Returns a special value that can be used with `setDoc` or
+`updateDoc` that tells the server to increment the field's current value by
 the given value.
 
 If either the operand or the current field value uses floating point
@@ -131,7 +134,7 @@ precision, all arithmetic follows IEEE 754 semantics. If both values are
 integers, values outside of JavaScript's safe number range
 (`Number.MIN_SAFE_INTEGER` to `Number.MAX_SAFE_INTEGER`) are also subject to
 precision loss. Furthermore, once processed by the Firestore backend, all
-integer operations are capped between -2^63 and 2^63-1.
+integer operations are capped between `-2^63` and `2^63-1`.
 
 If the current field value is not of type `number`, or if the field does not
 yet exist, the transformation sets the field to the given value.
@@ -159,7 +162,7 @@ The `FieldValue` sentinel for use in a call to `setDoc()` or
 
 Defined in: [firestore/lib/modular/FieldValue.d.ts:19](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/FieldValue.d.ts#L19)
 
-Returns a sentinel used with @firebase/firestore#(setDoc:1) or @firebase/firestore/lite#(updateDoc:1) to
+Returns a sentinel used with `setDoc` or `updateDoc` to
 include a server-generated timestamp in the written data.
 
 #### Returns
