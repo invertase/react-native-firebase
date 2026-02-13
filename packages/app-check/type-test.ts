@@ -7,6 +7,8 @@ import appCheck, {
   setTokenAutoRefreshEnabled,
   onTokenChanged,
   CustomProvider,
+  AppCheck,
+  AppCheckTokenResult,
 } from '.';
 
 console.log(appCheck().app);
@@ -113,33 +115,33 @@ modularProvider.configure({
 initializeAppCheck(firebase.app(), {
   provider: modularProvider,
   isTokenAutoRefreshEnabled: true,
-}).then((appCheckModular: FirebaseAppCheckTypes.Module) => {
+}).then((appCheckModular: AppCheck) => {
   console.log(appCheckModular.app.name);
 });
 
 initializeAppCheck(undefined, {
   provider: modularProvider,
   isTokenAutoRefreshEnabled: true,
-}).then((appCheckModular: FirebaseAppCheckTypes.Module) => {
+}).then((appCheckModular: AppCheck) => {
   console.log(appCheckModular.app.name);
 });
 
-getToken(appCheckInstance).then((result: FirebaseAppCheckTypes.AppCheckTokenResult) => {
+getToken(appCheckInstance).then((result: AppCheckTokenResult) => {
   console.log(result.token);
 });
 
-getToken(appCheckInstance, true).then((result: FirebaseAppCheckTypes.AppCheckTokenResult) => {
+getToken(appCheckInstance, true).then((result: AppCheckTokenResult) => {
   console.log(result.token);
 });
 
-getLimitedUseToken(appCheckInstance).then((result: FirebaseAppCheckTypes.AppCheckTokenResult) => {
+getLimitedUseToken(appCheckInstance).then((result: AppCheckTokenResult) => {
   console.log(result.token);
 });
 
 setTokenAutoRefreshEnabled(appCheckInstance, true);
 
 const modularUnsubscribe1 = onTokenChanged(appCheckInstance, {
-  next: (tokenResult: FirebaseAppCheckTypes.AppCheckTokenResult) => {
+  next: (tokenResult: AppCheckTokenResult) => {
     console.log(tokenResult.token);
   },
   error: (error: Error) => {
@@ -152,9 +154,8 @@ const modularUnsubscribe1 = onTokenChanged(appCheckInstance, {
 
 const modularUnsubscribe2 = onTokenChanged(
   appCheckInstance,
-  (tokenResult: FirebaseAppCheckTypes.AppCheckListenerResult) => {
+  (tokenResult: AppCheckTokenResult) => {
     console.log(tokenResult.token);
-    console.log(tokenResult.appName);
   },
   (error: Error) => {
     console.log(error.message);
