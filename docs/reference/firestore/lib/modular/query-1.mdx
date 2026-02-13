@@ -544,7 +544,7 @@ Takes the provided [Query](../modular.mdx#query) and returns a copy of the [Quer
 
 > **OrderByDirection** = `"desc"` \| `"asc"`
 
-Defined in: [firestore/lib/modular/query.d.ts:161](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L161)
+Defined in: [firestore/lib/modular/query.d.ts:160](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L160)
 
 The direction of a [orderBy](#orderby) clause is specified as 'desc' or 'asc'
 (descending or ascending).
@@ -581,10 +581,10 @@ to create a new query instance that also contains the `QueryConstraint`.
 
 > **and**(...`queries`): `QueryCompositeFilterConstraint`
 
-Defined in: [firestore/lib/modular/query.d.ts:155](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L155)
+Defined in: [firestore/lib/modular/query.d.ts:154](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L154)
 
-The and() function used to generate a logical AND query.
-e.g. and(where('name', '==', 'Ada'), where('name', '==', 'Bob'))
+The `and()` function used to generate a logical AND query.
+e.g. `and(where('name', '==', 'Ada'), where('name', '==', 'Bob'))`
 
 #### Parameters
 
@@ -602,7 +602,7 @@ e.g. and(where('name', '==', 'Ada'), where('name', '==', 'Bob'))
 
 > **deleteDoc**\<`AppModelType`, `DbModelType`\>(`reference`): `Promise`\<`void`\>
 
-Defined in: [firestore/lib/modular/query.d.ts:321](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L321)
+Defined in: [firestore/lib/modular/query.d.ts:320](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L320)
 
 Deletes the document referred to by the specified `DocumentReference`.
 
@@ -639,7 +639,7 @@ deleted from the backend (note that it won't resolve while you're offline).
 
 > **endAt**(...`fieldValues`): [`QueryEndAtConstraint`](#queryendatconstraint)
 
-Defined in: [firestore/lib/modular/query.d.ts:331](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L331)
+Defined in: [firestore/lib/modular/query.d.ts:330](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L330)
 
 Creates a QueryEndAtConstraint that modifies the result set to end at the provided fields relative to the order of the query.
 The order of the field values must match the order of the order by clauses of the query.
@@ -658,7 +658,7 @@ The order of the field values must match the order of the order by clauses of th
 
 > **endAt**\<`AppModelType`, `DbModelType`\>(`snapshot`): [`QueryEndAtConstraint`](#queryendatconstraint)
 
-Defined in: [firestore/lib/modular/query.d.ts:338](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L338)
+Defined in: [firestore/lib/modular/query.d.ts:337](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L337)
 
 reates a QueryEndAtConstraint that modifies the result set to end at the provided document (inclusive).
 The end position is relative to the order of the query. The document must contain all of the fields provided in the orderBy of the query.
@@ -689,7 +689,7 @@ The end position is relative to the order of the query. The document must contai
 
 > **endBefore**(...`fieldValues`): [`QueryEndAtConstraint`](#queryendatconstraint)
 
-Defined in: [firestore/lib/modular/query.d.ts:348](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L348)
+Defined in: [firestore/lib/modular/query.d.ts:347](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L347)
 
 Creates a QueryEndAtConstraint that modifies the result set to end before the provided fields relative to the order of the query.
 The order of the field values must match the order of the order by clauses of the query.
@@ -710,7 +710,7 @@ The order of the field values must match the order of the order by clauses of th
 
 > **getDoc**\<`AppModelType`, `DbModelType`\>(`reference`): `Promise`\<[`DocumentSnapshot`](snapshot.mdx#documentsnapshot)\<`AppModelType`, `DbModelType`\>\>
 
-Defined in: [firestore/lib/modular/query.d.ts:253](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L253)
+Defined in: [firestore/lib/modular/query.d.ts:252](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L252)
 
 Reads the document referred to by this `DocumentReference`.
 
@@ -750,7 +750,7 @@ current document contents.
 
 > **getDocFromCache**\<`AppModelType`, `DbModelType`\>(`reference`): `Promise`\<[`DocumentSnapshot`](snapshot.mdx#documentsnapshot)\<`AppModelType`, `DbModelType`\>\>
 
-Defined in: [firestore/lib/modular/query.d.ts:264](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L264)
+Defined in: [firestore/lib/modular/query.d.ts:263](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L263)
 
 Reads the document referred to by this `DocumentReference` from cache.
 Returns an error if the document is not currently cached.
@@ -784,7 +784,7 @@ current document contents.
 
 > **getDocFromServer**\<`AppModelType`, `DbModelType`\>(`reference`): `Promise`\<[`DocumentSnapshot`](snapshot.mdx#documentsnapshot)\<`AppModelType`, `DbModelType`\>\>
 
-Defined in: [firestore/lib/modular/query.d.ts:275](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L275)
+Defined in: [firestore/lib/modular/query.d.ts:274](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L274)
 
 Reads the document referred to by this `DocumentReference` from the server.
 Returns an error if the network is not available.
@@ -818,7 +818,7 @@ current document contents.
 
 > **getDocs**\<`AppModelType`, `DbModelType`\>(`query`): `Promise`\<`QuerySnapshot`\<`AppModelType`, `DbModelType`\>\>
 
-Defined in: [firestore/lib/modular/query.d.ts:289](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L289)
+Defined in: [firestore/lib/modular/query.d.ts:288](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L288)
 
 Executes the query and returns the results as a `QuerySnapshot`.
 
@@ -855,7 +855,7 @@ A `Promise` that will be resolved with the results of the query.
 
 > **getDocsFromCache**\<`AppModelType`, `DbModelType`\>(`query`): `Promise`\<`QuerySnapshot`\<`AppModelType`, `DbModelType`\>\>
 
-Defined in: [firestore/lib/modular/query.d.ts:300](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L300)
+Defined in: [firestore/lib/modular/query.d.ts:299](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L299)
 
 Executes the query and returns the results as a `QuerySnapshot` from cache.
 Returns an empty result set if no documents matching the query are currently
@@ -889,7 +889,7 @@ A `Promise` that will be resolved with the results of the query.
 
 > **getDocsFromServer**\<`AppModelType`, `DbModelType`\>(`query`): `Promise`\<`QuerySnapshot`\<`AppModelType`, `DbModelType`\>\>
 
-Defined in: [firestore/lib/modular/query.d.ts:310](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L310)
+Defined in: [firestore/lib/modular/query.d.ts:309](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L309)
 
 Executes the query and returns the results as a `QuerySnapshot` from the
 server. Returns an error if the network is not available.
@@ -922,7 +922,7 @@ A `Promise` that will be resolved with the results of the query.
 
 > **limit**(`limit`): [`QueryLimitConstraint`](#querylimitconstraint)
 
-Defined in: [firestore/lib/modular/query.d.ts:239](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L239)
+Defined in: [firestore/lib/modular/query.d.ts:238](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L238)
 
 Creates a [QueryLimitConstraint](#querylimitconstraint) that only returns the first matching
 documents.
@@ -939,7 +939,7 @@ The maximum number of items to return.
 
 [`QueryLimitConstraint`](#querylimitconstraint)
 
-The created [QueryLimitConstraint](#querylimitconstraint).
+The created QueryLimitConstraint
 
 ***
 
@@ -947,7 +947,7 @@ The created [QueryLimitConstraint](#querylimitconstraint).
 
 > **limitToLast**(`limit`): [`QueryConstraint`](#abstract-queryconstraint)
 
-Defined in: [firestore/lib/modular/query.d.ts:368](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L368)
+Defined in: [firestore/lib/modular/query.d.ts:367](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L367)
 
 Creates a new `QueryConstraint` that is limited to return only the last
 specified number of children.
@@ -962,7 +962,7 @@ event for the last 100 ordered messages. As items change, we will receive
 that the total number stays at 100.
 
 You can read more about `limitToLast()` in
-[Filtering data](https://firebase.google.com/docs/database/web/lists-of-data#filtering_data).
+[https://firebase.google.com/docs/database/web/lists-of-data#filtering_data].
 
 #### Parameters
 
@@ -982,10 +982,10 @@ The maximum number of nodes to include in this query.
 
 > **or**(...`queries`): `QueryCompositeFilterConstraint`
 
-Defined in: [firestore/lib/modular/query.d.ts:149](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L149)
+Defined in: [firestore/lib/modular/query.d.ts:148](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L148)
 
-The or() function used to generate a logical OR query.
-e.g. or(where('name', '==', 'Ada'), where('name', '==', 'Bob'))
+The `or()` function used to generate a logical OR query.
+e.g. `or(where('name', '==', 'Ada'), where('name', '==', 'Bob'))`
 
 #### Parameters
 
@@ -1003,7 +1003,7 @@ e.g. or(where('name', '==', 'Ada'), where('name', '==', 'Bob'))
 
 > **orderBy**(`fieldPath`, `directionStr?`): [`QueryOrderByConstraint`](#queryorderbyconstraint)
 
-Defined in: [firestore/lib/modular/query.d.ts:175](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L175)
+Defined in: [firestore/lib/modular/query.d.ts:174](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L174)
 
 Creates a [QueryOrderByConstraint](#queryorderbyconstraint) that sorts the query result by the
 specified field, optionally in descending order instead of ascending.
@@ -1030,7 +1030,7 @@ not specified, order will be ascending.
 
 [`QueryOrderByConstraint`](#queryorderbyconstraint)
 
-The created [QueryOrderByConstraint](#queryorderbyconstraint).
+The created QueryOrderByConstraint.
 
 ***
 
@@ -1040,7 +1040,7 @@ The created [QueryOrderByConstraint](#queryorderbyconstraint).
 
 > **query**\<`AppModelType`, `DbModelType`\>(`query`, `compositeFilter`, ...`queryConstraints`): [`Query`](../modular.mdx#query)\<`AppModelType`, `DbModelType`\>
 
-Defined in: [firestore/lib/modular/query.d.ts:107](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L107)
+Defined in: [firestore/lib/modular/query.d.ts:106](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L106)
 
 Creates a new immutable instance of [Query](../modular.mdx#query) that is extended to also
 include additional query constraints.
@@ -1061,23 +1061,22 @@ include additional query constraints.
 
 [`Query`](../modular.mdx#query)\<`AppModelType`, `DbModelType`\>
 
-The [Query](../modular.mdx#query) instance to use as a base for the new
+Query instance to use as a base for the new
 constraints.
 
 ###### compositeFilter
 
 `QueryCompositeFilterConstraint`
 
-The [QueryCompositeFilterConstraint](../modular.mdx#querycompositefilterconstraint) to
-apply. Create [QueryCompositeFilterConstraint](../modular.mdx#querycompositefilterconstraint) using [and](#and) or
-[or](#or).
+The QueryCompositeFilterConstraint to
+apply. Create QueryCompositeFilterConstraint using `and` or `or`.
 
 ###### queryConstraints
 
 ...[`QueryNonFilterConstraint`](#querynonfilterconstraint)[]
 
-Additional [QueryNonFilterConstraint](#querynonfilterconstraint)s to
-apply (e.g. [orderBy](#orderby), [limit](#limit)).
+Additional QueryNonFilterConstraint to
+apply (e.g. orderBy, limit).
 
 ##### Returns
 
@@ -1092,7 +1091,7 @@ existing or new constraints.
 
 > **query**\<`AppModelType`, `DbModelType`\>(`query`, ...`queryConstraints`): [`Query`](../modular.mdx#query)\<`AppModelType`, `DbModelType`\>
 
-Defined in: [firestore/lib/modular/query.d.ts:123](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L123)
+Defined in: [firestore/lib/modular/query.d.ts:122](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L122)
 
 Creates a new immutable instance of [Query](../modular.mdx#query) that is extended to also
 include additional query constraints.
@@ -1113,14 +1112,14 @@ include additional query constraints.
 
 [`Query`](../modular.mdx#query)\<`AppModelType`, `DbModelType`\>
 
-The [Query](../modular.mdx#query) instance to use as a base for the new
+The Query instance to use as a base for the new
 constraints.
 
 ###### queryConstraints
 
 ...[`QueryConstraint`](#abstract-queryconstraint)[]
 
-The list of [QueryConstraint](#abstract-queryconstraint)s to apply.
+The list of QueryConstraints to apply.
 
 ##### Returns
 
@@ -1139,7 +1138,7 @@ existing or new constraints.
 
 > **startAfter**\<`AppModelType`, `DbModelType`\>(`snapshot`): [`QueryStartAtConstraint`](#querystartatconstraint)
 
-Defined in: [firestore/lib/modular/query.d.ts:213](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L213)
+Defined in: [firestore/lib/modular/query.d.ts:212](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L212)
 
 Creates a [QueryStartAtConstraint](#querystartatconstraint) that modifies the result set to
 start after the provided document (exclusive). The starting position is
@@ -1168,13 +1167,13 @@ The snapshot of the document to start after.
 
 [`QueryStartAtConstraint`](#querystartatconstraint)
 
-A [QueryStartAtConstraint](#querystartatconstraint) to pass to `query()`
+A QueryStartAtConstraint to pass to `query()`
 
 #### Call Signature
 
 > **startAfter**(...`fieldValues`): [`QueryStartAtConstraint`](#querystartatconstraint)
 
-Defined in: [firestore/lib/modular/query.d.ts:226](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L226)
+Defined in: [firestore/lib/modular/query.d.ts:225](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L225)
 
 Creates a [QueryStartAtConstraint](#querystartatconstraint) that modifies the result set to
 start after the provided fields relative to the order of the query. The order
@@ -1193,13 +1192,13 @@ of the query's order by.
 
 [`QueryStartAtConstraint`](#querystartatconstraint)
 
-A [QueryStartAtConstraint](#querystartatconstraint) to pass to `query()`
+A QueryStartAtConstraint to pass to `query()`
 
 #### Call Signature
 
 > **startAfter**\<`AppModelType`, `DbModelType`\>(...`docOrFields`): [`QueryStartAtConstraint`](#querystartatconstraint)
 
-Defined in: [firestore/lib/modular/query.d.ts:228](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L228)
+Defined in: [firestore/lib/modular/query.d.ts:227](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L227)
 
 Creates a [QueryStartAtConstraint](#querystartatconstraint) that modifies the result set to
 start after the provided document (exclusive). The starting position is
@@ -1226,7 +1225,7 @@ fields provided in the orderBy of the query.
 
 [`QueryStartAtConstraint`](#querystartatconstraint)
 
-A [QueryStartAtConstraint](#querystartatconstraint) to pass to `query()`
+A QueryStartAtConstraint to pass to `query()`
 
 ***
 
@@ -1236,7 +1235,7 @@ A [QueryStartAtConstraint](#querystartatconstraint) to pass to `query()`
 
 > **startAt**(`snapshot`): [`QueryStartAtConstraint`](#querystartatconstraint)
 
-Defined in: [firestore/lib/modular/query.d.ts:189](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L189)
+Defined in: [firestore/lib/modular/query.d.ts:188](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L188)
 
 Creates a [QueryStartAtConstraint](#querystartatconstraint) that modifies the result set to
 start at the provided document (inclusive). The starting position is relative
@@ -1255,13 +1254,13 @@ The snapshot of the document to start at.
 
 [`QueryStartAtConstraint`](#querystartatconstraint)
 
-A [QueryStartAtConstraint](#querystartatconstraint) to pass to `query()`.
+A QueryStartAtConstraint to pass to `query()`.
 
 #### Call Signature
 
 > **startAt**(...`fieldValues`): [`QueryStartAtConstraint`](#querystartatconstraint)
 
-Defined in: [firestore/lib/modular/query.d.ts:200](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L200)
+Defined in: [firestore/lib/modular/query.d.ts:199](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L199)
 
 Creates a [QueryStartAtConstraint](#querystartatconstraint) that modifies the result set to
 start at the provided fields relative to the order of the query. The order of
@@ -1280,13 +1279,13 @@ of the query's order by.
 
 [`QueryStartAtConstraint`](#querystartatconstraint)
 
-A [QueryStartAtConstraint](#querystartatconstraint) to pass to `query()`.
+A QueryStartAtConstraint to pass to `query()`.
 
 #### Call Signature
 
 > **startAt**(...`docOrFields`): [`QueryStartAtConstraint`](#querystartatconstraint)
 
-Defined in: [firestore/lib/modular/query.d.ts:202](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L202)
+Defined in: [firestore/lib/modular/query.d.ts:201](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L201)
 
 Creates a [QueryStartAtConstraint](#querystartatconstraint) that modifies the result set to
 start at the provided document (inclusive). The starting position is relative
@@ -1303,7 +1302,7 @@ provided in the `orderBy` of this query.
 
 [`QueryStartAtConstraint`](#querystartatconstraint)
 
-A [QueryStartAtConstraint](#querystartatconstraint) to pass to `query()`.
+A QueryStartAtConstraint to pass to `query()`.
 
 ***
 
@@ -1311,7 +1310,7 @@ A [QueryStartAtConstraint](#querystartatconstraint) to pass to `query()`.
 
 > **where**(`fieldPath`, `opStr`, `value`): [`QueryFieldFilterConstraint`](#queryfieldfilterconstraint)
 
-Defined in: [firestore/lib/modular/query.d.ts:139](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L139)
+Defined in: [firestore/lib/modular/query.d.ts:138](https://github.com/invertase/react-native-firebase/blob/main/packages/firestore/lib/modular/query.d.ts#L138)
 
 Creates a [QueryFieldFilterConstraint](#queryfieldfilterconstraint) that enforces that documents
 must contain the specified field and that the value should satisfy the
@@ -1342,4 +1341,4 @@ The value for comparison
 
 [`QueryFieldFilterConstraint`](#queryfieldfilterconstraint)
 
-The created [QueryFieldFilterConstraint](#queryfieldfilterconstraint).
+The created QueryFieldFilterConstraint

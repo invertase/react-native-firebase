@@ -14,7 +14,7 @@ Defined in: [remote-config/lib/modular/index.d.ts:251](https://github.com/invert
 
 Defines the type for representing custom signals and their values.
 The values in CustomSignals must be one of the following types: string, number, or null.
-There are additional limitations on key and value length, for a full description see https://firebase.google.com/docs/remote-config/parameters?template_type=client#custom_signal_conditions
+There are additional limitations on key and value length, for a full description see [https://firebase.google.com/docs/remote-config/parameters?template_type=client#custom_signal_conditions]
 Failing to stay within these limitations will result in a silent API failure with only a warning in device logs
 
 #### Indexable
@@ -60,6 +60,8 @@ RemoteConfig instance
 
 `Promise`\<`boolean`\>
 
+`Promise<boolean>`
+
 ***
 
 ### ensureInitialized()
@@ -81,6 +83,8 @@ RemoteConfig instance
 #### Returns
 
 `Promise`\<`void`\>
+
+`Promise<void>`
 
 ***
 
@@ -110,6 +114,8 @@ number
 
 `Promise`\<`void`\>
 
+`Promise<void>`
+
 ***
 
 ### fetchAndActivate()
@@ -133,6 +139,8 @@ RemoteConfig instance
 
 `Promise`\<`boolean`\>
 
+`Promise<boolean>`
+
 ***
 
 ### fetchConfig()
@@ -154,6 +162,8 @@ RemoteConfig instance
 #### Returns
 
 `Promise`\<`void`\>
+
+`Promise<void>`
 
 ***
 
@@ -178,6 +188,8 @@ RemoteConfig instance
 
 `number`
 
+number
+
 ***
 
 ### getAll()
@@ -199,6 +211,8 @@ RemoteConfig instance
 #### Returns
 
 `ConfigValues`
+
+ConfigValues
 
 ***
 
@@ -228,6 +242,8 @@ key for boolean value
 
 `boolean`
 
+boolean
+
 ***
 
 ### getNumber()
@@ -256,6 +272,8 @@ key for number value
 
 `number`
 
+number
+
 ***
 
 ### getRemoteConfig()
@@ -277,6 +295,8 @@ FirebaseApp. Optional.
 #### Returns
 
 `Module`
+
+RemoteConfig
 
 ***
 
@@ -306,6 +326,8 @@ key for string value
 
 `string`
 
+string
+
 ***
 
 ### getValue()
@@ -334,6 +356,8 @@ key for the given value
 
 `ConfigValue`
 
+ConfigValue
+
 ***
 
 ### isSupported()
@@ -349,6 +373,8 @@ Checks two different things.
 #### Returns
 
 `Promise`\<`boolean`\>
+
+`Promise<boolean>`
 
 ***
 
@@ -371,6 +397,8 @@ RemoteConfig instance
 #### Returns
 
 `LastFetchStatusType`
+
+LastFetchStatusType
 
 ***
 
@@ -401,7 +429,7 @@ The ConfigUpdateObserver to be notified of config updates.
 
 `Unsubscribe`
 
-An Unsubscribe function to remove the listener.
+Unsubscribe function to remove the listener.
 
 #### Remarks
 
@@ -475,6 +503,8 @@ RemoteConfig instance
 
 `Promise`\<`void`\>
 
+`Promise<void>`
+
 ***
 
 ### setConfigSettings()
@@ -504,6 +534,8 @@ ConfigSettings instance
 
 `Promise`\<`void`\>
 
+`Promise<void>`
+
 ***
 
 ### setCustomSignals()
@@ -526,11 +558,13 @@ RemoteConfig instance
 
 [`CustomSignals`](#customsignals)
 
-CustomSignals
+CustomSignals instance
 
 #### Returns
 
 `Promise`\<`void`\>
+
+`Promise<void>`
 
 ***
 
@@ -560,6 +594,8 @@ ConfigDefaults
 
 `Promise`\<`void`\>
 
+`Promise<void>`
+
 ***
 
 ### setDefaultsFromResource()
@@ -587,6 +623,8 @@ string
 #### Returns
 
 `Promise`\<`null`\>
+
+`Promise<null>`
 
 ***
 
@@ -616,6 +654,8 @@ The log level to set
 
 `RemoteConfigLogLevel`
 
+RemoteConfigLogLevel
+
 ***
 
 ### settings()
@@ -624,8 +664,8 @@ The log level to set
 
 Defined in: [remote-config/lib/modular/index.d.ts:149](https://github.com/invertase/react-native-firebase/blob/main/packages/remote-config/lib/modular/index.d.ts#L149)
 
-Returns a ConfigSettings object which provides the properties `minimumFetchIntervalMillis` & `fetchTimeMillis` if they have been set
-using setConfigSettings({ fetchTimeMillis: number, minimumFetchIntervalMillis: number }).
+Returns a ConfigSettings object which provides the properties `minimumFetchIntervalMillis` and `fetchTimeMillis` if they have been set
+using `setConfigSettings({ fetchTimeMillis: number, minimumFetchIntervalMillis: number })`.
 
 #### Parameters
 
@@ -638,3 +678,5 @@ RemoteConfig instance
 #### Returns
 
 `ConfigSettings`
+
+ConfigSettings
