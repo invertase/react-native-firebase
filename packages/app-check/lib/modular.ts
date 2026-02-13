@@ -32,7 +32,7 @@ import type {
  * Activate App Check for the given app. Can be called only once per app.
  * @param app - The app to initialize App Check for. Optional.
  * @param options - App Check options.
- * @returns Promise<AppCheck>
+ * @returns `Promise<AppCheck>`
  */
 export async function initializeAppCheck(
   app?: ReactNativeFirebase.FirebaseApp,
@@ -57,7 +57,7 @@ export async function initializeAppCheck(
  * Returns null if no token is present and no token requests are in-flight.
  * @param appCheckInstance - The App Check instance.
  * @param forceRefresh - Whether to force refresh the token. Optional
- * @returns Promise<AppCheckTokenResult>
+ * @returns `Promise<AppCheckTokenResult>`
  */
 export function getToken(
   appCheckInstance: AppCheck,
@@ -75,7 +75,7 @@ export function getToken(
  * Get a limited-use (consumable) App Check token.
  * For use with server calls to firebase functions or custom backends using the firebase admin SDK.
  * @param appCheckInstance - The App Check instance.
- * @returns Promise<AppCheckTokenResult>
+ * @returns`Promise<AppCheckTokenResult>`
  */
 export function getLimitedUseToken(appCheckInstance: AppCheck): Promise<AppCheckTokenResult> {
   return appCheckInstance.getLimitedUseToken.call(

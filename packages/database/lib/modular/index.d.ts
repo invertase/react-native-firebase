@@ -11,9 +11,9 @@ import DatabaseReference = FirebaseDatabaseTypes.Reference;
  * default settings if no instance exists or if the existing
  * instance uses a custom database URL.
  *
- * @param {FirebaseApp?} app - The FirebaseApp instance that the returned Realtime Database instance is associated with.
- * @param {string?} url
- * @returns {*}
+ * @param FirebaseApp? app - The FirebaseApp instance that the returned Realtime Database instance is associated with.
+ * @param string? url
+ * @returns Database instance
  */
 export declare function getDatabase(app?: FirebaseApp, url?: string): Database;
 
@@ -110,7 +110,7 @@ export declare function ref(db: Database, path?: string): DatabaseReference;
  *
  * @param db The Database instance.
  * @param url The Firebase URL at which the returned Reference will point.
- * @returns {DatabaseReference}
+ * @returns DatabaseReference
  */
 export declare function refFromURL(db: Database, url: string): DatabaseReference;
 
@@ -158,7 +158,7 @@ export declare function setPersistenceEnabled(db: Database, enabled: boolean): v
  *
  * @param db The Database instance.
  * @param enabled Whether debug logging is enabled.
- * @returns {void}
+ * @returns void
  */
 export declare function setLoggingEnabled(db: Database, enabled: boolean): void;
 
