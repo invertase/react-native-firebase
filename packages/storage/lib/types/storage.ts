@@ -204,20 +204,55 @@ export interface FullMetadata extends UploadMetadata {
 }
 
 /**
+ * An enumeration of the possible string formats for upload.
+ * @public
+ */
+export type StringFormat = (typeof StringFormat)[keyof typeof StringFormat];
+
+/**
+ * An enumeration of the possible string formats for upload.
+ * @public
+ */
+export const StringFormat = {
+  RAW: 'raw',
+  BASE64: 'base64',
+  BASE64URL: 'base64url',
+  DATA_URL: 'data_url',
+} as const;
+
+/**
  * An event that is triggered on a task.
  * @public
  */
-export type TaskEvent = 'state_changed';
+export type TaskEvent = (typeof TaskEvent)[keyof typeof TaskEvent];
+
+/**
+ * An event that is triggered on a task.
+ * @public
+ */
+export const TaskEvent = {
+  STATE_CHANGED: 'state_changed',
+} as const;
 
 /**
  * Represents the current state of a running upload/download.
- *
- * Note: The Firebase JS SDK uses "canceled" (one L). React Native Firebase historically used
- * "cancelled" (two L) in docs, but the runtime value is "canceled".
- *
  * @public
  */
-export type TaskState = 'running' | 'paused' | 'success' | 'canceled' | 'error';
+export type TaskState = (typeof TaskState)[keyof typeof TaskState];
+
+/**
+ * Represents the current state of a running upload/download.
+ * @public
+ */
+export const TaskState = {
+  RUNNING: 'running',
+  PAUSED: 'paused',
+  SUCCESS: 'success',
+  CANCELED: 'canceled',
+  // Backwards-compat alias
+  CANCELLED: 'canceled',
+  ERROR: 'error',
+} as const;
 
 /**
  * A stream observer for Firebase Storage.

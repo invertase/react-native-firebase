@@ -15,25 +15,5 @@
  *
  */
 
-import type { TaskEvent as TaskEventType, TaskState as TaskStateType } from './types/storage';
-
-export const StringFormat = {
-  RAW: 'raw',
-  BASE64: 'base64',
-  BASE64URL: 'base64url',
-  DATA_URL: 'data_url',
-} as const;
-
-export const TaskEvent = {
-  STATE_CHANGED: 'state_changed',
-} as const satisfies Record<string, TaskEventType>;
-
-export const TaskState = {
-  RUNNING: 'running',
-  PAUSED: 'paused',
-  SUCCESS: 'success',
-  CANCELED: 'canceled',
-  // Backwards-compat alias
-  CANCELLED: 'canceled',
-  ERROR: 'error',
-} as const satisfies Record<string, TaskStateType>;
+// Runtime constants live in `types/storage.ts` (alongside their derived-union types).
+export { StringFormat, TaskEvent, TaskState } from './types/storage';
