@@ -22,6 +22,6 @@ export type * from './types/appcheck';
 export * from './modular';
 
 // Export namespaced API
-export { FirebaseAppCheckTypes } from './types/namespaced';
+export type { FirebaseAppCheckTypes } from './types/namespaced';
 export * from './namespaced';
 export { default } from './namespaced';
