@@ -7,7 +7,9 @@ import type {
 export default class ReactNativeFirebaseAppCheckProvider implements AppCheckProvider {
   providerOptions?: ProviderOptions;
 
-  constructor() {}
+  constructor(options?: ProviderOptions) {
+    this.providerOptions = options;
+  }
 
   configure(options: ProviderOptions): void {
     this.providerOptions = options;
