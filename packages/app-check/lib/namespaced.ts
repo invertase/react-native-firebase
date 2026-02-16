@@ -62,7 +62,7 @@ function hasProviderOptions(
   );
 }
 
-class FirebaseAppCheckModule extends FirebaseModule {
+class FirebaseAppCheckModule extends FirebaseModule<typeof nativeModuleName> {
   _listenerCount: number;
 
   constructor(

@@ -9,7 +9,7 @@ import type {
   ReactNativeFirebaseAppCheckProviderConfig,
   Unsubscribe,
 } from './appcheck';
-import type { FirebaseAppCheckTypes } from './namespaced'
+import type { FirebaseAppCheckTypes } from './namespaced';
 
 export type AppCheckInternal = AppCheck & {
   /** The FirebaseApp this module is associated with */
@@ -134,3 +134,30 @@ export type AppCheckInternal = AppCheck & {
 export type ProviderWithOptions =
   | ReactNativeFirebaseAppCheckProvider
   | ReactNativeFirebaseAppCheckProviderConfig;
+
+/**
+ * Wrapped native module interface for App Check.
+ *
+ * Note: React Native Firebase internally wraps native methods and auto-prepends the app name
+ * when `hasMultiAppSupport` is enabled. This interface represents the *wrapped* module shape
+ * that is exposed as `this.native` within FirebaseModule subclasses.
+ */
+export interface RNFBAppCheckModule {
+  initializeAppCheck(options: AppCheckOptions): Promise<void>;
+
+  setTokenAutoRefreshEnabled(enabled: boolean): void | Promise<void>;
+
+  configureProvider(provider: string, debugToken?: string): Promise<void>;
+
+  getToken(forceRefresh: boolean): Promise<FirebaseAppCheckTypes.AppCheckTokenResult>;
+  getLimitedUseToken(): Promise<FirebaseAppCheckTypes.AppCheckTokenResult>;
+
+  addAppCheckListener(): void | Promise<void>;
+  removeAppCheckListener(): void | Promise<void>;
+}
+
+declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
+  interface ReactNativeFirebaseNativeModules {
+    RNFBAppCheckModule: RNFBAppCheckModule;
+  }
+}
