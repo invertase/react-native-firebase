@@ -18,7 +18,10 @@
 import type { FirebaseApp } from '@react-native-firebase/app';
 import type { CustomProvider, ReactNativeFirebaseAppCheckProvider } from '../providers';
 
-export type { Unsubscribe, PartialObserver } from '@react-native-firebase/app';
+export type {
+  Unsubscribe,
+  PartialObserver,
+} from '@react-native-firebase/app/dist/module/types/common';
 /**
  * The Firebase App Check service interface.
  *
