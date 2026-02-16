@@ -9,7 +9,8 @@ import type {
   ReactNativeFirebaseAppCheckProviderConfig,
   Unsubscribe,
 } from './appcheck';
-import type { FirebaseAppCheckTypes } from './namespaced';
+
+type AppCheckListenerResult = AppCheckTokenResult & { readonly appName: string };
 
 export type AppCheckInternal = AppCheck & {
   /** The FirebaseApp this module is associated with */
@@ -88,9 +89,7 @@ export type AppCheckInternal = AppCheck & {
    *
    * @returns A function that unsubscribes this listener.
    */
-  onTokenChanged(
-    observer: PartialObserver<FirebaseAppCheckTypes.AppCheckListenerResult>,
-  ): () => void;
+  onTokenChanged(observer: PartialObserver<AppCheckListenerResult>): () => void;
 
   /**
    * Registers a listener to changes in the token state. There can be more
@@ -110,7 +109,7 @@ export type AppCheckInternal = AppCheck & {
    * @returns A function that unsubscribes this listener.
    */
   onTokenChanged(
-    onNext: (tokenResult: FirebaseAppCheckTypes.AppCheckListenerResult) => void,
+    onNext: (tokenResult: AppCheckListenerResult) => void,
     onError?: (error: Error) => void,
     onCompletion?: () => void,
   ): Unsubscribe;
@@ -149,8 +148,8 @@ export interface RNFBAppCheckModule {
 
   configureProvider(provider: string, debugToken?: string): Promise<void>;
 
-  getToken(forceRefresh: boolean): Promise<FirebaseAppCheckTypes.AppCheckTokenResult>;
-  getLimitedUseToken(): Promise<FirebaseAppCheckTypes.AppCheckTokenResult>;
+  getToken(forceRefresh: boolean): Promise<AppCheckTokenResult>;
+  getLimitedUseToken(): Promise<AppCheckTokenResult>;
 
   addAppCheckListener(): void | Promise<void>;
   removeAppCheckListener(): void | Promise<void>;

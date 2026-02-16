@@ -98,6 +98,7 @@ export interface AppCheckTokenResult {
  * An App Check provider. This can be either the built-in reCAPTCHA provider
  * or a custom provider. For more on custom providers, see
  * https://firebase.google.com/docs/app-check/web-custom-provider
+ * @public
  */
 export interface AppCheckProvider {
   /**
@@ -106,6 +107,10 @@ export interface AppCheckProvider {
   getToken(): Promise<AppCheckToken>;
 }
 
+/**
+ * Options for ReactNativeFirebaseAppCheckProvider.
+ * @public
+ */
 export interface ReactNativeFirebaseAppCheckProviderOptions {
   /**
    * debug token to use, if any. Defaults to undefined, pre-configure tokens in firebase web console if needed
@@ -113,6 +118,10 @@ export interface ReactNativeFirebaseAppCheckProviderOptions {
   debugToken?: string;
 }
 
+/**
+ * Options for ReactNativeFirebaseAppCheckProvider on web.
+ * @public
+ */
 export interface ReactNativeFirebaseAppCheckProviderWebOptions extends ReactNativeFirebaseAppCheckProviderOptions {
   /**
    * The web provider to use, either `reCaptchaV3` or `reCaptchaEnterprise`, defaults to `reCaptchaV3`
@@ -125,6 +134,10 @@ export interface ReactNativeFirebaseAppCheckProviderWebOptions extends ReactNati
   siteKey?: string;
 }
 
+/**
+ * Options for ReactNativeFirebaseAppCheckProvider on apple.
+ * @public
+ */
 export interface ReactNativeFirebaseAppCheckProviderAppleOptions extends ReactNativeFirebaseAppCheckProviderOptions {
   /**
    * The apple provider to use, either `deviceCheck` or `appAttest`, or `appAttestWithDeviceCheckFallback`,
@@ -134,6 +147,10 @@ export interface ReactNativeFirebaseAppCheckProviderAppleOptions extends ReactNa
   provider?: 'debug' | 'deviceCheck' | 'appAttest' | 'appAttestWithDeviceCheckFallback';
 }
 
+/**
+ * Options for ReactNativeFirebaseAppCheckProvider on android.
+ * @public
+ */
 export interface ReactNativeFirebaseAppCheckProviderAndroidOptions extends ReactNativeFirebaseAppCheckProviderOptions {
   /**
    * The android provider to use, either `debug` or `playIntegrity`. default is `playIntegrity`.
@@ -143,6 +160,7 @@ export interface ReactNativeFirebaseAppCheckProviderAndroidOptions extends React
 
 /**
  * Platform-specific provider options configuration.
+ * @public
  */
 export type ReactNativeFirebaseAppCheckProviderOptionsMap = {
   web?: ReactNativeFirebaseAppCheckProviderWebOptions;
@@ -156,11 +174,16 @@ export type ReactNativeFirebaseAppCheckProviderOptionsMap = {
  * that can be passed directly with providerOptions (for convenience in initialization).
  * The runtime accepts objects with providerOptions even if they don't have
  * getToken() and configure() methods.
+ * @public
  */
 export interface ReactNativeFirebaseAppCheckProviderConfig {
   providerOptions: ReactNativeFirebaseAppCheckProviderOptionsMap;
 }
 
+/**
+ * ReactNativeFirebaseAppCheckProvider interface.
+ * @public
+ */
 export interface ReactNativeFirebaseAppCheckProvider extends AppCheckProvider {
   /**
    * Provider options for platform-specific configuration.

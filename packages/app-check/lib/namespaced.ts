@@ -34,7 +34,12 @@ import { Platform } from 'react-native';
 import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import fallBackModule from './web/RNFBAppCheckModule';
 import { version } from './version';
-import type { AppCheckOptions, PartialObserver } from './types/appcheck';
+import type {
+  AppCheckOptions,
+  AppCheckProvider,
+  AppCheckTokenResult,
+  PartialObserver,
+} from './types/appcheck';
 import type { ProviderWithOptions } from './types/internal';
 import type { FirebaseAppCheckTypes } from './types/namespaced';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
@@ -152,7 +157,7 @@ class FirebaseAppCheckModule extends FirebaseModule<typeof nativeModuleName> {
   }
 
   activate(
-    siteKeyOrProvider: string | FirebaseAppCheckTypes.AppCheckProvider,
+    siteKeyOrProvider: string | AppCheckProvider,
     isTokenAutoRefreshEnabled?: boolean,
   ): Promise<void> {
     if (isOther) {
@@ -185,7 +190,7 @@ class FirebaseAppCheckModule extends FirebaseModule<typeof nativeModuleName> {
     this.native.setTokenAutoRefreshEnabled(isTokenAutoRefreshEnabled);
   }
 
-  getToken(forceRefresh?: boolean): Promise<FirebaseAppCheckTypes.AppCheckTokenResult> {
+  getToken(forceRefresh?: boolean): Promise<AppCheckTokenResult> {
     if (!forceRefresh) {
       return this.native.getToken(false);
     } else {
@@ -193,7 +198,7 @@ class FirebaseAppCheckModule extends FirebaseModule<typeof nativeModuleName> {
     }
   }
 
-  getLimitedUseToken(): Promise<FirebaseAppCheckTypes.AppCheckTokenResult> {
+  getLimitedUseToken(): Promise<AppCheckTokenResult> {
     return this.native.getLimitedUseToken();
   }
 
