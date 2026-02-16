@@ -16,41 +16,39 @@
  */
 
 import type { FirebaseApp } from '@react-native-firebase/app';
+import type { CustomProvider } from '../providers';
 
-// ============ Provider Types ============
-
+export type { Unsubscribe, PartialObserver } from '@react-native-firebase/app';
 /**
- * An App Check provider. This can be either the built-in reCAPTCHA provider
- * or a custom provider. For more on custom providers, see
- * https://firebase.google.com/docs/app-check/web-custom-provider
- */
-export interface AppCheckProvider {
-  /**
-   * Returns an AppCheck token.
-   */
-  getToken(): Promise<AppCheckToken>;
-}
-
-/**
- * Function to get an App Check token through a custom provider service.
- */
-export interface CustomProviderOptions {
-  getToken: () => Promise<AppCheckToken>;
-}
-
-// ============ Options & Result Types ============
-
-/**
- * Custom provider class.
+ * The Firebase App Check service interface.
+ *
  * @public
  */
-export declare class CustomProvider implements AppCheckProvider {
-  constructor(customProviderOptions: CustomProviderOptions);
-  getToken(): Promise<AppCheckToken>;
+export interface AppCheck {
+  /**
+   *  this `AppCheck` instance is associated with this FirebaseApp.
+   */
+  app: FirebaseApp;
+}
+
+/**
+ * The token returned from an `AppCheckProvider`.
+ * @public
+ */
+export interface AppCheckToken {
+  /**
+   * The token string in JWT format.
+   */
+  readonly token: string;
+  /**
+   * The local timestamp after which the token will expire.
+   */
+  readonly expireTimeMillis: number;
 }
 
 /**
  * Options for App Check initialization.
+ * @public
  */
 export interface AppCheckOptions {
   /**
@@ -73,21 +71,21 @@ export interface AppCheckOptions {
 }
 
 /**
- * The token returned from an `AppCheckProvider`.
+ * Function to get an App Check token through a custom provider service. This is for
+ * "other" platform only, this is not supported on iOS and android.
+ * @public
  */
-export interface AppCheckToken {
+export interface CustomProviderOptions {
   /**
-   * The token string in JWT format.
+   * Function to get an App Check token through a custom provider
+   * service.
    */
-  readonly token: string;
-  /**
-   * The local timestamp after which the token will expire.
-   */
-  readonly expireTimeMillis: number;
+  getToken: () => Promise<AppCheckToken>;
 }
 
 /**
  * Result returned by `getToken()`.
+ * @public
  */
 export interface AppCheckTokenResult {
   /**
@@ -97,30 +95,16 @@ export interface AppCheckTokenResult {
 }
 
 /**
- * The result return from `onTokenChanged`
+ * An App Check provider. This can be either the built-in reCAPTCHA provider
+ * or a custom provider. For more on custom providers, see
+ * https://firebase.google.com/docs/app-check/web-custom-provider
  */
-export type AppCheckListenerResult = AppCheckToken & { readonly appName: string };
-
-// ============ Observer Types ============
-
-export type NextFn<T> = (value: T) => void;
-export type ErrorFn = (error: Error) => void;
-export type CompleteFn = () => void;
-
-export interface Observer<T> {
-  next: NextFn<T>;
-  error: ErrorFn;
-  complete: CompleteFn;
+export interface AppCheckProvider {
+  /**
+   * Returns an AppCheck token.
+   */
+  getToken(): Promise<AppCheckToken>;
 }
-
-export type PartialObserver<T> = Partial<Observer<T>>;
-
-/**
- * A function that unsubscribes from token changes.
- */
-export type Unsubscribe = () => void;
-
-// ============ ReactNativeFirebaseAppCheckProvider Types ============
 
 export interface ReactNativeFirebaseAppCheckProviderOptions {
   /**
@@ -193,24 +177,4 @@ export interface ReactNativeFirebaseAppCheckProvider extends AppCheckProvider {
    * providers you choose to use on each platform.
    */
   configure(options: ReactNativeFirebaseAppCheckProviderOptionsMap): void;
-}
-
-/**
- * Type representing providers that have providerOptions.
- * Used for type narrowing in runtime code.
- */
-export type ProviderWithOptions =
-  | ReactNativeFirebaseAppCheckProvider
-  | ReactNativeFirebaseAppCheckProviderConfig;
-
-/**
- * The Firebase App Check service interface.
- *
- * @public
- */
-export interface AppCheck {
-  /**
-   *  this `AppCheck` instance is associated with this FirebaseApp.
-   */
-  app: FirebaseApp;
 }

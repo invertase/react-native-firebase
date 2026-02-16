@@ -15,14 +15,19 @@
  *
  */
 
-export { firebase, utils, default } from './namespaced';
-export * from './modular';
-export * from './types/common';
-export type {
-  ReactNativeFirebase,
-  Utils,
-  FirebaseApp,
-  LogCallbackParams,
-  LogCallback,
-  LogOptions,
-} from './types/app';
+export type NextFn<T> = (value: T) => void;
+export type ErrorFn = (error: Error) => void;
+export type CompleteFn = () => void;
+
+export interface Observer<T> {
+  next: NextFn<T>;
+  error: ErrorFn;
+  complete: CompleteFn;
+}
+
+export type PartialObserver<T> = Partial<Observer<T>>;
+
+/**
+ * A function that unsubscribes from an event listener.
+ */
+export type Unsubscribe = () => void;

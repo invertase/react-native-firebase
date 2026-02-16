@@ -34,14 +34,8 @@ import { Platform } from 'react-native';
 import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import fallBackModule from './web/RNFBAppCheckModule';
 import { version } from './version';
-import type {
-  AppCheckProvider,
-  AppCheckTokenResult,
-  AppCheckOptions,
-  AppCheckListenerResult,
-  PartialObserver,
-  ProviderWithOptions,
-} from './types/appcheck';
+import type { AppCheckOptions, PartialObserver } from './types/appcheck';
+import type { ProviderWithOptions } from './types/internal';
 import type { FirebaseAppCheckTypes } from './types/namespaced';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import { CustomProvider, ReactNativeFirebaseAppCheckProvider } from './providers';
@@ -158,7 +152,7 @@ class FirebaseAppCheckModule extends FirebaseModule {
   }
 
   activate(
-    siteKeyOrProvider: string | AppCheckProvider,
+    siteKeyOrProvider: string | FirebaseAppCheckTypes.AppCheckProvider,
     isTokenAutoRefreshEnabled?: boolean,
   ): Promise<void> {
     if (isOther) {
@@ -191,7 +185,7 @@ class FirebaseAppCheckModule extends FirebaseModule {
     this.native.setTokenAutoRefreshEnabled(isTokenAutoRefreshEnabled);
   }
 
-  getToken(forceRefresh?: boolean): Promise<AppCheckTokenResult> {
+  getToken(forceRefresh?: boolean): Promise<FirebaseAppCheckTypes.AppCheckTokenResult> {
     if (!forceRefresh) {
       return this.native.getToken(false);
     } else {
@@ -199,14 +193,14 @@ class FirebaseAppCheckModule extends FirebaseModule {
     }
   }
 
-  getLimitedUseToken(): Promise<AppCheckTokenResult> {
+  getLimitedUseToken(): Promise<FirebaseAppCheckTypes.AppCheckTokenResult> {
     return this.native.getLimitedUseToken();
   }
 
   onTokenChanged(
     onNextOrObserver:
-      | PartialObserver<AppCheckListenerResult>
-      | ((tokenResult: AppCheckListenerResult) => void),
+      | PartialObserver<FirebaseAppCheckTypes.AppCheckListenerResult>
+      | ((tokenResult: FirebaseAppCheckTypes.AppCheckListenerResult) => void),
     _onError?: (error: Error) => void,
     _onCompletion?: () => void,
   ): () => void {
@@ -218,8 +212,8 @@ class FirebaseAppCheckModule extends FirebaseModule {
     }
     const nextFn = parseListenerOrObserver(
       onNextOrObserver as
-        | ((value: AppCheckListenerResult) => void)
-        | { next: (value: AppCheckListenerResult) => void },
+        | ((value: FirebaseAppCheckTypes.AppCheckListenerResult) => void)
+        | { next: (value: FirebaseAppCheckTypes.AppCheckListenerResult) => void },
     );
     // let errorFn = function () { };
     // if (onNextOrObserver.error != null) {

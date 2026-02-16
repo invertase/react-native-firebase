@@ -1,14 +1,15 @@
 import type { FirebaseApp } from '@react-native-firebase/app';
 import type {
   AppCheck,
-  AppCheckListenerResult,
   AppCheckOptions,
   AppCheckProvider,
   AppCheckTokenResult,
   PartialObserver,
   ReactNativeFirebaseAppCheckProvider,
+  ReactNativeFirebaseAppCheckProviderConfig,
   Unsubscribe,
 } from './appcheck';
+import type { FirebaseAppCheckTypes } from './namespaced'
 
 export type AppCheckInternal = AppCheck & {
   /** The FirebaseApp this module is associated with */
@@ -87,7 +88,9 @@ export type AppCheckInternal = AppCheck & {
    *
    * @returns A function that unsubscribes this listener.
    */
-  onTokenChanged(observer: PartialObserver<AppCheckListenerResult>): () => void;
+  onTokenChanged(
+    observer: PartialObserver<FirebaseAppCheckTypes.AppCheckListenerResult>,
+  ): () => void;
 
   /**
    * Registers a listener to changes in the token state. There can be more
@@ -107,7 +110,7 @@ export type AppCheckInternal = AppCheck & {
    * @returns A function that unsubscribes this listener.
    */
   onTokenChanged(
-    onNext: (tokenResult: AppCheckListenerResult) => void,
+    onNext: (tokenResult: FirebaseAppCheckTypes.AppCheckListenerResult) => void,
     onError?: (error: Error) => void,
     onCompletion?: () => void,
   ): Unsubscribe;
@@ -123,3 +126,11 @@ export type AppCheckInternal = AppCheck & {
     onCompletion?: () => void,
   ): Unsubscribe;
 };
+
+/**
+ * Type representing providers that have providerOptions.
+ * Used for type narrowing in runtime code.
+ */
+export type ProviderWithOptions =
+  | ReactNativeFirebaseAppCheckProvider
+  | ReactNativeFirebaseAppCheckProviderConfig;
