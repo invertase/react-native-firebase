@@ -25,14 +25,14 @@ import type {
   StorageReference,
   Subscribe,
   Task,
-  TaskEvent as TaskEventType,
   TaskSnapshot,
-  TaskState,
   Unsubscribe,
 } from './types/storage';
 import type { StorageReferenceInternal, StorageInternal } from './types/internal';
 
 let TASK_ID = 0;
+
+type TaskEventType = (typeof TaskEvent)[keyof typeof TaskEvent];
 
 function createEmptyMetadata(ref: StorageReference): FullMetadata {
   return {
@@ -47,10 +47,6 @@ function createEmptyMetadata(ref: StorageReference): FullMetadata {
     downloadTokens: undefined,
     ref,
   };
-}
-
-function normalizeTaskState(state: TaskState): TaskState {
-  return state;
 }
 
 function wrapErrorEventListener(
@@ -88,7 +84,7 @@ function wrapSnapshotEventListener(
       const taskSnapshot = Object.assign({}, snapshot);
       taskSnapshot.task = task as Task;
       taskSnapshot.ref = task._ref;
-      taskSnapshot.state = normalizeTaskState(taskSnapshot.state);
+      taskSnapshot.state = taskSnapshot.state;
 
       if (!taskSnapshot.metadata) {
         taskSnapshot.metadata = createEmptyMetadata(task._ref);
@@ -238,7 +234,7 @@ export default class StorageTask {
               ...response,
               ref: this._ref,
               task: this as Task,
-              state: normalizeTaskState((response?.state ?? this._snapshot.state) as TaskState),
+              state: response?.state ?? this._snapshot.state,
               metadata: response?.metadata ? response.metadata : createEmptyMetadata(this._ref),
             } as TaskSnapshot;
             if (onFulfilled) {

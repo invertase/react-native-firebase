@@ -16,19 +16,7 @@
  */
 
 // Export modular types from types/storage
-export type {
-  Storage,
-  StorageReference,
-  FullMetadata,
-  SettableMetadata,
-  ListResult,
-  ListOptions,
-  TaskSnapshot,
-  TaskSnapshotObserver,
-  TaskResult,
-  Task,
-  EmulatorMockTokenOptions,
-} from './types/storage';
+export type * from './types/storage';
 
 // Export modular API functions
 export * from './modular';

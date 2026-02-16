@@ -15,6 +15,7 @@
       "@react-native-firebase/app/dist/module/internal": ["../app/dist/typescript/lib/internal"],
       "@react-native-firebase/app": ["../app/dist/typescript/lib"],
       "@react-native-firebase/app/dist/module/types/internal": ["../app/dist/typescript/lib/types/internal"],
+      "@react-native-firebase/app/dist/module/types/common": ["../app/dist/typescript/lib/types/common"],
     }
   },
   "include": ["lib/**/*"],

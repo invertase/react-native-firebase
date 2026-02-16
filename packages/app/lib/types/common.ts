@@ -15,25 +15,19 @@
  *
  */
 
-import type { TaskEvent as TaskEventType, TaskState as TaskStateType } from './types/storage';
+export type NextFn<T> = (value: T) => void;
+export type ErrorFn = (error: Error) => void;
+export type CompleteFn = () => void;
 
-export const StringFormat = {
-  RAW: 'raw',
-  BASE64: 'base64',
-  BASE64URL: 'base64url',
-  DATA_URL: 'data_url',
-} as const;
+export interface Observer<T> {
+  next: NextFn<T>;
+  error: ErrorFn;
+  complete: CompleteFn;
+}
 
-export const TaskEvent = {
-  STATE_CHANGED: 'state_changed',
-} as const satisfies Record<string, TaskEventType>;
+export type PartialObserver<T> = Partial<Observer<T>>;
 
-export const TaskState = {
-  RUNNING: 'running',
-  PAUSED: 'paused',
-  SUCCESS: 'success',
-  CANCELED: 'canceled',
-  // Backwards-compat alias
-  CANCELLED: 'canceled',
-  ERROR: 'error',
-} as const satisfies Record<string, TaskStateType>;
+/**
+ * A function that unsubscribes from an event listener.
+ */
+export type Unsubscribe = () => void;
