@@ -16,7 +16,7 @@
  */
 
 import type { FirebaseApp } from '@react-native-firebase/app';
-import type { CustomProvider } from '../providers';
+import type { CustomProvider, ReactNativeFirebaseAppCheckProvider } from '../providers';
 
 export type { Unsubscribe, PartialObserver } from '@react-native-firebase/app';
 /**
@@ -178,26 +178,4 @@ export type ReactNativeFirebaseAppCheckProviderOptionsMap = {
  */
 export interface ReactNativeFirebaseAppCheckProviderConfig {
   providerOptions: ReactNativeFirebaseAppCheckProviderOptionsMap;
-}
-
-/**
- * ReactNativeFirebaseAppCheckProvider interface.
- * @public
- */
-export interface ReactNativeFirebaseAppCheckProvider extends AppCheckProvider {
-  /**
-   * Provider options for platform-specific configuration.
-   * This is set when configure() is called.
-   */
-  providerOptions?: ReactNativeFirebaseAppCheckProviderOptionsMap;
-
-  /**
-   * Specify how the app check provider should be configured. The new configuration is
-   * in effect when this call returns. You must call `getToken()`
-   * after this call to get a token using the new configuration.
-   * This custom provider allows for delayed configuration and re-configuration on all platforms
-   * so AppCheck has the same experience across all platforms, with the only difference being the native
-   * providers you choose to use on each platform.
-   */
-  configure(options: ReactNativeFirebaseAppCheckProviderOptionsMap): void;
 }

@@ -16,26 +16,7 @@
  */
 
 // Export types from types/appcheck
-export type {
-  AppCheckProvider,
-  CustomProviderOptions,
-  AppCheckOptions,
-  AppCheckToken,
-  AppCheckTokenResult,
-  AppCheckListenerResult,
-  PartialObserver,
-  Observer,
-  NextFn,
-  ErrorFn,
-  CompleteFn,
-  Unsubscribe,
-  ReactNativeFirebaseAppCheckProviderOptions,
-  ReactNativeFirebaseAppCheckProviderWebOptions,
-  ReactNativeFirebaseAppCheckProviderAppleOptions,
-  ReactNativeFirebaseAppCheckProviderAndroidOptions,
-  ReactNativeFirebaseAppCheckProvider,
-  AppCheck,
-} from './types/appcheck';
+export type * from './types/appcheck';
 
 // Export modular API functions
 export * from './modular';

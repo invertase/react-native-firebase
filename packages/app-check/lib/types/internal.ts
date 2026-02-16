@@ -5,10 +5,10 @@ import type {
   AppCheckProvider,
   AppCheckTokenResult,
   PartialObserver,
-  ReactNativeFirebaseAppCheckProvider,
   ReactNativeFirebaseAppCheckProviderConfig,
   Unsubscribe,
 } from './appcheck';
+import type { ReactNativeFirebaseAppCheckProvider } from '../providers';
 
 type AppCheckListenerResult = AppCheckTokenResult & { readonly appName: string };
 
