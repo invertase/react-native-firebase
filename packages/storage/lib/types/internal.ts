@@ -22,6 +22,7 @@ import type {
   EmulatorMockTokenOptions,
   SettableMetadata,
   Task,
+  TaskSnapshot,
   FullMetadata,
   ListResult,
   ListOptions,
@@ -33,7 +34,7 @@ import type EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitte
  * Used internally by StorageReference and other internal classes.
  */
 export type StorageInternal = Storage & {
-  native: any;
+  native: RNFBStorageModule;
   _customUrlOrRegion: string | null;
   emitter: EventEmitter;
   eventNameForApp: (...args: Array<string | number>) => string;
@@ -117,3 +118,71 @@ export type ListResultInternal = {
   items: string[];
   prefixes: string[];
 };
+
+/**
+ * Wrapped native module interface for Storage.
+ *
+ * Note: React Native Firebase internally wraps native methods and auto-prepends the app name
+ * when `hasMultiAppSupport` is enabled. This interface represents the *wrapped* module shape
+ * that is exposed as `this.native` within FirebaseModule subclasses.
+ */
+export interface RNFBStorageModule {
+  /**
+   * Native constants exposed on the module.
+   * These are read during module construction to seed the JS-side values.
+   */
+  maxUploadRetryTime?: number;
+  maxDownloadRetryTime?: number;
+  maxOperationRetryTime?: number;
+
+  setMaxOperationRetryTime(time: number): Promise<void>;
+  setMaxUploadRetryTime(time: number): Promise<void>;
+  setMaxDownloadRetryTime(time: number): Promise<void>;
+
+  delete(url: string): Promise<void>;
+  getDownloadURL(url: string): Promise<string>;
+  getMetadata(url: string): Promise<FullMetadata>;
+  updateMetadata(url: string, metadata: SettableMetadata): Promise<FullMetadata>;
+
+  list(
+    url: string,
+    options: { maxResults: number; pageToken?: string },
+  ): Promise<ListResultInternal>;
+  listAll(url: string): Promise<ListResultInternal>;
+
+  putString(
+    url: string,
+    data: string,
+    format: string,
+    metadata: SettableMetadata | undefined,
+    taskId: number,
+  ): Promise<TaskSnapshot>;
+  putFile(
+    url: string,
+    filePath: string,
+    metadata: SettableMetadata | undefined,
+    taskId: number,
+  ): Promise<TaskSnapshot>;
+  writeToFile(url: string, filePath: string, taskId: number): Promise<TaskSnapshot>;
+
+  /**
+   * Set a running task status.
+   * - 0: pause
+   * - 1: resume
+   * - 2: cancel
+   */
+  setTaskStatus(taskId: number, status: number): Promise<boolean>;
+
+  /**
+   * Configure storage emulator.
+   *
+   * iOS does not persist emulator state between calls, so JS sends bucket/customUrlOrRegion through.
+   */
+  useEmulator(host: string, port: number, customUrlOrRegion?: string | null): void;
+}
+
+declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
+  interface ReactNativeFirebaseNativeModules {
+    RNFBStorageModule: RNFBStorageModule;
+  }
+}

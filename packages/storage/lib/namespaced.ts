@@ -48,7 +48,7 @@ const namespace = 'storage';
 const nativeEvents = ['storage_event'];
 const nativeModuleName = 'RNFBStorageModule';
 
-class FirebaseStorageModule extends FirebaseModule {
+class FirebaseStorageModule extends FirebaseModule<typeof nativeModuleName> {
   emulatorHost: string | undefined;
   emulatorPort: number;
   _maxUploadRetryTime: number;
@@ -60,8 +60,8 @@ class FirebaseStorageModule extends FirebaseModule {
     config: ModuleConfig,
     bucketUrl?: string | null,
   ) {
-    super(app, config, bucketUrl);
-    if (bucketUrl === undefined) {
+    super(app, config, bucketUrl ?? undefined);
+    if (bucketUrl == null) {
       this._customUrlOrRegion = `gs://${app.options.storageBucket}`;
     } else if (!isString(bucketUrl) || !bucketUrl.startsWith('gs://')) {
       throw new Error(
