@@ -214,4 +214,3 @@ export interface AppCheck {
    */
   app: FirebaseApp;
 }
-

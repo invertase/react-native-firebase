@@ -31,7 +31,6 @@ import {
 } from '@react-native-firebase/app/dist/module/internal';
 import type { ModuleConfig } from '@react-native-firebase/app/dist/module/internal';
 import { Platform } from 'react-native';
-import ReactNativeFirebaseAppCheckProvider from './ReactNativeFirebaseAppCheckProvider';
 import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import fallBackModule from './web/RNFBAppCheckModule';
 import { version } from './version';
@@ -45,7 +44,7 @@ import type {
 } from './types/appcheck';
 import type { FirebaseAppCheckTypes } from './types/namespaced';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
-import { CustomProvider } from './modular';
+import { CustomProvider, ReactNativeFirebaseAppCheckProvider } from './providers';
 
 const namespace = 'appCheck';
 
