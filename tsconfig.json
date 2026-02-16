@@ -72,6 +72,9 @@
     "paths": {
       "@react-native-firebase/*": ["./packages/*/lib/index.d.ts"],
       "@react-native-firebase/app": ["packages/app/dist/typescript/lib"],
+      "@react-native-firebase/app/dist/module/types/common": [
+        "packages/app/dist/typescript/lib/types/common"
+      ],
     }
   },
   "exclude": ["node_modules", "**/*.spec.ts", "packages/**/dist"]
