@@ -16,6 +16,7 @@
  */
 
 #import <Firebase/Firebase.h>
+#import <Foundation/Foundation.h>
 #import <React/RCTUtils.h>
 
 #import "RNFBApp/RCTConvert+FIRApp.h"
@@ -590,25 +591,35 @@ RCT_EXPORT_METHOD(signInWithCredential
                                                            token:authToken
                                                           secret:authSecret
                                                      firebaseApp:firebaseApp];
-  if (credential == nil) {
-    [RNFBSharedUtils rejectPromiseWithUserInfo:reject
-                                      userInfo:(NSMutableDictionary *)@{
-                                        @"code" : @"invalid-credential",
-                                        @"message" : @"The supplied auth credential is malformed, "
-                                                     @"has expired or is not currently supported.",
-                                      }];
-  }
-  DLog(@"using app SignInWithCredential: %@", firebaseApp.name);
 
-  [[FIRAuth authWithApp:firebaseApp]
-      signInWithCredential:credential
-                completion:^(FIRAuthDataResult *authResult, NSError *error) {
-                  if (error) {
-                    [self promiseRejectAuthException:reject error:error];
-                  } else {
-                    [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
-                  }
-                }];
+  [self _signInWithCredential:credential firebaseApp:firebaseApp resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(signInWithAppleCredential
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)provider
+                  : (NSString *)authToken
+                  : (NSString *)authSecret
+                  : (NSDictionary *)fullNameDict
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  NSPersonNameComponents *fullName = [[NSPersonNameComponents alloc] init];
+  id (^safeString)(id) = ^id(id value) {
+      return (value && value != [NSNull null]) ? value : @"";
+  };
+
+  fullName.givenName   = safeString(fullNameDict[@"givenName"]);
+  fullName.middleName  = safeString(fullNameDict[@"middleName"]);
+  fullName.familyName  = safeString(fullNameDict[@"familyName"]);
+  fullName.namePrefix  = safeString(fullNameDict[@"namePrefix"]);
+  fullName.nameSuffix  = safeString(fullNameDict[@"nameSuffix"]);
+  fullName.nickname    = safeString(fullNameDict[@"nickname"]);
+
+  FIRAuthCredential *credential = [FIROAuthProvider appleCredentialWithIDToken:authToken
+                                                                       rawNonce:authSecret
+                                                                       fullName:fullName];
+
+  [self _signInWithCredential:credential firebaseApp:firebaseApp resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(signInWithProvider
@@ -1553,6 +1564,33 @@ RCT_EXPORT_METHOD(useEmulator
   }
 
   return credential;
+}
+
+- (void)_signInWithCredential:(FIRAuthCredential *)credential
+                   firebaseApp:(FIRApp *)firebaseApp
+                       resolve:(RCTPromiseResolveBlock)resolve
+                        reject:(RCTPromiseRejectBlock)reject {
+  if (credential == nil) {
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                      userInfo:(NSMutableDictionary *)@{
+                                        @"code" : @"invalid-credential",
+                                        @"message" : @"The supplied auth credential is malformed, "
+                                                     @"has expired or is not currently supported.",
+                                      }];
+    return;
+  }
+
+  DLog(@"using app SignInWithCredential: %@", firebaseApp.name);
+
+  [[FIRAuth authWithApp:firebaseApp]
+      signInWithCredential:credential
+                completion:^(FIRAuthDataResult *authResult, NSError *error) {
+                  if (error) {
+                    [self promiseRejectAuthException:reject error:error];
+                  } else {
+                    [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
+                  }
+                }];
 }
 
 // This is here to protect against bugs in the iOS SDK which don't
