@@ -171,9 +171,28 @@ export function updateMetadata(storageRef, metadata) {
  * @param metadata - A Storage `SettableMetadata` instance to update. Optional.
  * @returns {Promise<TaskResult>}
  */
-// eslint-disable-next-line
 export async function uploadBytes(storageRef, data, metadata) {
-  throw new Error('`uploadBytes()` is not implemented');
+  const task = uploadBytesResumable(storageRef, data, metadata);
+  return new Promise((resolve, reject) => {
+    task.on('state_changed', taskSnapshot => {
+      switch (taskSnapshot.state) {
+        case 'running':
+          break;
+        case 'paused':
+          task.resume();
+          break;
+        case 'success':
+          resolve({ ref: taskSnapshot.ref, metadata: taskSnapshot.metadata });
+          break;
+        case 'cancelled':
+        case 'error':
+          reject(taskSnapshot.error);
+          break;
+        default:
+          throw new Error(`Unhandled task state in uploadBytes: ${taskSnapshot.state}`);
+      }
+    });
+  });
 }
 
 /**
