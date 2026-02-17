@@ -496,9 +496,7 @@ describe('AI', function () {
 
     it('`URLRetrievalStatus` constant is properly exposed to end user', function () {
       expect(URLRetrievalStatus).toBeDefined();
-      expect(URLRetrievalStatus.URL_RETRIEVAL_STATUS_SUCCESS).toBe(
-        'URL_RETRIEVAL_STATUS_SUCCESS',
-      );
+      expect(URLRetrievalStatus.URL_RETRIEVAL_STATUS_SUCCESS).toBe('URL_RETRIEVAL_STATUS_SUCCESS');
       expect(URLRetrievalStatus.URL_RETRIEVAL_STATUS_UNSPECIFIED).toBe(
         'URL_RETRIEVAL_STATUS_UNSPECIFIED',
       );
