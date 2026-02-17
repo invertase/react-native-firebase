@@ -5793,6 +5793,7 @@ __metadata:
   resolution: "@react-native-firebase/app-distribution@workspace:packages/app-distribution"
   dependencies:
     expo: "npm:^54.0.27"
+    react-native-builder-bob: "npm:^0.40.17"
   peerDependencies:
     "@react-native-firebase/app": 23.8.6
     expo: ">=47.0.0"
