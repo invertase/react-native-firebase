@@ -1,8 +1,13 @@
-import { FirebaseInAppMessagingTypes } from '..';
+import { getApp } from '@react-native-firebase/app';
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
+import type { InAppMessaging } from './types/in-app-messaging';
 
-type FirebaseInAppMessaging = FirebaseInAppMessagingTypes.Module;
-
-export declare function getInAppMessaging(): FirebaseInAppMessaging;
+/**
+ * Returns an In-App Messaging instance for the default app.
+ */
+export function getInAppMessaging(): InAppMessaging {
+  return getApp().inAppMessaging();
+}
 
 /**
  * Determines whether messages are suppressed or not.
@@ -14,9 +19,9 @@ export declare function getInAppMessaging(): FirebaseInAppMessaging;
  * const isSuppressed = isMessagesDisplaySuppressed(inAppMessaging);
  * ```
  */
-export declare function isMessagesDisplaySuppressed(
-  inAppMessaging: FirebaseInAppMessaging,
-): boolean;
+export function isMessagesDisplaySuppressed(inAppMessaging: InAppMessaging): boolean {
+  return inAppMessaging.isMessagesDisplaySuppressed;
+}
 
 /**
  * Enable or disable suppression of Firebase In App Messaging messages.
@@ -32,10 +37,17 @@ export declare function isMessagesDisplaySuppressed(
  * await setMessagesDisplaySuppressed(inAppMessaging, true);
  * ```
  */
-export declare function setMessagesDisplaySuppressed(
-  inAppMessaging: FirebaseInAppMessaging,
+export function setMessagesDisplaySuppressed(
+  inAppMessaging: InAppMessaging,
   enabled: boolean,
-): Promise<null>;
+): Promise<null> {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
+  return (inAppMessaging.setMessagesDisplaySuppressed as any).call(
+    inAppMessaging,
+    enabled,
+    MODULAR_DEPRECATION_ARG,
+  );
+}
 
 /**
  * Determines whether automatic data collection is enabled or not.
@@ -47,9 +59,9 @@ export declare function setMessagesDisplaySuppressed(
  * const isDataCollectionEnabled = isAutomaticDataCollectionEnabled(inAppMessaging);
  * ```
  */
-export declare function isAutomaticDataCollectionEnabled(
-  inAppMessaging: FirebaseInAppMessaging,
-): boolean;
+export function isAutomaticDataCollectionEnabled(inAppMessaging: InAppMessaging): boolean {
+  return inAppMessaging.isAutomaticDataCollectionEnabled;
+}
 
 /**
  * Enable or disable automatic data collection for Firebase In-App Messaging.
@@ -67,10 +79,17 @@ export declare function isAutomaticDataCollectionEnabled(
  * setAutomaticDataCollectionEnabled(inAppMessaging, false);
  * ```
  */
-export declare function setAutomaticDataCollectionEnabled(
-  inAppMessaging: FirebaseInAppMessaging,
+export function setAutomaticDataCollectionEnabled(
+  inAppMessaging: InAppMessaging,
   enabled: boolean,
-): Promise<null>;
+): Promise<null> {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
+  return (inAppMessaging.setAutomaticDataCollectionEnabled as any).call(
+    inAppMessaging,
+    enabled,
+    MODULAR_DEPRECATION_ARG,
+  );
+}
 
 /**
  * Trigger in-app messages programmatically
@@ -83,7 +102,7 @@ export declare function setAutomaticDataCollectionEnabled(
  * await triggerEvent(inAppMessaging, "exampleTrigger");
  * ```
  */
-export declare function triggerEvent(
-  inAppMessaging: FirebaseInAppMessaging,
-  eventId: string,
-): Promise<null>;
+export function triggerEvent(inAppMessaging: InAppMessaging, eventId: string): Promise<null> {
+  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
+  return (inAppMessaging.triggerEvent as any).call(inAppMessaging, eventId, MODULAR_DEPRECATION_ARG);
+}
