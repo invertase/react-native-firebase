@@ -28,8 +28,6 @@
       - '/analytics/usage'
     - - Screen Tracking
       - '/analytics/screen-tracking'
-    - - Building an Analytics Funnel
-      - 'https://blog.theodo.com/2018/01/building-google-analytics-funnel-firebase-react-native'
   - '//firebase.google.com/static/images/products/icons/run_analytics.svg'
 - - App Check
   - - - Usage
