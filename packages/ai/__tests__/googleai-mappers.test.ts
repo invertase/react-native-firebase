@@ -331,6 +331,37 @@ describe('Google AI Mappers', () => {
       expect(mapped).toEqual([]);
       expect(loggerWarnSpy).not.toHaveBeenCalled();
     });
+
+    it('should pass through groundingMetadata including searchEntryPoint (Google Search)', function () {
+      const candidates: GoogleAIGenerateContentCandidate[] = [
+        {
+          index: 0,
+          content: { role: 'model', parts: [{ text: 'Grounded response' }] },
+          finishReason: FinishReason.STOP,
+          groundingMetadata: {
+            searchEntryPoint: { renderedContent: '<div class="gsc">Search snippet</div>' },
+            groundingChunks: [{ web: { uri: 'https://source.org/page', title: 'Source Page' } }],
+            groundingSupports: [
+              {
+                segment: { partIndex: 0, startIndex: 0, endIndex: 10, text: 'foo' },
+                groundingChunkIndices: [0],
+              },
+            ],
+            webSearchQueries: ['search query'],
+          },
+        },
+      ];
+      const mapped = mapGenerateContentCandidates(candidates);
+      expect(mapped[0]?.groundingMetadata).toEqual(candidates[0]?.groundingMetadata);
+      expect(mapped[0]?.groundingMetadata?.searchEntryPoint?.renderedContent).toBe(
+        '<div class="gsc">Search snippet</div>',
+      );
+      expect(mapped[0]?.groundingMetadata?.groundingChunks).toHaveLength(1);
+      expect(mapped[0]?.groundingMetadata?.groundingChunks?.[0]?.web?.uri).toBe(
+        'https://source.org/page',
+      );
+      expect(mapped[0]?.groundingMetadata?.webSearchQueries).toEqual(['search query']);
+    });
   });
 
   describe('mapPromptFeedback', () => {

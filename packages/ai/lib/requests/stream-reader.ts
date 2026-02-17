@@ -188,6 +188,7 @@ export function aggregateResponses(responses: GenerateContentResponse[]): Genera
         aggregatedResponse.candidates[i].finishReason = candidate.finishReason;
         aggregatedResponse.candidates[i].finishMessage = candidate.finishMessage;
         aggregatedResponse.candidates[i].safetyRatings = candidate.safetyRatings;
+        aggregatedResponse.candidates[i].groundingMetadata = candidate.groundingMetadata;
 
         /**
          * Candidates should always have content and parts, but this handles
