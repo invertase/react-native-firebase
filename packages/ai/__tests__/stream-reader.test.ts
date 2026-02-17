@@ -35,6 +35,7 @@ import {
   HarmProbability,
   SafetyRating,
   AIErrorCode,
+  URLRetrievalStatus,
 } from '../lib/types';
 import { AIError } from '../lib/errors';
 import { ApiSettings } from '../lib/types/internal';
@@ -390,6 +391,55 @@ describe('stream-reader', () => {
               'by a malformed response from the backend.',
           );
         }
+      });
+
+      it('preserves urlContextMetadata from first chunk and does not overwrite with undefined', function () {
+        const responsesToAggregate: GenerateContentResponse[] = [
+          {
+            candidates: [
+              {
+                index: 0,
+                content: { role: 'user', parts: [{ text: 'chunk1' }] },
+                finishReason: FinishReason.STOP,
+                urlContextMetadata: {
+                  urlMetadata: [
+                    {
+                      retrievedUrl: 'https://example.com',
+                      urlRetrievalStatus: URLRetrievalStatus.URL_RETRIEVAL_STATUS_SUCCESS,
+                    },
+                  ],
+                },
+              },
+            ],
+            promptFeedback: {
+              blockReason: undefined,
+              safetyRatings: [],
+            },
+          },
+          {
+            candidates: [
+              {
+                index: 0,
+                content: { role: 'user', parts: [{ text: 'chunk2' }] },
+                finishReason: FinishReason.STOP,
+                // urlContextMetadata omitted (undefined) in later chunk
+              },
+            ],
+            promptFeedback: {
+              blockReason: undefined,
+              safetyRatings: [],
+            },
+          },
+        ];
+        const aggregated = aggregateResponses(responsesToAggregate);
+        expect(aggregated.candidates?.[0]?.urlContextMetadata).toBeDefined();
+        expect(aggregated.candidates?.[0]?.urlContextMetadata?.urlMetadata).toHaveLength(1);
+        expect(aggregated.candidates?.[0]?.urlContextMetadata?.urlMetadata[0]?.retrievedUrl).toBe(
+          'https://example.com',
+        );
+        expect(
+          aggregated.candidates?.[0]?.urlContextMetadata?.urlMetadata[0]?.urlRetrievalStatus,
+        ).toBe(URLRetrievalStatus.URL_RETRIEVAL_STATUS_SUCCESS);
       });
     });
   });

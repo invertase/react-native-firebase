@@ -250,7 +250,7 @@ export interface RequestOptions {
  * Defines a tool that model can call to access external knowledge.
  * @public
  */
-export type Tool = FunctionDeclarationsTool | GoogleSearchTool | CodeExecutionTool;
+export type Tool = FunctionDeclarationsTool | GoogleSearchTool | CodeExecutionTool | URLContextTool;
 
 /**
  * Structured representation of a function declaration as defined by the
@@ -329,6 +329,28 @@ export interface CodeExecutionTool {
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   codeExecution: {};
 }
+
+/**
+ * A tool that allows you to provide additional context to the models in the form of public web
+ * URLs. By including URLs in your request, the Gemini model will access the content from those
+ * pages to inform and enhance its response.
+ *
+ * @beta
+ */
+export interface URLContextTool {
+  /**
+   * Specifies the URL Context configuration.
+   */
+  urlContext: URLContext;
+}
+
+/**
+ * Specifies the URL Context configuration.
+ *
+ * @beta
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface URLContext {}
 
 /**
  * A `FunctionDeclarationsTool` is a piece of code that enables the system to
