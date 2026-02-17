@@ -16,6 +16,7 @@
  */
 
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
+// @ts-expect-error FirestoreFilter typings are migrated incrementally.
 import { _Filter, Filter } from '../FirestoreFilter';
 import type { DocumentData, DocumentReference, Query } from '../types/firestore';
 import type { DocumentSnapshot, QuerySnapshot } from './snapshot';
@@ -56,9 +57,11 @@ export class QueryConstraint {
     query: Query<AppModelType, DbModelType>,
   ): Query<AppModelType, DbModelType> {
     const method = (
-      query as Record<string, (...args: unknown[]) => Query<AppModelType, DbModelType>>
-      this.type
-    ];
+      query as unknown as Record<string, (...args: unknown[]) => Query<AppModelType, DbModelType>>
+    )[this.type];
+    if (!method) {
+      throw new Error(`Query method '${this.type}' is not available on query instance.`);
+    }
     return method.call(query, ...this._args, MODULAR_DEPRECATION_ARG);
   }
 }
@@ -119,7 +122,11 @@ function getFilterOps(queries: QueryFieldFilterConstraint[]): _Filter[] {
       continue;
     }
 
-    const [fieldPath, opStr, value] = queryConstraint._args as [string | FieldPath, WhereFilterOp, unknown];
+    const [fieldPath, opStr, value] = queryConstraint._args as [
+      string | FieldPath,
+      WhereFilterOp,
+      unknown,
+    ];
     ops.push(Filter(fieldPath, opStr, value));
   }
 
@@ -145,7 +152,9 @@ export function startAt(...docOrFields: Array<unknown | DocumentSnapshot>): Quer
   return new QueryConstraint('startAt', ...docOrFields) as QueryStartAtConstraint;
 }
 
-export function startAfter(...docOrFields: Array<unknown | DocumentSnapshot>): QueryStartAtConstraint {
+export function startAfter(
+  ...docOrFields: Array<unknown | DocumentSnapshot>
+): QueryStartAtConstraint {
   return new QueryConstraint('startAfter', ...docOrFields) as QueryStartAtConstraint;
 }
 
@@ -165,59 +174,96 @@ export function limitToLast(limitValue: number): QueryConstraint {
   return new QueryConstraint('limitToLast', limitValue);
 }
 
-export function getDoc<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+export function getDoc<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+>(
   reference: DocumentReference<AppModelType, DbModelType>,
 ): Promise<DocumentSnapshot<AppModelType, DbModelType>> {
-  const get = (reference as unknown as { get: (...args: unknown[]) => Promise<DocumentSnapshot<AppModelType, DbModelType>> }).get;
+  const get = (
+    reference as unknown as {
+      get: (...args: unknown[]) => Promise<DocumentSnapshot<AppModelType, DbModelType>>;
+    }
+  ).get;
   return get.call(reference, { source: 'default' }, MODULAR_DEPRECATION_ARG);
 }
 
-export function getDocFromCache<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+export function getDocFromCache<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+>(
   reference: DocumentReference<AppModelType, DbModelType>,
 ): Promise<DocumentSnapshot<AppModelType, DbModelType>> {
-  const get = (reference as unknown as { get: (...args: unknown[]) => Promise<DocumentSnapshot<AppModelType, DbModelType>> }).get;
+  const get = (
+    reference as unknown as {
+      get: (...args: unknown[]) => Promise<DocumentSnapshot<AppModelType, DbModelType>>;
+    }
+  ).get;
   return get.call(reference, { source: 'cache' }, MODULAR_DEPRECATION_ARG);
 }
 
-export function getDocFromServer<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+export function getDocFromServer<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+>(
   reference: DocumentReference<AppModelType, DbModelType>,
 ): Promise<DocumentSnapshot<AppModelType, DbModelType>> {
-  const get = (reference as unknown as { get: (...args: unknown[]) => Promise<DocumentSnapshot<AppModelType, DbModelType>> }).get;
+  const get = (
+    reference as unknown as {
+      get: (...args: unknown[]) => Promise<DocumentSnapshot<AppModelType, DbModelType>>;
+    }
+  ).get;
   return get.call(reference, { source: 'server' }, MODULAR_DEPRECATION_ARG);
 }
 
-export function getDocs<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
-  queryRef: Query<AppModelType, DbModelType>,
-): Promise<QuerySnapshot<AppModelType, DbModelType>> {
-  const get = (queryRef as unknown as { get: (...args: unknown[]) => Promise<QuerySnapshot<AppModelType, DbModelType>> }).get;
+export function getDocs<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+>(queryRef: Query<AppModelType, DbModelType>): Promise<QuerySnapshot<AppModelType, DbModelType>> {
+  const get = (
+    queryRef as unknown as {
+      get: (...args: unknown[]) => Promise<QuerySnapshot<AppModelType, DbModelType>>;
+    }
+  ).get;
   return get.call(queryRef, { source: 'default' }, MODULAR_DEPRECATION_ARG);
 }
 
-export function getDocsFromCache<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
-  queryRef: Query<AppModelType, DbModelType>,
-): Promise<QuerySnapshot<AppModelType, DbModelType>> {
-  const get = (queryRef as unknown as { get: (...args: unknown[]) => Promise<QuerySnapshot<AppModelType, DbModelType>> }).get;
+export function getDocsFromCache<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+>(queryRef: Query<AppModelType, DbModelType>): Promise<QuerySnapshot<AppModelType, DbModelType>> {
+  const get = (
+    queryRef as unknown as {
+      get: (...args: unknown[]) => Promise<QuerySnapshot<AppModelType, DbModelType>>;
+    }
+  ).get;
   return get.call(queryRef, { source: 'cache' }, MODULAR_DEPRECATION_ARG);
 }
 
-export function getDocsFromServer<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
-  queryRef: Query<AppModelType, DbModelType>,
-): Promise<QuerySnapshot<AppModelType, DbModelType>> {
-  const get = (queryRef as unknown as { get: (...args: unknown[]) => Promise<QuerySnapshot<AppModelType, DbModelType>> }).get;
+export function getDocsFromServer<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+>(queryRef: Query<AppModelType, DbModelType>): Promise<QuerySnapshot<AppModelType, DbModelType>> {
+  const get = (
+    queryRef as unknown as {
+      get: (...args: unknown[]) => Promise<QuerySnapshot<AppModelType, DbModelType>>;
+    }
+  ).get;
   return get.call(queryRef, { source: 'server' }, MODULAR_DEPRECATION_ARG);
 }
 
-export function deleteDoc<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
-  reference: DocumentReference<AppModelType, DbModelType>,
-): Promise<void> {
+export function deleteDoc<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+>(reference: DocumentReference<AppModelType, DbModelType>): Promise<void> {
   const remove = (reference as unknown as { delete: (...args: unknown[]) => Promise<void> }).delete;
   return remove.call(reference, MODULAR_DEPRECATION_ARG);
 }
 
-export function queryEqual<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
-  left: Query<AppModelType, DbModelType>,
-  right: Query<AppModelType, DbModelType>,
-): boolean {
+export function queryEqual<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+>(left: Query<AppModelType, DbModelType>, right: Query<AppModelType, DbModelType>): boolean {
   const isEqual = (left as unknown as { isEqual: (...args: unknown[]) => boolean }).isEqual;
   return isEqual.call(left, right, MODULAR_DEPRECATION_ARG);
 }

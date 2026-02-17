@@ -16,12 +16,7 @@
  */
 
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
-import type {
-  DocumentData,
-  DocumentReference,
-  Query,
-  SnapshotListenOptions,
-} from '../types/firestore';
+import type { DocumentData, DocumentReference, Query } from '../types/firestore';
 import type { FieldPath } from './FieldPath';
 
 export type Unsubscribe = () => void;
@@ -51,7 +46,7 @@ export interface QueryDocumentSnapshot<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
 > extends DocumentSnapshot<AppModelType, DbModelType> {
-  exists(): true;
+  exists(): this is QueryDocumentSnapshot<AppModelType, DbModelType>;
   data(): AppModelType;
 }
 
@@ -95,7 +90,6 @@ export function snapshotEqual<AppModelType, DbModelType extends DocumentData>(
   return isEqual.call(left, right, MODULAR_DEPRECATION_ARG);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function onSnapshotsInSync(
   _firestore: Query | DocumentReference,
   ..._args: unknown[]
