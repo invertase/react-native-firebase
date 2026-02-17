@@ -32,6 +32,66 @@ you can follow the manual installation steps for [iOS](/messaging/usage/installa
 
 # Expo
 
+## Notification Icons and Colors
+
+The @react-native-firebase/messaging package includes an Expo config plugin that automatically configures Firebase notification icons and colors when using Expo managed workflow.
+
+### Android Configuration
+
+For Android, add notification configuration to your `app.json` or `app.config.js`:
+
+```json
+{
+  "expo": {
+    "name": "Your App",
+    "slug": "your-app",
+    "notification": {
+      "icon": "./assets/notification-icon.png",
+      "color": "#FF0000"
+    }
+  }
+}
+```
+
+The plugin will automatically:
+- Configure `com.google.firebase.messaging.default_notification_icon` in your Android manifest
+- Configure `com.google.firebase.messaging.default_notification_color` in your Android manifest
+- Use Expo's standard notification icon handling (requires a pure white PNG icon)
+
+> **Note**: Android notifications require a pure white icon for proper display. The notification icon should be a white silhouette on a transparent background. For more information, see [Expo's notification documentation](https://docs.expo.dev/versions/latest/config/app/#notification).
+
+### iOS Configuration
+
+iOS uses the app icon for notifications by default and doesn't require separate notification icon configuration. However, you can customize notification appearance through iOS-specific settings in your `app.json`:
+
+```json
+{
+  "expo": {
+    "ios": {
+      "icon": "./assets/ios-icon.png"
+    }
+  }
+}
+```
+
+### Manual Setup
+
+If you need to manually configure the plugin, add it to your `app.json` or `app.config.js`:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      "@react-native-firebase/messaging"
+    ]
+  }
+}
+```
+
+### No Configuration Warning
+
+If no notification configuration is detected, the plugin will display a warning message encouraging you to add proper notification icon configuration for Android compatibility.
+
 ## iOS - Notifications entitlement
 
 Since Expo SDK51, Notifications entitlement is no longer always added to iOS projects during prebuild. If your project uses push notifications, you may need to add the aps-environment entitlement to your app config:
