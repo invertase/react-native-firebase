@@ -94,13 +94,12 @@ export type QueryNonFilterConstraint =
  * Creates a new immutable instance of {@link Query} that is extended to also
  * include additional query constraints.
  *
- * @param query - The {@link Query} instance to use as a base for the new
+ * @param query - Query instance to use as a base for the new
  * constraints.
- * @param compositeFilter - The {@link QueryCompositeFilterConstraint} to
- * apply. Create {@link QueryCompositeFilterConstraint} using {@link and} or
- * {@link or}.
- * @param queryConstraints - Additional {@link QueryNonFilterConstraint}s to
- * apply (e.g. {@link orderBy}, {@link limit}).
+ * @param compositeFilter - The QueryCompositeFilterConstraint to
+ * apply. Create QueryCompositeFilterConstraint using `and` or `or`.
+ * @param queryConstraints - Additional QueryNonFilterConstraint to
+ * apply (e.g. orderBy, limit).
  * @throws if any of the provided query constraints cannot be combined with the
  * existing or new constraints.
  */
@@ -114,9 +113,9 @@ export declare function query<AppModelType, DbModelType extends DocumentData>(
  * Creates a new immutable instance of {@link Query} that is extended to also
  * include additional query constraints.
  *
- * @param query - The {@link Query} instance to use as a base for the new
+ * @param query - The Query instance to use as a base for the new
  * constraints.
- * @param queryConstraints - The list of {@link QueryConstraint}s to apply.
+ * @param queryConstraints - The list of QueryConstraints to apply.
  * @throws if any of the provided query constraints cannot be combined with the
  * existing or new constraints.
  */
@@ -134,7 +133,7 @@ export declare function query<AppModelType, DbModelType extends DocumentData>(
  * @param opStr - The operation string (e.g "&lt;", "&lt;=", "==", "&lt;",
  *   "&lt;=", "!=").
  * @param value - The value for comparison
- * @returns The created {@link QueryFieldFilterConstraint}.
+ * @returns The created QueryFieldFilterConstraint
  */
 export function where(
   fieldPath: string | FieldPath,
@@ -143,14 +142,14 @@ export function where(
 ): QueryFieldFilterConstraint;
 
 /**
- * The or() function used to generate a logical OR query.
- * e.g. or(where('name', '==', 'Ada'), where('name', '==', 'Bob'))
+ * The `or()` function used to generate a logical OR query.
+ * e.g. `or(where('name', '==', 'Ada'), where('name', '==', 'Bob'))`
  */
 export function or(...queries: QueryFilterConstraint[]): QueryCompositeFilterConstraint;
 
 /**
- * The and() function used to generate a logical AND query.
- * e.g. and(where('name', '==', 'Ada'), where('name', '==', 'Bob'))
+ * The `and()` function used to generate a logical AND query.
+ * e.g. `and(where('name', '==', 'Ada'), where('name', '==', 'Bob'))`
  */
 export function and(...queries: QueryFilterConstraint[]): QueryCompositeFilterConstraint;
 
@@ -170,7 +169,7 @@ export type OrderByDirection = 'desc' | 'asc';
  * @param fieldPath - The field to sort by.
  * @param directionStr - Optional direction to sort by ('asc' or 'desc'). If
  * not specified, order will be ascending.
- * @returns The created {@link QueryOrderByConstraint}.
+ * @returns The created QueryOrderByConstraint.
  */
 export function orderBy(
   fieldPath: string | FieldPath,
@@ -184,7 +183,7 @@ export function orderBy(
  * provided in the `orderBy` of this query.
  *
  * @param snapshot - The snapshot of the document to start at.
- * @returns A {@link QueryStartAtConstraint} to pass to `query()`.
+ * @returns A QueryStartAtConstraint to pass to `query()`.
  */
 export function startAt(snapshot: DocumentSnapshot): QueryStartAtConstraint;
 /**
@@ -195,7 +194,7 @@ export function startAt(snapshot: DocumentSnapshot): QueryStartAtConstraint;
  *
  * @param fieldValues - The field values to start this query at, in order
  * of the query's order by.
- * @returns A {@link QueryStartAtConstraint} to pass to `query()`.
+ * @returns A QueryStartAtConstraint to pass to `query()`.
  */
 export function startAt(...fieldValues: unknown[]): QueryStartAtConstraint;
 
@@ -208,7 +207,7 @@ export function startAt(...docOrFields: Array<unknown | DocumentSnapshot>): Quer
  * fields provided in the orderBy of the query.
  *
  * @param snapshot - The snapshot of the document to start after.
- * @returns A {@link QueryStartAtConstraint} to pass to `query()`
+ * @returns A QueryStartAtConstraint to pass to `query()`
  */
 export function startAfter<AppModelType, DbModelType extends DocumentData>(
   snapshot: DocumentSnapshot<AppModelType, DbModelType>,
@@ -221,7 +220,7 @@ export function startAfter<AppModelType, DbModelType extends DocumentData>(
  *
  * @param fieldValues - The field values to start this query after, in order
  * of the query's order by.
- * @returns A {@link QueryStartAtConstraint} to pass to `query()`
+ * @returns A QueryStartAtConstraint to pass to `query()`
  */
 export function startAfter(...fieldValues: unknown[]): QueryStartAtConstraint;
 
@@ -234,7 +233,7 @@ export function startAfter<AppModelType, DbModelType extends DocumentData>(
  * documents.
  *
  * @param limit - The maximum number of items to return.
- * @returns The created {@link QueryLimitConstraint}.
+ * @returns The created QueryLimitConstraint
  */
 export function limit(limit: number): QueryLimitConstraint;
 
@@ -361,7 +360,7 @@ export declare function endBefore(...fieldValues: unknown[]): QueryEndAtConstrai
  * that the total number stays at 100.
  *
  * You can read more about `limitToLast()` in
- * {@link https://firebase.google.com/docs/database/web/lists-of-data#filtering_data | Filtering data}.
+ * [https://firebase.google.com/docs/database/web/lists-of-data#filtering_data].
  *
  * @param limit - The maximum number of nodes to include in this query.
  */

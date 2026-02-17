@@ -40,7 +40,7 @@ export const ValueSource: ValueSourceInterface;
 /**
  * Returns a RemoteConfig instance for the given app.
  * @param app - FirebaseApp. Optional.
- * @returns {RemoteConfig}
+ * @returns RemoteConfig
  */
 export function getRemoteConfig(app?: FirebaseApp): RemoteConfig;
 
@@ -48,14 +48,14 @@ export function getRemoteConfig(app?: FirebaseApp): RemoteConfig;
  * Returns a Boolean which resolves to true if the current call
  * activated the fetched configs.
  * @param remoteConfig - RemoteConfig instance
- * @returns {Promise<boolean>}
+ * @returns `Promise<boolean>`
  */
 export function activate(remoteConfig: RemoteConfig): Promise<boolean>;
 
 /**
  * Ensures the last activated config are available to the getters.
  * @param remoteConfig - RemoteConfig instance
- * @returns {Promise<void>}
+ * @returns `Promise<void>`
  */
 export function ensureInitialized(remoteConfig: RemoteConfig): Promise<void>;
 
@@ -63,21 +63,21 @@ export function ensureInitialized(remoteConfig: RemoteConfig): Promise<void>;
  * Performs a fetch and returns a Boolean which resolves to true
  * if the current call activated the fetched configs.
  * @param remoteConfig - RemoteConfig instance
- * @returns {Promise<boolean>}
+ * @returns `Promise<boolean>`
  */
 export function fetchAndActivate(remoteConfig: RemoteConfig): Promise<boolean>;
 
 /**
  * Fetches and caches configuration from the Remote Config service.
  * @param remoteConfig - RemoteConfig instance
- * @returns {Promise<void>}
+ * @returns `Promise<void>`
  */
 export function fetchConfig(remoteConfig: RemoteConfig): Promise<void>;
 
 /**
  * Gets all config.
  * @param remoteConfig - RemoteConfig instance
- * @returns {ConfigValues}
+ * @returns ConfigValues
  */
 export function getAll(remoteConfig: RemoteConfig): ConfigValues;
 
@@ -85,7 +85,7 @@ export function getAll(remoteConfig: RemoteConfig): ConfigValues;
  * Gets the value for the given key as a boolean.
  * @param remoteConfig - RemoteConfig instance
  * @param key - key for boolean value
- * @returns {boolean}
+ * @returns boolean
  */
 export function getBoolean(remoteConfig: RemoteConfig, key: string): boolean;
 
@@ -93,7 +93,7 @@ export function getBoolean(remoteConfig: RemoteConfig, key: string): boolean;
  * Gets the value for the given key as a number.
  * @param remoteConfig - RemoteConfig instance
  * @param key - key for number value
- * @returns {number}
+ * @returns number
  */
 export function getNumber(remoteConfig: RemoteConfig, key: string): number;
 
@@ -101,7 +101,7 @@ export function getNumber(remoteConfig: RemoteConfig, key: string): number;
  * Gets the value for the given key as a string.
  * @param remoteConfig - RemoteConfig instance
  * @param key - key for string value
- * @returns {string}
+ * @returns string
  */
 export function getString(remoteConfig: RemoteConfig, key: string): string;
 
@@ -109,7 +109,7 @@ export function getString(remoteConfig: RemoteConfig, key: string): string;
  * Gets the value for the given key
  * @param remoteConfig - RemoteConfig instance
  * @param key - key for the given value
- * @returns {ConfigValue}
+ * @returns ConfigValue
  */
 export function getValue(remoteConfig: RemoteConfig, key: string): ConfigValue;
 
@@ -117,7 +117,7 @@ export function getValue(remoteConfig: RemoteConfig, key: string): ConfigValue;
  * Defines the log level to use.
  * @param remoteConfig - RemoteConfig instance
  * @param logLevel - The log level to set
- * @returns {RemoteConfigLogLevel}
+ * @returns RemoteConfigLogLevel
  */
 export function setLogLevel(
   remoteConfig: RemoteConfig,
@@ -128,7 +128,7 @@ export function setLogLevel(
  * Checks two different things.
  * 1. Check if IndexedDB exists in the browser environment.
  * 2. Check if the current browser context allows IndexedDB open() calls.
- * @returns {Promise<boolean>}
+ * @returns `Promise<boolean>`
  */
 export function isSupported(): Promise<boolean>;
 
@@ -136,22 +136,22 @@ export function isSupported(): Promise<boolean>;
  * Indicates the default value in milliseconds to abandon a pending fetch
  * request made to the Remote Config server. Defaults to 60000 (One minute).
  * @param remoteConfig - RemoteConfig instance
- * @returns {number}
+ * @returns number
  */
 export function fetchTimeMillis(remoteConfig: RemoteConfig): number;
 
 /**
- * Returns a ConfigSettings object which provides the properties `minimumFetchIntervalMillis` & `fetchTimeMillis` if they have been set
- * using setConfigSettings({ fetchTimeMillis: number, minimumFetchIntervalMillis: number }).
+ * Returns a ConfigSettings object which provides the properties `minimumFetchIntervalMillis` and `fetchTimeMillis` if they have been set
+ * using `setConfigSettings({ fetchTimeMillis: number, minimumFetchIntervalMillis: number })`.
  * @param remoteConfig - RemoteConfig instance
- * @returns {ConfigSettings}
+ * @returns ConfigSettings
  */
 export function settings(remoteConfig: RemoteConfig): ConfigSettings;
 
 /**
  * The status of the latest Remote RemoteConfig fetch action.
  * @param remoteConfig - RemoteConfig instance
- * @returns {LastFetchStatusType}
+ * @returns LastFetchStatusType
  */
 export function lastFetchStatus(remoteConfig: RemoteConfig): LastFetchStatusType;
 
@@ -160,7 +160,7 @@ export function lastFetchStatus(remoteConfig: RemoteConfig): LastFetchStatusType
  * resets all Firebase Remote Config settings.
  * Android only. iOS does not reset anything.
  * @param remoteConfig - RemoteConfig instance
- * @returns {Promise<void>}
+ * @returns `Promise<void>`
  */
 export function reset(remoteConfig: RemoteConfig): Promise<void>;
 
@@ -169,7 +169,7 @@ export function reset(remoteConfig: RemoteConfig): Promise<void>;
  * `fetchTimeMillis` & `minimumFetchIntervalMillis`
  * @param remoteConfig - RemoteConfig instance
  * @param settings - ConfigSettings instance
- * @returns {Promise<void>}
+ * @returns `Promise<void>`
  */
 export function setConfigSettings(
   remoteConfig: RemoteConfig,
@@ -180,7 +180,7 @@ export function setConfigSettings(
  * Fetches parameter values for your app.
  * @param remoteConfig - RemoteConfig instance
  * @param expirationDurationSeconds - number
- * @returns {Promise<void>}
+ * @returns `Promise<void>`
  */
 export function fetch(
   remoteConfig: RemoteConfig,
@@ -191,7 +191,7 @@ export function fetch(
  * Fetches parameter values for your app.
  * @param remoteConfig - RemoteConfig instance
  * @param defaults - ConfigDefaults
- * @returns {Promise<void>}
+ * @returns `Promise<void>`
  */
 export function setDefaults(remoteConfig: RemoteConfig, defaults: ConfigDefaults): Promise<void>;
 
@@ -199,7 +199,7 @@ export function setDefaults(remoteConfig: RemoteConfig, defaults: ConfigDefaults
  * Fetches parameter values for your app.
  * @param remoteConfig - RemoteConfig instance
  * @param resourceName - string
- * @returns {Promise<null>}
+ * @returns `Promise<null>`
  */
 export function setDefaultsFromResource(
   remoteConfig: RemoteConfig,
@@ -221,7 +221,7 @@ export function setDefaultsFromResource(
  *
  * @param remoteConfig - The {@link RemoteConfig} instance.
  * @param observer - The {@link ConfigUpdateObserver} to be notified of config updates.
- * @returns An {@link Unsubscribe} function to remove the listener.
+ * @returns Unsubscribe function to remove the listener.
  */
 export function onConfigUpdate(
   remoteConfig: RemoteConfig,
@@ -233,7 +233,7 @@ export function onConfigUpdate(
  *
  * @param remoteConfig - RemoteConfig instance
  * @param callback - function called on config change
- * @returns {function} unsubscribe listener
+ * @returns unsubscribe listener
  * @deprecated use official firebase-js-sdk onConfigUpdate now that web supports realtime
  */
 export function onConfigUpdated(
@@ -244,7 +244,7 @@ export function onConfigUpdated(
 /**
  * Defines the type for representing custom signals and their values.
  * The values in CustomSignals must be one of the following types: string, number, or null.
- * There are additional limitations on key and value length, for a full description see https://firebase.google.com/docs/remote-config/parameters?template_type=client#custom_signal_conditions
+ * There are additional limitations on key and value length, for a full description see [https://firebase.google.com/docs/remote-config/parameters?template_type=client#custom_signal_conditions]
  * Failing to stay within these limitations will result in a silent API failure with only a warning in device logs
  */
 
@@ -254,9 +254,9 @@ export interface CustomSignals {
 
 /**
  * Sets the custom signals for the app instance.
- * @param {RemoteConfig} remoteConfig - RemoteConfig instance
- * @param {CustomSignals} customSignals - CustomSignals
- * @returns {Promise<void>}
+ * @param remoteConfig RemoteConfig instance
+ * @param customSignals CustomSignals instance
+ * @returns `Promise<void>`
  */
 
 export declare function setCustomSignals(

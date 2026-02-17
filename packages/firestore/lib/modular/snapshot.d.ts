@@ -386,8 +386,8 @@ export declare function onSnapshot<AppModelType, DbModelType extends DocumentDat
 /**
  * Returns true if the provided snapshots are equal.
  *
- * @param left	DocumentSnapshot<AppModelType, DbModelType> | QuerySnapshot<AppModelType, DbModelType>	A snapshot to compare.
- * @param right	DocumentSnapshot<AppModelType, DbModelType> | QuerySnapshot<AppModelType, DbModelType>	A snapshot to compare.
+ * @param left	`DocumentSnapshot<AppModelType, DbModelType> | QuerySnapshot<AppModelType, DbModelType>`	A snapshot to compare.
+ * @param right	`DocumentSnapshot<AppModelType, DbModelType> | QuerySnapshot<AppModelType, DbModelType>`	A snapshot to compare.
  *
  * @returns boolean true if the snapshots are equal.
  */
@@ -399,8 +399,8 @@ export function snapshotEqual<AppModelType, DbModelType extends DocumentData>(
 /**
  * Returns true if the provided queries point to the same collection and apply the same constraints.
  *
- * @param left	Query<AppModelType, DbModelType> A Query to compare.
- * @param right	Query<AppModelType, DbModelType> A Query to compare.
+ * @param left	`Query<AppModelType, DbModelType>` A Query to compare.
+ * @param right	`Query<AppModelType, DbModelType>` A Query to compare.
  *
  * @return boolean true if the references point to the same location in the same Firestore database.
  */

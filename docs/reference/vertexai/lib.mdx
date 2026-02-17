@@ -1,0 +1,884 @@
+[**react-native-firebase**](../README.mdx)
+
+***
+
+[react-native-firebase](../modules.mdx) / vertexai/lib
+
+# vertexai/lib
+
+## Interfaces
+
+### VertexAIOptions
+
+Defined in: [vertexai/lib/public-types.ts:34](https://github.com/invertase/react-native-firebase/blob/main/packages/vertexai/lib/public-types.ts#L34)
+
+Options when initializing the Vertex AI in Firebase SDK.
+
+#### Properties
+
+##### appCheck?
+
+> `optional` **appCheck**: `AppCheck` \| `null`
+
+Defined in: [vertexai/lib/public-types.ts:36](https://github.com/invertase/react-native-firebase/blob/main/packages/vertexai/lib/public-types.ts#L36)
+
+##### auth?
+
+> `optional` **auth**: `Module` \| `null`
+
+Defined in: [vertexai/lib/public-types.ts:37](https://github.com/invertase/react-native-firebase/blob/main/packages/vertexai/lib/public-types.ts#L37)
+
+##### location?
+
+> `optional` **location**: `string`
+
+Defined in: [vertexai/lib/public-types.ts:35](https://github.com/invertase/react-native-firebase/blob/main/packages/vertexai/lib/public-types.ts#L35)
+
+## Type Aliases
+
+### ~~VertexAI~~
+
+> **VertexAI** = [`AI`](../ai/lib.mdx#ai)
+
+Defined in: [vertexai/lib/public-types.ts:28](https://github.com/invertase/react-native-firebase/blob/main/packages/vertexai/lib/public-types.ts#L28)
+
+#### Deprecated
+
+Use the new [AI](../ai/lib.mdx#ai) instead. The Vertex AI in Firebase SDK has been
+replaced with the Firebase AI SDK to accommodate the evolving set of supported features and
+services. For migration details, see the [migration guide](https://firebase.google.com/docs/vertex-ai/migrate-to-latest-sdk).
+An instance of the Vertex AI in Firebase SDK.
+
+## Variables
+
+### VERTEX\_TYPE
+
+> `const` **VERTEX\_TYPE**: `"vertexAI"` = `'vertexAI'`
+
+Defined in: [vertexai/lib/public-types.ts:42](https://github.com/invertase/react-native-firebase/blob/main/packages/vertexai/lib/public-types.ts#L42)
+
+***
+
+### ~~VertexAIError~~
+
+> `const` **VertexAIError**: *typeof* [`AIError`](../ai/lib.mdx#aierror) = `AIError`
+
+Defined in: [vertexai/lib/index.ts:75](https://github.com/invertase/react-native-firebase/blob/main/packages/vertexai/lib/index.ts#L75)
+
+#### Deprecated
+
+Use the new [AIError](../ai/lib.mdx#aierror) instead. The Vertex AI in Firebase SDK has been
+replaced with the Firebase AI SDK to accommodate the evolving set of supported features and
+services. For migration details, see the [migration guide](https://firebase.google.com/docs/vertex-ai/migrate-to-latest-sdk).
+
+Error class for the Firebase AI SDK.
+
+***
+
+### ~~VertexAIModel~~
+
+> `const` **VertexAIModel**: *typeof* [`AIModel`](../ai/lib.mdx#abstract-aimodel) = `AIModel`
+
+Defined in: [vertexai/lib/index.ts:64](https://github.com/invertase/react-native-firebase/blob/main/packages/vertexai/lib/index.ts#L64)
+
+#### Deprecated
+
+Use the new [AIModel](../ai/lib.mdx#abstract-aimodel) instead. The Vertex AI in Firebase SDK has been
+replaced with the Firebase AI SDK to accommodate the evolving set of supported features and
+services. For migration details, see the [migration guide](https://firebase.google.com/docs/vertex-ai/migrate-to-latest-sdk).
+
+Base class for Firebase AI model APIs.
+
+## Functions
+
+### ~~getVertexAI()~~
+
+> **getVertexAI**(`app?`, `options?`): [`AI`](../ai/lib.mdx#ai)
+
+Defined in: [vertexai/lib/index.ts:42](https://github.com/invertase/react-native-firebase/blob/main/packages/vertexai/lib/index.ts#L42)
+
+#### Parameters
+
+##### app?
+
+`FirebaseApp` = `...`
+
+The @FirebaseApp to use.
+
+##### options?
+
+[`VertexAIOptions`](#vertexaioptions)
+
+The [VertexAIOptions](#vertexaioptions) to use.
+
+#### Returns
+
+[`AI`](../ai/lib.mdx#ai)
+
+#### Deprecated
+
+Use the new [getAI()](../ai/lib.mdx#getai) instead. The Vertex AI in Firebase SDK has been
+replaced with the Firebase AI SDK to accommodate the evolving set of supported features and
+services. For migration details, see the [migration guide](https://firebase.google.com/docs/vertex-ai/migrate-to-latest-sdk).
+
+Returns a [VertexAI](#vertexai) instance for the given app, configured to use the
+Vertex AI Gemini API. This instance will be
+configured to use the Vertex AI Gemini API.
+
+Returns a <code>[VertexAI](#vertexai)</code> instance for the given app.
+
+## References
+
+### AI
+
+Re-exports [AI](../ai/lib.mdx#ai)
+
+***
+
+### AIError
+
+Re-exports [AIError](../ai/lib.mdx#aierror)
+
+***
+
+### AIErrorCode
+
+Re-exports [AIErrorCode](../ai/lib.mdx#aierrorcode)
+
+***
+
+### AIModel
+
+Re-exports [AIModel](../ai/lib.mdx#abstract-aimodel)
+
+***
+
+### AIOptions
+
+Re-exports [AIOptions](../ai/lib.mdx#aioptions-1)
+
+***
+
+### ArraySchema
+
+Re-exports [ArraySchema](../ai/lib.mdx#arrayschema)
+
+***
+
+### AudioTranscriptionConfig
+
+Re-exports [AudioTranscriptionConfig](../ai/lib.mdx#audiotranscriptionconfig)
+
+***
+
+### Backend
+
+Re-exports [Backend](../ai/lib.mdx#abstract-backend)
+
+***
+
+### BackendType
+
+Re-exports [BackendType](../ai/lib.mdx#backendtype-4)
+
+***
+
+### BaseParams
+
+Re-exports [BaseParams](../ai/lib.mdx#baseparams)
+
+***
+
+### BlockReason
+
+Re-exports [BlockReason](../ai/lib.mdx#blockreason)
+
+***
+
+### BooleanSchema
+
+Re-exports [BooleanSchema](../ai/lib.mdx#booleanschema)
+
+***
+
+### ChatSession
+
+Re-exports [ChatSession](../ai/lib.mdx#chatsession)
+
+***
+
+### Citation
+
+Re-exports [Citation](../ai/lib.mdx#citation)
+
+***
+
+### CitationMetadata
+
+Re-exports [CitationMetadata](../ai/lib.mdx#citationmetadata)
+
+***
+
+### Content
+
+Re-exports [Content](../ai/lib.mdx#content)
+
+***
+
+### CountTokensRequest
+
+Re-exports [CountTokensRequest](../ai/lib.mdx#counttokensrequest)
+
+***
+
+### CountTokensResponse
+
+Re-exports [CountTokensResponse](../ai/lib.mdx#counttokensresponse)
+
+***
+
+### CustomErrorData
+
+Re-exports [CustomErrorData](../ai/lib.mdx#customerrordata-1)
+
+***
+
+### Date
+
+Re-exports [Date](../ai/lib.mdx#date)
+
+***
+
+### EnhancedGenerateContentResponse
+
+Re-exports [EnhancedGenerateContentResponse](../ai/lib.mdx#enhancedgeneratecontentresponse)
+
+***
+
+### ErrorDetails
+
+Re-exports [ErrorDetails](../ai/lib.mdx#errordetails-1)
+
+***
+
+### FileData
+
+Re-exports [FileData](../ai/lib.mdx#filedata)
+
+***
+
+### FileDataPart
+
+Re-exports [FileDataPart](../ai/lib.mdx#filedatapart)
+
+***
+
+### FinishReason
+
+Re-exports [FinishReason](../ai/lib.mdx#finishreason)
+
+***
+
+### FunctionCall
+
+Re-exports [FunctionCall](../ai/lib.mdx#functioncall-1)
+
+***
+
+### FunctionCallingConfig
+
+Re-exports [FunctionCallingConfig](../ai/lib.mdx#functioncallingconfig)
+
+***
+
+### FunctionCallingMode
+
+Re-exports [FunctionCallingMode](../ai/lib.mdx#functioncallingmode)
+
+***
+
+### FunctionCallPart
+
+Re-exports [FunctionCallPart](../ai/lib.mdx#functioncallpart)
+
+***
+
+### FunctionDeclaration
+
+Re-exports [FunctionDeclaration](../ai/lib.mdx#functiondeclaration)
+
+***
+
+### FunctionDeclarationsTool
+
+Re-exports [FunctionDeclarationsTool](../ai/lib.mdx#functiondeclarationstool)
+
+***
+
+### FunctionResponse
+
+Re-exports [FunctionResponse](../ai/lib.mdx#functionresponse-2)
+
+***
+
+### FunctionResponsePart
+
+Re-exports [FunctionResponsePart](../ai/lib.mdx#functionresponsepart)
+
+***
+
+### GenerateContentCandidate
+
+Re-exports [GenerateContentCandidate](../ai/lib.mdx#generatecontentcandidate)
+
+***
+
+### GenerateContentRequest
+
+Re-exports [GenerateContentRequest](../ai/lib.mdx#generatecontentrequest)
+
+***
+
+### GenerateContentResponse
+
+Re-exports [GenerateContentResponse](../ai/lib.mdx#generatecontentresponse)
+
+***
+
+### GenerateContentResult
+
+Re-exports [GenerateContentResult](../ai/lib.mdx#generatecontentresult)
+
+***
+
+### GenerateContentStreamResult
+
+Re-exports [GenerateContentStreamResult](../ai/lib.mdx#generatecontentstreamresult)
+
+***
+
+### GenerationConfig
+
+Re-exports [GenerationConfig](../ai/lib.mdx#generationconfig-6)
+
+***
+
+### GenerativeContentBlob
+
+Re-exports [GenerativeContentBlob](../ai/lib.mdx#generativecontentblob)
+
+***
+
+### GenerativeModel
+
+Re-exports [GenerativeModel](../ai/lib.mdx#generativemodel)
+
+***
+
+### getAI
+
+Re-exports [getAI](../ai/lib.mdx#getai)
+
+***
+
+### getGenerativeModel
+
+Re-exports [getGenerativeModel](../ai/lib.mdx#getgenerativemodel)
+
+***
+
+### getImagenModel
+
+Re-exports [getImagenModel](../ai/lib.mdx#getimagenmodel)
+
+***
+
+### getLiveGenerativeModel
+
+Re-exports [getLiveGenerativeModel](../ai/lib.mdx#getlivegenerativemodel)
+
+***
+
+### getTemplateGenerativeModel
+
+Re-exports [getTemplateGenerativeModel](../ai/lib.mdx#gettemplategenerativemodel)
+
+***
+
+### getTemplateImagenModel
+
+Re-exports [getTemplateImagenModel](../ai/lib.mdx#gettemplateimagenmodel)
+
+***
+
+### GoogleAIBackend
+
+Re-exports [GoogleAIBackend](../ai/lib.mdx#googleaibackend)
+
+***
+
+### GoogleAICitationMetadata
+
+Re-exports [GoogleAICitationMetadata](../ai/lib.mdx#googleaicitationmetadata)
+
+***
+
+### GoogleAICountTokensRequest
+
+Re-exports [GoogleAICountTokensRequest](../ai/lib.mdx#googleaicounttokensrequest)
+
+***
+
+### GoogleAIGenerateContentCandidate
+
+Re-exports [GoogleAIGenerateContentCandidate](../ai/lib.mdx#googleaigeneratecontentcandidate)
+
+***
+
+### GoogleAIGenerateContentResponse
+
+Re-exports [GoogleAIGenerateContentResponse](../ai/lib.mdx#googleaigeneratecontentresponse)
+
+***
+
+### GoogleSearch
+
+Re-exports [GoogleSearch](../ai/lib.mdx#googlesearch)
+
+***
+
+### GoogleSearchTool
+
+Re-exports [GoogleSearchTool](../ai/lib.mdx#googlesearchtool)
+
+***
+
+### GroundingAttribution
+
+Re-exports [GroundingAttribution](../ai/lib.mdx#groundingattribution)
+
+***
+
+### GroundingChunk
+
+Re-exports [GroundingChunk](../ai/lib.mdx#groundingchunk)
+
+***
+
+### GroundingMetadata
+
+Re-exports [GroundingMetadata](../ai/lib.mdx#groundingmetadata-2)
+
+***
+
+### GroundingSupport
+
+Re-exports [GroundingSupport](../ai/lib.mdx#groundingsupport)
+
+***
+
+### HarmBlockMethod
+
+Re-exports [HarmBlockMethod](../ai/lib.mdx#harmblockmethod)
+
+***
+
+### HarmBlockThreshold
+
+Re-exports [HarmBlockThreshold](../ai/lib.mdx#harmblockthreshold)
+
+***
+
+### HarmCategory
+
+Re-exports [HarmCategory](../ai/lib.mdx#harmcategory)
+
+***
+
+### HarmProbability
+
+Re-exports [HarmProbability](../ai/lib.mdx#harmprobability)
+
+***
+
+### HarmSeverity
+
+Re-exports [HarmSeverity](../ai/lib.mdx#harmseverity)
+
+***
+
+### ImagenAspectRatio
+
+Re-exports [ImagenAspectRatio](../ai/lib.mdx#imagenaspectratio-1)
+
+***
+
+### ImagenGCSImage
+
+Re-exports [ImagenGCSImage](../ai/lib.mdx#imagengcsimage)
+
+***
+
+### ImagenGenerationConfig
+
+Re-exports [ImagenGenerationConfig](../ai/lib.mdx#imagengenerationconfig)
+
+***
+
+### ImagenGenerationResponse
+
+Re-exports [ImagenGenerationResponse](../ai/lib.mdx#imagengenerationresponse)
+
+***
+
+### ImagenImageFormat
+
+Re-exports [ImagenImageFormat](../ai/lib.mdx#imagenimageformat)
+
+***
+
+### ImagenInlineImage
+
+Re-exports [ImagenInlineImage](../ai/lib.mdx#imageninlineimage)
+
+***
+
+### ImagenModel
+
+Re-exports [ImagenModel](../ai/lib.mdx#imagenmodel)
+
+***
+
+### ImagenModelParams
+
+Re-exports [ImagenModelParams](../ai/lib.mdx#imagenmodelparams)
+
+***
+
+### ImagenPersonFilterLevel
+
+Re-exports [ImagenPersonFilterLevel](../ai/lib.mdx#imagenpersonfilterlevel-1)
+
+***
+
+### ImagenSafetyFilterLevel
+
+Re-exports [ImagenSafetyFilterLevel](../ai/lib.mdx#imagensafetyfilterlevel-1)
+
+***
+
+### ImagenSafetySettings
+
+Re-exports [ImagenSafetySettings](../ai/lib.mdx#imagensafetysettings)
+
+***
+
+### InferenceMode
+
+Re-exports [InferenceMode](../ai/lib.mdx#inferencemode-1)
+
+***
+
+### InlineDataPart
+
+Re-exports [InlineDataPart](../ai/lib.mdx#inlinedatapart)
+
+***
+
+### IntegerSchema
+
+Re-exports [IntegerSchema](../ai/lib.mdx#integerschema)
+
+***
+
+### LiveGenerationConfig
+
+Re-exports [LiveGenerationConfig](../ai/lib.mdx#livegenerationconfig)
+
+***
+
+### LiveGenerativeModel
+
+Re-exports [LiveGenerativeModel](../ai/lib.mdx#livegenerativemodel)
+
+***
+
+### LiveModelParams
+
+Re-exports [LiveModelParams](../ai/lib.mdx#livemodelparams)
+
+***
+
+### LiveResponseType
+
+Re-exports [LiveResponseType](../ai/lib.mdx#liveresponsetype-1)
+
+***
+
+### LiveServerContent
+
+Re-exports [LiveServerContent](../ai/lib.mdx#liveservercontent)
+
+***
+
+### LiveServerToolCall
+
+Re-exports [LiveServerToolCall](../ai/lib.mdx#liveservertoolcall)
+
+***
+
+### LiveServerToolCallCancellation
+
+Re-exports [LiveServerToolCallCancellation](../ai/lib.mdx#liveservertoolcallcancellation)
+
+***
+
+### LiveSession
+
+Re-exports [LiveSession](../ai/lib.mdx#livesession)
+
+***
+
+### Modality
+
+Re-exports [Modality](../ai/lib.mdx#modality)
+
+***
+
+### ModalityTokenCount
+
+Re-exports [ModalityTokenCount](../ai/lib.mdx#modalitytokencount)
+
+***
+
+### ModelParams
+
+Re-exports [ModelParams](../ai/lib.mdx#modelparams)
+
+***
+
+### NumberSchema
+
+Re-exports [NumberSchema](../ai/lib.mdx#numberschema)
+
+***
+
+### ObjectSchema
+
+Re-exports [ObjectSchema](../ai/lib.mdx#objectschema)
+
+***
+
+### ObjectSchemaInterface
+
+Re-exports [ObjectSchemaInterface](../ai/lib.mdx#objectschemainterface)
+
+***
+
+### Part
+
+Re-exports [Part](../ai/lib.mdx#part)
+
+***
+
+### POSSIBLE\_ROLES
+
+Re-exports [POSSIBLE_ROLES](../ai/lib.mdx#possible_roles)
+
+***
+
+### PrebuiltVoiceConfig
+
+Re-exports [PrebuiltVoiceConfig](../ai/lib.mdx#prebuiltvoiceconfig)
+
+***
+
+### PromptFeedback
+
+Re-exports [PromptFeedback](../ai/lib.mdx#promptfeedback-3)
+
+***
+
+### RequestOptions
+
+Re-exports [RequestOptions](../ai/lib.mdx#requestoptions-5)
+
+***
+
+### ResponseModality
+
+Re-exports [ResponseModality](../ai/lib.mdx#responsemodality-1)
+
+***
+
+### RetrievedContextAttribution
+
+Re-exports [RetrievedContextAttribution](../ai/lib.mdx#retrievedcontextattribution)
+
+***
+
+### Role
+
+Re-exports [Role](../ai/lib.mdx#role-1)
+
+***
+
+### SafetyRating
+
+Re-exports [SafetyRating](../ai/lib.mdx#safetyrating)
+
+***
+
+### SafetySetting
+
+Re-exports [SafetySetting](../ai/lib.mdx#safetysetting)
+
+***
+
+### Schema
+
+Re-exports [Schema](../ai/lib.mdx#abstract-schema)
+
+***
+
+### SchemaInterface
+
+Re-exports [SchemaInterface](../ai/lib.mdx#schemainterface)
+
+***
+
+### SchemaParams
+
+Re-exports [SchemaParams](../ai/lib.mdx#schemaparams)
+
+***
+
+### SchemaRequest
+
+Re-exports [SchemaRequest](../ai/lib.mdx#schemarequest)
+
+***
+
+### SchemaShared
+
+Re-exports [SchemaShared](../ai/lib.mdx#schemashared)
+
+***
+
+### SchemaType
+
+Re-exports [SchemaType](../ai/lib.mdx#schematype)
+
+***
+
+### Segment
+
+Re-exports [Segment](../ai/lib.mdx#segment-2)
+
+***
+
+### SpeechConfig
+
+Re-exports [SpeechConfig](../ai/lib.mdx#speechconfig-1)
+
+***
+
+### StartChatParams
+
+Re-exports [StartChatParams](../ai/lib.mdx#startchatparams)
+
+***
+
+### StringSchema
+
+Re-exports [StringSchema](../ai/lib.mdx#stringschema)
+
+***
+
+### TemplateGenerativeModel
+
+Re-exports [TemplateGenerativeModel](../ai/lib.mdx#templategenerativemodel)
+
+***
+
+### TemplateImagenModel
+
+Re-exports [TemplateImagenModel](../ai/lib.mdx#templateimagenmodel)
+
+***
+
+### TextPart
+
+Re-exports [TextPart](../ai/lib.mdx#textpart)
+
+***
+
+### ThinkingConfig
+
+Re-exports [ThinkingConfig](../ai/lib.mdx#thinkingconfig-1)
+
+***
+
+### Tool
+
+Re-exports [Tool](../ai/lib.mdx#tool)
+
+***
+
+### ToolConfig
+
+Re-exports [ToolConfig](../ai/lib.mdx#toolconfig-6)
+
+***
+
+### Transcription
+
+Re-exports [Transcription](../ai/lib.mdx#transcription)
+
+***
+
+### TypedSchema
+
+Re-exports [TypedSchema](../ai/lib.mdx#typedschema)
+
+***
+
+### UsageMetadata
+
+Re-exports [UsageMetadata](../ai/lib.mdx#usagemetadata-3)
+
+***
+
+### VertexAIBackend
+
+Re-exports [VertexAIBackend](../ai/lib.mdx#vertexaibackend)
+
+***
+
+### VertexAIErrorCode
+
+Renames and re-exports [AIErrorCode](../ai/lib.mdx#aierrorcode)
+
+***
+
+### VideoMetadata
+
+Re-exports [VideoMetadata](../ai/lib.mdx#videometadata-1)
+
+***
+
+### VoiceConfig
+
+Re-exports [VoiceConfig](../ai/lib.mdx#voiceconfig-1)
+
+***
+
+### WebAttribution
+
+Re-exports [WebAttribution](../ai/lib.mdx#webattribution)
+
+***
+
+### WebGroundingChunk
+
+Re-exports [WebGroundingChunk](../ai/lib.mdx#webgroundingchunk)
