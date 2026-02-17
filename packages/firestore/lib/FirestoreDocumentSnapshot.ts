@@ -44,7 +44,10 @@ export default class FirestoreDocumentSnapshot {
   constructor(firestore: unknown, nativeData: DocumentSnapshotNativeData, converter: unknown) {
     this._firestore = firestore;
     this._nativeData = nativeData;
-    this._data = parseNativeMap(firestore as any, nativeData.data);
+    this._data = parseNativeMap(
+      firestore as any,
+      nativeData.data as Record<string, unknown> | undefined,
+    );
     this._metadata = new FirestoreSnapshotMetadata(nativeData.metadata ?? [false, false]);
     this._ref = new FirestoreDocumentReference(
       firestore as any,
