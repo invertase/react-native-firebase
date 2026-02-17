@@ -46,6 +46,14 @@ public class ReactNativeFirebasePreferences {
     return getPreferences().getBoolean(key, defaultValue);
   }
 
+  public void setIntValue(String key, int value) {
+    getPreferences().edit().putInt(key,value).apply();
+  }
+
+  public int getIntValue(String key, int defaultValue) {
+    return getPreferences().getInt(key,defaultValue);
+  }
+
   public void setLongValue(String key, long value) {
     getPreferences().edit().putLong(key, value).apply();
   }
