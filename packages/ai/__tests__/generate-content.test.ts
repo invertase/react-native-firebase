@@ -23,6 +23,8 @@ import {
   HarmBlockMethod,
   HarmBlockThreshold,
   HarmCategory,
+  Language,
+  Outcome,
   // RequestOptions,
 } from '../lib/types';
 import { ApiSettings } from '../lib/types/internal';
@@ -170,6 +172,15 @@ describe('generateContent()', () => {
       }),
       expect.anything(),
     );
+  });
+
+  it('codeExecution', async function () {
+    const mockResponse = getMockResponse(BackendName.VertexAI, 'unary-success-code-execution.json');
+    jest.spyOn(request, 'makeRequest').mockResolvedValue(mockResponse as Response);
+    const result = await generateContent(fakeApiSettings, 'model', fakeRequestParams);
+    const parts = result.response.candidates?.[0]?.content?.parts;
+    expect(parts?.some(part => part.codeExecutionResult?.outcome === Outcome.OK)).toBe(true);
+    expect(parts?.some(part => part.executableCode?.language === Language.PYTHON)).toBe(true);
   });
 
   it('blocked prompt', async () => {
