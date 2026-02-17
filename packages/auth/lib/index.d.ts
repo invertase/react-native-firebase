@@ -1211,6 +1211,39 @@ export namespace FirebaseAuthTypes {
      * @param smsCode The pre-set SMS code.
      */
     setAutoRetrievedSmsCodeForPhoneNumber(phoneNumber: string, smsCode: string): Promise<null>;
+
+    /**
+     * Flag to disable automatic retrieval of OTP codes for the given phone number.
+     * When receiving an OTP verification code Android automagically digests it and
+     * in some cases throws this error: `The SMS code has expired`
+     *
+     * @android
+     */
+    autoOTPVerify: boolean;
+
+    /**
+     * Sets whether the automatic OTP (One-Time Password) verification should be disabled on Android devices.
+     *
+     * This method allows you to control the behavior of OTP verification by disabling the automatic retrieval
+     * and verification of SMS codes. This can be useful in testing scenarios or when you want to handle OTP
+     * verification manually if your users encounter `The SMS code has expired` error on some devices.
+     *
+     * @example
+     * ```js
+     * (async function () {
+     *   try {
+     *     await firebase.auth().settings.setAutoOTPVerify(false);
+     *   } catch (error) {
+     *     console.error(error);
+     *   }
+     * })();
+     *
+     * ```
+     *
+     * @android
+     * @param enabled whether auto OTP verify should be disabled, defaults to false
+     */
+    setAutoOTPVerify(enabled: boolean): Promise<null>;
   }
 
   /**

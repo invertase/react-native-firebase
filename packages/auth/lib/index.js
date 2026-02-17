@@ -293,7 +293,7 @@ class FirebaseAuthModule extends FirebaseModule {
   signInWithPhoneNumber(phoneNumber, forceResend) {
     if (isAndroid) {
       return this.native
-        .signInWithPhoneNumber(phoneNumber, forceResend || false)
+        .signInWithPhoneNumber(phoneNumber, forceResend || false, this._settings.autoOTPVerify)
         .then(result => new ConfirmationResult(this, result.verificationId));
     }
 
@@ -316,12 +316,20 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   verifyPhoneNumberWithMultiFactorInfo(multiFactorHint, session) {
-    return this.native.verifyPhoneNumberWithMultiFactorInfo(multiFactorHint.uid, session);
+    return this.native.verifyPhoneNumberWithMultiFactorInfo(
+      multiFactorHint.uid,
+      session,
+      this._settings.autoOTPVerify,
+    );
   }
 
   verifyPhoneNumberForMultiFactor(phoneInfoOptions) {
     const { phoneNumber, session } = phoneInfoOptions;
-    return this.native.verifyPhoneNumberForMultiFactor(phoneNumber, session);
+    return this.native.verifyPhoneNumberForMultiFactor(
+      phoneNumber,
+      session,
+      this._settings.autoOTPVerify,
+    );
   }
 
   resolveMultiFactorSignIn(session, verificationId, verificationCode) {
