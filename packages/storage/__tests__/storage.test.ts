@@ -213,7 +213,7 @@ describe('Storage', function () {
     beforeEach(function () {
       storageV9Deprecation = createCheckV9Deprecation(['storage']);
 
-      storageRefV9Deprecation = createCheckV9Deprecation(['storage', 'StorageReference']);
+      storageRefV9Deprecation = createCheckV9Deprecation(['storage', 'Reference']);
 
       staticsV9Deprecation = createCheckV9Deprecation(['storage', 'statics']);
 
@@ -250,6 +250,7 @@ describe('Storage', function () {
         const storage = getStorage();
         storageV9Deprecation(
           () => connectStorageEmulator(storage, 'localhost', 8080),
+          // @ts-expect-error Combines modular and namespace API
           () => storage.useEmulator('localhost', 8080),
           'useEmulator',
         );
@@ -259,150 +260,165 @@ describe('Storage', function () {
         const storage = getStorage();
         storageV9Deprecation(
           () => ref(storage, 'foo'),
+          // @ts-expect-error Combines modular and namespace API
           () => storage.ref('foo'),
           'ref',
         );
       });
 
       it('refFromURL()', function () {
-        const storage = firebase.app().storage();
+        const storage = getStorage();
         storageV9Deprecation(
           () => refFromURL(storage, 'gs://flutterfire-e2e-tests.appspot.com/flutter-tsts'),
+          // @ts-expect-error Combines modular and namespace API
           () => storage.refFromURL('gs://flutterfire-e2e-tests.appspot.com/flutter-tsts'),
           'refFromURL',
         );
       });
 
       it('setMaxOperationRetryTime()', function () {
-        const storage = firebase.app().storage();
+        const storage = getStorage();
         storageV9Deprecation(
           () => setMaxOperationRetryTime(storage, 1000),
+          // @ts-expect-error Combines modular and namespace API
           () => storage.setMaxOperationRetryTime(1000),
           'setMaxOperationRetryTime',
         );
       });
 
       it('setMaxUploadRetryTime()', function () {
-        const storage = firebase.app().storage();
+        const storage = getStorage();
         storageV9Deprecation(
           () => setMaxUploadRetryTime(storage, 1000),
+          // @ts-expect-error Combines modular and namespace API
           () => storage.setMaxUploadRetryTime(1000),
           'setMaxUploadRetryTime',
         );
       });
 
       it('setMaxDownloadRetryTime()', function () {
-        const storage = firebase.app().storage();
+        const storage = getStorage();
         storageV9Deprecation(
           () => setMaxDownloadRetryTime(storage, 1000),
+          // @ts-expect-error Combines modular and namespace API
           () => storage.setMaxDownloadRetryTime(1000),
           'setMaxDownloadRetryTime',
         );
       });
 
       it('delete()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
         storageRefV9Deprecation(
           () => deleteObject(storageRef),
+          // @ts-expect-error Combines modular and namespace API
           () => storageRef.delete(),
           'delete',
         );
       });
 
       it('getDownloadURL()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
         storageRefV9Deprecation(
           () => getDownloadURL(storageRef),
+          // @ts-expect-error Combines modular and namespace API
           () => storageRef.getDownloadURL(),
           'getDownloadURL',
         );
       });
 
       it('getMetadata()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
         storageRefV9Deprecation(
           () => getMetadata(storageRef),
+          // @ts-expect-error Combines modular and namespace API
           () => storageRef.getMetadata(),
           'getMetadata',
         );
       });
 
       it('list()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
         storageRefV9Deprecation(
           () => list(storageRef),
+          // @ts-expect-error Combines modular and namespace API
           () => storageRef.list(),
           'list',
         );
       });
 
       it('listAll()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
         storageRefV9Deprecation(
           () => listAll(storageRef),
+          // @ts-expect-error Combines modular and namespace API
           () => storageRef.listAll(),
           'listAll',
         );
       });
 
       it('updateMetadata()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
         storageRefV9Deprecation(
           () => updateMetadata(storageRef, {}),
+          // @ts-expect-error Combines modular and namespace API
           () => storageRef.updateMetadata({}),
           'updateMetadata',
         );
       });
 
       it('put()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
         storageRefV9Deprecation(
           () => uploadBytesResumable(storageRef, new Blob(['foo']), {}),
+          // @ts-expect-error Combines modular and namespace API
           () => storageRef.put(new Blob(['foo']), {}),
           'put',
         );
       });
 
       it('putString()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
         storageRefV9Deprecation(
           () => uploadString(storageRef, 'foo', StringFormat.RAW),
+          // @ts-expect-error Combines modular and namespace API
           () => storageRef.putString('foo', StringFormat.RAW),
           'putString',
         );
       });
 
       it('putFile()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
         storageRefV9Deprecation(
           () => putFile(storageRef, 'foo', {}),
+          // @ts-expect-error Combines modular and namespace API
           () => storageRef.putFile('foo', {}),
           'putFile',
         );
       });
 
       it('writeToFile()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
         storageRefV9Deprecation(
           () => writeToFile(storageRef, 'foo'),
+          // @ts-expect-error Combines modular and namespace API
           () => storageRef.writeToFile('foo'),
           'writeToFile',
         );
       });
 
       it('toString()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
         storageRefV9Deprecation(
           () => toString(storageRef),
           () => storageRef.toString(),
@@ -411,10 +427,11 @@ describe('Storage', function () {
       });
 
       it('child()', function () {
-        const storage = firebase.app().storage();
-        const storageRef = storage.ref('foo');
+        const storage = getStorage();
+        const storageRef = ref(storage, 'foo');
         storageRefV9Deprecation(
           () => child(storageRef, 'bar'),
+          // @ts-expect-error Combines modular and namespace API
           () => storageRef.child('bar'),
           'child',
         );

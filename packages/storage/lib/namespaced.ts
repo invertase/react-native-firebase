@@ -27,14 +27,17 @@ import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
+  type ModuleConfig,
 } from '@react-native-firebase/app/dist/module/internal';
-import StorageReference from './StorageReference';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import Reference from './StorageReference';
 import { StringFormat, TaskEvent, TaskState } from './StorageStatics';
 import { getGsUrlParts, getHttpUrlParts, handleStorageEvent } from './utils';
-import version from './version';
+import { version } from './version';
 import fallBackModule from './web/RNFBStorageModule';
+import type { StorageInternal } from './types/internal';
+import type { FirebaseStorageTypes } from './types/namespaced';
 
-// import { STATICS } from '@react-native-firebase/storage';
 const statics = {
   StringFormat,
   TaskEvent,
@@ -45,10 +48,20 @@ const namespace = 'storage';
 const nativeEvents = ['storage_event'];
 const nativeModuleName = 'RNFBStorageModule';
 
-class FirebaseStorageModule extends FirebaseModule {
-  constructor(app, config, bucketUrl) {
-    super(app, config, bucketUrl);
-    if (bucketUrl === undefined) {
+class FirebaseStorageModule extends FirebaseModule<typeof nativeModuleName> {
+  emulatorHost: string | undefined;
+  emulatorPort: number;
+  _maxUploadRetryTime: number;
+  _maxDownloadRetryTime: number;
+  _maxOperationRetryTime: number;
+
+  constructor(
+    app: ReactNativeFirebase.FirebaseAppBase,
+    config: ModuleConfig,
+    bucketUrl?: string | null,
+  ) {
+    super(app, config, bucketUrl ?? undefined);
+    if (bucketUrl == null) {
       this._customUrlOrRegion = `gs://${app.options.storageBucket}`;
     } else if (!isString(bucketUrl) || !bucketUrl.startsWith('gs://')) {
       throw new Error(
@@ -57,7 +70,7 @@ class FirebaseStorageModule extends FirebaseModule {
     }
 
     this.emitter.addListener(
-      this.eventNameForApp(nativeEvents[0]),
+      this.eventNameForApp(nativeEvents[0]!),
       handleStorageEvent.bind(null, this),
     );
 
@@ -72,46 +85,46 @@ class FirebaseStorageModule extends FirebaseModule {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setmaxuploadretrytime
    */
-  get maxUploadRetryTime() {
+  get maxUploadRetryTime(): number {
     return this._maxUploadRetryTime;
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setmaxdownloadretrytime
    */
-  get maxDownloadRetryTime() {
+  get maxDownloadRetryTime(): number {
     return this._maxDownloadRetryTime;
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#maxoperationretrytime
    */
-  get maxOperationRetryTime() {
+  get maxOperationRetryTime(): number {
     return this._maxOperationRetryTime;
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#ref
    */
-  ref(path = '/') {
+  ref(path: string = '/'): Reference {
     if (!isString(path)) {
       throw new Error("firebase.storage().ref(*) 'path' must be a string value.");
     }
-    return createDeprecationProxy(new StorageReference(this, path));
+    return createDeprecationProxy(new Reference(this, path)) as Reference;
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#refFromURL
    */
-  refFromURL(url) {
+  refFromURL(url: string): Reference {
     if (!isString(url) || (!url.startsWith('gs://') && !url.startsWith('http'))) {
       throw new Error(
         "firebase.storage().refFromURL(*) 'url' must be a string value and begin with 'gs://' or 'https://'.",
       );
     }
 
-    let path;
-    let bucket;
+    let path: string;
+    let bucket: string;
 
     if (url.startsWith('http')) {
       const parts = getHttpUrlParts(url);
@@ -126,13 +139,13 @@ class FirebaseStorageModule extends FirebaseModule {
     }
 
     const storageInstance = this.app.storage(bucket);
-    return new StorageReference(storageInstance, path);
+    return new Reference(storageInstance as unknown as StorageInternal, path);
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxOperationRetryTime
    */
-  setMaxOperationRetryTime(time) {
+  setMaxOperationRetryTime(time: number): Promise<void> {
     if (!isNumber(time)) {
       throw new Error(
         "firebase.storage().setMaxOperationRetryTime(*) 'time' must be a number value.",
@@ -146,7 +159,7 @@ class FirebaseStorageModule extends FirebaseModule {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxUploadRetryTime
    */
-  setMaxUploadRetryTime(time) {
+  setMaxUploadRetryTime(time: number): Promise<void> {
     if (!isNumber(time)) {
       throw new Error("firebase.storage().setMaxUploadRetryTime(*) 'time' must be a number value.");
     }
@@ -158,7 +171,7 @@ class FirebaseStorageModule extends FirebaseModule {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxDownloadRetryTime
    */
-  setMaxDownloadRetryTime(time) {
+  setMaxDownloadRetryTime(time: number): Promise<void> {
     if (!isNumber(time)) {
       throw new Error(
         "firebase.storage().setMaxDownloadRetryTime(*) 'time' must be a number value.",
@@ -169,7 +182,11 @@ class FirebaseStorageModule extends FirebaseModule {
     return this.native.setMaxDownloadRetryTime(time);
   }
 
-  useEmulator(host, port) {
+  useEmulator(
+    host: string,
+    port: number,
+    _options?: FirebaseStorageTypes.EmulatorMockTokenOptions,
+  ): void {
     if (!host || !isString(host) || !port || !isNumber(port)) {
       throw new Error('firebase.storage().useEmulator() takes a non-empty host and port');
     }
@@ -191,16 +208,15 @@ class FirebaseStorageModule extends FirebaseModule {
     this.emulatorHost = host;
     this.emulatorPort = port;
     this.native.useEmulator(_host, port, this._customUrlOrRegion);
-    return [_host, port]; // undocumented return, just used to unit test android host remapping
+    // @ts-ignore undocumented return, just used to unit test android host remapping
+    return [_host, port];
   }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/storage';
 export const SDK_VERSION = version;
 
-// import storage from '@react-native-firebase/storage';
-// storage().X(...);
-export default createModuleNamespace({
+const storageNamespace = createModuleNamespace({
   statics,
   version,
   namespace,
@@ -212,11 +228,31 @@ export default createModuleNamespace({
   ModuleClass: FirebaseStorageModule,
 });
 
+type StorageNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  FirebaseStorageTypes.Module,
+  FirebaseStorageTypes.Statics
+> & {
+  storage: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+    FirebaseStorageTypes.Module,
+    FirebaseStorageTypes.Statics
+  >;
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+// import storage from '@react-native-firebase/storage';
+// storage().X(...);
+export default storageNamespace as unknown as StorageNamespace;
+
 // import storage, { firebase } from '@react-native-firebase/storage';
 // storage().X(...);
 // firebase.storage().X(...);
-export const firebase = getFirebaseRoot();
-
-export * from './modular';
+export const firebase =
+  getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
+    'storage',
+    FirebaseStorageTypes.Module,
+    FirebaseStorageTypes.Statics,
+    true
+  >;
 
 setReactNativeModule(nativeModuleName, fallBackModule);

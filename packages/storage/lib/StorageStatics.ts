@@ -15,12 +15,5 @@
  *
  */
 
-import StorageTask from './StorageTask';
-
-const DOWNLOAD_TASK = 'download';
-
-export default class StorageDownloadTask extends StorageTask {
-  constructor(storageRef, beginTaskFn) {
-    super(DOWNLOAD_TASK, storageRef, beginTaskFn);
-  }
-}
+// Runtime constants live in `types/storage.ts` (alongside their derived-union types).
+export { StringFormat, TaskEvent, TaskState } from './types/storage';

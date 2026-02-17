@@ -15,19 +15,19 @@
  *
  */
 
-export const StringFormat = {
-  RAW: 'raw',
-  BASE64: 'base64',
-  BASE64URL: 'base64url',
-  DATA_URL: 'data_url',
-};
-export const TaskEvent = {
-  STATE_CHANGED: 'state_changed',
-};
-export const TaskState = {
-  RUNNING: 'running',
-  PAUSED: 'paused',
-  SUCCESS: 'success',
-  CANCELLED: 'cancelled',
-  ERROR: 'error',
-};
+export type NextFn<T> = (value: T) => void;
+export type ErrorFn = (error: Error) => void;
+export type CompleteFn = () => void;
+
+export interface Observer<T> {
+  next: NextFn<T>;
+  error: ErrorFn;
+  complete: CompleteFn;
+}
+
+export type PartialObserver<T> = Partial<Observer<T>>;
+
+/**
+ * A function that unsubscribes from an event listener.
+ */
+export type Unsubscribe = () => void;

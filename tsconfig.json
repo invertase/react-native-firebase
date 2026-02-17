@@ -1,16 +1,12 @@
 {
   "include": [
     "packages/ai/lib/types/polyfills.d.ts",
-    "packages/app-check/lib/index.d.ts",
-    "packages/app-check/lib/modular/index.d.ts",
     "packages/app-distribution/lib/index.d.ts",
     "packages/app-distribution/lib/modular/index.d.ts",
     "packages/app/lib/internal/global.d.ts",
     "packages/app/lib/internal/web/memidb/index.d.ts",
     "packages/auth/lib/index.d.ts",
     "packages/auth/lib/modular/index.d.ts",
-    "packages/crashlytics/lib/index.d.ts",
-    "packages/crashlytics/lib/modular/index.d.ts",
     "packages/database/lib/index.d.ts",
     "packages/database/lib/modular/index.d.ts",
     "packages/database/lib/modular/query.d.ts",
@@ -35,8 +31,6 @@
     "packages/perf/lib/modular/index.d.ts",
     "packages/remote-config/lib/index.d.ts",
     "packages/remote-config/lib/modular/index.d.ts",
-    "packages/storage/lib/index.d.ts",
-    "packages/storage/lib/modular/index.d.ts",
     "packages/functions/type-test.ts",
     "packages/app/type-test.ts",
     "packages/app-check/type-test.ts",
@@ -76,7 +70,11 @@
     "lib": ["es2015", "es2016", "esnext", "dom"],
     "types": ["react-native", "node"],
     "paths": {
-      "@react-native-firebase/*": ["./packages/*/lib/index.d.ts"]
+      "@react-native-firebase/*": ["./packages/*/lib/index.d.ts"],
+      "@react-native-firebase/app": ["packages/app/dist/typescript/lib"],
+      "@react-native-firebase/app/dist/module/types/common": [
+        "packages/app/dist/typescript/lib/types/common"
+      ],
     }
   },
   "exclude": ["node_modules", "**/*.spec.ts", "packages/**/dist"]
