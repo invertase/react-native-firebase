@@ -15,13 +15,19 @@
  *
  */
 
-// Export types from types/appcheck
-export type * from './types/appcheck';
+export type NextFn<T> = (value: T) => void;
+export type ErrorFn = (error: Error) => void;
+export type CompleteFn = () => void;
 
-// Export modular API functions
-export * from './modular';
+export interface Observer<T> {
+  next: NextFn<T>;
+  error: ErrorFn;
+  complete: CompleteFn;
+}
 
-// Export namespaced API
-export type { FirebaseAppCheckTypes } from './types/namespaced';
-export * from './namespaced';
-export { default } from './namespaced';
+export type PartialObserver<T> = Partial<Observer<T>>;
+
+/**
+ * A function that unsubscribes from an event listener.
+ */
+export type Unsubscribe = () => void;
