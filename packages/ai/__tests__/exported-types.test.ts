@@ -80,6 +80,11 @@ import {
   StartChatParams,
   TextPart,
   ToolConfig,
+  URLContext,
+  URLContextMetadata,
+  URLContextTool,
+  URLMetadata,
+  URLRetrievalStatus,
   UsageMetadata,
   VideoMetadata,
   WebAttribution,
@@ -398,6 +403,26 @@ describe('AI', function () {
       expect(typeof _typeCheck).toBeDefined();
     });
 
+    it('`URLContext` type is properly exposed to end user', function () {
+      const _typeCheck: URLContext = {} as URLContext;
+      expect(typeof _typeCheck).toBeDefined();
+    });
+
+    it('`URLContextMetadata` type is properly exposed to end user', function () {
+      const _typeCheck: URLContextMetadata = {} as URLContextMetadata;
+      expect(typeof _typeCheck).toBeDefined();
+    });
+
+    it('`URLContextTool` type is properly exposed to end user', function () {
+      const _typeCheck: URLContextTool = { urlContext: {} };
+      expect(typeof _typeCheck).toBeDefined();
+    });
+
+    it('`URLMetadata` type is properly exposed to end user', function () {
+      const _typeCheck: URLMetadata = {} as URLMetadata;
+      expect(typeof _typeCheck).toBeDefined();
+    });
+
     it('`UsageMetadata` type is properly exposed to end user', function () {
       const _typeCheck: UsageMetadata = {} as UsageMetadata;
       expect(typeof _typeCheck).toBeDefined();
@@ -467,6 +492,16 @@ describe('AI', function () {
     it('`SchemaType` enum is properly exposed to end user', function () {
       // Const enum - test by accessing a property
       expect(SchemaType.STRING).toBeDefined();
+    });
+
+    it('`URLRetrievalStatus` constant is properly exposed to end user', function () {
+      expect(URLRetrievalStatus).toBeDefined();
+      expect(URLRetrievalStatus.URL_RETRIEVAL_STATUS_SUCCESS).toBe(
+        'URL_RETRIEVAL_STATUS_SUCCESS',
+      );
+      expect(URLRetrievalStatus.URL_RETRIEVAL_STATUS_UNSPECIFIED).toBe(
+        'URL_RETRIEVAL_STATUS_UNSPECIFIED',
+      );
     });
   });
 });
