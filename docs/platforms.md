@@ -28,26 +28,26 @@ Below is a table outlining which Firebase modules are supported on each platform
 
 | Firebase Service | Android | iOS | Other |
 | ---------------- | :-----: | :-: | :---: |
-| analytics        |    ✅    |  ✅  |   ✅   |
-| app-check        |    ⚠️   |  ⚠️ |   ⚠️  |
-| app-distribution |    ✅    |  ✅  |   ❌   |
-| app              |    ✅    |  ✅  |   ✅   |
-| auth             |    ✅    |  ✅  |   ⚠️  |
-| crashlytics      |    ✅    |  ✅  |   ❌   |
-| database         |    ✅    |  ✅  |   ✅   |
-| firestore        |    ✅    |  ✅  |   ⚠️  |
-| functions        |    ✅    |  ✅  |   ✅   |
-| in-app-messaging |    ✅    |  ✅  |   ❌   |
-| installations    |    ✅    |  ✅  |   ❌   |
-| messaging        |    ✅    |  ✅  |   ❌   |
-| ml               |    ✅    |  ✅  |   ❌   |
-| perf             |    ✅    |  ✅  |   ❌   |
-| remote-config    |    ✅    |  ✅  |   ✅   |
-| storage          |    ✅    |  ✅  |   ⚠️  |
+| analytics        |    ✅   |  ✅  |   ✅  |
+| app-check        |    ⚠️   |  ⚠️  |   ⚠️  |
+| app-distribution |    ✅   |  ✅  |   ❌  |
+| app              |    ✅   |  ✅  |   ✅  |
+| auth             |    ✅   |  ✅  |   ⚠️  |
+| crashlytics      |    ✅   |  ✅  |   ❌  |
+| database         |    ✅   |  ✅  |   ✅  |
+| firestore        |    ✅   |  ✅  |   ⚠️  |
+| functions        |    ✅   |  ✅  |   ✅  |
+| in-app-messaging |    ✅   |  ✅  |   ❌  |
+| installations    |    ✅   |  ✅  |   ❌  |
+| messaging        |    ✅   |  ✅  |   ❌  |
+| ml               |    ✅   |  ✅  |   ❌  |
+| perf             |    ✅   |  ✅  |   ❌  |
+| remote-config    |    ✅   |  ✅  |   ✅  |
+| storage          |    ✅   |  ✅  |   ⚠️  |
 
-* ✅ (supported)
-* ⚠️ (partial support) - see notes below
-* ❌ (not supported)
+- ✅ (supported)
+- ⚠️ (partial support) - see notes below
+- ❌ (not supported)
 
 
 ## Other Platforms
