@@ -15,26 +15,26 @@
  *
  */
 
-import FirestoreFieldValue from '../FirestoreFieldValue';
+import FieldValue from '../FieldValue';
 
-export const FieldValue = FirestoreFieldValue;
+export { FieldValue };
 
-export function deleteField(): FirestoreFieldValue {
+export function deleteField(): FieldValue {
   return FieldValue.delete();
 }
 
-export function serverTimestamp(): FirestoreFieldValue {
+export function serverTimestamp(): FieldValue {
   return FieldValue.serverTimestamp();
 }
 
-export function arrayUnion(...elements: unknown[]): FirestoreFieldValue {
+export function arrayUnion(...elements: unknown[]): FieldValue {
   return FieldValue.arrayUnion(...elements);
 }
 
-export function arrayRemove(...elements: unknown[]): FirestoreFieldValue {
+export function arrayRemove(...elements: unknown[]): FieldValue {
   return FieldValue.arrayRemove(...elements);
 }
 
-export function increment(n: number): FirestoreFieldValue {
+export function increment(n: number): FieldValue {
   return FieldValue.increment(n);
 }

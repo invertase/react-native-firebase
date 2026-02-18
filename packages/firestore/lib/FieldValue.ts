@@ -28,7 +28,7 @@ function validateArrayElements(elements: unknown[]): void {
   for (let i = 0; i < elements.length; i++) {
     const element = elements[i];
 
-    if (element instanceof FirestoreFieldValue) {
+    if (element instanceof FieldValue) {
       throw new Error('FieldValue instance cannot be used with other FieldValue methods.');
     }
 
@@ -38,7 +38,7 @@ function validateArrayElements(elements: unknown[]): void {
   }
 }
 
-export default class FirestoreFieldValue {
+export default class FieldValue {
   _type: string;
   _elements: unknown;
 
@@ -53,23 +53,23 @@ export default class FirestoreFieldValue {
     this._elements = elements;
   }
 
-  static delete(): FirestoreFieldValue {
-    return new FirestoreFieldValue(true, TypeFieldValueDelete);
+  static delete(): FieldValue {
+    return new FieldValue(true, TypeFieldValueDelete);
   }
 
-  static increment(n: number): FirestoreFieldValue {
+  static increment(n: number): FieldValue {
     if (!isNumber(n)) {
       throw new Error("firebase.firestore.FieldValue.increment(*) 'n' expected a number value.");
     }
 
-    return new FirestoreFieldValue(true, TypeFieldValueIncrement, n);
+    return new FieldValue(true, TypeFieldValueIncrement, n);
   }
 
-  static serverTimestamp(): FirestoreFieldValue {
-    return new FirestoreFieldValue(true, TypeFieldValueTimestamp);
+  static serverTimestamp(): FieldValue {
+    return new FieldValue(true, TypeFieldValueTimestamp);
   }
 
-  static arrayUnion(...elements: unknown[]): FirestoreFieldValue {
+  static arrayUnion(...elements: unknown[]): FieldValue {
     try {
       validateArrayElements(elements);
     } catch (e) {
@@ -78,10 +78,10 @@ export default class FirestoreFieldValue {
       );
     }
 
-    return new FirestoreFieldValue(true, TypeFieldValueUnion, buildNativeArray(elements));
+    return new FieldValue(true, TypeFieldValueUnion, buildNativeArray(elements));
   }
 
-  static arrayRemove(...elements: unknown[]): FirestoreFieldValue {
+  static arrayRemove(...elements: unknown[]): FieldValue {
     try {
       validateArrayElements(elements);
     } catch (e) {
@@ -90,11 +90,11 @@ export default class FirestoreFieldValue {
       );
     }
 
-    return new FirestoreFieldValue(true, TypeFieldValueRemove, buildNativeArray(elements));
+    return new FieldValue(true, TypeFieldValueRemove, buildNativeArray(elements));
   }
 
-  isEqual(other: FirestoreFieldValue): boolean {
-    if (!(other instanceof FirestoreFieldValue)) {
+  isEqual(other: FieldValue): boolean {
+    if (!(other instanceof FieldValue)) {
       throw new Error(
         "firebase.firestore.FieldValue.isEqual(*) 'other' expected a FieldValue instance.",
       );
@@ -107,4 +107,4 @@ export default class FirestoreFieldValue {
   }
 }
 
-provideFieldValueClass(FirestoreFieldValue);
+provideFieldValueClass(FieldValue);

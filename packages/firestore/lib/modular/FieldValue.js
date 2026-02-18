@@ -1,6 +1,6 @@
-import FirestoreFieldValue from '../FirestoreFieldValue';
+import FieldValue from '../FirestoreFieldValue';
 
-export const FieldValue = FirestoreFieldValue;
+export const FieldValue = FieldValue;
 
 /**
  * @returns {FieldValue}

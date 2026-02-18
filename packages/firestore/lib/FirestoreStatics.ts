@@ -19,7 +19,7 @@ import { createDeprecationProxy } from '@react-native-firebase/app/dist/module/c
 import { getReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import FirestoreBlob from './FirestoreBlob';
 import FieldPath from './FieldPath';
-import FirestoreFieldValue from './FirestoreFieldValue';
+import FieldValue from './FieldValue';
 import { Filter } from './FirestoreFilter';
 import FirestoreGeoPoint from './FirestoreGeoPoint';
 import FirestoreTimestamp from './FirestoreTimestamp';
@@ -30,7 +30,7 @@ type FirestoreLogLevel = 'debug' | 'error' | 'silent';
 const FirestoreStatics = {
   Blob: FirestoreBlob,
   FieldPath: FieldPath,
-  FieldValue: createDeprecationProxy(FirestoreFieldValue),
+  FieldValue: createDeprecationProxy(FieldValue),
   GeoPoint: FirestoreGeoPoint,
   Timestamp: createDeprecationProxy(FirestoreTimestamp),
   Filter: createDeprecationProxy(Filter),
