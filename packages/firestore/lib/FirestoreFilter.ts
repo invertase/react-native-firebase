@@ -21,7 +21,7 @@ import {
   isString,
   isUndefined,
 } from '@react-native-firebase/app/dist/module/common';
-import { fromDotSeparatedString } from './FirestoreFieldPath';
+import { fromDotSeparatedString } from './FieldPath';
 import { OPERATORS } from './FirestoreQueryModifiers';
 import { generateNativeData } from './utils/serialize';
 

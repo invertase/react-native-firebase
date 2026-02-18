@@ -16,7 +16,7 @@
  */
 
 import { isNumber } from '@react-native-firebase/app/dist/module/common';
-import FieldPath, { DOCUMENT_ID } from './FirestoreFieldPath';
+import FieldPath, { DOCUMENT_ID } from './FieldPath';
 import { buildNativeArray, generateNativeData } from './utils/serialize';
 
 export const OPERATORS: Record<string, string> = {

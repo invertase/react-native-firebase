@@ -24,7 +24,7 @@ import {
   isString,
   isUndefined,
 } from '@react-native-firebase/app/dist/module/common';
-import FieldPath, { fromDotSeparatedString } from '../FirestoreFieldPath';
+import FieldPath, { fromDotSeparatedString } from '../FieldPath';
 
 export function extractFieldPathData(data: unknown, segments: string[]): unknown {
   if (!isObject(data)) {

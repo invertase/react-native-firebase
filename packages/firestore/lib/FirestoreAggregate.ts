@@ -15,7 +15,7 @@
  *
  */
 
-import FieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
+import FieldPath, { fromDotSeparatedString } from './FieldPath';
 
 import type FirestorePath from './FirestorePath';
 import type FirestoreQuery from './FirestoreQuery';

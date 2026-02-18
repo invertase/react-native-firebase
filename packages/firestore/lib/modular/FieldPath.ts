@@ -15,9 +15,9 @@
  *
  */
 
-import FieldPath from '../FirestoreFieldPath';
+import FieldPath from '../FieldPath';
 
-export const FieldPath = FieldPath;
+export { FieldPath };
 
 export function documentId(): FieldPath {
   return FieldPath.documentId();

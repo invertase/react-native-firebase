@@ -26,7 +26,7 @@ import {
   isUndefined,
 } from '@react-native-firebase/app/dist/module/common';
 import FirestoreBlob from '../FirestoreBlob';
-import { DOCUMENT_ID } from '../FirestoreFieldPath';
+import { DOCUMENT_ID } from '../FieldPath';
 import FirestoreGeoPoint from '../FirestoreGeoPoint';
 import FirestorePath from '../FirestorePath';
 import FirestoreTimestamp from '../FirestoreTimestamp';

@@ -27,7 +27,7 @@ import {
 import NativeError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
 import { FirestoreAggregateQuery } from './FirestoreAggregate';
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
-import FieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
+import FieldPath, { fromDotSeparatedString } from './FieldPath';
 import { _Filter, generateFilters } from './FirestoreFilter';
 import FirestoreQueryModifiers from './FirestoreQueryModifiers';
 import FirestoreQuerySnapshot from './FirestoreQuerySnapshot';
