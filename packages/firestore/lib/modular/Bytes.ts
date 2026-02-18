@@ -16,8 +16,7 @@
  */
 
 import FirestoreBlob from '../FirestoreBlob';
-
-type FirestoreBlobInternal = FirestoreBlob & { _binaryString: string };
+import type { FirestoreBlobInternal } from '../types/internal';
 
 export class Bytes extends FirestoreBlob {
   constructor(blob: FirestoreBlobInternal) {

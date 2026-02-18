@@ -30,6 +30,7 @@ import type {
 } from './firestore';
 import type { QueryConstraint } from '../modular/query';
 import type { QuerySnapshot } from '../modular/snapshot';
+import FirestoreBlob from 'lib/FirestoreBlob';
 
 // Helper type for wrappers that forward MODULAR_DEPRECATION_ARG via .call(...).
 export type WithModularDeprecationArg<F> = F extends (...args: infer P) => infer R
@@ -126,3 +127,5 @@ export interface PersistentCacheIndexManagerInternal extends PersistentCacheInde
   disableIndexAutoCreation(...deprecationArg: unknown[]): Promise<void>;
   deleteAllIndexes(...deprecationArg: unknown[]): Promise<void>;
 }
+
+export type FirestoreBlobInternal = FirestoreBlob & { _binaryString: string };
