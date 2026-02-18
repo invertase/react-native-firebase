@@ -1,0 +1,83 @@
+/*
+ * Copyright (c) 2016-present Invertase Limited & Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this library except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+import { isString } from '@react-native-firebase/app/dist/module/common';
+
+const RESERVED = new RegExp('[~*/\\[\\]]');
+
+export default class FieldPath {
+  static documentId(): FieldPath {
+    return DOCUMENT_ID;
+  }
+
+  _segments: string[];
+
+  constructor(...segments: string[]) {
+    if (segments.length === 0) {
+      throw new Error('firebase.firestore.FieldPath cannot construct FieldPath with no segments.');
+    }
+
+    for (let i = 0; i < segments.length; i++) {
+      const segment = segments[i];
+      if (!isString(segment) || segment === '') {
+        throw new Error(
+          `firebase.firestore.FieldPath invalid segment at index ${i}, expected a non-empty string.`,
+        );
+      }
+    }
+
+    this._segments = segments;
+  }
+
+  isEqual(other: FieldPath): boolean {
+    if (!(other instanceof FieldPath)) {
+      throw new Error(
+        "firebase.firestore.FieldPath.isEqual(*) 'other' expected instance of FieldPath.",
+      );
+    }
+
+    return this._toPath() === other._toPath();
+  }
+
+  _toPath(): string {
+    return this._segments.join('.');
+  }
+
+  _toArray(): string[] {
+    return this._segments;
+  }
+}
+
+export const DOCUMENT_ID = new FieldPath('__name__');
+
+export function fromDotSeparatedString(path: string): FieldPath {
+  if (path === '' || path.startsWith('.') || path.endsWith('.') || path.indexOf('..') > 0) {
+    throw new Error(
+      "Invalid field path. Paths must not be empty, begin with '.', end with '.', or contain '..'.",
+    );
+  }
+
+  const found = path.search(RESERVED);
+
+  if (found > 0) {
+    throw new Error(
+      `Invalid field path (${path}). Paths must not contain '~', '*', '/', '[', or ']'.`,
+    );
+  }
+
+  return new FieldPath(...path.split('.'));
+}
