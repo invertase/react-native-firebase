@@ -24,7 +24,7 @@ import {
   isString,
   isUndefined,
 } from '@react-native-firebase/app/dist/module/common';
-import FirestoreFieldPath, { fromDotSeparatedString } from '../FirestoreFieldPath';
+import FieldPath, { fromDotSeparatedString } from '../FirestoreFieldPath';
 
 export function extractFieldPathData(data: unknown, segments: string[]): unknown {
   if (!isObject(data)) {
@@ -59,7 +59,7 @@ export function parseUpdateArgs(args: unknown[]): Record<string, unknown> {
       const value = args[i + 1];
       if (isString(key)) {
         data[key] = value;
-      } else if (key instanceof FirestoreFieldPath) {
+      } else if (key instanceof FieldPath) {
         data[key._toPath()] = value;
       } else {
         throw new Error(`argument at index ${i} must be a string or FieldPath`);
@@ -101,13 +101,13 @@ export function parseSetOptions(options?: unknown): Record<string, unknown> {
     const mergeFields = opts.mergeFields as unknown[];
     for (let i = 0; i < mergeFields.length; i++) {
       const field = mergeFields[i];
-      if (!isString(field) && !(field instanceof FirestoreFieldPath)) {
+      if (!isString(field) && !(field instanceof FieldPath)) {
         throw new Error(
           `'options.mergeFields' all fields must be of type string or FieldPath, but the value at index ${i} was ${typeof field}`,
         );
       }
 
-      if (field instanceof FirestoreFieldPath) {
+      if (field instanceof FieldPath) {
         (out.mergeFields as string[]).push(field._toPath());
       } else {
         try {

@@ -19,7 +19,7 @@ import { isArray, isString } from '@react-native-firebase/app/dist/module/common
 import FirestoreDocumentReference, {
   provideDocumentSnapshotClass,
 } from './FirestoreDocumentReference';
-import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
+import FieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
 import FirestorePath from './FirestorePath';
 import FirestoreSnapshotMetadata from './FirestoreSnapshotMetadata';
 import { extractFieldPathData } from './utils';
@@ -92,10 +92,10 @@ export default class FirestoreDocumentSnapshot {
     return this._data;
   }
 
-  get(fieldPath: string | FirestoreFieldPath | string[]): unknown {
+  get(fieldPath: string | FieldPath | string[]): unknown {
     if (
       !isString(fieldPath) &&
-      !(fieldPath instanceof FirestoreFieldPath) &&
+      !(fieldPath instanceof FieldPath) &&
       !Array.isArray(fieldPath)
     ) {
       throw new Error(
@@ -103,7 +103,7 @@ export default class FirestoreDocumentSnapshot {
       );
     }
 
-    let path: FirestoreFieldPath;
+    let path: FieldPath;
 
     if (isString(fieldPath)) {
       try {
@@ -114,7 +114,7 @@ export default class FirestoreDocumentSnapshot {
         );
       }
     } else if (isArray(fieldPath)) {
-      path = new FirestoreFieldPath(...fieldPath);
+      path = new FieldPath(...fieldPath);
     } else {
       path = fieldPath;
     }

@@ -16,7 +16,7 @@
  */
 
 import { isNumber } from '@react-native-firebase/app/dist/module/common';
-import FirestoreFieldPath, { DOCUMENT_ID } from './FirestoreFieldPath';
+import FieldPath, { DOCUMENT_ID } from './FirestoreFieldPath';
 import { buildNativeArray, generateNativeData } from './utils/serialize';
 
 export const OPERATORS: Record<string, string> = {
@@ -46,14 +46,14 @@ const DIRECTIONS: Record<string, string> = {
 };
 
 export interface FilterDef {
-  fieldPath?: FirestoreFieldPath | string[];
+  fieldPath?: FieldPath | string[];
   operator: string;
   value?: unknown;
   queries?: FilterDef[] | Array<{ operator: unknown; queries?: unknown[] }>;
 }
 
 export interface OrderDef {
-  fieldPath: FirestoreFieldPath;
+  fieldPath: FieldPath;
   direction: string;
 }
 
@@ -109,21 +109,21 @@ export default class FirestoreQueryModifiers {
   }
 
   get filters(): Array<{
-    fieldPath?: FirestoreFieldPath | string[];
+    fieldPath?: FieldPath | string[];
     operator: string;
     value?: unknown;
     queries?: unknown[];
   }> {
     return this._filters.map(f => ({
       ...f,
-      fieldPath: f.fieldPath instanceof FirestoreFieldPath ? f.fieldPath._toArray() : f.fieldPath,
+      fieldPath: f.fieldPath instanceof FieldPath ? f.fieldPath._toArray() : f.fieldPath,
     }));
   }
 
-  get orders(): Array<{ fieldPath: FirestoreFieldPath | string[]; direction: string }> {
+  get orders(): Array<{ fieldPath: FieldPath | string[]; direction: string }> {
     return this._orders.map(f => ({
       ...f,
-      fieldPath: f.fieldPath instanceof FirestoreFieldPath ? f.fieldPath._toArray() : f.fieldPath,
+      fieldPath: f.fieldPath instanceof FieldPath ? f.fieldPath._toArray() : f.fieldPath,
     }));
   }
 
@@ -233,7 +233,7 @@ export default class FirestoreQueryModifiers {
     );
   }
 
-  where(fieldPath: FirestoreFieldPath, opStr: string, value: unknown): this {
+  where(fieldPath: FieldPath, opStr: string, value: unknown): this {
     const filter: FilterDef = {
       fieldPath,
       operator: OPERATORS[opStr] ?? opStr,
@@ -345,7 +345,7 @@ export default class FirestoreQueryModifiers {
     return !!DIRECTIONS[directionStr.toLowerCase()];
   }
 
-  orderBy(fieldPath: FirestoreFieldPath, directionStr?: string): this {
+  orderBy(fieldPath: FieldPath, directionStr?: string): this {
     const dir = directionStr ? DIRECTIONS[directionStr.toLowerCase()] : DIRECTIONS.asc;
     const order: OrderDef = {
       fieldPath: fieldPath,
@@ -381,7 +381,7 @@ export default class FirestoreQueryModifiers {
         this._validateOrderByCheck(filter.queries as FilterDef[]);
         continue;
       }
-      const filterFieldPath = (filter.fieldPath as FirestoreFieldPath)._toPath();
+      const filterFieldPath = (filter.fieldPath as FieldPath)._toPath();
 
       for (let k = 0; k < this._orders.length; k++) {
         const order = this._orders[k]!;

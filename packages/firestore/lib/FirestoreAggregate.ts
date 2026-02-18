@@ -15,7 +15,7 @@
  *
  */
 
-import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
+import FieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
 
 import type FirestorePath from './FirestorePath';
 import type FirestoreQuery from './FirestoreQuery';
@@ -89,16 +89,16 @@ export const AggregateType = {
 
 export class AggregateField {
   aggregateType: string;
-  _fieldPath: FirestoreFieldPath | undefined;
+  _fieldPath: FieldPath | undefined;
 
-  constructor(aggregateType: string, fieldPath?: FirestoreFieldPath) {
+  constructor(aggregateType: string, fieldPath?: FieldPath) {
     this.aggregateType = aggregateType;
     this._fieldPath = fieldPath;
   }
 }
 
-export function fieldPathFromArgument(path: string | FirestoreFieldPath): FirestoreFieldPath {
-  if (path instanceof FirestoreFieldPath) {
+export function fieldPathFromArgument(path: string | FieldPath): FieldPath {
+  if (path instanceof FieldPath) {
     return path;
   }
   if (typeof path === 'string') {

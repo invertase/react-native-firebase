@@ -27,7 +27,7 @@ import {
 import NativeError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
 import { FirestoreAggregateQuery } from './FirestoreAggregate';
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
-import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
+import FieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
 import { _Filter, generateFilters } from './FirestoreFilter';
 import FirestoreQueryModifiers from './FirestoreQueryModifiers';
 import FirestoreQuerySnapshot from './FirestoreQuerySnapshot';
@@ -120,18 +120,18 @@ export default class FirestoreQuery {
       if (modifiers._orders.length) {
         const lastOrder = modifiers._orders[modifiers._orders.length - 1]!;
         const lastPathStr =
-          lastOrder.fieldPath instanceof FirestoreFieldPath
+          lastOrder.fieldPath instanceof FieldPath
             ? lastOrder.fieldPath._toPath()
             : String(lastOrder.fieldPath);
         if (lastPathStr !== '__name__') {
           modifiers._orders.push({
-            fieldPath: new FirestoreFieldPath('__name__'),
+            fieldPath: new FieldPath('__name__'),
             direction: lastOrder.direction,
           });
         }
       } else {
         modifiers._orders.push({
-          fieldPath: new FirestoreFieldPath('__name__'),
+          fieldPath: new FieldPath('__name__'),
           direction: 'ASCENDING',
         });
       }
@@ -394,16 +394,16 @@ export default class FirestoreQuery {
   }
 
   orderBy(
-    fieldPath: string | FirestoreFieldPath,
+    fieldPath: string | FieldPath,
     directionStr?: string,
   ): ReturnType<typeof createDeprecationProxy> {
-    if (!isString(fieldPath) && !(fieldPath instanceof FirestoreFieldPath)) {
+    if (!isString(fieldPath) && !(fieldPath instanceof FieldPath)) {
       throw new Error(
         "firebase.firestore().collection().orderBy(*) 'fieldPath' must be a string or instance of FieldPath.",
       );
     }
 
-    let path: FirestoreFieldPath;
+    let path: FieldPath;
 
     if (isString(fieldPath)) {
       try {
@@ -485,13 +485,13 @@ export default class FirestoreQuery {
   }
 
   where(
-    fieldPathOrFilter: string | FirestoreFieldPath | _Filter,
+    fieldPathOrFilter: string | FieldPath | _Filter,
     opStr?: string,
     value?: unknown,
   ): ReturnType<typeof createDeprecationProxy> {
     if (
       !isString(fieldPathOrFilter) &&
-      !(fieldPathOrFilter instanceof FirestoreFieldPath) &&
+      !(fieldPathOrFilter instanceof FieldPath) &&
       !(fieldPathOrFilter instanceof _Filter)
     ) {
       throw new Error(
@@ -505,14 +505,14 @@ export default class FirestoreQuery {
       const filters = generateFilters(fieldPathOrFilter, this._modifiers);
       modifiers = this._modifiers._copy().filterWhere(filters as any);
     } else {
-      let path: FirestoreFieldPath;
+      let path: FieldPath;
       let op = opStr;
       let val = value;
 
       if (fieldPathOrFilter instanceof _Filter) {
         op = fieldPathOrFilter.operator as string;
         val = fieldPathOrFilter.value;
-        fieldPathOrFilter = fieldPathOrFilter.fieldPath as FirestoreFieldPath;
+        fieldPathOrFilter = fieldPathOrFilter.fieldPath as FieldPath;
       }
 
       if (isString(fieldPathOrFilter)) {

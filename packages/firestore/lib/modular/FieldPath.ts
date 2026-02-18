@@ -15,10 +15,10 @@
  *
  */
 
-import FirestoreFieldPath from '../FirestoreFieldPath';
+import FieldPath from '../FirestoreFieldPath';
 
-export const FieldPath = FirestoreFieldPath;
+export const FieldPath = FieldPath;
 
-export function documentId(): FirestoreFieldPath {
+export function documentId(): FieldPath {
   return FieldPath.documentId();
 }

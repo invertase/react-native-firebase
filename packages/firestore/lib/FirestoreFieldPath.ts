@@ -19,8 +19,8 @@ import { isString } from '@react-native-firebase/app/dist/module/common';
 
 const RESERVED = new RegExp('[~*/\\[\\]]');
 
-export default class FirestoreFieldPath {
-  static documentId(): FirestoreFieldPath {
+export default class FieldPath {
+  static documentId(): FieldPath {
     return DOCUMENT_ID;
   }
 
@@ -43,8 +43,8 @@ export default class FirestoreFieldPath {
     this._segments = segments;
   }
 
-  isEqual(other: FirestoreFieldPath): boolean {
-    if (!(other instanceof FirestoreFieldPath)) {
+  isEqual(other: FieldPath): boolean {
+    if (!(other instanceof FieldPath)) {
       throw new Error(
         "firebase.firestore.FieldPath.isEqual(*) 'other' expected instance of FieldPath.",
       );
@@ -62,9 +62,9 @@ export default class FirestoreFieldPath {
   }
 }
 
-export const DOCUMENT_ID = new FirestoreFieldPath('__name__');
+export const DOCUMENT_ID = new FieldPath('__name__');
 
-export function fromDotSeparatedString(path: string): FirestoreFieldPath {
+export function fromDotSeparatedString(path: string): FieldPath {
   if (path === '' || path.startsWith('.') || path.endsWith('.') || path.indexOf('..') > 0) {
     throw new Error(
       "Invalid field path. Paths must not be empty, begin with '.', end with '.', or contain '..'.",
@@ -79,5 +79,5 @@ export function fromDotSeparatedString(path: string): FirestoreFieldPath {
     );
   }
 
-  return new FirestoreFieldPath(...path.split('.'));
+  return new FieldPath(...path.split('.'));
 }
