@@ -76,6 +76,7 @@ import {
   SchemaParams,
   SchemaRequest,
   SchemaShared,
+  SearchEntrypoint,
   Segment,
   StartChatParams,
   TextPart,
@@ -375,6 +376,11 @@ describe('AI', function () {
 
     it('`SchemaShared` type is properly exposed to end user', function () {
       const _typeCheck: SchemaShared<any> = {} as SchemaShared<any>;
+      expect(typeof _typeCheck).toBeDefined();
+    });
+
+    it('`SearchEntrypoint` type is properly exposed to end user', function () {
+      const _typeCheck: SearchEntrypoint = {} as SearchEntrypoint;
       expect(typeof _typeCheck).toBeDefined();
     });
 

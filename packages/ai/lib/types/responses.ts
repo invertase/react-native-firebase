@@ -208,6 +208,12 @@ export interface Citation {
  */
 export interface GroundingMetadata {
   /**
+   * Google Search entry point for web searches. This contains an HTML/CSS snippet that must be
+   * embedded in an app to display a Google Search entry point for follow-up web searches related to
+   * a model's "Grounded Response".
+   */
+  searchEntryPoint?: SearchEntrypoint;
+  /**
    * A list of {@link GroundingChunk} objects. Each chunk represents a piece of retrieved content
    * (for example, from a web page). that the model used to ground its response.
    */
@@ -226,6 +232,30 @@ export interface GroundingMetadata {
    * @deprecated Use {@link GroundingSupport} instead.
    */
   retrievalQueries?: string[];
+}
+
+/**
+ * Google search entry point.
+ *
+ * @public
+ */
+export interface SearchEntrypoint {
+  /**
+   * HTML/CSS snippet that must be embedded in a web page. The snippet is designed to avoid
+   * undesired interaction with the rest of the page's CSS.
+   *
+   * To ensure proper rendering and prevent CSS conflicts, it is recommended
+   * to encapsulate this `renderedContent` within a shadow DOM when embedding it
+   * into a webpage. See {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM | MDN: Using shadow DOM}.
+   *
+   * @example
+   * ```javascript
+   * const container = document.createElement('div');
+   * document.body.appendChild(container);
+   * container.attachShadow({ mode: 'open' }).innerHTML = renderedContent;
+   * ```
+   */
+  renderedContent?: string;
 }
 
 /**

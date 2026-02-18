@@ -349,6 +349,38 @@ describe('stream-reader', () => {
         expect(response.candidates?.[0]!.citationMetadata?.citations[1]!.startIndex).toBe(150);
       });
 
+      it('copies groundingMetadata from candidates into aggregated response', function () {
+        const withGrounding: GenerateContentResponse[] = [
+          {
+            candidates: [
+              {
+                index: 0,
+                content: { role: 'model', parts: [{ text: 'Grounded answer' }] },
+                finishReason: FinishReason.STOP,
+                groundingMetadata: {
+                  searchEntryPoint: { renderedContent: '<div>Search entry</div>' },
+                  groundingChunks: [{ web: { uri: 'https://example.com', title: 'Example' } }],
+                  webSearchQueries: ['query one'],
+                },
+              },
+            ],
+            promptFeedback: { blockReason: undefined, safetyRatings: [] },
+          },
+        ];
+        const aggregated = aggregateResponses(withGrounding);
+        expect(aggregated.candidates?.[0]?.groundingMetadata).toBeDefined();
+        expect(
+          aggregated.candidates?.[0]?.groundingMetadata?.searchEntryPoint?.renderedContent,
+        ).toBe('<div>Search entry</div>');
+        expect(aggregated.candidates?.[0]?.groundingMetadata?.groundingChunks).toHaveLength(1);
+        expect(aggregated.candidates?.[0]?.groundingMetadata?.groundingChunks?.[0]?.web?.uri).toBe(
+          'https://example.com',
+        );
+        expect(aggregated.candidates?.[0]?.groundingMetadata?.webSearchQueries).toEqual([
+          'query one',
+        ]);
+      });
+
       it('throws if a part has no properties', () => {
         const responsesToAggregate: GenerateContentResponse[] = [
           {
