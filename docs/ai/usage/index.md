@@ -86,6 +86,12 @@ function App() {
           }
 
           console.log(text);
+
+          const response = await result.response;
+          // Optional: use metadata (e.g. groundingMetadata when grounding is enabled)
+          if (response.candidates?.[0]?.groundingMetadata) {
+            console.log('Grounding metadata', response.candidates[0].groundingMetadata);
+          }
         }}
       />
     </View>
