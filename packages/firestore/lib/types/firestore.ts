@@ -32,6 +32,7 @@ export type SetOptions = FirebaseFirestoreTypes.SetOptions;
 export type SnapshotListenOptions = FirebaseFirestoreTypes.SnapshotListenOptions;
 export type WhereFilterOp = FirebaseFirestoreTypes.WhereFilterOp;
 export type QueryCompositeFilterConstraint = FirebaseFirestoreTypes.QueryCompositeFilterConstraint;
+export type AggregateType = 'count' | 'avg' | 'sum';
 
 // Re-exported helpers mirrored from modular declarations.
 export type Primitive = string | number | boolean | undefined | null;

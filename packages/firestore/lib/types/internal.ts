@@ -27,10 +27,13 @@ import type {
   Transaction,
   WriteBatch,
   WithFieldValue,
+  AggregateType,
 } from './firestore';
 import type { QueryConstraint } from '../modular/query';
 import type { QuerySnapshot } from '../modular/snapshot';
 import FirestoreBlob from 'lib/FirestoreBlob';
+import type { AggregateField } from '../FirestoreAggregate';
+import type FirestoreQuery from '../FirestoreQuery';
 
 // Helper type for wrappers that forward MODULAR_DEPRECATION_ARG via .call(...).
 export type WithModularDeprecationArg<F> = F extends (...args: infer P) => infer R
@@ -130,4 +133,32 @@ export interface PersistentCacheIndexManagerInternal extends PersistentCacheInde
 
 export type FirestoreBlobInternal = FirestoreBlob & { _binaryString: string };
 
-export type AggregateType = 'count' | 'avg' | 'sum';
+export type AggregateFieldType = AggregateField<number> | AggregateField<number | null>;
+
+export type AggregateQuerySpec = Record<string, AggregateFieldType>;
+
+export type QueryWithAggregateInternals = FirestoreQuery & {
+  _firestore: FirestoreInternal & {
+    native: {
+      aggregateQuery(
+        relativeName: string,
+        type: unknown,
+        filters: unknown,
+        orders: unknown,
+        options: unknown,
+        aggregateQueries: Array<{
+          aggregateType: AggregateType;
+          field: string | null;
+          key: string;
+        }>,
+      ): Promise<unknown>;
+    };
+  };
+  _collectionPath: { relativeName: string };
+  _modifiers: {
+    type: unknown;
+    filters: unknown;
+    orders: unknown;
+    options: unknown;
+  };
+};

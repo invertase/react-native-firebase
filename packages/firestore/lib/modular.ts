@@ -17,7 +17,6 @@
 
 import { getApp, setLogLevel as appSetLogLevel } from '@react-native-firebase/app';
 import { isObject, MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
-import type { AggregateType } from './types/internal';
 import {
   AggregateField,
   fieldPathFromArgument,
@@ -40,14 +39,17 @@ import type {
   WithFieldValue,
   WriteBatch,
   AggregateQuerySnapshot,
+  AggregateType,
 } from './types/firestore';
 import type {
+  AggregateQuerySpec,
   CollectionReferenceInternal,
   DocumentReferenceInternal,
   FirestoreInternal,
   ParentReferenceInternal,
   PersistentCacheIndexManagerInternal,
   QueryInternal,
+  QueryWithAggregateInternals,
   ReferenceInternal,
 } from './types/internal';
 import type { FieldPath } from './modular/FieldPath';
@@ -62,35 +64,6 @@ type FirestoreWithSyncEvents = FirestoreInternal & {
     addListener(eventName: string, callback: () => void): { remove(): void };
   };
   eventNameForApp(eventName: string): string;
-};
-
-type AggregateFieldType = AggregateField<number> | AggregateField<number | null>;
-type AggregateQuerySpec = Record<string, AggregateFieldType>;
-
-type QueryWithAggregateInternals = FirestoreQuery & {
-  _firestore: FirestoreInternal & {
-    native: {
-      aggregateQuery(
-        relativeName: string,
-        type: unknown,
-        filters: unknown,
-        orders: unknown,
-        options: unknown,
-        aggregateQueries: Array<{
-          aggregateType: AggregateType;
-          field: string | null;
-          key: string;
-        }>,
-      ): Promise<unknown>;
-    };
-  };
-  _collectionPath: { relativeName: string };
-  _modifiers: {
-    type: unknown;
-    filters: unknown;
-    orders: unknown;
-    options: unknown;
-  };
 };
 
 export function getFirestore(app?: FirebaseApp, databaseId?: string): Firestore {

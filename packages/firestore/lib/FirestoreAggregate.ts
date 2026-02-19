@@ -15,7 +15,7 @@
  *
  */
 
-import type { AggregateType } from './types/internal';
+import type { AggregateType } from './types/firestore';
 import FieldPath, { fromDotSeparatedString } from './FieldPath';
 
 import type FirestorePath from './FirestorePath';
