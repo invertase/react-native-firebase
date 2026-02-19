@@ -73,6 +73,7 @@ import firestore, {
   QueryDocumentSnapshot,
   Query,
 } from '.';
+import type { AggregateField, AggregateQuerySnapshot, AggregateSpec } from '.';
 
 type DocumentData = FirebaseFirestoreTypes.DocumentData;
 
@@ -298,26 +299,30 @@ console.log(
 
 getCountFromServer(testQuery2).then(
   (
-    snapshot: FirebaseFirestoreTypes.AggregateQuerySnapshot<{
-      count: FirebaseFirestoreTypes.AggregateField<number>;
+    snapshot: AggregateQuerySnapshot<{
+      count: AggregateField<number>;
     }>,
   ) => {
+    console.log(snapshot.query);
     console.log(snapshot.data().count);
   },
 );
 
-getAggregateFromServer(testQuery2, {
+const aggregateSpec: AggregateSpec = {
   totalAge: sum('age'),
   avgAge: average('age'),
   count: count(),
-}).then(
+};
+
+getAggregateFromServer(testQuery2, aggregateSpec).then(
   (
-    snapshot: FirebaseFirestoreTypes.AggregateQuerySnapshot<{
-      totalAge: FirebaseFirestoreTypes.AggregateField<number>;
-      avgAge: FirebaseFirestoreTypes.AggregateField<number | null>;
-      count: FirebaseFirestoreTypes.AggregateField<number>;
+    snapshot: AggregateQuerySnapshot<{
+      totalAge: AggregateField<number>;
+      avgAge: AggregateField<number | null>;
+      count: AggregateField<number>;
     }>,
   ) => {
+    console.log(snapshot.query);
     console.log(snapshot.data());
   },
 );
@@ -516,12 +521,13 @@ getAggregateFromServer(testQuery2, {
   count: countField,
 }).then(
   (
-    snapshot: FirebaseFirestoreTypes.AggregateQuerySnapshot<{
-      totalAge: FirebaseFirestoreTypes.AggregateField<number>;
-      avgAge: FirebaseFirestoreTypes.AggregateField<number | null>;
-      count: FirebaseFirestoreTypes.AggregateField<number>;
+    snapshot: AggregateQuerySnapshot<{
+      totalAge: AggregateField<number>;
+      avgAge: AggregateField<number | null>;
+      count: AggregateField<number>;
     }>,
   ) => {
+    console.log(snapshot.query);
     console.log(snapshot.data());
   },
 );

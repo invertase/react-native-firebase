@@ -17,6 +17,7 @@
 
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import type { FirebaseFirestoreTypes } from '../index';
+import type { AggregateField } from '../FirestoreAggregate';
 import type { FieldPath } from '../modular/FieldPath';
 import type { FieldValue } from '../modular/FieldValue';
 
@@ -27,12 +28,29 @@ export type FirestoreSettings = FirebaseFirestoreTypes.Settings;
 
 // Core namespaced aliases referenced by modular wrappers.
 export type PersistentCacheIndexManager = FirebaseFirestoreTypes.PersistentCacheIndexManager;
-export type AggregateQuerySnapshot = FirebaseFirestoreTypes.AggregateQuerySnapshot;
+export type AggregateType = 'count' | 'avg' | 'sum';
+export type AggregateFieldType = AggregateField<number> | AggregateField<number | null>;
+
+export interface AggregateSpec {
+  [field: string]: AggregateFieldType;
+}
+
+export type AggregateSpecData<T extends AggregateSpec> = {
+  [P in keyof T]: T[P] extends AggregateField<infer U> ? U : never;
+};
+
+export interface AggregateQuerySnapshot<
+  AggregateSpecType extends AggregateSpec = AggregateSpec,
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+> {
+  readonly query: Query<AppModelType, DbModelType>;
+  data(): AggregateSpecData<AggregateSpecType>;
+}
 export type SetOptions = FirebaseFirestoreTypes.SetOptions;
 export type SnapshotListenOptions = FirebaseFirestoreTypes.SnapshotListenOptions;
 export type WhereFilterOp = FirebaseFirestoreTypes.WhereFilterOp;
 export type QueryCompositeFilterConstraint = FirebaseFirestoreTypes.QueryCompositeFilterConstraint;
-export type AggregateType = 'count' | 'avg' | 'sum';
 
 // Re-exported helpers mirrored from modular declarations.
 export type Primitive = string | number | boolean | undefined | null;

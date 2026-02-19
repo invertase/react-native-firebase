@@ -40,9 +40,9 @@ import type {
   WriteBatch,
   AggregateQuerySnapshot,
   AggregateType,
+  AggregateSpec,
 } from './types/firestore';
 import type {
-  AggregateQuerySpec,
   CollectionReferenceInternal,
   DocumentReferenceInternal,
   FirestoreInternal,
@@ -306,7 +306,7 @@ export function getCountFromServer<AppModelType, DbModelType extends DocumentDat
 }
 
 export function getAggregateFromServer<
-  AggregateSpecType extends AggregateQuerySpec,
+  AggregateSpecType extends AggregateSpec,
   AppModelType,
   DbModelType extends DocumentData,
 >(
