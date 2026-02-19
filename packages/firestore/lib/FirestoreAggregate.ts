@@ -15,6 +15,7 @@
  *
  */
 
+import type { AggregateType } from './types/internal';
 import FieldPath, { fromDotSeparatedString } from './FieldPath';
 
 import type FirestorePath from './FirestorePath';
@@ -81,17 +82,12 @@ export class FirestoreAggregateQuerySnapshot {
   }
 }
 
-export const AggregateType = {
-  SUM: 'sum',
-  AVG: 'average',
-  COUNT: 'count',
-} as const;
-
-export class AggregateField {
-  aggregateType: string;
+export class AggregateField<T = unknown> {
+  readonly type = 'AggregateField';
+  aggregateType: AggregateType;
   _fieldPath: FieldPath | undefined;
 
-  constructor(aggregateType: string, fieldPath?: FieldPath) {
+  constructor(aggregateType: AggregateType, fieldPath?: FieldPath) {
     this.aggregateType = aggregateType;
     this._fieldPath = fieldPath;
   }

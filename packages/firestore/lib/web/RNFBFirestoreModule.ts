@@ -252,7 +252,7 @@ export default {
           case 'count':
             aggregateSpec[key] = count();
             break;
-          case 'average':
+          case 'avg':
             aggregateSpec[key] = average(field);
             break;
           case 'sum':

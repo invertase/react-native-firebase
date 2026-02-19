@@ -17,9 +17,9 @@
 
 import { getApp, setLogLevel as appSetLogLevel } from '@react-native-firebase/app';
 import { isObject, MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
+import type { AggregateType } from './types/internal';
 import {
   AggregateField,
-  AggregateType,
   fieldPathFromArgument,
   FirestoreAggregateQuerySnapshot,
 } from './FirestoreAggregate';
@@ -40,7 +40,6 @@ import type {
   WithFieldValue,
   WriteBatch,
   AggregateQuerySnapshot,
-  QueryCompositeFilterConstraint,
 } from './types/firestore';
 import type {
   CollectionReferenceInternal,
@@ -65,7 +64,8 @@ type FirestoreWithSyncEvents = FirestoreInternal & {
   eventNameForApp(eventName: string): string;
 };
 
-type AggregateQuerySpec = Record<string, AggregateField>;
+type AggregateFieldType = AggregateField<number> | AggregateField<number | null>;
+type AggregateQuerySpec = Record<string, AggregateFieldType>;
 
 type QueryWithAggregateInternals = FirestoreQuery & {
   _firestore: FirestoreInternal & {
@@ -324,10 +324,12 @@ export function runTransaction<T>(
 
 export function getCountFromServer<AppModelType, DbModelType extends DocumentData>(
   query: Query<AppModelType, DbModelType>,
-): Promise<AggregateQuerySnapshot<{ count: AggregateField }, AppModelType, DbModelType>> {
+): Promise<AggregateQuerySnapshot<{ count: AggregateField<number> }, AppModelType, DbModelType>> {
   return (query as QueryInternal<AppModelType, DbModelType>).count
     .call(query, MODULAR_DEPRECATION_ARG)
-    .get() as Promise<AggregateQuerySnapshot<{ count: AggregateField }, AppModelType, DbModelType>>;
+    .get() as Promise<
+      AggregateQuerySnapshot<{ count: AggregateField<number> }, AppModelType, DbModelType>
+    >;
 }
 
 export function getAggregateFromServer<
@@ -372,9 +374,9 @@ export function getAggregateFromServer<
       continue;
     }
     switch (aggregateField.aggregateType) {
-      case AggregateType.AVG:
-      case AggregateType.SUM:
-      case AggregateType.COUNT:
+      case 'avg':
+      case 'sum':
+      case 'count':
         aggregateQueries.push({
           aggregateType: aggregateField.aggregateType,
           field: aggregateField._fieldPath === null ? null : aggregateField._fieldPath._toPath(),
@@ -408,16 +410,16 @@ export function getAggregateFromServer<
     );
 }
 
-export function sum(field: string | FieldPath): AggregateField {
-  return new AggregateField(AggregateType.SUM, fieldPathFromArgument(field));
+export function sum(field: string | FieldPath): AggregateField<number> {
+  return new AggregateField('sum', fieldPathFromArgument(field));
 }
 
-export function average(field: string | FieldPath): AggregateField {
-  return new AggregateField(AggregateType.AVG, fieldPathFromArgument(field));
+export function average(field: string | FieldPath): AggregateField<number | null> {
+  return new AggregateField('avg', fieldPathFromArgument(field));
 }
 
-export function count(): AggregateField {
-  return new AggregateField(AggregateType.COUNT, null);
+export function count(): AggregateField<number> {
+  return new AggregateField('count', null);
 }
 
 export function loadBundle(

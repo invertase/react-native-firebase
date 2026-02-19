@@ -65,6 +65,7 @@ export const AggregateType = {
 };
 
 export class AggregateField {
+  type = 'AggregateField';
   /** Indicates the aggregation operation of this AggregateField. */
   aggregateType;
   _fieldPath;

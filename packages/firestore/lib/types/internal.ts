@@ -129,3 +129,5 @@ export interface PersistentCacheIndexManagerInternal extends PersistentCacheInde
 }
 
 export type FirestoreBlobInternal = FirestoreBlob & { _binaryString: string };
+
+export type AggregateType = 'count' | 'avg' | 'sum';
