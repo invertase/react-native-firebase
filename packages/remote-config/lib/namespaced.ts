@@ -47,6 +47,7 @@ const fallBackModule = require('./web/RNFBConfigModule') as {
 import { version } from './version';
 import { LastFetchStatus, ValueSource } from './statics';
 import type { FirebaseRemoteConfigTypes } from './types/namespaced';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
 const statics = {
   LastFetchStatus,
@@ -481,6 +482,12 @@ export default createModuleNamespace({
 // import config, { firebase } from '@react-native-firebase/remote-config';
 // config().X(...);
 // firebase.remoteConfig().X(...);
-export const firebase = getFirebaseRoot();
+export const firebase =
+  getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
+    'remoteConfig',
+    FirebaseRemoteConfigTypes.Module,
+    FirebaseRemoteConfigTypes.Statics,
+    false
+  >;
 
 setReactNativeModule(nativeModuleName, fallBackModule);
