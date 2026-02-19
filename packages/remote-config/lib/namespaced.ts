@@ -32,9 +32,21 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/dist/module/internal';
 import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
-import fallBackModule from './web/RNFBConfigModule';
-import version from './version';
+// Web fallback module; type inferred from implementation (RNFBConfigModule.ts)
+const fallBackModule = require('./web/RNFBConfigModule') as {
+  activate: (appName: string) => Promise<unknown>;
+  setConfigSettings: (appName: string, settings: unknown) => Promise<unknown>;
+  fetch: (appName: string, expirationDurationSeconds: number) => Promise<unknown>;
+  fetchAndActivate: (appName: string) => Promise<unknown>;
+  ensureInitialized: (appName: string) => Promise<unknown>;
+  setDefaults: (appName: string, defaults: unknown) => Promise<unknown>;
+  setCustomSignals: (appName: string, customSignals: unknown) => Promise<unknown>;
+  onConfigUpdated: (appName: string) => void;
+  removeConfigUpdateRegistration: (appName: string) => void;
+};
+import { version } from './version';
 import { LastFetchStatus, ValueSource } from './statics';
+import type { FirebaseRemoteConfigTypes } from './types/namespaced';
 
 const statics = {
   LastFetchStatus,
@@ -44,8 +56,27 @@ const statics = {
 const namespace = 'remoteConfig';
 const nativeModuleName = 'RNFBConfigModule';
 
+interface ConstantsUpdate {
+  lastFetchTime?: number;
+  lastFetchStatus?: string;
+  fetchTimeout: number;
+  minimumFetchInterval: number;
+  values: Record<string, { value: string; source: string }>;
+}
+
+interface NativeConstantsResult {
+  result: unknown;
+  constants: ConstantsUpdate;
+}
+
 class FirebaseConfigModule extends FirebaseModule {
-  constructor(...args) {
+  _settings: FirebaseRemoteConfigTypes.ConfigSettings;
+  _lastFetchTime: number;
+  _values: Record<string, { value: string; source: string }>;
+  _lastFetchStatus!: FirebaseRemoteConfigTypes.LastFetchStatusType;
+  _configUpdateListenerCount: number;
+
+  constructor(...args: ConstructorParameters<typeof FirebaseModule>) {
     super(...args);
     this._settings = {
       // defaults to 1 minute.
@@ -58,17 +89,17 @@ class FirebaseConfigModule extends FirebaseModule {
     this._configUpdateListenerCount = 0;
   }
 
-  get defaultConfig() {
-    const updatedDefaultConfig = {};
+  get defaultConfig(): FirebaseRemoteConfigTypes.ConfigDefaults {
+    const updatedDefaultConfig: FirebaseRemoteConfigTypes.ConfigDefaults = {};
     Object.keys(this._values).forEach(key => {
+      const entry = this._values[key];
       // Need to make it an object with key and literal value. Not `Value` instance.
-      updatedDefaultConfig[key] = this._values[key].value;
+      if (entry) updatedDefaultConfig[key] = entry.value;
     });
-
     return updatedDefaultConfig;
   }
 
-  set defaultConfig(defaults) {
+  set defaultConfig(defaults: FirebaseRemoteConfigTypes.ConfigDefaults) {
     if (!isObject(defaults)) {
       throw new Error("firebase.remoteConfig().defaultConfig: 'defaults' must be an object.");
     }
@@ -76,23 +107,33 @@ class FirebaseConfigModule extends FirebaseModule {
     // updates defaults on the instance. We then pass to underlying SDK to update. We do this because
     // there is no way to "await" a setter.
     this._updateFromConstants(defaults);
-    this.setDefaults.call(this, defaults, true);
+    (
+      this.setDefaults as (
+        d: FirebaseRemoteConfigTypes.ConfigDefaults,
+        internal?: boolean,
+      ) => Promise<null>
+    ).call(this, defaults, true);
   }
 
-  get settings() {
+  get settings(): FirebaseRemoteConfigTypes.ConfigSettings {
     return this._settings;
   }
 
-  set settings(settings) {
+  set settings(settings: FirebaseRemoteConfigTypes.ConfigSettings) {
     // To make Firebase web v9 API compatible, we update the settings first so it immediately
     // updates settings on the instance. We then pass to underlying SDK to update. We do this because
     // there is no way to "await" a setter. We can't delegate to `setConfigSettings()` as it is setup
     // for native.
     this._updateFromConstants(settings);
-    this.setConfigSettings.call(this, settings, true);
+    (
+      this.setConfigSettings as (
+        s: FirebaseRemoteConfigTypes.ConfigSettings,
+        internal?: boolean,
+      ) => Promise<void>
+    ).call(this, settings, true);
   }
 
-  getValue(key) {
+  getValue(key: string): FirebaseRemoteConfigTypes.ConfigValue {
     if (!isString(key)) {
       throw new Error("firebase.remoteConfig().getValue(): 'key' must be a string value.");
     }
@@ -104,33 +145,39 @@ class FirebaseConfigModule extends FirebaseModule {
       });
     }
 
-    return new Value({ value: `${this._values[key].value}`, source: this._values[key].source });
+    const entry = this._values[key];
+    return new Value({
+      value: `${entry?.value ?? ''}`,
+      source: (entry?.source ?? 'static') as 'remote' | 'default' | 'static',
+    });
   }
 
-  getBoolean(key) {
+  getBoolean(key: string): boolean {
     return this.getValue(key).asBoolean();
   }
 
-  getNumber(key) {
+  getNumber(key: string): number {
     return this.getValue(key).asNumber();
   }
 
-  getString(key) {
+  getString(key: string): string {
     return this.getValue(key).asString();
   }
 
-  getAll() {
-    const values = {};
-    Object.keys(this._values).forEach(key => (values[key] = this.getValue(key)));
+  getAll(): FirebaseRemoteConfigTypes.ConfigValues {
+    const values: FirebaseRemoteConfigTypes.ConfigValues = {};
+    Object.keys(this._values).forEach(key => {
+      values[key] = this.getValue(key);
+    });
     return values;
   }
 
-  get fetchTimeMillis() {
+  get fetchTimeMillis(): number {
     // android returns -1 if no fetch yet and iOS returns 0
     return this._lastFetchTime;
   }
 
-  get lastFetchStatus() {
+  get lastFetchStatus(): FirebaseRemoteConfigTypes.LastFetchStatusType {
     return this._lastFetchStatus;
   }
 
@@ -138,21 +185,24 @@ class FirebaseConfigModule extends FirebaseModule {
    * Deletes all activated, fetched and defaults configs and resets all Firebase Remote Config settings.
    * @returns {Promise<null>}
    */
-  reset() {
+  reset(): Promise<null | void> {
     if (isIOS) {
       return Promise.resolve(null);
     }
-
-    return this._promiseWithConstants(this.native.reset());
+    return this._promiseWithConstants(this.native.reset()) as Promise<null>;
   }
 
-  setConfigSettings(settings) {
-    const updatedSettings = {};
+  setConfigSettings(settings: FirebaseRemoteConfigTypes.ConfigSettings): Promise<void> {
+    const updatedSettings: {
+      fetchTimeout: number;
+      minimumFetchInterval: number;
+    } = {
+      fetchTimeout: (this._settings.fetchTimeMillis ?? 60000) / 1000,
+      minimumFetchInterval: (this._settings.minimumFetchIntervalMillis ?? 43200000) / 1000,
+    };
 
-    updatedSettings.fetchTimeout = this._settings.fetchTimeMillis / 1000;
-    updatedSettings.minimumFetchInterval = this._settings.minimumFetchIntervalMillis / 1000;
-
-    const apiCalled = arguments[1] == true ? 'settings' : 'setConfigSettings';
+    const apiCalled =
+      (arguments as unknown as [unknown, unknown])[1] === true ? 'settings' : 'setConfigSettings';
     if (!isObject(settings)) {
       throw new Error(`firebase.remoteConfig().${apiCalled}(*): settings must set an object.`);
     }
@@ -177,24 +227,25 @@ class FirebaseConfigModule extends FirebaseModule {
       }
     }
 
-    return this._promiseWithConstants(this.native.setConfigSettings(updatedSettings));
+    return this._promiseWithConstants(
+      this.native.setConfigSettings(updatedSettings),
+    ) as Promise<void>;
   }
 
   /**
    * Activates the Fetched RemoteConfig, so that the fetched key-values take effect.
    * @returns {Promise<boolean>}
    */
-  activate() {
+  activate(): Promise<boolean> {
     return this._promiseWithConstants(this.native.activate());
   }
 
   /**
    * Fetches parameter values for your app.
-
    * @param {number} expirationDurationSeconds
    * @returns {Promise}
    */
-  fetch(expirationDurationSeconds) {
+  fetch(expirationDurationSeconds?: number): Promise<void> {
     if (!isUndefined(expirationDurationSeconds) && !isNumber(expirationDurationSeconds)) {
       throw new Error(
         "firebase.remoteConfig().fetch(): 'expirationDurationSeconds' must be a number value.",
@@ -203,78 +254,87 @@ class FirebaseConfigModule extends FirebaseModule {
 
     return this._promiseWithConstants(
       this.native.fetch(expirationDurationSeconds !== undefined ? expirationDurationSeconds : -1),
-    );
+    ) as Promise<void>;
   }
 
-  fetchAndActivate() {
+  fetchAndActivate(): Promise<boolean> {
     return this._promiseWithConstants(this.native.fetchAndActivate());
   }
 
-  ensureInitialized() {
-    return this._promiseWithConstants(this.native.ensureInitialized());
+  ensureInitialized(): Promise<void> {
+    return this._promiseWithConstants(this.native.ensureInitialized()) as Promise<void>;
   }
 
   /**
    * Sets defaults.
-   *
    * @param {object} defaults
    */
-  setDefaults(defaults) {
-    const apiCalled = arguments[1] === true ? 'defaultConfig' : 'setDefaults';
+  setDefaults(defaults: FirebaseRemoteConfigTypes.ConfigDefaults): Promise<null> {
+    const apiCalled =
+      (arguments as unknown as [unknown, unknown])[1] === true ? 'defaultConfig' : 'setDefaults';
     if (!isObject(defaults)) {
       throw new Error(`firebase.remoteConfig().${apiCalled}(): 'defaults' must be an object.`);
     }
 
-    return this._promiseWithConstants(this.native.setDefaults(defaults));
+    return this._promiseWithConstants(this.native.setDefaults(defaults)) as Promise<null>;
   }
 
   /**
    * Sets defaults based on resource.
    * @param {string} resourceName
    */
-  setDefaultsFromResource(resourceName) {
+  setDefaultsFromResource(resourceName: string): Promise<null> {
     if (!isString(resourceName)) {
       throw new Error(
         "firebase.remoteConfig().setDefaultsFromResource(): 'resourceName' must be a string value.",
       );
     }
 
-    return this._promiseWithConstants(this.native.setDefaultsFromResource(resourceName));
+    return this._promiseWithConstants(
+      this.native.setDefaultsFromResource(resourceName),
+    ) as Promise<null>;
   }
 
   /**
    * Registers an observer to changes in the configuration.
-   *
    * @param observer - The {@link ConfigUpdateObserver} to be notified of config updates.
    * @returns An {@link Unsubscribe} function to remove the listener.
    */
-  onConfigUpdate(observer) {
+  onConfigUpdate(
+    observer: FirebaseRemoteConfigTypes.ConfigUpdateObserver,
+  ): FirebaseRemoteConfigTypes.Unsubscribe {
     if (!isObject(observer) || !isFunction(observer.next) || !isFunction(observer.error)) {
       throw new Error("'observer' expected an object with 'next' and 'error' functions.");
     }
 
-    // We maintaine our pre-web-support native interface but bend it to match
+    // We maintain our pre-web-support native interface but bend it to match
     // the official JS SDK API by assuming the callback is an Observer, and sending it a ConfigUpdate
     // compatible parameter that implements the `getUpdatedKeys` method
     let unsubscribed = false;
     const subscription = this.emitter.addListener(
       this.eventNameForApp('on_config_updated'),
-      event => {
+      (event: {
+        resultType: string;
+        updatedKeys: string[];
+        code: string;
+        message: string;
+        nativeErrorMessage: string;
+      }) => {
         const { resultType } = event;
         if (resultType === 'success') {
           observer.next({
-            getUpdatedKeys: () => {
-              return new Set(event.updatedKeys);
-            },
+            getUpdatedKeys: () => new Set(event.updatedKeys),
           });
           return;
         }
 
-        observer.error({
-          code: event.code,
-          message: event.message,
-          nativeErrorMessage: event.nativeErrorMessage,
-        });
+        observer.error(
+          Object.assign(new Error(event.message), {
+            code: event.code,
+            message: event.message,
+            nativeErrorMessage: event.nativeErrorMessage,
+          }),
+        );
       },
     );
     if (this._configUpdateListenerCount === 0) {
@@ -288,9 +348,8 @@ class FirebaseConfigModule extends FirebaseModule {
         // there is no harm in calling this multiple times to unsubscribe,
         // but anything after the first call is a no-op
         return;
-      } else {
-        unsubscribed = true;
       }
+      unsubscribed = true;
       subscription.remove();
       this._configUpdateListenerCount--;
       if (this._configUpdateListenerCount === 0) {
@@ -301,17 +360,27 @@ class FirebaseConfigModule extends FirebaseModule {
 
   /**
    * Registers a listener to changes in the configuration.
-   *
    * @param listenerOrObserver - function called on config change
    * @returns {function} unsubscribe listener
    * @deprecated use official firebase-js-sdk onConfigUpdate now that web supports realtime
    */
-  onConfigUpdated(listenerOrObserver) {
-    const listener = parseListenerOrObserver(listenerOrObserver);
+  onConfigUpdated(
+    listenerOrObserver: FirebaseRemoteConfigTypes.CallbackOrObserver<FirebaseRemoteConfigTypes.OnConfigUpdatedListenerCallback>,
+  ): () => void {
+    const listener = parseListenerOrObserver(listenerOrObserver) as (
+      event?: { updatedKeys: string[] },
+      error?: { code: string; message: string; nativeErrorMessage: string },
+    ) => void;
     let unsubscribed = false;
     const subscription = this.emitter.addListener(
       this.eventNameForApp('on_config_updated'),
-      event => {
+      (event: {
+        resultType: string;
+        updatedKeys: string[];
+        code: string;
+        message: string;
+        nativeErrorMessage: string;
+      }) => {
         const { resultType } = event;
         if (resultType === 'success') {
           listener({ updatedKeys: event.updatedKeys }, undefined);
@@ -336,9 +405,8 @@ class FirebaseConfigModule extends FirebaseModule {
         // there is no harm in calling this multiple times to unsubscribe,
         // but anything after the first call is a no-op
         return;
-      } else {
-        unsubscribed = true;
       }
+      unsubscribed = true;
       subscription.remove();
       this._configUpdateListenerCount--;
       if (this._configUpdateListenerCount === 0) {
@@ -347,29 +415,49 @@ class FirebaseConfigModule extends FirebaseModule {
     };
   }
 
-  _updateFromConstants(constants) {
+  _updateFromConstants(
+    constants:
+      | ConstantsUpdate
+      | FirebaseRemoteConfigTypes.ConfigDefaults
+      | FirebaseRemoteConfigTypes.ConfigSettings,
+  ): void {
+    const c = constants as Record<string, unknown>;
     // Wrapped this as we update using sync getters initially for `defaultConfig` & `settings`
-    if (constants.lastFetchTime) {
-      this._lastFetchTime = constants.lastFetchTime;
+    if (typeof c.lastFetchTime === 'number') {
+      this._lastFetchTime = c.lastFetchTime;
     }
 
     // Wrapped this as we update using sync getters initially for `defaultConfig` & `settings`
-    if (constants.lastFetchStatus) {
-      this._lastFetchStatus = constants.lastFetchStatus;
+    if (typeof c.lastFetchStatus === 'string') {
+      this._lastFetchStatus = c.lastFetchStatus as FirebaseRemoteConfigTypes.LastFetchStatusType;
     }
 
-    this._settings = {
-      fetchTimeMillis: constants.fetchTimeout * 1000,
-      minimumFetchIntervalMillis: constants.minimumFetchInterval * 1000,
-    };
+    if (typeof c.fetchTimeout === 'number' && typeof c.minimumFetchInterval === 'number') {
+      this._settings = {
+        fetchTimeMillis: c.fetchTimeout * 1000,
+        minimumFetchIntervalMillis: c.minimumFetchInterval * 1000,
+      };
+    } else if (
+      typeof (c as FirebaseRemoteConfigTypes.ConfigSettings).fetchTimeMillis === 'number' ||
+      typeof (c as FirebaseRemoteConfigTypes.ConfigSettings).minimumFetchIntervalMillis === 'number'
+    ) {
+      const s = c as FirebaseRemoteConfigTypes.ConfigSettings;
+      this._settings = {
+        fetchTimeMillis: s.fetchTimeMillis ?? this._settings.fetchTimeMillis,
+        minimumFetchIntervalMillis:
+          s.minimumFetchIntervalMillis ?? this._settings.minimumFetchIntervalMillis,
+      };
+    }
 
-    this._values = Object.freeze(constants.values);
+    if (c.values && typeof c.values === 'object' && !Array.isArray(c.values)) {
+      this._values = Object.freeze(c.values) as Record<string, { value: string; source: string }>;
+    }
   }
 
-  _promiseWithConstants(promise) {
+  _promiseWithConstants<T>(promise: Promise<NativeConstantsResult>): Promise<T> {
     return promise.then(({ result, constants }) => {
       this._updateFromConstants(constants);
-      return result;
+      return result as T;
     });
   }
 }
@@ -389,8 +477,6 @@ export default createModuleNamespace({
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseConfigModule,
 });
-
-export * from './modular';
 
 // import config, { firebase } from '@react-native-firebase/remote-config';
 // config().X(...);

@@ -15,7 +15,9 @@
  *
  */
 
-import { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
+
+type FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
 /**
  * Firebase Remote RemoteConfig package for React Native.
@@ -53,8 +55,8 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase remote-config
  */
+// eslint-disable-next-line @typescript-eslint/no-namespace -- public API shape
 export namespace FirebaseRemoteConfigTypes {
-  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
   /**
    * Defines levels of Remote Config logging. Web only.
    */
@@ -290,7 +292,7 @@ export namespace FirebaseRemoteConfigTypes {
   /**
    * The status of the latest Remote RemoteConfig fetch action.
    */
-  type LastFetchStatusType = 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
+  export type LastFetchStatusType = 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
 
   /**
    * Contains information about which keys have been updated.
@@ -318,7 +320,7 @@ export namespace FirebaseRemoteConfigTypes {
     /**
      * Called if an error occurs during the stream.
      */
-    error: (error: FirebaseError) => void;
+    error: (error: Error) => void;
 
     /**
      * Called when the stream is gracefully terminated.
@@ -344,7 +346,7 @@ export namespace FirebaseRemoteConfigTypes {
    * const defaultAppRemoteConfig = firebase.remoteConfig();
    * ```
    */
-  export class Module extends FirebaseModule {
+  export interface Module extends FirebaseModule {
     /**
      * The current `FirebaseApp` instance for this Firebase service.
      */
@@ -434,11 +436,10 @@ export namespace FirebaseRemoteConfigTypes {
      * and the config update process fetches the new config but does not automatically activate
      * it for you. Typically you will activate the config in your callback to use the new values.
      *
-     * @param remoteConfig - The {@link RemoteConfig} instance.
      * @param observer - The {@link ConfigUpdateObserver} to be notified of config updates.
      * @returns An {@link Unsubscribe} function to remove the listener.
      */
-    onConfigUpdate(remoteConfig: RemoteConfig, observer: ConfigUpdateObserver): Unsubscribe;
+    onConfigUpdate(observer: ConfigUpdateObserver): Unsubscribe;
 
     /**
      * Start listening for real-time config updates from the Remote Config backend and
@@ -619,35 +620,14 @@ export namespace FirebaseRemoteConfigTypes {
   ) => void;
 }
 
-type RemoteConfigNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
-  FirebaseRemoteConfigTypes.Module,
-  FirebaseRemoteConfigTypes.Statics
-> & {
-  firebase: ReactNativeFirebase.Module;
-  app(name?: string): ReactNativeFirebase.FirebaseApp;
-};
-
-declare const defaultExport: RemoteConfigNamespace;
-
-export const firebase: ReactNativeFirebase.Module & {
-  remoteConfig: typeof defaultExport;
-  app(
-    name?: string,
-  ): ReactNativeFirebase.FirebaseApp & { remoteConfig(): FirebaseRemoteConfigTypes.Module };
-};
-
-export default defaultExport;
-
-export * from './modular';
-
 /**
- * Attach namespace to `firebase.` and `FirebaseApp.`.
+ * Attach namespace to `firebase.` and `FirebaseApp.`
  */
 declare module '@react-native-firebase/app' {
+  // eslint-disable-next-line @typescript-eslint/no-namespace -- module augmentation
   namespace ReactNativeFirebase {
-    import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
     interface Module {
-      remoteConfig: FirebaseModuleWithStatics<
+      remoteConfig: ReactNativeFirebase.FirebaseModuleWithStatics<
         FirebaseRemoteConfigTypes.Module,
         FirebaseRemoteConfigTypes.Statics
       >;
