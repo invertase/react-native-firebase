@@ -36,6 +36,8 @@ export interface AggregateSpec {
 export type AggregateSpecData<T extends AggregateSpec> = {
   [P in keyof T]: T[P] extends AggregateField<infer U> ? U : never;
 };
+
+export type EmulatorMockTokenOptions = { user_id: string } | { sub: string };
 export type SetOptions = FirebaseFirestoreTypes.SetOptions;
 export type SnapshotListenOptions = FirebaseFirestoreTypes.SnapshotListenOptions;
 export type WhereFilterOp = FirebaseFirestoreTypes.WhereFilterOp;

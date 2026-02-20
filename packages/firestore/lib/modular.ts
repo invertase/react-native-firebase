@@ -31,6 +31,7 @@ import type {
   Firestore,
   FirestoreSettings,
   FirebaseApp,
+  EmulatorMockTokenOptions,
   PersistentCacheIndexManager,
   Query,
   SetOptions,
@@ -270,7 +271,7 @@ export function connectFirestoreEmulator(
   firestore: Firestore,
   host: string,
   port: number,
-  options?: { mockUserToken?: { user_id: string } | { sub: string } | string },
+  options?: { mockUserToken?: EmulatorMockTokenOptions | string },
 ): void {
   return (firestore as FirestoreInternal).useEmulator.call(
     firestore,
