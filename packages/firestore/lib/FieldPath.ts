@@ -20,10 +20,6 @@ import { isString } from '@react-native-firebase/app/dist/module/common';
 const RESERVED = new RegExp('[~*/\\[\\]]');
 
 export default class FieldPath {
-  static documentId(): FieldPath {
-    return DOCUMENT_ID;
-  }
-
   _segments: string[];
 
   constructor(...segments: string[]) {

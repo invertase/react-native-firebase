@@ -15,10 +15,10 @@
  *
  */
 
-import FieldPath from '../FieldPath';
+import FieldPath, { DOCUMENT_ID } from '../FieldPath';
 
 export { FieldPath };
 
 export function documentId(): FieldPath {
-  return FieldPath.documentId();
+  return DOCUMENT_ID;
 }
