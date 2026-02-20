@@ -29,6 +29,7 @@ import { VertexAITestComponent } from './vertexai/vertexai';
 import { AuthMFADemonstrator } from './auth/auth-mfa-demonstrator';
 import { HttpsCallableTestComponent } from './functions/https-callable';
 import { StreamingCallableTestComponent } from './functions/streaming-callable';
+import { RemoteConfigTestComponent } from './remote-config';
 
 const testComponents = {
   // List your imported components here...
@@ -40,6 +41,7 @@ const testComponents = {
   'Auth MFA Demonstrator': AuthMFADemonstrator,
   'HttpsCallable Test': HttpsCallableTestComponent,
   'Streaming Callable Test': StreamingCallableTestComponent,
+  'Remote Config Test': RemoteConfigTestComponent,
 };
 
 export function TestComponents() {

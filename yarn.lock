@@ -5958,8 +5958,10 @@ __metadata:
   resolution: "@react-native-firebase/remote-config@workspace:packages/remote-config"
   dependencies:
     "@types/text-encoding": "npm:^0.0.40"
+    react-native-builder-bob: "npm:^0.40.17"
     react-native-fetch-api: "npm:^3.0.0"
     text-encoding: "npm:^0.7.0"
+    typescript: "npm:^5.9.3"
     web-streams-polyfill: "npm:^4.2.0"
   peerDependencies:
     "@react-native-firebase/analytics": 23.8.6

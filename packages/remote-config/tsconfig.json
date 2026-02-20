@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.packages.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": ".",
+    "paths": {
+      "@react-native-firebase/app/dist/module/common/*": ["../app/dist/typescript/lib/common/*"],
+      "@react-native-firebase/app/dist/module/common": ["../app/dist/typescript/lib/common"],
+      "@react-native-firebase/app/dist/module/internal/web/*": ["../app/dist/typescript/lib/internal/web/*"],
+      "@react-native-firebase/app/dist/module/internal/*": ["../app/dist/typescript/lib/internal/*"],
+      "@react-native-firebase/app/dist/module/internal": ["../app/dist/typescript/lib/internal"],
+      "@react-native-firebase/app": ["../app/dist/typescript/lib"]
+    }
+  },
+  "include": ["lib/**/*", "../app/lib/internal/global.d.ts"],
+  "exclude": ["node_modules", "dist", "__tests__", "**/*.test.ts"]
+}

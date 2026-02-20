@@ -33,8 +33,6 @@
     "packages/ml/lib/modular/index.d.ts",
     "packages/perf/lib/index.d.ts",
     "packages/perf/lib/modular/index.d.ts",
-    "packages/remote-config/lib/index.d.ts",
-    "packages/remote-config/lib/modular/index.d.ts",
     "packages/storage/lib/index.d.ts",
     "packages/storage/lib/modular/index.d.ts",
     "packages/functions/type-test.ts",
@@ -76,6 +74,12 @@
     "lib": ["es2015", "es2016", "esnext", "dom"],
     "types": ["react-native", "node"],
     "paths": {
+      "@react-native-firebase/remote-config": ["./packages/remote-config/lib/index.ts"],
+      "@react-native-firebase/app/dist/module/internal/*": ["./packages/app/lib/internal/*"],
+      "@react-native-firebase/app/dist/module/internal": ["./packages/app/lib/internal"],
+      "@react-native-firebase/app/dist/module/common/*": ["./packages/app/lib/common/*"],
+      "@react-native-firebase/app/dist/module/common": ["./packages/app/lib/common"],
+      "@react-native-firebase/app": ["./packages/app/lib/index.ts"],
       "@react-native-firebase/*": ["./packages/*/lib/index.d.ts"]
     }
   },

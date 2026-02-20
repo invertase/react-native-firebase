@@ -1,6 +1,6 @@
+import type { CustomSignals, FirebaseRemoteConfigTypes } from '@react-native-firebase/remote-config';
 import remoteConfig, {
   firebase,
-  FirebaseRemoteConfigTypes,
   getRemoteConfig,
   activate,
   ensureInitialized,
@@ -26,7 +26,7 @@ import remoteConfig, {
   setCustomSignals,
   LastFetchStatus,
   ValueSource,
-} from '.';
+} from '@react-native-firebase/remote-config';
 
 console.log(remoteConfig().app);
 
@@ -51,7 +51,7 @@ console.log(firebase.remoteConfig.LastFetchStatus.THROTTLED);
 console.log(firebase.remoteConfig.LastFetchStatus.NO_FETCH_YET);
 
 // checks statics exist on defaultExport
-console.log(remoteConfig.firebase.SDK_VERSION);
+console.log((remoteConfig as typeof remoteConfig & { firebase: typeof firebase }).firebase.SDK_VERSION);
 
 // checks root exists
 console.log(firebase.SDK_VERSION);
@@ -60,7 +60,7 @@ console.log(firebase.SDK_VERSION);
 console.log(firebase.remoteConfig(firebase.app()).app.name);
 
 // checks default export supports app arg
-console.log(remoteConfig(firebase.app()).app.name);
+console.log(remoteConfig(firebase.app().name).app.name);
 
 // checks Module instance APIs
 const remoteConfigInstance = firebase.remoteConfig();
@@ -70,11 +70,17 @@ console.log(remoteConfigInstance.lastFetchStatus);
 console.log(remoteConfigInstance.settings);
 console.log(remoteConfigInstance.defaultConfig);
 
-remoteConfigInstance.setConfigSettings({ minimumFetchIntervalMillis: 30000 }).then(() => {
+remoteConfigInstance.setConfigSettings({
+  minimumFetchIntervalMillis: 30000,
+  fetchTimeoutMillis: 60000,
+}).then(() => {
   console.log('Config settings set');
 });
 
-remoteConfigInstance.settings = { minimumFetchIntervalMillis: 60000 };
+remoteConfigInstance.settings = {
+  minimumFetchIntervalMillis: 60000,
+  fetchTimeoutMillis: 60000,
+};
 
 remoteConfigInstance.setDefaults({ key: 'value' }).then(() => {
   console.log('Defaults set');
@@ -86,7 +92,7 @@ remoteConfigInstance.setDefaultsFromResource('config_resource').then(() => {
   console.log('Defaults from resource set');
 });
 
-const unsubscribeOnConfigUpdate = remoteConfigInstance.onConfigUpdate(remoteConfigInstance, {
+const unsubscribeOnConfigUpdate = remoteConfigInstance.onConfigUpdate({
   next: (configUpdate: FirebaseRemoteConfigTypes.ConfigUpdate) => {
     console.log(configUpdate.getUpdatedKeys());
   },
@@ -155,7 +161,7 @@ remoteConfigInstance.reset().then(() => {
 const modularRemoteConfig1 = getRemoteConfig();
 console.log(modularRemoteConfig1.app.name);
 
-const modularRemoteConfig2 = getRemoteConfig(firebase.app());
+const modularRemoteConfig2 = getRemoteConfig(firebase.app() as Parameters<typeof getRemoteConfig>[0]);
 console.log(modularRemoteConfig2.app.name);
 
 activate(modularRemoteConfig1).then((activated: boolean) => {
@@ -200,7 +206,10 @@ reset(modularRemoteConfig1).then(() => {
   console.log('Modular reset');
 });
 
-setConfigSettings(modularRemoteConfig1, { minimumFetchIntervalMillis: 30000 }).then(() => {
+setConfigSettings(modularRemoteConfig1, {
+  minimumFetchIntervalMillis: 30000,
+  fetchTimeoutMillis: 60000,
+}).then(() => {
   console.log('Modular config settings set');
 });
 
@@ -249,7 +258,9 @@ const modularUnsubscribeOnConfigUpdated = onConfigUpdated(
 );
 modularUnsubscribeOnConfigUpdated();
 
-setCustomSignals(modularRemoteConfig1, { signal1: 'value1', signal2: 123 }).then(() => {
+// Explicit use of modular type CustomSignals (from lib/types/modular)
+const customSignals: CustomSignals = { signal1: 'value1', signal2: 123, signal3: null };
+setCustomSignals(modularRemoteConfig1, customSignals).then(() => {
   console.log('Modular custom signals set');
 });
 
