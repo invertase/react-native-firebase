@@ -267,11 +267,17 @@ export namespace FirebaseRemoteConfigTypes {
      * Indicates the default value in milliseconds to set for the minimum interval that needs to elapse
      * before a fetch request can again be made to the Remote Config server. Defaults to 43200000 (Twelve hours).
      */
-    minimumFetchIntervalMillis?: number;
+    minimumFetchIntervalMillis: number;
     /**
      * Indicates the default value in milliseconds to abandon a pending fetch request made to the Remote Config server. Defaults to 60000 (One minute).
+     * @deprecated Use fetchTimeoutMillis to match Firebase Web SDK. This is an alias for the same value.
      */
     fetchTimeMillis?: number;
+    /**
+     * Defines the maximum amount of milliseconds to wait for a response when fetching configuration.
+     * Defaults to 60000 (One minute). Matches Firebase Web SDK RemoteConfigSettings.
+     */
+    fetchTimeoutMillis: number;
   }
 
   /**

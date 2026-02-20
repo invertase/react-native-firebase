@@ -82,11 +82,17 @@ console.log(remoteConfigInstance.lastFetchStatus);
 console.log(remoteConfigInstance.settings);
 console.log(remoteConfigInstance.defaultConfig);
 
-remoteConfigInstance.setConfigSettings({ minimumFetchIntervalMillis: 30000 }).then(() => {
+remoteConfigInstance.setConfigSettings({
+  minimumFetchIntervalMillis: 30000,
+  fetchTimeoutMillis: 60000,
+}).then(() => {
   console.log('Config settings set');
 });
 
-remoteConfigInstance.settings = { minimumFetchIntervalMillis: 60000 };
+remoteConfigInstance.settings = {
+  minimumFetchIntervalMillis: 60000,
+  fetchTimeoutMillis: 60000,
+};
 
 remoteConfigInstance.setDefaults({ key: 'value' }).then(() => {
   console.log('Defaults set');
@@ -212,7 +218,10 @@ reset(modularRemoteConfig1).then(() => {
   console.log('Modular reset');
 });
 
-setConfigSettings(modularRemoteConfig1, { minimumFetchIntervalMillis: 30000 }).then(() => {
+setConfigSettings(modularRemoteConfig1, {
+  minimumFetchIntervalMillis: 30000,
+  fetchTimeoutMillis: 60000,
+}).then(() => {
   console.log('Modular config settings set');
 });
 

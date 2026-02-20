@@ -82,6 +82,7 @@ class FirebaseConfigModule extends FirebaseModule {
     this._settings = {
       // defaults to 1 minute.
       fetchTimeMillis: 60000,
+      fetchTimeoutMillis: 60000,
       // defaults to 12 hours.
       minimumFetchIntervalMillis: 43200000,
     };
@@ -126,6 +127,7 @@ class FirebaseConfigModule extends FirebaseModule {
     // there is no way to "await" a setter. We can't delegate to `setConfigSettings()` as it is setup
     // for native.
     this._updateFromConstants(settings);
+
     (
       this.setConfigSettings as (
         s: FirebaseRemoteConfigTypes.ConfigSettings,
@@ -204,6 +206,7 @@ class FirebaseConfigModule extends FirebaseModule {
 
     const apiCalled =
       (arguments as unknown as [unknown, unknown])[1] === true ? 'settings' : 'setConfigSettings';
+
     if (!isObject(settings)) {
       throw new Error(`firebase.remoteConfig().${apiCalled}(*): settings must set an object.`);
     }
@@ -273,6 +276,7 @@ class FirebaseConfigModule extends FirebaseModule {
   setDefaults(defaults: FirebaseRemoteConfigTypes.ConfigDefaults): Promise<null> {
     const apiCalled =
       (arguments as unknown as [unknown, unknown])[1] === true ? 'defaultConfig' : 'setDefaults';
+
     if (!isObject(defaults)) {
       throw new Error(`firebase.remoteConfig().${apiCalled}(): 'defaults' must be an object.`);
     }
@@ -312,6 +316,7 @@ class FirebaseConfigModule extends FirebaseModule {
     // the official JS SDK API by assuming the callback is an Observer, and sending it a ConfigUpdate
     // compatible parameter that implements the `getUpdatedKeys` method
     let unsubscribed = false;
+
     const subscription = this.emitter.addListener(
       this.eventNameForApp('on_config_updated'),
       (event: {
@@ -322,6 +327,7 @@ class FirebaseConfigModule extends FirebaseModule {
         nativeErrorMessage: string;
       }) => {
         const { resultType } = event;
+
         if (resultType === 'success') {
           observer.next({
             getUpdatedKeys: () => new Set(event.updatedKeys),
@@ -338,6 +344,7 @@ class FirebaseConfigModule extends FirebaseModule {
         );
       },
     );
+
     if (this._configUpdateListenerCount === 0) {
       this.native.onConfigUpdated();
     }
@@ -352,7 +359,9 @@ class FirebaseConfigModule extends FirebaseModule {
       }
       unsubscribed = true;
       subscription.remove();
+
       this._configUpdateListenerCount--;
+
       if (this._configUpdateListenerCount === 0) {
         this.native.removeConfigUpdateRegistration();
       }
@@ -373,6 +382,7 @@ class FirebaseConfigModule extends FirebaseModule {
       error?: { code: string; message: string; nativeErrorMessage: string },
     ) => void;
     let unsubscribed = false;
+
     const subscription = this.emitter.addListener(
       this.eventNameForApp('on_config_updated'),
       (event: {
@@ -383,6 +393,7 @@ class FirebaseConfigModule extends FirebaseModule {
         nativeErrorMessage: string;
       }) => {
         const { resultType } = event;
+
         if (resultType === 'success') {
           listener({ updatedKeys: event.updatedKeys }, undefined);
           return;
@@ -395,6 +406,7 @@ class FirebaseConfigModule extends FirebaseModule {
         });
       },
     );
+
     if (this._configUpdateListenerCount === 0) {
       this.native.onConfigUpdated();
     }
@@ -407,9 +419,12 @@ class FirebaseConfigModule extends FirebaseModule {
         // but anything after the first call is a no-op
         return;
       }
+
       unsubscribed = true;
       subscription.remove();
+
       this._configUpdateListenerCount--;
+
       if (this._configUpdateListenerCount === 0) {
         this.native.removeConfigUpdateRegistration();
       }
@@ -434,17 +449,28 @@ class FirebaseConfigModule extends FirebaseModule {
     }
 
     if (typeof c.fetchTimeout === 'number' && typeof c.minimumFetchInterval === 'number') {
+      const timeoutMillis = c.fetchTimeout * 1000;
+
       this._settings = {
-        fetchTimeMillis: c.fetchTimeout * 1000,
+        fetchTimeMillis: timeoutMillis,
+        fetchTimeoutMillis: timeoutMillis,
         minimumFetchIntervalMillis: c.minimumFetchInterval * 1000,
       };
     } else if (
-      typeof (c as FirebaseRemoteConfigTypes.ConfigSettings).fetchTimeMillis === 'number' ||
-      typeof (c as FirebaseRemoteConfigTypes.ConfigSettings).minimumFetchIntervalMillis === 'number'
+      typeof (c as unknown as FirebaseRemoteConfigTypes.ConfigSettings).fetchTimeMillis ===
+        'number' ||
+      typeof (c as unknown as FirebaseRemoteConfigTypes.ConfigSettings).fetchTimeoutMillis ===
+        'number' ||
+      typeof (c as unknown as FirebaseRemoteConfigTypes.ConfigSettings)
+        .minimumFetchIntervalMillis === 'number'
     ) {
-      const s = c as FirebaseRemoteConfigTypes.ConfigSettings;
+      const s = c as unknown as FirebaseRemoteConfigTypes.ConfigSettings;
+      const timeoutMillis =
+        s.fetchTimeoutMillis ?? s.fetchTimeMillis ?? this._settings.fetchTimeoutMillis;
+
       this._settings = {
-        fetchTimeMillis: s.fetchTimeMillis ?? this._settings.fetchTimeMillis,
+        fetchTimeMillis: timeoutMillis,
+        fetchTimeoutMillis: timeoutMillis,
         minimumFetchIntervalMillis:
           s.minimumFetchIntervalMillis ?? this._settings.minimumFetchIntervalMillis,
       };
