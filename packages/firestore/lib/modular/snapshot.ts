@@ -16,55 +16,27 @@
  */
 
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
-import type { DocumentData, DocumentReference, Query } from '../types/firestore';
-import type { FieldPath } from './FieldPath';
+import type {
+  DocumentSnapshot,
+  DocumentData,
+  DocumentReference,
+  Query,
+  QueryDocumentSnapshot,
+  QuerySnapshot,
+} from '../types/firestore';
 
 export type Unsubscribe = () => void;
 export type FirestoreError = Error;
-export type SnapshotMetadata = {
-  fromCache: boolean;
-  hasPendingWrites: boolean;
-  isEqual(other: SnapshotMetadata): boolean;
-};
-
-export interface DocumentSnapshot<
-  AppModelType = DocumentData,
-  DbModelType extends DocumentData = DocumentData,
-> {
-  exists(): this is QueryDocumentSnapshot<AppModelType, DbModelType>;
-  id: string;
-  metadata: SnapshotMetadata;
-  ref: DocumentReference<AppModelType, DbModelType>;
-  data(): AppModelType | undefined;
-  get<fieldType extends DbModelType[keyof DbModelType]>(
-    fieldPath: keyof DbModelType | string | FieldPath,
-  ): fieldType;
-  isEqual(other: DocumentSnapshot): boolean;
-}
-
-export interface QueryDocumentSnapshot<
-  AppModelType = DocumentData,
-  DbModelType extends DocumentData = DocumentData,
-> extends DocumentSnapshot<AppModelType, DbModelType> {
-  exists(): this is QueryDocumentSnapshot<AppModelType, DbModelType>;
-  data(): AppModelType;
-}
-
-export interface QuerySnapshot<
-  AppModelType = DocumentData,
-  DbModelType extends DocumentData = DocumentData,
-> {
-  docs: QueryDocumentSnapshot<AppModelType, DbModelType>[];
-  empty: boolean;
-  metadata: SnapshotMetadata;
-  query: Query<AppModelType, DbModelType>;
-  size: number;
-  forEach(
-    callback: (result: QueryDocumentSnapshot<AppModelType, DbModelType>, index: number) => void,
-    thisArg?: unknown,
-  ): void;
-  isEqual(other: QuerySnapshot): boolean;
-}
+export type {
+  DocumentSnapshot,
+  QueryDocumentSnapshot,
+  QuerySnapshot,
+  SnapshotMetadata,
+  SnapshotListenOptions,
+  SnapshotOptions,
+  DocumentChange,
+  DocumentChangeType,
+} from '../types/firestore';
 
 export function onSnapshot<
   AppModelType = DocumentData,

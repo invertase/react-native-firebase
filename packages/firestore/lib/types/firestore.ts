@@ -28,7 +28,6 @@ export declare class Firestore {
    * Whether it's a Firestore or Firestore Lite instance.
    */
   type: 'firestore';
-  private constructor();
   /**
    * The FirebaseApp associated with this Firestore instance.
    */
@@ -52,10 +51,64 @@ export type AggregateSpecData<T extends AggregateSpec> = {
 };
 
 export type EmulatorMockTokenOptions = { user_id: string } | { sub: string };
-export type SetOptions = FirebaseFirestoreTypes.SetOptions;
-export type SnapshotListenOptions = FirebaseFirestoreTypes.SnapshotListenOptions;
-export type WhereFilterOp = FirebaseFirestoreTypes.WhereFilterOp;
-export type QueryCompositeFilterConstraint = FirebaseFirestoreTypes.QueryCompositeFilterConstraint;
+
+export type SetOptions =
+  | {
+      readonly merge?: boolean;
+    }
+  | {
+      readonly mergeFields?: Array<string | FieldPath>;
+    };
+
+export type WhereFilterOp =
+  | '<'
+  | '<='
+  | '=='
+  | '!='
+  | '>='
+  | '>'
+  | 'array-contains'
+  | 'in'
+  | 'array-contains-any'
+  | 'not-in';
+
+export type OrderByDirection = 'desc' | 'asc';
+
+export type QueryConstraintType =
+  | 'where'
+  | 'orderBy'
+  | 'limit'
+  | 'limitToLast'
+  | 'startAt'
+  | 'startAfter'
+  | 'endAt'
+  | 'endBefore';
+
+export interface SnapshotListenOptions {
+  readonly includeMetadataChanges?: boolean;
+}
+
+export type SnapshotOptions = {
+  readonly serverTimestamps?: 'estimate' | 'previous' | 'none';
+};
+
+export class SnapshotMetadata {
+  readonly fromCache: boolean;
+  readonly hasPendingWrites: boolean;
+  isEqual(other: SnapshotMetadata): boolean;
+}
+
+export type DocumentChangeType = 'added' | 'removed' | 'modified';
+
+export interface DocumentChange<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+> {
+  readonly type: DocumentChangeType;
+  readonly doc: QueryDocumentSnapshot<AppModelType, DbModelType>;
+  readonly oldIndex: number;
+  readonly newIndex: number;
+}
 
 // Re-exported helpers mirrored from modular declarations.
 export type Primitive = string | number | boolean | undefined | null;
@@ -122,12 +175,10 @@ export interface FirestoreDataConverter<
   ): AppModelType;
 }
 
-export interface Query<
-  AppModelType = DocumentData,
-  DbModelType extends DocumentData = DocumentData,
-> {
-  firestore: Firestore;
-  converter: FirestoreDataConverter<AppModelType, DbModelType> | null;
+export class Query<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData> {
+  readonly converter: FirestoreDataConverter<AppModelType, DbModelType> | null;
+  readonly type: 'query' | 'collection';
+  readonly firestore: Firestore;
   withConverter(converter: null): Query<DocumentData, DocumentData>;
   withConverter<NewAppModelType, NewDbModelType extends DocumentData = DocumentData>(
     converter: FirestoreDataConverter<NewAppModelType, NewDbModelType>,
@@ -231,17 +282,40 @@ export class Transaction extends LiteTransaction {
 }
 
 export type TransactionOptions = unknown;
-export type SnapshotOptions = unknown;
-export interface QueryDocumentSnapshot<
+export class DocumentSnapshot<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
 > {
-  data(options?: SnapshotOptions): AppModelType;
+  readonly metadata: SnapshotMetadata;
+  exists(): this is QueryDocumentSnapshot<AppModelType, DbModelType>;
+  data(options?: SnapshotOptions): AppModelType | undefined;
+  get(fieldPath: string | FieldPath, options?: SnapshotOptions): any;
+  get id(): string;
+  get ref(): DocumentReference<AppModelType, DbModelType>;
 }
-export interface DocumentSnapshot<
+
+export class QueryDocumentSnapshot<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
-> {}
+> extends DocumentSnapshot<AppModelType, DbModelType> {
+  data(options?: SnapshotOptions): AppModelType;
+}
+
+export class QuerySnapshot<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+> {
+  readonly metadata: SnapshotMetadata;
+  readonly query: Query<AppModelType, DbModelType>;
+  get docs(): Array<QueryDocumentSnapshot<AppModelType, DbModelType>>;
+  get size(): number;
+  get empty(): boolean;
+  forEach(
+    callback: (result: QueryDocumentSnapshot<AppModelType, DbModelType>) => void,
+    thisArg?: unknown,
+  ): void;
+  docChanges(options?: SnapshotListenOptions): Array<DocumentChange<AppModelType, DbModelType>>;
+}
 
 // Utility aliases for later migration steps.
 export type ModularTypes = typeof import('../modular/index');

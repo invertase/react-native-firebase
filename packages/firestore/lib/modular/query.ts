@@ -16,44 +16,29 @@
  */
 
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
-// @ts-expect-error FirestoreFilter typings are migrated incrementally.
 import { _Filter, Filter } from '../FirestoreFilter';
-import type { DocumentData, DocumentReference, Query } from '../types/firestore';
+import type {
+  DocumentData,
+  DocumentReference,
+  OrderByDirection,
+  Query,
+  QueryConstraintType,
+  WhereFilterOp,
+} from '../types/firestore';
 import type { DocumentSnapshot, QuerySnapshot } from './snapshot';
 import type { FieldPath } from './FieldPath';
 
-export type WhereFilterOp =
-  | '<'
-  | '<='
-  | '=='
-  | '>'
-  | '>='
-  | '!='
-  | 'array-contains'
-  | 'array-contains-any'
-  | 'in'
-  | 'not-in';
+export type { OrderByDirection, QueryConstraintType, WhereFilterOp } from '../types/firestore';
 
-export type QueryConstraintType =
-  | 'where'
-  | 'orderBy'
-  | 'limit'
-  | 'limitToLast'
-  | 'startAt'
-  | 'startAfter'
-  | 'endAt'
-  | 'endBefore';
+export abstract class QueryConstraint {
+  abstract readonly type: QueryConstraintType;
+  private readonly _args: unknown[];
 
-export class QueryConstraint {
-  readonly type: QueryConstraintType;
-  readonly _args: unknown[];
-
-  constructor(type: QueryConstraintType, ...args: unknown[]) {
-    this.type = type;
+  protected constructor(...args: unknown[]) {
     this._args = args;
   }
 
-  _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+  private _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
     query: Query<AppModelType, DbModelType>,
   ): Query<AppModelType, DbModelType> {
     const method = (
@@ -66,33 +51,104 @@ export class QueryConstraint {
   }
 }
 
-export class QueryOrderByConstraint extends QueryConstraint {}
-export class QueryLimitConstraint extends QueryConstraint {}
-export class QueryStartAtConstraint extends QueryConstraint {}
-export class QueryEndAtConstraint extends QueryConstraint {}
-export class QueryFieldFilterConstraint extends QueryConstraint {}
+export class QueryCompositeFilterConstraint {
+  readonly type: 'or' | 'and';
+  private readonly _filter: _Filter;
+
+  constructor(type: 'or' | 'and', filters: _Filter[]) {
+    this.type = type;
+    this._filter = type === 'or' ? Filter.or(...filters) : Filter.and(...filters);
+  }
+
+  private _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+    query: Query<AppModelType, DbModelType>,
+  ): Query<AppModelType, DbModelType> {
+    const where = (
+      query as unknown as {
+        where: (...args: unknown[]) => Query<AppModelType, DbModelType>;
+      }
+    ).where;
+    return where.call(query, this._filter, MODULAR_DEPRECATION_ARG);
+  }
+}
+
+export class QueryOrderByConstraint extends QueryConstraint {
+  readonly type = 'orderBy';
+
+  constructor(fieldPath: string | FieldPath, directionStr?: OrderByDirection) {
+    super(fieldPath, directionStr);
+  }
+}
+
+export class QueryLimitConstraint extends QueryConstraint {
+  readonly type: 'limit' | 'limitToLast';
+
+  constructor(type: 'limit' | 'limitToLast', limitValue: number) {
+    super(limitValue);
+    this.type = type;
+  }
+}
+
+export class QueryStartAtConstraint extends QueryConstraint {
+  readonly type: 'startAt' | 'startAfter';
+
+  constructor(type: 'startAt' | 'startAfter', ...docOrFields: Array<unknown | DocumentSnapshot>) {
+    super(...docOrFields);
+    this.type = type;
+  }
+}
+
+export class QueryEndAtConstraint extends QueryConstraint {
+  readonly type: 'endAt' | 'endBefore';
+
+  constructor(type: 'endAt' | 'endBefore', ...fieldValues: unknown[]) {
+    super(...fieldValues);
+    this.type = type;
+  }
+}
+
+export class QueryFieldFilterConstraint extends QueryConstraint {
+  readonly type = 'where';
+  private readonly _filter: _Filter;
+
+  constructor(fieldPath: string | FieldPath, opStr: WhereFilterOp, value: unknown) {
+    super(fieldPath, opStr, value);
+    this._filter = Filter(fieldPath, opStr, value);
+  }
+}
 
 export type QueryFilterConstraint = QueryFieldFilterConstraint | QueryCompositeFilterConstraint;
-export type QueryCompositeFilterConstraint = QueryConstraint;
 export type QueryNonFilterConstraint =
   | QueryOrderByConstraint
   | QueryLimitConstraint
   | QueryStartAtConstraint
   | QueryEndAtConstraint;
-export type OrderByDirection = 'desc' | 'asc';
 
 export function query<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
   queryRef: Query<AppModelType, DbModelType>,
-  queryConstraint?: QueryCompositeFilterConstraint | QueryConstraint,
-  ...additionalQueryConstraints: Array<QueryConstraint | QueryNonFilterConstraint>
+  compositeFilter: QueryCompositeFilterConstraint,
+  ...queryConstraints: QueryNonFilterConstraint[]
+): Query<AppModelType, DbModelType>;
+export function query<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+  queryRef: Query<AppModelType, DbModelType>,
+  ...queryConstraints: QueryConstraint[]
+): Query<AppModelType, DbModelType>;
+export function query<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+  queryRef: Query<AppModelType, DbModelType>,
+  ...queryConstraints: Array<QueryCompositeFilterConstraint | QueryConstraint>
 ): Query<AppModelType, DbModelType> {
-  const queryConstraints = [queryConstraint, ...additionalQueryConstraints].filter(
-    constraint => constraint !== undefined,
-  ) as QueryConstraint[];
-
   let constrainedQuery = queryRef;
   for (const constraint of queryConstraints) {
-    constrainedQuery = constraint._apply(constrainedQuery);
+    if (!constraint) {
+      continue;
+    }
+    const apply = (
+      constraint as unknown as { _apply?: (q: Query<AppModelType, DbModelType>) => any }
+    )._apply;
+    if (!apply) {
+      continue;
+    }
+    constrainedQuery = apply.call(constraint, constrainedQuery);
   }
   return constrainedQuery;
 }
@@ -102,76 +158,77 @@ export function where(
   opStr: WhereFilterOp,
   value: unknown,
 ): QueryFieldFilterConstraint {
-  return new QueryConstraint('where', fieldPath, opStr, value) as QueryFieldFilterConstraint;
+  return new QueryFieldFilterConstraint(fieldPath, opStr, value);
 }
 
-function getFilterOps(queries: QueryFieldFilterConstraint[]): _Filter[] {
-  const ops: _Filter[] = [];
-
-  for (const queryConstraint of queries) {
-    if (queryConstraint.type !== 'where') {
-      throw new Error('Invalid query constraint: expected where() constraint');
-    }
-
-    if (!queryConstraint._args.length) {
-      throw new Error('Invalid query constraint: missing where() arguments');
-    }
-
-    if (queryConstraint._args[0] instanceof _Filter) {
-      ops.push(queryConstraint._args[0]);
-      continue;
-    }
-
-    const [fieldPath, opStr, value] = queryConstraint._args as [
-      string | FieldPath,
-      WhereFilterOp,
-      unknown,
-    ];
-    ops.push(Filter(fieldPath, opStr, value));
+function toFilter(queryConstraint: QueryFilterConstraint): _Filter {
+  if (queryConstraint instanceof QueryCompositeFilterConstraint) {
+    return (queryConstraint as unknown as { _filter: _Filter })._filter;
   }
-
-  return ops;
+  if (queryConstraint instanceof QueryFieldFilterConstraint) {
+    return (queryConstraint as unknown as { _filter: _Filter })._filter;
+  }
+  throw new Error('Invalid query constraint: expected filter constraint');
 }
 
-export function or(...queries: QueryFieldFilterConstraint[]): QueryCompositeFilterConstraint {
-  return new QueryConstraint('where', Filter.or(...getFilterOps(queries)));
+export function or(...queryConstraints: QueryFilterConstraint[]): QueryCompositeFilterConstraint {
+  return new QueryCompositeFilterConstraint('or', queryConstraints.map(toFilter));
 }
 
-export function and(...queries: QueryFieldFilterConstraint[]): QueryCompositeFilterConstraint {
-  return new QueryConstraint('where', Filter.and(...getFilterOps(queries)));
+export function and(...queryConstraints: QueryFilterConstraint[]): QueryCompositeFilterConstraint {
+  return new QueryCompositeFilterConstraint('and', queryConstraints.map(toFilter));
 }
 
 export function orderBy(
   fieldPath: string | FieldPath,
   directionStr?: OrderByDirection,
 ): QueryOrderByConstraint {
-  return new QueryConstraint('orderBy', fieldPath, directionStr) as QueryOrderByConstraint;
+  return new QueryOrderByConstraint(fieldPath, directionStr);
 }
 
+export function startAt<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+>(snapshot: DocumentSnapshot<AppModelType, DbModelType>): QueryStartAtConstraint;
+export function startAt(...fieldValues: unknown[]): QueryStartAtConstraint;
 export function startAt(...docOrFields: Array<unknown | DocumentSnapshot>): QueryStartAtConstraint {
-  return new QueryConstraint('startAt', ...docOrFields) as QueryStartAtConstraint;
+  return new QueryStartAtConstraint('startAt', ...docOrFields);
 }
 
+export function startAfter<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+>(snapshot: DocumentSnapshot<AppModelType, DbModelType>): QueryStartAtConstraint;
+export function startAfter(...fieldValues: unknown[]): QueryStartAtConstraint;
 export function startAfter(
   ...docOrFields: Array<unknown | DocumentSnapshot>
 ): QueryStartAtConstraint {
-  return new QueryConstraint('startAfter', ...docOrFields) as QueryStartAtConstraint;
+  return new QueryStartAtConstraint('startAfter', ...docOrFields);
 }
 
+export function endAt<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+  snapshot: DocumentSnapshot<AppModelType, DbModelType>,
+): QueryEndAtConstraint;
+export function endAt(...fieldValues: unknown[]): QueryEndAtConstraint;
 export function endAt(...args: unknown[]): QueryEndAtConstraint {
-  return new QueryConstraint('endAt', ...args) as QueryEndAtConstraint;
+  return new QueryEndAtConstraint('endAt', ...args);
 }
 
+export function endBefore<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+>(snapshot: DocumentSnapshot<AppModelType, DbModelType>): QueryEndAtConstraint;
+export function endBefore(...fieldValues: unknown[]): QueryEndAtConstraint;
 export function endBefore(...fieldValues: unknown[]): QueryEndAtConstraint {
-  return new QueryConstraint('endBefore', ...fieldValues) as QueryEndAtConstraint;
+  return new QueryEndAtConstraint('endBefore', ...fieldValues);
 }
 
 export function limit(limitValue: number): QueryLimitConstraint {
-  return new QueryConstraint('limit', limitValue) as QueryLimitConstraint;
+  return new QueryLimitConstraint('limit', limitValue);
 }
 
-export function limitToLast(limitValue: number): QueryConstraint {
-  return new QueryConstraint('limitToLast', limitValue);
+export function limitToLast(limitValue: number): QueryLimitConstraint {
+  return new QueryLimitConstraint('limitToLast', limitValue);
 }
 
 export function getDoc<
