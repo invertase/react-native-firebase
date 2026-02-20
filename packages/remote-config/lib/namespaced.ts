@@ -24,6 +24,7 @@ import {
   isIOS,
   isFunction,
   parseListenerOrObserver,
+  isWeb,
 } from '@react-native-firebase/app/dist/module/common';
 import Value from './RemoteConfigValue';
 import {
@@ -189,7 +190,7 @@ class FirebaseConfigModule extends FirebaseModule {
    * @returns {Promise<null>}
    */
   reset(): Promise<null | void> {
-    if (isIOS) {
+    if (isIOS || isWeb) {
       return Promise.resolve(null);
     }
     return this._promiseWithConstants(this.native.reset()) as Promise<null>;
