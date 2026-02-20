@@ -2,20 +2,22 @@ import { getApp } from '@react-native-firebase/app';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 import type {
+  ConfigUpdateObserver,
+  CustomSignals,
+  RemoteConfig,
+  Unsubscribe,
+} from './types/modular';
+import type {
   CallbackOrObserver,
   ConfigDefaults,
   ConfigSettings,
-  ConfigUpdateObserver,
   ConfigValue,
   ConfigValues,
-  CustomSignals,
   LastFetchStatusType,
   OnConfigUpdatedListenerCallback,
-  RemoteConfig,
   RemoteConfigLogLevel,
   RemoteConfigWithDeprecationArg,
-  Unsubscribe,
-} from './types/modular';
+} from './types/internal';
 
 export type { CustomSignals };
 
@@ -26,9 +28,9 @@ export type { CustomSignals };
  */
 export function getRemoteConfig(app?: ReactNativeFirebase.FirebaseApp): RemoteConfig {
   if (app) {
-    return getApp(app.name).remoteConfig();
+    return getApp(app.name).remoteConfig() as RemoteConfig;
   }
-  return getApp().remoteConfig();
+  return getApp().remoteConfig() as RemoteConfig;
 }
 
 function rc(remoteConfig: RemoteConfig): RemoteConfigWithDeprecationArg {
@@ -249,7 +251,6 @@ export function setDefaultsFromResource(
  * @param remoteConfig - RemoteConfig instance
  * @param observer - to be notified of config updates
  * @returns Unsubscribe function to remove the listener
- * @deprecated use official firebase-js-sdk onConfigUpdate now that web supports realtime
  */
 export function onConfigUpdate(
   remoteConfig: RemoteConfig,

@@ -374,9 +374,11 @@ describe('remoteConfig()', function () {
 
         it('setConfigSettings()', function () {
           const remoteConfig = getRemoteConfig();
+          const settings = { minimumFetchIntervalMillis: 12, fetchTimeoutMillis: 60000 };
+
           remoteConfigV9Deprecation(
-            () => setConfigSettings(remoteConfig, { minimumFetchIntervalMillis: 12 }),
-            () => remoteConfig.setConfigSettings({ minimumFetchIntervalMillis: 12 }),
+            () => setConfigSettings(remoteConfig, settings),
+            () => remoteConfig.setConfigSettings(settings),
             'setConfigSettings',
           );
         });
