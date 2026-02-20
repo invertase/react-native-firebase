@@ -352,7 +352,10 @@ export function getAggregateFromServer<
       case 'count':
         aggregateQueries.push({
           aggregateType: aggregateField.aggregateType,
-          field: aggregateField._fieldPath === null ? null : aggregateField._fieldPath._toPath(),
+          field:
+            aggregateField._internalFieldPath === undefined
+              ? null
+              : aggregateField._internalFieldPath._toPath(),
           key,
         });
         break;

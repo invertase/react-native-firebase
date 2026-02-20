@@ -100,11 +100,11 @@ export class FirestoreAggregateQuerySnapshot<
 export class AggregateField<T = unknown> {
   readonly type = 'AggregateField';
   aggregateType: AggregateType;
-  _fieldPath: FieldPath | undefined;
+  readonly _internalFieldPath?: FieldPath;
 
   constructor(aggregateType: AggregateType, fieldPath?: FieldPath) {
     this.aggregateType = aggregateType;
-    this._fieldPath = fieldPath;
+    this._internalFieldPath = fieldPath;
   }
 }
 
