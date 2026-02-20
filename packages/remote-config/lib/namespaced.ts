@@ -33,18 +33,7 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/dist/module/internal';
 import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
-// Web fallback module; type inferred from implementation (RNFBConfigModule.ts)
-const fallBackModule = require('./web/RNFBConfigModule') as {
-  activate: (appName: string) => Promise<unknown>;
-  setConfigSettings: (appName: string, settings: unknown) => Promise<unknown>;
-  fetch: (appName: string, expirationDurationSeconds: number) => Promise<unknown>;
-  fetchAndActivate: (appName: string) => Promise<unknown>;
-  ensureInitialized: (appName: string) => Promise<unknown>;
-  setDefaults: (appName: string, defaults: unknown) => Promise<unknown>;
-  setCustomSignals: (appName: string, customSignals: unknown) => Promise<unknown>;
-  onConfigUpdated: (appName: string) => void;
-  removeConfigUpdateRegistration: (appName: string) => void;
-};
+import fallBackModule from './web/RNFBConfigModule';
 import { version } from './version';
 import { LastFetchStatus, ValueSource } from './statics';
 import type { FirebaseRemoteConfigTypes } from './types/namespaced';
