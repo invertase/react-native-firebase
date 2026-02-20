@@ -34,9 +34,9 @@ export type {
   Value,
   ValueSource as ModularValueSource,
 } from './types/modular';
+
 export * from './modular';
 
 export type { FirebaseRemoteConfigTypes } from './types/namespaced';
-
 export * from './namespaced';
 export { default } from './namespaced';
