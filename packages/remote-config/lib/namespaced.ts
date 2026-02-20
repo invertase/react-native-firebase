@@ -37,6 +37,13 @@ import fallBackModule from './web/RNFBConfigModule';
 import { version } from './version';
 import { LastFetchStatus, ValueSource } from './statics';
 import type { FirebaseRemoteConfigTypes } from './types/namespaced';
+import type {
+  ConstantsUpdate,
+  NativeConstantsResult,
+  ConfigUpdatedEvent,
+  SetConfigSettingsWithInternalArg,
+  SetDefaultsWithInternalArg,
+} from './types/internal';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
 const statics = {
@@ -46,19 +53,6 @@ const statics = {
 
 const namespace = 'remoteConfig';
 const nativeModuleName = 'RNFBConfigModule';
-
-interface ConstantsUpdate {
-  lastFetchTime?: number;
-  lastFetchStatus?: string;
-  fetchTimeout: number;
-  minimumFetchInterval: number;
-  values: Record<string, { value: string; source: string }>;
-}
-
-interface NativeConstantsResult {
-  result: unknown;
-  constants: ConstantsUpdate;
-}
 
 class FirebaseConfigModule extends FirebaseModule {
   _settings: FirebaseRemoteConfigTypes.ConfigSettings;
@@ -99,12 +93,7 @@ class FirebaseConfigModule extends FirebaseModule {
     // updates defaults on the instance. We then pass to underlying SDK to update. We do this because
     // there is no way to "await" a setter.
     this._updateFromConstants(defaults);
-    (
-      this.setDefaults as (
-        d: FirebaseRemoteConfigTypes.ConfigDefaults,
-        internal?: boolean,
-      ) => Promise<null>
-    ).call(this, defaults, true);
+    (this.setDefaults as SetDefaultsWithInternalArg).call(this, defaults, true);
   }
 
   get settings(): FirebaseRemoteConfigTypes.ConfigSettings {
@@ -118,12 +107,7 @@ class FirebaseConfigModule extends FirebaseModule {
     // for native.
     this._updateFromConstants(settings);
 
-    (
-      this.setConfigSettings as (
-        s: FirebaseRemoteConfigTypes.ConfigSettings,
-        internal?: boolean,
-      ) => Promise<void>
-    ).call(this, settings, true);
+    (this.setConfigSettings as SetConfigSettingsWithInternalArg).call(this, settings, true);
   }
 
   getValue(key: string): FirebaseRemoteConfigTypes.ConfigValue {
@@ -309,13 +293,7 @@ class FirebaseConfigModule extends FirebaseModule {
 
     const subscription = this.emitter.addListener(
       this.eventNameForApp('on_config_updated'),
-      (event: {
-        resultType: string;
-        updatedKeys: string[];
-        code: string;
-        message: string;
-        nativeErrorMessage: string;
-      }) => {
+      (event: ConfigUpdatedEvent) => {
         const { resultType } = event;
 
         if (resultType === 'success') {
@@ -375,13 +353,7 @@ class FirebaseConfigModule extends FirebaseModule {
 
     const subscription = this.emitter.addListener(
       this.eventNameForApp('on_config_updated'),
-      (event: {
-        resultType: string;
-        updatedKeys: string[];
-        code: string;
-        message: string;
-        nativeErrorMessage: string;
-      }) => {
+      (event: ConfigUpdatedEvent) => {
         const { resultType } = event;
 
         if (resultType === 'success') {

@@ -20,6 +20,30 @@
  * Not part of the public API; use types from modular.ts for public usage.
  */
 
+/** Shape of constants passed from native after config operations (fetch, activate, setDefaults, etc.). */
+export interface ConstantsUpdate {
+  lastFetchTime?: number;
+  lastFetchStatus?: string;
+  fetchTimeout: number;
+  minimumFetchInterval: number;
+  values: Record<string, { value: string; source: string }>;
+}
+
+/** Result wrapper from native module methods that return updated constants. */
+export interface NativeConstantsResult {
+  result: unknown;
+  constants: ConstantsUpdate;
+}
+
+/** Native event payload for on_config_updated. */
+export interface ConfigUpdatedEvent {
+  resultType: string;
+  updatedKeys: string[];
+  code: string;
+  message: string;
+  nativeErrorMessage: string;
+}
+
 import type {
   ConfigUpdateObserver,
   FetchStatus,
@@ -29,12 +53,31 @@ import type {
   Unsubscribe,
   Value,
 } from './modular';
+import type { FirebaseRemoteConfigTypes } from './namespaced';
 
 /** Alias for RemoteConfigSettings. Used by modular functions and namespaced bridge. */
 export type ConfigSettings = RemoteConfigSettings;
 
 /** Alias for default config object shape. */
 export type ConfigDefaults = { [key: string]: string | number | boolean };
+
+/**
+ * setConfigSettings when called from the settings setter (internal second arg).
+ * Used by namespaced bridge; uses namespaced ConfigSettings to match FirebaseRemoteConfigTypes.
+ */
+export type SetConfigSettingsWithInternalArg = (
+  settings: FirebaseRemoteConfigTypes.ConfigSettings,
+  internal?: boolean,
+) => Promise<void>;
+
+/**
+ * setDefaults when called from the defaultConfig setter (internal second arg).
+ * Used by namespaced bridge; uses namespaced ConfigDefaults to match FirebaseRemoteConfigTypes.
+ */
+export type SetDefaultsWithInternalArg = (
+  defaults: FirebaseRemoteConfigTypes.ConfigDefaults,
+  internal?: boolean,
+) => Promise<null>;
 
 /** Alias for Value. */
 export type ConfigValue = Value;
