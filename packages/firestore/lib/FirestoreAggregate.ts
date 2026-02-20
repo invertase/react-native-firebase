@@ -70,6 +70,7 @@ export class FirestoreAggregateQuerySnapshot<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
 > {
+  readonly type = 'AggregateQuerySnapshot';
   _query: Query<AppModelType, DbModelType>;
   _data: { count?: number; [key: string]: unknown };
   _isGetCountFromServer: boolean;

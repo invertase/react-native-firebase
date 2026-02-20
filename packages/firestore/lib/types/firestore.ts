@@ -44,6 +44,7 @@ export interface AggregateQuerySnapshot<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
 > {
+  readonly type: 'AggregateQuerySnapshot';
   readonly query: Query<AppModelType, DbModelType>;
   data(): AggregateSpecData<AggregateSpecType>;
 }
