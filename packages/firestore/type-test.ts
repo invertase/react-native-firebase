@@ -73,7 +73,8 @@ import firestore, {
   QueryDocumentSnapshot,
   Query,
 } from '.';
-import type { AggregateField, AggregateQuerySnapshot, AggregateSpec } from '.';
+import { AggregateField, AggregateQuerySnapshot } from '.';
+import type { AggregateSpec } from '.';
 
 type DocumentData = FirebaseFirestoreTypes.DocumentData;
 

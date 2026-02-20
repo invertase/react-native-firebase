@@ -101,10 +101,10 @@ export class AggregateQuerySnapshot<
 
 export class AggregateField<T = unknown> {
   readonly type = 'AggregateField';
-  aggregateType: AggregateType;
+  readonly aggregateType: AggregateType;
   readonly _internalFieldPath?: FieldPath;
 
-  constructor(aggregateType: AggregateType, fieldPath?: FieldPath) {
+  constructor(aggregateType: AggregateType = 'count', fieldPath?: FieldPath) {
     this.aggregateType = aggregateType;
     this._internalFieldPath = fieldPath;
   }

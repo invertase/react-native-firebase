@@ -396,7 +396,7 @@ export function average(field: string | FieldPath): AggregateField<number | null
 }
 
 export function count(): AggregateField<number> {
-  return new AggregateField('count', null);
+  return new AggregateField('count');
 }
 
 export function loadBundle(
