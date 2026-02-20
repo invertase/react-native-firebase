@@ -23,7 +23,21 @@ import type { AggregateField } from '../FirestoreAggregate';
 
 // Canonical app/module aliases used by modular declarations.
 export type FirebaseApp = ReactNativeFirebase.FirebaseApp;
-export type Firestore = FirebaseFirestoreTypes.Module;
+export declare class Firestore {
+  /**
+   * Whether it's a Firestore or Firestore Lite instance.
+   */
+  type: 'firestore';
+  private constructor();
+  /**
+   * The FirebaseApp associated with this Firestore instance.
+   */
+  get app(): FirebaseApp;
+  /**
+   * Returns a JSON-serializable representation of this Firestore instance.
+   */
+  toJSON(): object;
+}
 export type FirestoreSettings = FirebaseFirestoreTypes.Settings;
 
 // Core namespaced aliases referenced by modular wrappers.

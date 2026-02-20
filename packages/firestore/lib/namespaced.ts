@@ -42,7 +42,7 @@ import FirestoreQueryModifiers from './FirestoreQueryModifiers';
 import FirestoreStatics from './FirestoreStatics';
 import FirestoreTransactionHandler from './FirestoreTransactionHandler';
 import FirestoreWriteBatch from './FirestoreWriteBatch';
-import version from './version';
+import { version } from './version';
 import type { FirebaseWithFirestore, FirestoreNamespace } from './types/namespaced';
 import fallBackModule from './web/RNFBFirestoreModule';
 
@@ -74,15 +74,19 @@ type FirestoreModuleSettingsState = {
 };
 
 class FirebaseFirestoreModule extends FirebaseModule {
+  type: 'firestore' = 'firestore';
   _referencePath: FirestorePath;
   _transactionHandler: FirestoreTransactionHandler;
   _settings: FirestoreModuleSettingsState;
+  _databaseId: string | null;
 
   constructor(app: ReactNativeFirebase.FirebaseAppBase, config: ModuleConfig, databaseId?: string) {
     super(app, config);
 
     if (isString(databaseId) || databaseId === undefined) {
-      this._customUrlOrRegion = databaseId || '(default)';
+      this._databaseId = databaseId || '(default)';
+      // Kept for backwards compatibility with the modular API
+      this._customUrlOrRegion = this._databaseId;
     } else {
       throw new Error('firebase.app().firestore(*) database ID must be a string');
     }
@@ -121,13 +125,21 @@ class FirebaseFirestoreModule extends FirebaseModule {
     };
   }
 
+  toJSON(): object {
+    return {
+      app: this.app,
+      databaseId: this._databaseId,
+      settings: this._settings,
+    };
+  }
+  // Kept for backwards compatibility with the modular API
   get customUrlOrRegion(): string {
-    return this._customUrlOrRegion as string;
+    return this._databaseId as string;
   }
 
   // We override the FirebaseModule's eventNameForApp() method to include the customUrlOrRegion
   eventNameForApp(...args: Array<string | number>): string {
-    return `${this.app.name}-${this._customUrlOrRegion}-${args.join('-')}`;
+    return `${this.app.name}-${this._databaseId}-${args.join('-')}`;
   }
 
   batch(): FirestoreWriteBatch {
