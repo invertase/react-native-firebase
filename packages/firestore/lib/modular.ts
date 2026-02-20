@@ -20,7 +20,7 @@ import { isObject, MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/di
 import {
   AggregateField,
   fieldPathFromArgument,
-  FirestoreAggregateQuerySnapshot,
+  AggregateQuerySnapshot,
 } from './FirestoreAggregate';
 import { Filter } from './FirestoreFilter';
 import FirestoreQuery from './FirestoreQuery';
@@ -38,7 +38,6 @@ import type {
   UpdateData,
   WithFieldValue,
   WriteBatch,
-  AggregateQuerySnapshot,
   AggregateType,
   AggregateSpec,
 } from './types/firestore';
@@ -54,6 +53,8 @@ import type {
 } from './types/internal';
 import type { FieldPath } from './modular/FieldPath';
 import type { Unsubscribe } from './modular/snapshot';
+
+export { AggregateField, AggregateQuerySnapshot } from './FirestoreAggregate';
 
 type FirestoreWithSyncEvents = FirestoreInternal & {
   native: {
@@ -378,7 +379,7 @@ export function getAggregateFromServer<
     )
     .then(
       data =>
-        new FirestoreAggregateQuerySnapshot(query, data, false) as AggregateQuerySnapshot<
+        new AggregateQuerySnapshot(query, data, false) as AggregateQuerySnapshot<
           AggregateSpecType,
           AppModelType,
           DbModelType

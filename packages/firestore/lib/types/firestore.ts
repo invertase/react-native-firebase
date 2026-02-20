@@ -29,7 +29,6 @@ export type FirestoreSettings = FirebaseFirestoreTypes.Settings;
 export type PersistentCacheIndexManager = FirebaseFirestoreTypes.PersistentCacheIndexManager;
 export type {
   AggregateFieldType,
-  AggregateQuerySnapshot,
   AggregateSpec,
   AggregateSpecData,
   AggregateType,

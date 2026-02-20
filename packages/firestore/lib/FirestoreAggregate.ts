@@ -50,7 +50,7 @@ export class FirestoreAggregateQuery {
     return this._query;
   }
 
-  get(): Promise<FirestoreAggregateQuerySnapshot> {
+  get(): Promise<AggregateQuerySnapshot> {
     return this._firestore.native
       .collectionCount(
         this._collectionPath.relativeName,
@@ -59,13 +59,11 @@ export class FirestoreAggregateQuery {
         this._modifiers.orders,
         this._modifiers.options,
       )
-      .then(
-        (data: { count?: number }) => new FirestoreAggregateQuerySnapshot(this._query, data, true),
-      );
+      .then((data: { count?: number }) => new AggregateQuerySnapshot(this._query, data, true));
   }
 }
 
-export class FirestoreAggregateQuerySnapshot<
+export class AggregateQuerySnapshot<
   AggregateSpecType extends AggregateSpec = AggregateSpec,
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
@@ -94,6 +92,10 @@ export class FirestoreAggregateQuerySnapshot<
       return { count: this._data.count } as AggregateSpecData<AggregateSpecType>;
     }
     return { ...this._data } as AggregateSpecData<AggregateSpecType>;
+  }
+
+  _fieldsProto(): Record<string, unknown> {
+    return { ...this._data };
   }
 }
 

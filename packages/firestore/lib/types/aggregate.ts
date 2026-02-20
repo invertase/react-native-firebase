@@ -16,7 +16,6 @@
  */
 
 import type { FieldPath } from '../modular/FieldPath';
-import type { DocumentData, Query } from './firestore';
 
 export type AggregateType = 'count' | 'avg' | 'sum';
 
@@ -35,13 +34,3 @@ export interface AggregateSpec {
 export type AggregateSpecData<T extends AggregateSpec> = {
   [P in keyof T]: T[P] extends AggregateFieldLike<infer U> ? U : never;
 };
-
-export interface AggregateQuerySnapshot<
-  AggregateSpecType extends AggregateSpec = AggregateSpec,
-  AppModelType = DocumentData,
-  DbModelType extends DocumentData = DocumentData,
-> {
-  readonly type: 'AggregateQuerySnapshot';
-  readonly query: Query<AppModelType, DbModelType>;
-  data(): AggregateSpecData<AggregateSpecType>;
-}
