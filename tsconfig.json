@@ -75,15 +75,6 @@
     "types": ["react-native", "node"],
     "paths": {
       "@react-native-firebase/remote-config": ["./packages/remote-config/lib/index.ts"],
-      "@react-native-firebase/app/dist/module/internal/web/utils": [
-        "./packages/app/lib/internal/web/utils"
-      ],
-      "@react-native-firebase/app/dist/module/internal/web/firebaseRemoteConfig": [
-        "./packages/app/lib/internal/web/firebaseRemoteConfig"
-      ],
-      "@react-native-firebase/app/dist/module/internal/nativeModule": [
-        "./packages/app/lib/internal/nativeModule"
-      ],
       "@react-native-firebase/app/dist/module/internal/*": ["./packages/app/lib/internal/*"],
       "@react-native-firebase/app/dist/module/internal": ["./packages/app/lib/internal"],
       "@react-native-firebase/app/dist/module/common/*": ["./packages/app/lib/common/*"],

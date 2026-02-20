@@ -43,6 +43,7 @@ import type {
   ConfigUpdatedEvent,
   SetConfigSettingsWithInternalArg,
   SetDefaultsWithInternalArg,
+  OnConfigUpdatedListenerCallback,
 } from './types/internal';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
@@ -58,7 +59,7 @@ class FirebaseConfigModule extends FirebaseModule {
   _settings: FirebaseRemoteConfigTypes.ConfigSettings;
   _lastFetchTime: number;
   _values: Record<string, { value: string; source: string }>;
-  _lastFetchStatus!: FirebaseRemoteConfigTypes.LastFetchStatusType;
+  _lastFetchStatus: FirebaseRemoteConfigTypes.LastFetchStatusType;
   _configUpdateListenerCount: number;
 
   constructor(...args: ConstructorParameters<typeof FirebaseModule>) {
@@ -71,6 +72,7 @@ class FirebaseConfigModule extends FirebaseModule {
       minimumFetchIntervalMillis: 43200000,
     };
     this._lastFetchTime = -1;
+    this._lastFetchStatus = 'no_fetch_yet';
     this._values = {};
     this._configUpdateListenerCount = 0;
   }
@@ -325,6 +327,7 @@ class FirebaseConfigModule extends FirebaseModule {
         // but anything after the first call is a no-op
         return;
       }
+
       unsubscribed = true;
       subscription.remove();
 
@@ -345,10 +348,7 @@ class FirebaseConfigModule extends FirebaseModule {
   onConfigUpdated(
     listenerOrObserver: FirebaseRemoteConfigTypes.CallbackOrObserver<FirebaseRemoteConfigTypes.OnConfigUpdatedListenerCallback>,
   ): () => void {
-    const listener = parseListenerOrObserver(listenerOrObserver) as (
-      event?: { updatedKeys: string[] },
-      error?: { code: string; message: string; nativeErrorMessage: string },
-    ) => void;
+    const listener = parseListenerOrObserver(listenerOrObserver) as OnConfigUpdatedListenerCallback;
     let unsubscribed = false;
 
     const subscription = this.emitter.addListener(
