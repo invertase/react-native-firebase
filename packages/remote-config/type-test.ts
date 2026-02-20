@@ -28,54 +28,42 @@ import remoteConfig, {
   ValueSource,
 } from '@react-native-firebase/remote-config';
 
-// Root tsconfig resolves app from source; getFirebaseRoot() may not get remote-config augmentation.
-type FirebaseRoot = {
-  app(name?: string): { name: string; remoteConfig(): ReturnType<typeof getRemoteConfig> };
-  remoteConfig: ((app?: { name: string }) => ReturnType<typeof getRemoteConfig>) & {
-    SDK_VERSION: string;
-    ValueSource: { REMOTE: string; DEFAULT: string; STATIC: string };
-    LastFetchStatus: { SUCCESS: string; FAILURE: string; THROTTLED: string; NO_FETCH_YET: string };
-  };
-  SDK_VERSION?: string;
-};
-const _firebase = firebase as unknown as FirebaseRoot;
-
 console.log(remoteConfig().app);
 
 // checks module exists at root
-console.log(_firebase.remoteConfig().app.name);
-console.log(_firebase.remoteConfig().fetchTimeMillis);
-console.log(_firebase.remoteConfig().lastFetchStatus);
-console.log(_firebase.remoteConfig().settings);
-console.log(_firebase.remoteConfig().defaultConfig);
+console.log(firebase.remoteConfig().app.name);
+console.log(firebase.remoteConfig().fetchTimeMillis);
+console.log(firebase.remoteConfig().lastFetchStatus);
+console.log(firebase.remoteConfig().settings);
+console.log(firebase.remoteConfig().defaultConfig);
 
 // checks module exists at app level
-console.log(_firebase.app().remoteConfig().app.name);
+console.log(firebase.app().remoteConfig().app.name);
 
 // checks statics exist
-console.log(_firebase.remoteConfig.SDK_VERSION);
-console.log(_firebase.remoteConfig.ValueSource.REMOTE);
-console.log(_firebase.remoteConfig.ValueSource.DEFAULT);
-console.log(_firebase.remoteConfig.ValueSource.STATIC);
-console.log(_firebase.remoteConfig.LastFetchStatus.SUCCESS);
-console.log(_firebase.remoteConfig.LastFetchStatus.FAILURE);
-console.log(_firebase.remoteConfig.LastFetchStatus.THROTTLED);
-console.log(_firebase.remoteConfig.LastFetchStatus.NO_FETCH_YET);
+console.log(firebase.remoteConfig.SDK_VERSION);
+console.log(firebase.remoteConfig.ValueSource.REMOTE);
+console.log(firebase.remoteConfig.ValueSource.DEFAULT);
+console.log(firebase.remoteConfig.ValueSource.STATIC);
+console.log(firebase.remoteConfig.LastFetchStatus.SUCCESS);
+console.log(firebase.remoteConfig.LastFetchStatus.FAILURE);
+console.log(firebase.remoteConfig.LastFetchStatus.THROTTLED);
+console.log(firebase.remoteConfig.LastFetchStatus.NO_FETCH_YET);
 
 // checks statics exist on defaultExport
-console.log((remoteConfig as unknown as { firebase: FirebaseRoot }).firebase.SDK_VERSION);
+console.log((remoteConfig as typeof remoteConfig & { firebase: typeof firebase }).firebase.SDK_VERSION);
 
 // checks root exists
-console.log(_firebase.SDK_VERSION);
+console.log(firebase.SDK_VERSION);
 
 // checks multi-app support exists
-console.log(_firebase.remoteConfig(_firebase.app()).app.name);
+console.log(firebase.remoteConfig(firebase.app()).app.name);
 
 // checks default export supports app arg
-console.log(remoteConfig(_firebase.app().name).app.name);
+console.log(remoteConfig(firebase.app().name).app.name);
 
 // checks Module instance APIs
-const remoteConfigInstance = _firebase.remoteConfig();
+const remoteConfigInstance = firebase.remoteConfig();
 console.log(remoteConfigInstance.app.name);
 console.log(remoteConfigInstance.fetchTimeMillis);
 console.log(remoteConfigInstance.lastFetchStatus);
@@ -173,7 +161,7 @@ remoteConfigInstance.reset().then(() => {
 const modularRemoteConfig1 = getRemoteConfig();
 console.log(modularRemoteConfig1.app.name);
 
-const modularRemoteConfig2 = getRemoteConfig(_firebase.app() as Parameters<typeof getRemoteConfig>[0]);
+const modularRemoteConfig2 = getRemoteConfig(firebase.app() as Parameters<typeof getRemoteConfig>[0]);
 console.log(modularRemoteConfig2.app.name);
 
 activate(modularRemoteConfig1).then((activated: boolean) => {
