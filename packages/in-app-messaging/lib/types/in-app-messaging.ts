@@ -69,9 +69,6 @@ export interface InAppMessaging extends ReactNativeFirebase.FirebaseModule {
   /**
    * Enable or disable automatic data collection for Firebase In-App Messaging.
    *
-   * When enabled, generates a registration token on app startup if there is no valid one and generates a new token
-   * when it is deleted (which prevents `deleteInstanceId()` from stopping the periodic sending of data).
-   *
    * This setting is persisted across app restarts and overrides the setting specified in your manifest/plist file.
    *
    * #### Example
@@ -91,7 +88,7 @@ export interface InAppMessaging extends ReactNativeFirebase.FirebaseModule {
    * #### Example
    *
    * ```js
-   * // Suppress messages
+   * // Trigger an event
    * await firebase.inAppMessaging().triggerEvent("exampleTrigger");
    * ```
    *
