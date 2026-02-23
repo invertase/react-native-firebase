@@ -37,7 +37,60 @@ export declare class Firestore {
    */
   toJSON(): object;
 }
-export type FirestoreSettings = FirebaseFirestoreTypes.Settings;
+// web/other platform only
+export interface ExperimentalLongPollingOptions {
+  timeoutSeconds?: number;
+}
+
+// web/other platform only
+export interface PersistenceSettings {
+  forceOwnership?: boolean;
+}
+
+// web/other platform only
+export type MemoryLocalCache = {
+  kind: 'memory';
+  _onlineComponentProvider: unknown;
+  _offlineComponentProvider: unknown;
+};
+
+// web/other platform only
+export type PersistentLocalCache = {
+  kind: 'persistent';
+  _onlineComponentProvider: unknown;
+  _offlineComponentProvider: unknown;
+};
+
+// web/other platform only
+export type FirestoreLocalCache = MemoryLocalCache | PersistentLocalCache;
+
+export interface FirestoreSettings {
+  host?: string;
+  ssl?: boolean;
+  ignoreUndefinedProperties?: boolean;
+  cacheSizeBytes?: number;
+  // web/other platform only
+  localCache?: FirestoreLocalCache;
+  // web/other platform only
+  experimentalForceLongPolling?: boolean;
+  // web/other platform only
+  experimentalAutoDetectLongPolling?: boolean;
+  // web/other platform only
+  experimentalLongPollingOptions?: ExperimentalLongPollingOptions;
+  // React Native native SDK-specific settings.
+  persistence?: boolean;
+  serverTimestampBehavior?: 'estimate' | 'previous' | 'none';
+}
+
+export interface PrivateSettings extends FirestoreSettings {
+  // Internal-only settings (mirroring firebase-js-sdk shape).
+  // web/other platform only
+  credentials?: unknown;
+  // web/other platform only
+  useFetchStreams?: boolean;
+  // web/other platform only
+  emulatorOptions?: { mockUserToken?: EmulatorMockTokenOptions | string };
+}
 
 // Core namespaced aliases referenced by modular wrappers.
 export type PersistentCacheIndexManager = FirebaseFirestoreTypes.PersistentCacheIndexManager;

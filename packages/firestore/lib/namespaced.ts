@@ -24,6 +24,7 @@ import {
   isObject,
   isString,
   isUndefined,
+  isOther,
 } from '@react-native-firebase/app/dist/module/common';
 import {
   createModuleNamespace,
@@ -312,10 +313,14 @@ class FirebaseFirestoreModule extends FirebaseModule {
     const opts = [
       'cacheSizeBytes',
       'host',
+      'localCache',
       'persistence',
       'ssl',
       'ignoreUndefinedProperties',
       'serverTimestampBehavior',
+      'experimentalForceLongPolling',
+      'experimentalAutoDetectLongPolling',
+      'experimentalLongPollingOptions',
     ];
 
     for (const key of keys) {
@@ -422,7 +427,16 @@ class FirebaseFirestoreModule extends FirebaseModule {
       this._settings.persistence = false;
     }
 
-    return this.native.settings(settings);
+    const settingsToApply = isOther ? settings : { ...settings };
+
+    if (!isOther) {
+      delete settingsToApply.localCache;
+      delete settingsToApply.experimentalForceLongPolling;
+      delete settingsToApply.experimentalAutoDetectLongPolling;
+      delete settingsToApply.experimentalLongPollingOptions;
+    }
+
+    return this.native.settings(settingsToApply);
   }
 
   persistentCacheIndexManager(): FirestorePersistentCacheIndexManager | null {
