@@ -117,9 +117,9 @@ export namespace FirebaseInAppMessagingTypes {
 /* eslint-disable @typescript-eslint/no-namespace */
 declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
-    import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
-      inAppMessaging: FirebaseModuleWithStatics<
+      inAppMessaging: FirebaseModuleWithStaticsAndApp<
         FirebaseInAppMessagingTypes.Module,
         FirebaseInAppMessagingTypes.Statics
       >;

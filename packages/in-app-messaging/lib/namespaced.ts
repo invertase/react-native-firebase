@@ -71,7 +71,7 @@ class FirebaseFiamModule extends FirebaseModule implements InAppMessaging {
 
 export const SDK_VERSION = version;
 
-export default createModuleNamespace({
+const inAppMessagingNamespace = createModuleNamespace({
   statics,
   version,
   namespace,
@@ -82,4 +82,24 @@ export default createModuleNamespace({
   ModuleClass: FirebaseFiamModule,
 });
 
-export const firebase = getFirebaseRoot();
+type InAppMessagingNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  InAppMessaging,
+  Statics
+> & {
+  inAppMessaging: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<InAppMessaging, Statics>;
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+export default inAppMessagingNamespace as unknown as InAppMessagingNamespace;
+
+// import inAppMessaging, { firebase } from '@react-native-firebase/in-app-messaging';
+// inAppMessaging().X(...);
+// firebase.inAppMessaging().X(...);
+export const firebase =
+  getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
+    'inAppMessaging',
+    InAppMessaging,
+    Statics,
+    false
+  >;
