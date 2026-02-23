@@ -60,8 +60,9 @@ class FirebaseInstallationsModule extends FirebaseModule implements Installation
     return this.native.delete();
   }
 
-  onIdChange(): () => void {
+  onIdChange(_callback: (installationId: string) => void): () => void {
     if (isIOS) {
+      // iOS doesn't support ID change events, return empty unsubscribe function
       return () => {};
     }
 
