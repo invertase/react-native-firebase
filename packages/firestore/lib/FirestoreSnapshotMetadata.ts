@@ -17,7 +17,7 @@
 
 import { isUndefined } from '@react-native-firebase/app/dist/module/common';
 
-export default class FirestoreSnapshotMetadata {
+export default class SnapshotMetadata {
   _metadata: [boolean, boolean];
 
   constructor(metadata: [boolean, boolean]) {
@@ -32,8 +32,8 @@ export default class FirestoreSnapshotMetadata {
     return this._metadata[1];
   }
 
-  isEqual(other: FirestoreSnapshotMetadata): boolean {
-    if (isUndefined(other) || !(other instanceof FirestoreSnapshotMetadata)) {
+  isEqual(other: SnapshotMetadata): boolean {
+    if (isUndefined(other) || !(other instanceof SnapshotMetadata)) {
       throw new Error(
         "firebase.firestore() SnapshotMetadata.isEqual(*) 'other' expected instance of SnapshotMetadata",
       );

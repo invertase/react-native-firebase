@@ -23,8 +23,8 @@ import {
   isUndefined,
 } from '@react-native-firebase/app/dist/module/common';
 import FirestoreDocumentChange from './FirestoreDocumentChange';
-import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
-import FirestoreSnapshotMetadata from './FirestoreSnapshotMetadata';
+import DocumentSnapshot from './FirestoreDocumentSnapshot';
+import SnapshotMetadata from './FirestoreSnapshotMetadata';
 
 import type FirestoreQuery from './FirestoreQuery';
 
@@ -47,13 +47,13 @@ export interface QuerySnapshotNativeData {
   metadata: [boolean, boolean];
 }
 
-export default class FirestoreQuerySnapshot {
+export default class QuerySnapshot {
   _query: FirestoreQuery;
   _source: string | undefined;
   _excludesMetadataChanges: boolean | undefined;
   _changes: FirestoreDocumentChange[];
-  _docs: FirestoreDocumentSnapshot[];
-  _metadata: FirestoreSnapshotMetadata;
+  _docs: DocumentSnapshot[];
+  _metadata: SnapshotMetadata;
 
   constructor(
     firestore: any,
@@ -69,12 +69,12 @@ export default class FirestoreQuerySnapshot {
         new FirestoreDocumentChange(firestore, c, converter),
     );
     this._docs = nativeData.documents.map((doc: QuerySnapshotNativeData['documents'][0]) =>
-      createDeprecationProxy(new FirestoreDocumentSnapshot(firestore, doc, converter)),
-    ) as FirestoreDocumentSnapshot[];
-    this._metadata = new FirestoreSnapshotMetadata(nativeData.metadata ?? [false, false]);
+      createDeprecationProxy(new DocumentSnapshot(firestore, doc, converter)),
+    ) as DocumentSnapshot[];
+    this._metadata = new SnapshotMetadata(nativeData.metadata ?? [false, false]);
   }
 
-  get docs(): FirestoreDocumentSnapshot[] {
+  get docs(): DocumentSnapshot[] {
     return this._docs;
   }
 
@@ -82,7 +82,7 @@ export default class FirestoreQuerySnapshot {
     return this._docs.length === 0;
   }
 
-  get metadata(): FirestoreSnapshotMetadata {
+  get metadata(): SnapshotMetadata {
     return this._metadata;
   }
 
@@ -131,10 +131,7 @@ export default class FirestoreQuerySnapshot {
     });
   }
 
-  forEach(
-    callback: (doc: FirestoreDocumentSnapshot, index: number) => void,
-    thisArg?: unknown,
-  ): void {
+  forEach(callback: (doc: DocumentSnapshot, index: number) => void, thisArg?: unknown): void {
     if (!isFunction(callback)) {
       throw new Error(
         "firebase.firestore() QuerySnapshot.forEach(*) 'callback' expected a function.",
@@ -148,8 +145,8 @@ export default class FirestoreQuerySnapshot {
     }
   }
 
-  isEqual(other: FirestoreQuerySnapshot, ..._args: unknown[]): boolean {
-    if (!(other instanceof FirestoreQuerySnapshot)) {
+  isEqual(other: QuerySnapshot, ..._args: unknown[]): boolean {
+    if (!(other instanceof QuerySnapshot)) {
       throw new Error(
         "firebase.firestore() QuerySnapshot.isEqual(*) 'other' expected a QuerySnapshot instance.",
       );

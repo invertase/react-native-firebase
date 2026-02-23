@@ -26,11 +26,11 @@ import {
 } from '@react-native-firebase/app/dist/module/common';
 import NativeError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
 import { FirestoreAggregateQuery } from './FirestoreAggregate';
-import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
+import DocumentSnapshot from './FirestoreDocumentSnapshot';
 import FieldPath, { fromDotSeparatedString } from './FieldPath';
 import { _Filter, generateFilters } from './FirestoreFilter';
 import FirestoreQueryModifiers from './FirestoreQueryModifiers';
-import FirestoreQuerySnapshot from './FirestoreQuerySnapshot';
+import QuerySnapshot from './FirestoreQuerySnapshot';
 import { parseSnapshotArgs, validateWithConverter } from './utils';
 
 import type FirestorePath from './FirestorePath';
@@ -68,7 +68,7 @@ export default class FirestoreQuery {
 
   _handleQueryCursor(
     cursor: 'startAt' | 'startAfter' | 'endAt' | 'endBefore',
-    docOrField: FirestoreDocumentSnapshot | unknown,
+    docOrField: DocumentSnapshot | unknown,
     fields: unknown[],
   ): FirestoreQueryModifiers {
     const modifiers = this._modifiers._copy();
@@ -79,7 +79,7 @@ export default class FirestoreQuery {
       );
     }
 
-    if (docOrField instanceof FirestoreDocumentSnapshot) {
+    if (docOrField instanceof DocumentSnapshot) {
       if (fields.length > 0) {
         throw new Error(
           `firebase.firestore().collection().${cursor}(*) Too many arguments provided. Expected DocumentSnapshot or list of field values.`,
@@ -106,7 +106,11 @@ export default class FirestoreQuery {
           continue;
         }
 
-        const value = documentSnapshot.get(order.fieldPath as string | string[]);
+        const value = documentSnapshot.get(
+          Array.isArray(order.fieldPath)
+            ? new FieldPath(...order.fieldPath)
+            : (order.fieldPath as string | FieldPath),
+        );
 
         if (value === undefined) {
           throw new Error(
@@ -167,7 +171,7 @@ export default class FirestoreQuery {
   }
 
   endAt(
-    docOrField: FirestoreDocumentSnapshot | unknown,
+    docOrField: DocumentSnapshot | unknown,
     ...fields: unknown[]
   ): ReturnType<typeof createDeprecationProxy> {
     return createDeprecationProxy(
@@ -182,7 +186,7 @@ export default class FirestoreQuery {
   }
 
   endBefore(
-    docOrField: FirestoreDocumentSnapshot | unknown,
+    docOrField: DocumentSnapshot | unknown,
     ...fields: unknown[]
   ): ReturnType<typeof createDeprecationProxy> {
     return createDeprecationProxy(
@@ -196,7 +200,7 @@ export default class FirestoreQuery {
     );
   }
 
-  get(options?: { source?: 'default' | 'server' | 'cache' }): Promise<FirestoreQuerySnapshot> {
+  get(options?: { source?: 'default' | 'server' | 'cache' }): Promise<QuerySnapshot> {
     if (!isUndefined(options) && !isObject(options)) {
       throw new Error(
         "firebase.firestore().collection().get(*) 'options' must be an object is provided.",
@@ -225,9 +229,7 @@ export default class FirestoreQuery {
           this._modifiers.options,
           options,
         )
-        .then(
-          (data: any) => new FirestoreQuerySnapshot(this._firestore, this, data, this._converter),
-        );
+        .then((data: any) => new QuerySnapshot(this._firestore, this, data, this._converter));
     }
 
     this._modifiers.validatelimitToLast();
@@ -241,9 +243,7 @@ export default class FirestoreQuery {
         this._modifiers.options,
         options,
       )
-      .then(
-        (data: any) => new FirestoreQuerySnapshot(this._firestore, this, data, this._converter),
-      );
+      .then((data: any) => new QuerySnapshot(this._firestore, this, data, this._converter));
   }
 
   isEqual(other: FirestoreQuery): boolean {
@@ -318,8 +318,8 @@ export default class FirestoreQuery {
 
   onSnapshot(...args: unknown[]): () => void {
     let snapshotListenOptions: { includeMetadataChanges?: boolean };
-    let callback: (snapshot: FirestoreQuerySnapshot | null, error: Error | null) => void;
-    let onNext: (snapshot: FirestoreQuerySnapshot) => void;
+    let callback: (snapshot: QuerySnapshot | null, error: Error | null) => void;
+    let onNext: (snapshot: QuerySnapshot) => void;
     let onError: (error: Error) => void;
 
     this._modifiers.validatelimitToLast();
@@ -334,7 +334,7 @@ export default class FirestoreQuery {
       throw new Error(`firebase.firestore().collection().onSnapshot(*) ${(e as Error).message}`);
     }
 
-    function handleSuccess(querySnapshot: FirestoreQuerySnapshot): void {
+    function handleSuccess(querySnapshot: QuerySnapshot): void {
       callback(querySnapshot, null);
       onNext(querySnapshot);
     }
@@ -352,7 +352,7 @@ export default class FirestoreQuery {
         if (event.body.error) {
           handleError(NativeError.fromEvent(event.body.error, 'firestore'));
         } else {
-          const querySnapshot = new FirestoreQuerySnapshot(
+          const querySnapshot = new QuerySnapshot(
             this._firestore,
             this,
             event.body.snapshot,
@@ -455,7 +455,7 @@ export default class FirestoreQuery {
   }
 
   startAfter(
-    docOrField: FirestoreDocumentSnapshot | unknown,
+    docOrField: DocumentSnapshot | unknown,
     ...fields: unknown[]
   ): ReturnType<typeof createDeprecationProxy> {
     return createDeprecationProxy(
@@ -470,7 +470,7 @@ export default class FirestoreQuery {
   }
 
   startAt(
-    docOrField: FirestoreDocumentSnapshot | unknown,
+    docOrField: DocumentSnapshot | unknown,
     ...fields: unknown[]
   ): ReturnType<typeof createDeprecationProxy> {
     return createDeprecationProxy(

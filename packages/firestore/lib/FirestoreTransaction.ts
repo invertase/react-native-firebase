@@ -17,7 +17,7 @@
 
 import { isObject, createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
 import FirestoreDocumentReference from './FirestoreDocumentReference';
-import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
+import DocumentSnapshot from './FirestoreDocumentSnapshot';
 import { parseSetOptions, parseUpdateArgs, applyFirestoreDataConverter } from './utils';
 import { buildNativeMap } from './utils/serialize';
 
@@ -64,7 +64,7 @@ export default class FirestoreTransaction {
   /**
    * Reads the document referenced by the provided DocumentReference.
    */
-  get(documentRef: FirestoreDocumentReference): Promise<FirestoreDocumentSnapshot> {
+  get(documentRef: FirestoreDocumentReference): Promise<DocumentSnapshot> {
     if (!(documentRef instanceof FirestoreDocumentReference)) {
       throw new Error(
         "firebase.firestore().runTransaction() Transaction.get(*) 'documentRef' expected a DocumentReference.",
@@ -75,7 +75,7 @@ export default class FirestoreTransaction {
     return this._firestore.native
       .transactionGetDocument(this._meta.id, documentRef.path)
       .then((data: any) =>
-        createDeprecationProxy(new FirestoreDocumentSnapshot(this._firestore, data, null)),
+        createDeprecationProxy(new DocumentSnapshot(this._firestore, data, null)),
       );
   }
 

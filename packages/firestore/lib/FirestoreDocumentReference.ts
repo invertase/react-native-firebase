@@ -34,7 +34,7 @@ import {
 import { buildNativeMap, provideDocumentReferenceClass } from './utils/serialize';
 
 import type FirestoreCollectionReferenceClass from './FirestoreCollectionReference';
-import type FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
+import type DocumentSnapshot from './FirestoreDocumentSnapshot';
 
 let FirestoreCollectionReference:
   | (new (firestore: any, path: any, converter?: any) => FirestoreCollectionReferenceClass)
@@ -51,11 +51,11 @@ export function provideCollectionReferenceClass(
 }
 
 let FirestoreDocumentSnapshotClass:
-  | (new (firestore: any, data: any, converter: any) => FirestoreDocumentSnapshot)
+  | (new (firestore: any, data: any, converter: any) => DocumentSnapshot)
   | null = null;
 
 export function provideDocumentSnapshotClass(
-  documentSnapshot: new (firestore: any, data: any, converter: any) => FirestoreDocumentSnapshot,
+  documentSnapshot: new (firestore: any, data: any, converter: any) => DocumentSnapshot,
 ): void {
   FirestoreDocumentSnapshotClass = documentSnapshot;
 }
@@ -126,7 +126,7 @@ export default class FirestoreDocumentReference {
     return this._firestore.native.documentDelete(this.path);
   }
 
-  get(options?: { source?: 'default' | 'server' | 'cache' }): Promise<FirestoreDocumentSnapshot> {
+  get(options?: { source?: 'default' | 'server' | 'cache' }): Promise<DocumentSnapshot> {
     if (!isUndefined(options) && !isObject(options)) {
       throw new Error("firebase.firestore().doc().get(*) 'options' must be an object is provided.");
     }
@@ -169,8 +169,8 @@ export default class FirestoreDocumentReference {
 
   onSnapshot(...args: unknown[]): () => void {
     let snapshotListenOptions: { includeMetadataChanges?: boolean };
-    let callback: (snapshot: FirestoreDocumentSnapshot | null, error: Error | null) => void;
-    let onNext: (snapshot: FirestoreDocumentSnapshot) => void;
+    let callback: (snapshot: DocumentSnapshot | null, error: Error | null) => void;
+    let onNext: (snapshot: DocumentSnapshot) => void;
     let onError: (error: Error) => void;
 
     try {
@@ -183,7 +183,7 @@ export default class FirestoreDocumentReference {
       throw new Error(`firebase.firestore().doc().onSnapshot(*) ${(e as Error).message}`);
     }
 
-    function handleSuccess(documentSnapshot: FirestoreDocumentSnapshot): void {
+    function handleSuccess(documentSnapshot: DocumentSnapshot): void {
       callback(documentSnapshot, null);
       onNext(documentSnapshot);
     }

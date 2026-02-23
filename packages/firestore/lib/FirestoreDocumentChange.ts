@@ -16,7 +16,7 @@
  */
 
 import { createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
-import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
+import DocumentSnapshot from './FirestoreDocumentSnapshot';
 
 const TYPE_MAP: Record<string, 'added' | 'modified' | 'removed'> = {
   a: 'added',
@@ -45,10 +45,10 @@ export default class FirestoreDocumentChange {
     this._converter = converter;
   }
 
-  get doc(): FirestoreDocumentSnapshot {
+  get doc(): DocumentSnapshot {
     return createDeprecationProxy(
-      new FirestoreDocumentSnapshot(this._firestore as any, this._nativeData.doc, this._converter),
-    ) as FirestoreDocumentSnapshot;
+      new DocumentSnapshot(this._firestore as any, this._nativeData.doc, this._converter),
+    ) as DocumentSnapshot;
   }
 
   get newIndex(): number {
