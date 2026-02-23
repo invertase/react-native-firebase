@@ -20,23 +20,25 @@ import type {
   DocumentSnapshot,
   DocumentData,
   DocumentReference,
+  Firestore,
+  FirestoreDataConverter,
   Query,
-  QueryDocumentSnapshot,
   QuerySnapshot,
 } from '../types/firestore';
 
 export type Unsubscribe = () => void;
 export type FirestoreError = Error;
 export type {
-  DocumentSnapshot,
   QueryDocumentSnapshot,
-  QuerySnapshot,
-  SnapshotMetadata,
   SnapshotListenOptions,
   SnapshotOptions,
   DocumentChange,
   DocumentChangeType,
 } from '../types/firestore';
+
+export { default as DocumentSnapshot } from '../FirestoreDocumentSnapshot';
+export { default as QuerySnapshot } from '../FirestoreQuerySnapshot';
+export { default as SnapshotMetadata } from '../FirestoreSnapshotMetadata';
 
 export function onSnapshot<
   AppModelType = DocumentData,
@@ -62,9 +64,42 @@ export function snapshotEqual<AppModelType, DbModelType extends DocumentData>(
   return isEqual.call(left, right, MODULAR_DEPRECATION_ARG);
 }
 
-export function onSnapshotsInSync(
-  _firestore: Query | DocumentReference,
-  ..._args: unknown[]
-): Unsubscribe {
-  throw new Error('onSnapshotsInSync() is not implemented');
+export function documentSnapshotFromJSON(_firestore: Firestore, _json: object): DocumentSnapshot;
+export function documentSnapshotFromJSON<
+  AppModelType,
+  DbModelType extends DocumentData = DocumentData,
+>(
+  _firestore: Firestore,
+  _json: object,
+  _converter: FirestoreDataConverter<AppModelType, DbModelType>,
+): DocumentSnapshot<AppModelType, DbModelType>;
+export function documentSnapshotFromJSON<
+  AppModelType,
+  DbModelType extends DocumentData = DocumentData,
+>(
+  _firestore: Firestore,
+  _json: object,
+  _converter?: FirestoreDataConverter<AppModelType, DbModelType>,
+): DocumentSnapshot<AppModelType, DbModelType> {
+  throw new Error('documentSnapshotFromJSON() is not supported in React Native.');
+}
+
+export function querySnapshotFromJSON(_firestore: Firestore, _json: object): QuerySnapshot;
+export function querySnapshotFromJSON<
+  AppModelType,
+  DbModelType extends DocumentData = DocumentData,
+>(
+  _firestore: Firestore,
+  _json: object,
+  _converter: FirestoreDataConverter<AppModelType, DbModelType>,
+): QuerySnapshot<AppModelType, DbModelType>;
+export function querySnapshotFromJSON<
+  AppModelType,
+  DbModelType extends DocumentData = DocumentData,
+>(
+  _firestore: Firestore,
+  _json: object,
+  _converter?: FirestoreDataConverter<AppModelType, DbModelType>,
+): QuerySnapshot<AppModelType, DbModelType> {
+  throw new Error('querySnapshotFromJSON() is not supported in React Native.');
 }
