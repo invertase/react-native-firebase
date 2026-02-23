@@ -68,12 +68,22 @@ type FirestoreWithSyncEvents = FirestoreInternal & {
   eventNameForApp(eventName: string): string;
 };
 
-export function getFirestore(app?: FirebaseApp, databaseId?: string): Firestore {
-  if (app) {
+export function getFirestore(): Firestore;
+export function getFirestore(app: FirebaseApp): Firestore;
+export function getFirestore(app: FirebaseApp, databaseId: string): Firestore;
+export function getFirestore(
+  appOrDatabaseId?: FirebaseApp | string,
+  databaseId?: string,
+): Firestore {
+  if (typeof appOrDatabaseId === 'string') {
+    return getApp().firestore(appOrDatabaseId);
+  }
+
+  if (appOrDatabaseId) {
     if (databaseId) {
-      return getApp(app.name).firestore(databaseId);
+      return getApp(appOrDatabaseId.name).firestore(databaseId);
     }
-    return getApp(app.name).firestore();
+    return getApp(appOrDatabaseId.name).firestore();
   }
 
   if (databaseId) {
