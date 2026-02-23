@@ -15,13 +15,14 @@
  *
  */
 
-import { isArray, isString } from '@react-native-firebase/app/dist/module/common';
+import { isString } from '@react-native-firebase/app/dist/module/common';
 import FirestoreDocumentReference, {
   provideDocumentSnapshotClass,
 } from './FirestoreDocumentReference';
 import FieldPath, { fromDotSeparatedString } from './FieldPath';
 import FirestorePath from './FirestorePath';
-import FirestoreSnapshotMetadata from './FirestoreSnapshotMetadata';
+import SnapshotMetadata from './FirestoreSnapshotMetadata';
+import type { SnapshotOptions } from './types/firestore';
 import { extractFieldPathData } from './utils';
 import { parseNativeMap } from './utils/serialize';
 
@@ -32,11 +33,11 @@ export interface DocumentSnapshotNativeData {
   exists?: boolean;
 }
 
-export default class FirestoreDocumentSnapshot {
+export default class DocumentSnapshot {
   _firestore: unknown;
   _nativeData: DocumentSnapshotNativeData;
   _data: Record<string, unknown> | undefined;
-  _metadata: FirestoreSnapshotMetadata;
+  _metadata: SnapshotMetadata;
   _ref: FirestoreDocumentReference;
   _exists: boolean;
   _converter: unknown;
@@ -48,7 +49,7 @@ export default class FirestoreDocumentSnapshot {
       firestore as any,
       nativeData.data as Record<string, unknown> | undefined,
     );
-    this._metadata = new FirestoreSnapshotMetadata(nativeData.metadata ?? [false, false]);
+    this._metadata = new SnapshotMetadata(nativeData.metadata ?? [false, false]);
     this._ref = new FirestoreDocumentReference(
       firestore as any,
       FirestorePath.fromName(nativeData.path),
@@ -61,7 +62,7 @@ export default class FirestoreDocumentSnapshot {
     return this._ref.id;
   }
 
-  get metadata(): FirestoreSnapshotMetadata {
+  get metadata(): SnapshotMetadata {
     return this._metadata;
   }
 
@@ -73,16 +74,18 @@ export default class FirestoreDocumentSnapshot {
     return this._exists;
   }
 
-  data(): unknown {
+  data(options?: SnapshotOptions): unknown {
     if (
       this._converter &&
-      (this._converter as { fromFirestore?: (snapshot: FirestoreDocumentSnapshot) => unknown })
+      (this._converter as { fromFirestore?: (snapshot: DocumentSnapshot) => unknown })
         .fromFirestore
     ) {
       try {
         return (
-          this._converter as { fromFirestore: (snapshot: FirestoreDocumentSnapshot) => unknown }
-        ).fromFirestore(new FirestoreDocumentSnapshot(this._firestore, this._nativeData, null));
+          this._converter as {
+            fromFirestore: (snapshot: DocumentSnapshot, options?: SnapshotOptions) => unknown;
+          }
+        ).fromFirestore(new DocumentSnapshot(this._firestore, this._nativeData, null), options);
       } catch (e) {
         throw new Error(
           `firebase.firestore() DocumentSnapshot.data(*) 'withConverter.fromFirestore' threw an error: ${(e as Error).message}.`,
@@ -92,14 +95,10 @@ export default class FirestoreDocumentSnapshot {
     return this._data;
   }
 
-  get(fieldPath: string | FieldPath | string[]): unknown {
-    if (
-      !isString(fieldPath) &&
-      !(fieldPath instanceof FieldPath) &&
-      !Array.isArray(fieldPath)
-    ) {
+  get(fieldPath: string | FieldPath, _options?: SnapshotOptions): unknown {
+    if (!isString(fieldPath) && !(fieldPath instanceof FieldPath)) {
       throw new Error(
-        "firebase.firestore() DocumentSnapshot.get(*) 'fieldPath' expected type string, array or FieldPath.",
+        "firebase.firestore() DocumentSnapshot.get(*) 'fieldPath' expected type string or FieldPath.",
       );
     }
 
@@ -113,8 +112,6 @@ export default class FirestoreDocumentSnapshot {
           `firebase.firestore() DocumentSnapshot.get(*) 'fieldPath' ${(e as Error).message}.`,
         );
       }
-    } else if (isArray(fieldPath)) {
-      path = new FieldPath(...fieldPath);
     } else {
       path = fieldPath;
     }
@@ -122,8 +119,8 @@ export default class FirestoreDocumentSnapshot {
     return extractFieldPathData(this._data, path._segments);
   }
 
-  isEqual(other: FirestoreDocumentSnapshot): boolean {
-    if (!(other instanceof FirestoreDocumentSnapshot)) {
+  isEqual(other: DocumentSnapshot): boolean {
+    if (!(other instanceof DocumentSnapshot)) {
       throw new Error(
         "firebase.firestore() DocumentSnapshot.isEqual(*) 'other' expected a DocumentSnapshot instance.",
       );
@@ -144,4 +141,4 @@ export default class FirestoreDocumentSnapshot {
   }
 }
 
-provideDocumentSnapshotClass(FirestoreDocumentSnapshot);
+provideDocumentSnapshotClass(DocumentSnapshot);
