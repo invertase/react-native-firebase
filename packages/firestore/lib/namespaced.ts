@@ -42,6 +42,7 @@ import FirestoreQueryModifiers from './FirestoreQueryModifiers';
 import FirestoreStatics from './FirestoreStatics';
 import FirestoreTransactionHandler from './FirestoreTransactionHandler';
 import FirestoreWriteBatch from './FirestoreWriteBatch';
+import { LoadBundleTask } from './LoadBundleTask';
 import { version } from './version';
 import type { FirebaseWithFirestore, FirestoreNamespace } from './types/namespaced';
 import fallBackModule from './web/RNFBFirestoreModule';
@@ -146,7 +147,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
     return new FirestoreWriteBatch(this);
   }
 
-  loadBundle(bundle: string): Promise<unknown> {
+  loadBundle(bundle: string): LoadBundleTask {
     if (!isString(bundle)) {
       throw new Error("firebase.firestore().loadBundle(*) 'bundle' must be a string value.");
     }
@@ -155,7 +156,12 @@ class FirebaseFirestoreModule extends FirebaseModule {
       throw new Error("firebase.firestore().loadBundle(*) 'bundle' must be a non-empty string.");
     }
 
-    return this.native.loadBundle(bundle);
+    const task = new LoadBundleTask();
+    this.native
+      .loadBundle(bundle)
+      .then(progress => task._completeWith(progress))
+      .catch(error => task._failWith(error));
+    return task;
   }
 
   namedQuery(queryName: string): FirestoreQuery | null {

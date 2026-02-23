@@ -39,7 +39,9 @@ describe('firestore().loadBundle()', function () {
 
     it('loads the bundle contents', async function () {
       const bundle = getBundle();
-      const progress = await firebase.firestore().loadBundle(bundle);
+      const task = firebase.firestore().loadBundle(bundle);
+      task.onProgress();
+      const progress = await task;
       const query = firebase.firestore().collection(BUNDLE_COLLECTION);
       const snapshot = await query.get({ source: 'cache' });
 
@@ -69,7 +71,9 @@ describe('firestore().loadBundle()', function () {
       const db = getFirestore();
 
       const bundle = getBundle();
-      const progress = await loadBundle(db, bundle);
+      const task = loadBundle(db, bundle);
+      task.onProgress();
+      const progress = await task;
       const query = collection(db, BUNDLE_COLLECTION);
       const snapshot = await getDocsFromCache(query);
 

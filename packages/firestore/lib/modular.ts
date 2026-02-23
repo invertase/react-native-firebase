@@ -24,6 +24,7 @@ import {
 } from './FirestoreAggregate';
 import { Filter } from './FirestoreFilter';
 import FirestoreQuery from './FirestoreQuery';
+import { LoadBundleTask } from './LoadBundleTask';
 import type {
   CollectionReference,
   DocumentData,
@@ -41,6 +42,7 @@ import type {
   WriteBatch,
   AggregateType,
   AggregateSpec,
+  LoadBundleTaskProgress,
 } from './types/firestore';
 import type {
   CollectionReferenceInternal,
@@ -413,12 +415,13 @@ export function count(): AggregateField<number> {
 export function loadBundle(
   firestore: Firestore,
   bundleData: ReadableStream<Uint8Array> | ArrayBuffer | string,
-): Promise<unknown> {
-  return (firestore as FirestoreInternal).loadBundle.call(
-    firestore,
-    bundleData,
-    MODULAR_DEPRECATION_ARG,
-  );
+): LoadBundleTask {
+  const task = new LoadBundleTask();
+  (firestore as FirestoreInternal).loadBundle
+    .call(firestore, bundleData, MODULAR_DEPRECATION_ARG)
+    .then(progress => task._completeWith(progress as LoadBundleTaskProgress))
+    .catch(error => task._failWith(error));
+  return task;
 }
 
 export function namedQuery(firestore: Firestore, name: string): Promise<Query | null> {
@@ -473,4 +476,6 @@ export * from './modular/FieldValue';
 export * from './modular/GeoPoint';
 export * from './modular/Timestamp';
 export * from './modular/VectorValue';
+export { LoadBundleTask } from './LoadBundleTask';
+export type { LoadBundleTaskProgress, TaskState } from './LoadBundleTask';
 export { Filter };

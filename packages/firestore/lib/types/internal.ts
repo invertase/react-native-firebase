@@ -21,6 +21,7 @@ import type {
   DocumentReference,
   Firestore,
   FirestoreSettings,
+  LoadBundleTask,
   PersistentCacheIndexManager,
   Query,
   SetOptions,
@@ -118,7 +119,7 @@ export interface FirestoreInternal extends ParentReferenceInternal, Firestore {
   loadBundle(
     bundleData: ReadableStream<Uint8Array> | ArrayBuffer | string,
     ...deprecationArg: unknown[]
-  ): Promise<unknown>;
+  ): LoadBundleTask;
   namedQuery(name: string, ...deprecationArg: unknown[]): Promise<Query | null>;
   batch(...deprecationArg: unknown[]): WriteBatch;
   persistentCacheIndexManager(...deprecationArg: unknown[]): PersistentCacheIndexManager | null;

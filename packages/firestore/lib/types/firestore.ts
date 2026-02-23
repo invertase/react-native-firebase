@@ -52,6 +52,29 @@ export type AggregateSpecData<T extends AggregateSpec> = {
 
 export type EmulatorMockTokenOptions = { user_id: string } | { sub: string };
 
+export type TaskState = 'Error' | 'Running' | 'Success';
+
+export interface LoadBundleTaskProgress {
+  documentsLoaded: number;
+  totalDocuments: number;
+  bytesLoaded: number;
+  totalBytes: number;
+  taskState: TaskState;
+}
+
+export class LoadBundleTask implements PromiseLike<LoadBundleTaskProgress> {
+  onProgress(
+    next?: (progress: LoadBundleTaskProgress) => unknown,
+    error?: (err: Error) => unknown,
+    complete?: () => void,
+  ): void;
+  catch<R>(onRejected: (a: Error) => R | PromiseLike<R>): Promise<R | LoadBundleTaskProgress>;
+  then<T, R>(
+    onFulfilled?: (a: LoadBundleTaskProgress) => T | PromiseLike<T>,
+    onRejected?: (a: Error) => R | PromiseLike<R>,
+  ): Promise<T | R>;
+}
+
 export type SetOptions =
   | {
       readonly merge?: boolean;
