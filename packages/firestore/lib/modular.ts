@@ -165,7 +165,14 @@ let snapshotInSyncListenerId = 0;
 
 export function onSnapshotsInSync(
   firestore: Firestore,
-  callback: (() => void) | { next?: () => void },
+  observer: { next?: () => void; error?: (error: Error) => void; complete?: () => void },
+): Unsubscribe;
+export function onSnapshotsInSync(firestore: Firestore, onSync: () => void): Unsubscribe;
+export function onSnapshotsInSync(
+  firestore: Firestore,
+  callback:
+    | (() => void)
+    | { next?: () => void; error?: (error: Error) => void; complete?: () => void },
 ): Unsubscribe {
   const listenerId = snapshotInSyncListenerId++;
   const syncFirestore = firestore as FirestoreWithSyncEvents;
@@ -315,8 +322,8 @@ export function getCountFromServer<AppModelType, DbModelType extends DocumentDat
   return (query as QueryInternal<AppModelType, DbModelType>).count
     .call(query, MODULAR_DEPRECATION_ARG)
     .get() as Promise<
-      AggregateQuerySnapshot<{ count: AggregateField<number> }, AppModelType, DbModelType>
-    >;
+    AggregateQuerySnapshot<{ count: AggregateField<number> }, AppModelType, DbModelType>
+  >;
 }
 
 export function getAggregateFromServer<
