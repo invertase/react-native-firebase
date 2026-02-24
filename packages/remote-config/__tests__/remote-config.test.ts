@@ -45,6 +45,8 @@ import {
   ValueSource,
 } from '../lib';
 
+import type { RemoteConfigWithDeprecationArg } from '../lib/types/internal';
+
 import {
   createCheckV9Deprecation,
   CheckV9DeprecationFunction,
@@ -292,7 +294,7 @@ describe('remoteConfig()', function () {
 
       describe('remoteConfig functions', function () {
         it('activate()', function () {
-          const remoteConfig = getRemoteConfig();
+          const remoteConfig = getRemoteConfig() as RemoteConfigWithDeprecationArg;
           remoteConfigV9Deprecation(
             () => activate(remoteConfig),
             () => remoteConfig.activate(),
@@ -301,7 +303,7 @@ describe('remoteConfig()', function () {
         });
 
         it('ensureInitialized()', function () {
-          const remoteConfig = getRemoteConfig();
+          const remoteConfig = getRemoteConfig() as RemoteConfigWithDeprecationArg;
           remoteConfigV9Deprecation(
             () => ensureInitialized(remoteConfig),
             () => remoteConfig.ensureInitialized(),
@@ -310,7 +312,7 @@ describe('remoteConfig()', function () {
         });
 
         it('fetchAndActivate()', function () {
-          const remoteConfig = getRemoteConfig();
+          const remoteConfig = getRemoteConfig() as RemoteConfigWithDeprecationArg;
           remoteConfigV9Deprecation(
             () => fetchAndActivate(remoteConfig),
             () => remoteConfig.fetchAndActivate(),
@@ -319,7 +321,7 @@ describe('remoteConfig()', function () {
         });
 
         it('getAll()', function () {
-          const remoteConfig = getRemoteConfig();
+          const remoteConfig = getRemoteConfig() as RemoteConfigWithDeprecationArg;
           remoteConfigV9Deprecation(
             () => getAll(remoteConfig),
             () => remoteConfig.getAll(),
@@ -328,7 +330,7 @@ describe('remoteConfig()', function () {
         });
 
         it('getBoolean()', function () {
-          const remoteConfig = getRemoteConfig();
+          const remoteConfig = getRemoteConfig() as RemoteConfigWithDeprecationArg;
           remoteConfigV9Deprecation(
             () => getBoolean(remoteConfig, 'foo'),
             () => remoteConfig.getBoolean('foo'),
@@ -337,7 +339,7 @@ describe('remoteConfig()', function () {
         });
 
         it('getNumber()', function () {
-          const remoteConfig = getRemoteConfig();
+          const remoteConfig = getRemoteConfig() as RemoteConfigWithDeprecationArg;
           remoteConfigV9Deprecation(
             () => getNumber(remoteConfig, 'foo'),
             () => remoteConfig.getNumber('foo'),
@@ -346,7 +348,7 @@ describe('remoteConfig()', function () {
         });
 
         it('getString()', function () {
-          const remoteConfig = getRemoteConfig();
+          const remoteConfig = getRemoteConfig() as RemoteConfigWithDeprecationArg;
           remoteConfigV9Deprecation(
             () => getString(remoteConfig, 'foo'),
             () => remoteConfig.getString('foo'),
@@ -355,7 +357,7 @@ describe('remoteConfig()', function () {
         });
 
         it('getValue()', function () {
-          const remoteConfig = getRemoteConfig();
+          const remoteConfig = getRemoteConfig() as RemoteConfigWithDeprecationArg;
           remoteConfigV9Deprecation(
             () => getValue(remoteConfig, 'foo'),
             () => remoteConfig.getValue('foo'),
@@ -364,7 +366,7 @@ describe('remoteConfig()', function () {
         });
 
         it('reset()', function () {
-          const remoteConfig = getRemoteConfig();
+          const remoteConfig = getRemoteConfig() as RemoteConfigWithDeprecationArg;
           remoteConfigV9Deprecation(
             () => reset(remoteConfig),
             () => remoteConfig.reset(),
@@ -373,7 +375,7 @@ describe('remoteConfig()', function () {
         });
 
         it('setConfigSettings()', function () {
-          const remoteConfig = getRemoteConfig();
+          const remoteConfig = getRemoteConfig() as RemoteConfigWithDeprecationArg;
           const settings = { minimumFetchIntervalMillis: 12, fetchTimeoutMillis: 60000 };
 
           remoteConfigV9Deprecation(
@@ -384,7 +386,7 @@ describe('remoteConfig()', function () {
         });
 
         it('fetch()', function () {
-          const remoteConfig = getRemoteConfig();
+          const remoteConfig = getRemoteConfig() as RemoteConfigWithDeprecationArg;
           remoteConfigV9Deprecation(
             () => fetch(remoteConfig, 12),
             () => remoteConfig.fetch(12),
@@ -393,7 +395,7 @@ describe('remoteConfig()', function () {
         });
 
         it('setDefaults()', function () {
-          const remoteConfig = getRemoteConfig();
+          const remoteConfig = getRemoteConfig() as RemoteConfigWithDeprecationArg;
           remoteConfigV9Deprecation(
             () => setDefaults(remoteConfig, { foo: 'bar' }),
             () => remoteConfig.setDefaults({ foo: 'bar' }),
@@ -402,7 +404,7 @@ describe('remoteConfig()', function () {
         });
 
         it('setDefaultsFromResource()', function () {
-          const remoteConfig = getRemoteConfig();
+          const remoteConfig = getRemoteConfig() as RemoteConfigWithDeprecationArg;
           remoteConfigV9Deprecation(
             () => setDefaultsFromResource(remoteConfig, 'foo'),
             () => remoteConfig.setDefaultsFromResource('foo'),
@@ -411,7 +413,7 @@ describe('remoteConfig()', function () {
         });
 
         it('onConfigUpdated()', function () {
-          const remoteConfig = getRemoteConfig();
+          const remoteConfig = getRemoteConfig() as RemoteConfigWithDeprecationArg;
           remoteConfigV9Deprecation(
             () => onConfigUpdated(remoteConfig, () => {}),
             () => remoteConfig.onConfigUpdated(() => {}),
