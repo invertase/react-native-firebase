@@ -10,6 +10,7 @@ import type {
   RemoteConfigLogLevel,
   Unsubscribe,
   RemoteConfigOptions,
+  RemoteConfigSettings,
   Value,
 } from './types/modular';
 import type {
@@ -210,7 +211,7 @@ export function reset(remoteConfig: RemoteConfig): Promise<void> {
  */
 export function setConfigSettings(
   remoteConfig: RemoteConfig,
-  settings: ConfigSettings,
+  settings: RemoteConfigSettings,
 ): Promise<void> {
   return rc(remoteConfig).setConfigSettings.call(remoteConfig, settings, MODULAR_DEPRECATION_ARG);
 }
