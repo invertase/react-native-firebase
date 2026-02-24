@@ -79,9 +79,6 @@ export type SetDefaultsWithInternalArg = (
   internal?: boolean,
 ) => Promise<null>;
 
-/** Alias for Value. */
-export type ConfigValue = Value;
-
 /** Map of key to Value. */
 export type ConfigValues = { [key: string]: Value };
 
@@ -120,7 +117,7 @@ export type RemoteConfigWithDeprecationArg = RemoteConfig & {
   getBoolean(key: string, _dep?: unknown): boolean;
   getNumber(key: string, _dep?: unknown): number;
   getString(key: string, _dep?: unknown): string;
-  getValue(key: string, _dep?: unknown): ConfigValue;
+  getValue(key: string, _dep?: unknown): Value;
   reset(_dep?: unknown): Promise<void>;
   setConfigSettings(settings: ConfigSettings, _dep?: unknown): Promise<void>;
   fetch(expirationDurationSeconds?: number, _dep?: unknown): Promise<void>;

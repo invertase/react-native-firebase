@@ -7,12 +7,12 @@ import type {
   RemoteConfig,
   Unsubscribe,
   RemoteConfigOptions,
+  Value,
 } from './types/modular';
 import type {
   CallbackOrObserver,
   ConfigDefaults,
   ConfigSettings,
-  ConfigValue,
   ConfigValues,
   LastFetchStatusType,
   OnConfigUpdatedListenerCallback,
@@ -133,9 +133,9 @@ export function getString(remoteConfig: RemoteConfig, key: string): string {
  * Gets the value for the given key.
  * @param remoteConfig - RemoteConfig instance
  * @param key - key for the given value
- * @returns ConfigValue
+ * @returns Value
  */
-export function getValue(remoteConfig: RemoteConfig, key: string): ConfigValue {
+export function getValue(remoteConfig: RemoteConfig, key: string): Value {
   return rc(remoteConfig).getValue.call(remoteConfig, key, MODULAR_DEPRECATION_ARG);
 }
 
