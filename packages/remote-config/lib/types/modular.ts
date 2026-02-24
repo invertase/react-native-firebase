@@ -53,36 +53,6 @@ export interface RemoteConfig {
    * The status of the last fetch <i>attempt</i>.
    */
   lastFetchStatus: FetchStatus;
-
-  // Instance methods (React Native Firebase implementation surface)
-  activate(): Promise<boolean>;
-  ensureInitialized(): Promise<void>;
-  fetchAndActivate(): Promise<boolean>;
-  fetch(expirationDurationSeconds?: number): Promise<void>;
-  fetchConfig?(): Promise<void>;
-  getAll(): { [key: string]: Value };
-  getBoolean(key: string): boolean;
-  getNumber(key: string): number;
-  getString(key: string): string;
-  getValue(key: string): Value;
-  reset(): Promise<void>;
-  setConfigSettings(settings: RemoteConfigSettings): Promise<void>;
-  setDefaults(defaults: { [key: string]: string | number | boolean }): Promise<null>;
-  setDefaultsFromResource(resourceName: string): Promise<null>;
-  onConfigUpdate(observer: ConfigUpdateObserver): Unsubscribe;
-  onConfigUpdated(
-    callback:
-      | ((
-          event?: { updatedKeys: string[] },
-          error?: { code: string; message: string; nativeErrorMessage: string },
-        ) => void)
-      | {
-          next: (
-            event?: { updatedKeys: string[] },
-            error?: { code: string; message: string; nativeErrorMessage: string },
-          ) => void;
-        },
-  ): () => void;
 }
 
 /**
