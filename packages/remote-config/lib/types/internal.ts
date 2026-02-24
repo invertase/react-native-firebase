@@ -47,7 +47,6 @@ export interface ConfigUpdatedEvent {
 import type {
   ConfigUpdateObserver,
   ConfigValues,
-  LogLevel,
   RemoteConfig,
   RemoteConfigSettings,
   Unsubscribe,
@@ -78,9 +77,6 @@ export type SetDefaultsWithInternalArg = (
   defaults: FirebaseRemoteConfigTypes.ConfigDefaults,
   internal?: boolean,
 ) => Promise<null>;
-
-/** Alias for LogLevel. */
-export type RemoteConfigLogLevel = LogLevel;
 
 /**
  * Listener can be a callback or an object with a next method (Observer shape).

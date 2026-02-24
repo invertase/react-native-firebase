@@ -7,6 +7,7 @@ import type {
   CustomSignals,
   FetchStatus,
   RemoteConfig,
+  RemoteConfigLogLevel,
   Unsubscribe,
   RemoteConfigOptions,
   Value,
@@ -16,7 +17,6 @@ import type {
   ConfigDefaults,
   ConfigSettings,
   OnConfigUpdatedListenerCallback,
-  RemoteConfigLogLevel,
   RemoteConfigWithDeprecationArg,
 } from './types/internal';
 

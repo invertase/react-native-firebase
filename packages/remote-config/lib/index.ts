@@ -29,6 +29,7 @@ export type {
   FirebaseRemoteConfigObject,
   LogLevel,
   RemoteConfig,
+  RemoteConfigLogLevel,
   RemoteConfigOptions,
   RemoteConfigSettings,
   Unsubscribe,
