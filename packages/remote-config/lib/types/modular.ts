@@ -200,6 +200,13 @@ export interface Value {
 }
 
 /**
+ * Map of config key to {@link Value}.
+ *
+ * @public
+ */
+export type ConfigValues = { [key: string]: Value };
+
+/**
  * Defines configuration options for the Remote Config SDK.
  *
  * @public

@@ -20,6 +20,7 @@ import './polyfills';
 export type {
   ConfigUpdate,
   ConfigUpdateObserver,
+  ConfigValues,
   CustomSignals,
   FetchResponse,
   FetchStatus,

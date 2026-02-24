@@ -46,6 +46,7 @@ export interface ConfigUpdatedEvent {
 
 import type {
   ConfigUpdateObserver,
+  ConfigValues,
   FetchStatus,
   LogLevel,
   RemoteConfig,
@@ -78,9 +79,6 @@ export type SetDefaultsWithInternalArg = (
   defaults: FirebaseRemoteConfigTypes.ConfigDefaults,
   internal?: boolean,
 ) => Promise<null>;
-
-/** Map of key to Value. */
-export type ConfigValues = { [key: string]: Value };
 
 /** Alias for FetchStatus. */
 export type LastFetchStatusType = FetchStatus;

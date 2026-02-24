@@ -3,6 +3,7 @@ import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 import type {
   ConfigUpdateObserver,
+  ConfigValues,
   CustomSignals,
   RemoteConfig,
   Unsubscribe,
@@ -13,7 +14,6 @@ import type {
   CallbackOrObserver,
   ConfigDefaults,
   ConfigSettings,
-  ConfigValues,
   LastFetchStatusType,
   OnConfigUpdatedListenerCallback,
   RemoteConfigLogLevel,
