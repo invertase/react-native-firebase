@@ -16,6 +16,7 @@
  */
 
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { RemoteConfigOptions } from './modular';
 
 type FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
@@ -691,7 +692,7 @@ declare module '@react-native-firebase/app' {
     }
     interface FirebaseApp {
       /** @deprecated Use getRemoteConfig(app) from '@react-native-firebase/remote-config' instead. */
-      remoteConfig(): FirebaseRemoteConfigTypes.Module;
+      remoteConfig(options?: RemoteConfigOptions): FirebaseRemoteConfigTypes.Module;
     }
   }
 }

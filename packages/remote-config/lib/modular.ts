@@ -6,6 +6,7 @@ import type {
   CustomSignals,
   RemoteConfig,
   Unsubscribe,
+  RemoteConfigOptions,
 } from './types/modular';
 import type {
   CallbackOrObserver,
@@ -26,10 +27,22 @@ export type { CustomSignals };
  * @param app - FirebaseApp. Optional.
  * @returns RemoteConfig instance
  */
-export function getRemoteConfig(app?: ReactNativeFirebase.FirebaseApp): RemoteConfig {
+export function getRemoteConfig(
+  app?: ReactNativeFirebase.FirebaseApp,
+  options?: RemoteConfigOptions,
+): RemoteConfig {
   if (app) {
+    if (options != null) {
+      return getApp(app.name).remoteConfig(options) as RemoteConfig;
+    }
+
     return getApp(app.name).remoteConfig() as RemoteConfig;
   }
+
+  if (options != null) {
+    return getApp().remoteConfig(options) as RemoteConfig;
+  }
+
   return getApp().remoteConfig() as RemoteConfig;
 }
 
