@@ -104,5 +104,9 @@ export function setAutomaticDataCollectionEnabled(
  */
 export function triggerEvent(inAppMessaging: InAppMessaging, eventId: string): Promise<null> {
   // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return (inAppMessaging.triggerEvent as any).call(inAppMessaging, eventId, MODULAR_DEPRECATION_ARG);
+  return (inAppMessaging.triggerEvent as any).call(
+    inAppMessaging,
+    eventId,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
