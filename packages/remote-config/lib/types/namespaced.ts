@@ -313,10 +313,11 @@ export namespace FirebaseRemoteConfigTypes {
   }
 
   /**
-   * The status of the latest Remote RemoteConfig fetch action.
-   * @deprecated Use the modular API from '@react-native-firebase/remote-config' instead.
+   * The status of the latest Remote Config fetch action.
+   * Use with the namespaced API (e.g. `firebase.remoteConfig().lastFetchStatus`).
+   * @deprecated Use the modular API from '@react-native-firebase/remote-config' (e.g. lastFetchStatus()) instead.
    */
-  export type LastFetchStatusType = 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
+  export type FetchStatus = 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
 
   /**
    * Contains information about which keys have been updated.
@@ -394,7 +395,7 @@ export namespace FirebaseRemoteConfigTypes {
      * See the `LastFetchStatus` statics definition.
      * @deprecated Use the modular API lastFetchStatus() from '@react-native-firebase/remote-config' instead.
      */
-    lastFetchStatus: LastFetchStatusType;
+    lastFetchStatus: FetchStatus;
 
     /**
      * Provides an object which provides the properties `minimumFetchIntervalMillis` & `fetchTimeMillis` if they have been set

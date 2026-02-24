@@ -5,6 +5,7 @@ import type {
   ConfigUpdateObserver,
   ConfigValues,
   CustomSignals,
+  FetchStatus,
   RemoteConfig,
   Unsubscribe,
   RemoteConfigOptions,
@@ -14,7 +15,6 @@ import type {
   CallbackOrObserver,
   ConfigDefaults,
   ConfigSettings,
-  LastFetchStatusType,
   OnConfigUpdatedListenerCallback,
   RemoteConfigLogLevel,
   RemoteConfigWithDeprecationArg,
@@ -186,9 +186,9 @@ export function settings(remoteConfig: RemoteConfig): ConfigSettings {
 /**
  * The status of the latest Remote Config fetch action.
  * @param remoteConfig - RemoteConfig instance
- * @returns LastFetchStatusType
+ * @returns FetchStatus
  */
-export function lastFetchStatus(remoteConfig: RemoteConfig): LastFetchStatusType {
+export function lastFetchStatus(remoteConfig: RemoteConfig): FetchStatus {
   return remoteConfig.lastFetchStatus;
 }
 

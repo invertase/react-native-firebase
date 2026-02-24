@@ -59,7 +59,7 @@ class FirebaseConfigModule extends FirebaseModule {
   _settings: FirebaseRemoteConfigTypes.ConfigSettings;
   _lastFetchTime: number;
   _values: Record<string, { value: string; source: string }>;
-  _lastFetchStatus: FirebaseRemoteConfigTypes.LastFetchStatusType;
+  _lastFetchStatus: FirebaseRemoteConfigTypes.FetchStatus;
   _configUpdateListenerCount: number;
 
   constructor(...args: ConstructorParameters<typeof FirebaseModule>) {
@@ -156,7 +156,7 @@ class FirebaseConfigModule extends FirebaseModule {
     return this._lastFetchTime;
   }
 
-  get lastFetchStatus(): FirebaseRemoteConfigTypes.LastFetchStatusType {
+  get lastFetchStatus(): FirebaseRemoteConfigTypes.FetchStatus {
     return this._lastFetchStatus;
   }
 
@@ -407,7 +407,7 @@ class FirebaseConfigModule extends FirebaseModule {
 
     // Wrapped this as we update using sync getters initially for `defaultConfig` & `settings`
     if (typeof c.lastFetchStatus === 'string') {
-      this._lastFetchStatus = c.lastFetchStatus as FirebaseRemoteConfigTypes.LastFetchStatusType;
+      this._lastFetchStatus = c.lastFetchStatus as FirebaseRemoteConfigTypes.FetchStatus;
     }
 
     if (typeof c.fetchTimeout === 'number' && typeof c.minimumFetchInterval === 'number') {
