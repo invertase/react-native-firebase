@@ -22,6 +22,9 @@ type FirebaseModule = ReactNativeFirebase.FirebaseModule;
 /**
  * Firebase Remote RemoteConfig package for React Native.
  *
+ * @deprecated Namespaced API is deprecated. Use the modular API from '@react-native-firebase/remote-config'
+ * (e.g. getRemoteConfig(), getString(), activate()) instead.
+ *
  * #### Example 1
  *
  * Access the firebase export from the `config` package:
@@ -59,10 +62,12 @@ type FirebaseModule = ReactNativeFirebase.FirebaseModule;
 export namespace FirebaseRemoteConfigTypes {
   /**
    * Defines levels of Remote Config logging. Web only.
+   * @deprecated Use the modular API from '@react-native-firebase/remote-config' instead.
    */
   export declare type RemoteConfigLogLevel = 'debug' | 'error' | 'silent';
   /**
    * A pseudo-enum for usage with ConfigSettingsRead.lastFetchStatus to determine the last fetch status.
+   * @deprecated Use the modular API from '@react-native-firebase/remote-config' instead.
    *
    * #### Example
    *
@@ -120,6 +125,8 @@ export namespace FirebaseRemoteConfigTypes {
    * ```js
    * firebase.remoteConfig.ValueSource;
    * ```
+   *
+   * @deprecated Use the modular API from '@react-native-firebase/remote-config' instead.
    */
   export interface ValueSource {
     /**
@@ -154,6 +161,8 @@ export namespace FirebaseRemoteConfigTypes {
    * ```js
    * firebase.config;
    * ```
+   *
+   * @deprecated Use the modular API from '@react-native-firebase/remote-config' instead.
    */
   export interface Statics {
     /**
@@ -182,6 +191,7 @@ export namespace FirebaseRemoteConfigTypes {
 
   /**
    * An Interface representing a RemoteConfig value.
+   * @deprecated Use the modular API from '@react-native-firebase/remote-config' (e.g. getValue()) instead.
    */
   export interface ConfigValue {
     /**
@@ -244,6 +254,8 @@ export namespace FirebaseRemoteConfigTypes {
    * ```js
    * const values = firebase.remoteConfig().getAll();
    * ```
+   *
+   * @deprecated Use the modular API from '@react-native-firebase/remote-config' (e.g. getAll()) instead.
    */
   export interface ConfigValues {
     [key: string]: ConfigValue;
@@ -261,6 +273,8 @@ export namespace FirebaseRemoteConfigTypes {
    *    fetchTimeMillis: 6000,
    * });
    * ```
+   *
+   * @deprecated Use the modular API from '@react-native-firebase/remote-config' (e.g. setConfigSettings()) instead.
    */
   export interface ConfigSettings {
     /**
@@ -290,6 +304,8 @@ export namespace FirebaseRemoteConfigTypes {
    *   experiment_enabled: false,
    * });
    * ```
+   *
+   * @deprecated Use the modular API from '@react-native-firebase/remote-config' (e.g. setDefaults()) instead.
    */
   export interface ConfigDefaults {
     [key: string]: number | string | boolean;
@@ -297,11 +313,13 @@ export namespace FirebaseRemoteConfigTypes {
 
   /**
    * The status of the latest Remote RemoteConfig fetch action.
+   * @deprecated Use the modular API from '@react-native-firebase/remote-config' instead.
    */
   export type LastFetchStatusType = 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
 
   /**
    * Contains information about which keys have been updated.
+   * @deprecated Use the modular API from '@react-native-firebase/remote-config' (e.g. onConfigUpdate()) instead.
    */
   export interface ConfigUpdate {
     /**
@@ -316,6 +334,8 @@ export namespace FirebaseRemoteConfigTypes {
    *
    * NOTE: Although an `complete` callback can be provided, it will
    * never be called because the ConfigUpdate stream is never-ending.
+   *
+   * @deprecated Use the modular API from '@react-native-firebase/remote-config' (e.g. onConfigUpdate()) instead.
    */
   export interface ConfigUpdateObserver {
     /**
@@ -336,6 +356,7 @@ export namespace FirebaseRemoteConfigTypes {
 
   /**
    * A function that unsubscribes from a real-time event stream.
+   * @deprecated Use the modular API from '@react-native-firebase/remote-config' instead.
    */
   export type Unsubscribe = () => void;
 
@@ -351,21 +372,26 @@ export namespace FirebaseRemoteConfigTypes {
    * ```js
    * const defaultAppRemoteConfig = firebase.remoteConfig();
    * ```
+   *
+   * @deprecated Use the modular API from '@react-native-firebase/remote-config' (e.g. getRemoteConfig()) instead.
    */
   export interface Module extends FirebaseModule {
     /**
      * The current `FirebaseApp` instance for this Firebase service.
+     * @deprecated Use the modular API from '@react-native-firebase/remote-config' instead.
      */
     app: ReactNativeFirebase.FirebaseApp;
 
     /**
      * The number of milliseconds since the last Remote RemoteConfig fetch was performed.
+     * @deprecated Use the modular API fetchTimeMillis() from '@react-native-firebase/remote-config' instead.
      */
     fetchTimeMillis: number;
     /**
      * The status of the latest Remote RemoteConfig fetch action.
      *
      * See the `LastFetchStatus` statics definition.
+     * @deprecated Use the modular API lastFetchStatus() from '@react-native-firebase/remote-config' instead.
      */
     lastFetchStatus: LastFetchStatusType;
 
@@ -374,11 +400,13 @@ export namespace FirebaseRemoteConfigTypes {
      * using setConfigSettings({ fetchTimeMillis: number, minimumFetchIntervalMillis: number }). A description of the properties
      * can be found above
      *
+     * @deprecated Use the modular API settings() from '@react-native-firebase/remote-config' instead.
      */
     settings: ConfigSettings;
 
     /**
      * Provides an object with the type ConfigDefaults for default configuration values
+     * @deprecated Use the modular API from '@react-native-firebase/remote-config' instead.
      */
     defaultConfig: ConfigDefaults;
 
@@ -394,6 +422,7 @@ export namespace FirebaseRemoteConfigTypes {
      * ```
      *
      * @param configSettings A ConfigSettingsWrite instance used to set Remote RemoteConfig settings.
+     * @deprecated Use the modular API setConfigSettings() from '@react-native-firebase/remote-config' instead.
      */
     setConfigSettings(configSettings: ConfigSettings): Promise<void>;
 
@@ -410,6 +439,7 @@ export namespace FirebaseRemoteConfigTypes {
      * ```
      *
      * @param defaults A ConfigDefaults instance used to set default values.
+     * @deprecated Use the modular API setDefaults() from '@react-native-firebase/remote-config' instead.
      */
     setDefaults(defaults: ConfigDefaults): Promise<null>;
 
@@ -426,6 +456,7 @@ export namespace FirebaseRemoteConfigTypes {
      * ```
      *
      * @param resourceName The plist/xml file name with no extension.
+     * @deprecated Use the modular API setDefaultsFromResource() from '@react-native-firebase/remote-config' instead.
      */
     setDefaultsFromResource(resourceName: string): Promise<null>;
 
@@ -444,6 +475,7 @@ export namespace FirebaseRemoteConfigTypes {
      *
      * @param observer - The {@link ConfigUpdateObserver} to be notified of config updates.
      * @returns An {@link Unsubscribe} function to remove the listener.
+     * @deprecated Use the modular API onConfigUpdate() from '@react-native-firebase/remote-config' instead.
      */
     onConfigUpdate(observer: ConfigUpdateObserver): Unsubscribe;
 
@@ -475,6 +507,8 @@ export namespace FirebaseRemoteConfigTypes {
      *   console.log('Fetched values were already activated.');
      * }
      * ```
+     *
+     * @deprecated Use the modular API activate() from '@react-native-firebase/remote-config' instead.
      */
     activate(): Promise<boolean>;
     /**
@@ -486,6 +520,8 @@ export namespace FirebaseRemoteConfigTypes {
      * await firebase.remoteConfig().ensureInitialized();
      * // get remote config values
      * ```
+     *
+     * @deprecated Use the modular API ensureInitialized() from '@react-native-firebase/remote-config' instead.
      */
     ensureInitialized(): Promise<void>;
 
@@ -500,6 +536,7 @@ export namespace FirebaseRemoteConfigTypes {
      * ```
      *
      * @param expirationDurationSeconds Duration in seconds to cache the data for. To skip cache, use a duration of 0.
+     * @deprecated Use the modular API fetch() from '@react-native-firebase/remote-config' instead.
      */
     fetch(expirationDurationSeconds?: number): Promise<void>;
 
@@ -520,6 +557,7 @@ export namespace FirebaseRemoteConfigTypes {
      * }
      * ```
      *
+     * @deprecated Use the modular API fetchAndActivate() from '@react-native-firebase/remote-config' instead.
      */
     fetchAndActivate(): Promise<boolean>;
 
@@ -539,6 +577,7 @@ export namespace FirebaseRemoteConfigTypes {
      * });
      * ```
      *
+     * @deprecated Use the modular API getAll() from '@react-native-firebase/remote-config' instead.
      */
     getAll(): ConfigValues;
 
@@ -554,6 +593,7 @@ export namespace FirebaseRemoteConfigTypes {
      * ```
      *
      * @param key A key used to retrieve a specific value.
+     * @deprecated Use the modular API getValue() from '@react-native-firebase/remote-config' instead.
      */
     getValue(key: string): ConfigValue;
     /**
@@ -567,6 +607,7 @@ export namespace FirebaseRemoteConfigTypes {
      * ```
      *
      * @param key A key used to retrieve a specific value.
+     * @deprecated Use the modular API getBoolean() from '@react-native-firebase/remote-config' instead.
      */
     getBoolean(key: string): boolean;
     /**
@@ -580,6 +621,7 @@ export namespace FirebaseRemoteConfigTypes {
      * ```
      *
      * @param key A key used to retrieve a specific value.
+     * @deprecated Use the modular API getString() from '@react-native-firebase/remote-config' instead.
      */
     getString(key: string): string;
     /**
@@ -594,6 +636,7 @@ export namespace FirebaseRemoteConfigTypes {
      * ```
      *
      * @param key A key used to retrieve a specific value.
+     * @deprecated Use the modular API getNumber() from '@react-native-firebase/remote-config' instead.
      */
     getNumber(key: string): number;
 
@@ -608,14 +651,19 @@ export namespace FirebaseRemoteConfigTypes {
      * // get remote config values
      * ```
      *
+     * @deprecated Use the modular API reset() from '@react-native-firebase/remote-config' instead.
      */
     reset(): Promise<void>;
   }
 
-  // deprecated: from pre-Web realtime remote-config support - remove with onConfigUpdated
+  /**
+   * @deprecated Use the modular API onConfigUpdate() from '@react-native-firebase/remote-config' instead.
+   */
   export type CallbackOrObserver<T extends (...args: any[]) => any> = T | { next: T };
 
-  // deprecated: from pre-Web realtime remote-config support - remove with onConfigUpdated
+  /**
+   * @deprecated Use the modular API onConfigUpdate() from '@react-native-firebase/remote-config' instead.
+   */
   export type OnConfigUpdatedListenerCallback = (
     event?: { updatedKeys: string[] },
     error?: {
@@ -628,17 +676,21 @@ export namespace FirebaseRemoteConfigTypes {
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`
+ *
+ * @deprecated Namespaced API is deprecated. Use the modular API from '@react-native-firebase/remote-config' instead.
  */
 declare module '@react-native-firebase/app' {
   // eslint-disable-next-line @typescript-eslint/no-namespace -- module augmentation
   namespace ReactNativeFirebase {
     interface Module {
+      /** @deprecated Use getRemoteConfig() from '@react-native-firebase/remote-config' instead. */
       remoteConfig: ReactNativeFirebase.FirebaseModuleWithStatics<
         FirebaseRemoteConfigTypes.Module,
         FirebaseRemoteConfigTypes.Statics
       >;
     }
     interface FirebaseApp {
+      /** @deprecated Use getRemoteConfig(app) from '@react-native-firebase/remote-config' instead. */
       remoteConfig(): FirebaseRemoteConfigTypes.Module;
     }
   }
