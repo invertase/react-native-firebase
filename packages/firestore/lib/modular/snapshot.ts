@@ -20,14 +20,13 @@ import type {
   DocumentSnapshot,
   DocumentData,
   DocumentReference,
-  Firestore,
-  FirestoreDataConverter,
   Query,
   QuerySnapshot,
+  Unsubscribe,
 } from '../types/firestore';
 
-export type Unsubscribe = () => void;
 export type FirestoreError = Error;
+export type { Unsubscribe } from '../types/firestore';
 export type {
   QueryDocumentSnapshot,
   SnapshotListenOptions,
@@ -62,44 +61,4 @@ export function snapshotEqual<AppModelType, DbModelType extends DocumentData>(
 ): boolean {
   const isEqual = (left as unknown as { isEqual: (...args: unknown[]) => boolean }).isEqual;
   return isEqual.call(left, right, MODULAR_DEPRECATION_ARG);
-}
-
-export function documentSnapshotFromJSON(_firestore: Firestore, _json: object): DocumentSnapshot;
-export function documentSnapshotFromJSON<
-  AppModelType,
-  DbModelType extends DocumentData = DocumentData,
->(
-  _firestore: Firestore,
-  _json: object,
-  _converter: FirestoreDataConverter<AppModelType, DbModelType>,
-): DocumentSnapshot<AppModelType, DbModelType>;
-export function documentSnapshotFromJSON<
-  AppModelType,
-  DbModelType extends DocumentData = DocumentData,
->(
-  _firestore: Firestore,
-  _json: object,
-  _converter?: FirestoreDataConverter<AppModelType, DbModelType>,
-): DocumentSnapshot<AppModelType, DbModelType> {
-  throw new Error('documentSnapshotFromJSON() is not supported in React Native.');
-}
-
-export function querySnapshotFromJSON(_firestore: Firestore, _json: object): QuerySnapshot;
-export function querySnapshotFromJSON<
-  AppModelType,
-  DbModelType extends DocumentData = DocumentData,
->(
-  _firestore: Firestore,
-  _json: object,
-  _converter: FirestoreDataConverter<AppModelType, DbModelType>,
-): QuerySnapshot<AppModelType, DbModelType>;
-export function querySnapshotFromJSON<
-  AppModelType,
-  DbModelType extends DocumentData = DocumentData,
->(
-  _firestore: Firestore,
-  _json: object,
-  _converter?: FirestoreDataConverter<AppModelType, DbModelType>,
-): QuerySnapshot<AppModelType, DbModelType> {
-  throw new Error('querySnapshotFromJSON() is not supported in React Native.');
 }

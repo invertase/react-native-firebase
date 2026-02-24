@@ -90,7 +90,10 @@ export interface CollectionReferenceInternal<
   DbModelType extends DocumentData = DocumentData,
 >
   extends ReferenceInternal<AppModelType, DbModelType>, ParentReferenceInternal {
-  add(data: WithFieldValue<AppModelType>, ...deprecationArg: unknown[]): Promise<DocumentReference>;
+  add(
+    data: WithFieldValue<AppModelType>,
+    ...deprecationArg: unknown[]
+  ): Promise<DocumentReference<AppModelType, DbModelType>>;
 }
 
 export interface QueryInternal<

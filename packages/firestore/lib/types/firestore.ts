@@ -176,6 +176,10 @@ export class SnapshotMetadata {
 
 export type DocumentChangeType = 'added' | 'removed' | 'modified';
 
+export interface Unsubscribe {
+  (): void;
+}
+
 export interface DocumentChange<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
@@ -261,10 +265,11 @@ export class Query<AppModelType = DocumentData, DbModelType extends DocumentData
   ): Query<NewAppModelType, NewDbModelType>;
 }
 
-export interface CollectionReference<
+export class CollectionReference<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
 > extends Query<AppModelType, DbModelType> {
+  readonly type: 'collection';
   id: string;
   parent: DocumentReference<DocumentData, DocumentData> | null;
   path: string;
@@ -274,10 +279,11 @@ export interface CollectionReference<
   ): CollectionReference<NewAppModelType, NewDbModelType>;
 }
 
-export interface DocumentReference<
+export class DocumentReference<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
 > {
+  readonly type: 'document';
   firestore: Firestore;
   converter: FirestoreDataConverter<AppModelType, DbModelType> | null;
   id: string;
@@ -357,7 +363,6 @@ export class Transaction extends LiteTransaction {
   ): this;
 }
 
-export type TransactionOptions = unknown;
 export class DocumentSnapshot<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,

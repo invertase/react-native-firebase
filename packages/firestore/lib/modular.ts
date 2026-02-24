@@ -96,10 +96,13 @@ export function getFirestore(
 }
 
 export function doc<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
-  parent: Firestore | CollectionReference<AppModelType, DbModelType> | DocumentReference,
+  parent:
+    | Firestore
+    | CollectionReference<AppModelType, DbModelType>
+    | DocumentReference<AppModelType, DbModelType>,
   path?: string,
   ...pathSegments: string[]
-): DocumentReference {
+): DocumentReference<AppModelType, DbModelType> {
   let resolvedPath = path;
   if (pathSegments.length) {
     resolvedPath =
@@ -153,12 +156,15 @@ export function refEqual<AppModelType, DbModelType extends DocumentData>(
   );
 }
 
-export function collectionGroup(firestore: Firestore, collectionId: string): Query<DocumentData> {
+export function collectionGroup(
+  firestore: Firestore,
+  collectionId: string,
+): Query<DocumentData, DocumentData> {
   return (firestore as FirestoreInternal).collectionGroup.call(
     firestore,
     collectionId,
     MODULAR_DEPRECATION_ARG,
-  ) as Query<DocumentData>;
+  ) as Query<DocumentData, DocumentData>;
 }
 
 let snapshotInSyncListenerId = 0;
@@ -239,12 +245,12 @@ export function updateDoc<AppModelType, DbModelType extends DocumentData>(
 export function addDoc<AppModelType, DbModelType extends DocumentData>(
   reference: CollectionReference<AppModelType, DbModelType>,
   data: WithFieldValue<AppModelType>,
-): Promise<DocumentReference> {
+): Promise<DocumentReference<AppModelType, DbModelType>> {
   return (reference as CollectionReferenceInternal<AppModelType, DbModelType>).add.call(
     reference,
     data,
     MODULAR_DEPRECATION_ARG,
-  );
+  ) as Promise<DocumentReference<AppModelType, DbModelType>>;
 }
 
 export function enableNetwork(firestore: Firestore): Promise<void> {
