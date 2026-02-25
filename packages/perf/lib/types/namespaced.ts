@@ -53,6 +53,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase perf
  */
+/* eslint-disable @typescript-eslint/no-namespace */
 export namespace FirebasePerformanceTypes {
   /**
    * Type alias describing the valid HTTP methods accepted when creating a new {@link perf.HttpMetric} instance.
@@ -82,7 +83,7 @@ export namespace FirebasePerformanceTypes {
   /**
    * Trace allows you to time the beginning to end of a certain action in your app with additional metric values and attributes.
    */
-  export class Trace {
+  export interface Trace {
     /**
      * Returns the value of an attribute. Returns null if it does not exist.
      *
@@ -217,7 +218,7 @@ export namespace FirebasePerformanceTypes {
    *
    * @platform android Android !== 9.0.0 && Adnroid !== 9.1.0
    */
-  export class ScreenTrace {
+  export interface ScreenTrace {
     /**
      * Starts a new screen trace. Does nothing if already started.
      *
@@ -256,7 +257,7 @@ export namespace FirebasePerformanceTypes {
   /**
    * Metric used to collect data for network requests/responses. A new instance must be used for every request/response.
    */
-  export class HttpMetric {
+  export interface HttpMetric {
     /**
      * Returns the value of an attribute. Returns null if it does not exist.
      *
@@ -415,7 +416,7 @@ export namespace FirebasePerformanceTypes {
    * const defaultAppPerf = firebase.perf();
    * ```
    */
-  export class Module extends FirebaseModule {
+  export interface Module extends FirebaseModule {
     /**
      * The current `FirebaseApp` instance for this Firebase service.
      */
@@ -555,7 +556,7 @@ type PerfNamespace = ReactNativeFirebase.FirebaseModuleWithStatics<
 
 declare const defaultExport: PerfNamespace;
 
-export const firebase: ReactNativeFirebase.Module & {
+export declare const firebase: ReactNativeFirebase.Module & {
   perf: typeof defaultExport;
   app(name?: string): ReactNativeFirebase.FirebaseApp & { perf(): FirebasePerformanceTypes.Module };
 };

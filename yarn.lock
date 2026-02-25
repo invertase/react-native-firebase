@@ -5937,6 +5937,8 @@ __metadata:
   resolution: "@react-native-firebase/perf@workspace:packages/perf"
   dependencies:
     expo: "npm:^54.0.27"
+    react-native-builder-bob: "npm:^0.40.17"
+    typescript: "npm:^5.9.3"
   peerDependencies:
     "@react-native-firebase/app": 23.8.6
     expo: ">=47.0.0"
