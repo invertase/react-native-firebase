@@ -65,11 +65,11 @@ export interface PerformanceTrace {
   /**
    * Starts the timing for the trace instance.
    */
-  start(): void | Promise<null>;
+  start(): Promise<null>;
   /**
    * Stops the timing of the trace instance and logs the data of the instance.
    */
-  stop(): void | Promise<null>;
+  stop(): Promise<null>;
   /**
    * Records a trace from given parameters. This provides a direct way to use trace without a need to
    * start/stop. This is useful for use cases in which the trace cannot directly be used

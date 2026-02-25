@@ -99,3 +99,15 @@ export interface RNFBPerfTraceNativeModule {
     },
   ): Promise<null>;
 }
+
+/**
+ * @internal
+ * Native bridge for the perf module (FirebasePerfModule). Combines perf config methods and Trace/ScreenTrace/HttpMetric methods.
+ */
+export interface RNFBPerfModuleNative
+  extends RNFBPerfTraceNativeModule, RNFBPerfScreenTraceNativeModule, RNFBPerfNativeModule {
+  readonly isPerformanceCollectionEnabled: boolean;
+  readonly isInstrumentationEnabled: boolean;
+  instrumentationEnabled(enabled: boolean): void | Promise<null>;
+  setPerformanceCollectionEnabled(enabled: boolean): Promise<null>;
+}

@@ -22,10 +22,14 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/dist/module/internal';
 import { Platform } from 'react-native';
+
 import HttpMetric from './HttpMetric';
 import Trace from './Trace';
 import ScreenTrace from './ScreenTrace';
-import version from './version';
+import { version } from './version';
+
+import type { FirebasePerformanceTypes } from './types/namespaced';
+import type { PerfNamespace, RNFBPerfModuleNative } from './types/internal';
 
 const statics = {};
 
@@ -33,7 +37,7 @@ const namespace = 'perf';
 
 const nativeModuleName = 'RNFBPerfModule';
 
-const VALID_HTTP_METHODS = [
+const VALID_HTTP_METHODS: readonly FirebasePerformanceTypes.HttpMethod[] = [
   'CONNECT',
   'DELETE',
   'GET',
@@ -46,63 +50,67 @@ const VALID_HTTP_METHODS = [
 ];
 
 class FirebasePerfModule extends FirebaseModule {
-  constructor(...args) {
+  private _isPerformanceCollectionEnabled: boolean;
+  private _instrumentationEnabled: boolean;
+
+  constructor(...args: ConstructorParameters<typeof FirebaseModule>) {
     super(...args);
-    this._isPerformanceCollectionEnabled = this.native.isPerformanceCollectionEnabled;
-    this._instrumentationEnabled = this.native.isInstrumentationEnabled;
+    const native = this.native as RNFBPerfModuleNative;
+    this._isPerformanceCollectionEnabled = native.isPerformanceCollectionEnabled;
+    this._instrumentationEnabled = native.isInstrumentationEnabled;
   }
 
-  get isPerformanceCollectionEnabled() {
+  get isPerformanceCollectionEnabled(): boolean {
     return this._isPerformanceCollectionEnabled;
   }
 
-  get instrumentationEnabled() {
+  get instrumentationEnabled(): boolean {
     return this._instrumentationEnabled;
   }
 
-  set instrumentationEnabled(enabled) {
+  set instrumentationEnabled(enabled: boolean) {
     if (!isBoolean(enabled)) {
       throw new Error("firebase.perf().instrumentationEnabled = 'enabled' must be a boolean.");
     }
-    if (Platform.OS == 'ios') {
+    if (Platform.OS === 'ios') {
       // We don't change for android as it cannot be set from code, it is set at gradle build time.
       this._instrumentationEnabled = enabled;
       // No need to await, as it only takes effect on the next app run.
-      this.native.instrumentationEnabled(enabled);
+      (this.native as RNFBPerfModuleNative).instrumentationEnabled(enabled);
     }
   }
 
-  get dataCollectionEnabled() {
+  get dataCollectionEnabled(): boolean {
     return this._isPerformanceCollectionEnabled;
   }
 
-  set dataCollectionEnabled(enabled) {
+  set dataCollectionEnabled(enabled: boolean) {
     if (!isBoolean(enabled)) {
       throw new Error("firebase.perf().dataCollectionEnabled = 'enabled' must be a boolean.");
     }
     this._isPerformanceCollectionEnabled = enabled;
-    this.native.setPerformanceCollectionEnabled(enabled);
+    (this.native as RNFBPerfModuleNative).setPerformanceCollectionEnabled(enabled);
   }
 
-  async setPerformanceCollectionEnabled(enabled) {
+  async setPerformanceCollectionEnabled(enabled: boolean): Promise<null> {
     if (!isBoolean(enabled)) {
       throw new Error(
         "firebase.perf().setPerformanceCollectionEnabled(*) 'enabled' must be a boolean.",
       );
     }
 
-    if (Platform.OS == 'ios') {
+    if (Platform.OS === 'ios') {
       // '_instrumentationEnabled' is updated here as well to maintain backward compatibility. See:
       // https://github.com/invertase/react-native-firebase/commit/b705622e64d6ebf4ee026d50841e2404cf692f85
       this._instrumentationEnabled = enabled;
-      await this.native.instrumentationEnabled(enabled);
+      await (this.native as RNFBPerfModuleNative).instrumentationEnabled(enabled);
     }
 
     this._isPerformanceCollectionEnabled = enabled;
-    return this.native.setPerformanceCollectionEnabled(enabled);
+    return (this.native as RNFBPerfModuleNative).setPerformanceCollectionEnabled(enabled);
   }
 
-  newTrace(identifier) {
+  newTrace(identifier: string): Trace {
     // TODO(VALIDATION): identifier: no leading or trailing whitespace, no leading underscore '_'
     if (!isString(identifier) || identifier.length > 100) {
       throw new Error(
@@ -110,43 +118,43 @@ class FirebasePerfModule extends FirebaseModule {
       );
     }
 
-    return new Trace(this.native, identifier);
+    return new Trace(this.native as RNFBPerfModuleNative, identifier);
   }
 
-  startTrace(identifier) {
+  async startTrace(identifier: string): Promise<Trace> {
     const trace = this.newTrace(identifier);
-    return trace.start().then(() => trace);
+    await trace.start();
+    return trace;
   }
 
-  newScreenTrace(identifier) {
+  newScreenTrace(identifier: string): ScreenTrace {
     if (!isString(identifier) || identifier.length > 100) {
       throw new Error(
         "firebase.perf().newScreenTrace(*) 'identifier' must be a string with a maximum length of 100 characters.",
       );
     }
 
-    return new ScreenTrace(this.native, identifier);
+    return new ScreenTrace(this.native as RNFBPerfModuleNative, identifier);
   }
 
-  startScreenTrace(identifier) {
+  async startScreenTrace(identifier: string): Promise<ScreenTrace> {
     const screenTrace = this.newScreenTrace(identifier);
-    return screenTrace.start().then(() => screenTrace);
+    await screenTrace.start();
+    return screenTrace;
   }
 
-  newHttpMetric(url, httpMethod) {
+  newHttpMetric(url: string, httpMethod: FirebasePerformanceTypes.HttpMethod): HttpMetric {
     if (!isString(url)) {
       throw new Error("firebase.perf().newHttpMetric(*, _) 'url' must be a string.");
     }
 
-    if (!isString(url) || !isOneOf(httpMethod, VALID_HTTP_METHODS)) {
+    if (!isOneOf(httpMethod, VALID_HTTP_METHODS as unknown as string[])) {
       throw new Error(
-        `firebase.perf().newHttpMetric(_, *) 'httpMethod' must be one of ${VALID_HTTP_METHODS.join(
-          ', ',
-        )}.`,
+        `firebase.perf().newHttpMetric(_, *) 'httpMethod' must be one of ${VALID_HTTP_METHODS.join(', ')}.`,
       );
     }
 
-    return new HttpMetric(this.native, url, httpMethod);
+    return new HttpMetric(this.native as RNFBPerfModuleNative, url, httpMethod);
   }
 }
 
@@ -155,7 +163,7 @@ export const SDK_VERSION = version;
 
 // import perf from '@react-native-firebase/perf';
 // perf().X(...);
-export default createModuleNamespace({
+const namespaceGetter = createModuleNamespace({
   statics,
   version,
   namespace,
@@ -165,6 +173,7 @@ export default createModuleNamespace({
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebasePerfModule,
 });
+export default namespaceGetter as unknown as PerfNamespace;
 
 export * from './modular';
 

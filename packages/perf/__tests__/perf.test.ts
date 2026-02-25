@@ -15,6 +15,8 @@ import {
   CheckV9DeprecationFunction,
 } from '../../app/lib/common/unitTestUtils';
 
+import type { PerformanceModuleWithModularArg } from '../lib/types/internal';
+
 // @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 
@@ -197,7 +199,7 @@ describe('Performance Monitoring', function () {
     });
 
     it('newTrace()', function () {
-      const perf = getPerformance();
+      const perf = getPerformance() as PerformanceModuleWithModularArg;
       perfV9Deprecation(
         () => trace(perf, 'invertase'),
         () => perf.newTrace('invertase'),
@@ -206,7 +208,7 @@ describe('Performance Monitoring', function () {
     });
 
     it('newHttpMetric()', function () {
-      const perf = getPerformance();
+      const perf = getPerformance() as PerformanceModuleWithModularArg;
       perfV9Deprecation(
         () => httpMetric(perf, 'https://invertase.io', 'GET'),
         () => perf.newHttpMetric('https://invertase.io', 'GET'),
@@ -215,7 +217,7 @@ describe('Performance Monitoring', function () {
     });
 
     it('newScreenTrace()', function () {
-      const perf = getPerformance();
+      const perf = getPerformance() as PerformanceModuleWithModularArg;
       perfV9Deprecation(
         () => newScreenTrace(perf, 'invertase'),
         () => perf.newScreenTrace('invertase'),
@@ -224,7 +226,7 @@ describe('Performance Monitoring', function () {
     });
 
     it('startScreenTrace()', function () {
-      const perf = getPerformance();
+      const perf = getPerformance() as PerformanceModuleWithModularArg;
       perfV9Deprecation(
         () => startScreenTrace(perf, 'invertase'),
         () => perf.startScreenTrace('invertase'),

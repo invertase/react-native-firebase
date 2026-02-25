@@ -30,6 +30,9 @@ console.log(perf.firebase.SDK_VERSION);
 // checks root exists
 console.log(firebase.SDK_VERSION);
 
+// checks multi-app support exists
+console.log(firebase.perf(firebase.app()).app.name);
+
 // checks default export supports app arg
 console.log(perf().app.name);
 
