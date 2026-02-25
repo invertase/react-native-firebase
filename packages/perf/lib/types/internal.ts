@@ -60,7 +60,7 @@ export type FirebaseWithPerf = ReactNativeFirebase.Module & {
 
 /**
  * @internal
- * Native bridge methods used by HttpMetric. .
+ * Native bridge methods used by HttpMetric.
  */
 export interface RNFBPerfNativeModule {
   startHttpMetric(id: number, url: string, httpMethod: string): Promise<null>;
@@ -72,6 +72,30 @@ export interface RNFBPerfNativeModule {
       requestPayloadSize?: number;
       responsePayloadSize?: number;
       responseContentType?: string;
+    },
+  ): Promise<null>;
+}
+
+/**
+ * @internal
+ * Native bridge methods used by ScreenTrace.
+ */
+export interface RNFBPerfScreenTraceNativeModule {
+  startScreenTrace(id: number, identifier: string): Promise<null>;
+  stopScreenTrace(id: number): Promise<null>;
+}
+
+/**
+ * @internal
+ * Native bridge methods used by Trace.
+ */
+export interface RNFBPerfTraceNativeModule {
+  startTrace(id: number, identifier: string): Promise<null>;
+  stopTrace(
+    id: number,
+    traceData: {
+      metrics: Record<string, number>;
+      attributes: Record<string, string>;
     },
   ): Promise<null>;
 }

@@ -15,33 +15,38 @@
  *
  */
 
-import { hasOwnProperty, isNumber, isString } from '@react-native-firebase/app/dist/module/common';
+import { isNumber, isString } from '@react-native-firebase/app/dist/module/common';
 import MetricWithAttributes from './MetricWithAttributes';
+import type { RNFBPerfTraceNativeModule } from './types/internal';
 
 export default class Trace extends MetricWithAttributes {
-  constructor(native, identifier) {
+  private _identifier: string;
+  private _metrics: Record<string, number>;
+  private _started: boolean;
+  private _stopped: boolean;
+
+  constructor(native: RNFBPerfTraceNativeModule, identifier: string) {
     super(native);
+
     this._identifier = identifier;
-
     this._metrics = {};
-
     this._started = false;
     this._stopped = false;
   }
 
-  getMetric(metricName) {
+  getMetric(metricName: string): number {
     if (!isString(metricName)) {
       throw new Error("firebase.perf.Trace.getMetric(*) 'metricName' must be a string.");
     }
 
-    return hasOwnProperty(this._metrics, metricName) ? this._metrics[metricName] : 0;
+    return this._metrics[metricName] ?? 0;
   }
 
-  getMetrics() {
+  getMetrics(): Record<string, number> {
     return Object.assign({}, this._metrics);
   }
 
-  putMetric(metricName, value) {
+  putMetric(metricName: string, value: number): void {
     // TODO(VALIDATION): metricName: no leading or trailing whitespace, no leading underscore '_' character, max length is 32 characters
     // TODO(VALIDATION): value: >= 0
     if (!isString(metricName)) {
@@ -55,7 +60,7 @@ export default class Trace extends MetricWithAttributes {
     this._metrics[metricName] = value;
   }
 
-  incrementMetric(metricName, incrementBy) {
+  incrementMetric(metricName: string, incrementBy: number): void {
     // TODO(VALIDATION): metricName: no leading or trailing whitespace, no leading underscore '_' character, max length is 32 characters
     // TODO(VALIDATION): value: >= 0
     if (!isString(metricName)) {
@@ -69,7 +74,7 @@ export default class Trace extends MetricWithAttributes {
     this._metrics[metricName] = this.getMetric(metricName) + incrementBy;
   }
 
-  removeMetric(metric) {
+  removeMetric(metric: string): void {
     if (!isString(metric)) {
       throw new Error("firebase.perf.Trace.removeMetric(*) 'metric' must be a string.");
     }
@@ -77,16 +82,16 @@ export default class Trace extends MetricWithAttributes {
     delete this._metrics[metric];
   }
 
-  start() {
+  start(): Promise<null> {
     if (this._started) {
       return Promise.resolve(null);
     }
     this._started = true;
 
-    return this.native.startTrace(this._id, this._identifier);
+    return (this.native as RNFBPerfTraceNativeModule).startTrace(this._id, this._identifier);
   }
 
-  stop() {
+  stop(): Promise<null> {
     if (this._stopped) {
       return Promise.resolve(null);
     }
@@ -97,6 +102,6 @@ export default class Trace extends MetricWithAttributes {
       attributes: Object.assign({}, this._attributes),
     };
 
-    return this.native.stopTrace(this._id, traceData);
+    return (this.native as RNFBPerfTraceNativeModule).stopTrace(this._id, traceData);
   }
 }
