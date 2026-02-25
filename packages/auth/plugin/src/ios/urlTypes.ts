@@ -114,7 +114,7 @@ export function setUrlTypesForCaptcha({
   } else {
     // eslint-disable-next-line no-console
     console.warn(
-      '[@react-native-firebase/auth] REVERSED_CLIENT_ID field not found in GoogleServices-Info.plist. Google Sign-In requires this is - if you need Google Sign-In, enable it and re-download your plist file',
+      '[@react-native-firebase/auth] REVERSED_CLIENT_ID not found in GoogleService-Info.plist. This is required for Google Sign-In — if you need it, enable Google Sign-In in the Firebase console and re-download your plist. Phone auth reCAPTCHA will still work via the Encoded App ID scheme.',
     );
   }
 
