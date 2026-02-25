@@ -57,3 +57,21 @@ export type FirebaseWithPerf = ReactNativeFirebase.Module & {
   perf: PerfNamespace;
   app(name?: string): ReactNativeFirebase.FirebaseApp & { perf(): FirebasePerformanceTypes.Module };
 };
+
+/**
+ * @internal
+ * Native bridge methods used by HttpMetric. .
+ */
+export interface RNFBPerfNativeModule {
+  startHttpMetric(id: number, url: string, httpMethod: string): Promise<null>;
+  stopHttpMetric(
+    id: number,
+    metricData: {
+      attributes: Record<string, string>;
+      httpResponseCode?: number;
+      requestPayloadSize?: number;
+      responsePayloadSize?: number;
+      responseContentType?: string;
+    },
+  ): Promise<null>;
+}

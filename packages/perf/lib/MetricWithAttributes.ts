@@ -20,20 +20,24 @@ import { hasOwnProperty, isString } from '@react-native-firebase/app/dist/module
 let id = 0;
 
 export default class MetricWithAttributes {
-  constructor(native) {
+  readonly native: unknown;
+  readonly _id: number;
+  protected _attributes: Record<string, string>;
+
+  constructor(native: unknown) {
     this._id = id++;
     this.native = native;
     this._attributes = {};
   }
 
-  getAttribute(attribute) {
+  getAttribute(attribute: string): string | null {
     if (!isString(attribute)) {
       throw new Error("firebase.perf.*.getAttribute(*) 'attribute' must be a string.");
     }
     return this._attributes[attribute] || null;
   }
 
-  putAttribute(attribute, value) {
+  putAttribute(attribute: string, value: string): void {
     // TODO(VALIDATION): attribute: no leading or trailing whitespace, no leading underscore '_'
     if (!isString(attribute) || attribute.length > 40) {
       throw new Error(
