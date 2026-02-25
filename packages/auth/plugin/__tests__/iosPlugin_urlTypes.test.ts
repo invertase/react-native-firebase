@@ -42,7 +42,7 @@ describe('Config Plugin iOS Tests - urlTypes', () => {
     );
   });
 
-  it('warns if GoogleServer-Info.plist has no reversed client id or GOOGLE_APP_ID', async () => {
+  it('warns if GoogleServer-Info.plist has no reversed client id', async () => {
     const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
     setUrlTypesForCaptcha({
       config: {
@@ -57,9 +57,7 @@ describe('Config Plugin iOS Tests - urlTypes', () => {
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       '[@react-native-firebase/auth] REVERSED_CLIENT_ID field not found in GoogleServices-Info.plist. Google Sign-In requires this is - if you need Google Sign-In, enable it and re-download your plist file',
     );
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
-      '[@react-native-firebase/auth] GOOGLE_APP_ID field not found in GoogleServices-Info.plist. Phone auth reCAPTCHA fallback on iOS requires this field - please re-download your GoogleService-Info.plist from the Firebase console.',
-    );
+    expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
     consoleWarnSpy.mockRestore();
   });
 
