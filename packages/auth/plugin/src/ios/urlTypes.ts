@@ -42,6 +42,34 @@ function reversedClientIDExists(googleServiceFilePath: string): boolean {
   }
 }
 
+// Derives the Encoded App ID from GOOGLE_APP_ID for reCAPTCHA URL scheme registration.
+// Firebase requires this scheme for phone auth / SMS MFA reCAPTCHA fallback on iOS.
+// See: https://firebase.google.com/docs/auth/ios/multi-factor#using_recaptcha_verification
+// Transformation: "1:123456789012:ios:abc123" -> "app-1-123456789012-ios-abc123"
+function getEncodedAppId(googleServiceFilePath: string): string {
+  try {
+    const googleServicePlist = fs.readFileSync(googleServiceFilePath, 'utf8');
+    const googleServiceJson = plist.parse(googleServicePlist) as { GOOGLE_APP_ID: string };
+    const GOOGLE_APP_ID = googleServiceJson.GOOGLE_APP_ID;
+    return 'app-' + GOOGLE_APP_ID.replace(/:/g, '-');
+  } catch {
+    throw new Error(
+      '[@react-native-firebase/auth] Failed to parse your GoogleService-Info.plist. Are you sure it is a valid Info.Plist file with a GOOGLE_APP_ID field?',
+    );
+  }
+}
+
+// Utility function to check if GOOGLE_APP_ID exists in Google-Services.plist
+function googleAppIdExists(googleServiceFilePath: string): boolean {
+  try {
+    const googleServicePlist = fs.readFileSync(googleServiceFilePath, 'utf8');
+    const googleServiceJson = plist.parse(googleServicePlist) as { GOOGLE_APP_ID: string };
+    return !!googleServiceJson.GOOGLE_APP_ID;
+  } catch {
+    return false;
+  }
+}
+
 // add phone auth support by configuring recaptcha
 // https://github.com/invertase/react-native-firebase/pull/6167
 function addUriScheme(
@@ -98,6 +126,19 @@ export function setUrlTypesForCaptcha({
     // eslint-disable-next-line no-console
     console.warn(
       '[@react-native-firebase/auth] REVERSED_CLIENT_ID field not found in GoogleServices-Info.plist. Google Sign-In requires this is - if you need Google Sign-In, enable it and re-download your plist file',
+    );
+  }
+
+  // Always add the Encoded App ID derived from GOOGLE_APP_ID for phone auth reCAPTCHA fallback.
+  // Firebase requires this URL scheme on iOS when APNs is unavailable (e.g. Simulator).
+  // See: https://firebase.google.com/docs/auth/ios/multi-factor#using_recaptcha_verification
+  if (googleAppIdExists(googleServiceFilePath)) {
+    const encodedAppId = getEncodedAppId(googleServiceFilePath);
+    addUriScheme(config, encodedAppId);
+  } else {
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[@react-native-firebase/auth] GOOGLE_APP_ID field not found in GoogleServices-Info.plist. Phone auth reCAPTCHA fallback on iOS requires this field - please re-download your GoogleService-Info.plist from the Firebase console.',
     );
   }
 

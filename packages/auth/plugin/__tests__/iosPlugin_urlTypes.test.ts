@@ -42,7 +42,7 @@ describe('Config Plugin iOS Tests - urlTypes', () => {
     );
   });
 
-  it('warns if GoogleServer-Info.plist has no reversed client id', async () => {
+  it('warns if GoogleServer-Info.plist has no reversed client id or GOOGLE_APP_ID', async () => {
     const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
     setUrlTypesForCaptcha({
       config: {
@@ -57,10 +57,13 @@ describe('Config Plugin iOS Tests - urlTypes', () => {
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       '[@react-native-firebase/auth] REVERSED_CLIENT_ID field not found in GoogleServices-Info.plist. Google Sign-In requires this is - if you need Google Sign-In, enable it and re-download your plist file',
     );
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      '[@react-native-firebase/auth] GOOGLE_APP_ID field not found in GoogleServices-Info.plist. Phone auth reCAPTCHA fallback on iOS requires this field - please re-download your GoogleService-Info.plist from the Firebase console.',
+    );
     consoleWarnSpy.mockRestore();
   });
 
-  it('adds url types to the Info.plist', async () => {
+  it('adds url types to the Info.plist (with REVERSED_CLIENT_ID and GOOGLE_APP_ID)', async () => {
     const result = setUrlTypesForCaptcha({
       config: {
         name: 'TestName',
@@ -72,5 +75,24 @@ describe('Config Plugin iOS Tests - urlTypes', () => {
       },
     });
     expect(result.modResults).toMatchSnapshot();
+  });
+
+  it('adds encoded app ID url scheme when only GOOGLE_APP_ID is present (no REVERSED_CLIENT_ID)', async () => {
+    const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const result = setUrlTypesForCaptcha({
+      config: {
+        name: 'TestName',
+        slug: 'TestSlug',
+        modRequest: { projectRoot: path.join(__dirname, 'fixtures') } as any,
+        modResults: {},
+        modRawConfig: { name: 'TestName', slug: 'TestSlug' },
+        ios: { googleServicesFile: 'TestGoogleService-Info.no-reversed-client-id.plist' },
+      },
+    });
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      '[@react-native-firebase/auth] REVERSED_CLIENT_ID field not found in GoogleServices-Info.plist. Google Sign-In requires this is - if you need Google Sign-In, enable it and re-download your plist file',
+    );
+    expect(result.modResults).toMatchSnapshot();
+    consoleWarnSpy.mockRestore();
   });
 });
