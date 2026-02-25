@@ -15,6 +15,7 @@
  *
  */
 
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import type { FirebasePerformanceTypes } from './namespaced';
 
 /**
@@ -34,4 +35,25 @@ export type PerformanceModuleWithModularArg = FirebasePerformanceTypes.Module & 
     identifier: string,
     _modularArg?: string,
   ): Promise<FirebasePerformanceTypes.ScreenTrace>;
+};
+
+/**
+ * @internal
+ * Type for the default perf() namespace export. Used only to type the default export in namespaced.ts.
+ */
+export type PerfNamespace = ReactNativeFirebase.FirebaseModuleWithStatics<
+  FirebasePerformanceTypes.Module,
+  FirebasePerformanceTypes.Statics
+> & {
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+/**
+ * @internal
+ * Type for the firebase export (perf namespace attached to @react-native-firebase/app Module).
+ */
+export type FirebaseWithPerf = ReactNativeFirebase.Module & {
+  perf: PerfNamespace;
+  app(name?: string): ReactNativeFirebase.FirebaseApp & { perf(): FirebasePerformanceTypes.Module };
 };

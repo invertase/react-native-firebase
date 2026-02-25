@@ -17,6 +17,8 @@
 
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 
+import type { FirebaseWithPerf, PerfNamespace } from './internal';
+
 /**
  * Firebase Performance Monitoring package for React Native.
  *
@@ -546,20 +548,9 @@ export namespace FirebasePerformanceTypes {
   }
 }
 
-type PerfNamespace = ReactNativeFirebase.FirebaseModuleWithStatics<
-  FirebasePerformanceTypes.Module,
-  FirebasePerformanceTypes.Statics
-> & {
-  firebase: ReactNativeFirebase.Module;
-  app(name?: string): ReactNativeFirebase.FirebaseApp;
-};
-
 declare const defaultExport: PerfNamespace;
 
-export declare const firebase: ReactNativeFirebase.Module & {
-  perf: typeof defaultExport;
-  app(name?: string): ReactNativeFirebase.FirebaseApp & { perf(): FirebasePerformanceTypes.Module };
-};
+export declare const firebase: FirebaseWithPerf;
 
 export default defaultExport;
 
