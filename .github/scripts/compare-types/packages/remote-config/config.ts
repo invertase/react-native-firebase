@@ -1,0 +1,178 @@
+/**
+ * Known differences between the firebase-js-sdk @firebase/remote-config public
+ * API and the @react-native-firebase/remote-config modular API.
+ *
+ * Each entry must have a `name` (the export name) and a `reason` explaining
+ * why the difference exists. Any difference NOT listed here will cause CI to
+ * fail so that new drift is caught and deliberately acknowledged.
+ *
+ * Sections:
+ *  nameMapping     — exports that exist in both packages but under different names
+ *  missingInRN     — firebase-js-sdk exports absent from RN Firebase
+ *  extraInRN       — RN Firebase exports not present in the firebase-js-sdk
+ *  differentShape  — exports present in both but with differing signatures/members
+ */
+
+import type { PackageConfig } from '../../src/types';
+
+const config: PackageConfig = {
+  // ---------------------------------------------------------------------------
+  // Name mapping
+  // ---------------------------------------------------------------------------
+  // ValueSource is defined as `ValueSource` in the source files of both
+  // packages, but the RN Firebase index.d.ts re-exports it under the alias
+  // `ModularValueSource` to avoid a naming clash with the namespaced API.
+  // Since we compare source files directly, both sides see `ValueSource`
+  // and they match — no mapping entry is needed here.
+  nameMapping: {},
+
+  // ---------------------------------------------------------------------------
+  // Missing in RN Firebase
+  // ---------------------------------------------------------------------------
+  missingInRN: [
+    // Currently empty — all firebase-js-sdk remote-config exports are present
+    // in the RN Firebase modular API (though some have different shapes; see below).
+  ],
+
+  // ---------------------------------------------------------------------------
+  // Extra in RN Firebase
+  // ---------------------------------------------------------------------------
+  extraInRN: [
+    {
+      name: 'ConfigValues',
+      reason:
+        'RN Firebase-specific type alias for `{ [key: string]: Value }`, ' +
+        'semantically equivalent to `Record<string, Value>` used in the ' +
+        'firebase-js-sdk. Kept for backwards compatibility.',
+    },
+    {
+      name: 'RemoteConfigLogLevel',
+      reason:
+        'Type alias for `LogLevel` exposed for API clarity (mirrors the ' +
+        'firebase-js-sdk internal RemoteConfigLogLevel). Not part of the ' +
+        'firebase-js-sdk public API.',
+    },
+    {
+      name: 'LastFetchStatus',
+      reason:
+        'Namespaced constant re-exported from statics.d.ts for backwards ' +
+        'compatibility with the class-based (namespaced) API. Not part of ' +
+        'the firebase-js-sdk modular API.',
+    },
+    {
+      name: 'ValueSource',
+      reason:
+        'Namespaced constant re-exported from statics.d.ts for backwards ' +
+        'compatibility with the class-based (namespaced) API. The modular ' +
+        '`ValueSource` type alias (matching firebase-js-sdk) is also exported ' +
+        'separately from types/modular.d.ts.',
+    },
+    {
+      name: 'fetch',
+      reason:
+        'Legacy RN Firebase fetch API that accepts an optional ' +
+        '`expirationDurationSeconds` parameter. Prefer `fetchConfig()` which ' +
+        'matches the firebase-js-sdk API. Kept for backwards compatibility.',
+    },
+    {
+      name: 'fetchTimeMillis',
+      reason:
+        'Getter function returning the last fetch timestamp. In the ' +
+        'firebase-js-sdk this value is accessed as the `fetchTimeMillis` ' +
+        'property on the `RemoteConfig` object rather than a standalone function.',
+    },
+    {
+      name: 'lastFetchStatus',
+      reason:
+        'Getter function returning the last fetch status. In the ' +
+        'firebase-js-sdk this value is accessed as the `lastFetchStatus` ' +
+        'property on the `RemoteConfig` object rather than a standalone function.',
+    },
+    {
+      name: 'settings',
+      reason:
+        'Getter function returning the current `ConfigSettings`. In the ' +
+        'firebase-js-sdk settings are accessed via the `settings` property ' +
+        'on the `RemoteConfig` object rather than a standalone function.',
+    },
+    {
+      name: 'onConfigUpdated',
+      reason:
+        'Deprecated RN Firebase listener for real-time config updates. ' +
+        'Replaced by `onConfigUpdate()` which matches the firebase-js-sdk API.',
+    },
+    {
+      name: 'reset',
+      reason:
+        'Android-only API that deletes all activated, fetched and default ' +
+        'configs and resets all Remote Config settings. No equivalent exists ' +
+        'in the firebase-js-sdk.',
+    },
+    {
+      name: 'setConfigSettings',
+      reason:
+        'RN Firebase helper to update `minimumFetchIntervalMillis` and ' +
+        '`fetchTimeoutMillis` asynchronously via the native module. In the ' +
+        'firebase-js-sdk these properties are set by direct property assignment ' +
+        'on the `RemoteConfig.settings` object.',
+    },
+    {
+      name: 'setDefaults',
+      reason:
+        'RN Firebase API for setting default config values programmatically. ' +
+        'The firebase-js-sdk uses direct assignment to `RemoteConfig.defaultConfig` ' +
+        'instead.',
+    },
+    {
+      name: 'setDefaultsFromResource',
+      reason:
+        'RN Firebase-specific API that loads default config values from a ' +
+        'platform resource file (iOS .plist / Android XML). No equivalent ' +
+        'exists in the firebase-js-sdk web API.',
+    },
+  ],
+
+  // ---------------------------------------------------------------------------
+  // Different shape
+  // ---------------------------------------------------------------------------
+  differentShape: [
+    {
+      name: 'ConfigUpdateObserver',
+      reason:
+        'The `error` callback parameter uses `ReactNativeFirebase.NativeFirebaseError` ' +
+        'instead of `FirebaseError` from `@firebase/app`. Both represent Firebase ' +
+        'errors but the RN type extends the native bridge error structure.',
+    },
+    {
+      name: 'getAll',
+      reason:
+        'Returns `ConfigValues` (RN Firebase type alias for `{ [key: string]: Value }`) ' +
+        'instead of `Record<string, Value>`. The two types are structurally equivalent; ' +
+        'the alias is retained for backwards compatibility.',
+    },
+    {
+      name: 'getRemoteConfig',
+      reason:
+        'The optional `app` parameter uses `ReactNativeFirebase.FirebaseApp` from ' +
+        '`@react-native-firebase/app` instead of `FirebaseApp` from `@firebase/app`. ' +
+        'Both types represent a Firebase app instance but come from different packages.',
+    },
+    {
+      name: 'setLogLevel',
+      reason:
+        'The RN Firebase implementation accepts `RemoteConfigLogLevel` (a type alias ' +
+        'for `LogLevel`) and returns it, whereas the firebase-js-sdk accepts `LogLevel` ' +
+        'and returns `void`. The parameter types are semantically identical; the return ' +
+        'type difference is a legacy artefact of the RN implementation.',
+    },
+    {
+      name: 'setCustomSignals',
+      reason:
+        'Returns `Promise<null>` in RN Firebase vs `Promise<void>` in the ' +
+        'firebase-js-sdk. The native module resolves with `null` rather than ' +
+        '`undefined`; both signal successful completion.',
+    },
+  ],
+};
+
+export default config;
