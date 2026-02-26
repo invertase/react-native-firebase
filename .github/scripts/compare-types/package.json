@@ -1,0 +1,15 @@
+{
+  "name": "compare-types",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "compare": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "ts-morph": "^24.0.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
