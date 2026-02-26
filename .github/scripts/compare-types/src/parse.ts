@@ -5,7 +5,6 @@
  * not a problem — they simply appear as their short name strings.
  */
 
-import path from 'path';
 import fs from 'fs';
 import {
   Project,
@@ -28,7 +27,15 @@ import type {
 // ---------------------------------------------------------------------------
 
 function normalizeType(s: string): string {
-  return s.trim().replace(/\s+/g, ' ');
+  return (
+    s
+      .trim()
+      // Collapse all whitespace to a single space
+      .replace(/\s+/g, ' ')
+      // Strip a leading pipe that TypeScript emits when a union type is
+      // written with a leading `|` on each line (e.g. `| 'a' | 'b'` → `'a' | 'b'`)
+      .replace(/^\| /, '')
+  );
 }
 
 // ---------------------------------------------------------------------------
