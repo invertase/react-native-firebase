@@ -6,12 +6,7 @@
  */
 
 import fs from 'fs';
-import {
-  Project,
-  Node,
-  type ExportedDeclarations,
-  type SourceFile,
-} from 'ts-morph';
+import { Project, Node, type ExportedDeclarations, type SourceFile } from 'ts-morph';
 import type {
   ExportEntry,
   ExportShape,
@@ -44,7 +39,10 @@ function normalizeType(s: string): string {
 
 function extractFunctionShape(
   decl: Parameters<typeof Node.isFunctionDeclaration>[0] & {
-    getParameters: () => { getTypeNode: () => { getText: () => string } | undefined; isRestParameter: () => boolean }[];
+    getParameters: () => {
+      getTypeNode: () => { getText: () => string } | undefined;
+      isRestParameter: () => boolean;
+    }[];
     getReturnTypeNode: () => { getText: () => string } | undefined;
   },
 ): FunctionShape {
@@ -53,9 +51,7 @@ function extractFunctionShape(
     const typeText = typeNode ? normalizeType(typeNode.getText()) : 'any';
     return p.isRestParameter() ? `...${typeText}` : typeText;
   });
-  const returnType = normalizeType(
-    (decl as any).getReturnTypeNode()?.getText() ?? 'void',
-  );
+  const returnType = normalizeType((decl as any).getReturnTypeNode()?.getText() ?? 'void');
   return { kind: 'function', params, returnType };
 }
 
@@ -74,9 +70,7 @@ function extractInterfaceShape(decl: any): InterfaceShape {
       const methodParams = member
         .getParameters()
         .map((p: any) => normalizeType(p.getTypeNode()?.getText() ?? 'any'));
-      const retType = normalizeType(
-        member.getReturnTypeNode()?.getText() ?? 'void',
-      );
+      const retType = normalizeType(member.getReturnTypeNode()?.getText() ?? 'void');
       members.push({
         name: member.getName(),
         type: `(${methodParams.join(', ')}) => ${retType}`,
@@ -99,9 +93,7 @@ function extractVariableShape(decl: any): VariableShape {
   return { kind: 'variable', type };
 }
 
-function extractShape(
-  declarations: ReadonlyArray<ExportedDeclarations>,
-): ExportShape | null {
+function extractShape(declarations: ReadonlyArray<ExportedDeclarations>): ExportShape | null {
   for (const decl of declarations) {
     if (Node.isFunctionDeclaration(decl)) {
       return extractFunctionShape(decl as any);
@@ -135,10 +127,7 @@ function createProject(): Project {
   });
 }
 
-function collectExportsFromSourceFile(
-  sf: SourceFile,
-  into: Map<string, ExportEntry>,
-): void {
+function collectExportsFromSourceFile(sf: SourceFile, into: Map<string, ExportEntry>): void {
   for (const [name, decls] of sf.getExportedDeclarations()) {
     if (into.has(name)) continue; // first file wins (no overwriting)
     const shape = extractShape(decls);

@@ -39,16 +39,7 @@ export interface PackageEntry {
 }
 
 function rnDist(packageName: string): string {
-  return path.join(
-    REPO_ROOT,
-    'packages',
-    packageName,
-    'dist',
-    'typescript',
-    'lib',
-  );
+  return path.join(REPO_ROOT, 'packages', packageName, 'dist', 'typescript', 'lib');
 }
 
-export const packages: PackageEntry[] = [
-
-];
+export const packages: PackageEntry[] = [];
