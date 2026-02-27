@@ -19,11 +19,12 @@ import {
   emitEvent,
 } from '@react-native-firebase/app/dist/module/internal/web/utils';
 
-import type { FirebaseRemoteConfigTypes } from '../types/namespaced';
+import type { RemoteConfig } from '../types/modular';
+import type { ConfigDefaults } from '../types/internal';
 
-type RemoteConfigInstance = FirebaseRemoteConfigTypes.Module & {
+type RemoteConfigInstance = RemoteConfig & {
   settings: Record<string, number>;
-  defaultConfig: FirebaseRemoteConfigTypes.ConfigDefaults;
+  defaultConfig: ConfigDefaults;
   fetchTimeMillis: number;
   lastFetchStatus: string;
 };
@@ -33,7 +34,7 @@ const configSettingsForInstance: Record<
   { minimumFetchIntervalMillis: number; fetchTimeoutMillis: number }
 > = {};
 
-const defaultConfigForInstance: Record<string, FirebaseRemoteConfigTypes.ConfigDefaults> = {};
+const defaultConfigForInstance: Record<string, ConfigDefaults> = {};
 
 function makeGlobalsAvailable(): void {
   (navigator as { onLine?: boolean }).onLine = true;
@@ -161,7 +162,7 @@ export default {
     });
   },
 
-  setDefaults(appName: string, defaults: FirebaseRemoteConfigTypes.ConfigDefaults) {
+  setDefaults(appName: string, defaults: ConfigDefaults) {
     return guard(async () => {
       defaultConfigForInstance[appName] = defaults;
       const remoteConfig = getRemoteConfigInstanceForApp(appName);
