@@ -447,7 +447,7 @@ How to migrate: If you use device-local notification APIs and user-visible notif
 `@react-native-firebase/remote-config`
 
 - Module namespace has been renamed to `.remoteConfig()` from `.config()`.
-- All Remote Config values can now be accessed synchronously in JS, see `getValue(key: string): Value` & `getAll(): ConfigValues` below.
+- All Remote Config values can now be accessed synchronously in JS, see `getValue(key: string): ConfigValue` & `getAll(): ConfigValues` below.
   - These replace all the original async methods: `getValue`, `getValues`, `getKeysByPrefix`.
 - `setDefaultsFromResource` now returns a Promise that resolves when completed, this will reject with code `config/resource_not_found` if the file could not be found.
 - `setDefaultsFromResource` now expects a resource file name for Android to match iOS, formerly this required a resource id (something you would not have in RN as this was generated at build time by Android).
