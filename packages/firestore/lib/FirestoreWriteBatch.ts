@@ -27,7 +27,7 @@ export interface BatchWrite {
   options?: Record<string, unknown>;
 }
 
-export default class FirestoreWriteBatch {
+export default class WriteBatch {
   _firestore: any;
   _writes: BatchWrite[];
   _committed: boolean;
