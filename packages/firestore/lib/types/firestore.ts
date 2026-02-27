@@ -37,6 +37,8 @@ export declare class Firestore {
    */
   toJSON(): object;
 }
+
+export type LogLevel = 'debug' | 'error' | 'silent';
 // web/other platform only
 export interface ExperimentalLongPollingOptions {
   timeoutSeconds?: number;

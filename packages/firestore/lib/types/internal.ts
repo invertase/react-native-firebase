@@ -29,6 +29,7 @@ import type {
   WriteBatch,
   WithFieldValue,
   AggregateType,
+  PartialWithFieldValue,
 } from './firestore';
 import type { QueryConstraint } from '../modular/query';
 import type { QuerySnapshot } from '../modular/snapshot';
@@ -72,7 +73,7 @@ export interface DocumentReferenceInternal<
 >
   extends ReferenceInternal<AppModelType, DbModelType>, ParentReferenceInternal {
   set(
-    data: WithFieldValue<AppModelType>,
+    data: WithFieldValue<AppModelType> | PartialWithFieldValue<AppModelType>,
     options?: SetOptions,
     ...deprecationArg: unknown[]
   ): Promise<void>;

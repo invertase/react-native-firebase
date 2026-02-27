@@ -24,8 +24,9 @@ import { Filter } from './FirestoreFilter';
 import FirestoreGeoPoint from './FirestoreGeoPoint';
 import FirestoreTimestamp from './FirestoreTimestamp';
 import FirestoreVectorValue from './FirestoreVectorValue';
+import type { LogLevel } from './types/firestore';
 
-type FirestoreLogLevel = 'debug' | 'error' | 'silent';
+type FirestoreLogLevel = LogLevel;
 
 const FirestoreStatics = {
   Blob: FirestoreBlob,
