@@ -39,10 +39,12 @@ import type {
   Transaction,
   UpdateData,
   WithFieldValue,
+  PartialWithFieldValue,
   WriteBatch,
   AggregateType,
   AggregateSpec,
   LoadBundleTaskProgress,
+  LogLevel,
 } from './types/firestore';
 import type {
   CollectionReferenceInternal,
@@ -58,6 +60,8 @@ import type { FieldPath } from './modular/FieldPath';
 import type { Unsubscribe } from './modular/snapshot';
 
 export { AggregateField, AggregateQuerySnapshot } from './FirestoreAggregate';
+
+export const CACHE_SIZE_UNLIMITED = -1;
 
 type FirestoreWithSyncEvents = FirestoreInternal & {
   native: {
@@ -203,6 +207,15 @@ export function onSnapshotsInSync(
 export function setDoc<AppModelType, DbModelType extends DocumentData>(
   reference: DocumentReference<AppModelType, DbModelType>,
   data: WithFieldValue<AppModelType>,
+): Promise<void>;
+export function setDoc<AppModelType, DbModelType extends DocumentData>(
+  reference: DocumentReference<AppModelType, DbModelType>,
+  data: PartialWithFieldValue<AppModelType>,
+  options: SetOptions,
+): Promise<void>;
+export function setDoc<AppModelType, DbModelType extends DocumentData>(
+  reference: DocumentReference<AppModelType, DbModelType>,
+  data: WithFieldValue<AppModelType> | PartialWithFieldValue<AppModelType>,
   options?: SetOptions,
 ): Promise<void> {
   return (reference as DocumentReferenceInternal<AppModelType, DbModelType>).set.call(
@@ -307,7 +320,7 @@ export function connectFirestoreEmulator(
   );
 }
 
-export function setLogLevel(logLevel: 'debug' | 'error' | 'silent'): void {
+export function setLogLevel(logLevel: LogLevel): void {
   return appSetLogLevel(logLevel);
 }
 
@@ -492,3 +505,5 @@ export * from './modular/VectorValue';
 export { LoadBundleTask } from './LoadBundleTask';
 export type { LoadBundleTaskProgress, TaskState } from './LoadBundleTask';
 export { Filter };
+export { default as WriteBatch } from './FirestoreWriteBatch';
+export type { LogLevel } from './types/firestore';
