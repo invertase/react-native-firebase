@@ -15,11 +15,11 @@
  *
  */
 
-import { isArray, isNumber } from '@react-native-firebase/app/dist/module/common';
+import { isArray, isNumber, isObject } from '@react-native-firebase/app/dist/module/common';
 
-type FirestoreVectorJson = { vectorValues: number[] };
+type FirestoreVectorJson = { vectorValues: number[]; type?: string };
 
-export default class FirestoreVectorValue {
+export default class VectorValue {
   _values: number[];
 
   constructor(values?: number[]) {
@@ -46,13 +46,32 @@ export default class FirestoreVectorValue {
     this._values = values.slice();
   }
 
-  static fromJSON(json: string | FirestoreVectorJson): FirestoreVectorValue {
-    const parsedVector = typeof json === 'string' ? (JSON.parse(json) as FirestoreVectorJson) : json;
-    return new FirestoreVectorValue(parsedVector.vectorValues);
+  static _jsonSchemaVersion: string = 'firestore/vectorValue/1.0';
+  static _jsonSchema = {
+    type: VectorValue._jsonSchemaVersion,
+    vectorValues: 'object',
+  };
+
+  static fromJSON(json: object): VectorValue {
+    const parsedVector = isObject(json) ? (json as FirestoreVectorJson & { type?: unknown }) : null;
+    if (
+      parsedVector &&
+      (parsedVector.type === undefined || parsedVector.type === VectorValue._jsonSchemaVersion) &&
+      Array.isArray(parsedVector.vectorValues) &&
+      parsedVector.vectorValues.every(element => typeof element === 'number')
+    ) {
+      return new VectorValue(parsedVector.vectorValues);
+    }
+
+    if (parsedVector && parsedVector.type === VectorValue._jsonSchemaVersion) {
+      throw new Error("Expected 'vectorValues' field to be a number array");
+    }
+
+    throw new Error('Unexpected error creating Timestamp from JSON.');
   }
 
-  isEqual(other: FirestoreVectorValue): boolean {
-    if (!(other instanceof FirestoreVectorValue)) {
+  isEqual(other: VectorValue): boolean {
+    if (!(other instanceof VectorValue)) {
       throw new Error(
         "firebase.firestore.VectorValue.isEqual(*) 'other' expected a VectorValue instance.",
       );
@@ -71,7 +90,7 @@ export default class FirestoreVectorValue {
     return this._values.slice();
   }
 
-  toJSON(): FirestoreVectorJson {
-    return { vectorValues: this._values.slice() };
+  toJSON(): { vectorValues: number[]; type: string } {
+    return { type: VectorValue._jsonSchemaVersion, vectorValues: this._values.slice() };
   }
 }

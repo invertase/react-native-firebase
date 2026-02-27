@@ -15,10 +15,10 @@
  *
  */
 
-import FirestoreVectorValue from '../FirestoreVectorValue';
+import VectorValue from '../FirestoreVectorValue';
 
-export const VectorValue = FirestoreVectorValue;
+export { VectorValue };
 
-export function vector(values?: number[]): FirestoreVectorValue {
+export function vector(values?: number[]): VectorValue {
   return new VectorValue(values);
 }
