@@ -15,30 +15,30 @@
  *
  */
 
-import { isDate, isNumber } from '@react-native-firebase/app/dist/module/common';
+import { isDate, isNumber, isObject } from '@react-native-firebase/app/dist/module/common';
 
 // Earliest date supported by Firestore timestamps (0001-01-01T00:00:00Z).
 const MIN_SECONDS = -62135596800;
 
-export default class FirestoreTimestamp {
-  static now(): FirestoreTimestamp {
-    return FirestoreTimestamp.fromMillis(Date.now());
+export default class Timestamp {
+  static now(): Timestamp {
+    return Timestamp.fromMillis(Date.now());
   }
 
-  static fromDate(date: Date): FirestoreTimestamp {
+  static fromDate(date: Date): Timestamp {
     if (!isDate(date)) {
       throw new Error(
         "firebase.firestore.Timestamp.fromDate(*) 'date' expected a valid Date object.",
       );
     }
 
-    return FirestoreTimestamp.fromMillis(date.getTime());
+    return Timestamp.fromMillis(date.getTime());
   }
 
-  static fromMillis(milliseconds: number): FirestoreTimestamp {
+  static fromMillis(milliseconds: number): Timestamp {
     const seconds = Math.floor(milliseconds / 1000);
     const nanoseconds = (milliseconds - seconds * 1000) * 1e6;
-    return new FirestoreTimestamp(seconds, nanoseconds);
+    return new Timestamp(seconds, nanoseconds);
   }
 
   _seconds: number;
@@ -81,8 +81,8 @@ export default class FirestoreTimestamp {
     return this._nanoseconds;
   }
 
-  isEqual(other: FirestoreTimestamp): boolean {
-    if (!(other instanceof FirestoreTimestamp)) {
+  isEqual(other: Timestamp): boolean {
+    if (!(other instanceof Timestamp)) {
       throw Error(
         "firebase.firestore.Timestamp.isEqual(*) 'other' expected an instance of Timestamp.",
       );
@@ -99,12 +99,48 @@ export default class FirestoreTimestamp {
     return this._seconds * 1000 + this._nanoseconds / 1e6;
   }
 
-  toString(): string {
-    return `FirestoreTimestamp(seconds=${this.seconds}, nanoseconds=${this.nanoseconds})`;
+  _compareTo(other: Timestamp): number {
+    if (this._seconds === other._seconds) {
+      if (this._nanoseconds < other._nanoseconds) return -1;
+      if (this._nanoseconds > other._nanoseconds) return 1;
+      return 0;
+    }
+    return this._seconds < other._seconds ? -1 : 1;
   }
 
-  toJSON(): { seconds: number; nanoseconds: number } {
-    return { seconds: this.seconds, nanoseconds: this.nanoseconds };
+  toString(): string {
+    return `Timestamp(seconds=${this.seconds}, nanoseconds=${this.nanoseconds})`;
+  }
+
+  static _jsonSchemaVersion: string = 'firestore/timestamp/1.0';
+  static _jsonSchema = {
+    type: Timestamp._jsonSchemaVersion,
+    seconds: 'number',
+    nanoseconds: 'number',
+  };
+
+  toJSON(): { seconds: number; nanoseconds: number; type: string } {
+    return {
+      type: Timestamp._jsonSchemaVersion,
+      seconds: this.seconds,
+      nanoseconds: this.nanoseconds,
+    };
+  }
+
+  static fromJSON(json: object): Timestamp {
+    if (
+      isObject(json) &&
+      (json as { type?: unknown }).type === Timestamp._jsonSchemaVersion &&
+      typeof (json as { seconds?: unknown }).seconds === 'number' &&
+      typeof (json as { nanoseconds?: unknown }).nanoseconds === 'number'
+    ) {
+      return new Timestamp(
+        (json as { seconds: number }).seconds,
+        (json as { nanoseconds: number }).nanoseconds,
+      );
+    }
+
+    throw new Error('Unexpected error creating Timestamp from JSON.');
   }
 
   valueOf(): string {

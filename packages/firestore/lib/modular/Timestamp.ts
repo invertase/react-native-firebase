@@ -15,6 +15,6 @@
  *
  */
 
-import FirestoreTimestamp from '../FirestoreTimestamp';
+import Timestamp from '../FirestoreTimestamp';
 
-export const Timestamp = FirestoreTimestamp;
+export { Timestamp };
