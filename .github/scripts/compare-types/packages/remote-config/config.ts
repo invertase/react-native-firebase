@@ -19,11 +19,9 @@ const config: PackageConfig = {
   // ---------------------------------------------------------------------------
   // Name mapping
   // ---------------------------------------------------------------------------
-  // ValueSource is defined as `ValueSource` in the source files of both
-  // packages, but the RN Firebase index.d.ts re-exports it under the alias
-  // `ModularValueSource` to avoid a naming clash with the namespaced API.
-  // Since we compare source files directly, both sides see `ValueSource`
-  // and they match — no mapping entry is needed here.
+  // ValueSource exists in both packages. In RN Firebase we export only the
+  // value (from modular/statics) and use the value as the type; no type alias.
+  // Both sides see `ValueSource` and they match — no mapping entry needed.
   nameMapping: {},
 
   // ---------------------------------------------------------------------------

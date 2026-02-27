@@ -17,28 +17,13 @@
 
 import './polyfills';
 
-export type {
-  ConfigUpdate,
-  ConfigUpdateObserver,
-  ConfigValues,
-  CustomSignals,
-  FetchResponse,
-  FetchStatus,
-  FetchType,
-  FirebaseExperimentDescription,
-  FirebaseRemoteConfigObject,
-  LogLevel,
-  RemoteConfig,
-  RemoteConfigLogLevel,
-  RemoteConfigOptions,
-  RemoteConfigSettings,
-  Unsubscribe,
-  Value,
-  ValueSource as ModularValueSource,
-} from './types/modular';
+// Export modular types from types/modular
+export type * from './types/modular';
 
+// Export modular API functions
 export * from './modular';
 
+// Export namespaced API
 export type { FirebaseRemoteConfigTypes } from './types/namespaced';
 export * from './namespaced';
 export { default } from './namespaced';
