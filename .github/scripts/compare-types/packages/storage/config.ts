@@ -25,19 +25,6 @@ const config: PackageConfig = {
   // Missing in RN Firebase
   // ---------------------------------------------------------------------------
   missingInRN: [
-    {
-      name: 'StorageError',
-      reason:
-        'The firebase-js-sdk exposes a typed `StorageError` class extending `FirebaseError`. ' +
-        'RN Firebase uses the native bridge error type (`NativeFirebaseError`) for all ' +
-        'Firebase errors instead of a custom class.',
-    },
-    {
-      name: 'StorageErrorCode',
-      reason:
-        'Companion enum to `StorageError` which is not exposed in the RN Firebase ' +
-        'modular API. Error codes are surfaced via the native bridge error structure.',
-    },
   ],
 
   // ---------------------------------------------------------------------------
