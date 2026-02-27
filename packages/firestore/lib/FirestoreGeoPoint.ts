@@ -15,9 +15,14 @@
  *
  */
 
-import { isFinite, isNumber, isUndefined } from '@react-native-firebase/app/dist/module/common';
+import {
+  isFinite,
+  isNumber,
+  isUndefined,
+  isObject,
+} from '@react-native-firebase/app/dist/module/common';
 
-export default class FirestoreGeoPoint {
+export default class GeoPoint {
   _latitude: number;
   _longitude: number;
 
@@ -60,8 +65,8 @@ export default class FirestoreGeoPoint {
     return this._longitude;
   }
 
-  isEqual(other: FirestoreGeoPoint): boolean {
-    if (!(other instanceof FirestoreGeoPoint)) {
+  isEqual(other: GeoPoint): boolean {
+    if (!(other instanceof GeoPoint)) {
       throw new Error(
         "firebase.firestore.GeoPoint.isEqual(*) 'other' expected an instance of GeoPoint.",
       );
@@ -70,10 +75,42 @@ export default class FirestoreGeoPoint {
     return this._latitude === other._latitude && this._longitude === other._longitude;
   }
 
-  toJSON(): { latitude: number; longitude: number } {
+  _compareTo(other: GeoPoint): number {
+    if (this._latitude < other._latitude) return -1;
+    if (this._latitude > other._latitude) return 1;
+    if (this._longitude < other._longitude) return -1;
+    if (this._longitude > other._longitude) return 1;
+    return 0;
+  }
+
+  static _jsonSchemaVersion: string = 'firestore/geoPoint/1.0';
+  static _jsonSchema = {
+    type: GeoPoint._jsonSchemaVersion,
+    latitude: 'number',
+    longitude: 'number',
+  };
+
+  toJSON(): { latitude: number; longitude: number; type: string } {
     return {
       latitude: this._latitude,
       longitude: this._longitude,
+      type: GeoPoint._jsonSchemaVersion,
     };
+  }
+
+  static fromJSON(json: object): GeoPoint {
+    if (
+      isObject(json) &&
+      (json as { type?: unknown }).type === GeoPoint._jsonSchemaVersion &&
+      typeof (json as { latitude?: unknown }).latitude === 'number' &&
+      typeof (json as { longitude?: unknown }).longitude === 'number'
+    ) {
+      return new GeoPoint(
+        (json as { latitude: number }).latitude,
+        (json as { longitude: number }).longitude,
+      );
+    }
+
+    throw new Error('Unexpected error creating GeoPoint from JSON.');
   }
 }

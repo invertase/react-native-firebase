@@ -15,6 +15,6 @@
  *
  */
 
-import FirestoreGeoPoint from '../FirestoreGeoPoint';
+import GeoPoint from '../FirestoreGeoPoint';
 
-export const GeoPoint = FirestoreGeoPoint;
+export { GeoPoint };
