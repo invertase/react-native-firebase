@@ -117,17 +117,44 @@ export function printReport(results: ComparisonResult[]): boolean {
       );
     }
 
+    // --- Stale config entries ---
+    const totalStale =
+      result.staleConfigMissing.length +
+      result.staleConfigExtra.length +
+      result.staleConfigDifferentShape.length;
+
+    if (totalStale > 0) {
+      const staleNames = [
+        ...result.staleConfigMissing,
+        ...result.staleConfigExtra,
+        ...result.staleConfigDifferentShape,
+      ];
+      console.log(`\n  ${c(RED, `Stale config entries`)} (${totalStale}):`);
+      for (const name of staleNames) {
+        console.log(
+          `${c(RED, '  ✗')} ${c(BOLD, name)}${c(RED, ' [STALE]')}${c(DIM, '  — now matches the firebase-js-sdk; remove from config.ts')}`,
+        );
+      }
+    }
+
     // --- Summary ---
     const totalUndoc =
       result.undocumentedMissing.length +
       result.undocumentedExtra.length +
       result.undocumentedDifferentShape.length;
 
-    if (totalUndoc > 0) {
+    if (totalUndoc > 0 || totalStale > 0) {
       hasFailures = true;
-      console.log(
-        `\n  ${c(RED, `✗ ${totalUndoc} undocumented difference(s) — add them to config.ts with a reason`)}`,
-      );
+      if (totalUndoc > 0) {
+        console.log(
+          `\n  ${c(RED, `✗ ${totalUndoc} undocumented difference(s) — add them to config.ts with a reason`)}`,
+        );
+      }
+      if (totalStale > 0) {
+        console.log(
+          `\n  ${c(RED, `✗ ${totalStale} stale config entry/entries — remove them from config.ts`)}`,
+        );
+      }
     } else {
       console.log(
         `\n  ${c(GREEN, `✓ All ${totalDiffs} difference(s) are documented in config.ts`)}`,
