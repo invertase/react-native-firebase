@@ -102,7 +102,6 @@ export type RemoteConfigWithDeprecationArg = RemoteConfig & {
   activate(_dep?: unknown): Promise<boolean>;
   ensureInitialized(_dep?: unknown): Promise<void>;
   fetchAndActivate(_dep?: unknown): Promise<boolean>;
-  fetchConfig?(_dep?: unknown): Promise<void>;
   getAll(_dep?: unknown): ConfigValues;
   getBoolean(key: string, _dep?: unknown): boolean;
   getNumber(key: string, _dep?: unknown): number;

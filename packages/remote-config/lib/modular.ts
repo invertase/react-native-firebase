@@ -81,14 +81,18 @@ export function fetchAndActivate(remoteConfig: RemoteConfig): Promise<boolean> {
 /**
  * Fetches and caches configuration from the Remote Config service.
  * @param remoteConfig - RemoteConfig instance
+ * @param expirationDurationSeconds - Optional. Time in seconds before the fetch expires.
  * @returns Promise<void>
  */
-export function fetchConfig(remoteConfig: RemoteConfig): Promise<void> {
-  const r = rc(remoteConfig);
-  if (r.fetchConfig) {
-    return r.fetchConfig.call(remoteConfig, MODULAR_DEPRECATION_ARG);
-  }
-  return Promise.resolve();
+export function fetchConfig(
+  remoteConfig: RemoteConfig,
+  expirationDurationSeconds?: number,
+): Promise<void> {
+  return rc(remoteConfig).fetch.call(
+    remoteConfig,
+    expirationDurationSeconds,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -214,23 +218,6 @@ export function setConfigSettings(
   settings: RemoteConfigSettings,
 ): Promise<void> {
   return rc(remoteConfig).setConfigSettings.call(remoteConfig, settings, MODULAR_DEPRECATION_ARG);
-}
-
-/**
- * Fetches parameter values for your app.
- * @param remoteConfig - RemoteConfig instance
- * @param expirationDurationSeconds - number
- * @returns Promise<void>
- */
-export function fetch(
-  remoteConfig: RemoteConfig,
-  expirationDurationSeconds?: number,
-): Promise<void> {
-  return rc(remoteConfig).fetch.call(
-    remoteConfig,
-    expirationDurationSeconds,
-    MODULAR_DEPRECATION_ARG,
-  );
 }
 
 /**

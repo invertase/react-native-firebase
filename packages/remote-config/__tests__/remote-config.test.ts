@@ -35,7 +35,6 @@ import {
   lastFetchStatus,
   reset,
   setConfigSettings,
-  fetch,
   setDefaults,
   setDefaultsFromResource,
   onConfigUpdate,
@@ -225,10 +224,6 @@ describe('remoteConfig()', function () {
       expect(setConfigSettings).toBeDefined();
     });
 
-    it('`fetch` function is properly exposed to end user', function () {
-      expect(fetch).toBeDefined();
-    });
-
     it('`setDefaults` function is properly exposed to end user', function () {
       expect(setDefaults).toBeDefined();
     });
@@ -385,12 +380,12 @@ describe('remoteConfig()', function () {
           );
         });
 
-        it('fetch()', function () {
+        it('fetchConfig()', function () {
           const remoteConfig = getRemoteConfig() as RemoteConfigWithDeprecationArg;
           remoteConfigV9Deprecation(
-            () => fetch(remoteConfig, 12),
-            () => remoteConfig.fetch(12),
-            'fetch',
+            () => fetchConfig(remoteConfig),
+            () => remoteConfig.fetch(),
+            'fetchConfig',
           );
         });
 

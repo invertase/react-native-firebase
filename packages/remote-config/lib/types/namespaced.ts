@@ -538,7 +538,7 @@ export namespace FirebaseRemoteConfigTypes {
      * ```
      *
      * @param expirationDurationSeconds Duration in seconds to cache the data for. To skip cache, use a duration of 0.
-     * @deprecated Use the modular API fetch() from '@react-native-firebase/remote-config' instead.
+     * @deprecated Use the modular API fetchConfig() from '@react-native-firebase/remote-config' instead.
      */
     fetch(expirationDurationSeconds?: number): Promise<void>;
 

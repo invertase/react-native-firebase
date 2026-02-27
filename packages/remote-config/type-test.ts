@@ -1,4 +1,7 @@
-import type { CustomSignals, FirebaseRemoteConfigTypes } from '@react-native-firebase/remote-config';
+import type {
+  CustomSignals,
+  FirebaseRemoteConfigTypes,
+} from '@react-native-firebase/remote-config';
 import remoteConfig, {
   firebase,
   getRemoteConfig,
@@ -18,7 +21,6 @@ import remoteConfig, {
   lastFetchStatus,
   reset,
   setConfigSettings,
-  fetch,
   setDefaults,
   setDefaultsFromResource,
   onConfigUpdate,
@@ -51,7 +53,9 @@ console.log(firebase.remoteConfig.LastFetchStatus.THROTTLED);
 console.log(firebase.remoteConfig.LastFetchStatus.NO_FETCH_YET);
 
 // checks statics exist on defaultExport
-console.log((remoteConfig as typeof remoteConfig & { firebase: typeof firebase }).firebase.SDK_VERSION);
+console.log(
+  (remoteConfig as typeof remoteConfig & { firebase: typeof firebase }).firebase.SDK_VERSION,
+);
 
 // checks root exists
 console.log(firebase.SDK_VERSION);
@@ -70,12 +74,14 @@ console.log(remoteConfigInstance.lastFetchStatus);
 console.log(remoteConfigInstance.settings);
 console.log(remoteConfigInstance.defaultConfig);
 
-remoteConfigInstance.setConfigSettings({
-  minimumFetchIntervalMillis: 30000,
-  fetchTimeoutMillis: 60000,
-}).then(() => {
-  console.log('Config settings set');
-});
+remoteConfigInstance
+  .setConfigSettings({
+    minimumFetchIntervalMillis: 30000,
+    fetchTimeoutMillis: 60000,
+  })
+  .then(() => {
+    console.log('Config settings set');
+  });
 
 remoteConfigInstance.settings = {
   minimumFetchIntervalMillis: 60000,
@@ -161,7 +167,9 @@ remoteConfigInstance.reset().then(() => {
 const modularRemoteConfig1 = getRemoteConfig();
 console.log(modularRemoteConfig1.app.name);
 
-const modularRemoteConfig2 = getRemoteConfig(firebase.app() as Parameters<typeof getRemoteConfig>[0]);
+const modularRemoteConfig2 = getRemoteConfig(
+  firebase.app() as Parameters<typeof getRemoteConfig>[0],
+);
 console.log(modularRemoteConfig2.app.name);
 
 activate(modularRemoteConfig1).then((activated: boolean) => {
@@ -213,12 +221,12 @@ setConfigSettings(modularRemoteConfig1, {
   console.log('Modular config settings set');
 });
 
-fetch(modularRemoteConfig1).then(() => {
-  console.log('Modular fetch');
+fetchConfig(modularRemoteConfig1).then(() => {
+  console.log('Modular fetch config');
 });
 
-fetch(modularRemoteConfig1, 300).then(() => {
-  console.log('Modular fetch with expiration');
+fetchConfig(modularRemoteConfig1, 300).then(() => {
+  console.log('Modular fetchConfig with expiration');
 });
 
 setDefaults(modularRemoteConfig1, { modularKey: 'modularValue' }).then(() => {

@@ -374,7 +374,8 @@ describe('remoteConfig()', function () {
 
     describe('fetch()', function () {
       it('with expiration provided', async function () {
-        const { getRemoteConfig, ensureInitialized, fetch, LastFetchStatus } = remoteConfigModular;
+        const { getRemoteConfig, ensureInitialized, fetchConfig, LastFetchStatus } =
+          remoteConfigModular;
         const date = Date.now() - 30000;
         const remoteConfig = getRemoteConfig();
         await ensureInitialized(remoteConfig);
@@ -384,14 +385,14 @@ describe('remoteConfig()', function () {
           remoteConfig.fetchTimeMillis.should.be.a.Number();
         }
 
-        await fetch(remoteConfig, 0);
+        await fetchConfig(remoteConfig, 0);
         remoteConfig.lastFetchStatus.should.equal(LastFetchStatus.SUCCESS);
         should.equal(getRemoteConfig().fetchTimeMillis >= date, true);
       });
 
       it('without expiration provided', function () {
-        const { getRemoteConfig, fetch } = remoteConfigModular;
-        return fetch(getRemoteConfig());
+        const { getRemoteConfig, fetchConfig } = remoteConfigModular;
+        return fetchConfig(getRemoteConfig());
       });
     });
 
@@ -404,14 +405,14 @@ describe('remoteConfig()', function () {
 
     describe('activate()', function () {
       it('with expiration provided', async function () {
-        const { getRemoteConfig, fetch, activate } = remoteConfigModular;
-        await fetch(getRemoteConfig(), 0);
+        const { getRemoteConfig, fetchConfig, activate } = remoteConfigModular;
+        await fetchConfig(getRemoteConfig(), 0);
         (await activate(getRemoteConfig())).should.be.a.Boolean();
       });
 
       it('without expiration provided', async function () {
-        const { getRemoteConfig, fetch, activate } = remoteConfigModular;
-        await fetch(getRemoteConfig());
+        const { getRemoteConfig, fetchConfig, activate } = remoteConfigModular;
+        await fetchConfig(getRemoteConfig());
         (await activate(getRemoteConfig())).should.be.a.Boolean();
       });
     });

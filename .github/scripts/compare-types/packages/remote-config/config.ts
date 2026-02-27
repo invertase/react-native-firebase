@@ -66,13 +66,6 @@ const config: PackageConfig = {
         'separately from types/modular.d.ts.',
     },
     {
-      name: 'fetch',
-      reason:
-        'Legacy RN Firebase fetch API that accepts an optional ' +
-        '`expirationDurationSeconds` parameter. Prefer `fetchConfig()` which ' +
-        'matches the firebase-js-sdk API. Kept for backwards compatibility.',
-    },
-    {
       name: 'fetchTimeMillis',
       reason:
         'Getter function returning the last fetch timestamp. In the ' +
