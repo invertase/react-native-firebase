@@ -67,6 +67,9 @@ export interface FirebaseRemoteConfigObject {
 /**
  * Defines experiment and variant attached to a config parameter.
  *
+ * Web only. Supported in the Firebase JS SDK; not implemented in React Native Firebase
+ * at the moment. These types are reserved for a future web implementation.
+ *
  * @public
  */
 export interface FirebaseExperimentDescription {
@@ -94,8 +97,11 @@ export interface FirebaseExperimentDescription {
 /**
  * Defines a successful response (200 or 304).
  *
- * <p>Modeled after the native `Response` interface, but simplified for Remote Config's
+ * Modeled after the native `Response` interface, but simplified for Remote Config's
  * use case.
+ *
+ * Web only. Supported in the Firebase JS SDK; not implemented in React Native Firebase
+ * at the moment. Reserved for a future web implementation.
  *
  * @public
  */
@@ -141,6 +147,9 @@ export interface FetchResponse {
 
 /**
  * Options for Remote Config initialization.
+ *
+ * Web only. Supported in the Firebase JS SDK; not implemented in React Native Firebase
+ * at the moment. Reserved for a future web implementation.
  *
  * @public
  */
