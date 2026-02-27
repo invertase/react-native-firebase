@@ -14,10 +14,8 @@ import type {
   Value,
 } from './types/modular';
 import type {
-  CallbackOrObserver,
   ConfigDefaults,
   ConfigSettings,
-  OnConfigUpdatedListenerCallback,
   RemoteConfigWithDeprecationArg,
 } from './types/internal';
 
@@ -258,20 +256,6 @@ export function onConfigUpdate(
   observer: ConfigUpdateObserver,
 ): Unsubscribe {
   return rc(remoteConfig).onConfigUpdate.call(remoteConfig, observer, MODULAR_DEPRECATION_ARG);
-}
-
-/**
- * Registers a listener to changes in the configuration.
- * @param remoteConfig - RemoteConfig instance
- * @param callback - function called on config change
- * @returns unsubscribe listener
- * @deprecated use official firebase-js-sdk onConfigUpdate now that web supports realtime
- */
-export function onConfigUpdated(
-  remoteConfig: RemoteConfig,
-  callback: CallbackOrObserver<OnConfigUpdatedListenerCallback>,
-): () => void {
-  return rc(remoteConfig).onConfigUpdated.call(remoteConfig, callback, MODULAR_DEPRECATION_ARG);
 }
 
 /**
