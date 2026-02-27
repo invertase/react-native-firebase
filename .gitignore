@@ -587,3 +587,4 @@ vertexai-sdk-test-data*
 mocks-lookup.ts
 
 .nx/
+.claude/
