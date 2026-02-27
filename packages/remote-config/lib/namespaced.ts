@@ -168,7 +168,7 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> {
     if (isIOS || isWeb) {
       return Promise.resolve(null);
     }
-    return this._promiseWithConstants(this.native.reset()) as Promise<null>;
+    return this._promiseWithConstants(this.native.reset());
   }
 
   setConfigSettings(settings: FirebaseRemoteConfigTypes.ConfigSettings): Promise<void> {
@@ -207,9 +207,7 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> {
       }
     }
 
-    return this._promiseWithConstants(
-      this.native.setConfigSettings(updatedSettings),
-    ) as Promise<void>;
+    return this._promiseWithConstants(this.native.setConfigSettings(updatedSettings));
   }
 
   /**
@@ -234,7 +232,7 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> {
 
     return this._promiseWithConstants(
       this.native.fetch(expirationDurationSeconds !== undefined ? expirationDurationSeconds : -1),
-    ) as Promise<void>;
+    );
   }
 
   fetchAndActivate(): Promise<boolean> {
@@ -242,7 +240,7 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> {
   }
 
   ensureInitialized(): Promise<void> {
-    return this._promiseWithConstants(this.native.ensureInitialized()) as Promise<void>;
+    return this._promiseWithConstants(this.native.ensureInitialized());
   }
 
   /**
@@ -257,7 +255,7 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> {
       throw new Error(`firebase.remoteConfig().${apiCalled}(): 'defaults' must be an object.`);
     }
 
-    return this._promiseWithConstants(this.native.setDefaults(defaults)) as Promise<null>;
+    return this._promiseWithConstants(this.native.setDefaults(defaults));
   }
 
   /**
@@ -271,9 +269,7 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> {
       );
     }
 
-    return this._promiseWithConstants(
-      this.native.setDefaultsFromResource(resourceName),
-    ) as Promise<null>;
+    return this._promiseWithConstants(this.native.setDefaultsFromResource(resourceName));
   }
 
   /**

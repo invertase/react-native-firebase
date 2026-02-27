@@ -38,7 +38,6 @@ import {
   setDefaults,
   setDefaultsFromResource,
   onConfigUpdate,
-  onConfigUpdated,
   setCustomSignals,
   LastFetchStatus,
   ValueSource,
@@ -236,10 +235,6 @@ describe('remoteConfig()', function () {
       expect(onConfigUpdate).toBeDefined();
     });
 
-    it('`onConfigUpdated` function is properly exposed to end user', function () {
-      expect(onConfigUpdated).toBeDefined();
-    });
-
     it('`setCustomSignals` function is properly exposed to end user', function () {
       expect(setCustomSignals).toBeDefined();
     });
@@ -404,15 +399,6 @@ describe('remoteConfig()', function () {
             () => setDefaultsFromResource(remoteConfig, 'foo'),
             () => remoteConfig.setDefaultsFromResource('foo'),
             'setDefaultsFromResource',
-          );
-        });
-
-        it('onConfigUpdated()', function () {
-          const remoteConfig = getRemoteConfig() as RemoteConfigWithDeprecationArg;
-          remoteConfigV9Deprecation(
-            () => onConfigUpdated(remoteConfig, () => {}),
-            () => remoteConfig.onConfigUpdated(() => {}),
-            'onConfigUpdated',
           );
         });
       });
