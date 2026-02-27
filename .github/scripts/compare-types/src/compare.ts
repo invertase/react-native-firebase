@@ -139,6 +139,23 @@ export function compare(
     reason: config.differentShape?.find(c => c.name === d.name)?.reason,
   }));
 
+  // --- Stale config entries: documented but no longer a real difference ---
+  const actualMissingSet = new Set(missingInRN);
+  const actualExtraSet = new Set(extraInRN);
+  const actualDiffSet = new Set(differentShape.map(d => d.name));
+
+  const staleConfigMissing = (config.missingInRN ?? [])
+    .map(d => d.name)
+    .filter(name => !actualMissingSet.has(name));
+
+  const staleConfigExtra = (config.extraInRN ?? [])
+    .map(d => d.name)
+    .filter(name => !actualExtraSet.has(name));
+
+  const staleConfigDifferentShape = (config.differentShape ?? [])
+    .map(d => d.name)
+    .filter(name => !actualDiffSet.has(name));
+
   return {
     packageName,
     missing: missingEntries,
@@ -149,5 +166,8 @@ export function compare(
     undocumentedDifferentShape: differentShape
       .map(d => d.name)
       .filter(n => !docDiff.has(n)),
+    staleConfigMissing,
+    staleConfigExtra,
+    staleConfigDifferentShape,
   };
 }
