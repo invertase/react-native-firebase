@@ -19,7 +19,7 @@ import { getApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 import type { FirebaseApp } from '@react-native-firebase/app';
 import type {
-  Storage,
+  FirebaseStorage,
   StorageReference,
   FullMetadata,
   ListResult,
@@ -42,7 +42,7 @@ type WithModularDeprecationArg<F> = F extends (...args: infer P) => infer R
  * @param bucketUrl - Storage bucket URL. Optional.
  * @returns {Storage}
  */
-export function getStorage(app?: FirebaseApp, bucketUrl?: string): Storage {
+export function getStorage(app?: FirebaseApp, bucketUrl?: string): FirebaseStorage {
   if (app) {
     if (bucketUrl != null) {
       return getApp(app.name).storage(bucketUrl);
@@ -67,7 +67,7 @@ export function getStorage(app?: FirebaseApp, bucketUrl?: string): Storage {
  * @returns {void}
  */
 export function connectStorageEmulator(
-  storage: Storage,
+  storage: FirebaseStorage,
   host: string,
   port: number,
   options?: EmulatorMockTokenOptions,
@@ -86,7 +86,7 @@ export function connectStorageEmulator(
  * is provided, the returned reference will be the bucket root path. Optional.
  * @returns {StorageReference}
  */
-export function ref(storage: Storage, path?: string): StorageReference {
+export function ref(storage: FirebaseStorage, path?: string): StorageReference {
   return (
     (storage as StorageInternal).ref as WithModularDeprecationArg<StorageInternal['ref']>
   ).call(storage, path, MODULAR_DEPRECATION_ARG);
@@ -289,7 +289,7 @@ export function uploadString(
  * @param url - A storage bucket URL pointing to a single file or location. Must be either a `gs://` url or an `http` url. Not available on web.
  * @returns {StorageReference}
  */
-export function refFromURL(storage: Storage, url: string): StorageReference {
+export function refFromURL(storage: FirebaseStorage, url: string): StorageReference {
   return (
     (storage as StorageInternal).refFromURL as WithModularDeprecationArg<
       StorageInternal['refFromURL']
@@ -303,7 +303,7 @@ export function refFromURL(storage: Storage, url: string): StorageReference {
  * @param time - The new maximum operation retry time in milliseconds.
  * @returns {Promise<void>}
  */
-export function setMaxOperationRetryTime(storage: Storage, time: number): Promise<void> {
+export function setMaxOperationRetryTime(storage: FirebaseStorage, time: number): Promise<void> {
   return (
     (storage as StorageInternal).setMaxOperationRetryTime as WithModularDeprecationArg<
       StorageInternal['setMaxOperationRetryTime']
@@ -317,7 +317,7 @@ export function setMaxOperationRetryTime(storage: Storage, time: number): Promis
  * @param time - The new maximum operation retry time in milliseconds.
  * @returns {Promise<void>}
  */
-export function setMaxUploadRetryTime(storage: Storage, time: number): Promise<void> {
+export function setMaxUploadRetryTime(storage: FirebaseStorage, time: number): Promise<void> {
   return (
     (storage as StorageInternal).setMaxUploadRetryTime as WithModularDeprecationArg<
       StorageInternal['setMaxUploadRetryTime']
@@ -390,7 +390,7 @@ export function child(storageRef: StorageReference, path: string): StorageRefere
  * @param time - The new maximum download retry time in milliseconds.
  * @returns {Promise<void>}
  */
-export function setMaxDownloadRetryTime(storage: Storage, time: number): Promise<void> {
+export function setMaxDownloadRetryTime(storage: FirebaseStorage, time: number): Promise<void> {
   return (
     (storage as StorageInternal).setMaxDownloadRetryTime as WithModularDeprecationArg<
       StorageInternal['setMaxDownloadRetryTime']

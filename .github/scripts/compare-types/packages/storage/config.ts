@@ -19,12 +19,7 @@ const config: PackageConfig = {
   // ---------------------------------------------------------------------------
   // Name mapping
   // ---------------------------------------------------------------------------
-  nameMapping: {
-    // The firebase-js-sdk calls the module instance `FirebaseStorage`;
-    // RN Firebase calls it `Storage` to avoid a naming clash with the
-    // namespaced API class. Both represent the same storage module instance.
-    FirebaseStorage: 'Storage',
-  },
+  nameMapping: {},
 
   // ---------------------------------------------------------------------------
   // Missing in RN Firebase
@@ -155,18 +150,11 @@ const config: PackageConfig = {
     {
       name: 'FirebaseStorage',
       reason:
-        'The RN Firebase `Storage` interface adds a `maxDownloadRetryTime` property ' +
-        '(android & iOS only) not present in the firebase-js-sdk `FirebaseStorage`. ' +
-        'Additionally, `maxUploadRetryTime` and `maxOperationRetryTime` are declared ' +
-        '`readonly` in RN Firebase (they are set via dedicated functions) whereas the ' +
-        'firebase-js-sdk declares them as mutable.',
-    },
-    {
-      name: 'StorageReference',
-      reason:
-        'The `storage` member type is `FirebaseStorage` in the firebase-js-sdk and ' +
-        '`Storage` in RN Firebase — both refer to the same storage module instance ' +
-        'under different names (see nameMapping).',
+        'RN Firebase adds a `maxDownloadRetryTime` property (android & iOS only) ' +
+        'not present in the firebase-js-sdk `FirebaseStorage`. Additionally, ' +
+        '`maxUploadRetryTime` and `maxOperationRetryTime` are declared `readonly` ' +
+        'in RN Firebase (they are set via dedicated modular functions) whereas the ' +
+        'firebase-js-sdk declares them as mutable properties.',
     },
     {
       name: 'StorageObserver',
@@ -191,26 +179,11 @@ const config: PackageConfig = {
         'between absent and null tokens.',
     },
     {
-      name: 'getStorage',
-      reason:
-        'Returns `Storage` in RN Firebase instead of `FirebaseStorage` — both refer ' +
-        'to the same storage module instance under different names (see nameMapping).',
-    },
-    {
       name: 'connectStorageEmulator',
       reason:
-        'First parameter is typed as `Storage` instead of `FirebaseStorage` (see ' +
-        'nameMapping). The optional `options` parameter type also differs: the ' +
-        'firebase-js-sdk accepts `{ mockUserToken?: EmulatorMockTokenOptions | string }` ' +
-        'while RN Firebase accepts its own `EmulatorMockTokenOptions` interface.',
-    },
-    {
-      name: 'ref',
-      reason:
-        'The firebase-js-sdk provides two overloaded signatures (one accepting only ' +
-        '`FirebaseStorage`, one accepting `FirebaseStorage | StorageReference`). RN ' +
-        'Firebase exposes a single signature accepting `Storage`. The overloaded form ' +
-        'that accepts a `StorageReference` is covered by `refFromURL` and `child`.',
+        'The optional `options` parameter type differs: the firebase-js-sdk accepts ' +
+        '`{ mockUserToken?: EmulatorMockTokenOptions | string }` (an inline object ' +
+        'literal) while RN Firebase accepts its own `EmulatorMockTokenOptions` interface.',
     },
     {
       name: 'getStream',

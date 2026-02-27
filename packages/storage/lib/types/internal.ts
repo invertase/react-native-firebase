@@ -17,7 +17,7 @@
 
 import type { ModuleConfig } from '@react-native-firebase/app/dist/module/types/internal';
 import type {
-  Storage,
+  FirebaseStorage,
   StorageReference,
   EmulatorMockTokenOptions,
   SettableMetadata,
@@ -33,7 +33,7 @@ import type EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitte
  * Internal Storage type with access to private properties.
  * Used internally by StorageReference and other internal classes.
  */
-export type StorageInternal = Storage & {
+export type StorageInternal = FirebaseStorage & {
   native: RNFBStorageModule;
   _customUrlOrRegion: string | null;
   emitter: EventEmitter;

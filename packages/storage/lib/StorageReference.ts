@@ -42,7 +42,7 @@ import type {
   ListOptions,
   FullMetadata,
   Task,
-  Storage,
+  FirebaseStorage,
 } from './types/storage';
 import type { ListResultInternal, StorageInternal } from './types/internal';
 
@@ -96,7 +96,7 @@ export default class Reference extends ReferenceBase implements StorageReference
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#storage
    */
-  get storage(): Storage {
+  get storage(): FirebaseStorage {
     return this._storage;
   }
 

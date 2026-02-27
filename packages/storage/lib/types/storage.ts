@@ -25,7 +25,7 @@ export type NativeFirebaseError = ReactNativeFirebase.NativeFirebaseError;
 /**
  * Storage module instance
  */
-export interface Storage {
+export interface FirebaseStorage {
   /** The FirebaseApp this module is associated with */
   app: FirebaseApp;
 
