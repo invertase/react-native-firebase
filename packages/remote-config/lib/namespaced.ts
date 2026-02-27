@@ -55,7 +55,7 @@ const statics = {
 const namespace = 'remoteConfig';
 const nativeModuleName = 'RNFBConfigModule';
 
-class FirebaseConfigModule extends FirebaseModule {
+class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> {
   _settings: FirebaseRemoteConfigTypes.ConfigSettings;
   _lastFetchTime: number;
   _values: Record<string, { value: string; source: string }>;

@@ -128,3 +128,32 @@ export type RemoteConfigWithSetCustomSignalsNative = RemoteConfig & {
   _promiseWithConstants: (p: Promise<{ result: unknown; constants: unknown }>) => Promise<unknown>;
   native: { setCustomSignals: (s: CustomSignals) => Promise<unknown> };
 };
+
+/**
+ * Wrapped native module interface for Remote Config.
+ *
+ * Note: React Native Firebase internally wraps native methods and auto-prepends the app name
+ * when `hasMultiAppSupport` is enabled. This interface represents the *wrapped* module shape
+ * that is exposed as `this.native` within FirebaseModule subclasses.
+ */
+export interface RNFBConfigModule {
+  reset(): Promise<NativeConstantsResult>;
+  setConfigSettings(settings: {
+    fetchTimeout: number;
+    minimumFetchInterval: number;
+  }): Promise<NativeConstantsResult>;
+  activate(): Promise<NativeConstantsResult>;
+  fetch(expirationDurationSeconds: number): Promise<NativeConstantsResult>;
+  fetchAndActivate(): Promise<NativeConstantsResult>;
+  ensureInitialized(): Promise<NativeConstantsResult>;
+  setDefaults(defaults: ConfigDefaults): Promise<NativeConstantsResult>;
+  setDefaultsFromResource(resourceName: string): Promise<NativeConstantsResult>;
+  onConfigUpdated(): void;
+  removeConfigUpdateRegistration(): void;
+}
+
+declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
+  interface ReactNativeFirebaseNativeModules {
+    RNFBConfigModule: RNFBConfigModule;
+  }
+}
