@@ -133,14 +133,6 @@ const config: PackageConfig = {
         'Re-export of the RN Firebase native bridge error type used in place of ' +
         '`StorageError` / `FirebaseError`. No equivalent in the firebase-js-sdk.',
     },
-    {
-      name: 'EmulatorMockTokenOptions',
-      reason:
-        'The firebase-js-sdk re-exports `EmulatorMockTokenOptions` from `@firebase/util` ' +
-        'which cannot be resolved from the standalone SDK snapshot file. RN Firebase ' +
-        'defines its own simplified version (`{ mockUserToken?: string | null }`) for ' +
-        'the emulator options parameter.',
-    },
   ],
 
   // ---------------------------------------------------------------------------
@@ -177,6 +169,15 @@ const config: PackageConfig = {
         '`pageToken` is typed as `string | null` in the firebase-js-sdk and as ' +
         '`string` in RN Firebase. The RN implementation does not need to distinguish ' +
         'between absent and null tokens.',
+    },
+    {
+      name: 'EmulatorMockTokenOptions',
+      reason:
+        'The firebase-js-sdk `EmulatorMockTokenOptions` (from `@firebase/util`) is a ' +
+        'complex type `({ user_id: string } | { sub: string }) & Partial<FirebaseIdToken>` ' +
+        'representing a full mock JWT payload. RN Firebase defines a simplified version ' +
+        '`{ mockUserToken?: string | null }` that only accepts a pre-encoded token string, ' +
+        'since the native bridge does not need to construct JWT payloads directly.',
     },
     {
       name: 'connectStorageEmulator',
