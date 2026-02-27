@@ -15,7 +15,13 @@
  *
  */
 
-export default class FirestorePersistentCacheIndexManager {
+/**
+ * A `PersistentCacheIndexManager` for configuring persistent cache indexes used
+ * for local query execution.
+ *
+ * To use, call `getPersistentCacheIndexManager()` to get an instance.
+ */
+export class PersistentCacheIndexManager {
   _firestore: any;
 
   constructor(firestore: any) {
@@ -34,3 +40,5 @@ export default class FirestorePersistentCacheIndexManager {
     await this._firestore.native.persistenceCacheIndexManager(2);
   }
 }
+
+export default PersistentCacheIndexManager;

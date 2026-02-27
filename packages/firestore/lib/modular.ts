@@ -33,7 +33,6 @@ import type {
   FirestoreSettings,
   FirebaseApp,
   EmulatorMockTokenOptions,
-  PersistentCacheIndexManager,
   Query,
   SetOptions,
   Transaction,
@@ -56,6 +55,7 @@ import type {
   QueryWithAggregateInternals,
   ReferenceInternal,
 } from './types/internal';
+import { PersistentCacheIndexManager } from './FirestorePersistentCacheIndexManager';
 import type { FieldPath } from './modular/FieldPath';
 import type { Unsubscribe } from './modular/snapshot';
 

@@ -16,7 +16,6 @@
  */
 
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
-import type { FirebaseFirestoreTypes } from '../index';
 import type { FieldPath } from '../modular/FieldPath';
 import type { FieldValue } from '../modular/FieldValue';
 import type { AggregateField } from '../FirestoreAggregate';
@@ -94,8 +93,6 @@ export interface PrivateSettings extends FirestoreSettings {
   emulatorOptions?: { mockUserToken?: EmulatorMockTokenOptions | string };
 }
 
-// Core namespaced aliases referenced by modular wrappers.
-export type PersistentCacheIndexManager = FirebaseFirestoreTypes.PersistentCacheIndexManager;
 export type AggregateType = 'count' | 'avg' | 'sum';
 export type AggregateFieldType = AggregateField<number> | AggregateField<number | null>;
 export interface AggregateSpec {
@@ -214,7 +211,10 @@ export type UnionToIntersection<U> = (U extends unknown ? (k: U) => void : never
   : never;
 
 export type AddPrefixToKeys<Prefix extends string, T extends Record<string, unknown>> = {
-  [K in keyof T & string as `${Prefix}.${K}`]+?: T[K];
+  // `string extends K` detects index signatures (e.g. `{[key: string]: bool}`).
+  // A field path like `foo.[string]` matches `foo.bar` or any sub-path, so we
+  // must widen to `any` to allow arbitrary sub-path property types.
+  [K in keyof T & string as `${Prefix}.${K}`]+?: string extends K ? any : T[K];
 };
 
 export type ChildUpdateFields<K extends string, V> =

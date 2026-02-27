@@ -22,7 +22,6 @@ import type {
   Firestore,
   FirestoreSettings,
   LoadBundleTask,
-  PersistentCacheIndexManager,
   Query,
   SetOptions,
   Transaction,
@@ -31,6 +30,7 @@ import type {
   AggregateType,
   PartialWithFieldValue,
 } from './firestore';
+import type { PersistentCacheIndexManager } from '../FirestorePersistentCacheIndexManager';
 import type { QueryConstraint } from '../modular/query';
 import type { QuerySnapshot } from '../modular/snapshot';
 import FirestoreBlob from 'lib/FirestoreBlob';
