@@ -69,7 +69,7 @@ export interface StorageReference {
   /**
    * The {@link FirebaseStorage} instance associated with this reference.
    */
-  storage: Storage;
+  storage: FirebaseStorage;
   /**
    * A reference pointing to the parent location of this reference, or null if
    * this reference is the root.
