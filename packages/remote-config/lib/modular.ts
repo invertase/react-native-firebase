@@ -17,6 +17,7 @@ import type {
   ConfigDefaults,
   ConfigSettings,
   RemoteConfigWithDeprecationArg,
+  RemoteConfigWithSetCustomSignalsNative,
 } from './types/internal';
 
 export type { CustomSignals };
@@ -276,12 +277,7 @@ export async function setCustomSignals(
     }
   }
 
-  const rcInstance = remoteConfig as unknown as {
-    _promiseWithConstants: (
-      p: Promise<{ result: unknown; constants: unknown }>,
-    ) => Promise<unknown>;
-    native: { setCustomSignals: (s: CustomSignals) => Promise<unknown> };
-  };
+  const rcInstance = remoteConfig as unknown as RemoteConfigWithSetCustomSignalsNative;
 
   await rcInstance._promiseWithConstants(
     rcInstance.native.setCustomSignals(customSignals) as Promise<{

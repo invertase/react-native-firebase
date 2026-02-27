@@ -47,6 +47,7 @@ export interface ConfigUpdatedEvent {
 import type {
   ConfigUpdateObserver,
   ConfigValues,
+  CustomSignals,
   RemoteConfig,
   RemoteConfigSettings,
   Unsubscribe,
@@ -117,4 +118,13 @@ export type RemoteConfigWithDeprecationArg = RemoteConfig & {
     callback: CallbackOrObserver<OnConfigUpdatedListenerCallback>,
     _dep?: unknown,
   ): () => void;
+};
+
+/**
+ * Internal shape of RemoteConfig used by setCustomSignals to call the native bridge.
+ * Not part of the public API.
+ */
+export type RemoteConfigWithSetCustomSignalsNative = RemoteConfig & {
+  _promiseWithConstants: (p: Promise<{ result: unknown; constants: unknown }>) => Promise<unknown>;
+  native: { setCustomSignals: (s: CustomSignals) => Promise<unknown> };
 };
