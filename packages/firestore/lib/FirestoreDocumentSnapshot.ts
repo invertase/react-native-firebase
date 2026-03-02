@@ -16,9 +16,7 @@
  */
 
 import { isString } from '@react-native-firebase/app/dist/module/common';
-import FirestoreDocumentReference, {
-  provideDocumentSnapshotClass,
-} from './FirestoreDocumentReference';
+import DocumentReference, { provideDocumentSnapshotClass } from './FirestoreDocumentReference';
 import FieldPath, { fromDotSeparatedString } from './FieldPath';
 import FirestorePath from './FirestorePath';
 import SnapshotMetadata from './FirestoreSnapshotMetadata';
@@ -38,7 +36,7 @@ export default class DocumentSnapshot {
   _nativeData: DocumentSnapshotNativeData;
   _data: Record<string, unknown> | undefined;
   _metadata: SnapshotMetadata;
-  _ref: FirestoreDocumentReference;
+  _ref: DocumentReference;
   _exists: boolean;
   _converter: unknown;
 
@@ -50,10 +48,7 @@ export default class DocumentSnapshot {
       nativeData.data as Record<string, unknown> | undefined,
     );
     this._metadata = new SnapshotMetadata(nativeData.metadata ?? [false, false]);
-    this._ref = new FirestoreDocumentReference(
-      firestore as any,
-      FirestorePath.fromName(nativeData.path),
-    );
+    this._ref = new DocumentReference(firestore as any, FirestorePath.fromName(nativeData.path));
     this._exists = nativeData.exists ?? false;
     this._converter = converter;
   }
@@ -66,7 +61,7 @@ export default class DocumentSnapshot {
     return this._metadata;
   }
 
-  get ref(): FirestoreDocumentReference {
+  get ref(): DocumentReference {
     return this._ref;
   }
 

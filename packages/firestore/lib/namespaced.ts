@@ -35,7 +35,7 @@ import {
 import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import CollectionReference from './FirestoreCollectionReference';
-import FirestoreDocumentReference from './FirestoreDocumentReference';
+import DocumentReference from './FirestoreDocumentReference';
 import FirestorePath from './FirestorePath';
 import FirestorePersistentCacheIndexManager from './FirestorePersistentCacheIndexManager';
 import FirestoreQuery from './FirestoreQuery';
@@ -275,7 +275,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
     await this.native.disableNetwork();
   }
 
-  doc(documentPath: string): FirestoreDocumentReference {
+  doc(documentPath: string): DocumentReference {
     if (!isString(documentPath)) {
       throw new Error("firebase.firestore().doc(*) 'documentPath' must be a string value.");
     }
@@ -290,7 +290,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
       throw new Error("firebase.firestore().doc(*) 'documentPath' must point to a document.");
     }
 
-    return createDeprecationProxy(new FirestoreDocumentReference(this, path));
+    return createDeprecationProxy(new DocumentReference(this, path));
   }
 
   async enableNetwork(): Promise<void> {

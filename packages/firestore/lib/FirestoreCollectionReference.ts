@@ -21,9 +21,7 @@ import {
   isNull,
   isUndefined,
 } from '@react-native-firebase/app/dist/module/common';
-import FirestoreDocumentReference, {
-  provideCollectionReferenceClass,
-} from './FirestoreDocumentReference';
+import DocumentReference, { provideCollectionReferenceClass } from './FirestoreDocumentReference';
 import FirestoreQuery from './FirestoreQuery';
 import FirestoreQueryModifiers from './FirestoreQueryModifiers';
 import { validateWithConverter } from './utils';
@@ -44,19 +42,19 @@ export default class CollectionReference extends FirestoreQuery {
     return this._collectionPath.id;
   }
 
-  get parent(): FirestoreDocumentReference | null {
+  get parent(): DocumentReference | null {
     const parent = this._collectionPath.parent();
     if (!parent) {
       return null;
     }
-    return new FirestoreDocumentReference(this._firestore, parent);
+    return new DocumentReference(this._firestore, parent);
   }
 
   get path(): string {
     return this._collectionPath.relativeName;
   }
 
-  add(data: Record<string, unknown>): Promise<FirestoreDocumentReference> {
+  add(data: Record<string, unknown>): Promise<DocumentReference> {
     if (!isObject(data)) {
       throw new Error("firebase.firestore().collection().add(*) 'data' must be an object.");
     }
@@ -65,7 +63,7 @@ export default class CollectionReference extends FirestoreQuery {
     return documentRef.set(data).then(() => Promise.resolve(documentRef));
   }
 
-  doc(documentPath?: string): FirestoreDocumentReference {
+  doc(documentPath?: string): DocumentReference {
     const newPath = documentPath ?? generateFirestoreId();
     const path = this._collectionPath.child(newPath);
 
@@ -75,7 +73,7 @@ export default class CollectionReference extends FirestoreQuery {
       );
     }
 
-    return new FirestoreDocumentReference(this._firestore, path, this._converter);
+    return new DocumentReference(this._firestore, path, this._converter);
   }
 
   withConverter(converter: unknown): CollectionReference {

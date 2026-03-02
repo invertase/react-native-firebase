@@ -16,7 +16,7 @@
  */
 
 import { isObject } from '@react-native-firebase/app/dist/module/common';
-import FirestoreDocumentReference from './FirestoreDocumentReference';
+import DocumentReference from './FirestoreDocumentReference';
 import { parseSetOptions, parseUpdateArgs, applyFirestoreDataConverter } from './utils';
 import { buildNativeMap } from './utils/serialize';
 
@@ -55,9 +55,9 @@ export default class WriteBatch {
     return this._firestore.native.documentBatch(this._writes);
   }
 
-  delete(documentRef: FirestoreDocumentReference): this {
+  delete(documentRef: DocumentReference): this {
     this._verifyNotCommitted('delete');
-    if (!(documentRef instanceof FirestoreDocumentReference)) {
+    if (!(documentRef instanceof DocumentReference)) {
       throw new Error(
         "firebase.firestore.batch().delete(*) 'documentRef' expected instance of a DocumentReference.",
       );
@@ -78,12 +78,12 @@ export default class WriteBatch {
   }
 
   set(
-    documentRef: FirestoreDocumentReference,
+    documentRef: DocumentReference,
     data: Record<string, unknown>,
     options?: unknown,
   ): this {
     this._verifyNotCommitted('set');
-    if (!(documentRef instanceof FirestoreDocumentReference)) {
+    if (!(documentRef instanceof DocumentReference)) {
       throw new Error(
         "firebase.firestore.batch().set(*) 'documentRef' expected instance of a DocumentReference.",
       );
@@ -125,9 +125,9 @@ export default class WriteBatch {
     return this;
   }
 
-  update(documentRef: FirestoreDocumentReference, ...args: unknown[]): this {
+  update(documentRef: DocumentReference, ...args: unknown[]): this {
     this._verifyNotCommitted('update');
-    if (!(documentRef instanceof FirestoreDocumentReference)) {
+    if (!(documentRef instanceof DocumentReference)) {
       throw new Error(
         "firebase.firestore.batch().update(*) 'documentRef' expected instance of a DocumentReference.",
       );

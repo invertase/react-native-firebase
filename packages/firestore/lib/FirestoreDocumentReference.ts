@@ -62,7 +62,7 @@ export function provideDocumentSnapshotClass(
 
 let _id = 0;
 
-export default class FirestoreDocumentReference {
+export default class DocumentReference {
   _firestore: any;
   _documentPath: import('./FirestorePath').default;
   _converter: unknown;
@@ -152,8 +152,8 @@ export default class FirestoreDocumentReference {
       );
   }
 
-  isEqual(other: FirestoreDocumentReference): boolean {
-    if (!(other instanceof FirestoreDocumentReference)) {
+  isEqual(other: DocumentReference): boolean {
+    if (!(other instanceof DocumentReference)) {
       throw new Error(
         "firebase.firestore().doc().isEqual(*) 'other' expected a DocumentReference instance.",
       );
@@ -272,9 +272,9 @@ export default class FirestoreDocumentReference {
     );
   }
 
-  withConverter(converter: unknown): FirestoreDocumentReference {
+  withConverter(converter: unknown): DocumentReference {
     if (isUndefined(converter) || isNull(converter)) {
-      return new FirestoreDocumentReference(this._firestore, this._documentPath, null);
+      return new DocumentReference(this._firestore, this._documentPath, null);
     }
 
     try {
@@ -283,8 +283,8 @@ export default class FirestoreDocumentReference {
       throw new Error(`firebase.firestore().doc().withConverter() ${(e as Error).message}`);
     }
 
-    return new FirestoreDocumentReference(this._firestore, this._documentPath, converter);
+    return new DocumentReference(this._firestore, this._documentPath, converter);
   }
 }
 
-provideDocumentReferenceClass(FirestoreDocumentReference);
+provideDocumentReferenceClass(DocumentReference);
