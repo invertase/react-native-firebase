@@ -120,11 +120,6 @@ const config: PackageConfig = {
         'errors but the RN type extends the native bridge error structure.',
     },
     {
-      name: 'getAll',
-      reason:
-        'Returns `Record<string, Value>` matching firebase-js-sdk. No type alias used.',
-    },
-    {
       name: 'getRemoteConfig',
       reason:
         'The optional `app` parameter uses `ReactNativeFirebase.FirebaseApp` from ' +
