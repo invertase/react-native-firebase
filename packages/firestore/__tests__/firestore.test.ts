@@ -824,6 +824,7 @@ describe('Firestore', function () {
         const firestore = getFirestore();
         firestoreRefV9Deprecation(
           () => writeBatch(firestore),
+          // @ts-expect-error Combines modular and namespace API
           () => firestore.batch(),
           'batch',
         );
@@ -833,6 +834,7 @@ describe('Firestore', function () {
         const firestore = getFirestore();
         firestoreRefV9Deprecation(
           () => loadBundle(firestore, 'some bundle'),
+          // @ts-expect-error Combines modular and namespace API
           () => firestore.loadBundle('some bundle'),
           'loadBundle',
         );
@@ -842,6 +844,7 @@ describe('Firestore', function () {
         const firestore = getFirestore();
         firestoreRefV9Deprecation(
           () => namedQuery(firestore, 'some name'),
+          // @ts-expect-error Combines modular and namespace API
           () => firestore.namedQuery('some name'),
           'namedQuery',
         );
@@ -851,6 +854,7 @@ describe('Firestore', function () {
         const firestore = getFirestore();
         firestoreRefV9Deprecation(
           () => clearIndexedDbPersistence(firestore),
+          // @ts-expect-error Combines modular and namespace API
           () => firestore.clearPersistence(),
           'clearPersistence',
         );
@@ -866,6 +870,7 @@ describe('Firestore', function () {
         const firestore = getFirestore();
         firestoreRefV9Deprecation(
           () => waitForPendingWrites(firestore),
+          // @ts-expect-error Combines modular and namespace API
           () => firestore.waitForPendingWrites(),
           'waitForPendingWrites',
         );
@@ -875,6 +880,7 @@ describe('Firestore', function () {
         const firestore = getFirestore();
         firestoreRefV9Deprecation(
           () => terminate(firestore),
+          // @ts-expect-error Combines modular and namespace API
           () => firestore.terminate(),
           'terminate',
         );
@@ -884,6 +890,7 @@ describe('Firestore', function () {
         const firestore = getFirestore();
         firestoreRefV9Deprecation(
           () => connectFirestoreEmulator(firestore, 'localhost', 8080),
+          // @ts-expect-error Combines modular and namespace API
           () => firestore.useEmulator('localhost', 8080),
           'useEmulator',
         );
@@ -893,6 +900,7 @@ describe('Firestore', function () {
         const firestore = getFirestore();
         firestoreRefV9Deprecation(
           () => collection(firestore, 'collection'),
+          // @ts-expect-error Combines modular and namespace API
           () => firestore.collection('collection'),
           'collection',
         );
@@ -902,6 +910,7 @@ describe('Firestore', function () {
         const firestore = getFirestore();
         firestoreRefV9Deprecation(
           () => collectionGroup(firestore, 'collection'),
+          // @ts-expect-error Combines modular and namespace API
           () => firestore.collectionGroup('collection'),
           'collectionGroup',
         );
@@ -911,6 +920,7 @@ describe('Firestore', function () {
         const firestore = getFirestore();
         firestoreRefV9Deprecation(
           () => disableNetwork(firestore),
+          // @ts-expect-error Combines modular and namespace API
           () => firestore.disableNetwork(),
           'disableNetwork',
         );
@@ -920,6 +930,7 @@ describe('Firestore', function () {
         const firestore = getFirestore();
         firestoreRefV9Deprecation(
           () => doc(firestore, 'collection/path'),
+          // @ts-expect-error Combines modular and namespace API
           () => firestore.doc('collection/path'),
           'doc',
         );
@@ -929,6 +940,7 @@ describe('Firestore', function () {
         const firestore = getFirestore();
         firestoreRefV9Deprecation(
           () => enableNetwork(firestore),
+          // @ts-expect-error Combines modular and namespace API
           () => firestore.enableNetwork(),
           'enableNetwork',
         );
@@ -938,6 +950,7 @@ describe('Firestore', function () {
         const firestore = getFirestore();
         firestoreRefV9Deprecation(
           () => runTransaction(firestore, async () => {}),
+          // @ts-expect-error Combines modular and namespace API
           () => firestore.runTransaction(async () => {}),
           'runTransaction',
         );
@@ -948,6 +961,7 @@ describe('Firestore', function () {
         firestoreRefV9Deprecation(
           // no equivalent settings method for firebase-js-sdk
           () => initializeFirestore(getApp(), {}),
+          // @ts-expect-error Combines modular and namespace API
           () => firestore.settings({}),
           'settings',
         );
@@ -1156,10 +1170,11 @@ describe('Firestore', function () {
       it('DocumentReference.collection()', function () {
         const firestore = getFirestore();
 
-        const docRef = firestore.doc('some/foo');
+        const docRef = doc(firestore, 'some/foo');
 
         docRefV9Deprecation(
           () => collection(firestore, 'bar'),
+          // @ts-expect-error Combines modular and namespace API
           () => docRef.collection('bar'),
           'collection',
         );
@@ -1168,10 +1183,11 @@ describe('Firestore', function () {
       it('DocumentReference.delete()', function () {
         const firestore = getFirestore();
 
-        const docRef = firestore.doc('some/foo');
+        const docRef = doc(firestore, 'some/foo');
 
         docRefV9Deprecation(
           () => deleteDoc(docRef),
+          // @ts-expect-error Combines modular and namespace API
           () => docRef.delete(),
           'delete',
         );
@@ -1180,10 +1196,11 @@ describe('Firestore', function () {
       it('DocumentReference.get()', function () {
         const firestore = getFirestore();
 
-        const docRef = firestore.doc('some/foo');
+        const docRef = doc(firestore, 'some/foo');
 
         docRefV9Deprecation(
           () => getDoc(docRef),
+          // @ts-expect-error Combines modular and namespace API
           () => docRef.get(),
           'get',
         );
@@ -1192,11 +1209,12 @@ describe('Firestore', function () {
       it('DocumentReference.isEqual()', function () {
         const firestore = getFirestore();
 
-        const docRef = firestore.doc('some/foo');
+        const docRef = doc(firestore, 'some/foo');
 
         docRefV9Deprecation(
           // no equivalent method
           () => {},
+          // @ts-expect-error Combines modular and namespace API
           () => docRef.isEqual(docRef),
           'isEqual',
         );
@@ -1205,10 +1223,11 @@ describe('Firestore', function () {
       it('DocumentReference.onSnapshot()', function () {
         const firestore = getFirestore();
 
-        const docRef = firestore.doc('some/foo');
+        const docRef = doc(firestore, 'some/foo');
 
         docRefV9Deprecation(
           () => onSnapshot(docRef, () => {}),
+          // @ts-expect-error Combines modular and namespace API
           () => docRef.onSnapshot(() => {}),
           'onSnapshot',
         );
@@ -1217,10 +1236,11 @@ describe('Firestore', function () {
       it('DocumentReference.set()', function () {
         const firestore = getFirestore();
 
-        const docRef = firestore.doc('some/foo');
+        const docRef = doc(firestore, 'some/foo');
 
         docRefV9Deprecation(
           () => setDoc(docRef, { foo: 'bar' }),
+          // @ts-expect-error Combines modular and namespace API
           () => docRef.set({ foo: 'bar' }),
           'set',
         );
@@ -1229,10 +1249,11 @@ describe('Firestore', function () {
       it('DocumentReference.update()', function () {
         const firestore = getFirestore();
 
-        const docRef = firestore.doc('some/foo');
+        const docRef = doc(firestore, 'some/foo');
 
         docRefV9Deprecation(
           () => updateDoc(docRef, { foo: 'bar' }),
+          // @ts-expect-error Combines modular and namespace API
           () => docRef.update({ foo: 'bar' }),
           'update',
         );
@@ -1244,13 +1265,15 @@ describe('Firestore', function () {
       // Every `FirestoreDocumentSnapshot` has been wrapped in deprecation proxy, so we use constructor directly
       // for ease of mocking
       const snapshot = createDeprecationProxy(
-        new FirestoreDocumentSnapshot(firestore, {
-          source: 'cache',
-          changes: [],
-          documents: [],
-          metadata: {},
-          path: 'foo',
-        }),
+        new FirestoreDocumentSnapshot(
+          firestore,
+          {
+            data: {},
+            metadata: [false, false],
+            path: 'foo',
+          },
+          null,
+        ),
       );
 
       docRefV9Deprecation(
@@ -1401,6 +1424,7 @@ describe('Firestore', function () {
 
         firestoreRefV9Deprecation(
           () => getPersistentCacheIndexManager(firestore),
+          // @ts-expect-error Combines modular and namespace API
           () => firestore.persistentCacheIndexManager(),
           'persistentCacheIndexManager',
         );
@@ -1410,6 +1434,7 @@ describe('Firestore', function () {
         const firestore = getFirestore();
         // @ts-ignore test
         firestore._settings.persistence = true;
+        // @ts-expect-error Combines modular and namespace API
         const indexManager = firestore.persistentCacheIndexManager();
         persistentCacheIndexManagerV9Deprecation(
           () => enablePersistentCacheIndexAutoCreation(indexManager!),
@@ -1422,6 +1447,7 @@ describe('Firestore', function () {
         const firestore = getFirestore();
         // @ts-ignore test
         firestore._settings.persistence = true;
+        // @ts-expect-error Combines modular and namespace API
         const indexManager = firestore.persistentCacheIndexManager();
         persistentCacheIndexManagerV9Deprecation(
           () => disablePersistentCacheIndexAutoCreation(indexManager!),
@@ -1434,6 +1460,7 @@ describe('Firestore', function () {
         const firestore = getFirestore();
         // @ts-ignore test
         firestore._settings.persistence = true;
+        // @ts-expect-error Combines modular and namespace API
         const indexManager = firestore.persistentCacheIndexManager();
         persistentCacheIndexManagerV9Deprecation(
           () => deleteAllPersistentCacheIndexes(indexManager!),
