@@ -46,6 +46,7 @@ export type FirebaseApp = ReactNativeFirebase.FirebaseApp;
 
 // ============ Module Augmentation ============
 
+/* eslint-disable @typescript-eslint/no-namespace */
 declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     interface Module {
@@ -56,6 +57,7 @@ declare module '@react-native-firebase/app' {
     }
   }
 }
+/* eslint-enable @typescript-eslint/no-namespace */
 
 // ============ Backwards Compatibility Namespace ============
 
@@ -65,7 +67,9 @@ type _Statics = Statics;
  * @deprecated Use the exported types directly instead.
  * FirebaseMLTypes namespace is kept for backwards compatibility.
  */
+/* eslint-disable @typescript-eslint/no-namespace */
 export namespace FirebaseMLTypes {
   export type Module = ML;
   export type Statics = _Statics;
 }
+/* eslint-enable @typescript-eslint/no-namespace */
