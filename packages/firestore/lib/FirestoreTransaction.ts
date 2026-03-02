@@ -23,7 +23,7 @@ import { buildNativeMap } from './utils/serialize';
 
 export interface TransactionMeta {
   id: number;
-  updateFunction: (transaction: FirestoreTransaction) => Promise<unknown>;
+  updateFunction: (transaction: Transaction) => Promise<unknown>;
   stack?: string;
   resolve?: (result: unknown) => void;
   reject?: (error: unknown) => void;
@@ -36,7 +36,7 @@ export interface TransactionCommand {
   options?: Record<string, unknown>;
 }
 
-export default class FirestoreTransaction {
+export default class Transaction {
   _firestore: any;
   _meta: TransactionMeta;
   _calledGetCount: number;
@@ -82,11 +82,7 @@ export default class FirestoreTransaction {
   /**
    * Writes to the document referred to by the provided DocumentReference.
    */
-  set(
-    documentRef: DocumentReference,
-    data: Record<string, unknown>,
-    options?: unknown,
-  ): this {
+  set(documentRef: DocumentReference, data: Record<string, unknown>, options?: unknown): this {
     if (!(documentRef instanceof DocumentReference)) {
       throw new Error(
         "firebase.firestore().runTransaction() Transaction.set(*) 'documentRef' expected a DocumentReference.",

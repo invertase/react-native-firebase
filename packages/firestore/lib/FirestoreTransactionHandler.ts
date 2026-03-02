@@ -16,7 +16,7 @@
  */
 
 import NativeError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
-import FirestoreTransaction, { type TransactionMeta } from './FirestoreTransaction';
+import Transaction, { type TransactionMeta } from './FirestoreTransaction';
 
 let transactionId = 0;
 
@@ -24,7 +24,7 @@ const generateTransactionId = (): number => transactionId++;
 
 export interface TransactionPendingEntry {
   meta: TransactionMeta;
-  transaction: FirestoreTransaction;
+  transaction: Transaction;
 }
 
 export interface TransactionEventBody {
@@ -137,7 +137,7 @@ export default class FirestoreTransactionHandler {
     }
   }
 
-  _add(updateFunction: (transaction: FirestoreTransaction) => Promise<unknown>): Promise<unknown> {
+  _add(updateFunction: (transaction: Transaction) => Promise<unknown>): Promise<unknown> {
     const id = generateTransactionId();
 
     const meta: TransactionMeta = {
@@ -148,7 +148,7 @@ export default class FirestoreTransactionHandler {
 
     this._pending[id] = {
       meta,
-      transaction: new FirestoreTransaction(this._firestore, meta),
+      transaction: new Transaction(this._firestore, meta),
     };
 
     return new Promise((resolve, reject) => {
