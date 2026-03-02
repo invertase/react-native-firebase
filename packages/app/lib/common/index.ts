@@ -362,7 +362,7 @@ const mapOfDeprecationReplacements: DeprecationMap = {
       Blob: 'Bytes',
       FieldPath: 'FieldPath',
     },
-    FirestoreCollectionReference: {
+    CollectionReference: {
       count: 'getCountFromServer()',
       countFromServer: 'getCountFromServer()',
       endAt: 'endAt()',
@@ -379,7 +379,7 @@ const mapOfDeprecationReplacements: DeprecationMap = {
       add: 'addDoc()',
       doc: 'doc()',
     },
-    FirestoreDocumentReference: {
+    DocumentReference: {
       collection: 'collection()',
       delete: 'deleteDoc()',
       get: 'getDoc()',
@@ -388,10 +388,10 @@ const mapOfDeprecationReplacements: DeprecationMap = {
       set: 'setDoc()',
       update: 'updateDoc()',
     },
-    FirestoreDocumentSnapshot: {
+    DocumentSnapshot: {
       isEqual: NO_REPLACEMENT,
     },
-    FirestoreFieldValue: {
+    FieldValue: {
       arrayRemove: 'arrayRemove()',
       arrayUnion: 'arrayUnion()',
       delete: 'deleteField()',
@@ -402,12 +402,12 @@ const mapOfDeprecationReplacements: DeprecationMap = {
       or: 'or()',
       and: 'and()',
     },
-    FirestorePersistentCacheIndexManager: {
+    PersistentCacheIndexManager: {
       enableIndexAutoCreation: 'enablePersistentCacheIndexAutoCreation()',
       disableIndexAutoCreation: 'disablePersistentCacheIndexAutoCreation()',
       deleteAllIndexes: 'deleteAllPersistentCacheIndexes()',
     },
-    FirestoreTimestamp: {
+    Timestamp: {
       seconds: NO_REPLACEMENT,
       nanoseconds: NO_REPLACEMENT,
     },
@@ -652,8 +652,8 @@ export function createDeprecationProxy<T extends object>(instance: T): T {
         return Reflect.get(target, prop, receiver);
       }
 
-      if (target && target.constructor && target.constructor.name === 'FirestoreTimestamp') {
-        deprecationConsoleWarning('firestore', prop as string, 'FirestoreTimestamp', false);
+      if (target && target.constructor && target.constructor.name === 'Timestamp') {
+        deprecationConsoleWarning('firestore', prop as string, 'Timestamp', false);
         return Reflect.get(target, prop, receiver);
       }
 
