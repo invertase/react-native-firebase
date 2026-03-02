@@ -38,7 +38,7 @@ import CollectionReference from './FirestoreCollectionReference';
 import DocumentReference from './FirestoreDocumentReference';
 import FirestorePath from './FirestorePath';
 import FirestorePersistentCacheIndexManager from './FirestorePersistentCacheIndexManager';
-import FirestoreQuery from './FirestoreQuery';
+import Query from './FirestoreQuery';
 import FirestoreQueryModifiers from './FirestoreQueryModifiers';
 import FirestoreStatics from './FirestoreStatics';
 import FirestoreTransactionHandler from './FirestoreTransactionHandler';
@@ -170,7 +170,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
     return task;
   }
 
-  namedQuery(queryName: string): FirestoreQuery | null {
+  namedQuery(queryName: string): Query | null {
     if (!isString(queryName)) {
       throw new Error("firebase.firestore().namedQuery(*) 'queryName' must be a string value.");
     }
@@ -179,7 +179,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
       throw new Error("firebase.firestore().namedQuery(*) 'queryName' must be a non-empty string.");
     }
 
-    return new FirestoreQuery(this, this._referencePath, new FirestoreQueryModifiers(), queryName);
+    return new Query(this, this._referencePath, new FirestoreQueryModifiers(), queryName);
   }
 
   async clearPersistence(): Promise<void> {
@@ -242,7 +242,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
     return createDeprecationProxy(new CollectionReference(this, path));
   }
 
-  collectionGroup(collectionId: string): FirestoreQuery {
+  collectionGroup(collectionId: string): Query {
     if (!isString(collectionId)) {
       throw new Error(
         "firebase.firestore().collectionGroup(*) 'collectionId' must be a string value.",
@@ -262,7 +262,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
     }
 
     return createDeprecationProxy(
-      new FirestoreQuery(
+      new Query(
         this,
         this._referencePath.child(collectionId),
         new FirestoreQueryModifiers().asCollectionGroupQuery(),

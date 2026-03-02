@@ -34,7 +34,7 @@ import type {
 import type { PersistentCacheIndexManager } from '../FirestorePersistentCacheIndexManager';
 import type { QueryConstraint } from '../modular/query';
 import Blob from 'lib/FirestoreBlob';
-import type FirestoreQuery from '../FirestoreQuery';
+import type Query from '../FirestoreQuery';
 
 // Helper type for wrappers that forward MODULAR_DEPRECATION_ARG via .call(...).
 export type WithModularDeprecationArg<F> = F extends (...args: infer P) => infer R
@@ -137,7 +137,7 @@ export interface PersistentCacheIndexManagerInternal extends PersistentCacheInde
 
 export type FirestoreBlobInternal = Blob & { _binaryString: string };
 
-export type QueryWithAggregateInternals = FirestoreQuery & {
+export type QueryWithAggregateInternals = Query & {
   _firestore: FirestoreInternal & {
     native: {
       aggregateQuery(

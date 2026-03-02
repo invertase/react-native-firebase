@@ -4,7 +4,7 @@ import { createDeprecationProxy } from '../../app/lib/common';
 // @ts-ignore test
 import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 // @ts-ignore test
-import FirestoreQuery from '../lib/FirestoreQuery';
+import Query from '../lib/FirestoreQuery';
 // @ts-ignore test
 import FirestoreDocumentSnapshot from '../lib/FirestoreDocumentSnapshot';
 // @ts-ignore test
@@ -812,7 +812,7 @@ describe('Firestore', function () {
       });
 
       jest
-        .spyOn(FirestoreQuery.prototype, '_handleQueryCursor')
+        .spyOn(Query.prototype, '_handleQueryCursor')
         // @ts-ignore test
         .mockImplementation(() => {
           return [];

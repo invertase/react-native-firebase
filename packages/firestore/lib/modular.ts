@@ -23,7 +23,7 @@ import {
   AggregateQuerySnapshot,
 } from './FirestoreAggregate';
 import { Filter } from './FirestoreFilter';
-import FirestoreQuery from './FirestoreQuery';
+import Query from './FirestoreQuery';
 import { LoadBundleTask } from './LoadBundleTask';
 import type {
   CollectionReference,
@@ -356,7 +356,7 @@ export function getAggregateFromServer<
   query: Query<AppModelType, DbModelType>,
   aggregateSpec: AggregateSpecType,
 ): Promise<AggregateQuerySnapshot<AggregateSpecType, AppModelType, DbModelType>> {
-  if (!(query instanceof FirestoreQuery)) {
+  if (!(query instanceof Query)) {
     throw new Error(
       '`getAggregateFromServer(*, aggregateSpec)` `query` must be an instance of `FirestoreQuery`',
     );

@@ -26,7 +26,7 @@ import DocumentChange from './FirestoreDocumentChange';
 import DocumentSnapshot from './FirestoreDocumentSnapshot';
 import SnapshotMetadata from './FirestoreSnapshotMetadata';
 
-import type FirestoreQuery from './FirestoreQuery';
+import type Query from './FirestoreQuery';
 
 export interface QuerySnapshotNativeData {
   source?: string;
@@ -48,7 +48,7 @@ export interface QuerySnapshotNativeData {
 }
 
 export default class QuerySnapshot {
-  _query: FirestoreQuery;
+  _query: Query;
   _source: string | undefined;
   _excludesMetadataChanges: boolean | undefined;
   _changes: DocumentChange[];
@@ -57,7 +57,7 @@ export default class QuerySnapshot {
 
   constructor(
     firestore: any,
-    query: FirestoreQuery,
+    query: Query,
     nativeData: QuerySnapshotNativeData,
     converter: unknown,
   ) {
@@ -85,7 +85,7 @@ export default class QuerySnapshot {
     return this._metadata;
   }
 
-  get query(): FirestoreQuery {
+  get query(): Query {
     return this._query;
   }
 

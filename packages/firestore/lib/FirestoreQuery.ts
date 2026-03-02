@@ -38,7 +38,7 @@ import type { DocumentData, FirestoreDataConverter } from './types/firestore';
 
 let _id = 0;
 
-export default class FirestoreQuery {
+export default class Query {
   _firestore: any;
   _collectionPath: FirestorePath;
   _modifiers: FirestoreQueryModifiers;
@@ -170,7 +170,7 @@ export default class FirestoreQuery {
     );
   }
 
-  countFromServer(): ReturnType<FirestoreQuery['count']> {
+  countFromServer(): ReturnType<Query['count']> {
     return this.count();
   }
 
@@ -179,7 +179,7 @@ export default class FirestoreQuery {
     ...fields: unknown[]
   ): ReturnType<typeof createDeprecationProxy> {
     return createDeprecationProxy(
-      new FirestoreQuery(
+      new Query(
         this._firestore,
         this._collectionPath,
         this._handleQueryCursor('endAt', docOrField, filterModularArgument(fields)),
@@ -194,7 +194,7 @@ export default class FirestoreQuery {
     ...fields: unknown[]
   ): ReturnType<typeof createDeprecationProxy> {
     return createDeprecationProxy(
-      new FirestoreQuery(
+      new Query(
         this._firestore,
         this._collectionPath,
         this._handleQueryCursor('endBefore', docOrField, filterModularArgument(fields)),
@@ -250,8 +250,8 @@ export default class FirestoreQuery {
       .then((data: any) => new QuerySnapshot(this._firestore, this, data, this._converter));
   }
 
-  isEqual(other: FirestoreQuery): boolean {
-    if (!(other instanceof FirestoreQuery)) {
+  isEqual(other: Query): boolean {
+    if (!(other instanceof Query)) {
       throw new Error(
         "firebase.firestore().collection().isEqual(*) 'other' expected a Query instance.",
       );
@@ -290,7 +290,7 @@ export default class FirestoreQuery {
     const modifiers = this._modifiers._copy().limit(limit);
 
     return createDeprecationProxy(
-      new FirestoreQuery(
+      new Query(
         this._firestore,
         this._collectionPath,
         modifiers,
@@ -310,7 +310,7 @@ export default class FirestoreQuery {
     const modifiers = this._modifiers._copy().limitToLast(limitToLast);
 
     return createDeprecationProxy(
-      new FirestoreQuery(
+      new Query(
         this._firestore,
         this._collectionPath,
         modifiers,
@@ -448,7 +448,7 @@ export default class FirestoreQuery {
     }
 
     return createDeprecationProxy(
-      new FirestoreQuery(
+      new Query(
         this._firestore,
         this._collectionPath,
         modifiers,
@@ -463,7 +463,7 @@ export default class FirestoreQuery {
     ...fields: unknown[]
   ): ReturnType<typeof createDeprecationProxy> {
     return createDeprecationProxy(
-      new FirestoreQuery(
+      new Query(
         this._firestore,
         this._collectionPath,
         this._handleQueryCursor('startAfter', docOrField, filterModularArgument(fields)),
@@ -478,7 +478,7 @@ export default class FirestoreQuery {
     ...fields: unknown[]
   ): ReturnType<typeof createDeprecationProxy> {
     return createDeprecationProxy(
-      new FirestoreQuery(
+      new Query(
         this._firestore,
         this._collectionPath,
         this._handleQueryCursor('startAt', docOrField, filterModularArgument(fields)),
@@ -577,7 +577,7 @@ export default class FirestoreQuery {
     }
 
     return createDeprecationProxy(
-      new FirestoreQuery(
+      new Query(
         this._firestore,
         this._collectionPath,
         modifiers,
@@ -587,9 +587,9 @@ export default class FirestoreQuery {
     );
   }
 
-  withConverter(converter: unknown): FirestoreQuery {
+  withConverter(converter: unknown): Query {
     if (isUndefined(converter) || isNull(converter)) {
-      return new FirestoreQuery(
+      return new Query(
         this._firestore,
         this._collectionPath,
         this._modifiers,
@@ -604,7 +604,7 @@ export default class FirestoreQuery {
       throw new Error(`firebase.firestore().collection().withConverter() ${(e as Error).message}`);
     }
 
-    return new FirestoreQuery(
+    return new Query(
       this._firestore,
       this._collectionPath,
       this._modifiers,

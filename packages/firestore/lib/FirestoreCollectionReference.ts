@@ -22,14 +22,14 @@ import {
   isUndefined,
 } from '@react-native-firebase/app/dist/module/common';
 import DocumentReference, { provideCollectionReferenceClass } from './FirestoreDocumentReference';
-import FirestoreQuery from './FirestoreQuery';
+import Query from './FirestoreQuery';
 import FirestoreQueryModifiers from './FirestoreQueryModifiers';
 import { validateWithConverter } from './utils';
 
 import type FirestorePath from './FirestorePath';
 import type { DocumentData, FirestoreDataConverter } from './types/firestore';
 
-export default class CollectionReference extends FirestoreQuery {
+export default class CollectionReference extends Query {
   constructor(
     firestore: any,
     collectionPath: FirestorePath,

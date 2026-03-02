@@ -25,18 +25,18 @@ import type {
 import FieldPath, { fromDotSeparatedString } from './FieldPath';
 
 import type FirestorePath from './FirestorePath';
-import type FirestoreQuery from './FirestoreQuery';
+import type Query from './FirestoreQuery';
 import type FirestoreQueryModifiers from './FirestoreQueryModifiers';
 
 export class AggregateQuery {
   _firestore: any;
-  _query: FirestoreQuery;
+  _query: Query;
   _collectionPath: FirestorePath;
   _modifiers: FirestoreQueryModifiers;
 
   constructor(
     firestore: any,
-    query: FirestoreQuery,
+    query: Query,
     collectionPath: FirestorePath,
     modifiers: FirestoreQueryModifiers,
   ) {
@@ -46,7 +46,7 @@ export class AggregateQuery {
     this._modifiers = modifiers;
   }
 
-  get query(): FirestoreQuery {
+  get query(): Query {
     return this._query;
   }
 
