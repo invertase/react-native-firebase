@@ -420,12 +420,12 @@ export function getAggregateFromServer<
       aggregateQueries,
     )
     .then(
-      (data: { count?: number; [key: string]: unknown }) =>
-        new AggregateQuerySnapshot(query, data, false) as AggregateQuerySnapshot<
-          AggregateSpecType,
-          AppModelType,
-          DbModelType
-        >,
+      (data: any) =>
+        new AggregateQuerySnapshot(
+          query as Query<AppModelType, DbModelType>,
+          data,
+          false,
+        ) as AggregateQuerySnapshot<AggregateSpecType, AppModelType, DbModelType>,
     );
 }
 
