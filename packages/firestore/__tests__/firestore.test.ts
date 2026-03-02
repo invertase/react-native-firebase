@@ -775,18 +775,18 @@ describe('Firestore', function () {
         'FirestoreCollectionReference',
       ]);
 
-      docRefV9Deprecation = createCheckV9Deprecation(['firestore', 'FirestoreDocumentReference']);
+      docRefV9Deprecation = createCheckV9Deprecation(['firestore', 'DocumentReference']);
 
-      fieldValueV9Deprecation = createCheckV9Deprecation(['firestore', 'FirestoreFieldValue']);
+      fieldValueV9Deprecation = createCheckV9Deprecation(['firestore', 'FieldValue']);
       filterV9Deprecation = createCheckV9Deprecation(['firestore', 'Filter']);
       persistentCacheIndexManagerV9Deprecation = createCheckV9Deprecation([
         'firestore',
-        'FirestorePersistentCacheIndexManager',
+        'PersistentCacheIndexManager',
       ]);
 
       staticsV9Deprecation = createCheckV9Deprecation(['firestore', 'statics']);
 
-      timestampV9Deprecation = createCheckV9Deprecation(['firestore', 'FirestoreTimestamp']);
+      timestampV9Deprecation = createCheckV9Deprecation(['firestore', 'Timestamp']);
 
       // Mock the native module directly to avoid getter caching issues
       const mockNative = new Proxy(
