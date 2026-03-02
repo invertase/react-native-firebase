@@ -34,7 +34,6 @@ import type {
 import type { PersistentCacheIndexManager } from '../FirestorePersistentCacheIndexManager';
 import type { QueryConstraint } from '../modular/query';
 import Blob from 'lib/FirestoreBlob';
-import type Query from '../FirestoreQuery';
 
 // Helper type for wrappers that forward MODULAR_DEPRECATION_ARG via .call(...).
 export type WithModularDeprecationArg<F> = F extends (...args: infer P) => infer R
