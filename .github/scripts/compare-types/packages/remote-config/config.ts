@@ -37,13 +37,6 @@ const config: PackageConfig = {
   // ---------------------------------------------------------------------------
   extraInRN: [
     {
-      name: 'RemoteConfigLogLevel',
-      reason:
-        'Type alias for `LogLevel` exposed for API clarity (mirrors the ' +
-        'firebase-js-sdk internal RemoteConfigLogLevel). Not part of the ' +
-        'firebase-js-sdk public API.',
-    },
-    {
       name: 'LastFetchStatus',
       reason:
         'Namespaced constant re-exported from statics.d.ts for backwards ' +
@@ -129,10 +122,8 @@ const config: PackageConfig = {
     {
       name: 'setLogLevel',
       reason:
-        'The RN Firebase implementation accepts `RemoteConfigLogLevel` (a type alias ' +
-        'for `LogLevel`) and returns it, whereas the firebase-js-sdk accepts `LogLevel` ' +
-        'and returns `void`. The parameter types are semantically identical; the return ' +
-        'type difference is a legacy artefact of the RN implementation.',
+        'Uses `LogLevel` matching firebase-js-sdk. RN Firebase returns `LogLevel`; ' +
+        'firebase-js-sdk returns `void`. The return type is a legacy artefact of the RN implementation.',
     },
     {
       name: 'setCustomSignals',

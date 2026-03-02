@@ -62,11 +62,6 @@ type FirebaseModule = ReactNativeFirebase.FirebaseModule;
 // eslint-disable-next-line @typescript-eslint/no-namespace -- public API shape
 export namespace FirebaseRemoteConfigTypes {
   /**
-   * Defines levels of Remote Config logging. Web only.
-   * @deprecated Use the modular API from '@react-native-firebase/remote-config' instead.
-   */
-  export declare type RemoteConfigLogLevel = 'debug' | 'error' | 'silent';
-  /**
    * A pseudo-enum for usage with ConfigSettingsRead.lastFetchStatus to determine the last fetch status.
    * @deprecated Use the modular API from '@react-native-firebase/remote-config' instead.
    *

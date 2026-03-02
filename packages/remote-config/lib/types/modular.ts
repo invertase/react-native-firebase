@@ -250,14 +250,6 @@ export type FetchStatus = 'no-fetch-yet' | 'success' | 'failure' | 'throttle';
 export type LogLevel = 'debug' | 'error' | 'silent';
 
 /**
- * Log level for Remote Config (e.g. for {@link setLogLevel}).
- * Same as {@link LogLevel}; exposed for API clarity.
- *
- * @public
- */
-export type RemoteConfigLogLevel = LogLevel;
-
-/**
  * Defines the type for representing custom signals and their values.
  *
  * <p>The values in CustomSignals must be one of the following types:

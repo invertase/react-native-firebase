@@ -5,8 +5,8 @@ import type {
   ConfigUpdateObserver,
   CustomSignals,
   FetchStatus,
+  LogLevel,
   RemoteConfig,
-  RemoteConfigLogLevel,
   Unsubscribe,
   RemoteConfigOptions,
   RemoteConfigSettings,
@@ -146,12 +146,9 @@ export function getValue(remoteConfig: RemoteConfig, key: string): Value {
  * Defines the log level to use.
  * @param _remoteConfig - RemoteConfig instance
  * @param _logLevel - The log level to set
- * @returns RemoteConfigLogLevel
+ * @returns LogLevel
  */
-export function setLogLevel(
-  _remoteConfig: RemoteConfig,
-  _logLevel: RemoteConfigLogLevel,
-): RemoteConfigLogLevel {
+export function setLogLevel(_remoteConfig: RemoteConfig, _logLevel: LogLevel): LogLevel {
   // always return the "error" log level for now as the setter is ignored on native. Web only.
   return 'error';
 }
