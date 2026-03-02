@@ -31,7 +31,7 @@ import { validateWithConverter } from './utils';
 import type FirestorePath from './FirestorePath';
 import type { DocumentData, FirestoreDataConverter } from './types/firestore';
 
-export default class FirestoreCollectionReference extends FirestoreQuery {
+export default class CollectionReference extends FirestoreQuery {
   constructor(
     firestore: any,
     collectionPath: FirestorePath,
@@ -78,9 +78,9 @@ export default class FirestoreCollectionReference extends FirestoreQuery {
     return new FirestoreDocumentReference(this._firestore, path, this._converter);
   }
 
-  withConverter(converter: unknown): FirestoreCollectionReference {
+  withConverter(converter: unknown): CollectionReference {
     if (isUndefined(converter) || isNull(converter)) {
-      return new FirestoreCollectionReference(this._firestore, this._collectionPath, null);
+      return new CollectionReference(this._firestore, this._collectionPath, null);
     }
 
     try {
@@ -89,7 +89,7 @@ export default class FirestoreCollectionReference extends FirestoreQuery {
       throw new Error(`firebase.firestore().collection().withConverter() ${(e as Error).message}`);
     }
 
-    return new FirestoreCollectionReference(
+    return new CollectionReference(
       this._firestore,
       this._collectionPath,
       converter as FirestoreDataConverter<DocumentData, DocumentData>,
@@ -97,4 +97,4 @@ export default class FirestoreCollectionReference extends FirestoreQuery {
   }
 }
 
-provideCollectionReferenceClass(FirestoreCollectionReference);
+provideCollectionReferenceClass(CollectionReference);

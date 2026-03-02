@@ -34,7 +34,7 @@ import {
 } from '@react-native-firebase/app/dist/module/internal';
 import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
-import FirestoreCollectionReference from './FirestoreCollectionReference';
+import CollectionReference from './FirestoreCollectionReference';
 import FirestoreDocumentReference from './FirestoreDocumentReference';
 import FirestorePath from './FirestorePath';
 import FirestorePersistentCacheIndexManager from './FirestorePersistentCacheIndexManager';
@@ -218,7 +218,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
     return [mappedHost, port]; // undocumented return, just used to unit test android host remapping
   }
 
-  collection(collectionPath: string): FirestoreCollectionReference {
+  collection(collectionPath: string): CollectionReference {
     if (!isString(collectionPath)) {
       throw new Error(
         "firebase.firestore().collection(*) 'collectionPath' must be a string value.",
@@ -239,7 +239,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
       );
     }
 
-    return createDeprecationProxy(new FirestoreCollectionReference(this, path));
+    return createDeprecationProxy(new CollectionReference(this, path));
   }
 
   collectionGroup(collectionId: string): FirestoreQuery {
