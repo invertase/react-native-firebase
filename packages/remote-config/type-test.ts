@@ -52,9 +52,7 @@ console.log(firebase.remoteConfig.LastFetchStatus.THROTTLED);
 console.log(firebase.remoteConfig.LastFetchStatus.NO_FETCH_YET);
 
 // checks statics exist on defaultExport
-console.log(
-  (remoteConfig as typeof remoteConfig & { firebase: typeof firebase }).firebase.SDK_VERSION,
-);
+console.log(remoteConfig.firebase.SDK_VERSION);
 
 // checks root exists
 console.log(firebase.SDK_VERSION);
@@ -166,9 +164,7 @@ remoteConfigInstance.reset().then(() => {
 const modularRemoteConfig1 = getRemoteConfig();
 console.log(modularRemoteConfig1.app.name);
 
-const modularRemoteConfig2 = getRemoteConfig(
-  firebase.app() as Parameters<typeof getRemoteConfig>[0],
-);
+const modularRemoteConfig2 = getRemoteConfig(firebase.app());
 console.log(modularRemoteConfig2.app.name);
 
 activate(modularRemoteConfig1).then((activated: boolean) => {

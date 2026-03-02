@@ -440,9 +440,19 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> {
 // import { SDK_VERSION } from '@react-native-firebase/remote-config';
 export const SDK_VERSION = version;
 
-// import config from '@react-native-firebase/remote-config';
+// import config, { firebase } from '@react-native-firebase/remote-config';
 // config().X(...);
-export default createModuleNamespace({
+// firebase.remoteConfig().X(...);
+const firebaseRoot = getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
+  'remoteConfig',
+  FirebaseRemoteConfigTypes.Module,
+  FirebaseRemoteConfigTypes.Statics,
+  false
+>;
+
+export const firebase = firebaseRoot;
+
+const moduleGetter = createModuleNamespace({
   statics,
   version,
   namespace,
@@ -453,15 +463,14 @@ export default createModuleNamespace({
   ModuleClass: FirebaseConfigModule,
 });
 
-// import config, { firebase } from '@react-native-firebase/remote-config';
-// config().X(...);
-// firebase.remoteConfig().X(...);
-export const firebase =
-  getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
-    'remoteConfig',
-    FirebaseRemoteConfigTypes.Module,
-    FirebaseRemoteConfigTypes.Statics,
-    false
-  >;
+type RemoteConfigDefaultExport = typeof moduleGetter & { firebase: typeof firebase };
+
+const defaultExport: RemoteConfigDefaultExport = Object.assign(moduleGetter, {
+  firebase: firebaseRoot,
+});
+
+// import config from '@react-native-firebase/remote-config';
+// config().X(...); config.firebase.SDK_VERSION
+export default defaultExport;
 
 setReactNativeModule(nativeModuleName, fallBackModule);
