@@ -58,14 +58,6 @@ const config: PackageConfig = {
         'the firebase-js-sdk modular API.',
     },
     {
-      name: 'ValueSource',
-      reason:
-        'Namespaced constant re-exported from statics.d.ts for backwards ' +
-        'compatibility with the class-based (namespaced) API. The modular ' +
-        '`ValueSource` type alias (matching firebase-js-sdk) is also exported ' +
-        'separately from types/modular.d.ts.',
-    },
-    {
       name: 'fetchTimeMillis',
       reason:
         'Getter function returning the last fetch timestamp. In the ' +

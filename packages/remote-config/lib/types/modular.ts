@@ -176,7 +176,7 @@ export interface RemoteConfigOptions {
  *
  * @public
  */
-type ValueSource = 'static' | 'default' | 'remote';
+export type ValueSource = 'static' | 'default' | 'remote';
 
 /**
  * Wraps a value with metadata and type-safe getters.

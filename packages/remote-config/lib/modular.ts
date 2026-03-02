@@ -288,5 +288,3 @@ export async function setCustomSignals(
 
   return null;
 }
-
-export { LastFetchStatus, ValueSource } from './statics';

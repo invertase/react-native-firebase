@@ -1,6 +1,8 @@
 import type {
   CustomSignals,
+  FetchStatus,
   FirebaseRemoteConfigTypes,
+  ValueSource,
 } from '@react-native-firebase/remote-config';
 import remoteConfig, {
   firebase,
@@ -25,8 +27,6 @@ import remoteConfig, {
   setDefaultsFromResource,
   onConfigUpdate,
   setCustomSignals,
-  LastFetchStatus,
-  ValueSource,
 } from '@react-native-firebase/remote-config';
 
 console.log(remoteConfig().app);
@@ -255,6 +255,8 @@ setCustomSignals(modularRemoteConfig1, customSignals).then(() => {
   console.log('Modular custom signals set');
 });
 
-// checks modular statics exports
-console.log(LastFetchStatus.SUCCESS);
-console.log(ValueSource.REMOTE);
+// checks modular statics (string literal types per Firebase Web SDK; use literals in code)
+const fetchStatusSuccess: FetchStatus = 'success';
+const valueSourceRemote: ValueSource = 'remote';
+console.log(fetchStatusSuccess);
+console.log(valueSourceRemote);

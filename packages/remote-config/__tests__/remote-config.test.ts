@@ -39,9 +39,9 @@ import {
   setDefaultsFromResource,
   onConfigUpdate,
   setCustomSignals,
-  LastFetchStatus,
-  ValueSource,
 } from '../lib';
+
+import type { FetchStatus, ValueSource } from '../lib';
 
 import type { RemoteConfigWithDeprecationArg } from '../lib/types/internal';
 
@@ -239,17 +239,22 @@ describe('remoteConfig()', function () {
       expect(setCustomSignals).toBeDefined();
     });
 
-    it('`LastFetchStatus` is properly exposed to end user', function () {
-      expect(LastFetchStatus.FAILURE).toBeDefined();
-      expect(LastFetchStatus.NO_FETCH_YET).toBeDefined();
-      expect(LastFetchStatus.SUCCESS).toBeDefined();
-      expect(LastFetchStatus.THROTTLED).toBeDefined();
-    });
+    it('`FetchStatus` and `ValueSource` types are exposed (modular string literal types)', function () {
+      const fetchStatusFailure: FetchStatus = 'failure';
+      const fetchStatusSuccess: FetchStatus = 'success';
+      const fetchStatusNoFetchYet: FetchStatus = 'no-fetch-yet';
+      const fetchStatusThrottle: FetchStatus = 'throttle';
+      expect(fetchStatusFailure).toBe('failure');
+      expect(fetchStatusSuccess).toBe('success');
+      expect(fetchStatusNoFetchYet).toBe('no-fetch-yet');
+      expect(fetchStatusThrottle).toBe('throttle');
 
-    it('`ValueSource` is properly exposed to end user', function () {
-      expect(ValueSource.DEFAULT).toBeDefined();
-      expect(ValueSource.REMOTE).toBeDefined();
-      expect(ValueSource.STATIC).toBeDefined();
+      const valueSourceDefault: ValueSource = 'default';
+      const valueSourceRemote: ValueSource = 'remote';
+      const valueSourceStatic: ValueSource = 'static';
+      expect(valueSourceDefault).toBe('default');
+      expect(valueSourceRemote).toBe('remote');
+      expect(valueSourceStatic).toBe('static');
     });
 
     describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
@@ -406,7 +411,7 @@ describe('remoteConfig()', function () {
       describe('statics', function () {
         it('LastFetchStatus', function () {
           staticsV9Deprecation(
-            () => LastFetchStatus.FAILURE,
+            () => 'failure' as FetchStatus,
             () => firebase.remoteConfig.LastFetchStatus.FAILURE,
             'LastFetchStatus',
           );
@@ -414,7 +419,7 @@ describe('remoteConfig()', function () {
 
         it('ValueSource', function () {
           staticsV9Deprecation(
-            () => ValueSource.DEFAULT,
+            () => 'default' as ValueSource,
             () => firebase.remoteConfig.ValueSource.DEFAULT,
             'ValueSource',
           );
