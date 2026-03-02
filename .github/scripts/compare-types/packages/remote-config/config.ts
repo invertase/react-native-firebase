@@ -37,13 +37,6 @@ const config: PackageConfig = {
   // ---------------------------------------------------------------------------
   extraInRN: [
     {
-      name: 'ConfigValues',
-      reason:
-        'RN Firebase-specific type alias for `{ [key: string]: Value }`, ' +
-        'semantically equivalent to `Record<string, Value>` used in the ' +
-        'firebase-js-sdk. Kept for backwards compatibility.',
-    },
-    {
       name: 'RemoteConfigLogLevel',
       reason:
         'Type alias for `LogLevel` exposed for API clarity (mirrors the ' +
@@ -129,9 +122,7 @@ const config: PackageConfig = {
     {
       name: 'getAll',
       reason:
-        'Returns `ConfigValues` (RN Firebase type alias for `{ [key: string]: Value }`) ' +
-        'instead of `Record<string, Value>`. The two types are structurally equivalent; ' +
-        'the alias is retained for backwards compatibility.',
+        'Returns `Record<string, Value>` matching firebase-js-sdk. No type alias used.',
     },
     {
       name: 'getRemoteConfig',

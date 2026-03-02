@@ -3,7 +3,6 @@ import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 import type {
   ConfigUpdateObserver,
-  ConfigValues,
   CustomSignals,
   FetchStatus,
   RemoteConfig,
@@ -97,9 +96,9 @@ export function fetchConfig(
 /**
  * Gets all config.
  * @param remoteConfig - RemoteConfig instance
- * @returns ConfigValues
+ * @returns Record of config key to Value
  */
-export function getAll(remoteConfig: RemoteConfig): ConfigValues {
+export function getAll(remoteConfig: RemoteConfig): Record<string, Value> {
   return rc(remoteConfig).getAll.call(remoteConfig, MODULAR_DEPRECATION_ARG);
 }
 

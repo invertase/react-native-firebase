@@ -46,7 +46,6 @@ export interface ConfigUpdatedEvent {
 
 import type {
   ConfigUpdateObserver,
-  ConfigValues,
   CustomSignals,
   RemoteConfig,
   RemoteConfigSettings,
@@ -109,7 +108,7 @@ export type RemoteConfigWithDeprecationArg = RemoteConfig & {
   activate(_dep?: unknown): Promise<boolean>;
   ensureInitialized(_dep?: unknown): Promise<void>;
   fetchAndActivate(_dep?: unknown): Promise<boolean>;
-  getAll(_dep?: unknown): ConfigValues;
+  getAll(_dep?: unknown): Record<string, Value>;
   getBoolean(key: string, _dep?: unknown): boolean;
   getNumber(key: string, _dep?: unknown): number;
   getString(key: string, _dep?: unknown): string;
