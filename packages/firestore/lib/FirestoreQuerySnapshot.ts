@@ -22,7 +22,7 @@ import {
   isObject,
   isUndefined,
 } from '@react-native-firebase/app/dist/module/common';
-import FirestoreDocumentChange from './FirestoreDocumentChange';
+import DocumentChange from './FirestoreDocumentChange';
 import DocumentSnapshot from './FirestoreDocumentSnapshot';
 import SnapshotMetadata from './FirestoreSnapshotMetadata';
 
@@ -51,7 +51,7 @@ export default class QuerySnapshot {
   _query: FirestoreQuery;
   _source: string | undefined;
   _excludesMetadataChanges: boolean | undefined;
-  _changes: FirestoreDocumentChange[];
+  _changes: DocumentChange[];
   _docs: DocumentSnapshot[];
   _metadata: SnapshotMetadata;
 
@@ -65,8 +65,7 @@ export default class QuerySnapshot {
     this._source = nativeData.source;
     this._excludesMetadataChanges = nativeData.excludesMetadataChanges;
     this._changes = nativeData.changes.map(
-      (c: QuerySnapshotNativeData['changes'][0]) =>
-        new FirestoreDocumentChange(firestore, c, converter),
+      (c: QuerySnapshotNativeData['changes'][0]) => new DocumentChange(firestore, c, converter),
     );
     this._docs = nativeData.documents.map((doc: QuerySnapshotNativeData['documents'][0]) =>
       createDeprecationProxy(new DocumentSnapshot(firestore, doc, converter)),
@@ -94,7 +93,7 @@ export default class QuerySnapshot {
     return this._docs.length;
   }
 
-  docChanges(options?: { includeMetadataChanges?: boolean }): FirestoreDocumentChange[] {
+  docChanges(options?: { includeMetadataChanges?: boolean }): DocumentChange[] {
     if (!isUndefined(options) && !isObject(options)) {
       throw new Error(
         "firebase.firestore() QuerySnapshot.docChanges(*) 'options' expected an object.",

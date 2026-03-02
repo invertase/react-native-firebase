@@ -32,7 +32,7 @@ export interface DocumentChangeNativeData {
   isMetadataChange?: boolean;
 }
 
-export default class FirestoreDocumentChange {
+export default class DocumentChange {
   _firestore: unknown;
   _nativeData: DocumentChangeNativeData;
   _isMetadataChange: boolean;
