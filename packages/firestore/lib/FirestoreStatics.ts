@@ -17,7 +17,7 @@
 
 import { createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
 import { getReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
-import FirestoreBlob from './FirestoreBlob';
+import Blob from './FirestoreBlob';
 import FieldPath from './FieldPath';
 import FieldValue from './FieldValue';
 import { Filter } from './FirestoreFilter';
@@ -29,7 +29,7 @@ import type { LogLevel } from './types/firestore';
 type FirestoreLogLevel = LogLevel;
 
 const FirestoreStatics = {
-  Blob: FirestoreBlob,
+  Blob: Blob,
   FieldPath: FieldPath,
   FieldValue: createDeprecationProxy(FieldValue),
   GeoPoint: FirestoreGeoPoint,

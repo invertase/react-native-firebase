@@ -15,10 +15,10 @@
  *
  */
 
-import FirestoreBlob from '../FirestoreBlob';
+import Blob from '../FirestoreBlob';
 import type { FirestoreBlobInternal } from '../types/internal';
 
-export class Bytes extends FirestoreBlob {
+export class Bytes extends Blob {
   constructor(blob: FirestoreBlobInternal) {
     super(true);
     // Binary string was already parsed and created; avoid reparsing.
@@ -27,14 +27,14 @@ export class Bytes extends FirestoreBlob {
 
   static fromBase64String(base64: string): Bytes {
     try {
-      return new Bytes(FirestoreBlob.fromBase64String(base64) as FirestoreBlobInternal);
+      return new Bytes(Blob.fromBase64String(base64) as FirestoreBlobInternal);
     } catch (error) {
       throw new Error(`Failed to construct data from Base64 string: ${error}`);
     }
   }
 
   static fromUint8Array(array: Uint8Array): Bytes {
-    return new Bytes(FirestoreBlob.fromUint8Array(array) as FirestoreBlobInternal);
+    return new Bytes(Blob.fromUint8Array(array) as FirestoreBlobInternal);
   }
 
   toBase64(): string {

@@ -25,7 +25,7 @@ import {
   isString,
   isUndefined,
 } from '@react-native-firebase/app/dist/module/common';
-import FirestoreBlob from '../FirestoreBlob';
+import Blob from '../FirestoreBlob';
 import { DOCUMENT_ID } from '../FieldPath';
 import FirestoreGeoPoint from '../FirestoreGeoPoint';
 import FirestorePath from '../FirestorePath';
@@ -164,7 +164,7 @@ export function generateNativeData(
       return getTypeMapInt('timestamp', [value.seconds, value.nanoseconds]);
     }
 
-    if (value instanceof FirestoreBlob || value instanceof Bytes) {
+    if (value instanceof Blob || value instanceof Bytes) {
       return getTypeMapInt('blob', value.toBase64());
     }
 

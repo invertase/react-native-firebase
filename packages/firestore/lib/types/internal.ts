@@ -33,7 +33,7 @@ import type {
 } from './firestore';
 import type { PersistentCacheIndexManager } from '../FirestorePersistentCacheIndexManager';
 import type { QueryConstraint } from '../modular/query';
-import FirestoreBlob from 'lib/FirestoreBlob';
+import Blob from 'lib/FirestoreBlob';
 import type FirestoreQuery from '../FirestoreQuery';
 
 // Helper type for wrappers that forward MODULAR_DEPRECATION_ARG via .call(...).
@@ -135,7 +135,7 @@ export interface PersistentCacheIndexManagerInternal extends PersistentCacheInde
   deleteAllIndexes(...deprecationArg: unknown[]): Promise<void>;
 }
 
-export type FirestoreBlobInternal = FirestoreBlob & { _binaryString: string };
+export type FirestoreBlobInternal = Blob & { _binaryString: string };
 
 export type QueryWithAggregateInternals = FirestoreQuery & {
   _firestore: FirestoreInternal & {

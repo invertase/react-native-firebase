@@ -17,7 +17,7 @@
 
 import { Base64, isString } from '@react-native-firebase/app/dist/module/common';
 
-export default class FirestoreBlob {
+export default class Blob {
   _binaryString: string;
 
   constructor(internal = false, binaryString?: string) {
@@ -30,29 +30,29 @@ export default class FirestoreBlob {
     this._binaryString = binaryString ?? '';
   }
 
-  static fromBase64String(base64: string): FirestoreBlob {
+  static fromBase64String(base64: string): Blob {
     if (!isString(base64) || base64.length < 1) {
       throw new Error(
         'firestore.Blob.fromBase64String expects a string of at least 1 character in length',
       );
     }
 
-    return new FirestoreBlob(true, Base64.atob(base64));
+    return new Blob(true, Base64.atob(base64));
   }
 
-  static fromUint8Array(array: Uint8Array): FirestoreBlob {
+  static fromUint8Array(array: Uint8Array): Blob {
     if (!(array instanceof Uint8Array)) {
       throw new Error('firestore.Blob.fromUint8Array expects an instance of Uint8Array');
     }
 
-    return new FirestoreBlob(
+    return new Blob(
       true,
       Array.prototype.map.call(array, (byte: number) => String.fromCharCode(byte)).join(''),
     );
   }
 
-  isEqual(blob: FirestoreBlob): boolean {
-    if (!(blob instanceof FirestoreBlob)) {
+  isEqual(blob: Blob): boolean {
+    if (!(blob instanceof Blob)) {
       throw new Error('firestore.Blob.isEqual expects an instance of Blob');
     }
 
