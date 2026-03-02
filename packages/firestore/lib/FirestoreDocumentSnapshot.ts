@@ -77,8 +77,7 @@ export default class DocumentSnapshot {
   data(options?: SnapshotOptions): unknown {
     if (
       this._converter &&
-      (this._converter as { fromFirestore?: (snapshot: DocumentSnapshot) => unknown })
-        .fromFirestore
+      (this._converter as { fromFirestore?: (snapshot: DocumentSnapshot) => unknown }).fromFirestore
     ) {
       try {
         return (
