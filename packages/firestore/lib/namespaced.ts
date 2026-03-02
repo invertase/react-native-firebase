@@ -44,8 +44,9 @@ import FirestoreStatics from './FirestoreStatics';
 import FirestoreTransactionHandler from './FirestoreTransactionHandler';
 import FirestoreWriteBatch from './FirestoreWriteBatch';
 import { LoadBundleTask } from './LoadBundleTask';
+import type { LoadBundleTaskProgress } from './types/firestore';
 import { version } from './version';
-import type { FirebaseWithFirestore, FirestoreNamespace } from './types/namespaced';
+import type { FirebaseFirestoreTypes } from './types/namespaced';
 import fallBackModule from './web/RNFBFirestoreModule';
 
 // react-native at least through 0.77 does not correctly support URL.host, which
@@ -76,13 +77,17 @@ type FirestoreModuleSettingsState = {
 };
 
 class FirebaseFirestoreModule extends FirebaseModule {
-  type: 'firestore' = 'firestore';
+  type = 'firestore' as const;
   _referencePath: FirestorePath;
   _transactionHandler: FirestoreTransactionHandler;
   _settings: FirestoreModuleSettingsState;
   _databaseId: string | null;
 
-  constructor(app: ReactNativeFirebase.FirebaseAppBase, config: ModuleConfig, databaseId?: string) {
+  constructor(
+    app: ReactNativeFirebase.FirebaseAppBase,
+    config: ModuleConfig,
+    databaseId?: string | null,
+  ) {
     super(app, config);
 
     if (isString(databaseId) || databaseId === undefined) {
@@ -160,8 +165,8 @@ class FirebaseFirestoreModule extends FirebaseModule {
     const task = new LoadBundleTask();
     this.native
       .loadBundle(bundle)
-      .then(progress => task._completeWith(progress))
-      .catch(error => task._failWith(error));
+      .then((progress: LoadBundleTaskProgress) => task._completeWith(progress))
+      .catch((error: Error) => task._failWith(error));
     return task;
   }
 
@@ -370,15 +375,16 @@ class FirebaseFirestoreModule extends FirebaseModule {
       }
 
       if (isAndroid) {
-        if (settings.host.startsWith('localhost')) {
-          settings.host = settings.host.replace('localhost', '10.0.2.2');
+        const host = settings.host as string;
+        if (host.startsWith('localhost')) {
+          settings.host = host.replace('localhost', '10.0.2.2');
           // eslint-disable-next-line no-console
           console.log(
             'Mapping firestore host "localhost" to "10.0.2.2" for android emulators. Use real IP on real devices.',
           );
         }
-        if (settings.host.startsWith('127.0.0.1')) {
-          settings.host = settings.host.replace('127.0.0.1', '10.0.2.2');
+        if ((settings.host as string).startsWith('127.0.0.1')) {
+          settings.host = (settings.host as string).replace('127.0.0.1', '10.0.2.2');
           // eslint-disable-next-line no-console
           console.log(
             'Mapping firestore host "127.0.0.1" to "10.0.2.2" for android emulators. Use real IP on real devices.',
@@ -461,6 +467,18 @@ const firestoreNamespace = createModuleNamespace({
   ModuleClass: FirebaseFirestoreModule,
 });
 
+type FirestoreNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  FirebaseFirestoreTypes.Module,
+  FirebaseFirestoreTypes.Statics
+> & {
+  firestore: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+    FirebaseFirestoreTypes.Module,
+    FirebaseFirestoreTypes.Statics
+  >;
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
 // import firestore from '@react-native-firebase/firestore';
 // firestore().X(...);
 export default firestoreNamespace as unknown as FirestoreNamespace;
@@ -468,7 +486,13 @@ export default firestoreNamespace as unknown as FirestoreNamespace;
 // import firestore, { firebase } from '@react-native-firebase/firestore';
 // firestore().X(...);
 // firebase.firestore().X(...);
-export const firebase = getFirebaseRoot() as unknown as FirebaseWithFirestore;
+export const firebase =
+  getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
+    'firestore',
+    FirebaseFirestoreTypes.Module,
+    FirebaseFirestoreTypes.Statics,
+    true
+  >;
 
 // Register the interop module for non-native platforms.
 for (const moduleName of nativeModuleName) {

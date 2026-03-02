@@ -114,7 +114,7 @@ export interface LoadBundleTaskProgress {
   taskState: TaskState;
 }
 
-export class LoadBundleTask implements PromiseLike<LoadBundleTaskProgress> {
+export declare class LoadBundleTask implements PromiseLike<LoadBundleTaskProgress> {
   onProgress(
     next?: (progress: LoadBundleTaskProgress) => unknown,
     error?: (err: Error) => unknown,
@@ -167,7 +167,7 @@ export type SnapshotOptions = {
   readonly serverTimestamps?: 'estimate' | 'previous' | 'none';
 };
 
-export class SnapshotMetadata {
+export declare class SnapshotMetadata {
   readonly fromCache: boolean;
   readonly hasPendingWrites: boolean;
   isEqual(other: SnapshotMetadata): boolean;
@@ -228,7 +228,7 @@ export type NestedUpdateFields<T extends Record<string, unknown>> = UnionToInter
 
 export type UpdateData<T> = T extends Primitive
   ? T
-  : T extends object
+  : T extends Record<string, unknown>
     ? {
         [K in keyof T]?: UpdateData<T[K]> | FieldValue;
       } & NestedUpdateFields<T>
@@ -257,7 +257,10 @@ export interface FirestoreDataConverter<
   ): AppModelType;
 }
 
-export class Query<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData> {
+export declare class Query<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+> {
   readonly converter: FirestoreDataConverter<AppModelType, DbModelType> | null;
   readonly type: 'query' | 'collection';
   readonly firestore: Firestore;
@@ -267,7 +270,7 @@ export class Query<AppModelType = DocumentData, DbModelType extends DocumentData
   ): Query<NewAppModelType, NewDbModelType>;
 }
 
-export class CollectionReference<
+export declare class CollectionReference<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
 > extends Query<AppModelType, DbModelType> {
@@ -281,7 +284,7 @@ export class CollectionReference<
   ): CollectionReference<NewAppModelType, NewDbModelType>;
 }
 
-export class DocumentReference<
+export declare class DocumentReference<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
 > {
@@ -297,7 +300,7 @@ export class DocumentReference<
   ): DocumentReference<NewAppModelType, NewDbModelType>;
 }
 
-export class WriteBatch {
+export declare class WriteBatch {
   set<AppModelType, DbModelType extends DocumentData>(
     documentRef: DocumentReference<AppModelType, DbModelType>,
     data: WithFieldValue<AppModelType>,
@@ -329,9 +332,9 @@ export class WriteBatch {
   commit(): Promise<void>;
 }
 
-export class LiteTransaction {}
+export declare class LiteTransaction {}
 
-export class Transaction extends LiteTransaction {
+export declare class Transaction extends LiteTransaction {
   get<AppModelType, DbModelType extends DocumentData>(
     documentRef: DocumentReference<AppModelType, DbModelType>,
   ): Promise<DocumentSnapshot<AppModelType, DbModelType>>;
@@ -365,7 +368,7 @@ export class Transaction extends LiteTransaction {
   ): this;
 }
 
-export class DocumentSnapshot<
+export declare class DocumentSnapshot<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
 > {
@@ -377,14 +380,14 @@ export class DocumentSnapshot<
   get ref(): DocumentReference<AppModelType, DbModelType>;
 }
 
-export class QueryDocumentSnapshot<
+export declare class QueryDocumentSnapshot<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
 > extends DocumentSnapshot<AppModelType, DbModelType> {
   data(options?: SnapshotOptions): AppModelType;
 }
 
-export class QuerySnapshot<
+export declare class QuerySnapshot<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
 > {
@@ -401,6 +404,5 @@ export class QuerySnapshot<
 }
 
 // Utility aliases for later migration steps.
-export type ModularTypes = typeof import('../modular/index');
 export type ModularQueryTypes = typeof import('../modular/query');
 export type ModularSnapshotTypes = typeof import('../modular/snapshot');

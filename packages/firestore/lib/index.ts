@@ -18,8 +18,53 @@
 // Export modular API functions
 export * from './modular';
 
-// Export modular/public type helpers
-export type * from './types/firestore';
+// Export modular/public type helpers.
+// DocumentSnapshot, LoadBundleTask, QuerySnapshot, SnapshotMetadata, WriteBatch
+// are excluded here because they are already exported as values from './modular'.
+export type {
+  FirebaseApp,
+  Firestore,
+  LogLevel,
+  ExperimentalLongPollingOptions,
+  PersistenceSettings,
+  MemoryLocalCache,
+  PersistentLocalCache,
+  FirestoreLocalCache,
+  FirestoreSettings,
+  PrivateSettings,
+  AggregateType,
+  AggregateFieldType,
+  AggregateSpec,
+  AggregateSpecData,
+  EmulatorMockTokenOptions,
+  TaskState,
+  LoadBundleTaskProgress,
+  SetOptions,
+  WhereFilterOp,
+  OrderByDirection,
+  QueryConstraintType,
+  SnapshotListenOptions,
+  SnapshotOptions,
+  DocumentChangeType,
+  Unsubscribe,
+  DocumentChange,
+  Primitive,
+  DocumentData,
+  PartialWithFieldValue,
+  UnionToIntersection,
+  AddPrefixToKeys,
+  ChildUpdateFields,
+  NestedUpdateFields,
+  UpdateData,
+  WithFieldValue,
+  FirestoreDataConverter,
+  Query,
+  CollectionReference,
+  DocumentReference,
+  LiteTransaction,
+  Transaction,
+  QueryDocumentSnapshot,
+} from './types/firestore';
 
 // Export namespaced API and default export
 export * from './namespaced';

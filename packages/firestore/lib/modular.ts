@@ -81,22 +81,25 @@ export function getFirestore(
   appOrDatabaseId?: FirebaseApp | string,
   databaseId?: string,
 ): Firestore {
+  const app = (name?: string) =>
+    getApp(name) as unknown as { firestore(databaseId?: string): Firestore };
+
   if (typeof appOrDatabaseId === 'string') {
-    return getApp().firestore(appOrDatabaseId);
+    return app().firestore(appOrDatabaseId);
   }
 
   if (appOrDatabaseId) {
     if (databaseId) {
-      return getApp(appOrDatabaseId.name).firestore(databaseId);
+      return app(appOrDatabaseId.name).firestore(databaseId);
     }
-    return getApp(appOrDatabaseId.name).firestore();
+    return app(appOrDatabaseId.name).firestore();
   }
 
   if (databaseId) {
-    return getApp().firestore(databaseId);
+    return app().firestore(databaseId);
   }
 
-  return getApp().firestore();
+  return app().firestore();
 }
 
 export function doc<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
@@ -115,11 +118,11 @@ export function doc<AppModelType = DocumentData, DbModelType extends DocumentDat
       pathSegments.map(segment => segment.replace(/^\/|\/$/g, '')).join('/');
   }
 
-  return (parent as ParentReferenceInternal).doc.call(
+  return (parent as unknown as ParentReferenceInternal).doc.call(
     parent,
     resolvedPath,
     MODULAR_DEPRECATION_ARG,
-  );
+  ) as DocumentReference<AppModelType, DbModelType>;
 }
 
 export function collection<
@@ -138,7 +141,7 @@ export function collection<
     resolvedPath = `${resolvedPath}/${pathSegments.map(segment => segment.replace(/^\/|\/$/g, '')).join('/')}`;
   }
 
-  return (parent as ParentReferenceInternal).collection.call(
+  return (parent as unknown as ParentReferenceInternal).collection.call(
     parent,
     resolvedPath,
     MODULAR_DEPRECATION_ARG,
@@ -153,7 +156,7 @@ export function refEqual<AppModelType, DbModelType extends DocumentData>(
     | DocumentReference<AppModelType, DbModelType>
     | CollectionReference<AppModelType, DbModelType>,
 ): boolean {
-  return (left as ReferenceInternal<AppModelType, DbModelType>).isEqual.call(
+  return (left as unknown as ReferenceInternal<AppModelType, DbModelType>).isEqual.call(
     left,
     right,
     MODULAR_DEPRECATION_ARG,
@@ -218,7 +221,7 @@ export function setDoc<AppModelType, DbModelType extends DocumentData>(
   data: WithFieldValue<AppModelType> | PartialWithFieldValue<AppModelType>,
   options?: SetOptions,
 ): Promise<void> {
-  return (reference as DocumentReferenceInternal<AppModelType, DbModelType>).set.call(
+  return (reference as unknown as DocumentReferenceInternal<AppModelType, DbModelType>).set.call(
     reference,
     data,
     options,
@@ -232,7 +235,7 @@ export function updateDoc<AppModelType, DbModelType extends DocumentData>(
   value?: unknown,
   ...moreFieldsAndValues: unknown[]
 ): Promise<void> {
-  const ref = reference as DocumentReferenceInternal<AppModelType, DbModelType>;
+  const ref = reference as unknown as DocumentReferenceInternal<AppModelType, DbModelType>;
 
   if (!fieldOrUpdateData) {
     return ref.update.call(reference, MODULAR_DEPRECATION_ARG);
@@ -259,7 +262,7 @@ export function addDoc<AppModelType, DbModelType extends DocumentData>(
   reference: CollectionReference<AppModelType, DbModelType>,
   data: WithFieldValue<AppModelType>,
 ): Promise<DocumentReference<AppModelType, DbModelType>> {
-  return (reference as CollectionReferenceInternal<AppModelType, DbModelType>).add.call(
+  return (reference as unknown as CollectionReferenceInternal<AppModelType, DbModelType>).add.call(
     reference,
     data,
     MODULAR_DEPRECATION_ARG,
@@ -299,8 +302,8 @@ export async function initializeFirestore(
   settings: FirestoreSettings,
   databaseId?: string,
 ): Promise<Firestore> {
-  const firebase = getApp(app.name);
-  const firestore = firebase.firestore(databaseId) as FirestoreInternal;
+  const firebase = getApp(app.name) as unknown as { firestore(databaseId?: string): Firestore };
+  const firestore = firebase.firestore(databaseId) as unknown as FirestoreInternal;
   await firestore.settings.call(firestore, settings, MODULAR_DEPRECATION_ARG);
   return firestore;
 }
@@ -338,7 +341,7 @@ export function runTransaction<T>(
 export function getCountFromServer<AppModelType, DbModelType extends DocumentData>(
   query: Query<AppModelType, DbModelType>,
 ): Promise<AggregateQuerySnapshot<{ count: AggregateField<number> }, AppModelType, DbModelType>> {
-  return (query as QueryInternal<AppModelType, DbModelType>).count
+  return (query as unknown as QueryInternal<AppModelType, DbModelType>).count
     .call(query, MODULAR_DEPRECATION_ARG)
     .get() as Promise<
     AggregateQuerySnapshot<{ count: AggregateField<number> }, AppModelType, DbModelType>
@@ -417,7 +420,7 @@ export function getAggregateFromServer<
       aggregateQueries,
     )
     .then(
-      data =>
+      (data: { count?: number; [key: string]: unknown }) =>
         new AggregateQuerySnapshot(query, data, false) as AggregateQuerySnapshot<
           AggregateSpecType,
           AppModelType,

@@ -20,12 +20,13 @@ import { _Filter, Filter } from '../FirestoreFilter';
 import type {
   DocumentData,
   DocumentReference,
+  DocumentSnapshot,
   OrderByDirection,
   Query,
   QueryConstraintType,
+  QuerySnapshot,
   WhereFilterOp,
 } from '../types/firestore';
-import type { DocumentSnapshot, QuerySnapshot } from './snapshot';
 import type { FieldPath } from './FieldPath';
 
 export type { OrderByDirection, QueryConstraintType, WhereFilterOp } from '../types/firestore';
@@ -38,7 +39,7 @@ export abstract class QueryConstraint {
     this._args = args;
   }
 
-  private _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+  _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
     query: Query<AppModelType, DbModelType>,
   ): Query<AppModelType, DbModelType> {
     const method = (
@@ -53,14 +54,14 @@ export abstract class QueryConstraint {
 
 export class QueryCompositeFilterConstraint {
   readonly type: 'or' | 'and';
-  private readonly _filter: _Filter;
+  readonly _filter: _Filter;
 
   constructor(type: 'or' | 'and', filters: _Filter[]) {
     this.type = type;
     this._filter = type === 'or' ? Filter.or(...filters) : Filter.and(...filters);
   }
 
-  private _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+  _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
     query: Query<AppModelType, DbModelType>,
   ): Query<AppModelType, DbModelType> {
     const where = (
@@ -109,7 +110,7 @@ export class QueryEndAtConstraint extends QueryConstraint {
 
 export class QueryFieldFilterConstraint extends QueryConstraint {
   readonly type = 'where';
-  private readonly _filter: _Filter;
+  readonly _filter: _Filter;
 
   constructor(fieldPath: string | FieldPath, opStr: WhereFilterOp, value: unknown) {
     super(fieldPath, opStr, value);

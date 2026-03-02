@@ -103,6 +103,8 @@ export class AggregateField<T = unknown> {
   readonly type = 'AggregateField';
   readonly aggregateType: AggregateType;
   readonly _internalFieldPath?: FieldPath;
+  // Phantom property to anchor the type parameter T for AggregateSpecData inference.
+  _phantomType?: T;
 
   constructor(aggregateType: AggregateType = 'count', fieldPath?: FieldPath) {
     this.aggregateType = aggregateType;

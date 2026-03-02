@@ -34,6 +34,7 @@ import QuerySnapshot from './FirestoreQuerySnapshot';
 import { parseSnapshotArgs, validateWithConverter } from './utils';
 
 import type FirestorePath from './FirestorePath';
+import type { DocumentData, FirestoreDataConverter } from './types/firestore';
 
 let _id = 0;
 
@@ -42,14 +43,17 @@ export default class FirestoreQuery {
   _collectionPath: FirestorePath;
   _modifiers: FirestoreQueryModifiers;
   _queryName: string | undefined;
-  _converter: unknown;
+  _converter: FirestoreDataConverter<DocumentData, DocumentData> | null;
+
+  /** Satisfies Query<DocumentData, DocumentData> for AggregateQuerySnapshot and similar. */
+  readonly type = 'query' as const;
 
   constructor(
     firestore: any,
     collectionPath: FirestorePath,
     modifiers: FirestoreQueryModifiers,
     queryName?: string,
-    converter?: unknown,
+    converter?: FirestoreDataConverter<DocumentData, DocumentData> | null,
   ) {
     this._firestore = firestore;
     this._collectionPath = collectionPath;
@@ -62,7 +66,7 @@ export default class FirestoreQuery {
     return this._firestore;
   }
 
-  get converter(): unknown {
+  get converter(): FirestoreDataConverter<DocumentData, DocumentData> | null {
     return this._converter;
   }
 
@@ -605,7 +609,7 @@ export default class FirestoreQuery {
       this._collectionPath,
       this._modifiers,
       this._queryName,
-      converter,
+      converter as FirestoreDataConverter<DocumentData, DocumentData>,
     );
   }
 }

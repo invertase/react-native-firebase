@@ -29,10 +29,10 @@ import type {
   WithFieldValue,
   AggregateType,
   PartialWithFieldValue,
+  QuerySnapshot,
 } from './firestore';
 import type { PersistentCacheIndexManager } from '../FirestorePersistentCacheIndexManager';
 import type { QueryConstraint } from '../modular/query';
-import type { QuerySnapshot } from '../modular/snapshot';
 import FirestoreBlob from 'lib/FirestoreBlob';
 import type FirestoreQuery from '../FirestoreQuery';
 

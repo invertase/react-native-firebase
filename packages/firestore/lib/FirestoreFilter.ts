@@ -95,10 +95,7 @@ Filter.and = function and(...queries: _Filter[]): _Filter {
   return new _Filter(null, null, null, AND_QUERY, queries);
 };
 
-function hasOrOperator(obj: {
-  operator: unknown;
-  queries?: Array<{ operator: unknown; queries?: unknown[] }>;
-}): boolean {
+function hasOrOperator(obj: { operator: unknown; queries?: unknown[] }): boolean {
   return (
     obj.operator === OR_QUERY ||
     (Array.isArray(obj.queries) &&
@@ -123,23 +120,15 @@ Filter.or = function or(...queries: _Filter[]): _Filter {
   return new _Filter(null, null, null, OR_QUERY, queries);
 };
 
+interface FilterMap {
+  fieldPath?: unknown;
+  operator: unknown;
+  value?: unknown;
+  queries?: FilterMap[];
+}
+
 function mapFieldQuery(
-  {
-    fieldPath,
-    operator,
-    value,
-    queries,
-  }: {
-    fieldPath?: unknown;
-    operator: unknown;
-    value?: unknown;
-    queries?: Array<{
-      fieldPath?: unknown;
-      operator: unknown;
-      value?: unknown;
-      queries?: unknown[];
-    }>;
-  },
+  { fieldPath, operator, value, queries }: FilterMap,
   modifiers: {
     isValidOperator(operator: unknown): boolean;
     isEqualOperator(operator: unknown): boolean;
