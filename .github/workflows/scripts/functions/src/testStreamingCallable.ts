@@ -20,7 +20,7 @@ export const testStreamingCallable = onCall(
     for (let i = 0; i < count; i++) {
       // Wait for the specified delay
       await new Promise(resolve => setTimeout(resolve, delay));
-      
+
       if (response) {
         await response.sendChunk({
           index: i,
@@ -31,6 +31,7 @@ export const testStreamingCallable = onCall(
             isEven: i % 2 === 0,
           },
         });
+        logger.info(`testStreamingCallable send chunk ${i + 1}`);
       }
     }
 
@@ -43,10 +44,7 @@ export const testStreamingCallable = onCall(
  * Test streaming callable that sends progressive updates
  */
 export const testProgressStream = onCall(
-  async (
-    req: CallableRequest<{ task?: string }>,
-    response?: CallableResponse<any>,
-  ) => {
+  async (req: CallableRequest<{ task?: string }>, response?: CallableResponse<any>) => {
     const task = req.data.task || 'Processing';
 
     logger.info('testProgressStream called', { task });

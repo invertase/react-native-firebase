@@ -588,3 +588,4 @@ mocks-lookup.ts
 
 .nx/
 .claude/
+.codex/
