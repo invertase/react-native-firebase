@@ -25,7 +25,7 @@ import {
   isUndefined,
 } from '@react-native-firebase/app/dist/module/common';
 import NativeError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
-import { FirestoreAggregateQuery } from './FirestoreAggregate';
+import { AggregateQuery } from './FirestoreAggregate';
 import DocumentSnapshot from './FirestoreDocumentSnapshot';
 import FieldPath, { fromDotSeparatedString } from './FieldPath';
 import { _Filter, generateFilters } from './FirestoreFilter';
@@ -166,7 +166,7 @@ export default class FirestoreQuery {
 
   count(): ReturnType<typeof createDeprecationProxy> {
     return createDeprecationProxy(
-      new FirestoreAggregateQuery(this._firestore, this, this._collectionPath, this._modifiers),
+      new AggregateQuery(this._firestore, this, this._collectionPath, this._modifiers),
     );
   }
 

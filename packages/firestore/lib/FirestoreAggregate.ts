@@ -28,7 +28,7 @@ import type FirestorePath from './FirestorePath';
 import type FirestoreQuery from './FirestoreQuery';
 import type FirestoreQueryModifiers from './FirestoreQueryModifiers';
 
-export class FirestoreAggregateQuery {
+export class AggregateQuery {
   _firestore: any;
   _query: FirestoreQuery;
   _collectionPath: FirestorePath;
