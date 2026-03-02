@@ -18,7 +18,6 @@ import remoteConfig, {
   getValue,
   setLogLevel,
   isSupported,
-  settings,
   reset,
   setConfigSettings,
   setDefaults,
@@ -200,7 +199,7 @@ isSupported().then((supported: boolean) => {
 });
 
 console.log(modularRemoteConfig1.fetchTimeMillis);
-console.log(settings(modularRemoteConfig1));
+console.log(modularRemoteConfig1.settings);
 console.log(modularRemoteConfig1.lastFetchStatus);
 
 reset(modularRemoteConfig1).then(() => {

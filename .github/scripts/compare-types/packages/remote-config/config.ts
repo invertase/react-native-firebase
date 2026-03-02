@@ -44,13 +44,6 @@ const config: PackageConfig = {
         'the firebase-js-sdk modular API.',
     },
     {
-      name: 'settings',
-      reason:
-        'Getter function returning the current `ConfigSettings`. In the ' +
-        'firebase-js-sdk settings are accessed via the `settings` property ' +
-        'on the `RemoteConfig` object rather than a standalone function.',
-    },
-    {
       name: 'onConfigUpdated',
       reason:
         'Deprecated RN Firebase listener for real-time config updates. ' +

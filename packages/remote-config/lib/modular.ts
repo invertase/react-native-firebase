@@ -13,7 +13,6 @@ import type {
 } from './types/modular';
 import type {
   ConfigDefaults,
-  ConfigSettings,
   RemoteConfigWithDeprecationArg,
   RemoteConfigWithSetCustomSignalsNative,
 } from './types/internal';
@@ -164,16 +163,6 @@ export function isSupported(): Promise<boolean> {
 }
 
 /**
- * Returns a ConfigSettings object which provides the properties `minimumFetchIntervalMillis` & `fetchTimeMillis` if they have been set
- * using setConfigSettings({ fetchTimeMillis: number, minimumFetchIntervalMillis: number }).
- * @param remoteConfig - RemoteConfig instance
- * @returns ConfigSettings
- */
-export function settings(remoteConfig: RemoteConfig): ConfigSettings {
-  return remoteConfig.settings;
-}
-
-/**
  * Deletes all activated, fetched and defaults configs and resets all Firebase Remote Config settings.
  * Android only. iOS does not reset anything.
  * @param remoteConfig - RemoteConfig instance
@@ -186,7 +175,7 @@ export function reset(remoteConfig: RemoteConfig): Promise<void> {
 /**
  * Set the Remote Config settings, currently able to set `fetchTimeMillis` & `minimumFetchIntervalMillis`.
  * @param remoteConfig - RemoteConfig instance
- * @param settings - ConfigSettings instance
+ * @param settings - RemoteConfigSettings instance
  * @returns Promise<void>
  */
 export function setConfigSettings(
