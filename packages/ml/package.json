@@ -33,10 +33,6 @@
     "access": "public",
     "provenance": true
   },
-  "devDependencies": {
-    "react-native-builder-bob": "^0.40.17",
-    "typescript": "^5.9.3"
-  },
   "exports": {
     ".": {
       "source": "./lib/index.ts",
