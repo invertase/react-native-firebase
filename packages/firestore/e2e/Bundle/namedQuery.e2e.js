@@ -47,7 +47,7 @@ describe('firestore().namedQuery()', function () {
       const query = firebase.firestore().namedQuery(BUNDLE_QUERY_NAME);
       const snapshot = await query.get({ source: 'cache' });
 
-      snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
+      snapshot.constructor.name.should.eql('QuerySnapshot');
       snapshot.docs.forEach(doc => {
         doc.data().number.should.equalOneOf(1, 2, 3);
         doc.metadata.fromCache.should.eql(true);
@@ -125,7 +125,7 @@ describe('firestore().namedQuery()', function () {
       const query = namedQuery(getFirestore(), BUNDLE_QUERY_NAME);
       const snapshot = await getDocsFromCache(query);
 
-      snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
+      snapshot.constructor.name.should.eql('QuerySnapshot');
       snapshot.docs.forEach(doc => {
         doc.data().number.should.equalOneOf(1, 2, 3);
         doc.metadata.fromCache.should.eql(true);

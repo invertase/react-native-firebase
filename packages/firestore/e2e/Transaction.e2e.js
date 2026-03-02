@@ -107,7 +107,7 @@ describe('firestore.Transaction', function () {
 
         await firebase.firestore().runTransaction(async t => {
           const docSnapshot = await t.get(docRef);
-          docSnapshot.constructor.name.should.eql('FirestoreDocumentSnapshot');
+          docSnapshot.constructor.name.should.eql('DocumentSnapshot');
           docSnapshot.exists().should.eql(true);
           docSnapshot.id.should.eql('get-delete');
 
@@ -483,7 +483,7 @@ describe('firestore.Transaction', function () {
 
         await runTransaction(db, async t => {
           const docSnapshot = await t.get(docRef);
-          docSnapshot.constructor.name.should.eql('FirestoreDocumentSnapshot');
+          docSnapshot.constructor.name.should.eql('DocumentSnapshot');
           docSnapshot.exists().should.eql(true);
           docSnapshot.id.should.eql('get-delete');
 

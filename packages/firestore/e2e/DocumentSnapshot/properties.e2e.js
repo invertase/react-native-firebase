@@ -60,7 +60,7 @@ describe('firestore().doc() -> snapshot', function () {
     it('.metadata -> returns a SnapshotMetadata instance', async function () {
       const ref = firebase.firestore().doc(`${COLLECTION}/exists`);
       const snapshot = await ref.get();
-      snapshot.metadata.constructor.name.should.eql('FirestoreSnapshotMetadata');
+      snapshot.metadata.constructor.name.should.eql('SnapshotMetadata');
     });
 
     it('.ref -> returns the correct document ref', async function () {
@@ -111,7 +111,7 @@ describe('firestore().doc() -> snapshot', function () {
       const { getFirestore, doc, getDoc } = firestoreModular;
       const ref = doc(getFirestore(), `${COLLECTION}/exists`);
       const snapshot = await getDoc(ref);
-      snapshot.metadata.constructor.name.should.eql('FirestoreSnapshotMetadata');
+      snapshot.metadata.constructor.name.should.eql('SnapshotMetadata');
     });
 
     it('.ref -> returns the correct document ref', async function () {

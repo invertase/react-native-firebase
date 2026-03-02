@@ -113,7 +113,7 @@ describe('Second Database', function () {
 
           await firestore.runTransaction(async t => {
             const docSnapshot = await t.get(docRef);
-            docSnapshot.constructor.name.should.eql('FirestoreDocumentSnapshot');
+            docSnapshot.constructor.name.should.eql('DocumentSnapshot');
             docSnapshot.exists().should.eql(true);
             docSnapshot.id.should.eql('get-delete');
 
@@ -486,7 +486,7 @@ describe('Second Database', function () {
 
           await runTransaction(db, async t => {
             const docSnapshot = await t.get(docRef);
-            docSnapshot.constructor.name.should.eql('FirestoreDocumentSnapshot');
+            docSnapshot.constructor.name.should.eql('DocumentSnapshot');
             docSnapshot.exists().should.eql(true);
             docSnapshot.id.should.eql('get-delete');
 
