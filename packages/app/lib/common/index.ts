@@ -493,7 +493,7 @@ const mapOfDeprecationReplacements: DeprecationMap = {
       getValue: 'getValue()',
       reset: 'reset()',
       setConfigSettings: 'setConfigSettings()',
-      fetch: 'fetch()',
+      fetch: 'fetchConfig()',
       setDefaults: 'setDefaults()',
       setDefaultsFromResource: 'setDefaultsFromResource()',
       onConfigUpdated: 'onConfigUpdated()',

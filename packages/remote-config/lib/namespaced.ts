@@ -38,12 +38,12 @@ import { version } from './version';
 import { LastFetchStatus, ValueSource } from './statics';
 import type { FirebaseRemoteConfigTypes } from './types/namespaced';
 import type {
-  ConstantsUpdate,
   NativeConstantsResult,
   ConfigUpdatedEvent,
   SetConfigSettingsWithInternalArg,
   SetDefaultsWithInternalArg,
   OnConfigUpdatedListenerCallback,
+  UpdateFromConstantsPayload,
 } from './types/internal';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
@@ -389,12 +389,7 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> {
     };
   }
 
-  _updateFromConstants(
-    constants:
-      | ConstantsUpdate
-      | FirebaseRemoteConfigTypes.ConfigDefaults
-      | FirebaseRemoteConfigTypes.ConfigSettings,
-  ): void {
+  _updateFromConstants(constants: UpdateFromConstantsPayload): void {
     const c = constants as Record<string, unknown>;
     // Wrapped this as we update using sync getters initially for `defaultConfig` & `settings`
     if (typeof c.lastFetchTime === 'number') {
@@ -402,7 +397,7 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> {
     }
 
     // Wrapped this as we update using sync getters initially for `defaultConfig` & `settings`
-    if (typeof c.lastFetchStatus === 'string') {
+    if (c.lastFetchStatus) {
       this._lastFetchStatus = c.lastFetchStatus as FirebaseRemoteConfigTypes.FetchStatus;
     }
 
@@ -415,12 +410,9 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> {
         minimumFetchIntervalMillis: c.minimumFetchInterval * 1000,
       };
     } else if (
-      typeof (c as unknown as FirebaseRemoteConfigTypes.ConfigSettings).fetchTimeMillis ===
-        'number' ||
-      typeof (c as unknown as FirebaseRemoteConfigTypes.ConfigSettings).fetchTimeoutMillis ===
-        'number' ||
-      typeof (c as unknown as FirebaseRemoteConfigTypes.ConfigSettings)
-        .minimumFetchIntervalMillis === 'number'
+      'fetchTimeMillis' in c ||
+      'fetchTimeoutMillis' in c ||
+      'minimumFetchIntervalMillis' in c
     ) {
       const s = c as unknown as FirebaseRemoteConfigTypes.ConfigSettings;
       const timeoutMillis =
@@ -434,9 +426,7 @@ class FirebaseConfigModule extends FirebaseModule<typeof nativeModuleName> {
       };
     }
 
-    if (c.values && typeof c.values === 'object' && !Array.isArray(c.values)) {
-      this._values = Object.freeze(c.values) as Record<string, { value: string; source: string }>;
-    }
+    this._values = Object.freeze(c.values);
   }
 
   _promiseWithConstants<T>(promise: Promise<NativeConstantsResult>): Promise<T> {

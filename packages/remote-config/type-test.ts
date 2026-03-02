@@ -24,7 +24,6 @@ import remoteConfig, {
   setDefaults,
   setDefaultsFromResource,
   onConfigUpdate,
-  onConfigUpdated,
   setCustomSignals,
   LastFetchStatus,
   ValueSource,
@@ -249,22 +248,6 @@ const modularUnsubscribeOnConfigUpdate = onConfigUpdate(modularRemoteConfig1, {
   },
 });
 modularUnsubscribeOnConfigUpdate();
-
-const modularUnsubscribeOnConfigUpdated = onConfigUpdated(
-  modularRemoteConfig1,
-  (
-    event?: { updatedKeys: string[] },
-    error?: { code: string; message: string; nativeErrorMessage: string },
-  ) => {
-    if (event) {
-      console.log(event.updatedKeys);
-    }
-    if (error) {
-      console.log(error);
-    }
-  },
-);
-modularUnsubscribeOnConfigUpdated();
 
 // Explicit use of modular type CustomSignals (from lib/types/modular)
 const customSignals: CustomSignals = { signal1: 'value1', signal2: 123, signal3: null };

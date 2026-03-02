@@ -380,7 +380,7 @@ describe('remoteConfig()', function () {
           remoteConfigV9Deprecation(
             () => fetchConfig(remoteConfig),
             () => remoteConfig.fetch(),
-            'fetchConfig',
+            'fetch', // namespaced method name (proxy passes .fetch)
           );
         });
 

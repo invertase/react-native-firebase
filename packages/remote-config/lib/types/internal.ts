@@ -62,6 +62,12 @@ export type ConfigSettings = RemoteConfigSettings;
 export type ConfigDefaults = { [key: string]: string | number | boolean };
 
 /**
+ * Payload for _updateFromConstants: native constants result, defaults, or settings.
+ * Used to type the parameter so callers pass a known shape; implementation narrows at runtime.
+ */
+export type UpdateFromConstantsPayload = ConstantsUpdate | ConfigDefaults | ConfigSettings;
+
+/**
  * setConfigSettings when called from the settings setter (internal second arg).
  * Used by namespaced bridge; uses namespaced ConfigSettings to match FirebaseRemoteConfigTypes.
  */
