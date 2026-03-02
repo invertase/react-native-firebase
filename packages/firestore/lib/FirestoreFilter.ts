@@ -39,14 +39,14 @@ export class _Filter {
   fieldPath?: unknown;
   operator: unknown;
   value?: unknown;
-  queries: _Filter[];
+  queries?: _Filter[];
 
   constructor(
     fieldPath: unknown,
     operator: unknown,
     value: unknown,
     filterOperator?: FilterOperator,
-    queries: _Filter[] = [],
+    queries?: _Filter[],
   ) {
     if ([AND_QUERY, OR_QUERY].includes(filterOperator as FilterOperator)) {
       this.operator = filterOperator;
@@ -57,19 +57,18 @@ export class _Filter {
     this.fieldPath = fieldPath;
     this.operator = operator;
     this.value = value;
-    this.queries = [];
   }
 
   _toMap(): {
     fieldPath?: unknown;
     operator: unknown;
     value?: unknown;
-    queries: ReturnType<_Filter['_toMap']>[];
+    queries?: ReturnType<_Filter['_toMap']>[];
   } {
     if ([AND_QUERY, OR_QUERY].includes(this.operator as FilterOperator)) {
       return {
         operator: this.operator,
-        queries: this.queries.map(query => query._toMap()),
+        queries: this.queries!.map(query => query._toMap()),
       };
     }
 
@@ -77,7 +76,6 @@ export class _Filter {
       fieldPath: this.fieldPath,
       operator: this.operator,
       value: this.value,
-      queries: [],
     };
   }
 }
@@ -211,6 +209,6 @@ export function generateFilters(
   const filterMap = filter._toMap();
   return {
     operator: filterMap.operator,
-    queries: filterMap.queries.map(query => mapFieldQuery(query, modifiers)),
+    queries: filterMap.queries!.map(query => mapFieldQuery(query, modifiers)),
   };
 }
