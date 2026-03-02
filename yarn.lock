@@ -5927,6 +5927,9 @@ __metadata:
 "@react-native-firebase/ml@npm:23.8.6, @react-native-firebase/ml@workspace:packages/ml":
   version: 0.0.0-use.local
   resolution: "@react-native-firebase/ml@workspace:packages/ml"
+  dependencies:
+    react-native-builder-bob: "npm:^0.40.17"
+    typescript: "npm:^5.9.3"
   peerDependencies:
     "@react-native-firebase/app": 23.8.6
   languageName: unknown
