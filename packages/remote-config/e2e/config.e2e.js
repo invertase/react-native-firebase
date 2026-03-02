@@ -374,8 +374,7 @@ describe('remoteConfig()', function () {
 
     describe('fetch()', function () {
       it('with expiration provided', async function () {
-        const { getRemoteConfig, ensureInitialized, fetchConfig, LastFetchStatus } =
-          remoteConfigModular;
+        const { getRemoteConfig, ensureInitialized, fetchConfig } = remoteConfigModular;
         const date = Date.now() - 30000;
         const remoteConfig = getRemoteConfig();
         await ensureInitialized(remoteConfig);
@@ -386,7 +385,7 @@ describe('remoteConfig()', function () {
         }
 
         await fetchConfig(remoteConfig, 0);
-        remoteConfig.lastFetchStatus.should.equal(LastFetchStatus.SUCCESS);
+        remoteConfig.lastFetchStatus.should.equal('success');
         should.equal(getRemoteConfig().fetchTimeMillis >= date, true);
       });
 
