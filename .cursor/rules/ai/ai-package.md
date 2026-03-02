@@ -294,6 +294,16 @@ registerVersion(name, version);
 
 **Reason**: Chrome's on-device AI is browser-specific and not available in React Native. This is a web-only feature.
 
+### Audio Conversation (startAudioConversation, etc.)
+**Firebase JS SDK has:**
+- `src/methods/live-session-helpers.ts` – `startAudioConversation`, `AudioConversationController`, `StartAudioConversationOptions`
+- Uses Web Audio API (`AudioContext`, `AudioWorkletNode`, `AudioWorkletProcessor`), `navigator.mediaDevices.getUserMedia()`, and `MediaStream` for mic capture and playback
+
+**React Native Firebase does NOT have:**
+- `live-session-helpers.ts` or any audio-conversation exports
+
+**Reason**: Audio conversation depends on browser-only APIs (Web Audio API, getUserMedia). React Native has no equivalent; mic and playback use different native modules or libraries. Do not port.
+
 ### Browser-Specific APIs Not Used
 - No `window` object references (except in comments/docs)
 - No `document` object usage (except in JSDoc examples)
@@ -707,6 +717,7 @@ Any difference NOT documented in these cursor rules is a potential feature gap.
 | **Chrome Adapter** | ✅ Has | ❌ Doesn't have | Browser-only feature |
 | **Hybrid Mode** | ✅ Has | ❌ Doesn't have | Browser-only feature |
 | **HybridParams** | ✅ Has | ❌ Doesn't have | Browser-only feature |
+| **Audio Conversation** (startAudioConversation, etc.) | ✅ Has | ❌ Doesn't have | Web Audio API / getUserMedia not in RN |
 | **Polyfills** | ❌ Doesn't need | ✅ Requires | RN environment |
 | **Dependencies** | `@firebase/*` | `@react-native-firebase/*` | Different ecosystem |
 | **AIService** | Complex (with _FirebaseService) | Simple | Different architecture |

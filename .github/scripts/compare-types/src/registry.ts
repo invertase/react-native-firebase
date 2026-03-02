@@ -13,7 +13,6 @@
 import path from 'path';
 import type { PackageConfig } from './types';
 
-import remoteConfigConfig from '../packages/remote-config/config';
 import firestoreConfig from '../packages/firestore/config';
 
 const SCRIPT_DIR = path.resolve(__dirname, '..');
