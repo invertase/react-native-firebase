@@ -4,7 +4,6 @@ import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/
 import type {
   ConfigUpdateObserver,
   CustomSignals,
-  FetchStatus,
   LogLevel,
   RemoteConfig,
   Unsubscribe,
@@ -165,15 +164,6 @@ export function isSupported(): Promise<boolean> {
 }
 
 /**
- * Indicates the default value in milliseconds to abandon a pending fetch request made to the Remote Config server. Defaults to 60000 (One minute).
- * @param remoteConfig - RemoteConfig instance
- * @returns number
- */
-export function fetchTimeMillis(remoteConfig: RemoteConfig): number {
-  return remoteConfig.fetchTimeMillis;
-}
-
-/**
  * Returns a ConfigSettings object which provides the properties `minimumFetchIntervalMillis` & `fetchTimeMillis` if they have been set
  * using setConfigSettings({ fetchTimeMillis: number, minimumFetchIntervalMillis: number }).
  * @param remoteConfig - RemoteConfig instance
@@ -181,15 +171,6 @@ export function fetchTimeMillis(remoteConfig: RemoteConfig): number {
  */
 export function settings(remoteConfig: RemoteConfig): ConfigSettings {
   return remoteConfig.settings;
-}
-
-/**
- * The status of the latest Remote Config fetch action.
- * @param remoteConfig - RemoteConfig instance
- * @returns FetchStatus
- */
-export function lastFetchStatus(remoteConfig: RemoteConfig): FetchStatus {
-  return remoteConfig.lastFetchStatus;
 }
 
 /**

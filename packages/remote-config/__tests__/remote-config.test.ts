@@ -30,9 +30,7 @@ import {
   getValue,
   setLogLevel,
   isSupported,
-  fetchTimeMillis,
   settings,
-  lastFetchStatus,
   reset,
   setConfigSettings,
   setDefaults,
@@ -203,16 +201,16 @@ describe('remoteConfig()', function () {
       expect(isSupported).toBeDefined();
     });
 
-    it('`fetchTimeMillis` function is properly exposed to end user', function () {
-      expect(fetchTimeMillis).toBeDefined();
+    it('`fetchTimeMillis` and `lastFetchStatus` are on RemoteConfig instance (firebase-js-sdk shape)', function () {
+      const rc = getRemoteConfig();
+      expect(rc.fetchTimeMillis).toBeDefined();
+      expect(typeof rc.fetchTimeMillis).toBe('number');
+      expect(rc.lastFetchStatus).toBeDefined();
+      expect(typeof rc.lastFetchStatus).toBe('string');
     });
 
     it('`settings` function is properly exposed to end user', function () {
       expect(settings).toBeDefined();
-    });
-
-    it('`lastFetchStatus` function is properly exposed to end user', function () {
-      expect(lastFetchStatus).toBeDefined();
     });
 
     it('`reset` function is properly exposed to end user', function () {

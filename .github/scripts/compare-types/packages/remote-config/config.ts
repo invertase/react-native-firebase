@@ -44,20 +44,6 @@ const config: PackageConfig = {
         'the firebase-js-sdk modular API.',
     },
     {
-      name: 'fetchTimeMillis',
-      reason:
-        'Getter function returning the last fetch timestamp. In the ' +
-        'firebase-js-sdk this value is accessed as the `fetchTimeMillis` ' +
-        'property on the `RemoteConfig` object rather than a standalone function.',
-    },
-    {
-      name: 'lastFetchStatus',
-      reason:
-        'Getter function returning the last fetch status. In the ' +
-        'firebase-js-sdk this value is accessed as the `lastFetchStatus` ' +
-        'property on the `RemoteConfig` object rather than a standalone function.',
-    },
-    {
       name: 'settings',
       reason:
         'Getter function returning the current `ConfigSettings`. In the ' +
