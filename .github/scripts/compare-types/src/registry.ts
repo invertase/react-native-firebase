@@ -13,8 +13,6 @@
 import path from 'path';
 import type { PackageConfig } from './types';
 
-import remoteConfigConfig from '../packages/remote-config/config';
-
 const SCRIPT_DIR = path.resolve(__dirname, '..');
 const REPO_ROOT = path.resolve(SCRIPT_DIR, '..', '..', '..');
 
@@ -52,23 +50,5 @@ function rnDist(packageName: string): string {
 }
 
 export const packages: PackageEntry[] = [
-  {
-    name: 'remote-config',
-    firebaseSdkTypesPath: path.join(
-      SCRIPT_DIR,
-      'packages',
-      'remote-config',
-      'firebase-sdk.d.ts',
-    ),
-    rnFirebaseModularFiles: [
-      path.join(rnDist('remote-config'), 'types', 'modular.d.ts'),
-      path.join(rnDist('remote-config'), 'modular.d.ts'),
-    ],
-    rnFirebaseSupportFiles: [
-      path.join(rnDist('remote-config'), 'statics.d.ts'),
-      path.join(rnDist('remote-config'), 'types', 'namespaced.d.ts'),
-      path.join(rnDist('remote-config'), 'types', 'internal.d.ts'),
-    ],
-    config: remoteConfigConfig,
-  },
+
 ];
