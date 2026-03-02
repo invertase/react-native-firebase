@@ -23,7 +23,7 @@ import {
 } from '@react-native-firebase/app/dist/module/common';
 import DocumentReference, { provideCollectionReferenceClass } from './FirestoreDocumentReference';
 import Query from './FirestoreQuery';
-import FirestoreQueryModifiers from './FirestoreQueryModifiers';
+import QueryModifiers from './FirestoreQueryModifiers';
 import { validateWithConverter } from './utils';
 
 import type FirestorePath from './FirestorePath';
@@ -35,7 +35,7 @@ export default class CollectionReference extends Query {
     collectionPath: FirestorePath,
     converter?: FirestoreDataConverter<DocumentData, DocumentData> | null,
   ) {
-    super(firestore, collectionPath, new FirestoreQueryModifiers(), undefined, converter);
+    super(firestore, collectionPath, new QueryModifiers(), undefined, converter);
   }
 
   get id(): string {

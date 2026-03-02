@@ -39,7 +39,7 @@ import DocumentReference from './FirestoreDocumentReference';
 import FirestorePath from './FirestorePath';
 import FirestorePersistentCacheIndexManager from './FirestorePersistentCacheIndexManager';
 import Query from './FirestoreQuery';
-import FirestoreQueryModifiers from './FirestoreQueryModifiers';
+import QueryModifiers from './FirestoreQueryModifiers';
 import FirestoreStatics from './FirestoreStatics';
 import FirestoreTransactionHandler from './FirestoreTransactionHandler';
 import FirestoreWriteBatch from './FirestoreWriteBatch';
@@ -179,7 +179,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
       throw new Error("firebase.firestore().namedQuery(*) 'queryName' must be a non-empty string.");
     }
 
-    return new Query(this, this._referencePath, new FirestoreQueryModifiers(), queryName);
+    return new Query(this, this._referencePath, new QueryModifiers(), queryName);
   }
 
   async clearPersistence(): Promise<void> {
@@ -265,7 +265,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
       new Query(
         this,
         this._referencePath.child(collectionId),
-        new FirestoreQueryModifiers().asCollectionGroupQuery(),
+        new QueryModifiers().asCollectionGroupQuery(),
         undefined,
       ),
     );

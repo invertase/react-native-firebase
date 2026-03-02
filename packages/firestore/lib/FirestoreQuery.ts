@@ -29,7 +29,7 @@ import { AggregateQuery } from './FirestoreAggregate';
 import DocumentSnapshot from './FirestoreDocumentSnapshot';
 import FieldPath, { fromDotSeparatedString } from './FieldPath';
 import { _Filter, generateFilters } from './FirestoreFilter';
-import FirestoreQueryModifiers from './FirestoreQueryModifiers';
+import QueryModifiers from './FirestoreQueryModifiers';
 import QuerySnapshot from './FirestoreQuerySnapshot';
 import { parseSnapshotArgs, validateWithConverter } from './utils';
 
@@ -41,7 +41,7 @@ let _id = 0;
 export default class Query {
   _firestore: any;
   _collectionPath: FirestorePath;
-  _modifiers: FirestoreQueryModifiers;
+  _modifiers: QueryModifiers;
   _queryName: string | undefined;
   _converter: FirestoreDataConverter<DocumentData, DocumentData> | null;
 
@@ -51,7 +51,7 @@ export default class Query {
   constructor(
     firestore: any,
     collectionPath: FirestorePath,
-    modifiers: FirestoreQueryModifiers,
+    modifiers: QueryModifiers,
     queryName?: string,
     converter?: FirestoreDataConverter<DocumentData, DocumentData> | null,
   ) {
@@ -74,7 +74,7 @@ export default class Query {
     cursor: 'startAt' | 'startAfter' | 'endAt' | 'endBefore',
     docOrField: DocumentSnapshot | unknown,
     fields: unknown[],
-  ): FirestoreQueryModifiers {
+  ): QueryModifiers {
     const modifiers = this._modifiers._copy();
 
     if (isUndefined(docOrField)) {
@@ -290,13 +290,7 @@ export default class Query {
     const modifiers = this._modifiers._copy().limit(limit);
 
     return createDeprecationProxy(
-      new Query(
-        this._firestore,
-        this._collectionPath,
-        modifiers,
-        this._queryName,
-        this._converter,
-      ),
+      new Query(this._firestore, this._collectionPath, modifiers, this._queryName, this._converter),
     );
   }
 
@@ -310,13 +304,7 @@ export default class Query {
     const modifiers = this._modifiers._copy().limitToLast(limitToLast);
 
     return createDeprecationProxy(
-      new Query(
-        this._firestore,
-        this._collectionPath,
-        modifiers,
-        this._queryName,
-        this._converter,
-      ),
+      new Query(this._firestore, this._collectionPath, modifiers, this._queryName, this._converter),
     );
   }
 
@@ -448,13 +436,7 @@ export default class Query {
     }
 
     return createDeprecationProxy(
-      new Query(
-        this._firestore,
-        this._collectionPath,
-        modifiers,
-        this._queryName,
-        this._converter,
-      ),
+      new Query(this._firestore, this._collectionPath, modifiers, this._queryName, this._converter),
     );
   }
 
@@ -503,7 +485,7 @@ export default class Query {
       );
     }
 
-    let modifiers: FirestoreQueryModifiers;
+    let modifiers: QueryModifiers;
 
     if (fieldPathOrFilter instanceof _Filter && fieldPathOrFilter.queries) {
       const filters = generateFilters(fieldPathOrFilter, this._modifiers);
@@ -577,13 +559,7 @@ export default class Query {
     }
 
     return createDeprecationProxy(
-      new Query(
-        this._firestore,
-        this._collectionPath,
-        modifiers,
-        this._queryName,
-        this._converter,
-      ),
+      new Query(this._firestore, this._collectionPath, modifiers, this._queryName, this._converter),
     );
   }
 

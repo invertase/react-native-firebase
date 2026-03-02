@@ -57,7 +57,7 @@ export interface OrderDef {
   direction: string;
 }
 
-export default class FirestoreQueryModifiers {
+export default class QueryModifiers {
   _limit: number | undefined;
   _limitToLast: number | undefined;
   _filters: FilterDef[];
@@ -94,8 +94,8 @@ export default class FirestoreQueryModifiers {
     this.hasNotIn = false;
   }
 
-  _copy(): FirestoreQueryModifiers {
-    const newInstance = new FirestoreQueryModifiers();
+  _copy(): QueryModifiers {
+    const newInstance = new QueryModifiers();
     newInstance._limit = this._limit;
     newInstance._limitToLast = this._limitToLast;
     newInstance._filters = [...this._filters];

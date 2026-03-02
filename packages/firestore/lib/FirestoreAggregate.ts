@@ -20,25 +20,25 @@ import type {
   AggregateSpecData,
   AggregateType,
   DocumentData,
-  Query,
+  Query as FirestoreQuery,
 } from './types/firestore';
 import FieldPath, { fromDotSeparatedString } from './FieldPath';
 
 import type FirestorePath from './FirestorePath';
 import type Query from './FirestoreQuery';
-import type FirestoreQueryModifiers from './FirestoreQueryModifiers';
+import type QueryModifiers from './FirestoreQueryModifiers';
 
 export class AggregateQuery {
   _firestore: any;
   _query: Query;
   _collectionPath: FirestorePath;
-  _modifiers: FirestoreQueryModifiers;
+  _modifiers: QueryModifiers;
 
   constructor(
     firestore: any,
     query: Query,
     collectionPath: FirestorePath,
-    modifiers: FirestoreQueryModifiers,
+    modifiers: QueryModifiers,
   ) {
     this._firestore = firestore;
     this._query = query;
@@ -69,12 +69,12 @@ export class AggregateQuerySnapshot<
   DbModelType extends DocumentData = DocumentData,
 > {
   readonly type = 'AggregateQuerySnapshot';
-  _query: Query<AppModelType, DbModelType>;
+  _query: FirestoreQuery<AppModelType, DbModelType>;
   _data: { count?: number; [key: string]: unknown };
   _isGetCountFromServer: boolean;
 
   constructor(
-    query: Query<AppModelType, DbModelType>,
+    query: FirestoreQuery<AppModelType, DbModelType>,
     data: { count?: number; [key: string]: unknown },
     isGetCountFromServer: boolean,
   ) {
@@ -83,7 +83,7 @@ export class AggregateQuerySnapshot<
     this._isGetCountFromServer = isGetCountFromServer;
   }
 
-  get query(): Query<AppModelType, DbModelType> {
+  get query(): FirestoreQuery<AppModelType, DbModelType> {
     return this._query;
   }
 
