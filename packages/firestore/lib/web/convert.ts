@@ -30,6 +30,7 @@ import {
   vector,
   VectorValue,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
+import type { Firestore } from '../types/firestore';
 
 const INT_NAN = 0;
 const INT_NEGATIVE_INFINITY = 1;
@@ -71,7 +72,7 @@ export function arrayToWriteable(array: unknown[]): unknown[] {
 }
 
 export function readableToObject(
-  firestore: any,
+  firestore: Firestore,
   readableMap: Record<string, unknown>,
 ): Record<string, unknown> {
   const out: Record<string, unknown> = {};
@@ -81,7 +82,7 @@ export function readableToObject(
   return out;
 }
 
-export function readableToArray(firestore: any, readableArray: unknown[]): unknown[] {
+export function readableToArray(firestore: Firestore, readableArray: unknown[]): unknown[] {
   return readableArray.map(value => parseTypeMap(firestore, value as [number, unknown?]));
 }
 
@@ -93,7 +94,7 @@ export interface ParsedDocumentBatch {
 }
 
 export function parseDocumentBatches(
-  firestore: any,
+  firestore: Firestore,
   readableArray: Array<Record<string, unknown>>,
 ): ParsedDocumentBatch[] {
   const out: ParsedDocumentBatch[] = [];
@@ -210,7 +211,7 @@ function buildTypeMap(value: unknown): unknown {
   return out;
 }
 
-export function parseTypeMap(firestore: any, typedArray: [number, unknown?]): unknown {
+export function parseTypeMap(firestore: Firestore, typedArray: [number, unknown?]): unknown {
   const value = typedArray[0];
 
   switch (value) {
