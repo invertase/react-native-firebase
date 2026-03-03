@@ -20,8 +20,10 @@ import type {
   DocumentSnapshot,
   DocumentData,
   DocumentReference,
+  FirestoreError,
   Query,
   QuerySnapshot,
+  SnapshotListenOptions,
   Unsubscribe,
 } from '../types/firestore';
 
@@ -29,6 +31,90 @@ export { default as DocumentSnapshot } from '../FirestoreDocumentSnapshot';
 export { default as QuerySnapshot } from '../FirestoreQuerySnapshot';
 export { default as SnapshotMetadata } from '../FirestoreSnapshotMetadata';
 
+export function onSnapshot<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+>(
+  reference: DocumentReference<AppModelType, DbModelType>,
+  observer: {
+    next?: (snapshot: DocumentSnapshot<AppModelType, DbModelType>) => void;
+    error?: (error: FirestoreError) => void;
+    complete?: () => void;
+  },
+): Unsubscribe;
+export function onSnapshot<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+>(
+  reference: DocumentReference<AppModelType, DbModelType>,
+  options: SnapshotListenOptions,
+  observer: {
+    next?: (snapshot: DocumentSnapshot<AppModelType, DbModelType>) => void;
+    error?: (error: FirestoreError) => void;
+    complete?: () => void;
+  },
+): Unsubscribe;
+export function onSnapshot<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+>(
+  reference: DocumentReference<AppModelType, DbModelType>,
+  onNext: (snapshot: DocumentSnapshot<AppModelType, DbModelType>) => void,
+  onError?: (error: FirestoreError) => void,
+  onCompletion?: () => void,
+): Unsubscribe;
+export function onSnapshot<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+>(
+  reference: DocumentReference<AppModelType, DbModelType>,
+  options: SnapshotListenOptions,
+  onNext: (snapshot: DocumentSnapshot<AppModelType, DbModelType>) => void,
+  onError?: (error: FirestoreError) => void,
+  onCompletion?: () => void,
+): Unsubscribe;
+export function onSnapshot<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+>(
+  query: Query<AppModelType, DbModelType>,
+  observer: {
+    next?: (snapshot: QuerySnapshot<AppModelType, DbModelType>) => void;
+    error?: (error: FirestoreError) => void;
+    complete?: () => void;
+  },
+): Unsubscribe;
+export function onSnapshot<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+>(
+  query: Query<AppModelType, DbModelType>,
+  options: SnapshotListenOptions,
+  observer: {
+    next?: (snapshot: QuerySnapshot<AppModelType, DbModelType>) => void;
+    error?: (error: FirestoreError) => void;
+    complete?: () => void;
+  },
+): Unsubscribe;
+export function onSnapshot<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+>(
+  query: Query<AppModelType, DbModelType>,
+  onNext: (snapshot: QuerySnapshot<AppModelType, DbModelType>) => void,
+  onError?: (error: FirestoreError) => void,
+  onCompletion?: () => void,
+): Unsubscribe;
+export function onSnapshot<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+>(
+  query: Query<AppModelType, DbModelType>,
+  options: SnapshotListenOptions,
+  onNext: (snapshot: QuerySnapshot<AppModelType, DbModelType>) => void,
+  onError?: (error: FirestoreError) => void,
+  onCompletion?: () => void,
+): Unsubscribe;
 export function onSnapshot<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,

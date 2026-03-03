@@ -65,6 +65,8 @@ export type {
   QueryDocumentSnapshot,
 } from './types/firestore';
 
-// Export namespaced API and default export
+// Export namespaced API
+export type { FirebaseFirestoreTypes } from './types/namespaced';
+
 export * from './namespaced';
 export { default } from './namespaced';
