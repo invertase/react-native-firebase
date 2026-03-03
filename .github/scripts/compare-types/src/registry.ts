@@ -50,5 +50,23 @@ function rnDist(packageName: string): string {
 }
 
 export const packages: PackageEntry[] = [
-
+  {
+    name: 'installations',
+    firebaseSdkTypesPath: path.join(
+      SCRIPT_DIR,
+      'packages',
+      'installations',
+      'installations-js-sdk.d.ts',
+    ),
+    rnFirebaseModularFiles: [
+      path.join(rnDist('installations'), 'types', 'installations.d.ts'),
+      path.join(rnDist('installations'), 'modular.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('installations'), 'types', 'namespaced.d.ts'),
+      path.join(rnDist('installations'), 'types', 'internal.d.ts'),
+    ],
+    config: require(path.join(SCRIPT_DIR, 'packages', 'installations', 'config'))
+    .default as PackageConfig,
+  },
 ];
