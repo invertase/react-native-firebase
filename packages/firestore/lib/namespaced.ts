@@ -180,7 +180,12 @@ class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
       throw new Error("firebase.firestore().namedQuery(*) 'queryName' must be a non-empty string.");
     }
 
-    return new Query(this, this._referencePath, new QueryModifiers(), queryName);
+    return new Query(
+      this as unknown as FirestoreInternal,
+      this._referencePath,
+      new QueryModifiers(),
+      queryName,
+    );
   }
 
   async clearPersistence(): Promise<void> {
@@ -266,7 +271,7 @@ class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
 
     return createDeprecationProxy(
       new Query(
-        this,
+        this as unknown as FirestoreInternal,
         this._referencePath.child(collectionId),
         new QueryModifiers().asCollectionGroupQuery(),
         undefined,
@@ -454,7 +459,9 @@ class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
     if (this._settings.persistence === false) {
       return null;
     }
-    return createDeprecationProxy(new FirestorePersistentCacheIndexManager(this));
+    return createDeprecationProxy(
+      new FirestorePersistentCacheIndexManager(this as unknown as FirestoreInternal),
+    );
   }
 }
 
