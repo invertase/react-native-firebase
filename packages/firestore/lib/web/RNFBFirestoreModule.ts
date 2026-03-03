@@ -38,6 +38,10 @@ import {
   writeBatch,
   terminate,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
+import type {
+  Firestore,
+  Transaction,
+} from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
 import {
   guard,
   getWebError,
@@ -45,6 +49,7 @@ import {
 } from '@react-native-firebase/app/dist/module/internal/web/utils';
 import { objectToWriteable, readableToObject, parseDocumentBatches } from './convert';
 import { buildQuery } from './query';
+import type { FilterSpec, OrderSpec, QueryOptions } from './query';
 
 function rejectWithCodeAndMessage(code: string, message: string): Promise<never> {
   return Promise.reject(getWebError({ code, message } as Error & { code: string }));
@@ -96,12 +101,19 @@ function querySnapshotToObject(snapshot: { docs: DocumentSnapshotLike[] }): {
 }
 
 const emulatorForApp: Record<string, { host: string; port: number }> = {};
-const firestoreInstances: Record<string, any> = {};
-const appInstances: Record<string, any> = {};
-const transactionHandler: Record<number, any> = {};
-const transactionBuffer: Record<number, any[]> = {};
+const firestoreInstances: Record<string, Firestore> = {};
+const appInstances: Record<string, ReturnType<typeof getApp>> = {};
+const transactionHandler: Record<number, Transaction> = {};
+const transactionBuffer: Record<number, TransactionCommand[]> = {};
 
-function getCachedAppInstance(appName: string): any {
+interface TransactionCommand {
+  path: string;
+  type: string;
+  data?: Record<string, unknown>;
+  options?: Record<string, unknown>;
+}
+
+function getCachedAppInstance(appName: string): ReturnType<typeof getApp> {
   return (appInstances[appName] ??= getApp(appName));
 }
 
@@ -109,7 +121,7 @@ function createFirestoreKey(appName: string, databaseId: string): string {
   return `${appName}:${databaseId}`;
 }
 
-function getCachedFirestoreInstance(appName: string, databaseId: string): any {
+function getCachedFirestoreInstance(appName: string, databaseId: string): Firestore {
   const firestoreKey = createFirestoreKey(appName, databaseId);
   let instance = firestoreInstances[firestoreKey];
   if (!instance) {
@@ -177,7 +189,7 @@ export default {
     return guard(async (): Promise<null> => {
       const instance = initializeFirestore(
         getCachedAppInstance(appName),
-        settings as any,
+        settings as Parameters<typeof initializeFirestore>[1],
         databaseId,
       );
       firestoreInstances[appName] = instance;
@@ -214,9 +226,9 @@ export default {
     databaseId: string,
     path: string,
     type: string,
-    filters: any[],
-    orders: any[],
-    options: any,
+    filters: FilterSpec[],
+    orders: OrderSpec[],
+    options: QueryOptions,
   ): Promise<{ count: number }> {
     return guard(async () => {
       const firestore = getCachedFirestoreInstance(appName, databaseId);
@@ -233,10 +245,10 @@ export default {
     databaseId: string,
     path: string,
     type: string,
-    filters: any[],
-    orders: any[],
-    options: any,
-    aggregateQueries: Array<{ aggregateType: string; field?: any; key: string }>,
+    filters: FilterSpec[],
+    orders: OrderSpec[],
+    options: QueryOptions,
+    aggregateQueries: Array<{ aggregateType: string; field?: unknown; key: string }>,
   ): Promise<Record<string, unknown>> {
     return guard(async () => {
       const firestore = getCachedFirestoreInstance(appName, databaseId);
@@ -253,14 +265,14 @@ export default {
             aggregateSpec[key] = count();
             break;
           case 'avg':
-            aggregateSpec[key] = average(field);
+            aggregateSpec[key] = average(field as Parameters<typeof average>[0]);
             break;
           case 'sum':
-            aggregateSpec[key] = sum(field);
+            aggregateSpec[key] = sum(field as Parameters<typeof sum>[0]);
             break;
         }
       }
-      const result = await getAggregate(query, aggregateSpec as any);
+      const result = await getAggregate(query, aggregateSpec as Parameters<typeof getAggregate>[1]);
       const data = result.data();
       const response: Record<string, unknown> = {};
       for (let i = 0; i < aggregateQueries.length; i++) {
@@ -276,9 +288,9 @@ export default {
     databaseId: string,
     path: string,
     type: string,
-    filters: any[],
-    orders: any[],
-    options: any,
+    filters: FilterSpec[],
+    orders: OrderSpec[],
+    options: QueryOptions,
     getOptions?: { source?: string },
   ): Promise<ReturnType<typeof querySnapshotToObject>> {
     if (getOptions?.source === 'cache') {
@@ -424,7 +436,7 @@ export default {
     return guard(async () => {
       const firestore = getCachedFirestoreInstance(appName, databaseId);
       const docRef = doc(firestore, path);
-      const tsx = transactionHandler[transactionId];
+      const tsx = transactionHandler[transactionId]!;
       const snapshot = await tsx.get(docRef);
       return documentSnapshotToObject(snapshot);
     });
@@ -438,7 +450,7 @@ export default {
     _appName: string,
     _databaseId: string,
     transactionId: number,
-    commandBuffer: any[],
+    commandBuffer: TransactionCommand[],
   ): void {
     if (transactionHandler[transactionId]) {
       transactionBuffer[transactionId] = commandBuffer;
@@ -450,7 +462,7 @@ export default {
       const firestore = getCachedFirestoreInstance(appName, databaseId);
 
       try {
-        await runTransaction(firestore, async (tsx: any) => {
+        await runTransaction(firestore, async (tsx: Transaction) => {
           transactionHandler[transactionId] = tsx;
 
           emitEvent('firestore_transaction_event', {
@@ -461,9 +473,10 @@ export default {
             listenerId: transactionId,
           });
 
-          const getBuffer = (): any[] | undefined => transactionBuffer[transactionId];
+          const getBuffer = (): TransactionCommand[] | undefined =>
+            transactionBuffer[transactionId];
 
-          const buffer = await new Promise<any[]>(resolve => {
+          const buffer = await new Promise<TransactionCommand[]>(resolve => {
             const interval = setInterval(() => {
               const b = getBuffer();
               if (b) {
@@ -482,7 +495,7 @@ export default {
                 tsx.delete(docRef);
                 break;
               case 'UPDATE':
-                tsx.update(docRef, readableToObject(firestore, data));
+                tsx.update(docRef, readableToObject(firestore, data ?? {}));
                 break;
               case 'SET': {
                 const options = serialized.options ?? {};
@@ -492,7 +505,7 @@ export default {
                 } else if ('mergeFields' in options) {
                   setOptions.mergeFields = options.mergeFields;
                 }
-                tsx.set(docRef, readableToObject(firestore, data), setOptions);
+                tsx.set(docRef, readableToObject(firestore, data ?? {}), setOptions);
                 break;
               }
             }

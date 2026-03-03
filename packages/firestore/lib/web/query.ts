@@ -29,6 +29,11 @@ import {
   and,
   or,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
+import type {
+  Firestore,
+  Query,
+  QueryConstraint,
+} from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
 import { parseTypeMap, readableToArray } from './convert';
 
 export interface FilterSpec {
@@ -53,12 +58,12 @@ export interface QueryOptions {
 }
 
 export function buildQuery(
-  queryInstance: { firestore: any },
+  queryInstance: Query,
   filters: FilterSpec[],
   orders: OrderSpec[],
   options: QueryOptions,
-): any {
-  let current: any = queryInstance;
+): Query {
+  let current: Query = queryInstance;
 
   for (const filter of filters) {
     current = query(current, getFilterConstraint(filter, queryInstance.firestore));
@@ -99,7 +104,7 @@ export function buildQuery(
   return current;
 }
 
-function getFilterConstraint(filter: FilterSpec, firestore: any): any {
+function getFilterConstraint(filter: FilterSpec, firestore: Firestore): QueryConstraint {
   if ('fieldPath' in filter && filter.fieldPath) {
     const fieldPath = Array.isArray(filter.fieldPath)
       ? new FieldPath(...filter.fieldPath)
@@ -133,10 +138,10 @@ function getFilterConstraint(filter: FilterSpec, firestore: any): any {
     const constraints = filter.queries.map(f => getFilterConstraint(f, firestore));
 
     if (filter.operator === 'AND') {
-      return and(...constraints);
+      return and(...(constraints as Parameters<typeof and>)) as unknown as QueryConstraint;
     }
     if (filter.operator === 'OR') {
-      return or(...constraints);
+      return or(...(constraints as Parameters<typeof or>)) as unknown as QueryConstraint;
     }
     throw new Error('Invalid filter operator');
   }

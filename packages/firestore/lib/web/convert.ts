@@ -30,7 +30,7 @@ import {
   vector,
   VectorValue,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
-import type { Firestore } from '../types/firestore';
+import type { Firestore } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
 
 const INT_NAN = 0;
 const INT_NEGATIVE_INFINITY = 1;
