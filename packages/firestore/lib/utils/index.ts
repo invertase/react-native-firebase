@@ -24,6 +24,12 @@ import {
   isString,
   isUndefined,
 } from '@react-native-firebase/app/dist/module/common';
+import type {
+  ConverterWithOptionalMethodsInternal,
+  ConverterWithOptionalToFirestoreInternal,
+  ConverterWithToFirestoreInternal,
+  PartialSnapshotObserverInternal,
+} from '../types/internal';
 import FieldPath, { fromDotSeparatedString } from '../FieldPath';
 
 export function extractFieldPathData(data: unknown, segments: string[]): unknown {
@@ -128,13 +134,8 @@ export function applyFirestoreDataConverter(
   converter: unknown,
   options?: unknown,
 ): unknown {
-  if (
-    converter &&
-    (converter as { toFirestore?: (data: unknown, options?: unknown) => unknown }).toFirestore
-  ) {
-    return (
-      converter as { toFirestore: (data: unknown, options?: unknown) => unknown }
-    ).toFirestore(data, options);
+  if (converter && (converter as ConverterWithOptionalToFirestoreInternal).toFirestore) {
+    return (converter as ConverterWithToFirestoreInternal).toFirestore(data, options);
   }
   return data;
 }
@@ -177,7 +178,7 @@ export function parseSnapshotArgs(args: unknown[]): ParseSnapshotArgsResult {
   }
 
   if (isObject(args[0]) && isPartialObserver(args[0])) {
-    const observer = args[0] as { next?: (snapshot: unknown) => void; error?: (e: Error) => void };
+    const observer = args[0] as PartialSnapshotObserverInternal;
     if (observer.error) {
       onError =
         typeof observer.error === 'function' ? observer.error.bind(observer) : observer.error;
@@ -199,10 +200,7 @@ export function parseSnapshotArgs(args: unknown[]): ParseSnapshotArgsResult {
         callback = args[1] as (snapshot: unknown, error: Error | null) => void;
       }
     } else if (isPartialObserver(args[1])) {
-      const observer = args[1] as {
-        next?: (snapshot: unknown) => void;
-        error?: (e: Error) => void;
-      };
+      const observer = args[1] as PartialSnapshotObserverInternal;
       if (observer.error) {
         onError =
           typeof observer.error === 'function' ? observer.error.bind(observer) : observer.error;
@@ -235,7 +233,7 @@ export function validateWithConverter(converter: unknown): void {
     throw new Error('expected an object value.');
   }
 
-  const c = converter as { toFirestore?: unknown; fromFirestore?: unknown };
+  const c = converter as ConverterWithOptionalMethodsInternal;
   if (!isFunction(c.toFirestore)) {
     throw new Error("'toFirestore' expected a function.");
   }

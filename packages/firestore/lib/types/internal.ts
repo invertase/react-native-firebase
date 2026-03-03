@@ -119,6 +119,28 @@ export interface ReferenceWithOnSnapshotInternal {
   onSnapshot(...listenerArgs: unknown[]): Unsubscribe;
 }
 
+/** Converter object with optional toFirestore (for guards before calling). */
+export interface ConverterWithOptionalToFirestoreInternal {
+  toFirestore?(data: unknown, options?: unknown): unknown;
+}
+
+/** Converter object with required toFirestore (after guard). */
+export interface ConverterWithToFirestoreInternal {
+  toFirestore: (data: unknown, options?: unknown) => unknown;
+}
+
+/** Partial snapshot listener observer (next / error only). */
+export interface PartialSnapshotObserverInternal {
+  next?: (snapshot: unknown) => void;
+  error?: (e: Error) => void;
+}
+
+/** Converter object with optional toFirestore/fromFirestore (for validation). */
+export interface ConverterWithOptionalMethodsInternal {
+  toFirestore?: unknown;
+  fromFirestore?: unknown;
+}
+
 export interface DocumentReferenceInternal<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
