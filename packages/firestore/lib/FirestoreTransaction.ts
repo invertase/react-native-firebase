@@ -18,11 +18,15 @@
 import { isObject, createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
 import DocumentReference from './FirestoreDocumentReference';
 import DocumentSnapshot from './FirestoreDocumentSnapshot';
+import type { DocumentSnapshotNativeData } from './FirestoreDocumentSnapshot';
 import { parseSetOptions, parseUpdateArgs, applyFirestoreDataConverter } from './utils';
 import { buildNativeMap } from './utils/serialize';
+import type { FirestoreInternal } from './types/internal';
+import type { SetOptions } from './types/firestore';
 
 export interface TransactionMeta {
   id: number;
+  /** Receives the Transaction instance (this module's default export). */
   updateFunction: (transaction: Transaction) => Promise<unknown>;
   stack?: string;
   resolve?: (result: unknown) => void;
@@ -37,13 +41,13 @@ export interface TransactionCommand {
 }
 
 export default class Transaction {
-  _firestore: any;
+  _firestore: FirestoreInternal;
   _meta: TransactionMeta;
   _calledGetCount: number;
   _commandBuffer: TransactionCommand[];
   _pendingResult: unknown;
 
-  constructor(firestore: any, meta: TransactionMeta) {
+  constructor(firestore: FirestoreInternal, meta: TransactionMeta) {
     this._firestore = firestore;
     this._meta = meta;
     this._calledGetCount = 0;
@@ -74,15 +78,17 @@ export default class Transaction {
     this._calledGetCount++;
     return this._firestore.native
       .transactionGetDocument(this._meta.id, documentRef.path)
-      .then((data: any) =>
-        createDeprecationProxy(new DocumentSnapshot(this._firestore, data, null)),
+      .then((data: unknown) =>
+        createDeprecationProxy(
+          new DocumentSnapshot(this._firestore, data as DocumentSnapshotNativeData, null),
+        ),
       );
   }
 
   /**
    * Writes to the document referred to by the provided DocumentReference.
    */
-  set(documentRef: DocumentReference, data: Record<string, unknown>, options?: unknown): this {
+  set(documentRef: DocumentReference, data: Record<string, unknown>, options?: SetOptions): this {
     if (!(documentRef instanceof DocumentReference)) {
       throw new Error(
         "firebase.firestore().runTransaction() Transaction.set(*) 'documentRef' expected a DocumentReference.",
@@ -98,9 +104,9 @@ export default class Transaction {
       );
     }
 
-    let converted: unknown = data;
+    let converted: Record<string, unknown> | unknown = data;
     try {
-      converted = applyFirestoreDataConverter(data, (documentRef as any)._converter, setOptions);
+      converted = applyFirestoreDataConverter(data, documentRef.converter, setOptions);
     } catch (e) {
       throw new Error(
         `firebase.firestore().runTransaction() Transaction.set(_, *) 'withConverter.toFirestore' threw an error: ${(e as Error).message}.`,

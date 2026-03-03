@@ -227,6 +227,7 @@ export interface RNFBFirestoreModule {
   // --- Transaction module (RNFBFirestoreTransactionModule) ---
   transactionBegin(transactionId: number): Promise<void>;
   transactionDispose(transactionId: number): void;
+  transactionGetDocument(transactionId: number, path: string): Promise<unknown>;
   transactionApplyBuffer(transactionId: number, commandBuffer: unknown[]): void;
 }
 
