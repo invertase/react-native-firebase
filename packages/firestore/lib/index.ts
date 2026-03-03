@@ -19,7 +19,7 @@
 export * from './modular';
 
 // Export modular/public type helpers.
-// DocumentSnapshot, LoadBundleTask, QuerySnapshot, SnapshotMetadata, WriteBatch
+// DocumentSnapshot, LoadBundleTask, QuerySnapshot, SnapshotMetadata, Transaction, WriteBatch
 // are excluded here because they are already exported as values from './modular'.
 export type {
   FirebaseApp,
@@ -46,6 +46,7 @@ export type {
   SnapshotListenOptions,
   SnapshotOptions,
   DocumentChangeType,
+  FirestoreError,
   Unsubscribe,
   DocumentChange,
   Primitive,
@@ -61,8 +62,6 @@ export type {
   Query,
   CollectionReference,
   DocumentReference,
-  LiteTransaction,
-  Transaction,
   QueryDocumentSnapshot,
 } from './types/firestore';
 

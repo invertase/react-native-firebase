@@ -175,6 +175,8 @@ export declare class SnapshotMetadata {
 
 export type DocumentChangeType = 'added' | 'removed' | 'modified';
 
+export type FirestoreError = Error;
+
 export interface Unsubscribe {
   (): void;
 }

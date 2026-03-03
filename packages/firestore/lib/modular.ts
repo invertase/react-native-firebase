@@ -22,7 +22,6 @@ import {
   fieldPathFromArgument,
   AggregateQuerySnapshot,
 } from './FirestoreAggregate';
-import { Filter } from './FirestoreFilter';
 import QueryImpl from './FirestoreQuery';
 import { LoadBundleTask } from './LoadBundleTask';
 import type {
@@ -57,7 +56,7 @@ import type {
 } from './types/internal';
 import { PersistentCacheIndexManager } from './FirestorePersistentCacheIndexManager';
 import type { FieldPath } from './modular/FieldPath';
-import type { Unsubscribe } from './modular/snapshot';
+import type { Unsubscribe } from './types/firestore';
 
 export { AggregateField, AggregateQuerySnapshot } from './FirestoreAggregate';
 
@@ -506,7 +505,5 @@ export * from './modular/GeoPoint';
 export * from './modular/Timestamp';
 export * from './modular/VectorValue';
 export { LoadBundleTask } from './LoadBundleTask';
-export type { LoadBundleTaskProgress, TaskState } from './LoadBundleTask';
-export { Filter };
+export { default as Transaction } from './FirestoreTransaction';
 export { default as WriteBatch } from './FirestoreWriteBatch';
-export type { LogLevel } from './types/firestore';

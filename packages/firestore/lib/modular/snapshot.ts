@@ -25,16 +25,6 @@ import type {
   Unsubscribe,
 } from '../types/firestore';
 
-export type FirestoreError = Error;
-export type { Unsubscribe } from '../types/firestore';
-export type {
-  QueryDocumentSnapshot,
-  SnapshotListenOptions,
-  SnapshotOptions,
-  DocumentChange,
-  DocumentChangeType,
-} from '../types/firestore';
-
 export { default as DocumentSnapshot } from '../FirestoreDocumentSnapshot';
 export { default as QuerySnapshot } from '../FirestoreQuerySnapshot';
 export { default as SnapshotMetadata } from '../FirestoreSnapshotMetadata';

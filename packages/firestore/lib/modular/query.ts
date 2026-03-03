@@ -29,8 +29,6 @@ import type {
 } from '../types/firestore';
 import type { FieldPath } from './FieldPath';
 
-export type { OrderByDirection, QueryConstraintType, WhereFilterOp } from '../types/firestore';
-
 export abstract class QueryConstraint {
   abstract readonly type: QueryConstraintType;
   private readonly _args: unknown[];

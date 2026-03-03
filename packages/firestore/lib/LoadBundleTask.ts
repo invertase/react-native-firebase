@@ -17,8 +17,6 @@
 
 import type { LoadBundleTaskProgress } from './types/firestore';
 
-export type { LoadBundleTaskProgress, TaskState } from './types/firestore';
-
 type ProgressObserver = {
   next?: (progress: LoadBundleTaskProgress) => unknown;
   error?: (err: Error) => unknown;
