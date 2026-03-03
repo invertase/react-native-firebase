@@ -1,7 +1,7 @@
 import { getApp } from '@react-native-firebase/app';
-import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
-import type { AppDistribution } from './types/app-distribution';
+import type { AppDistribution, AppDistributionRelease } from './types/app-distribution';
+import type { AppDistributionInternal } from './types/internal';
 
 export type FirebaseAppDistribution = AppDistribution;
 
@@ -10,9 +10,9 @@ export type FirebaseAppDistribution = AppDistribution;
  */
 export function getAppDistribution(app?: ReactNativeFirebase.FirebaseApp): FirebaseAppDistribution {
   if (app) {
-    return getApp(app.name).appDistribution() as unknown as FirebaseAppDistribution;
+    return getApp(app.name).appDistribution() as FirebaseAppDistribution;
   }
-  return getApp().appDistribution() as unknown as FirebaseAppDistribution;
+  return getApp().appDistribution() as FirebaseAppDistribution;
 }
 
 /**
@@ -20,8 +20,7 @@ export function getAppDistribution(app?: ReactNativeFirebase.FirebaseApp): Fireb
  * If not an iOS device, it always rejects, as neither false nor true seem like a sensible default.
  */
 export function isTesterSignedIn(appDistribution: FirebaseAppDistribution): Promise<boolean> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return appDistribution.isTesterSignedIn.call(appDistribution, MODULAR_DEPRECATION_ARG);
+  return (appDistribution as AppDistributionInternal).isTesterSignedIn();
 }
 
 /**
@@ -29,8 +28,7 @@ export function isTesterSignedIn(appDistribution: FirebaseAppDistribution): Prom
  * If not an iOS device, it always rejects, as no defaults seem sensible.
  */
 export function signInTester(appDistribution: FirebaseAppDistribution): Promise<void> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return appDistribution.signInTester.call(appDistribution, MODULAR_DEPRECATION_ARG);
+  return (appDistribution as AppDistributionInternal).signInTester();
 }
 
 /**
@@ -39,9 +37,8 @@ export function signInTester(appDistribution: FirebaseAppDistribution): Promise<
  */
 export function checkForUpdate(
   appDistribution: FirebaseAppDistribution,
-): Promise<import('./types/app-distribution').AppDistributionRelease> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return appDistribution.checkForUpdate.call(appDistribution, MODULAR_DEPRECATION_ARG);
+): Promise<AppDistributionRelease> {
+  return (appDistribution as AppDistributionInternal).checkForUpdate();
 }
 
 /**
@@ -49,6 +46,5 @@ export function checkForUpdate(
  * If not an iOS device, it always rejects, as no default response seems sensible.
  */
 export function signOutTester(appDistribution: FirebaseAppDistribution): Promise<void> {
-  // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
-  return appDistribution.signOutTester.call(appDistribution, MODULAR_DEPRECATION_ARG);
+  return (appDistribution as AppDistributionInternal).signOutTester();
 }

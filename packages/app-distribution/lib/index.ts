@@ -15,7 +15,7 @@
  *
  */
 
-// Export types from types/app-distribution
+// Export types from types/app-distribution (public/modular API)
 export type {
   AppDistributionRelease,
   Statics,

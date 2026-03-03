@@ -24,15 +24,17 @@ import {
 } from '@react-native-firebase/app/dist/module/internal';
 
 import { version } from './version';
-import type { Statics, AppDistribution, AppDistributionRelease } from './types/app-distribution';
+import type { AppDistributionRelease } from './types/app-distribution';
+import type { AppDistributionInternal } from './types/internal';
+import type { FirebaseAppDistributionTypes } from './types/namespaced';
 
-const statics: Statics = {};
+const statics: FirebaseAppDistributionTypes.Statics = { SDK_VERSION: version };
 
 const namespace = 'appDistribution';
 
 const nativeModuleName = 'RNFBAppDistributionModule';
 
-class FirebaseAppDistributionModule extends FirebaseModule {
+class FirebaseAppDistributionModule extends FirebaseModule implements AppDistributionInternal {
   isTesterSignedIn(): Promise<boolean> {
     if (isIOS) {
       return this.native.isTesterSignedIn();
@@ -84,10 +86,13 @@ const appDistributionNamespace = createModuleNamespace({
 });
 
 type AppDistributionNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
-  AppDistribution,
-  Statics
+  FirebaseAppDistributionTypes.Module,
+  FirebaseAppDistributionTypes.Statics
 > & {
-  appDistribution: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<AppDistribution, Statics>;
+  appDistribution: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+    FirebaseAppDistributionTypes.Module,
+    FirebaseAppDistributionTypes.Statics
+  >;
   firebase: ReactNativeFirebase.Module;
   app(name?: string): ReactNativeFirebase.FirebaseApp;
 };
@@ -100,7 +105,7 @@ export default appDistributionNamespace as unknown as AppDistributionNamespace;
 export const firebase =
   getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
     'appDistribution',
-    AppDistribution,
-    Statics,
+    FirebaseAppDistributionTypes.Module,
+    FirebaseAppDistributionTypes.Statics,
     false
   >;
