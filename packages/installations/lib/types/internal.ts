@@ -21,7 +21,7 @@ import type { Installations } from './installations';
  * Wraps a method type so it accepts MODULAR_DEPRECATION_ARG as a trailing argument.
  * Allows modular wrappers to use .call(instance, ...args, MODULAR_DEPRECATION_ARG) without changing internal types.
  */
-export type WithModularDeprecationArg<T extends (...args: unknown[]) => unknown> = T extends (
+export type WithModularDeprecationArg<T extends (...args: any[]) => any> = T extends (
   ...args: infer A
 ) => infer R
   ? (...args: [...A, unknown?]) => R
