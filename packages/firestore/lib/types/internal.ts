@@ -49,8 +49,8 @@ export interface FirestoreFilterSpecInternal {
   fieldPath?: string[] | unknown;
   operator: string;
   value?: unknown;
-  /** Nested queries for composite filters (AND/OR). Type matches QueryModifiers getter. */
-  queries?: FirestoreFilterSpecInternal[] | unknown[];
+  /** Nested queries for composite filters (AND/OR). */
+  queries?: FirestoreFilterSpecInternal[];
 }
 
 /** Order spec passed to native (fieldPath serialized as string[] from QueryModifiers). */
@@ -68,6 +68,9 @@ export interface FirestoreQueryOptionsInternal {
   endAt?: unknown[];
   endBefore?: unknown[];
 }
+
+/** Cursor field values (startAt, startAfter, endAt, endBefore) – serialized array passed to native. */
+export type FirestoreCursorFieldsInternal = unknown[];
 
 /** Options for snapshot listeners (includeMetadataChanges). */
 export interface FirestoreSnapshotListenOptionsInternal {

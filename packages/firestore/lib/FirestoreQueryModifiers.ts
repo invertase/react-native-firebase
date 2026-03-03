@@ -17,6 +17,13 @@
 
 import { isNumber } from '@react-native-firebase/app/dist/module/common';
 import FieldPath, { DOCUMENT_ID } from './FieldPath';
+import type {
+  DocumentFieldValueInternal,
+  FirestoreCursorFieldsInternal,
+  FirestoreFilterSpecInternal,
+  FirestoreOrderSpecInternal,
+  FirestoreQueryOptionsInternal,
+} from './types/internal';
 import { buildNativeArray, generateNativeData } from './utils/serialize';
 
 export const OPERATORS: Record<string, string> = {
@@ -48,8 +55,8 @@ const DIRECTIONS: Record<string, string> = {
 export interface FilterDef {
   fieldPath?: FieldPath | string[];
   operator: string;
-  value?: unknown;
-  queries?: FilterDef[] | Array<{ operator: unknown; queries?: unknown[] }>;
+  value?: DocumentFieldValueInternal;
+  queries?: FilterDef[];
 }
 
 export interface OrderDef {
@@ -63,10 +70,10 @@ export default class QueryModifiers {
   _filters: FilterDef[];
   _orders: OrderDef[];
   _type: 'collection' | 'collectionGroup';
-  _startAt: unknown;
-  _startAfter: unknown;
-  _endAt: unknown;
-  _endBefore: unknown;
+  _startAt: FirestoreCursorFieldsInternal | undefined;
+  _startAfter: FirestoreCursorFieldsInternal | undefined;
+  _endAt: FirestoreCursorFieldsInternal | undefined;
+  _endBefore: FirestoreCursorFieldsInternal | undefined;
 
   hasInequality: false | FilterDef;
   hasNotEqual: boolean;
@@ -108,27 +115,22 @@ export default class QueryModifiers {
     return newInstance;
   }
 
-  get filters(): Array<{
-    fieldPath?: FieldPath | string[];
-    operator: string;
-    value?: unknown;
-    queries?: unknown[];
-  }> {
+  get filters(): FirestoreFilterSpecInternal[] {
     return this._filters.map(f => ({
       ...f,
       fieldPath: f.fieldPath instanceof FieldPath ? f.fieldPath._toArray() : f.fieldPath,
     }));
   }
 
-  get orders(): Array<{ fieldPath: FieldPath | string[]; direction: string }> {
+  get orders(): FirestoreOrderSpecInternal[] {
     return this._orders.map(f => ({
       ...f,
       fieldPath: f.fieldPath instanceof FieldPath ? f.fieldPath._toArray() : f.fieldPath,
     }));
   }
 
-  get options(): Record<string, unknown> {
-    const options: Record<string, unknown> = {};
+  get options(): FirestoreQueryOptionsInternal {
+    const options: FirestoreQueryOptionsInternal = {};
 
     if (this._limit) {
       options.limit = this._limit;
@@ -160,9 +162,10 @@ export default class QueryModifiers {
 
   setFieldsCursor(
     cursor: 'startAt' | 'startAfter' | 'endAt' | 'endBefore',
-    fields: unknown[],
+    fields: FirestoreCursorFieldsInternal,
   ): this {
-    (this as Record<string, unknown>)[`_${cursor}`] = buildNativeArray(fields);
+    (this as unknown as Record<string, FirestoreCursorFieldsInternal | undefined>)[`_${cursor}`] =
+      buildNativeArray(fields);
     return this;
   }
 
@@ -233,7 +236,7 @@ export default class QueryModifiers {
     );
   }
 
-  where(fieldPath: FieldPath, opStr: string, value: unknown): this {
+  where(fieldPath: FieldPath, opStr: string, value: DocumentFieldValueInternal): this {
     const filter: FilterDef = {
       fieldPath,
       operator: OPERATORS[opStr] ?? opStr,
@@ -244,8 +247,8 @@ export default class QueryModifiers {
     return this;
   }
 
-  filterWhere(filter: FilterDef | { operator: string; queries: unknown[] }): this {
-    this._filters = this._filters.concat(filter as FilterDef);
+  filterWhere(filter: FilterDef): this {
+    this._filters = this._filters.concat(filter);
     return this;
   }
 
