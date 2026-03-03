@@ -30,16 +30,22 @@ import DocumentSnapshot from './FirestoreDocumentSnapshot';
 import FieldPath, { fromDotSeparatedString } from './FieldPath';
 import { _Filter, generateFilters } from './FirestoreFilter';
 import QueryModifiers from './FirestoreQueryModifiers';
-import QuerySnapshot from './FirestoreQuerySnapshot';
+import QuerySnapshot, { type QuerySnapshotNativeData } from './FirestoreQuerySnapshot';
 import { parseSnapshotArgs, validateWithConverter } from './utils';
 
 import type FirestorePath from './FirestorePath';
 import type { DocumentData, FirestoreDataConverter } from './types/firestore';
+import type {
+  FirestoreInternal,
+  DocumentFieldValueInternal,
+  FirestoreSyncEventErrorInternal,
+  FirestoreSyncEventBodyInternal,
+} from './types/internal';
 
 let _id = 0;
 
 export default class Query {
-  _firestore: any;
+  _firestore: FirestoreInternal;
   _collectionPath: FirestorePath;
   _modifiers: QueryModifiers;
   _queryName: string | undefined;
@@ -49,7 +55,7 @@ export default class Query {
   readonly type = 'query' as const;
 
   constructor(
-    firestore: any,
+    firestore: FirestoreInternal,
     collectionPath: FirestorePath,
     modifiers: QueryModifiers,
     queryName?: string,
@@ -62,7 +68,7 @@ export default class Query {
     this._converter = converter ?? null;
   }
 
-  get firestore(): any {
+  get firestore(): FirestoreInternal {
     return this._firestore;
   }
 
@@ -72,8 +78,8 @@ export default class Query {
 
   _handleQueryCursor(
     cursor: 'startAt' | 'startAfter' | 'endAt' | 'endBefore',
-    docOrField: DocumentSnapshot | unknown,
-    fields: unknown[],
+    docOrField: DocumentSnapshot | DocumentFieldValueInternal,
+    fields: DocumentFieldValueInternal[],
   ): QueryModifiers {
     const modifiers = this._modifiers._copy();
 
@@ -99,7 +105,7 @@ export default class Query {
       }
 
       const currentOrders = modifiers.orders;
-      const values: unknown[] = [];
+      const values: DocumentFieldValueInternal[] = [];
 
       for (let i = 0; i < currentOrders.length; i++) {
         const order = currentOrders[i]!;
@@ -175,8 +181,8 @@ export default class Query {
   }
 
   endAt(
-    docOrField: DocumentSnapshot | unknown,
-    ...fields: unknown[]
+    docOrField: DocumentSnapshot | DocumentFieldValueInternal,
+    ...fields: DocumentFieldValueInternal[]
   ): ReturnType<typeof createDeprecationProxy> {
     return createDeprecationProxy(
       new Query(
@@ -190,8 +196,8 @@ export default class Query {
   }
 
   endBefore(
-    docOrField: DocumentSnapshot | unknown,
-    ...fields: unknown[]
+    docOrField: DocumentSnapshot | DocumentFieldValueInternal,
+    ...fields: DocumentFieldValueInternal[]
   ): ReturnType<typeof createDeprecationProxy> {
     return createDeprecationProxy(
       new Query(
@@ -233,7 +239,15 @@ export default class Query {
           this._modifiers.options,
           options,
         )
-        .then((data: any) => new QuerySnapshot(this._firestore, this, data, this._converter));
+        .then(
+          (data: unknown) =>
+            new QuerySnapshot(
+              this._firestore,
+              this,
+              data as QuerySnapshotNativeData,
+              this._converter,
+            ),
+        );
     }
 
     this._modifiers.validatelimitToLast();
@@ -247,7 +261,15 @@ export default class Query {
         this._modifiers.options,
         options,
       )
-      .then((data: any) => new QuerySnapshot(this._firestore, this, data, this._converter));
+      .then(
+        (data: unknown) =>
+          new QuerySnapshot(
+            this._firestore,
+            this,
+            data as QuerySnapshotNativeData,
+            this._converter,
+          ),
+      );
   }
 
   isEqual(other: Query): boolean {
@@ -340,16 +362,17 @@ export default class Query {
 
     const onSnapshotSubscription = this._firestore.emitter.addListener(
       this._firestore.eventNameForApp(`firestore_collection_sync_event:${listenerId}`),
-      (event: { body: { error?: unknown; snapshot?: any } }) => {
-        if (event.body.error) {
-          handleError(NativeError.fromEvent(event.body.error, 'firestore'));
+      (event: { body: FirestoreSyncEventBodyInternal }) => {
+        const body = event.body as {
+          error?: FirestoreSyncEventErrorInternal;
+          snapshot?: QuerySnapshotNativeData;
+        };
+        if (body.error) {
+          handleError(NativeError.fromEvent(body.error, 'firestore'));
         } else {
-          const querySnapshot = new QuerySnapshot(
-            this._firestore,
-            this,
-            event.body.snapshot,
-            this._converter,
-          );
+          const snapshot = body.snapshot;
+          if (!snapshot) return;
+          const querySnapshot = new QuerySnapshot(this._firestore, this, snapshot, this._converter);
           handleSuccess(querySnapshot);
         }
       },
@@ -441,8 +464,8 @@ export default class Query {
   }
 
   startAfter(
-    docOrField: DocumentSnapshot | unknown,
-    ...fields: unknown[]
+    docOrField: DocumentSnapshot | DocumentFieldValueInternal,
+    ...fields: DocumentFieldValueInternal[]
   ): ReturnType<typeof createDeprecationProxy> {
     return createDeprecationProxy(
       new Query(
@@ -456,8 +479,8 @@ export default class Query {
   }
 
   startAt(
-    docOrField: DocumentSnapshot | unknown,
-    ...fields: unknown[]
+    docOrField: DocumentSnapshot | DocumentFieldValueInternal,
+    ...fields: DocumentFieldValueInternal[]
   ): ReturnType<typeof createDeprecationProxy> {
     return createDeprecationProxy(
       new Query(
@@ -473,7 +496,7 @@ export default class Query {
   where(
     fieldPathOrFilter: string | FieldPath | _Filter,
     opStr?: string,
-    value?: unknown,
+    value?: DocumentFieldValueInternal,
   ): ReturnType<typeof createDeprecationProxy> {
     if (
       !isString(fieldPathOrFilter) &&
@@ -489,7 +512,7 @@ export default class Query {
 
     if (fieldPathOrFilter instanceof _Filter && fieldPathOrFilter.queries) {
       const filters = generateFilters(fieldPathOrFilter, this._modifiers);
-      modifiers = this._modifiers._copy().filterWhere(filters as any);
+      modifiers = this._modifiers._copy().filterWhere(filters);
     } else {
       let path: FieldPath;
       let op = opStr;
@@ -536,13 +559,13 @@ export default class Query {
       }
 
       if (this._modifiers.isInOperator(op!)) {
-        if (!isArray(val) || !(val as unknown[]).length) {
+        if (!isArray(val) || !(val as DocumentFieldValueInternal[]).length) {
           throw new Error(
             `firebase.firestore().collection().where(_, _, *) 'value' is invalid. A non-empty array is required for '${op}' filters.`,
           );
         }
 
-        if ((val as unknown[]).length > 30) {
+        if ((val as DocumentFieldValueInternal[]).length > 30) {
           throw new Error(
             `firebase.firestore().collection().where(_, _, *) 'value' is invalid. '${op}' filters support a maximum of 30 elements in the value array.`,
           );
@@ -563,7 +586,9 @@ export default class Query {
     );
   }
 
-  withConverter(converter: unknown): Query {
+  withConverter(
+    converter: FirestoreDataConverter<DocumentData, DocumentData> | null | unknown,
+  ): Query {
     if (isUndefined(converter) || isNull(converter)) {
       return new Query(
         this._firestore,
