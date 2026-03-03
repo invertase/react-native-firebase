@@ -77,11 +77,7 @@ export default class WriteBatch {
     return this;
   }
 
-  set(
-    documentRef: DocumentReference,
-    data: Record<string, unknown>,
-    options?: unknown,
-  ): this {
+  set(documentRef: DocumentReference, data: Record<string, unknown>, options?: unknown): this {
     this._verifyNotCommitted('set');
     if (!(documentRef instanceof DocumentReference)) {
       throw new Error(

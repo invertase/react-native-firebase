@@ -182,6 +182,7 @@ export function generateNativeData(
     );
   }
 
+  // eslint-disable-next-line no-console
   console.warn(`Unknown data type received ${value}`);
   return getTypeMapInt('unknown');
 }
@@ -255,6 +256,7 @@ export function parseNativeData(firestore: any, nativeArray: [number, unknown?])
     case 'vector':
       return new FirestoreVectorValue(value as number[]);
     default:
+      // eslint-disable-next-line no-console
       console.warn(`Unknown data type received from native channel: ${type}`);
       return value;
   }

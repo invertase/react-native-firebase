@@ -1481,10 +1481,7 @@ describe('firestore().collection().where(OR Filters)', function () {
               where(documentId(), '==', ['document-id']),
               where('foo.bar', 'not-in', [1, 2, 3, 4]),
             ),
-            and(
-              where(documentId(), '==', ['document-id']),
-              where('foo.bar', '==', 'something'),
-            ),
+            and(where(documentId(), '==', ['document-id']), where('foo.bar', '==', 'something')),
           ),
           orderBy('differentOrderBy', 'desc'),
         );
