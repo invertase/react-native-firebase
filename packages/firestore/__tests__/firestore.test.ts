@@ -106,7 +106,7 @@ describe('Firestore', function () {
     describe('batch()', function () {
       it('returns a new WriteBatch instance', function () {
         const instance = firebase.firestore().batch();
-        return expect(instance.constructor.name).toEqual('FirestoreWriteBatch');
+        return expect(instance.constructor.name).toEqual('WriteBatch');
       });
     });
 
@@ -247,7 +247,7 @@ describe('Firestore', function () {
     describe('collectionGroup()', function () {
       it('returns a new query instance', function () {
         const query = firebase.firestore().collectionGroup(COLLECTION);
-        expect(query.constructor.name).toEqual('FirestoreQuery');
+        expect(query.constructor.name).toEqual('Query');
       });
 
       it('throws if id is not a string', async function () {
@@ -310,7 +310,7 @@ describe('Firestore', function () {
 
       it('returns a new CollectionReference', async function () {
         const collectionReference = firebase.firestore().collection('firestore');
-        expect(collectionReference.constructor.name).toEqual('FirestoreCollectionReference');
+        expect(collectionReference.constructor.name).toEqual('CollectionReference');
         expect(collectionReference.path).toEqual('firestore');
       });
     });
@@ -346,7 +346,7 @@ describe('Firestore', function () {
 
       it('returns a new DocumentReference', async function () {
         const docRef = firebase.firestore().doc(`${COLLECTION}/bar`);
-        expect(docRef.constructor.name).toEqual('FirestoreDocumentReference');
+        expect(docRef.constructor.name).toEqual('DocumentReference');
         expect(docRef.path).toEqual(`${COLLECTION}/bar`);
       });
 
@@ -483,7 +483,7 @@ describe('Firestore', function () {
           firestore1.settings({ persistence: true });
           const indexManager = firestore1.persistentCacheIndexManager();
           expect(indexManager).toBeDefined();
-          expect(indexManager!.constructor.name).toEqual('FirestorePersistentCacheIndexManager');
+          expect(indexManager!.constructor.name).toEqual('PersistentCacheIndexManager');
 
           expect(indexManager!.enableIndexAutoCreation).toBeInstanceOf(Function);
           expect(indexManager!.disableIndexAutoCreation).toBeInstanceOf(Function);
