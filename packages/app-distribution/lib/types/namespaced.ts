@@ -139,4 +139,3 @@ export namespace FirebaseAppDistributionTypes {
     signOutTester(): Promise<void>;
   }
 }
-/* eslint-enable @typescript-eslint/no-namespace */

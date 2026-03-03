@@ -25,7 +25,6 @@ import {
 
 import { version } from './version';
 import type { AppDistributionRelease } from './types/app-distribution';
-import type { AppDistributionInternal } from './types/internal';
 import type { FirebaseAppDistributionTypes } from './types/namespaced';
 
 const statics: FirebaseAppDistributionTypes.Statics = { SDK_VERSION: version };
@@ -34,7 +33,7 @@ const namespace = 'appDistribution';
 
 const nativeModuleName = 'RNFBAppDistributionModule';
 
-class FirebaseAppDistributionModule extends FirebaseModule implements AppDistributionInternal {
+class FirebaseAppDistributionModule extends FirebaseModule<typeof nativeModuleName> {
   isTesterSignedIn(): Promise<boolean> {
     if (isIOS) {
       return this.native.isTesterSignedIn();

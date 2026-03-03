@@ -1,7 +1,15 @@
 import { getApp } from '@react-native-firebase/app';
+import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import type { AppDistribution, AppDistributionRelease } from './types/app-distribution';
 import type { AppDistributionInternal } from './types/internal';
+
+/**
+ * Wraps a method type so it accepts MODULAR_DEPRECATION_ARG as a trailing argument.
+ * Allows modular wrappers to use .call(instance, ...args, MODULAR_DEPRECATION_ARG) without changing internal types.
+ */
+type WithModularDeprecationArg<T extends (...args: unknown[]) => unknown> =
+  T extends (...args: infer A) => infer R ? (...args: [...A, unknown?]) => R : never;
 
 export type FirebaseAppDistribution = AppDistribution;
 
@@ -20,7 +28,11 @@ export function getAppDistribution(app?: ReactNativeFirebase.FirebaseApp): Fireb
  * If not an iOS device, it always rejects, as neither false nor true seem like a sensible default.
  */
 export function isTesterSignedIn(appDistribution: FirebaseAppDistribution): Promise<boolean> {
-  return (appDistribution as AppDistributionInternal).isTesterSignedIn();
+  return (
+    (appDistribution as AppDistributionInternal).isTesterSignedIn as WithModularDeprecationArg<
+      AppDistributionInternal['isTesterSignedIn']
+    >
+  ).call(appDistribution, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -28,7 +40,11 @@ export function isTesterSignedIn(appDistribution: FirebaseAppDistribution): Prom
  * If not an iOS device, it always rejects, as no defaults seem sensible.
  */
 export function signInTester(appDistribution: FirebaseAppDistribution): Promise<void> {
-  return (appDistribution as AppDistributionInternal).signInTester();
+  return (
+    (appDistribution as AppDistributionInternal).signInTester as WithModularDeprecationArg<
+      AppDistributionInternal['signInTester']
+    >
+  ).call(appDistribution, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -38,7 +54,11 @@ export function signInTester(appDistribution: FirebaseAppDistribution): Promise<
 export function checkForUpdate(
   appDistribution: FirebaseAppDistribution,
 ): Promise<AppDistributionRelease> {
-  return (appDistribution as AppDistributionInternal).checkForUpdate();
+  return (
+    (appDistribution as AppDistributionInternal).checkForUpdate as WithModularDeprecationArg<
+      AppDistributionInternal['checkForUpdate']
+    >
+  ).call(appDistribution, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -46,5 +66,9 @@ export function checkForUpdate(
  * If not an iOS device, it always rejects, as no default response seems sensible.
  */
 export function signOutTester(appDistribution: FirebaseAppDistribution): Promise<void> {
-  return (appDistribution as AppDistributionInternal).signOutTester();
+  return (
+    (appDistribution as AppDistributionInternal).signOutTester as WithModularDeprecationArg<
+      AppDistributionInternal['signOutTester']
+    >
+  ).call(appDistribution, MODULAR_DEPRECATION_ARG);
 }

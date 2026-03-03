@@ -18,6 +18,22 @@
 import type { AppDistribution, AppDistributionRelease } from './app-distribution';
 
 /**
+ * Wrapped native module interface for App Distribution.
+ */
+export interface RNFBAppDistributionModule {
+  isTesterSignedIn(): Promise<boolean>;
+  signInTester(): Promise<void>;
+  checkForUpdate(): Promise<AppDistributionRelease>;
+  signOutTester(): Promise<void>;
+}
+
+declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
+  interface ReactNativeFirebaseNativeModules {
+    RNFBAppDistributionModule: RNFBAppDistributionModule;
+  }
+}
+
+/**
  * Internal AppDistribution type with access to instance methods.
  * Used by namespaced implementation and modular wrappers; not part of the public modular API.
  */
