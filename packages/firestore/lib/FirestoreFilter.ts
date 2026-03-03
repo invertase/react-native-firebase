@@ -24,6 +24,8 @@ import {
 import { fromDotSeparatedString } from './FieldPath';
 import { OPERATORS } from './FirestoreQueryModifiers';
 import { generateNativeData } from './utils/serialize';
+import type FieldPath from './FieldPath';
+import type { Primitive } from './types/firestore';
 
 const AND_QUERY = 'AND';
 const OR_QUERY = 'OR';
@@ -31,40 +33,42 @@ const OR_QUERY = 'OR';
 type FilterOperator = typeof AND_QUERY | typeof OR_QUERY;
 type FieldFilterOperator = keyof typeof OPERATORS;
 
-export function Filter(fieldPath: unknown, operator: FieldFilterOperator, value: unknown): _Filter {
-  return new _Filter(fieldPath, operator, value);
+/** Value allowed in a filter (primitive, object, or array for in/array-contains-any). */
+type FilterValue = Primitive | Record<string, unknown> | unknown[];
+
+export function Filter(
+  fieldPath: string | FieldPath,
+  operator: FieldFilterOperator,
+  value: FilterValue | unknown,
+): _Filter {
+  return new _Filter(fieldPath, operator, value as FilterValue);
 }
 
 export class _Filter {
-  fieldPath?: unknown;
-  operator: unknown;
-  value?: unknown;
+  fieldPath?: string | FieldPath;
+  operator: FieldFilterOperator | FilterOperator;
+  value?: FilterValue;
   queries?: _Filter[];
 
   constructor(
-    fieldPath: unknown,
-    operator: unknown,
-    value: unknown,
+    fieldPath: string | FieldPath | null,
+    operator: FieldFilterOperator | FilterOperator | null,
+    value: FilterValue | null,
     filterOperator?: FilterOperator,
     queries?: _Filter[],
   ) {
-    if ([AND_QUERY, OR_QUERY].includes(filterOperator as FilterOperator)) {
+    if (filterOperator !== undefined && [AND_QUERY, OR_QUERY].includes(filterOperator)) {
       this.operator = filterOperator;
       this.queries = queries;
       return;
     }
 
-    this.fieldPath = fieldPath;
-    this.operator = operator;
-    this.value = value;
+    this.fieldPath = fieldPath ?? undefined;
+    this.operator = operator as FieldFilterOperator | FilterOperator;
+    this.value = value ?? undefined;
   }
 
-  _toMap(): {
-    fieldPath?: unknown;
-    operator: unknown;
-    value?: unknown;
-    queries?: ReturnType<_Filter['_toMap']>[];
-  } {
+  _toMap(): FilterMap {
     if ([AND_QUERY, OR_QUERY].includes(this.operator as FilterOperator)) {
       return {
         operator: this.operator,
@@ -93,11 +97,22 @@ Filter.and = function and(...queries: _Filter[]): _Filter {
   return new _Filter(null, null, null, AND_QUERY, queries);
 };
 
-function hasOrOperator(obj: { operator: unknown; queries?: unknown[] }): boolean {
+/** Serialized field filter or composite (AND/OR) for generateFilters output. */
+interface SerializedFieldFilter {
+  fieldPath: FieldPath | string[];
+  operator: string;
+  value: [number, unknown?] | null;
+}
+interface SerializedCompositeFilter {
+  operator: FilterOperator;
+  queries: SerializedFilterSpec[];
+}
+type SerializedFilterSpec = SerializedFieldFilter | SerializedCompositeFilter;
+
+function hasOrOperator(obj: _Filter): boolean {
   return (
     obj.operator === OR_QUERY ||
-    (Array.isArray(obj.queries) &&
-      obj.queries.some(query => hasOrOperator(query as { operator: unknown; queries?: unknown[] })))
+    (Array.isArray(obj.queries) && obj.queries.some(query => hasOrOperator(query)))
   );
 }
 
@@ -119,37 +134,43 @@ Filter.or = function or(...queries: _Filter[]): _Filter {
 };
 
 interface FilterMap {
-  fieldPath?: unknown;
-  operator: unknown;
-  value?: unknown;
+  fieldPath?: string | FieldPath;
+  operator: FieldFilterOperator | FilterOperator;
+  value?: FilterValue;
   queries?: FilterMap[];
 }
 
+/** Modifiers object passed to generateFilters (e.g. QueryModifiers). */
+export interface FilterModifiersInternal {
+  isValidOperator(operator: string): boolean;
+  isEqualOperator(operator: string): boolean;
+  isNotEqualOperator(operator: string): boolean;
+  isInOperator(operator: string): boolean;
+}
+
 function mapFieldQuery(
-  { fieldPath, operator, value, queries }: FilterMap,
-  modifiers: {
-    isValidOperator(operator: unknown): boolean;
-    isEqualOperator(operator: unknown): boolean;
-    isNotEqualOperator(operator: unknown): boolean;
-    isInOperator(operator: unknown): boolean;
-  },
-): unknown {
+  filterMap: FilterMap,
+  modifiers: FilterModifiersInternal,
+): SerializedFilterSpec {
+  const { fieldPath, operator, value, queries } = filterMap;
   if (operator === AND_QUERY || operator === OR_QUERY) {
     return {
       operator,
-      queries: (queries ?? []).map(filter => mapFieldQuery(filter, modifiers)),
+      queries: (queries ?? []).map(q => mapFieldQuery(q, modifiers)),
     };
   }
 
-  let path: unknown;
+  let path: FieldPath | string;
   if (isString(fieldPath)) {
     try {
       path = fromDotSeparatedString(fieldPath);
     } catch (e) {
       throw new Error(`first argument of Filter(*,_ , _) 'fieldPath' ${(e as Error).message}.`);
     }
-  } else {
+  } else if (fieldPath !== undefined) {
     path = fieldPath;
+  } else {
+    throw new Error("first argument of Filter(*,_ , _) 'fieldPath' is required.");
   }
 
   if (!modifiers.isValidOperator(operator)) {
@@ -192,23 +213,19 @@ function mapFieldQuery(
 
   return {
     fieldPath: path,
-    operator: OPERATORS[operator as FieldFilterOperator],
+    operator: OPERATORS[operator as FieldFilterOperator]!,
     value: generateNativeData(value, true),
   };
 }
 
 export function generateFilters(
   filter: _Filter,
-  modifiers: {
-    isValidOperator(operator: unknown): boolean;
-    isEqualOperator(operator: unknown): boolean;
-    isNotEqualOperator(operator: unknown): boolean;
-    isInOperator(operator: unknown): boolean;
-  },
-): { operator: unknown; queries: unknown[] } {
+  modifiers: FilterModifiersInternal,
+): { operator: string; queries: SerializedFilterSpec[] } {
   const filterMap = filter._toMap();
+  const queries = (filterMap.queries ?? []).map(q => mapFieldQuery(q, modifiers));
   return {
-    operator: filterMap.operator,
-    queries: filterMap.queries!.map(query => mapFieldQuery(query, modifiers)),
+    operator: filterMap.operator ?? '',
+    queries,
   };
 }
