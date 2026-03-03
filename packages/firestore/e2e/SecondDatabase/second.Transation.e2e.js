@@ -49,7 +49,7 @@ describe('Second Database', function () {
 
       it('should return an instance of FirestoreTransaction', async function () {
         await firestore.runTransaction(async transaction => {
-          transaction.constructor.name.should.eql('FirestoreTransaction');
+          transaction.constructor.name.should.eql('Transaction');
           return null;
         });
       });
@@ -415,7 +415,7 @@ describe('Second Database', function () {
       it('should return an instance of FirestoreTransaction', async function () {
         const { runTransaction } = firestoreModular;
         await runTransaction(firestore, async transaction => {
-          transaction.constructor.name.should.eql('FirestoreTransaction');
+          transaction.constructor.name.should.eql('Transaction');
           return null;
         });
       });

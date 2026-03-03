@@ -82,7 +82,7 @@ describe('firestore.QuerySnapshot', function () {
     it('returns a Query instance', async function () {
       const colRef = firebase.firestore().collection(COLLECTION);
       const snapshot = await colRef.get();
-      snapshot.query.constructor.name.should.eql('FirestoreCollectionReference');
+      snapshot.query.constructor.name.should.eql('CollectionReference');
     });
 
     it('returns size as a number', async function () {
@@ -152,7 +152,7 @@ describe('firestore.QuerySnapshot', function () {
         const changes = snapshot.docChanges();
         changes.should.be.Array();
         changes.length.should.be.eql(1);
-        changes[0].constructor.name.should.eql('FirestoreDocumentChange');
+        changes[0].constructor.name.should.eql('DocumentChange');
       });
 
       // FIXME flakey in CI - the changes length comes back unstable
@@ -389,7 +389,7 @@ describe('firestore.QuerySnapshot', function () {
       const { getFirestore, collection, getDocs } = firestoreModular;
       const colRef = collection(getFirestore(), COLLECTION);
       const snapshot = await getDocs(colRef);
-      snapshot.query.constructor.name.should.eql('FirestoreCollectionReference');
+      snapshot.query.constructor.name.should.eql('CollectionReference');
     });
 
     it('returns size as a number', async function () {
@@ -466,7 +466,7 @@ describe('firestore.QuerySnapshot', function () {
         const changes = snapshot.docChanges();
         changes.should.be.Array();
         changes.length.should.be.eql(1);
-        changes[0].constructor.name.should.eql('FirestoreDocumentChange');
+        changes[0].constructor.name.should.eql('DocumentChange');
       });
 
       // FIXME flakey in CI - the changes length comes back unstable

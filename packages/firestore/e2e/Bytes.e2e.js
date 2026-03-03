@@ -28,7 +28,7 @@ describe('Bytes modular', function () {
     // Verify Bytes extends FirestoreBlob via prototype chain
     const FirestoreBlob = Object.getPrototypeOf(Bytes.prototype).constructor;
     myBytes.should.be.instanceOf(FirestoreBlob);
-    FirestoreBlob.name.should.equal('FirestoreBlob');
+    FirestoreBlob.name.should.equal('Blob');
     myBytes._binaryString.should.equal(testString);
     should.deepEqual(
       JSON.parse(myBytes._binaryString),
