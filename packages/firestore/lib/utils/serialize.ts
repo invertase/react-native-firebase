@@ -25,6 +25,7 @@ import {
   isString,
   isUndefined,
 } from '@react-native-firebase/app/dist/module/common';
+import type { Firestore } from '../types/firestore';
 import Blob from '../FirestoreBlob';
 import { DOCUMENT_ID } from '../FieldPath';
 import FirestoreGeoPoint from '../FirestoreGeoPoint';
@@ -34,19 +35,24 @@ import { getTypeMapInt, getTypeMapName } from './typemap';
 import { Bytes } from '../modular/Bytes';
 import FirestoreVectorValue from '../FirestoreVectorValue';
 
-let FirestoreDocumentReference: (new (firestore: any, path: any) => { path: string }) | null = null;
+let FirestoreDocumentReference:
+  | (new (firestore: Firestore, path: InstanceType<typeof FirestorePath>) => { path: string })
+  | null = null;
 
 export function provideDocumentReferenceClass(
-  documentReference: (new (firestore: any, path: any) => { path: string }) | null,
+  documentReference:
+    | (new (firestore: Firestore, path: InstanceType<typeof FirestorePath>) => { path: string })
+    | null,
 ): void {
   FirestoreDocumentReference = documentReference;
 }
 
-let FirestoreFieldValue: (new (...args: any[]) => { _type: string; _elements: unknown }) | null =
-  null;
+let FirestoreFieldValue:
+  | (new (...args: unknown[]) => { _type: string; _elements: unknown })
+  | null = null;
 
 export function provideFieldValueClass(
-  fieldValue: (new (...args: any[]) => { _type: string; _elements: unknown }) | null,
+  fieldValue: (new (...args: unknown[]) => { _type: string; _elements: unknown }) | null,
 ): void {
   FirestoreFieldValue = fieldValue;
 }
@@ -188,7 +194,7 @@ export function generateNativeData(
 }
 
 export function parseNativeMap(
-  firestore: any,
+  firestore: Firestore,
   nativeData: Record<string, unknown> | null | undefined,
 ): Record<string, unknown> | undefined {
   let data: Record<string, unknown> | undefined;
@@ -203,7 +209,7 @@ export function parseNativeMap(
   return data;
 }
 
-export function parseNativeArray(firestore: any, nativeArray: unknown[]): unknown[] {
+export function parseNativeArray(firestore: Firestore, nativeArray: unknown[]): unknown[] {
   const array: unknown[] = [];
   if (nativeArray) {
     for (let i = 0; i < nativeArray.length; i++) {
@@ -213,7 +219,7 @@ export function parseNativeArray(firestore: any, nativeArray: unknown[]): unknow
   return array;
 }
 
-export function parseNativeData(firestore: any, nativeArray: [number, unknown?]): unknown {
+export function parseNativeData(firestore: Firestore, nativeArray: [number, unknown?]): unknown {
   const [int, value] = nativeArray;
   const type = getTypeMapName(int);
 

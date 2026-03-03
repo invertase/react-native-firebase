@@ -107,4 +107,4 @@ export default class FieldValue {
   }
 }
 
-provideFieldValueClass(FieldValue);
+provideFieldValueClass(FieldValue as Parameters<typeof provideFieldValueClass>[0]);
