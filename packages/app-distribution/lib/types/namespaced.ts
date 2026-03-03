@@ -139,3 +139,20 @@ export namespace FirebaseAppDistributionTypes {
     signOutTester(): Promise<void>;
   }
 }
+
+/* eslint-disable @typescript-eslint/no-namespace */
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+    interface Module {
+      appDistribution: FirebaseModuleWithStaticsAndApp<
+        FirebaseAppDistributionTypes.Module,
+        FirebaseAppDistributionTypes.Statics
+      >;
+    }
+    interface FirebaseApp {
+      appDistribution(): FirebaseAppDistributionTypes.Module;
+    }
+  }
+}
+/* eslint-enable @typescript-eslint/no-namespace */

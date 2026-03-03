@@ -68,15 +68,3 @@ export interface AppDistribution {
   /** The FirebaseApp this module is associated with */
   app: ReactNativeFirebase.FirebaseApp;
 }
-
-declare module '@react-native-firebase/app' {
-  namespace ReactNativeFirebase {
-    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
-    interface Module {
-      appDistribution: FirebaseModuleWithStaticsAndApp<AppDistribution, Statics>;
-    }
-    interface FirebaseApp {
-      appDistribution(): AppDistribution;
-    }
-  }
-}
