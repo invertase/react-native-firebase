@@ -227,18 +227,6 @@ const config: PackageConfig = {
         'use; not part of the firebase-js-sdk public API.',
     },
     {
-      name: 'ModularQueryTypes',
-      reason:
-        'TypeScript `typeof import` helper used internally to bridge the ' +
-        'namespaced and modular APIs. Not part of the firebase-js-sdk public API.',
-    },
-    {
-      name: 'ModularSnapshotTypes',
-      reason:
-        'TypeScript `typeof import` helper used internally to bridge the ' +
-        'namespaced and modular APIs. Not part of the firebase-js-sdk public API.',
-    },
-    {
       name: 'clearPersistence',
       reason:
         'RN Firebase-specific alias for clearIndexedDbPersistence. Provides a ' +

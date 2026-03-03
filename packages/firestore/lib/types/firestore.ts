@@ -404,7 +404,3 @@ export declare class QuerySnapshot<
   ): void;
   docChanges(options?: SnapshotListenOptions): Array<DocumentChange<AppModelType, DbModelType>>;
 }
-
-// Utility aliases for later migration steps.
-export type ModularQueryTypes = typeof import('../modular/query');
-export type ModularSnapshotTypes = typeof import('../modular/snapshot');
