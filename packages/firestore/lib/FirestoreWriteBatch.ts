@@ -19,6 +19,8 @@ import { isObject } from '@react-native-firebase/app/dist/module/common';
 import DocumentReference from './FirestoreDocumentReference';
 import { parseSetOptions, parseUpdateArgs, applyFirestoreDataConverter } from './utils';
 import { buildNativeMap } from './utils/serialize';
+import type { FirestoreInternal } from './types/internal';
+import type { SetOptions } from './types/firestore';
 
 export interface BatchWrite {
   path: string;
@@ -28,11 +30,11 @@ export interface BatchWrite {
 }
 
 export default class WriteBatch {
-  _firestore: any;
+  _firestore: FirestoreInternal;
   _writes: BatchWrite[];
   _committed: boolean;
 
-  constructor(firestore: any) {
+  constructor(firestore: FirestoreInternal) {
     this._firestore = firestore;
     this._writes = [];
     this._committed = false;
@@ -52,7 +54,9 @@ export default class WriteBatch {
     if (this._writes.length === 0) {
       return Promise.resolve();
     }
-    return this._firestore.native.documentBatch(this._writes);
+    return this._firestore.native.documentBatch(
+      this._writes as unknown as Array<Record<string, unknown>>,
+    );
   }
 
   delete(documentRef: DocumentReference): this {
@@ -77,7 +81,7 @@ export default class WriteBatch {
     return this;
   }
 
-  set(documentRef: DocumentReference, data: Record<string, unknown>, options?: unknown): this {
+  set(documentRef: DocumentReference, data: Record<string, unknown>, options?: SetOptions): this {
     this._verifyNotCommitted('set');
     if (!(documentRef instanceof DocumentReference)) {
       throw new Error(
@@ -98,9 +102,9 @@ export default class WriteBatch {
       throw new Error(`firebase.firestore().batch().set(_, *) ${(e as Error).message}.`);
     }
 
-    let converted: unknown = data;
+    let converted: Record<string, unknown> | unknown = data;
     try {
-      converted = applyFirestoreDataConverter(data, (documentRef as any)._converter, setOptions);
+      converted = applyFirestoreDataConverter(data, documentRef.converter, setOptions);
     } catch (e) {
       throw new Error(
         `firebase.firestore().batch().set(_, *) 'withConverter.toFirestore' threw an error: ${(e as Error).message}.`,

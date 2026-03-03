@@ -151,7 +151,7 @@ class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
   }
 
   batch(): FirestoreWriteBatch {
-    return new FirestoreWriteBatch(this);
+    return new FirestoreWriteBatch(this as unknown as FirestoreInternal);
   }
 
   loadBundle(bundle: string): LoadBundleTask {
