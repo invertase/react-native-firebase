@@ -66,6 +66,13 @@ const config: PackageConfig = {
   // ---------------------------------------------------------------------------
   differentShape: [
     {
+      name: 'getInstallations',
+      reason:
+        'The optional `app` parameter is typed as `ReactNativeFirebase.FirebaseApp` in RN Firebase ' +
+        'and as `FirebaseApp` from `@firebase/app` in the firebase-js-sdk. Both represent the app ' +
+        'instance; the RN type comes from the React Native Firebase app package.',
+    },
+    {
       name: 'Installations',
       reason:
         'The `app` property is typed as `ReactNativeFirebase.FirebaseApp` in RN Firebase ' +
