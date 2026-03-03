@@ -72,6 +72,46 @@ export interface FirestoreSnapshotListenOptionsInternal {
   includeMetadataChanges?: boolean;
 }
 
+/** Settings state on the Firestore module instance (ignoreUndefinedProperties, persistence). */
+export interface FirestoreSettingsStateInternal {
+  ignoreUndefinedProperties: boolean;
+  persistence: boolean;
+}
+
+/** Subscription returned by emitter.addListener. */
+export interface FirestoreEmitterSubscriptionInternal {
+  remove(): void;
+}
+
+/** Native error shape in sync event body. */
+export interface FirestoreSyncEventErrorInternal {
+  code?: string;
+  message?: string;
+}
+
+/** Serialized document snapshot from native (event.body.snapshot). */
+export interface FirestoreDocumentSnapshotDataInternal {
+  path: string;
+  exists: boolean;
+  data?: Record<string, unknown>;
+  metadata: [boolean, boolean];
+}
+
+/** Sync event body (document or collection) from native. */
+export interface FirestoreSyncEventBodyInternal {
+  error?: FirestoreSyncEventErrorInternal;
+  snapshot?: FirestoreDocumentSnapshotDataInternal;
+  documents?: FirestoreDocumentSnapshotDataInternal[];
+}
+
+/** Emitter interface used by FirestoreInternal (matches FirebaseModule.emitter usage). */
+export interface FirestoreEmitterInternal {
+  addListener(
+    eventName: string,
+    callback: (event: { body: FirestoreSyncEventBodyInternal }) => void,
+  ): FirestoreEmitterSubscriptionInternal;
+}
+
 /**
  * Wrapped native module interface for Firestore.
  *
@@ -335,6 +375,12 @@ export interface QueryInternal<
 export interface FirestoreInternal extends ParentReferenceInternal, Firestore {
   /** Wrapped native module (merged Firestore native modules). */
   readonly native: RNFBFirestoreModule;
+  /** Shared event emitter for sync events (document, collection, snapshots-in-sync). */
+  readonly emitter: FirestoreEmitterInternal;
+  /** Builds app- and database-scoped event name. */
+  eventNameForApp(...args: Array<string | number>): string;
+  /** Module settings (e.g. ignoreUndefinedProperties for serialization). */
+  readonly _settings: FirestoreSettingsStateInternal;
   collectionGroup(collectionId: string, ...deprecationArg: unknown[]): Query;
   enableNetwork(...deprecationArg: unknown[]): Promise<void>;
   disableNetwork(...deprecationArg: unknown[]): Promise<void>;
@@ -351,7 +397,7 @@ export interface FirestoreInternal extends ParentReferenceInternal, Firestore {
     bundleData: ReadableStream<Uint8Array> | ArrayBuffer | string,
     ...deprecationArg: unknown[]
   ): LoadBundleTask;
-  namedQuery(name: string, ...deprecationArg: unknown[]): Promise<Query | null>;
+  namedQuery(name: string, ...deprecationArg: unknown[]): Query | null;
   batch(...deprecationArg: unknown[]): WriteBatch;
   persistentCacheIndexManager(...deprecationArg: unknown[]): PersistentCacheIndexManager | null;
 }

@@ -35,6 +35,7 @@ import { buildNativeMap, provideDocumentReferenceClass } from './utils/serialize
 
 import type FirestoreCollectionReferenceClass from './FirestoreCollectionReference';
 import type DocumentSnapshot from './FirestoreDocumentSnapshot';
+import type { FirestoreInternal, FirestoreSyncEventBodyInternal } from './types/internal';
 
 let FirestoreCollectionReference:
   | (new (firestore: any, path: any, converter?: any) => FirestoreCollectionReferenceClass)
@@ -63,12 +64,12 @@ export function provideDocumentSnapshotClass(
 let _id = 0;
 
 export default class DocumentReference {
-  _firestore: any;
+  _firestore: FirestoreInternal;
   _documentPath: import('./FirestorePath').default;
   _converter: unknown;
 
   constructor(
-    firestore: any,
+    firestore: FirestoreInternal,
     documentPath: import('./FirestorePath').default,
     converter?: unknown,
   ) {
@@ -197,16 +198,14 @@ export default class DocumentReference {
 
     const onSnapshotSubscription = this._firestore.emitter.addListener(
       this._firestore.eventNameForApp(`firestore_document_sync_event:${listenerId}`),
-      (event: { body: { error?: unknown; snapshot?: any } }) => {
+      (event: { body: FirestoreSyncEventBodyInternal }) => {
         if (event.body.error) {
           handleError(NativeError.fromEvent(event.body.error, 'firestore'));
         } else {
+          const snapshot = event.body.snapshot;
+          if (!snapshot) return;
           const documentSnapshot = createDeprecationProxy(
-            new FirestoreDocumentSnapshotClass!(
-              this._firestore,
-              event.body.snapshot,
-              this._converter,
-            ),
+            new FirestoreDocumentSnapshotClass!(this._firestore, snapshot, this._converter),
           );
           handleSuccess(documentSnapshot);
         }

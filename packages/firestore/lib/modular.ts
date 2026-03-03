@@ -453,7 +453,9 @@ export function loadBundle(
 }
 
 export function namedQuery(firestore: Firestore, name: string): Promise<Query | null> {
-  return (firestore as FirestoreInternal).namedQuery.call(firestore, name, MODULAR_DEPRECATION_ARG);
+  return Promise.resolve(
+    (firestore as FirestoreInternal).namedQuery.call(firestore, name, MODULAR_DEPRECATION_ARG),
+  );
 }
 
 export function writeBatch(firestore: Firestore): WriteBatch {

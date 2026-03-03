@@ -28,10 +28,11 @@ import { validateWithConverter } from './utils';
 
 import type FirestorePath from './FirestorePath';
 import type { DocumentData, FirestoreDataConverter } from './types/firestore';
+import type { FirestoreInternal } from './types/internal';
 
 export default class CollectionReference extends Query {
   constructor(
-    firestore: any,
+    firestore: FirestoreInternal,
     collectionPath: FirestorePath,
     converter?: FirestoreDataConverter<DocumentData, DocumentData> | null,
   ) {

@@ -26,6 +26,7 @@ import {
   isUndefined,
 } from '@react-native-firebase/app/dist/module/common';
 import type { Firestore } from '../types/firestore';
+import type { FirestoreInternal } from '../types/internal';
 import Blob from '../FirestoreBlob';
 import { DOCUMENT_ID } from '../FieldPath';
 import FirestoreGeoPoint from '../FirestoreGeoPoint';
@@ -36,12 +37,20 @@ import { Bytes } from '../modular/Bytes';
 import FirestoreVectorValue from '../FirestoreVectorValue';
 
 let FirestoreDocumentReference:
-  | (new (firestore: Firestore, path: InstanceType<typeof FirestorePath>) => { path: string })
+  | (new (
+      firestore: FirestoreInternal,
+      path: InstanceType<typeof FirestorePath>,
+      converter?: unknown,
+    ) => { path: string })
   | null = null;
 
 export function provideDocumentReferenceClass(
   documentReference:
-    | (new (firestore: Firestore, path: InstanceType<typeof FirestorePath>) => { path: string })
+    | (new (
+        firestore: FirestoreInternal,
+        path: InstanceType<typeof FirestorePath>,
+        converter?: unknown,
+      ) => { path: string })
     | null,
 ): void {
   FirestoreDocumentReference = documentReference;
@@ -248,7 +257,10 @@ export function parseNativeData(firestore: Firestore, nativeArray: [number, unkn
     case 'object':
       return parseNativeMap(firestore, value as Record<string, unknown>);
     case 'reference':
-      return new FirestoreDocumentReference!(firestore, FirestorePath.fromName(value as string));
+      return new FirestoreDocumentReference!(
+        firestore as FirestoreInternal,
+        FirestorePath.fromName(value as string),
+      );
     case 'geopoint': {
       const v = (value ?? []) as number[];
       return new FirestoreGeoPoint(v[0] ?? 0, v[1] ?? 0);

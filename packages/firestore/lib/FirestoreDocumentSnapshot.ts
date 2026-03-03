@@ -23,6 +23,7 @@ import SnapshotMetadata from './FirestoreSnapshotMetadata';
 import type { SnapshotOptions } from './types/firestore';
 import { extractFieldPathData } from './utils';
 import { parseNativeMap } from './utils/serialize';
+import type { FirestoreInternal } from './types/internal';
 
 export interface DocumentSnapshotNativeData {
   path: string;
@@ -32,7 +33,7 @@ export interface DocumentSnapshotNativeData {
 }
 
 export default class DocumentSnapshot {
-  _firestore: unknown;
+  _firestore: FirestoreInternal;
   _nativeData: DocumentSnapshotNativeData;
   _data: Record<string, unknown> | undefined;
   _metadata: SnapshotMetadata;
@@ -40,15 +41,16 @@ export default class DocumentSnapshot {
   _exists: boolean;
   _converter: unknown;
 
-  constructor(firestore: unknown, nativeData: DocumentSnapshotNativeData, converter: unknown) {
+  constructor(
+    firestore: FirestoreInternal,
+    nativeData: DocumentSnapshotNativeData,
+    converter: unknown,
+  ) {
     this._firestore = firestore;
     this._nativeData = nativeData;
-    this._data = parseNativeMap(
-      firestore as any,
-      nativeData.data as Record<string, unknown> | undefined,
-    );
+    this._data = parseNativeMap(firestore, nativeData.data as Record<string, unknown> | undefined);
     this._metadata = new SnapshotMetadata(nativeData.metadata ?? [false, false]);
-    this._ref = new DocumentReference(firestore as any, FirestorePath.fromName(nativeData.path));
+    this._ref = new DocumentReference(firestore, FirestorePath.fromName(nativeData.path));
     this._exists = nativeData.exists ?? false;
     this._converter = converter;
   }

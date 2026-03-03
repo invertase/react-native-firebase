@@ -47,6 +47,7 @@ import { LoadBundleTask } from './LoadBundleTask';
 import type { LoadBundleTaskProgress } from './types/firestore';
 import { version } from './version';
 import type { FirebaseFirestoreTypes } from './types/namespaced';
+import type { FirestoreInternal } from './types/internal';
 import fallBackModule from './web/RNFBFirestoreModule';
 
 // react-native at least through 0.77 does not correctly support URL.host, which
@@ -239,7 +240,9 @@ class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
       );
     }
 
-    return createDeprecationProxy(new CollectionReference(this, path));
+    return createDeprecationProxy(
+      new CollectionReference(this as unknown as FirestoreInternal, path),
+    );
   }
 
   collectionGroup(collectionId: string): Query {
@@ -290,7 +293,9 @@ class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
       throw new Error("firebase.firestore().doc(*) 'documentPath' must point to a document.");
     }
 
-    return createDeprecationProxy(new DocumentReference(this, path));
+    return createDeprecationProxy(
+      new DocumentReference(this as unknown as FirestoreInternal, path),
+    );
   }
 
   async enableNetwork(): Promise<void> {
