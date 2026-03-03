@@ -28,6 +28,7 @@ import SnapshotMetadata from './FirestoreSnapshotMetadata';
 
 import type Query from './FirestoreQuery';
 import type { DocumentData, FirestoreDataConverter } from './types/firestore';
+import type { FirestoreInternal } from './types/internal';
 
 export interface QuerySnapshotNativeData {
   source?: string;
@@ -57,7 +58,7 @@ export default class QuerySnapshot {
   _metadata: SnapshotMetadata;
 
   constructor(
-    firestore: any,
+    firestore: FirestoreInternal,
     query: Query,
     nativeData: QuerySnapshotNativeData,
     converter: FirestoreDataConverter<DocumentData, DocumentData> | null,
