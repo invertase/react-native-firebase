@@ -100,7 +100,7 @@ class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
     }
 
     this._referencePath = new FirestorePath();
-    this._transactionHandler = new FirestoreTransactionHandler(this);
+    this._transactionHandler = new FirestoreTransactionHandler(this as unknown as FirestoreInternal);
 
     // Fan out native events
     this.emitter.addListener(this.eventNameForApp('firestore_collection_sync_event'), event => {

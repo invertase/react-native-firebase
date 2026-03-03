@@ -17,6 +17,7 @@
 
 import NativeError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
 import Transaction, { type TransactionMeta } from './FirestoreTransaction';
+import type { FirestoreInternal } from './types/internal';
 
 let transactionId = 0;
 
@@ -38,10 +39,10 @@ export interface TransactionEvent {
 }
 
 export default class FirestoreTransactionHandler {
-  _firestore: any;
+  _firestore: FirestoreInternal;
   _pending: Record<number, TransactionPendingEntry>;
 
-  constructor(firestore: any) {
+  constructor(firestore: FirestoreInternal) {
     this._firestore = firestore;
     this._pending = {};
     this._firestore.emitter.addListener(
