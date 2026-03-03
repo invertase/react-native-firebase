@@ -23,6 +23,7 @@ import type {
   Firestore,
   FirestoreSettings,
   LoadBundleTask,
+  LoadBundleTaskProgress,
   Query,
   QuerySnapshot,
   SetOptions,
@@ -37,6 +38,156 @@ import type { PersistentCacheIndexManager } from '../FirestorePersistentCacheInd
 import type { QueryConstraint } from '../modular/query';
 import type { _Filter } from '../FirestoreFilter';
 import Blob from 'lib/FirestoreBlob';
+
+/** Query type passed to native ('collection' or 'collectionGroup'). */
+export type FirestoreQueryTypeInternal = 'collection' | 'collectionGroup';
+
+/** Single filter spec passed to native (fieldPath serialized as string[] from QueryModifiers). */
+export interface FirestoreFilterSpecInternal {
+  fieldPath?: string[] | unknown;
+  operator: string;
+  value?: unknown;
+  /** Nested queries for composite filters (AND/OR). Type matches QueryModifiers getter. */
+  queries?: FirestoreFilterSpecInternal[] | unknown[];
+}
+
+/** Order spec passed to native (fieldPath serialized as string[] from QueryModifiers). */
+export interface FirestoreOrderSpecInternal {
+  fieldPath: string[] | unknown;
+  direction: string;
+}
+
+/** Query options passed to native (limit, limitToLast, startAt, etc.). */
+export interface FirestoreQueryOptionsInternal {
+  limit?: number;
+  limitToLast?: number;
+  startAt?: unknown[];
+  startAfter?: unknown[];
+  endAt?: unknown[];
+  endBefore?: unknown[];
+}
+
+/** Options for snapshot listeners (includeMetadataChanges). */
+export interface FirestoreSnapshotListenOptionsInternal {
+  includeMetadataChanges?: boolean;
+}
+
+/**
+ * Wrapped native module interface for Firestore.
+ *
+ * Note: React Native Firebase internally wraps native methods and auto-prepends app name and
+ * database ID when `hasMultiAppSupport` and `hasCustomUrlOrRegionSupport` are enabled.
+ * Firestore uses multiple native modules (RNFBFirestoreModule, RNFBFirestoreCollectionModule,
+ * RNFBFirestoreDocumentModule, RNFBFirestoreTransactionModule) which are merged into a single
+ * wrapped object. This interface represents that merged *wrapped* module shape exposed as
+ * `this.native` within FirebaseFirestoreModule.
+ */
+export interface RNFBFirestoreModule {
+  // --- Main Firestore module (RNFBFirestoreModule) ---
+  loadBundle(bundle: string): Promise<LoadBundleTaskProgress>;
+  clearPersistence(): Promise<void>;
+  waitForPendingWrites(): Promise<void>;
+  terminate(): Promise<void>;
+  useEmulator(host: string, port: number): void;
+  disableNetwork(): Promise<void>;
+  enableNetwork(): Promise<void>;
+  settings(settings: object): Promise<void>;
+
+  addSnapshotsInSync(listenerId: number): void;
+  removeSnapshotsInSync(listenerId: number): void;
+
+  /**
+   * Persistent cache index manager.
+   * - 0: enableIndexAutoCreation
+   * - 1: disableIndexAutoCreation
+   * - 2: deleteAllIndexes
+   */
+  persistenceCacheIndexManager(mode: number): Promise<void>;
+
+  // --- Collection module (RNFBFirestoreCollectionModule) ---
+  collectionOffSnapshot(listenerId: number): void;
+  namedQueryOnSnapshot(
+    queryName: string,
+    type: FirestoreQueryTypeInternal | string,
+    filters: FirestoreFilterSpecInternal[],
+    orders: FirestoreOrderSpecInternal[],
+    options: FirestoreQueryOptionsInternal,
+    listenerId: number,
+    snapshotListenOptions: FirestoreSnapshotListenOptionsInternal,
+  ): void;
+  collectionOnSnapshot(
+    path: string,
+    type: FirestoreQueryTypeInternal | string,
+    filters: FirestoreFilterSpecInternal[],
+    orders: FirestoreOrderSpecInternal[],
+    options: FirestoreQueryOptionsInternal,
+    listenerId: number,
+    snapshotListenOptions: FirestoreSnapshotListenOptionsInternal,
+  ): void;
+  namedQueryGet(
+    queryName: string,
+    type: FirestoreQueryTypeInternal | string,
+    filters: FirestoreFilterSpecInternal[],
+    orders: FirestoreOrderSpecInternal[],
+    options: FirestoreQueryOptionsInternal,
+    getOptions?: { source?: string },
+  ): Promise<unknown>;
+  collectionGet(
+    path: string,
+    type: FirestoreQueryTypeInternal | string,
+    filters: FirestoreFilterSpecInternal[],
+    orders: FirestoreOrderSpecInternal[],
+    options: FirestoreQueryOptionsInternal,
+    getOptions?: { source?: string },
+  ): Promise<unknown>;
+  collectionCount(
+    path: string,
+    type: FirestoreQueryTypeInternal | string,
+    filters: FirestoreFilterSpecInternal[],
+    orders: FirestoreOrderSpecInternal[],
+    options: FirestoreQueryOptionsInternal,
+  ): Promise<{ count?: number }>;
+  aggregateQuery(
+    path: string,
+    type: FirestoreQueryTypeInternal | string,
+    filters: FirestoreFilterSpecInternal[],
+    orders: FirestoreOrderSpecInternal[],
+    options: FirestoreQueryOptionsInternal,
+    aggregateQueries: Array<{
+      aggregateType: AggregateType;
+      field: string | null;
+      key: string;
+    }>,
+  ): Promise<Record<string, unknown>>;
+
+  // --- Document module (RNFBFirestoreDocumentModule) ---
+  documentDelete(path: string): Promise<void>;
+  documentOffSnapshot(listenerId: number): void;
+  documentOnSnapshot(
+    path: string,
+    listenerId: number,
+    snapshotListenOptions: FirestoreSnapshotListenOptionsInternal,
+  ): void;
+  documentGet(path: string, getOptions?: { source?: string }): Promise<unknown>;
+  documentSet(
+    path: string,
+    data: Record<string, unknown>,
+    options: Record<string, unknown>,
+  ): Promise<void>;
+  documentUpdate(path: string, data: Record<string, unknown>): Promise<void>;
+  documentBatch(writes: Array<Record<string, unknown>>): Promise<void>;
+
+  // --- Transaction module (RNFBFirestoreTransactionModule) ---
+  transactionBegin(transactionId: number): Promise<void>;
+  transactionDispose(transactionId: number): void;
+  transactionApplyBuffer(transactionId: number, commandBuffer: unknown[]): void;
+}
+
+declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
+  interface ReactNativeFirebaseNativeModules {
+    RNFBFirestoreModule: RNFBFirestoreModule;
+  }
+}
 
 // Helper type for wrappers that forward MODULAR_DEPRECATION_ARG via .call(...).
 export type WithModularDeprecationArg<F> = F extends (...args: infer P) => infer R
@@ -182,6 +333,8 @@ export interface QueryInternal<
 }
 
 export interface FirestoreInternal extends ParentReferenceInternal, Firestore {
+  /** Wrapped native module (merged Firestore native modules). */
+  readonly native: RNFBFirestoreModule;
   collectionGroup(collectionId: string, ...deprecationArg: unknown[]): Query;
   enableNetwork(...deprecationArg: unknown[]): Promise<void>;
   disableNetwork(...deprecationArg: unknown[]): Promise<void>;
@@ -212,27 +365,12 @@ export interface PersistentCacheIndexManagerInternal extends PersistentCacheInde
 export type FirestoreBlobInternal = Blob & { _binaryString: string };
 
 export type QueryWithAggregateInternals = Query & {
-  _firestore: FirestoreInternal & {
-    native: {
-      aggregateQuery(
-        relativeName: string,
-        type: unknown,
-        filters: unknown,
-        orders: unknown,
-        options: unknown,
-        aggregateQueries: Array<{
-          aggregateType: AggregateType;
-          field: string | null;
-          key: string;
-        }>,
-      ): Promise<unknown>;
-    };
-  };
+  _firestore: FirestoreInternal;
   _collectionPath: { relativeName: string };
   _modifiers: {
-    type: unknown;
-    filters: unknown;
-    orders: unknown;
-    options: unknown;
+    type: FirestoreQueryTypeInternal;
+    filters: FirestoreFilterSpecInternal[];
+    orders: FirestoreOrderSpecInternal[];
+    options: FirestoreQueryOptionsInternal;
   };
 };

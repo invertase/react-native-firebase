@@ -57,7 +57,7 @@ import 'react-native-url-polyfill/auto';
 
 const namespace = 'firestore';
 
-const nativeModuleName = [
+const nativeModuleNames = [
   'RNFBFirestoreModule',
   'RNFBFirestoreCollectionModule',
   'RNFBFirestoreDocumentModule',
@@ -76,7 +76,7 @@ type FirestoreModuleSettingsState = {
   persistence: boolean;
 };
 
-class FirebaseFirestoreModule extends FirebaseModule {
+class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
   type = 'firestore' as const;
   _referencePath: FirestorePath;
   _transactionHandler: FirestoreTransactionHandler;
@@ -460,7 +460,7 @@ const firestoreNamespace = createModuleNamespace({
   statics: FirestoreStatics,
   version,
   namespace,
-  nativeModuleName: [...nativeModuleName],
+  nativeModuleName: [...nativeModuleNames],
   nativeEvents: [...nativeEvents],
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: true,
@@ -495,6 +495,6 @@ export const firebase =
   >;
 
 // Register the interop module for non-native platforms.
-for (const moduleName of nativeModuleName) {
+for (const moduleName of nativeModuleNames) {
   setReactNativeModule(moduleName, fallBackModule);
 }
