@@ -507,3 +507,4 @@ export * from './modular/VectorValue';
 export { LoadBundleTask } from './LoadBundleTask';
 export { default as Transaction } from './FirestoreTransaction';
 export { default as WriteBatch } from './FirestoreWriteBatch';
+export { Filter } from './FirestoreFilter';
