@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2016-present Invertase Limited & Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this library except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
 // ============ Statics Interface ============
@@ -6,10 +23,11 @@ export interface Statics {
   SDK_VERSION: string;
 }
 
-// ============ Module Interface ============
+// ============ Module Interface (public/modular API) ============
 
 /**
- * The Firebase In-App Messaging service interface.
+ * The Firebase In-App Messaging service interface (modular/public API).
+ * Only exposes the app reference; use modular functions or the internal type for methods/properties.
  *
  * > This module is available for the default app only.
  *
@@ -18,115 +36,10 @@ export interface Statics {
  * Get the In-App Messaging service for the default app:
  *
  * ```js
- * const defaultAppInAppMessaging = firebase.inAppMessaging();
+ * const defaultAppInAppMessaging = getInAppMessaging();
  * ```
  */
-export interface InAppMessaging extends ReactNativeFirebase.FirebaseModule {
-  /**
-   * The current `FirebaseApp` instance for this Firebase service.
-   */
+export interface InAppMessaging {
+  /** The FirebaseApp this module is associated with */
   app: ReactNativeFirebase.FirebaseApp;
-
-  /**
-   * Determines whether messages are suppressed or not.
-   *
-   * #### Example
-   *
-   * ```js
-   * const isSuppressed = firebase.inAppMessaging().isMessagesDisplaySuppressed;
-   * ```
-   */
-  isMessagesDisplaySuppressed: boolean;
-
-  /**
-   * Enable or disable suppression of Firebase In App Messaging messages.
-   *
-   * When enabled, no in app messages will be rendered until either you disable suppression, or the app restarts.
-   * This state is not persisted between app restarts.
-   *
-   * #### Example
-   *
-   * ```js
-   * // Suppress messages
-   * await firebase.inAppMessaging().setMessagesDisplaySuppressed(true);
-   * ```
-   *
-   * @param enabled Whether messages should be suppressed.
-   */
-  setMessagesDisplaySuppressed(enabled: boolean): Promise<null>;
-
-  /**
-   * Determines whether automatic data collection is enabled or not.
-   *
-   * #### Example
-   *
-   * ```js
-   * const isDataCollectionEnabled = firebase.inAppMessaging().isAutomaticDataCollectionEnabled;
-   * ```
-   */
-  isAutomaticDataCollectionEnabled: boolean;
-
-  /**
-   * Enable or disable automatic data collection for Firebase In-App Messaging.
-   *
-   * This setting is persisted across app restarts and overrides the setting specified in your manifest/plist file.
-   *
-   * #### Example
-   *
-   * ```js
-   * // Disable data collection
-   * firebase.inAppMessaging().setAutomaticDataCollectionEnabled(false);
-   * ```
-   *
-   * @param enabled Whether automatic data collection is enabled.
-   */
-  setAutomaticDataCollectionEnabled(enabled: boolean): Promise<null>;
-
-  /**
-   * Trigger in-app messages programmatically
-   *
-   * #### Example
-   *
-   * ```js
-   * // Trigger an event
-   * await firebase.inAppMessaging().triggerEvent("exampleTrigger");
-   * ```
-   *
-   * @param eventId The id of the event.
-   */
-  triggerEvent(eventId: string): Promise<null>;
 }
-
-// Helper types to reference outer scope types within the namespace
-// These are needed because TypeScript can't directly alias types with the same name
-type _Statics = Statics;
-type _InAppMessaging = InAppMessaging;
-
-/**
- * Firebase In-App Messaging package types for React Native.
- */
-/* eslint-disable @typescript-eslint/no-namespace */
-export namespace FirebaseInAppMessagingTypes {
-  // Type aliases referencing top-level types
-  export type Statics = _Statics;
-  export type InAppMessaging = _InAppMessaging;
-  export type Module = InAppMessaging;
-}
-/* eslint-enable @typescript-eslint/no-namespace */
-
-/* eslint-disable @typescript-eslint/no-namespace */
-declare module '@react-native-firebase/app' {
-  namespace ReactNativeFirebase {
-    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
-    interface Module {
-      inAppMessaging: FirebaseModuleWithStaticsAndApp<
-        FirebaseInAppMessagingTypes.Module,
-        FirebaseInAppMessagingTypes.Statics
-      >;
-    }
-    interface FirebaseApp {
-      inAppMessaging(): FirebaseInAppMessagingTypes.Module;
-    }
-  }
-}
-/* eslint-enable @typescript-eslint/no-namespace */

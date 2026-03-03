@@ -7,17 +7,17 @@ import {
 import type { ModuleConfig } from '@react-native-firebase/app/dist/module/internal';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import { version } from './version';
-import type { InAppMessaging, Statics } from './types/in-app-messaging';
+import type { FirebaseInAppMessagingTypes } from './types/namespaced';
 
-const statics: Statics = {
+const statics: FirebaseInAppMessagingTypes.Statics = {
   SDK_VERSION: version,
 };
 
 const namespace = 'inAppMessaging';
 
-const nativeModuleName = 'RNFBFiamModule';
+const nativeModuleName = 'RNFBFiamModule' as const;
 
-class FirebaseFiamModule extends FirebaseModule implements InAppMessaging {
+class FirebaseFiamModule extends FirebaseModule<typeof nativeModuleName> {
   _isMessagesDisplaySuppressed: boolean;
   _isAutomaticDataCollectionEnabled: boolean;
 
@@ -83,10 +83,13 @@ const inAppMessagingNamespace = createModuleNamespace({
 });
 
 type InAppMessagingNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
-  InAppMessaging,
-  Statics
+  FirebaseInAppMessagingTypes.Module,
+  FirebaseInAppMessagingTypes.Statics
 > & {
-  inAppMessaging: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<InAppMessaging, Statics>;
+  inAppMessaging: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+    FirebaseInAppMessagingTypes.Module,
+    FirebaseInAppMessagingTypes.Statics
+  >;
   firebase: ReactNativeFirebase.Module;
   app(name?: string): ReactNativeFirebase.FirebaseApp;
 };
@@ -99,7 +102,7 @@ export default inAppMessagingNamespace as unknown as InAppMessagingNamespace;
 export const firebase =
   getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
     'inAppMessaging',
-    InAppMessaging,
-    Statics,
+    FirebaseInAppMessagingTypes.Module,
+    FirebaseInAppMessagingTypes.Statics,
     false
   >;

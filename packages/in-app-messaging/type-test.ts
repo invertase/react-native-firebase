@@ -1,5 +1,6 @@
 import inAppMessaging, {
   firebase,
+  FirebaseInAppMessagingTypes,
   getInAppMessaging,
   isMessagesDisplaySuppressed,
   setMessagesDisplaySuppressed,
@@ -36,7 +37,7 @@ console.log(firebase.inAppMessaging().app.name);
 console.log(inAppMessaging().app.name);
 
 // checks Module instance APIs
-const inAppMessagingInstance = firebase.inAppMessaging();
+const inAppMessagingInstance = firebase.inAppMessaging() as unknown as FirebaseInAppMessagingTypes.Module;
 console.log(inAppMessagingInstance.isMessagesDisplaySuppressed);
 console.log(inAppMessagingInstance.isAutomaticDataCollectionEnabled);
 
