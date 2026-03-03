@@ -69,24 +69,6 @@ export interface AppDistribution {
   app: ReactNativeFirebase.FirebaseApp;
 }
 
-// Helper types to reference outer scope types within the namespace
-type _AppDistributionRelease = AppDistributionRelease;
-type _Statics = Statics;
-type _AppDistribution = AppDistribution;
-
-/**
- * Firebase AppDistribution package types for React Native.
- */
-/* eslint-disable @typescript-eslint/no-namespace */
-export namespace FirebaseAppDistributionTypes {
-  export type AppDistributionRelease = _AppDistributionRelease;
-  export type Statics = _Statics;
-  export type AppDistribution = _AppDistribution;
-  export type Module = AppDistribution;
-}
-/* eslint-enable @typescript-eslint/no-namespace */
-
-/* eslint-disable @typescript-eslint/no-namespace */
 declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
@@ -98,4 +80,3 @@ declare module '@react-native-firebase/app' {
     }
   }
 }
-/* eslint-enable @typescript-eslint/no-namespace */
