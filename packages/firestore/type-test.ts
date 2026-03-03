@@ -1,6 +1,5 @@
 import firestore, {
   firebase,
-  FirebaseFirestoreTypes,
   getFirestore,
   connectFirestoreEmulator,
   doc,
@@ -74,9 +73,7 @@ import firestore, {
   Query,
 } from '.';
 import { AggregateField, AggregateQuerySnapshot } from '.';
-import type { AggregateSpec } from '.';
-
-type DocumentData = FirebaseFirestoreTypes.DocumentData;
+import type { FirebaseFirestoreTypes, Firestore, DocumentData, LoadBundleTaskProgress } from '.';
 
 console.log(firestore().app);
 
@@ -133,7 +130,7 @@ testDoc.update({ foo: 'bar' }).then(() => {
   console.log('Update complete');
 });
 
-testCollection.add({ foo: 'bar' }).then((ref: FirebaseFirestoreTypes.DocumentSnapshot) => {
+testCollection.add({ foo: 'bar' }).then((ref: FirebaseFirestoreTypes.DocumentReference) => {
   console.log(ref.id);
 });
 
@@ -260,17 +257,18 @@ waitForPendingWrites(firestoreModular1).then(() => {
 
 initializeFirestore(firebase.app(), {
   cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
-}).then((fs: FirebaseFirestoreTypes.Module) => {
+}).then((fs: Firestore) => {
   console.log(fs.app.name);
 });
 
 setLogLevel('debug');
 
-runTransaction(firestoreModular1, async (transaction: FirebaseFirestoreTypes.Transaction) => {
+runTransaction(firestoreModular1, async transaction => {
   const docRef = doc(firestoreModular1, 'users', 'test');
   const docSnap = await transaction.get(docRef);
   if (docSnap.exists()) {
-    transaction.update(docRef, { count: (docSnap.data()?.count || 0) + 1 });
+    const data = docSnap.data() as { count?: number } | undefined;
+    transaction.update(docRef, { count: (data?.count || 0) + 1 });
   }
   return 'success';
 }).then((result: string) => {
@@ -309,7 +307,7 @@ getCountFromServer(testQuery2).then(
   },
 );
 
-const aggregateSpec: AggregateSpec = {
+const aggregateSpec = {
   totalAge: sum('age'),
   avgAge: average('age'),
   count: count(),
@@ -340,15 +338,15 @@ getDocFromServer(modularDoc).then(snapshot => {
   console.log(snapshot.data());
 });
 
-getDocs(testQuery2).then((snapshot: FirebaseFirestoreTypes.QuerySnapshot) => {
+getDocs(testQuery2).then(snapshot => {
   console.log(snapshot.docs);
 });
 
-getDocsFromCache(testQuery2).then((snapshot: FirebaseFirestoreTypes.QuerySnapshot) => {
+getDocsFromCache(testQuery2).then(snapshot => {
   console.log(snapshot.docs);
 });
 
-getDocsFromServer(testQuery2).then((snapshot: FirebaseFirestoreTypes.QuerySnapshot) => {
+getDocsFromServer(testQuery2).then(snapshot => {
   console.log(snapshot.docs);
 });
 
@@ -535,7 +533,7 @@ getAggregateFromServer(testQuery2, {
 
 // Bundle and named queries
 loadBundle(firestoreModular1, 'bundle-data').then(
-  (progress: FirebaseFirestoreTypes.LoadBundleTaskProgress) => {
+  (progress: LoadBundleTaskProgress) => {
     console.log(progress);
   },
 );
@@ -572,7 +570,7 @@ if (indexManager) {
 }
 
 // Exercise withConverter implementation
-onSnapshot(collection(firebase.firestore(), 'foo'), {
+onSnapshot(collection(getFirestore(), 'foo'), {
   next: (snapshot: QuerySnapshot) => {
     // @ts-expect-error - toFirestore modelObject must be DocumentData
     console.log(snapshot.query.converter?.toFirestore(1));
@@ -584,7 +582,7 @@ onSnapshot(collection(firebase.firestore(), 'foo'), {
 });
 
 function withTestDb(
-  fn: (db: FirebaseFirestoreTypes.Module) => void | Promise<void>,
+  fn: (db: Firestore) => void | Promise<void>,
 ): Promise<void> {
   return Promise.resolve(fn(getFirestore()));
 }
@@ -1238,11 +1236,9 @@ withTestDb(async db => {
 
   batch.update(ref, {
     outerArr: [],
-    nested: {
-      'innerNested.innerNestedNum': increment(1),
-      innerArr: arrayUnion(2),
-      timestamp: serverTimestamp(),
-    },
+    'nested.innerNested.innerNestedNum': increment(1),
+    'nested.innerArr': arrayUnion(2),
+    'nested.timestamp': serverTimestamp(),
   });
 });
 
@@ -1299,13 +1295,9 @@ withTestDb(async db => {
   return runTransaction(db, async tx => {
     tx.update(ref, {
       outerArr: [],
-      nested: {
-        innerNested: {
-          innerNestedNum: increment(1),
-        },
-        innerArr: arrayUnion(2),
-        timestamp: serverTimestamp(),
-      },
+      'nested.innerNested.innerNestedNum': increment(1),
+      'nested.innerArr': arrayUnion(2),
+      'nested.timestamp': serverTimestamp(),
     });
   });
 });
