@@ -1,5 +1,6 @@
 import installations, {
   firebase,
+  FirebaseInstallationsTypes,
   getInstallations,
   deleteInstallations,
   getId,
@@ -33,7 +34,7 @@ console.log(installations(firebase.app()).app.name);
 console.log(installations(firebase.app('foo')).app.name);
 
 // checks Module instance APIs
-const installationsInstance = firebase.installations();
+const installationsInstance = firebase.installations() as unknown as FirebaseInstallationsTypes.Module;
 console.log(installationsInstance.app.name);
 
 installationsInstance.getId().then((id: string) => {
