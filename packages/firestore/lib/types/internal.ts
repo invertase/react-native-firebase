@@ -27,6 +27,7 @@ import type {
   QuerySnapshot,
   SetOptions,
   Transaction,
+  Unsubscribe,
   WriteBatch,
   WithFieldValue,
   AggregateType,
@@ -111,6 +112,11 @@ export interface DocumentReferenceDeleteInternal {
 /** Reference or query viewed as having isEqual(). */
 export interface ReferenceIsEqualInternal {
   isEqual(...args: unknown[]): boolean;
+}
+
+/** DocumentReference or Query viewed as having onSnapshot(). */
+export interface ReferenceWithOnSnapshotInternal {
+  onSnapshot(...listenerArgs: unknown[]): Unsubscribe;
 }
 
 export interface DocumentReferenceInternal<

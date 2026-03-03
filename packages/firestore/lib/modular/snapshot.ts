@@ -26,6 +26,7 @@ import type {
   SnapshotListenOptions,
   Unsubscribe,
 } from '../types/firestore';
+import type { ReferenceIsEqualInternal, ReferenceWithOnSnapshotInternal } from '../types/internal';
 
 export { default as DocumentSnapshot } from '../FirestoreDocumentSnapshot';
 export { default as QuerySnapshot } from '../FirestoreQuerySnapshot';
@@ -122,11 +123,7 @@ export function onSnapshot<
   reference: Query<AppModelType, DbModelType> | DocumentReference<AppModelType, DbModelType>,
   ...args: unknown[]
 ): Unsubscribe {
-  const onSnapshotMethod = (
-    reference as unknown as {
-      onSnapshot: (...listenerArgs: unknown[]) => Unsubscribe;
-    }
-  ).onSnapshot;
+  const onSnapshotMethod = (reference as unknown as ReferenceWithOnSnapshotInternal).onSnapshot;
 
   return onSnapshotMethod.call(reference, ...args, MODULAR_DEPRECATION_ARG);
 }
@@ -135,6 +132,6 @@ export function snapshotEqual<AppModelType, DbModelType extends DocumentData>(
   left: DocumentSnapshot<AppModelType, DbModelType> | QuerySnapshot<AppModelType, DbModelType>,
   right: DocumentSnapshot<AppModelType, DbModelType> | QuerySnapshot<AppModelType, DbModelType>,
 ): boolean {
-  const isEqual = (left as unknown as { isEqual: (...args: unknown[]) => boolean }).isEqual;
+  const isEqual = (left as unknown as ReferenceIsEqualInternal).isEqual;
   return isEqual.call(left, right, MODULAR_DEPRECATION_ARG);
 }
