@@ -36,27 +36,42 @@ import { buildNativeMap, provideDocumentReferenceClass } from './utils/serialize
 import type FirestoreCollectionReferenceClass from './FirestoreCollectionReference';
 import type DocumentSnapshot from './FirestoreDocumentSnapshot';
 import type { FirestoreInternal, FirestoreSyncEventBodyInternal } from './types/internal';
+import type { DocumentSnapshotNativeData } from './FirestoreDocumentSnapshot';
+import type FirestorePath from './FirestorePath';
+import type { DocumentData, FirestoreDataConverter } from './types/firestore';
 
 let FirestoreCollectionReference:
-  | (new (firestore: any, path: any, converter?: any) => FirestoreCollectionReferenceClass)
+  | (new (
+      firestore: FirestoreInternal,
+      path: FirestorePath,
+      converter?: FirestoreDataConverter<DocumentData, DocumentData> | null,
+    ) => FirestoreCollectionReferenceClass)
   | null = null;
 
 export function provideCollectionReferenceClass(
   collectionReference: new (
-    firestore: any,
-    path: any,
-    converter?: any,
+    firestore: FirestoreInternal,
+    path: FirestorePath,
+    converter?: FirestoreDataConverter<DocumentData, DocumentData> | null,
   ) => FirestoreCollectionReferenceClass,
 ): void {
   FirestoreCollectionReference = collectionReference;
 }
 
 let FirestoreDocumentSnapshotClass:
-  | (new (firestore: any, data: any, converter: any) => DocumentSnapshot)
+  | (new (
+      firestore: FirestoreInternal,
+      data: DocumentSnapshotNativeData,
+      converter: FirestoreDataConverter<DocumentData, DocumentData> | null,
+    ) => DocumentSnapshot)
   | null = null;
 
 export function provideDocumentSnapshotClass(
-  documentSnapshot: new (firestore: any, data: any, converter: any) => DocumentSnapshot,
+  documentSnapshot: new (
+    firestore: FirestoreInternal,
+    data: DocumentSnapshotNativeData,
+    converter: FirestoreDataConverter<DocumentData, DocumentData> | null,
+  ) => DocumentSnapshot,
 ): void {
   FirestoreDocumentSnapshotClass = documentSnapshot;
 }
@@ -65,20 +80,16 @@ let _id = 0;
 
 export default class DocumentReference {
   _firestore: FirestoreInternal;
-  _documentPath: import('./FirestorePath').default;
-  _converter: unknown;
+  _documentPath: FirestorePath;
+  _converter: FirestoreDataConverter<DocumentData, DocumentData> | null;
 
-  constructor(
-    firestore: FirestoreInternal,
-    documentPath: import('./FirestorePath').default,
-    converter?: unknown,
-  ) {
+  constructor(firestore: FirestoreInternal, documentPath: FirestorePath, converter?: unknown) {
     this._firestore = firestore;
     this._documentPath = documentPath;
-    this._converter = converter ?? null;
+    this._converter = converter as FirestoreDataConverter<DocumentData, DocumentData> | null;
   }
 
-  get firestore(): any {
+  get firestore(): FirestoreInternal {
     return this._firestore;
   }
 
@@ -146,10 +157,15 @@ export default class DocumentReference {
 
     return this._firestore.native
       .documentGet(this.path, options)
-      .then((data: any) =>
-        createDeprecationProxy(
-          new FirestoreDocumentSnapshotClass!(this._firestore, data, this._converter),
-        ),
+      .then(
+        (data: unknown) =>
+          createDeprecationProxy(
+            new FirestoreDocumentSnapshotClass!(
+              this._firestore,
+              data as DocumentSnapshotNativeData,
+              this._converter,
+            ),
+          ) as DocumentSnapshot,
       );
   }
 
@@ -271,7 +287,9 @@ export default class DocumentReference {
     );
   }
 
-  withConverter(converter: unknown): DocumentReference {
+  withConverter(
+    converter: FirestoreDataConverter<DocumentData, DocumentData> | null,
+  ): DocumentReference {
     if (isUndefined(converter) || isNull(converter)) {
       return new DocumentReference(this._firestore, this._documentPath, null);
     }
