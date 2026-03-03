@@ -142,8 +142,17 @@ export default class Timestamp {
 
     throw new Error('Unexpected error creating Timestamp from JSON.');
   }
-
+  /**
+   * Converts this object to a primitive string, which allows Timestamp objects to be compared
+   * using the `>`, `<=`, `>=` and `>` operators.
+   */
   valueOf(): string {
+    // This method returns a string of the form <seconds>.<nanoseconds> where <seconds> is
+    // translated to have a non-negative value and both <seconds> and <nanoseconds> are left-padded
+    // with zeroes to be a consistent length. Strings with this format then have a lexiographical
+    // ordering that matches the expected ordering. The <seconds> translation is done to avoid
+    // having a leading negative sign (i.e. a leading '-' character) in its string representation,
+    // which would affect its lexiographical ordering.
     const adjustedSeconds = this.seconds - MIN_SECONDS;
     const formattedSeconds = String(adjustedSeconds).padStart(12, '0');
     const formattedNanoseconds = String(this.nanoseconds).padStart(9, '0');
