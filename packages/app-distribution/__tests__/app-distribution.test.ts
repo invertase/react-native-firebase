@@ -68,9 +68,11 @@ describe('appDistribution()', function () {
 
   describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
     let appDistributionV9Deprecation: CheckV9DeprecationFunction;
+    let staticsV9Deprecation: CheckV9DeprecationFunction;
 
     beforeEach(function () {
       appDistributionV9Deprecation = createCheckV9Deprecation(['appDistribution']);
+      staticsV9Deprecation = createCheckV9Deprecation(['appDistribution', 'statics']);
 
       // @ts-ignore test
       jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
@@ -79,49 +81,57 @@ describe('appDistribution()', function () {
           {
             get: () =>
               jest.fn().mockResolvedValue({
-                constants: {
-                  isTesterSignedIn: true,
-                },
+                displayVersion: '1.0.0',
+                buildVersion: '123',
+                releaseNotes: null,
+                downloadURL: 'https://example.com',
+                isExpired: false,
               } as never),
           },
         );
       });
     });
 
-    it('isTesterSignedIn', function () {
-      const appDistribution = getAppDistribution();
-      appDistributionV9Deprecation(
-        () => isTesterSignedIn(appDistribution),
-        () => appDistribution.isTesterSignedIn(),
-        'isTesterSignedIn',
-      );
-    });
+    describe('AppDistribution', function () {
+      it('isTesterSignedIn()', function () {
+        const appDistribution = getAppDistribution();
+        appDistributionV9Deprecation(
+          () => isTesterSignedIn(appDistribution),
+          // @ts-expect-error Combines modular and namespace API
+          () => appDistribution.isTesterSignedIn(),
+          'isTesterSignedIn',
+        );
+      });
 
-    it('signInTester', function () {
-      const appDistribution = getAppDistribution();
-      appDistributionV9Deprecation(
-        () => signInTester(appDistribution),
-        () => appDistribution.signInTester(),
-        'signInTester',
-      );
-    });
+      it('signInTester()', function () {
+        const appDistribution = getAppDistribution();
+        appDistributionV9Deprecation(
+          () => signInTester(appDistribution),
+          // @ts-expect-error Combines modular and namespace API
+          () => appDistribution.signInTester(),
+          'signInTester',
+        );
+      });
 
-    it('checkForUpdate', function () {
-      const appDistribution = getAppDistribution();
-      appDistributionV9Deprecation(
-        () => checkForUpdate(appDistribution),
-        () => appDistribution.checkForUpdate(),
-        'checkForUpdate',
-      );
-    });
+      it('checkForUpdate()', function () {
+        const appDistribution = getAppDistribution();
+        appDistributionV9Deprecation(
+          () => checkForUpdate(appDistribution),
+          // @ts-expect-error Combines modular and namespace API
+          () => appDistribution.checkForUpdate(),
+          'checkForUpdate',
+        );
+      });
 
-    it('signOutTester', function () {
-      const appDistribution = getAppDistribution();
-      appDistributionV9Deprecation(
-        () => signOutTester(appDistribution),
-        () => appDistribution.signOutTester(),
-        'signOutTester',
-      );
+      it('signOutTester()', function () {
+        const appDistribution = getAppDistribution();
+        appDistributionV9Deprecation(
+          () => signOutTester(appDistribution),
+          // @ts-expect-error Combines modular and namespace API
+          () => appDistribution.signOutTester(),
+          'signOutTester',
+        );
+      });
     });
   });
 });
