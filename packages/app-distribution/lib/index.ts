@@ -15,8 +15,8 @@
  *
  */
 
-// Export types from types/app-distribution (public/modular API)
-export type { AppDistributionRelease, Statics, AppDistribution } from './types/app-distribution';
+// Export types from types/app-distribution (public/modular API; Statics re-exported via modular)
+export type { AppDistributionRelease, AppDistribution } from './types/app-distribution';
 export type { FirebaseAppDistributionTypes } from './types/namespaced';
 
 // Export modular API functions
