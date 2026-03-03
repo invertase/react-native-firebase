@@ -15,8 +15,9 @@
  *
  */
 
-// Export types from types/installations
-export type { Installations, Statics, FirebaseInstallationsTypes } from './types/installations';
+// Export types from types/installations (public/modular API)
+export type { Installations, Statics } from './types/installations';
+export type { FirebaseInstallationsTypes } from './types/namespaced';
 
 // Export modular API functions
 export * from './modular';
