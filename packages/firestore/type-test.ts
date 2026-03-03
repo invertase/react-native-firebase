@@ -133,7 +133,7 @@ testDoc.update({ foo: 'bar' }).then(() => {
   console.log('Update complete');
 });
 
-testCollection.add({ foo: 'bar' }).then((ref: DocumentReference) => {
+testCollection.add({ foo: 'bar' }).then((ref: FirebaseFirestoreTypes.DocumentSnapshot) => {
   console.log(ref.id);
 });
 
@@ -196,15 +196,15 @@ console.log(firestoreModular2.app.name);
 const firestoreModular3 = getFirestore(firebase.app(), 'test-db');
 console.log(firestoreModular3.app.name);
 
-connectFirestoreEmulator(firestoreInstance, 'localhost', 8080, {
+connectFirestoreEmulator(firestoreModular1, 'localhost', 8080, {
   mockUserToken: { user_id: 'test' },
 });
 
-const modularCollection = collection(firestoreInstance, 'users');
-const modularDoc = doc(firestoreInstance, 'users', 'test');
+const modularCollection = collection(firestoreModular1, 'users');
+const modularDoc = doc(firestoreModular1, 'users', 'test');
 const modularDoc2 = doc(modularCollection, 'test');
 console.log(collection(modularDoc, 'subcollection'));
-console.log(collectionGroup(firestoreInstance, 'users'));
+console.log(collectionGroup(firestoreModular1, 'users'));
 
 console.log(refEqual(modularDoc, modularDoc2));
 
@@ -234,27 +234,27 @@ addDoc(modularCollection, { name: 'test' }).then((ref: DocumentReference) => {
   console.log(ref.id);
 });
 
-enableNetwork(firestoreInstance).then(() => {
+enableNetwork(firestoreModular1).then(() => {
   console.log('Network enabled');
 });
 
-disableNetwork(firestoreInstance).then(() => {
+disableNetwork(firestoreModular1).then(() => {
   console.log('Network disabled');
 });
 
-clearPersistence(firestoreInstance).then(() => {
+clearPersistence(firestoreModular1).then(() => {
   console.log('Persistence cleared');
 });
 
-clearIndexedDbPersistence(firestoreInstance).then(() => {
+clearIndexedDbPersistence(firestoreModular1).then(() => {
   console.log('IndexedDB persistence cleared');
 });
 
-terminate(firestoreInstance).then(() => {
+terminate(firestoreModular1).then(() => {
   console.log('Terminated');
 });
 
-waitForPendingWrites(firestoreInstance).then(() => {
+waitForPendingWrites(firestoreModular1).then(() => {
   console.log('Pending writes complete');
 });
 
@@ -266,8 +266,8 @@ initializeFirestore(firebase.app(), {
 
 setLogLevel('debug');
 
-runTransaction(firestoreInstance, async (transaction: FirebaseFirestoreTypes.Transaction) => {
-  const docRef = doc(firestoreInstance, 'users', 'test');
+runTransaction(firestoreModular1, async (transaction: FirebaseFirestoreTypes.Transaction) => {
+  const docRef = doc(firestoreModular1, 'users', 'test');
   const docSnap = await transaction.get(docRef);
   if (docSnap.exists()) {
     transaction.update(docRef, { count: (docSnap.data()?.count || 0) + 1 });
@@ -434,11 +434,11 @@ getDocs(testQuery2).then(querySnap1 => {
 
 console.log(queryEqual(testQuery2, testQuery3));
 
-const unsubscribeSync = onSnapshotsInSync(firestoreInstance, () => {
+const unsubscribeSync = onSnapshotsInSync(firestoreModular1, () => {
   console.log('Snapshots in sync');
 });
 
-const unsubscribeSync2 = onSnapshotsInSync(firestoreInstance, {
+const unsubscribeSync2 = onSnapshotsInSync(firestoreModular1, {
   next: () => {
     console.log('Snapshots in sync');
   },
@@ -534,20 +534,20 @@ getAggregateFromServer(testQuery2, {
 );
 
 // Bundle and named queries
-loadBundle(firestoreInstance, 'bundle-data').then(
+loadBundle(firestoreModular1, 'bundle-data').then(
   (progress: FirebaseFirestoreTypes.LoadBundleTaskProgress) => {
     console.log(progress);
   },
 );
 
-namedQuery(firestoreInstance, 'test-query').then((q: Query | null) => {
+namedQuery(firestoreModular1, 'test-query').then((q: Query | null) => {
   if (q) {
     console.log(q);
   }
 });
 
 // WriteBatch
-const batch = writeBatch(firestoreInstance);
+const batch = writeBatch(firestoreModular1);
 batch.set(modularDoc, { name: 'test' });
 batch.update(modularDoc, { age: 30 });
 batch.delete(modularDoc);
@@ -556,7 +556,7 @@ batch.commit().then(() => {
 });
 
 // PersistentCacheIndexManager
-const indexManager = getPersistentCacheIndexManager(firestoreInstance);
+const indexManager = getPersistentCacheIndexManager(firestoreModular1);
 if (indexManager) {
   enablePersistentCacheIndexAutoCreation(indexManager).then(() => {
     console.log('Auto creation enabled');
