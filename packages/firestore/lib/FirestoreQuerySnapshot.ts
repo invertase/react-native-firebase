@@ -144,7 +144,7 @@ export default class QuerySnapshot {
     }
   }
 
-  isEqual(other: QuerySnapshot, ..._args: unknown[]): boolean {
+  isEqual(other: QuerySnapshot, ...args: unknown[]): boolean {
     if (!(other instanceof QuerySnapshot)) {
       throw new Error(
         "firebase.firestore() QuerySnapshot.isEqual(*) 'other' expected a QuerySnapshot instance.",
@@ -163,7 +163,7 @@ export default class QuerySnapshot {
       const thisDoc = this.docs[i]!;
       const otherDoc = other.docs[i]!;
 
-      if (!thisDoc.isEqual(otherDoc)) {
+      if (!(thisDoc.isEqual as (...a: unknown[]) => boolean)(otherDoc, ...args)) {
         return false;
       }
     }
