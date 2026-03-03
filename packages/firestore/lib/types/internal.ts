@@ -24,9 +24,11 @@ import type {
   FirestoreSettings,
   LoadBundleTask,
   LoadBundleTaskProgress,
+  Primitive,
   Query,
   QuerySnapshot,
   SetOptions,
+  SnapshotOptions,
   Transaction,
   Unsubscribe,
   WriteBatch,
@@ -331,6 +333,14 @@ export interface ConverterWithOptionalMethodsInternal {
   toFirestore?: unknown;
   fromFirestore?: unknown;
 }
+
+/** Converter with required fromFirestore (for DocumentSnapshot.data() when converter is present). */
+export interface ConverterWithFromFirestoreInternal {
+  fromFirestore(snapshot: DocumentSnapshot, options?: SnapshotOptions): unknown;
+}
+
+/** Value at a field path in a document (primitive, nested object, or array). */
+export type DocumentFieldValueInternal = Primitive | Record<string, unknown> | unknown[];
 
 export interface DocumentReferenceInternal<
   AppModelType = DocumentData,

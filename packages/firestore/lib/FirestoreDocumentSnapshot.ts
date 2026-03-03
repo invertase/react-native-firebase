@@ -23,7 +23,16 @@ import SnapshotMetadata from './FirestoreSnapshotMetadata';
 import type { SnapshotOptions } from './types/firestore';
 import { extractFieldPathData } from './utils';
 import { parseNativeMap } from './utils/serialize';
-import type { FirestoreInternal } from './types/internal';
+import type {
+  FirestoreInternal,
+  ConverterWithFromFirestoreInternal,
+  DocumentFieldValueInternal,
+} from './types/internal';
+import type {
+  DocumentData,
+  DocumentSnapshot as DocumentSnapshotDeclare,
+  FirestoreDataConverter,
+} from './types/firestore';
 
 export interface DocumentSnapshotNativeData {
   path: string;
@@ -39,12 +48,12 @@ export default class DocumentSnapshot {
   _metadata: SnapshotMetadata;
   _ref: DocumentReference;
   _exists: boolean;
-  _converter: unknown;
+  _converter: FirestoreDataConverter<DocumentData, DocumentData> | null;
 
   constructor(
     firestore: FirestoreInternal,
     nativeData: DocumentSnapshotNativeData,
-    converter: unknown,
+    converter: FirestoreDataConverter<DocumentData, DocumentData> | null,
   ) {
     this._firestore = firestore;
     this._nativeData = nativeData;
@@ -71,17 +80,17 @@ export default class DocumentSnapshot {
     return this._exists;
   }
 
-  data(options?: SnapshotOptions): unknown {
-    if (
-      this._converter &&
-      (this._converter as { fromFirestore?: (snapshot: DocumentSnapshot) => unknown }).fromFirestore
-    ) {
+  data(options?: SnapshotOptions): DocumentData | undefined {
+    if (this._converter) {
       try {
-        return (
-          this._converter as {
-            fromFirestore: (snapshot: DocumentSnapshot, options?: SnapshotOptions) => unknown;
-          }
-        ).fromFirestore(new DocumentSnapshot(this._firestore, this._nativeData, null), options);
+        return (this._converter as ConverterWithFromFirestoreInternal).fromFirestore(
+          new DocumentSnapshot(
+            this._firestore,
+            this._nativeData,
+            null,
+          ) as unknown as DocumentSnapshotDeclare<DocumentData, DocumentData>,
+          options,
+        ) as DocumentData;
       } catch (e) {
         throw new Error(
           `firebase.firestore() DocumentSnapshot.data(*) 'withConverter.fromFirestore' threw an error: ${(e as Error).message}.`,
@@ -91,7 +100,7 @@ export default class DocumentSnapshot {
     return this._data;
   }
 
-  get(fieldPath: string | FieldPath, _options?: SnapshotOptions): unknown {
+  get(fieldPath: string | FieldPath, _options?: SnapshotOptions): DocumentFieldValueInternal {
     if (!isString(fieldPath) && !(fieldPath instanceof FieldPath)) {
       throw new Error(
         "firebase.firestore() DocumentSnapshot.get(*) 'fieldPath' expected type string or FieldPath.",
@@ -112,7 +121,7 @@ export default class DocumentSnapshot {
       path = fieldPath;
     }
 
-    return extractFieldPathData(this._data, path._segments);
+    return extractFieldPathData(this._data, path._segments) as DocumentFieldValueInternal;
   }
 
   isEqual(other: DocumentSnapshot): boolean {

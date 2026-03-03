@@ -27,6 +27,7 @@ import DocumentSnapshot from './FirestoreDocumentSnapshot';
 import SnapshotMetadata from './FirestoreSnapshotMetadata';
 
 import type Query from './FirestoreQuery';
+import type { DocumentData, FirestoreDataConverter } from './types/firestore';
 
 export interface QuerySnapshotNativeData {
   source?: string;
@@ -59,7 +60,7 @@ export default class QuerySnapshot {
     firestore: any,
     query: Query,
     nativeData: QuerySnapshotNativeData,
-    converter: unknown,
+    converter: FirestoreDataConverter<DocumentData, DocumentData> | null,
   ) {
     this._query = query;
     this._source = nativeData.source;
