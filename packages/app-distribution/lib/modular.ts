@@ -8,8 +8,11 @@ import type { AppDistributionInternal } from './types/internal';
  * Wraps a method type so it accepts MODULAR_DEPRECATION_ARG as a trailing argument.
  * Allows modular wrappers to use .call(instance, ...args, MODULAR_DEPRECATION_ARG) without changing internal types.
  */
-type WithModularDeprecationArg<T extends (...args: unknown[]) => unknown> =
-  T extends (...args: infer A) => infer R ? (...args: [...A, unknown?]) => R : never;
+type WithModularDeprecationArg<T extends (...args: unknown[]) => unknown> = T extends (
+  ...args: infer A
+) => infer R
+  ? (...args: [...A, unknown?]) => R
+  : never;
 
 export type FirebaseAppDistribution = AppDistribution;
 
