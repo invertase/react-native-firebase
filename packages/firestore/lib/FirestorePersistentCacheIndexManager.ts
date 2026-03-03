@@ -15,6 +15,8 @@
  *
  */
 
+import type { FirestoreInternal } from './types/internal';
+
 /**
  * A `PersistentCacheIndexManager` for configuring persistent cache indexes used
  * for local query execution.
@@ -22,9 +24,9 @@
  * To use, call `getPersistentCacheIndexManager()` to get an instance.
  */
 export class PersistentCacheIndexManager {
-  _firestore: any;
+  _firestore: FirestoreInternal;
 
-  constructor(firestore: any) {
+  constructor(firestore: FirestoreInternal) {
     this._firestore = firestore;
   }
 
