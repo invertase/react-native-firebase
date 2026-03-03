@@ -25,17 +25,17 @@ import {
 import type { ModuleConfig } from '@react-native-firebase/app/dist/module/internal';
 
 import { version } from './version';
-import type { Statics, Installations } from './types/installations';
+import type { FirebaseInstallationsTypes } from './types/namespaced';
 
-const statics: Statics = {
+const statics: FirebaseInstallationsTypes.Statics = {
   SDK_VERSION: version,
 };
 
 const namespace = 'installations';
 
-const nativeModuleName = 'RNFBInstallationsModule';
+const nativeModuleName = 'RNFBInstallationsModule' as const;
 
-class FirebaseInstallationsModule extends FirebaseModule implements Installations {
+class FirebaseInstallationsModule extends FirebaseModule<typeof nativeModuleName> {
   constructor(
     app: ReactNativeFirebase.FirebaseAppBase,
     config: ModuleConfig,
@@ -88,10 +88,13 @@ const installationsNamespace = createModuleNamespace({
 });
 
 type InstallationsNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
-  Installations,
-  Statics
+  FirebaseInstallationsTypes.Module,
+  FirebaseInstallationsTypes.Statics
 > & {
-  installations: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<Installations, Statics>;
+  installations: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+    FirebaseInstallationsTypes.Module,
+    FirebaseInstallationsTypes.Statics
+  >;
   firebase: ReactNativeFirebase.Module;
   app(name?: string): ReactNativeFirebase.FirebaseApp;
 };
@@ -104,7 +107,7 @@ export default installationsNamespace as unknown as InstallationsNamespace;
 export const firebase =
   getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
     'installations',
-    Installations,
-    Statics,
+    FirebaseInstallationsTypes.Module,
+    FirebaseInstallationsTypes.Statics,
     false
   >;
