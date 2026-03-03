@@ -20,17 +20,29 @@ jobs:
             echo "op_comment=false" >> $GITHUB_ENV
           fi
 
-      - name: Add 'Needs Attention' label if OP responded
-        if: env.op_comment == 'true'
+      - name: Add 'Needs Attention' label if OP responded and it was open
+        if: env.op_comment == 'true' && github.event.issue.state == 'open'
         uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: 'Needs Attention'
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Remove 'blocked customer-response' label if OP responded
-        if: env.op_comment == 'true'
+
+      - name: Remove 'blocked customer-response' label if OP responded and it was open
+        if: env.op_comment == 'true' && github.event.issue.state == 'open'
         uses: actions-ecosystem/action-remove-labels@v1
         with:
           labels: 'blocked: customer-response'
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Add comment if OP responded but issue was closed
+        if: env.op_comment == 'true' && github.event.issue.state == 'closed'
+        uses: actions-ecosystem/action-create-comment@v1
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+          body: |
+            In order to prioritize work in this repository, closed issues and pull requests do not regularly receive attention.
+
+            If the underlying issue or pull request still requires attention, opening a new issue with a reproduction
+            after testing with current versions, or reposting the pull request as a new PR may be the most effective way forward.

@@ -10,6 +10,7 @@
 import { logger } from 'firebase-functions/v2';
 import { CallableRequest, onCall } from 'firebase-functions/v2/https';
 import { getMessaging, TokenMessage } from 'firebase-admin/messaging';
+import { getAdminApp } from '.';
 
 // Note: this will only work in a live environment, not locally via the Firebase emulator.
 export const sendFCM = onCall(
@@ -19,8 +20,13 @@ export const sendFCM = onCall(
       logger.info('Sleeping this many milliseconds: ' + (delay ?? 0));
       setTimeout(async () => {
         logger.info('done sleeping');
-        const result = await getMessaging().send(message);
-        return { messageId: result };
+        try {
+          const result = await getMessaging(getAdminApp()).send(message);
+          return { messageId: result };
+        } catch (e) {
+          logger.error(`There was a problem: ${e}`);
+          return { error: e };
+        }
       }, delay ?? 0);
     });
   },

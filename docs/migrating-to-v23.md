@@ -2,7 +2,7 @@
 title: Migrating to v23
 description: Migrate to React Native Firebase v23.
 previous: /migrate-to-v22
-next: /typescript
+next: /migrate-to-v24
 ---
 
 # Firebase Crashlytics

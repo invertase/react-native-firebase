@@ -28,6 +28,7 @@ import { FirestoreOnSnapshotInSyncTest } from './firestore/onSnapshotInSync';
 import { VertexAITestComponent } from './vertexai/vertexai';
 import { AuthMFADemonstrator } from './auth/auth-mfa-demonstrator';
 import { HttpsCallableTestComponent } from './functions/https-callable';
+import { StreamingCallableTestComponent } from './functions/streaming-callable';
 
 const testComponents = {
   // List your imported components here...
@@ -38,6 +39,7 @@ const testComponents = {
   'VertexAI Generation Example': VertexAITestComponent,
   'Auth MFA Demonstrator': AuthMFADemonstrator,
   'HttpsCallable Test': HttpsCallableTestComponent,
+  'Streaming Callable Test': StreamingCallableTestComponent,
 };
 
 export function TestComponents() {

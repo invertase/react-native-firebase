@@ -15,14 +15,9 @@
  *
  */
 
-import { getApp } from '@react-native-firebase/app';
+import { getApp, type FirebaseApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
-import type {
-  Functions,
-  FirebaseApp,
-  HttpsCallableOptions,
-  HttpsCallable,
-} from './types/functions';
+import type { Functions, HttpsCallableOptions, HttpsCallable } from './types/functions';
 
 /**
  * Returns a Functions instance for the given app.
@@ -61,18 +56,18 @@ export function connectFunctionsEmulator(
  * @param options An interface for metadata about how calls should be executed.
  * @returns HttpsCallable instance
  */
-export function httpsCallable<RequestData = unknown, ResponseData = unknown>(
+export function httpsCallable<RequestData = unknown, ResponseData = unknown, StreamData = unknown>(
   functionsInstance: Functions,
   name: string,
   options?: HttpsCallableOptions,
-): HttpsCallable<RequestData, ResponseData> {
+): HttpsCallable<RequestData, ResponseData, StreamData> {
   return functionsInstance.httpsCallable.call(
     functionsInstance,
     name,
     options,
     // @ts-ignore
     MODULAR_DEPRECATION_ARG,
-  ) as HttpsCallable<RequestData, ResponseData>;
+  ) as HttpsCallable<RequestData, ResponseData, StreamData>;
 }
 
 /**
@@ -82,16 +77,20 @@ export function httpsCallable<RequestData = unknown, ResponseData = unknown>(
  * @param options An instance of HttpsCallableOptions containing metadata about how calls should be executed.
  * @returns HttpsCallable instance
  */
-export function httpsCallableFromUrl<RequestData = unknown, ResponseData = unknown>(
+export function httpsCallableFromUrl<
+  RequestData = unknown,
+  ResponseData = unknown,
+  StreamData = unknown,
+>(
   functionsInstance: Functions,
   url: string,
   options?: HttpsCallableOptions,
-): HttpsCallable<RequestData, ResponseData> {
+): HttpsCallable<RequestData, ResponseData, StreamData> {
   return functionsInstance.httpsCallableFromUrl.call(
     functionsInstance,
     url,
     options,
     // @ts-ignore
     MODULAR_DEPRECATION_ARG,
-  ) as HttpsCallable<RequestData, ResponseData>;
+  ) as HttpsCallable<RequestData, ResponseData, StreamData>;
 }

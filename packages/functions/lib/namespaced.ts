@@ -15,7 +15,7 @@
  *
  */
 
-import { isAndroid, isNumber } from '@react-native-firebase/app/dist/module/common';
+import { isAndroid, isNumber, isOther } from '@react-native-firebase/app/dist/module/common';
 import {
   createModuleNamespace,
   FirebaseModule,
@@ -26,7 +26,14 @@ import { HttpsError, type NativeError } from './HttpsError';
 import { version } from './version';
 import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import fallBackModule from './web/RNFBFunctionsModule';
-import type { HttpsCallableOptions, Functions, FunctionsStatics } from './types/functions';
+import type {
+  HttpsCallableOptions,
+  HttpsCallableStreamOptions,
+  Functions,
+  FunctionsStatics,
+  HttpsCallable,
+} from './types/functions';
+import type { CustomHttpsCallableOptions, FunctionsStreamingEvent } from './types/internal';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 const namespace = 'functions';
 
@@ -76,6 +83,8 @@ const statics = {
   HttpsErrorCode,
 };
 
+let _id_functions_streaming_event = 0;
+
 class FirebaseFunctionsModule extends FirebaseModule {
   _customUrlOrRegion: string;
   private _useFunctionsEmulatorHost: string | null;
@@ -90,6 +99,182 @@ class FirebaseFunctionsModule extends FirebaseModule {
     this._customUrlOrRegion = customUrlOrRegion || 'us-central1';
     this._useFunctionsEmulatorHost = null;
     this._useFunctionsEmulatorPort = -1;
+
+    this.emitter.addListener(
+      this.eventNameForApp('functions_streaming_event'),
+      (event: FunctionsStreamingEvent) => {
+        this.emitter.emit(
+          this.eventNameForApp(`functions_streaming_event:${event.listenerId}`),
+          event,
+        );
+      },
+    );
+  }
+
+  /**
+   * Private helper method to create a streaming handler for callable functions.
+   * This method encapsulates the common streaming logic used by both
+   * httpsCallable and httpsCallableFromUrl.
+   */
+  private async _createStreamHandler(
+    initiateStream: (listenerId: number) => void,
+  ): Promise<{ stream: AsyncGenerator<unknown, void, unknown>; data: Promise<unknown> }> {
+    const listenerId = _id_functions_streaming_event++;
+    const eventName = this.eventNameForApp(`functions_streaming_event:${listenerId}`);
+    const nativeModule = this.native;
+
+    // Capture JavaScript stack at stream creation time so an error can be thrown with the correct stack trace
+    const capturedStack = new Error().stack;
+
+    // Queue to buffer events before iteration starts
+    const eventQueue: unknown[] = [];
+    let resolveNext: ((value: IteratorResult<unknown>) => void) | null = null;
+    let error: HttpsError | null = null;
+    let done = false;
+    let finalData: unknown = null;
+    let resolveDataPromise: ((value: unknown) => void) | null = null;
+    let rejectDataPromise: ((reason: Error) => void) | null = null;
+
+    const subscription = this.emitter.addListener(eventName, (event: FunctionsStreamingEvent) => {
+      const body = event.body;
+
+      if (body.error) {
+        const { code, message, details } = body.error || {};
+        error = new HttpsError(
+          HttpsErrorCode[code as keyof typeof HttpsErrorCode] || HttpsErrorCode.UNKNOWN,
+          message || 'Unknown error',
+          details ?? null,
+          { jsStack: capturedStack },
+        );
+        done = true;
+        subscription.remove();
+        if (nativeModule.removeFunctionsStreaming) {
+          nativeModule.removeFunctionsStreaming(listenerId);
+        }
+        if (resolveNext) {
+          resolveNext({ done: true, value: undefined });
+          resolveNext = null;
+        }
+        if (rejectDataPromise) {
+          rejectDataPromise(error);
+          rejectDataPromise = null;
+        }
+        return;
+      }
+
+      if (body.done) {
+        finalData = body.data;
+        done = true;
+        subscription.remove();
+        if (nativeModule.removeFunctionsStreaming) {
+          nativeModule.removeFunctionsStreaming(listenerId);
+        }
+        if (resolveNext) {
+          resolveNext({ done: true, value: undefined });
+          resolveNext = null;
+        }
+        if (resolveDataPromise) {
+          resolveDataPromise(finalData);
+          resolveDataPromise = null;
+        }
+      } else if (body.data !== null && body.data !== undefined) {
+        // This is a chunk
+        if (resolveNext) {
+          resolveNext({ done: false, value: body.data });
+          resolveNext = null;
+        } else {
+          eventQueue.push(body.data);
+        }
+      }
+    });
+
+    // Start native streaming via the provided callback
+    initiateStream(listenerId);
+
+    // Use async generator function for better compatibility with Hermes/React Native
+    async function* streamGenerator() {
+      try {
+        while (true) {
+          if (error) {
+            const err = error as HttpsError;
+            throw new HttpsError(
+              HttpsErrorCode[err.code as keyof typeof HttpsErrorCode] || HttpsErrorCode.UNKNOWN,
+              err.message,
+              err.details ?? null,
+              {
+                jsStack: capturedStack,
+              },
+            );
+          }
+
+          if (eventQueue.length > 0) {
+            yield eventQueue.shift();
+            continue;
+          }
+
+          if (error) {
+            const err = error as HttpsError;
+            throw new HttpsError(
+              HttpsErrorCode[err.code as keyof typeof HttpsErrorCode] || HttpsErrorCode.UNKNOWN,
+              err.message,
+              err.details ?? null,
+              {
+                jsStack: capturedStack,
+              },
+            );
+          }
+          if (done) {
+            return;
+          }
+
+          // Wait for next event
+          const result = await new Promise<IteratorResult<unknown>>(resolve => {
+            resolveNext = resolve;
+          });
+
+          // Check result after promise resolves
+          if (error) {
+            const err = error as HttpsError;
+            throw new HttpsError(err.code, err.message, err.details ?? null, {
+              jsStack: capturedStack,
+            });
+          }
+          if (result.done || done) {
+            return;
+          }
+
+          if (result.value !== undefined && result.value !== null) {
+            yield result.value;
+          }
+        }
+      } finally {
+        // Cleanup when generator is closed/returned
+        subscription.remove();
+        if (nativeModule.removeFunctionsStreaming) {
+          nativeModule.removeFunctionsStreaming(listenerId);
+        }
+      }
+    }
+
+    const asyncIterator = streamGenerator();
+
+    // Create a promise that resolves with the final data when the listener receives done/error
+    const dataPromise = new Promise<unknown>((resolve, reject) => {
+      resolveDataPromise = resolve;
+      rejectDataPromise = reject;
+      if (error) {
+        rejectDataPromise = null;
+        reject(error);
+      } else if (done) {
+        resolveDataPromise = null;
+        resolve(finalData);
+      }
+    });
+
+    return {
+      stream: asyncIterator,
+      data: dataPromise,
+    };
   }
 
   httpsCallable(name: string, options: HttpsCallableOptions = {}) {
@@ -101,7 +286,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
       }
     }
 
-    return (data?: any) => {
+    const callableFunction = ((data?: unknown) => {
       const nativePromise = this.native.httpsCallable(
         this._useFunctionsEmulatorHost,
         this._useFunctionsEmulatorPort,
@@ -122,7 +307,31 @@ class FirebaseFunctionsModule extends FirebaseModule {
           ),
         );
       });
+    }) as HttpsCallable<unknown, unknown, unknown>;
+
+    callableFunction.stream = async (
+      data?: unknown,
+      streamOptions?: HttpsCallableStreamOptions,
+    ) => {
+      const platformOptions = !isOther
+        ? options
+        : ({
+            ...options,
+            httpsCallableStreamOptions: streamOptions || {},
+          } as CustomHttpsCallableOptions);
+      return this._createStreamHandler(listenerId => {
+        this.native.httpsCallableStream(
+          this._useFunctionsEmulatorHost || null,
+          this._useFunctionsEmulatorPort || -1,
+          name,
+          { data },
+          platformOptions || {},
+          listenerId,
+        );
+      });
     };
+
+    return callableFunction;
   }
 
   httpsCallableFromUrl(url: string, options: HttpsCallableOptions = {}) {
@@ -134,7 +343,7 @@ class FirebaseFunctionsModule extends FirebaseModule {
       }
     }
 
-    return (data?: any) => {
+    const callableFunction = ((data?: unknown) => {
       const nativePromise = this.native.httpsCallableFromUrl(
         this._useFunctionsEmulatorHost,
         this._useFunctionsEmulatorPort,
@@ -155,7 +364,30 @@ class FirebaseFunctionsModule extends FirebaseModule {
           ),
         );
       });
+    }) as HttpsCallable<unknown, unknown, unknown>;
+
+    callableFunction.stream = async (
+      data?: unknown,
+      streamOptions?: HttpsCallableStreamOptions,
+    ) => {
+      const platformOptions = !isOther
+        ? options
+        : ({
+            ...options,
+            httpsCallableStreamOptions: streamOptions || {},
+          } as CustomHttpsCallableOptions);
+      return this._createStreamHandler(listenerId => {
+        this.native.httpsCallableStreamFromUrl(
+          this._useFunctionsEmulatorHost || null,
+          this._useFunctionsEmulatorPort || -1,
+          url,
+          { data },
+          platformOptions || {},
+          listenerId,
+        );
+      });
     };
+    return callableFunction;
   }
 
   useFunctionsEmulator(origin: string): void {
@@ -207,7 +439,7 @@ const functionsNamespace = createModuleNamespace({
   version,
   namespace,
   nativeModuleName,
-  nativeEvents: false,
+  nativeEvents: ['functions_streaming_event'],
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: true,
   ModuleClass: FirebaseFunctionsModule,

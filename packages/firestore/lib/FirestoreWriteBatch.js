@@ -17,7 +17,7 @@
 
 import { isObject } from '@react-native-firebase/app/dist/module/common';
 import FirestoreDocumentReference from './FirestoreDocumentReference';
-import { parseSetOptions, parseUpdateArgs } from './utils';
+import { parseSetOptions, parseUpdateArgs, applyFirestoreDataConverter } from './utils';
 import { buildNativeMap } from './utils/serialize';
 
 export default class FirestoreWriteBatch {
@@ -80,21 +80,30 @@ export default class FirestoreWriteBatch {
       );
     }
 
-    if (!isObject(data)) {
-      throw new Error("firebase.firestore.batch().set(_, *) 'data' must be an object.");
-    }
-
     let setOptions;
     try {
       setOptions = parseSetOptions(options);
     } catch (e) {
-      throw new Error(`firebase.firestore().doc().set(_, *) ${e.message}.`);
+      throw new Error(`firebase.firestore().batch().set(_, *) ${e.message}.`);
+    }
+
+    let converted = data;
+    try {
+      converted = applyFirestoreDataConverter(data, documentRef._converter, setOptions);
+    } catch (e) {
+      throw new Error(
+        `firebase.firestore().batch().set(_, *) 'withConverter.toFirestore' threw an error: ${e.message}.`,
+      );
+    }
+
+    if (!isObject(converted)) {
+      throw new Error("firebase.firestore.batch().set(_, *) 'data' must be an object.");
     }
 
     this._writes.push({
       path: documentRef.path,
       type: 'SET',
-      data: buildNativeMap(data, this._firestore._settings.ignoreUndefinedProperties),
+      data: buildNativeMap(converted, this._firestore._settings.ignoreUndefinedProperties),
       options: setOptions,
     });
 

@@ -194,6 +194,36 @@ export namespace FirebaseFirestoreTypes {
      * @param documentPath A slash-separated path to a document.
      */
     doc(documentPath?: string): DocumentReference<T>;
+
+    /**
+     * Applies a custom data converter to this CollectionReference, allowing you
+     * to use your own custom model objects with Firestore. When you call add()
+     * on the returned CollectionReference instance, the provided converter will
+     * convert between Firestore data and your custom type U.
+     *
+     * Passing in `null` as the converter parameter removes the current
+     * converter.
+     *
+     * @param converter Converts objects to and from Firestore. Passing in
+     * `null` removes the current converter.
+     * @return A CollectionReference<U> that uses the provided converter.
+     */
+    withConverter(converter: null): CollectionReference<DocumentData>;
+
+    /**
+     * Applies a custom data converter to this CollectionReference, allowing you
+     * to use your own custom model objects with Firestore. When you call add()
+     * on the returned CollectionReference instance, the provided converter will
+     * convert between Firestore data and your custom type U.
+     *
+     * Passing in `null` as the converter parameter removes the current
+     * converter.
+     *
+     * @param converter Converts objects to and from Firestore. Passing in
+     * `null` removes the current converter.
+     * @return A CollectionReference<U> that uses the provided converter.
+     */
+    withConverter<U>(converter: FirestoreDataConverter<U>): CollectionReference<U>;
   }
 
   /**
@@ -253,7 +283,7 @@ export namespace FirebaseFirestoreTypes {
    * to the location. The document at the referenced location may or may not exist. A `DocumentReference` can also be used
    * to create a `CollectionReference` to a subcollection.
    */
-  export interface DocumentReference<T extends DocumentData = DocumentData> {
+  export interface DocumentReference<AppModelType, DbModelType extends DocumentData> {
     /**
      * The Firestore instance the document is in. This is useful for performing transactions, for example.
      */
@@ -267,7 +297,7 @@ export namespace FirebaseFirestoreTypes {
     /**
      * The Collection this `DocumentReference` belongs to.
      */
-    parent: CollectionReference<T>;
+    parent: CollectionReference<AppModelType, DbModelType>;
 
     /**
      * A string representing the path of the referenced document (relative to the root of the database).
@@ -516,6 +546,28 @@ export namespace FirebaseFirestoreTypes {
      * @param moreFieldsAndValues Additional key value pairs.
      */
     update(field: keyof T | FieldPath, value: any, ...moreFieldsAndValues: any[]): Promise<void>;
+
+    /**
+     * Removes the current converter.
+     *
+     * @param converter Passing in `null` removes the current converter.
+     * @return A DocumentReference<U> that uses the provided converter.
+     */
+    withConverter(converter: null): DocumentReference<DocumentData, DocumentData>;
+
+    /**
+     * Applies a custom data converter to this `DocumentReference`, allowing you
+     * to use your own custom model objects with Firestore. When you call setDoc
+     * getDoc, etc. with the returned `DocumentReference`
+     * instance, the provided converter will convert between Firestore data of
+     * type `NewDbModelType` and your custom type `NewAppModelType`.
+     *
+     * @param converter - Converts objects to and from Firestore.
+     * @returns A `DocumentReference` that uses the provided converter.
+     */
+    withConverter<NewAppModelType, NewDbModelType extends DocumentData = DocumentData>(
+      converter: FirestoreDataConverter<NewAppModelType, NewDbModelType>,
+    ): DocumentReference<NewAppModelType, NewDbModelType>;
   }
 
   /**
@@ -978,7 +1030,10 @@ export namespace FirebaseFirestoreTypes {
    * A Query refers to a `Query` which you can read or listen to. You can also construct refined `Query` objects by
    * adding filters and ordering.
    */
-  export interface Query<T extends DocumentData = DocumentData> {
+  export interface Query<
+    AppModelType = DocumentData,
+    DbModelType extends DocumentData = DocumentData,
+  > {
     /**
      * Calculates the number of documents in the result set of the given query, without actually downloading
      * the documents.
@@ -1020,7 +1075,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param snapshot The snapshot of the document to end at.
      */
-    endAt(snapshot: DocumentSnapshot<T>): Query<T>;
+    endAt(snapshot: DocumentSnapshot<AppModelType, DbModelType>): Query<AppModelType, DbModelType>;
 
     /**
      * Creates and returns a new Query that ends at the provided fields relative to the order of the query.
@@ -1038,7 +1093,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param fieldValues The field values to end this query at, in order of the query's order by.
      */
-    endAt(...fieldValues: any[]): Query<T>;
+    endAt(...fieldValues: any[]): Query<AppModelType, DbModelType>;
 
     /**
      * Creates and returns a new Query that ends before the provided document (exclusive). The end
@@ -1061,7 +1116,9 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param snapshot The snapshot of the document to end before.
      */
-    endBefore(snapshot: DocumentSnapshot<T>): Query<T>;
+    endBefore(
+      snapshot: DocumentSnapshot<AppModelType, DbModelType>,
+    ): Query<AppModelType, DbModelType>;
 
     /**
      * Creates and returns a new Query that ends before the provided fields relative to the order of
@@ -1079,7 +1136,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param fieldValues The field values to end this query before, in order of the query's order by.
      */
-    endBefore(...fieldValues: any[]): Query<T>;
+    endBefore(...fieldValues: any[]): Query<AppModelType, DbModelType>;
 
     /**
      * Executes the query and returns the results as a QuerySnapshot.
@@ -1101,7 +1158,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param options An object to configure the get behavior.
      */
-    get(options?: GetOptions): Promise<QuerySnapshot<T>>;
+    get(options?: GetOptions): Promise<QuerySnapshot<AppModelType, DbModelType>>;
 
     /**
      * Returns true if this Query is equal to the provided one.
@@ -1141,7 +1198,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param limit The maximum number of items to return.
      */
-    limit(limit: number): Query<T>;
+    limit(limit: number): Query<AppModelType, DbModelType>;
 
     /**
      * Creates and returns a new Query where the results are limited to the specified number of documents
@@ -1161,7 +1218,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param limitToLast The maximum number of items to return.
      */
-    limitToLast(limitToLast: number): Query<T>;
+    limitToLast(limitToLast: number): Query<AppModelType, DbModelType>;
 
     /**
      * Attaches a listener for `QuerySnapshot` events.
@@ -1187,7 +1244,7 @@ export namespace FirebaseFirestoreTypes {
     onSnapshot(observer: {
       complete?: () => void;
       error?: (error: Error) => void;
-      next?: (snapshot: QuerySnapshot<T>) => void;
+      next?: (snapshot: QuerySnapshot<AppModelType, DbModelType>) => void;
     }): () => void;
 
     /**
@@ -1219,7 +1276,7 @@ export namespace FirebaseFirestoreTypes {
       observer: {
         complete?: () => void;
         error?: (error: Error) => void;
-        next?: (snapshot: QuerySnapshot<T>) => void;
+        next?: (snapshot: QuerySnapshot<AppModelType, DbModelType>) => void;
       },
     ): () => void;
 
@@ -1246,7 +1303,7 @@ export namespace FirebaseFirestoreTypes {
      * @param onCompletion An optional function which will never be called.
      */
     onSnapshot(
-      onNext: (snapshot: QuerySnapshot<T>) => void,
+      onNext: (snapshot: QuerySnapshot<AppModelType, DbModelType>) => void,
       onError?: (error: Error) => void,
       onCompletion?: () => void,
     ): () => void;
@@ -1277,7 +1334,7 @@ export namespace FirebaseFirestoreTypes {
      */
     onSnapshot(
       options: SnapshotListenOptions,
-      onNext: (snapshot: QuerySnapshot<T>) => void,
+      onNext: (snapshot: QuerySnapshot<AppModelType, DbModelType>) => void,
       onError?: (error: Error) => void,
       onCompletion?: () => void,
     ): () => void;
@@ -1300,7 +1357,10 @@ export namespace FirebaseFirestoreTypes {
      * @param fieldPath The field to sort by. Either a string or FieldPath instance.
      * @param directionStr Optional direction to sort by (`asc` or `desc`). If not specified, order will be ascending.
      */
-    orderBy(fieldPath: keyof T | string | FieldPath, directionStr?: 'asc' | 'desc'): Query<T>;
+    orderBy(
+      fieldPath: string | FieldPath,
+      directionStr?: 'asc' | 'desc',
+    ): Query<AppModelType, DbModelType>;
 
     /**
      * Creates and returns a new Query that starts after the provided document (exclusive). The start
@@ -1324,7 +1384,9 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param snapshot The snapshot of the document to start after.
      */
-    startAfter(snapshot: DocumentSnapshot<T>): Query<T>;
+    startAfter(
+      snapshot: DocumentSnapshot<AppModelType, DbModelType>,
+    ): Query<AppModelType, DbModelType>;
 
     /**
      * Creates and returns a new Query that starts after the provided fields relative to the order of
@@ -1343,7 +1405,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param fieldValues The field values to start this query after, in order of the query's order by.
      */
-    startAfter(...fieldValues: any[]): Query<T>;
+    startAfter(...fieldValues: any[]): Query<AppModelType, DbModelType>;
 
     /**
      * Creates and returns a new Query that starts at the provided document (inclusive). The start
@@ -1367,7 +1429,9 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param snapshot The snapshot of the document to start at.
      */
-    startAt(snapshot: DocumentSnapshot<T>): Query<T>;
+    startAt(
+      snapshot: DocumentSnapshot<AppModelType, DbModelType>,
+    ): Query<AppModelType, DbModelType>;
 
     /**
      * Creates and returns a new Query that starts at the provided fields relative to the order of the query.
@@ -1386,7 +1450,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param fieldValues The field values to start this query at, in order of the query's order by.
      */
-    startAt(...fieldValues: any[]): Query<T>;
+    startAt(...fieldValues: any[]): Query<AppModelType, DbModelType>;
 
     /**
      * Creates and returns a new Query with the additional filter that documents must contain the specified field and
@@ -1406,7 +1470,11 @@ export namespace FirebaseFirestoreTypes {
      * @param opStr The operation string (e.g "<", "<=", "==", ">", ">=", "!=", "array-contains", "array-contains-any", "in", "not-in").
      * @param value The comparison value.
      */
-    where(fieldPath: keyof T | FieldPath, opStr: WhereFilterOp, value: any): Query<T>;
+    where(
+      fieldPath: string | FieldPath,
+      opStr: WhereFilterOp,
+      value: any,
+    ): Query<AppModelType, DbModelType>;
 
     /**
      * Creates and returns a new Query with the additional filter that documents must contain the specified field and
@@ -1424,7 +1492,32 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param filter The filter to apply to the query.
      */
-    where(filter: QueryFilterConstraint): Query<T>;
+    where(filter: QueryFilterConstraint): Query<AppModelType, DbModelType>;
+
+    /**
+     * Removes the current converter.
+     *
+     * @param converter `null` removes the current converter.
+     * @return A Query that uses the provided converter.
+     */
+    withConverter(converter: null): Query<AppModelType, DbModelType>;
+
+    /**
+     * Applies a custom data converter to this Query, allowing you to use your
+     * own custom model objects with Firestore. When you call get() on the
+     * returned Query, the provided converter will convert between Firestore
+     * data and your custom type U.
+     *
+     * Passing in `null` as the converter parameter removes the current
+     * converter.
+     *
+     * @param converter Converts objects to and from Firestore. Passing in
+     * `null` removes the current converter.
+     * @return A Query<U> that uses the provided converter.
+     */
+    withConverter<NewAppModelType, NewDbModelType>(
+      converter: FirestoreDataConverter<U>,
+    ): Query<NewAppModelType, NewDbModelType>;
   }
 
   /**
@@ -1447,11 +1540,14 @@ export namespace FirebaseFirestoreTypes {
    * can be accessed as an array via the `docs` property or enumerated using the `forEach` method. The number of documents
    * can be determined via the `empty` and `size` properties.
    */
-  export interface QuerySnapshot<T extends DocumentData = DocumentData> {
+  export interface QuerySnapshot<
+    AppModelType = DocumentData,
+    DbModelType extends DocumentData = DocumentData,
+  > {
     /**
      * An array of all the documents in the `QuerySnapshot`.
      */
-    docs: QueryDocumentSnapshot<T>[];
+    docs: Array<QueryDocumentSnapshot<AppModelType, DbModelType>>;
 
     /**
      * True if there are no documents in the `QuerySnapshot`.
@@ -1466,7 +1562,7 @@ export namespace FirebaseFirestoreTypes {
     /**
      * The query on which you called get or `onSnapshot` in order to `get` this `QuerySnapshot`.
      */
-    query: Query<T>;
+    query: Query<AppModelType, DbModelType>;
 
     /**
      * The number of documents in the `QuerySnapshot`.
@@ -1501,7 +1597,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param options `SnapshotListenOptions` that control whether metadata-only changes (i.e. only `DocumentSnapshot.metadata` changed) should trigger snapshot events.
      */
-    docChanges(options?: SnapshotListenOptions): DocumentChange<T>[];
+    docChanges(options?: SnapshotListenOptions): Array<DocumentChange<AppModelType, DbModelType>>;
 
     /**
      * Enumerates all of the documents in the `QuerySnapshot`.
@@ -1519,11 +1615,10 @@ export namespace FirebaseFirestoreTypes {
      * @param callback A callback to be called with a `QueryDocumentSnapshot` for each document in the snapshot.
      * @param thisArg The `this` binding for the callback.
      */
-
     forEach(
-      callback: (result: QueryDocumentSnapshot<T>, index: number) => void,
-      thisArg?: any,
-    ): void;
+      callback: (result: QueryDocumentSnapshot<AppModelType, DbModelType>) => void,
+      thisArg?: unknown,
+    );
 
     /**
      * Returns true if this `QuerySnapshot` is equal to the provided one.
@@ -2128,6 +2223,68 @@ export namespace FirebaseFirestoreTypes {
      */
     setLogLevel(logLevel: 'debug' | 'error' | 'silent'): void;
     SDK_VERSION: string;
+  }
+
+  /**
+   * Converter used by `withConverter()` to transform user objects of type T
+   * into Firestore data.
+   *
+   * Using the converter allows you to specify generic type arguments when
+   * storing and retrieving objects from Firestore.
+   *
+   * @example
+   * ```typescript
+   * class Post {
+   *   constructor(readonly title: string, readonly author: string) {}
+   *
+   *   toString(): string {
+   *     return this.title + ', by ' + this.author;
+   *   }
+   * }
+   *
+   * const postConverter = {
+   *   toFirestore(post: Post): firebase.firestore.DocumentData {
+   *     return {title: post.title, author: post.author};
+   *   },
+   *   fromFirestore(
+   *     snapshot: firebase.firestore.QueryDocumentSnapshot,
+   *     options: firebase.firestore.SnapshotOptions
+   *   ): Post {
+   *     const data = snapshot.data(options)!;
+   *     return new Post(data.title, data.author);
+   *   }
+   * };
+   *
+   * const postSnap = await firebase.firestore()
+   *   .collection('posts')
+   *   .withConverter(postConverter)
+   *   .doc().get();
+   * const post = postSnap.data();
+   * if (post !== undefined) {
+   *   post.title; // string
+   *   post.toString(); // Should be defined
+   *   post.someNonExistentProperty; // TS error
+   * }
+   * ```
+   */
+  export interface FirestoreDataConverter<T> {
+    /**
+     * Called by the Firestore SDK to convert a custom model object of type T
+     * into a plain JavaScript object (suitable for writing directly to the
+     * Firestore database). To use `set()` with `merge` and `mergeFields`,
+     * `toFirestore()` must be defined with `Partial<T>`.
+     */
+    toFirestore(modelObject: T): DocumentData;
+    toFirestore(modelObject: Partial<T>, options: SetOptions): DocumentData;
+
+    /**
+     * Called by the Firestore SDK to convert Firestore data into an object of
+     * type T. You can access your data by calling: `snapshot.data(options)`.
+     *
+     * @param snapshot A QueryDocumentSnapshot containing your data and metadata.
+     * @param options The SnapshotOptions from the initial call to `data()`.
+     */
+    fromFirestore(snapshot: QueryDocumentSnapshot, options: SnapshotOptions): T;
   }
 
   /**

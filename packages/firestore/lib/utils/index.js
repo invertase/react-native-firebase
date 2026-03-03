@@ -130,6 +130,21 @@ export function parseSetOptions(options) {
   return out;
 }
 
+/**
+ * Applies a FirestoreDataConverter to the data object, if converter is provided.
+ *
+ * @param data
+ * @param converter
+ * @param options
+ * @returns Converted data.
+ */
+export function applyFirestoreDataConverter(data, converter, options) {
+  if (converter && converter.toFirestore) {
+    return converter.toFirestore(data, options);
+  }
+  return data;
+}
+
 // function buildFieldPathData(segments, value) {
 //   if (segments.length === 1) {
 //     return {
@@ -242,4 +257,23 @@ export function parseSnapshotArgs(args) {
   }
 
   return { snapshotListenOptions, callback, onNext, onError };
+}
+
+/**
+ * Validates a withConverter object contains both required functions
+ *
+ * @param converter
+ */
+export function validateWithConverter(converter) {
+  if (isUndefined(converter) || !isObject(converter)) {
+    throw new Error('expected an object value.');
+  }
+
+  if (!isFunction(converter.toFirestore)) {
+    throw new Error("'toFirestore' expected a function.");
+  }
+
+  if (!isFunction(converter.fromFirestore)) {
+    throw new Error("'fromFirestore' expected a function.");
+  }
 }

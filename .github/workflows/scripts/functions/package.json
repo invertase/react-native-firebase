@@ -5,7 +5,7 @@
     "serve": "build && firebase emulators:start --only functions",
     "shell": "build && firebase functions:shell",
     "start": "shell",
-    "deploy": "firebase deploy --only functions",
+    "deploy": "firebase use react-native-firebase-testing && firebase deploy --only functions",
     "logs": "firebase functions:log"
   },
   "engines": {

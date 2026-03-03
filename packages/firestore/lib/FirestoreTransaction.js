@@ -18,7 +18,7 @@
 import { isObject, createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
 import FirestoreDocumentReference from './FirestoreDocumentReference';
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
-import { parseSetOptions, parseUpdateArgs } from './utils';
+import { parseSetOptions, parseUpdateArgs, applyFirestoreDataConverter } from './utils';
 import { buildNativeMap } from './utils/serialize';
 
 export default class FirestoreTransaction {
@@ -52,7 +52,9 @@ export default class FirestoreTransaction {
     this._calledGetCount++;
     return this._firestore.native
       .transactionGetDocument(this._meta.id, documentRef.path)
-      .then(data => createDeprecationProxy(new FirestoreDocumentSnapshot(this._firestore, data)));
+      .then(data =>
+        createDeprecationProxy(new FirestoreDocumentSnapshot(this._firestore, data, null)),
+      );
   }
 
   /**
@@ -67,12 +69,6 @@ export default class FirestoreTransaction {
       );
     }
 
-    if (!isObject(data)) {
-      throw new Error(
-        "firebase.firestore().runTransaction() Transaction.set(_, *) 'data' must be an object..",
-      );
-    }
-
     let setOptions;
     try {
       setOptions = parseSetOptions(options);
@@ -82,10 +78,25 @@ export default class FirestoreTransaction {
       );
     }
 
+    let converted = data;
+    try {
+      converted = applyFirestoreDataConverter(data, documentRef._converter, setOptions);
+    } catch (e) {
+      throw new Error(
+        `firebase.firestore().runTransaction() Transaction.set(_, *) 'withConverter.toFirestore' threw an error: ${e.message}.`,
+      );
+    }
+
+    if (!isObject(converted)) {
+      throw new Error(
+        "firebase.firestore().runTransaction() Transaction.set(_, *) 'data' must be an object..",
+      );
+    }
+
     this._commandBuffer.push({
       type: 'SET',
       path: documentRef.path,
-      data: buildNativeMap(data, this._firestore._settings.ignoreUndefinedProperties),
+      data: buildNativeMap(converted, this._firestore._settings.ignoreUndefinedProperties),
       options: setOptions,
     });
 

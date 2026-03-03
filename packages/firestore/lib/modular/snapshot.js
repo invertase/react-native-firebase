@@ -1,7 +1,6 @@
 /**
- * @typedef {import('../..').FirebaseFirestoreTypes.Query} Query
- * @typedef {import('../..').FirebaseFirestoreTypes.DocumentReference} DocumentReference
- * @typedef {import('snapshot').Unsubscribe} Unsubscribe
+ * @typedef {import('.').Query} Query
+ * @typedef {import('.').DocumentReference} DocumentReference
  */
 
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
