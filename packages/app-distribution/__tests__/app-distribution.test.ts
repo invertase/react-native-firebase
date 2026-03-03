@@ -68,11 +68,9 @@ describe('appDistribution()', function () {
 
   describe('test `console.warn` is called for RNFB v8 API & not called for v9 API', function () {
     let appDistributionV9Deprecation: CheckV9DeprecationFunction;
-    let staticsV9Deprecation: CheckV9DeprecationFunction;
 
     beforeEach(function () {
       appDistributionV9Deprecation = createCheckV9Deprecation(['appDistribution']);
-      staticsV9Deprecation = createCheckV9Deprecation(['appDistribution', 'statics']);
 
       // @ts-ignore test
       jest.spyOn(FirebaseModule.prototype, 'native', 'get').mockImplementation(() => {
