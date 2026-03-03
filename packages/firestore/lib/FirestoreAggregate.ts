@@ -27,15 +27,16 @@ import FieldPath, { fromDotSeparatedString } from './FieldPath';
 import type FirestorePath from './FirestorePath';
 import type Query from './FirestoreQuery';
 import type QueryModifiers from './FirestoreQueryModifiers';
+import type { FirestoreInternal } from './types/internal';
 
 export class AggregateQuery {
-  _firestore: any;
+  _firestore: FirestoreInternal;
   _query: Query;
   _collectionPath: FirestorePath;
   _modifiers: QueryModifiers;
 
   constructor(
-    firestore: any,
+    firestore: FirestoreInternal,
     query: Query,
     collectionPath: FirestorePath,
     modifiers: QueryModifiers,
