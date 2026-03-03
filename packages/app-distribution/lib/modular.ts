@@ -2,19 +2,9 @@ import { getApp } from '@react-native-firebase/app';
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import type { AppDistribution, AppDistributionRelease } from './types/app-distribution';
-import type { AppDistributionInternal } from './types/internal';
+import type { AppDistributionInternal, WithModularDeprecationArg } from './types/internal';
 
 export type { Statics } from './types/app-distribution';
-
-/**
- * Wraps a method type so it accepts MODULAR_DEPRECATION_ARG as a trailing argument.
- * Allows modular wrappers to use .call(instance, ...args, MODULAR_DEPRECATION_ARG) without changing internal types.
- */
-type WithModularDeprecationArg<T extends (...args: unknown[]) => unknown> = T extends (
-  ...args: infer A
-) => infer R
-  ? (...args: [...A, unknown?]) => R
-  : never;
 
 export type FirebaseAppDistribution = AppDistribution;
 
