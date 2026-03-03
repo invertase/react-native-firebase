@@ -24,6 +24,7 @@ import type {
   FirestoreSettings,
   LoadBundleTask,
   LoadBundleTaskProgress,
+  LogLevel,
   Primitive,
   Query,
   QuerySnapshot,
@@ -128,6 +129,7 @@ export interface FirestoreEmitterInternal {
  * `this.native` within FirebaseFirestoreModule.
  */
 export interface RNFBFirestoreModule {
+  setLogLevel(level: LogLevel): Promise<void>;
   // --- Main Firestore module (RNFBFirestoreModule) ---
   loadBundle(bundle: string): Promise<LoadBundleTaskProgress>;
   clearPersistence(): Promise<void>;

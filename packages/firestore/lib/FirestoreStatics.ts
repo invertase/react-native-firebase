@@ -25,6 +25,7 @@ import FirestoreGeoPoint from './FirestoreGeoPoint';
 import FirestoreTimestamp from './FirestoreTimestamp';
 import FirestoreVectorValue from './FirestoreVectorValue';
 import type { LogLevel } from './types/firestore';
+import type { RNFBFirestoreModule } from './types/internal';
 
 type FirestoreLogLevel = LogLevel;
 
@@ -49,9 +50,7 @@ const FirestoreStatics = {
       );
     }
 
-    const native = getReactNativeModule('RNFBFirestoreModule') as {
-      setLogLevel(level: FirestoreLogLevel): void;
-    };
+    const native = getReactNativeModule('RNFBFirestoreModule') as unknown as RNFBFirestoreModule;
     native.setLogLevel(logLevel);
   },
 };
