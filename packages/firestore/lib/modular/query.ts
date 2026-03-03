@@ -27,6 +27,16 @@ import type {
   QuerySnapshot,
   WhereFilterOp,
 } from '../types/firestore';
+import type {
+  DocumentReferenceDeleteInternal,
+  DocumentReferenceGetInternal,
+  QueryConstraintWithApplyInternal,
+  QueryFilterConstraintWithFilterInternal,
+  QueryInternal,
+  QueryWithMethodInternal,
+  QueryWithWhereInternal,
+  ReferenceIsEqualInternal,
+} from '../types/internal';
 import type { FieldPath } from './FieldPath';
 
 export abstract class QueryConstraint {
@@ -40,9 +50,9 @@ export abstract class QueryConstraint {
   _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
     query: Query<AppModelType, DbModelType>,
   ): Query<AppModelType, DbModelType> {
-    const method = (
-      query as unknown as Record<string, (...args: unknown[]) => Query<AppModelType, DbModelType>>
-    )[this.type];
+    const method = (query as unknown as QueryWithMethodInternal<AppModelType, DbModelType>)[
+      this.type
+    ];
     if (!method) {
       throw new Error(`Query method '${this.type}' is not available on query instance.`);
     }
@@ -62,11 +72,7 @@ export class QueryCompositeFilterConstraint {
   _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
     query: Query<AppModelType, DbModelType>,
   ): Query<AppModelType, DbModelType> {
-    const where = (
-      query as unknown as {
-        where: (...args: unknown[]) => Query<AppModelType, DbModelType>;
-      }
-    ).where;
+    const where = (query as unknown as QueryWithWhereInternal<AppModelType, DbModelType>).where;
     return where.call(query, this._filter, MODULAR_DEPRECATION_ARG);
   }
 }
@@ -142,7 +148,7 @@ export function query<AppModelType = DocumentData, DbModelType extends DocumentD
       continue;
     }
     const apply = (
-      constraint as unknown as { _apply?: (q: Query<AppModelType, DbModelType>) => any }
+      constraint as unknown as QueryConstraintWithApplyInternal<AppModelType, DbModelType>
     )._apply;
     if (!apply) {
       continue;
@@ -162,10 +168,10 @@ export function where(
 
 function toFilter(queryConstraint: QueryFilterConstraint): _Filter {
   if (queryConstraint instanceof QueryCompositeFilterConstraint) {
-    return (queryConstraint as unknown as { _filter: _Filter })._filter;
+    return (queryConstraint as unknown as QueryFilterConstraintWithFilterInternal)._filter;
   }
   if (queryConstraint instanceof QueryFieldFilterConstraint) {
-    return (queryConstraint as unknown as { _filter: _Filter })._filter;
+    return (queryConstraint as unknown as QueryFilterConstraintWithFilterInternal)._filter;
   }
   throw new Error('Invalid query constraint: expected filter constraint');
 }
@@ -236,11 +242,7 @@ export function getDoc<
 >(
   reference: DocumentReference<AppModelType, DbModelType>,
 ): Promise<DocumentSnapshot<AppModelType, DbModelType>> {
-  const get = (
-    reference as unknown as {
-      get: (...args: unknown[]) => Promise<DocumentSnapshot<AppModelType, DbModelType>>;
-    }
-  ).get;
+  const get = (reference as unknown as DocumentReferenceGetInternal<AppModelType, DbModelType>).get;
   return get.call(reference, { source: 'default' }, MODULAR_DEPRECATION_ARG);
 }
 
@@ -250,11 +252,7 @@ export function getDocFromCache<
 >(
   reference: DocumentReference<AppModelType, DbModelType>,
 ): Promise<DocumentSnapshot<AppModelType, DbModelType>> {
-  const get = (
-    reference as unknown as {
-      get: (...args: unknown[]) => Promise<DocumentSnapshot<AppModelType, DbModelType>>;
-    }
-  ).get;
+  const get = (reference as unknown as DocumentReferenceGetInternal<AppModelType, DbModelType>).get;
   return get.call(reference, { source: 'cache' }, MODULAR_DEPRECATION_ARG);
 }
 
@@ -264,11 +262,7 @@ export function getDocFromServer<
 >(
   reference: DocumentReference<AppModelType, DbModelType>,
 ): Promise<DocumentSnapshot<AppModelType, DbModelType>> {
-  const get = (
-    reference as unknown as {
-      get: (...args: unknown[]) => Promise<DocumentSnapshot<AppModelType, DbModelType>>;
-    }
-  ).get;
+  const get = (reference as unknown as DocumentReferenceGetInternal<AppModelType, DbModelType>).get;
   return get.call(reference, { source: 'server' }, MODULAR_DEPRECATION_ARG);
 }
 
@@ -276,11 +270,7 @@ export function getDocs<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
 >(queryRef: Query<AppModelType, DbModelType>): Promise<QuerySnapshot<AppModelType, DbModelType>> {
-  const get = (
-    queryRef as unknown as {
-      get: (...args: unknown[]) => Promise<QuerySnapshot<AppModelType, DbModelType>>;
-    }
-  ).get;
+  const get = (queryRef as unknown as QueryInternal<AppModelType, DbModelType>).get;
   return get.call(queryRef, { source: 'default' }, MODULAR_DEPRECATION_ARG);
 }
 
@@ -288,11 +278,7 @@ export function getDocsFromCache<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
 >(queryRef: Query<AppModelType, DbModelType>): Promise<QuerySnapshot<AppModelType, DbModelType>> {
-  const get = (
-    queryRef as unknown as {
-      get: (...args: unknown[]) => Promise<QuerySnapshot<AppModelType, DbModelType>>;
-    }
-  ).get;
+  const get = (queryRef as unknown as QueryInternal<AppModelType, DbModelType>).get;
   return get.call(queryRef, { source: 'cache' }, MODULAR_DEPRECATION_ARG);
 }
 
@@ -300,11 +286,7 @@ export function getDocsFromServer<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
 >(queryRef: Query<AppModelType, DbModelType>): Promise<QuerySnapshot<AppModelType, DbModelType>> {
-  const get = (
-    queryRef as unknown as {
-      get: (...args: unknown[]) => Promise<QuerySnapshot<AppModelType, DbModelType>>;
-    }
-  ).get;
+  const get = (queryRef as unknown as QueryInternal<AppModelType, DbModelType>).get;
   return get.call(queryRef, { source: 'server' }, MODULAR_DEPRECATION_ARG);
 }
 
@@ -312,7 +294,7 @@ export function deleteDoc<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
 >(reference: DocumentReference<AppModelType, DbModelType>): Promise<void> {
-  const remove = (reference as unknown as { delete: (...args: unknown[]) => Promise<void> }).delete;
+  const remove = (reference as unknown as DocumentReferenceDeleteInternal).delete;
   return remove.call(reference, MODULAR_DEPRECATION_ARG);
 }
 
@@ -320,6 +302,6 @@ export function queryEqual<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
 >(left: Query<AppModelType, DbModelType>, right: Query<AppModelType, DbModelType>): boolean {
-  const isEqual = (left as unknown as { isEqual: (...args: unknown[]) => boolean }).isEqual;
+  const isEqual = (left as unknown as ReferenceIsEqualInternal).isEqual;
   return isEqual.call(left, right, MODULAR_DEPRECATION_ARG);
 }

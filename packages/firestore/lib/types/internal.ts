@@ -19,20 +19,22 @@ import type {
   CollectionReference,
   DocumentData,
   DocumentReference,
+  DocumentSnapshot,
   Firestore,
   FirestoreSettings,
   LoadBundleTask,
   Query,
+  QuerySnapshot,
   SetOptions,
   Transaction,
   WriteBatch,
   WithFieldValue,
   AggregateType,
   PartialWithFieldValue,
-  QuerySnapshot,
 } from './firestore';
 import type { PersistentCacheIndexManager } from '../FirestorePersistentCacheIndexManager';
 import type { QueryConstraint } from '../modular/query';
+import type { _Filter } from '../FirestoreFilter';
 import Blob from 'lib/FirestoreBlob';
 
 // Helper type for wrappers that forward MODULAR_DEPRECATION_ARG via .call(...).
@@ -64,6 +66,51 @@ export interface ReferenceInternal<
       | CollectionReference<AppModelType, DbModelType>,
     ...deprecationArg: unknown[]
   ): boolean;
+}
+
+/** Used when calling query instance methods by name (e.g. in QueryConstraint._apply). */
+export type QueryWithMethodInternal<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+> = Record<string, (...args: unknown[]) => Query<AppModelType, DbModelType>>;
+
+/** Used when calling .where() on a query with a composite filter. */
+export interface QueryWithWhereInternal<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+> {
+  where(...args: unknown[]): Query<AppModelType, DbModelType>;
+}
+
+/** Constraint instance that may have _apply(query) to apply itself to a query. */
+export interface QueryConstraintWithApplyInternal<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+> {
+  _apply?(query: Query<AppModelType, DbModelType>): Query<AppModelType, DbModelType>;
+}
+
+/** Filter constraint (field or composite) that exposes _filter. */
+export interface QueryFilterConstraintWithFilterInternal {
+  _filter: _Filter;
+}
+
+/** DocumentReference viewed as having get() returning DocumentSnapshot. */
+export interface DocumentReferenceGetInternal<
+  AppModelType = DocumentData,
+  DbModelType extends DocumentData = DocumentData,
+> {
+  get(...args: unknown[]): Promise<DocumentSnapshot<AppModelType, DbModelType>>;
+}
+
+/** DocumentReference viewed as having delete(). */
+export interface DocumentReferenceDeleteInternal {
+  delete(...args: unknown[]): Promise<void>;
+}
+
+/** Reference or query viewed as having isEqual(). */
+export interface ReferenceIsEqualInternal {
+  isEqual(...args: unknown[]): boolean;
 }
 
 export interface DocumentReferenceInternal<
