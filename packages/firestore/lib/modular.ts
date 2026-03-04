@@ -91,6 +91,21 @@ export function getFirestore(
   return app().firestore();
 }
 
+export function doc(
+  parent: Firestore,
+  path: string,
+  ...pathSegments: string[]
+): DocumentReference<DocumentData, DocumentData>;
+export function doc<AppModelType, DbModelType extends DocumentData>(
+  parent: CollectionReference<AppModelType, DbModelType>,
+  path?: string,
+  ...pathSegments: string[]
+): DocumentReference<AppModelType, DbModelType>;
+export function doc<AppModelType, DbModelType extends DocumentData>(
+  parent: DocumentReference<AppModelType, DbModelType>,
+  path: string,
+  ...pathSegments: string[]
+): DocumentReference<DocumentData, DocumentData>;
 export function doc<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
   parent:
     | Firestore

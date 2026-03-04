@@ -272,13 +272,6 @@ const config: PackageConfig = {
         'The RN implementation is async because it delegates to the native module.',
     },
     {
-      name: 'doc',
-      reason:
-        'RN Firebase uses a single overload accepting ' +
-        '`Firestore | CollectionReference | DocumentReference` as the first ' +
-        'parameter, whereas the firebase-js-sdk defines separate overloads for each.',
-    },
-    {
       name: 'enablePersistentCacheIndexAutoCreation',
       reason:
         'Returns `Promise<void>` in RN Firebase vs `void` in the firebase-js-sdk. ' +
