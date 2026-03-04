@@ -40,6 +40,8 @@ function normalizeType(s: string): string {
       // Strip a leading pipe that TypeScript emits when a union type is
       // written with a leading `|` on each line (e.g. `| 'a' | 'b'` → `'a' | 'b'`)
       .replace(/^\| /, '')
+      // Same when the union is inside parentheses: ( | A | B ) or (| A | B ) → ( A | B )
+      .replace(/\(\s*\|/g, '(')
       // Remove spaces adjacent to brackets/parens/commas/colons so that
       // `( k: infer I, )` and `(k: infer I)` normalize to the same string
       .replace(/\s*\(\s*/g, '(')
@@ -58,6 +60,9 @@ function normalizeType(s: string): string {
       // Remove leading comma after ( or [ (formatting-only)
       .replace(/\(\s*,/g, '(')
       .replace(/\[\s*,/g, '[')
+      // Optional trailing semicolons in object types (e.g. { a: string; } vs { a: string })
+      .replace(/;\s*}/g, '}')
+      .replace(/;\s*,/g, ',')
   );
 }
 
