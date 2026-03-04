@@ -40,23 +40,23 @@ if (Platform.other) {
 }
 
 if (!Platform.other) {
-  // platformSupportedModules.push('app');
-  // platformSupportedModules.push('functions');
-  // platformSupportedModules.push('auth');
-  // platformSupportedModules.push('database');
+  platformSupportedModules.push('app');
+  platformSupportedModules.push('functions');
+  platformSupportedModules.push('auth');
+  platformSupportedModules.push('database');
   platformSupportedModules.push('firestore');
-  // platformSupportedModules.push('storage');
-  // platformSupportedModules.push('messaging');
-  // platformSupportedModules.push('perf');
-  // platformSupportedModules.push('analytics');
-  // platformSupportedModules.push('remoteConfig');
-  // platformSupportedModules.push('crashlytics');
-  // platformSupportedModules.push('inAppMessaging');
-  // platformSupportedModules.push('installations');
-  // platformSupportedModules.push('appCheck');
-  // platformSupportedModules.push('appDistribution');
-  // platformSupportedModules.push('ml');
-  // platformSupportedModules.push('ai');
+  platformSupportedModules.push('storage');
+  platformSupportedModules.push('messaging');
+  platformSupportedModules.push('perf');
+  platformSupportedModules.push('analytics');
+  platformSupportedModules.push('remoteConfig');
+  platformSupportedModules.push('crashlytics');
+  platformSupportedModules.push('inAppMessaging');
+  platformSupportedModules.push('installations');
+  platformSupportedModules.push('appCheck');
+  platformSupportedModules.push('appDistribution');
+  platformSupportedModules.push('ml');
+  platformSupportedModules.push('ai');
 }
 // Registering an error handler that always throw unhandled exceptions
 // This is to enable Jet to exit on uncaught errors
@@ -74,7 +74,7 @@ function loadTests(_) {
     if (!globalThis.RNFBDebug) {
       // Only retry tests if not debugging or hunting deprecated API usage locally,
       // otherwise it gets annoying to debug.
-      this.retries(0);
+      this.retries(4);
     }
 
     before(async function () {
