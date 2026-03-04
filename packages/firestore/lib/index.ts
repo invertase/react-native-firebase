@@ -31,7 +31,6 @@ export type {
   PersistentLocalCache,
   FirestoreLocalCache,
   FirestoreSettings,
-  PrivateSettings,
   AggregateType,
   AggregateFieldType,
   AggregateSpec,

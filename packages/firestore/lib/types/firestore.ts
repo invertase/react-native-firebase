@@ -84,16 +84,6 @@ export interface FirestoreSettings {
   serverTimestampBehavior?: 'estimate' | 'previous' | 'none';
 }
 
-export interface PrivateSettings extends FirestoreSettings {
-  // Internal-only settings (mirroring firebase-js-sdk shape).
-  // web/other platform only
-  credentials?: unknown;
-  // web/other platform only
-  useFetchStreams?: boolean;
-  // web/other platform only
-  emulatorOptions?: { mockUserToken?: EmulatorMockTokenOptions | string };
-}
-
 export type AggregateType = 'count' | 'avg' | 'sum';
 export type AggregateFieldType =
   | ReturnType<typeof sum>

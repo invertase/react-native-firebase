@@ -220,13 +220,6 @@ const config: PackageConfig = {
         'Firebase functions. Not part of the firebase-js-sdk public Firestore API.',
     },
     {
-      name: 'PrivateSettings',
-      reason:
-        'Extended FirestoreSettings interface with internal properties ' +
-        '(credentials, useFetchStreams, emulatorOptions). Exposed for internal ' +
-        'use; not part of the firebase-js-sdk public API.',
-    },
-    {
       name: 'clearPersistence',
       reason:
         'RN Firebase-specific alias for clearIndexedDbPersistence. Provides a ' +
