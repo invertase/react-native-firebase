@@ -19,6 +19,7 @@
  * Wrapped native module interface for ML.
  * ML Kit module exposes no instance methods beyond the base FirebaseModule.
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface RNFBMLModule {
   // No additional methods; ML uses base FirebaseModule only.
 }
