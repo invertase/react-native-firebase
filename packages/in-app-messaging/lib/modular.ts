@@ -27,7 +27,8 @@ export function setMessagesDisplaySuppressed(
   enabled: boolean,
 ): Promise<null> {
   return (
-    (inAppMessaging as InAppMessagingInternal).setMessagesDisplaySuppressed as WithModularDeprecationArg<
+    (inAppMessaging as InAppMessagingInternal)
+      .setMessagesDisplaySuppressed as WithModularDeprecationArg<
       InAppMessagingInternal['setMessagesDisplaySuppressed']
     >
   ).call(inAppMessaging, enabled, MODULAR_DEPRECATION_ARG);
@@ -48,7 +49,8 @@ export function setAutomaticDataCollectionEnabled(
   enabled: boolean,
 ): Promise<null> {
   return (
-    (inAppMessaging as InAppMessagingInternal).setAutomaticDataCollectionEnabled as WithModularDeprecationArg<
+    (inAppMessaging as InAppMessagingInternal)
+      .setAutomaticDataCollectionEnabled as WithModularDeprecationArg<
       InAppMessagingInternal['setAutomaticDataCollectionEnabled']
     >
   ).call(inAppMessaging, enabled, MODULAR_DEPRECATION_ARG);
