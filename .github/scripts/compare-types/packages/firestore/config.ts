@@ -298,13 +298,6 @@ const config: PackageConfig = {
         'the native Firestore module.',
     },
     {
-      name: 'onSnapshot',
-      reason:
-        'RN Firebase uses a simplified signature with rest args (`...args: unknown[]`) ' +
-        'to handle the many overload variants, whereas the firebase-js-sdk defines ' +
-        'separate typed overloads for document and query listeners.',
-    },
-    {
       name: 'onSnapshotsInSync',
       reason:
         'The observer `next` callback has no parameter in RN Firebase vs ' +
@@ -377,13 +370,6 @@ const config: PackageConfig = {
         'The types are semantically identical.',
     },
     {
-      name: 'PartialWithFieldValue',
-      reason:
-        'RN Firebase uses `T extends object` whereas the firebase-js-sdk uses ' +
-        '`T extends {}`. Both are semantically equivalent in TypeScript for ' +
-        'constraining to object types.',
-    },
-    {
       name: 'PersistentLocalCache',
       reason:
         'RN Firebase exposes internal `_onlineComponentProvider` and ' +
@@ -408,20 +394,6 @@ const config: PackageConfig = {
       reason:
         'Whitespace-only difference in the conditional type formatting. ' +
         'The types are semantically identical.',
-    },
-    {
-      name: 'UpdateData',
-      reason:
-        'RN Firebase uses `T extends Record<string, unknown>` whereas the ' +
-        'firebase-js-sdk uses `T extends {}`. Both are structurally equivalent ' +
-        'for the purpose of this utility type.',
-    },
-    {
-      name: 'WithFieldValue',
-      reason:
-        'RN Firebase uses `T extends object` whereas the firebase-js-sdk uses ' +
-        '`T extends {}`. Both are semantically equivalent in TypeScript for ' +
-        'constraining to object types.',
     },
   ],
 };
