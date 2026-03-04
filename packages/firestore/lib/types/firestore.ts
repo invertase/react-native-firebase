@@ -19,6 +19,7 @@ import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import type { FieldPath } from '../modular/FieldPath';
 import type { FieldValue } from '../modular/FieldValue';
 import type { AggregateField } from '../FirestoreAggregate';
+import type { sum, average, count } from '../modular';
 
 // Canonical app/module aliases used by modular declarations.
 export type FirebaseApp = ReactNativeFirebase.FirebaseApp;
@@ -94,7 +95,10 @@ export interface PrivateSettings extends FirestoreSettings {
 }
 
 export type AggregateType = 'count' | 'avg' | 'sum';
-export type AggregateFieldType = AggregateField<number> | AggregateField<number | null>;
+export type AggregateFieldType =
+  | ReturnType<typeof sum>
+  | ReturnType<typeof average>
+  | ReturnType<typeof count>;
 export interface AggregateSpec {
   [field: string]: AggregateFieldType;
 }
