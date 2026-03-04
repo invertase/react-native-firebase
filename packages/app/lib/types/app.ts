@@ -280,7 +280,6 @@ export namespace ReactNativeFirebase {
     abstract app: FirebaseApp;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export type FirebaseModuleWithStatics<M, S = {}> = {
     (): M;
 
@@ -290,7 +289,6 @@ export namespace ReactNativeFirebase {
     readonly SDK_VERSION: string;
   } & S;
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export type FirebaseModuleWithStaticsAndApp<M, S = {}> = {
     (app?: FirebaseApp): M;
 
