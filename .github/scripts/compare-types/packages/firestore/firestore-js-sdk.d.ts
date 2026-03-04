@@ -5,8 +5,60 @@
  */
 import { FirebaseApp } from '@firebase/app';
 import { LogLevelString as LogLevel } from '@firebase/logger';
-import { EmulatorMockTokenOptions } from '@firebase/util';
 import { FirebaseError } from '@firebase/util';
+
+/**
+ * Provider identifier for Firebase Auth (from @firebase/util).
+ * Inlined here so the compare-types script can resolve EmulatorMockTokenOptions.
+ */
+export declare type FirebaseSignInProvider =
+  | 'custom'
+  | 'email'
+  | 'password'
+  | 'phone'
+  | 'anonymous'
+  | 'google.com'
+  | 'facebook.com'
+  | 'github.com'
+  | 'twitter.com'
+  | 'microsoft.com'
+  | 'apple.com';
+
+/**
+ * Shape of a decoded Firebase ID token (from @firebase/util).
+ * Inlined here so the compare-types script can resolve EmulatorMockTokenOptions.
+ */
+export declare interface FirebaseIdToken {
+  iss: string;
+  aud: string;
+  sub: string;
+  iat: number;
+  exp: number;
+  user_id: string;
+  auth_time: number;
+  provider_id?: 'anonymous';
+  email?: string;
+  email_verified?: boolean;
+  phone_number?: string;
+  name?: string;
+  picture?: string;
+  firebase: {
+    sign_in_provider: FirebaseSignInProvider;
+    identities?: { [provider in FirebaseSignInProvider]?: string[] };
+  };
+  [claim: string]: unknown;
+  uid?: never;
+}
+
+/**
+ * Options for mock auth token when using emulators (from @firebase/util).
+ * Inlined here so the compare-types script has access to the full type.
+ */
+export declare type EmulatorMockTokenOptions = (
+  | { user_id: string }
+  | { sub: string }
+) &
+  Partial<FirebaseIdToken>;
 
 /**
  * Add a new document to specified `CollectionReference` with the given data,
@@ -734,7 +786,6 @@ export declare function documentSnapshotFromJSON<
 ): DocumentSnapshot<AppModelType, DbModelType>;
 /* Excluded from this release type: _EmptyAppCheckTokenProvider */
 /* Excluded from this release type: _EmptyAuthCredentialsProvider */
-export { EmulatorMockTokenOptions };
 /**
  * Attempts to enable persistent storage, if possible.
  *
