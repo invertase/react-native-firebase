@@ -23,6 +23,7 @@ import {
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import { version } from './version';
 import type { FirebaseMLTypes } from './types/namespaced';
+import './types/internal';
 
 const statics: FirebaseMLTypes.Statics = {
   SDK_VERSION: version,
