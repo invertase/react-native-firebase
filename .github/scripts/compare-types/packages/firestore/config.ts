@@ -286,14 +286,6 @@ const config: PackageConfig = {
         'transaction implementation.',
     },
     {
-      name: 'updateDoc',
-      reason:
-        'RN Firebase merges the overloads into a single signature accepting ' +
-        '`string | FieldPath | UpdateData<DbModelType>` as the second parameter, ' +
-        'whereas the firebase-js-sdk defines separate overloads for the data object ' +
-        'vs field/value pair forms.',
-    },
-    {
       name: 'EmulatorMockTokenOptions',
       reason:
         'The firebase-js-sdk intersects `{ user_id: string } | { sub: string }` ' +

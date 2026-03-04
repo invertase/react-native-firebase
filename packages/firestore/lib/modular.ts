@@ -250,6 +250,16 @@ export function setDoc<AppModelType, DbModelType extends DocumentData>(
 
 export function updateDoc<AppModelType, DbModelType extends DocumentData>(
   reference: DocumentReference<AppModelType, DbModelType>,
+  data: UpdateData<DbModelType>,
+): Promise<void>;
+export function updateDoc<AppModelType, DbModelType extends DocumentData>(
+  reference: DocumentReference<AppModelType, DbModelType>,
+  field: string | FieldPath,
+  value: unknown,
+  ...moreFieldsAndValues: unknown[]
+): Promise<void>;
+export function updateDoc<AppModelType, DbModelType extends DocumentData>(
+  reference: DocumentReference<AppModelType, DbModelType>,
   fieldOrUpdateData: string | FieldPath | UpdateData<DbModelType>,
   value?: unknown,
   ...moreFieldsAndValues: unknown[]
