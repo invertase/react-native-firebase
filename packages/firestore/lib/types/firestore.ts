@@ -163,9 +163,28 @@ export interface SnapshotListenOptions {
   readonly includeMetadataChanges?: boolean;
 }
 
-export type SnapshotOptions = {
+/**
+ * Options that configure how data is retrieved from a `DocumentSnapshot` (for
+ * example the desired behavior for server timestamps that have not yet been set
+ * to their final value).
+ */
+export declare interface SnapshotOptions {
+  /**
+   * If set, controls the return value for server timestamps that have not yet
+   * been set to their final value.
+   *
+   * By specifying 'estimate', pending server timestamps return an estimate
+   * based on the local clock. This estimate will differ from the final value
+   * and cause these values to change once the server result becomes available.
+   *
+   * By specifying 'previous', pending timestamps will be ignored and return
+   * their previous value instead.
+   *
+   * If omitted or set to 'none', `null` will be returned by default until the
+   * server value becomes available.
+   */
   readonly serverTimestamps?: 'estimate' | 'previous' | 'none';
-};
+}
 
 export declare class SnapshotMetadata {
   readonly fromCache: boolean;
@@ -206,7 +225,17 @@ export type PartialWithFieldValue<T> =
         ? { [K in keyof T]?: PartialWithFieldValue<T[K]> | FieldValue }
         : never);
 
-export type UnionToIntersection<U> = (U extends unknown ? (k: U) => void : never) extends (
+/**
+ * Given a union type `U = T1 | T2 | ...`, returns an intersected type
+ * `(T1 & T2 & ...)`.
+ *
+ * Uses distributive conditional types and inference from conditional types.
+ * This works because multiple candidates for the same type variable in
+ * contra-variant positions causes an intersection type to be inferred.
+ * https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-inference-in-conditional-types
+ * https://stackoverflow.com/questions/50374908/transform-union-type-to-intersection-type
+ */
+export declare type UnionToIntersection<U> = (U extends unknown ? (k: U) => void : never) extends (
   k: infer I,
 ) => void
   ? I
