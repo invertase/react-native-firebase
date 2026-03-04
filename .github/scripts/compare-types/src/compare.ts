@@ -51,11 +51,29 @@ function functionsMatch(a: FunctionShape, b: FunctionShape): boolean {
 
 function interfacesMatch(a: InterfaceShape, b: InterfaceShape): boolean {
   if (a.members.length !== b.members.length) return false;
-  const bByName = new Map(b.members.map(m => [m.name, m]));
-  return a.members.every(m => {
-    const bm = bByName.get(m.name);
-    return bm !== undefined && m.type === bm.type && m.optional === bm.optional;
-  });
+  // Group by name so overloaded methods (same name, different signatures) are compared correctly
+  const groupBy = (members: InterfaceShape['members']) => {
+    const map = new Map<string, Array<{ type: string; optional: boolean }>>();
+    for (const m of members) {
+      const list = map.get(m.name) ?? [];
+      list.push({ type: m.type, optional: m.optional });
+      map.set(m.name, list);
+    }
+    return map;
+  };
+  const aByNames = groupBy(a.members);
+  const bByNames = groupBy(b.members);
+  if (aByNames.size !== bByNames.size) return false;
+  const sortKey = (t: { type: string; optional: boolean }) => `${t.optional}:${t.type}`;
+  for (const [name, aList] of aByNames) {
+    const bList = bByNames.get(name);
+    if (!bList || aList.length !== bList.length) return false;
+    const aSorted = [...aList].sort((x, y) => sortKey(x).localeCompare(sortKey(y)));
+    const bSorted = [...bList].sort((x, y) => sortKey(x).localeCompare(sortKey(y)));
+    if (!aSorted.every((item, i) => item.type === bSorted[i].type && item.optional === bSorted[i].optional))
+      return false;
+  }
+  return true;
 }
 
 function shapesMatch(sdk: ExportShape, rn: ExportShape): boolean {
