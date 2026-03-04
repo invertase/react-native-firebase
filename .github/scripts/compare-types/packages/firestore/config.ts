@@ -285,12 +285,6 @@ const config: PackageConfig = {
         'The RN implementation is async because it delegates to the native module.',
     },
     {
-      name: 'getCountFromServer',
-      reason:
-        'Whitespace-only difference in the return type generic formatting. ' +
-        'The types are semantically identical.',
-    },
-    {
       name: 'initializeFirestore',
       reason:
         'Returns `Promise<Firestore>` in RN Firebase vs `Firestore` in the ' +
@@ -364,12 +358,6 @@ const config: PackageConfig = {
         'RN implementation.',
     },
     {
-      name: 'NestedUpdateFields',
-      reason:
-        'Whitespace-only difference in the type formatting. ' +
-        'The types are semantically identical.',
-    },
-    {
       name: 'PersistentLocalCache',
       reason:
         'RN Firebase exposes internal `_onlineComponentProvider` and ' +
@@ -382,18 +370,6 @@ const config: PackageConfig = {
       reason:
         'The firebase-js-sdk includes an optional `source` property (of type ' +
         '`ListenSource`) which is not yet supported in RN Firebase.',
-    },
-    {
-      name: 'SnapshotOptions',
-      reason:
-        'Whitespace-only / readonly modifier difference in the type definition. ' +
-        'The types are semantically identical.',
-    },
-    {
-      name: 'UnionToIntersection',
-      reason:
-        'Whitespace-only difference in the conditional type formatting. ' +
-        'The types are semantically identical.',
     },
   ],
 };
