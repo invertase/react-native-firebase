@@ -65,7 +65,8 @@ export class _Filter {
 
     this.fieldPath = fieldPath ?? undefined;
     this.operator = operator as FieldFilterOperator | FilterOperator;
-    this.value = value ?? undefined;
+    // Preserve null for == / != (required for mapFieldQuery; do not coerce to undefined)
+    this.value = value as FilterValue | undefined;
   }
 
   _toMap(): FilterMap {
