@@ -22,15 +22,17 @@ import {
 } from '@react-native-firebase/app/dist/module/internal';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import { version } from './version';
-import type { ML, Statics } from './types/ml';
+import type { FirebaseMLTypes } from './types/namespaced';
 
-const statics: Partial<Statics> = {};
+const statics: FirebaseMLTypes.Statics = {
+  SDK_VERSION: version,
+};
 
 const namespace = 'ml';
 
-const nativeModuleName = 'RNFBMLModule';
+const nativeModuleName = 'RNFBMLModule' as const;
 
-class FirebaseMLModule extends FirebaseModule {}
+class FirebaseMLModule extends FirebaseModule<typeof nativeModuleName> {}
 
 export const SDK_VERSION = version;
 
@@ -45,7 +47,10 @@ const mlNamespace = createModuleNamespace({
   ModuleClass: FirebaseMLModule,
 });
 
-type MLNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<ML, Statics> & {
+type MLNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  FirebaseMLTypes.Module,
+  FirebaseMLTypes.Statics
+> & {
   firebase: ReactNativeFirebase.Module;
   app(name?: string): ReactNativeFirebase.FirebaseApp;
 };
@@ -55,7 +60,7 @@ export default mlNamespace as unknown as MLNamespace;
 export const firebase =
   getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
     'ml',
-    ML,
-    Statics,
+    FirebaseMLTypes.Module,
+    FirebaseMLTypes.Statics,
     false
   >;
