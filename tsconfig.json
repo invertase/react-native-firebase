@@ -29,8 +29,6 @@
     "packages/in-app-messaging/lib/modular/index.d.ts",
     "packages/installations/lib/index.d.ts",
     "packages/installations/lib/modular/index.d.ts",
-    "packages/ml/lib/index.ts",
-    "packages/ml/lib/modular.ts",
     "packages/perf/lib/index.d.ts",
     "packages/perf/lib/modular/index.d.ts",
     "packages/remote-config/lib/index.d.ts",

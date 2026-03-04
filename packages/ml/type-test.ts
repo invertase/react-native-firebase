@@ -1,4 +1,4 @@
-import ml, { firebase, getML } from '.';
+import ml, { firebase, FirebaseMLTypes, getML } from '.';
 
 console.log(ml().app);
 
@@ -24,7 +24,7 @@ console.log(firebase.ml(firebase.app()).app.name);
 console.log(ml(firebase.app()).app.name);
 
 // checks Module instance APIs
-const mlInstance = firebase.ml();
+const mlInstance = firebase.ml() as unknown as FirebaseMLTypes.Module;
 console.log(mlInstance.app.name);
 
 // checks modular API functions
