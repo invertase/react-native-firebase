@@ -315,14 +315,6 @@ const config: PackageConfig = {
         'vs field/value pair forms.',
     },
     {
-      name: 'AggregateFieldType',
-      reason:
-        'RN Firebase defines AggregateFieldType as `AggregateField<number> | ' +
-        'AggregateField<number | null>` whereas the firebase-js-sdk uses ' +
-        '`ReturnType<typeof sum> | ReturnType<typeof average> | ReturnType<typeof count>`. ' +
-        'Both resolve to equivalent types at runtime.',
-    },
-    {
       name: 'EmulatorMockTokenOptions',
       reason:
         'The firebase-js-sdk intersects `{ user_id: string } | { sub: string }` ' +
