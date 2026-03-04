@@ -82,6 +82,7 @@ import firestore, {
   vector,
   VectorValue,
 } from '../lib';
+import { FirestoreInternal } from '../lib/types/internal';
 
 const COLLECTION = 'firestore';
 
@@ -1266,6 +1267,7 @@ describe('Firestore', function () {
       // for ease of mocking
       const snapshot = createDeprecationProxy(
         new FirestoreDocumentSnapshot(
+          // @ts-expect-error calling a private constructor directly which expects FirestoreInternal type
           firestore,
           {
             data: {},
