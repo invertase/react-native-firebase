@@ -330,12 +330,6 @@ const config: PackageConfig = {
         'RN Firebase uses the simpler union without the intersection.',
     },
     {
-      name: 'FirestoreDataConverter',
-      reason:
-        'Whitespace-only difference in the interface member formatting. ' +
-        'The types are semantically identical.',
-    },
-    {
       name: 'FirestoreSettings',
       reason:
         'RN Firebase adds `persistence` (boolean) and `serverTimestampBehavior` ' +
