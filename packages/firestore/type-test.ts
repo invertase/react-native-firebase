@@ -104,11 +104,11 @@ const unsubDoc1 = nsDocRef.onSnapshot((snap: FirebaseFirestoreTypes.DocumentSnap
 });
 const unsubDoc2 = nsDocRef.onSnapshot(
   { includeMetadataChanges: true },
-  (snap: FirebaseFirestoreTypes.DocumentSnapshot) => {},
+  (_snap: FirebaseFirestoreTypes.DocumentSnapshot) => {},
 );
 const unsubDoc3 = nsDocRef.onSnapshot({
-  next: (snap: FirebaseFirestoreTypes.DocumentSnapshot) => {},
-  error: (e: Error) => {},
+  next: (_snap: FirebaseFirestoreTypes.DocumentSnapshot) => {},
+  error: (_e: Error) => {},
 });
 unsubDoc1();
 unsubDoc2();
@@ -120,7 +120,7 @@ const unsubQuery1 = nsQuery.onSnapshot((snap: FirebaseFirestoreTypes.QuerySnapsh
 });
 const unsubQuery2 = nsQuery.onSnapshot(
   { includeMetadataChanges: true },
-  { next: snap => {}, error: (e: Error) => {} },
+  { next: _snap => {}, error: (_e: Error) => {} },
 );
 unsubQuery1();
 unsubQuery2();
@@ -136,6 +136,7 @@ const nsQuery2 = nsColl
   .startAfter(2)
   .endAt(10)
   .endBefore(9);
+void nsQuery2;
 
 // ----- Firestore instance: loadBundle, namedQuery, runTransaction -----
 const nsLoadTask = nsFirestore.loadBundle('bundle-data');
@@ -181,13 +182,18 @@ nsBatch.commit().then(() => {});
 
 // ----- Namespaced FieldValue (statics) -----
 const nsFieldPath = new firebase.firestore.FieldPath('user', 'name');
+void nsFieldPath;
 const nsBlob = firebase.firestore.Blob.fromBase64String('dGVzdA==');
+void nsBlob;
 const nsGeoPoint = new firebase.firestore.GeoPoint(0, 0);
+void nsGeoPoint;
 const nsTimestamp = firebase.firestore.Timestamp.now();
+void nsTimestamp;
 const nsDelete = firebase.firestore.FieldValue.delete();
 const nsServerTs = firebase.firestore.FieldValue.serverTimestamp();
 const nsArrayUnion = firebase.firestore.FieldValue.arrayUnion(1, 2);
 const nsArrayRemove = firebase.firestore.FieldValue.arrayRemove(1);
+void nsArrayRemove;
 const nsIncrement = firebase.firestore.FieldValue.increment(1);
 
 nsDocRef.set({
@@ -377,6 +383,7 @@ const modQuery3 = query(
   modColl,
   or(where('status', '==', 'active'), where('status', '==', 'pending')),
 );
+void modQuery3;
 const modQuery4 = query(
   modColl,
   and(where('age', '>', 18), where('status', '==', 'active')),
@@ -387,6 +394,7 @@ const modQuery4 = query(
   endBefore('Y'),
   limitToLast(5),
 );
+void modQuery4;
 
 // ----- getCountFromServer -----
 getCountFromServer(modQuery1).then(
@@ -432,8 +440,8 @@ deleteDoc(modDoc).then(() => {});
 const unsubMod1 = onSnapshot(modDoc, snap => snap.data());
 const unsubMod2 = onSnapshot(modDoc, { includeMetadataChanges: true }, snap => snap.data());
 const unsubMod3 = onSnapshot(modDoc, {
-  next: snap => {},
-  error: (e: Error) => {},
+  next: _snap => {},
+  error: (_e: Error) => {},
 });
 const unsubMod4 = onSnapshot(modQuery1, snap => snap.docs);
 unsubMod1();
@@ -453,7 +461,7 @@ console.log(queryEqual(modQuery1, modQuery2));
 const unsubSync = onSnapshotsInSync(modFirestore1, () => {});
 const unsubSync2 = onSnapshotsInSync(modFirestore1, {
   next: () => {},
-  error: (e: Error) => {},
+  error: (_e: Error) => {},
 });
 unsubSync();
 unsubSync2();
@@ -463,6 +471,7 @@ const modDelete = deleteField();
 const modServerTs = serverTimestamp();
 const modArrayUnion = arrayUnion('a', 'b');
 const modArrayRemove = arrayRemove('a');
+void modArrayRemove;
 const modIncrement = increment(5);
 setDoc(modDoc, {
   name: 'test',
@@ -509,7 +518,7 @@ console.log(v1.toArray());
 console.log(v1.isEqual(v2));
 
 // ----- loadBundle -----
-loadBundle(modFirestore1, 'bundle-data').then((progress: LoadBundleTaskProgress) => {});
+loadBundle(modFirestore1, 'bundle-data').then((_progress: LoadBundleTaskProgress) => {});
 
 // ----- namedQuery -----
 namedQuery(modFirestore1, 'my-query').then((q: Query | null) => {
