@@ -82,7 +82,6 @@ import firestore, {
   vector,
   VectorValue,
 } from '../lib';
-import { FirestoreInternal } from '../lib/types/internal';
 
 const COLLECTION = 'firestore';
 
