@@ -41,10 +41,7 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
-      ml: FirebaseModuleWithStaticsAndApp<
-        FirebaseMLTypes.Module,
-        FirebaseMLTypes.Statics
-      >;
+      ml: FirebaseModuleWithStaticsAndApp<FirebaseMLTypes.Module, FirebaseMLTypes.Statics>;
     }
     interface FirebaseApp {
       ml(): FirebaseMLTypes.Module;
