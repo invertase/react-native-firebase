@@ -129,6 +129,21 @@ export function doc<AppModelType = DocumentData, DbModelType extends DocumentDat
   ) as DocumentReference<AppModelType, DbModelType>;
 }
 
+export function collection(
+  parent: Firestore,
+  path: string,
+  ...pathSegments: string[]
+): CollectionReference<DocumentData, DocumentData>;
+export function collection<AppModelType, DbModelType extends DocumentData>(
+  parent: CollectionReference<AppModelType, DbModelType>,
+  path: string,
+  ...pathSegments: string[]
+): CollectionReference<DocumentData, DocumentData>;
+export function collection<AppModelType, DbModelType extends DocumentData>(
+  parent: DocumentReference<AppModelType, DbModelType>,
+  path: string,
+  ...pathSegments: string[]
+): CollectionReference<DocumentData, DocumentData>;
 export function collection<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,

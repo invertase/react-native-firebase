@@ -253,13 +253,6 @@ const config: PackageConfig = {
   // ---------------------------------------------------------------------------
   differentShape: [
     {
-      name: 'collection',
-      reason:
-        'RN Firebase uses a single overload accepting ' +
-        '`Firestore | DocumentReference | CollectionReference` as the first ' +
-        'parameter, whereas the firebase-js-sdk defines separate overloads for each.',
-    },
-    {
       name: 'deleteAllPersistentCacheIndexes',
       reason:
         'Returns `Promise<void>` in RN Firebase vs `void` in the firebase-js-sdk. ' +
