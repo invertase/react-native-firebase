@@ -38,14 +38,14 @@ import type DocumentSnapshot from './FirestoreDocumentSnapshot';
 import type { FirestoreInternal, FirestoreSyncEventBodyInternal } from './types/internal';
 import type { DocumentSnapshotNativeData } from './FirestoreDocumentSnapshot';
 import type FirestorePath from './FirestorePath';
-import type { CollectionReference, DocumentData, FirestoreDataConverter } from './types/firestore';
+import type { DocumentData, FirestoreDataConverter } from './types/firestore';
 
 let FirestoreCollectionReference:
   | (new (
-    firestore: FirestoreInternal,
-    path: FirestorePath,
-    converter?: FirestoreDataConverter<DocumentData, DocumentData> | null,
-  ) => FirestoreCollectionReferenceClass)
+      firestore: FirestoreInternal,
+      path: FirestorePath,
+      converter?: FirestoreDataConverter<DocumentData, DocumentData> | null,
+    ) => FirestoreCollectionReferenceClass)
   | null = null;
 
 export function provideCollectionReferenceClass(
@@ -60,10 +60,10 @@ export function provideCollectionReferenceClass(
 
 let FirestoreDocumentSnapshotClass:
   | (new (
-    firestore: FirestoreInternal,
-    data: DocumentSnapshotNativeData,
-    converter: FirestoreDataConverter<DocumentData, DocumentData> | null,
-  ) => DocumentSnapshot)
+      firestore: FirestoreInternal,
+      data: DocumentSnapshotNativeData,
+      converter: FirestoreDataConverter<DocumentData, DocumentData> | null,
+    ) => DocumentSnapshot)
   | null = null;
 
 export function provideDocumentSnapshotClass(
