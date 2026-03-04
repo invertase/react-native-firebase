@@ -39,7 +39,6 @@ import type {
   WithFieldValue,
   PartialWithFieldValue,
   WriteBatch,
-  AggregateType,
   AggregateSpec,
   LoadBundleTaskProgress,
   LogLevel,
@@ -53,6 +52,9 @@ import type {
   QueryInternal,
   QueryWithAggregateInternals,
   ReferenceInternal,
+  AppWithFirestoreInternal,
+  FirestoreAggregateQuerySpecInternal,
+  FirestoreAggregateQueryResultInternal,
 } from './types/internal';
 import { PersistentCacheIndexManager } from './FirestorePersistentCacheIndexManager';
 import type { FieldPath } from './modular/FieldPath';
@@ -62,17 +64,6 @@ export { AggregateField, AggregateQuerySnapshot } from './FirestoreAggregate';
 
 export const CACHE_SIZE_UNLIMITED = -1;
 
-type FirestoreWithSyncEvents = FirestoreInternal & {
-  native: {
-    addSnapshotsInSync(listenerId: number): void;
-    removeSnapshotsInSync(listenerId: number): void;
-  };
-  emitter: {
-    addListener(eventName: string, callback: () => void): { remove(): void };
-  };
-  eventNameForApp(eventName: string): string;
-};
-
 export function getFirestore(): Firestore;
 export function getFirestore(app: FirebaseApp): Firestore;
 export function getFirestore(app: FirebaseApp, databaseId: string): Firestore;
@@ -80,8 +71,7 @@ export function getFirestore(
   appOrDatabaseId?: FirebaseApp | string,
   databaseId?: string,
 ): Firestore {
-  const app = (name?: string) =>
-    getApp(name) as unknown as { firestore(databaseId?: string): Firestore };
+  const app = (name?: string) => getApp(name) as unknown as AppWithFirestoreInternal;
 
   if (typeof appOrDatabaseId === 'string') {
     return app().firestore(appOrDatabaseId);
@@ -187,7 +177,7 @@ export function onSnapshotsInSync(
     | { next?: () => void; error?: (error: Error) => void; complete?: () => void },
 ): Unsubscribe {
   const listenerId = snapshotInSyncListenerId++;
-  const syncFirestore = firestore as FirestoreWithSyncEvents;
+  const syncFirestore = firestore as FirestoreInternal;
   syncFirestore.native.addSnapshotsInSync(listenerId);
   const subscription = syncFirestore.emitter.addListener(
     syncFirestore.eventNameForApp(`firestore_snapshots_in_sync_event:${listenerId}`),
@@ -374,11 +364,7 @@ export function getAggregateFromServer<
     );
   }
 
-  const aggregateQueries: Array<{
-    aggregateType: AggregateType;
-    field: string | null;
-    key: string;
-  }> = [];
+  const aggregateQueries: FirestoreAggregateQuerySpecInternal[] = [];
 
   for (const key in aggregateSpec) {
     if (!Object.prototype.hasOwnProperty.call(aggregateSpec, key)) {
@@ -419,7 +405,7 @@ export function getAggregateFromServer<
       aggregateQueries,
     )
     .then(
-      (data: any) =>
+      (data: FirestoreAggregateQueryResultInternal) =>
         new AggregateQuerySnapshot(
           query as Query<AppModelType, DbModelType>,
           data,

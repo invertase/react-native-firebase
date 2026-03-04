@@ -42,8 +42,16 @@ import type { QueryConstraint } from '../modular/query';
 import type { _Filter } from '../FirestoreFilter';
 import Blob from 'lib/FirestoreBlob';
 
+/** Optional final argument passed by modular API wrappers (MODULAR_DEPRECATION_ARG). */
+export type FirestoreModularDeprecationArg = string;
+
 /** Query type passed to native ('collection' or 'collectionGroup'). */
 export type FirestoreQueryTypeInternal = 'collection' | 'collectionGroup';
+
+/** App instance with firestore() method (e.g. from getApp() when used for getFirestore()). */
+export interface AppWithFirestoreInternal {
+  firestore(databaseId?: string): Firestore;
+}
 
 /** Single filter spec passed to native (fieldPath serialized as string[] from QueryModifiers). */
 export interface FirestoreFilterSpecInternal {
@@ -72,6 +80,19 @@ export interface FirestoreQueryOptionsInternal {
 
 /** Cursor field values (startAt, startAfter, endAt, endBefore) – serialized array passed to native. */
 export type FirestoreCursorFieldsInternal = unknown[];
+
+/** Single aggregate query spec passed to native (aggregateQuery). */
+export interface FirestoreAggregateQuerySpecInternal {
+  aggregateType: AggregateType;
+  field: string | null;
+  key: string;
+}
+
+/** Aggregate query result from native (passed to AggregateQuerySnapshot constructor). */
+export interface FirestoreAggregateQueryResultInternal {
+  count?: number;
+  [key: string]: unknown;
+}
 
 /** Options for snapshot listeners (includeMetadataChanges). */
 export interface FirestoreSnapshotListenOptionsInternal {
@@ -200,11 +221,7 @@ export interface RNFBFirestoreModule {
     filters: FirestoreFilterSpecInternal[],
     orders: FirestoreOrderSpecInternal[],
     options: FirestoreQueryOptionsInternal,
-    aggregateQueries: Array<{
-      aggregateType: AggregateType;
-      field: string | null;
-      key: string;
-    }>,
+    aggregateQueries: FirestoreAggregateQuerySpecInternal[],
   ): Promise<Record<string, unknown>>;
 
   // --- Document module (RNFBFirestoreDocumentModule) ---
@@ -239,7 +256,7 @@ declare module '@react-native-firebase/app/dist/module/internal/NativeModules' {
 
 // Helper type for wrappers that forward MODULAR_DEPRECATION_ARG via .call(...).
 export type WithModularDeprecationArg<F> = F extends (...args: infer P) => infer R
-  ? (...args: [...P, unknown]) => R
+  ? (...args: [...P, FirestoreModularDeprecationArg?]) => R
   : never;
 
 export interface ParentReferenceInternal<
@@ -248,11 +265,11 @@ export interface ParentReferenceInternal<
 > {
   doc(
     path?: string,
-    ...pathSegmentsOrDeprecationArg: unknown[]
+    deprecationArg?: FirestoreModularDeprecationArg,
   ): DocumentReference<AppModelType, DbModelType>;
   collection(
     path: string,
-    ...pathSegmentsOrDeprecationArg: unknown[]
+    deprecationArg?: FirestoreModularDeprecationArg,
   ): CollectionReference<AppModelType, DbModelType>;
 }
 
@@ -264,7 +281,7 @@ export interface ReferenceInternal<
     other:
       | DocumentReference<AppModelType, DbModelType>
       | CollectionReference<AppModelType, DbModelType>,
-    ...deprecationArg: unknown[]
+    deprecationArg?: FirestoreModularDeprecationArg,
   ): boolean;
 }
 
@@ -310,7 +327,7 @@ export interface DocumentReferenceDeleteInternal {
 
 /** Reference or query viewed as having isEqual(). */
 export interface ReferenceIsEqualInternal {
-  isEqual(...args: unknown[]): boolean;
+  isEqual(other: unknown, deprecationArg?: FirestoreModularDeprecationArg): boolean;
 }
 
 /** DocumentReference or Query viewed as having onSnapshot(). */
@@ -356,15 +373,18 @@ export interface DocumentReferenceInternal<
   set(
     data: WithFieldValue<AppModelType> | PartialWithFieldValue<AppModelType>,
     options?: SetOptions,
-    ...deprecationArg: unknown[]
+    deprecationArg?: FirestoreModularDeprecationArg,
   ): Promise<void>;
   update(
     fieldOrUpdateData?: unknown,
     value?: unknown,
-    ...moreFieldsAndValuesAndDeprecationArg: unknown[]
+    ...moreFieldsAndValuesAndDeprecationArg: (unknown | FirestoreModularDeprecationArg)[]
   ): Promise<void>;
-  delete(...deprecationArg: unknown[]): Promise<void>;
-  get(...deprecationArg: unknown[]): Promise<unknown>;
+  delete(deprecationArg?: FirestoreModularDeprecationArg): Promise<void>;
+  get(
+    getOptions?: { source?: string },
+    deprecationArg?: FirestoreModularDeprecationArg,
+  ): Promise<unknown>;
 }
 
 export interface CollectionReferenceInternal<
@@ -374,7 +394,7 @@ export interface CollectionReferenceInternal<
   extends ReferenceInternal<AppModelType, DbModelType>, ParentReferenceInternal {
   add(
     data: WithFieldValue<AppModelType>,
-    ...deprecationArg: unknown[]
+    deprecationArg?: FirestoreModularDeprecationArg,
   ): Promise<DocumentReference<AppModelType, DbModelType>>;
 }
 
@@ -382,9 +402,15 @@ export interface QueryInternal<
   AppModelType = DocumentData,
   DbModelType extends DocumentData = DocumentData,
 > extends ReferenceInternal<AppModelType, DbModelType> {
-  get(...deprecationArg: unknown[]): Promise<QuerySnapshot<AppModelType, DbModelType>>;
-  count(...deprecationArg: unknown[]): { get(): Promise<unknown> };
-  where(...queryConstraintOrDeprecationArg: unknown[]): Query<AppModelType, DbModelType>;
+  get(
+    getOptions?: { source?: string },
+    deprecationArg?: FirestoreModularDeprecationArg,
+  ): Promise<QuerySnapshot<AppModelType, DbModelType>>;
+  count(deprecationArg?: FirestoreModularDeprecationArg): { get(): Promise<unknown> };
+  where(
+    queryConstraintOrFilter: unknown,
+    deprecationArg?: FirestoreModularDeprecationArg,
+  ): Query<AppModelType, DbModelType>;
   withConstraints(...queryConstraints: QueryConstraint[]): Query<AppModelType, DbModelType>;
 }
 
@@ -397,31 +423,41 @@ export interface FirestoreInternal extends ParentReferenceInternal, Firestore {
   eventNameForApp(...args: Array<string | number>): string;
   /** Module settings (e.g. ignoreUndefinedProperties for serialization). */
   readonly _settings: FirestoreSettingsStateInternal;
-  collectionGroup(collectionId: string, ...deprecationArg: unknown[]): Query;
-  enableNetwork(...deprecationArg: unknown[]): Promise<void>;
-  disableNetwork(...deprecationArg: unknown[]): Promise<void>;
-  clearPersistence(...deprecationArg: unknown[]): Promise<void>;
-  waitForPendingWrites(...deprecationArg: unknown[]): Promise<void>;
-  terminate(...deprecationArg: unknown[]): Promise<void>;
-  settings(settings: FirestoreSettings, ...deprecationArg: unknown[]): Promise<void>;
-  useEmulator(host: string, port: number, options?: unknown, ...deprecationArg: unknown[]): void;
+  collectionGroup(collectionId: string, deprecationArg?: FirestoreModularDeprecationArg): Query;
+  enableNetwork(deprecationArg?: FirestoreModularDeprecationArg): Promise<void>;
+  disableNetwork(deprecationArg?: FirestoreModularDeprecationArg): Promise<void>;
+  clearPersistence(deprecationArg?: FirestoreModularDeprecationArg): Promise<void>;
+  waitForPendingWrites(deprecationArg?: FirestoreModularDeprecationArg): Promise<void>;
+  terminate(deprecationArg?: FirestoreModularDeprecationArg): Promise<void>;
+  settings(
+    settings: FirestoreSettings,
+    deprecationArg?: FirestoreModularDeprecationArg,
+  ): Promise<void>;
+  useEmulator(
+    host: string,
+    port: number,
+    options?: unknown,
+    deprecationArg?: FirestoreModularDeprecationArg,
+  ): void;
   runTransaction(
     updateFunction: (transaction: Transaction) => Promise<unknown>,
-    ...deprecationArg: unknown[]
+    deprecationArg?: FirestoreModularDeprecationArg,
   ): Promise<unknown>;
   loadBundle(
     bundleData: ReadableStream<Uint8Array> | ArrayBuffer | string,
-    ...deprecationArg: unknown[]
+    deprecationArg?: FirestoreModularDeprecationArg,
   ): LoadBundleTask;
-  namedQuery(name: string, ...deprecationArg: unknown[]): Query | null;
-  batch(...deprecationArg: unknown[]): WriteBatch;
-  persistentCacheIndexManager(...deprecationArg: unknown[]): PersistentCacheIndexManager | null;
+  namedQuery(name: string, deprecationArg?: FirestoreModularDeprecationArg): Query | null;
+  batch(deprecationArg?: FirestoreModularDeprecationArg): WriteBatch;
+  persistentCacheIndexManager(
+    deprecationArg?: FirestoreModularDeprecationArg,
+  ): PersistentCacheIndexManager | null;
 }
 
 export interface PersistentCacheIndexManagerInternal extends PersistentCacheIndexManager {
-  enableIndexAutoCreation(...deprecationArg: unknown[]): Promise<void>;
-  disableIndexAutoCreation(...deprecationArg: unknown[]): Promise<void>;
-  deleteAllIndexes(...deprecationArg: unknown[]): Promise<void>;
+  enableIndexAutoCreation(deprecationArg?: FirestoreModularDeprecationArg): Promise<void>;
+  disableIndexAutoCreation(deprecationArg?: FirestoreModularDeprecationArg): Promise<void>;
+  deleteAllIndexes(deprecationArg?: FirestoreModularDeprecationArg): Promise<void>;
 }
 
 export type FirestoreBlobInternal = Blob & { _binaryString: string };
