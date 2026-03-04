@@ -19,6 +19,8 @@ import { getApp } from '@react-native-firebase/app';
 import type { FirebaseApp } from '@react-native-firebase/app';
 import type { ML } from './types/ml';
 
+export type { Statics } from './types/ml';
+
 /**
  * Returns the existing default {@link ML} instance that is associated with the
  * default {@link @firebase/app#FirebaseApp}. If no instance exists, initializes a new
@@ -29,7 +31,7 @@ import type { ML } from './types/ml';
  */
 export function getML(app?: FirebaseApp): ML {
   if (app) {
-    return getApp(app.name).ml();
+    return getApp(app.name).ml() as ML;
   }
-  return getApp().ml();
+  return getApp().ml() as ML;
 }
