@@ -15,9 +15,9 @@
  *
  */
 
-// Export types from types/ml
-export type { ML, Statics, FirebaseApp } from './types/ml';
-export type { FirebaseMLTypes } from './types/ml';
+// Export types from types/ml (public/modular API; Statics re-exported via modular)
+export type { ML, FirebaseApp } from './types/ml';
+export type { FirebaseMLTypes } from './types/namespaced';
 
 // Export modular API functions
 export * from './modular';

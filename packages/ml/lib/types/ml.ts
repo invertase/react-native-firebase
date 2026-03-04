@@ -17,22 +17,19 @@
 
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
-// ============ Module Interface ============
+// ============ Module Interface (public/modular API) ============
 
 /**
- * ML module instance - returned from firebase.ml() or firebase.app().ml()
+ * ML module instance - returned from firebase.ml() or getML().
  * Note: Firebase ML Kit has no JavaScript SDK; types match RNFB native API.
  */
-export interface ML extends ReactNativeFirebase.FirebaseModule {
+export interface ML {
   /** The FirebaseApp this module is associated with */
   app: ReactNativeFirebase.FirebaseApp;
 }
 
 // ============ Statics Interface ============
 
-/**
- * Static properties available on firebase.ml
- */
 export interface Statics {
   SDK_VERSION: string;
 }
@@ -40,36 +37,5 @@ export interface Statics {
 /**
  * FirebaseApp type with ml() method.
  * @deprecated Import FirebaseApp from '@react-native-firebase/app' instead.
- * The ml() method is added via module augmentation.
  */
 export type FirebaseApp = ReactNativeFirebase.FirebaseApp;
-
-// ============ Module Augmentation ============
-
-/* eslint-disable @typescript-eslint/no-namespace */
-declare module '@react-native-firebase/app' {
-  namespace ReactNativeFirebase {
-    interface Module {
-      ml: FirebaseModuleWithStaticsAndApp<ML, Statics>;
-    }
-    interface FirebaseApp {
-      ml(): ML;
-    }
-  }
-}
-/* eslint-enable @typescript-eslint/no-namespace */
-
-// ============ Backwards Compatibility Namespace ============
-
-type _Statics = Statics;
-
-/**
- * @deprecated Use the exported types directly instead.
- * FirebaseMLTypes namespace is kept for backwards compatibility.
- */
-/* eslint-disable @typescript-eslint/no-namespace */
-export namespace FirebaseMLTypes {
-  export type Module = ML;
-  export type Statics = _Statics;
-}
-/* eslint-enable @typescript-eslint/no-namespace */
