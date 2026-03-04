@@ -42,10 +42,10 @@ import type { CollectionReference, DocumentData, FirestoreDataConverter } from '
 
 let FirestoreCollectionReference:
   | (new (
-      firestore: FirestoreInternal,
-      path: FirestorePath,
-      converter?: FirestoreDataConverter<DocumentData, DocumentData> | null,
-    ) => FirestoreCollectionReferenceClass)
+    firestore: FirestoreInternal,
+    path: FirestorePath,
+    converter?: FirestoreDataConverter<DocumentData, DocumentData> | null,
+  ) => FirestoreCollectionReferenceClass)
   | null = null;
 
 export function provideCollectionReferenceClass(
@@ -60,10 +60,10 @@ export function provideCollectionReferenceClass(
 
 let FirestoreDocumentSnapshotClass:
   | (new (
-      firestore: FirestoreInternal,
-      data: DocumentSnapshotNativeData,
-      converter: FirestoreDataConverter<DocumentData, DocumentData> | null,
-    ) => DocumentSnapshot)
+    firestore: FirestoreInternal,
+    data: DocumentSnapshotNativeData,
+    converter: FirestoreDataConverter<DocumentData, DocumentData> | null,
+  ) => DocumentSnapshot)
   | null = null;
 
 export function provideDocumentSnapshotClass(
@@ -174,12 +174,9 @@ export default class DocumentReference {
 
   isEqual(other: DocumentReference): boolean {
     if (!(other instanceof DocumentReference)) {
-      const otherCtor = (other as unknown as CollectionReference)?.constructor?.name;
-      if (otherCtor === 'CollectionReference') {
-        throw new Error(
-          "firebase.firestore().doc().isEqual(*) 'other' expected a DocumentReference instance.",
-        );
-      }
+      throw new Error(
+        "firebase.firestore().doc().isEqual(*) 'other' expected a DocumentReference instance.",
+      );
     }
 
     return !(
