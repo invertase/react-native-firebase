@@ -89,7 +89,7 @@ nsQuery.get().then((snap: FirebaseFirestoreTypes.QuerySnapshot) => {
 });
 
 // ----- DocumentSnapshot -----
-nsDocRef.get().then(snap => {
+nsDocRef.get().then((snap: FirebaseFirestoreTypes.DocumentSnapshot) => {
   if (snap.exists()) {
     const d = snap.data();
     console.log(d);
@@ -120,7 +120,7 @@ const unsubQuery1 = nsQuery.onSnapshot((snap: FirebaseFirestoreTypes.QuerySnapsh
 });
 const unsubQuery2 = nsQuery.onSnapshot(
   { includeMetadataChanges: true },
-  { next: _snap => {}, error: (_e: Error) => {} },
+  { next: (_snap: FirebaseFirestoreTypes.QuerySnapshot) => {}, error: (_e: Error) => {} },
 );
 unsubQuery1();
 unsubQuery2();
@@ -220,7 +220,7 @@ const nsConverter: FirebaseFirestoreTypes.FirestoreDataConverter<User> = {
 const nsCollWithConv = nsFirestore.collection('users').withConverter(nsConverter);
 const nsDocWithConv = nsCollWithConv.doc('alice');
 nsDocWithConv.set({ name: 'Alice', age: 30 }).then(() => {});
-nsDocWithConv.get().then(snap => {
+nsDocWithConv.get().then((snap: FirebaseFirestoreTypes.DocumentSnapshot<User>) => {
   const u = snap.data();
   if (u) console.log(u.name, u.age);
 });
