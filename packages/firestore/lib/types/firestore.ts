@@ -96,7 +96,55 @@ export type AggregateSpecData<T extends AggregateSpec> = {
   [P in keyof T]: T[P] extends AggregateField<infer U> ? U : never;
 };
 
-export type EmulatorMockTokenOptions = { user_id: string } | { sub: string };
+/**
+ * Provider identifier for Firebase Auth (from @firebase/util).
+ * Must match the union used by EmulatorMockTokenOptions / FirebaseIdToken.
+ */
+export type FirebaseSignInProvider =
+  | 'custom'
+  | 'email'
+  | 'password'
+  | 'phone'
+  | 'anonymous'
+  | 'google.com'
+  | 'facebook.com'
+  | 'github.com'
+  | 'twitter.com'
+  | 'microsoft.com'
+  | 'apple.com';
+
+/**
+ * Shape of a decoded Firebase ID token (JWT) used for emulator mock auth.
+ * @see https://firebase.google.com/docs/reference/js/auth#firebaseidtoken
+ */
+export interface FirebaseIdToken {
+  iss: string;
+  aud: string;
+  sub: string;
+  iat: number;
+  exp: number;
+  user_id: string;
+  auth_time: number;
+  provider_id?: 'anonymous';
+  email?: string;
+  email_verified?: boolean;
+  phone_number?: string;
+  name?: string;
+  picture?: string;
+  firebase: {
+    sign_in_provider: FirebaseSignInProvider;
+    identities?: { [provider in FirebaseSignInProvider]?: string[] };
+  };
+  [claim: string]: unknown;
+  uid?: never;
+}
+
+/**
+ * Options for mock auth token when using the Firestore emulator.
+ * Must include either `user_id` or `sub`; may include other partial ID token claims.
+ */
+export type EmulatorMockTokenOptions = ({ user_id: string } | { sub: string }) &
+  Partial<FirebaseIdToken>;
 
 export type TaskState = 'Error' | 'Running' | 'Success';
 

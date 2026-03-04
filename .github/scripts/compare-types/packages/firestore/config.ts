@@ -286,13 +286,6 @@ const config: PackageConfig = {
         'transaction implementation.',
     },
     {
-      name: 'EmulatorMockTokenOptions',
-      reason:
-        'The firebase-js-sdk intersects `{ user_id: string } | { sub: string }` ' +
-        'with `Partial<FirebaseIdToken>`, allowing additional ID token claims. ' +
-        'RN Firebase uses the simpler union without the intersection.',
-    },
-    {
       name: 'FirestoreSettings',
       reason:
         'RN Firebase adds `persistence` (boolean) and `serverTimestampBehavior` ' +
