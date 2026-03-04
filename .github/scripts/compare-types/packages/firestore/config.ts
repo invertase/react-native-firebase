@@ -312,7 +312,7 @@ const config: PackageConfig = {
       reason:
         'RN Firebase exposes internal `_onlineComponentProvider` and ' +
         '`_offlineComponentProvider` members that are not part of the ' +
-        'firebase-js-sdk public type. These are structural artefacts of the ' +
+        'firebase-js-sdk public type. These are structural artifacts of the ' +
         'RN implementation.',
     },
     {
