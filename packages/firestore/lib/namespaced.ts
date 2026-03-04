@@ -77,6 +77,9 @@ type FirestoreModuleSettingsState = {
   persistence: boolean;
 };
 
+/** Sync event payload from emitter when fanning out collection/document/snapshots-in-sync events. */
+type FirestoreSyncEventWithListenerId = { listenerId: string | number };
+
 class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
   type = 'firestore' as const;
   _referencePath: FirestorePath;
@@ -100,11 +103,13 @@ class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
     }
 
     this._referencePath = new FirestorePath();
-    this._transactionHandler = new FirestoreTransactionHandler(this as unknown as FirestoreInternal);
+    this._transactionHandler = new FirestoreTransactionHandler(
+      this as unknown as FirestoreInternal,
+    );
 
     // Fan out native events
     this.emitter.addListener(this.eventNameForApp('firestore_collection_sync_event'), event => {
-      const syncEvent = event as { listenerId: string | number };
+      const syncEvent = event as FirestoreSyncEventWithListenerId;
       this.emitter.emit(
         this.eventNameForApp(`firestore_collection_sync_event:${syncEvent.listenerId}`),
         event,
@@ -112,7 +117,7 @@ class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
     });
 
     this.emitter.addListener(this.eventNameForApp('firestore_document_sync_event'), event => {
-      const syncEvent = event as { listenerId: string | number };
+      const syncEvent = event as FirestoreSyncEventWithListenerId;
       this.emitter.emit(
         this.eventNameForApp(`firestore_document_sync_event:${syncEvent.listenerId}`),
         event,
@@ -120,7 +125,7 @@ class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
     });
 
     this.emitter.addListener(this.eventNameForApp('firestore_snapshots_in_sync_event'), event => {
-      const syncEvent = event as { listenerId: string | number };
+      const syncEvent = event as FirestoreSyncEventWithListenerId;
       this.emitter.emit(
         this.eventNameForApp(`firestore_snapshots_in_sync_event:${syncEvent.listenerId}`),
         event,
@@ -200,7 +205,7 @@ class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
     await this.native.terminate();
   }
 
-  useEmulator(host: string, port: number): [string, number] {
+  useEmulator(host: string, port: number): void {
     if (!host || !isString(host) || !port || !isNumber(port)) {
       throw new Error('firebase.firestore().useEmulator() takes a non-empty host and port');
     }
@@ -221,7 +226,8 @@ class FirebaseFirestoreModule extends FirebaseModule<'RNFBFirestoreModule'> {
     }
 
     this.native.useEmulator(mappedHost, port);
-    return [mappedHost, port]; // undocumented return, just used to unit test android host remapping
+    // @ts-ignore - undocumented return, just used to unit test android host remapping
+    return [mappedHost, port];
   }
 
   collection(collectionPath: string): CollectionReference {
