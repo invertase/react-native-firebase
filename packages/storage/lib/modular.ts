@@ -80,13 +80,22 @@ export function connectStorageEmulator(
 }
 
 /**
- * Returns a StorageReference for the given location.
- * When called with (storage, path?) returns a reference for the bucket path or full URL.
- * When called with (parentRef, path) returns a reference to the child path (matches firebase-js-sdk).
- * @param storageOrRef - FirebaseStorage instance or StorageReference (parent).
- * @param path - Optional path relative to the bucket, or a full gs:// / https:// URL, or (when first arg is StorageReference) a relative child path.
+ * Returns a StorageReference for the given URL or path in the default bucket.
+ * @param storage - FirebaseStorage instance.
+ * @param url - Optional gs:// or https:// URL, or path. If empty, returns root reference.
  * @returns {StorageReference}
  */
+export function ref(storage: FirebaseStorage, url?: string): StorageReference;
+/**
+ * Returns a StorageReference for the given path, or the same reference if path is omitted.
+ * @param storageOrRef - FirebaseStorage or StorageReference (parent).
+ * @param path - Optional path. If empty, returns root reference (FirebaseStorage) or same reference (StorageReference).
+ * @returns {StorageReference}
+ */
+export function ref(
+  storageOrRef: FirebaseStorage | StorageReference,
+  path?: string,
+): StorageReference;
 export function ref(
   storageOrRef: FirebaseStorage | StorageReference,
   path?: string,

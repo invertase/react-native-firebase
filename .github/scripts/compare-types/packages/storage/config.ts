@@ -107,14 +107,6 @@ const config: PackageConfig = {
   // ---------------------------------------------------------------------------
   differentShape: [
     {
-      name: 'ref',
-      reason:
-        'RN Firebase declares a single overload ref(storageOrRef, path?) where the first ' +
-        'parameter is FirebaseStorage | StorageReference, matching the firebase-js-sdk ' +
-        'behaviour (ref(storage, path), ref(storageRef, path) for child, ref(storage, url) for full URL). ' +
-        'The SDK declares separate overloads; the runtime behaviour is the same.',
-    },
-    {
       name: 'FirebaseStorage',
       reason:
         'RN Firebase adds a `maxDownloadRetryTime` property (android & iOS only) ' +
