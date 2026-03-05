@@ -1,9 +1,7 @@
-import { ReactNativeFirebase } from '@react-native-firebase/app';
-import { FirebaseDatabaseTypes } from '..';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { Database, Reference } from '../types/database';
 
-import FirebaseApp = ReactNativeFirebase.FirebaseApp;
-import Database = FirebaseDatabaseTypes.Module;
-import DatabaseReference = FirebaseDatabaseTypes.Reference;
+type FirebaseApp = ReactNativeFirebase.FirebaseApp;
 
 /**
  * Returns the instance of the Realtime Database SDK that is associated with
@@ -101,7 +99,7 @@ export declare function goOnline(db: Database): Promise<void>;
  * @param db The Database instance.
  * @param path Optional path representing the location the returned `Reference` will point. If not provided, the returned `Reference` will point to the root of the Database.
  */
-export declare function ref(db: Database, path?: string): DatabaseReference;
+export declare function ref(db: Database, path?: string): Reference;
 
 /**
  * Generates a Reference from a database URL.
@@ -112,7 +110,7 @@ export declare function ref(db: Database, path?: string): DatabaseReference;
  * @param url The Firebase URL at which the returned Reference will point.
  * @returns {DatabaseReference}
  */
-export declare function refFromURL(db: Database, url: string): DatabaseReference;
+export declare function refFromURL(db: Database, url: string): Reference;
 
 /**
  * Sets whether persistence is enabled for all database calls for the current app
@@ -210,7 +208,7 @@ export function serverTimestamp(): object;
 /**
  * Returns the current Firebase Database server time as a JavaScript Date object.
  */
-export function getServerTime(db: Database): Promise<number>;
+export function getServerTime(db: Database): Date;
 /**
  * Returns a placeholder value that can be used to atomically increment the
  * current database value by the provided delta.
@@ -242,5 +240,6 @@ export const ServerValue: {
  */
 export declare function enableLogging(enabled: boolean, persistent?: boolean): any;
 
+export type { Statics } from '../types/database';
 export * from './query';
 export * from './transaction';

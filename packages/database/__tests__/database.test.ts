@@ -357,6 +357,7 @@ describe('Database', function () {
       const db = getDatabase();
       databaseV9Deprecation(
         () => connectDatabaseEmulator(db, 'localhost', 9000),
+        // @ts-expect-error Combines modular and namespace API
         () => db.useEmulator('localhost', 9000),
         'useEmulator',
       );
@@ -366,6 +367,7 @@ describe('Database', function () {
       const db = getDatabase();
       databaseV9Deprecation(
         () => goOffline(db),
+        // @ts-expect-error Combines modular and namespace API
         () => db.goOffline(),
         'goOffline',
       );
@@ -375,6 +377,7 @@ describe('Database', function () {
       const db = getDatabase();
       databaseV9Deprecation(
         () => goOnline(db),
+        // @ts-expect-error Combines modular and namespace API
         () => db.goOnline(),
         'goOnline',
       );
@@ -384,6 +387,7 @@ describe('Database', function () {
       const db = getDatabase();
       databaseV9Deprecation(
         () => ref(db, 'test'),
+        // @ts-expect-error Combines modular and namespace API
         () => db.ref('test'),
         'ref',
       );
@@ -395,6 +399,7 @@ describe('Database', function () {
       (db as any)._customUrlOrRegion = 'https://test.firebaseio.com';
       databaseV9Deprecation(
         () => refFromURL(db, 'https://test.firebaseio.com'),
+        // @ts-expect-error Combines modular and namespace API
         () => db.refFromURL('https://test.firebaseio.com'),
         'refFromURL',
       );
@@ -404,6 +409,7 @@ describe('Database', function () {
       const db = getDatabase();
       databaseV9Deprecation(
         () => setPersistenceEnabled(db, true),
+        // @ts-expect-error Combines modular and namespace API
         () => db.setPersistenceEnabled(true),
         'setPersistenceEnabled',
       );
@@ -413,6 +419,7 @@ describe('Database', function () {
       const db = getDatabase();
       databaseV9Deprecation(
         () => setLoggingEnabled(db, true),
+        // @ts-expect-error Combines modular and namespace API
         () => db.setLoggingEnabled(true),
         'setLoggingEnabled',
       );
@@ -422,6 +429,7 @@ describe('Database', function () {
       const db = getDatabase();
       databaseV9Deprecation(
         () => setPersistenceCacheSizeBytes(db, 10000000),
+        // @ts-expect-error Combines modular and namespace API
         () => db.setPersistenceCacheSizeBytes(10000000),
         'setPersistenceCacheSizeBytes',
       );
@@ -431,6 +439,7 @@ describe('Database', function () {
       const db = getDatabase();
       databaseV9Deprecation(
         () => getServerTime(db),
+        // @ts-expect-error Combines modular and namespace API
         () => db.getServerTime(),
         'getServerTime',
       );
