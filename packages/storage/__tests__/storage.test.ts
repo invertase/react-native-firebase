@@ -21,7 +21,6 @@ import storage, {
   setMaxUploadRetryTime,
   putFile,
   writeToFile,
-  child,
   setMaxDownloadRetryTime,
   StringFormat,
   TaskEvent,
@@ -179,9 +178,6 @@ describe('Storage', function () {
       expect(toString).toBeDefined();
     });
 
-    it('`child` function is properly exposed to end user', function () {
-      expect(child).toBeDefined();
-    });
 
     it('`setMaxDownloadRetryTime` function is properly exposed to end user', function () {
       expect(setMaxDownloadRetryTime).toBeDefined();
@@ -425,11 +421,11 @@ describe('Storage', function () {
         expect(storageRef.toString()).toContain('gs://');
       });
 
-      it('child()', function () {
+      it('ref() with child path', function () {
         const storage = getStorage();
         const storageRef = ref(storage, 'foo');
         storageRefV9Deprecation(
-          () => child(storageRef, 'bar'),
+          () => ref(storageRef, 'bar'),
           // @ts-expect-error Combines modular and namespace API
           () => storageRef.child('bar'),
           'child',

@@ -23,7 +23,6 @@ import storage, {
   setMaxUploadRetryTime,
   putFile,
   writeToFile,
-  child,
   setMaxDownloadRetryTime,
   StringFormat,
   TaskEvent,
@@ -276,7 +275,7 @@ modularWriteToFile.then((snapshot: TaskSnapshot) => {
 
 console.log(modularRef1.toString());
 
-const modularChildRef = child(modularRef1, 'child');
+const modularChildRef = ref(modularRef1, 'child');
 console.log(modularChildRef.fullPath);
 
 setMaxDownloadRetryTime(modularStorage1, 25000).then(() => {

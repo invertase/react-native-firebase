@@ -80,13 +80,30 @@ export function connectStorageEmulator(
 }
 
 /**
- * Modify this Storage instance to communicate with the Firebase Storage emulator.
- * @param storage - Storage instance.
- * @param path An optional string pointing to a location on the storage bucket, or a full `gs://` or `https://` URL. If no path
- * is provided, the returned reference will be the bucket root path. Optional.
+ * Returns a StorageReference for the given location.
+ * When called with (storage, path?) returns a reference for the bucket path or full URL.
+ * When called with (parentRef, path) returns a reference to the child path (matches firebase-js-sdk).
+ * @param storageOrRef - FirebaseStorage instance or StorageReference (parent).
+ * @param path - Optional path relative to the bucket, or a full gs:// / https:// URL, or (when first arg is StorageReference) a relative child path.
  * @returns {StorageReference}
  */
-export function ref(storage: FirebaseStorage, path?: string): StorageReference {
+export function ref(
+  storageOrRef: FirebaseStorage | StorageReference,
+  path?: string,
+): StorageReference {
+  // ref(parentRef, path) → child reference; ref(parentRef) → same reference (firebase-js-sdk overload)
+  if (typeof (storageOrRef as StorageReference).fullPath === 'string') {
+    if (path === undefined) {
+      return storageOrRef as StorageReference;
+    }
+    return (
+      (storageOrRef as StorageReferenceInternal).child as WithModularDeprecationArg<
+        StorageReferenceInternal['child']
+      >
+    ).call(storageOrRef, path, MODULAR_DEPRECATION_ARG);
+  }
+
+  const storage = storageOrRef as FirebaseStorage;
   if (path != null && (path.startsWith('gs://') || path.startsWith('https://'))) {
     return (
       (storage as StorageInternal).refFromURL as WithModularDeprecationArg<
@@ -349,20 +366,6 @@ export function writeToFile(storageRef: StorageReference, filePath: string): Tas
       StorageReferenceInternal['writeToFile']
     >
   ).call(storageRef, filePath, MODULAR_DEPRECATION_ARG);
-}
-
-/**
- * Returns a reference to a relative path from this reference.
- * @param storageRef - Storage Reference instance.
- * @param path - The relative path from this reference. Leading, trailing, and consecutive slashes are removed.
- * @returns {String}
- */
-export function child(storageRef: StorageReference, path: string): StorageReference {
-  return (
-    (storageRef as StorageReferenceInternal).child as WithModularDeprecationArg<
-      StorageReferenceInternal['child']
-    >
-  ).call(storageRef, path, MODULAR_DEPRECATION_ARG);
 }
 
 /**

@@ -64,13 +64,6 @@ const config: PackageConfig = {
         'No equivalent exists in the firebase-js-sdk web API.',
     },
     {
-      name: 'child',
-      reason:
-        'RN Firebase exposes `child()` as a standalone modular function for navigating ' +
-        'to a relative path. The firebase-js-sdk uses the overloaded `ref()` function ' +
-        'for the same purpose.',
-    },
-    {
       name: 'TaskSnapshot',
       reason:
         'RN Firebase-specific interface extending `UploadTaskSnapshot` with an optional ' +
@@ -113,6 +106,14 @@ const config: PackageConfig = {
   // Different shape
   // ---------------------------------------------------------------------------
   differentShape: [
+    {
+      name: 'ref',
+      reason:
+        'RN Firebase declares a single overload ref(storageOrRef, path?) where the first ' +
+        'parameter is FirebaseStorage | StorageReference, matching the firebase-js-sdk ' +
+        'behaviour (ref(storage, path), ref(storageRef, path) for child, ref(storage, url) for full URL). ' +
+        'The SDK declares separate overloads; the runtime behaviour is the same.',
+    },
     {
       name: 'FirebaseStorage',
       reason:

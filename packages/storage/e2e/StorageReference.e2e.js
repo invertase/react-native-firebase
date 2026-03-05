@@ -818,10 +818,10 @@ describe('storage() -> StorageReference', function () {
 
     describe('child()', function () {
       it('returns a reference to a child path', function () {
-        const { getStorage, ref, child } = storageModular;
+        const { getStorage, ref } = storageModular;
         const storageReference = ref(getStorage(), '/foo');
 
-        const childRef = child(storageReference, 'someFile.json');
+        const childRef = ref(storageReference, 'someFile.json');
         childRef.fullPath.should.equal('foo/someFile.json');
       });
     });
