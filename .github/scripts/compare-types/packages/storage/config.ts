@@ -64,12 +64,6 @@ const config: PackageConfig = {
         'No equivalent exists in the firebase-js-sdk web API.',
     },
     {
-      name: 'toString',
-      reason:
-        'RN Firebase exposes `toString()` as a standalone modular function. In the ' +
-        'firebase-js-sdk it is a method on the `StorageReference` interface.',
-    },
-    {
       name: 'child',
       reason:
         'RN Firebase exposes `child()` as a standalone modular function for navigating ' +

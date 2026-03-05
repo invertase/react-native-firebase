@@ -352,18 +352,6 @@ export function writeToFile(storageRef: StorageReference, filePath: string): Tas
 }
 
 /**
- * Returns a gs:// URL for this object in the form `gs://<bucket>/<path>/<to>/<object>`.
- * @param storageRef - Storage Reference instance.
- * @returns {String}
- */
-export function toString(storageRef: StorageReference): string {
-  return (storageRef.toString as WithModularDeprecationArg<typeof storageRef.toString>).call(
-    storageRef,
-    MODULAR_DEPRECATION_ARG,
-  );
-}
-
-/**
  * Returns a reference to a relative path from this reference.
  * @param storageRef - Storage Reference instance.
  * @param path - The relative path from this reference. Leading, trailing, and consecutive slashes are removed.

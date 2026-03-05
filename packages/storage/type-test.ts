@@ -23,7 +23,6 @@ import storage, {
   setMaxUploadRetryTime,
   putFile,
   writeToFile,
-  toString as storageToString,
   child,
   setMaxDownloadRetryTime,
   StringFormat,
@@ -275,7 +274,7 @@ modularWriteToFile.then((snapshot: TaskSnapshot) => {
   console.log(snapshot);
 });
 
-console.log(storageToString(modularRef1));
+console.log(modularRef1.toString());
 
 const modularChildRef = child(modularRef1, 'child');
 console.log(modularChildRef.fullPath);

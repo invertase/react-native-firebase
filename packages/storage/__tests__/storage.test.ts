@@ -17,12 +17,10 @@ import storage, {
   uploadBytes,
   uploadBytesResumable,
   uploadString,
-  ref,
   setMaxOperationRetryTime,
   setMaxUploadRetryTime,
   putFile,
   writeToFile,
-  toString,
   child,
   setMaxDownloadRetryTime,
   StringFormat,
@@ -423,11 +421,8 @@ describe('Storage', function () {
       it('toString()', function () {
         const storage = getStorage();
         const storageRef = ref(storage, 'foo');
-        storageRefV9Deprecation(
-          () => toString(storageRef),
-          () => storageRef.toString(),
-          'toString',
-        );
+        expect(typeof storageRef.toString()).toBe('string');
+        expect(storageRef.toString()).toContain('gs://');
       });
 
       it('child()', function () {

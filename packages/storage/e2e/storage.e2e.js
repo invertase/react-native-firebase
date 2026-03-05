@@ -355,12 +355,12 @@ describe('storage() modular', function () {
 
   describe('ref with full URL (gs:// or https://)', function () {
     it('accepts a gs url', async function () {
-      const { getStorage, ref, toString } = storageModular;
+      const { getStorage, ref } = storageModular;
 
       const url = 'gs://foo/bar/baz.png';
       const refObj = ref(getStorage(), url);
 
-      toString(refObj).should.equal(url);
+      refObj.toString().should.equal(url);
     });
 
     it('accepts a https url', async function () {

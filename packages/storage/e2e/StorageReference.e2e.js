@@ -746,12 +746,12 @@ describe('storage() -> StorageReference', function () {
     describe('toString()', function () {
       it('returns the correct bucket path to the file', function () {
         const { getApp } = modular;
-        const { getStorage, ref, toString } = storageModular;
+        const { getStorage, ref } = storageModular;
         const storageReference = ref(getStorage(), `/uploadNope.jpeg`);
 
-        toString(storageReference).should.equal(
-          `gs://${getApp().options.storageBucket}/uploadNope.jpeg`,
-        );
+        storageReference
+          .toString()
+          .should.equal(`gs://${getApp().options.storageBucket}/uploadNope.jpeg`);
       });
     });
 
