@@ -15,8 +15,6 @@
  *
  */
 
-import FirestoreBlob from '../lib/FirestoreBlob';
-
 const testObject = { hello: 'world' };
 const testString = JSON.stringify(testObject);
 const testBuffer = [123, 34, 104, 101, 108, 108, 111, 34, 58, 34, 119, 111, 114, 108, 100, 34, 125];
@@ -27,7 +25,10 @@ describe('Bytes modular', function () {
     const { Bytes } = firestoreModular;
     const myBytes = Bytes.fromBase64String(testBase64);
     myBytes.should.be.instanceOf(Bytes);
+    // Verify Bytes extends FirestoreBlob via prototype chain
+    const FirestoreBlob = Object.getPrototypeOf(Bytes.prototype).constructor;
     myBytes.should.be.instanceOf(FirestoreBlob);
+    FirestoreBlob.name.should.equal('Blob');
     myBytes._binaryString.should.equal(testString);
     should.deepEqual(
       JSON.parse(myBytes._binaryString),

@@ -1,0 +1,171 @@
+/*
+ * Copyright (c) 2016-present Invertase Limited & Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this library except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+import { isObject, createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
+import DocumentReference from './FirestoreDocumentReference';
+import DocumentSnapshot from './FirestoreDocumentSnapshot';
+import type { DocumentSnapshotNativeData } from './FirestoreDocumentSnapshot';
+import { parseSetOptions, parseUpdateArgs, applyFirestoreDataConverter } from './utils';
+import { buildNativeMap } from './utils/serialize';
+import type { FirestoreInternal } from './types/internal';
+import type { SetOptions } from './types/firestore';
+
+export interface TransactionMeta {
+  id: number;
+  /** Receives the Transaction instance (this module's default export). */
+  updateFunction: (transaction: Transaction) => Promise<unknown>;
+  stack?: string;
+  resolve?: (result: unknown) => void;
+  reject?: (error: unknown) => void;
+}
+
+export interface TransactionCommand {
+  type: 'SET' | 'UPDATE' | 'DELETE';
+  path: string;
+  data?: Record<string, unknown>;
+  options?: Record<string, unknown>;
+}
+
+export default class Transaction {
+  _firestore: FirestoreInternal;
+  _meta: TransactionMeta;
+  _calledGetCount: number;
+  _commandBuffer: TransactionCommand[];
+  _pendingResult: unknown;
+
+  constructor(firestore: FirestoreInternal, meta: TransactionMeta) {
+    this._firestore = firestore;
+    this._meta = meta;
+    this._calledGetCount = 0;
+    this._commandBuffer = [];
+    this._pendingResult = undefined;
+  }
+
+  /**
+   * Clears the command buffer and any pending result in prep for
+   * the next transaction iteration attempt.
+   */
+  _prepare(): void {
+    this._calledGetCount = 0;
+    this._commandBuffer = [];
+    this._pendingResult = undefined;
+  }
+
+  /**
+   * Reads the document referenced by the provided DocumentReference.
+   */
+  get(documentRef: DocumentReference): Promise<DocumentSnapshot> {
+    if (!(documentRef instanceof DocumentReference)) {
+      throw new Error(
+        "firebase.firestore().runTransaction() Transaction.get(*) 'documentRef' expected a DocumentReference.",
+      );
+    }
+
+    this._calledGetCount++;
+    return this._firestore.native
+      .transactionGetDocument(this._meta.id, documentRef.path)
+      .then((data: unknown) =>
+        createDeprecationProxy(
+          new DocumentSnapshot(this._firestore, data as DocumentSnapshotNativeData, null),
+        ),
+      );
+  }
+
+  /**
+   * Writes to the document referred to by the provided DocumentReference.
+   */
+  set(documentRef: DocumentReference, data: Record<string, unknown>, options?: SetOptions): this {
+    if (!(documentRef instanceof DocumentReference)) {
+      throw new Error(
+        "firebase.firestore().runTransaction() Transaction.set(*) 'documentRef' expected a DocumentReference.",
+      );
+    }
+
+    let setOptions: Record<string, unknown>;
+    try {
+      setOptions = parseSetOptions(options);
+    } catch (e) {
+      throw new Error(
+        `firebase.firestore().runTransaction() Transaction.set(_, _, *) ${(e as Error).message}.`,
+      );
+    }
+
+    let converted: Record<string, unknown> | unknown = data;
+    try {
+      converted = applyFirestoreDataConverter(data, documentRef.converter, setOptions);
+    } catch (e) {
+      throw new Error(
+        `firebase.firestore().runTransaction() Transaction.set(_, *) 'withConverter.toFirestore' threw an error: ${(e as Error).message}.`,
+      );
+    }
+
+    if (!isObject(converted)) {
+      throw new Error(
+        "firebase.firestore().runTransaction() Transaction.set(_, *) 'data' must be an object..",
+      );
+    }
+
+    this._commandBuffer.push({
+      type: 'SET',
+      path: documentRef.path,
+      data: buildNativeMap(converted, this._firestore._settings.ignoreUndefinedProperties),
+      options: setOptions,
+    });
+
+    return this;
+  }
+
+  update(documentRef: DocumentReference, ...args: unknown[]): this {
+    if (!(documentRef instanceof DocumentReference)) {
+      throw new Error(
+        "firebase.firestore().runTransaction() Transaction.update(*) 'documentRef' expected a DocumentReference.",
+      );
+    }
+
+    let data: Record<string, unknown>;
+    try {
+      data = parseUpdateArgs(args);
+    } catch (e) {
+      throw new Error(
+        `firebase.firestore().runTransaction() Transaction.update(_, *) ${(e as Error).message}`,
+      );
+    }
+
+    this._commandBuffer.push({
+      type: 'UPDATE',
+      path: documentRef.path,
+      data: buildNativeMap(data, this._firestore._settings.ignoreUndefinedProperties),
+    });
+
+    return this;
+  }
+
+  delete(documentRef: DocumentReference): this {
+    if (!(documentRef instanceof DocumentReference)) {
+      throw new Error(
+        "firebase.firestore().runTransaction() Transaction.delete(*) 'documentRef' expected a DocumentReference.",
+      );
+    }
+
+    this._commandBuffer.push({
+      type: 'DELETE',
+      path: documentRef.path,
+    });
+
+    return this;
+  }
+}

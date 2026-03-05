@@ -253,7 +253,7 @@ RCT_EXPORT_METHOD(aggregateQuery
       [aggregateFields addObject:[FIRAggregateField aggregateFieldForCount]];
     } else if ([aggregateType isEqualToString:@"sum"]) {
       [aggregateFields addObject:[FIRAggregateField aggregateFieldForSumOfField:fieldPath]];
-    } else if ([aggregateType isEqualToString:@"average"]) {
+    } else if ([aggregateType isEqualToString:@"avg"]) {
       [aggregateFields addObject:[FIRAggregateField aggregateFieldForAverageOfField:fieldPath]];
     } else {
       NSString *reason = [@"Invalid Aggregate Type: " stringByAppendingString:aggregateType];
@@ -290,7 +290,7 @@ RCT_EXPORT_METHOD(aggregateQuery
                              valueForAggregateField:[FIRAggregateField
                                                         aggregateFieldForSumOfField:fieldPath]];
                          snapshotMap[key] = sum;
-                       } else if ([aggregateType isEqualToString:@"average"]) {
+                       } else if ([aggregateType isEqualToString:@"avg"]) {
                          NSNumber *average = [snapshot
                              valueForAggregateField:[FIRAggregateField
                                                         aggregateFieldForAverageOfField:fieldPath]];

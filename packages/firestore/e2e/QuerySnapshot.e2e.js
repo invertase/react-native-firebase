@@ -36,7 +36,7 @@ describe('firestore.QuerySnapshot', function () {
     it('is returned from a collection get()', async function () {
       const snapshot = await firebase.firestore().collection(COLLECTION).get();
 
-      snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
+      snapshot.constructor.name.should.eql('QuerySnapshot');
     });
 
     it('is returned from a collection onSnapshot()', async function () {
@@ -46,7 +46,7 @@ describe('firestore.QuerySnapshot', function () {
       const callback = sinon.spy();
       firebase.firestore().collection(COLLECTION).onSnapshot(callback);
       await Utils.spyToBeCalledOnceAsync(callback);
-      callback.args[0][0].constructor.name.should.eql('FirestoreQuerySnapshot');
+      callback.args[0][0].constructor.name.should.eql('QuerySnapshot');
     });
 
     it('returns an array of DocumentSnapshots', async function () {
@@ -55,7 +55,7 @@ describe('firestore.QuerySnapshot', function () {
       const snapshot = await colRef.get();
       snapshot.docs.should.be.Array();
       snapshot.docs.length.should.be.aboveOrEqual(1);
-      snapshot.docs[0].constructor.name.should.eql('FirestoreDocumentSnapshot');
+      snapshot.docs[0].constructor.name.should.eql('DocumentSnapshot');
     });
 
     it('returns false if not empty', async function () {
@@ -76,13 +76,13 @@ describe('firestore.QuerySnapshot', function () {
     it('returns a SnapshotMetadata instance', async function () {
       const colRef = firebase.firestore().collection(COLLECTION);
       const snapshot = await colRef.get();
-      snapshot.metadata.constructor.name.should.eql('FirestoreSnapshotMetadata');
+      snapshot.metadata.constructor.name.should.eql('SnapshotMetadata');
     });
 
     it('returns a Query instance', async function () {
       const colRef = firebase.firestore().collection(COLLECTION);
       const snapshot = await colRef.get();
-      snapshot.query.constructor.name.should.eql('FirestoreCollectionReference');
+      snapshot.query.constructor.name.should.eql('CollectionReference');
     });
 
     it('returns size as a number', async function () {
@@ -152,7 +152,7 @@ describe('firestore.QuerySnapshot', function () {
         const changes = snapshot.docChanges();
         changes.should.be.Array();
         changes.length.should.be.eql(1);
-        changes[0].constructor.name.should.eql('FirestoreDocumentChange');
+        changes[0].constructor.name.should.eql('DocumentChange');
       });
 
       // FIXME flakey in CI - the changes length comes back unstable
@@ -225,9 +225,9 @@ describe('firestore.QuerySnapshot', function () {
         snapshot.forEach(callback);
         await Utils.spyToBeCalledTimesAsync(callback, 2, 20000);
         callback.should.be.calledTwice();
-        callback.args[0][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
+        callback.args[0][0].constructor.name.should.eql('DocumentSnapshot');
         callback.args[0][1].should.be.Number();
-        callback.args[1][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
+        callback.args[1][0].constructor.name.should.eql('DocumentSnapshot');
         callback.args[1][1].should.be.Number();
       });
 
@@ -336,7 +336,7 @@ describe('firestore.QuerySnapshot', function () {
       const { getFirestore, getDocs, collection } = firestoreModular;
 
       const snapshot = await getDocs(collection(getFirestore(), COLLECTION));
-      snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
+      snapshot.constructor.name.should.eql('QuerySnapshot');
     });
 
     it('is returned from a collection onSnapshot()', async function () {
@@ -347,7 +347,7 @@ describe('firestore.QuerySnapshot', function () {
       const callback = sinon.spy();
       onSnapshot(collection(getFirestore(), COLLECTION), callback);
       await Utils.spyToBeCalledOnceAsync(callback);
-      callback.args[0][0].constructor.name.should.eql('FirestoreQuerySnapshot');
+      callback.args[0][0].constructor.name.should.eql('QuerySnapshot');
     });
 
     it('returns an array of DocumentSnapshots', async function () {
@@ -358,7 +358,7 @@ describe('firestore.QuerySnapshot', function () {
       const snapshot = await getDocs(colRef);
       snapshot.docs.should.be.Array();
       snapshot.docs.length.should.be.aboveOrEqual(1);
-      snapshot.docs[0].constructor.name.should.eql('FirestoreDocumentSnapshot');
+      snapshot.docs[0].constructor.name.should.eql('DocumentSnapshot');
     });
 
     it('returns false if not empty', async function () {
@@ -382,14 +382,14 @@ describe('firestore.QuerySnapshot', function () {
       const { getFirestore, collection, getDocs } = firestoreModular;
       const colRef = collection(getFirestore(), COLLECTION);
       const snapshot = await getDocs(colRef);
-      snapshot.metadata.constructor.name.should.eql('FirestoreSnapshotMetadata');
+      snapshot.metadata.constructor.name.should.eql('SnapshotMetadata');
     });
 
     it('returns a Query instance', async function () {
       const { getFirestore, collection, getDocs } = firestoreModular;
       const colRef = collection(getFirestore(), COLLECTION);
       const snapshot = await getDocs(colRef);
-      snapshot.query.constructor.name.should.eql('FirestoreCollectionReference');
+      snapshot.query.constructor.name.should.eql('CollectionReference');
     });
 
     it('returns size as a number', async function () {
@@ -466,7 +466,7 @@ describe('firestore.QuerySnapshot', function () {
         const changes = snapshot.docChanges();
         changes.should.be.Array();
         changes.length.should.be.eql(1);
-        changes[0].constructor.name.should.eql('FirestoreDocumentChange');
+        changes[0].constructor.name.should.eql('DocumentChange');
       });
 
       // FIXME flakey in CI - the changes length comes back unstable
@@ -548,9 +548,9 @@ describe('firestore.QuerySnapshot', function () {
         snapshot.forEach(callback);
         await Utils.spyToBeCalledTimesAsync(callback, 2, 20000);
         callback.should.be.calledTwice();
-        callback.args[0][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
+        callback.args[0][0].constructor.name.should.eql('DocumentSnapshot');
         callback.args[0][1].should.be.Number();
-        callback.args[1][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
+        callback.args[1][0].constructor.name.should.eql('DocumentSnapshot');
         callback.args[1][1].should.be.Number();
       });
 

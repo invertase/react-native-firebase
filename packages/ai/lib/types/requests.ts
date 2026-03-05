@@ -326,7 +326,6 @@ export interface CodeExecutionTool {
    * Specifies the code execution configuration.
    * Currently, this is an empty object, but it's reserved for future configuration options.
    */
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   codeExecution: {};
 }
 
