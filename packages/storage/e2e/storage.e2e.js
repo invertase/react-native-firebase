@@ -353,43 +353,43 @@ describe('storage() modular', function () {
     });
   });
 
-  describe('refFromURL', function () {
+  describe('ref with full URL (gs:// or https://)', function () {
     it('accepts a gs url', async function () {
-      const { getStorage, refFromURL, toString } = storageModular;
+      const { getStorage, ref, toString } = storageModular;
 
       const url = 'gs://foo/bar/baz.png';
-      const ref = refFromURL(getStorage(), url);
+      const refObj = ref(getStorage(), url);
 
-      toString(ref).should.equal(url);
+      toString(refObj).should.equal(url);
     });
 
     it('accepts a https url', async function () {
-      const { getStorage, refFromURL } = storageModular;
+      const { getStorage, ref } = storageModular;
 
       const url =
         'https://firebasestorage.googleapis.com/v0/b/react-native-firebase-testing.appspot.com/o/1mbTestFile.gif?alt=media';
-      const ref = refFromURL(getStorage(), url);
-      ref.bucket.should.equal('react-native-firebase-testing.appspot.com');
-      ref.name.should.equal('1mbTestFile.gif');
-      ref.toString().should.equal('gs://react-native-firebase-testing.appspot.com/1mbTestFile.gif');
+      const refObj = ref(getStorage(), url);
+      refObj.bucket.should.equal('react-native-firebase-testing.appspot.com');
+      refObj.name.should.equal('1mbTestFile.gif');
+      refObj.toString().should.equal('gs://react-native-firebase-testing.appspot.com/1mbTestFile.gif');
     });
 
     it('accepts a https encoded url', async function () {
-      const { getStorage, refFromURL } = storageModular;
+      const { getStorage, ref } = storageModular;
 
       const url =
         'https%3A%2F%2Ffirebasestorage.googleapis.com%2Fv0%2Fb%2Freact-native-firebase-testing.appspot.com%2Fo%2F1mbTestFile.gif%3Falt%3Dmedia';
-      const ref = refFromURL(getStorage(), url);
-      ref.bucket.should.equal('react-native-firebase-testing.appspot.com');
-      ref.name.should.equal('1mbTestFile.gif');
-      ref.toString().should.equal('gs://react-native-firebase-testing.appspot.com/1mbTestFile.gif');
+      const refObj = ref(getStorage(), url);
+      refObj.bucket.should.equal('react-native-firebase-testing.appspot.com');
+      refObj.name.should.equal('1mbTestFile.gif');
+      refObj.toString().should.equal('gs://react-native-firebase-testing.appspot.com/1mbTestFile.gif');
     });
 
     it('throws an error if https url could not be parsed', async function () {
       try {
-        const { getStorage, refFromURL } = storageModular;
+        const { getStorage, ref } = storageModular;
 
-        refFromURL(getStorage(), 'https://invertase.io');
+        ref(getStorage(), 'https://invertase.io');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("unable to parse 'url'");
@@ -398,18 +398,18 @@ describe('storage() modular', function () {
     });
 
     it('accepts a gs url without a fullPath', async function () {
-      const { getStorage, refFromURL } = storageModular;
+      const { getStorage, ref } = storageModular;
 
       const url = 'gs://some-bucket';
-      const ref = refFromURL(getStorage(), url);
-      ref.toString().should.equal(url);
+      const refObj = ref(getStorage(), url);
+      refObj.toString().should.equal(url);
     });
 
     it('throws an error if url is not a string', async function () {
       try {
-        const { getStorage, refFromURL } = storageModular;
+        const { getStorage, ref } = storageModular;
 
-        refFromURL(getStorage(), { derp: true });
+        ref(getStorage(), { derp: true });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("'url' must be a string value");
@@ -419,9 +419,9 @@ describe('storage() modular', function () {
 
     it('throws an error if url does not start with gs:// or https://', async function () {
       try {
-        const { getStorage, refFromURL } = storageModular;
+        const { getStorage, ref } = storageModular;
 
-        refFromURL(getStorage(), 'bs://foo/bar/cat.gif');
+        ref(getStorage(), 'bs://foo/bar/cat.gif');
 
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {

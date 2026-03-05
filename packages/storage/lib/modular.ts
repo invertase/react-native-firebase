@@ -82,11 +82,18 @@ export function connectStorageEmulator(
 /**
  * Modify this Storage instance to communicate with the Firebase Storage emulator.
  * @param storage - Storage instance.
- * @param path An optional string pointing to a location on the storage bucket. If no path
+ * @param path An optional string pointing to a location on the storage bucket, or a full `gs://` or `https://` URL. If no path
  * is provided, the returned reference will be the bucket root path. Optional.
  * @returns {StorageReference}
  */
 export function ref(storage: FirebaseStorage, path?: string): StorageReference {
+  if (path != null && (path.startsWith('gs://') || path.startsWith('https://'))) {
+    return (
+      (storage as StorageInternal).refFromURL as WithModularDeprecationArg<
+        StorageInternal['refFromURL']
+      >
+    ).call(storage, path, MODULAR_DEPRECATION_ARG);
+  }
   return (
     (storage as StorageInternal).ref as WithModularDeprecationArg<StorageInternal['ref']>
   ).call(storage, path, MODULAR_DEPRECATION_ARG);
@@ -282,20 +289,6 @@ export function uploadString(
 }
 
 // Methods not on the Firebase JS SDK below
-
-/**
- *  Returns a new Storage `Reference` instance from a storage bucket URL.
- * @param storage - Storage instance.
- * @param url - A storage bucket URL pointing to a single file or location. Must be either a `gs://` url or an `http` url. Not available on web.
- * @returns {StorageReference}
- */
-export function refFromURL(storage: FirebaseStorage, url: string): StorageReference {
-  return (
-    (storage as StorageInternal).refFromURL as WithModularDeprecationArg<
-      StorageInternal['refFromURL']
-    >
-  ).call(storage, url, MODULAR_DEPRECATION_ARG);
-}
 
 /**
  * Sets the maximum time in milliseconds to retry a download if a failure occurs.. android & iOS only.

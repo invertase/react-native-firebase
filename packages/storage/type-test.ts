@@ -1,12 +1,11 @@
 import storage, {
   firebase,
   // Types
-  type Storage,
+  type FirebaseStorage,
   type FirebaseStorageTypes,
   // Modular API
   getStorage,
   connectStorageEmulator,
-  ref,
   deleteObject,
   getBlob,
   getBytes,
@@ -19,7 +18,7 @@ import storage, {
   uploadBytes,
   uploadBytesResumable,
   uploadString,
-  refFromURL,
+  ref,
   setMaxOperationRetryTime,
   setMaxUploadRetryTime,
   putFile,
@@ -255,7 +254,7 @@ modularUploadString.then((snapshot: TaskSnapshot) => {
   console.log(snapshot);
 });
 
-const modularRefFromURL = refFromURL(modularStorage1, 'gs://bucket/path');
+const modularRefFromURL = ref(modularStorage1, 'gs://bucket/path');
 console.log(modularRefFromURL.fullPath);
 
 setMaxOperationRetryTime(modularStorage1, 5000).then(() => {
@@ -291,7 +290,7 @@ console.log(TaskEvent.STATE_CHANGED);
 console.log(TaskState.SUCCESS);
 
 // Test type usage
-const storageInstance2: Storage = firebase.storage();
+const storageInstance2: FirebaseStorage = firebase.storage();
 console.log(storageInstance2.app.name);
 
 // Test backwards compatibility types

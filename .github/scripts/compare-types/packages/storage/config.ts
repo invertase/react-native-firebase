@@ -32,13 +32,6 @@ const config: PackageConfig = {
   // ---------------------------------------------------------------------------
   extraInRN: [
     {
-      name: 'refFromURL',
-      reason:
-        'RN Firebase-specific helper that creates a `StorageReference` from a full ' +
-        'gs:// or https:// URL. The firebase-js-sdk exposes this via the overloaded ' +
-        '`ref()` function instead.',
-    },
-    {
       name: 'setMaxOperationRetryTime',
       reason:
         'RN Firebase-specific function for setting the maximum retry time for ' +

@@ -17,7 +17,7 @@ import storage, {
   uploadBytes,
   uploadBytesResumable,
   uploadString,
-  refFromURL,
+  ref,
   setMaxOperationRetryTime,
   setMaxUploadRetryTime,
   putFile,
@@ -153,8 +153,12 @@ describe('Storage', function () {
       expect(uploadString).toBeDefined();
     });
 
-    it('`refFromURL` function is properly exposed to end user', function () {
-      expect(refFromURL).toBeDefined();
+    it('`ref` supports full URLs (gs:// or https://) like firebase-js-sdk', function () {
+      expect(ref).toBeDefined();
+      const storage = getStorage();
+      const refFromUrl = ref(storage, 'gs://bucket/path/to/file');
+      expect(refFromUrl).toBeDefined();
+      expect(refFromUrl.fullPath).toBeDefined();
     });
 
     it('`setMaxOperationRetryTime` function is properly exposed to end user', function () {
@@ -266,10 +270,10 @@ describe('Storage', function () {
         );
       });
 
-      it('refFromURL()', function () {
+      it('ref() with full URL', function () {
         const storage = getStorage();
         storageV9Deprecation(
-          () => refFromURL(storage, 'gs://flutterfire-e2e-tests.appspot.com/flutter-tsts'),
+          () => ref(storage, 'gs://flutterfire-e2e-tests.appspot.com/flutter-tsts'),
           // @ts-expect-error Combines modular and namespace API
           () => storage.refFromURL('gs://flutterfire-e2e-tests.appspot.com/flutter-tsts'),
           'refFromURL',
