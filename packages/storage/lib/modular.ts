@@ -95,10 +95,6 @@ export function ref(storage: FirebaseStorage, url?: string): StorageReference;
 export function ref(
   storageOrRef: FirebaseStorage | StorageReference,
   path?: string,
-): StorageReference;
-export function ref(
-  storageOrRef: FirebaseStorage | StorageReference,
-  path?: string,
 ): StorageReference {
   // ref(parentRef, path) → child reference; ref(parentRef) → same reference (firebase-js-sdk overload)
   if (typeof (storageOrRef as StorageReference).fullPath === 'string') {
