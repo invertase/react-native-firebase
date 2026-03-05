@@ -275,10 +275,11 @@ describe('firestore().collection().where(Filters)', function () {
 
   it('should throw an error if you use a FieldPath on a filter in conjunction with an orderBy() parameter that is not FieldPath', async function () {
     try {
+      const { documentId } = firestoreModular;
       firebase
         .firestore()
         .collection(COLLECTION)
-        .where(Filter(firebase.firestore.FieldPath.documentId(), '==', ['document-id']))
+        .where(Filter(documentId(), '==', ['document-id']))
         .where(Filter('foo.bar', 'not-in', [1, 2, 3, 4]))
         .orderBy('differentOrderBy', 'desc');
 

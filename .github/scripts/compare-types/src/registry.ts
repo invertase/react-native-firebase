@@ -14,6 +14,7 @@ import path from 'path';
 import type { PackageConfig } from './types';
 
 import storageConfig from '../packages/storage/config';
+import firestoreConfig from '../packages/firestore/config';
 
 const SCRIPT_DIR = path.resolve(__dirname, '..');
 const REPO_ROOT = path.resolve(SCRIPT_DIR, '..', '..', '..');
@@ -89,6 +90,46 @@ export const packages: PackageEntry[] = [
       path.join(rnDist('storage'), 'types', 'internal.d.ts'),
     ],
     config: storageConfig,
+  },
+  {
+    name: 'firestore',
+    firebaseSdkTypesPath: path.join(
+      SCRIPT_DIR,
+      'packages',
+      'firestore',
+      'firestore-js-sdk.d.ts',
+    ),
+    rnFirebaseModularFiles: [
+      path.join(rnDist('firestore'), 'types', 'firestore.d.ts'),
+      path.join(rnDist('firestore'), 'modular.d.ts'),
+      path.join(rnDist('firestore'), 'modular', 'query.d.ts'),
+      path.join(rnDist('firestore'), 'modular', 'snapshot.d.ts'),
+      path.join(rnDist('firestore'), 'modular', 'Bytes.d.ts'),
+      path.join(rnDist('firestore'), 'modular', 'FieldPath.d.ts'),
+      path.join(rnDist('firestore'), 'modular', 'FieldValue.d.ts'),
+      path.join(rnDist('firestore'), 'modular', 'GeoPoint.d.ts'),
+      path.join(rnDist('firestore'), 'modular', 'Timestamp.d.ts'),
+      path.join(rnDist('firestore'), 'modular', 'VectorValue.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('firestore'), 'types', 'namespaced.d.ts'),
+      path.join(rnDist('firestore'), 'types', 'internal.d.ts'),
+      path.join(rnDist('firestore'), 'FirestoreAggregate.d.ts'),
+      path.join(rnDist('firestore'), 'FirestoreFilter.d.ts'),
+      path.join(rnDist('firestore'), 'FirestoreBlob.d.ts'),
+      path.join(rnDist('firestore'), 'FirestoreDocumentSnapshot.d.ts'),
+      path.join(rnDist('firestore'), 'FirestoreQuerySnapshot.d.ts'),
+      path.join(rnDist('firestore'), 'FirestoreSnapshotMetadata.d.ts'),
+      path.join(rnDist('firestore'), 'FirestoreGeoPoint.d.ts'),
+      path.join(rnDist('firestore'), 'FirestoreTimestamp.d.ts'),
+      path.join(rnDist('firestore'), 'FirestoreVectorValue.d.ts'),
+      path.join(rnDist('firestore'), 'FirestorePersistentCacheIndexManager.d.ts'),
+      path.join(rnDist('firestore'), 'LoadBundleTask.d.ts'),
+      path.join(rnDist('firestore'), 'FirestoreWriteBatch.d.ts'),
+      path.join(rnDist('firestore'), 'FieldPath.d.ts'),
+      path.join(rnDist('firestore'), 'FieldValue.d.ts'),
+    ],
+    config: firestoreConfig,
   },
 ];
 

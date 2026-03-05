@@ -25,6 +25,7 @@ import { CrashTestComponent } from './crash-test';
 import { AITestComponent } from './ai/ai';
 import { DatabaseOnChildMovedTest } from './database';
 import { FirestoreOnSnapshotInSyncTest } from './firestore/onSnapshotInSync';
+import { DocumentReferenceTestComponent } from './firestore/document-reference';
 import { VertexAITestComponent } from './vertexai/vertexai';
 import { AuthMFADemonstrator } from './auth/auth-mfa-demonstrator';
 import { HttpsCallableTestComponent } from './functions/https-callable';
@@ -37,6 +38,7 @@ const testComponents = {
   'AI Generation Example': AITestComponent,
   'Database onChildMoved Test': DatabaseOnChildMovedTest,
   'Firestore onSnapshotInSync Test': FirestoreOnSnapshotInSyncTest,
+  'Firestore Document Reference Test': DocumentReferenceTestComponent,
   'VertexAI Generation Example': VertexAITestComponent,
   'Auth MFA Demonstrator': AuthMFADemonstrator,
   'HttpsCallable Test': HttpsCallableTestComponent,

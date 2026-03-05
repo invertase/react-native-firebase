@@ -124,6 +124,7 @@ describe('firestore.GeoPoint', function () {
       it('returns a json representation of the GeoPoint', function () {
         const geo = new firebase.firestore.GeoPoint(30, 35);
         const json = geo.toJSON();
+        json.type.should.eql('firestore/geoPoint/1.0');
         json.latitude.should.eql(30);
         json.longitude.should.eql(35);
       });
@@ -136,7 +137,7 @@ describe('firestore.GeoPoint', function () {
       });
       const snapshot = await ref.get();
       const geo = snapshot.data().geopoint;
-      should.equal(geo.constructor.name, 'FirestoreGeoPoint');
+      should.equal(geo.constructor.name, 'GeoPoint');
       geo.latitude.should.equal(20);
       geo.longitude.should.equal(30);
       await ref.delete();
@@ -257,6 +258,7 @@ describe('firestore.GeoPoint', function () {
 
         const geo = new GeoPoint(30, 35);
         const json = geo.toJSON();
+        json.type.should.eql('firestore/geoPoint/1.0');
         json.latitude.should.eql(30);
         json.longitude.should.eql(35);
       });
@@ -272,7 +274,7 @@ describe('firestore.GeoPoint', function () {
       });
       const snapshot = await getDoc(ref);
       const geo = snapshot.data().geopoint;
-      should.equal(geo.constructor.name, 'FirestoreGeoPoint');
+      should.equal(geo.constructor.name, 'GeoPoint');
       geo.latitude.should.equal(20);
       geo.longitude.should.equal(30);
       await deleteDoc(ref);

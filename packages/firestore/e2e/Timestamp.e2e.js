@@ -142,14 +142,14 @@ describe('firestore.Timestamp', function () {
       it('returns a string representation of the class', function () {
         const ts = new firebase.firestore.Timestamp(123, 123456);
         const str = ts.toString();
-        str.should.equal(`FirestoreTimestamp(seconds=${123}, nanoseconds=${123456})`);
+        str.should.equal(`Timestamp(seconds=${123}, nanoseconds=${123456})`);
       });
     });
 
     describe('Timestamp.now()', function () {
       it('returns a new instance', function () {
         const ts = firebase.firestore.Timestamp.now();
-        should.equal(ts.constructor.name, 'FirestoreTimestamp');
+        should.equal(ts.constructor.name, 'Timestamp');
       });
     });
 
@@ -166,14 +166,14 @@ describe('firestore.Timestamp', function () {
 
       it('returns a new instance', function () {
         const ts = firebase.firestore.Timestamp.fromDate(new Date());
-        should.equal(ts.constructor.name, 'FirestoreTimestamp');
+        should.equal(ts.constructor.name, 'Timestamp');
       });
     });
 
     describe('Timestamp.fromMillis()', function () {
       it('returns a new instance', function () {
         const ts = firebase.firestore.Timestamp.fromMillis(123);
-        should.equal(ts.constructor.name, 'FirestoreTimestamp');
+        should.equal(ts.constructor.name, 'Timestamp');
       });
     });
   });
@@ -322,7 +322,7 @@ describe('firestore.Timestamp', function () {
 
         const ts = new Timestamp(123, 123456);
         const str = ts.toString();
-        str.should.equal(`FirestoreTimestamp(seconds=${123}, nanoseconds=${123456})`);
+        str.should.equal(`Timestamp(seconds=${123}, nanoseconds=${123456})`);
       });
     });
 
@@ -331,7 +331,7 @@ describe('firestore.Timestamp', function () {
         const { Timestamp } = firestoreModular;
 
         const ts = Timestamp.now();
-        should.equal(ts.constructor.name, 'FirestoreTimestamp');
+        should.equal(ts.constructor.name, 'Timestamp');
       });
     });
 
@@ -352,7 +352,7 @@ describe('firestore.Timestamp', function () {
         const { Timestamp } = firestoreModular;
 
         const ts = Timestamp.fromDate(new Date());
-        should.equal(ts.constructor.name, 'FirestoreTimestamp');
+        should.equal(ts.constructor.name, 'Timestamp');
       });
     });
 
@@ -361,7 +361,7 @@ describe('firestore.Timestamp', function () {
         const { Timestamp } = firestoreModular;
 
         const ts = Timestamp.fromMillis(123);
-        should.equal(ts.constructor.name, 'FirestoreTimestamp');
+        should.equal(ts.constructor.name, 'Timestamp');
       });
     });
   });

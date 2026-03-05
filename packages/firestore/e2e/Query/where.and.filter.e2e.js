@@ -309,12 +309,13 @@ describe(' firestore().collection().where(AND Filters)', function () {
 
     it('should throw an error if you use a FieldPath on a filter in conjunction with an orderBy() parameter that is not FieldPath', async function () {
       try {
+        const { documentId } = firestoreModular;
         firebase
           .firestore()
           .collection(COLLECTION)
           .where(
             Filter.and(
-              Filter(firebase.firestore.FieldPath.documentId(), '==', ['document-id']),
+              Filter(documentId(), '==', ['document-id']),
               Filter('foo.bar', 'not-in', [1, 2, 3, 4]),
             ),
           )
@@ -957,14 +958,11 @@ describe(' firestore().collection().where(AND Filters)', function () {
     });
 
     it('should throw an error if you use a FieldPath on a filter in conjunction with an orderBy() parameter that is not FieldPath', async function () {
-      const { getFirestore, collection, query, where, and, orderBy, FieldPath } = firestoreModular;
+      const { getFirestore, collection, query, where, and, orderBy, documentId } = firestoreModular;
       try {
         query(
           collection(getFirestore(), COLLECTION),
-          and(
-            where(FieldPath.documentId(), '==', ['document-id']),
-            where('foo.bar', 'not-in', [1, 2, 3, 4]),
-          ),
+          and(where(documentId(), '==', ['document-id']), where('foo.bar', 'not-in', [1, 2, 3, 4])),
           orderBy('differentOrderBy', 'desc'),
         );
 

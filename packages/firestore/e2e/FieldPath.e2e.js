@@ -95,7 +95,8 @@ describe('firestore.FieldPath', function () {
 
     it('should return document ID path', function () {
       const expect = '__name__';
-      const path = firebase.firestore.FieldPath.documentId();
+      const { documentId } = firestoreModular;
+      const path = documentId();
       path._segments.length.should.equal(1);
       path._toPath().should.equal(expect);
     });

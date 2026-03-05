@@ -232,7 +232,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
         case "sum":
           aggregateFields.add(AggregateField.sum(fieldPath));
           break;
-        case "average":
+        case "avg":
           aggregateFields.add(AggregateField.average(fieldPath));
           break;
         default:
@@ -280,7 +280,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
                       }
                       result.putDouble(key, sum.doubleValue());
                       break;
-                    case "average":
+                    case "avg":
                       Number average = snapshot.get(average(field));
                       if (average == null) {
                         result.putNull(key);
