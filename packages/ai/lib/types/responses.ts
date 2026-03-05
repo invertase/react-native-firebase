@@ -161,7 +161,83 @@ export interface GenerateContentCandidate {
   safetyRatings?: SafetyRating[];
   citationMetadata?: CitationMetadata;
   groundingMetadata?: GroundingMetadata;
+  urlContextMetadata?: URLContextMetadata;
 }
+
+/**
+ * Metadata related to {@link URLContextTool}.
+ *
+ * @public
+ */
+export interface URLContextMetadata {
+  /**
+   * List of URL metadata used to provide context to the Gemini model.
+   */
+  urlMetadata: URLMetadata[];
+}
+
+/**
+ * Metadata for a single URL retrieved by the {@link URLContextTool} tool.
+ *
+ * @public
+ */
+export interface URLMetadata {
+  /**
+   * The retrieved URL.
+   */
+  retrievedUrl?: string;
+  /**
+   * The status of the URL retrieval.
+   */
+  urlRetrievalStatus?: URLRetrievalStatus;
+}
+
+/**
+ * The status of a URL retrieval.
+ *
+ * @remarks
+ * <b>URL_RETRIEVAL_STATUS_UNSPECIFIED:</b> Unspecified retrieval status.
+ * <br/>
+ * <b>URL_RETRIEVAL_STATUS_SUCCESS:</b> The URL retrieval was successful.
+ * <br/>
+ * <b>URL_RETRIEVAL_STATUS_ERROR:</b> The URL retrieval failed.
+ * <br/>
+ * <b>URL_RETRIEVAL_STATUS_PAYWALL:</b> The URL retrieval failed because the content is behind a paywall.
+ * <br/>
+ * <b>URL_RETRIEVAL_STATUS_UNSAFE:</b> The URL retrieval failed because the content is unsafe.
+ * <br/>
+ *
+ * @public
+ */
+export const URLRetrievalStatus = {
+  /**
+   * Unspecified retrieval status.
+   */
+  URL_RETRIEVAL_STATUS_UNSPECIFIED: 'URL_RETRIEVAL_STATUS_UNSPECIFIED',
+  /**
+   * The URL retrieval was successful.
+   */
+  URL_RETRIEVAL_STATUS_SUCCESS: 'URL_RETRIEVAL_STATUS_SUCCESS',
+  /**
+   * The URL retrieval failed.
+   */
+  URL_RETRIEVAL_STATUS_ERROR: 'URL_RETRIEVAL_STATUS_ERROR',
+  /**
+   * The URL retrieval failed because the content is behind a paywall.
+   */
+  URL_RETRIEVAL_STATUS_PAYWALL: 'URL_RETRIEVAL_STATUS_PAYWALL',
+  /**
+   * The URL retrieval failed because the content is unsafe.
+   */
+  URL_RETRIEVAL_STATUS_UNSAFE: 'URL_RETRIEVAL_STATUS_UNSAFE',
+} as const;
+
+/**
+ * Type alias for URL retrieval status values.
+ *
+ * @public
+ */
+export type URLRetrievalStatus = (typeof URLRetrievalStatus)[keyof typeof URLRetrievalStatus];
 
 /**
  * Citation metadata that may be found on a {@link GenerateContentCandidate}.

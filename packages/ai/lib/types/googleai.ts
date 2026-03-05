@@ -24,6 +24,7 @@ import {
   PromptFeedback,
   SafetyRating,
   UsageMetadata,
+  URLContextMetadata,
 } from '../public-types';
 import { Content, Part } from './content';
 
@@ -60,6 +61,7 @@ export interface GoogleAIGenerateContentCandidate {
   safetyRatings?: SafetyRating[];
   citationMetadata?: GoogleAICitationMetadata;
   groundingMetadata?: GroundingMetadata;
+  urlContextMetadata?: URLContextMetadata;
 }
 
 /**

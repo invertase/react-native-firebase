@@ -39,6 +39,7 @@ import {
   HarmSeverity,
   PromptFeedback,
   SafetyRating,
+  URLRetrievalStatus,
 } from '../lib/public-types';
 import { BackendName, getMockResponse } from './test-utils/mock-response';
 import { SpiedFunction } from 'jest-mock';
@@ -330,6 +331,33 @@ describe('Google AI Mappers', () => {
       const mapped = mapGenerateContentCandidates(candidates);
       expect(mapped).toEqual([]);
       expect(loggerWarnSpy).not.toHaveBeenCalled();
+    });
+
+    it('should pass through urlContextMetadata on candidates', function () {
+      const candidates: GoogleAIGenerateContentCandidate[] = [
+        {
+          index: 0,
+          content: { role: 'model', parts: [{ text: 'Response with URL context' }] },
+          finishReason: FinishReason.STOP,
+          urlContextMetadata: {
+            urlMetadata: [
+              {
+                retrievedUrl: 'https://example.com/page',
+                urlRetrievalStatus: URLRetrievalStatus.URL_RETRIEVAL_STATUS_SUCCESS,
+              },
+            ],
+          },
+        },
+      ];
+      const mapped = mapGenerateContentCandidates(candidates);
+      expect(mapped[0]?.urlContextMetadata).toEqual(candidates[0]?.urlContextMetadata);
+      expect(mapped[0]?.urlContextMetadata?.urlMetadata).toHaveLength(1);
+      expect(mapped[0]?.urlContextMetadata?.urlMetadata[0]?.retrievedUrl).toBe(
+        'https://example.com/page',
+      );
+      expect(mapped[0]?.urlContextMetadata?.urlMetadata[0]?.urlRetrievalStatus).toBe(
+        URLRetrievalStatus.URL_RETRIEVAL_STATUS_SUCCESS,
+      );
     });
   });
 
