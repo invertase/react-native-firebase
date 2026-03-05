@@ -95,7 +95,7 @@ export interface ListOptions {
    * The `nextPageToken` from a previous call to `list()`. If provided,
    * listing is resumed from the previous position.
    */
-  pageToken?: string;
+  pageToken?: string | null;
 }
 
 /**

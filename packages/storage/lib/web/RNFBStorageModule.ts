@@ -71,7 +71,7 @@ interface UploadTaskSnapshot {
 
 interface ListOptions {
   maxResults?: number;
-  pageToken?: string;
+  pageToken?: string | null;
 }
 
 function rejectWithCodeAndMessage(code: string, message: string): Promise<never> {

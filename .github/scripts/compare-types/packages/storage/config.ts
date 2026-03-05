@@ -131,13 +131,6 @@ const config: PackageConfig = {
         'types also use `NativeFirebaseError` instead of `StorageError`.',
     },
     {
-      name: 'ListOptions',
-      reason:
-        '`pageToken` is typed as `string | null` in the firebase-js-sdk and as ' +
-        '`string` in RN Firebase. The RN implementation does not need to distinguish ' +
-        'between absent and null tokens.',
-    },
-    {
       name: 'EmulatorMockTokenOptions',
       reason:
         'The firebase-js-sdk `EmulatorMockTokenOptions` (from `@firebase/util`) is a ' +
