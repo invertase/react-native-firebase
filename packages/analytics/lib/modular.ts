@@ -424,7 +424,7 @@ export function logTransaction(analytics: Analytics, transaction_id: string): Pr
   if (Platform.OS !== 'ios') {
     throw new Error('logTransaction is only available on iOS');
   }
-  return (analytics as { native: { logTransaction(id: string): Promise<void> } }).native.logTransaction(
+  return (analytics as unknown as { native: { logTransaction(id: string): Promise<void> } }).native.logTransaction(
     transaction_id,
   );
 }

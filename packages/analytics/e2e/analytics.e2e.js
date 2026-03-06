@@ -1172,6 +1172,34 @@ describe('analytics()', function () {
       });
     });
 
+    describe('logTransaction()', function () {
+      it('throws when transactionId is not a valid numeric string', async function () {
+        if (!Platform.ios) {
+          this.skip();
+        }
+        try {
+          const { getAnalytics, logTransaction } = analyticsModular;
+          await logTransaction(getAnalytics(), 'not_a_number');
+          fail('Should have thrown an error');
+        } catch (e) {
+          e.message.should.include('Invalid transactionId');
+        }
+      });
+
+      it('throws when transactionId is valid format but transaction not found in StoreKit', async function () {
+        if (!Platform.ios) {
+          this.skip();
+        }
+        try {
+          const { getAnalytics, logTransaction } = analyticsModular;
+          await logTransaction(getAnalytics(), '12345');
+          fail('Should have thrown an error');
+        } catch (e) {
+          e.message.should.include('Transaction not found');
+        }
+      });
+    });
+
     describe('getGoogleAnalyticsClientId()', function () {
       it('Error for getGoogleAnalyticsClientId() on non-other platforms', async function () {
         if (Platform.other) {
