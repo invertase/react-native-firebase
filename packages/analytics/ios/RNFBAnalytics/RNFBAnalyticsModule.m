@@ -20,6 +20,7 @@
 
 #import <RNFBApp/RNFBSharedUtils.h>
 #import "RNFBAnalyticsModule.h"
+#import "RNFBAnalytics-Swift.h"
 
 @implementation RNFBAnalyticsModule
 #pragma mark -
@@ -210,6 +211,15 @@ RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithHashedPhoneNumber
   }
 
   return resolve([NSNull null]);
+}
+
+RCT_EXPORT_METHOD(logTransaction
+                  : (NSString *)transactionId resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  [RNFBAnalyticsLogTransaction logTransactionWithTransactionId:transactionId
+                                                       resolve:resolve
+                                                       reject:reject];
 }
 
 RCT_EXPORT_METHOD(setConsent
