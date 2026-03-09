@@ -71,7 +71,7 @@ export type PipelineDistanceMeasure = 'COSINE' | 'EUCLIDEAN' | 'DOT_PRODUCT';
  * Options for pipeline aggregate() stage.
  */
 export interface PipelineAggregateOptions {
-  accumulator?: Accumulator[];
+  accumulators?: Accumulator[];
   groups?: Selectable[];
 }
 
@@ -80,7 +80,7 @@ export interface PipelineAggregateOptions {
  * Options for pipeline distinct() stage.
  */
 export interface PipelineDistinctOptions {
-  group?: (Field | string)[];
+  groups?: (Field | string)[];
 }
 
 /**
@@ -100,8 +100,7 @@ export interface PipelineFindNearestOptions {
  * Options for pipeline replaceWith() stage.
  */
 export interface PipelineReplaceWithOptions {
-  expr?: Selectable;
-  fieldName?: string;
+  map?: Selectable | string;
 }
 
 /**
@@ -109,8 +108,8 @@ export interface PipelineReplaceWithOptions {
  * Options for pipeline sample() stage.
  */
 export interface PipelineSampleOptions {
-  n?: number;
-  percent?: number;
+  documents?: number;
+  percentage?: number;
 }
 
 /**
