@@ -19,13 +19,16 @@ import Foundation
 import FirebaseAnalytics
 import StoreKit
 
-/// iOS-only: logs a verified StoreKit 2 transaction to Firebase Analytics (iOS 15+).
-/// Swift bridge for React Native; call from ObjC via alloc/init then logTransactionWithTransactionId:resolve:reject: (see RNFBFunctionsCallHandler).
+/// Swift wrapper for logging a verified StoreKit 2 transaction to Firebase Analytics.
+/// Accessible from Objective-C; necessary because StoreKit 2 and Analytics.logTransaction use Swift async APIs.
+/// Call from ObjC only when @available(iOS 15.0, *) (see RNFBFunctionsStreamHandler pattern).
+@available(iOS 15.0, macOS 12.0, *)
 @objc(RNFBAnalyticsLogTransaction)
+@objcMembers
 public class RNFBAnalyticsLogTransaction: NSObject {
 
   private static let kCode = "firebase_analytics"
-  private static let kUnsupportedMessage = "logTransaction() is only supported on iOS 15.0 or newer"
+  private var logTask: Task<Void, Never>?
 
   /// Resolve/reject types matching RCTPromiseResolveBlock / RCTPromiseRejectBlock for React Native bridge.
   @objc public func logTransaction(
@@ -33,52 +36,46 @@ public class RNFBAnalyticsLogTransaction: NSObject {
     resolve: @escaping (Any?) -> Void,
     reject: @escaping (String, String, NSError?) -> Void
   ) {
-    if #available(iOS 15.0, *) {
-      logTransactionWithStoreKit(transactionId: transactionId, resolve: resolve, reject: reject)
-    } else {
-      DispatchQueue.main.async {
-        reject(Self.kCode, Self.kUnsupportedMessage, nil)
-      }
+    logTask = Task {
+      await performLogTransaction(transactionId: transactionId, resolve: resolve, reject: reject)
+      logTask = nil
     }
   }
 
-  @available(iOS 15.0, *)
-  private func logTransactionWithStoreKit(
+  private func performLogTransaction(
     transactionId: String,
     resolve: @escaping (Any?) -> Void,
     reject: @escaping (String, String, NSError?) -> Void
-  ) {
-    Task {
-      do {
-        guard let id = UInt64(transactionId) else {
-          await MainActor.run { reject(Self.kCode, "Invalid transactionId", nil) }
-          return
-        }
-
-        var foundTransaction: StoreKit.Transaction?
-        for await result in StoreKit.Transaction.all {
-          switch result {
-          case let .verified(transaction):
-            if transaction.id == id {
-              foundTransaction = transaction
-              break
-            }
-          case .unverified:
-            continue
-          }
-        }
-
-        guard let transaction = foundTransaction else {
-          await MainActor.run { reject(Self.kCode, "Transaction not found", nil) }
-          return
-        }
-
-        Analytics.logTransaction(transaction)
-        await MainActor.run { resolve(NSNull()) }
-      } catch {
-        let nsError = error as NSError
-        await MainActor.run { reject(Self.kCode, error.localizedDescription, nsError) }
+  ) async {
+    do {
+      guard let id = UInt64(transactionId) else {
+        await MainActor.run { reject(Self.kCode, "Invalid transactionId", nil) }
+        return
       }
+
+      var foundTransaction: StoreKit.Transaction?
+      for await result in StoreKit.Transaction.all {
+        switch result {
+        case let .verified(transaction):
+          if transaction.id == id {
+            foundTransaction = transaction
+            break
+          }
+        case .unverified:
+          continue
+        }
+      }
+
+      guard let transaction = foundTransaction else {
+        await MainActor.run { reject(Self.kCode, "Transaction not found", nil) }
+        return
+      }
+
+      Analytics.logTransaction(transaction)
+      await MainActor.run { resolve(NSNull()) }
+    } catch {
+      let nsError = error as NSError
+      await MainActor.run { reject(Self.kCode, error.localizedDescription, nsError) }
     }
   }
 }

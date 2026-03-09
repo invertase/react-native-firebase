@@ -20,7 +20,7 @@
 
 #import <RNFBApp/RNFBSharedUtils.h>
 #import "RNFBAnalyticsModule.h"
-#import "RNFBAnalytics-Swift.h"
+#import <RNFBAnalytics/RNFBAnalytics-Swift.h>
 
 @implementation RNFBAnalyticsModule
 #pragma mark -
@@ -217,8 +217,12 @@ RCT_EXPORT_METHOD(logTransaction
                   : (NSString *)transactionId resolver
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject) {
-  RNFBAnalyticsLogTransaction *handler = [[RNFBAnalyticsLogTransaction alloc] init];
-  [handler logTransactionWithTransactionId:transactionId resolve:resolve reject:reject];
+  if (@available(iOS 15.0, macOS 12.0, *)) {
+    RNFBAnalyticsLogTransaction *handler = [[RNFBAnalyticsLogTransaction alloc] init];
+    [handler logTransactionWithTransactionId:transactionId resolve:resolve reject:reject];
+  } else {
+    reject(@"firebase_analytics", @"logTransaction() is only supported on iOS 15.0 or newer", nil);
+  }
 }
 
 RCT_EXPORT_METHOD(setConsent
