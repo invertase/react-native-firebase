@@ -1212,8 +1212,9 @@ describe('analytics()', function () {
           await logTransaction(getAnalytics(), '12345');
           fail('Should have thrown an error');
         } catch (e) {
-          (e && e.message).should.be.a('string');
-          e.message.should.include('logTransaction is only available on iOS');
+          if (!(e && e.message && e.message.includes('logTransaction is only available on iOS'))) {
+            throw e;
+          }
         }
       });
 
@@ -1226,8 +1227,9 @@ describe('analytics()', function () {
           await logTransaction(getAnalytics(), '12345');
           fail('Should have thrown an error');
         } catch (e) {
-          (e && e.message).should.be.a('string');
-          e.message.should.include('logTransaction is only available on iOS');
+          if (!(e && e.message && e.message.includes('logTransaction is only available on iOS'))) {
+            throw e;
+          }
         }
       });
     });
