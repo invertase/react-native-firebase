@@ -1182,7 +1182,9 @@ describe('analytics()', function () {
           await logTransaction(getAnalytics(), 'not_a_number');
           fail('Should have thrown an error');
         } catch (e) {
-          e.message.should.include('Invalid transactionId');
+          if (!(e && e.message && e.message.includes('Invalid transactionId'))) {
+            throw e;
+          }
         }
       });
 
@@ -1195,7 +1197,9 @@ describe('analytics()', function () {
           await logTransaction(getAnalytics(), '12345');
           fail('Should have thrown an error');
         } catch (e) {
-          e.message.should.include('Transaction not found');
+          if (!(e && e.message && e.message.includes('Transaction not found'))) {
+            throw e;
+          }
         }
       });
     });
