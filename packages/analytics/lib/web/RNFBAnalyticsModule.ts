@@ -132,4 +132,11 @@ export const RNFBAnalyticsModule: RNFBAnalyticsModuleType = {
       return null;
     });
   },
+
+  logTransaction(_transactionId: string): Promise<null> {
+    // Unimplemented on web; iOS-only (StoreKit 2).
+    return Promise.reject(
+      new Error('logTransaction is only available on iOS'),
+    ) as Promise<null>;
+  },
 };

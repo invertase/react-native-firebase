@@ -1202,6 +1202,34 @@ describe('analytics()', function () {
           }
         }
       });
+
+      it('rejects with unimplemented on Android', async function () {
+        if (!Platform.android) {
+          this.skip();
+        }
+        try {
+          const { getAnalytics, logTransaction } = analyticsModular;
+          await logTransaction(getAnalytics(), '12345');
+          fail('Should have thrown an error');
+        } catch (e) {
+          (e && e.message).should.be.a('string');
+          e.message.should.include('logTransaction is only available on iOS');
+        }
+      });
+
+      it('rejects with unimplemented on web (other platform)', async function () {
+        if (!Platform.other) {
+          this.skip();
+        }
+        try {
+          const { getAnalytics, logTransaction } = analyticsModular;
+          await logTransaction(getAnalytics(), '12345');
+          fail('Should have thrown an error');
+        } catch (e) {
+          (e && e.message).should.be.a('string');
+          e.message.should.include('logTransaction is only available on iOS');
+        }
+      });
     });
 
     describe('getGoogleAnalyticsClientId()', function () {
