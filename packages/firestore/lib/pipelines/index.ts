@@ -15,17 +15,43 @@
  *
  */
 
+import type { Pipeline, PipelineSource } from './pipeline';
+
 /**
  * @beta
  * Pipeline type for Firestore pipelines API.
  */
-export interface Pipeline {}
+export type {
+  Pipeline,
+  PipelineSource,
+  PipelineSnapshot,
+  PipelineResult,
+  ExecuteOptions,
+} from './pipeline';
+export type {
+  PipelineCollectionSourceOptions,
+  PipelineCollectionGroupSourceOptions,
+  PipelineDatabaseSourceOptions,
+  PipelineDocumentsSourceOptions,
+} from './pipeline';
 
-/**
- * @beta
- * Source stage of a Pipeline (e.g. collection).
- */
-export interface PipelineSource<_T> {}
+export type {
+  BooleanExpression,
+  Selectable,
+  Field,
+  Accumulator,
+  PipelineDistanceMeasure,
+  PipelineAggregateOptions,
+  PipelineDistinctOptions,
+  PipelineFindNearestOptions,
+  PipelineReplaceWithOptions,
+  PipelineSampleOptions,
+  PipelineUnionOptions,
+  PipelineUnnestOptions,
+  PipelineRawStageOptions,
+} from './stage_options';
+
+export { execute, field, and, or, gt, eq, Ordering, avg, countAll, map, array } from './stage';
 
 declare module '../types/firestore' {
   /**
@@ -34,7 +60,7 @@ declare module '../types/firestore' {
    *
    * @example
    * ```
-   * let myPipeline: Pipeline = firestore.pipeline().collection('books');
+   * const myPipeline = firestore.pipeline().collection('books');
    * ```
    */
   interface Firestore {
