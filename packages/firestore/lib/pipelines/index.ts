@@ -51,7 +51,36 @@ export type {
   PipelineRawStageOptions,
 } from './stage_options';
 
-export { execute, field, and, or, gt, eq, Ordering, avg, countAll, map, array } from './stage';
+export {
+  execute,
+  field,
+  and,
+  or,
+  gt,
+  eq,
+  greaterThan,
+  equal,
+  notEqual,
+  gte,
+  greaterThanOrEqual,
+  lt,
+  lte,
+  lessThan,
+  lessThanOrEqual,
+  exists,
+  arrayContains,
+  arrayContainsAny,
+  arrayContainsAll,
+  startsWith,
+  endsWith,
+  Ordering,
+  ascending,
+  descending,
+  avg,
+  countAll,
+  map,
+  array,
+} from './stage';
 
 declare module '../types/firestore' {
   /**
