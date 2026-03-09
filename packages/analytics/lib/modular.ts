@@ -418,12 +418,9 @@ export function logEvent(
 
 /** Logs verified in-app purchase events in Google Analytics for Firebase
  * after a purchase is successful.
- * Modular API only; only available on iOS.
+ * Modular API only; iOS only (StoreKit 2). On Android, the native module rejects with unimplemented.
  */
 export function logTransaction(analytics: Analytics, transaction_id: string): Promise<void> {
-  if (Platform.OS !== 'ios') {
-    throw new Error('logTransaction is only available on iOS');
-  }
   return (
     analytics as unknown as { native: { logTransaction(id: string): Promise<void> } }
   ).native.logTransaction(transaction_id);
