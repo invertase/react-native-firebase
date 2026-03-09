@@ -14,7 +14,7 @@
 
 import fs from 'fs';
 import { packages } from './registry';
-import { parseSingleFile, parseModularFiles } from './parse';
+import { parseModularFiles } from './parse';
 import { compare } from './compare';
 import { printReport } from './report';
 import type { ComparisonResult } from './types';
@@ -34,15 +34,15 @@ async function main(): Promise<void> {
 
   for (const pkg of packages) {
     checkFilesExist(
-      [pkg.firebaseSdkTypesPath],
-      `firebase-js-sdk snapshot for "${pkg.name}"`,
+      pkg.firebaseSdkTypesPaths,
+      `firebase-js-sdk snapshot(s) for "${pkg.name}"`,
     );
     checkFilesExist(
       pkg.rnFirebaseModularFiles,
       `RN Firebase built types for "${pkg.name}" — run \`yarn build:all:build\` first`,
     );
 
-    const sdkExports = parseSingleFile(pkg.firebaseSdkTypesPath);
+    const sdkExports = parseModularFiles(pkg.firebaseSdkTypesPaths, []);
     const rnExports = parseModularFiles(
       pkg.rnFirebaseModularFiles,
       pkg.rnFirebaseSupportFiles,
