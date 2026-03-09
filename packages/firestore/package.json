@@ -46,6 +46,11 @@
       "types": "./dist/typescript/lib/index.d.ts",
       "default": "./dist/module/index.js"
     },
+    "./pipelines": {
+      "source": "./lib/pipelines/index.ts",
+      "types": "./dist/typescript/lib/pipelines/index.d.ts",
+      "default": "./dist/module/pipelines/index.js"
+    },
     "./package.json": "./package.json"
   },
   "react-native-builder-bob": {
