@@ -23,9 +23,7 @@ import StoreKit
 /// Accessible from Objective-C; necessary because StoreKit 2 and Analytics.logTransaction use Swift async APIs.
 /// Call from ObjC only when @available(iOS 15.0, *) (see RNFBFunctionsStreamHandler pattern).
 @available(iOS 15.0, macOS 12.0, *)
-@objc(RNFBAnalyticsLogTransaction)
-@objcMembers
-public class RNFBAnalyticsLogTransaction: NSObject {
+@objcMembers public class RNFBAnalyticsLogTransaction: NSObject {
 
   private static let kCode = "firebase_analytics"
   private var logTask: Task<Void, Never>?
