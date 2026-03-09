@@ -14,6 +14,7 @@ import path from 'path';
 import type { PackageConfig } from './types';
 
 import firestoreConfig from '../packages/firestore/config';
+import firestorePipelinesConfig from '../packages/firestore-pipelines/config';
 
 const SCRIPT_DIR = path.resolve(__dirname, '..');
 const REPO_ROOT = path.resolve(SCRIPT_DIR, '..', '..', '..');
@@ -110,5 +111,25 @@ export const packages: PackageEntry[] = [
       path.join(rnDist('firestore'), 'FieldValue.d.ts'),
     ],
     config: firestoreConfig,
+  },
+  {
+    name: 'firestore-pipelines',
+    firebaseSdkTypesPaths: [
+      path.join(
+        SCRIPT_DIR,
+        'packages',
+        'firestore-pipelines',
+        'pipelines.d.ts',
+      ),
+    ],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('firestore'), 'pipelines', 'index.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('firestore'), 'pipelines', 'pipeline.d.ts'),
+      path.join(rnDist('firestore'), 'pipelines', 'stage.d.ts'),
+      path.join(rnDist('firestore'), 'pipelines', 'stage_options.d.ts'),
+    ],
+    config: firestorePipelinesConfig,
   },
 ];
