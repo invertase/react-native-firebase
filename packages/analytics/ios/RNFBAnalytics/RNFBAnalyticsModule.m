@@ -18,9 +18,9 @@
 #import <Firebase/Firebase.h>
 #import <React/RCTUtils.h>
 
+#import <RNFBAnalytics/RNFBAnalytics-Swift.h>
 #import <RNFBApp/RNFBSharedUtils.h>
 #import "RNFBAnalyticsModule.h"
-#import <RNFBAnalytics/RNFBAnalytics-Swift.h>
 
 @implementation RNFBAnalyticsModule
 #pragma mark -

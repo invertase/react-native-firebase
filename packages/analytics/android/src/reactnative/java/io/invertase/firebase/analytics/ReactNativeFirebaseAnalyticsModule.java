@@ -196,7 +196,9 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
   @ReactMethod
   public void logTransaction(String transactionId, Promise promise) {
     rejectPromiseWithCodeAndMessage(
-        promise, "unimplemented", "logTransaction is only available on iOS");
+        promise,
+        "unimplemented",
+        "logTransaction is only available on iOS");
   }
 
   private Bundle toBundle(ReadableMap readableMap) {
