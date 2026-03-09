@@ -15,9 +15,6 @@
  *
  */
 
-// Pipelines API augmentation (Firestore.pipeline())
-import './pipelines';
-
 // Export modular API functions
 export * from './modular';
 
