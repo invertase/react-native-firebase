@@ -217,9 +217,8 @@ RCT_EXPORT_METHOD(logTransaction
                   : (NSString *)transactionId resolver
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject) {
-  [RNFBAnalyticsLogTransaction logTransactionWithTransactionId:transactionId
-                                                       resolve:resolve
-                                                       reject:reject];
+  RNFBAnalyticsLogTransaction *handler = [[RNFBAnalyticsLogTransaction alloc] init];
+  [handler logTransactionWithTransactionId:transactionId resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(setConsent

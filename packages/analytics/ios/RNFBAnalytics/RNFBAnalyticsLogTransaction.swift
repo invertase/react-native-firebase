@@ -20,6 +20,7 @@ import FirebaseAnalytics
 import StoreKit
 
 /// iOS-only: logs a verified StoreKit 2 transaction to Firebase Analytics (iOS 15+).
+/// Swift bridge for React Native; call from ObjC via alloc/init then logTransactionWithTransactionId:resolve:reject: (see RNFBFunctionsCallHandler).
 @objc(RNFBAnalyticsLogTransaction)
 public class RNFBAnalyticsLogTransaction: NSObject {
 
@@ -27,7 +28,7 @@ public class RNFBAnalyticsLogTransaction: NSObject {
   private static let kUnsupportedMessage = "logTransaction() is only supported on iOS 15.0 or newer"
 
   /// Resolve/reject types matching RCTPromiseResolveBlock / RCTPromiseRejectBlock for React Native bridge.
-  @objc public static func logTransaction(
+  @objc public func logTransaction(
     transactionId: String,
     resolve: @escaping (Any?) -> Void,
     reject: @escaping (String, String, NSError?) -> Void
@@ -36,13 +37,13 @@ public class RNFBAnalyticsLogTransaction: NSObject {
       logTransactionWithStoreKit(transactionId: transactionId, resolve: resolve, reject: reject)
     } else {
       DispatchQueue.main.async {
-        reject(kCode, kUnsupportedMessage, nil)
+        reject(Self.kCode, Self.kUnsupportedMessage, nil)
       }
     }
   }
 
   @available(iOS 15.0, *)
-  private static func logTransactionWithStoreKit(
+  private func logTransactionWithStoreKit(
     transactionId: String,
     resolve: @escaping (Any?) -> Void,
     reject: @escaping (String, String, NSError?) -> Void
@@ -50,12 +51,12 @@ public class RNFBAnalyticsLogTransaction: NSObject {
     Task {
       do {
         guard let id = UInt64(transactionId) else {
-          await MainActor.run { reject(kCode, "Invalid transactionId", nil) }
+          await MainActor.run { reject(Self.kCode, "Invalid transactionId", nil) }
           return
         }
 
-        var foundTransaction: Transaction?
-        for await result in Transaction.all {
+        var foundTransaction: StoreKit.Transaction?
+        for await result in StoreKit.Transaction.all {
           switch result {
           case let .verified(transaction):
             if transaction.id == id {
@@ -68,7 +69,7 @@ public class RNFBAnalyticsLogTransaction: NSObject {
         }
 
         guard let transaction = foundTransaction else {
-          await MainActor.run { reject(kCode, "Transaction not found", nil) }
+          await MainActor.run { reject(Self.kCode, "Transaction not found", nil) }
           return
         }
 
@@ -76,7 +77,7 @@ public class RNFBAnalyticsLogTransaction: NSObject {
         await MainActor.run { resolve(NSNull()) }
       } catch {
         let nsError = error as NSError
-        await MainActor.run { reject(kCode, error.localizedDescription, nsError) }
+        await MainActor.run { reject(Self.kCode, error.localizedDescription, nsError) }
       }
     }
   }
