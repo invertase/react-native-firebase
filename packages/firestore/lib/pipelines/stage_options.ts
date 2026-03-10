@@ -271,6 +271,10 @@ export interface AliasedExpression extends Selectable {
  * Options for AddFields stage. At least one field required.
  */
 export type AddFieldsStageOptions = StageOptions & {
+  /**
+   * @beta
+   * The fields to add to each document, specified as a Selectable. At least one field is required.
+   */
   fields: Selectable[];
 };
 
@@ -279,7 +283,15 @@ export type AddFieldsStageOptions = StageOptions & {
  * Options for Aggregate stage.
  */
 export type AggregateStageOptions = StageOptions & {
+  /**
+   * @beta
+   * The AliasedAggregate values specifying aggregate operations to perform on the input documents.
+   */
   accumulators: AliasedAggregate[];
+  /**
+   * @beta
+   * The Selectable expressions or field names to consider when determining distinct value combinations (groups), which will be aggregated over.
+   */
   groups?: Array<string | Selectable>;
 };
 
@@ -288,7 +300,15 @@ export type AggregateStageOptions = StageOptions & {
  * Options for CollectionGroup stage.
  */
 export type CollectionGroupStageOptions = StageOptions & {
+  /**
+   * @beta
+   * ID of the collection group to use as the Pipeline source.
+   */
   collectionId: string;
+  /**
+   * @beta
+   * Specifies the name of an index to be used for a query, overriding the query optimizer's default choice. This can be useful for performance tuning in specific scenarios where the default index selection does not yield optimal performance. This property is optional. When provided, it should be the exact name of the index to force.
+   */
   forceIndex?: string;
 };
 
@@ -297,7 +317,15 @@ export type CollectionGroupStageOptions = StageOptions & {
  * Options for Collection stage.
  */
 export type CollectionStageOptions = StageOptions & {
+  /**
+   * @beta
+   * Name or reference to the collection that will be used as the Pipeline source.
+   */
   collection: string | Query;
+  /**
+   * @beta
+   * Specifies the name of an index to be used for a query, overriding the query optimizer's default choice. This can be useful for performance tuning in specific scenarios where the default index selection does not yield optimal performance. This property is optional. When provided, it should be the exact name of the index to force.
+   */
   forceIndex?: string;
 };
 
@@ -312,6 +340,10 @@ export type DatabaseStageOptions = StageOptions & {};
  * Options for Distinct stage.
  */
 export type DistinctStageOptions = StageOptions & {
+  /**
+   * @beta
+   * The Selectable expressions or field names to consider when determining distinct value combinations (groups).
+   */
   groups: Array<string | Selectable>;
 };
 
@@ -320,6 +352,10 @@ export type DistinctStageOptions = StageOptions & {
  * Options for Documents stage.
  */
 export type DocumentsStageOptions = StageOptions & {
+  /**
+   * @beta
+   * An array of paths and DocumentReferences specifying the individual documents that will be the source of this pipeline. The converters for these DocumentReferences will be ignored and not have an effect on this pipeline. There must be at least one document specified in the array.
+   */
   docs: Array<string | DocumentReference>;
 };
 
@@ -328,10 +364,30 @@ export type DocumentsStageOptions = StageOptions & {
  * Options for FindNearest stage (vector search).
  */
 export type FindNearestStageOptions = StageOptions & {
+  /**
+   * @beta
+   * Specifies the field to be used. This can be a string representing the field path (e.g., 'fieldName', 'nested.fieldName') or an object of type Field representing a more complex field expression.
+   */
   field: Field | string;
+  /**
+   * @beta
+   * Specifies the query vector value, to which the vector distance will be computed.
+   */
   vectorValue: VectorValue | number[];
+  /**
+   * @beta
+   * Specifies the method used to compute the distance between vectors. Possible values are: 'euclidean', 'cosine', 'dot_product'.
+   */
   distanceMeasure: 'euclidean' | 'cosine' | 'dot_product';
+  /**
+   * @beta
+   * The maximum number of documents to return from the FindNearest stage.
+   */
   limit?: number;
+  /**
+   * @beta
+   * If set, specifies the field on the output documents that will contain the computed vector distance for the document. If not set, the computed vector distance will not be returned.
+   */
   distanceField?: string;
 };
 
@@ -340,6 +396,10 @@ export type FindNearestStageOptions = StageOptions & {
  * Options for Limit stage.
  */
 export type LimitStageOptions = StageOptions & {
+  /**
+   * @beta
+   * The maximum number of documents to return.
+   */
   limit: number;
 };
 
@@ -348,6 +408,10 @@ export type LimitStageOptions = StageOptions & {
  * Options for Offset stage.
  */
 export type OffsetStageOptions = StageOptions & {
+  /**
+   * @beta
+   * The number of documents to skip.
+   */
   offset: number;
 };
 
@@ -366,6 +430,10 @@ export interface PipelineExecuteOptions extends StageOptions {
  * Options for RemoveFields stage.
  */
 export type RemoveFieldsStageOptions = StageOptions & {
+  /**
+   * @beta
+   * The fields to remove from each document.
+   */
   fields: Array<Field | string>;
 };
 
@@ -374,6 +442,10 @@ export type RemoveFieldsStageOptions = StageOptions & {
  * Options for ReplaceWith stage.
  */
 export type ReplaceWithStageOptions = StageOptions & {
+  /**
+   * @beta
+   * The name of a field that contains a map or an Expression that evaluates to a map.
+   */
   map: Expression | string;
 };
 
@@ -383,7 +455,15 @@ export type ReplaceWithStageOptions = StageOptions & {
  */
 export type SampleStageOptions = StageOptions &
   OneOf<{
+    /**
+     * @beta
+     * If set, specifies the sample rate as a percentage of the input documents. Cannot be set when documents: number is set.
+     */
     percentage: number;
+    /**
+     * @beta
+     * If set, specifies the sample rate as a total number of documents to sample from the input documents. Cannot be set when percentage: number is set.
+     */
     documents: number;
   }>;
 
@@ -392,6 +472,10 @@ export type SampleStageOptions = StageOptions &
  * Options for Select stage.
  */
 export type SelectStageOptions = StageOptions & {
+  /**
+   * @beta
+   * The fields to include in the output documents, specified as Selectable expression or as a string value indicating the field name.
+   */
   selections: Array<Selectable | string>;
 };
 
@@ -400,6 +484,10 @@ export type SelectStageOptions = StageOptions & {
  * Options for Sort stage.
  */
 export type SortStageOptions = StageOptions & {
+  /**
+   * @beta
+   * Orderings specify how the input documents are sorted. One or more ordering are required.
+   */
   orderings: Ordering[];
 };
 
@@ -408,6 +496,10 @@ export type SortStageOptions = StageOptions & {
  * Options for Union stage.
  */
 export type UnionStageOptions = StageOptions & {
+  /**
+   * @beta
+   * Specifies the other Pipeline to union with.
+   */
   other: Pipeline;
 };
 
@@ -416,7 +508,15 @@ export type UnionStageOptions = StageOptions & {
  * Options for Unnest stage.
  */
 export type UnnestStageOptions = StageOptions & {
+  /**
+   * @beta
+   * A Selectable object that defines an array expression to be un-nested and the alias for the un-nested field.
+   */
   selectable: Selectable;
+  /**
+   * @beta
+   * If set, specifies the field on the output documents that will contain the offset (starting at zero) that the element is from the original array.
+   */
   indexField?: string;
 };
 
@@ -425,5 +525,9 @@ export type UnnestStageOptions = StageOptions & {
  * Options for Where stage.
  */
 export type WhereStageOptions = StageOptions & {
+  /**
+   * @beta
+   * The BooleanExpression to apply as a filter for each input document to this stage.
+   */
   condition: BooleanExpression;
 };

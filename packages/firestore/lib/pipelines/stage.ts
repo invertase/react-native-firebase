@@ -969,7 +969,10 @@ export function split(
 
 // --- Batch 2: cosineDistance, dotProduct, equalAny, euclideanDistance, isAbsent, isError, isType, logicalMaximum, logicalMinimum, ltrim, notEqualAny, pipelineResultEqual, rand, rtrim, stringConcat ---
 
-export function cosineDistance(_fieldName: string, _vector: number[] | VectorValue): FunctionExpression;
+export function cosineDistance(
+  _fieldName: string,
+  _vector: number[] | VectorValue,
+): FunctionExpression;
 export function cosineDistance(
   _fieldName: string,
   _vectorExpression: Expression,
