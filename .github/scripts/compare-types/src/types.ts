@@ -78,11 +78,18 @@ export interface VariableShape {
   type: string;
 }
 
+/** Class declarations (export declare class X) — compared by instance members. */
+export interface ClassShape {
+  kind: 'class';
+  members: InterfaceMember[];
+}
+
 export type ExportShape =
   | FunctionShape
   | InterfaceShape
   | TypeAliasShape
-  | VariableShape;
+  | VariableShape
+  | ClassShape;
 
 export interface ExportEntry {
   name: string;

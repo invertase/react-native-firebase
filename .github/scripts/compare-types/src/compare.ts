@@ -11,6 +11,7 @@ import type {
   InterfaceShape,
   TypeAliasShape,
   VariableShape,
+  ClassShape,
   PackageConfig,
   ComparisonResult,
   MissingEntry,
@@ -26,7 +27,8 @@ export function shapeToString(shape: ExportShape): string {
   switch (shape.kind) {
     case 'function':
       return `(${shape.params.join(', ')}) => ${shape.returnType}`;
-    case 'interface': {
+    case 'interface':
+    case 'class': {
       const members = shape.members
         .map(m => `${m.name}${m.optional ? '?' : ''}: ${m.type}`)
         .join('; ');
@@ -77,12 +79,25 @@ function interfacesMatch(a: InterfaceShape, b: InterfaceShape): boolean {
 }
 
 function shapesMatch(sdk: ExportShape, rn: ExportShape): boolean {
-  if (sdk.kind !== rn.kind) return false;
+  if (sdk.kind !== rn.kind) {
+    // Allow class vs interface: compare by members (SDK uses classes, RN often uses interfaces).
+    if (
+      (sdk.kind === 'class' && rn.kind === 'interface') ||
+      (sdk.kind === 'interface' && rn.kind === 'class')
+    ) {
+      return interfacesMatch(
+        { kind: 'interface', members: sdk.members },
+        { kind: 'interface', members: rn.members },
+      );
+    }
+    return false;
+  }
   switch (sdk.kind) {
     case 'function':
       return functionsMatch(sdk, rn as FunctionShape);
     case 'interface':
-      return interfacesMatch(sdk, rn as InterfaceShape);
+    case 'class':
+      return interfacesMatch(sdk as InterfaceShape, rn as InterfaceShape);
     case 'typeAlias':
       return sdk.type === (rn as TypeAliasShape).type;
     case 'variable':

@@ -9,6 +9,7 @@ import fs from 'fs';
 import {
   Project,
   Node,
+  type ClassDeclaration,
   type ExportedDeclarations,
   type SourceFile,
 } from 'ts-morph';
@@ -20,6 +21,7 @@ import type {
   InterfaceShape,
   TypeAliasShape,
   VariableShape,
+  ClassShape,
 } from './types';
 
 // ---------------------------------------------------------------------------
@@ -127,6 +129,37 @@ function extractVariableShape(decl: any): VariableShape {
   return { kind: 'variable', type };
 }
 
+/**
+ * Extract instance members from a class declaration (for comparison).
+ * Treats class shape like an interface so SDK classes can match RN interfaces.
+ */
+function extractClassShape(decl: ClassDeclaration): ClassShape {
+  const members: InterfaceMember[] = [];
+  for (const member of decl.getMembers()) {
+    if (Node.isPropertyDeclaration(member)) {
+      const typeNode = member.getTypeNode();
+      members.push({
+        name: member.getName(),
+        type: normalizeType(typeNode?.getText() ?? 'any'),
+        optional: member.hasQuestionToken(),
+      });
+    } else if (Node.isMethodDeclaration(member)) {
+      const methodParams = member
+        .getParameters()
+        .map((p) => normalizeType(p.getTypeNode()?.getText() ?? 'any'));
+      const retType = normalizeType(
+        member.getReturnTypeNode()?.getText() ?? 'void',
+      );
+      members.push({
+        name: member.getName(),
+        type: `(${methodParams.join(', ')}) => ${retType}`,
+        optional: member.hasQuestionToken(),
+      });
+    }
+  }
+  return { kind: 'class', members };
+}
+
 function extractShape(
   declarations: ReadonlyArray<ExportedDeclarations>,
 ): ExportShape | null {
@@ -142,6 +175,9 @@ function extractShape(
     }
     if (Node.isVariableDeclaration(decl)) {
       return extractVariableShape(decl);
+    }
+    if (Node.isClassDeclaration(decl)) {
+      return extractClassShape(decl);
     }
   }
   return null;
