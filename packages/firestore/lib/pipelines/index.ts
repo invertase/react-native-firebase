@@ -78,7 +78,6 @@ export {
   OrderingHelper as Ordering,
   ascending,
   descending,
-  avg,
   countAll,
   map,
   array,

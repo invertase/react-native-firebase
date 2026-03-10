@@ -17,6 +17,7 @@
 
 import type { Pipeline } from './pipeline';
 import type { DocumentReference, Query } from '../types/firestore';
+import type VectorValue from '../FirestoreVectorValue';
 
 /**
  * @beta
@@ -328,7 +329,7 @@ export type DocumentsStageOptions = StageOptions & {
  */
 export type FindNearestStageOptions = StageOptions & {
   field: Field | string;
-  vectorValue: number[] | { values: number[] };
+  vectorValue: VectorValue | number[];
   distanceMeasure: 'euclidean' | 'cosine' | 'dot_product';
   limit?: number;
   distanceField?: string;
@@ -357,6 +358,7 @@ export type OffsetStageOptions = StageOptions & {
 export interface PipelineExecuteOptions extends StageOptions {
   pipeline: Pipeline;
   indexMode?: 'recommended';
+  rawOptions?: { [name: string]: unknown };
 }
 
 /**
@@ -381,8 +383,8 @@ export type ReplaceWithStageOptions = StageOptions & {
  */
 export type SampleStageOptions = StageOptions &
   OneOf<{
-    documents: number;
     percentage: number;
+    documents: number;
   }>;
 
 /**

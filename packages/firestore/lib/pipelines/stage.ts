@@ -29,6 +29,8 @@ import type {
   TimeGranularity,
 } from './stage_options';
 import type { DocumentReference } from '../types/firestore';
+import type VectorValue from '../FirestoreVectorValue';
+import type { Bytes } from '../modular/Bytes';
 
 /**
  * @beta
@@ -967,14 +969,14 @@ export function split(
 
 // --- Batch 2: cosineDistance, dotProduct, equalAny, euclideanDistance, isAbsent, isError, isType, logicalMaximum, logicalMinimum, ltrim, notEqualAny, pipelineResultEqual, rand, rtrim, stringConcat ---
 
-export function cosineDistance(_fieldName: string, _vector: number[] | unknown): FunctionExpression;
+export function cosineDistance(_fieldName: string, _vector: number[] | VectorValue): FunctionExpression;
 export function cosineDistance(
   _fieldName: string,
   _vectorExpression: Expression,
 ): FunctionExpression;
 export function cosineDistance(
   _vectorExpression: Expression,
-  _vector: number[] | unknown,
+  _vector: number[] | VectorValue,
 ): FunctionExpression;
 export function cosineDistance(
   _vectorExpression: Expression,
@@ -982,16 +984,16 @@ export function cosineDistance(
 ): FunctionExpression;
 export function cosineDistance(
   _fieldOrExpr: string | Expression,
-  _vectorOrExpr: number[] | unknown | Expression,
+  _vectorOrExpr: number[] | VectorValue | Expression,
 ): FunctionExpression {
   return {} as FunctionExpression;
 }
 
-export function dotProduct(_fieldName: string, _vector: number[] | unknown): FunctionExpression;
+export function dotProduct(_fieldName: string, _vector: number[] | VectorValue): FunctionExpression;
 export function dotProduct(_fieldName: string, _vectorExpression: Expression): FunctionExpression;
 export function dotProduct(
   _vectorExpression: Expression,
-  _vector: number[] | unknown,
+  _vector: number[] | VectorValue,
 ): FunctionExpression;
 export function dotProduct(
   _vectorExpression: Expression,
@@ -999,7 +1001,7 @@ export function dotProduct(
 ): FunctionExpression;
 export function dotProduct(
   _fieldOrExpr: string | Expression,
-  _vectorOrExpr: number[] | unknown | Expression,
+  _vectorOrExpr: number[] | VectorValue | Expression,
 ): FunctionExpression {
   return {} as FunctionExpression;
 }
@@ -1023,7 +1025,7 @@ export function equalAny(
 
 export function euclideanDistance(
   _fieldName: string,
-  _vector: number[] | unknown,
+  _vector: number[] | VectorValue,
 ): FunctionExpression;
 export function euclideanDistance(
   _fieldName: string,
@@ -1031,7 +1033,7 @@ export function euclideanDistance(
 ): FunctionExpression;
 export function euclideanDistance(
   _vectorExpression: Expression,
-  _vector: number[] | unknown,
+  _vector: number[] | VectorValue,
 ): FunctionExpression;
 export function euclideanDistance(
   _vectorExpression: Expression,
@@ -1039,7 +1041,7 @@ export function euclideanDistance(
 ): FunctionExpression;
 export function euclideanDistance(
   _fieldOrExpr: string | Expression,
-  _vectorOrExpr: number[] | unknown | Expression,
+  _vectorOrExpr: number[] | VectorValue | Expression,
 ): FunctionExpression {
   return {} as FunctionExpression;
 }
@@ -1098,15 +1100,15 @@ export function logicalMinimum(
 
 export function ltrim(
   _fieldName: string,
-  _valueToTrim?: string | Expression | unknown,
+  _valueToTrim?: string | Expression | Bytes,
 ): FunctionExpression;
 export function ltrim(
   _expression: Expression,
-  _valueToTrim?: string | Expression | unknown,
+  _valueToTrim?: string | Expression | Bytes,
 ): FunctionExpression;
 export function ltrim(
   _fieldOrExpr: string | Expression,
-  _valueToTrim?: string | Expression | unknown,
+  _valueToTrim?: string | Expression | Bytes,
 ): FunctionExpression {
   return {} as FunctionExpression;
 }
@@ -1138,15 +1140,15 @@ export function rand(): FunctionExpression {
 
 export function rtrim(
   _fieldName: string,
-  _valueToTrim?: string | Expression | unknown,
+  _valueToTrim?: string | Expression | Bytes,
 ): FunctionExpression;
 export function rtrim(
   _expression: Expression,
-  _valueToTrim?: string | Expression | unknown,
+  _valueToTrim?: string | Expression | Bytes,
 ): FunctionExpression;
 export function rtrim(
   _fieldOrExpr: string | Expression,
-  _valueToTrim?: string | Expression | unknown,
+  _valueToTrim?: string | Expression | Bytes,
 ): FunctionExpression {
   return {} as FunctionExpression;
 }
@@ -1314,15 +1316,15 @@ export function stringContains(
 
 export function stringIndexOf(
   _fieldName: string,
-  _search: string | Expression | unknown,
+  _search: string | Expression | Bytes,
 ): FunctionExpression;
 export function stringIndexOf(
   _expression: Expression,
-  _search: string | Expression | unknown,
+  _search: string | Expression | Bytes,
 ): FunctionExpression;
 export function stringIndexOf(
   _fieldOrExpr: string | Expression,
-  _search: string | Expression | unknown,
+  _search: string | Expression | Bytes,
 ): FunctionExpression {
   return {} as FunctionExpression;
 }
@@ -1344,18 +1346,18 @@ export function stringRepeat(
 
 export function stringReplaceAll(
   _fieldName: string,
-  _find: string | Expression | unknown,
-  _replacement: string | Expression | unknown,
+  _find: string | Expression | Bytes,
+  _replacement: string | Expression | Bytes,
 ): FunctionExpression;
 export function stringReplaceAll(
   _expression: Expression,
-  _find: string | Expression | unknown,
-  _replacement: string | Expression | unknown,
+  _find: string | Expression | Bytes,
+  _replacement: string | Expression | Bytes,
 ): FunctionExpression;
 export function stringReplaceAll(
   _fieldOrExpr: string | Expression,
-  _find: string | Expression | unknown,
-  _replacement: string | Expression | unknown,
+  _find: string | Expression | Bytes,
+  _replacement: string | Expression | Bytes,
 ): FunctionExpression {
   return {} as FunctionExpression;
 }
@@ -1366,18 +1368,18 @@ type TimestampUnit = 'microsecond' | 'millisecond' | 'second' | 'minute' | 'hour
 
 export function stringReplaceOne(
   _fieldName: string,
-  _find: string | Expression | unknown,
-  _replacement: string | Expression | unknown,
+  _find: string | Expression | Bytes,
+  _replacement: string | Expression | Bytes,
 ): FunctionExpression;
 export function stringReplaceOne(
   _expression: Expression,
-  _find: string | Expression | unknown,
-  _replacement: string | Expression | unknown,
+  _find: string | Expression | Bytes,
+  _replacement: string | Expression | Bytes,
 ): FunctionExpression;
 export function stringReplaceOne(
   _fieldOrExpr: string | Expression,
-  _find: string | Expression | unknown,
-  _replacement: string | Expression | unknown,
+  _find: string | Expression | Bytes,
+  _replacement: string | Expression | Bytes,
 ): FunctionExpression {
   return {} as FunctionExpression;
 }
