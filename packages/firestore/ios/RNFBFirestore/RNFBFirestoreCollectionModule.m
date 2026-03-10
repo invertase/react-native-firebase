@@ -19,6 +19,7 @@
 #import <React/RCTUtils.h>
 
 #import "RNFBFirestoreCollectionModule.h"
+#import "RNFBFirestorePipelineExecutor.h"
 
 static __strong NSMutableDictionary *collectionSnapshotListeners;
 static NSString *const RNFB_FIRESTORE_COLLECTION_SYNC = @"firestore_collection_sync_event";
@@ -309,21 +310,11 @@ RCT_EXPORT_METHOD(pipelineExecute
                   : (NSDictionary *)options
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  (void)firebaseApp;
-  (void)databaseId;
-  (void)pipeline;
-  (void)options;
-  (void)resolve;
-
-  NSError *error = [NSError
-      errorWithDomain:FIRFirestoreErrorDomain
-                 code:FIRFirestoreErrorCodeUnimplemented
-             userInfo:@{
-               NSLocalizedDescriptionKey :
-                   @"Firestore pipelines are not supported by this native implementation yet."
-             }];
-
-  [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
+  FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
+                                                         databaseId:databaseId];
+  RNFBFirestorePipelineExecutor *pipelineExecutor =
+      [[RNFBFirestorePipelineExecutor alloc] initWithFirestore:firestore];
+  [pipelineExecutor executeWithPipeline:pipeline options:options resolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(collectionGet
