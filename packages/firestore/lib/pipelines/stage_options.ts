@@ -31,6 +31,32 @@ export type ExpressionType =
 
 /**
  * @beta
+ * Firestore value type for isType() checks.
+ */
+export type Type =
+  | 'null'
+  | 'array'
+  | 'boolean'
+  | 'bytes'
+  | 'timestamp'
+  | 'geo_point'
+  | 'number'
+  | 'int32'
+  | 'int64'
+  | 'float64'
+  | 'decimal128'
+  | 'map'
+  | 'reference'
+  | 'string'
+  | 'vector'
+  | 'max_key'
+  | 'min_key'
+  | 'object_id'
+  | 'regex'
+  | 'request_timestamp';
+
+/**
+ * @beta
  * Boolean expression for pipeline `where()` (e.g. field('x').gt(0), and(...), or(...)).
  */
 export interface BooleanExpression {

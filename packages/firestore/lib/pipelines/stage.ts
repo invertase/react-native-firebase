@@ -15,7 +15,7 @@
  *
  */
 
-import type { ExecuteOptions, Pipeline, PipelineSnapshot } from './pipeline';
+import type { ExecuteOptions, Pipeline, PipelineResult, PipelineSnapshot } from './pipeline';
 import type {
   BooleanExpression,
   Field,
@@ -25,6 +25,7 @@ import type {
   AggregateFunction,
   Expression,
   Selectable,
+  Type,
 } from './stage_options';
 import type { DocumentReference } from '../types/firestore';
 
@@ -959,6 +960,210 @@ export function split(_expression: Expression, _delimiter: Expression): Function
 export function split(
   _fieldOrExpr: string | Expression,
   _delimiter: string | Expression,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+// --- Batch 2: cosineDistance, dotProduct, equalAny, euclideanDistance, isAbsent, isError, isType, logicalMaximum, logicalMinimum, ltrim, notEqualAny, pipelineResultEqual, rand, rtrim, stringConcat ---
+
+export function cosineDistance(_fieldName: string, _vector: number[] | unknown): FunctionExpression;
+export function cosineDistance(
+  _fieldName: string,
+  _vectorExpression: Expression,
+): FunctionExpression;
+export function cosineDistance(
+  _vectorExpression: Expression,
+  _vector: number[] | unknown,
+): FunctionExpression;
+export function cosineDistance(
+  _vectorExpression: Expression,
+  _otherVectorExpression: Expression,
+): FunctionExpression;
+export function cosineDistance(
+  _fieldOrExpr: string | Expression,
+  _vectorOrExpr: number[] | unknown | Expression,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function dotProduct(_fieldName: string, _vector: number[] | unknown): FunctionExpression;
+export function dotProduct(_fieldName: string, _vectorExpression: Expression): FunctionExpression;
+export function dotProduct(
+  _vectorExpression: Expression,
+  _vector: number[] | unknown,
+): FunctionExpression;
+export function dotProduct(
+  _vectorExpression: Expression,
+  _otherVectorExpression: Expression,
+): FunctionExpression;
+export function dotProduct(
+  _fieldOrExpr: string | Expression,
+  _vectorOrExpr: number[] | unknown | Expression,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function equalAny(
+  _expression: Expression,
+  _values: Array<Expression | unknown>,
+): BooleanExpression;
+export function equalAny(_expression: Expression, _arrayExpression: Expression): BooleanExpression;
+export function equalAny(
+  _fieldName: string,
+  _values: Array<Expression | unknown>,
+): BooleanExpression;
+export function equalAny(_fieldName: string, _arrayExpression: Expression): BooleanExpression;
+export function equalAny(
+  _exprOrField: string | Expression,
+  _valuesOrArray: Array<Expression | unknown> | Expression,
+): BooleanExpression {
+  return {} as BooleanExpression;
+}
+
+export function euclideanDistance(
+  _fieldName: string,
+  _vector: number[] | unknown,
+): FunctionExpression;
+export function euclideanDistance(
+  _fieldName: string,
+  _vectorExpression: Expression,
+): FunctionExpression;
+export function euclideanDistance(
+  _vectorExpression: Expression,
+  _vector: number[] | unknown,
+): FunctionExpression;
+export function euclideanDistance(
+  _vectorExpression: Expression,
+  _otherVectorExpression: Expression,
+): FunctionExpression;
+export function euclideanDistance(
+  _fieldOrExpr: string | Expression,
+  _vectorOrExpr: number[] | unknown | Expression,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function isAbsent(_value: Expression): BooleanExpression;
+export function isAbsent(_field: string): BooleanExpression;
+export function isAbsent(_valueOrField: Expression | string): BooleanExpression {
+  return {} as BooleanExpression;
+}
+
+export function isError(_value: Expression): BooleanExpression {
+  return {} as BooleanExpression;
+}
+
+export function isType(_fieldName: string, _type: Type): BooleanExpression;
+export function isType(_expression: Expression, _type: Type): BooleanExpression;
+export function isType(_fieldOrExpr: string | Expression, _type: Type): BooleanExpression {
+  return {} as BooleanExpression;
+}
+
+export function logicalMaximum(
+  _first: Expression,
+  _second: Expression | unknown,
+  ..._others: Array<Expression | unknown>
+): FunctionExpression;
+export function logicalMaximum(
+  _fieldName: string,
+  _second: Expression | unknown,
+  ..._others: Array<Expression | unknown>
+): FunctionExpression;
+export function logicalMaximum(
+  _first: Expression | string,
+  _second: Expression | unknown,
+  ..._others: Array<Expression | unknown>
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function logicalMinimum(
+  _first: Expression,
+  _second: Expression | unknown,
+  ..._others: Array<Expression | unknown>
+): FunctionExpression;
+export function logicalMinimum(
+  _fieldName: string,
+  _second: Expression | unknown,
+  ..._others: Array<Expression | unknown>
+): FunctionExpression;
+export function logicalMinimum(
+  _first: Expression | string,
+  _second: Expression | unknown,
+  ..._others: Array<Expression | unknown>
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function ltrim(
+  _fieldName: string,
+  _valueToTrim?: string | Expression | unknown,
+): FunctionExpression;
+export function ltrim(
+  _expression: Expression,
+  _valueToTrim?: string | Expression | unknown,
+): FunctionExpression;
+export function ltrim(
+  _fieldOrExpr: string | Expression,
+  _valueToTrim?: string | Expression | unknown,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function notEqualAny(
+  _element: Expression,
+  _values: Array<Expression | unknown>,
+): BooleanExpression;
+export function notEqualAny(
+  _fieldName: string,
+  _values: Array<Expression | unknown>,
+): BooleanExpression;
+export function notEqualAny(_element: Expression, _arrayExpression: Expression): BooleanExpression;
+export function notEqualAny(_fieldName: string, _arrayExpression: Expression): BooleanExpression;
+export function notEqualAny(
+  _elemOrField: string | Expression,
+  _valuesOrArray: Array<Expression | unknown> | Expression,
+): BooleanExpression {
+  return {} as BooleanExpression;
+}
+
+export function pipelineResultEqual(_left: PipelineResult, _right: PipelineResult): boolean {
+  return false;
+}
+
+export function rand(): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function rtrim(
+  _fieldName: string,
+  _valueToTrim?: string | Expression | unknown,
+): FunctionExpression;
+export function rtrim(
+  _expression: Expression,
+  _valueToTrim?: string | Expression | unknown,
+): FunctionExpression;
+export function rtrim(
+  _fieldOrExpr: string | Expression,
+  _valueToTrim?: string | Expression | unknown,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function stringConcat(
+  _fieldName: string,
+  _secondString: Expression | string,
+  ..._otherStrings: Array<Expression | string>
+): FunctionExpression;
+export function stringConcat(
+  _firstString: Expression,
+  _secondString: Expression | string,
+  ..._otherStrings: Array<Expression | string>
+): FunctionExpression;
+export function stringConcat(
+  _first: string | Expression,
+  _second: Expression | string,
+  ..._others: Array<Expression | string>
 ): FunctionExpression {
   return {} as FunctionExpression;
 }
