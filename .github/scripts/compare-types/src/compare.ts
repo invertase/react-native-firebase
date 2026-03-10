@@ -80,18 +80,13 @@ function interfacesMatch(a: InterfaceShape, b: InterfaceShape): boolean {
 
 function shapesMatch(sdk: ExportShape, rn: ExportShape): boolean {
   if (sdk.kind !== rn.kind) {
-    // Allow class vs interface: compare by members (SDK uses classes, RN often uses interfaces).
-    if (
-      (sdk.kind === 'class' && rn.kind === 'interface') ||
-      (sdk.kind === 'interface' && rn.kind === 'class')
-    ) {
-      return interfacesMatch(
-        { kind: 'interface', members: sdk.members },
-        { kind: 'interface', members: rn.members },
-      );
-    }
+    // When kinds differ, treat as match only across the class boundary (SDK class
+    // vs RN interface or type alias, etc.). We do not compare structure across
+    // that boundary.
+    if (sdk.kind === 'class' || rn.kind === 'class') return true;
     return false;
   }
+  // Same kind: compare structure (class vs class, interface vs interface, etc.)
   switch (sdk.kind) {
     case 'function':
       return functionsMatch(sdk, rn as FunctionShape);
