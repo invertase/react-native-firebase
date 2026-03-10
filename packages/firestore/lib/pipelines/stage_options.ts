@@ -30,7 +30,7 @@ export interface BooleanExpression {
  * Selectable for pipeline field selection/expressions (e.g. field('a').as('b'), expressions).
  */
 export interface Selectable {
-  readonly _brand?: 'Selectable';
+  selectable: true;
 }
 
 /**
@@ -40,6 +40,21 @@ export interface Selectable {
 export interface Field {
   readonly _brand?: 'Field';
 }
+
+/**
+ * @beta
+ * Function expression (e.g. map(...), array(...)). Used as return type and in Expression union.
+ */
+export interface FunctionExpression {
+  selectable: true;
+  readonly _brand?: 'FunctionExpression';
+}
+
+/**
+ * @beta
+ * Expression type for pipeline parameters (field refs, literals, function results).
+ */
+export type Expression = Field | FunctionExpression | Selectable | string;
 
 /**
  * @beta
@@ -59,6 +74,12 @@ export interface Accumulator {
   as(name: string): Accumulator;
   readonly _brand?: 'Accumulator';
 }
+
+/**
+ * @beta
+ * Aggregate function (e.g. countAll()). Alias for Accumulator.
+ */
+export type AggregateFunction = Accumulator;
 
 /**
  * @beta

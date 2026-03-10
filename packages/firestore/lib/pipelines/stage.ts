@@ -15,13 +15,15 @@
  *
  */
 
-import type { DocumentData } from '../types/firestore';
 import type { ExecuteOptions, Pipeline, PipelineSnapshot } from './pipeline';
 import type {
   BooleanExpression,
   Field,
-  Ordering as OrderingType,
+  Ordering,
   Accumulator,
+  AggregateFunction,
+  Expression,
+  FunctionExpression,
   Selectable,
 } from './stage_options';
 
@@ -36,17 +38,17 @@ import type {
  * );
  * ```
  */
-export function execute<T = DocumentData>(pipeline: Pipeline<T>): Promise<PipelineSnapshot<T>>;
+export function execute(pipeline: Pipeline): Promise<PipelineSnapshot>;
 
 /**
  * @beta
  * Executes a pipeline with options.
  */
-export function execute<T = DocumentData>(options: ExecuteOptions<T>): Promise<PipelineSnapshot<T>>;
+export function execute(options: ExecuteOptions): Promise<PipelineSnapshot>;
 
-export function execute<T = DocumentData>(
-  _pipelineOrOptions: Pipeline<T> | ExecuteOptions<T>,
-): Promise<PipelineSnapshot<T>> {
+export function execute(
+  _pipelineOrOptions: Pipeline | ExecuteOptions,
+): Promise<PipelineSnapshot> {
   // Stub: internal implementation will differ for React Native Firebase.
   return Promise.resolve({
     results: [],
@@ -98,7 +100,7 @@ export function or(
  * @beta
  * Greater-than comparison.
  */
-export function gt(_left: Field | Selectable, _right: unknown): BooleanExpression {
+export function gt(_left: Expression, _right: Expression): BooleanExpression {
   return {} as BooleanExpression;
 }
 
@@ -106,10 +108,7 @@ export function gt(_left: Field | Selectable, _right: unknown): BooleanExpressio
  * @beta
  * Greater-than comparison (alias for gt).
  */
-export function greaterThan(
-  _left: Field | Selectable | string,
-  _right: unknown,
-): BooleanExpression {
+export function greaterThan(_left: Expression, _right: Expression): BooleanExpression {
   return {} as BooleanExpression;
 }
 
@@ -117,7 +116,7 @@ export function greaterThan(
  * @beta
  * Equality comparison.
  */
-export function eq(_left: Field | Selectable, _right: unknown): BooleanExpression {
+export function eq(_left: Expression, _right: Expression): BooleanExpression {
   return {} as BooleanExpression;
 }
 
@@ -125,7 +124,7 @@ export function eq(_left: Field | Selectable, _right: unknown): BooleanExpressio
  * @beta
  * Equality comparison (alias for eq).
  */
-export function equal(_left: Field | Selectable | string, _right: unknown): BooleanExpression {
+export function equal(_left: Expression, _right: Expression): BooleanExpression {
   return {} as BooleanExpression;
 }
 
@@ -133,7 +132,7 @@ export function equal(_left: Field | Selectable | string, _right: unknown): Bool
  * @beta
  * Inequality comparison.
  */
-export function notEqual(_left: Field | Selectable | string, _right: unknown): BooleanExpression {
+export function notEqual(_left: Expression, _right: Expression): BooleanExpression {
   return {} as BooleanExpression;
 }
 
@@ -141,7 +140,7 @@ export function notEqual(_left: Field | Selectable | string, _right: unknown): B
  * @beta
  * Greater-than-or-equal comparison.
  */
-export function gte(_left: Field | Selectable | string, _right: unknown): BooleanExpression {
+export function gte(_left: Expression, _right: Expression): BooleanExpression {
   return {} as BooleanExpression;
 }
 
@@ -149,7 +148,7 @@ export function gte(_left: Field | Selectable | string, _right: unknown): Boolea
  * @beta
  * Less-than comparison.
  */
-export function lt(_left: Field | Selectable | string, _right: unknown): BooleanExpression {
+export function lt(_left: Expression, _right: Expression): BooleanExpression {
   return {} as BooleanExpression;
 }
 
@@ -157,7 +156,7 @@ export function lt(_left: Field | Selectable | string, _right: unknown): Boolean
  * @beta
  * Less-than comparison (alias for lt).
  */
-export function lessThan(_left: Field | Selectable | string, _right: unknown): BooleanExpression {
+export function lessThan(_left: Expression, _right: Expression): BooleanExpression {
   return {} as BooleanExpression;
 }
 
@@ -165,7 +164,7 @@ export function lessThan(_left: Field | Selectable | string, _right: unknown): B
  * @beta
  * Less-than-or-equal comparison.
  */
-export function lte(_left: Field | Selectable | string, _right: unknown): BooleanExpression {
+export function lte(_left: Expression, _right: Expression): BooleanExpression {
   return {} as BooleanExpression;
 }
 
@@ -173,10 +172,7 @@ export function lte(_left: Field | Selectable | string, _right: unknown): Boolea
  * @beta
  * Less-than-or-equal comparison (alias for lte).
  */
-export function lessThanOrEqual(
-  _left: Field | Selectable | string,
-  _right: unknown,
-): BooleanExpression {
+export function lessThanOrEqual(_left: Expression, _right: Expression): BooleanExpression {
   return {} as BooleanExpression;
 }
 
@@ -184,10 +180,7 @@ export function lessThanOrEqual(
  * @beta
  * Greater-than-or-equal comparison (alias for gte).
  */
-export function greaterThanOrEqual(
-  _left: Field | Selectable | string,
-  _right: unknown,
-): BooleanExpression {
+export function greaterThanOrEqual(_left: Expression, _right: Expression): BooleanExpression {
   return {} as BooleanExpression;
 }
 
@@ -195,7 +188,7 @@ export function greaterThanOrEqual(
  * @beta
  * Checks if a field exists (or expression evaluates to a value).
  */
-export function exists(_valueOrFieldName: Field | Selectable | string): BooleanExpression {
+export function exists(_valueOrFieldName: Expression): BooleanExpression {
   return {} as BooleanExpression;
 }
 
@@ -204,8 +197,8 @@ export function exists(_valueOrFieldName: Field | Selectable | string): BooleanE
  * Checks if an array contains an element.
  */
 export function arrayContains(
-  _arrayOrFieldName: Field | Selectable | string,
-  _element: unknown,
+  _arrayOrFieldName: Expression,
+  _element: Expression,
 ): BooleanExpression {
   return {} as BooleanExpression;
 }
@@ -215,8 +208,8 @@ export function arrayContains(
  * Checks if an array contains any of the given values.
  */
 export function arrayContainsAny(
-  _arrayOrFieldName: Field | Selectable | string,
-  _values: unknown[] | Selectable,
+  _arrayOrFieldName: Expression,
+  _values: Array<Expression | unknown>,
 ): BooleanExpression {
   return {} as BooleanExpression;
 }
@@ -226,8 +219,8 @@ export function arrayContainsAny(
  * Checks if an array contains all of the given values.
  */
 export function arrayContainsAll(
-  _arrayOrFieldName: Field | Selectable | string,
-  _values: unknown[] | Selectable,
+  _arrayOrFieldName: Expression,
+  _values: Array<Expression | unknown>,
 ): BooleanExpression {
   return {} as BooleanExpression;
 }
@@ -236,9 +229,14 @@ export function arrayContainsAll(
  * @beta
  * Checks if a string starts with a prefix.
  */
+export function startsWith(_stringOrFieldName: string, _prefix: string): BooleanExpression;
 export function startsWith(
-  _stringOrFieldName: Field | Selectable | string,
-  _prefix: string | Selectable,
+  _stringOrFieldName: Expression,
+  _prefix: string | Expression,
+): BooleanExpression;
+export function startsWith(
+  _stringOrFieldName: string | Expression,
+  _prefix: string | Expression,
 ): BooleanExpression {
   return {} as BooleanExpression;
 }
@@ -247,9 +245,14 @@ export function startsWith(
  * @beta
  * Checks if a string ends with a suffix.
  */
+export function endsWith(_stringOrFieldName: string, _suffix: string): BooleanExpression;
 export function endsWith(
-  _stringOrFieldName: Field | Selectable | string,
-  _suffix: string | Selectable,
+  _stringOrFieldName: Expression,
+  _suffix: string | Expression,
+): BooleanExpression;
+export function endsWith(
+  _stringOrFieldName: string | Expression,
+  _suffix: string | Expression,
 ): BooleanExpression {
   return {} as BooleanExpression;
 }
@@ -258,9 +261,9 @@ export function endsWith(
  * @beta
  * Ordering helper (e.g. Ordering.of(field('rating')).descending()).
  */
-export const Ordering = {
-  of(_fieldOrOrdering: Field | OrderingType): OrderingType {
-    return {} as OrderingType;
+export const OrderingHelper = {
+  of(_fieldOrOrdering: Field | Ordering): Ordering {
+    return {} as Ordering;
   },
 };
 
@@ -268,16 +271,16 @@ export const Ordering = {
  * @beta
  * Ascending ordering (standalone). Use in sort().
  */
-export function ascending(_exprOrFieldName: Field | Selectable | string): OrderingType {
-  return {} as OrderingType;
+export function ascending(_expr: Expression): Ordering {
+  return {} as Ordering;
 }
 
 /**
  * @beta
  * Descending ordering (standalone). Use in sort().
  */
-export function descending(_exprOrFieldName: Field | Selectable | string): OrderingType {
-  return {} as OrderingType;
+export function descending(_expr: Expression): Ordering {
+  return {} as Ordering;
 }
 
 /**
@@ -292,22 +295,22 @@ export function avg(_f: Field | Selectable): Accumulator {
  * @beta
  * Count-all aggregation (e.g. countAll().as('total')).
  */
-export function countAll(): Accumulator {
-  return {} as Accumulator;
+export function countAll(): AggregateFunction {
+  return {} as AggregateFunction;
 }
 
 /**
  * @beta
  * Map expression for replaceWith etc.
  */
-export function map(_entries: Record<string, unknown>): Selectable {
-  return {} as Selectable;
+export function map(_entries: Record<string, unknown>): FunctionExpression {
+  return {} as FunctionExpression;
 }
 
 /**
  * @beta
  * Array expression.
  */
-export function array(..._items: unknown[]): Selectable {
-  return {} as Selectable;
+export function array(_elements: unknown[]): FunctionExpression {
+  return {} as FunctionExpression;
 }
