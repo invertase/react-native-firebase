@@ -24,16 +24,6 @@ const config: PackageConfig = {
   nameMapping: {},
   missingInRN: [],
   extraInRN: [
-    { name: 'PipelineReplaceWithOptions', reason: 'RN export for replaceWith() options; SDK uses ReplaceWithStageOptions.' },
-    { name: 'PipelineSampleOptions', reason: 'RN export for sample() options; SDK uses SampleStageOptions.' },
-    { name: 'PipelineUnionOptions', reason: 'RN export for union() options; SDK uses UnionStageOptions.' },
-    { name: 'PipelineUnnestOptions', reason: 'RN export for unnest() options; SDK uses UnnestStageOptions.' },
-    { name: 'PipelineRawStageOptions', reason: 'RN export for rawStage() options; SDK uses PipelineRawStageOptions or inline.' },
-    { name: 'gt', reason: 'RN exports shorthand comparison helper; SDK uses greaterThan only.' },
-    { name: 'eq', reason: 'RN exports shorthand comparison helper; SDK uses equal only.' },
-    { name: 'gte', reason: 'RN exports shorthand comparison helper; SDK uses greaterThanOrEqual only.' },
-    { name: 'lt', reason: 'RN exports shorthand comparison helper; SDK uses lessThan only.' },
-    { name: 'lte', reason: 'RN exports shorthand comparison helper; SDK uses lessThanOrEqual only.' },
     { name: 'avg', reason: 'RN exports shorthand for average(); SDK uses average only.' },
   ],
   differentShape: [
