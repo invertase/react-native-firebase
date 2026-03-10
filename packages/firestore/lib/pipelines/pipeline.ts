@@ -25,13 +25,7 @@ import type {
   PipelineUnnestOptions,
   PipelineRawStageOptions,
 } from './stage_options';
-import type {
-  BooleanExpression,
-  Selectable,
-  Field,
-  Ordering,
-  Accumulator,
-} from './expressions';
+import type { BooleanExpression, Selectable, Field, Ordering, Accumulator } from './expressions';
 
 /**
  * @beta

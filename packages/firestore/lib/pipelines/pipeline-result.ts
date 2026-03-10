@@ -45,9 +45,33 @@ export interface PipelineSnapshot<T = DocumentData> {
  * @beta
  * Compares two pipeline results for equality.
  */
-export function pipelineResultEqual(
-  _left: PipelineResult,
-  _right: PipelineResult,
-): boolean {
-  return false;
+export function pipelineResultEqual(left: PipelineResult, right: PipelineResult): boolean {
+  if (left === right) {
+    return true;
+  }
+
+  const leftRefPath = left.ref?.path;
+  const rightRefPath = right.ref?.path;
+
+  if (leftRefPath !== rightRefPath) {
+    return false;
+  }
+
+  if (left.id !== right.id) {
+    return false;
+  }
+
+  const leftCreateTime = left.createTime?.toMillis();
+  const rightCreateTime = right.createTime?.toMillis();
+  if (leftCreateTime !== rightCreateTime) {
+    return false;
+  }
+
+  const leftUpdateTime = left.updateTime?.toMillis();
+  const rightUpdateTime = right.updateTime?.toMillis();
+  if (leftUpdateTime !== rightUpdateTime) {
+    return false;
+  }
+
+  return JSON.stringify(left.data()) === JSON.stringify(right.data());
 }

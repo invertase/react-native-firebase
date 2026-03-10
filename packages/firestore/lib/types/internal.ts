@@ -40,6 +40,7 @@ import type {
 import type { PersistentCacheIndexManager } from '../FirestorePersistentCacheIndexManager';
 import type { QueryConstraint } from '../modular/query';
 import type { _Filter } from '../FirestoreFilter';
+import type FirestoreTimestamp from '../FirestoreTimestamp';
 import Blob from 'lib/FirestoreBlob';
 
 /** Optional final argument passed by modular API wrappers (MODULAR_DEPRECATION_ARG). */
@@ -92,6 +93,76 @@ export interface FirestoreAggregateQuerySpecInternal {
 export interface FirestoreAggregateQueryResultInternal {
   count?: number;
   [key: string]: unknown;
+}
+
+/** Serialized pipeline source passed to native execute bridge. */
+export type FirestorePipelineSourceInternal =
+  | {
+      source: 'collection';
+      path: string;
+      rawOptions?: Record<string, unknown>;
+    }
+  | {
+      source: 'collectionGroup';
+      collectionId: string;
+      rawOptions?: Record<string, unknown>;
+    }
+  | {
+      source: 'database';
+      rawOptions?: Record<string, unknown>;
+    }
+  | {
+      source: 'documents';
+      documents: string[];
+      rawOptions?: Record<string, unknown>;
+    }
+  | {
+      source: 'query';
+      path: string;
+      queryType: FirestoreQueryTypeInternal;
+      filters: unknown[];
+      orders: unknown[];
+      options: Record<string, unknown>;
+    };
+
+/** Serialized pipeline stage passed to native execute bridge. */
+export interface FirestorePipelineStageInternal {
+  stage: string;
+  options: Record<string, unknown>;
+}
+
+/** Serialized pipeline payload passed to native execute bridge. */
+export interface FirestorePipelineSerializedInternal {
+  source: FirestorePipelineSourceInternal;
+  stages: FirestorePipelineStageInternal[];
+}
+
+/** Options passed to native pipeline execute bridge. */
+export interface FirestorePipelineExecuteOptionsInternal {
+  indexMode?: 'recommended';
+  rawOptions?: Record<string, unknown>;
+}
+
+/** Timestamp shape received from native pipeline execution. */
+export type FirestorePipelineTimestampInternal =
+  | FirestoreTimestamp
+  | { seconds?: number; nanoseconds?: number }
+  | [number, number]
+  | number;
+
+/** Single serialized pipeline result received from native execution. */
+export interface FirestorePipelineResultInternal {
+  data?: Record<string, unknown>;
+  path?: string;
+  id?: string;
+  createTime?: FirestorePipelineTimestampInternal;
+  updateTime?: FirestorePipelineTimestampInternal;
+}
+
+/** Pipeline execution response received from native execution. */
+export interface FirestorePipelineSnapshotInternal {
+  results?: FirestorePipelineResultInternal[];
+  executionTime?: FirestorePipelineTimestampInternal;
 }
 
 /** Options for snapshot listeners (includeMetadataChanges). */
@@ -223,6 +294,10 @@ export interface RNFBFirestoreModule {
     options: FirestoreQueryOptionsInternal,
     aggregateQueries: FirestoreAggregateQuerySpecInternal[],
   ): Promise<Record<string, unknown>>;
+  pipelineExecute(
+    pipeline: FirestorePipelineSerializedInternal,
+    options?: FirestorePipelineExecuteOptionsInternal,
+  ): Promise<FirestorePipelineSnapshotInternal>;
 
   // --- Document module (RNFBFirestoreDocumentModule) ---
   documentDelete(path: string): Promise<void>;
@@ -452,6 +527,12 @@ export interface FirestoreInternal extends ParentReferenceInternal, Firestore {
   persistentCacheIndexManager(
     deprecationArg?: FirestoreModularDeprecationArg,
   ): PersistentCacheIndexManager | null;
+}
+
+/** Firestore instance prototype shape used when installing pipeline() at runtime. */
+export interface FirestorePipelinePrototypeInternal {
+  pipeline?: (this: FirestoreInternal) => unknown;
+  __rnfbFirestorePipelineInstalled__?: boolean;
 }
 
 export interface PersistentCacheIndexManagerInternal extends PersistentCacheIndexManager {

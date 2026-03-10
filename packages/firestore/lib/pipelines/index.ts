@@ -17,6 +17,7 @@
 
 import type { PipelineSource } from './pipeline-source';
 import type { Pipeline } from './pipeline';
+import { installPipelineRuntime } from './pipeline_runtime';
 
 /**
  * @beta
@@ -184,6 +185,8 @@ export {
   length,
 } from './expressions';
 export { pipelineResultEqual } from './pipeline-result';
+
+installPipelineRuntime();
 
 declare module '../types/firestore' {
   /**

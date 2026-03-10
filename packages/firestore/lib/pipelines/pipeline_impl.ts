@@ -18,6 +18,7 @@
 import type { Pipeline } from './pipeline';
 import type { PipelineSnapshot } from './pipeline-result';
 import type { PipelineExecuteOptions } from './pipeline_options';
+import { executeRuntimePipeline } from './pipeline_runtime';
 
 /**
  * @beta
@@ -39,11 +40,7 @@ export function execute(pipeline: Pipeline): Promise<PipelineSnapshot>;
 export function execute(options: PipelineExecuteOptions): Promise<PipelineSnapshot>;
 
 export function execute(
-  _pipelineOrOptions: Pipeline | PipelineExecuteOptions,
+  pipelineOrOptions: Pipeline | PipelineExecuteOptions,
 ): Promise<PipelineSnapshot> {
-  // Stub: internal implementation will differ for React Native Firebase.
-  return Promise.resolve({
-    results: [],
-    executionTime: {} as import('../FirestoreTimestamp').default,
-  });
+  return executeRuntimePipeline(pipelineOrOptions);
 }

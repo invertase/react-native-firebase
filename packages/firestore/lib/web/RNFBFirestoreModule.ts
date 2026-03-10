@@ -50,6 +50,10 @@ import {
 import { objectToWriteable, readableToObject, parseDocumentBatches } from './convert';
 import { buildQuery } from './query';
 import type { FilterSpec, OrderSpec, QueryOptions } from './query';
+import type {
+  FirestorePipelineExecuteOptionsInternal,
+  FirestorePipelineSerializedInternal,
+} from '../types/internal';
 
 function rejectWithCodeAndMessage(code: string, message: string): Promise<never> {
   return Promise.reject(getWebError({ code, message } as Error & { code: string }));
@@ -281,6 +285,18 @@ export default {
       }
       return response;
     });
+  },
+
+  pipelineExecute(
+    _appName: string,
+    _databaseId: string,
+    _pipeline: FirestorePipelineSerializedInternal,
+    _options?: FirestorePipelineExecuteOptionsInternal,
+  ): Promise<never> {
+    return rejectWithCodeAndMessage(
+      'unsupported',
+      'Firestore pipelines are not supported by the current web fallback module.',
+    );
   },
 
   collectionGet(

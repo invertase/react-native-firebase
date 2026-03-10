@@ -302,6 +302,30 @@ RCT_EXPORT_METHOD(aggregateQuery
                  }];
 }
 
+RCT_EXPORT_METHOD(pipelineExecute
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)databaseId
+                  : (NSDictionary *)pipeline
+                  : (NSDictionary *)options
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  (void)firebaseApp;
+  (void)databaseId;
+  (void)pipeline;
+  (void)options;
+  (void)resolve;
+
+  NSError *error = [NSError
+      errorWithDomain:FIRFirestoreErrorDomain
+                 code:FIRFirestoreErrorCodeUnimplemented
+             userInfo:@{
+               NSLocalizedDescriptionKey :
+                   @"Firestore pipelines are not supported by this native implementation yet."
+             }];
+
+  [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
+}
+
 RCT_EXPORT_METHOD(collectionGet
                   : (FIRApp *)firebaseApp
                   : (NSString *)databaseId
