@@ -45,35 +45,30 @@ import StoreKit
     resolve: @escaping (Any?) -> Void,
     reject: @escaping (String, String, NSError?) -> Void
   ) async {
-    do {
-      guard let id = UInt64(transactionId) else {
-        await MainActor.run { reject(Self.kCode, "Invalid transactionId", nil) }
-        return
-      }
-
-      var foundTransaction: StoreKit.Transaction?
-      for await result in StoreKit.Transaction.all {
-        switch result {
-        case let .verified(transaction):
-          if transaction.id == id {
-            foundTransaction = transaction
-            break
-          }
-        case .unverified:
-          continue
-        }
-      }
-
-      guard let transaction = foundTransaction else {
-        await MainActor.run { reject(Self.kCode, "Transaction not found", nil) }
-        return
-      }
-
-      Analytics.logTransaction(transaction)
-      await MainActor.run { resolve(NSNull()) }
-    } catch {
-      let nsError = error as NSError
-      await MainActor.run { reject(Self.kCode, error.localizedDescription, nsError) }
+    guard let id = UInt64(transactionId) else {
+      await MainActor.run { reject(Self.kCode, "Invalid transactionId", nil) }
+      return
     }
+
+    var foundTransaction: StoreKit.Transaction?
+    for await result in StoreKit.Transaction.all {
+      switch result {
+      case let .verified(transaction):
+        if transaction.id == id {
+          foundTransaction = transaction
+          break
+        }
+      case .unverified:
+        continue
+      }
+    }
+
+    guard let transaction = foundTransaction else {
+      await MainActor.run { reject(Self.kCode, "Transaction not found", nil) }
+      return
+    }
+
+    Analytics.logTransaction(transaction)
+    await MainActor.run { resolve(NSNull()) }
   }
 }
