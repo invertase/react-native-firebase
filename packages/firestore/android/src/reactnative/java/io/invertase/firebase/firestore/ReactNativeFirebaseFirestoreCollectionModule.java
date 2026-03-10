@@ -307,10 +307,10 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   @ReactMethod
   public void pipelineExecute(
       String appName, String databaseId, ReadableMap pipeline, ReadableMap options, Promise promise) {
-    rejectPromiseWithCodeAndMessage(
-        promise,
-        "firestore/unsupported",
-        "Firestore pipelines are not supported by this native implementation yet.");
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName, databaseId);
+    ReactNativeFirebaseFirestorePipelineExecutor pipelineExecutor =
+        new ReactNativeFirebaseFirestorePipelineExecutor(firebaseFirestore);
+    pipelineExecutor.execute(pipeline, options, promise);
   }
 
   @ReactMethod
