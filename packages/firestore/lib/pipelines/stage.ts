@@ -68,7 +68,14 @@ export function field(_path: string): Field {
  * @beta
  * Logical AND of boolean expressions.
  */
-export function and(..._expressions: BooleanExpression[]): BooleanExpression {
+export function and(
+  first: BooleanExpression,
+  second: BooleanExpression,
+  ...more: BooleanExpression[]
+): BooleanExpression {
+  void first;
+  void second;
+  void more;
   return {} as BooleanExpression;
 }
 
@@ -76,7 +83,14 @@ export function and(..._expressions: BooleanExpression[]): BooleanExpression {
  * @beta
  * Logical OR of boolean expressions.
  */
-export function or(..._expressions: BooleanExpression[]): BooleanExpression {
+export function or(
+  first: BooleanExpression,
+  second: BooleanExpression,
+  ...more: BooleanExpression[]
+): BooleanExpression {
+  void first;
+  void second;
+  void more;
   return {} as BooleanExpression;
 }
 
