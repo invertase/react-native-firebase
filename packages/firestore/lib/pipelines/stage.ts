@@ -847,3 +847,118 @@ export function arraySum(_expression: Expression): FunctionExpression;
 export function arraySum(_fieldOrExpr: string | Expression): FunctionExpression {
   return {} as FunctionExpression;
 }
+
+// --- Batch: byteLength, charLength, collectionId, countIf, exp, join, like, ln, log, log10, maximum, minimum, pow, reverse, split ---
+
+export function byteLength(_expr: Expression): FunctionExpression;
+export function byteLength(_fieldName: string): FunctionExpression;
+export function byteLength(_exprOrField: Expression | string): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function charLength(_fieldName: string): FunctionExpression;
+export function charLength(_stringExpression: Expression): FunctionExpression;
+export function charLength(_fieldOrExpr: string | Expression): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function collectionId(_fieldName: string): FunctionExpression;
+export function collectionId(_expression: Expression): FunctionExpression;
+export function collectionId(_fieldOrExpr: string | Expression): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function countIf(_booleanExpr: BooleanExpression): AggregateFunction {
+  return {} as AggregateFunction;
+}
+
+export function exp(_expression: Expression): FunctionExpression;
+export function exp(_fieldName: string): FunctionExpression;
+export function exp(_exprOrField: Expression | string): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function join(_arrayFieldName: string, _delimiter: string): Expression;
+export function join(_arrayExpression: Expression, _delimiterExpression: Expression): Expression;
+export function join(_arrayExpression: Expression, _delimiter: string): Expression;
+export function join(_arrayFieldName: string, _delimiterExpression: Expression): Expression;
+export function join(
+  _arrayOrField: string | Expression,
+  _delimiter: string | Expression,
+): Expression {
+  return {} as Expression;
+}
+
+export function like(_fieldName: string, _pattern: string): BooleanExpression;
+export function like(_fieldName: string, _pattern: Expression): BooleanExpression;
+export function like(_stringExpression: Expression, _pattern: string): BooleanExpression;
+export function like(_stringExpression: Expression, _pattern: Expression): BooleanExpression;
+export function like(
+  _fieldOrExpr: string | Expression,
+  _pattern: string | Expression,
+): BooleanExpression {
+  return {} as BooleanExpression;
+}
+
+export function ln(_fieldName: string): FunctionExpression;
+export function ln(_expression: Expression): FunctionExpression;
+export function ln(_fieldOrExpr: string | Expression): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function log(_expression: Expression, _base: number): FunctionExpression;
+export function log(_expression: Expression, _base: Expression): FunctionExpression;
+export function log(_fieldName: string, _base: number): FunctionExpression;
+export function log(_fieldName: string, _base: Expression): FunctionExpression;
+export function log(
+  _exprOrField: Expression | string,
+  _base: number | Expression,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function log10(_fieldName: string): FunctionExpression;
+export function log10(_expression: Expression): FunctionExpression;
+export function log10(_fieldOrExpr: string | Expression): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function maximum(_expression: Expression): AggregateFunction;
+export function maximum(_fieldName: string): AggregateFunction;
+export function maximum(_exprOrField: Expression | string): AggregateFunction {
+  return {} as AggregateFunction;
+}
+
+export function minimum(_expression: Expression): AggregateFunction;
+export function minimum(_fieldName: string): AggregateFunction;
+export function minimum(_exprOrField: Expression | string): AggregateFunction {
+  return {} as AggregateFunction;
+}
+
+export function pow(_base: Expression, _exponent: Expression): FunctionExpression;
+export function pow(_base: Expression, _exponent: number): FunctionExpression;
+export function pow(_base: string, _exponent: Expression): FunctionExpression;
+export function pow(_base: string, _exponent: number): FunctionExpression;
+export function pow(
+  _base: Expression | string,
+  _exponent: Expression | number,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function reverse(_stringExpression: Expression): FunctionExpression;
+export function reverse(_field: string): FunctionExpression;
+export function reverse(_exprOrField: Expression | string): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function split(_fieldName: string, _delimiter: string): FunctionExpression;
+export function split(_fieldName: string, _delimiter: Expression): FunctionExpression;
+export function split(_expression: Expression, _delimiter: string): FunctionExpression;
+export function split(_expression: Expression, _delimiter: Expression): FunctionExpression;
+export function split(
+  _fieldOrExpr: string | Expression,
+  _delimiter: string | Expression,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}

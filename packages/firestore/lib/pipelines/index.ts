@@ -123,6 +123,21 @@ export {
   arrayGet,
   arrayLength,
   arraySum,
+  byteLength,
+  charLength,
+  collectionId,
+  countIf,
+  exp,
+  join,
+  like,
+  ln,
+  log,
+  log10,
+  maximum,
+  minimum,
+  pow,
+  reverse,
+  split,
 } from './stage';
 
 declare module '../types/firestore' {
