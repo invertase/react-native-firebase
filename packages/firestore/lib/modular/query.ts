@@ -39,7 +39,19 @@ import type {
 } from '../types/internal';
 import type { FieldPath } from './FieldPath';
 
-export abstract class QueryConstraint {
+/**
+ * Public interface for query constraints. Ensures generated .d.ts exposes _apply
+ * so that QueryConstraint[] accepts instances from where(), orderBy(), etc.
+ */
+export interface QueryConstraint {
+  readonly type: QueryConstraintType;
+  _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+    query: Query<AppModelType, DbModelType>,
+  ): Query<AppModelType, DbModelType>;
+}
+
+/** Base implementation for orderBy/limit/startAt/endAt/where constraints. */
+export abstract class QueryConstraintBase implements QueryConstraint {
   abstract readonly type: QueryConstraintType;
   private readonly _args: unknown[];
 
@@ -60,7 +72,7 @@ export abstract class QueryConstraint {
   }
 }
 
-export class QueryCompositeFilterConstraint {
+export class QueryCompositeFilterConstraint implements QueryConstraint {
   readonly type: 'or' | 'and';
   readonly _filter: _Filter;
 
@@ -77,7 +89,7 @@ export class QueryCompositeFilterConstraint {
   }
 }
 
-export class QueryOrderByConstraint extends QueryConstraint {
+export class QueryOrderByConstraint extends QueryConstraintBase {
   readonly type = 'orderBy';
 
   constructor(fieldPath: string | FieldPath, directionStr?: OrderByDirection) {
@@ -85,7 +97,7 @@ export class QueryOrderByConstraint extends QueryConstraint {
   }
 }
 
-export class QueryLimitConstraint extends QueryConstraint {
+export class QueryLimitConstraint extends QueryConstraintBase {
   readonly type: 'limit' | 'limitToLast';
 
   constructor(type: 'limit' | 'limitToLast', limitValue: number) {
@@ -94,7 +106,7 @@ export class QueryLimitConstraint extends QueryConstraint {
   }
 }
 
-export class QueryStartAtConstraint extends QueryConstraint {
+export class QueryStartAtConstraint extends QueryConstraintBase {
   readonly type: 'startAt' | 'startAfter';
 
   constructor(type: 'startAt' | 'startAfter', ...docOrFields: Array<unknown | DocumentSnapshot>) {
@@ -103,7 +115,7 @@ export class QueryStartAtConstraint extends QueryConstraint {
   }
 }
 
-export class QueryEndAtConstraint extends QueryConstraint {
+export class QueryEndAtConstraint extends QueryConstraintBase {
   readonly type: 'endAt' | 'endBefore';
 
   constructor(type: 'endAt' | 'endBefore', ...fieldValues: unknown[]) {
@@ -112,7 +124,7 @@ export class QueryEndAtConstraint extends QueryConstraint {
   }
 }
 
-export class QueryFieldFilterConstraint extends QueryConstraint {
+export class QueryFieldFilterConstraint extends QueryConstraintBase {
   readonly type = 'where';
   readonly _filter: _Filter;
 

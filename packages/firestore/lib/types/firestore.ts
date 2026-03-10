@@ -199,7 +199,9 @@ export type QueryConstraintType =
   | 'startAt'
   | 'startAfter'
   | 'endAt'
-  | 'endBefore';
+  | 'endBefore'
+  | 'or'
+  | 'and';
 
 export interface SnapshotListenOptions {
   readonly includeMetadataChanges?: boolean;
