@@ -802,7 +802,10 @@ class FirebaseAnalyticsModule extends FirebaseModule<typeof nativeModuleName> {
       return Promise.resolve();
     }
 
-    return this.native.initiateOnDeviceConversionMeasurementWithEmailAddress(emailAddress);
+    return (
+      this.native.initiateOnDeviceConversionMeasurementWithEmailAddress?.(emailAddress) ??
+      Promise.resolve()
+    );
   }
 
   initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
@@ -818,8 +821,10 @@ class FirebaseAnalyticsModule extends FirebaseModule<typeof nativeModuleName> {
       return Promise.resolve();
     }
 
-    return this.native.initiateOnDeviceConversionMeasurementWithHashedEmailAddress(
-      hashedEmailAddress,
+    return (
+      this.native.initiateOnDeviceConversionMeasurementWithHashedEmailAddress?.(
+        hashedEmailAddress,
+      ) ?? Promise.resolve()
     );
   }
 
@@ -834,7 +839,10 @@ class FirebaseAnalyticsModule extends FirebaseModule<typeof nativeModuleName> {
       return Promise.resolve();
     }
 
-    return this.native.initiateOnDeviceConversionMeasurementWithPhoneNumber(phoneNumber);
+    return (
+      this.native.initiateOnDeviceConversionMeasurementWithPhoneNumber?.(phoneNumber) ??
+      Promise.resolve()
+    );
   }
 
   initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
@@ -856,8 +864,9 @@ class FirebaseAnalyticsModule extends FirebaseModule<typeof nativeModuleName> {
       return Promise.resolve();
     }
 
-    return this.native.initiateOnDeviceConversionMeasurementWithHashedPhoneNumber(
-      hashedPhoneNumber,
+    return (
+      this.native.initiateOnDeviceConversionMeasurementWithHashedPhoneNumber?.(hashedPhoneNumber) ??
+      Promise.resolve()
     );
   }
 }

@@ -28,7 +28,7 @@ export interface RNFBAnalyticsModule {
   setUserProperty(key: string, value: string | null): Promise<void>;
   setUserProperties(properties: Record<string, string | number | boolean | null>): Promise<void>;
   setDefaultEventParameters(params?: Record<string, unknown> | null): Promise<void>;
-  setConsent(consent: Record<string, boolean | undefined>): Promise<void>;
+  setConsent(consent: Record<string, unknown>): Promise<void>;
   setAnalyticsCollectionEnabled(enabled: boolean): Promise<void>;
   resetAnalyticsData(): Promise<void>;
   setSessionTimeoutDuration(milliseconds?: number): Promise<void>;
