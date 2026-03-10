@@ -83,6 +83,9 @@ export {
   countAll,
   map,
   array,
+  constant,
+  add,
+  subtract,
 } from './stage';
 
 declare module '../types/firestore' {

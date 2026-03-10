@@ -19,11 +19,11 @@ import type { ExecuteOptions, Pipeline, PipelineSnapshot } from './pipeline';
 import type {
   BooleanExpression,
   Field,
+  FunctionExpression,
   Ordering,
   Accumulator,
   AggregateFunction,
   Expression,
-  FunctionExpression,
   Selectable,
 } from './stage_options';
 
@@ -312,5 +312,101 @@ export function map(_entries: Record<string, unknown>): FunctionExpression {
  * Array expression.
  */
 export function array(_elements: unknown[]): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+// --- Arithmetic / constant expression helpers (align with JS SDK) ---
+
+/**
+ * @beta
+ * Creates a constant expression for a number value.
+ */
+export function constant(_value: number): Expression;
+/**
+ * @beta
+ * Creates a constant expression for a string value.
+ */
+export function constant(_value: string): Expression;
+/**
+ * @beta
+ * Creates a constant boolean expression.
+ */
+export function constant(_value: boolean): BooleanExpression;
+/**
+ * @beta
+ * Creates a constant expression for null.
+ */
+export function constant(_value: null): Expression;
+/**
+ * @beta
+ * Creates a constant expression for a value (e.g. GeoPoint, Timestamp, Date, Bytes, DocumentReference, VectorValue).
+ */
+export function constant(_value: unknown): Expression;
+export function constant(
+  _value: number | string | boolean | null | unknown,
+): Expression | BooleanExpression {
+  return {} as Expression | BooleanExpression;
+}
+
+/**
+ * @beta
+ * Creates an expression that adds two or more expressions together.
+ *
+ * @param first - The first expression to add.
+ * @param second - The second expression or literal to add.
+ * @param others - Optional other expressions or literals to add.
+ * @returns A new Expression representing the addition operation.
+ */
+export function add(
+  _first: Expression,
+  _second: Expression | unknown,
+  ..._others: (Expression | unknown)[]
+): FunctionExpression;
+/**
+ * @beta
+ * Creates an expression that adds a field's value to an expression.
+ *
+ * @param fieldName - The name of the field containing the value to add.
+ * @param second - The second expression or literal to add.
+ * @param others - Optional other expressions or literals to add.
+ * @returns A new Expression representing the addition operation.
+ */
+export function add(
+  _fieldName: string,
+  _second: Expression | unknown,
+  ..._others: (Expression | unknown)[]
+): FunctionExpression;
+export function add(
+  _first: Expression | string,
+  _second: Expression | unknown,
+  ..._others: (Expression | unknown)[]
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+/**
+ * @beta
+ * Creates an expression that subtracts the second from the first.
+ */
+export function subtract(_left: Expression, _right: Expression): FunctionExpression;
+/**
+ * @beta
+ * Creates an expression that subtracts a constant value from an expression.
+ */
+export function subtract(_expression: Expression, _value: unknown): FunctionExpression;
+/**
+ * @beta
+ * Creates an expression that subtracts an expression from a field's value.
+ */
+export function subtract(_fieldName: string, _expression: Expression): FunctionExpression;
+/**
+ * @beta
+ * Creates an expression that subtracts a constant value from a field's value.
+ */
+export function subtract(_fieldName: string, _value: unknown): FunctionExpression;
+export function subtract(
+  _leftOrField: Expression | string,
+  _rightOrValue: Expression | unknown,
+): FunctionExpression {
   return {} as FunctionExpression;
 }
