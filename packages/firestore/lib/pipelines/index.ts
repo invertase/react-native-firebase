@@ -154,6 +154,21 @@ export {
   rand,
   rtrim,
   stringConcat,
+  mapEntries,
+  mapGet,
+  mapKeys,
+  mapMerge,
+  mapRemove,
+  mapSet,
+  mapValues,
+  regexContains,
+  regexFind,
+  regexFindAll,
+  regexMatch,
+  stringContains,
+  stringIndexOf,
+  stringRepeat,
+  stringReplaceAll,
 } from './stage';
 
 declare module '../types/firestore' {

@@ -1167,3 +1167,194 @@ export function stringConcat(
 ): FunctionExpression {
   return {} as FunctionExpression;
 }
+
+// --- Batch 3: map*, regex*, stringContains, stringIndexOf, stringRepeat, stringReplaceAll ---
+
+export function mapEntries(_mapField: string): FunctionExpression;
+export function mapEntries(_mapExpression: Expression): FunctionExpression;
+export function mapEntries(_mapOrExpr: string | Expression): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function mapGet(_fieldName: string, _subField: string): FunctionExpression;
+export function mapGet(_mapExpression: Expression, _subField: string): FunctionExpression;
+export function mapGet(_mapOrExpr: string | Expression, _subField: string): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function mapKeys(_mapField: string): FunctionExpression;
+export function mapKeys(_mapExpression: Expression): FunctionExpression;
+export function mapKeys(_mapOrExpr: string | Expression): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function mapMerge(
+  _mapField: string,
+  _secondMap: Record<string, unknown> | Expression,
+  ..._otherMaps: Array<Record<string, unknown> | Expression>
+): FunctionExpression;
+export function mapMerge(
+  _firstMap: Record<string, unknown> | Expression,
+  _secondMap: Record<string, unknown> | Expression,
+  ..._otherMaps: Array<Record<string, unknown> | Expression>
+): FunctionExpression;
+export function mapMerge(
+  _first: string | Record<string, unknown> | Expression,
+  _second: Record<string, unknown> | Expression,
+  ..._others: Array<Record<string, unknown> | Expression>
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function mapRemove(_mapField: string, _key: string): FunctionExpression;
+export function mapRemove(_mapExpr: Expression, _key: string): FunctionExpression;
+export function mapRemove(_mapField: string, _keyExpr: Expression): FunctionExpression;
+export function mapRemove(_mapExpr: Expression, _keyExpr: Expression): FunctionExpression;
+export function mapRemove(
+  _mapOrExpr: string | Expression,
+  _keyOrExpr: string | Expression,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function mapSet(
+  _mapField: string,
+  _key: string | Expression,
+  _value: unknown,
+  ..._moreKeyValues: unknown[]
+): FunctionExpression;
+export function mapSet(
+  _mapExpression: Expression,
+  _key: string | Expression,
+  _value: unknown,
+  ..._moreKeyValues: unknown[]
+): FunctionExpression;
+export function mapSet(
+  _mapOrExpr: string | Expression,
+  _key: string | Expression,
+  _value: unknown,
+  ..._more: unknown[]
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function mapValues(_mapField: string): FunctionExpression;
+export function mapValues(_mapExpression: Expression): FunctionExpression;
+export function mapValues(_mapOrExpr: string | Expression): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function regexContains(_fieldName: string, _pattern: string): BooleanExpression;
+export function regexContains(_fieldName: string, _pattern: Expression): BooleanExpression;
+export function regexContains(_stringExpression: Expression, _pattern: string): BooleanExpression;
+export function regexContains(
+  _stringExpression: Expression,
+  _pattern: Expression,
+): BooleanExpression;
+export function regexContains(
+  _fieldOrExpr: string | Expression,
+  _pattern: string | Expression,
+): BooleanExpression {
+  return {} as BooleanExpression;
+}
+
+export function regexFind(_fieldName: string, _pattern: string): FunctionExpression;
+export function regexFind(_fieldName: string, _pattern: Expression): FunctionExpression;
+export function regexFind(_stringExpression: Expression, _pattern: string): FunctionExpression;
+export function regexFind(_stringExpression: Expression, _pattern: Expression): FunctionExpression;
+export function regexFind(
+  _fieldOrExpr: string | Expression,
+  _pattern: string | Expression,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function regexFindAll(_fieldName: string, _pattern: string): FunctionExpression;
+export function regexFindAll(_fieldName: string, _pattern: Expression): FunctionExpression;
+export function regexFindAll(_stringExpression: Expression, _pattern: string): FunctionExpression;
+export function regexFindAll(
+  _stringExpression: Expression,
+  _pattern: Expression,
+): FunctionExpression;
+export function regexFindAll(
+  _fieldOrExpr: string | Expression,
+  _pattern: string | Expression,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function regexMatch(_fieldName: string, _pattern: string): BooleanExpression;
+export function regexMatch(_fieldName: string, _pattern: Expression): BooleanExpression;
+export function regexMatch(_stringExpression: Expression, _pattern: string): BooleanExpression;
+export function regexMatch(_stringExpression: Expression, _pattern: Expression): BooleanExpression;
+export function regexMatch(
+  _fieldOrExpr: string | Expression,
+  _pattern: string | Expression,
+): BooleanExpression {
+  return {} as BooleanExpression;
+}
+
+export function stringContains(_fieldName: string, _substring: string): BooleanExpression;
+export function stringContains(_fieldName: string, _substring: Expression): BooleanExpression;
+export function stringContains(
+  _stringExpression: Expression,
+  _substring: string,
+): BooleanExpression;
+export function stringContains(
+  _stringExpression: Expression,
+  _substring: Expression,
+): BooleanExpression;
+export function stringContains(
+  _fieldOrExpr: string | Expression,
+  _substring: string | Expression,
+): BooleanExpression {
+  return {} as BooleanExpression;
+}
+
+export function stringIndexOf(
+  _fieldName: string,
+  _search: string | Expression | unknown,
+): FunctionExpression;
+export function stringIndexOf(
+  _expression: Expression,
+  _search: string | Expression | unknown,
+): FunctionExpression;
+export function stringIndexOf(
+  _fieldOrExpr: string | Expression,
+  _search: string | Expression | unknown,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function stringRepeat(
+  _fieldName: string,
+  _repetitions: number | Expression,
+): FunctionExpression;
+export function stringRepeat(
+  _expression: Expression,
+  _repetitions: number | Expression,
+): FunctionExpression;
+export function stringRepeat(
+  _fieldOrExpr: string | Expression,
+  _repetitions: number | Expression,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function stringReplaceAll(
+  _fieldName: string,
+  _find: string | Expression | unknown,
+  _replacement: string | Expression | unknown,
+): FunctionExpression;
+export function stringReplaceAll(
+  _expression: Expression,
+  _find: string | Expression | unknown,
+  _replacement: string | Expression | unknown,
+): FunctionExpression;
+export function stringReplaceAll(
+  _fieldOrExpr: string | Expression,
+  _find: string | Expression | unknown,
+  _replacement: string | Expression | unknown,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
