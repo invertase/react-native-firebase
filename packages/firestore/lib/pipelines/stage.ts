@@ -527,8 +527,8 @@ export function abs(_exprOrField: Expression | string): FunctionExpression {
  * @beta
  * Rounds up to the nearest integer.
  */
-export function ceil(_expression: Expression): FunctionExpression;
 export function ceil(_fieldName: string): FunctionExpression;
+export function ceil(_expression: Expression): FunctionExpression;
 export function ceil(_exprOrField: Expression | string): FunctionExpression {
   return {} as FunctionExpression;
 }
@@ -562,8 +562,8 @@ export function mod(
  * @beta
  * Rounds to the nearest integer (or to decimalPlaces when provided).
  */
-export function round(_expression: Expression): FunctionExpression;
 export function round(_fieldName: string): FunctionExpression;
+export function round(_expression: Expression): FunctionExpression;
 /**
  * @beta
  * Rounds to the given number of decimal places.
@@ -776,5 +776,74 @@ export function substring(
   _position: number | Expression,
   _length?: number | Expression,
 ): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+// --- Array expression helpers (align with JS SDK) ---
+
+/**
+ * @beta
+ * Collects distinct values of an expression across stage inputs into an array (aggregate).
+ */
+export function arrayAggDistinct(_expression: Expression): AggregateFunction;
+export function arrayAggDistinct(_fieldName: string): AggregateFunction;
+export function arrayAggDistinct(_exprOrField: Expression | string): AggregateFunction {
+  return {} as AggregateFunction;
+}
+
+/**
+ * @beta
+ * Concatenates two or more arrays.
+ */
+export function arrayConcat(
+  _firstArray: Expression,
+  _secondArray: Expression | unknown[],
+  ..._otherArrays: Array<Expression | unknown[]>
+): FunctionExpression;
+export function arrayConcat(
+  _firstArrayField: string,
+  _secondArray: Expression | unknown[],
+  ..._otherArrays: Array<Expression | unknown[]>
+): FunctionExpression;
+export function arrayConcat(
+  _first: Expression | string,
+  _second: Expression | unknown[],
+  ..._others: Array<Expression | unknown[]>
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+/**
+ * @beta
+ * Gets element at offset in an array field or expression.
+ */
+export function arrayGet(_arrayField: string, _offset: number): FunctionExpression;
+export function arrayGet(_arrayField: string, _offsetExpr: Expression): FunctionExpression;
+export function arrayGet(_arrayExpression: Expression, _offset: number): FunctionExpression;
+export function arrayGet(_arrayExpression: Expression, _offsetExpr: Expression): FunctionExpression;
+export function arrayGet(
+  _arrayOrField: string | Expression,
+  _offset: number | Expression,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+/**
+ * @beta
+ * Length of an array (field or expression).
+ */
+export function arrayLength(_fieldName: string): FunctionExpression;
+export function arrayLength(_array: Expression): FunctionExpression;
+export function arrayLength(_fieldOrExpr: string | Expression): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+/**
+ * @beta
+ * Sum of numeric values in an array (aggregate-like for arrays).
+ */
+export function arraySum(_fieldName: string): FunctionExpression;
+export function arraySum(_expression: Expression): FunctionExpression;
+export function arraySum(_fieldOrExpr: string | Expression): FunctionExpression {
   return {} as FunctionExpression;
 }

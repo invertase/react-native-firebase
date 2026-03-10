@@ -118,6 +118,11 @@ export {
   toUpper,
   trim,
   substring,
+  arrayAggDistinct,
+  arrayConcat,
+  arrayGet,
+  arrayLength,
+  arraySum,
 } from './stage';
 
 declare module '../types/firestore' {
