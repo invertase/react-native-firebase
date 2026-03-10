@@ -19,6 +19,18 @@ import type { Pipeline } from './pipeline';
 
 /**
  * @beta
+ * Expression type kind (for internal/backend use).
+ */
+export type ExpressionType =
+  | 'Field'
+  | 'Constant'
+  | 'Function'
+  | 'AggregateFunction'
+  | 'ListOfExpressions'
+  | 'AliasedExpression';
+
+/**
+ * @beta
  * Boolean expression for pipeline `where()` (e.g. field('x').gt(0), and(...), or(...)).
  */
 export interface BooleanExpression {
@@ -157,3 +169,53 @@ export interface PipelineUnnestOptions {
 export interface PipelineRawStageOptions {
   [key: string]: unknown;
 }
+
+/**
+ * @beta
+ * Options defining how a Stage is evaluated. Base type for stage option types.
+ */
+export interface StageOptions {
+  /**
+   * @beta
+   * Escape hatch for options not known at build time (e.g. backend-specific snake_case options).
+   */
+  rawOptions?: {
+    [name: string]: unknown;
+  };
+}
+
+/**
+ * @beta
+ * An aggregate function with an output alias.
+ */
+export interface AliasedAggregate {
+  readonly aggregate: AggregateFunction;
+  readonly alias: string;
+}
+
+/**
+ * @beta
+ * An expression with an output alias (implements Selectable).
+ */
+export interface AliasedExpression extends Selectable {
+  readonly expr: Expression;
+  readonly alias: string;
+  exprType?: ExpressionType;
+}
+
+/**
+ * @beta
+ * Options for AddFields stage. At least one field required.
+ */
+export type AddFieldsStageOptions = StageOptions & {
+  fields: Selectable[];
+};
+
+/**
+ * @beta
+ * Options for Aggregate stage.
+ */
+export type AggregateStageOptions = StageOptions & {
+  accumulators: AliasedAggregate[];
+  groups?: Array<string | Selectable>;
+};

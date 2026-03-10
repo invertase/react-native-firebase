@@ -52,6 +52,12 @@ export type {
   PipelineUnionOptions,
   PipelineUnnestOptions,
   PipelineRawStageOptions,
+  ExpressionType,
+  StageOptions,
+  AliasedAggregate,
+  AliasedExpression,
+  AddFieldsStageOptions,
+  AggregateStageOptions,
 } from './stage_options';
 
 export {
@@ -101,6 +107,17 @@ export {
   countDistinct,
   first,
   last,
+  arrayAgg,
+  concat,
+  sqrt,
+  currentTimestamp,
+  not,
+  ifAbsent,
+  ifError,
+  toLower,
+  toUpper,
+  trim,
+  substring,
 } from './stage';
 
 declare module '../types/firestore' {

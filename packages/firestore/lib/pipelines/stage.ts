@@ -353,32 +353,21 @@ export function constant(
  *
  * @param first - The first expression to add.
  * @param second - The second expression or literal to add.
- * @param others - Optional other expressions or literals to add.
  * @returns A new Expression representing the addition operation.
  */
-export function add(
-  _first: Expression,
-  _second: Expression | unknown,
-  ..._others: (Expression | unknown)[]
-): FunctionExpression;
+export function add(_first: Expression, _second: Expression | unknown): FunctionExpression;
 /**
  * @beta
  * Creates an expression that adds a field's value to an expression.
  *
  * @param fieldName - The name of the field containing the value to add.
  * @param second - The second expression or literal to add.
- * @param others - Optional other expressions or literals to add.
  * @returns A new Expression representing the addition operation.
  */
-export function add(
-  _fieldName: string,
-  _second: Expression | unknown,
-  ..._others: (Expression | unknown)[]
-): FunctionExpression;
+export function add(_fieldName: string, _second: Expression | unknown): FunctionExpression;
 export function add(
   _first: Expression | string,
   _second: Expression | unknown,
-  ..._others: (Expression | unknown)[]
 ): FunctionExpression {
   return {} as FunctionExpression;
 }
@@ -629,4 +618,163 @@ export function last(_expression: Expression): AggregateFunction;
 export function last(_fieldName: string): AggregateFunction;
 export function last(_exprOrField: Expression | string): AggregateFunction {
   return {} as AggregateFunction;
+}
+
+// --- arrayAgg, concat, sqrt, currentTimestamp, not, ifAbsent, ifError, string helpers ---
+
+/**
+ * @beta
+ * Collects all values of an expression across stage inputs into an array (aggregate).
+ */
+export function arrayAgg(_expression: Expression): AggregateFunction;
+export function arrayAgg(_fieldName: string): AggregateFunction;
+export function arrayAgg(_exprOrField: Expression | string): AggregateFunction {
+  return {} as AggregateFunction;
+}
+
+/**
+ * @beta
+ * Concatenates two or more expressions (e.g. strings or arrays).
+ */
+export function concat(
+  _first: Expression,
+  _second: Expression | unknown,
+  ..._others: Array<Expression | unknown>
+): FunctionExpression;
+export function concat(
+  _fieldName: string,
+  _second: Expression | unknown,
+  ..._others: Array<Expression | unknown>
+): FunctionExpression;
+export function concat(
+  _first: Expression | string,
+  _second: Expression | unknown,
+  ..._others: Array<Expression | unknown>
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+/**
+ * @beta
+ * Square root of a numeric expression.
+ */
+export function sqrt(_expression: Expression): FunctionExpression;
+export function sqrt(_fieldName: string): FunctionExpression;
+export function sqrt(_exprOrField: Expression | string): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+/**
+ * @beta
+ * Server timestamp at execution time.
+ */
+export function currentTimestamp(): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+/**
+ * @beta
+ * Logical NOT of a boolean expression.
+ */
+export function not(_booleanExpr: BooleanExpression): BooleanExpression {
+  return {} as BooleanExpression;
+}
+
+/**
+ * @beta
+ * If ifExpr is present use it, else use elseExpr/elseValue.
+ */
+export function ifAbsent(_ifExpr: Expression, _elseExpr: Expression): Expression;
+export function ifAbsent(_ifExpr: Expression, _elseValue: unknown): Expression;
+export function ifAbsent(_ifFieldName: string, _elseExpr: Expression): Expression;
+export function ifAbsent(
+  _ifFieldName: string | Expression,
+  _elseValue: Expression | unknown,
+): Expression;
+export function ifAbsent(
+  _ifExpr: string | Expression,
+  _elseValue: Expression | unknown,
+): Expression {
+  return {} as Expression;
+}
+
+/**
+ * @beta
+ * If tryExpr errors, return catchExpr/catchValue (error handling expression).
+ */
+export function ifError(
+  _tryExpr: BooleanExpression,
+  _catchExpr: BooleanExpression,
+): BooleanExpression;
+export function ifError(_tryExpr: Expression, _catchExpr: Expression): FunctionExpression;
+export function ifError(_tryExpr: Expression, _catchValue: unknown): FunctionExpression;
+export function ifError(
+  _tryExpr: BooleanExpression | Expression,
+  _catch: BooleanExpression | Expression | unknown,
+): BooleanExpression | FunctionExpression {
+  return {} as BooleanExpression | FunctionExpression;
+}
+
+/**
+ * @beta
+ * Converts string to lower case.
+ */
+export function toLower(_fieldName: string): FunctionExpression;
+export function toLower(_stringExpression: Expression): FunctionExpression;
+export function toLower(_fieldOrExpr: string | Expression): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+/**
+ * @beta
+ * Converts string to upper case.
+ */
+export function toUpper(_fieldName: string): FunctionExpression;
+export function toUpper(_stringExpression: Expression): FunctionExpression;
+export function toUpper(_fieldOrExpr: string | Expression): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+/**
+ * @beta
+ * Trims whitespace (or optional valueToTrim) from string.
+ */
+export function trim(_fieldName: string, _valueToTrim?: string | Expression): FunctionExpression;
+export function trim(
+  _stringExpression: Expression,
+  _valueToTrim?: string | Expression,
+): FunctionExpression;
+export function trim(
+  _fieldOrExpr: string | Expression,
+  _valueToTrim?: string | Expression,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+/**
+ * @beta
+ * Substring from position with optional length.
+ */
+export function substring(_field: string, _position: number, _length?: number): FunctionExpression;
+export function substring(
+  _input: Expression,
+  _position: number,
+  _length?: number,
+): FunctionExpression;
+export function substring(
+  _field: string,
+  _position: Expression,
+  _length?: Expression,
+): FunctionExpression;
+export function substring(
+  _input: Expression,
+  _position: Expression,
+  _length?: Expression,
+): FunctionExpression;
+export function substring(
+  _fieldOrInput: string | Expression,
+  _position: number | Expression,
+  _length?: number | Expression,
+): FunctionExpression {
+  return {} as FunctionExpression;
 }
