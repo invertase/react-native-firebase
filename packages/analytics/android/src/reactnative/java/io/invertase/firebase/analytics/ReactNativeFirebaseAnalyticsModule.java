@@ -192,13 +192,6 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
             });
   }
 
-  /** Rejects with unimplemented; logTransaction is iOS-only (StoreKit 2). */
-  @ReactMethod
-  public void logTransaction(String transactionId, Promise promise) {
-    rejectPromiseWithCodeAndMessage(
-        promise, "unimplemented", "logTransaction is only available on iOS");
-  }
-
   private Bundle toBundle(ReadableMap readableMap) {
     Bundle bundle = Arguments.toBundle(readableMap);
     if (bundle == null) {

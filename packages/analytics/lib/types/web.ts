@@ -53,6 +53,4 @@ export interface RNFBAnalyticsModule {
   setSessionTimeoutDuration(): Promise<null>;
   getAppInstanceId(): Promise<string | null>;
   getSessionId(): Promise<null>;
-  /** Rejects with unimplemented; logTransaction is iOS-only (StoreKit 2). */
-  logTransaction(transactionId: string): Promise<null>;
 }
