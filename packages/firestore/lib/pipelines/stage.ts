@@ -26,6 +26,7 @@ import type {
   Expression,
   Selectable,
   Type,
+  TimeGranularity,
 } from './stage_options';
 import type { DocumentReference } from '../types/firestore';
 
@@ -1357,4 +1358,176 @@ export function stringReplaceAll(
   _replacement: string | Expression | unknown,
 ): FunctionExpression {
   return {} as FunctionExpression;
+}
+
+// --- Batch 4: stringReplaceOne, stringReverse, timestamp*, trunc, type, unix*ToTimestamp, vectorLength, xor ---
+
+type TimestampUnit = 'microsecond' | 'millisecond' | 'second' | 'minute' | 'hour' | 'day';
+
+export function stringReplaceOne(
+  _fieldName: string,
+  _find: string | Expression | unknown,
+  _replacement: string | Expression | unknown,
+): FunctionExpression;
+export function stringReplaceOne(
+  _expression: Expression,
+  _find: string | Expression | unknown,
+  _replacement: string | Expression | unknown,
+): FunctionExpression;
+export function stringReplaceOne(
+  _fieldOrExpr: string | Expression,
+  _find: string | Expression | unknown,
+  _replacement: string | Expression | unknown,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function stringReverse(_stringExpression: Expression): FunctionExpression;
+export function stringReverse(_field: string): FunctionExpression;
+export function stringReverse(_exprOrField: Expression | string): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function timestampAdd(
+  _timestamp: Expression,
+  _unit: Expression,
+  _amount: Expression,
+): FunctionExpression;
+export function timestampAdd(
+  _timestamp: Expression,
+  _unit: TimestampUnit,
+  _amount: number,
+): FunctionExpression;
+export function timestampAdd(
+  _fieldName: string,
+  _unit: TimestampUnit,
+  _amount: number,
+): FunctionExpression;
+export function timestampAdd(
+  _tsOrField: Expression | string,
+  _unit: Expression | TimestampUnit,
+  _amount: Expression | number,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function timestampSubtract(
+  _timestamp: Expression,
+  _unit: Expression,
+  _amount: Expression,
+): FunctionExpression;
+export function timestampSubtract(
+  _timestamp: Expression,
+  _unit: TimestampUnit,
+  _amount: number,
+): FunctionExpression;
+export function timestampSubtract(
+  _fieldName: string,
+  _unit: TimestampUnit,
+  _amount: number,
+): FunctionExpression;
+export function timestampSubtract(
+  _tsOrField: Expression | string,
+  _unit: Expression | TimestampUnit,
+  _amount: Expression | number,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function timestampToUnixMicros(_expr: Expression): FunctionExpression;
+export function timestampToUnixMicros(_fieldName: string): FunctionExpression;
+export function timestampToUnixMicros(_exprOrField: Expression | string): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function timestampToUnixMillis(_expr: Expression): FunctionExpression;
+export function timestampToUnixMillis(_fieldName: string): FunctionExpression;
+export function timestampToUnixMillis(_exprOrField: Expression | string): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function timestampToUnixSeconds(_expr: Expression): FunctionExpression;
+export function timestampToUnixSeconds(_fieldName: string): FunctionExpression;
+export function timestampToUnixSeconds(_exprOrField: Expression | string): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function timestampTruncate(
+  _fieldName: string,
+  _granularity: TimeGranularity,
+  _timezone?: string | Expression,
+): FunctionExpression;
+export function timestampTruncate(
+  _fieldName: string,
+  _granularity: Expression,
+  _timezone?: string | Expression,
+): FunctionExpression;
+export function timestampTruncate(
+  _timestampExpression: Expression,
+  _granularity: TimeGranularity,
+  _timezone?: string | Expression,
+): FunctionExpression;
+export function timestampTruncate(
+  _timestampExpression: Expression,
+  _granularity: Expression,
+  _timezone?: string | Expression,
+): FunctionExpression;
+export function timestampTruncate(
+  _fieldOrExpr: string | Expression,
+  _granularity: TimeGranularity | Expression,
+  _timezone?: string | Expression,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function trunc(_fieldName: string): FunctionExpression;
+export function trunc(_expression: Expression): FunctionExpression;
+export function trunc(_fieldName: string, _decimalPlaces: number | Expression): FunctionExpression;
+export function trunc(
+  _expression: Expression,
+  _decimalPlaces: number | Expression,
+): FunctionExpression;
+export function trunc(
+  _fieldOrExpr: string | Expression,
+  _decimalPlaces?: number | Expression,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function type(_fieldName: string): FunctionExpression;
+export function type(_expression: Expression): FunctionExpression;
+export function type(_fieldOrExpr: string | Expression): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function unixMicrosToTimestamp(_expr: Expression): FunctionExpression;
+export function unixMicrosToTimestamp(_fieldName: string): FunctionExpression;
+export function unixMicrosToTimestamp(_exprOrField: Expression | string): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function unixMillisToTimestamp(_expr: Expression): FunctionExpression;
+export function unixMillisToTimestamp(_fieldName: string): FunctionExpression;
+export function unixMillisToTimestamp(_exprOrField: Expression | string): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function unixSecondsToTimestamp(_expr: Expression): FunctionExpression;
+export function unixSecondsToTimestamp(_fieldName: string): FunctionExpression;
+export function unixSecondsToTimestamp(_exprOrField: Expression | string): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function vectorLength(_vectorExpression: Expression): FunctionExpression;
+export function vectorLength(_fieldName: string): FunctionExpression;
+export function vectorLength(_exprOrField: Expression | string): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+export function xor(
+  _first: BooleanExpression,
+  _second: BooleanExpression,
+  ..._additionalConditions: BooleanExpression[]
+): BooleanExpression {
+  return {} as BooleanExpression;
 }

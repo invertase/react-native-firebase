@@ -57,6 +57,31 @@ export type Type =
 
 /**
  * @beta
+ * Time granularity for timestampTruncate.
+ */
+export type TimeGranularity =
+  | 'microsecond'
+  | 'millisecond'
+  | 'second'
+  | 'minute'
+  | 'hour'
+  | 'day'
+  | 'week'
+  | 'week(monday)'
+  | 'week(tuesday)'
+  | 'week(wednesday)'
+  | 'week(thursday)'
+  | 'week(friday)'
+  | 'week(saturday)'
+  | 'week(sunday)'
+  | 'isoWeek'
+  | 'month'
+  | 'quarter'
+  | 'year'
+  | 'isoYear';
+
+/**
+ * @beta
  * Boolean expression for pipeline `where()` (e.g. field('x').gt(0), and(...), or(...)).
  */
 export interface BooleanExpression {
