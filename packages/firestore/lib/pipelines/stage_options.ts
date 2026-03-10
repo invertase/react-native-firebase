@@ -18,143 +18,16 @@
 import type { Pipeline } from './pipeline';
 import type { DocumentReference, Query } from '../types/firestore';
 import type VectorValue from '../FirestoreVectorValue';
-
-/**
- * @beta
- * Utility type: only one property of T may be set.
- */
-export type OneOf<T> = {
-  [K in keyof T]: Pick<T, K> & {
-    [P in Exclude<keyof T, K>]?: undefined;
-  };
-}[keyof T];
-
-/**
- * @beta
- * Expression type kind (for internal/backend use).
- */
-export type ExpressionType =
-  | 'Field'
-  | 'Constant'
-  | 'Function'
-  | 'AggregateFunction'
-  | 'ListOfExpressions'
-  | 'AliasedExpression';
-
-/**
- * @beta
- * Firestore value type for isType() checks.
- */
-export type Type =
-  | 'null'
-  | 'array'
-  | 'boolean'
-  | 'bytes'
-  | 'timestamp'
-  | 'geo_point'
-  | 'number'
-  | 'int32'
-  | 'int64'
-  | 'float64'
-  | 'decimal128'
-  | 'map'
-  | 'reference'
-  | 'string'
-  | 'vector'
-  | 'max_key'
-  | 'min_key'
-  | 'object_id'
-  | 'regex'
-  | 'request_timestamp';
-
-/**
- * @beta
- * Time granularity for timestampTruncate.
- */
-export type TimeGranularity =
-  | 'microsecond'
-  | 'millisecond'
-  | 'second'
-  | 'minute'
-  | 'hour'
-  | 'day'
-  | 'week'
-  | 'week(monday)'
-  | 'week(tuesday)'
-  | 'week(wednesday)'
-  | 'week(thursday)'
-  | 'week(friday)'
-  | 'week(saturday)'
-  | 'week(sunday)'
-  | 'isoWeek'
-  | 'month'
-  | 'quarter'
-  | 'year'
-  | 'isoYear';
-
-/**
- * @beta
- * Boolean expression for pipeline `where()` (e.g. field('x').gt(0), and(...), or(...)).
- */
-export interface BooleanExpression {
-  readonly _brand?: 'BooleanExpression';
-}
-
-/**
- * @beta
- * Selectable for pipeline field selection/expressions (e.g. field('a').as('b'), expressions).
- */
-export interface Selectable {
-  selectable: true;
-}
-
-/**
- * @beta
- * Field reference for pipeline stages.
- */
-export interface Field {
-  readonly _brand?: 'Field';
-}
-
-/**
- * @beta
- * Function expression (e.g. map(...), array(...)). Used as return type and in Expression union.
- */
-export interface FunctionExpression {
-  selectable: true;
-  readonly _brand?: 'FunctionExpression';
-}
-
-/**
- * @beta
- * Expression type for pipeline parameters (field refs, literals, function results).
- */
-export type Expression = Field | FunctionExpression | Selectable | string;
-
-/**
- * @beta
- * Ordering for pipeline sort() (e.g. Ordering.of(field('rating')).descending()).
- */
-export interface Ordering {
-  descending(): Ordering;
-  ascending(): Ordering;
-  readonly _brand?: 'Ordering';
-}
-
-/**
- * @beta
- * Accumulator for pipeline aggregate() (e.g. avg(field('rating')).as('avgRating'), countAll().as('total')).
- */
-export interface Accumulator {
-  as(name: string): Accumulator;
-  readonly _brand?: 'Accumulator';
-}
-
-/**
- * @beta
- * Aggregate function (e.g. countAll()). Alias for Accumulator.
- */
-export type AggregateFunction = Accumulator;
+import type { OneOf } from './types';
+import type {
+  Ordering,
+  Selectable,
+  Field,
+  BooleanExpression,
+  Expression,
+  AliasedAggregate,
+  Accumulator,
+} from './expressions';
 
 /**
  * @beta
@@ -245,25 +118,6 @@ export interface StageOptions {
   rawOptions?: {
     [name: string]: unknown;
   };
-}
-
-/**
- * @beta
- * An aggregate function with an output alias.
- */
-export interface AliasedAggregate {
-  readonly aggregate: AggregateFunction;
-  readonly alias: string;
-}
-
-/**
- * @beta
- * An expression with an output alias (implements Selectable).
- */
-export interface AliasedExpression extends Selectable {
-  readonly expr: Expression;
-  readonly alias: string;
-  exprType?: ExpressionType;
 }
 
 /**
@@ -414,16 +268,6 @@ export type OffsetStageOptions = StageOptions & {
    */
   offset: number;
 };
-
-/**
- * @beta
- * Options for pipeline execute().
- */
-export interface PipelineExecuteOptions extends StageOptions {
-  pipeline: Pipeline;
-  indexMode?: 'recommended';
-  rawOptions?: { [name: string]: unknown };
-}
 
 /**
  * @beta

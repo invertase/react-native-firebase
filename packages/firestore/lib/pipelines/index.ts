@@ -15,13 +15,16 @@
  *
  */
 
-import type { Pipeline, PipelineSource } from './pipeline';
+import type { PipelineSource } from './pipeline-source';
+import type { Pipeline } from './pipeline';
 
 /**
  * @beta
  * Pipeline type for Firestore pipelines API.
  */
-export type { Pipeline, PipelineSource, PipelineSnapshot, PipelineResult } from './pipeline';
+export type { PipelineResult, PipelineSnapshot } from './pipeline-result';
+export type { Pipeline } from './pipeline';
+export type { PipelineSource } from './pipeline-source';
 
 export type {
   BooleanExpression,
@@ -33,9 +36,11 @@ export type {
   ExpressionType,
   Type,
   TimeGranularity,
-  StageOptions,
   AliasedAggregate,
   AliasedExpression,
+} from './expressions';
+export type {
+  StageOptions,
   AddFieldsStageOptions,
   AggregateStageOptions,
   CollectionGroupStageOptions,
@@ -46,7 +51,6 @@ export type {
   FindNearestStageOptions,
   LimitStageOptions,
   OffsetStageOptions,
-  PipelineExecuteOptions,
   RemoveFieldsStageOptions,
   ReplaceWithStageOptions,
   SampleStageOptions,
@@ -55,11 +59,14 @@ export type {
   UnionStageOptions,
   UnnestStageOptions,
   WhereStageOptions,
-  OneOf,
 } from './stage_options';
+export type { PipelineExecuteOptions } from './pipeline_options';
+export type { OneOf } from './types';
 
 export {
   execute,
+} from './pipeline_impl';
+export {
   field,
   and,
   or,
@@ -141,7 +148,6 @@ export {
   logicalMinimum,
   ltrim,
   notEqualAny,
-  pipelineResultEqual,
   rand,
   rtrim,
   stringConcat,
@@ -176,7 +182,8 @@ export {
   vectorLength,
   xor,
   length,
-} from './stage';
+} from './expressions';
+export { pipelineResultEqual } from './pipeline-result';
 
 declare module '../types/firestore' {
   /**

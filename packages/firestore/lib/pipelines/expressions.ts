@@ -15,48 +15,154 @@
  *
  */
 
-import type { ExecuteOptions, Pipeline, PipelineResult, PipelineSnapshot } from './pipeline';
-import type {
-  BooleanExpression,
-  Field,
-  FunctionExpression,
-  Ordering,
-  Accumulator,
-  AggregateFunction,
-  Expression,
-  Selectable,
-  Type,
-  TimeGranularity,
-} from './stage_options';
 import type { DocumentReference } from '../types/firestore';
 import type VectorValue from '../FirestoreVectorValue';
 import type { Bytes } from '../modular/Bytes';
 
 /**
  * @beta
- * Executes a pipeline and returns a Promise that resolves to the pipeline snapshot.
- *
- * @example
- * ```
- * const snapshot = await execute(
- *   firestore.pipeline().collection('books').where(gt(field('rating'), 4.5)).select('title', 'author', 'rating')
- * );
- * ```
+ * Expression type kind (for internal/backend use).
  */
-export function execute(pipeline: Pipeline): Promise<PipelineSnapshot>;
+export type ExpressionType =
+  | 'Field'
+  | 'Constant'
+  | 'Function'
+  | 'AggregateFunction'
+  | 'ListOfExpressions'
+  | 'AliasedExpression';
 
 /**
  * @beta
- * Executes a pipeline with options.
+ * Firestore value type for isType() checks.
  */
-export function execute(options: ExecuteOptions): Promise<PipelineSnapshot>;
+export type Type =
+  | 'null'
+  | 'array'
+  | 'boolean'
+  | 'bytes'
+  | 'timestamp'
+  | 'geo_point'
+  | 'number'
+  | 'int32'
+  | 'int64'
+  | 'float64'
+  | 'decimal128'
+  | 'map'
+  | 'reference'
+  | 'string'
+  | 'vector'
+  | 'max_key'
+  | 'min_key'
+  | 'object_id'
+  | 'regex'
+  | 'request_timestamp';
 
-export function execute(_pipelineOrOptions: Pipeline | ExecuteOptions): Promise<PipelineSnapshot> {
-  // Stub: internal implementation will differ for React Native Firebase.
-  return Promise.resolve({
-    results: [],
-    executionTime: {} as import('../FirestoreTimestamp').default,
-  });
+/**
+ * @beta
+ * Time granularity for timestampTruncate.
+ */
+export type TimeGranularity =
+  | 'microsecond'
+  | 'millisecond'
+  | 'second'
+  | 'minute'
+  | 'hour'
+  | 'day'
+  | 'week'
+  | 'week(monday)'
+  | 'week(tuesday)'
+  | 'week(wednesday)'
+  | 'week(thursday)'
+  | 'week(friday)'
+  | 'week(saturday)'
+  | 'week(sunday)'
+  | 'isoWeek'
+  | 'month'
+  | 'quarter'
+  | 'year'
+  | 'isoYear';
+
+/**
+ * @beta
+ * Boolean expression for pipeline `where()` (e.g. field('x').gt(0), and(...), or(...)).
+ */
+export interface BooleanExpression {
+  readonly _brand?: 'BooleanExpression';
+}
+
+/**
+ * @beta
+ * Selectable for pipeline field selection/expressions (e.g. field('a').as('b'), expressions).
+ */
+export interface Selectable {
+  selectable: true;
+}
+
+/**
+ * @beta
+ * Field reference for pipeline stages.
+ */
+export interface Field {
+  readonly _brand?: 'Field';
+}
+
+/**
+ * @beta
+ * Function expression (e.g. map(...), array(...)). Used as return type and in Expression union.
+ */
+export interface FunctionExpression {
+  selectable: true;
+  readonly _brand?: 'FunctionExpression';
+}
+
+/**
+ * @beta
+ * Expression type for pipeline parameters (field refs, literals, function results).
+ */
+export type Expression = Field | FunctionExpression | Selectable | string;
+
+/**
+ * @beta
+ * Ordering for pipeline sort() (e.g. Ordering.of(field('rating')).descending()).
+ */
+export interface Ordering {
+  descending(): Ordering;
+  ascending(): Ordering;
+  readonly _brand?: 'Ordering';
+}
+
+/**
+ * @beta
+ * Accumulator for pipeline aggregate() (e.g. avg(field('rating')).as('avgRating'), countAll().as('total')).
+ */
+export interface Accumulator {
+  as(name: string): Accumulator;
+  readonly _brand?: 'Accumulator';
+}
+
+/**
+ * @beta
+ * Aggregate function (e.g. countAll()). Alias for Accumulator.
+ */
+export type AggregateFunction = Accumulator;
+
+/**
+ * @beta
+ * An aggregate function with an output alias.
+ */
+export interface AliasedAggregate {
+  readonly aggregate: AggregateFunction;
+  readonly alias: string;
+}
+
+/**
+ * @beta
+ * An expression with an output alias (implements Selectable).
+ */
+export interface AliasedExpression extends Selectable {
+  readonly expr: Expression;
+  readonly alias: string;
+  exprType?: ExpressionType;
 }
 
 // --- Expression / helper stubs (for use in where, select, addFields, aggregate, sort, etc.) ---
@@ -967,7 +1073,7 @@ export function split(
   return {} as FunctionExpression;
 }
 
-// --- Batch 2: cosineDistance, dotProduct, equalAny, euclideanDistance, isAbsent, isError, isType, logicalMaximum, logicalMinimum, ltrim, notEqualAny, pipelineResultEqual, rand, rtrim, stringConcat ---
+// --- Batch 2: cosineDistance, dotProduct, equalAny, euclideanDistance, isAbsent, isError, isType, logicalMaximum, logicalMinimum, ltrim, notEqualAny, rand, rtrim, stringConcat ---
 
 export function cosineDistance(
   _fieldName: string,
@@ -1131,10 +1237,6 @@ export function notEqualAny(
   _valuesOrArray: Array<Expression | unknown> | Expression,
 ): BooleanExpression {
   return {} as BooleanExpression;
-}
-
-export function pipelineResultEqual(_left: PipelineResult, _right: PipelineResult): boolean {
-  return false;
 }
 
 export function rand(): FunctionExpression {
