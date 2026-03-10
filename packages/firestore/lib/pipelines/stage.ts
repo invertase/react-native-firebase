@@ -517,3 +517,116 @@ export function average(_fieldName: string): AggregateFunction;
 export function average(_exprOrField: Expression | string): AggregateFunction {
   return {} as AggregateFunction;
 }
+
+// --- More expression and aggregate helpers (align with JS SDK) ---
+
+/**
+ * @beta
+ * Absolute value of a numeric expression.
+ */
+export function abs(_expr: Expression): FunctionExpression;
+/**
+ * @beta
+ * Absolute value of a field.
+ */
+export function abs(_fieldName: string): FunctionExpression;
+export function abs(_exprOrField: Expression | string): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+/**
+ * @beta
+ * Rounds up to the nearest integer.
+ */
+export function ceil(_expression: Expression): FunctionExpression;
+export function ceil(_fieldName: string): FunctionExpression;
+export function ceil(_exprOrField: Expression | string): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+/**
+ * @beta
+ * Rounds down to the nearest integer.
+ */
+export function floor(_expr: Expression): FunctionExpression;
+export function floor(_fieldName: string): FunctionExpression;
+export function floor(_exprOrField: Expression | string): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+/**
+ * @beta
+ * Remainder (modulo) of left divided by right.
+ */
+export function mod(_left: Expression, _right: Expression): FunctionExpression;
+export function mod(_expression: Expression, _value: unknown): FunctionExpression;
+export function mod(_fieldName: string, _expression: Expression): FunctionExpression;
+export function mod(_fieldName: string, _value: unknown): FunctionExpression;
+export function mod(
+  _leftOrField: Expression | string,
+  _rightOrValue: Expression | unknown,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+/**
+ * @beta
+ * Rounds to the nearest integer (or to decimalPlaces when provided).
+ */
+export function round(_expression: Expression): FunctionExpression;
+export function round(_fieldName: string): FunctionExpression;
+/**
+ * @beta
+ * Rounds to the given number of decimal places.
+ */
+export function round(
+  _expression: Expression,
+  _decimalPlaces: number | Expression,
+): FunctionExpression;
+export function round(_fieldName: string, _decimalPlaces: number | Expression): FunctionExpression;
+export function round(
+  _exprOrField: Expression | string,
+  _decimalPlaces?: number | Expression,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+/**
+ * @beta
+ * Conditional expression: if condition then thenExpr else elseExpr.
+ */
+export function conditional(
+  _condition: BooleanExpression,
+  _thenExpr: Expression,
+  _elseExpr: Expression,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+/**
+ * @beta
+ * Count distinct values of an expression or field.
+ */
+export function countDistinct(_expr: Expression | string): AggregateFunction {
+  return {} as AggregateFunction;
+}
+
+/**
+ * @beta
+ * First value of the expression in each group (aggregate).
+ */
+export function first(_expression: Expression): AggregateFunction;
+export function first(_fieldName: string): AggregateFunction;
+export function first(_exprOrField: Expression | string): AggregateFunction {
+  return {} as AggregateFunction;
+}
+
+/**
+ * @beta
+ * Last value of the expression in each group (aggregate).
+ */
+export function last(_expression: Expression): AggregateFunction;
+export function last(_fieldName: string): AggregateFunction;
+export function last(_exprOrField: Expression | string): AggregateFunction {
+  return {} as AggregateFunction;
+}

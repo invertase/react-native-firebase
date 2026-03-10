@@ -92,6 +92,15 @@ export {
   sum,
   count,
   average,
+  abs,
+  ceil,
+  floor,
+  mod,
+  round,
+  conditional,
+  countDistinct,
+  first,
+  last,
 } from './stage';
 
 declare module '../types/firestore' {
