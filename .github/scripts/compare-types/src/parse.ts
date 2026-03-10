@@ -29,13 +29,24 @@ import type {
 // ---------------------------------------------------------------------------
 
 /**
+ * Strips JSDoc and block comments from type text so that comparison is based
+ * only on the actual type structure, not code comments.
+ */
+function stripComments(s: string): string {
+  return s
+    .replace(/\/\*\*[\s\S]*?\*\//g, '') // JSDoc /** ... */
+    .replace(/\/\*[\s\S]*?\*\//g, '');  // Block /* ... */
+}
+
+/**
  * Normalizes type text so that formatting-only differences (multi-line vs
  * single-line, whitespace around punctuation, trailing commas) do not affect
  * comparison. Types that are semantically identical should compare equal.
+ * JSDoc and block comments are stripped so only the type structure is compared.
  */
 function normalizeType(s: string): string {
   return (
-    s
+    stripComments(s)
       .trim()
       // Collapse all whitespace (including newlines) to a single space
       .replace(/\s+/g, ' ')

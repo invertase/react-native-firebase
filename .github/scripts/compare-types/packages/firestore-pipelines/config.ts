@@ -24,21 +24,7 @@ const config: PackageConfig = {
   nameMapping: {},
   missingInRN: [],
   extraInRN: [],
-  differentShape: [
-    { name: 'AddFieldsStageOptions', reason: 'JSDoc-only difference; structural shape matches SDK.' },
-    { name: 'AggregateStageOptions', reason: 'JSDoc-only difference; structural shape matches SDK.' },
-    { name: 'CollectionGroupStageOptions', reason: 'JSDoc-only difference; structural shape matches SDK.' },
-    { name: 'CollectionStageOptions', reason: 'JSDoc-only difference; structural shape matches SDK.' },
-    { name: 'DistinctStageOptions', reason: 'JSDoc-only difference; structural shape matches SDK.' },
-    { name: 'DocumentsStageOptions', reason: 'JSDoc-only difference; structural shape matches SDK.' },
-    { name: 'FindNearestStageOptions', reason: 'JSDoc-only difference; structural shape matches SDK.' },
-    { name: 'ReplaceWithStageOptions', reason: 'JSDoc-only difference; structural shape matches SDK.' },
-    { name: 'SampleStageOptions', reason: 'JSDoc-only difference; structural shape matches SDK.' },
-    { name: 'SelectStageOptions', reason: 'JSDoc-only difference; structural shape matches SDK.' },
-    { name: 'SortStageOptions', reason: 'JSDoc-only difference; structural shape matches SDK.' },
-    { name: 'UnnestStageOptions', reason: 'JSDoc-only difference; structural shape matches SDK.' },
-    { name: 'WhereStageOptions', reason: 'JSDoc-only difference; structural shape matches SDK.' },
-  ],
+  differentShape: [],
 };
 
 export default config;
