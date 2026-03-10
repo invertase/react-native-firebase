@@ -60,6 +60,24 @@ export type {
   AliasedExpression,
   AddFieldsStageOptions,
   AggregateStageOptions,
+  CollectionGroupStageOptions,
+  CollectionStageOptions,
+  DatabaseStageOptions,
+  DistinctStageOptions,
+  DocumentsStageOptions,
+  FindNearestStageOptions,
+  LimitStageOptions,
+  OffsetStageOptions,
+  PipelineExecuteOptions,
+  RemoveFieldsStageOptions,
+  ReplaceWithStageOptions,
+  SampleStageOptions,
+  SelectStageOptions,
+  SortStageOptions,
+  UnionStageOptions,
+  UnnestStageOptions,
+  WhereStageOptions,
+  OneOf,
 } from './stage_options';
 
 export {
@@ -185,6 +203,7 @@ export {
   unixSecondsToTimestamp,
   vectorLength,
   xor,
+  length,
 } from './stage';
 
 declare module '../types/firestore' {

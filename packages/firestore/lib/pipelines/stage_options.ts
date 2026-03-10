@@ -16,6 +16,17 @@
  */
 
 import type { Pipeline } from './pipeline';
+import type { DocumentReference, Query } from '../types/firestore';
+
+/**
+ * @beta
+ * Utility type: only one property of T may be set.
+ */
+export type OneOf<T> = {
+  [K in keyof T]: Pick<T, K> & {
+    [P in Exclude<keyof T, K>]?: undefined;
+  };
+}[keyof T];
 
 /**
  * @beta
@@ -269,4 +280,148 @@ export type AddFieldsStageOptions = StageOptions & {
 export type AggregateStageOptions = StageOptions & {
   accumulators: AliasedAggregate[];
   groups?: Array<string | Selectable>;
+};
+
+/**
+ * @beta
+ * Options for CollectionGroup stage.
+ */
+export type CollectionGroupStageOptions = StageOptions & {
+  collectionId: string;
+  forceIndex?: string;
+};
+
+/**
+ * @beta
+ * Options for Collection stage.
+ */
+export type CollectionStageOptions = StageOptions & {
+  collection: string | Query;
+  forceIndex?: string;
+};
+
+/**
+ * @beta
+ * Options for Database stage.
+ */
+export type DatabaseStageOptions = StageOptions & {};
+
+/**
+ * @beta
+ * Options for Distinct stage.
+ */
+export type DistinctStageOptions = StageOptions & {
+  groups: Array<string | Selectable>;
+};
+
+/**
+ * @beta
+ * Options for Documents stage.
+ */
+export type DocumentsStageOptions = StageOptions & {
+  docs: Array<string | DocumentReference>;
+};
+
+/**
+ * @beta
+ * Options for FindNearest stage (vector search).
+ */
+export type FindNearestStageOptions = StageOptions & {
+  field: Field | string;
+  vectorValue: number[] | { values: number[] };
+  distanceMeasure: 'euclidean' | 'cosine' | 'dot_product';
+  limit?: number;
+  distanceField?: string;
+};
+
+/**
+ * @beta
+ * Options for Limit stage.
+ */
+export type LimitStageOptions = StageOptions & {
+  limit: number;
+};
+
+/**
+ * @beta
+ * Options for Offset stage.
+ */
+export type OffsetStageOptions = StageOptions & {
+  offset: number;
+};
+
+/**
+ * @beta
+ * Options for pipeline execute().
+ */
+export interface PipelineExecuteOptions extends StageOptions {
+  pipeline: Pipeline;
+  indexMode?: 'recommended';
+}
+
+/**
+ * @beta
+ * Options for RemoveFields stage.
+ */
+export type RemoveFieldsStageOptions = StageOptions & {
+  fields: Array<Field | string>;
+};
+
+/**
+ * @beta
+ * Options for ReplaceWith stage.
+ */
+export type ReplaceWithStageOptions = StageOptions & {
+  map: Expression | string;
+};
+
+/**
+ * @beta
+ * Options for Sample stage (documents or percentage, one of).
+ */
+export type SampleStageOptions = StageOptions &
+  OneOf<{
+    documents: number;
+    percentage: number;
+  }>;
+
+/**
+ * @beta
+ * Options for Select stage.
+ */
+export type SelectStageOptions = StageOptions & {
+  selections: Array<Selectable | string>;
+};
+
+/**
+ * @beta
+ * Options for Sort stage.
+ */
+export type SortStageOptions = StageOptions & {
+  orderings: Ordering[];
+};
+
+/**
+ * @beta
+ * Options for Union stage.
+ */
+export type UnionStageOptions = StageOptions & {
+  other: Pipeline;
+};
+
+/**
+ * @beta
+ * Options for Unnest stage.
+ */
+export type UnnestStageOptions = StageOptions & {
+  selectable: Selectable;
+  indexField?: string;
+};
+
+/**
+ * @beta
+ * Options for Where stage.
+ */
+export type WhereStageOptions = StageOptions & {
+  condition: BooleanExpression;
 };

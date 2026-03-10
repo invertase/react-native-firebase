@@ -1531,3 +1531,13 @@ export function xor(
 ): BooleanExpression {
   return {} as BooleanExpression;
 }
+
+/**
+ * @beta
+ * Length of string, array, map, vector, or bytes (field or expression).
+ */
+export function length(_fieldName: string): FunctionExpression;
+export function length(_expression: Expression): FunctionExpression;
+export function length(_fieldOrExpr: string | Expression): FunctionExpression {
+  return {} as FunctionExpression;
+}
