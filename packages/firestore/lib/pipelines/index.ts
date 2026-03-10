@@ -86,6 +86,12 @@ export {
   constant,
   add,
   subtract,
+  divide,
+  multiply,
+  documentId,
+  sum,
+  count,
+  average,
 } from './stage';
 
 declare module '../types/firestore' {

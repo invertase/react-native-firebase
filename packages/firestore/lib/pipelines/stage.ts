@@ -26,6 +26,7 @@ import type {
   Expression,
   Selectable,
 } from './stage_options';
+import type { DocumentReference } from '../types/firestore';
 
 /**
  * @beta
@@ -46,9 +47,7 @@ export function execute(pipeline: Pipeline): Promise<PipelineSnapshot>;
  */
 export function execute(options: ExecuteOptions): Promise<PipelineSnapshot>;
 
-export function execute(
-  _pipelineOrOptions: Pipeline | ExecuteOptions,
-): Promise<PipelineSnapshot> {
+export function execute(_pipelineOrOptions: Pipeline | ExecuteOptions): Promise<PipelineSnapshot> {
   // Stub: internal implementation will differ for React Native Firebase.
   return Promise.resolve({
     results: [],
@@ -409,4 +408,112 @@ export function subtract(
   _rightOrValue: Expression | unknown,
 ): FunctionExpression {
   return {} as FunctionExpression;
+}
+
+// --- Additional arithmetic and aggregate helpers (align with JS SDK) ---
+
+/**
+ * @beta
+ * Creates an expression that divides the first by the second.
+ */
+export function divide(_left: Expression, _right: Expression): FunctionExpression;
+/**
+ * @beta
+ * Creates an expression that divides an expression by a constant value.
+ */
+export function divide(_expression: Expression, _value: unknown): FunctionExpression;
+/**
+ * @beta
+ * Creates an expression that divides a field's value by an expression.
+ */
+export function divide(_fieldName: string, _expression: Expression): FunctionExpression;
+/**
+ * @beta
+ * Creates an expression that divides a field's value by a constant.
+ */
+export function divide(_fieldName: string, _value: unknown): FunctionExpression;
+export function divide(
+  _leftOrField: Expression | string,
+  _rightOrValue: Expression | unknown,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+/**
+ * @beta
+ * Creates an expression that multiplies two or more expressions.
+ */
+export function multiply(_first: Expression, _second: Expression | unknown): FunctionExpression;
+/**
+ * @beta
+ * Creates an expression that multiplies a field's value by an expression or literal.
+ */
+export function multiply(_fieldName: string, _second: Expression | unknown): FunctionExpression;
+export function multiply(
+  _first: Expression | string,
+  _second: Expression | unknown,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+/**
+ * @beta
+ * Creates an expression that evaluates to the document ID (and optionally path).
+ *
+ * @param documentPath - Document path string or DocumentReference.
+ * @returns A new Expression representing the document ID.
+ */
+export function documentId(_documentPath: string | DocumentReference): FunctionExpression;
+/**
+ * @beta
+ * Creates an expression that evaluates to the document ID from a path expression.
+ */
+export function documentId(_documentPathExpr: Expression): FunctionExpression;
+export function documentId(
+  _documentPath: string | DocumentReference | Expression,
+): FunctionExpression {
+  return {} as FunctionExpression;
+}
+
+/**
+ * @beta
+ * Creates an aggregation that sums values from an expression across stage inputs.
+ */
+export function sum(_expression: Expression): AggregateFunction;
+/**
+ * @beta
+ * Creates an aggregation that sums a field's values across stage inputs.
+ */
+export function sum(_fieldName: string): AggregateFunction;
+export function sum(_exprOrField: Expression | string): AggregateFunction {
+  return {} as AggregateFunction;
+}
+
+/**
+ * @beta
+ * Creates an aggregation that counts stage inputs with valid evaluations of the expression.
+ */
+export function count(_expression: Expression): AggregateFunction;
+/**
+ * @beta
+ * Creates an aggregation that counts stage inputs where the field exists.
+ */
+export function count(_fieldName: string): AggregateFunction;
+export function count(_exprOrField: Expression | string): AggregateFunction {
+  return {} as AggregateFunction;
+}
+
+/**
+ * @beta
+ * Creates an aggregation that calculates the average (mean) of values from an expression.
+ * SDK name: average (avg is RN alias).
+ */
+export function average(_expression: Expression): AggregateFunction;
+/**
+ * @beta
+ * Creates an aggregation that calculates the average (mean) of a field's values.
+ */
+export function average(_fieldName: string): AggregateFunction;
+export function average(_exprOrField: Expression | string): AggregateFunction {
+  return {} as AggregateFunction;
 }
