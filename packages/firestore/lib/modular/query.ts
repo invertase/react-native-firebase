@@ -131,6 +131,21 @@ export type QueryNonFilterConstraint =
   | QueryStartAtConstraint
   | QueryEndAtConstraint;
 
+/**
+ * Union of all constraint types accepted by {@link query}.
+ * Not present in the Firebase JS SDK (which uses {@link QueryConstraint}[] only).
+ * Use this type when building an array of constraints (e.g. from {@link where},
+ * {@link orderBy}, {@link limit}) so that assignability type-checks reliably
+ * across build outputs; then pass the array to query as query(coll, ...constraints).
+ */
+export type QueryConstraintUnion =
+  | QueryFieldFilterConstraint
+  | QueryCompositeFilterConstraint
+  | QueryOrderByConstraint
+  | QueryLimitConstraint
+  | QueryStartAtConstraint
+  | QueryEndAtConstraint;
+
 export function query<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
   queryRef: Query<AppModelType, DbModelType>,
   compositeFilter: QueryCompositeFilterConstraint,
@@ -138,11 +153,11 @@ export function query<AppModelType = DocumentData, DbModelType extends DocumentD
 ): Query<AppModelType, DbModelType>;
 export function query<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
   queryRef: Query<AppModelType, DbModelType>,
-  ...queryConstraints: QueryConstraint[]
+  ...queryConstraints: QueryConstraintUnion[]
 ): Query<AppModelType, DbModelType>;
 export function query<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
   queryRef: Query<AppModelType, DbModelType>,
-  ...queryConstraints: Array<QueryCompositeFilterConstraint | QueryConstraint>
+  ...queryConstraints: QueryConstraintUnion[]
 ): Query<AppModelType, DbModelType> {
   let constrainedQuery = queryRef;
   for (const constraint of queryConstraints) {

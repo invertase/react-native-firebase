@@ -239,6 +239,14 @@ const config: PackageConfig = {
         '`FirestoreError` as a class extending `FirebaseError`, but RN Firebase ' +
         'uses its own `NativeFirebaseError` type for error handling.',
     },
+    {
+      name: 'QueryConstraintUnion',
+      reason:
+        'Not in the firebase-js-sdk. RN Firebase adds this union type so that building ' +
+        'an array of constraints (from where(), orderBy(), limit(), etc.) type-checks when ' +
+        'passed to query(); the JS SDK uses QueryConstraint[] only, which can cause ' +
+        'assignability issues with generated .d.ts in some setups.',
+    },
   ],
 
   // ---------------------------------------------------------------------------
@@ -320,6 +328,13 @@ const config: PackageConfig = {
       reason:
         'The firebase-js-sdk includes an optional `source` property (of type ' +
         '`ListenSource`) which is not yet supported in RN Firebase.',
+    },
+    {
+      name: 'query',
+      reason:
+        'RN Firebase types the queryConstraints rest parameter as ' +
+        'QueryConstraintUnion[] so building an array from where(), orderBy(), ' +
+        'limit() etc. type-checks; the firebase-js-sdk uses QueryConstraint[].',
     },
   ],
 };
