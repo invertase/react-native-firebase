@@ -21,19 +21,7 @@ import type { Pipeline, PipelineSource } from './pipeline';
  * @beta
  * Pipeline type for Firestore pipelines API.
  */
-export type {
-  Pipeline,
-  PipelineSource,
-  PipelineSnapshot,
-  PipelineResult,
-  ExecuteOptions,
-} from './pipeline';
-export type {
-  PipelineCollectionSourceOptions,
-  PipelineCollectionGroupSourceOptions,
-  PipelineDatabaseSourceOptions,
-  PipelineDocumentsSourceOptions,
-} from './pipeline';
+export type { Pipeline, PipelineSource, PipelineSnapshot, PipelineResult } from './pipeline';
 
 export type {
   BooleanExpression,
@@ -41,12 +29,7 @@ export type {
   Field,
   Expression,
   FunctionExpression,
-  Accumulator,
   AggregateFunction,
-  PipelineDistanceMeasure,
-  PipelineAggregateOptions,
-  PipelineDistinctOptions,
-  PipelineFindNearestOptions,
   PipelineReplaceWithOptions,
   PipelineSampleOptions,
   PipelineUnionOptions,
