@@ -67,6 +67,7 @@ describe('Config Plugin Android Tests', function () {
       const manifestApplication: ManifestApplication = JSON.parse(
         JSON.stringify(manifestApplicationExample),
       );
+      // @ts-ignore - removed in Expo 55 but still useful for Expo 54 and lower folks
       config.notification = undefined;
       setFireBaseMessagingAndroidManifest(config, manifestApplication);
       expect(called).toBeTruthy();

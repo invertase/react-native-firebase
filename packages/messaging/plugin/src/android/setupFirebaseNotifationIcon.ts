@@ -50,9 +50,12 @@ const getNotificationConfig = (config: ExpoConfig) => {
    * Get notification config from config.notification
    * Will be removed in the future as `expo-notifications` plugin is the recommended way to configure notifications.
    */
+  // @ts-ignore - config.notification deprecated in Expo 54 / removed in Expo 55+, but still useful for people
   if (config.notification) {
     return {
+      // @ts-ignore - config.notification deprecated in Expo 54 / removed in Expo 55+, but still useful for people
       icon: config.notification.icon,
+      // @ts-ignore - config.notification deprecated in Expo 54 / removed in Expo 55+, but still useful for people
       color: config.notification.color,
     };
   }
