@@ -34,6 +34,8 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/dist/module/internal';
 
+import './types/internal';
+
 // Internal types are now available through module declarations in app package
 import { setReactNativeModule } from '@react-native-firebase/app/dist/module/internal/nativeModule';
 import { isBoolean } from '@react-native-firebase/app/dist/module/common';
@@ -122,7 +124,7 @@ const namespace = 'analytics';
 
 const nativeModuleName = 'RNFBAnalyticsModule';
 
-class FirebaseAnalyticsModule extends FirebaseModule {
+class FirebaseAnalyticsModule extends FirebaseModule<typeof nativeModuleName> {
   logEvent(
     name: string,
     params: { [key: string]: any } = {},

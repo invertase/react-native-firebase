@@ -1,6 +1,7 @@
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 import { getApp } from '@react-native-firebase/app';
 import type { Analytics } from './types/analytics';
+import type { AnalyticsInternal } from './types/internal';
 import { Platform } from 'react-native';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import type {
@@ -424,9 +425,11 @@ export function logTransaction(analytics: Analytics, transaction_id: string): Pr
   if (Platform.OS !== 'ios') {
     return Promise.reject(new Error('logTransaction is only available on iOS'));
   }
-  return (
-    analytics as unknown as { native: { logTransaction(id: string): Promise<void> } }
-  ).native.logTransaction(transaction_id);
+  const native = (analytics as AnalyticsInternal).native;
+  if (!native.logTransaction) {
+    return Promise.reject(new Error('logTransaction is only available on iOS'));
+  }
+  return native.logTransaction(transaction_id);
 }
 
 /**
