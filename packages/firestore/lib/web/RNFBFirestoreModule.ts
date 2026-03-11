@@ -54,6 +54,7 @@ import type {
   FirestorePipelineExecuteOptionsInternal,
   FirestorePipelineSerializedInternal,
 } from '../types/internal';
+import { createPipelineUnsupportedMessage } from '../pipelines/pipeline_support';
 
 function rejectWithCodeAndMessage(code: string, message: string): Promise<never> {
   return Promise.reject(getWebError({ code, message } as Error & { code: string }));
@@ -290,13 +291,10 @@ export default {
   pipelineExecute(
     _appName: string,
     _databaseId: string,
-    _pipeline: FirestorePipelineSerializedInternal,
+    pipeline: FirestorePipelineSerializedInternal,
     _options?: FirestorePipelineExecuteOptionsInternal,
   ): Promise<never> {
-    return rejectWithCodeAndMessage(
-      'unsupported',
-      'Firestore pipelines are not supported by the current web fallback module.',
-    );
+    return rejectWithCodeAndMessage('unsupported', createPipelineUnsupportedMessage(pipeline));
   },
 
   collectionGet(
