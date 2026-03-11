@@ -3,7 +3,7 @@
   "packages": ["packages/*", "tests"],
   "command": {
     "version": {
-      "allowBranch": "main",
+      "allowBranch": ["main", "release-v*"],
       "conventionalCommits": true,
       "exact": true,
       "gitRemote": "origin",

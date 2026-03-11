@@ -21,6 +21,7 @@ on:
     branches:
       - main
       - v14-release
+      - release-v23
     paths-ignore:
       - 'docs/**'
       - 'website/**'
