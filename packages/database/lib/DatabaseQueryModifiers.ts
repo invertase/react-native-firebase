@@ -20,9 +20,41 @@ import { isNull, isNumber, isString } from '@react-native-firebase/app/dist/modu
 const CONSTANTS = {
   VIEW_FROM_LEFT: 'left',
   VIEW_FROM_RIGHT: 'right',
-};
+} as const;
+
+interface LimitModifier {
+  id: string;
+  name: 'limitToFirst' | 'limitToLast';
+  type: 'limit';
+  value: number;
+  viewFrom: typeof CONSTANTS.VIEW_FROM_LEFT | typeof CONSTANTS.VIEW_FROM_RIGHT;
+}
+
+interface OrderModifier {
+  id: string;
+  type: 'orderBy';
+  name: 'orderByChild' | 'orderByKey' | 'orderByPriority' | 'orderByValue';
+  key?: string;
+}
+
+interface FilterModifier {
+  id: string;
+  type: 'filter';
+  name: 'startAt' | 'endAt';
+  value: number | string | boolean | null;
+  valueType: 'null' | 'string' | 'number' | 'boolean';
+  key?: string;
+}
+
+type Modifier = LimitModifier | OrderModifier | FilterModifier;
 
 export default class DatabaseQueryModifiers {
+  private _limit: LimitModifier | undefined;
+  private _orderBy: OrderModifier | undefined;
+  private _startAt: FilterModifier | undefined;
+  private _endAt: FilterModifier | undefined;
+  private _modifiers: Modifier[];
+
   constructor() {
     this._limit = undefined;
     this._orderBy = undefined;
@@ -31,7 +63,7 @@ export default class DatabaseQueryModifiers {
     this._modifiers = [];
   }
 
-  _copy() {
+  _copy(): DatabaseQueryModifiers {
     const newInstance = new DatabaseQueryModifiers();
     newInstance._limit = this._limit;
     newInstance._orderBy = this._orderBy;
@@ -47,16 +79,16 @@ export default class DatabaseQueryModifiers {
    *
    */
 
-  hasLimit() {
+  hasLimit(): boolean {
     return this._limit !== undefined;
   }
 
-  isValidLimit(limit) {
+  isValidLimit(limit: unknown): boolean {
     return !isNumber(limit) || Math.floor(limit) !== limit || limit <= 0;
   }
 
-  limitToFirst(limit) {
-    const newLimit = {
+  limitToFirst(limit: number): this {
+    const newLimit: LimitModifier = {
       id: `limit-limitToFirst:${limit}`,
       name: 'limitToFirst',
       type: 'limit',
@@ -69,8 +101,8 @@ export default class DatabaseQueryModifiers {
     return this;
   }
 
-  limitToLast(limit) {
-    const newLimit = {
+  limitToLast(limit: number): this {
+    const newLimit: LimitModifier = {
       id: `limit-limitToLast:${limit}`,
       name: 'limitToLast',
       type: 'limit',
@@ -89,12 +121,12 @@ export default class DatabaseQueryModifiers {
    *
    */
 
-  hasOrderBy() {
+  hasOrderBy(): boolean {
     return this._orderBy !== undefined;
   }
 
-  orderByChild(path) {
-    const newOrder = {
+  orderByChild(path: string): this {
+    const newOrder: OrderModifier = {
       id: `order-orderByChild:${path}`,
       type: 'orderBy',
       name: 'orderByChild',
@@ -106,8 +138,8 @@ export default class DatabaseQueryModifiers {
     return this;
   }
 
-  orderByKey() {
-    const newOrder = {
+  orderByKey(): this {
+    const newOrder: OrderModifier = {
       id: 'order-orderByKey',
       type: 'orderBy',
       name: 'orderByKey',
@@ -118,12 +150,12 @@ export default class DatabaseQueryModifiers {
     return this;
   }
 
-  isValidPriority(priority) {
+  isValidPriority(priority: unknown): boolean {
     return isNumber(priority) || isString(priority) || isNull(priority);
   }
 
-  orderByPriority() {
-    const newOrder = {
+  orderByPriority(): this {
+    const newOrder: OrderModifier = {
       id: 'order-orderByPriority',
       type: 'orderBy',
       name: 'orderByPriority',
@@ -134,8 +166,8 @@ export default class DatabaseQueryModifiers {
     return this;
   }
 
-  orderByValue() {
-    const newOrder = {
+  orderByValue(): this {
+    const newOrder: OrderModifier = {
       id: 'order-orderByValue',
       type: 'orderBy',
       name: 'orderByValue',
@@ -152,21 +184,21 @@ export default class DatabaseQueryModifiers {
    *
    */
 
-  hasStartAt() {
+  hasStartAt(): boolean {
     return this._startAt !== undefined;
   }
 
-  hasEndAt() {
+  hasEndAt(): boolean {
     return this._endAt !== undefined;
   }
 
-  startAt(value, key) {
-    const newStart = {
+  startAt(value: number | string | boolean | null, key?: string): this {
+    const newStart: FilterModifier = {
       id: `filter-startAt:${value}:${key || ''}`,
       type: 'filter',
       name: 'startAt',
       value,
-      valueType: value === null ? 'null' : typeof value,
+      valueType: value === null ? 'null' : (typeof value as 'string' | 'number' | 'boolean'),
       key,
     };
 
@@ -175,29 +207,29 @@ export default class DatabaseQueryModifiers {
     return this;
   }
 
-  endAt(value, key) {
-    const newStart = {
+  endAt(value: number | string | boolean | null, key?: string): this {
+    const newEnd: FilterModifier = {
       id: `filter-endAt:${value}:${key || ''}`,
       type: 'filter',
       name: 'endAt',
       value,
-      valueType: value === null ? 'null' : typeof value,
+      valueType: value === null ? 'null' : (typeof value as 'string' | 'number' | 'boolean'),
       key,
     };
 
-    this._endAt = newStart;
-    this._modifiers.push(newStart);
+    this._endAt = newEnd;
+    this._modifiers.push(newEnd);
     return this;
   }
 
   // Returns a modifier array
-  toArray() {
+  toArray(): Modifier[] {
     return this._modifiers;
   }
 
   // Converts the modifier list to a string representation
-  toString() {
-    const sorted = [].concat(this._modifiers).sort((a, b) => {
+  toString(): string {
+    const sorted = [...this._modifiers].sort((a, b) => {
       if (a.id < b.id) {
         return -1;
       }
@@ -212,13 +244,13 @@ export default class DatabaseQueryModifiers {
       if (i !== 0) {
         key += ',';
       }
-      key += sorted[i].id;
+      key += sorted[i]!.id;
     }
     key += '}';
     return key;
   }
 
-  validateModifiers(prefix) {
+  validateModifiers(prefix: string): void {
     if (this._orderBy && this._orderBy.name === 'orderByKey') {
       if ((this._startAt && !!this._startAt.key) || (this._endAt && !!this._endAt.key)) {
         throw new Error(

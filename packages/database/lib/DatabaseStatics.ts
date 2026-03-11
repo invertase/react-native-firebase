@@ -15,17 +15,21 @@
  *
  */
 
-export default {
+import type { ServerValue } from './types/database';
+
+const DatabaseStatics = {
   ServerValue: {
     TIMESTAMP: {
       '.sv': 'timestamp',
     },
-    increment(delta) {
+    increment(delta: number): object {
       return {
         '.sv': {
           increment: delta,
         },
       };
     },
-  },
+  } as ServerValue,
 };
+
+export default DatabaseStatics;

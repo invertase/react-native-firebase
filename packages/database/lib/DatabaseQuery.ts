@@ -31,20 +31,27 @@ import {
 } from '@react-native-firebase/app/dist/module/common';
 import DatabaseDataSnapshot from './DatabaseDataSnapshot';
 import DatabaseSyncTree from './DatabaseSyncTree';
+import DatabaseQueryModifiers from './DatabaseQueryModifiers';
+import type { DatabaseInternal } from './types/internal';
+import type { EventType, Reference } from './types/database';
+import type DatabaseReference from './DatabaseReference';
 
-const eventTypes = ['value', 'child_added', 'child_changed', 'child_moved', 'child_removed'];
+const eventTypes: EventType[] = ['value', 'child_added', 'child_changed', 'child_moved', 'child_removed'];
 
 // To avoid React Native require cycle warnings
-let DatabaseReference = null;
-export function provideReferenceClass(databaseReference) {
-  DatabaseReference = databaseReference;
+let DatabaseReferenceClass: typeof DatabaseReference | null = null;
+export function provideReferenceClass(databaseReference: typeof DatabaseReference): void {
+  DatabaseReferenceClass = databaseReference;
 }
 
 // Internal listener count
 let listeners = 0;
 
 export default class DatabaseQuery extends ReferenceBase {
-  constructor(database, path, modifiers) {
+  protected _database: DatabaseInternal;
+  protected _modifiers: DatabaseQueryModifiers;
+
+  constructor(database: DatabaseInternal, path: string, modifiers: DatabaseQueryModifiers) {
     super(path);
     this._database = database;
     this._modifiers = modifiers;
@@ -53,8 +60,13 @@ export default class DatabaseQuery extends ReferenceBase {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Query.html#endat
    */
-  get ref() {
-    return createDeprecationProxy(new DatabaseReference(this._database, this.path));
+  get ref(): Reference {
+    if (!DatabaseReferenceClass) {
+      throw new Error('DatabaseReference class not provided. Call provideReferenceClass first.');
+    }
+    return createDeprecationProxy(
+      new DatabaseReferenceClass(this._database, this.path),
+    ) as Reference;
   }
 
   /**
@@ -63,7 +75,7 @@ export default class DatabaseQuery extends ReferenceBase {
    * @param key
    * @return {DatabaseQuery}
    */
-  endAt(value, key) {
+  endAt(value: number | string | boolean | null, key?: string): DatabaseQuery {
     if (!isNumber(value) && !isString(value) && !isBoolean(value) && !isNull(value)) {
       throw new Error(
         "firebase.database().ref().endAt(*) 'value' must be a number, string, boolean or null value.",
@@ -85,7 +97,7 @@ export default class DatabaseQuery extends ReferenceBase {
     const modifiers = this._modifiers._copy().endAt(value, key);
     modifiers.validateModifiers('firebase.database().ref().endAt()');
 
-    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
+    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers)) as DatabaseQuery;
   }
 
   /**
@@ -94,7 +106,7 @@ export default class DatabaseQuery extends ReferenceBase {
    * @param key
    * @return {DatabaseQuery}
    */
-  equalTo(value, key) {
+  equalTo(value: number | string | boolean | null, key?: string): DatabaseQuery {
     if (!isNumber(value) && !isString(value) && !isBoolean(value) && !isNull(value)) {
       throw new Error(
         "firebase.database().ref().equalTo(*) 'value' must be a number, string, boolean or null value.",
@@ -120,7 +132,7 @@ export default class DatabaseQuery extends ReferenceBase {
     }
 
     // Internal method calls should always use MODULAR_DEPRECATION_ARG to avoid false deprecation warnings
-    return this.startAt
+    return (this.startAt as (value: number | string | boolean | null, key?: string, ...args: unknown[]) => DatabaseQuery)
       .call(this, value, key, MODULAR_DEPRECATION_ARG)
       .endAt.call(this, value, MODULAR_DEPRECATION_ARG);
   }
@@ -130,7 +142,7 @@ export default class DatabaseQuery extends ReferenceBase {
    * @param other
    * @return {boolean}
    */
-  isEqual(other) {
+  isEqual(other: DatabaseQuery): boolean {
     if (!(other instanceof DatabaseQuery)) {
       throw new Error("firebase.database().ref().isEqual(*) 'other' must be an instance of Query.");
     }
@@ -147,7 +159,7 @@ export default class DatabaseQuery extends ReferenceBase {
    * @param limit
    * @return {DatabaseQuery}
    */
-  limitToFirst(limit) {
+  limitToFirst(limit: number): DatabaseQuery {
     if (this._modifiers.isValidLimit(limit)) {
       throw new Error(
         "firebase.database().ref().limitToFirst(*) 'limit' must be a positive integer value.",
@@ -162,7 +174,7 @@ export default class DatabaseQuery extends ReferenceBase {
 
     return createDeprecationProxy(
       new DatabaseQuery(this._database, this.path, this._modifiers._copy().limitToFirst(limit)),
-    );
+    ) as DatabaseQuery;
   }
 
   /**
@@ -170,7 +182,7 @@ export default class DatabaseQuery extends ReferenceBase {
    * @param limit
    * @return {DatabaseQuery}
    */
-  limitToLast(limit) {
+  limitToLast(limit: number): DatabaseQuery {
     if (this._modifiers.isValidLimit(limit)) {
       throw new Error(
         "firebase.database().ref().limitToLast(*) 'limit' must be a positive integer value.",
@@ -185,7 +197,7 @@ export default class DatabaseQuery extends ReferenceBase {
 
     return createDeprecationProxy(
       new DatabaseQuery(this._database, this.path, this._modifiers._copy().limitToLast(limit)),
-    );
+    ) as DatabaseQuery;
   }
 
   /**
@@ -195,7 +207,11 @@ export default class DatabaseQuery extends ReferenceBase {
    * @param context
    * @return {DatabaseQuery}
    */
-  off(eventType, callback, context) {
+  off(
+    eventType?: EventType,
+    callback?: (snapshot: DatabaseDataSnapshot, previousChildKey?: string | null) => void,
+    context?: Record<string, unknown>,
+  ): number {
     //
     if (arguments.length === 0) {
       // Firebase Docs:
@@ -233,7 +249,7 @@ export default class DatabaseQuery extends ReferenceBase {
         callback,
       );
       if (!registration) {
-        return [];
+        return 0;
       }
 
       // remove the paired cancellation registration if any exist
@@ -241,15 +257,15 @@ export default class DatabaseQuery extends ReferenceBase {
 
       // remove only the first registration to match firebase web sdk
       // call multiple times to remove multiple registrations
-      return DatabaseSyncTree.removeListenerRegistrations(callback, [registration]);
+      return DatabaseSyncTree.removeListenerRegistrations(callback, [registration]).length;
     }
 
     // Firebase Docs:
     //     If a callback is not specified, all callbacks for the specified eventType will be removed.
-    const registrations = DatabaseSyncTree.getRegistrationsByPathEvent(this.path, eventType);
+    const registrations = DatabaseSyncTree.getRegistrationsByPathEvent(this.path, eventType!);
 
     DatabaseSyncTree.removeListenersForRegistrations(
-      DatabaseSyncTree.getRegistrationsByPathEvent(this.path, `${eventType}$cancelled`),
+      DatabaseSyncTree.getRegistrationsByPathEvent(this.path, `${eventType}$cancelled` as EventType),
     );
 
     return DatabaseSyncTree.removeListenersForRegistrations(registrations);
@@ -263,7 +279,12 @@ export default class DatabaseQuery extends ReferenceBase {
    * @param context
    * @return {DatabaseQuery}
    */
-  on(eventType, callback, cancelCallbackOrContext, context) {
+  on(
+    eventType: EventType,
+    callback: (snapshot: DatabaseDataSnapshot, previousChildKey?: string | null) => void,
+    cancelCallbackOrContext?: ((error: Error) => void) | Record<string, unknown>,
+    context?: Record<string, unknown>,
+  ): (snapshot: DatabaseDataSnapshot, previousChildKey?: string | null) => void {
     if (!eventTypes.includes(eventType)) {
       throw new Error(
         `firebase.database().ref().on(*) 'eventType' must be one of ${eventTypes.join(', ')}.`,
@@ -320,7 +341,7 @@ export default class DatabaseQuery extends ReferenceBase {
         key: queryKey,
         appName: this._database.app.name,
         dbURL: this._database._customUrlOrRegion,
-        eventType: `${eventType}$cancelled`,
+        eventType: `${eventType}$cancelled` as EventType,
         eventRegistrationKey: registrationCancellationKey,
         listener: _context ? cancelCallbackOrContext.bind(_context) : cancelCallbackOrContext,
       });
@@ -353,7 +374,12 @@ export default class DatabaseQuery extends ReferenceBase {
    * @param failureCallbackOrContext
    * @param context
    */
-  once(eventType, successCallBack, failureCallbackOrContext, context) {
+  once(
+    eventType: EventType,
+    successCallBack?: (snapshot: DatabaseDataSnapshot, previousChildKey?: string | null) => void,
+    failureCallbackOrContext?: ((error: Error) => void) | Record<string, unknown>,
+    context?: Record<string, unknown>,
+  ): Promise<DatabaseDataSnapshot> {
     if (!eventTypes.includes(eventType)) {
       throw new Error(
         `firebase.database().ref().once(*) 'eventType' must be one of ${eventTypes.join(', ')}.`,
@@ -384,17 +410,27 @@ export default class DatabaseQuery extends ReferenceBase {
 
     return this._database.native
       .once(this.path, modifiers, eventType)
-      .then(result => {
-        let dataSnapshot;
-        let previousChildName;
+      .then((result: {
+        snapshot?: unknown;
+        previousChildName?: string | null;
+        value?: unknown;
+        key?: string | null;
+        exists?: boolean;
+        childKeys?: string[];
+        priority?: string | number | null;
+      }) => {
+        let dataSnapshot: DatabaseDataSnapshot;
+        let previousChildName: string | null | undefined;
 
         // Child based events return a previousChildName
         if (eventType === 'value') {
-          dataSnapshot = createDeprecationProxy(new DatabaseDataSnapshot(this.ref, result));
+          dataSnapshot = createDeprecationProxy(
+            new DatabaseDataSnapshot(this.ref, result as { value: unknown; key: string | null; exists: boolean; childKeys: string[]; priority: string | number | null }),
+          ) as DatabaseDataSnapshot;
         } else {
           dataSnapshot = createDeprecationProxy(
-            new DatabaseDataSnapshot(this.ref, result.snapshot),
-          );
+            new DatabaseDataSnapshot(this.ref, (result.snapshot as { value: unknown; key: string | null; exists: boolean; childKeys: string[]; priority: string | number | null }) || { value: null, key: null, exists: false, childKeys: [], priority: null }),
+          ) as DatabaseDataSnapshot;
           previousChildName = result.previousChildName;
         }
 
@@ -410,7 +446,7 @@ export default class DatabaseQuery extends ReferenceBase {
 
         return dataSnapshot;
       })
-      .catch(error => {
+      .catch((error: Error) => {
         if (isFunction(failureCallbackOrContext)) {
           failureCallbackOrContext(error);
         }
@@ -421,7 +457,7 @@ export default class DatabaseQuery extends ReferenceBase {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Query.html#orderbychild
    */
-  orderByChild(path) {
+  orderByChild(path: string): DatabaseQuery {
     if (!isString(path)) {
       throw new Error("firebase.database().ref().orderByChild(*) 'path' must be a string value.");
     }
@@ -441,13 +477,13 @@ export default class DatabaseQuery extends ReferenceBase {
     const modifiers = this._modifiers._copy().orderByChild(path);
     modifiers.validateModifiers('firebase.database().ref().orderByChild()');
 
-    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
+    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers)) as DatabaseQuery;
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Query.html#orderbykey
    */
-  orderByKey() {
+  orderByKey(): DatabaseQuery {
     if (this._modifiers.hasOrderBy()) {
       throw new Error(
         "firebase.database().ref().orderByKey() You can't combine multiple orderBy calls.",
@@ -457,13 +493,13 @@ export default class DatabaseQuery extends ReferenceBase {
     const modifiers = this._modifiers._copy().orderByKey();
     modifiers.validateModifiers('firebase.database().ref().orderByKey()');
 
-    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
+    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers)) as DatabaseQuery;
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Query.html#orderbypriority
    */
-  orderByPriority() {
+  orderByPriority(): DatabaseQuery {
     if (this._modifiers.hasOrderBy()) {
       throw new Error(
         "firebase.database().ref().orderByPriority() You can't combine multiple orderBy calls.",
@@ -473,13 +509,13 @@ export default class DatabaseQuery extends ReferenceBase {
     const modifiers = this._modifiers._copy().orderByPriority();
     modifiers.validateModifiers('firebase.database().ref().orderByPriority()');
 
-    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
+    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers)) as DatabaseQuery;
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Query.html#orderbyvalue
    */
-  orderByValue() {
+  orderByValue(): DatabaseQuery {
     if (this._modifiers.hasOrderBy()) {
       throw new Error(
         "firebase.database().ref().orderByValue() You can't combine multiple orderBy calls.",
@@ -489,10 +525,10 @@ export default class DatabaseQuery extends ReferenceBase {
     const modifiers = this._modifiers._copy().orderByValue();
     modifiers.validateModifiers('firebase.database().ref().orderByValue()');
 
-    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
+    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers)) as DatabaseQuery;
   }
 
-  startAt(value, key) {
+  startAt(value?: number | string | boolean | null, key?: string): DatabaseQuery {
     if (!isNumber(value) && !isString(value) && !isBoolean(value) && !isNull(value)) {
       throw new Error(
         "firebase.database().ref().startAt(*) 'value' must be a number, string, boolean or null value.",
@@ -511,21 +547,21 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    const modifiers = this._modifiers._copy().startAt(value, key);
+    const modifiers = this._modifiers._copy().startAt(value!, key);
     modifiers.validateModifiers('firebase.database().ref().startAt()');
 
-    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers));
+    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers)) as DatabaseQuery;
   }
 
-  toJSON() {
+  toJSON(): string {
     return this.toString();
   }
 
-  toString() {
+  toString(): string {
     return `${this._database._customUrlOrRegion}${pathToUrlEncodedString(this.path)}`;
   }
 
-  keepSynced(bool) {
+  keepSynced(bool: boolean): Promise<void> {
     if (!isBoolean(bool)) {
       throw new Error(
         "firebase.database().ref().keepSynced(*) 'bool' value must be a boolean value.",
@@ -542,14 +578,14 @@ export default class DatabaseQuery extends ReferenceBase {
 
   // Generates a unique string for a query
   // Ensures any queries called in various orders keep the same key
-  _generateQueryKey() {
+  _generateQueryKey(): string {
     return `$${this._database._customUrlOrRegion}$/${this.path}$${
       this._database.app.name
     }$${this._modifiers.toString()}`;
   }
 
   // Generates a unique event registration key
-  _generateQueryEventKey(eventType) {
+  _generateQueryEventKey(eventType: EventType): string {
     return `${this._generateQueryKey()}$${listeners}$${eventType}`;
   }
 }

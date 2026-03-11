@@ -15,5 +15,13 @@
  *
  */
 
-export { default, firebase, SDK_VERSION } from './namespaced';
+// Export modular types from types/database
+export type * from './types/database';
+
+// Export modular API functions
 export * from './modular';
+
+// Export namespaced API
+export type { FirebaseDatabaseTypes } from './types/namespaced';
+export * from './namespaced';
+export { default } from './namespaced';

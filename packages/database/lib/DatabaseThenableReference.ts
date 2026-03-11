@@ -16,33 +16,48 @@
  */
 
 import { createDeprecationProxy } from '@react-native-firebase/app/dist/module/common';
+import type DatabaseReference from './DatabaseReference';
+
 // To avoid React Native require cycle warnings
-let DatabaseReference = null;
-export function provideReferenceClass(databaseReference) {
-  DatabaseReference = databaseReference;
+let DatabaseReferenceClass: typeof DatabaseReference | null = null;
+
+export function provideReferenceClass(databaseReference: typeof DatabaseReference): void {
+  DatabaseReferenceClass = databaseReference;
 }
 
 export default class DatabaseThenableReference {
-  constructor(database, path, promise) {
-    this._ref = createDeprecationProxy(new DatabaseReference(database, path));
+  private _ref: DatabaseReference;
+  private _promise: Promise<DatabaseReference>;
+
+  constructor(
+    database: unknown,
+    path: string,
+    promise: Promise<DatabaseReference>,
+  ) {
+    if (!DatabaseReferenceClass) {
+      throw new Error('DatabaseReference class not provided. Call provideReferenceClass first.');
+    }
+    this._ref = createDeprecationProxy(
+      new DatabaseReferenceClass(database, path),
+    ) as DatabaseReference;
     this._promise = promise;
 
     return new Proxy(this, {
       get(target, prop) {
         if (prop === 'then' || prop === 'catch') {
-          return target[prop];
+          return target[prop as keyof DatabaseThenableReference];
         }
 
-        return target._ref[prop];
+        return (target._ref as Record<string | symbol, unknown>)[prop];
       },
-    });
+    }) as DatabaseThenableReference & DatabaseReference;
   }
 
-  get then() {
+  get then(): Promise<DatabaseReference>['then'] {
     return this._promise.then.bind(this._promise);
   }
 
-  get catch() {
+  get catch(): Promise<DatabaseReference>['catch'] {
     return this._promise.catch.bind(this._promise);
   }
 }

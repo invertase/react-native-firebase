@@ -26,15 +26,34 @@ import {
 import { deepGet } from '@react-native-firebase/app/dist/module/common/deeps';
 
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
+import type DatabaseReference from './DatabaseReference';
+import type DatabaseQuery from './DatabaseQuery';
+
+interface SnapshotData {
+  value: unknown;
+  key: string | null;
+  exists: boolean;
+  childKeys: string[];
+  priority: string | number | null;
+  childPriorities?: { [key: string]: string | number | null };
+}
+
 export default class DatabaseDataSnapshot {
-  constructor(reference, snapshot) {
+  _snapshot: SnapshotData;
+  _ref: DatabaseReference;
+
+  constructor(reference: DatabaseReference | DatabaseQuery, snapshot: SnapshotData) {
     this._snapshot = snapshot;
 
     if (reference.key !== snapshot.key) {
       // reference is a query?
-      this._ref = reference.ref.child.call(reference.ref, snapshot.key, MODULAR_DEPRECATION_ARG);
+      this._ref = reference.ref.child.call(
+        reference.ref,
+        snapshot.key,
+        MODULAR_DEPRECATION_ARG,
+      ) as DatabaseReference;
     } else {
-      this._ref = reference;
+      this._ref = reference as DatabaseReference;
     }
 
     // TODO #894
@@ -43,11 +62,11 @@ export default class DatabaseDataSnapshot {
     // }
   }
 
-  get key() {
+  get key(): string | null {
     return this._snapshot.key;
   }
 
-  get ref() {
+  get ref(): DatabaseReference {
     return this._ref;
   }
 
@@ -56,7 +75,7 @@ export default class DatabaseDataSnapshot {
    * @param path
    * @returns {DatabaseDataSnapshot}
    */
-  child(path) {
+  child(path: string): DatabaseDataSnapshot {
     if (!isString(path)) {
       throw new Error("snapshot().child(*) 'path' must be a string value");
     }
@@ -67,11 +86,11 @@ export default class DatabaseDataSnapshot {
       value = null;
     }
 
-    const childRef = this._ref.child.call(this._ref, path, MODULAR_DEPRECATION_ARG);
+    const childRef = this._ref.child.call(this._ref, path, MODULAR_DEPRECATION_ARG) as DatabaseReference;
 
-    let childPriority = null;
+    let childPriority: string | number | null = null;
     if (this._snapshot.childPriorities) {
-      const childPriorityValue = this._snapshot.childPriorities[childRef.key];
+      const childPriorityValue = this._snapshot.childPriorities[childRef.key || ''];
       if (isString(childPriorityValue) || isNumber(childPriorityValue)) {
         childPriority = childPriorityValue;
       }
@@ -84,7 +103,7 @@ export default class DatabaseDataSnapshot {
         childKeys: isObject(value) ? Object.keys(value) : [],
         priority: childPriority,
       }),
-    );
+    ) as DatabaseDataSnapshot;
   }
 
   /**
@@ -92,7 +111,7 @@ export default class DatabaseDataSnapshot {
    *
    * @returns {(function())|((path: PathLike, callback: (exists: boolean) => void) => void)|boolean|exists|(() => boolean)}
    */
-  exists() {
+  exists(): boolean {
     return this._snapshot.exists;
   }
 
@@ -101,7 +120,7 @@ export default class DatabaseDataSnapshot {
    *
    * @returns {{'.priority': *, '.value': *}}
    */
-  exportVal() {
+  exportVal(): { '.value': unknown; '.priority': string | number | null } {
     let { value } = this._snapshot;
 
     if (isObject(value) || isArray(value)) {
@@ -120,7 +139,7 @@ export default class DatabaseDataSnapshot {
    * @param action
    * @return {boolean}
    */
-  forEach(action) {
+  forEach(action: (snapshot: DatabaseDataSnapshot, index: number) => true | undefined): boolean {
     if (!isFunction(action)) {
       throw new Error("snapshot.forEach(*) 'action' must be a function.");
     }
@@ -153,7 +172,7 @@ export default class DatabaseDataSnapshot {
     return cancelled;
   }
 
-  getPriority() {
+  getPriority(): string | number | null {
     return this._snapshot.priority;
   }
 
@@ -163,7 +182,7 @@ export default class DatabaseDataSnapshot {
    * @param path
    * @returns {boolean}
    */
-  hasChild(path) {
+  hasChild(path: string): boolean {
     if (!isString(path)) {
       throw new Error("snapshot.hasChild(*) 'path' must be a string value.");
     }
@@ -176,7 +195,7 @@ export default class DatabaseDataSnapshot {
    *
    * @returns {boolean}
    */
-  hasChildren() {
+  hasChildren(): boolean {
     return this.numChildren() > 0;
   }
 
@@ -185,7 +204,7 @@ export default class DatabaseDataSnapshot {
    *
    * @returns {number}
    */
-  numChildren() {
+  numChildren(): number {
     const { value } = this._snapshot;
     if (isArray(value)) {
       return value.length;
@@ -201,7 +220,7 @@ export default class DatabaseDataSnapshot {
    * Same as snapshot.val()
    * @returns {any}
    */
-  toJSON() {
+  toJSON(): unknown {
     return this.val();
   }
 
@@ -210,7 +229,7 @@ export default class DatabaseDataSnapshot {
    *
    * @returns {any}
    */
-  val() {
+  val(): unknown {
     const { value } = this._snapshot;
 
     if (isObject(value) || isArray(value)) {
