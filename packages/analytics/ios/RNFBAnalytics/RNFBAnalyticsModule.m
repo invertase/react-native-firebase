@@ -21,7 +21,7 @@
 #if __has_include(<RNFBAnalytics/RNFBAnalytics-Swift.h>)
 // This import will work in situations where `use_frameworks!` is in use
 #import <RNFBAnalytics/RNFBAnalytics-Swift.h>
-#elif __has_include("RNFBFunctions-Swift.h")
+#elif __has_include("RNFBAnalytics-Swift.h")
 // If `use_frameworks!` is not in use (for example, while using pre-built
 // react-native core) then header imports based on frameworks assumptions fail.
 // So, if frameworks are not available, fall back to importing the header directly, it
