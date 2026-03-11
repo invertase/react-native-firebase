@@ -35,7 +35,7 @@ export interface RNFBAnalyticsModule {
   getAppInstanceId(): Promise<string | null>;
   getSessionId(): Promise<number | null>;
   /** iOS only (StoreKit 2). Not present on Android native. */
-  logTransaction?(transactionId: string): Promise<void>;
+  logTransaction(transactionId: string): Promise<void>;
   /** iOS only. */
   initiateOnDeviceConversionMeasurementWithEmailAddress?(emailAddress: string): Promise<void>;
   /** iOS only. */
