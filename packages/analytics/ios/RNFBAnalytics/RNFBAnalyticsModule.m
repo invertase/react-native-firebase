@@ -18,7 +18,17 @@
 #import <Firebase/Firebase.h>
 #import <React/RCTUtils.h>
 
+#if __has_include(<RNFBAnalytics/RNFBAnalytics-Swift.h>)
+// This import will work in situations where `use_frameworks!` is in use
 #import <RNFBAnalytics/RNFBAnalytics-Swift.h>
+#elif __has_include("RNFBFunctions-Swift.h")
+// If `use_frameworks!` is not in use (for example, while using pre-built
+// react-native core) then header imports based on frameworks assumptions fail.
+// So, if frameworks are not available, fall back to importing the header directly, it
+// should be findable from a header search path pointing to the build
+// directory. See firebase-ios-sdk#12611 for more context.
+#import "RNFBAnalytics-Swift.h"
+#endif
 #import <RNFBApp/RNFBSharedUtils.h>
 #import "RNFBAnalyticsModule.h"
 
