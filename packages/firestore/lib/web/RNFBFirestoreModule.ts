@@ -38,6 +38,8 @@ import {
   writeBatch,
   terminate,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
+
+import { execute } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines';
 import type {
   Firestore,
   Transaction,
@@ -52,9 +54,10 @@ import { buildQuery } from './query';
 import type { FilterSpec, OrderSpec, QueryOptions } from './query';
 import type {
   FirestorePipelineExecuteOptionsInternal,
+  FirestorePipelineSnapshotInternal,
   FirestorePipelineSerializedInternal,
 } from '../types/internal';
-import { createPipelineUnsupportedMessage } from '../pipelines/pipeline_support';
+import { executeWebSdkPipeline } from './pipeline';
 
 function rejectWithCodeAndMessage(code: string, message: string): Promise<never> {
   return Promise.reject(getWebError({ code, message } as Error & { code: string }));
@@ -289,12 +292,17 @@ export default {
   },
 
   pipelineExecute(
-    _appName: string,
-    _databaseId: string,
+    appName: string,
+    databaseId: string,
     pipeline: FirestorePipelineSerializedInternal,
-    _options?: FirestorePipelineExecuteOptionsInternal,
-  ): Promise<never> {
-    return rejectWithCodeAndMessage('unsupported', createPipelineUnsupportedMessage(pipeline));
+    options?: FirestorePipelineExecuteOptionsInternal,
+  ): Promise<FirestorePipelineSnapshotInternal> {
+    return guard(async () => {
+      const firestore = getCachedFirestoreInstance(appName, databaseId);
+      return executeWebSdkPipeline(firestore, pipeline, options, {
+        execute: execute as (input: unknown) => Promise<unknown>,
+      });
+    });
   },
 
   collectionGet(
