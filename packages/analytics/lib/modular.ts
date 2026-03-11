@@ -425,7 +425,9 @@ export function logTransaction(analytics: Analytics, transaction_id: string): Pr
   if (Platform.OS !== 'ios') {
     return Promise.reject(new Error('logTransaction is only available on iOS'));
   }
-  return (analytics as AnalyticsInternal).logTransaction(transaction_id);
+  const native = (analytics as AnalyticsInternal).native;
+  // logTransaction is optional on RNFBAnalyticsModule (Android/web don't implement it); on iOS it exists
+  return (native as { logTransaction(id: string): Promise<void> }).logTransaction(transaction_id);
 }
 
 /**
