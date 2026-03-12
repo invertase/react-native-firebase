@@ -7,6 +7,7 @@ import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 import Query from '../lib/FirestoreQuery';
 // @ts-ignore test
 import FirestoreDocumentSnapshot from '../lib/FirestoreDocumentSnapshot';
+import { parseSnapshotArgs } from '../lib/utils';
 // @ts-ignore test
 import * as nativeModule from '@react-native-firebase/app/dist/module/internal/nativeModuleAndroidIos';
 
@@ -496,6 +497,35 @@ describe('Firestore', function () {
 
           expect(nullIndexManager).toBeNull();
         });
+      });
+    });
+
+    describe('onSnapshot()', function () {
+      it("accepts { source: 'cache' } listener options", function () {
+        const parsed = parseSnapshotArgs([{ source: 'cache' }, () => {}]);
+
+        expect(parsed.snapshotListenOptions).toEqual({
+          includeMetadataChanges: false,
+          source: 'cache',
+        });
+      });
+
+      it("accepts { source: 'default', includeMetadataChanges: true } listener options", function () {
+        const parsed = parseSnapshotArgs([
+          { source: 'default', includeMetadataChanges: true },
+          () => {},
+        ]);
+
+        expect(parsed.snapshotListenOptions).toEqual({
+          includeMetadataChanges: true,
+          source: 'default',
+        });
+      });
+
+      it("throws for unsupported listener source value 'server'", function () {
+        expect(() =>
+          parseSnapshotArgs([{ source: 'server' as 'default' | 'cache' }, () => {}]),
+        ).toThrow("'options' SnapshotOptions.source must be one of 'default' or 'cache'.");
       });
     });
   });

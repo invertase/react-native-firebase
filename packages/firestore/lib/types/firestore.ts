@@ -201,8 +201,17 @@ export type QueryConstraintType =
   | 'endAt'
   | 'endBefore';
 
+/**
+ * Describe the source a query listens to.
+ *
+ * Set to `default` to listen to both cache and server changes. Set to `cache`
+ * to listen to changes in cache only.
+ */
+export type ListenSource = 'default' | 'cache';
+
 export interface SnapshotListenOptions {
   readonly includeMetadataChanges?: boolean;
+  readonly source?: ListenSource;
 }
 
 /**

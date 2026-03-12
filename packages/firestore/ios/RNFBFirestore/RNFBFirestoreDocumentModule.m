@@ -97,13 +97,19 @@ RCT_EXPORT_METHOD(documentOnSnapshot
   };
 
   BOOL includeMetadataChanges = NO;
-  if (listenerOptions[@"includeMetadataChanges"] != nil) {
-    includeMetadataChanges = [listenerOptions[@"includeMetadataChanges"] boolValue];
+  FIRListenSource source = FIRListenSourceDefault;
+  if (listenerOptions[KEY_INCLUDE_METADATA_CHANGES] != nil) {
+    includeMetadataChanges = [listenerOptions[KEY_INCLUDE_METADATA_CHANGES] boolValue];
+  }
+  if ([listenerOptions[KEY_SOURCE] isEqualToString:@"cache"]) {
+    source = FIRListenSourceCache;
   }
 
+  FIRSnapshotListenOptions *snapshotListenOptions = [[[[FIRSnapshotListenOptions alloc] init]
+      optionsWithIncludeMetadataChanges:includeMetadataChanges] optionsWithSource:source];
   id<FIRListenerRegistration> listener =
-      [documentReference addSnapshotListenerWithIncludeMetadataChanges:includeMetadataChanges
-                                                              listener:listenerBlock];
+      [documentReference addSnapshotListenerWithOptions:snapshotListenOptions
+                                               listener:listenerBlock];
   documentSnapshotListeners[listenerId] = listener;
 }
 
