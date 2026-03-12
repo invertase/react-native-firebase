@@ -86,6 +86,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return isObject(value) && !isArray(value);
 }
 
+function hasAnyKey(value: Record<string, unknown>, keys: string[]): boolean {
+  return keys.some(key => Object.prototype.hasOwnProperty.call(value, key));
+}
+
 function parseTimestamp(
   value: FirestorePipelineTimestampInternal | undefined,
 ): FirestoreTimestamp | undefined {
@@ -267,7 +271,9 @@ class RuntimePipelineImpl<T = DocumentData> implements RuntimePipeline {
     ]);
   }
 
-  serialize(visiting: WeakSet<object> = new WeakSet<object>()): FirestorePipelineSerializedInternal {
+  serialize(
+    visiting: WeakSet<object> = new WeakSet<object>(),
+  ): FirestorePipelineSerializedInternal {
     if (visiting.has(this)) {
       throw new Error('firebase.firestore().pipeline() cannot union a pipeline with itself.');
     }
@@ -286,9 +292,10 @@ class RuntimePipelineImpl<T = DocumentData> implements RuntimePipeline {
   where(condition: BooleanExpression): Pipeline<T>;
   where(options: { condition: BooleanExpression }): Pipeline<T>;
   where(conditionOrOptions: BooleanExpression | { condition: BooleanExpression }): Pipeline<T> {
-    const condition = isRecord(conditionOrOptions)
-      ? conditionOrOptions.condition
-      : conditionOrOptions;
+    const condition =
+      isRecord(conditionOrOptions) && hasAnyKey(conditionOrOptions, ['condition'])
+        ? conditionOrOptions.condition
+        : conditionOrOptions;
     return this.append('where', { condition });
   }
 
@@ -298,9 +305,12 @@ class RuntimePipelineImpl<T = DocumentData> implements RuntimePipeline {
     ...selectionOrOptions: (Selectable | string)[] | [{ selection: (Selectable | string)[] }]
   ): Pipeline<T> {
     const first = selectionOrOptions[0];
-    const selections = isRecord(first)
-      ? (first.selection ?? (first as { selections?: (Selectable | string)[] }).selections) || []
-      : (selectionOrOptions as (Selectable | string)[]);
+    const selections =
+      selectionOrOptions.length === 1 &&
+      isRecord(first) &&
+      hasAnyKey(first, ['selection', 'selections'])
+        ? (first.selection ?? (first as { selections?: (Selectable | string)[] }).selections) || []
+        : (selectionOrOptions as (Selectable | string)[]);
     return this.append('select', { selections });
   }
 
@@ -308,9 +318,10 @@ class RuntimePipelineImpl<T = DocumentData> implements RuntimePipeline {
   addFields(options: { field: Selectable[] }): Pipeline<T>;
   addFields(...fieldOrOptions: Selectable[] | [{ field: Selectable[] }]): Pipeline<T> {
     const first = fieldOrOptions[0];
-    const fields = isRecord(first)
-      ? (first.field ?? (first as { fields?: Selectable[] }).fields) || []
-      : (fieldOrOptions as Selectable[]);
+    const fields =
+      fieldOrOptions.length === 1 && isRecord(first) && hasAnyKey(first, ['field', 'fields'])
+        ? (first.field ?? (first as { fields?: Selectable[] }).fields) || []
+        : (fieldOrOptions as Selectable[]);
     return this.append('addFields', { fields });
   }
 
@@ -320,9 +331,10 @@ class RuntimePipelineImpl<T = DocumentData> implements RuntimePipeline {
     ...fieldOrOptions: (Field | string)[] | [{ field: (Field | string)[] }]
   ): Pipeline<T> {
     const first = fieldOrOptions[0];
-    const fields = isRecord(first)
-      ? (first.field ?? (first as { fields?: (Field | string)[] }).fields) || []
-      : (fieldOrOptions as (Field | string)[]);
+    const fields =
+      fieldOrOptions.length === 1 && isRecord(first) && hasAnyKey(first, ['field', 'fields'])
+        ? (first.field ?? (first as { fields?: (Field | string)[] }).fields) || []
+        : (fieldOrOptions as (Field | string)[]);
     return this.append('removeFields', { fields });
   }
 
@@ -330,9 +342,12 @@ class RuntimePipelineImpl<T = DocumentData> implements RuntimePipeline {
   sort(options: { ordering: Ordering[] }): Pipeline<T>;
   sort(...orderingOrOptions: Ordering[] | [{ ordering: Ordering[] }]): Pipeline<T> {
     const first = orderingOrOptions[0];
-    const orderings = isRecord(first)
-      ? (first.ordering ?? (first as { orderings?: Ordering[] }).orderings) || []
-      : (orderingOrOptions as Ordering[]);
+    const orderings =
+      orderingOrOptions.length === 1 &&
+      isRecord(first) &&
+      hasAnyKey(first, ['ordering', 'orderings'])
+        ? (first.ordering ?? (first as { orderings?: Ordering[] }).orderings) || []
+        : (orderingOrOptions as Ordering[]);
     return this.append('sort', { orderings });
   }
 
@@ -358,10 +373,14 @@ class RuntimePipelineImpl<T = DocumentData> implements RuntimePipeline {
   aggregate(options: PipelineAggregateOptions): Pipeline<T>;
   aggregate(...accumulatorOrOptions: Accumulator[] | [PipelineAggregateOptions]): Pipeline<T> {
     const first = accumulatorOrOptions[0];
-    const accumulators = isRecord(first)
+    const isOptionsRecord =
+      accumulatorOrOptions.length === 1 &&
+      isRecord(first) &&
+      hasAnyKey(first, ['accumulators', 'accumulator', 'groups', 'group']);
+    const accumulators = isOptionsRecord
       ? (first.accumulators ?? (first as { accumulator?: Accumulator[] }).accumulator) || []
       : (accumulatorOrOptions as Accumulator[]);
-    const groups = isRecord(first)
+    const groups = isOptionsRecord
       ? ((first.groups ?? (first as { group?: (Field | string)[] }).group) as
           | (Field | string)[]
           | undefined)
@@ -374,9 +393,10 @@ class RuntimePipelineImpl<T = DocumentData> implements RuntimePipeline {
   distinct(options: PipelineDistinctOptions): Pipeline<T>;
   distinct(...groupOrOptions: (Field | string)[] | [PipelineDistinctOptions]): Pipeline<T> {
     const first = groupOrOptions[0];
-    const groups = isRecord(first)
-      ? (first.groups ?? (first as { group?: (Field | string)[] }).group) || []
-      : (groupOrOptions as (Field | string)[]);
+    const groups =
+      groupOrOptions.length === 1 && isRecord(first) && hasAnyKey(first, ['groups', 'group'])
+        ? (first.groups ?? (first as { group?: (Field | string)[] }).group) || []
+        : (groupOrOptions as (Field | string)[]);
     return this.append('distinct', { groups });
   }
 
@@ -394,7 +414,10 @@ class RuntimePipelineImpl<T = DocumentData> implements RuntimePipeline {
       return this.append('replaceWith', { map: fieldNameOrExprOrOptions });
     }
 
-    if (isRecord(fieldNameOrExprOrOptions)) {
+    if (
+      isRecord(fieldNameOrExprOrOptions) &&
+      hasAnyKey(fieldNameOrExprOrOptions, ['map', 'expr', 'fieldName'])
+    ) {
       const map =
         fieldNameOrExprOrOptions.map ??
         (fieldNameOrExprOrOptions as { expr?: Selectable }).expr ??
@@ -443,7 +466,10 @@ class RuntimePipelineImpl<T = DocumentData> implements RuntimePipeline {
     selectableOrOptions: Selectable | PipelineUnnestOptions,
     indexField?: string,
   ): Pipeline<T> {
-    if (isRecord(selectableOrOptions)) {
+    if (
+      isRecord(selectableOrOptions) &&
+      hasAnyKey(selectableOrOptions, ['selectable', 'indexField'])
+    ) {
       return this.append('unnest', selectableOrOptions as Record<string, unknown>);
     }
 
