@@ -19,6 +19,9 @@
 #import <Firebase/Firebase.h>
 #import <React/RCTBridgeModule.h>
 
+static NSString *const KEY_INCLUDE_METADATA_CHANGES = @"includeMetadataChanges";
+static NSString *const KEY_SOURCE = @"source";
+
 @interface RNFBFirestoreCommon : NSObject
 
 + (dispatch_queue_t)getFirestoreQueue;
