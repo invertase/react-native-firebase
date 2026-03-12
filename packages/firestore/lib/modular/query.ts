@@ -129,7 +129,7 @@ export class QueryCompositeFilterConstraint extends AppliableConstraint {
   _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
     query: Query<AppModelType, DbModelType>,
   ): Query<AppModelType, DbModelType> {
-    const filters = this._queryConstraints.map((constraint) => {
+    const filters = this._queryConstraints.map(constraint => {
       if (constraint instanceof QueryCompositeFilterConstraint) {
         return constraint._filter;
       }
@@ -141,7 +141,7 @@ export class QueryCompositeFilterConstraint extends AppliableConstraint {
   }
 
   get _filter(): _Filter {
-    const filters = this._queryConstraints.map((constraint) => {
+    const filters = this._queryConstraints.map(constraint => {
       if (constraint instanceof QueryCompositeFilterConstraint) {
         return constraint._filter;
       }
