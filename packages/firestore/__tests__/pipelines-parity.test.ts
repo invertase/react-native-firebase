@@ -50,11 +50,11 @@ describe('Firestore pipeline native parity', function () {
     expect(iosStages).toEqual([...PIPELINE_STAGE_TYPES]);
   });
 
-  it('keeps unsupported message contract deterministic', function () {
+  it('keeps unsupported message contract deterministic for non-Android paths', function () {
     const androidSource = readFileSync(ANDROID_EXECUTOR_PATH, 'utf8');
     const iosSource = readFileSync(IOS_EXECUTOR_PATH, 'utf8');
 
-    expect(androidSource).toContain(PIPELINE_UNSUPPORTED_BASE_MESSAGE);
+    expect(androidSource).not.toContain(PIPELINE_UNSUPPORTED_BASE_MESSAGE);
     expect(iosSource).toContain(PIPELINE_UNSUPPORTED_BASE_MESSAGE);
 
     expect(createPipelineUnsupportedMessage()).toBe(PIPELINE_UNSUPPORTED_BASE_MESSAGE);

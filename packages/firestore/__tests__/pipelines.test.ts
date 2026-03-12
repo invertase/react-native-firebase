@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { firebase } from '../lib';
-import { execute } from '../lib/pipelines';
+import { and, execute, field, greaterThan, Ordering } from '../lib/pipelines';
 import '../lib/pipelines';
 
 describe('Firestore pipelines runtime', function () {
@@ -157,5 +157,92 @@ describe('Firestore pipelines runtime', function () {
     } finally {
       db._nativeModule = originalNativeModule;
     }
+  });
+
+  it('serializes global expression helpers with field names and constants', function () {
+    const condition: any = greaterThan('rating' as any, 4 as any);
+    expect(condition).toMatchObject({
+      exprType: 'Function',
+      name: 'greaterThan',
+      args: [
+        { exprType: 'Field', path: 'rating' },
+        { exprType: 'Constant', value: 4 },
+      ],
+    });
+  });
+
+  it('supports method-style expression chaining and ordering helper serialization', function () {
+    const db: any = firebase.firestore();
+    const f = (path: string): any => field(path as any);
+
+    const pipeline = db
+      .pipeline()
+      .collection('firestore')
+      .where(and(f('rating').greaterThan(4), f('genre').equal('Fantasy')))
+      .select(
+        f('title').as('title'),
+        f('rating').add(1).as('boostedRating'),
+        f('genre').equal('Fantasy').as('isFantasy'),
+      )
+      .sort((Ordering.of(f('rating')) as any).descending())
+      .aggregate(f('rating').average().as('averageRating'));
+
+    const serialized = pipeline.serialize();
+    expect(serialized.stages[0]).toMatchObject({
+      stage: 'where',
+      options: {
+        condition: {
+          exprType: 'Function',
+          name: 'and',
+        },
+      },
+    });
+    expect(serialized.stages[1]).toMatchObject({
+      stage: 'select',
+      options: {
+        selections: [
+          {
+            exprType: 'AliasedExpression',
+            alias: 'title',
+            expr: { exprType: 'Field', path: 'title' },
+          },
+          {
+            exprType: 'AliasedExpression',
+            alias: 'boostedRating',
+            expr: { exprType: 'Function', name: 'add' },
+          },
+          {
+            exprType: 'AliasedExpression',
+            alias: 'isFantasy',
+            expr: { exprType: 'Function', name: 'equal' },
+          },
+        ],
+      },
+    });
+    expect(serialized.stages[2]).toMatchObject({
+      stage: 'sort',
+      options: {
+        orderings: [
+          {
+            direction: 'descending',
+            expr: { exprType: 'Field', path: 'rating' },
+          },
+        ],
+      },
+    });
+    expect(serialized.stages[3]).toMatchObject({
+      stage: 'aggregate',
+      options: {
+        accumulators: [
+          {
+            alias: 'averageRating',
+            aggregate: {
+              exprType: 'AggregateFunction',
+              kind: 'average',
+            },
+          },
+        ],
+      },
+    });
   });
 });
