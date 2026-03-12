@@ -89,48 +89,78 @@ export class QueryCompositeFilterConstraint implements QueryConstraint {
   }
 }
 
-export class QueryOrderByConstraint extends QueryConstraintBase {
+export class QueryOrderByConstraint extends QueryConstraintBase implements QueryConstraint {
   readonly type = 'orderBy';
 
   constructor(fieldPath: string | FieldPath, directionStr?: OrderByDirection) {
     super(fieldPath, directionStr);
   }
+
+  _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+    query: Query<AppModelType, DbModelType>,
+  ): Query<AppModelType, DbModelType> {
+    return super._apply(query);
+  }
 }
 
-export class QueryLimitConstraint extends QueryConstraintBase {
+export class QueryLimitConstraint extends QueryConstraintBase implements QueryConstraint {
   readonly type: 'limit' | 'limitToLast';
 
   constructor(type: 'limit' | 'limitToLast', limitValue: number) {
     super(limitValue);
     this.type = type;
   }
+
+  _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+    query: Query<AppModelType, DbModelType>,
+  ): Query<AppModelType, DbModelType> {
+    return super._apply(query);
+  }
 }
 
-export class QueryStartAtConstraint extends QueryConstraintBase {
+export class QueryStartAtConstraint extends QueryConstraintBase implements QueryConstraint {
   readonly type: 'startAt' | 'startAfter';
 
   constructor(type: 'startAt' | 'startAfter', ...docOrFields: Array<unknown | DocumentSnapshot>) {
     super(...docOrFields);
     this.type = type;
   }
+
+  _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+    query: Query<AppModelType, DbModelType>,
+  ): Query<AppModelType, DbModelType> {
+    return super._apply(query);
+  }
 }
 
-export class QueryEndAtConstraint extends QueryConstraintBase {
+export class QueryEndAtConstraint extends QueryConstraintBase implements QueryConstraint {
   readonly type: 'endAt' | 'endBefore';
 
   constructor(type: 'endAt' | 'endBefore', ...fieldValues: unknown[]) {
     super(...fieldValues);
     this.type = type;
   }
+
+  _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+    query: Query<AppModelType, DbModelType>,
+  ): Query<AppModelType, DbModelType> {
+    return super._apply(query);
+  }
 }
 
-export class QueryFieldFilterConstraint extends QueryConstraintBase {
+export class QueryFieldFilterConstraint extends QueryConstraintBase implements QueryConstraint {
   readonly type = 'where';
   readonly _filter: _Filter;
 
   constructor(fieldPath: string | FieldPath, opStr: WhereFilterOp, value: unknown) {
     super(fieldPath, opStr, value);
     this._filter = Filter(fieldPath, opStr, value);
+  }
+
+  _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+    query: Query<AppModelType, DbModelType>,
+  ): Query<AppModelType, DbModelType> {
+    return super._apply(query);
   }
 }
 
