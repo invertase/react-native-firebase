@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.8.8](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v23.8.8) (2026-03-12)
+
+### Bug Fixes
+
+- **analytics, android:** use Parcelable for items serialization in logEvent ([#8879](https://github.com/invertase/react-native-firebase/issues/8879)) ([1fa290f](https://github.com/invertase/react-native-firebase/commit/1fa290f9a6a9f6e5b27e0d7ccd4a7b57cee7453b))
+
 ## [23.8.7](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v23.8.7) (2026-03-12)
 
 ### Bug Fixes
