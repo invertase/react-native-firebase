@@ -29,6 +29,38 @@ export interface RNFBDatabaseModule {
   setLoggingEnabled(enabled: boolean): Promise<void>;
   setPersistenceCacheSizeBytes(bytes: number): Promise<void>;
   useEmulator(host: string, port: number): void;
+  set(path: string, data: { value: unknown }): Promise<void>;
+  update(path: string, data: { values: { [key: string]: unknown } }): Promise<void>;
+  setWithPriority(path: string, data: { value: unknown; priority: string | number | null }): Promise<void>;
+  remove(path: string): Promise<void>;
+  setPriority(path: string, data: { priority: string | number | null }): Promise<void>;
+  onDisconnectCancel(path: string): Promise<void>;
+  onDisconnectRemove(path: string): Promise<void>;
+  onDisconnectSet(path: string, data: { value: unknown }): Promise<void>;
+  onDisconnectSetWithPriority(path: string, data: { value: unknown; priority: string | number | null }): Promise<void>;
+  onDisconnectUpdate(path: string, data: { values: { [key: string]: unknown } }): Promise<void>;
+  on(props: {
+    eventType: string;
+    path: string;
+    key: string;
+    appName: string;
+    dbURL: string;
+    modifiers: unknown[];
+    hasCancellationCallback: boolean;
+    registration: { eventRegistrationKey: string; key?: string; registrationCancellationKey?: string };
+  }): Promise<void>;
+  once(path: string, modifiers: unknown[], eventType: string): Promise<{
+    snapshot?: unknown;
+    previousChildName?: string | null;
+    value?: unknown;
+    key?: string | null;
+    exists?: boolean;
+    childKeys?: string[];
+    priority?: string | number | null;
+  }>;
+  keepSynced(queryKey: string, path: string, modifiers: unknown[], enabled: boolean): Promise<void>;
+  transactionStart(path: string, id: number, applyLocally: boolean, transactionUpdater?: (currentData: unknown) => unknown): void;
+  transactionTryCommit(id: number, updates: { [key: string]: unknown }): void;
 }
 
 /**
@@ -36,6 +68,10 @@ export interface RNFBDatabaseModule {
  */
 export interface DatabaseInternal extends Database {
   native: RNFBDatabaseModule;
+  _serverTimeOffset: number;
+  _customUrlOrRegion: string;
+  _transaction: import('../DatabaseTransaction').default;
+  emitter: import('@react-native-firebase/app/dist/module/internal/SharedEventEmitter').default;
   getServerTime(): Date;
   ref(path?: string): Reference;
   refFromURL(url: string): Reference;
@@ -45,6 +81,7 @@ export interface DatabaseInternal extends Database {
   setLoggingEnabled(enabled: boolean): void;
   setPersistenceCacheSizeBytes(bytes: number): void;
   useEmulator(host: string, port: number): void;
+  eventNameForApp(...args: Array<string | number>): string;
 }
 
 /**

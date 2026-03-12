@@ -194,7 +194,7 @@ export function serverTimestamp(): object {
  * @returns {object}
  */
 export function increment(delta: number): object {
-  return ServerValue.increment.call(ServerValue, delta, MODULAR_DEPRECATION_ARG);
+  return (ServerValue.increment as any).call(ServerValue, delta, MODULAR_DEPRECATION_ARG);
 }
 
 export { ServerValue };

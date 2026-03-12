@@ -47,7 +47,7 @@ export default class DatabaseDataSnapshot {
 
     if (reference.key !== snapshot.key) {
       // reference is a query?
-      this._ref = reference.ref.child.call(
+      this._ref = (reference.ref.child as any).call(
         reference.ref,
         snapshot.key,
         MODULAR_DEPRECATION_ARG,
@@ -80,13 +80,13 @@ export default class DatabaseDataSnapshot {
       throw new Error("snapshot().child(*) 'path' must be a string value");
     }
 
-    let value = deepGet(this._snapshot.value, path);
+    let value = deepGet(this._snapshot.value as Record<string, unknown> | unknown[], path);
 
     if (value === undefined) {
       value = null;
     }
 
-    const childRef = this._ref.child.call(this._ref, path, MODULAR_DEPRECATION_ARG) as DatabaseReference;
+    const childRef = (this._ref.child as any).call(this._ref, path, MODULAR_DEPRECATION_ARG) as DatabaseReference;
 
     let childPriority: string | number | null = null;
     if (this._snapshot.childPriorities) {
@@ -160,7 +160,7 @@ export default class DatabaseDataSnapshot {
 
     for (let i = 0; i < this._snapshot.childKeys.length; i++) {
       const key = this._snapshot.childKeys[i];
-      const snapshot = this.child.call(this, key, MODULAR_DEPRECATION_ARG);
+      const snapshot = (this.child as any).call(this, key, MODULAR_DEPRECATION_ARG);
       const actionReturn = action(snapshot, i);
 
       if (actionReturn === true) {
@@ -187,7 +187,7 @@ export default class DatabaseDataSnapshot {
       throw new Error("snapshot.hasChild(*) 'path' must be a string value.");
     }
 
-    return deepGet(this._snapshot.value, path) !== undefined;
+    return deepGet(this._snapshot.value as Record<string, unknown> | unknown[], path) !== undefined;
   }
 
   /**

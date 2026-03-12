@@ -66,7 +66,7 @@ export default class DatabaseQuery extends ReferenceBase {
     }
     return createDeprecationProxy(
       new DatabaseReferenceClass(this._database, this.path),
-    ) as Reference;
+    ) as unknown as Reference;
   }
 
   /**
@@ -320,7 +320,7 @@ export default class DatabaseQuery extends ReferenceBase {
     // Add a new SyncTree registration
     DatabaseSyncTree.addRegistration({
       eventType,
-      ref: this.ref,
+      ref: this.ref as any,
       path: this.path,
       key: queryKey,
       appName: this._database.app.name,
@@ -335,7 +335,7 @@ export default class DatabaseQuery extends ReferenceBase {
       // to occur either, only happens on failure to register on native
 
       DatabaseSyncTree.addRegistration({
-        ref: this.ref,
+        ref: this.ref as any,
         once: true,
         path: this.path,
         key: queryKey,
@@ -343,7 +343,7 @@ export default class DatabaseQuery extends ReferenceBase {
         dbURL: this._database._customUrlOrRegion,
         eventType: `${eventType}$cancelled` as EventType,
         eventRegistrationKey: registrationCancellationKey,
-        listener: _context ? cancelCallbackOrContext.bind(_context) : cancelCallbackOrContext,
+        listener: _context ? (cancelCallbackOrContext as any).bind(_context) : cancelCallbackOrContext as any,
       });
     }
 
@@ -352,6 +352,7 @@ export default class DatabaseQuery extends ReferenceBase {
       path: this.path,
       key: queryKey,
       appName: this._database.app.name,
+      dbURL: this._database._customUrlOrRegion,
       modifiers: this._modifiers.toArray(),
       hasCancellationCallback: isFunction(cancelCallbackOrContext),
       registration: {
@@ -425,11 +426,11 @@ export default class DatabaseQuery extends ReferenceBase {
         // Child based events return a previousChildName
         if (eventType === 'value') {
           dataSnapshot = createDeprecationProxy(
-            new DatabaseDataSnapshot(this.ref, result as { value: unknown; key: string | null; exists: boolean; childKeys: string[]; priority: string | number | null }),
+            new DatabaseDataSnapshot(this.ref as any, result as { value: unknown; key: string | null; exists: boolean; childKeys: string[]; priority: string | number | null }),
           ) as DatabaseDataSnapshot;
         } else {
           dataSnapshot = createDeprecationProxy(
-            new DatabaseDataSnapshot(this.ref, (result.snapshot as { value: unknown; key: string | null; exists: boolean; childKeys: string[]; priority: string | number | null }) || { value: null, key: null, exists: false, childKeys: [], priority: null }),
+            new DatabaseDataSnapshot(this.ref as any, (result.snapshot as { value: unknown; key: string | null; exists: boolean; childKeys: string[]; priority: string | number | null }) || { value: null, key: null, exists: false, childKeys: [], priority: null }),
           ) as DatabaseDataSnapshot;
           previousChildName = result.previousChildName;
         }

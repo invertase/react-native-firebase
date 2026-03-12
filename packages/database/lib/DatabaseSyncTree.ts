@@ -32,6 +32,8 @@ interface Registration {
   path: string;
   ref: DatabaseReference;
   key: string;
+  appName?: string;
+  dbURL?: string;
 }
 
 interface SyncEventBody {
@@ -127,7 +129,7 @@ class DatabaseSyncTree {
     if (registration) {
       // build a new js error - we additionally attach
       // the ref as a property for easier debugging
-      const error = NativeError.fromEvent(event.error, 'database');
+      const error = NativeError.fromEvent(event.error as any, 'database');
 
       // forward on to users .on(successCallback, cancellationCallback <-- listener
       SharedEventEmitter.emit(registrationCancellationKey, error);
@@ -161,7 +163,7 @@ class DatabaseSyncTree {
       // notify native that the registration
       // no longer exists so it can remove
       // the native listeners
-      return this.native.off(key, eventRegistrationKey);
+      return (this.native as any)?.off(key, eventRegistrationKey);
     }
 
     let snapshot: DatabaseDataSnapshot;
@@ -405,7 +407,7 @@ class DatabaseSyncTree {
     // automatically unsubscribed on native when the first event is sent
     const registrationObj = this._reverseLookup[registration];
     if (registrationObj && !once) {
-      this.native.off(registrationObj.key, registration);
+      (this.native as any)?.off(registrationObj.key, registration);
     }
 
     delete this._tree[path]![eventType]![registration];

@@ -240,7 +240,7 @@ export default class DatabaseReference extends DatabaseQuery {
             onComplete(
               null,
               committed,
-              createDeprecationProxy(new DatabaseDataSnapshot(this, snapshotData as { value: unknown; key: string | null; exists: boolean; childKeys: string[]; priority: string | number | null })) as DatabaseDataSnapshot,
+              snapshotData ? createDeprecationProxy(new DatabaseDataSnapshot(this, snapshotData as any)) as DatabaseDataSnapshot : null,
             );
           }
         }
@@ -250,7 +250,7 @@ export default class DatabaseReference extends DatabaseQuery {
         }
         return resolve({
           committed,
-          snapshot: createDeprecationProxy(new DatabaseDataSnapshot(this, snapshotData as { value: unknown; key: string | null; exists: boolean; childKeys: string[]; priority: string | number | null })) as DatabaseDataSnapshot,
+          snapshot: snapshotData ? createDeprecationProxy(new DatabaseDataSnapshot(this, snapshotData as any)) as DatabaseDataSnapshot : null as any,
         });
       };
 

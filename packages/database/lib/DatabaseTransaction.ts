@@ -197,7 +197,7 @@ export default class DatabaseTransaction {
 
       try {
         // error, committed, snapshot
-        const error = NativeError.fromEvent(event.body.error, 'database');
+        const error = NativeError.fromEvent(event.body.error as any, 'database');
         transaction.onComplete(error, false, null);
       } finally {
         this._removeTransaction(event.id);

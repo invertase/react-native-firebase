@@ -15,7 +15,6 @@
  *
  */
 
-import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import type { FirebaseDatabaseTypes } from './types/namespaced';
 
 // Public/modular types (ServerValue not re-exported as type so value from modular is used)
@@ -38,28 +37,7 @@ export type { FirebaseDatabaseTypes } from './types/namespaced';
 export * from './modular';
 
 // Namespaced default export and firebase
-type DatabaseNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
-  FirebaseDatabaseTypes.Module,
-  FirebaseDatabaseTypes.Statics
-> & {
-  database: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
-    FirebaseDatabaseTypes.Module,
-    FirebaseDatabaseTypes.Statics
-  >;
-  firebase: ReactNativeFirebase.Module;
-  app(name?: string): ReactNativeFirebase.FirebaseApp;
-};
-
-declare const defaultExport: DatabaseNamespace;
-
-export const firebase: ReactNativeFirebase.Module & {
-  database: typeof defaultExport;
-  app(
-    name?: string,
-  ): ReactNativeFirebase.FirebaseApp & { database(): FirebaseDatabaseTypes.Module };
-};
-
-export default defaultExport;
+export { default, firebase } from './namespaced';
 
 declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {

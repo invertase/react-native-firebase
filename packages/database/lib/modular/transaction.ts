@@ -34,7 +34,7 @@ export function runTransaction(
   transactionUpdate: (currentData: unknown) => unknown,
   options?: TransactionOptions,
 ): Promise<TransactionResult> {
-  return ref.transaction.call(
+  return (ref.transaction as any).call(
     ref,
     transactionUpdate,
     undefined,

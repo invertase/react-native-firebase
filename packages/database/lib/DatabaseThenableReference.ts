@@ -26,6 +26,7 @@ export function provideReferenceClass(databaseReference: typeof DatabaseReferenc
 }
 
 export default class DatabaseThenableReference {
+  // @ts-expect-error - _ref is used in Proxy get trap but TypeScript doesn't detect it
   private _ref: DatabaseReference;
   private _promise: Promise<DatabaseReference>;
 
@@ -38,17 +39,17 @@ export default class DatabaseThenableReference {
       throw new Error('DatabaseReference class not provided. Call provideReferenceClass first.');
     }
     this._ref = createDeprecationProxy(
-      new DatabaseReferenceClass(database, path),
+      new DatabaseReferenceClass(database as any, path),
     ) as DatabaseReference;
     this._promise = promise;
 
-    return new Proxy(this, {
+    return new Proxy(this as any, {
       get(target, prop) {
         if (prop === 'then' || prop === 'catch') {
           return target[prop as keyof DatabaseThenableReference];
         }
 
-        return (target._ref as Record<string | symbol, unknown>)[prop];
+        return (target._ref as any)[prop];
       },
     }) as DatabaseThenableReference & DatabaseReference;
   }

@@ -36,7 +36,6 @@ import DatabaseStatics from './DatabaseStatics';
 import DatabaseTransaction from './DatabaseTransaction';
 import { version } from './version';
 import fallBackModule from './web/RNFBDatabaseModule';
-import type { DatabaseInternal } from './types/internal';
 import type { FirebaseDatabaseTypes } from './types/namespaced';
 
 const namespace = 'database';
@@ -47,9 +46,9 @@ const nativeModuleName = [
   'RNFBDatabaseQueryModule',
   'RNFBDatabaseOnDisconnectModule',
   'RNFBDatabaseTransactionModule',
-] as const;
+];
 
-class FirebaseDatabaseModule extends FirebaseModule<typeof nativeModuleName[number]> {
+class FirebaseDatabaseModule extends FirebaseModule<any> {
   _serverTimeOffset: number;
   _customUrlOrRegion: string;
   _transaction: DatabaseTransaction;
@@ -62,16 +61,16 @@ class FirebaseDatabaseModule extends FirebaseModule<typeof nativeModuleName[numb
     super(app, config, databaseUrl ?? undefined);
     this._serverTimeOffset = 0;
     this._customUrlOrRegion = databaseUrl || this.app.options.databaseURL || '';
-    this._transaction = new DatabaseTransaction(this);
+    this._transaction = new DatabaseTransaction(this as any);
     setTimeout(() => {
       this._syncServerTimeOffset();
     }, 100);
   }
 
   _syncServerTimeOffset(): void {
-    this.ref('.info/serverTimeOffset').on(
+    (this.ref('.info/serverTimeOffset').on as any)(
       'value',
-      snapshot => {
+      (snapshot: any) => {
         this._serverTimeOffset = snapshot.val() as number;
       },
       MODULAR_DEPRECATION_ARG,
@@ -93,7 +92,7 @@ class FirebaseDatabaseModule extends FirebaseModule<typeof nativeModuleName[numb
       );
     }
 
-    return createDeprecationProxy(new DatabaseReference(this, path)) as DatabaseReference;
+    return createDeprecationProxy(new DatabaseReference(this as any, path)) as DatabaseReference;
   }
 
   refFromURL(url: string): DatabaseReference {
@@ -114,15 +113,15 @@ class FirebaseDatabaseModule extends FirebaseModule<typeof nativeModuleName[numb
       path = path.slice(0, path.indexOf('?'));
     }
 
-    return createDeprecationProxy(new DatabaseReference(this, path || '/')) as DatabaseReference;
+    return createDeprecationProxy(new DatabaseReference(this as any, path || '/')) as DatabaseReference;
   }
 
   goOnline(): Promise<void> {
-    return this.native.goOnline();
+    return (this.native as any).goOnline();
   }
 
   goOffline(): Promise<void> {
-    return this.native.goOffline();
+    return (this.native as any).goOffline();
   }
 
   setPersistenceEnabled(enabled: boolean): Promise<void> {
@@ -132,7 +131,7 @@ class FirebaseDatabaseModule extends FirebaseModule<typeof nativeModuleName[numb
       );
     }
 
-    return this.native.setPersistenceEnabled(enabled);
+    return (this.native as any).setPersistenceEnabled(enabled);
   }
 
   setLoggingEnabled(enabled: boolean): Promise<void> {
@@ -142,7 +141,7 @@ class FirebaseDatabaseModule extends FirebaseModule<typeof nativeModuleName[numb
       );
     }
 
-    return this.native.setLoggingEnabled(enabled);
+    return (this.native as any).setLoggingEnabled(enabled);
   }
 
   setPersistenceCacheSizeBytes(bytes: number): Promise<void> {
@@ -164,7 +163,7 @@ class FirebaseDatabaseModule extends FirebaseModule<typeof nativeModuleName[numb
       );
     }
 
-    return this.native.setPersistenceCacheSizeBytes(bytes);
+    return (this.native as any).setPersistenceCacheSizeBytes(bytes);
   }
 
   useEmulator(host: string, port: number): [string, number] {
@@ -191,7 +190,7 @@ class FirebaseDatabaseModule extends FirebaseModule<typeof nativeModuleName[numb
         );
       }
     }
-    this.native.useEmulator(_host, port);
+    (this.native as any).useEmulator(_host, port);
     // @ts-ignore undocumented return, just used to unit test android host remapping
     return [_host, port];
   }

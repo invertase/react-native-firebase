@@ -59,7 +59,7 @@ class QueryConstraintImpl implements QueryConstraint {
   }
 
   _apply(query: Query): Query {
-    return (query[this._type] as (...args: unknown[]) => Query).apply(query, [
+    return ((query as any)[this._type] as (...args: unknown[]) => Query).apply(query, [
       ...this._args,
       MODULAR_DEPRECATION_ARG,
     ]);
@@ -138,14 +138,14 @@ function addEventListener(
   if (listenOptions && listenOptions.onlyOnce) {
     const userCallback = callback;
     callback = (snapshot: DataSnapshot, previousChildKey?: string | null) => {
-      query.off.call(query, eventType, callback, null, MODULAR_DEPRECATION_ARG);
+      (query.off as any).call(query, eventType, callback, null, MODULAR_DEPRECATION_ARG);
       return userCallback(snapshot, previousChildKey);
     };
   }
 
-  query.on.call(query, eventType, callback, cancelCallback, null, MODULAR_DEPRECATION_ARG);
+  (query.on as any).call(query, eventType, callback, cancelCallback, null, MODULAR_DEPRECATION_ARG);
 
-  return () => query.off.call(query, eventType, callback, null, MODULAR_DEPRECATION_ARG);
+  return () => (query.off as any).call(query, eventType, callback, null, MODULAR_DEPRECATION_ARG);
 }
 
 export function onValue(
@@ -194,11 +194,11 @@ export function onChildRemoved(
 }
 
 export function set(ref: Reference, value: unknown): Promise<void> {
-  return ref.set.call(ref, value, () => {}, MODULAR_DEPRECATION_ARG);
+  return (ref.set as any).call(ref, value, () => {}, MODULAR_DEPRECATION_ARG);
 }
 
 export function setPriority(ref: Reference, priority: string | number | null): Promise<void> {
-  return ref.setPriority.call(ref, priority, () => {}, MODULAR_DEPRECATION_ARG);
+  return (ref.setPriority as any).call(ref, priority, () => {}, MODULAR_DEPRECATION_ARG);
 }
 
 export function setWithPriority(
@@ -206,11 +206,11 @@ export function setWithPriority(
   value: unknown,
   priority: string | number | null,
 ): Promise<void> {
-  return ref.setWithPriority.call(ref, value, priority, () => {}, MODULAR_DEPRECATION_ARG);
+  return (ref.setWithPriority as any).call(ref, value, priority, () => {}, MODULAR_DEPRECATION_ARG);
 }
 
 export function get(query: Query): Promise<DataSnapshot> {
-  return query.once.call(
+  return (query.once as any).call(
     query,
     'value',
     () => {},
@@ -225,25 +225,25 @@ export function off(_query: Query, _eventType?: EventType, _callback?: unknown):
 }
 
 export function child(parent: Reference, path: string): Reference {
-  return parent.child.call(parent, path, MODULAR_DEPRECATION_ARG);
+  return (parent.child as any).call(parent, path, MODULAR_DEPRECATION_ARG);
 }
 
 export function onDisconnect(ref: Reference): OnDisconnect {
-  return ref.onDisconnect.call(ref, MODULAR_DEPRECATION_ARG);
+  return (ref.onDisconnect as any).call(ref, MODULAR_DEPRECATION_ARG);
 }
 
 export function keepSynced(ref: Reference, value: boolean): Promise<void> {
-  return ref.keepSynced.call(ref, value, MODULAR_DEPRECATION_ARG);
+  return (ref.keepSynced as any).call(ref, value, MODULAR_DEPRECATION_ARG);
 }
 
 export function push(parent: Reference, value?: unknown): ThenableReference {
-  return parent.push.call(parent, value, MODULAR_DEPRECATION_ARG);
+  return (parent.push as any).call(parent, value, MODULAR_DEPRECATION_ARG);
 }
 
 export function remove(ref: Reference): Promise<void> {
-  return ref.remove.call(ref, MODULAR_DEPRECATION_ARG);
+  return (ref.remove as any).call(ref, MODULAR_DEPRECATION_ARG);
 }
 
 export function update(ref: Reference, values: { [key: string]: unknown }): Promise<void> {
-  return ref.update.call(ref, values, MODULAR_DEPRECATION_ARG);
+  return (ref.update as any).call(ref, values, MODULAR_DEPRECATION_ARG);
 }
