@@ -123,6 +123,17 @@ export class QueryCompositeFilterConstraint extends AppliableConstraint {
     type: 'or' | 'and',
     _queryConstraints: QueryFilterConstraint[],
   ): QueryCompositeFilterConstraint {
+    // Validate nested OR filters when creating the constraint
+    if (type === 'or') {
+      const filters = _queryConstraints.map(constraint => {
+        if (constraint instanceof QueryCompositeFilterConstraint) {
+          return constraint._filter;
+        }
+        return (constraint as unknown as QueryFilterConstraintWithFilterInternal)._filter;
+      });
+      // This will throw if nested OR filters are detected
+      Filter.or(...filters);
+    }
     return new QueryCompositeFilterConstraint(type, _queryConstraints);
   }
 
