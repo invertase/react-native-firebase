@@ -337,8 +337,12 @@ RCT_EXPORT_METHOD(collectionGet
                    listenerId:(nonnull NSNumber *)listenerId
               listenerOptions:(NSDictionary *)listenerOptions {
   BOOL includeMetadataChanges = NO;
+  FIRListenSource source = FIRListenSourceDefault;
   if (listenerOptions[KEY_INCLUDE_METADATA_CHANGES] != nil) {
     includeMetadataChanges = [listenerOptions[KEY_INCLUDE_METADATA_CHANGES] boolValue];
+  }
+  if ([listenerOptions[KEY_SOURCE] isEqualToString:@"cache"]) {
+    source = FIRListenSourceCache;
   }
 
   __weak RNFBFirestoreCollectionModule *weakSelf = self;
@@ -362,9 +366,12 @@ RCT_EXPORT_METHOD(collectionGet
     }
   };
 
+  FIRSnapshotListenOptions *snapshotListenOptions =
+      [[[[FIRSnapshotListenOptions alloc] init]
+           optionsWithIncludeMetadataChanges:includeMetadataChanges] optionsWithSource:source];
   id<FIRListenerRegistration> listener = [[firestoreQuery instance]
-      addSnapshotListenerWithIncludeMetadataChanges:includeMetadataChanges
-                                           listener:listenerBlock];
+      addSnapshotListenerWithOptions:snapshotListenOptions
+                            listener:listenerBlock];
   collectionSnapshotListeners[listenerId] = listener;
 }
 

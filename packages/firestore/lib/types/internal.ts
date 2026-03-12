@@ -94,9 +94,10 @@ export interface FirestoreAggregateQueryResultInternal {
   [key: string]: unknown;
 }
 
-/** Options for snapshot listeners (includeMetadataChanges). */
+/** Options for snapshot listeners (includeMetadataChanges, source). */
 export interface FirestoreSnapshotListenOptionsInternal {
   includeMetadataChanges?: boolean;
+  source?: 'default' | 'cache';
 }
 
 /** Settings state on the Firestore module instance (ignoreUndefinedProperties, persistence). */

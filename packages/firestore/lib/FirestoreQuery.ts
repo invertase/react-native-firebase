@@ -331,7 +331,7 @@ export default class Query {
   }
 
   onSnapshot(...args: unknown[]): () => void {
-    let snapshotListenOptions: { includeMetadataChanges?: boolean };
+    let snapshotListenOptions: { includeMetadataChanges?: boolean; source?: 'default' | 'cache' };
     let callback: (snapshot: QuerySnapshot | null, error: Error | null) => void;
     let onNext: (snapshot: QuerySnapshot) => void;
     let onError: (error: Error) => void;

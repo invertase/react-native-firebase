@@ -319,6 +319,66 @@ describe('firestore().collection().onSnapshot()', function () {
       }
     });
 
+    it("throws if SnapshotListenerOptions.source is invalid ('server')", function () {
+      try {
+        firebase.firestore().collection(NO_RULE_COLLECTION).onSnapshot({
+          source: 'server',
+        });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'options' SnapshotOptions.source must be one of 'default' or 'cache'",
+        );
+        return Promise.resolve();
+      }
+    });
+
+    it('uses cache source for query listeners', async function () {
+      if (Platform.other) {
+        return;
+      }
+
+      const collectionPath = `${COLLECTION}/${Utils.randString(12, '#aA')}/cache-source`;
+      const colRef = firebase.firestore().collection(collectionPath);
+      await colRef.doc('one').set({ enabled: true });
+      await colRef.get();
+
+      let unsub = () => {};
+      try {
+        await firebase.firestore().disableNetwork();
+        const callback = sinon.spy();
+        unsub = colRef.onSnapshot({ source: 'cache' }, callback);
+        await Utils.spyToBeCalledOnceAsync(callback);
+        callback.args[0][0].metadata.fromCache.should.equal(true);
+      } finally {
+        unsub();
+        await firebase.firestore().enableNetwork();
+      }
+    });
+
+    it('supports cache source with metadata changes', async function () {
+      if (Platform.other) {
+        return;
+      }
+
+      const collectionPath = `${COLLECTION}/${Utils.randString(12, '#aA')}/cache-source-meta`;
+      const colRef = firebase.firestore().collection(collectionPath);
+      await colRef.doc('one').set({ enabled: true });
+      await colRef.get();
+
+      let unsub = () => {};
+      try {
+        await firebase.firestore().disableNetwork();
+        const callback = sinon.spy();
+        unsub = colRef.onSnapshot({ source: 'cache', includeMetadataChanges: true }, callback);
+        await Utils.spyToBeCalledOnceAsync(callback);
+        callback.args[0][0].metadata.fromCache.should.equal(true);
+      } finally {
+        unsub();
+        await firebase.firestore().enableNetwork();
+      }
+    });
+
     it('throws if next callback is invalid', function () {
       try {
         firebase.firestore().collection(NO_RULE_COLLECTION).onSnapshot({
@@ -632,6 +692,21 @@ describe('firestore().collection().onSnapshot()', function () {
       } catch (error) {
         error.message.should.containEql(
           "'options' SnapshotOptions.includeMetadataChanges must be a boolean value",
+        );
+        return Promise.resolve();
+      }
+    });
+
+    it("throws if SnapshotListenerOptions.source is invalid ('server')", function () {
+      const { getFirestore, collection, onSnapshot } = firestoreModular;
+      try {
+        onSnapshot(collection(getFirestore(), NO_RULE_COLLECTION), {
+          source: 'server',
+        });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'options' SnapshotOptions.source must be one of 'default' or 'cache'",
         );
         return Promise.resolve();
       }

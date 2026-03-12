@@ -7,6 +7,7 @@ import FirebaseModule from '../../app/lib/internal/FirebaseModule';
 import Query from '../lib/FirestoreQuery';
 // @ts-ignore test
 import FirestoreDocumentSnapshot from '../lib/FirestoreDocumentSnapshot';
+import { parseSnapshotArgs } from '../lib/utils';
 // @ts-ignore test
 import * as nativeModule from '@react-native-firebase/app/dist/module/internal/nativeModuleAndroidIos';
 
@@ -160,7 +161,7 @@ describe('Firestore', function () {
         // eslint-disable-next-line no-console
         const warnOrig = console.warn;
         // eslint-disable-next-line no-console
-        console.warn = (_: string) => {};
+        console.warn = (_: string) => { };
         try {
           // @ts-ignore the type is incorrect *on purpose* to test type checking in javascript
           await firebase.firestore().settings({ host: 123 });
@@ -177,7 +178,7 @@ describe('Firestore', function () {
         // eslint-disable-next-line no-console
         const warnOrig = console.warn;
         // eslint-disable-next-line no-console
-        console.warn = (_: string) => {};
+        console.warn = (_: string) => { };
         try {
           await firebase.firestore().settings({ host: '' });
           return Promise.reject(new Error('Did not throw an Error.'));
@@ -496,6 +497,35 @@ describe('Firestore', function () {
 
           expect(nullIndexManager).toBeNull();
         });
+      });
+    });
+
+    describe('onSnapshot()', function () {
+      it("accepts { source: 'cache' } listener options", function () {
+        const parsed = parseSnapshotArgs([{ source: 'cache' }, () => { }]);
+
+        expect(parsed.snapshotListenOptions).toEqual({
+          includeMetadataChanges: false,
+          source: 'cache',
+        });
+      });
+
+      it("accepts { source: 'default', includeMetadataChanges: true } listener options", function () {
+        const parsed = parseSnapshotArgs([
+          { source: 'default', includeMetadataChanges: true },
+          () => { },
+        ]);
+
+        expect(parsed.snapshotListenOptions).toEqual({
+          includeMetadataChanges: true,
+          source: 'default',
+        });
+      });
+
+      it("throws for unsupported listener source value 'server'", function () {
+        expect(() =>
+          parseSnapshotArgs([{ source: 'server' as 'default' | 'cache' }, () => { }]),
+        ).toThrow("'options' SnapshotOptions.source must be one of 'default' or 'cache'.");
       });
     });
   });
@@ -949,9 +979,9 @@ describe('Firestore', function () {
       it('firestore.runTransaction()', function () {
         const firestore = getFirestore();
         firestoreRefV9Deprecation(
-          () => runTransaction(firestore, async () => {}),
+          () => runTransaction(firestore, async () => { }),
           // @ts-expect-error Combines modular and namespace API
-          () => firestore.runTransaction(async () => {}),
+          () => firestore.runTransaction(async () => { }),
           'runTransaction',
         );
       });
@@ -1041,7 +1071,7 @@ describe('Firestore', function () {
 
         collectionRefV9Deprecation(
           // no equivalent method
-          () => {},
+          () => { },
           // @ts-expect-error Combines modular and namespace API
           () => query.isEqual(query),
           'isEqual',
@@ -1080,9 +1110,9 @@ describe('Firestore', function () {
         const query = collection(firestore, 'test');
 
         collectionRefV9Deprecation(
-          () => onSnapshot(query, () => {}),
+          () => onSnapshot(query, () => { }),
           // @ts-expect-error Combines modular and namespace API
-          () => query.onSnapshot(() => {}),
+          () => query.onSnapshot(() => { }),
           'onSnapshot',
         );
       });
@@ -1213,7 +1243,7 @@ describe('Firestore', function () {
 
         docRefV9Deprecation(
           // no equivalent method
-          () => {},
+          () => { },
           // @ts-expect-error Combines modular and namespace API
           () => docRef.isEqual(docRef),
           'isEqual',
@@ -1226,9 +1256,9 @@ describe('Firestore', function () {
         const docRef = doc(firestore, 'some/foo');
 
         docRefV9Deprecation(
-          () => onSnapshot(docRef, () => {}),
+          () => onSnapshot(docRef, () => { }),
           // @ts-expect-error Combines modular and namespace API
-          () => docRef.onSnapshot(() => {}),
+          () => docRef.onSnapshot(() => { }),
           'onSnapshot',
         );
       });
@@ -1279,7 +1309,7 @@ describe('Firestore', function () {
 
       docRefV9Deprecation(
         // no equivalent method
-        () => {},
+        () => { },
         () => snapshot.isEqual(snapshot),
         'isEqual',
       );
@@ -1352,7 +1382,7 @@ describe('Firestore', function () {
       it('Filter static', function () {
         staticsV9Deprecation(
           // no corresponding method
-          () => {},
+          () => { },
           () => firestore.Filter,
           'Filter',
         );
@@ -1476,7 +1506,7 @@ describe('Firestore', function () {
         const timestamp = new firestore.Timestamp(2, 3);
         timestampV9Deprecation(
           // no corresponding method
-          () => {},
+          () => { },
           () => timestamp.seconds,
           'seconds',
         );
@@ -1486,7 +1516,7 @@ describe('Firestore', function () {
         const timestamp = new firestore.Timestamp(2000, 3000000);
         timestampV9Deprecation(
           // no corresponding method
-          () => {},
+          () => { },
           () => timestamp.nanoseconds,
           'nanoseconds',
         );

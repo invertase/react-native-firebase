@@ -203,6 +203,7 @@ export type QueryConstraintType =
 
 export interface SnapshotListenOptions {
   readonly includeMetadataChanges?: boolean;
+  readonly source?: 'default' | 'cache';
 }
 
 /**

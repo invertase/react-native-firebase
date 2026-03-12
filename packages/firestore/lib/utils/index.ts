@@ -151,7 +151,10 @@ function isPartialObserver(
 }
 
 export interface ParseSnapshotArgsResult {
-  snapshotListenOptions: { includeMetadataChanges?: boolean };
+  snapshotListenOptions: {
+    includeMetadataChanges?: boolean;
+    source?: 'default' | 'cache';
+  };
   callback: (snapshot: unknown, error: Error | null) => void;
   onNext: (snapshot: unknown) => void;
   onError: (error: Error) => void;
@@ -163,7 +166,10 @@ export function parseSnapshotArgs(args: unknown[]): ParseSnapshotArgsResult {
   }
 
   const NOOP = (): void => {};
-  const snapshotListenOptions: { includeMetadataChanges?: boolean } = {};
+  const snapshotListenOptions: {
+    includeMetadataChanges?: boolean;
+    source?: 'default' | 'cache';
+  } = {};
   let callback: (snapshot: unknown, error: Error | null) => void = NOOP;
   let onError: (error: Error) => void = NOOP;
   let onNext: (snapshot: unknown) => void = NOOP;
@@ -189,9 +195,10 @@ export function parseSnapshotArgs(args: unknown[]): ParseSnapshotArgsResult {
   }
 
   if (isObject(args[0]) && !isPartialObserver(args[0])) {
-    const opts = args[0] as { includeMetadataChanges?: boolean };
+    const opts = args[0] as { includeMetadataChanges?: boolean; source?: 'default' | 'cache' };
     snapshotListenOptions.includeMetadataChanges =
       opts.includeMetadataChanges == null ? false : opts.includeMetadataChanges;
+    snapshotListenOptions.source = opts.source == null ? 'default' : opts.source;
     if (isFunction(args[1])) {
       if (isFunction(args[2])) {
         onNext = args[1] as (snapshot: unknown) => void;
@@ -214,6 +221,12 @@ export function parseSnapshotArgs(args: unknown[]): ParseSnapshotArgsResult {
   if (hasOwnProperty(snapshotListenOptions, 'includeMetadataChanges')) {
     if (!isBoolean(snapshotListenOptions.includeMetadataChanges)) {
       throw new Error("'options' SnapshotOptions.includeMetadataChanges must be a boolean value.");
+    }
+  }
+
+  if (hasOwnProperty(snapshotListenOptions, 'source')) {
+    if (snapshotListenOptions.source !== 'default' && snapshotListenOptions.source !== 'cache') {
+      throw new Error("'options' SnapshotOptions.source must be one of 'default' or 'cache'.");
     }
   }
 

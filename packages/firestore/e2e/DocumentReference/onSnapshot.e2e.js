@@ -305,6 +305,97 @@ describe('firestore().doc().onSnapshot()', function () {
       }
     });
 
+    it("throws if SnapshotListenerOptions.source is invalid ('server')", function () {
+      try {
+        firebase.firestore().doc(`${NO_RULE_COLLECTION}/nope`).onSnapshot({
+          source: 'server',
+        });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'options' SnapshotOptions.source must be one of 'default' or 'cache'",
+        );
+        return Promise.resolve();
+      }
+    });
+
+    it('accepts source-only SnapshotListenerOptions', async function () {
+      if (Platform.other) {
+        return;
+      }
+      const callback = sinon.spy();
+      const unsub = firebase.firestore().doc(`${COLLECTION}/source-only`).onSnapshot(
+        {
+          source: 'cache',
+        },
+        callback,
+      );
+
+      await Utils.spyToBeCalledOnceAsync(callback);
+      unsub();
+    });
+
+    it('accepts source + includeMetadataChanges SnapshotListenerOptions', async function () {
+      if (Platform.other) {
+        return;
+      }
+      const callback = sinon.spy();
+      const unsub = firebase.firestore().doc(`${COLLECTION}/source-with-metadata`).onSnapshot(
+        {
+          source: 'default',
+          includeMetadataChanges: true,
+        },
+        callback,
+      );
+
+      await Utils.spyToBeCalledOnceAsync(callback);
+      unsub();
+    });
+
+    it('uses cache source for document listeners', async function () {
+      if (Platform.other) {
+        return;
+      }
+
+      const docRef = firebase.firestore().doc(`${COLLECTION}/${Utils.randString(12, '#aA')}`);
+      await docRef.set({ enabled: true });
+      await docRef.get();
+
+      let unsub = () => {};
+      try {
+        await firebase.firestore().disableNetwork();
+        const callback = sinon.spy();
+        unsub = docRef.onSnapshot({ source: 'cache' }, callback);
+        await Utils.spyToBeCalledOnceAsync(callback);
+        callback.args[0][0].metadata.fromCache.should.equal(true);
+      } finally {
+        unsub();
+        await firebase.firestore().enableNetwork();
+      }
+    });
+
+    it('supports cache source with metadata changes', async function () {
+      if (Platform.other) {
+        return;
+      }
+
+      const docRef = firebase.firestore().doc(`${COLLECTION}/${Utils.randString(12, '#aA')}`);
+      await docRef.set({ enabled: true });
+      await docRef.get();
+
+      let unsub = () => {};
+      try {
+        await firebase.firestore().disableNetwork();
+        const callback = sinon.spy();
+        unsub = docRef.onSnapshot({ source: 'cache', includeMetadataChanges: true }, callback);
+        await Utils.spyToBeCalledOnceAsync(callback);
+        callback.args[0][0].metadata.fromCache.should.equal(true);
+      } finally {
+        unsub();
+        await firebase.firestore().enableNetwork();
+      }
+    });
+
     it('throws if next callback is invalid', function () {
       try {
         firebase.firestore().doc(`${NO_RULE_COLLECTION}/nope`).onSnapshot({
@@ -614,6 +705,58 @@ describe('firestore().doc().onSnapshot()', function () {
         );
         return Promise.resolve();
       }
+    });
+
+    it("throws if SnapshotListenerOptions.source is invalid ('server')", function () {
+      const { getFirestore, doc, onSnapshot } = firestoreModular;
+      try {
+        onSnapshot(doc(getFirestore(), `${NO_RULE_COLLECTION}/nope`), {
+          source: 'server',
+        });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'options' SnapshotOptions.source must be one of 'default' or 'cache'",
+        );
+        return Promise.resolve();
+      }
+    });
+
+    it('accepts source-only SnapshotListenerOptions', async function () {
+      if (Platform.other) {
+        return;
+      }
+      const { getFirestore, doc, onSnapshot } = firestoreModular;
+      const callback = sinon.spy();
+      const unsub = onSnapshot(
+        doc(getFirestore(), `${COLLECTION}/mod-source-only`),
+        {
+          source: 'cache',
+        },
+        callback,
+      );
+
+      await Utils.spyToBeCalledOnceAsync(callback);
+      unsub();
+    });
+
+    it('accepts source + includeMetadataChanges SnapshotListenerOptions', async function () {
+      if (Platform.other) {
+        return;
+      }
+      const { getFirestore, doc, onSnapshot } = firestoreModular;
+      const callback = sinon.spy();
+      const unsub = onSnapshot(
+        doc(getFirestore(), `${COLLECTION}/mod-source-with-metadata`),
+        {
+          source: 'default',
+          includeMetadataChanges: true,
+        },
+        callback,
+      );
+
+      await Utils.spyToBeCalledOnceAsync(callback);
+      unsub();
     });
 
     it('throws if next callback is invalid', function () {

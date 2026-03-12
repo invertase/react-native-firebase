@@ -22,6 +22,9 @@
 #import "RNFBFirestoreCommon.h"
 #import "RNFBFirestoreSerialize.h"
 
+static NSString *const KEY_INCLUDE_METADATA_CHANGES = @"includeMetadataChanges";
+static NSString *const KEY_SOURCE = @"source";
+
 @interface RNFBFirestoreDocumentModule : NSObject <RCTBridgeModule>
 
 @end

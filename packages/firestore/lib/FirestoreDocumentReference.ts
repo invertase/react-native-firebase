@@ -188,7 +188,7 @@ export default class DocumentReference {
   }
 
   onSnapshot(...args: unknown[]): () => void {
-    let snapshotListenOptions: { includeMetadataChanges?: boolean };
+    let snapshotListenOptions: { includeMetadataChanges?: boolean; source?: 'default' | 'cache' };
     let callback: (snapshot: DocumentSnapshot | null, error: Error | null) => void;
     let onNext: (snapshot: DocumentSnapshot) => void;
     let onError: (error: Error) => void;
