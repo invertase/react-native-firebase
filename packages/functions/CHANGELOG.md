@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.8.7](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v23.8.7) (2026-03-12)
+
+**Note:** Version bump only for package @react-native-firebase/functions
+
 ## [23.8.6](https://github.com/invertase/react-native-firebase/compare/v23.8.5...v23.8.6) (2026-02-03)
 
 ### Bug Fixes

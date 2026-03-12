@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.8.7](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v23.8.7) (2026-03-12)
+
+### Bug Fixes
+
+- **app, ios:** adopt firebase-ios-sdk 12.9.0 ([da083c4](https://github.com/invertase/react-native-firebase/commit/da083c486ebde8141cc1facb0f2338b87498b56d)), closes [/firebase.google.com/support/release-notes/ios#version*1290*-\_february_3_2026](https://github.com/invertase//firebase.google.com/support/release-notes/ios/issues/version_1290_-_february_3_2026)
+- **deps:** ios-sdk 12.10.0 / android-sdk 34.10.0 / js-sdk 12.10.0 ([ff36c3d](https://github.com/invertase/react-native-firebase/commit/ff36c3d1ce49eed47e8ae5340edc5b56e97a2b81))
+
 ## [23.8.6](https://github.com/invertase/react-native-firebase/compare/v23.8.5...v23.8.6) (2026-02-03)
 
 **Note:** Version bump only for package react-native-firebase-tests
