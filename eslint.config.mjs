@@ -127,6 +127,11 @@ export default [
       'mocha/no-top-level-hooks': 'off',
       'mocha/no-hooks-for-single-case': 'off',
       'mocha/no-setup-in-describe': 'off',
+      // Allow `{}` in type positions (e.g. T extends {} to match firebase-js-sdk).
+      '@typescript-eslint/no-empty-object-type': [
+        'error',
+        { allowObjectTypes: 'always' },
+      ],
     },
   },
 ];

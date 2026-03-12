@@ -42,6 +42,23 @@ function reversedClientIDExists(googleServiceFilePath: string): boolean {
   }
 }
 
+// Derives the Encoded App ID from GOOGLE_APP_ID for reCAPTCHA URL scheme registration.
+// Firebase requires this scheme for phone auth / SMS MFA reCAPTCHA fallback on iOS.
+// See: https://firebase.google.com/docs/auth/ios/multi-factor#using_recaptcha_verification
+// Transformation: "1:123456789012:ios:abc123" -> "app-1-123456789012-ios-abc123"
+function getEncodedAppId(googleServiceFilePath: string): string {
+  try {
+    const googleServicePlist = fs.readFileSync(googleServiceFilePath, 'utf8');
+    const googleServiceJson = plist.parse(googleServicePlist) as { GOOGLE_APP_ID: string };
+    const GOOGLE_APP_ID = googleServiceJson.GOOGLE_APP_ID;
+    return 'app-' + GOOGLE_APP_ID.replace(/:/g, '-');
+  } catch {
+    throw new Error(
+      '[@react-native-firebase/auth] Failed to parse your GoogleService-Info.plist. Are you sure it is a valid Info.Plist file with a GOOGLE_APP_ID field?',
+    );
+  }
+}
+
 // add phone auth support by configuring recaptcha
 // https://github.com/invertase/react-native-firebase/pull/6167
 function addUriScheme(
@@ -97,8 +114,20 @@ export function setUrlTypesForCaptcha({
   } else {
     // eslint-disable-next-line no-console
     console.warn(
-      '[@react-native-firebase/auth] REVERSED_CLIENT_ID field not found in GoogleServices-Info.plist. Google Sign-In requires this is - if you need Google Sign-In, enable it and re-download your plist file',
+      '[@react-native-firebase/auth] REVERSED_CLIENT_ID not found in GoogleService-Info.plist. This is required for Google Sign-In — if you need it, enable Google Sign-In in the Firebase console and re-download your plist. Phone auth reCAPTCHA will still work via the Encoded App ID scheme.',
     );
+  }
+
+  // Always add the Encoded App ID derived from GOOGLE_APP_ID for phone auth reCAPTCHA fallback.
+  // Firebase requires this URL scheme on iOS when APNs is unavailable (e.g. Simulator).
+  // GOOGLE_APP_ID is always present in a valid GoogleService-Info.plist, so no warning needed here.
+  // See: https://firebase.google.com/docs/auth/ios/multi-factor#using_recaptcha_verification
+  try {
+    const encodedAppId = getEncodedAppId(googleServiceFilePath);
+    addUriScheme(config, encodedAppId);
+  } catch {
+    // silently skip — a missing GOOGLE_APP_ID means the plist is malformed;
+    // the file-existence and parse checks above will have already surfaced the real problem.
   }
 
   return config;

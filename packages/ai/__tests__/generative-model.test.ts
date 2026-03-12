@@ -37,7 +37,7 @@ const fakeAI: AI = {
 };
 
 describe('GenerativeModel', () => {
-  it('passes CodeExecutionTool with other tools through to generateContent', async function () {
+  it('passes CodeExecutionTool and URLContextTool with other tools through to generateContent', async function () {
     const genModel = new GenerativeModel(fakeAI, {
       model: 'my-model',
       tools: [
@@ -51,11 +51,12 @@ describe('GenerativeModel', () => {
         },
         { googleSearch: {} },
         { codeExecution: {} },
+        { urlContext: {} },
       ],
       toolConfig: { functionCallingConfig: { mode: FunctionCallingMode.NONE } },
       systemInstruction: { role: 'system', parts: [{ text: 'be friendly' }] },
     });
-    expect(genModel.tools?.length).toBe(3);
+    expect(genModel.tools?.length).toBe(4);
     expect(genModel.toolConfig?.functionCallingConfig?.mode).toBe(FunctionCallingMode.NONE);
     expect(genModel.systemInstruction?.parts[0]!.text).toBe('be friendly');
     const mockResponse = getMockResponse(
@@ -75,7 +76,9 @@ describe('GenerativeModel', () => {
         requestOptions: {},
       }),
       expect.stringMatching(
-        new RegExp(`myfunc|googleSearch|codeExecution|${FunctionCallingMode.NONE}|be friendly`),
+        new RegExp(
+          `myfunc|googleSearch|codeExecution|urlContext|${FunctionCallingMode.NONE}|be friendly`,
+        ),
       ),
     );
     makeRequestStub.mockRestore();

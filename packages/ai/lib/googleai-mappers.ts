@@ -187,6 +187,7 @@ export function mapGenerateContentCandidates(
         safetyRatings: mappedSafetyRatings,
         citationMetadata,
         groundingMetadata: candidate.groundingMetadata,
+        urlContextMetadata: candidate.urlContextMetadata,
       };
       mappedCandidates.push(mappedCandidate);
     });

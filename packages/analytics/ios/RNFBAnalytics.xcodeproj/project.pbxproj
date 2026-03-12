@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2744B98621F45429004F8E3F /* RNFBAnalyticsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBAnalyticsModule.m */; };
+		2744B99021F45429004F8E3F /* RNFBAnalyticsLogTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98F21F45429004F8E3F /* RNFBAnalyticsLogTransaction.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,6 +27,7 @@
 		2744B98221F45429004F8E3F /* libRNFBAnalytics.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBAnalytics.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2744B98421F45429004F8E3F /* RNFBAnalyticsModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBAnalyticsModule.h; path = RNFBAnalytics/RNFBAnalyticsModule.h; sourceTree = SOURCE_ROOT; };
 		2744B98521F45429004F8E3F /* RNFBAnalyticsModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAnalyticsModule.m; path = RNFBAnalytics/RNFBAnalyticsModule.m; sourceTree = SOURCE_ROOT; };
+		2744B98F21F45429004F8E3F /* RNFBAnalyticsLogTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNFBAnalyticsLogTransaction.swift; path = RNFBAnalytics/RNFBAnalyticsLogTransaction.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +56,7 @@
 				2744B98C21F45C64004F8E3F /* common */,
 				2744B98421F45429004F8E3F /* RNFBAnalyticsModule.h */,
 				2744B98521F45429004F8E3F /* RNFBAnalyticsModule.m */,
+				2744B98F21F45429004F8E3F /* RNFBAnalyticsLogTransaction.swift */,
 			);
 			path = RNFBAnalytics;
 			sourceTree = "<group>";
@@ -125,6 +128,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2744B98621F45429004F8E3F /* RNFBAnalyticsModule.m in Sources */,
+				2744B99021F45429004F8E3F /* RNFBAnalyticsLogTransaction.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -166,6 +170,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -200,6 +205,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};

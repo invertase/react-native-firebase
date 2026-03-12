@@ -47,7 +47,7 @@ describe('firestore().namedQuery()', function () {
       const query = firebase.firestore().namedQuery(BUNDLE_QUERY_NAME);
       const snapshot = await query.get({ source: 'cache' });
 
-      snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
+      snapshot.constructor.name.should.eql('QuerySnapshot');
       snapshot.docs.forEach(doc => {
         doc.data().number.should.equalOneOf(1, 2, 3);
         doc.metadata.fromCache.should.eql(true);
@@ -122,10 +122,10 @@ describe('firestore().namedQuery()', function () {
     it('returns bundled QuerySnapshot', async function () {
       const { getFirestore, namedQuery, getDocsFromCache } = firestoreModular;
 
-      const query = namedQuery(getFirestore(), BUNDLE_QUERY_NAME);
+      const query = await namedQuery(getFirestore(), BUNDLE_QUERY_NAME);
       const snapshot = await getDocsFromCache(query);
 
-      snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
+      snapshot.constructor.name.should.eql('QuerySnapshot');
       snapshot.docs.forEach(doc => {
         doc.data().number.should.equalOneOf(1, 2, 3);
         doc.metadata.fromCache.should.eql(true);
@@ -135,7 +135,7 @@ describe('firestore().namedQuery()', function () {
     it('limits the number of documents in bundled QuerySnapshot', async function () {
       const { getFirestore, namedQuery, getDocsFromCache, query, limit } = firestoreModular;
 
-      const q = namedQuery(getFirestore(), BUNDLE_QUERY_NAME);
+      const q = await namedQuery(getFirestore(), BUNDLE_QUERY_NAME);
       const snapshot = await getDocsFromCache(query(q, limit(1)));
 
       snapshot.size.should.equal(1);
@@ -150,7 +150,8 @@ describe('firestore().namedQuery()', function () {
       const docRef = doc(collection(db, BUNDLE_COLLECTION));
       await setDoc(docRef, { number: 4 });
 
-      const query = namedQuery(db, BUNDLE_QUERY_NAME);
+      const query = await namedQuery(db, BUNDLE_QUERY_NAME);
+      if (!query) throw new Error('namedQuery returned null');
       const snapshot = await getDocs(query);
 
       snapshot.size.should.equal(1);
@@ -168,7 +169,9 @@ describe('firestore().namedQuery()', function () {
 
       const onNext = sinon.spy();
       const onError = sinon.spy();
-      const unsub = onSnapshot(namedQuery(db, BUNDLE_QUERY_NAME), onNext, onError);
+      const q = await namedQuery(db, BUNDLE_QUERY_NAME);
+      if (!q) throw new Error('namedQuery returned null');
+      const unsub = onSnapshot(q, onNext, onError);
 
       await Utils.spyToBeCalledOnceAsync(onNext);
 
@@ -183,7 +186,8 @@ describe('firestore().namedQuery()', function () {
     it('throws if invalid query name', async function () {
       const { getFirestore, namedQuery, getDocsFromCache } = firestoreModular;
 
-      const query = namedQuery(getFirestore(), 'invalid-query');
+      const query = await namedQuery(getFirestore(), 'invalid-query');
+      if (!query) throw new Error('namedQuery returned null');
       try {
         await getDocsFromCache(query);
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -198,7 +202,9 @@ describe('firestore().namedQuery()', function () {
 
       const onNext = sinon.spy();
       const onError = sinon.spy();
-      const unsub = onSnapshot(namedQuery(getFirestore(), 'invalid-query'), onNext, onError);
+      const q = await namedQuery(getFirestore(), 'invalid-query');
+      if (!q) throw new Error('namedQuery returned null');
+      const unsub = onSnapshot(q, onNext, onError);
 
       await Utils.spyToBeCalledOnceAsync(onError);
 

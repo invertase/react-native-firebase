@@ -212,7 +212,15 @@ jest.doMock('react-native', () => {
           getServerTime: jest.fn((_appName: any, _customUrl: any) => Promise.resolve(Date.now())),
         },
         RNFBFirestoreModule: {
-          loadBundle: jest.fn(),
+          loadBundle: jest.fn(() =>
+            Promise.resolve({
+              taskState: 'Success',
+              totalBytes: 0,
+              totalDocuments: 0,
+              bytesLoaded: 0,
+              documentsLoaded: 0,
+            }),
+          ),
           clearPersistence: jest.fn(),
           waitForPendingWrites: jest.fn(),
           terminate: jest.fn(),

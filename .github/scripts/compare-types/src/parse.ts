@@ -26,15 +26,43 @@ import type {
 // Normalization helpers
 // ---------------------------------------------------------------------------
 
+/**
+ * Normalizes type text so that formatting-only differences (multi-line vs
+ * single-line, whitespace around punctuation, trailing commas) do not affect
+ * comparison. Types that are semantically identical should compare equal.
+ */
 function normalizeType(s: string): string {
   return (
     s
       .trim()
-      // Collapse all whitespace to a single space
+      // Collapse all whitespace (including newlines) to a single space
       .replace(/\s+/g, ' ')
       // Strip a leading pipe that TypeScript emits when a union type is
       // written with a leading `|` on each line (e.g. `| 'a' | 'b'` → `'a' | 'b'`)
       .replace(/^\| /, '')
+      // Same when the union is inside parentheses: ( | A | B ) or (| A | B ) → ( A | B )
+      .replace(/\(\s*\|/g, '(')
+      // Remove spaces adjacent to brackets/parens/commas/colons so that
+      // `( k: infer I, )` and `(k: infer I)` normalize to the same string
+      .replace(/\s*\(\s*/g, '(')
+      .replace(/\s*\)\s*/g, ')')
+      .replace(/\s*\[\s*/g, '[')
+      .replace(/\s*\]\s*/g, ']')
+      .replace(/\s*<\s*/g, '<')
+      .replace(/\s*>\s*/g, '>')
+      .replace(/\s*,\s*/g, ',')
+      .replace(/\s*:\s*/g, ':')
+      .replace(/\s*\{\s*/g, '{')
+      .replace(/\s*\}\s*/g, '}')
+      // Remove trailing comma before ) or ] (formatting-only)
+      .replace(/,\s*\)/g, ')')
+      .replace(/,\s*\]/g, ']')
+      // Remove leading comma after ( or [ (formatting-only)
+      .replace(/\(\s*,/g, '(')
+      .replace(/\[\s*,/g, '[')
+      // Optional trailing semicolons in object types (e.g. { a: string; } vs { a: string })
+      .replace(/;\s*}/g, '}')
+      .replace(/;\s*,/g, ',')
   );
 }
 

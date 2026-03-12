@@ -10,7 +10,10 @@ For each registered package it compares the **modular** public API exported by t
 | **Extra in RN Firebase** | Export exists in the RN package but not in the firebase-js-sdk |
 | **Different shape** | Same name, but the type signature or interface members differ |
 
-Every difference must have an entry in the package's `config.ts` explaining why it exists. Undocumented differences cause the script to exit with code 1, failing CI.
+Every difference must have an entry in the package's `config.ts` explaining why it exists. The script exits with code 1, failing CI, if either:
+
+- A difference is **undocumented** — add it to `config.ts` with a reason, or fix the RN Firebase types to match.
+- A config entry is **stale** — the API now matches the firebase-js-sdk, so the entry should be removed from `config.ts`.
 
 ## Prerequisites
 
@@ -54,8 +57,17 @@ yarn compare
   ✓ All 17 difference(s) are documented in config.ts
 ```
 
+```
+📦 storage
+
+  Stale config entries (1):
+  ✗ uploadString [STALE]  — now matches the firebase-js-sdk; remove from config.ts
+
+  ✗ 1 stale config entry/entries — remove them from config.ts
+```
+
 `~` (yellow) = documented difference — CI passes.
-`✗` (red) = undocumented difference — CI fails.
+`✗` (red) = undocumented difference or stale config entry — CI fails.
 
 ---
 
@@ -68,7 +80,8 @@ src/
                 without needing to resolve external imports (reads type text as-written).
   compare.ts    Diffs two export maps and classifies each difference.
                 Cross-references against the package config to split documented
-                from undocumented differences.
+                from undocumented differences, and detects stale config entries
+                whose APIs now match the SDK.
   report.ts     Formats results to the terminal with colour coding.
   registry.ts   Package registry. Add new packages here.
   types.ts      TypeScript types for the config schema and internal data structures.
@@ -206,3 +219,12 @@ When a new firebase-js-sdk version ships with type changes:
 3. Any newly introduced differences will be flagged as undocumented. Either:
    - Update the RN Firebase types to match, or
    - Add a new entry to `config.ts` explaining why the difference is intentional.
+4. Any config entries that the SDK change has now made redundant will be flagged as **stale**. Remove them from `config.ts`.
+
+## Resolving a known difference in RN Firebase
+
+When the RN Firebase types are updated to match the firebase-js-sdk for a previously documented difference:
+
+1. Update the RN Firebase types and rebuild the package.
+2. Run `yarn compare:types`.
+3. The resolved entry will be flagged as **stale** (`✗ [STALE]`). Remove it from `config.ts`.
