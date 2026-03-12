@@ -16,7 +16,7 @@
  */
 const COLLECTION = 'firestore';
 const NO_RULE_COLLECTION = 'no_rules';
-const { wipe } = require('../helpers');
+const { wipe, setDocumentOutOfBand } = require('../helpers');
 
 describe('firestore().doc().onSnapshot()', function () {
   before(function () {
@@ -302,6 +302,108 @@ describe('firestore().doc().onSnapshot()', function () {
           "'options' SnapshotOptions.includeMetadataChanges must be a boolean value",
         );
         return Promise.resolve();
+      }
+    });
+
+    it("throws if SnapshotListenerOptions.source is invalid ('server')", function () {
+      try {
+        firebase.firestore().doc(`${NO_RULE_COLLECTION}/nope`).onSnapshot({
+          source: 'server',
+        });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'options' SnapshotOptions.source must be one of 'default' or 'cache'",
+        );
+        return Promise.resolve();
+      }
+    });
+
+    it('accepts source-only SnapshotListenerOptions', async function () {
+      if (Platform.other) {
+        return;
+      }
+      const callback = sinon.spy();
+      const unsub = firebase.firestore().doc(`${COLLECTION}/source-only`).onSnapshot(
+        {
+          source: 'cache',
+        },
+        callback,
+      );
+
+      await Utils.spyToBeCalledOnceAsync(callback);
+      unsub();
+    });
+
+    it('accepts source + includeMetadataChanges SnapshotListenerOptions', async function () {
+      if (Platform.other) {
+        return;
+      }
+      const callback = sinon.spy();
+      const unsub = firebase.firestore().doc(`${COLLECTION}/source-with-metadata`).onSnapshot(
+        {
+          source: 'default',
+          includeMetadataChanges: true,
+        },
+        callback,
+      );
+
+      await Utils.spyToBeCalledOnceAsync(callback);
+      unsub();
+    });
+
+    it('cache source listeners ignore out-of-band server writes', async function () {
+      if (Platform.other) {
+        return;
+      }
+
+      const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+      const docRef = firebase.firestore().doc(docPath);
+      await docRef.set({ value: 1 });
+      await docRef.get();
+
+      const callback = sinon.spy();
+      const unsub = docRef.onSnapshot({ source: 'cache' }, callback);
+      try {
+        await Utils.spyToBeCalledOnceAsync(callback);
+
+        await setDocumentOutOfBand(docPath, { value: 2 });
+        await Utils.sleep(1500);
+        callback.should.be.callCount(1);
+
+        await docRef.set({ value: 3 });
+        await Utils.spyToBeCalledTimesAsync(callback, 2);
+        callback.args[1][0].get('value').should.equal(3);
+      } finally {
+        unsub();
+      }
+    });
+
+    it('default source listeners receive out-of-band server writes', async function () {
+      if (Platform.other) {
+        return;
+      }
+
+      const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+      const docRef = firebase.firestore().doc(docPath);
+      await docRef.set({ value: 1 });
+      await docRef.get();
+
+      const callback = sinon.spy();
+      const unsub = docRef.onSnapshot(
+        { source: 'default', includeMetadataChanges: true },
+        callback,
+      );
+      try {
+        await Utils.spyToBeCalledOnceAsync(callback);
+
+        await setDocumentOutOfBand(docPath, { value: 2 });
+        await Utils.spyToBeCalledTimesAsync(callback, 2, 8000);
+
+        const latestSnapshot = callback.args[callback.callCount - 1][0];
+        latestSnapshot.get('value').should.equal(2);
+      } finally {
+        unsub();
       }
     });
 
@@ -614,6 +716,58 @@ describe('firestore().doc().onSnapshot()', function () {
         );
         return Promise.resolve();
       }
+    });
+
+    it("throws if SnapshotListenerOptions.source is invalid ('server')", function () {
+      const { getFirestore, doc, onSnapshot } = firestoreModular;
+      try {
+        onSnapshot(doc(getFirestore(), `${NO_RULE_COLLECTION}/nope`), {
+          source: 'server',
+        });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'options' SnapshotOptions.source must be one of 'default' or 'cache'",
+        );
+        return Promise.resolve();
+      }
+    });
+
+    it('accepts source-only SnapshotListenerOptions', async function () {
+      if (Platform.other) {
+        return;
+      }
+      const { getFirestore, doc, onSnapshot } = firestoreModular;
+      const callback = sinon.spy();
+      const unsub = onSnapshot(
+        doc(getFirestore(), `${COLLECTION}/mod-source-only`),
+        {
+          source: 'cache',
+        },
+        callback,
+      );
+
+      await Utils.spyToBeCalledOnceAsync(callback);
+      unsub();
+    });
+
+    it('accepts source + includeMetadataChanges SnapshotListenerOptions', async function () {
+      if (Platform.other) {
+        return;
+      }
+      const { getFirestore, doc, onSnapshot } = firestoreModular;
+      const callback = sinon.spy();
+      const unsub = onSnapshot(
+        doc(getFirestore(), `${COLLECTION}/mod-source-with-metadata`),
+        {
+          source: 'default',
+          includeMetadataChanges: true,
+        },
+        callback,
+      );
+
+      await Utils.spyToBeCalledOnceAsync(callback);
+      unsub();
     });
 
     it('throws if next callback is invalid', function () {
