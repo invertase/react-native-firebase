@@ -63,6 +63,7 @@ import '@react-native-firebase/auth';
 import '@react-native-firebase/crashlytics';
 import '@react-native-firebase/database';
 import '@react-native-firebase/firestore';
+import '@react-native-firebase/firestore/pipelines';
 import '@react-native-firebase/in-app-messaging';
 import '@react-native-firebase/installations';
 import '@react-native-firebase/messaging';
@@ -75,6 +76,7 @@ import * as appCheckModular from '@react-native-firebase/app-check';
 import * as appDistributionModular from '@react-native-firebase/app-distribution';
 import * as authModular from '@react-native-firebase/auth';
 import * as firestoreModular from '@react-native-firebase/firestore';
+import * as firestorePipelinesModular from '@react-native-firebase/firestore/pipelines';
 import * as functionsModular from '@react-native-firebase/functions';
 import * as messagingModular from '@react-native-firebase/messaging';
 import * as perfModular from '@react-native-firebase/perf';
@@ -461,6 +463,12 @@ Object.defineProperty(global, 'databaseModular', {
 Object.defineProperty(global, 'firestoreModular', {
   get() {
     return firestoreModular;
+  },
+});
+
+Object.defineProperty(global, 'firestorePipelinesModular', {
+  get() {
+    return firestorePipelinesModular;
   },
 });
 

@@ -15,10 +15,6 @@
  *
  */
 
-require('@react-native-firebase/firestore/pipelines');
-
-const { execute } = require('@react-native-firebase/firestore/pipelines');
-
 const COLLECTION = 'firestore';
 
 describe('FirestorePipeline', function () {
@@ -103,6 +99,7 @@ describe('FirestorePipeline', function () {
     });
 
     it('forwards execute options and parses pipeline results', async function () {
+      const { execute } = firestorePipelinesModular;
       const db = firebase.firestore();
       const originalPipelineExecute = db.native.pipelineExecute;
 
@@ -182,6 +179,11 @@ describe('FirestorePipeline', function () {
     });
 
     it('returns an unsupported error when native pipeline execution is unavailable', async function () {
+      const { execute } = firestorePipelinesModular;
+      if (Platform.android) {
+        this.skip();
+      }
+
       const db = firebase.firestore();
       const pipeline = db
         .pipeline()
@@ -194,6 +196,76 @@ describe('FirestorePipeline', function () {
         error.code.should.match(/^firestore\//);
         error.message.toLowerCase().should.containEql('pipelines are not supported');
       }
+    });
+  });
+
+  describe('android native execution', function () {
+    beforeEach(function () {
+      if (!Platform.android) {
+        this.skip();
+      }
+    });
+
+    it('executes createFrom(query) end-to-end', async function () {
+      const { execute } = firestorePipelinesModular;
+      const db = firebase.firestore();
+      const collectionName = `${COLLECTION}/${Utils.randString(12, '#aA')}/pipeline-query`;
+      const collectionRef = db.collection(collectionName);
+
+      await Promise.all([
+        collectionRef.doc('one').set({ score: 10, active: true }),
+        collectionRef.doc('two').set({ score: 21, active: true }),
+        collectionRef.doc('three').set({ score: 5, active: false }),
+      ]);
+
+      const query = collectionRef.where('active', '==', true).orderBy('score', 'desc').limit(2);
+      const snapshot = await execute(db.pipeline().createFrom(query));
+
+      snapshot.results.should.have.length(2);
+      snapshot.results[0].id.should.equal('two');
+      snapshot.results[0].data().score.should.equal(21);
+      snapshot.results[1].id.should.equal('one');
+      snapshot.results[1].data().score.should.equal(10);
+    });
+
+    it('executes method-style expressions through Android bridge', async function () {
+      const { and, execute, field, Ordering } = firestorePipelinesModular;
+      const db = firebase.firestore();
+      const collectionName = `${COLLECTION}/${Utils.randString(12, '#aA')}/pipeline-expression`;
+      const collectionRef = db.collection(collectionName);
+
+      await Promise.all([
+        collectionRef.doc('a').set({ title: 'A', rating: 2, genre: 'Fantasy' }),
+        collectionRef.doc('b').set({ title: 'B', rating: 5, genre: 'Fantasy' }),
+        collectionRef.doc('c').set({ title: 'C', rating: 8, genre: 'Fantasy' }),
+        collectionRef.doc('d').set({ title: 'D', rating: 9, genre: 'Sci-Fi' }),
+      ]);
+
+      const f = path => field(path);
+      const pipeline = db
+        .pipeline()
+        .collection(collectionRef)
+        .where(and(f('genre').equal('Fantasy'), f('rating').greaterThan(3)))
+        .select(
+          f('title').as('title'),
+          f('rating').add(1).as('boostedRating'),
+          f('genre').equal('Fantasy').as('isFantasy'),
+        )
+        .sort(Ordering.of(f('rating')).descending());
+
+      const snapshot = await execute(pipeline);
+
+      snapshot.results.should.have.length(2);
+      snapshot.results[0].data().should.deep.equal({
+        title: 'C',
+        boostedRating: 9,
+        isFantasy: true,
+      });
+      snapshot.results[1].data().should.deep.equal({
+        title: 'B',
+        boostedRating: 6,
+        isFantasy: true,
+      });
     });
   });
 });
