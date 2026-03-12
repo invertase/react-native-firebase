@@ -30,7 +30,6 @@ import type {
 import type {
   DocumentReferenceDeleteInternal,
   DocumentReferenceGetInternal,
-  QueryConstraintWithApplyInternal,
   QueryFilterConstraintWithFilterInternal,
   QueryInternal,
   QueryWithMethodInternal,
@@ -272,16 +271,6 @@ export function where(
   value: unknown,
 ): QueryFieldFilterConstraint {
   return new QueryFieldFilterConstraint(fieldPath, opStr, value);
-}
-
-function toFilter(queryConstraint: QueryFilterConstraint): _Filter {
-  if (queryConstraint instanceof QueryCompositeFilterConstraint) {
-    return (queryConstraint as unknown as QueryFilterConstraintWithFilterInternal)._filter;
-  }
-  if (queryConstraint instanceof QueryFieldFilterConstraint) {
-    return (queryConstraint as unknown as QueryFilterConstraintWithFilterInternal)._filter;
-  }
-  throw new Error('Invalid query constraint: expected filter constraint');
 }
 
 export function or(...queryConstraints: QueryFilterConstraint[]): QueryCompositeFilterConstraint {
