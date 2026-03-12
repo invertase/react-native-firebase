@@ -58,9 +58,7 @@ const nsDocRef = nsColl.doc('alice');
 const nsQuery = nsColl.where('name', '==', 'test');
 
 nsDocRef.set({ name: 'Alice', count: 1 }).then(() => {});
-nsDocRef
-  .set({ name: 'Alice' }, { merge: true })
-  .then(() => {});
+nsDocRef.set({ name: 'Alice' }, { merge: true }).then(() => {});
 
 nsDocRef.update({ count: 2 }).then(() => {});
 nsDocRef.update('count', 3).then(() => {});
@@ -155,13 +153,15 @@ console.log(nsLoadTask.then(() => {}));
 const nsNamed = nsFirestore.namedQuery('my-query');
 console.log(nsNamed);
 
-nsFirestore.runTransaction(async (tx: FirebaseFirestoreTypes.Transaction) => {
-  const snap = await tx.get(nsDocRef);
-  if (snap.exists()) {
-    tx.update(nsDocRef, { count: ((snap.data() as { count?: number })?.count ?? 0) + 1 });
-  }
-  return null;
-}).then(() => {});
+nsFirestore
+  .runTransaction(async (tx: FirebaseFirestoreTypes.Transaction) => {
+    const snap = await tx.get(nsDocRef);
+    if (snap.exists()) {
+      tx.update(nsDocRef, { count: ((snap.data() as { count?: number })?.count ?? 0) + 1 });
+    }
+    return null;
+  })
+  .then(() => {});
 
 // ----- Firestore instance: persistence and network -----
 nsFirestore.clearPersistence().then(() => {});
@@ -206,13 +206,15 @@ const nsArrayRemove = firebase.firestore.FieldValue.arrayRemove(1);
 void nsArrayRemove;
 const nsIncrement = firebase.firestore.FieldValue.increment(1);
 
-nsDocRef.set({
-  name: 'x',
-  deleted: nsDelete,
-  ts: nsServerTs,
-  arr: nsArrayUnion,
-  cnt: nsIncrement,
-}).then(() => {});
+nsDocRef
+  .set({
+    name: 'x',
+    deleted: nsDelete,
+    ts: nsServerTs,
+    arr: nsArrayUnion,
+    cnt: nsIncrement,
+  })
+  .then(() => {});
 
 // ----- withConverter (namespaced) -----
 interface User {
@@ -455,8 +457,10 @@ const unsubMod3 = onSnapshot(modDoc, {
   error: (_e: Error) => {},
 });
 const unsubMod4 = onSnapshot(modQuery1, snap => snap.docs);
-const unsubMod6 = onSnapshot(modQuery1, { source: 'cache', includeMetadataChanges: true }, snap =>
-  snap.docs,
+const unsubMod6 = onSnapshot(
+  modQuery1,
+  { source: 'cache', includeMetadataChanges: true },
+  snap => snap.docs,
 );
 unsubMod1();
 unsubMod2();
