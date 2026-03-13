@@ -15,7 +15,7 @@ const ANDROID_EXECUTOR_PATH = join(
 );
 const IOS_EXECUTOR_PATH = join(
   ROOT,
-  'packages/firestore/ios/RNFBFirestore/RNFBFirestorePipelineExecutor.m',
+  'packages/firestore/ios/RNFBFirestore/RNFBFirestorePipelineCallHandler.swift',
 );
 
 function extractQuotedList(source: string, marker: string, endMarker: string): string[] {
@@ -40,9 +40,9 @@ describe('Firestore pipeline native parity', function () {
     const iosSource = readFileSync(IOS_EXECUTOR_PATH, 'utf8');
 
     const androidSources = extractQuotedList(androidSource, 'SOURCE_TYPES', '));');
-    const iosSources = extractQuotedList(iosSource, 'supportedSources', '];');
+    const iosSources = extractQuotedList(iosSource, 'sourceTypes', ']');
     const androidStages = extractQuotedList(androidSource, 'KNOWN_STAGES', '));');
-    const iosStages = extractQuotedList(iosSource, 'knownStages', '];');
+    const iosStages = extractQuotedList(iosSource, 'knownStages', ']');
 
     expect(androidSources).toEqual([...PIPELINE_SOURCE_TYPES]);
     expect(iosSources).toEqual([...PIPELINE_SOURCE_TYPES]);
@@ -50,12 +50,12 @@ describe('Firestore pipeline native parity', function () {
     expect(iosStages).toEqual([...PIPELINE_STAGE_TYPES]);
   });
 
-  it('keeps unsupported message contract deterministic for non-Android paths', function () {
+  it('keeps unsupported message contract deterministic for non-native fallback paths', function () {
     const androidSource = readFileSync(ANDROID_EXECUTOR_PATH, 'utf8');
     const iosSource = readFileSync(IOS_EXECUTOR_PATH, 'utf8');
 
     expect(androidSource).not.toContain(PIPELINE_UNSUPPORTED_BASE_MESSAGE);
-    expect(iosSource).toContain(PIPELINE_UNSUPPORTED_BASE_MESSAGE);
+    expect(iosSource).not.toContain(PIPELINE_UNSUPPORTED_BASE_MESSAGE);
 
     expect(createPipelineUnsupportedMessage()).toBe(PIPELINE_UNSUPPORTED_BASE_MESSAGE);
     expect(
