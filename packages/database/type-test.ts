@@ -214,7 +214,7 @@ modularUnsubscribe3();
 
 const unsubscribeChildAdded = onChildAdded(
   testRef,
-  (snapshot: FirebaseDatabaseTypes.DataSnapshot, previousChildName: string | null) => {
+  (snapshot: FirebaseDatabaseTypes.DataSnapshot, previousChildName?: string | null) => {
     console.log(snapshot.val());
     console.log(previousChildName);
   },
@@ -222,7 +222,7 @@ const unsubscribeChildAdded = onChildAdded(
 
 const unsubscribeChildChanged = onChildChanged(
   testRef,
-  (snapshot: FirebaseDatabaseTypes.DataSnapshot, previousChildName: string | null) => {
+  (snapshot: FirebaseDatabaseTypes.DataSnapshot, previousChildName?: string | null) => {
     console.log(snapshot.val());
     console.log(previousChildName);
   },
@@ -230,7 +230,7 @@ const unsubscribeChildChanged = onChildChanged(
 
 const unsubscribeChildMoved = onChildMoved(
   testRef,
-  (snapshot: FirebaseDatabaseTypes.DataSnapshot, previousChildName: string | null) => {
+  (snapshot: FirebaseDatabaseTypes.DataSnapshot, previousChildName?: string | null) => {
     console.log(snapshot.val());
     console.log(previousChildName);
   },

@@ -814,7 +814,6 @@ export default {
    * @param updates - The updates.
    * @returns {Promise<void>}
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async transactionTryCommit(
     _appName: string,
     _dbURL: string,
