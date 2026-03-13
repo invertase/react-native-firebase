@@ -121,10 +121,7 @@ const appInstances: Record<string, unknown> = {};
 const databaseInstances: Record<string, unknown> = {};
 const onDisconnectRef: Record<string, unknown> = {};
 const listeners: Record<string, () => void> = {};
-const emulatorForApp: Record<
-  string,
-  { host: string; port: number; connected?: boolean }
-> = {};
+const emulatorForApp: Record<string, { host: string; port: number; connected?: boolean }> = {};
 
 function getCachedAppInstance(appName: string): unknown {
   return (appInstances[appName] ??= getApp(appName) as unknown);
@@ -353,12 +350,17 @@ export default {
     path: string,
     modifiers: unknown[],
     eventType: string,
-  ): Promise<SnapshotData | { snapshot: SnapshotData; previousChildName: string | null | undefined }> {
+  ): Promise<
+    SnapshotData | { snapshot: SnapshotData; previousChildName: string | null | undefined }
+  > {
     return guard(async () => {
       const db = getCachedDatabaseInstance(appName, dbURL);
       // @ts-expect-error - Web SDK types don't match our Database type exactly
       const dbRef = ref(db, path);
-      const queryRef = getQueryInstance(dbRef, modifiers as Array<{ type: string; name: string; key?: string; value?: unknown }>);
+      const queryRef = getQueryInstance(
+        dbRef,
+        modifiers as Array<{ type: string; name: string; key?: string; value?: unknown }>,
+      );
 
       if (eventType === 'value') {
         const snapshot = await new Promise<{
@@ -412,23 +414,28 @@ export default {
             };
             previousChildName: string | null | undefined;
           }>((resolve, reject) => {
-            (fn as unknown as (
-              queryRef: unknown,
-              callback: (snapshot: unknown, previousChildName?: string | null) => void,
-              reject: (error: Error) => void,
-              options: { onlyOnce: boolean },
-            ) => void)(
+            (
+              fn as unknown as (
+                queryRef: unknown,
+                callback: (snapshot: unknown, previousChildName?: string | null) => void,
+                reject: (error: Error) => void,
+                options: { onlyOnce: boolean },
+              ) => void
+            )(
               queryRef,
               (snapshot, previousChildName) => {
-                resolve({ snapshot: snapshot as {
-                  key: string | null;
-                  exists(): boolean;
-                  hasChildren(): boolean;
-                  size: number;
-                  forEach: (callback: (child: { key: string | null }) => void) => void;
-                  priority: string | number | null;
-                  val(): unknown;
-                }, previousChildName });
+                resolve({
+                  snapshot: snapshot as {
+                    key: string | null;
+                    exists(): boolean;
+                    hasChildren(): boolean;
+                    size: number;
+                    forEach: (callback: (child: { key: string | null }) => void) => void;
+                    priority: string | number | null;
+                    val(): unknown;
+                  },
+                  previousChildName,
+                });
               },
               reject,
               { onlyOnce: true },
@@ -441,15 +448,17 @@ export default {
 
       // @ts-expect-error - Web SDK types don't match our Reference type exactly
       const snapshot = await get(dbRef, modifiers);
-      return snapshotToObject(snapshot as {
-        key: string | null;
-        exists(): boolean;
-        hasChildren(): boolean;
-        size: number;
-        forEach: (callback: (child: { key: string | null }) => void) => void;
-        priority: string | number | null;
-        val(): unknown;
-      });
+      return snapshotToObject(
+        snapshot as {
+          key: string | null;
+          exists(): boolean;
+          hasChildren(): boolean;
+          size: number;
+          forEach: (callback: (child: { key: string | null }) => void) => void;
+          priority: string | number | null;
+          val(): unknown;
+        },
+      );
     });
   },
 
@@ -473,9 +482,16 @@ export default {
       // @ts-expect-error - Web SDK types don't match our Database type exactly
       const dbRef = ref(db, path);
 
-      const queryRef = getQueryInstance(dbRef, modifiers as Array<{ type: string; name: string; key?: string; value?: unknown }>);
+      const queryRef = getQueryInstance(
+        dbRef,
+        modifiers as Array<{ type: string; name: string; key?: string; value?: unknown }>,
+      );
 
-      function sendEvent(data: SnapshotData | { snapshot: SnapshotData; previousChildName: string | null | undefined }): void {
+      function sendEvent(
+        data:
+          | SnapshotData
+          | { snapshot: SnapshotData; previousChildName: string | null | undefined },
+      ): void {
         const event = {
           eventName: 'database_sync_event',
           body: {
@@ -547,22 +563,29 @@ export default {
         }
 
         if (fn) {
-          listener = (fn as unknown as (
-            queryRef: unknown,
-            callback: (snapshot: unknown, previousChildName?: string | null) => void,
-            reject: (error: Error) => void,
-          ) => () => void)(
+          listener = (
+            fn as unknown as (
+              queryRef: unknown,
+              callback: (snapshot: unknown, previousChildName?: string | null) => void,
+              reject: (error: Error) => void,
+            ) => () => void
+          )(
             queryRef,
             (snapshot, previousChildName) => {
-              sendEvent(snapshotWithPreviousChildToObject(snapshot as {
-                key: string | null;
-                exists(): boolean;
-                hasChildren(): boolean;
-                size: number;
-                forEach: (callback: (child: { key: string | null }) => void) => void;
-                priority: string | number | null;
-                val(): unknown;
-              }, previousChildName ?? null));
+              sendEvent(
+                snapshotWithPreviousChildToObject(
+                  snapshot as {
+                    key: string | null;
+                    exists(): boolean;
+                    hasChildren(): boolean;
+                    size: number;
+                    forEach: (callback: (child: { key: string | null }) => void) => void;
+                    priority: string | number | null;
+                    val(): unknown;
+                  },
+                  previousChildName ?? null,
+                ),
+              );
             },
             sendError,
           ) as () => void;
@@ -604,7 +627,9 @@ export default {
       const db = getCachedDatabaseInstance(appName, dbURL);
       // @ts-expect-error - Web SDK types don't match our Database type exactly
       const dbRef = ref(db, path);
-      const instance = getCachedOnDisconnectInstance(dbRef as unknown as { key: string | null }) as {
+      const instance = getCachedOnDisconnectInstance(
+        dbRef as unknown as { key: string | null },
+      ) as {
         cancel: () => Promise<void>;
       };
       await instance.cancel();
@@ -626,7 +651,9 @@ export default {
       const db = getCachedDatabaseInstance(appName, dbURL);
       // @ts-expect-error - Web SDK types don't match our Database type exactly
       const dbRef = ref(db, path);
-      const instance = getCachedOnDisconnectInstance(dbRef as unknown as { key: string | null }) as {
+      const instance = getCachedOnDisconnectInstance(
+        dbRef as unknown as { key: string | null },
+      ) as {
         remove: () => Promise<void>;
       };
       await instance.remove();
@@ -651,7 +678,9 @@ export default {
       const db = getCachedDatabaseInstance(appName, dbURL);
       // @ts-expect-error - Web SDK types don't match our Database type exactly
       const dbRef = ref(db, path);
-      const instance = getCachedOnDisconnectInstance(dbRef as unknown as { key: string | null }) as {
+      const instance = getCachedOnDisconnectInstance(
+        dbRef as unknown as { key: string | null },
+      ) as {
         set: (value: unknown) => Promise<void>;
       };
       const value = props.value;
@@ -677,7 +706,9 @@ export default {
       const db = getCachedDatabaseInstance(appName, dbURL);
       // @ts-expect-error - Web SDK types don't match our Database type exactly
       const dbRef = ref(db, path);
-      const instance = getCachedOnDisconnectInstance(dbRef as unknown as { key: string | null }) as {
+      const instance = getCachedOnDisconnectInstance(
+        dbRef as unknown as { key: string | null },
+      ) as {
         setWithPriority: (value: unknown, priority: string | number | null) => Promise<void>;
       };
       const value = props.value;
@@ -704,7 +735,9 @@ export default {
       const db = getCachedDatabaseInstance(appName, dbURL);
       // @ts-expect-error - Web SDK types don't match our Database type exactly
       const dbRef = ref(db, path);
-      const instance = getCachedOnDisconnectInstance(dbRef as unknown as { key: string | null }) as {
+      const instance = getCachedOnDisconnectInstance(
+        dbRef as unknown as { key: string | null },
+      ) as {
         update: (values: { [key: string]: unknown }) => Promise<void>;
       };
       const values = props.values;
@@ -730,27 +763,25 @@ export default {
       const dbRef = ref(db, path);
 
       try {
-        const { committed, snapshot } = await (runTransaction as any)(
-          dbRef,
-          userExecutor,
-          {
-            applyLocally,
-          },
-        ) as { committed: boolean; snapshot: unknown };
+        const { committed, snapshot } = (await (runTransaction as any)(dbRef, userExecutor, {
+          applyLocally,
+        })) as { committed: boolean; snapshot: unknown };
 
         const event = {
           body: {
             committed,
             type: 'complete',
-            snapshot: snapshotToObject(snapshot as {
-              key: string | null;
-              exists(): boolean;
-              hasChildren(): boolean;
-              size: number;
-              forEach: (callback: (child: { key: string | null }) => void) => void;
-              priority: string | number | null;
-              val(): unknown;
-            }),
+            snapshot: snapshotToObject(
+              snapshot as {
+                key: string | null;
+                exists(): boolean;
+                hasChildren(): boolean;
+                size: number;
+                forEach: (callback: (child: { key: string | null }) => void) => void;
+                priority: string | number | null;
+                val(): unknown;
+              },
+            ),
           },
           appName,
           id: transactionId,

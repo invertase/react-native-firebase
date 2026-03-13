@@ -30,11 +30,7 @@ export default class DatabaseThenableReference {
   private _ref: DatabaseReference;
   private _promise: Promise<DatabaseReference>;
 
-  constructor(
-    database: unknown,
-    path: string,
-    promise: Promise<DatabaseReference>,
-  ) {
+  constructor(database: unknown, path: string, promise: Promise<DatabaseReference>) {
     if (!DatabaseReferenceClass) {
       throw new Error('DatabaseReference class not provided. Call provideReferenceClass first.');
     }

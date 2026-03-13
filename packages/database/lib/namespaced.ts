@@ -113,7 +113,9 @@ class FirebaseDatabaseModule extends FirebaseModule<any> {
       path = path.slice(0, path.indexOf('?'));
     }
 
-    return createDeprecationProxy(new DatabaseReference(this as any, path || '/')) as DatabaseReference;
+    return createDeprecationProxy(
+      new DatabaseReference(this as any, path || '/'),
+    ) as DatabaseReference;
   }
 
   goOnline(): Promise<void> {

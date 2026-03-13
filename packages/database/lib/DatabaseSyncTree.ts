@@ -58,10 +58,20 @@ interface SyncEvent {
 class DatabaseSyncTree {
   private _tree: Record<
     string,
-    Record<EventType, Record<string, (snapshot: DatabaseDataSnapshot, previousChildName?: string | null) => void>>
+    Record<
+      EventType,
+      Record<string, (snapshot: DatabaseDataSnapshot, previousChildName?: string | null) => void>
+    >
   >;
   private _reverseLookup: Record<string, Registration>;
-  private _registry: Record<string, Set<{ listener: (snapshot: DatabaseDataSnapshot, previousChildName?: string | null) => void; remove: () => void; context?: Record<string, unknown> }>>;
+  private _registry: Record<
+    string,
+    Set<{
+      listener: (snapshot: DatabaseDataSnapshot, previousChildName?: string | null) => void;
+      remove: () => void;
+      context?: Record<string, unknown>;
+    }>
+  >;
 
   constructor() {
     this._tree = {};
@@ -85,9 +95,20 @@ class DatabaseSyncTree {
 
   // from upstream EventEmitter: initialize registrations for an emitter key
   _allocate(
-    registry: Record<string, Set<{ listener: (snapshot: DatabaseDataSnapshot, previousChildName?: string | null) => void; remove: () => void; context?: Record<string, unknown> }>>,
+    registry: Record<
+      string,
+      Set<{
+        listener: (snapshot: DatabaseDataSnapshot, previousChildName?: string | null) => void;
+        remove: () => void;
+        context?: Record<string, unknown>;
+      }>
+    >,
     eventType: string,
-  ): Set<{ listener: (snapshot: DatabaseDataSnapshot, previousChildName?: string | null) => void; remove: () => void; context?: Record<string, unknown> }> {
+  ): Set<{
+    listener: (snapshot: DatabaseDataSnapshot, previousChildName?: string | null) => void;
+    remove: () => void;
+    context?: Record<string, unknown>;
+  }> {
     let registrations = registry[eventType];
     if (registrations == null) {
       registrations = new Set();
@@ -172,11 +193,29 @@ class DatabaseSyncTree {
     // Value events don't return a previousChildName
     if (eventType === 'value') {
       snapshot = createDeprecationProxy(
-        new DatabaseDataSnapshot(registration.ref, event.data as { value: unknown; key: string | null; exists: boolean; childKeys: string[]; priority: string | number | null }),
+        new DatabaseDataSnapshot(
+          registration.ref,
+          event.data as {
+            value: unknown;
+            key: string | null;
+            exists: boolean;
+            childKeys: string[];
+            priority: string | number | null;
+          },
+        ),
       ) as DatabaseDataSnapshot;
     } else {
       snapshot = createDeprecationProxy(
-        new DatabaseDataSnapshot(registration.ref, (event.data?.snapshot as { value: unknown; key: string | null; exists: boolean; childKeys: string[]; priority: string | number | null }) || { value: null, key: null, exists: false, childKeys: [], priority: null }),
+        new DatabaseDataSnapshot(
+          registration.ref,
+          (event.data?.snapshot as {
+            value: unknown;
+            key: string | null;
+            exists: boolean;
+            childKeys: string[];
+            priority: string | number | null;
+          }) || { value: null, key: null, exists: false, childKeys: [], priority: null },
+        ),
       ) as DatabaseDataSnapshot;
       previousChildName = event.data?.previousChildName;
     }
@@ -252,7 +291,13 @@ class DatabaseSyncTree {
 
     for (let i = 0, len = registrations.length; i < len; i++) {
       const registration = registrations[i]!;
-      let subscriptions: Array<{ listener: (snapshot: DatabaseDataSnapshot, previousChildName?: string | null) => void; remove: () => void; context?: Record<string, unknown> }> | undefined;
+      let subscriptions:
+        | Array<{
+            listener: (snapshot: DatabaseDataSnapshot, previousChildName?: string | null) => void;
+            remove: () => void;
+            context?: Record<string, unknown>;
+          }>
+        | undefined;
 
       // get all registrations for this key so we can find our specific listener
       const registrySubscriptionsSet = this._registry[registration];
@@ -289,7 +334,10 @@ class DatabaseSyncTree {
     const eventKeys = Object.keys(this._tree[path] || {});
 
     for (let i = 0, len = eventKeys.length; i < len; i++) {
-      Array.prototype.push.apply(out, Object.keys(this._tree[path]![eventKeys[i]! as EventType] || {}));
+      Array.prototype.push.apply(
+        out,
+        Object.keys(this._tree[path]![eventKeys[i]! as EventType] || {}),
+      );
     }
 
     return out;
@@ -354,7 +402,10 @@ class DatabaseSyncTree {
     const { eventRegistrationKey, eventType, listener, once, path } = registration;
 
     if (!this._tree[path]) {
-      this._tree[path] = {} as Record<EventType, Record<string, (snapshot: DatabaseDataSnapshot, previousChildName?: string | null) => void>>;
+      this._tree[path] = {} as Record<
+        EventType,
+        Record<string, (snapshot: DatabaseDataSnapshot, previousChildName?: string | null) => void>
+      >;
     }
     if (!this._tree[path]![eventType]) {
       this._tree[path]![eventType] = {};
@@ -364,12 +415,18 @@ class DatabaseSyncTree {
     this._reverseLookup[eventRegistrationKey] = registration;
 
     if (once) {
-      const subscription = SharedEventEmitter.addListener(eventRegistrationKey, (event: DatabaseDataSnapshot) => {
-        this._onOnceRemoveRegistration(eventRegistrationKey, listener)(event);
-        subscription.remove();
-      });
+      const subscription = SharedEventEmitter.addListener(
+        eventRegistrationKey,
+        (event: DatabaseDataSnapshot) => {
+          this._onOnceRemoveRegistration(eventRegistrationKey, listener)(event);
+          subscription.remove();
+        },
+      );
     } else {
-      const registrationSubscription = SharedEventEmitter.addListener(eventRegistrationKey, listener);
+      const registrationSubscription = SharedEventEmitter.addListener(
+        eventRegistrationKey,
+        listener,
+      );
 
       // add this listener registration info to our emitter-key map
       // in case we need to identify and remove a specific listener later

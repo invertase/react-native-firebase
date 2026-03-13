@@ -77,9 +77,7 @@ export default class DatabaseReference extends DatabaseQuery {
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Reference.html#root
    */
   get root(): DatabaseReference {
-    return createDeprecationProxy(
-      new DatabaseReference(this._database, '/'),
-    ) as DatabaseReference;
+    return createDeprecationProxy(new DatabaseReference(this._database, '/')) as DatabaseReference;
   }
 
   /**
@@ -206,7 +204,11 @@ export default class DatabaseReference extends DatabaseQuery {
    */
   transaction(
     transactionUpdate: (currentData: unknown) => unknown,
-    onComplete?: (error: Error | null, committed: boolean, snapshot: DatabaseDataSnapshot | null) => void,
+    onComplete?: (
+      error: Error | null,
+      committed: boolean,
+      snapshot: DatabaseDataSnapshot | null,
+    ) => void,
     applyLocally?: boolean,
   ): Promise<TransactionResult> {
     if (!isFunction(transactionUpdate)) {
@@ -240,7 +242,11 @@ export default class DatabaseReference extends DatabaseQuery {
             onComplete(
               null,
               committed,
-              snapshotData ? createDeprecationProxy(new DatabaseDataSnapshot(this, snapshotData as any)) as DatabaseDataSnapshot : null,
+              snapshotData
+                ? (createDeprecationProxy(
+                    new DatabaseDataSnapshot(this, snapshotData as any),
+                  ) as DatabaseDataSnapshot)
+                : null,
             );
           }
         }
@@ -250,7 +256,11 @@ export default class DatabaseReference extends DatabaseQuery {
         }
         return resolve({
           committed,
-          snapshot: snapshotData ? createDeprecationProxy(new DatabaseDataSnapshot(this, snapshotData as any)) as DatabaseDataSnapshot : null as any,
+          snapshot: snapshotData
+            ? (createDeprecationProxy(
+                new DatabaseDataSnapshot(this, snapshotData as any),
+              ) as DatabaseDataSnapshot)
+            : (null as any),
         });
       };
 
@@ -305,7 +315,13 @@ export default class DatabaseReference extends DatabaseQuery {
       return new DatabaseThenableReference(
         this._database,
         pathChild(this.path, id),
-        Promise.resolve((this.child as (path: string, ...args: unknown[]) => DatabaseReference).call(this, id, MODULAR_DEPRECATION_ARG)),
+        Promise.resolve(
+          (this.child as (path: string, ...args: unknown[]) => DatabaseReference).call(
+            this,
+            id,
+            MODULAR_DEPRECATION_ARG,
+          ),
+        ),
       );
     }
 
@@ -315,11 +331,13 @@ export default class DatabaseReference extends DatabaseQuery {
       MODULAR_DEPRECATION_ARG,
     );
 
-    const promise = (pushRef.set as (
-      value: unknown,
-      onComplete?: (error: Error | null) => void,
-      ...args: unknown[]
-    ) => Promise<void>)
+    const promise = (
+      pushRef.set as (
+        value: unknown,
+        onComplete?: (error: Error | null) => void,
+        ...args: unknown[]
+      ) => Promise<void>
+    )
       .call(pushRef, value, onComplete, MODULAR_DEPRECATION_ARG)
       .then(() => pushRef);
 

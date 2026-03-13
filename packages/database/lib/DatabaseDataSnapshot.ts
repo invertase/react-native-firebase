@@ -86,7 +86,11 @@ export default class DatabaseDataSnapshot {
       value = null;
     }
 
-    const childRef = (this._ref.child as any).call(this._ref, path, MODULAR_DEPRECATION_ARG) as DatabaseReference;
+    const childRef = (this._ref.child as any).call(
+      this._ref,
+      path,
+      MODULAR_DEPRECATION_ARG,
+    ) as DatabaseReference;
 
     let childPriority: string | number | null = null;
     if (this._snapshot.childPriorities) {

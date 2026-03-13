@@ -41,12 +41,7 @@ export interface Statics {
   SDK_VERSION: string;
 }
 
-export type EventType =
-  | 'value'
-  | 'child_added'
-  | 'child_changed'
-  | 'child_moved'
-  | 'child_removed';
+export type EventType = 'value' | 'child_added' | 'child_changed' | 'child_moved' | 'child_removed';
 
 /**
  * Result of a transaction.

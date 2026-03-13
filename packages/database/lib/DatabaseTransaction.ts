@@ -25,7 +25,11 @@ interface Transaction {
   id: number;
   reference: DatabaseReference;
   transactionUpdater: (currentData: unknown) => unknown;
-  onComplete: (error: Error | null, committed: boolean, snapshot: DatabaseDataSnapshot | null) => void;
+  onComplete: (
+    error: Error | null,
+    committed: boolean,
+    snapshot: DatabaseDataSnapshot | null,
+  ) => void;
   applyLocally: boolean;
   completed: boolean;
   started: boolean;
@@ -66,7 +70,11 @@ export default class DatabaseTransaction {
   add(
     reference: DatabaseReference,
     transactionUpdater: (currentData: unknown) => unknown,
-    onComplete: (error: Error | null, committed: boolean, snapshot: DatabaseDataSnapshot | null) => void,
+    onComplete: (
+      error: Error | null,
+      committed: boolean,
+      snapshot: DatabaseDataSnapshot | null,
+    ) => void,
     applyLocally: boolean = false,
   ): void {
     const id = generateTransactionId();
@@ -82,12 +90,7 @@ export default class DatabaseTransaction {
     };
 
     if (isOther) {
-      this._database.native.transactionStart(
-        reference.path,
-        id,
-        applyLocally,
-        transactionUpdater,
-      );
+      this._database.native.transactionStart(reference.path, id, applyLocally, transactionUpdater);
     } else {
       this._database.native.transactionStart(reference.path, id, applyLocally);
     }
@@ -224,7 +227,11 @@ export default class DatabaseTransaction {
 
       try {
         // error, committed, snapshot
-        transaction.onComplete(null, event.body.committed || false, Object.assign({}, event.body.snapshot) as DatabaseDataSnapshot | null);
+        transaction.onComplete(
+          null,
+          event.body.committed || false,
+          Object.assign({}, event.body.snapshot) as DatabaseDataSnapshot | null,
+        );
       } finally {
         this._removeTransaction(event.id);
       }

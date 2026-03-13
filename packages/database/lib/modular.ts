@@ -68,9 +68,7 @@ export function connectDatabaseEmulator(db: Database, host: string, port: number
  */
 export function goOffline(db: Database): Promise<void> {
   return (
-    (db as DatabaseInternal).goOffline as WithModularDeprecationArg<
-      DatabaseInternal['goOffline']
-    >
+    (db as DatabaseInternal).goOffline as WithModularDeprecationArg<DatabaseInternal['goOffline']>
   ).call(db, MODULAR_DEPRECATION_ARG);
 }
 
@@ -92,9 +90,11 @@ export function goOnline(db: Database): Promise<void> {
  * @returns {Reference}
  */
 export function ref(db: Database, path?: string): Reference {
-  return (
-    (db as DatabaseInternal).ref as WithModularDeprecationArg<DatabaseInternal['ref']>
-  ).call(db, path, MODULAR_DEPRECATION_ARG);
+  return ((db as DatabaseInternal).ref as WithModularDeprecationArg<DatabaseInternal['ref']>).call(
+    db,
+    path,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -105,9 +105,7 @@ export function ref(db: Database, path?: string): Reference {
  */
 export function refFromURL(db: Database, url: string): Reference {
   return (
-    (db as DatabaseInternal).refFromURL as WithModularDeprecationArg<
-      DatabaseInternal['refFromURL']
-    >
+    (db as DatabaseInternal).refFromURL as WithModularDeprecationArg<DatabaseInternal['refFromURL']>
   ).call(db, url, MODULAR_DEPRECATION_ARG);
 }
 

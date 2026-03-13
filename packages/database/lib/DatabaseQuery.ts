@@ -36,7 +36,13 @@ import type { DatabaseInternal } from './types/internal';
 import type { EventType, Reference } from './types/database';
 import type DatabaseReference from './DatabaseReference';
 
-const eventTypes: EventType[] = ['value', 'child_added', 'child_changed', 'child_moved', 'child_removed'];
+const eventTypes: EventType[] = [
+  'value',
+  'child_added',
+  'child_changed',
+  'child_moved',
+  'child_removed',
+];
 
 // To avoid React Native require cycle warnings
 let DatabaseReferenceClass: typeof DatabaseReference | null = null;
@@ -97,7 +103,9 @@ export default class DatabaseQuery extends ReferenceBase {
     const modifiers = this._modifiers._copy().endAt(value, key);
     modifiers.validateModifiers('firebase.database().ref().endAt()');
 
-    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers)) as DatabaseQuery;
+    return createDeprecationProxy(
+      new DatabaseQuery(this._database, this.path, modifiers),
+    ) as DatabaseQuery;
   }
 
   /**
@@ -132,7 +140,13 @@ export default class DatabaseQuery extends ReferenceBase {
     }
 
     // Internal method calls should always use MODULAR_DEPRECATION_ARG to avoid false deprecation warnings
-    return (this.startAt as (value: number | string | boolean | null, key?: string, ...args: unknown[]) => DatabaseQuery)
+    return (
+      this.startAt as (
+        value: number | string | boolean | null,
+        key?: string,
+        ...args: unknown[]
+      ) => DatabaseQuery
+    )
       .call(this, value, key, MODULAR_DEPRECATION_ARG)
       .endAt.call(this, value, MODULAR_DEPRECATION_ARG);
   }
@@ -265,7 +279,10 @@ export default class DatabaseQuery extends ReferenceBase {
     const registrations = DatabaseSyncTree.getRegistrationsByPathEvent(this.path, eventType!);
 
     DatabaseSyncTree.removeListenersForRegistrations(
-      DatabaseSyncTree.getRegistrationsByPathEvent(this.path, `${eventType}$cancelled` as EventType),
+      DatabaseSyncTree.getRegistrationsByPathEvent(
+        this.path,
+        `${eventType}$cancelled` as EventType,
+      ),
     );
 
     return DatabaseSyncTree.removeListenersForRegistrations(registrations);
@@ -343,7 +360,9 @@ export default class DatabaseQuery extends ReferenceBase {
         dbURL: this._database._customUrlOrRegion,
         eventType: `${eventType}$cancelled` as EventType,
         eventRegistrationKey: registrationCancellationKey,
-        listener: _context ? (cancelCallbackOrContext as any).bind(_context) : cancelCallbackOrContext as any,
+        listener: _context
+          ? (cancelCallbackOrContext as any).bind(_context)
+          : (cancelCallbackOrContext as any),
       });
     }
 
@@ -411,42 +430,62 @@ export default class DatabaseQuery extends ReferenceBase {
 
     return this._database.native
       .once(this.path, modifiers, eventType)
-      .then((result: {
-        snapshot?: unknown;
-        previousChildName?: string | null;
-        value?: unknown;
-        key?: string | null;
-        exists?: boolean;
-        childKeys?: string[];
-        priority?: string | number | null;
-      }) => {
-        let dataSnapshot: DatabaseDataSnapshot;
-        let previousChildName: string | null | undefined;
+      .then(
+        (result: {
+          snapshot?: unknown;
+          previousChildName?: string | null;
+          value?: unknown;
+          key?: string | null;
+          exists?: boolean;
+          childKeys?: string[];
+          priority?: string | number | null;
+        }) => {
+          let dataSnapshot: DatabaseDataSnapshot;
+          let previousChildName: string | null | undefined;
 
-        // Child based events return a previousChildName
-        if (eventType === 'value') {
-          dataSnapshot = createDeprecationProxy(
-            new DatabaseDataSnapshot(this.ref as any, result as { value: unknown; key: string | null; exists: boolean; childKeys: string[]; priority: string | number | null }),
-          ) as DatabaseDataSnapshot;
-        } else {
-          dataSnapshot = createDeprecationProxy(
-            new DatabaseDataSnapshot(this.ref as any, (result.snapshot as { value: unknown; key: string | null; exists: boolean; childKeys: string[]; priority: string | number | null }) || { value: null, key: null, exists: false, childKeys: [], priority: null }),
-          ) as DatabaseDataSnapshot;
-          previousChildName = result.previousChildName;
-        }
-
-        if (isFunction(successCallBack)) {
-          if (isObject(failureCallbackOrContext)) {
-            successCallBack.bind(failureCallbackOrContext)(dataSnapshot, previousChildName);
-          } else if (isObject(context)) {
-            successCallBack.bind(context)(dataSnapshot, previousChildName);
+          // Child based events return a previousChildName
+          if (eventType === 'value') {
+            dataSnapshot = createDeprecationProxy(
+              new DatabaseDataSnapshot(
+                this.ref as any,
+                result as {
+                  value: unknown;
+                  key: string | null;
+                  exists: boolean;
+                  childKeys: string[];
+                  priority: string | number | null;
+                },
+              ),
+            ) as DatabaseDataSnapshot;
           } else {
-            successCallBack(dataSnapshot, previousChildName);
+            dataSnapshot = createDeprecationProxy(
+              new DatabaseDataSnapshot(
+                this.ref as any,
+                (result.snapshot as {
+                  value: unknown;
+                  key: string | null;
+                  exists: boolean;
+                  childKeys: string[];
+                  priority: string | number | null;
+                }) || { value: null, key: null, exists: false, childKeys: [], priority: null },
+              ),
+            ) as DatabaseDataSnapshot;
+            previousChildName = result.previousChildName;
           }
-        }
 
-        return dataSnapshot;
-      })
+          if (isFunction(successCallBack)) {
+            if (isObject(failureCallbackOrContext)) {
+              successCallBack.bind(failureCallbackOrContext)(dataSnapshot, previousChildName);
+            } else if (isObject(context)) {
+              successCallBack.bind(context)(dataSnapshot, previousChildName);
+            } else {
+              successCallBack(dataSnapshot, previousChildName);
+            }
+          }
+
+          return dataSnapshot;
+        },
+      )
       .catch((error: Error) => {
         if (isFunction(failureCallbackOrContext)) {
           failureCallbackOrContext(error);
@@ -478,7 +517,9 @@ export default class DatabaseQuery extends ReferenceBase {
     const modifiers = this._modifiers._copy().orderByChild(path);
     modifiers.validateModifiers('firebase.database().ref().orderByChild()');
 
-    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers)) as DatabaseQuery;
+    return createDeprecationProxy(
+      new DatabaseQuery(this._database, this.path, modifiers),
+    ) as DatabaseQuery;
   }
 
   /**
@@ -494,7 +535,9 @@ export default class DatabaseQuery extends ReferenceBase {
     const modifiers = this._modifiers._copy().orderByKey();
     modifiers.validateModifiers('firebase.database().ref().orderByKey()');
 
-    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers)) as DatabaseQuery;
+    return createDeprecationProxy(
+      new DatabaseQuery(this._database, this.path, modifiers),
+    ) as DatabaseQuery;
   }
 
   /**
@@ -510,7 +553,9 @@ export default class DatabaseQuery extends ReferenceBase {
     const modifiers = this._modifiers._copy().orderByPriority();
     modifiers.validateModifiers('firebase.database().ref().orderByPriority()');
 
-    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers)) as DatabaseQuery;
+    return createDeprecationProxy(
+      new DatabaseQuery(this._database, this.path, modifiers),
+    ) as DatabaseQuery;
   }
 
   /**
@@ -526,7 +571,9 @@ export default class DatabaseQuery extends ReferenceBase {
     const modifiers = this._modifiers._copy().orderByValue();
     modifiers.validateModifiers('firebase.database().ref().orderByValue()');
 
-    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers)) as DatabaseQuery;
+    return createDeprecationProxy(
+      new DatabaseQuery(this._database, this.path, modifiers),
+    ) as DatabaseQuery;
   }
 
   startAt(value?: number | string | boolean | null, key?: string): DatabaseQuery {
@@ -551,7 +598,9 @@ export default class DatabaseQuery extends ReferenceBase {
     const modifiers = this._modifiers._copy().startAt(value!, key);
     modifiers.validateModifiers('firebase.database().ref().startAt()');
 
-    return createDeprecationProxy(new DatabaseQuery(this._database, this.path, modifiers)) as DatabaseQuery;
+    return createDeprecationProxy(
+      new DatabaseQuery(this._database, this.path, modifiers),
+    ) as DatabaseQuery;
   }
 
   toJSON(): string {

@@ -31,13 +31,19 @@ export interface RNFBDatabaseModule {
   useEmulator(host: string, port: number): void;
   set(path: string, data: { value: unknown }): Promise<void>;
   update(path: string, data: { values: { [key: string]: unknown } }): Promise<void>;
-  setWithPriority(path: string, data: { value: unknown; priority: string | number | null }): Promise<void>;
+  setWithPriority(
+    path: string,
+    data: { value: unknown; priority: string | number | null },
+  ): Promise<void>;
   remove(path: string): Promise<void>;
   setPriority(path: string, data: { priority: string | number | null }): Promise<void>;
   onDisconnectCancel(path: string): Promise<void>;
   onDisconnectRemove(path: string): Promise<void>;
   onDisconnectSet(path: string, data: { value: unknown }): Promise<void>;
-  onDisconnectSetWithPriority(path: string, data: { value: unknown; priority: string | number | null }): Promise<void>;
+  onDisconnectSetWithPriority(
+    path: string,
+    data: { value: unknown; priority: string | number | null },
+  ): Promise<void>;
   onDisconnectUpdate(path: string, data: { values: { [key: string]: unknown } }): Promise<void>;
   on(props: {
     eventType: string;
@@ -47,9 +53,17 @@ export interface RNFBDatabaseModule {
     dbURL: string;
     modifiers: unknown[];
     hasCancellationCallback: boolean;
-    registration: { eventRegistrationKey: string; key?: string; registrationCancellationKey?: string };
+    registration: {
+      eventRegistrationKey: string;
+      key?: string;
+      registrationCancellationKey?: string;
+    };
   }): Promise<void>;
-  once(path: string, modifiers: unknown[], eventType: string): Promise<{
+  once(
+    path: string,
+    modifiers: unknown[],
+    eventType: string,
+  ): Promise<{
     snapshot?: unknown;
     previousChildName?: string | null;
     value?: unknown;
@@ -59,7 +73,12 @@ export interface RNFBDatabaseModule {
     priority?: string | number | null;
   }>;
   keepSynced(queryKey: string, path: string, modifiers: unknown[], enabled: boolean): Promise<void>;
-  transactionStart(path: string, id: number, applyLocally: boolean, transactionUpdater?: (currentData: unknown) => unknown): void;
+  transactionStart(
+    path: string,
+    id: number,
+    applyLocally: boolean,
+    transactionUpdater?: (currentData: unknown) => unknown,
+  ): void;
   transactionTryCommit(id: number, updates: { [key: string]: unknown }): void;
 }
 
