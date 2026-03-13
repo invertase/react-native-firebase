@@ -273,14 +273,12 @@ export function PipelinesE2ETestComponent() {
         const lines: string[] = [];
         const collectionName = `${COLLECTION}/${randString(12)}/pipeline-expression`;
         const collectionRef = collection(db, collectionName);
-        console.log('collectionRef', collectionRef.path);
         await Promise.all([
           setDoc(doc(collectionRef, 'a'), { title: 'A', rating: 2, genre: 'Fantasy' }),
           setDoc(doc(collectionRef, 'b'), { title: 'B', rating: 5, genre: 'Fantasy' }),
           setDoc(doc(collectionRef, 'c'), { title: 'C', rating: 8, genre: 'Fantasy' }),
           setDoc(doc(collectionRef, 'd'), { title: 'D', rating: 9, genre: 'Sci-Fi' }),
         ]);
-        console.log('collectionRef 222', collectionRef.path);
         const f = (path: string) => field(path);
         const pipeline = db
           .pipeline()
@@ -294,7 +292,6 @@ export function PipelinesE2ETestComponent() {
           .sort(f('rating').descending());
 
         const snapshot = await execute(pipeline);
-        console.log('snapshot', snapshot);
         if (snapshot.results.length === 2) {
           lines.push('✓ results count is 2');
         } else {
