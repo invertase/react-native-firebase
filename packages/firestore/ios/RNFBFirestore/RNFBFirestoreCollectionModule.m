@@ -332,8 +332,14 @@ RCT_EXPORT_METHOD(pipelineExecute
                                 nil);
                          return;
                        }
+                      if (result == nil) {
+                        reject(@"firestore/unknown",
+                               @"Failed to execute pipeline: empty pipeline response.",
+                               nil);
+                        return;
+                      }
 
-                       resolve(result ?: @{@"results" : @[]});
+                      resolve(result);
                      }];
 }
 
