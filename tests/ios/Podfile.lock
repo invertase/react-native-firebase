@@ -202,7 +202,7 @@ PODS:
     - GTMSessionFetcher/Core (< 6.0, >= 3.4)
   - fmt (11.0.2)
   - glog (0.3.5)
-  - GoogleAdsOnDeviceConversion (3.2.0):
+  - GoogleAdsOnDeviceConversion (3.4.0):
     - GoogleUtilities/Environment (~> 8.1)
     - GoogleUtilities/Logger (~> 8.1)
     - GoogleUtilities/Network (~> 8.1)
@@ -250,7 +250,7 @@ PODS:
   - GoogleUtilities/UserDefaults (8.1.0):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
-  - GTMSessionFetcher/Core (5.0.0)
+  - GTMSessionFetcher/Core (5.1.0)
   - hermes-engine (0.78.3):
     - hermes-engine/Pre-built (= 0.78.3)
   - hermes-engine/Pre-built (0.78.3)
@@ -2529,11 +2529,11 @@ SPEC CHECKSUMS:
   FirebaseStorage: 3ba2348d876c295236cdd9f408a62d3f9ff8e6b5
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
-  GoogleAdsOnDeviceConversion: d68c69dd9581a0f5da02617b6f377e5be483970f
+  GoogleAdsOnDeviceConversion: 98956ec5399cff7c0886cf757f4c8ca4716a5064
   GoogleAppMeasurement: fce7c1c90640d2f9f5c56771f71deacb2ba3f98c
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-  GTMSessionFetcher: 02d6e866e90bc236f48a703a041dfe43e6221a29
+  GTMSessionFetcher: b8ab00db932816e14b0a0664a08cb73dda6d164b
   hermes-engine: b5c9cfbe6415f1b0b24759f2942c8f33e9af6347
   leveldb-library: cc8b8f8e013647a295ad3f8cd2ddf49a6f19be19
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
@@ -2607,7 +2607,7 @@ SPEC CHECKSUMS:
   RNFBAuth: cfe0ff33b059533f9cdba10cb3eaf251054e3269
   RNFBCrashlytics: 06a7155fd1a61ebd45ff8213a063ee2fe1498637
   RNFBDatabase: e0ff9d6ff95191bffa5148360b38ef77f3891628
-  RNFBFirestore: 66ab38a4b57928a24aa8eb648877f13384ab7f9c
+  RNFBFirestore: 4d2b45402f120d60671c9e50db3941d5bd8e57b1
   RNFBFunctions: f8801a00ebb8d1769401f269a284145d69525fcd
   RNFBInAppMessaging: 94d95cb7f47f84177d270f9c0b7a3500bb29a320
   RNFBInstallations: ab72cf7865bbcf92a24f3807e2b855df37ba85e7
