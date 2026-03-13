@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-const { wipe } = require('../helpers');
+const { wipe, setDocumentOutOfBand } = require('../helpers');
 const COLLECTION = 'firestore';
 const NO_RULE_COLLECTION = 'no_rules';
 
@@ -333,7 +333,7 @@ describe('firestore().collection().onSnapshot()', function () {
       }
     });
 
-    it('uses cache source for query listeners', async function () {
+    it('cache source query listeners ignore out-of-band server writes', async function () {
       if (Platform.other) {
         return;
       }
@@ -343,20 +343,22 @@ describe('firestore().collection().onSnapshot()', function () {
       await colRef.doc('one').set({ enabled: true });
       await colRef.get();
 
-      let unsub = () => {};
+      const callback = sinon.spy();
+      const unsub = colRef.onSnapshot({ source: 'cache' }, callback);
       try {
-        await firebase.firestore().disableNetwork();
-        const callback = sinon.spy();
-        unsub = colRef.onSnapshot({ source: 'cache' }, callback);
         await Utils.spyToBeCalledOnceAsync(callback);
-        callback.args[0][0].metadata.fromCache.should.equal(true);
+        await setDocumentOutOfBand(`${collectionPath}/server-write`, { enabled: false });
+        await Utils.sleep(1500);
+        callback.should.be.callCount(1);
+
+        await colRef.doc('local-write').set({ enabled: true });
+        await Utils.spyToBeCalledTimesAsync(callback, 2);
       } finally {
         unsub();
-        await firebase.firestore().enableNetwork();
       }
     });
 
-    it('supports cache source with metadata changes', async function () {
+    it('default source query listeners receive out-of-band server writes', async function () {
       if (Platform.other) {
         return;
       }
@@ -366,16 +368,17 @@ describe('firestore().collection().onSnapshot()', function () {
       await colRef.doc('one').set({ enabled: true });
       await colRef.get();
 
-      let unsub = () => {};
+      const callback = sinon.spy();
+      const unsub = colRef.onSnapshot(
+        { source: 'default', includeMetadataChanges: true },
+        callback,
+      );
       try {
-        await firebase.firestore().disableNetwork();
-        const callback = sinon.spy();
-        unsub = colRef.onSnapshot({ source: 'cache', includeMetadataChanges: true }, callback);
         await Utils.spyToBeCalledOnceAsync(callback);
-        callback.args[0][0].metadata.fromCache.should.equal(true);
+        await setDocumentOutOfBand(`${collectionPath}/server-write`, { enabled: false });
+        await Utils.spyToBeCalledTimesAsync(callback, 2, 8000);
       } finally {
         unsub();
-        await firebase.firestore().enableNetwork();
       }
     });
 

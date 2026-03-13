@@ -16,7 +16,7 @@
  */
 const COLLECTION = 'firestore';
 const NO_RULE_COLLECTION = 'no_rules';
-const { wipe } = require('../helpers');
+const { wipe, setDocumentOutOfBand } = require('../helpers');
 
 describe('firestore().doc().onSnapshot()', function () {
   before(function () {
@@ -352,47 +352,58 @@ describe('firestore().doc().onSnapshot()', function () {
       unsub();
     });
 
-    it('uses cache source for document listeners', async function () {
+    it('cache source listeners ignore out-of-band server writes', async function () {
       if (Platform.other) {
         return;
       }
 
-      const docRef = firebase.firestore().doc(`${COLLECTION}/${Utils.randString(12, '#aA')}`);
-      await docRef.set({ enabled: true });
+      const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+      const docRef = firebase.firestore().doc(docPath);
+      await docRef.set({ value: 1 });
       await docRef.get();
 
-      let unsub = () => {};
+      const callback = sinon.spy();
+      const unsub = docRef.onSnapshot({ source: 'cache' }, callback);
       try {
-        await firebase.firestore().disableNetwork();
-        const callback = sinon.spy();
-        unsub = docRef.onSnapshot({ source: 'cache' }, callback);
         await Utils.spyToBeCalledOnceAsync(callback);
-        callback.args[0][0].metadata.fromCache.should.equal(true);
+
+        await setDocumentOutOfBand(docPath, { value: 2 });
+        await Utils.sleep(1500);
+        callback.should.be.callCount(1);
+
+        await docRef.set({ value: 3 });
+        await Utils.spyToBeCalledTimesAsync(callback, 2);
+        callback.args[1][0].get('value').should.equal(3);
       } finally {
         unsub();
-        await firebase.firestore().enableNetwork();
       }
     });
 
-    it('supports cache source with metadata changes', async function () {
+    it('default source listeners receive out-of-band server writes', async function () {
       if (Platform.other) {
         return;
       }
 
-      const docRef = firebase.firestore().doc(`${COLLECTION}/${Utils.randString(12, '#aA')}`);
-      await docRef.set({ enabled: true });
+      const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+      const docRef = firebase.firestore().doc(docPath);
+      await docRef.set({ value: 1 });
       await docRef.get();
 
-      let unsub = () => {};
+      const callback = sinon.spy();
+      const unsub = docRef.onSnapshot(
+        { source: 'default', includeMetadataChanges: true },
+        callback,
+      );
       try {
-        await firebase.firestore().disableNetwork();
-        const callback = sinon.spy();
-        unsub = docRef.onSnapshot({ source: 'cache', includeMetadataChanges: true }, callback);
         await Utils.spyToBeCalledOnceAsync(callback);
-        callback.args[0][0].metadata.fromCache.should.equal(true);
+
+        await setDocumentOutOfBand(docPath, { value: 2 });
+        await Utils.spyToBeCalledTimesAsync(callback, 2, 8000);
+
+        const latestSnapshot = callback.args[callback.callCount - 1][0];
+        latestSnapshot.get('value').should.equal(2);
       } finally {
         unsub();
-        await firebase.firestore().enableNetwork();
       }
     });
 
