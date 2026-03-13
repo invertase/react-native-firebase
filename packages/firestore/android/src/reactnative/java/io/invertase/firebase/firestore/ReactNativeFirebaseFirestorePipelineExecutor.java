@@ -85,9 +85,6 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
               "unnest",
               "rawStage"));
 
-  private static final Set<String> DOCUMENT_METADATA_FALLBACK_STAGES =
-      new HashSet<>(Arrays.asList("select", "addFields", "removeFields"));
-
   private final FirebaseFirestore firestore;
 
   ReactNativeFirebaseFirestorePipelineExecutor(FirebaseFirestore firestore) {
@@ -97,12 +94,11 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
   void execute(ReadableMap pipeline, ReadableMap options, Promise promise) {
     try {
       validatePipelineRequest(pipeline, options);
-      PipelineExecutionMetadata executionMetadata = buildExecutionMetadata(pipeline);
       Pipeline sdkPipeline = buildNativePipeline(pipeline);
       Pipeline.ExecuteOptions executeOptions = buildExecuteOptions(options);
       Task<Pipeline.Snapshot> executeTask =
           executeOptions == null ? sdkPipeline.execute() : sdkPipeline.execute(executeOptions);
-      executeTask.addOnCompleteListener(task -> resolvePipelineTask(task, promise, executionMetadata));
+      executeTask.addOnCompleteListener(task -> resolvePipelineTask(task, promise));
     } catch (PipelineValidationException e) {
       rejectPromiseWithCodeAndMessage(promise, "firestore/invalid-argument", e.getMessage());
     } catch (Exception e) {
@@ -248,11 +244,10 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     }
   }
 
-  private void resolvePipelineTask(
-      Task<Pipeline.Snapshot> task, Promise promise, PipelineExecutionMetadata executionMetadata) {
+  private void resolvePipelineTask(Task<Pipeline.Snapshot> task, Promise promise) {
     if (task.isSuccessful()) {
       Pipeline.Snapshot snapshot = task.getResult();
-      promise.resolve(serializeSnapshot(snapshot, executionMetadata));
+      promise.resolve(serializeSnapshot(snapshot));
       return;
     }
 
@@ -834,18 +829,14 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     return rawStage;
   }
 
-  private WritableMap serializeSnapshot(
-      Pipeline.Snapshot snapshot, PipelineExecutionMetadata executionMetadata) {
+  private WritableMap serializeSnapshot(Pipeline.Snapshot snapshot) {
     WritableMap map = Arguments.createMap();
     WritableArray results = Arguments.createArray();
     List<PipelineResult> pipelineResults = snapshot != null ? snapshot.getResults() : null;
 
     if (pipelineResults != null) {
-      int resultCount = pipelineResults.size();
-      for (int i = 0; i < pipelineResults.size(); i++) {
-        PipelineResult result = pipelineResults.get(i);
-        String fallbackPath = executionMetadata.getFallbackPathForIndex(i, resultCount);
-        results.pushMap(serializeResult(result, fallbackPath));
+      for (PipelineResult result : pipelineResults) {
+        results.pushMap(serializeResult(result));
       }
     }
 
@@ -861,29 +852,18 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     return map;
   }
 
-  private WritableMap serializeResult(PipelineResult result, String fallbackPath) {
+  private WritableMap serializeResult(PipelineResult result) {
     WritableMap map = Arguments.createMap();
     if (result == null) {
       return map;
     }
 
     DocumentReference reference = result.getRef();
-    String path = reference != null ? reference.getPath() : fallbackPath;
-    if (path != null) {
-      map.putString("path", path);
+    if (reference != null) {
+      map.putString("path", reference.getPath());
     }
 
     String id = result.getId();
-    if (id == null && reference != null) {
-      id = reference.getId();
-    }
-    if (id == null && fallbackPath != null) {
-      int lastSlash = fallbackPath.lastIndexOf('/');
-      id = lastSlash >= 0 ? fallbackPath.substring(lastSlash + 1) : fallbackPath;
-    } else if (id == null && path != null) {
-      int lastSlash = path.lastIndexOf('/');
-      id = lastSlash >= 0 ? path.substring(lastSlash + 1) : path;
-    }
     if (id != null) {
       map.putString("id", id);
     } else {
@@ -910,90 +890,6 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     }
 
     return map;
-  }
-
-  private PipelineExecutionMetadata buildExecutionMetadata(ReadableMap pipeline)
-      throws PipelineValidationException {
-    if (pipeline == null) {
-      return PipelineExecutionMetadata.EMPTY;
-    }
-
-    ReadableMap source = pipeline.getMap("source");
-    ReadableArray stages = pipeline.getArray("stages");
-    if (source == null || stages == null) {
-      return PipelineExecutionMetadata.EMPTY;
-    }
-
-    String sourceType = source.getString("source");
-    if (!"documents".equals(sourceType)) {
-      return PipelineExecutionMetadata.EMPTY;
-    }
-
-    if (!isDocumentMetadataFallbackSafe(stages)) {
-      return PipelineExecutionMetadata.EMPTY;
-    }
-
-    Object documentsValue = getJavaValue(source, "documents");
-    String[] documentPaths = coerceStringList(documentsValue, "pipeline.source.documents");
-    if (documentPaths.length == 0) {
-      return PipelineExecutionMetadata.EMPTY;
-    }
-    return PipelineExecutionMetadata.withDocumentPaths(Arrays.asList(documentPaths));
-  }
-
-  private boolean isDocumentMetadataFallbackSafe(ReadableArray stages) {
-    if (stages == null) {
-      return false;
-    }
-
-    for (int i = 0; i < stages.size(); i++) {
-      if (stages.getType(i) != ReadableType.Map) {
-        return false;
-      }
-
-      ReadableMap stage = stages.getMap(i);
-      if (stage == null || !stage.hasKey("stage") || stage.getType("stage") != ReadableType.String) {
-        return false;
-      }
-
-      String stageName = stage.getString("stage");
-      if (stageName == null || !DOCUMENT_METADATA_FALLBACK_STAGES.contains(stageName)) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  private static class PipelineExecutionMetadata {
-    private static final PipelineExecutionMetadata EMPTY =
-        new PipelineExecutionMetadata(null, false);
-
-    private final List<String> sourceDocumentPaths;
-    private final boolean canFallbackMetadataByIndex;
-
-    private PipelineExecutionMetadata(List<String> sourceDocumentPaths, boolean canFallbackMetadataByIndex) {
-      this.sourceDocumentPaths = sourceDocumentPaths;
-      this.canFallbackMetadataByIndex = canFallbackMetadataByIndex;
-    }
-
-    private static PipelineExecutionMetadata withDocumentPaths(List<String> sourceDocumentPaths) {
-      boolean isUsable = sourceDocumentPaths != null && !sourceDocumentPaths.isEmpty();
-      return new PipelineExecutionMetadata(sourceDocumentPaths, isUsable);
-    }
-
-    private String getFallbackPathForIndex(int index, int resultCount) {
-      if (!canFallbackMetadataByIndex || sourceDocumentPaths == null) {
-        return null;
-      }
-      if (resultCount != sourceDocumentPaths.size()) {
-        return null;
-      }
-      if (index < 0 || index >= sourceDocumentPaths.size()) {
-        return null;
-      }
-      return sourceDocumentPaths.get(index);
-    }
   }
 
   private WritableMap serializeTimestamp(Timestamp timestamp) {
