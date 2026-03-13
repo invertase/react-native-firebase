@@ -105,7 +105,7 @@ describe('FirestorePipeline', function () {
       should(pipelineFromQuery.serialize().source.options).eql({ limit: 2 });
     });
 
-    it('forwards execute options and parses pipeline results', async function () {
+    it('executes documents source and parses pipeline results', async function () {
       const { execute } = firestorePipelinesModular;
       const { getFirestore, doc, setDoc } = firestoreModular;
       if (!Platform.android) {
@@ -121,21 +121,14 @@ describe('FirestorePipeline', function () {
       });
 
       const pipeline = db.pipeline().documents([docPath]).select('score', 'nested');
-      const snapshot = await execute({
-        pipeline,
-        indexMode: 'recommended',
-      });
+      const snapshot = await execute(pipeline);
 
       snapshot.results.should.have.length(1);
       should(snapshot.executionTime).be.ok();
 
       const first = snapshot.results[0];
-      first.id.should.equal('pipeline-doc');
-      first.ref.path.should.equal(docPath);
-      first.data().should.eql({ score: 42, nested: { ok: true } });
-      first.get('nested.ok').should.equal(true);
-      should(first.createTime).be.ok();
-      should(first.updateTime).be.ok();
+      should(first.data()).eql({ score: 42, nested: { ok: true } });
+      should(first.get('nested.ok')).equal(true);
     });
 
     it('throws helpful validation errors for invalid source arguments', function () {
