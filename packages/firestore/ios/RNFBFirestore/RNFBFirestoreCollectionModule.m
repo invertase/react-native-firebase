@@ -17,9 +17,10 @@
 
 #import <RNFBApp/RNFBRCTEventEmitter.h>
 #import <React/RCTUtils.h>
+#import <RNFBFirestore/RNFBFirestore-Swift.h>
 
 #import "RNFBFirestoreCollectionModule.h"
-#import "RNFBFirestorePipelineExecutor.h"
+#import "RNFBFirestoreCommon.h"
 
 static __strong NSMutableDictionary *collectionSnapshotListeners;
 static NSString *const RNFB_FIRESTORE_COLLECTION_SYNC = @"firestore_collection_sync_event";
@@ -312,9 +313,28 @@ RCT_EXPORT_METHOD(pipelineExecute
                   : (RCTPromiseRejectBlock)reject) {
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
                                                          databaseId:databaseId];
-  RNFBFirestorePipelineExecutor *pipelineExecutor =
-      [[RNFBFirestorePipelineExecutor alloc] initWithFirestore:firestore];
-  [pipelineExecutor executeWithPipeline:pipeline options:options resolve:resolve reject:reject];
+  RNFBFirestorePipelineCallHandler *handler = [[RNFBFirestorePipelineCallHandler alloc] init];
+  [handler executeWithFirestore:firestore
+                       pipeline:pipeline
+                        options:options
+                     completion:^(NSDictionary *_Nullable result, NSDictionary *_Nullable error) {
+                       if (error != nil) {
+                         NSError *nativeError = error[@"nativeError"];
+                         if (nativeError != nil) {
+                           [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:nativeError];
+                           return;
+                         }
+
+                         NSString *code = error[@"code"];
+                         NSString *message = error[@"message"];
+                         reject(code ?: @"firestore/unknown",
+                                message ?: @"Failed to execute pipeline.",
+                                nil);
+                         return;
+                       }
+
+                       resolve(result ?: @{@"results" : @[]});
+                     }];
 }
 
 RCT_EXPORT_METHOD(collectionGet
