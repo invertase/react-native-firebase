@@ -34,7 +34,7 @@ import QuerySnapshot, { type QuerySnapshotNativeData } from './FirestoreQuerySna
 import { parseSnapshotArgs, validateWithConverter } from './utils';
 
 import type FirestorePath from './FirestorePath';
-import type { DocumentData, FirestoreDataConverter } from './types/firestore';
+import type { DocumentData, FirestoreDataConverter, ListenSource } from './types/firestore';
 import type {
   FirestoreInternal,
   DocumentFieldValueInternal,
@@ -331,7 +331,7 @@ export default class Query {
   }
 
   onSnapshot(...args: unknown[]): () => void {
-    let snapshotListenOptions: { includeMetadataChanges?: boolean; source?: 'default' | 'cache' };
+    let snapshotListenOptions: { includeMetadataChanges?: boolean; source?: ListenSource };
     let callback: (snapshot: QuerySnapshot | null, error: Error | null) => void;
     let onNext: (snapshot: QuerySnapshot) => void;
     let onError: (error: Error) => void;

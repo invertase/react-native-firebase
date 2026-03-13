@@ -16,6 +16,7 @@
  */
 
 import { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { ListenSource } from './firestore';
 
 /**
  * Firebase Cloud Firestore package for React Native.
@@ -1768,7 +1769,7 @@ export namespace FirebaseFirestoreTypes {
     /**
      * Set the source the query listens to. Default is 'default'.
      */
-    source?: 'default' | 'cache';
+    source?: ListenSource;
   }
 
   /**

@@ -31,6 +31,7 @@ import type {
   PartialSnapshotObserverInternal,
 } from '../types/internal';
 import FieldPath, { fromDotSeparatedString } from '../FieldPath';
+import type { ListenSource } from 'lib/types/firestore';
 
 export function extractFieldPathData(data: unknown, segments: string[]): unknown {
   if (!isObject(data)) {
@@ -153,7 +154,7 @@ function isPartialObserver(
 export interface ParseSnapshotArgsResult {
   snapshotListenOptions: {
     includeMetadataChanges?: boolean;
-    source?: 'default' | 'cache';
+    source?: ListenSource;
   };
   callback: (snapshot: unknown, error: Error | null) => void;
   onNext: (snapshot: unknown) => void;
@@ -168,7 +169,7 @@ export function parseSnapshotArgs(args: unknown[]): ParseSnapshotArgsResult {
   const NOOP = (): void => {};
   const snapshotListenOptions: {
     includeMetadataChanges?: boolean;
-    source?: 'default' | 'cache';
+    source?: ListenSource;
   } = {};
   let callback: (snapshot: unknown, error: Error | null) => void = NOOP;
   let onError: (error: Error) => void = NOOP;
