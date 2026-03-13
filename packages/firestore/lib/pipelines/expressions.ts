@@ -86,7 +86,22 @@ export type TimeGranularity =
  * @beta
  * Boolean expression for pipeline `where()` (e.g. field('x').gt(0), and(...), or(...)).
  */
-export interface BooleanExpression {
+interface FluentExpressionMethods {
+  as(name: string): AliasedExpression;
+  ascending(): Ordering;
+  descending(): Ordering;
+  add(value: Expression): FunctionExpression;
+  add(value: unknown): FunctionExpression;
+  equal(expression: Expression): BooleanExpression;
+  equal(value: unknown): BooleanExpression;
+  greaterThan(expression: Expression): BooleanExpression;
+  greaterThan(value: unknown): BooleanExpression;
+  greaterThanOrEqual(expression: Expression): BooleanExpression;
+  greaterThanOrEqual(value: unknown): BooleanExpression;
+  sum(): AggregateFunction;
+}
+
+export interface BooleanExpression extends Selectable, FluentExpressionMethods {
   readonly _brand?: 'BooleanExpression';
 }
 
@@ -102,7 +117,7 @@ export interface Selectable {
  * @beta
  * Field reference for pipeline stages.
  */
-export interface Field {
+export interface Field extends Selectable, FluentExpressionMethods {
   readonly _brand?: 'Field';
 }
 
@@ -110,7 +125,7 @@ export interface Field {
  * @beta
  * Function expression (e.g. map(...), array(...)). Used as return type and in Expression union.
  */
-export interface FunctionExpression {
+export interface FunctionExpression extends Selectable, FluentExpressionMethods {
   selectable: true;
   readonly _brand?: 'FunctionExpression';
 }

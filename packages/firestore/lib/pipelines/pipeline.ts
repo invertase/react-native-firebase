@@ -28,10 +28,38 @@ import type {
 import type { BooleanExpression, Selectable, Field, Ordering, Accumulator } from './expressions';
 
 /**
+ * @internal
+ * Serialized pipeline payload shape forwarded to native/web executors.
+ */
+export interface SerializedPipeline {
+  source: {
+    source: string;
+    collectionId?: string;
+    path?: string;
+    queryType?: string;
+    filters?: unknown[];
+    orders?: unknown[];
+    options?: { limit?: number; [key: string]: unknown };
+    documents?: string[];
+    [key: string]: unknown;
+  };
+  stages: Array<{
+    stage: string;
+    options: Record<string, unknown>;
+  }>;
+}
+
+/**
  * @beta
  * Pipeline with chained stages. Each stage returns a new Pipeline (immutable chain).
  */
 export interface Pipeline<T = import('../types/firestore').DocumentData> {
+  /**
+   * @internal
+   * Serializes the source + stage chain to the wire format.
+   */
+  serialize(): SerializedPipeline;
+
   where(condition: BooleanExpression): Pipeline<T>;
   where(options: { condition: BooleanExpression }): Pipeline<T>;
 
