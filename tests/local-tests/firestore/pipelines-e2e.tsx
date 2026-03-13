@@ -29,7 +29,6 @@ type TestFn = () => Promise<string[]>;
 interface TestCase {
   name: string;
   run: TestFn;
-  androidOnly?: boolean;
 }
 
 export function PipelinesE2ETestComponent() {
@@ -213,7 +212,6 @@ export function PipelinesE2ETestComponent() {
     },
     {
       name: 'execute_createFrom_query',
-      androidOnly: true,
       run: async () => {
         const lines: string[] = [];
         const collectionName = `${COLLECTION}/${randString(12)}/pipeline-query-exec`;
@@ -268,7 +266,6 @@ export function PipelinesE2ETestComponent() {
     },
     {
       name: 'execute_method_expressions',
-      androidOnly: true,
       run: async () => {
         const lines: string[] = [];
         const collectionName = `${COLLECTION}/${randString(12)}/pipeline-expression`;
@@ -323,7 +320,6 @@ export function PipelinesE2ETestComponent() {
     },
     {
       name: 'execute_collection_basic',
-      androidOnly: true,
       run: async () => {
         const lines: string[] = [];
         const collectionName = `${COLLECTION}/${randString(12)}/pipeline-basic`;
@@ -353,7 +349,6 @@ export function PipelinesE2ETestComponent() {
     },
     {
       name: 'execute_where_filter',
-      androidOnly: true,
       run: async () => {
         const lines: string[] = [];
         const collectionName = `${COLLECTION}/${randString(12)}/pipeline-where`;
@@ -386,7 +381,6 @@ export function PipelinesE2ETestComponent() {
     },
     {
       name: 'execute_select_fields',
-      androidOnly: true,
       run: async () => {
         const lines: string[] = [];
         const collectionName = `${COLLECTION}/${randString(12)}/pipeline-select`;
@@ -420,7 +414,6 @@ export function PipelinesE2ETestComponent() {
     },
     {
       name: 'execute_sort_order',
-      androidOnly: true,
       run: async () => {
         const lines: string[] = [];
         const collectionName = `${COLLECTION}/${randString(12)}/pipeline-sort`;
@@ -463,7 +456,6 @@ export function PipelinesE2ETestComponent() {
     },
     {
       name: 'execute_limit',
-      androidOnly: true,
       run: async () => {
         const lines: string[] = [];
         const collectionName = `${COLLECTION}/${randString(12)}/pipeline-limit`;
@@ -491,7 +483,6 @@ export function PipelinesE2ETestComponent() {
     },
     {
       name: 'execute_aggregate',
-      androidOnly: true,
       run: async () => {
         const lines: string[] = [];
         const collectionName = `${COLLECTION}/${randString(12)}/pipeline-aggregate`;
@@ -527,7 +518,6 @@ export function PipelinesE2ETestComponent() {
     },
     {
       name: 'execute_documents_batch',
-      androidOnly: true,
       run: async () => {
         const lines: string[] = [];
         const collectionName = `${COLLECTION}/${randString(12)}/pipeline-docs`;
@@ -563,11 +553,6 @@ export function PipelinesE2ETestComponent() {
   ];
 
   const runTest = async (test: TestCase) => {
-    if (test.androidOnly && Platform.OS !== 'android') {
-      setResult(`[${test.name}]\n⚠ Skipped: Android only test`);
-      return;
-    }
-
     setLoading(test.name);
     setResult('');
     try {
@@ -590,11 +575,6 @@ export function PipelinesE2ETestComponent() {
     const allResults: string[] = [];
 
     for (const test of tests) {
-      if (test.androidOnly && Platform.OS !== 'android') {
-        allResults.push(`[${test.name}]\n⚠ Skipped: Android only test\n`);
-        continue;
-      }
-
       try {
         const lines = await test.run();
         allResults.push(`[${test.name}]\n${lines.join('\n')}\n`);
@@ -629,14 +609,10 @@ export function PipelinesE2ETestComponent() {
           {tests.map((test, index) => (
             <View key={index} style={styles.buttonWrapper}>
               <Button
-                title={
-                  loading === test.name
-                    ? `Running...`
-                    : `${test.name}${test.androidOnly ? ' (Android)' : ''}`
-                }
+                title={loading === test.name ? `Running...` : test.name}
                 onPress={() => runTest(test)}
                 disabled={loading !== null}
-                color={test.androidOnly ? '#FF9800' : '#2196F3'}
+                color="#2196F3"
               />
             </View>
           ))}
