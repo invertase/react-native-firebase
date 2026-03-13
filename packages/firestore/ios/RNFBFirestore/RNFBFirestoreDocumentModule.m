@@ -105,12 +105,11 @@ RCT_EXPORT_METHOD(documentOnSnapshot
     source = FIRListenSourceCache;
   }
 
-  FIRSnapshotListenOptions *snapshotListenOptions =
-      [[[[FIRSnapshotListenOptions alloc] init]
-           optionsWithIncludeMetadataChanges:includeMetadataChanges] optionsWithSource:source];
-  id<FIRListenerRegistration> listener = [documentReference
-      addSnapshotListenerWithOptions:snapshotListenOptions
-                            listener:listenerBlock];
+  FIRSnapshotListenOptions *snapshotListenOptions = [[[[FIRSnapshotListenOptions alloc] init]
+      optionsWithIncludeMetadataChanges:includeMetadataChanges] optionsWithSource:source];
+  id<FIRListenerRegistration> listener =
+      [documentReference addSnapshotListenerWithOptions:snapshotListenOptions
+                                               listener:listenerBlock];
   documentSnapshotListeners[listenerId] = listener;
 }
 

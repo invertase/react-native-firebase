@@ -366,12 +366,11 @@ RCT_EXPORT_METHOD(collectionGet
     }
   };
 
-  FIRSnapshotListenOptions *snapshotListenOptions =
-      [[[[FIRSnapshotListenOptions alloc] init]
-           optionsWithIncludeMetadataChanges:includeMetadataChanges] optionsWithSource:source];
-  id<FIRListenerRegistration> listener = [[firestoreQuery instance]
-      addSnapshotListenerWithOptions:snapshotListenOptions
-                            listener:listenerBlock];
+  FIRSnapshotListenOptions *snapshotListenOptions = [[[[FIRSnapshotListenOptions alloc] init]
+      optionsWithIncludeMetadataChanges:includeMetadataChanges] optionsWithSource:source];
+  id<FIRListenerRegistration> listener =
+      [[firestoreQuery instance] addSnapshotListenerWithOptions:snapshotListenOptions
+                                                       listener:listenerBlock];
   collectionSnapshotListeners[listenerId] = listener;
 }
 

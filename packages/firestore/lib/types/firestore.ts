@@ -171,11 +171,11 @@ export declare class LoadBundleTask implements PromiseLike<LoadBundleTaskProgres
 
 export type SetOptions =
   | {
-    readonly merge?: boolean;
-  }
+      readonly merge?: boolean;
+    }
   | {
-    readonly mergeFields?: Array<string | FieldPath>;
-  };
+      readonly mergeFields?: Array<string | FieldPath>;
+    };
 
 export type WhereFilterOp =
   | '<'
@@ -271,10 +271,10 @@ export interface DocumentData {
 export type PartialWithFieldValue<T> =
   | Partial<T>
   | (T extends Primitive
-    ? T
-    : T extends {}
-    ? { [K in keyof T]?: PartialWithFieldValue<T[K]> | FieldValue }
-    : never);
+      ? T
+      : T extends {}
+        ? { [K in keyof T]?: PartialWithFieldValue<T[K]> | FieldValue }
+        : never);
 
 /**
  * Given a union type `U = T1 | T2 | ...`, returns an intersected type
@@ -311,18 +311,18 @@ export type NestedUpdateFields<T extends {}> = UnionToIntersection<
 export type UpdateData<T> = T extends Primitive
   ? T
   : T extends {}
-  ? {
-    [K in keyof T]?: UpdateData<T[K]> | FieldValue;
-  } & NestedUpdateFields<T>
-  : Partial<T>;
+    ? {
+        [K in keyof T]?: UpdateData<T[K]> | FieldValue;
+      } & NestedUpdateFields<T>
+    : Partial<T>;
 
 export type WithFieldValue<T> =
   | T
   | (T extends Primitive
-    ? T
-    : T extends {}
-    ? { [K in keyof T]: WithFieldValue<T[K]> | FieldValue }
-    : never);
+      ? T
+      : T extends {}
+        ? { [K in keyof T]: WithFieldValue<T[K]> | FieldValue }
+        : never);
 
 export interface FirestoreDataConverter<
   AppModelType,
@@ -414,7 +414,7 @@ export declare class WriteBatch {
   commit(): Promise<void>;
 }
 
-export declare class LiteTransaction { }
+export declare class LiteTransaction {}
 
 export declare class Transaction extends LiteTransaction {
   get<AppModelType, DbModelType extends DocumentData>(
