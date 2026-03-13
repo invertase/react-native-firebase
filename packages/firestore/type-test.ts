@@ -271,6 +271,7 @@ import {
   endBefore,
   limit,
   limitToLast,
+  type QueryConstraint,
   getDoc,
   getDocFromCache,
   getDocFromServer,
@@ -395,6 +396,19 @@ const modQuery4 = query(
   limitToLast(5),
 );
 void modQuery4;
+
+// ----- QueryConstraint[] array test (reproducer for #8923) -----
+// This test verifies that QueryConstraint subclasses can be assigned to QueryConstraint[]
+// without TypeScript errors about missing _apply property
+const constraints: QueryConstraint[] = [];
+
+constraints.push(where('status', '==', 'active'));
+constraints.push(orderBy('createdAt', 'desc'));
+constraints.push(limit(10));
+
+// Verify we can use the constraints array
+const testQuery = query(modColl, ...constraints);
+void testQuery;
 
 // ----- getCountFromServer -----
 getCountFromServer(modQuery1).then(

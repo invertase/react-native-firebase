@@ -72,9 +72,13 @@ export abstract class QueryConstraint extends AppliableConstraint {
    * Takes the provided {@link Query} and returns a copy of the {@link Query} with this
    * {@link QueryConstraint} applied.
    */
-  abstract _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
-    query: Query<AppModelType, DbModelType>,
-  ): Query<AppModelType, DbModelType>;
+  _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+    queryRef: Query<AppModelType, DbModelType>,
+  ): Query<AppModelType, DbModelType> {
+    // This method is implemented in subclasses (QueryConstraintBase provides the default implementation)
+    // Making it non-abstract ensures it appears in .d.ts so subclasses inherit it
+    throw new Error('_apply must be implemented by subclass');
+  }
 }
 
 /**
@@ -168,12 +172,6 @@ export class QueryOrderByConstraint extends QueryConstraintBase {
   constructor(fieldPath: string | FieldPath, directionStr?: OrderByDirection) {
     super(fieldPath, directionStr);
   }
-
-  _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
-    query: Query<AppModelType, DbModelType>,
-  ): Query<AppModelType, DbModelType> {
-    return super._apply(query);
-  }
 }
 
 export class QueryLimitConstraint extends QueryConstraintBase {
@@ -182,12 +180,6 @@ export class QueryLimitConstraint extends QueryConstraintBase {
   constructor(type: 'limit' | 'limitToLast', limitValue: number) {
     super(limitValue);
     this.type = type;
-  }
-
-  _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
-    query: Query<AppModelType, DbModelType>,
-  ): Query<AppModelType, DbModelType> {
-    return super._apply(query);
   }
 }
 
@@ -198,12 +190,6 @@ export class QueryStartAtConstraint extends QueryConstraintBase {
     super(...docOrFields);
     this.type = type;
   }
-
-  _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
-    query: Query<AppModelType, DbModelType>,
-  ): Query<AppModelType, DbModelType> {
-    return super._apply(query);
-  }
 }
 
 export class QueryEndAtConstraint extends QueryConstraintBase {
@@ -212,12 +198,6 @@ export class QueryEndAtConstraint extends QueryConstraintBase {
   constructor(type: 'endAt' | 'endBefore', ...fieldValues: unknown[]) {
     super(...fieldValues);
     this.type = type;
-  }
-
-  _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
-    query: Query<AppModelType, DbModelType>,
-  ): Query<AppModelType, DbModelType> {
-    return super._apply(query);
   }
 }
 
@@ -228,12 +208,6 @@ export class QueryFieldFilterConstraint extends QueryConstraintBase {
   constructor(fieldPath: string | FieldPath, opStr: WhereFilterOp, value: unknown) {
     super(fieldPath, opStr, value);
     this._filter = Filter(fieldPath, opStr, value);
-  }
-
-  _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
-    query: Query<AppModelType, DbModelType>,
-  ): Query<AppModelType, DbModelType> {
-    return super._apply(query);
   }
 }
 
