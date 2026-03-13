@@ -27,6 +27,7 @@ import {
   endBefore,
   startAt,
   startAfter,
+  type QueryConstraint,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseDatabase';
 
 interface QueryModifier {
@@ -37,7 +38,7 @@ interface QueryModifier {
 }
 
 export function getQueryInstance(dbRef: unknown, modifiers: QueryModifier[]): unknown {
-  const constraints: unknown[] = [];
+  const constraints: QueryConstraint[] = [];
 
   for (const modifier of modifiers) {
     const { type, name } = modifier;
@@ -77,19 +78,19 @@ export function getQueryInstance(dbRef: unknown, modifiers: QueryModifier[]): un
 
       switch (name) {
         case 'endAt':
-          constraints.push(endAt(value, key));
+          constraints.push(endAt(value as number | string | boolean | null, key));
           break;
         case 'endBefore':
-          constraints.push(endBefore(value, key));
+          constraints.push(endBefore(value as number | string | boolean | null, key));
           break;
         case 'startAt':
-          constraints.push(startAt(value, key));
+          constraints.push(startAt(value as number | string | boolean | null | undefined, key));
           break;
         case 'startAfter':
-          constraints.push(startAfter(value, key));
+          constraints.push(startAfter(value as number | string | boolean | null, key));
           break;
       }
     }
   }
-  return query(dbRef, ...constraints);
+  return query(dbRef as Parameters<typeof query>[0], ...constraints);
 }

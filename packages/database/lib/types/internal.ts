@@ -90,7 +90,7 @@ export interface DatabaseInternal extends Database {
   _serverTimeOffset: number;
   _customUrlOrRegion: string;
   _transaction: import('../DatabaseTransaction').default;
-  emitter: import('@react-native-firebase/app/dist/module/internal/SharedEventEmitter').default;
+  emitter: typeof import('@react-native-firebase/app/dist/module/internal/SharedEventEmitter').default;
   getServerTime(): Date;
   ref(path?: string): Reference;
   refFromURL(url: string): Reference;

@@ -1,6 +1,7 @@
 {
   "include": [
     "packages/ai/lib/types/polyfills.d.ts",
+    "packages/app/lib/index.d.ts",
     "packages/app-check/lib/index.d.ts",
     "packages/app-check/lib/modular/index.d.ts",
     "packages/app-distribution/lib/index.d.ts",
@@ -72,7 +73,8 @@
     "lib": ["es2015", "es2016", "esnext", "dom"],
     "types": ["react-native", "node"],
     "paths": {
-      "@react-native-firebase/*": ["./packages/*/lib/index.d.ts"],
+      "@react-native-firebase/*": ["./packages/*/lib/index.d.ts", "./packages/*/lib/index.ts"],
+      "@react-native-firebase/app": ["./packages/app/lib/index.ts", "./packages/app/lib/index.d.ts"],
       "@react-native-firebase/app/dist/module/common/*": ["./packages/app/lib/common/*"],
       "@react-native-firebase/app/dist/module/common": ["./packages/app/lib/common"],
       "@react-native-firebase/app/dist/module/internal/web/*": ["./packages/app/lib/internal/web/*"],
