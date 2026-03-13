@@ -73,7 +73,7 @@ export abstract class QueryConstraint extends AppliableConstraint {
    * {@link QueryConstraint} applied.
    */
   _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
-    queryRef: Query<AppModelType, DbModelType>,
+    _queryRef: Query<AppModelType, DbModelType>,
   ): Query<AppModelType, DbModelType> {
     // This method is implemented in subclasses (QueryConstraintBase provides the default implementation)
     // Making it non-abstract ensures it appears in .d.ts so subclasses inherit it
