@@ -64,9 +64,7 @@ export type {
 export type { PipelineExecuteOptions } from './pipeline_options';
 export type { OneOf } from './types';
 
-export {
-  execute,
-} from './pipeline_impl';
+export { execute } from './pipeline_impl';
 export {
   field,
   and,
