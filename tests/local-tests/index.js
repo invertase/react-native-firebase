@@ -27,6 +27,7 @@ import { DatabaseOnChildMovedTest } from './database';
 import { FirestoreOnSnapshotInSyncTest } from './firestore/onSnapshotInSync';
 import { DocumentReferenceTestComponent } from './firestore/document-reference';
 import { PipelinesTestComponent } from './firestore/pipelines';
+import { PipelinesE2ETestComponent } from './firestore/pipelines-e2e';
 import { VertexAITestComponent } from './vertexai/vertexai';
 import { AuthMFADemonstrator } from './auth/auth-mfa-demonstrator';
 import { HttpsCallableTestComponent } from './functions/https-callable';
@@ -40,6 +41,7 @@ const testComponents = {
   'Firestore onSnapshotInSync Test': FirestoreOnSnapshotInSyncTest,
   'Firestore Document Reference Test': DocumentReferenceTestComponent,
   'Firestore Pipelines Test': PipelinesTestComponent,
+  'Firestore Pipelines E2E Test': PipelinesE2ETestComponent,
   'VertexAI Generation Example': VertexAITestComponent,
   'Auth MFA Demonstrator': AuthMFADemonstrator,
   'HttpsCallable Test': HttpsCallableTestComponent,
