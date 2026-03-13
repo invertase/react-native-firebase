@@ -1347,13 +1347,8 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
       Object functionNameValue = map.get("name");
       if (functionNameValue instanceof String) {
         Object argsValue = map.get("args");
-        List<Object> args =
-            argsValue instanceof List ? (List<Object>) argsValue : java.util.Arrays.asList(argsValue);
-        Expression[] expressions = new Expression[args.size()];
-        for (int i = 0; i < args.size(); i++) {
-          expressions[i] = coerceExpression(args.get(i), fieldName + ".args[" + i + "]");
-        }
-        return BooleanExpression.rawFunction((String) functionNameValue, expressions);
+        List<Object> args = argsValue instanceof List ? (List<Object>) argsValue : java.util.Arrays.asList(argsValue);
+        return booleanExpressionFromFunction((String) functionNameValue, args, fieldName);
       }
     }
 
@@ -1364,6 +1359,93 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
 
     throw new PipelineValidationException(
         "pipelineExecute() expected " + fieldName + " to resolve to a boolean expression.");
+  }
+
+  private BooleanExpression booleanExpressionFromFunction(
+      String functionName, List<Object> args, String fieldName) throws PipelineValidationException {
+    String normalizedName = functionName.toLowerCase(Locale.ROOT);
+
+    if ("and".equals(normalizedName) || "or".equals(normalizedName)) {
+      if (args == null || args.isEmpty()) {
+        throw new PipelineValidationException(
+            "pipelineExecute() expected " + fieldName + ".args to contain boolean expressions.");
+      }
+
+      BooleanExpression[] expressions = new BooleanExpression[args.size()];
+      for (int i = 0; i < args.size(); i++) {
+        expressions[i] = coerceBooleanExpression(args.get(i), fieldName + ".args[" + i + "]");
+      }
+
+      BooleanExpression first = expressions[0];
+      BooleanExpression[] rest = Arrays.copyOfRange(expressions, 1, expressions.length);
+      return "and".equals(normalizedName) ? Expression.and(first, rest) : Expression.or(first, rest);
+    }
+
+    if ("equal".equals(normalizedName)
+        || "notequal".equals(normalizedName)
+        || "greaterthan".equals(normalizedName)
+        || "greaterthanorequal".equals(normalizedName)
+        || "lessthan".equals(normalizedName)
+        || "lessthanorequal".equals(normalizedName)
+        || "arraycontains".equals(normalizedName)
+        || "arraycontainsany".equals(normalizedName)
+        || "arraycontainsall".equals(normalizedName)
+        || "equalany".equals(normalizedName)
+        || "notequalany".equals(normalizedName)) {
+      if (args == null || args.size() < 2) {
+        throw new PipelineValidationException(
+            "pipelineExecute() expected " + fieldName + ".args to include left and right operands.");
+      }
+
+      Expression left = coerceExpression(args.get(0), fieldName + ".args[0]");
+      Object right = args.get(1);
+
+      if ("equal".equals(normalizedName)) {
+        return applyComparison(left::equal, right);
+      }
+      if ("notequal".equals(normalizedName)) {
+        return applyComparison(left::notEqual, right);
+      }
+      if ("greaterthan".equals(normalizedName)) {
+        return applyComparison(left::greaterThan, right);
+      }
+      if ("greaterthanorequal".equals(normalizedName)) {
+        return applyComparison(left::greaterThanOrEqual, right);
+      }
+      if ("lessthan".equals(normalizedName)) {
+        return applyComparison(left::lessThan, right);
+      }
+      if ("lessthanorequal".equals(normalizedName)) {
+        return applyComparison(left::lessThanOrEqual, right);
+      }
+      if ("arraycontains".equals(normalizedName)) {
+        return applyArrayContains(left, right, fieldName + ".args[1]");
+      }
+      if ("arraycontainsany".equals(normalizedName)) {
+        return applyArrayContainsAny(left, right, fieldName + ".args[1]");
+      }
+      if ("arraycontainsall".equals(normalizedName)) {
+        return applyArrayContainsAll(left, right, fieldName + ".args[1]");
+      }
+      if ("equalany".equals(normalizedName)) {
+        if (right instanceof List) {
+          return left.equalAny((List<?>) right);
+        }
+        return left.equalAny(coerceExpression(right, fieldName + ".args[1]"));
+      }
+      if ("notequalany".equals(normalizedName)) {
+        if (right instanceof List) {
+          return left.notEqualAny((List<?>) right);
+        }
+        return left.notEqualAny(coerceExpression(right, fieldName + ".args[1]"));
+      }
+    }
+
+    Expression[] expressions = new Expression[args.size()];
+    for (int i = 0; i < args.size(); i++) {
+      expressions[i] = coerceExpression(args.get(i), fieldName + ".args[" + i + "]");
+    }
+    return BooleanExpression.rawFunction(functionName, expressions);
   }
 
   private BooleanExpression booleanExpressionFromOperatorMap(
@@ -1459,10 +1541,7 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
 
   private BooleanExpression applyComparison(ComparisonFn fn, Object rawValue)
       throws PipelineValidationException {
-    if (rawValue instanceof Map && ((Map<?, ?>) rawValue).containsKey("fieldPath")) {
-      return fn.apply(coerceExpression(rawValue, "stage.options.condition.value"));
-    }
-    if (rawValue instanceof Map && ((Map<?, ?>) rawValue).containsKey("expr")) {
+    if (rawValue instanceof Map) {
       return fn.apply(coerceExpression(rawValue, "stage.options.condition.value"));
     }
     return fn.apply(rawValue);
