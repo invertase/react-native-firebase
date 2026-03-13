@@ -40,6 +40,7 @@ export * from './modular';
 export { default, firebase } from './namespaced';
 
 declare module '@react-native-firebase/app' {
+  // eslint-disable-next-line @typescript-eslint/no-namespace -- module augmentation uses namespace
   namespace ReactNativeFirebase {
     interface Module {
       database: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
