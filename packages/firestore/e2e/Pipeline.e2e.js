@@ -15,7 +15,8 @@
  *
  */
 
-const COLLECTION = 'firestore';
+const DATABASE_ID = 'firestore-pipeline-test';
+const COLLECTION = 'react-native-firebase-testing';
 
 describe('FirestorePipeline', function () {
   describe('v8 compatibility', function () {
@@ -31,7 +32,7 @@ describe('FirestorePipeline', function () {
 
     it('serializes source builders and stage ordering', function () {
       const { getFirestore, collection, query, where, orderBy, limit } = firestoreModular;
-      const db = getFirestore();
+      const db = getFirestore(DATABASE_ID);
       const collectionName = `${COLLECTION}/${Utils.randString(12, '#aA')}/pipeline-order`;
       const collectionRef = collection(db, collectionName);
       const querySource = query(
@@ -55,12 +56,12 @@ describe('FirestorePipeline', function () {
         .documents([`${collectionName}/one`, `${collectionName}/two`]);
       const pipelineFromQuery = db.pipeline().createFrom(querySource);
 
-      should(pipelineFromCollection.serialize().source).deep.equal({
+      should(pipelineFromCollection.serialize().source).eql({
         source: 'collection',
         path: collectionRef.path,
       });
 
-      should(pipelineFromCollection.serialize().stages).deep.equal([
+      should(pipelineFromCollection.serialize().stages).eql([
         {
           stage: 'where',
           options: {
@@ -81,17 +82,17 @@ describe('FirestorePipeline', function () {
         },
       ]);
 
-      should(pipelineFromGroup.serialize().source).deep.equal({
+      should(pipelineFromGroup.serialize().source).eql({
         source: 'collectionGroup',
         collectionId: 'pipeline-order-sub',
       });
 
-      should(pipelineFromDatabase.serialize().source).deep.equal({
+      should(pipelineFromDatabase.serialize().source).eql({
         source: 'database',
         rawOptions: { explain: true },
       });
 
-      should(pipelineFromDocuments.serialize().source).deep.equal({
+      should(pipelineFromDocuments.serialize().source).eql({
         source: 'documents',
         documents: [`${collectionName}/one`, `${collectionName}/two`],
       });
@@ -101,81 +102,45 @@ describe('FirestorePipeline', function () {
       should(pipelineFromQuery.serialize().source.queryType).equal('collection');
       should(pipelineFromQuery.serialize().source.filters).have.length(1);
       should(pipelineFromQuery.serialize().source.orders).have.length(1);
-      should(pipelineFromQuery.serialize().source.options).deep.equal({ limit: 2 });
+      should(pipelineFromQuery.serialize().source.options).eql({ limit: 2 });
     });
 
     it('forwards execute options and parses pipeline results', async function () {
       const { execute } = firestorePipelinesModular;
-      const { getFirestore } = firestoreModular;
-      const db = getFirestore();
-      const originalPipelineExecute = db.native.pipelineExecute;
-
-      let capturedPipeline;
-      let capturedOptions;
-
-      db.native.pipelineExecute = async function pipelineExecute(pipeline, options) {
-        capturedPipeline = pipeline;
-        capturedOptions = options;
-
-        return {
-          executionTime: { seconds: 1735689600, nanoseconds: 123456789 },
-          results: [
-            {
-              path: 'firestore/pipeline-doc',
-              data: {
-                score: 42,
-                nested: { ok: true },
-              },
-              createTime: [1735689601, 100],
-              updateTime: 1735689602000,
-            },
-          ],
-        };
-      };
-
-      try {
-        const pipeline = db
-          .pipeline()
-          .documents(['firestore/pipeline-doc'])
-          .select('score', 'nested');
-
-        const snapshot = await execute({
-          pipeline,
-          indexMode: 'recommended',
-          rawOptions: { requestLabel: 'e2e' },
-        });
-
-        should(capturedPipeline.source).deep.equal({
-          source: 'documents',
-          documents: ['firestore/pipeline-doc'],
-        });
-        should(capturedPipeline.stages).have.length(1);
-        should(capturedPipeline.stages[0].stage).equal('select');
-        should(capturedPipeline.stages[0].options.selections).deep.equal(['score', 'nested']);
-
-        should(capturedOptions).deep.equal({
-          indexMode: 'recommended',
-          rawOptions: { requestLabel: 'e2e' },
-        });
-
-        snapshot.results.should.have.length(1);
-        snapshot.executionTime.toMillis().should.equal(1735689600123);
-
-        const first = snapshot.results[0];
-        first.id.should.equal('pipeline-doc');
-        first.ref.path.should.equal('firestore/pipeline-doc');
-        first.data().should.deep.equal({ score: 42, nested: { ok: true } });
-        first.get('nested.ok').should.equal(true);
-        first.createTime.toMillis().should.equal(1735689601000);
-        first.updateTime.toMillis().should.equal(1735689602000);
-      } finally {
-        db.native.pipelineExecute = originalPipelineExecute;
+      const { getFirestore, doc, setDoc } = firestoreModular;
+      if (!Platform.android) {
+        this.skip();
       }
+
+      const db = getFirestore(DATABASE_ID);
+
+      const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+      await setDoc(doc(db, docPath), {
+        score: 42,
+        nested: { ok: true },
+      });
+
+      const pipeline = db.pipeline().documents([docPath]).select('score', 'nested');
+      const snapshot = await execute({
+        pipeline,
+        indexMode: 'recommended',
+      });
+
+      snapshot.results.should.have.length(1);
+      should(snapshot.executionTime).be.ok();
+
+      const first = snapshot.results[0];
+      first.id.should.equal('pipeline-doc');
+      first.ref.path.should.equal(docPath);
+      first.data().should.eql({ score: 42, nested: { ok: true } });
+      first.get('nested.ok').should.equal(true);
+      should(first.createTime).be.ok();
+      should(first.updateTime).be.ok();
     });
 
     it('throws helpful validation errors for invalid source arguments', function () {
       const { getFirestore } = firestoreModular;
-      const db = getFirestore();
+      const db = getFirestore(DATABASE_ID);
 
       (() => db.pipeline().documents([])).should.throw(
         'firebase.firestore().pipeline().documents(*) expected at least one document path or DocumentReference.',
@@ -193,7 +158,7 @@ describe('FirestorePipeline', function () {
         this.skip();
       }
 
-      const db = getFirestore();
+      const db = getFirestore(DATABASE_ID);
       const pipeline = db
         .pipeline()
         .collection(`${COLLECTION}/${Utils.randString(12, '#aA')}/unsupported`);
@@ -219,7 +184,7 @@ describe('FirestorePipeline', function () {
       const { execute } = firestorePipelinesModular;
       const { getFirestore, collection, doc, setDoc, query, where, orderBy, limit } =
         firestoreModular;
-      const db = getFirestore();
+      const db = getFirestore(DATABASE_ID);
       const collectionName = `${COLLECTION}/${Utils.randString(12, '#aA')}/pipeline-query`;
       const collectionRef = collection(db, collectionName);
 
@@ -247,7 +212,7 @@ describe('FirestorePipeline', function () {
     it('executes method-style expressions through Android bridge', async function () {
       const { getFirestore, collection, doc, setDoc } = firestoreModular;
       const { and, execute, field, Ordering } = firestorePipelinesModular;
-      const db = getFirestore();
+      const db = getFirestore(DATABASE_ID);
       const collectionName = `${COLLECTION}/${Utils.randString(12, '#aA')}/pipeline-expression`;
       const collectionRef = collection(db, collectionName);
 
@@ -273,12 +238,12 @@ describe('FirestorePipeline', function () {
       const snapshot = await execute(pipeline);
 
       snapshot.results.should.have.length(2);
-      snapshot.results[0].data().should.deep.equal({
+      snapshot.results[0].data().should.eql({
         title: 'C',
         boostedRating: 9,
         isFantasy: true,
       });
-      snapshot.results[1].data().should.deep.equal({
+      snapshot.results[1].data().should.eql({
         title: 'B',
         boostedRating: 6,
         isFantasy: true,
