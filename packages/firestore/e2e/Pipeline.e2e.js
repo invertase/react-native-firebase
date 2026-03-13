@@ -30,10 +30,16 @@ describe('FirestorePipeline', function () {
     });
 
     it('serializes source builders and stage ordering', function () {
-      const db = firebase.firestore();
+      const { getFirestore, collection, query, where, orderBy, limit } = firestoreModular;
+      const db = getFirestore();
       const collectionName = `${COLLECTION}/${Utils.randString(12, '#aA')}/pipeline-order`;
-      const collectionRef = db.collection(collectionName);
-      const querySource = collectionRef.where('score', '>=', 10).orderBy('score', 'desc').limit(2);
+      const collectionRef = collection(db, collectionName);
+      const querySource = query(
+        collectionRef,
+        where('score', '>=', 10),
+        orderBy('score', 'desc'),
+        limit(2),
+      );
 
       const pipelineFromCollection = db
         .pipeline()
@@ -49,12 +55,12 @@ describe('FirestorePipeline', function () {
         .documents([`${collectionName}/one`, `${collectionName}/two`]);
       const pipelineFromQuery = db.pipeline().createFrom(querySource);
 
-      pipelineFromCollection.serialize().source.should.deep.equal({
+      should(pipelineFromCollection.serialize().source).deep.equal({
         source: 'collection',
         path: collectionRef.path,
       });
 
-      pipelineFromCollection.serialize().stages.should.deep.equal([
+      should(pipelineFromCollection.serialize().stages).deep.equal([
         {
           stage: 'where',
           options: {
@@ -75,32 +81,33 @@ describe('FirestorePipeline', function () {
         },
       ]);
 
-      pipelineFromGroup.serialize().source.should.deep.equal({
+      should(pipelineFromGroup.serialize().source).deep.equal({
         source: 'collectionGroup',
         collectionId: 'pipeline-order-sub',
       });
 
-      pipelineFromDatabase.serialize().source.should.deep.equal({
+      should(pipelineFromDatabase.serialize().source).deep.equal({
         source: 'database',
         rawOptions: { explain: true },
       });
 
-      pipelineFromDocuments.serialize().source.should.deep.equal({
+      should(pipelineFromDocuments.serialize().source).deep.equal({
         source: 'documents',
         documents: [`${collectionName}/one`, `${collectionName}/two`],
       });
 
-      pipelineFromQuery.serialize().source.source.should.equal('query');
-      pipelineFromQuery.serialize().source.path.should.equal(collectionRef.path);
-      pipelineFromQuery.serialize().source.queryType.should.equal('collection');
-      pipelineFromQuery.serialize().source.filters.should.have.length(1);
-      pipelineFromQuery.serialize().source.orders.should.have.length(1);
-      pipelineFromQuery.serialize().source.options.should.deep.equal({ limit: 2 });
+      should(pipelineFromQuery.serialize().source.source).equal('query');
+      should(pipelineFromQuery.serialize().source.path).equal(collectionRef.path);
+      should(pipelineFromQuery.serialize().source.queryType).equal('collection');
+      should(pipelineFromQuery.serialize().source.filters).have.length(1);
+      should(pipelineFromQuery.serialize().source.orders).have.length(1);
+      should(pipelineFromQuery.serialize().source.options).deep.equal({ limit: 2 });
     });
 
     it('forwards execute options and parses pipeline results', async function () {
       const { execute } = firestorePipelinesModular;
-      const db = firebase.firestore();
+      const { getFirestore } = firestoreModular;
+      const db = getFirestore();
       const originalPipelineExecute = db.native.pipelineExecute;
 
       let capturedPipeline;
@@ -138,15 +145,15 @@ describe('FirestorePipeline', function () {
           rawOptions: { requestLabel: 'e2e' },
         });
 
-        capturedPipeline.source.should.deep.equal({
+        should(capturedPipeline.source).deep.equal({
           source: 'documents',
           documents: ['firestore/pipeline-doc'],
         });
-        capturedPipeline.stages.should.have.length(1);
-        capturedPipeline.stages[0].stage.should.equal('select');
-        capturedPipeline.stages[0].options.selections.should.deep.equal(['score', 'nested']);
+        should(capturedPipeline.stages).have.length(1);
+        should(capturedPipeline.stages[0].stage).equal('select');
+        should(capturedPipeline.stages[0].options.selections).deep.equal(['score', 'nested']);
 
-        capturedOptions.should.deep.equal({
+        should(capturedOptions).deep.equal({
           indexMode: 'recommended',
           rawOptions: { requestLabel: 'e2e' },
         });
@@ -167,7 +174,8 @@ describe('FirestorePipeline', function () {
     });
 
     it('throws helpful validation errors for invalid source arguments', function () {
-      const db = firebase.firestore();
+      const { getFirestore } = firestoreModular;
+      const db = getFirestore();
 
       (() => db.pipeline().documents([])).should.throw(
         'firebase.firestore().pipeline().documents(*) expected at least one document path or DocumentReference.',
@@ -180,11 +188,12 @@ describe('FirestorePipeline', function () {
 
     it('returns an unsupported error when native pipeline execution is unavailable', async function () {
       const { execute } = firestorePipelinesModular;
+      const { getFirestore } = firestoreModular;
       if (Platform.android) {
         this.skip();
       }
 
-      const db = firebase.firestore();
+      const db = getFirestore();
       const pipeline = db
         .pipeline()
         .collection(`${COLLECTION}/${Utils.randString(12, '#aA')}/unsupported`);
@@ -208,18 +217,25 @@ describe('FirestorePipeline', function () {
 
     it('executes createFrom(query) end-to-end', async function () {
       const { execute } = firestorePipelinesModular;
-      const db = firebase.firestore();
+      const { getFirestore, collection, doc, setDoc, query, where, orderBy, limit } =
+        firestoreModular;
+      const db = getFirestore();
       const collectionName = `${COLLECTION}/${Utils.randString(12, '#aA')}/pipeline-query`;
-      const collectionRef = db.collection(collectionName);
+      const collectionRef = collection(db, collectionName);
 
       await Promise.all([
-        collectionRef.doc('one').set({ score: 10, active: true }),
-        collectionRef.doc('two').set({ score: 21, active: true }),
-        collectionRef.doc('three').set({ score: 5, active: false }),
+        setDoc(doc(collectionRef, 'one'), { score: 10, active: true }),
+        setDoc(doc(collectionRef, 'two'), { score: 21, active: true }),
+        setDoc(doc(collectionRef, 'three'), { score: 5, active: false }),
       ]);
 
-      const query = collectionRef.where('active', '==', true).orderBy('score', 'desc').limit(2);
-      const snapshot = await execute(db.pipeline().createFrom(query));
+      const queryRef = query(
+        collectionRef,
+        where('active', '==', true),
+        orderBy('score', 'desc'),
+        limit(2),
+      );
+      const snapshot = await execute(db.pipeline().createFrom(queryRef));
 
       snapshot.results.should.have.length(2);
       snapshot.results[0].id.should.equal('two');
@@ -229,16 +245,17 @@ describe('FirestorePipeline', function () {
     });
 
     it('executes method-style expressions through Android bridge', async function () {
+      const { getFirestore, collection, doc, setDoc } = firestoreModular;
       const { and, execute, field, Ordering } = firestorePipelinesModular;
-      const db = firebase.firestore();
+      const db = getFirestore();
       const collectionName = `${COLLECTION}/${Utils.randString(12, '#aA')}/pipeline-expression`;
-      const collectionRef = db.collection(collectionName);
+      const collectionRef = collection(db, collectionName);
 
       await Promise.all([
-        collectionRef.doc('a').set({ title: 'A', rating: 2, genre: 'Fantasy' }),
-        collectionRef.doc('b').set({ title: 'B', rating: 5, genre: 'Fantasy' }),
-        collectionRef.doc('c').set({ title: 'C', rating: 8, genre: 'Fantasy' }),
-        collectionRef.doc('d').set({ title: 'D', rating: 9, genre: 'Sci-Fi' }),
+        setDoc(doc(collectionRef, 'a'), { title: 'A', rating: 2, genre: 'Fantasy' }),
+        setDoc(doc(collectionRef, 'b'), { title: 'B', rating: 5, genre: 'Fantasy' }),
+        setDoc(doc(collectionRef, 'c'), { title: 'C', rating: 8, genre: 'Fantasy' }),
+        setDoc(doc(collectionRef, 'd'), { title: 'D', rating: 9, genre: 'Sci-Fi' }),
       ]);
 
       const f = path => field(path);
