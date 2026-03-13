@@ -36,6 +36,7 @@ import type {
   WithFieldValue,
   AggregateType,
   PartialWithFieldValue,
+  ListenSource,
 } from './firestore';
 import type { PersistentCacheIndexManager } from '../FirestorePersistentCacheIndexManager';
 import type { QueryConstraint } from '../modular/query';
@@ -97,7 +98,7 @@ export interface FirestoreAggregateQueryResultInternal {
 /** Options for snapshot listeners (includeMetadataChanges, source). */
 export interface FirestoreSnapshotListenOptionsInternal {
   includeMetadataChanges?: boolean;
-  source?: 'default' | 'cache';
+  source?: ListenSource;
 }
 
 /** Settings state on the Firestore module instance (ignoreUndefinedProperties, persistence). */
