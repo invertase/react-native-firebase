@@ -44,6 +44,73 @@ exports.wipe = async function wipe(debug = false, databaseId = '(default)') {
   }
 };
 
+function toFirestoreValue(value) {
+  if (value === null) {
+    return { nullValue: null };
+  }
+
+  if (Array.isArray(value)) {
+    return { arrayValue: { values: value.map(toFirestoreValue) } };
+  }
+
+  if (typeof value === 'boolean') {
+    return { booleanValue: value };
+  }
+
+  if (typeof value === 'number') {
+    if (Number.isInteger(value)) {
+      return { integerValue: String(value) };
+    }
+    return { doubleValue: value };
+  }
+
+  if (typeof value === 'string') {
+    return { stringValue: value };
+  }
+
+  if (typeof value === 'object') {
+    const fields = {};
+    for (const [key, nestedValue] of Object.entries(value)) {
+      fields[key] = toFirestoreValue(nestedValue);
+    }
+    return { mapValue: { fields } };
+  }
+
+  throw new Error(`Unsupported Firestore REST value type: ${typeof value}`);
+}
+
+exports.setDocumentOutOfBand = async function setDocumentOutOfBand(
+  path,
+  data,
+  databaseId = '(default)',
+) {
+  const url =
+    `http://${getE2eEmulatorHost()}:8080/v1/projects/` +
+    getE2eTestProject() +
+    `/databases/${databaseId}/documents/${path}`;
+
+  const fields = {};
+  for (const [key, value] of Object.entries(data)) {
+    fields[key] = toFirestoreValue(value);
+  }
+
+  const response = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      Authorization: 'Bearer owner',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ fields }),
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(`Unable to set out-of-band firestore document: ${response.status} ${body}`);
+  }
+
+  return response.json();
+};
+
 exports.BUNDLE_QUERY_NAME = 'named-bundle-test';
 exports.BUNDLE_COLLECTION = 'firestore-bundle-tests';
 
