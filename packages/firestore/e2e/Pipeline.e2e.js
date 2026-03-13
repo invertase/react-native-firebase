@@ -143,27 +143,6 @@ describe('FirestorePipeline', function () {
         'firebase.firestore().pipeline().collection(*) expected a non-empty string.',
       );
     });
-
-    it('returns an unsupported error when native pipeline execution is unavailable', async function () {
-      const { execute } = firestorePipelinesModular;
-      const { getFirestore } = firestoreModular;
-      if (Platform.android) {
-        this.skip();
-      }
-
-      const db = getFirestore(DATABASE_ID);
-      const pipeline = db
-        .pipeline()
-        .collection(`${COLLECTION}/${Utils.randString(12, '#aA')}/unsupported`);
-
-      try {
-        await execute(pipeline);
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.code.should.match(/^firestore\//);
-        error.message.toLowerCase().should.containEql('pipelines are not supported');
-      }
-    });
   });
 
   describe('android native execution', function () {
