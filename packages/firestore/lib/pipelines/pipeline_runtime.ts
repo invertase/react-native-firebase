@@ -229,6 +229,14 @@ function serializeValue(value: unknown, visiting: WeakSet<object>): unknown {
     }
 
     visiting.delete(value);
+    // Ensure aliased expressions have both "alias" and "as" for native (e.g. Android coerceSelectable).
+    if (
+      typeof (output as Record<string, unknown>).alias !== 'undefined' &&
+      (typeof (output as Record<string, unknown>).expr !== 'undefined' ||
+        (output as Record<string, unknown>).__kind === 'aliasedExpression')
+    ) {
+      (output as Record<string, unknown>).as = (output as Record<string, unknown>).alias;
+    }
     return output;
   }
 

@@ -243,6 +243,24 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  const proto = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
+}
+
+function isDocumentReferenceLike(value: unknown): value is { path: string; firestore: unknown } {
+  return (
+    isRecord(value) &&
+    typeof value.path === 'string' &&
+    value.path.length > 0 &&
+    isRecord(value.firestore)
+  );
+}
+
 function isRuntimeNode(value: unknown): value is RuntimeNode {
   return isRecord(value) && (value as unknown as RuntimeNodeBase)[RUNTIME_NODE_SYMBOL] === true;
 }
@@ -257,6 +275,10 @@ function containsRuntimeNode(value: unknown): boolean {
   }
 
   if (!isRecord(value)) {
+    return false;
+  }
+
+  if (!isPlainObject(value)) {
     return false;
   }
 
@@ -277,6 +299,10 @@ function toCanonicalFunctionName(name: string): string {
       return 'lessThanOrEqual';
     case 'avg':
       return 'average';
+    case 'toLower':
+      return 'lower';
+    case 'toUpper':
+      return 'upper';
     default:
       return name;
   }
@@ -526,7 +552,15 @@ function normalizeRawValue(value: unknown): unknown {
     return value.map(normalizeRawValue);
   }
 
+  if (isDocumentReferenceLike(value)) {
+    // Treat references as atomic values to avoid walking circular internal firestore graphs.
+    return value;
+  }
+
   if (isRecord(value)) {
+    if (!isPlainObject(value)) {
+      return value;
+    }
     return normalizeMapLikeValue(value);
   }
 
