@@ -108,9 +108,6 @@ describe('FirestorePipeline', function () {
     it('executes documents source and parses pipeline results', async function () {
       const { execute } = firestorePipelinesModular;
       const { getFirestore, doc, setDoc } = firestoreModular;
-      if (!Platform.android) {
-        this.skip();
-      }
 
       const db = getFirestore(DATABASE_ID);
 
@@ -145,13 +142,7 @@ describe('FirestorePipeline', function () {
     });
   });
 
-  describe('android native execution', function () {
-    beforeEach(function () {
-      if (!Platform.android) {
-        this.skip();
-      }
-    });
-
+  describe('native execution', function () {
     it('executes createFrom(query) end-to-end', async function () {
       const { execute } = firestorePipelinesModular;
       const { getFirestore, collection, doc, setDoc, query, where, orderBy, limit } =
@@ -181,7 +172,7 @@ describe('FirestorePipeline', function () {
       snapshot.results[1].data().score.should.equal(10);
     });
 
-    it('executes method-style expressions through Android bridge', async function () {
+    it('executes method-style expressions', async function () {
       const { getFirestore, collection, doc, setDoc } = firestoreModular;
       const { and, execute, field, Ordering } = firestorePipelinesModular;
       const db = getFirestore(DATABASE_ID);
