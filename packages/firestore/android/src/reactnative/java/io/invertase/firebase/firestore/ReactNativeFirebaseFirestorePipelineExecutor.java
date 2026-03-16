@@ -1264,12 +1264,7 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
 
     if (value instanceof Map) {
       Map<?, ?> map = (Map<?, ?>) value;
-      String alias = null;
-      if (map.get("alias") instanceof String) {
-        alias = (String) map.get("alias");
-      } else if (map.get("as") instanceof String) {
-        alias = (String) map.get("as");
-      }
+      String alias = firstString(map.get("alias"), map.get("as"));
 
       Object exprValue = map.containsKey("expr") ? map.get("expr") : value;
       Expression expr = coerceExpression(exprValue, fieldName + ".expr");
@@ -1353,7 +1348,15 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
       Object functionNameValue = map.get("name");
       if (functionNameValue instanceof String) {
         Object argsValue = map.get("args");
-        List<Object> args = argsValue instanceof List ? (List<Object>) argsValue : java.util.Arrays.asList(argsValue);
+        List<Object> args;
+        if (argsValue == null) {
+          args = new java.util.ArrayList<>();
+        } else if (argsValue instanceof List) {
+          args = (List<Object>) argsValue;
+        } else {
+          args = new java.util.ArrayList<>();
+          args.add(argsValue);
+        }
         return booleanExpressionFromFunction((String) functionNameValue, args, fieldName);
       }
     }
@@ -1619,6 +1622,12 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     if (expressionValue == null) {
       expressionValue = aggregate.get("value");
     }
+    if (expressionValue == null && aggregate.get("args") instanceof List) {
+      List<?> args = (List<?>) aggregate.get("args");
+      if (!args.isEmpty()) {
+        expressionValue = args.get(0);
+      }
+    }
 
     switch (normalizedKind) {
       case "countall":
@@ -1635,6 +1644,10 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
             fieldName);
       case "countif":
       case "count_if":
+        if (expressionValue == null) {
+          throw new PipelineValidationException(
+              "pipelineExecute() expected " + fieldName + ".expr for countIf aggregate.");
+        }
         return AggregateFunction.countIf(
             coerceBooleanExpression(expressionValue, fieldName + ".expr"));
       case "sum":
@@ -1754,14 +1767,15 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
           "pipelineExecute() expected " + fieldName + " to be provided.");
     }
 
-    String normalized = value.trim().toUpperCase(Locale.ROOT);
+    String normalized =
+        value.trim().replace('-', '_').replace(' ', '_').toUpperCase(Locale.ROOT);
     if ("COSINE".equals(normalized)) {
       return FindNearestStage.DistanceMeasure.COSINE;
     }
     if ("EUCLIDEAN".equals(normalized)) {
       return FindNearestStage.DistanceMeasure.EUCLIDEAN;
     }
-    if ("DOT_PRODUCT".equals(normalized)) {
+    if ("DOT_PRODUCT".equals(normalized) || "DOTPRODUCT".equals(normalized)) {
       return FindNearestStage.DistanceMeasure.DOT_PRODUCT;
     }
 
