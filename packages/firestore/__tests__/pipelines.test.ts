@@ -82,6 +82,24 @@ describe('Firestore pipelines runtime', function () {
     ]);
   });
 
+  it('treats unnest selectable overload as selectable, not options object', function () {
+    const db: any = firebase.firestore();
+    const serialized = db
+      .pipeline()
+      .collection('firestore')
+      .unnest(field('scores').as('score'), 'attempt')
+      .serialize();
+
+    expect(serialized.stages).toHaveLength(1);
+    expect(serialized.stages[0]?.stage).toBe('unnest');
+    expect(serialized.stages[0]?.options?.indexField).toBe('attempt');
+    expect(serialized.stages[0]?.options?.selectable?.alias).toBe('score');
+    expect(
+      serialized.stages[0]?.options?.selectable?.path ??
+        serialized.stages[0]?.options?.selectable?.expr?.path,
+    ).toBe('scores');
+  });
+
   it('enforces union guards and self-cycle serialization constraints', function () {
     const db: any = firebase.firestore();
     const secondaryDb: any = firebase.app('secondaryFromNative').firestore();
