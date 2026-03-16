@@ -310,6 +310,10 @@ const mapOfDeprecationReplacements: DeprecationMap = {
     statics: {
       ServerValue: 'ServerValue',
     },
+    ServerValue: {
+      increment: 'increment()',
+      serverTimestamp: 'serverTimestamp()',
+    },
     DatabaseReference: {
       child: 'child()',
       set: 'set()',
@@ -595,6 +599,10 @@ function getNamespace(target: any): string | undefined {
   if (target.constructor.name === 'DatabaseReference') {
     return 'database';
   }
+  // Check if target is ServerValue object (has increment method and TIMESTAMP property)
+  if (target.increment && target.TIMESTAMP && target.TIMESTAMP['.sv'] === 'timestamp') {
+    return 'database';
+  }
   if (target.GeoPoint || target.CustomProvider) {
     // target is statics object. GeoPoint - Firestore, CustomProvider - AppCheck
     return 'firestore';
@@ -625,6 +633,11 @@ function getInstanceName(target: any): string {
   if (target._config) {
     // module class instance, we use default to store map of deprecated methods
     return 'default';
+  }
+
+  // Check if target is ServerValue object (has increment method and TIMESTAMP property)
+  if (target.increment && target.TIMESTAMP && target.TIMESTAMP['.sv'] === 'timestamp') {
+    return 'ServerValue';
   }
 
   if (target.constructor.name === 'StorageReference') {

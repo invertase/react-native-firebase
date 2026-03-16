@@ -62,6 +62,10 @@ describe('database issues', function () {
       testRef._modifiers.toString().should.be.a.String();
       testRef._modifiers.toArray()[0].name.should.equal('orderByChild');
 
+      // Seed some data that matches the query to ensure callback fires
+      const seedRef = firebase.database().ref(`${TEST_PATH}/item1`);
+      await seedRef.set({ disabled: false, name: 'test' });
+
       testRef.on('value', snapshot => {
         callback(snapshot.val());
       });
@@ -180,7 +184,8 @@ describe('database issues', function () {
     });
 
     it('#2833 should not mutate modifiers ordering', async function () {
-      const { getDatabase, ref, child, query, equalTo, orderByChild, onValue } = databaseModular;
+      const { getDatabase, ref, child, query, equalTo, orderByChild, onValue, set } =
+        databaseModular;
 
       const callback = sinon.spy();
       const testRef = query(
@@ -191,6 +196,10 @@ describe('database issues', function () {
 
       testRef._modifiers.toString().should.be.a.String();
       testRef._modifiers.toArray()[0].name.should.equal('orderByChild');
+
+      // Seed some data that matches the query to ensure callback fires
+      const seedRef = child(ref(getDatabase()), `${TEST_PATH}/item1`);
+      await set(seedRef, { disabled: false, name: 'test' });
 
       const unsubscribe = onValue(testRef, snapshot => {
         callback(snapshot.val());

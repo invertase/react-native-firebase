@@ -17,6 +17,23 @@
 
 import NativeError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
 import { isOther } from '@react-native-firebase/app/dist/module/common';
+import type DatabaseReference from './DatabaseReference';
+import type DatabaseDataSnapshot from './DatabaseDataSnapshot';
+import type { DatabaseInternal } from './types/internal';
+
+interface Transaction {
+  id: number;
+  reference: DatabaseReference;
+  transactionUpdater: (currentData: unknown) => unknown;
+  onComplete: (
+    error: Error | null,
+    committed: boolean,
+    snapshot: DatabaseDataSnapshot | null,
+  ) => void;
+  applyLocally: boolean;
+  completed: boolean;
+  started: boolean;
+}
 
 let transactionId = 0;
 
@@ -25,11 +42,14 @@ let transactionId = 0;
  * @returns {number}
  * @private
  */
-
-const generateTransactionId = () => transactionId++;
+const generateTransactionId = (): number => transactionId++;
 
 export default class DatabaseTransaction {
-  constructor(database) {
+  private _database: DatabaseInternal;
+  private _emitter: DatabaseInternal['emitter'];
+  private _transactions: Record<number, Transaction>;
+
+  constructor(database: DatabaseInternal) {
     this._database = database;
     this._emitter = database.emitter;
     this._transactions = {};
@@ -47,7 +67,16 @@ export default class DatabaseTransaction {
    * @param onComplete
    * @param applyLocally
    */
-  add(reference, transactionUpdater, onComplete, applyLocally = false) {
+  add(
+    reference: DatabaseReference,
+    transactionUpdater: (currentData: unknown) => unknown,
+    onComplete: (
+      error: Error | null,
+      committed: boolean,
+      snapshot: DatabaseDataSnapshot | null,
+    ) => void,
+    applyLocally: boolean = false,
+  ): void {
     const id = generateTransactionId();
 
     this._transactions[id] = {
@@ -74,7 +103,7 @@ export default class DatabaseTransaction {
    * @return {*}
    * @private
    */
-  _getTransaction(id) {
+  _getTransaction(id: number): Transaction | undefined {
     return this._transactions[id];
   }
 
@@ -84,7 +113,7 @@ export default class DatabaseTransaction {
    * @param id
    * @private
    */
-  _removeTransaction(id) {
+  _removeTransaction(id: number): void {
     setImmediate(() => {
       delete this._transactions[id];
     });
@@ -95,7 +124,16 @@ export default class DatabaseTransaction {
    * @param event
    * @private
    */
-  _onTransactionEvent(event) {
+  _onTransactionEvent(event: {
+    id: number;
+    body: {
+      type: 'update' | 'error' | 'complete';
+      value?: unknown;
+      error?: unknown;
+      committed?: boolean;
+      snapshot?: unknown;
+    };
+  }): void {
     switch (event.body.type) {
       case 'update':
         return this._handleUpdate(event);
@@ -113,8 +151,13 @@ export default class DatabaseTransaction {
    * @param event
    * @private
    */
-  _handleUpdate(event) {
-    let newValue;
+  _handleUpdate(event: {
+    id: number;
+    body: {
+      value?: unknown;
+    };
+  }): void {
+    let newValue: unknown;
 
     const { id, body } = event;
     const { value } = body;
@@ -144,7 +187,12 @@ export default class DatabaseTransaction {
    * @param event
    * @private
    */
-  _handleError(event) {
+  _handleError(event: {
+    id: number;
+    body: {
+      error?: unknown;
+    };
+  }): void {
     const transaction = this._getTransaction(event.id);
 
     if (transaction && !transaction.completed) {
@@ -152,7 +200,7 @@ export default class DatabaseTransaction {
 
       try {
         // error, committed, snapshot
-        const error = NativeError.fromEvent(event.body.error, 'database');
+        const error = NativeError.fromEvent(event.body.error as any, 'database');
         transaction.onComplete(error, false, null);
       } finally {
         this._removeTransaction(event.id);
@@ -165,7 +213,13 @@ export default class DatabaseTransaction {
    * @param event
    * @private
    */
-  _handleComplete(event) {
+  _handleComplete(event: {
+    id: number;
+    body: {
+      committed?: boolean;
+      snapshot?: unknown;
+    };
+  }): void {
     const transaction = this._getTransaction(event.id);
 
     if (transaction && !transaction.completed) {
@@ -173,7 +227,11 @@ export default class DatabaseTransaction {
 
       try {
         // error, committed, snapshot
-        transaction.onComplete(null, event.body.committed, Object.assign({}, event.body.snapshot));
+        transaction.onComplete(
+          null,
+          event.body.committed || false,
+          Object.assign({}, event.body.snapshot) as DatabaseDataSnapshot | null,
+        );
       } finally {
         this._removeTransaction(event.id);
       }

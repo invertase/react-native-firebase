@@ -159,9 +159,8 @@ setPersistenceCacheSizeBytes(dbInstance, 2000000);
 const timestamp = serverTimestamp();
 console.log(timestamp);
 
-getServerTime(dbInstance).then((time: number) => {
-  console.log(time);
-});
+const modularServerTime = getServerTime(dbInstance);
+console.log(modularServerTime);
 
 const incrementValue = increment(1);
 console.log(incrementValue);
@@ -215,7 +214,7 @@ modularUnsubscribe3();
 
 const unsubscribeChildAdded = onChildAdded(
   testRef,
-  (snapshot: FirebaseDatabaseTypes.DataSnapshot, previousChildName: string | null) => {
+  (snapshot: FirebaseDatabaseTypes.DataSnapshot, previousChildName?: string | null) => {
     console.log(snapshot.val());
     console.log(previousChildName);
   },
@@ -223,7 +222,7 @@ const unsubscribeChildAdded = onChildAdded(
 
 const unsubscribeChildChanged = onChildChanged(
   testRef,
-  (snapshot: FirebaseDatabaseTypes.DataSnapshot, previousChildName: string | null) => {
+  (snapshot: FirebaseDatabaseTypes.DataSnapshot, previousChildName?: string | null) => {
     console.log(snapshot.val());
     console.log(previousChildName);
   },
@@ -231,7 +230,7 @@ const unsubscribeChildChanged = onChildChanged(
 
 const unsubscribeChildMoved = onChildMoved(
   testRef,
-  (snapshot: FirebaseDatabaseTypes.DataSnapshot, previousChildName: string | null) => {
+  (snapshot: FirebaseDatabaseTypes.DataSnapshot, previousChildName?: string | null) => {
     console.log(snapshot.val());
     console.log(previousChildName);
   },

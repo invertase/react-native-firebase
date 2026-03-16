@@ -25,16 +25,19 @@ import {
   isValidPath,
   promiseWithOptionalCallback,
 } from '@react-native-firebase/app/dist/module/common';
+import type DatabaseReference from './DatabaseReference';
 
 export default class DatabaseOnDisconnect {
-  constructor(reference) {
+  private _ref: DatabaseReference;
+
+  constructor(reference: DatabaseReference) {
     this._ref = reference;
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.OnDisconnect#cancel
    */
-  cancel(onComplete) {
+  cancel(onComplete?: (error: Error | null) => void): Promise<void> {
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(
         "firebase.database().ref().onDisconnect().cancel(*) 'onComplete' must be a function if provided.",
@@ -50,7 +53,7 @@ export default class DatabaseOnDisconnect {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.OnDisconnect#remove
    */
-  remove(onComplete) {
+  remove(onComplete?: (error: Error | null) => void): Promise<void> {
     if (!isUndefined(onComplete) && !isFunction(onComplete)) {
       throw new Error(
         "firebase.database().ref().onDisconnect().remove(*) 'onComplete' must be a function if provided.",
@@ -66,7 +69,7 @@ export default class DatabaseOnDisconnect {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.OnDisconnect#set
    */
-  set(value, onComplete) {
+  set(value: unknown, onComplete?: (error: Error | null) => void): Promise<void> {
     if (isUndefined(value)) {
       throw new Error("firebase.database().ref().value(*) 'value' must be defined.");
     }
@@ -86,7 +89,11 @@ export default class DatabaseOnDisconnect {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.OnDisconnect#setwithpriority
    */
-  setWithPriority(value, priority, onComplete) {
+  setWithPriority(
+    value: unknown,
+    priority: string | number | null,
+    onComplete?: (error: Error | null) => void,
+  ): Promise<void> {
     if (isUndefined(value)) {
       throw new Error("firebase.database().ref().setWithPriority(*) 'value' must be defined.");
     }
@@ -112,7 +119,10 @@ export default class DatabaseOnDisconnect {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.OnDisconnect#update
    */
-  update(values, onComplete) {
+  update(
+    values: { [key: string]: unknown },
+    onComplete?: (error: Error | null) => void,
+  ): Promise<void> {
     if (!isObject(values)) {
       throw new Error(
         "firebase.database().ref().onDisconnect().update(*) 'values' must be an object.",
@@ -127,7 +137,7 @@ export default class DatabaseOnDisconnect {
 
     const keys = Object.keys(values);
     for (let i = 0; i < keys.length; i++) {
-      if (!isValidPath(keys[i])) {
+      if (!isValidPath(keys[i]!)) {
         throw new Error(
           'firebase.database().onDisconnect().update(*) \'values\' contains an invalid path. Paths must be non-empty strings and can\'t contain ".", "#", "$", "[", or "]"',
         );
