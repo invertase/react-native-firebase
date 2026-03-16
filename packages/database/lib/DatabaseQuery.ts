@@ -370,7 +370,6 @@ export default class DatabaseQuery extends ReferenceBase {
       eventType,
       path: this.path,
       key: queryKey,
-      appName: this._database.app.name,
       modifiers: this._modifiers.toArray(),
       hasCancellationCallback: isFunction(cancelCallbackOrContext),
       registration: {

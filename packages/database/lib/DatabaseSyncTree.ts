@@ -171,7 +171,8 @@ class DatabaseSyncTree {
    */
   _handleValueEvent(event: SyncEventBody): void {
     // console.log('SyncTree.VALUE >>>', event);
-    const { key, eventRegistrationKey, eventType } = event;
+    const { key, eventType, registration: registrationData } = event;
+    const eventRegistrationKey = registrationData?.eventRegistrationKey;
     if (!eventRegistrationKey || !key || !eventType) {
       return;
     }

@@ -49,7 +49,6 @@ export interface RNFBDatabaseModule {
     eventType: string;
     path: string;
     key: string;
-    appName: string;
     modifiers: unknown[];
     hasCancellationCallback: boolean;
     registration: {
