@@ -210,6 +210,19 @@ function serializeValue(value: unknown, visiting: WeakSet<object>): unknown {
       );
     }
 
+    // Explicit wire format for aliased expressions so native (Android) always receives expr, alias, as.
+    const rec = value as Record<string, unknown>;
+    if (rec.__kind === 'aliasedExpression' && rec.expr !== undefined && rec.alias !== undefined) {
+      visiting.add(value);
+      const result = {
+        expr: serializeValue(rec.expr, visiting),
+        alias: rec.alias,
+        as: rec.alias,
+      };
+      visiting.delete(value);
+      return result;
+    }
+
     // Convert document/collection references to a stable path representation.
     if (
       isString((value as { path?: unknown }).path) &&

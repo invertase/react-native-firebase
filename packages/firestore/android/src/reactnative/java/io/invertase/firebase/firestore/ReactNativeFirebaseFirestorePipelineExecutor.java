@@ -1212,7 +1212,41 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
       expressions[i] = coerceExpression(args.get(i), fieldName + ".args[" + i + "]");
     }
 
-    return Expression.rawFunction((String) nameValue, expressions);
+    String functionName = normalizeExpressionFunctionName((String) nameValue);
+    return Expression.rawFunction(functionName, expressions);
+  }
+
+  /** Normalize JS/camelCase names to backend wire names (e.g. lower -> to_lower). */
+  private String normalizeExpressionFunctionName(String name) {
+    if (name == null) {
+      return name;
+    }
+    String normalized = name.toLowerCase(Locale.ROOT).replace("-", "");
+    switch (normalized) {
+      case "lower":
+      case "tolower":
+        return "to_lower";
+      case "upper":
+      case "toupper":
+        return "to_upper";
+      case "startswith":
+        return "starts_with";
+      case "endswith":
+        return "ends_with";
+      case "arraycontains":
+        return "array_contains";
+      case "arraycontainsany":
+        return "array_contains_any";
+      case "arraycontainsall":
+        return "array_contains_all";
+      case "charlength":
+      case "characterlength":
+        return "char_length";
+      case "bytelength":
+        return "byte_length";
+      default:
+        return name;
+    }
   }
 
   private Expression constantExpression(Object value) throws PipelineValidationException {
@@ -1264,9 +1298,16 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
 
     if (value instanceof Map) {
       Map<?, ?> map = (Map<?, ?>) value;
-      String alias = firstString(map.get("alias"), map.get("as"));
+      String alias = firstString(map.get("alias"), map.get("as"), map.get("name"));
 
-      Object exprValue = map.containsKey("expr") ? map.get("expr") : value;
+      Object exprValue =
+          firstNonNull(
+              map.get("expr"),
+              map.get("expression"),
+              map.get("field"));
+      if (exprValue == null) {
+        exprValue = value;
+      }
       Expression expr = coerceExpression(exprValue, fieldName + ".expr");
       if (alias != null && !alias.isEmpty()) {
         return expr.alias(alias);
@@ -1454,7 +1495,7 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     for (int i = 0; i < args.size(); i++) {
       expressions[i] = coerceExpression(args.get(i), fieldName + ".args[" + i + "]");
     }
-    return BooleanExpression.rawFunction(functionName, expressions);
+    return BooleanExpression.rawFunction(normalizeExpressionFunctionName(functionName), expressions);
   }
 
   private BooleanExpression booleanExpressionFromOperatorMap(
