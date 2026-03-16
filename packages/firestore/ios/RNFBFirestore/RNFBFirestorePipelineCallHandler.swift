@@ -383,8 +383,8 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
 
     if let name = map["name"] as? String {
       let args = (map["args"] as? [Any]) ?? []
-      return FunctionExprBridge(name: name, args: try args.map {
-        try coerceExpression($0, fieldName: "\(fieldName).args")
+      return FunctionExprBridge(name: name, args: try args.enumerated().map {
+        try coerceExpression($0.element, fieldName: "\(fieldName).args[\($0.offset)]")
       })
     }
 
@@ -430,6 +430,14 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
     args: [Any],
     fieldName: String
   ) throws -> ExprBridge {
+    return try coerceFunctionExpression(name: name, args: args, fieldName: fieldName)
+  }
+
+  private func coerceFunctionExpression(
+    name: String,
+    args: [Any],
+    fieldName: String
+  ) throws -> ExprBridge {
     let normalized = name.lowercased()
 
     if normalized == "and" || normalized == "or" {
@@ -437,8 +445,10 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
         throw PipelineValidationError("pipelineExecute() expected \(fieldName).args to contain boolean expressions.")
       }
 
-      let booleanArgs = try args.map { try coerceBooleanExpression($0, fieldName: "\(fieldName).args") }
-      return FunctionExprBridge(name: normalized, args: booleanArgs)
+      let parsedArgs = try args.enumerated().map { index, value in
+        try coerceBooleanExpression(value, fieldName: "\(fieldName).args[\(index)]")
+      }
+      return FunctionExprBridge(name: normalized, args: parsedArgs)
     }
 
     let comparisonFunctions: Set<String> = [
@@ -454,12 +464,14 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
 
       let left = try coerceExpression(args[0], fieldName: "\(fieldName).args[0]")
       let right = try coerceComparisonOperand(args[1], fieldName: "\(fieldName).args[1]")
-      return FunctionExprBridge(name: canonicalComparisonFunctionName(normalized), args: [left, right])
+      let canonicalName = canonicalComparisonFunctionName(normalized)
+      return FunctionExprBridge(name: canonicalName, args: [left, right])
     }
 
-    return FunctionExprBridge(name: name, args: try args.enumerated().map {
-      try coerceExpression($0.element, fieldName: "\(fieldName).args[\($0.offset)]")
-    })
+    let parsedArgs = try args.enumerated().map { index, value in
+      try coerceBooleanExpression(value, fieldName: "\(fieldName).args[\(index)]")
+    }
+    return FunctionExprBridge(name: name, args: parsedArgs)
   }
 
   private func coerceBooleanOperatorExpression(
@@ -509,16 +521,16 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
   private func canonicalComparisonFunctionName(_ normalizedName: String) -> String {
     switch normalizedName {
     case "equal": return "equal"
-    case "notequal": return "notEqual"
-    case "greaterthan": return "greaterThan"
-    case "greaterthanorequal": return "greaterThanOrEqual"
-    case "lessthan": return "lessThan"
-    case "lessthanorequal": return "lessThanOrEqual"
-    case "arraycontains": return "arrayContains"
-    case "arraycontainsany": return "arrayContainsAny"
-    case "arraycontainsall": return "arrayContainsAll"
-    case "equalany": return "equalAny"
-    case "notequalany": return "notEqualAny"
+    case "notequal": return "not_equal"
+    case "greaterthan": return "greater_than"
+    case "greaterthanorequal": return "greater_than_or_equal"
+    case "lessthan": return "less_than"
+    case "lessthanorequal": return "less_than_or_equal"
+    case "arraycontains": return "array_contains"
+    case "arraycontainsany": return "array_contains_any"
+    case "arraycontainsall": return "array_contains_all"
+    case "equalany": return "equal_any"
+    case "notequalany": return "not_equal_any"
     default: return normalizedName
     }
   }
@@ -526,16 +538,16 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
   private func mapOperatorToFunction(_ operatorName: String) -> String {
     switch operatorName {
     case "==", "=", "EQUAL": return "equal"
-    case "!=", "<>", "NOT_EQUAL": return "notEqual"
-    case ">", "GREATER_THAN": return "greaterThan"
-    case ">=", "GREATER_THAN_OR_EQUAL": return "greaterThanOrEqual"
-    case "<", "LESS_THAN": return "lessThan"
-    case "<=", "LESS_THAN_OR_EQUAL": return "lessThanOrEqual"
-    case "ARRAY_CONTAINS", "ARRAY-CONTAINS": return "arrayContains"
-    case "ARRAY_CONTAINS_ANY", "ARRAY-CONTAINS-ANY": return "arrayContainsAny"
-    case "ARRAY_CONTAINS_ALL", "ARRAY-CONTAINS-ALL": return "arrayContainsAll"
-    case "IN": return "equalAny"
-    case "NOT_IN": return "notEqualAny"
+    case "!=", "<>", "NOT_EQUAL": return "not_equal"
+    case ">", "GREATER_THAN": return "greater_than"
+    case ">=", "GREATER_THAN_OR_EQUAL": return "greater_than_or_equal"
+    case "<", "LESS_THAN": return "less_than"
+    case "<=", "LESS_THAN_OR_EQUAL": return "less_than_or_equal"
+    case "ARRAY_CONTAINS", "ARRAY-CONTAINS": return "array_contains"
+    case "ARRAY_CONTAINS_ANY", "ARRAY-CONTAINS-ANY": return "array_contains_any"
+    case "ARRAY_CONTAINS_ALL", "ARRAY-CONTAINS-ALL": return "array_contains_all"
+    case "IN": return "equal_any"
+    case "NOT_IN": return "not_equal_any"
     default: return operatorName.lowercased()
     }
   }
