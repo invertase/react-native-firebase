@@ -184,7 +184,8 @@ describe('database issues', function () {
     });
 
     it('#2833 should not mutate modifiers ordering', async function () {
-      const { getDatabase, ref, child, query, equalTo, orderByChild, onValue, set } = databaseModular;
+      const { getDatabase, ref, child, query, equalTo, orderByChild, onValue, set } =
+        databaseModular;
 
       const callback = sinon.spy();
       const testRef = query(
