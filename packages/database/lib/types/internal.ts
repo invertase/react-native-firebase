@@ -50,7 +50,6 @@ export interface RNFBDatabaseModule {
     path: string;
     key: string;
     appName: string;
-    dbURL: string;
     modifiers: unknown[];
     hasCancellationCallback: boolean;
     registration: {

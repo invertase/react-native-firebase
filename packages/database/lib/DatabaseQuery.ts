@@ -371,7 +371,6 @@ export default class DatabaseQuery extends ReferenceBase {
       path: this.path,
       key: queryKey,
       appName: this._database.app.name,
-      dbURL: this._database._customUrlOrRegion,
       modifiers: this._modifiers.toArray(),
       hasCancellationCallback: isFunction(cancelCallbackOrContext),
       registration: {
