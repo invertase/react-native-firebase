@@ -143,73 +143,409 @@ describe('FirestorePipeline', function () {
   });
 
   describe('native execution', function () {
-    it('executes createFrom(query) end-to-end', async function () {
-      const { execute } = firestorePipelinesModular;
-      const { getFirestore, collection, doc, setDoc, query, where, orderBy, limit } =
-        firestoreModular;
-      const db = getFirestore(DATABASE_ID);
-      const collectionName = `${COLLECTION}/${Utils.randString(12, '#aA')}/pipeline-query`;
-      const collectionRef = collection(db, collectionName);
+    describe('query source', function () {
+      it('executes createFrom(query) end-to-end', async function () {
+        const { execute } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc, query, where, orderBy, limit } =
+          firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const collectionName = `${COLLECTION}/${Utils.randString(12, '#aA')}/pipeline-query`;
+        const collectionRef = collection(db, collectionName);
 
-      await Promise.all([
-        setDoc(doc(collectionRef, 'one'), { score: 10, active: true }),
-        setDoc(doc(collectionRef, 'two'), { score: 21, active: true }),
-        setDoc(doc(collectionRef, 'three'), { score: 5, active: false }),
-      ]);
+        await Promise.all([
+          setDoc(doc(collectionRef, 'one'), { score: 10, active: true }),
+          setDoc(doc(collectionRef, 'two'), { score: 21, active: true }),
+          setDoc(doc(collectionRef, 'three'), { score: 5, active: false }),
+        ]);
 
-      const queryRef = query(
-        collectionRef,
-        where('active', '==', true),
-        orderBy('score', 'desc'),
-        limit(2),
-      );
-      const snapshot = await execute(db.pipeline().createFrom(queryRef));
+        const queryRef = query(
+          collectionRef,
+          where('active', '==', true),
+          orderBy('score', 'desc'),
+          limit(2),
+        );
+        const snapshot = await execute(db.pipeline().createFrom(queryRef));
 
-      snapshot.results.should.have.length(2);
-      snapshot.results[0].id.should.equal('two');
-      snapshot.results[0].data().score.should.equal(21);
-      snapshot.results[1].id.should.equal('one');
-      snapshot.results[1].data().score.should.equal(10);
+        snapshot.results.should.have.length(2);
+        snapshot.results[0].id.should.equal('two');
+        snapshot.results[0].data().score.should.equal(21);
+        snapshot.results[1].id.should.equal('one');
+        snapshot.results[1].data().score.should.equal(10);
+      });
     });
 
-    it('executes method-style expressions', async function () {
-      const { getFirestore, collection, doc, setDoc } = firestoreModular;
-      const { and, execute, field, Ordering } = firestorePipelinesModular;
-      const db = getFirestore(DATABASE_ID);
-      const collectionName = `${COLLECTION}/${Utils.randString(12, '#aA')}/pipeline-expression`;
-      const collectionRef = collection(db, collectionName);
+    describe('functions and expressions', function () {
+      it('executes method-style expressions', async function () {
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const { and, execute, field, Ordering } = firestorePipelinesModular;
+        const db = getFirestore(DATABASE_ID);
+        const collectionName = `${COLLECTION}/${Utils.randString(12, '#aA')}/pipeline-expression`;
+        const collectionRef = collection(db, collectionName);
 
-      await Promise.all([
-        setDoc(doc(collectionRef, 'a'), { title: 'A', rating: 2, genre: 'Fantasy' }),
-        setDoc(doc(collectionRef, 'b'), { title: 'B', rating: 5, genre: 'Fantasy' }),
-        setDoc(doc(collectionRef, 'c'), { title: 'C', rating: 8, genre: 'Fantasy' }),
-        setDoc(doc(collectionRef, 'd'), { title: 'D', rating: 9, genre: 'Sci-Fi' }),
-      ]);
+        await Promise.all([
+          setDoc(doc(collectionRef, 'a'), { title: 'A', rating: 2, genre: 'Fantasy' }),
+          setDoc(doc(collectionRef, 'b'), { title: 'B', rating: 5, genre: 'Fantasy' }),
+          setDoc(doc(collectionRef, 'c'), { title: 'C', rating: 8, genre: 'Fantasy' }),
+          setDoc(doc(collectionRef, 'd'), { title: 'D', rating: 9, genre: 'Sci-Fi' }),
+        ]);
 
-      const f = path => field(path);
-      const pipeline = db
-        .pipeline()
-        .collection(collectionRef)
-        .where(and(f('genre').equal('Fantasy'), f('rating').greaterThan(3)))
-        .select(
-          f('title').as('title'),
-          f('rating').add(1).as('boostedRating'),
-          f('genre').equal('Fantasy').as('isFantasy'),
-        )
-        .sort(Ordering.of(f('rating')).descending());
+        const f = path => field(path);
+        const pipeline = db
+          .pipeline()
+          .collection(collectionRef)
+          .where(and(f('genre').equal('Fantasy'), f('rating').greaterThan(3)))
+          .select(
+            f('title').as('title'),
+            f('rating').add(1).as('boostedRating'),
+            f('genre').equal('Fantasy').as('isFantasy'),
+          )
+          .sort(Ordering.of(f('rating')).descending());
 
-      const snapshot = await execute(pipeline);
+        const snapshot = await execute(pipeline);
 
-      snapshot.results.should.have.length(2);
-      snapshot.results[0].data().should.eql({
-        title: 'C',
-        boostedRating: 9,
-        isFantasy: true,
+        snapshot.results.should.have.length(2);
+        snapshot.results[0].data().should.eql({
+          title: 'C',
+          boostedRating: 9,
+          isFantasy: true,
+        });
+        snapshot.results[1].data().should.eql({
+          title: 'B',
+          boostedRating: 6,
+          isFantasy: true,
+        });
       });
-      snapshot.results[1].data().should.eql({
-        title: 'B',
-        boostedRating: 6,
-        isFantasy: true,
+    });
+
+    describe('stages (input + transformation)', function () {
+      it('executes addFields/removeFields/select against documents source', async function () {
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const { execute, field } = firestorePipelinesModular;
+        const db = getFirestore(DATABASE_ID);
+
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+        await setDoc(doc(db, docPath), {
+          title: 'Book',
+          keep: 7,
+          removeMe: true,
+        });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .addFields(field('keep').add(3).as('keepPlusThree'))
+            .removeFields('removeMe')
+            .select('title', 'keepPlusThree'),
+        );
+
+        snapshot.results.should.have.length(1);
+        snapshot.results[0].data().should.eql({
+          title: 'Book',
+          keepPlusThree: 10,
+        });
+      });
+
+      it('executes replaceWith and sort/offset/limit chain', async function () {
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const { execute, field, Ordering } = firestorePipelinesModular;
+        const db = getFirestore(DATABASE_ID);
+        const collectionName = `${COLLECTION}/${Utils.randString(12, '#aA')}/pipeline-transform`;
+        const collectionRef = collection(db, collectionName);
+
+        await Promise.all([
+          setDoc(doc(collectionRef, 'one'), { score: 1, payload: { label: 'A', rank: 1 } }),
+          setDoc(doc(collectionRef, 'two'), { score: 2, payload: { label: 'B', rank: 2 } }),
+          setDoc(doc(collectionRef, 'three'), { score: 3, payload: { label: 'C', rank: 3 } }),
+        ]);
+
+        const listSnapshot = await execute(
+          db
+            .pipeline()
+            .collection(collectionRef)
+            .sort(Ordering.of(field('score')).descending())
+            .offset(1)
+            .limit(1)
+            .select('score'),
+        );
+
+        listSnapshot.results.should.have.length(1);
+        listSnapshot.results[0].data().score.should.equal(2);
+
+        const replaceSnapshot = await execute(
+          db
+            .pipeline()
+            .documents([`${collectionRef.path}/three`])
+            .replaceWith('payload'),
+        );
+
+        replaceSnapshot.results.should.have.length(1);
+        replaceSnapshot.results[0].data().should.eql({ label: 'C', rank: 3 });
+      });
+    });
+  });
+
+  describe('cross-platform coverage', function () {
+    describe('input stages', function () {
+      it('supports collectionGroup source with ordering', async function () {
+        const { execute, field } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const rootA = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+        const rootB = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+        const runId = Utils.randString(12, '#aA');
+
+        await Promise.all([
+          setDoc(doc(db, `${rootA}/departments/eng`), {
+            city: 'SF',
+            employees: 120,
+            runId,
+          }),
+          setDoc(doc(db, `${rootB}/departments/sales`), {
+            city: 'NY',
+            employees: 85,
+            runId,
+          }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collectionGroup('departments')
+            .where(field('runId').equal(runId))
+            .where(field('employees').greaterThan(0))
+            .sort(field('employees').ascending())
+            .select('city', 'employees'),
+        );
+
+        snapshot.results.should.have.length(2);
+        snapshot.results[0].data().employees.should.equal(85);
+        snapshot.results[1].data().employees.should.equal(120);
+      });
+
+      it('supports documents source from DocumentReference values', async function () {
+        const { execute, field } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/docs-source`);
+        const refA = doc(coll, 'a');
+        const refB = doc(coll, 'b');
+
+        await Promise.all([
+          setDoc(refA, { name: 'Alpha', score: 3 }),
+          setDoc(refB, { name: 'Beta', score: 9 }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([refA, refB])
+            .sort(field('score').descending())
+            .select('name', 'score'),
+        );
+
+        snapshot.results.should.have.length(2);
+        snapshot.results[0].data().name.should.equal('Beta');
+        snapshot.results[1].data().name.should.equal('Alpha');
+      });
+
+      it('supports complex pagination-style query with and/or tie-break', async function () {
+        const { execute, field, and, or } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/paging`);
+
+        await Promise.all([
+          setDoc(doc(coll, 'a'), { name: 'A', population: 100 }),
+          setDoc(doc(coll, 'b'), { name: 'B', population: 100 }),
+          setDoc(doc(coll, 'c'), { name: 'C', population: 90 }),
+          setDoc(doc(coll, 'd'), { name: 'D', population: 80 }),
+        ]);
+
+        const pageSize = 2;
+        const pipeline = db
+          .pipeline()
+          .collection(coll)
+          .select('name', 'population')
+          .sort(field('population').descending(), field('name').ascending());
+
+        const firstPage = await execute(pipeline.limit(pageSize));
+        firstPage.results.should.have.length(2);
+        firstPage.results[0].data().name.should.equal('A');
+        firstPage.results[1].data().name.should.equal('B');
+
+        const last = firstPage.results[firstPage.results.length - 1];
+        const secondPage = await execute(
+          pipeline
+            .where(
+              or(
+                and(
+                  field('population').equal(last.get('population')),
+                  field('name').greaterThan(last.get('name')),
+                ),
+                field('population').lessThan(last.get('population')),
+              ),
+            )
+            .limit(pageSize),
+        );
+
+        secondPage.results.should.have.length(2);
+        secondPage.results[0].data().name.should.equal('C');
+        secondPage.results[1].data().name.should.equal('D');
+      });
+    });
+
+    describe('stages and transforms', function () {
+      it('supports grouped aggregate + post-aggregate where (having style)', async function () {
+        const { execute, field, countAll, sum } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/agg`);
+
+        await Promise.all([
+          setDoc(doc(coll, 'ca1'), { country: 'US', state: 'CA', population: 70 }),
+          setDoc(doc(coll, 'ca2'), { country: 'US', state: 'CA', population: 80 }),
+          setDoc(doc(coll, 'ny1'), { country: 'US', state: 'NY', population: 40 }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .aggregate({
+              accumulators: [countAll().as('cities'), sum('population').as('totalPopulation')],
+              groups: ['country', 'state'],
+            })
+            .where(field('totalPopulation').greaterThan(100))
+            .sort(field('totalPopulation').descending()),
+        );
+
+        snapshot.results.should.have.length(1);
+        snapshot.results[0].data().state.should.equal('CA');
+        snapshot.results[0].data().totalPopulation.should.equal(150);
+        snapshot.results[0].data().cities.should.equal(2);
+      });
+
+      it('supports distinct with expression alias', async function () {
+        const { execute, field } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/distinct`);
+
+        await Promise.all([
+          setDoc(doc(coll, 'one'), { author: 'ALICE', genre: 'Fantasy' }),
+          setDoc(doc(coll, 'two'), { author: 'alice', genre: 'Fantasy' }),
+          setDoc(doc(coll, 'three'), { author: 'Bob', genre: 'Sci-Fi' }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .distinct(field('author').toLower().as('authorNorm'), field('genre')),
+        );
+
+        snapshot.results.should.have.length(2);
+      });
+
+      it('supports union stage across two pipelines', async function () {
+        const { execute, field } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const base = `${COLLECTION}/${Utils.randString(12, '#aA')}/union`;
+        const sf = collection(db, `${base}/SF/restaurants`);
+        const ny = collection(db, `${base}/NY/restaurants`);
+
+        await Promise.all([
+          setDoc(doc(sf, 's1'), { type: 'Chinese', rating: 4.8 }),
+          setDoc(doc(sf, 's2'), { type: 'Italian', rating: 4.9 }),
+          setDoc(doc(ny, 'n1'), { type: 'Italian', rating: 4.7 }),
+          setDoc(doc(ny, 'n2'), { type: 'Italian', rating: 3.7 }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(sf)
+            .where(field('type').equal('Chinese'))
+            .union(db.pipeline().collection(ny).where(field('type').equal('Italian')))
+            .where(field('rating').greaterThanOrEqual(4.5))
+            .sort(field('__name__').descending())
+            .select('type', 'rating'),
+        );
+
+        snapshot.results.should.have.length(2);
+        snapshot.results[0].data().rating.should.be.greaterThanOrEqual(4.5);
+        snapshot.results[1].data().rating.should.be.greaterThanOrEqual(4.5);
+      });
+
+      it('supports unnest with index field', async function () {
+        const { execute, field } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/unnest`);
+
+        await Promise.all([
+          setDoc(doc(coll, 'u1'), { name: 'A', scores: [5, 7] }),
+          setDoc(doc(coll, 'u2'), { name: 'B', scores: [3] }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .unnest(field('scores').as('score'), 'attempt')
+            .sort(field('name').ascending(), field('attempt').ascending())
+            .select('name', 'score', 'attempt'),
+        );
+
+        snapshot.results.should.have.length(3);
+        snapshot.results[0].data().attempt.should.equal(0);
+        snapshot.results[1].data().attempt.should.equal(1);
+        snapshot.results[2].data().attempt.should.equal(0);
+      });
+    });
+
+    describe('function-heavy expressions', function () {
+      it('supports complex composed scalar/boolean expressions', async function () {
+        const { execute, field, and } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/expressions`);
+
+        await setDoc(doc(coll, 'book1'), {
+          title: 'The RN Firebase Guide',
+          rating: 5,
+          price: 8,
+          sold: 12,
+          tags: ['firebase', 'mobile'],
+          genre: ['Fantasy', 'Adventure'],
+        });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .select(
+              field('rating').greaterThan(4).as('gt4'),
+              field('price').lessThan(10).as('cheap'),
+              and(field('rating').greaterThan(4), field('price').lessThan(10)).as('recommended'),
+              field('title').startsWith('The').as('startsWithThe'),
+              field('genre').arrayContains('Fantasy').as('hasFantasy'),
+              field('title').charLength().as('titleLength'),
+              field('price').multiply(field('sold')).round().as('revenueRounded'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.gt4.should.equal(true);
+        data.cheap.should.equal(true);
+        data.recommended.should.equal(true);
+        data.startsWithThe.should.equal(true);
+        data.hasFantasy.should.equal(true);
+        data.titleLength.should.be.greaterThan(0);
+        data.revenueRounded.should.equal(96);
       });
     });
   });
