@@ -499,10 +499,20 @@ class RuntimePipelineImpl<T = DocumentData> implements RuntimePipeline {
     selectableOrOptions: Selectable | PipelineUnnestOptions,
     indexField?: string,
   ): Pipeline<T> {
-    if (
+    const isOptionsObject =
       isRecord(selectableOrOptions) &&
-      hasAnyKey(selectableOrOptions, ['selectable', 'indexField'])
-    ) {
+      (Object.prototype.hasOwnProperty.call(selectableOrOptions, 'indexField') ||
+        (Object.prototype.hasOwnProperty.call(selectableOrOptions, 'selectable') &&
+          !hasAnyKey(selectableOrOptions, [
+            '__kind',
+            'exprType',
+            'path',
+            'name',
+            'args',
+            'alias',
+          ])));
+
+    if (isOptionsObject) {
       return this.append('unnest', selectableOrOptions as Record<string, unknown>);
     }
 
