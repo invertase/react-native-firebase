@@ -251,7 +251,7 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
     switch stageName {
     case "where":
       let condition = try requireValue(options, key: "condition", fieldName: "stage.options.condition")
-      return WhereStageBridge(expr: try coerceExpression(condition, fieldName: "stage.options.condition"))
+      return WhereStageBridge(expr: try coerceBooleanExpression(condition, fieldName: "stage.options.condition"))
     case "select":
       return SelectStageBridge(selections: try coerceNamedSelectables(options, key: "selections"))
     case "addFields":
@@ -399,6 +399,69 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
     throw PipelineValidationError("pipelineExecute() could not convert \(fieldName) into a pipeline expression.")
   }
 
+  private func coerceBooleanExpression(_ value: Any, fieldName: String) throws -> ExprBridge {
+    if let map = value as? [String: Any] {
+      if let nested = map["condition"] {
+        return try coerceBooleanExpression(nested, fieldName: "\(fieldName).condition")
+      }
+
+      if let operatorName = map["operator"] as? String {
+        return try coerceBooleanOperatorExpression(map: map, operatorName: operatorName, fieldName: fieldName)
+      }
+
+      if let name = map["name"] as? String {
+        let rawArgs: [Any]
+        if let args = map["args"] as? [Any] {
+          rawArgs = args
+        } else if let singleArg = map["args"] {
+          rawArgs = [singleArg]
+        } else {
+          rawArgs = []
+        }
+        return try coerceBooleanFunctionExpression(name: name, args: rawArgs, fieldName: fieldName)
+      }
+    }
+
+    return try coerceExpression(value, fieldName: fieldName)
+  }
+
+  private func coerceBooleanFunctionExpression(
+    name: String,
+    args: [Any],
+    fieldName: String
+  ) throws -> ExprBridge {
+    let normalized = name.lowercased()
+
+    if normalized == "and" || normalized == "or" {
+      guard !args.isEmpty else {
+        throw PipelineValidationError("pipelineExecute() expected \(fieldName).args to contain boolean expressions.")
+      }
+
+      let booleanArgs = try args.map { try coerceBooleanExpression($0, fieldName: "\(fieldName).args") }
+      return FunctionExprBridge(name: normalized, args: booleanArgs)
+    }
+
+    let comparisonFunctions: Set<String> = [
+      "equal", "notequal", "greaterthan", "greaterthanorequal", "lessthan", "lessthanorequal",
+      "arraycontains", "arraycontainsany", "arraycontainsall", "equalany", "notequalany",
+    ]
+
+    if comparisonFunctions.contains(normalized) {
+      guard args.count >= 2 else {
+        throw PipelineValidationError(
+          "pipelineExecute() expected \(fieldName).args to include left and right operands.")
+      }
+
+      let left = try coerceExpression(args[0], fieldName: "\(fieldName).args[0]")
+      let right = try coerceComparisonOperand(args[1], fieldName: "\(fieldName).args[1]")
+      return FunctionExprBridge(name: canonicalComparisonFunctionName(normalized), args: [left, right])
+    }
+
+    return FunctionExprBridge(name: name, args: try args.enumerated().map {
+      try coerceExpression($0.element, fieldName: "\(fieldName).args[\($0.offset)]")
+    })
+  }
+
   private func coerceBooleanOperatorExpression(
     map: [String: Any],
     operatorName: String,
@@ -410,7 +473,7 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
         throw PipelineValidationError("pipelineExecute() expected \(fieldName).queries to contain boolean expressions.")
       }
 
-      let args = try queries.map { try coerceExpression($0, fieldName: "\(fieldName).queries") }
+      let args = try queries.map { try coerceBooleanExpression($0, fieldName: "\(fieldName).queries") }
       return FunctionExprBridge(name: normalized == "AND" ? "and" : "or", args: args)
     }
 
@@ -421,9 +484,43 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
 
     let left = FieldBridge(name: try coerceFieldPath(fieldValue, fieldName: "\(fieldName).fieldPath"))
     let right = map["value"] ?? map["right"] ?? map["operand"] ?? NSNull()
-    let rightExpr = try coerceExpression(right, fieldName: "\(fieldName).value")
+    let rightExpr = try coerceComparisonOperand(right, fieldName: "\(fieldName).value")
     let fnName = mapOperatorToFunction(normalized)
     return FunctionExprBridge(name: fnName, args: [left, rightExpr])
+  }
+
+  private func coerceComparisonOperand(_ value: Any, fieldName: String) throws -> ExprBridge {
+    if let map = value as? [String: Any] {
+      return try coerceExpression(map, fieldName: fieldName)
+    }
+
+    if let values = value as? [Any] {
+      return ConstantBridge(values)
+    }
+
+    if value is NSNull || value is NSNumber || value is String || value is Date || value is Timestamp ||
+      value is GeoPoint || value is DocumentReference || value is VectorValue {
+      return ConstantBridge(value)
+    }
+
+    return try coerceExpression(value, fieldName: fieldName)
+  }
+
+  private func canonicalComparisonFunctionName(_ normalizedName: String) -> String {
+    switch normalizedName {
+    case "equal": return "equal"
+    case "notequal": return "notEqual"
+    case "greaterthan": return "greaterThan"
+    case "greaterthanorequal": return "greaterThanOrEqual"
+    case "lessthan": return "lessThan"
+    case "lessthanorequal": return "lessThanOrEqual"
+    case "arraycontains": return "arrayContains"
+    case "arraycontainsany": return "arrayContainsAny"
+    case "arraycontainsall": return "arrayContainsAll"
+    case "equalany": return "equalAny"
+    case "notequalany": return "notEqualAny"
+    default: return normalizedName
+    }
   }
 
   private func mapOperatorToFunction(_ operatorName: String) -> String {
