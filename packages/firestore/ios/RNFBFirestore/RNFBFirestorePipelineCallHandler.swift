@@ -321,8 +321,9 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
         throw PipelineValidationError("pipelineExecute() expected stage.options.accumulators[\(index)] to be an object.")
       }
 
-      let alias = (map["alias"] as? String) ?? (map["as"] as? String) ?? "acc_\(index)"
-      accumulators[alias] = try coerceAggregateFunction(map, fieldName: "stage.options.accumulators[\(index)]")
+      let alias = (map["alias"] as? String) ?? (map["as"] as? String) ?? (map["name"] as? String) ?? "acc_\(index)"
+      let aggregateFn = try coerceAggregateFunction(map, fieldName: "stage.options.accumulators[\(index)]")
+      accumulators[alias] = aggregateFn
     }
 
     let groups = try coerceOptionalNamedSelectables(options, key: "groups")
@@ -383,7 +384,7 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
 
     if let name = map["name"] as? String {
       let args = (map["args"] as? [Any]) ?? []
-      return FunctionExprBridge(name: name, args: try args.enumerated().map {
+      return FunctionExprBridge(name: normalizeExpressionFunctionName(name), args: try args.enumerated().map {
         try coerceExpression($0.element, fieldName: "\(fieldName).args[\($0.offset)]")
       })
     }
@@ -471,7 +472,7 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
     let parsedArgs = try args.enumerated().map { index, value in
       try coerceBooleanExpression(value, fieldName: "\(fieldName).args[\(index)]")
     }
-    return FunctionExprBridge(name: name, args: parsedArgs)
+    return FunctionExprBridge(name: normalizeExpressionFunctionName(name), args: parsedArgs)
   }
 
   private func coerceBooleanOperatorExpression(
@@ -535,6 +536,61 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
     }
   }
 
+  private func normalizeExpressionFunctionName(_ name: String) -> String {
+    let normalized = name.lowercased().replacingOccurrences(of: "-", with: "")
+    switch normalized {
+    case "lower", "tolower":
+      return "to_lower"
+    case "upper", "toupper":
+      return "to_upper"
+    case "startswith":
+      return "starts_with"
+    case "endswith":
+      return "ends_with"
+    case "arraycontains":
+      return "array_contains"
+    case "arraycontainsany":
+      return "array_contains_any"
+    case "arraycontainsall":
+      return "array_contains_all"
+    case "charlength", "characterlength":
+      return "char_length"
+    case "bytelength":
+      return "byte_length"
+    case "greaterthan":
+      return "greater_than"
+    case "lessthan":
+      return "less_than"
+    case "greaterthanorequal":
+      return "greater_than_or_equal"
+    case "lessthanorequal":
+      return "less_than_or_equal"
+    case "notequal":
+      return "not_equal"
+    default:
+      return name
+    }
+  }
+
+  private func normalizeAggregateKind(_ kind: String) -> String {
+    let normalized = kind.lowercased().replacingOccurrences(of: "-", with: "")
+    switch normalized {
+    case "countall", "count_all":
+      // iOS bridge accepts count() with no args as count-all.
+      return "count"
+    case "countif", "count_if":
+      return "countIf"
+    case "countdistinct", "count_distinct":
+      return "countDistinct"
+    case "arrayagg", "array_agg":
+      return "arrayAgg"
+    case "arrayaggdistinct", "array_agg_distinct":
+      return "arrayAggDistinct"
+    default:
+      return kind
+    }
+  }
+
   private func mapOperatorToFunction(_ operatorName: String) -> String {
     switch operatorName {
     case "==", "=", "EQUAL": return "equal"
@@ -565,6 +621,7 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
     guard let kind, !kind.isEmpty else {
       throw PipelineValidationError("pipelineExecute() expected \(fieldName) to include an aggregate kind.")
     }
+    let normalizedKind = normalizeAggregateKind(kind)
 
     var args: [ExprBridge] = []
     if let expr = aggregate["expr"] ?? aggregate["field"] ?? aggregate["value"] {
@@ -577,7 +634,7 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
       })
     }
 
-    return AggregateFunctionBridge(name: kind, args: args)
+    return AggregateFunctionBridge(name: normalizedKind, args: args)
   }
 
   private func coerceNamedSelectables(
