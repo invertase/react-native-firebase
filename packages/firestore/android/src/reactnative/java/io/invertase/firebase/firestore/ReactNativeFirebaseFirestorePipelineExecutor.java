@@ -1244,6 +1244,16 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
         return "char_length";
       case "bytelength":
         return "byte_length";
+      case "greaterthan":
+        return "greater_than";
+      case "lessthan":
+        return "less_than";
+      case "greaterthanorequal":
+        return "greater_than_or_equal";
+      case "lessthanorequal":
+        return "less_than_or_equal";
+      case "notequal":
+        return "not_equal";
       default:
         return name;
     }
@@ -1299,6 +1309,20 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     if (value instanceof Map) {
       Map<?, ?> map = (Map<?, ?>) value;
       String alias = firstString(map.get("alias"), map.get("as"), map.get("name"));
+
+      // Flat form: { path, alias, as } from JS for field(path).as(alias) so no nested expr.
+      if (alias != null
+          && !alias.isEmpty()
+          && (map.containsKey("path") || map.containsKey("fieldPath") || map.containsKey("segments"))) {
+        try {
+          String path = coerceFieldPath(map, fieldName + ".path");
+          if (path != null && !path.isEmpty()) {
+            return Expression.field(path).alias(alias);
+          }
+        } catch (PipelineValidationException e) {
+          // Fall through to nested expr handling.
+        }
+      }
 
       Object exprValue =
           firstNonNull(

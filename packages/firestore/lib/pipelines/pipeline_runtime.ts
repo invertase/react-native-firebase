@@ -214,6 +214,18 @@ function serializeValue(value: unknown, visiting: WeakSet<object>): unknown {
     const rec = value as Record<string, unknown>;
     if (rec.__kind === 'aliasedExpression' && rec.expr !== undefined && rec.alias !== undefined) {
       visiting.add(value);
+      const inner = rec.expr as Record<string, unknown>;
+      // Flat form for simple field path: { path, alias, as } so native does not need to parse nested expr.
+      if (
+        inner &&
+        typeof inner === 'object' &&
+        (inner.__kind === 'expression' || inner.exprType === 'Field') &&
+        typeof inner.path === 'string' &&
+        inner.path.length > 0
+      ) {
+        visiting.delete(value);
+        return { path: inner.path, alias: rec.alias, as: rec.alias };
+      }
       const result = {
         expr: serializeValue(rec.expr, visiting),
         alias: rec.alias,
