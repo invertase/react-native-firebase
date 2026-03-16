@@ -15,7 +15,11 @@
  *
  */
 
+#if __has_include(<FirebaseCore/FirebaseCore.h>)
 #import <FirebaseCore/FirebaseCore.h>
+#else
+@import FirebaseCore;
+#endif
 #import <React/RCTConvert.h>
 
 @interface RCTConvert (FIRApp)

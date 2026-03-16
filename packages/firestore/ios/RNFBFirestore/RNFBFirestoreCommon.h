@@ -16,7 +16,12 @@
  *
  */
 
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#else
+@import FirebaseCore;
+@import FirebaseFirestore;
+#endif
 #import <React/RCTBridgeModule.h>
 
 @interface RNFBFirestoreCommon : NSObject

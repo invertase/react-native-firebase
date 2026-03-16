@@ -52,6 +52,8 @@ jobs:
           retry_wait_seconds: 60
           max_attempts: 3
           command: yarn
+      - name: Test Firebase SPM Helper
+        run: ruby packages/app/__tests__/firebase_spm_test.rb
       - name: Jest
         run: yarn tests:jest-coverage
       - uses: codecov/codecov-action@v5
