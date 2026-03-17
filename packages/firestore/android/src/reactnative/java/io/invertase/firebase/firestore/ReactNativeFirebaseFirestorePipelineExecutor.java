@@ -402,8 +402,9 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     if (options.hasKey("indexMode") && options.getType("indexMode") == ReadableType.String) {
       String indexMode = options.getString("indexMode");
       if ("recommended".equals(indexMode)) {
-        executeOptions =
-            executeOptions.withIndexMode(Pipeline.ExecuteOptions.IndexMode.RECOMMENDED);
+        // This continues to produce "Client specified an invalid argument" error so we throw early in JS code when present
+         executeOptions =
+             executeOptions.withIndexMode(Pipeline.ExecuteOptions.IndexMode.RECOMMENDED);
         hasOptions = true;
       }
     }
@@ -413,7 +414,8 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
             ? options.getMap("rawOptions")
             : null;
     if (rawOptions != null) {
-      executeOptions = applyExecuteRawOptions(executeOptions, rawOptions);
+      // This continues to produce "Client specified an invalid argument" error so we throw early in JS code when present
+       executeOptions = applyExecuteRawOptions(executeOptions, rawOptions);
       hasOptions = true;
     }
 
