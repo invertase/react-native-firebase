@@ -966,17 +966,7 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
       map["id"] = NSNull()
     }
 
-    if let data = result.data() as? [String: Any] {
-      map["data"] = RNFBFirestoreSerialize.serializeDictionary(data)
-    } else if let data = result.data() as? NSDictionary,
-              let typedData = data as? [String: Any] {
-      map["data"] = RNFBFirestoreSerialize.serializeDictionary(typedData)
-    } else if let data = result.data() {
-      map["data"] = data
-    } else {
-      map["data"] = NSNull()
-    }
-
+    map["data"] = RNFBFirestoreSerialize.serializeDictionary(result.data())
     map["createTime"] = result.create_time.map(serializeTimestamp) ?? NSNull()
     map["updateTime"] = result.update_time.map(serializeTimestamp) ?? NSNull()
 
