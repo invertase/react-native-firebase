@@ -15,7 +15,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: 'main'
           fetch-depth: 0
           # Repository admin required to evade PR+checks branch protection
           token: ${{ secrets.GH_TOKEN }}

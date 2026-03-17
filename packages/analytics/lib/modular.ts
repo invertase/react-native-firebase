@@ -1,6 +1,7 @@
 import { MODULAR_DEPRECATION_ARG } from '@react-native-firebase/app/dist/module/common';
 import { getApp } from '@react-native-firebase/app';
 import type { Analytics } from './types/analytics';
+import type { AnalyticsInternal } from './types/internal';
 import { Platform } from 'react-native';
 import type { ReactNativeFirebase } from '@react-native-firebase/app';
 import type {
@@ -414,6 +415,18 @@ export function logEvent(
 ): Promise<void> {
   // @ts-ignore - MODULAR_DEPRECATION_ARG is filtered out internally
   return analytics.logEvent.call(analytics, name, params, options, MODULAR_DEPRECATION_ARG);
+}
+
+/** Logs verified in-app purchase events in Google Analytics for Firebase
+ * after a purchase is successful.
+ * Modular API only; iOS only (StoreKit 2). Throws on Android and web before reaching native.
+ */
+export function logTransaction(analytics: Analytics, transaction_id: string): Promise<void> {
+  if (Platform.OS !== 'ios') {
+    return Promise.reject(new Error('logTransaction is only available on iOS'));
+  }
+
+  return (analytics as AnalyticsInternal).native.logTransaction(transaction_id);
 }
 
 /**
