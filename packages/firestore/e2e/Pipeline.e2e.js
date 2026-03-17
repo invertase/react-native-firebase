@@ -15,8 +15,9 @@
  *
  */
 
-const DATABASE_ID = 'firestore-pipeline-test';
-const COLLECTION = 'react-native-firebase-testing';
+const DATABASE_ID = 'pipelines-e2e';
+const COLLECTION = 'pipeline-collection';
+const COLLECTION_GROUP = 'pipeline-collection-group';
 const PIPELINE_TEST_BASE64 = 'eyJoZWxsbyI6IndvcmxkIn0=';
 
 async function expectAsyncError(run, expectedMessage, expectedCode) {
@@ -179,20 +180,28 @@ describe('FirestorePipeline', function () {
       const first = snapshot.results[0];
       const data = first.data();
 
-      data.createdAt.isEqual(createdAt).should.equal(true);
+      data.createdAt.constructor.name.should.equal('Timestamp');
+      data.createdAt.seconds.should.equal(createdAt.seconds);
+      data.createdAt.nanoseconds.should.equal(createdAt.nanoseconds);
       data.linkedRef.path.should.equal(linkedRef.path);
       data.payloadBytes.toBase64().should.equal(PIPELINE_TEST_BASE64);
       data.embedding.toArray().should.eql([0.12, 0.34, 0.56]);
-      data.nested.updatedAt.isEqual(updatedAt).should.equal(true);
+      data.nested.updatedAt.constructor.name.should.equal('Timestamp');
+      data.nested.updatedAt.seconds.should.equal(updatedAt.seconds);
+      data.nested.updatedAt.nanoseconds.should.equal(updatedAt.nanoseconds);
       data.nested.linkedRef.path.should.equal(linkedRef.path);
       data.nested.payloadBytes.toBase64().should.equal(PIPELINE_TEST_BASE64);
       data.nested.embedding.toArray().should.eql([9, 8, 7]);
 
-      first.get('createdAt').isEqual(createdAt).should.equal(true);
+      first.get('createdAt').constructor.name.should.equal('Timestamp');
+      first.get('createdAt').seconds.should.equal(createdAt.seconds);
+      first.get('createdAt').nanoseconds.should.equal(createdAt.nanoseconds);
       first.get('linkedRef').path.should.equal(linkedRef.path);
       first.get('payloadBytes').toBase64().should.equal(PIPELINE_TEST_BASE64);
       first.get('embedding').toArray().should.eql([0.12, 0.34, 0.56]);
-      first.get('nested.updatedAt').isEqual(updatedAt).should.equal(true);
+      first.get('nested.updatedAt').constructor.name.should.equal('Timestamp');
+      first.get('nested.updatedAt').seconds.should.equal(updatedAt.seconds);
+      first.get('nested.updatedAt').nanoseconds.should.equal(updatedAt.nanoseconds);
       first.get('nested.linkedRef').path.should.equal(linkedRef.path);
       first.get('nested.payloadBytes').toBase64().should.equal(PIPELINE_TEST_BASE64);
       first.get('nested.embedding').toArray().should.eql([9, 8, 7]);
@@ -487,12 +496,12 @@ describe('FirestorePipeline', function () {
         const runId = Utils.randString(12, '#aA');
 
         await Promise.all([
-          setDoc(doc(db, `${rootA}/departments/eng`), {
+          setDoc(doc(db, `${rootA}/${COLLECTION_GROUP}/eng`), {
             city: 'SF',
             employees: 120,
             runId,
           }),
-          setDoc(doc(db, `${rootB}/departments/sales`), {
+          setDoc(doc(db, `${rootB}/${COLLECTION_GROUP}/sales`), {
             city: 'NY',
             employees: 85,
             runId,
@@ -502,7 +511,7 @@ describe('FirestorePipeline', function () {
         const snapshot = await execute(
           db
             .pipeline()
-            .collectionGroup('departments')
+            .collectionGroup(COLLECTION_GROUP)
             .where(field('runId').equal(runId))
             .where(field('employees').greaterThan(0))
             .sort(field('employees').ascending())
