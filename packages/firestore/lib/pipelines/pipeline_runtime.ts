@@ -90,6 +90,36 @@ function hasAnyKey(value: Record<string, unknown>, keys: string[]): boolean {
   return keys.some(key => Object.prototype.hasOwnProperty.call(value, key));
 }
 
+function assertSameFirestoreInstance(
+  actual: FirestoreInternal,
+  expected: FirestoreInternal,
+  method: 'collection' | 'documents',
+): void {
+  if (actual !== expected) {
+    throw new Error(
+      `firebase.firestore().pipeline().${method}(*) cannot use a reference from a different Firestore instance.`,
+    );
+  }
+}
+
+function getFirestoreReference(
+  value: unknown,
+): { firestore: FirestoreInternal; path: string } | undefined {
+  if (
+    isRecord(value) &&
+    isRecord(value.firestore) &&
+    isString(value.path) &&
+    value.path.length > 0
+  ) {
+    return {
+      firestore: value.firestore as unknown as FirestoreInternal,
+      path: value.path,
+    };
+  }
+
+  return undefined;
+}
+
 function parseTimestamp(
   value: FirestorePipelineTimestampInternal | undefined,
 ): FirestoreTimestamp | undefined {
@@ -556,6 +586,14 @@ class RuntimePipelineSourceImpl<
       );
     }
 
+    const collectionRef =
+      getFirestoreReference(pathOrCollectionRefOrOptions.collectionRef) ??
+      getFirestoreReference(pathOrCollectionRefOrOptions);
+
+    if (collectionRef) {
+      assertSameFirestoreInstance(collectionRef.firestore, this._firestore, 'collection');
+    }
+
     const path = isString(pathOrCollectionRefOrOptions.path)
       ? pathOrCollectionRefOrOptions.path
       : isRecord(pathOrCollectionRefOrOptions.collectionRef) &&
@@ -627,6 +665,11 @@ class RuntimePipelineSourceImpl<
       }
 
       if (isRecord(doc) && isString(doc.path) && doc.path.length > 0) {
+        const documentRef = getFirestoreReference(doc);
+        if (documentRef) {
+          assertSameFirestoreInstance(documentRef.firestore, this._firestore, 'documents');
+        }
+
         return doc.path;
       }
 

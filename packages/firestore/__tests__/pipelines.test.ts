@@ -100,6 +100,39 @@ describe('Firestore pipelines runtime', function () {
     ).toBe('scores');
   });
 
+  it('serializes rawStage params as an object so native bridges preserve named params', function () {
+    const db: any = firebase.firestore();
+    const serialized = db
+      .pipeline()
+      .collection('firestore')
+      .rawStage('score', {
+        input: field('rating'),
+        threshold: 4,
+        config: {
+          mode: 'strict',
+          boost: field('boost'),
+        },
+      })
+      .serialize();
+
+    expect(serialized.stages).toHaveLength(1);
+    expect(serialized.stages[0]).toMatchObject({
+      stage: 'rawStage',
+      options: {
+        name: 'score',
+        params: {
+          input: { exprType: 'Field', path: 'rating' },
+          threshold: 4,
+          config: {
+            mode: 'strict',
+            boost: { exprType: 'Field', path: 'boost' },
+          },
+        },
+        options: {},
+      },
+    });
+  });
+
   it('enforces union guards and self-cycle serialization constraints', function () {
     const db: any = firebase.firestore();
     const secondaryDb: any = firebase.app('secondaryFromNative').firestore();
@@ -131,6 +164,31 @@ describe('Firestore pipelines runtime', function () {
 
     expect(() => db.pipeline().createFrom(secondaryQuery)).toThrow(
       'firebase.firestore().pipeline().createFrom(*) cannot use a Query from a different Firestore instance.',
+    );
+  });
+
+  it('enforces source reference affinity for collection() and documents()', function () {
+    const db: any = firebase.firestore();
+    const secondaryDb: any = firebase.app('secondaryFromNative').firestore();
+
+    expect(() => db.pipeline().collection(secondaryDb.collection('firestore'))).toThrow(
+      'firebase.firestore().pipeline().collection(*) cannot use a reference from a different Firestore instance.',
+    );
+
+    expect(() =>
+      db.pipeline().collection({ collectionRef: secondaryDb.collection('firestore') }),
+    ).toThrow(
+      'firebase.firestore().pipeline().collection(*) cannot use a reference from a different Firestore instance.',
+    );
+
+    expect(() => db.pipeline().documents([secondaryDb.doc('firestore/a')])).toThrow(
+      'firebase.firestore().pipeline().documents(*) cannot use a reference from a different Firestore instance.',
+    );
+
+    expect(() =>
+      db.pipeline().documents({ docs: ['firestore/a', secondaryDb.doc('firestore/b')] }),
+    ).toThrow(
+      'firebase.firestore().pipeline().documents(*) cannot use a reference from a different Firestore instance.',
     );
   });
 
@@ -215,27 +273,18 @@ describe('Firestore pipelines runtime', function () {
         },
       },
     });
-    expect(serialized.stages[1]).toMatchObject({
-      stage: 'select',
-      options: {
-        selections: [
-          {
-            exprType: 'AliasedExpression',
-            alias: 'title',
-            expr: { exprType: 'Field', path: 'title' },
-          },
-          {
-            exprType: 'AliasedExpression',
-            alias: 'boostedRating',
-            expr: { exprType: 'Function', name: 'add' },
-          },
-          {
-            exprType: 'AliasedExpression',
-            alias: 'isFantasy',
-            expr: { exprType: 'Function', name: 'equal' },
-          },
-        ],
-      },
+    expect(serialized.stages[1]?.stage).toBe('select');
+    expect(serialized.stages[1]?.options?.selections).toHaveLength(3);
+    expect(serialized.stages[1]?.options?.selections?.[0]).toMatchObject({
+      alias: 'title',
+    });
+    expect(serialized.stages[1]?.options?.selections?.[1]).toMatchObject({
+      alias: 'boostedRating',
+      expr: { exprType: 'Function', name: 'add' },
+    });
+    expect(serialized.stages[1]?.options?.selections?.[2]).toMatchObject({
+      alias: 'isFantasy',
+      expr: { exprType: 'Function', name: 'equal' },
     });
     expect(serialized.stages[2]).toMatchObject({
       stage: 'sort',

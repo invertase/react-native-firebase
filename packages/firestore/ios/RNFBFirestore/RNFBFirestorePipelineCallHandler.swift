@@ -335,7 +335,7 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
       return UnnestStageBridge(field: expression, alias: FieldBridge(name: alias), indexField: indexExpr)
     case "rawStage":
       let name = try requireNonEmptyString(options, key: "name", fieldName: "stage.options.name")
-      let params = options["params"] as? [Any] ?? []
+      let params = options["params"]
       let rawOptions = options["options"] as? [String: Any]
       return RawStageBridge(name: name, params: try coerceRawParams(params), options: try coerceRawOptions(rawOptions))
     default:
@@ -723,20 +723,45 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
     }
   }
 
-  private func coerceRawParams(_ values: [Any]) throws -> [Any] {
-    return try values.map { value in
-      if value is ExprBridge || value is AggregateFunctionBridge {
-        return value
-      }
-      if let map = value as? [String: Any] {
-        var output: [String: Any] = [:]
-        for (key, nested) in map {
-          output[key] = try coerceExpression(nested, fieldName: "stage.options.params.\(key)")
-        }
-        return output
-      }
-      return try coerceExpression(value, fieldName: "stage.options.params")
+  private func coerceRawParams(_ value: Any?) throws -> [Any] {
+    guard let value else {
+      return []
     }
+
+    if let values = value as? [Any] {
+      return try values.enumerated().map { index, nested in
+        try coerceRawParamValue(nested, fieldName: "stage.options.params[\(index)]")
+      }
+    }
+
+    if let values = value as? [String: Any] {
+      return [try coerceRawParamDictionary(values, fieldName: "stage.options.params")]
+    }
+
+    return [try coerceRawParamValue(value, fieldName: "stage.options.params")]
+  }
+
+  private func coerceRawParamDictionary(_ values: [String: Any], fieldName: String) throws -> [String: Any] {
+    var output: [String: Any] = [:]
+    for (key, nested) in values {
+      output[key] = try coerceRawParamValue(nested, fieldName: "\(fieldName).\(key)")
+    }
+    return output
+  }
+
+  private func coerceRawParamValue(_ value: Any, fieldName: String) throws -> Any {
+    if value is ExprBridge || value is AggregateFunctionBridge {
+      return value
+    }
+    if let map = value as? [String: Any] {
+      return try coerceRawParamDictionary(map, fieldName: fieldName)
+    }
+    if let array = value as? [Any] {
+      return try array.enumerated().map { index, nested in
+        try coerceRawParamValue(nested, fieldName: "\(fieldName)[\(index)]")
+      }
+    }
+    return try coerceExpression(value, fieldName: fieldName)
   }
 
   private func coerceRawOptions(_ options: [String: Any]?) throws -> [String: ExprBridge]? {
