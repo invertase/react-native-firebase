@@ -9,6 +9,8 @@
   - '/migrating-to-v24'
 - - TypeScript
   - '/typescript'
+- - iOS SPM Support
+  - '/ios-spm'
 - - Platforms
   - '/platforms'
 - - Release Notes

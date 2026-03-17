@@ -15,8 +15,15 @@
  *
  */
 
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
-#import <FirebaseAppCheck/FIRAppCheck.h>
+#elif __has_include(<FirebaseAppCheck/FirebaseAppCheck.h>)
+#import <FirebaseAppCheck/FirebaseAppCheck.h>
+#import <FirebaseCore/FirebaseCore.h>
+#else
+@import FirebaseCore;
+@import FirebaseAppCheck;
+#endif
 
 #import <React/RCTUtils.h>
 
@@ -53,7 +60,8 @@ RCT_EXPORT_METHOD(activate
                   : (BOOL)isTokenAutoRefreshEnabled
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject) {
-  DLog(@"deprecated API, provider will be deviceCheck / token refresh %d for app %@",
+  DLog(@"deprecated API, provider will be deviceCheck / token refresh %d for "
+       @"app %@",
        isTokenAutoRefreshEnabled, firebaseApp.name);
   [[RNFBAppCheckModule sharedInstance].providerFactory configure:firebaseApp
                                                     providerName:@"deviceCheck"
@@ -86,8 +94,8 @@ RCT_EXPORT_METHOD(setTokenAutoRefreshEnabled
   appCheck.isTokenAutoRefreshEnabled = isTokenAutoRefreshEnabled;
 }
 
-// Not present in JS or Android - it is iOS-specific so we only call this in testing - it is not in
-// index.d.ts
+// Not present in JS or Android - it is iOS-specific so we only call this in
+// testing - it is not in index.d.ts
 RCT_EXPORT_METHOD(isTokenAutoRefreshEnabled
                   : (FIRApp *)firebaseApp
                   : (RCTPromiseResolveBlock)resolve rejecter
@@ -105,33 +113,36 @@ RCT_EXPORT_METHOD(getToken
                   : (RCTPromiseRejectBlock)reject) {
   FIRAppCheck *appCheck = [FIRAppCheck appCheckWithApp:firebaseApp];
   DLog(@"appName %@", firebaseApp.name);
-  [appCheck
-      tokenForcingRefresh:forceRefresh
-               completion:^(FIRAppCheckToken *_Nullable token, NSError *_Nullable error) {
-                 if (error != nil) {
-                   // Handle any errors if the token was not retrieved.
-                   DLog(@"RNFBAppCheck - getToken - Unable to retrieve App Check token: %@", error);
-                   [RNFBSharedUtils rejectPromiseWithUserInfo:reject
-                                                     userInfo:(NSMutableDictionary *)@{
-                                                       @"code" : @"token-error",
-                                                       @"message" : [error localizedDescription],
-                                                     }];
-                   return;
-                 }
-                 if (token == nil) {
-                   DLog(@"RNFBAppCheck - getToken - Unable to retrieve App Check token.");
-                   [RNFBSharedUtils rejectPromiseWithUserInfo:reject
-                                                     userInfo:(NSMutableDictionary *)@{
-                                                       @"code" : @"token-null",
-                                                       @"message" : @"no token fetched",
-                                                     }];
-                   return;
-                 }
+  [appCheck tokenForcingRefresh:forceRefresh
+                     completion:^(FIRAppCheckToken *_Nullable token, NSError *_Nullable error) {
+                       if (error != nil) {
+                         // Handle any errors if the token was not retrieved.
+                         DLog(@"RNFBAppCheck - getToken - Unable to retrieve App "
+                              @"Check token: %@",
+                              error);
+                         [RNFBSharedUtils
+                             rejectPromiseWithUserInfo:reject
+                                              userInfo:(NSMutableDictionary *)@{
+                                                @"code" : @"token-error",
+                                                @"message" : [error localizedDescription],
+                                              }];
+                         return;
+                       }
+                       if (token == nil) {
+                         DLog(@"RNFBAppCheck - getToken - Unable to retrieve App "
+                              @"Check token.");
+                         [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                                           userInfo:(NSMutableDictionary *)@{
+                                                             @"code" : @"token-null",
+                                                             @"message" : @"no token fetched",
+                                                           }];
+                         return;
+                       }
 
-                 NSMutableDictionary *tokenResultDictionary = [NSMutableDictionary new];
-                 tokenResultDictionary[@"token"] = token.token;
-                 resolve(tokenResultDictionary);
-               }];
+                       NSMutableDictionary *tokenResultDictionary = [NSMutableDictionary new];
+                       tokenResultDictionary[@"token"] = token.token;
+                       resolve(tokenResultDictionary);
+                     }];
 }
 
 RCT_EXPORT_METHOD(getLimitedUseToken
@@ -140,32 +151,35 @@ RCT_EXPORT_METHOD(getLimitedUseToken
                   : (RCTPromiseRejectBlock)reject) {
   FIRAppCheck *appCheck = [FIRAppCheck appCheckWithApp:firebaseApp];
   DLog(@"appName %@", firebaseApp.name);
-  [appCheck limitedUseTokenWithCompletion:^(FIRAppCheckToken *_Nullable token,
-                                            NSError *_Nullable error) {
-    if (error != nil) {
-      // Handle any errors if the token was not retrieved.
-      DLog(@"RNFBAppCheck - getLimitedUseToken - Unable to retrieve App Check token: %@", error);
-      [RNFBSharedUtils rejectPromiseWithUserInfo:reject
-                                        userInfo:(NSMutableDictionary *)@{
-                                          @"code" : @"token-error",
-                                          @"message" : [error localizedDescription],
-                                        }];
-      return;
-    }
-    if (token == nil) {
-      DLog(@"RNFBAppCheck - getLimitedUseToken - Unable to retrieve App Check token.");
-      [RNFBSharedUtils rejectPromiseWithUserInfo:reject
-                                        userInfo:(NSMutableDictionary *)@{
-                                          @"code" : @"token-null",
-                                          @"message" : @"no token fetched",
-                                        }];
-      return;
-    }
+  [appCheck
+      limitedUseTokenWithCompletion:^(FIRAppCheckToken *_Nullable token, NSError *_Nullable error) {
+        if (error != nil) {
+          // Handle any errors if the token was not retrieved.
+          DLog(@"RNFBAppCheck - getLimitedUseToken - Unable to retrieve App Check "
+               @"token: %@",
+               error);
+          [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                            userInfo:(NSMutableDictionary *)@{
+                                              @"code" : @"token-error",
+                                              @"message" : [error localizedDescription],
+                                            }];
+          return;
+        }
+        if (token == nil) {
+          DLog(@"RNFBAppCheck - getLimitedUseToken - Unable to retrieve App Check "
+               @"token.");
+          [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                            userInfo:(NSMutableDictionary *)@{
+                                              @"code" : @"token-null",
+                                              @"message" : @"no token fetched",
+                                            }];
+          return;
+        }
 
-    NSMutableDictionary *tokenResultDictionary = [NSMutableDictionary new];
-    tokenResultDictionary[@"token"] = token.token;
-    resolve(tokenResultDictionary);
-  }];
+        NSMutableDictionary *tokenResultDictionary = [NSMutableDictionary new];
+        tokenResultDictionary[@"token"] = token.token;
+        resolve(tokenResultDictionary);
+      }];
 }
 
 @end

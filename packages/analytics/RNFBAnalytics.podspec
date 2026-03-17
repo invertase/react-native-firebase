@@ -1,4 +1,5 @@
 require 'json'
+require '../app/firebase_spm'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 appPackage = JSON.parse(File.read(File.join('..', 'app', 'package.json')))
 
@@ -45,24 +46,31 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  s.dependency          'FirebaseAnalytics/Core', firebase_sdk_version
-  if defined?($RNFirebaseAnalyticsWithoutAdIdSupport) && ($RNFirebaseAnalyticsWithoutAdIdSupport == true)
-    Pod::UI.puts "#{s.name}: Not installing FirebaseAnalytics/IdentitySupport Pod, no IDFA will be collected."
-  else
-    if !defined?($RNFirebaseAnalyticsWithoutAdIdSupport)
-      Pod::UI.puts "#{s.name}: Using FirebaseAnalytics/IdentitySupport with Ad Ids. May require App Tracking Transparency. Not allowed for Kids apps."
-      Pod::UI.puts "#{s.name}: You may set variable `$RNFirebaseAnalyticsWithoutAdIdSupport=true` in Podfile to use analytics without ad ids."
-    end
-    s.dependency          'FirebaseAnalytics/IdentitySupport', firebase_sdk_version
+  # Analytics has conditional dependencies that vary between SPM and CocoaPods.
+  # SPM: FirebaseAnalytics includes ad ID support by default.
+  # CocoaPods: IdentitySupport is a separate subspec controlled by $RNFirebaseAnalyticsWithoutAdIdSupport.
+  firebase_dependency(s, firebase_sdk_version, ['FirebaseAnalytics'], 'FirebaseAnalytics/Core')
 
-    # Special pod for on-device conversion
-    if defined?($RNFirebaseAnalyticsEnableAdSupport) && ($RNFirebaseAnalyticsEnableAdSupport == true)
-      Pod::UI.puts "#{s.name}: Adding Apple AdSupport.framework dependency for optional analytics features"
-      s.frameworks =       'AdSupport'
+  unless defined?(spm_dependency)
+    # CocoaPods-only: conditional IdentitySupport subspec
+    if defined?($RNFirebaseAnalyticsWithoutAdIdSupport) && ($RNFirebaseAnalyticsWithoutAdIdSupport == true)
+      Pod::UI.puts "#{s.name}: Not installing FirebaseAnalytics/IdentitySupport Pod, no IDFA will be collected."
+    else
+      if !defined?($RNFirebaseAnalyticsWithoutAdIdSupport)
+        Pod::UI.puts "#{s.name}: Using FirebaseAnalytics/IdentitySupport with Ad Ids. May require App Tracking Transparency. Not allowed for Kids apps."
+        Pod::UI.puts "#{s.name}: You may set variable `$RNFirebaseAnalyticsWithoutAdIdSupport=true` in Podfile to use analytics without ad ids."
+      end
+      s.dependency          'FirebaseAnalytics/IdentitySupport', firebase_sdk_version
     end
   end
 
-  # Special pod for on-device conversion
+  # AdSupport framework (works with both SPM and CocoaPods)
+  if defined?($RNFirebaseAnalyticsEnableAdSupport) && ($RNFirebaseAnalyticsEnableAdSupport == true)
+    Pod::UI.puts "#{s.name}: Adding Apple AdSupport.framework dependency for optional analytics features"
+    s.frameworks =       'AdSupport'
+  end
+
+  # GoogleAdsOnDeviceConversion (CocoaPods only, not available in firebase-ios-sdk SPM)
   if defined?($RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion) && ($RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion == true)
     Pod::UI.puts "#{s.name}: GoogleAdsOnDeviceConversion pod added"
     s.dependency          'GoogleAdsOnDeviceConversion'

@@ -1,4 +1,5 @@
 require 'json'
+require '../app/firebase_spm'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 appPackage = JSON.parse(File.read(File.join('..', 'app', 'package.json')))
 
@@ -42,7 +43,7 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  s.dependency          'Firebase/AppDistribution', firebase_sdk_version
+  firebase_dependency(s, firebase_sdk_version, ['FirebaseAppDistribution-Beta'], 'Firebase/AppDistribution')
 
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"

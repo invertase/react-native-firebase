@@ -30,9 +30,11 @@ import { VertexAITestComponent } from './vertexai/vertexai';
 import { AuthMFADemonstrator } from './auth/auth-mfa-demonstrator';
 import { HttpsCallableTestComponent } from './functions/https-callable';
 import { StreamingCallableTestComponent } from './functions/streaming-callable';
+import { SPMVerificationComponent } from './spm-verification';
 
 const testComponents = {
   // List your imported components here...
+  'SPM Dependency Verification': SPMVerificationComponent,
   'Crashlytics Test Crash': CrashTestComponent,
   'AI Generation Example': AITestComponent,
   'Database onChildMoved Test': DatabaseOnChildMovedTest,

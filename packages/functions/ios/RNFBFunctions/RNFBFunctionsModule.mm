@@ -15,7 +15,19 @@
  *
  */
 
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#elif __has_include(<FirebaseFunctions/FirebaseFunctions.h>)
+#import <FirebaseCore/FirebaseCore.h>
+#import <FirebaseFunctions/FirebaseFunctions.h>
+#elif __has_include(<FirebaseCore/FirebaseCore.h>)
+#import <FirebaseCore/FirebaseCore.h>
+// SPM: FirebaseFunctions is a pure-Swift module — no ObjC headers available.
+// FIRFunctions instances are created via
+// RNFBFunctionsCallHandler.createFunctions() factory.
+#else
+@import FirebaseCore;
+#endif
 #import <React/RCTUtils.h>
 
 #import "NativeRNFBTurboFunctions.h"
@@ -30,9 +42,9 @@
 #elif __has_include("RNFBFunctions-Swift.h")
 // If `use_frameworks!` is not in use (for example, while using pre-built
 // react-native core) then header imports based on frameworks assumptions fail.
-// So, if frameworks are not available, fall back to importing the header directly, it
-// should be findable from a header search path pointing to the build
-// directory. See firebase-ios-sdk#12611 for more context.
+// So, if frameworks are not available, fall back to importing the header
+// directly, it should be findable from a header search path pointing to the
+// build directory. See firebase-ios-sdk#12611 for more context.
 #import "RNFBFunctions-Swift.h"
 #endif
 
@@ -82,29 +94,27 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
               options:(JS::NativeRNFBTurboFunctions::SpecHttpsCallableOptions &)options
               resolve:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject {
-  NSURL *url = [NSURL URLWithString:customUrlOrRegion];
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
-  FIRFunctions *functions =
-      (url && url.scheme && url.host)
-          ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
-          : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
+  // Use Swift factory — FirebaseFunctions is a pure-Swift SPM module,
+  // cannot be imported directly from .mm files.
+  id functions = [RNFBFunctionsCallHandler createFunctionsForApp:firebaseApp
+                                               customUrlOrRegion:customUrlOrRegion
+                                                    emulatorHost:emulatorHost
+                                                    emulatorPort:(int)emulatorPort];
 
   id callableData = data.data();
 
-  // In reality, this value is always null, because we always call it with null data
-  // on the javascript side for some reason. Check for that case (which should be 100% of the time)
-  // and set it to an `NSNull` (versus the `Optional<Any>` Swift will see from `valueForKey` so that
-  // FirebaseFunctions serializer won't have a validation failure for an unknown type.
+  // In reality, this value is always null, because we always call it with null
+  // data on the javascript side for some reason. Check for that case (which
+  // should be 100% of the time) and set it to an `NSNull` (versus the
+  // `Optional<Any>` Swift will see from `valueForKey` so that FirebaseFunctions
+  // serializer won't have a validation failure for an unknown type.
   if (callableData == nil) {
     callableData = [NSNull null];
   }
 
   std::optional<double> timeout = options.timeout();
-
-  if (emulatorHost != nil) {
-    [functions useEmulatorWithHost:emulatorHost port:(int)emulatorPort];
-  }
 
   RNFBFunctionsCallHandler *handler = [[RNFBFunctionsCallHandler alloc] init];
 
@@ -140,30 +150,26 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
                          (JS::NativeRNFBTurboFunctions::SpecHttpsCallableFromUrlOptions &)options
                      resolve:(RCTPromiseResolveBlock)resolve
                       reject:(RCTPromiseRejectBlock)reject {
-  NSURL *customUrl = [NSURL URLWithString:customUrlOrRegion];
   FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
-  FIRFunctions *functions =
-      (customUrl && customUrl.scheme && customUrl.host)
-          ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
-          : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
+  id functions = [RNFBFunctionsCallHandler createFunctionsForApp:firebaseApp
+                                               customUrlOrRegion:customUrlOrRegion
+                                                    emulatorHost:emulatorHost
+                                                    emulatorPort:(int)emulatorPort];
 
   id callableData = data.data();
 
-  // In reality, this value is always null, because we always call it with null data
-  // on the javascript side for some reason. Check for that case (which should be 100% of the time)
-  // and set it to an `NSNull` (versus the `Optional<Any>` Swift will see from `valueForKey` so that
-  // FirebaseFunctions serializer won't have a validation failure for an unknown type.
+  // In reality, this value is always null, because we always call it with null
+  // data on the javascript side for some reason. Check for that case (which
+  // should be 100% of the time) and set it to an `NSNull` (versus the
+  // `Optional<Any>` Swift will see from `valueForKey` so that FirebaseFunctions
+  // serializer won't have a validation failure for an unknown type.
   if (callableData == nil) {
     callableData = [NSNull null];
   }
 
   std::optional<double> timeout = options.timeout();
   std::optional<bool> limitedUseAppCheckToken = options.limitedUseAppCheckTokens();
-
-  if (emulatorHost != nil) {
-    [functions useEmulatorWithHost:emulatorHost port:(int)emulatorPort];
-  }
 
   RNFBFunctionsCallHandler *handler = [[RNFBFunctionsCallHandler alloc] init];
 
@@ -246,20 +252,15 @@ RCT_EXPORT_MODULE(NativeRNFBTurboFunctions)
   NSNumber *listenerIdNumber = @((int)listenerId);
 
   if (@available(iOS 15.0, macOS 12.0, *)) {
-    NSURL *customUrl = [NSURL URLWithString:customUrlOrRegion];
     FIRApp *firebaseApp = [RCTConvert firAppFromString:appName];
 
-    FIRFunctions *functions =
-        (customUrl && customUrl.scheme && customUrl.host)
-            ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
-            : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
+    id functions = [RNFBFunctionsCallHandler createFunctionsForApp:firebaseApp
+                                                 customUrlOrRegion:customUrlOrRegion
+                                                      emulatorHost:emulatorHost
+                                                      emulatorPort:(int)emulatorPort];
 
     if (data == nil) {
       data = [NSNull null];
-    }
-
-    if (emulatorHost != nil) {
-      [functions useEmulatorWithHost:emulatorHost port:(int)emulatorPort];
     }
 
     RNFBFunctionsStreamHandler *handler = [[RNFBFunctionsStreamHandler alloc] init];

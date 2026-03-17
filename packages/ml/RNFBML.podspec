@@ -1,5 +1,6 @@
 require 'json'
 require '../app/firebase_json'
+require '../app/firebase_spm'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 appPackage = JSON.parse(File.read(File.join('..', 'app', 'package.json')))
 
@@ -46,6 +47,9 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
+  # NOTE: Firebase/MLModelDownloader dependency is currently disabled
+  # When re-enabled, use: firebase_dependency(s, firebase_sdk_version,
+  #   ['FirebaseMLModelDownloader'], 'Firebase/MLModelDownloader')
   # s.dependency          'Firebase/MLModelDownloader', firebase_sdk_version
 
   if defined?($RNFirebaseAsStaticFramework)

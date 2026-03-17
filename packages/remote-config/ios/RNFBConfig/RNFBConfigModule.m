@@ -15,7 +15,12 @@
  *
  */
 
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#else
+@import FirebaseCore;
+@import FirebaseRemoteConfigInternal;
+#endif
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
 
