@@ -162,7 +162,7 @@ export interface FirestorePipelineResultInternal {
 /** Pipeline execution response received from native execution. */
 export interface FirestorePipelineSnapshotInternal {
   results?: FirestorePipelineResultInternal[];
-  executionTime?: FirestorePipelineTimestampInternal;
+  executionTime: FirestorePipelineTimestampInternal;
 }
 
 /** Options for snapshot listeners (includeMetadataChanges). */

@@ -131,6 +131,9 @@ describe('FirestorePipeline', function () {
 
       snapshot.results.should.have.length(1);
       should(snapshot.executionTime).be.ok();
+      should(snapshot.executionTime).have.property('toMillis').which.is.a.Function();
+      should(snapshot.executionTime.toMillis()).be.a.Number();
+      should(snapshot.executionTime.toMillis()).be.greaterThan(0);
 
       const first = snapshot.results[0];
       should(first.data()).eql({ score: 42, nested: { ok: true } });
@@ -384,7 +387,7 @@ describe('FirestorePipeline', function () {
           setDoc(doc(collectionRef, 'two'), { score: 5, category: 'A' }),
         ]);
 
-        const snapshot = await execute({
+        const executeOptions = {
           pipeline: db
             .pipeline()
             .collection(collectionRef)
@@ -393,8 +396,21 @@ describe('FirestorePipeline', function () {
             .select('score'),
           indexMode: 'recommended',
           rawOptions: { requestLabel: 'e2e-execute-options' },
-        });
+        };
 
+        if (Platform.ios) {
+          await expectAsyncError(
+            () => execute(executeOptions),
+            [
+              'pipelineExecute() does not support options.indexMode on iOS because the native Firestore pipeline SDK does not expose execute options.',
+              'pipelineExecute() does not support options.rawOptions on iOS because the native Firestore pipeline SDK does not expose execute options.',
+            ],
+            'firestore/unknown',
+          );
+          return;
+        }
+
+        const snapshot = await execute(executeOptions);
         snapshot.results.should.have.length(2);
         snapshot.results[0].data().score.should.equal(7);
         snapshot.results[1].data().score.should.equal(5);

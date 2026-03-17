@@ -300,6 +300,14 @@ export async function executeWebSdkPipeline(
 
   return {
     results,
-    executionTime: serializeTimestamp(snapshotRecord.executionTime),
+    executionTime: (() => {
+      const executionTime = serializeTimestamp(snapshotRecord.executionTime);
+      if (!executionTime) {
+        throw new Error(
+          'pipelineExecute() expected the web SDK snapshot to include executionTime.',
+        );
+      }
+      return executionTime;
+    })(),
   };
 }

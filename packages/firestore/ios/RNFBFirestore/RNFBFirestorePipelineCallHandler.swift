@@ -57,7 +57,19 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
           return
         }
 
-        completion(self.serializeSnapshot(snapshot, metadata: metadata), nil)
+        do {
+          completion(try self.serializeSnapshot(snapshot, metadata: metadata), nil)
+        } catch let error as PipelineValidationError {
+          completion(nil, [
+            "code": "firestore/unknown",
+            "message": error.message,
+          ])
+        } catch {
+          completion(nil, [
+            "code": "firestore/unknown",
+            "message": "Failed to serialize pipeline snapshot: \(error.localizedDescription)",
+          ])
+        }
       }
     } catch let error as PipelineValidationError {
       completion(nil, [
@@ -922,7 +934,7 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
   private func serializeSnapshot(
     _ snapshot: __PipelineSnapshotBridge?,
     metadata: PipelineExecutionMetadata
-  ) -> [AnyHashable: Any] {
+  ) throws -> [AnyHashable: Any] {
     var output: [AnyHashable: Any] = [:]
     let results = snapshot?.results ?? []
     let resultCount = results.count
@@ -931,11 +943,11 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
       serializeResult(result, fallbackPath: metadata.fallbackPath(for: index, resultCount: resultCount))
     }
 
-    if let executionTime = snapshot?.execution_time {
-      output["executionTime"] = serializeTimestamp(executionTime)
-    } else {
-      output["executionTime"] = NSNull()
+    guard let executionTime = snapshot?.execution_time else {
+      throw PipelineValidationError("pipelineExecute() expected native snapshot to include executionTime.")
     }
+
+    output["executionTime"] = serializeTimestamp(executionTime)
 
     return output
   }

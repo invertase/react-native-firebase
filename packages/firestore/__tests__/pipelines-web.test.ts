@@ -81,4 +81,29 @@ describe('Firestore web pipeline bridge', function () {
       message: createPipelineUnsupportedMessage(serializedPipeline as any),
     });
   });
+
+  it('throws when the web SDK snapshot omits executionTime', async function () {
+    const pipelineInstance: any = {};
+    const firestore = {
+      pipeline: jest.fn(() => ({
+        documents: jest.fn(() => pipelineInstance),
+      })),
+    } as any;
+
+    const execute = jest.fn(async () => ({
+      results: [],
+    }));
+
+    await expect(
+      executeWebSdkPipeline(
+        firestore,
+        {
+          source: { source: 'documents', documents: ['books/alpha'] },
+          stages: [],
+        },
+        undefined,
+        { execute },
+      ),
+    ).rejects.toThrow('pipelineExecute() expected the web SDK snapshot to include executionTime.');
+  });
 });

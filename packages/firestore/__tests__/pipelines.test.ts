@@ -235,6 +235,24 @@ describe('Firestore pipelines runtime', function () {
     }
   });
 
+  it('throws when pipelineExecute omits executionTime', async function () {
+    const db: any = firebase.firestore();
+    const originalNativeModule = db._nativeModule;
+    db._nativeModule = {
+      pipelineExecute: jest.fn(async () => ({
+        results: [{ path: 'firestore/a', data: { value: 42 } }],
+      })),
+    };
+
+    try {
+      await expect(execute(db.pipeline().documents(['firestore/a']))).rejects.toThrow(
+        'firebase.firestore().pipeline().execute(*) expected pipelineExecute() to return executionTime.',
+      );
+    } finally {
+      db._nativeModule = originalNativeModule;
+    }
+  });
+
   it('serializes global expression helpers with field names and constants', function () {
     const condition: any = greaterThan('rating' as any, 4 as any);
     expect(condition).toMatchObject({

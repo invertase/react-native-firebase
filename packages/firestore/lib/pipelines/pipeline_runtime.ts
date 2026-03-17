@@ -783,7 +783,12 @@ export async function executeRuntimePipeline(
     executeOptions,
   )) as FirestorePipelineSnapshotInternal;
 
-  const executionTime = parseTimestamp(nativeResponse?.executionTime) ?? FirestoreTimestamp.now();
+  const executionTime = parseTimestamp(nativeResponse?.executionTime);
+  if (!executionTime) {
+    throw new Error(
+      'firebase.firestore().pipeline().execute(*) expected pipelineExecute() to return executionTime.',
+    );
+  }
   const results = (nativeResponse?.results ?? []).map(
     result => new RuntimePipelineResult(runtimePipeline.firestore, result),
   );

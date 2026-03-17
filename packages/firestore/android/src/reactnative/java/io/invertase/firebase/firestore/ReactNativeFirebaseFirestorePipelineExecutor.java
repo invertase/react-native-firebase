@@ -247,7 +247,11 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
   private void resolvePipelineTask(Task<Pipeline.Snapshot> task, Promise promise) {
     if (task.isSuccessful()) {
       Pipeline.Snapshot snapshot = task.getResult();
-      promise.resolve(serializeSnapshot(snapshot));
+      try {
+        promise.resolve(serializeSnapshot(snapshot));
+      } catch (PipelineValidationException e) {
+        rejectPromiseWithCodeAndMessage(promise, "firestore/unknown", e.getMessage());
+      }
       return;
     }
 
@@ -829,7 +833,7 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     return rawStage;
   }
 
-  private WritableMap serializeSnapshot(Pipeline.Snapshot snapshot) {
+  private WritableMap serializeSnapshot(Pipeline.Snapshot snapshot) throws PipelineValidationException {
     WritableMap map = Arguments.createMap();
     WritableArray results = Arguments.createArray();
     List<PipelineResult> pipelineResults = snapshot != null ? snapshot.getResults() : null;
@@ -843,11 +847,11 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     map.putArray("results", results);
     if (snapshot != null) {
       WritableMap executionTime = serializeTimestamp(snapshot.getExecutionTime());
-      if (executionTime != null) {
-        map.putMap("executionTime", executionTime);
-      } else {
-        map.putNull("executionTime");
+      if (executionTime == null) {
+        throw new PipelineValidationException(
+            "pipelineExecute() expected native snapshot to include executionTime.");
       }
+      map.putMap("executionTime", executionTime);
     }
     return map;
   }
