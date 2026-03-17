@@ -465,14 +465,13 @@ describe('FirestorePipeline', function () {
           rawOptions: { requestLabel: 'e2e-execute-options' },
         };
 
-        if (Platform.ios) {
+        if (Platform.ios || Platform.android) {
           await expectAsyncError(
             () => execute(executeOptions),
             [
-              'pipelineExecute() does not support options.indexMode on iOS because the native Firestore pipeline SDK does not expose execute options.',
-              'pipelineExecute() does not support options.rawOptions on iOS because the native Firestore pipeline SDK does not expose execute options.',
+              'pipelineExecute() does not support options.indexMode on Android and iOS because native Firestore pipeline execute options are currently unstable or unavailable.',
+              'pipelineExecute() does not support options.rawOptions on Android and iOS because native Firestore pipeline execute options are currently unstable or unavailable.',
             ],
-            'firestore/unknown',
           );
           return;
         }

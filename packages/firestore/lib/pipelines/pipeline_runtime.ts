@@ -17,6 +17,8 @@
 
 import {
   isArray,
+  isAndroid,
+  isIOS,
   isNumber,
   isObject,
   isString,
@@ -796,6 +798,20 @@ export async function executeRuntimePipeline(
   pipelineOrOptions: Pipeline | PipelineExecuteOptions,
 ): Promise<PipelineSnapshot> {
   const { runtimePipeline, executeOptions } = parseExecuteInput(pipelineOrOptions);
+  if (isIOS || isAndroid) {
+    if (executeOptions.indexMode) {
+      throw new Error(
+        'pipelineExecute() does not support options.indexMode on Android and iOS because native Firestore pipeline execute options are currently unstable or unavailable.',
+      );
+    }
+
+    if (isRecord(executeOptions.rawOptions)) {
+      throw new Error(
+        'pipelineExecute() does not support options.rawOptions on Android and iOS because native Firestore pipeline execute options are currently unstable or unavailable.',
+      );
+    }
+  }
+
   const nativeResponse = (await runtimePipeline.firestore.native.pipelineExecute(
     runtimePipeline.serialize(),
     executeOptions,
