@@ -71,4 +71,12 @@ describe('Firestore pipeline native parity', function () {
       } as any),
     ).toBe(`${PIPELINE_UNSUPPORTED_BASE_MESSAGE} Unsupported source: documents.`);
   });
+
+  it('documents iOS-only rejection for pipeline execute and source options', function () {
+    const iosSource = readFileSync(IOS_EXECUTOR_PATH, 'utf8');
+
+    expect(iosSource).toContain('does not support options.indexMode on iOS');
+    expect(iosSource).toContain('does not support options.rawOptions on iOS');
+    expect(iosSource).toContain('does not support pipeline.source.rawOptions');
+  });
 });

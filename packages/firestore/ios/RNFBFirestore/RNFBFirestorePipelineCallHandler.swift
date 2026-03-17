@@ -41,6 +41,10 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
       let pipelineMap = try validateAndNormalizePipeline(pipeline, options: options)
       let metadata = buildExecutionMetadata(pipelineMap)
       let stageBridges = try buildStageBridges(firestore: firestore, pipeline: pipelineMap)
+
+      // FirebaseFirestoreInternal currently exposes only PipelineBridge.executeWithCompletion() and
+      // source-stage initializers without execute/source options. Reject these inputs on iOS until
+      // the native SDK exposes an options-bearing pipeline execution/source API.
       let bridge = PipelineBridge(stages: stageBridges, db: firestore)
 
       bridge.execute { snapshot, error in
@@ -102,9 +106,13 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
 
     switch sourceType {
     case "collection":
+      try rejectUnsupportedSourceRawOptions(source, sourceType: sourceType)
       _ = try requireNonEmptyString(source, key: "path", fieldName: "pipeline.source.path")
     case "collectionGroup":
+      try rejectUnsupportedSourceRawOptions(source, sourceType: sourceType)
       _ = try requireNonEmptyString(source, key: "collectionId", fieldName: "pipeline.source.collectionId")
+    case "database":
+      try rejectUnsupportedSourceRawOptions(source, sourceType: sourceType)
     case "documents":
       guard let documents = source["documents"] as? [Any] else {
         throw PipelineValidationError("pipelineExecute() expected pipeline.source.documents to be an array.")
@@ -162,13 +170,39 @@ public class RNFBFirestorePipelineCallHandler: NSObject {
       throw PipelineValidationError("pipelineExecute() expected options.indexMode to be a string.")
     }
 
-    if let indexMode = options["indexMode"] as? String, indexMode != "recommended" {
-      throw PipelineValidationError("pipelineExecute() only supports options.indexMode=\"recommended\".")
+    if let indexMode = options["indexMode"] as? String {
+      if indexMode != "recommended" {
+        throw PipelineValidationError("pipelineExecute() only supports options.indexMode=\"recommended\".")
+      }
+
+      throw PipelineValidationError(
+        "pipelineExecute() does not support options.indexMode on iOS because the native Firestore pipeline SDK does not expose execute options.")
     }
 
-    if let rawOptions = options["rawOptions"], !(rawOptions is [String: Any]) {
-      throw PipelineValidationError("pipelineExecute() expected options.rawOptions to be an object.")
+    if let rawOptions = options["rawOptions"] {
+      guard rawOptions is [String: Any] else {
+        throw PipelineValidationError("pipelineExecute() expected options.rawOptions to be an object.")
+      }
+
+      throw PipelineValidationError(
+        "pipelineExecute() does not support options.rawOptions on iOS because the native Firestore pipeline SDK does not expose execute options.")
     }
+  }
+
+  private func rejectUnsupportedSourceRawOptions(
+    _ source: [String: Any],
+    sourceType: String
+  ) throws {
+    guard let rawOptions = source["rawOptions"] else {
+      return
+    }
+
+    guard rawOptions is [String: Any] else {
+      throw PipelineValidationError("pipelineExecute() expected pipeline.source.rawOptions to be an object.")
+    }
+
+    throw PipelineValidationError(
+      "pipelineExecute() does not support pipeline.source.rawOptions for \(sourceType) on iOS because the native Firestore pipeline SDK does not expose source options.")
   }
 
   private func buildStageBridges(

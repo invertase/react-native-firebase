@@ -25,26 +25,37 @@ import type { Pipeline } from './pipeline';
 /**
  * @beta
  * Source stage options for collection.
+ *
+ * Note: `rawOptions` are currently applied on Android and web only. iOS rejects them because the
+ * native Firestore pipeline SDK does not yet expose collection source options.
  */
 export interface PipelineCollectionSourceOptions {
   path?: string;
   collectionRef?: CollectionReference;
+  rawOptions?: { [name: string]: unknown };
 }
 
 /**
  * @beta
  * Source stage options for collectionGroup.
+ *
+ * Note: `rawOptions` are currently applied on Android and web only. iOS rejects them because the
+ * native Firestore pipeline SDK does not yet expose collection group source options.
  */
 export interface PipelineCollectionGroupSourceOptions {
   collectionId?: string;
+  rawOptions?: { [name: string]: unknown };
 }
 
 /**
  * @beta
  * Source stage options for database.
+ *
+ * Note: `rawOptions` are currently applied on Android and web only. iOS rejects them because the
+ * native Firestore pipeline SDK does not yet expose database source options.
  */
 export interface PipelineDatabaseSourceOptions {
-  [key: string]: unknown;
+  rawOptions?: { [name: string]: unknown };
 }
 
 /**

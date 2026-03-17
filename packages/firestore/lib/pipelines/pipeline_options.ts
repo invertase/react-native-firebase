@@ -21,6 +21,9 @@ import type { StageOptions } from './stage_options';
 /**
  * @beta
  * Options for pipeline execute().
+ *
+ * Note: `indexMode` and `rawOptions` are currently applied on Android and web only. iOS rejects
+ * them because the native Firestore pipeline SDK does not yet expose execute options.
  */
 export interface PipelineExecuteOptions extends StageOptions {
   pipeline: Pipeline;
