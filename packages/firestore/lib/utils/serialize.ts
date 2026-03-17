@@ -202,6 +202,31 @@ export function generateNativeData(
   return getTypeMapInt('unknown');
 }
 
+function getArrayLikeEntries(value: unknown): unknown[] | undefined {
+  if (isArray(value)) {
+    return value;
+  }
+
+  if (isObject(value) && !isArray(value)) {
+    const record = value as Record<string, unknown>;
+    if (!Object.prototype.hasOwnProperty.call(record, '0')) {
+      return undefined;
+    }
+
+    const entries: unknown[] = [];
+    let index = 0;
+
+    while (Object.prototype.hasOwnProperty.call(record, String(index))) {
+      entries.push(record[String(index)]);
+      index += 1;
+    }
+
+    return entries;
+  }
+
+  return undefined;
+}
+
 export function parseNativeMap(
   firestore: Firestore,
   nativeData: Record<string, unknown> | null | undefined,
@@ -220,16 +245,24 @@ export function parseNativeMap(
 
 export function parseNativeArray(firestore: Firestore, nativeArray: unknown[]): unknown[] {
   const array: unknown[] = [];
-  if (nativeArray) {
-    for (let i = 0; i < nativeArray.length; i++) {
-      array.push(parseNativeData(firestore, nativeArray[i] as [number, unknown?]));
+  const normalizedArray = getArrayLikeEntries(nativeArray) ?? [];
+  if (normalizedArray) {
+    for (let i = 0; i < normalizedArray.length; i++) {
+      array.push(parseNativeData(firestore, normalizedArray[i] as [number, unknown?]));
     }
   }
   return array;
 }
 
 export function parseNativeData(firestore: Firestore, nativeArray: [number, unknown?]): unknown {
-  const [int, value] = nativeArray;
+  const normalizedTypeMap = getArrayLikeEntries(nativeArray) as [number, unknown?] | undefined;
+  if (!normalizedTypeMap || !isNumber(normalizedTypeMap[0])) {
+    // eslint-disable-next-line no-console
+    console.warn('Unknown data type received from native channel: malformed type map');
+    return undefined;
+  }
+
+  const [int, value] = normalizedTypeMap;
   const type = getTypeMapName(int);
 
   switch (type) {
@@ -253,7 +286,7 @@ export function parseNativeData(firestore: Firestore, nativeArray: [number, unkn
     case 'stringEmpty':
       return '';
     case 'array':
-      return parseNativeArray(firestore, (value ?? []) as unknown[]);
+      return parseNativeArray(firestore, (getArrayLikeEntries(value) ?? []) as unknown[]);
     case 'object':
       return parseNativeMap(firestore, value as Record<string, unknown>);
     case 'reference':
@@ -262,11 +295,11 @@ export function parseNativeData(firestore: Firestore, nativeArray: [number, unkn
         FirestorePath.fromName(value as string),
       );
     case 'geopoint': {
-      const v = (value ?? []) as number[];
+      const v = (getArrayLikeEntries(value) ?? []) as number[];
       return new FirestoreGeoPoint(v[0] ?? 0, v[1] ?? 0);
     }
     case 'timestamp': {
-      const v = (value ?? []) as number[];
+      const v = (getArrayLikeEntries(value) ?? []) as number[];
       return new FirestoreTimestamp(v[0] ?? 0, v[1] ?? 0);
     }
     case 'blob':

@@ -146,8 +146,20 @@ function parseTimestamp(
   return undefined;
 }
 
+function getNativeTypeMapArray(value: unknown): [number, unknown?] | undefined {
+  if (isArray(value) && value.length > 0 && isNumber(value[0])) {
+    return value as [number, unknown?];
+  }
+
+  if (isRecord(value) && isNumber(value[0])) {
+    return [value[0], value[1]];
+  }
+
+  return undefined;
+}
+
 function isNativeTypeMapValue(value: unknown): boolean {
-  return isArray(value) && value.length > 0 && isNumber(value[0]);
+  return getNativeTypeMapArray(value) !== undefined;
 }
 
 function isNativeTypeMapObject(value: unknown): value is Record<string, unknown> {
@@ -190,7 +202,13 @@ class RuntimePipelineResult<T = DocumentData> implements PipelineResult<T> {
 
   constructor(firestore: FirestoreInternal, nativeResult: FirestorePipelineResultInternal) {
     if (isNativeTypeMapObject(nativeResult.data)) {
-      this._data = parseNativeMap(firestore, nativeResult.data ?? {}) as T;
+      const normalizedData = Object.fromEntries(
+        Object.entries(nativeResult.data ?? {}).map(([key, value]) => [
+          key,
+          getNativeTypeMapArray(value) ?? value,
+        ]),
+      );
+      this._data = parseNativeMap(firestore, normalizedData) as T;
     } else {
       this._data = (nativeResult.data ?? {}) as T;
     }
