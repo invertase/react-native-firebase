@@ -16,13 +16,25 @@
  */
 
 #import "RNFBCrashlyticsInitProvider.h"
+#if __has_include(<Firebase/Firebase.h>)
 #import <Firebase/Firebase.h>
+#else
+@import FirebaseCore;
+#endif
+#if __has_include(<FirebaseCoreExtension/FIRAppInternal.h>)
 #import <FirebaseCoreExtension/FIRAppInternal.h>
 #import <FirebaseCoreExtension/FIRComponent.h>
 #import <FirebaseCoreExtension/FIRComponentContainer.h>
 #import <FirebaseCoreExtension/FIRComponentType.h>
 #import <FirebaseCoreExtension/FIRLibrary.h>
+#else
+@import FirebaseCoreExtension;
+#endif
+#if __has_include(<FirebaseCrashlytics/FIRCrashlytics.h>)
 #import <FirebaseCrashlytics/FIRCrashlytics.h>
+#else
+@import FirebaseCrashlytics;
+#endif
 #import "RNFBJSON.h"
 #import "RNFBMeta.h"
 #import "RNFBPreferences.h"

@@ -131,6 +131,7 @@
   "sdkVersions": {
     "ios": {
       "firebase": "12.15.0",
+      "firebaseSpmUrl": "https://github.com/firebase/firebase-ios-sdk.git",
       "iosTarget": "15.0",
       "macosTarget": "10.15",
       "tvosTarget": "15.0"

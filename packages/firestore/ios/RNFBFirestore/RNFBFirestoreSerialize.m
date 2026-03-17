@@ -16,7 +16,11 @@
  *
  */
 
+#if __has_include("FirebaseFirestore/FIRVectorValue.h")
 #import "FirebaseFirestore/FIRVectorValue.h"
+#elif __has_include(<FirebaseFirestore/FIRVectorValue.h>)
+#import <FirebaseFirestore/FIRVectorValue.h>
+#endif
 
 #import "RNFBFirestoreCommon.h"
 #import "RNFBFirestoreSerialize.h"

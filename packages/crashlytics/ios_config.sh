@@ -16,10 +16,19 @@
 #
 set -e
 
-if [[ ${PODS_ROOT} ]]; then
+if [[ ${PODS_ROOT} && -f "${PODS_ROOT}/FirebaseCrashlytics/run" ]]; then
   echo "info: Exec FirebaseCrashlytics Run from Pods"
   "${PODS_ROOT}/FirebaseCrashlytics/run"
-else
+elif [[ -f "${PROJECT_DIR}/FirebaseCrashlytics.framework/run" ]]; then
   echo "info: Exec FirebaseCrashlytics Run from framework"
   "${PROJECT_DIR}/FirebaseCrashlytics.framework/run"
+else
+  # SPM: upload-symbols is in the SourcePackages checkout
+  SPM_UPLOAD_SYMBOLS=$(find "${BUILD_DIR%Build/*}SourcePackages/checkouts/firebase-ios-sdk/Crashlytics" -name "upload-symbols" -type f 2>/dev/null | head -1)
+  if [[ -n "${SPM_UPLOAD_SYMBOLS}" ]]; then
+    echo "info: Exec FirebaseCrashlytics upload-symbols from SPM"
+    "${SPM_UPLOAD_SYMBOLS}" -gsp "${PROJECT_DIR}/GoogleService-Info.plist" -p ios "${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}"
+  else
+    echo "warning: FirebaseCrashlytics run script not found, skipping dSYM upload"
+  fi
 fi
