@@ -17,6 +17,7 @@
 
 const DATABASE_ID = 'firestore-pipeline-test';
 const COLLECTION = 'react-native-firebase-testing';
+const PIPELINE_TEST_BASE64 = 'eyJoZWxsbyI6IndvcmxkIn0=';
 
 async function expectAsyncError(run, expectedMessage, expectedCode) {
   try {
@@ -138,6 +139,63 @@ describe('FirestorePipeline', function () {
       const first = snapshot.results[0];
       should(first.data()).eql({ score: 42, nested: { ok: true } });
       should(first.get('nested.ok')).equal(true);
+    });
+
+    it('preserves typed Firestore values in pipeline result data', async function () {
+      const { execute } = firestorePipelinesModular;
+      const { getFirestore, doc, setDoc, Timestamp, Bytes, vector } = firestoreModular;
+
+      const db = getFirestore(DATABASE_ID);
+      const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+      const linkedRef = doc(db, `${COLLECTION}/${Utils.randString(12, '#aA')}`);
+      const createdAt = new Timestamp(1700000000, 123000000);
+      const updatedAt = new Timestamp(1700000001, 456000000);
+
+      await Promise.all([
+        setDoc(linkedRef, { label: 'linked-doc' }),
+        setDoc(doc(db, docPath), {
+          createdAt,
+          linkedRef,
+          payloadBytes: Bytes.fromBase64String(PIPELINE_TEST_BASE64),
+          embedding: vector([0.12, 0.34, 0.56]),
+          nested: {
+            updatedAt,
+            linkedRef,
+            payloadBytes: Bytes.fromBase64String(PIPELINE_TEST_BASE64),
+            embedding: vector([9, 8, 7]),
+          },
+        }),
+      ]);
+
+      const snapshot = await execute(
+        db
+          .pipeline()
+          .documents([docPath])
+          .select('createdAt', 'linkedRef', 'payloadBytes', 'embedding', 'nested'),
+      );
+
+      snapshot.results.should.have.length(1);
+
+      const first = snapshot.results[0];
+      const data = first.data();
+
+      data.createdAt.isEqual(createdAt).should.equal(true);
+      data.linkedRef.path.should.equal(linkedRef.path);
+      data.payloadBytes.toBase64().should.equal(PIPELINE_TEST_BASE64);
+      data.embedding.toArray().should.eql([0.12, 0.34, 0.56]);
+      data.nested.updatedAt.isEqual(updatedAt).should.equal(true);
+      data.nested.linkedRef.path.should.equal(linkedRef.path);
+      data.nested.payloadBytes.toBase64().should.equal(PIPELINE_TEST_BASE64);
+      data.nested.embedding.toArray().should.eql([9, 8, 7]);
+
+      first.get('createdAt').isEqual(createdAt).should.equal(true);
+      first.get('linkedRef').path.should.equal(linkedRef.path);
+      first.get('payloadBytes').toBase64().should.equal(PIPELINE_TEST_BASE64);
+      first.get('embedding').toArray().should.eql([0.12, 0.34, 0.56]);
+      first.get('nested.updatedAt').isEqual(updatedAt).should.equal(true);
+      first.get('nested.linkedRef').path.should.equal(linkedRef.path);
+      first.get('nested.payloadBytes').toBase64().should.equal(PIPELINE_TEST_BASE64);
+      first.get('nested.embedding').toArray().should.eql([9, 8, 7]);
     });
 
     it('throws helpful validation errors for invalid source arguments', function () {
