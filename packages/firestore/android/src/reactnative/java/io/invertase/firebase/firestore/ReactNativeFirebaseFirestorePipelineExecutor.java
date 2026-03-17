@@ -49,6 +49,7 @@ import com.google.firebase.firestore.pipeline.Expression;
 import com.google.firebase.firestore.pipeline.FindNearestOptions;
 import com.google.firebase.firestore.pipeline.FindNearestStage;
 import com.google.firebase.firestore.pipeline.Ordering;
+import com.google.firebase.firestore.pipeline.RawOptions;
 import com.google.firebase.firestore.pipeline.RawStage;
 import com.google.firebase.firestore.pipeline.SampleStage;
 import com.google.firebase.firestore.pipeline.Selectable;
@@ -100,10 +101,10 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
           executeOptions == null ? sdkPipeline.execute() : sdkPipeline.execute(executeOptions);
       executeTask.addOnCompleteListener(task -> resolvePipelineTask(task, promise));
     } catch (PipelineValidationException e) {
-      rejectPromiseWithCodeAndMessage(promise, "firestore/invalid-argument", e.getMessage());
+      rejectPromiseWithCodeAndMessage(promise, "invalid-argument", e.getMessage());
     } catch (Exception e) {
       rejectPromiseWithCodeAndMessage(
-          promise, "firestore/unknown", "Failed to execute pipeline: " + e.getMessage());
+          promise, "unknown", "Failed to execute pipeline: " + e.getMessage());
     }
   }
 
@@ -250,7 +251,7 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
       try {
         promise.resolve(serializeSnapshot(snapshot));
       } catch (PipelineValidationException e) {
-        rejectPromiseWithCodeAndMessage(promise, "firestore/unknown", e.getMessage());
+        rejectPromiseWithCodeAndMessage(promise, "unknown", e.getMessage());
       }
       return;
     }
@@ -262,7 +263,7 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     }
 
     rejectPromiseWithCodeAndMessage(
-        promise, "firestore/unknown", "Failed to execute pipeline: empty pipeline task response.");
+        promise, "unknown", "Failed to execute pipeline: empty pipeline task response.");
   }
 
   private Pipeline buildNativePipeline(ReadableMap pipeline) throws PipelineValidationException {
@@ -412,7 +413,7 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
             ? options.getMap("rawOptions")
             : null;
     if (rawOptions != null) {
-      executeOptions = applyPrimitiveRawOptions(executeOptions, rawOptions);
+      executeOptions = applyExecuteRawOptions(executeOptions, rawOptions);
       hasOptions = true;
     }
 
@@ -706,6 +707,7 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
 
     @SuppressWarnings("unchecked")
     ReadableMap otherPipelineMap = Arguments.makeNativeMap((Map<String, Object>) otherValue);
+    validatePipelineRequest(otherPipelineMap, null);
     Pipeline otherPipeline = buildNativePipeline(otherPipelineMap);
     return pipeline.union(otherPipeline);
   }
@@ -791,6 +793,125 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     }
 
     return options;
+  }
+
+  private Pipeline.ExecuteOptions applyExecuteRawOptions(
+      Pipeline.ExecuteOptions options, ReadableMap rawOptions) throws PipelineValidationException {
+    ReadableMapKeySetIterator iterator = rawOptions.keySetIterator();
+
+    while (iterator.hasNextKey()) {
+      String rawKey = iterator.nextKey();
+      String key = normalizeRawOptionKey(rawKey);
+      ReadableType type = rawOptions.getType(rawKey);
+      if (type == ReadableType.Null) {
+        continue;
+      }
+      if (type == ReadableType.Boolean) {
+        options = options.with(key, rawOptions.getBoolean(rawKey));
+        continue;
+      }
+      if (type == ReadableType.String) {
+        options = options.with(key, rawOptions.getString(rawKey));
+        continue;
+      }
+      if (type == ReadableType.Number) {
+        double value = rawOptions.getDouble(rawKey);
+        if (Math.floor(value) == value) {
+          options = options.with(key, (long) value);
+        } else {
+          options = options.with(key, value);
+        }
+        continue;
+      }
+      if (type == ReadableType.Map) {
+        ReadableMap nestedMap = rawOptions.getMap(rawKey);
+        if (nestedMap == null) {
+          throw new PipelineValidationException(
+              "pipelineExecute() expected options.rawOptions." + rawKey + " to be an object.");
+        }
+        options = options.with(key, toRawOptions(nestedMap, "options.rawOptions." + rawKey));
+        continue;
+      }
+      if (type == ReadableType.Array) {
+        throw new PipelineValidationException(
+            "pipelineExecute() received an unsupported raw option array for key: " + rawKey + ".");
+      }
+
+      throw new PipelineValidationException(
+          "pipelineExecute() received an unsupported raw option value for key: " + rawKey + ".");
+    }
+
+    return options;
+  }
+
+  private RawOptions toRawOptions(ReadableMap rawOptions, String fieldName)
+      throws PipelineValidationException {
+    RawOptions options = RawOptions.DEFAULT;
+    ReadableMapKeySetIterator iterator = rawOptions.keySetIterator();
+
+    while (iterator.hasNextKey()) {
+      String rawKey = iterator.nextKey();
+      String key = normalizeRawOptionKey(rawKey);
+      ReadableType type = rawOptions.getType(rawKey);
+      if (type == ReadableType.Null) {
+        continue;
+      }
+      if (type == ReadableType.Boolean) {
+        options = options.with(key, rawOptions.getBoolean(rawKey));
+        continue;
+      }
+      if (type == ReadableType.String) {
+        options = options.with(key, rawOptions.getString(rawKey));
+        continue;
+      }
+      if (type == ReadableType.Number) {
+        double value = rawOptions.getDouble(rawKey);
+        if (Math.floor(value) == value) {
+          options = options.with(key, (long) value);
+        } else {
+          options = options.with(key, value);
+        }
+        continue;
+      }
+      if (type == ReadableType.Map) {
+        ReadableMap nestedMap = rawOptions.getMap(rawKey);
+        if (nestedMap == null) {
+          throw new PipelineValidationException(
+              "pipelineExecute() expected " + fieldName + "." + rawKey + " to be an object.");
+        }
+        options = options.with(key, toRawOptions(nestedMap, fieldName + "." + rawKey));
+        continue;
+      }
+      if (type == ReadableType.Array) {
+        throw new PipelineValidationException(
+            "pipelineExecute() received an unsupported raw option array for key: " + rawKey + ".");
+      }
+
+      throw new PipelineValidationException(
+          "pipelineExecute() received an unsupported raw option value for key: " + rawKey + ".");
+    }
+
+    return options;
+  }
+
+  private String normalizeRawOptionKey(String key) {
+    if (key == null || key.isEmpty()) {
+      return key;
+    }
+
+    StringBuilder normalized = new StringBuilder();
+    for (int i = 0; i < key.length(); i++) {
+      char character = key.charAt(i);
+      if (Character.isUpperCase(character)) {
+        if (i > 0) {
+          normalized.append('_');
+        }
+        normalized.append(Character.toLowerCase(character));
+      } else {
+        normalized.append(character);
+      }
+    }
+    return normalized.toString();
   }
 
   private RawStage applyPrimitiveRawStageOptions(RawStage rawStage, ReadableMap options)
@@ -1597,14 +1718,18 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     if ("IN".equals(normalizedOperator)) {
       if (!(rightValue instanceof List)) {
         throw new PipelineValidationException(
-            "pipelineExecute() expected " + fieldName + ".value to be an array for operator IN.");
+            "Client specified an invalid argument. pipelineExecute() expected "
+                + fieldName
+                + ".value to be an array for operator IN.");
       }
       return fieldExpression.equalAny((List<?>) rightValue);
     }
     if ("NOT_IN".equals(normalizedOperator)) {
       if (!(rightValue instanceof List)) {
         throw new PipelineValidationException(
-            "pipelineExecute() expected " + fieldName + ".value to be an array for operator NOT_IN.");
+            "Client specified an invalid argument. pipelineExecute() expected "
+                + fieldName
+                + ".value to be an array for operator NOT_IN.");
       }
       return fieldExpression.notEqualAny((List<?>) rightValue);
     }
