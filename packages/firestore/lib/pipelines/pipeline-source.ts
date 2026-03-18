@@ -15,11 +15,7 @@
  *
  */
 
-import type {
-  CollectionReference,
-  DocumentReference,
-  Query,
-} from '../types/firestore';
+import type { CollectionReference, DocumentReference, Query } from '../types/firestore';
 import type { Pipeline } from './pipeline';
 
 /**
