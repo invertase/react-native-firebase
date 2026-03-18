@@ -42,13 +42,8 @@ import { objectToWriteable } from './convert';
 import { buildQuery } from './query';
 import type { FilterSpec, OrderSpec, QueryOptions } from './query';
 
-type PipelineExecuteFn = (...args: unknown[]) => Promise<unknown>;
-
-interface WebPipelineSdkHooks {
-  execute?: PipelineExecuteFn;
-}
-
 type WebPipelineMethod = (...args: unknown[]) => unknown;
+type WebPipelineExecuteMethod = (pipeline: unknown, options?: unknown) => Promise<unknown>;
 
 type WebPipelineInstance = Record<string, unknown> & {
   execute?: (options?: unknown) => Promise<unknown>;
@@ -290,6 +285,104 @@ function isSerializedPipeline(value: unknown): value is FirestorePipelineSeriali
   return isRecord(value) && isRecord(value.source) && Array.isArray(value.stages);
 }
 
+function buildCollectionSourcePipeline(
+  pipelineSource: WebPipelineSource,
+  source: Extract<FirestorePipelineSerializedInternal['source'], { source: 'collection' }>,
+): WebPipelineInstance | undefined {
+  const collectionMethod = pipelineSource.collection;
+  if (typeof collectionMethod !== 'function') {
+    return undefined;
+  }
+
+  return (
+    isRecord(source.rawOptions) && source.rawOptions
+      ? collectionMethod.call(pipelineSource, {
+          collection: source.path,
+          rawOptions: source.rawOptions,
+        })
+      : collectionMethod.call(pipelineSource, source.path)
+  ) as WebPipelineInstance;
+}
+
+function buildCollectionGroupSourcePipeline(
+  pipelineSource: WebPipelineSource,
+  source: Extract<FirestorePipelineSerializedInternal['source'], { source: 'collectionGroup' }>,
+): WebPipelineInstance | undefined {
+  const collectionGroupMethod = pipelineSource.collectionGroup;
+  if (typeof collectionGroupMethod !== 'function') {
+    return undefined;
+  }
+
+  return (
+    isRecord(source.rawOptions) && source.rawOptions
+      ? collectionGroupMethod.call(pipelineSource, {
+          collectionId: source.collectionId,
+          rawOptions: source.rawOptions,
+        })
+      : collectionGroupMethod.call(pipelineSource, source.collectionId)
+  ) as WebPipelineInstance;
+}
+
+function buildDatabaseSourcePipeline(
+  pipelineSource: WebPipelineSource,
+  source: Extract<FirestorePipelineSerializedInternal['source'], { source: 'database' }>,
+): WebPipelineInstance | undefined {
+  const databaseMethod = pipelineSource.database;
+  if (typeof databaseMethod !== 'function') {
+    return undefined;
+  }
+
+  return (
+    isRecord(source.rawOptions) && source.rawOptions
+      ? databaseMethod.call(pipelineSource, { rawOptions: source.rawOptions })
+      : databaseMethod.call(pipelineSource)
+  ) as WebPipelineInstance;
+}
+
+function buildDocumentsSourcePipeline(
+  pipelineSource: WebPipelineSource,
+  source: Extract<FirestorePipelineSerializedInternal['source'], { source: 'documents' }>,
+): WebPipelineInstance | undefined {
+  const documentsMethod = pipelineSource.documents;
+  if (typeof documentsMethod !== 'function') {
+    return undefined;
+  }
+
+  return (
+    isRecord(source.rawOptions) && source.rawOptions
+      ? documentsMethod.call(pipelineSource, {
+          docs: source.documents,
+          rawOptions: source.rawOptions,
+        })
+      : documentsMethod.call(pipelineSource, source.documents)
+  ) as WebPipelineInstance;
+}
+
+function buildQuerySourcePipeline(
+  firestore: Firestore,
+  pipelineSource: WebPipelineSource,
+  source: Extract<FirestorePipelineSerializedInternal['source'], { source: 'query' }>,
+): WebPipelineInstance {
+  if (typeof pipelineSource.createFrom !== 'function') {
+    throw createLiteUnsupportedError(
+      'pipelineExecute() expected pipeline source to support createFrom(query).',
+    );
+  }
+
+  const queryRef =
+    source.queryType === 'collectionGroup'
+      ? (collectionGroup(firestore, source.path) as unknown as Query)
+      : (collection(firestore, source.path) as unknown as Query);
+  const query = buildQuery(
+    queryRef,
+    source.filters as FilterSpec[],
+    source.orders as OrderSpec[],
+    source.options as QueryOptions,
+  );
+
+  return pipelineSource.createFrom(query as unknown as Query) as WebPipelineInstance;
+}
+
 function applyPipelineStage(
   current: WebPipelineInstance,
   stageName: string,
@@ -450,81 +543,21 @@ function buildWebSdkPipeline(
   let currentPipeline: WebPipelineInstance | undefined;
 
   switch (source.source) {
-    case 'collection': {
-      const collectionMethod = pipelineSource.collection;
-      if (typeof collectionMethod === 'function') {
-        currentPipeline = (
-          isRecord(source.rawOptions) && source.rawOptions
-            ? collectionMethod.call(pipelineSource, {
-                collection: source.path,
-                rawOptions: source.rawOptions,
-              })
-            : collectionMethod.call(pipelineSource, source.path)
-        ) as WebPipelineInstance;
-      }
+    case 'collection':
+      currentPipeline = buildCollectionSourcePipeline(pipelineSource, source);
       break;
-    }
-    case 'collectionGroup': {
-      const collectionGroupMethod = pipelineSource.collectionGroup;
-      if (typeof collectionGroupMethod === 'function') {
-        currentPipeline = (
-          isRecord(source.rawOptions) && source.rawOptions
-            ? collectionGroupMethod.call(pipelineSource, {
-                collectionId: source.collectionId,
-                rawOptions: source.rawOptions,
-              })
-            : collectionGroupMethod.call(pipelineSource, source.collectionId)
-        ) as WebPipelineInstance;
-      }
+    case 'collectionGroup':
+      currentPipeline = buildCollectionGroupSourcePipeline(pipelineSource, source);
       break;
-    }
-    case 'database': {
-      const databaseMethod = pipelineSource.database;
-      if (typeof databaseMethod === 'function') {
-        currentPipeline = (
-          isRecord(source.rawOptions) && source.rawOptions
-            ? databaseMethod.call(pipelineSource, { rawOptions: source.rawOptions })
-            : databaseMethod.call(pipelineSource)
-        ) as WebPipelineInstance;
-      }
+    case 'database':
+      currentPipeline = buildDatabaseSourcePipeline(pipelineSource, source);
       break;
-    }
-    case 'documents': {
-      const documentsMethod = pipelineSource.documents;
-      if (typeof documentsMethod === 'function') {
-        currentPipeline = (
-          isRecord(source.rawOptions) && source.rawOptions
-            ? documentsMethod.call(pipelineSource, {
-                docs: source.documents,
-                rawOptions: source.rawOptions,
-              })
-            : documentsMethod.call(pipelineSource, source.documents)
-        ) as WebPipelineInstance;
-      }
+    case 'documents':
+      currentPipeline = buildDocumentsSourcePipeline(pipelineSource, source);
       break;
-    }
-    case 'query': {
-      if (typeof pipelineSource.createFrom !== 'function') {
-        throw createLiteUnsupportedError(
-          'pipelineExecute() expected pipeline source to support createFrom(query).',
-        );
-      }
-
-      const queryRef =
-        source.queryType === 'collectionGroup'
-          ? (collectionGroup(firestore, source.path) as unknown as Query)
-          : (collection(firestore, source.path) as unknown as Query);
-      const query = buildQuery(
-        queryRef,
-        source.filters as FilterSpec[],
-        source.orders as OrderSpec[],
-        source.options as QueryOptions,
-      );
-      currentPipeline = (pipelineSource.createFrom as (query: Query) => unknown)(
-        query as unknown as Query,
-      ) as WebPipelineInstance;
+    case 'query':
+      currentPipeline = buildQuerySourcePipeline(firestore, pipelineSource, source);
       break;
-    }
     default:
       throw new Error('pipelineExecute() received an unknown source type.');
   }
@@ -546,46 +579,42 @@ function buildWebSdkPipeline(
   return currentPipeline;
 }
 
+function getWebSdkExecute(): WebPipelineExecuteMethod | undefined {
+  const execute = (firebaseFirestorePipelines as { execute?: unknown }).execute;
+  return typeof execute === 'function' ? (execute as WebPipelineExecuteMethod) : undefined;
+}
+
+async function executeWebSdkPipelineSnapshot(
+  webSdkPipeline: WebPipelineInstance,
+  options?: FirestorePipelineExecuteOptionsInternal,
+): Promise<unknown> {
+  const executeOptions = normalizeExecuteOptions(options);
+  const hasOptions = Object.keys(executeOptions).length > 0;
+  const sdkExecute = getWebSdkExecute();
+
+  if (sdkExecute) {
+    return hasOptions ? sdkExecute(webSdkPipeline, executeOptions) : sdkExecute(webSdkPipeline);
+  }
+
+  const pipelineExecute = webSdkPipeline.execute;
+  if (typeof pipelineExecute === 'function') {
+    return hasOptions
+      ? pipelineExecute.call(webSdkPipeline, executeOptions)
+      : pipelineExecute.call(webSdkPipeline);
+  }
+
+  throw createLiteUnsupportedError(
+    'pipelineExecute() expected either web execute(...) or pipeline.execute(...).',
+  );
+}
+
 export async function executeWebSdkPipeline(
   firestore: Firestore,
   pipeline: FirestorePipelineSerializedInternal,
   options?: FirestorePipelineExecuteOptionsInternal,
-  hooks?: WebPipelineSdkHooks,
 ): Promise<FirestorePipelineSnapshotInternal> {
   const webSdkPipeline = buildWebSdkPipeline(firestore, pipeline);
-  const executeOptions = normalizeExecuteOptions(options);
-  const hasOptions = Object.keys(executeOptions).length > 0;
-
-  const sdkExecute = hooks?.execute;
-  const pipelineExecute = webSdkPipeline?.execute;
-
-  let rawSnapshot: unknown;
-  if (typeof sdkExecute === 'function') {
-    if (hasOptions) {
-      try {
-        rawSnapshot = await sdkExecute(webSdkPipeline, executeOptions);
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        const isLegacyObjectOverload =
-          message.includes('_terminated') ||
-          message.includes('Cannot read properties of undefined');
-        if (!isLegacyObjectOverload) {
-          throw error;
-        }
-        rawSnapshot = await sdkExecute({ pipeline: webSdkPipeline, ...executeOptions });
-      }
-    } else {
-      rawSnapshot = await sdkExecute(webSdkPipeline);
-    }
-  } else if (typeof pipelineExecute === 'function') {
-    rawSnapshot = hasOptions
-      ? await pipelineExecute.call(webSdkPipeline, executeOptions)
-      : await pipelineExecute.call(webSdkPipeline);
-  } else {
-    throw createLiteUnsupportedError(
-      'pipelineExecute() expected either web execute(...) or pipeline.execute(...).',
-    );
-  }
+  const rawSnapshot = await executeWebSdkPipelineSnapshot(webSdkPipeline, options);
 
   const snapshotRecord = isRecord(rawSnapshot) ? rawSnapshot : {};
   const results = Array.isArray(snapshotRecord.results)
