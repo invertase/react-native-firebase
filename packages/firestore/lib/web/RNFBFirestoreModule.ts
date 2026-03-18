@@ -39,7 +39,6 @@ import {
   terminate,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
 
-import { execute } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines';
 import type {
   Firestore,
   Transaction,
@@ -299,9 +298,7 @@ export default {
   ): Promise<FirestorePipelineSnapshotInternal> {
     return guard(async () => {
       const firestore = getCachedFirestoreInstance(appName, databaseId);
-      return executeWebSdkPipeline(firestore, pipeline, options, {
-        execute: execute as (input: unknown) => Promise<unknown>,
-      });
+      return executeWebSdkPipeline(firestore, pipeline, options);
     });
   },
 
