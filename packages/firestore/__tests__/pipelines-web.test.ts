@@ -1,7 +1,23 @@
-import { describe, expect, it, jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { execute } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines';
 import { executeWebSdkPipeline } from '../lib/web/pipeline';
 
+jest.mock('@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines', () => {
+  const actual = jest.requireActual(
+    '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines',
+  ) as Record<string, unknown>;
+
+  return {
+    ...actual,
+    execute: jest.fn(),
+  };
+});
+
 describe('Firestore web pipeline bridge', function () {
+  beforeEach(function () {
+    (execute as jest.Mock).mockReset();
+  });
+
   it('rehydrates serialized expression nodes before applying stages', async function () {
     const pipelineInstance: any = {};
     pipelineInstance.where = jest.fn(() => pipelineInstance);
@@ -16,7 +32,7 @@ describe('Firestore web pipeline bridge', function () {
       pipeline: jest.fn(() => pipelineSource),
     } as any;
 
-    const execute = jest.fn(async () => ({
+    (execute as jest.Mock).mockImplementation(async () => ({
       executionTime: { seconds: 7, nanoseconds: 0 },
       results: [],
     }));
@@ -97,7 +113,6 @@ describe('Firestore web pipeline bridge', function () {
         ],
       },
       undefined,
-      { execute },
     );
 
     const whereArg = (pipelineInstance.where as jest.Mock).mock.calls[0][0] as any;
@@ -126,7 +141,7 @@ describe('Firestore web pipeline bridge', function () {
       pipeline: jest.fn(() => pipelineSource),
     } as any;
 
-    const execute = jest.fn(async () => ({
+    (execute as jest.Mock).mockImplementation(async () => ({
       executionTime: { seconds: 11, nanoseconds: 42 },
       results: [
         {
@@ -152,17 +167,14 @@ describe('Firestore web pipeline bridge', function () {
         indexMode: 'recommended',
         rawOptions: { request_label: 'jest' },
       },
-      { execute },
     );
 
-    expect(pipelineSource.collection as jest.Mock).toHaveBeenCalledWith('books');
+    expect(pipelineSource.collection as jest.Mock).toHaveBeenCalledWith({
+      collection: 'books',
+    });
     expect(pipelineInstance.select).toHaveBeenCalledWith('title', 'rating');
     expect(pipelineInstance.limit).toHaveBeenCalledWith(1);
-    expect(execute as jest.Mock).toHaveBeenCalledWith({
-      pipeline: pipelineInstance,
-      indexMode: 'recommended',
-      rawOptions: { request_label: 'jest' },
-    });
+    expect(execute as jest.Mock).toHaveBeenCalledWith(pipelineInstance);
 
     expect(response).toEqual({
       executionTime: { seconds: 11, nanoseconds: 42 },
@@ -185,7 +197,7 @@ describe('Firestore web pipeline bridge', function () {
     } as const;
 
     await expect(
-      executeWebSdkPipeline({} as any, serializedPipeline as any, undefined, {}),
+      executeWebSdkPipeline({} as any, serializedPipeline as any, undefined),
     ).rejects.toThrow('pipelineExecute() expected a Firestore instance with pipeline() support.');
   });
 
@@ -197,7 +209,7 @@ describe('Firestore web pipeline bridge', function () {
       })),
     } as any;
 
-    const execute = jest.fn(async () => ({
+    (execute as jest.Mock).mockImplementation(async () => ({
       results: [],
     }));
 
@@ -209,7 +221,6 @@ describe('Firestore web pipeline bridge', function () {
           stages: [],
         },
         undefined,
-        { execute },
       ),
     ).rejects.toThrow('pipelineExecute() expected the web SDK snapshot to include executionTime.');
   });
@@ -225,7 +236,7 @@ describe('Firestore web pipeline bridge', function () {
       pipeline: jest.fn(() => pipelineSource),
     } as any;
 
-    const executeCollection = jest.fn(async () => ({
+    (execute as jest.Mock).mockImplementation(async () => ({
       executionTime: { seconds: 1, nanoseconds: 0 },
       results: [],
     }));
@@ -240,7 +251,6 @@ describe('Firestore web pipeline bridge', function () {
         stages: [],
       },
       undefined,
-      { execute: executeCollection },
     );
 
     expect(pipelineSource.collection as jest.Mock).toHaveBeenCalledWith({
@@ -248,7 +258,7 @@ describe('Firestore web pipeline bridge', function () {
       rawOptions: { force_index: 'idx_books' },
     });
 
-    const executeDocuments = jest.fn(async () => ({
+    (execute as jest.Mock).mockImplementation(async () => ({
       executionTime: { seconds: 2, nanoseconds: 0 },
       results: [],
     }));
@@ -263,7 +273,6 @@ describe('Firestore web pipeline bridge', function () {
         stages: [],
       },
       undefined,
-      { execute: executeDocuments },
     );
 
     expect(pipelineSource.documents as jest.Mock).toHaveBeenCalledWith({

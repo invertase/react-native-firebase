@@ -192,7 +192,7 @@ describe('Firestore pipelines runtime', function () {
     );
   });
 
-  it('validates execute input and forwards normalized execute options to native', async function () {
+  it('validates execute input and enforces native execute option guards', async function () {
     const db: any = firebase.firestore();
     const nativeExecute = jest.fn(async () => ({
       executionTime: [1735689600, 123000000],
@@ -204,24 +204,32 @@ describe('Firestore pipelines runtime', function () {
 
     try {
       const pipeline = db.pipeline().documents(['firestore/a']);
-      const snapshot = await execute({
-        pipeline,
-        indexMode: 'recommended',
-        rawOptions: { requestLabel: 'unit-test' },
-      });
+      const snapshot = await execute(pipeline);
 
       expect(nativeExecute).toHaveBeenCalledTimes(1);
-      expect((nativeExecute as any).mock.calls[0]).toEqual([
-        pipeline.serialize(),
-        {
-          indexMode: 'recommended',
-          rawOptions: { requestLabel: 'unit-test' },
-        },
-      ]);
+      expect((nativeExecute as any).mock.calls[0]).toEqual([pipeline.serialize(), {}]);
       expect(snapshot.results).toHaveLength(1);
       expect(snapshot.results[0]?.data()).toEqual({ value: 42 });
       expect(snapshot.results[0]?.id).toBe('a');
       expect(snapshot.executionTime.toMillis()).toBe(1735689600123);
+
+      await expect(
+        execute({
+          pipeline,
+          indexMode: 'recommended',
+        }),
+      ).rejects.toThrow(
+        'pipelineExecute() does not support options.indexMode on Android and iOS because native Firestore pipeline execute options are currently unstable or unavailable.',
+      );
+
+      await expect(
+        execute({
+          pipeline,
+          rawOptions: { requestLabel: 'unit-test' },
+        }),
+      ).rejects.toThrow(
+        'pipelineExecute() does not support options.rawOptions on Android and iOS because native Firestore pipeline execute options are currently unstable or unavailable.',
+      );
 
       await expect(execute('invalid-input' as any)).rejects.toThrow(
         'firebase.firestore().pipeline().execute(*) expected a Pipeline or PipelineExecuteOptions.',
