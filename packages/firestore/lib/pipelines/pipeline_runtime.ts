@@ -73,6 +73,11 @@ import type { PipelineExecuteOptions } from './pipeline_options';
 import { getFirestore } from '../modular';
 
 const PIPELINE_RUNTIME_SYMBOL = Symbol.for('RNFBFirestorePipelineRuntime');
+const PIPELINE_RUNTIME_INSTALLER_SYMBOL = Symbol.for('RNFBFirestorePipelineRuntimeInstaller');
+
+type GlobalWithPipelineInstaller = typeof globalThis & {
+  [PIPELINE_RUNTIME_INSTALLER_SYMBOL]?: (firestore?: FirestoreInternal) => void;
+};
 
 interface RuntimePipeline extends Pipeline {
   readonly [PIPELINE_RUNTIME_SYMBOL]: true;
@@ -734,12 +739,14 @@ export function createPipelineSource(firestore: FirestoreInternal): PipelineSour
   return new RuntimePipelineSourceImpl(firestore);
 }
 
-export function installPipelineRuntime(): void {
-  let firestore: FirestoreInternal;
-  try {
-    firestore = getFirestore() as FirestoreInternal;
-  } catch {
-    return;
+export function installPipelineRuntime(firestoreInstance?: FirestoreInternal): void {
+  let firestore = firestoreInstance;
+  if (!firestore) {
+    try {
+      firestore = getFirestore() as FirestoreInternal;
+    } catch {
+      return;
+    }
   }
 
   const prototype = Object.getPrototypeOf(firestore) as FirestorePipelinePrototypeInternal | null;
@@ -762,6 +769,11 @@ export function installPipelineRuntime(): void {
     enumerable: false,
     writable: true,
   });
+}
+
+export function registerPipelineRuntimeInstaller(): void {
+  const runtimeGlobal = globalThis as GlobalWithPipelineInstaller;
+  runtimeGlobal[PIPELINE_RUNTIME_INSTALLER_SYMBOL] = installPipelineRuntime;
 }
 
 function parseExecuteInput(pipelineOrOptions: Pipeline | PipelineExecuteOptions): {
