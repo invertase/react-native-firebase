@@ -42,7 +42,7 @@ import { objectToWriteable } from './convert';
 import { buildQuery } from './query';
 import type { FilterSpec, OrderSpec, QueryOptions } from './query';
 
-type PipelineExecuteFn = (input: unknown) => Promise<unknown>;
+type PipelineExecuteFn = (...args: unknown[]) => Promise<unknown>;
 
 interface WebPipelineSdkHooks {
   execute?: PipelineExecuteFn;
@@ -75,9 +75,14 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 type PipelineHelperFn = (...args: unknown[]) => unknown;
 type AliasedValue = { as: (name: string) => unknown };
+const WEB_PIPELINE_HELPER_ALIASES: Record<string, string> = {
+  lower: 'toLower',
+  upper: 'toUpper',
+};
 
 function getPipelineHelper(name: string): PipelineHelperFn {
-  const helper = (firebaseFirestorePipelines as Record<string, unknown>)[name];
+  const helperModule = firebaseFirestorePipelines as Record<string, unknown>;
+  const helper = helperModule[name] ?? helperModule[WEB_PIPELINE_HELPER_ALIASES[name] ?? ''];
   if (typeof helper !== 'function') {
     throw new Error(
       `pipelineExecute() cannot rebuild "${name}" because the web helper is missing.`,
@@ -300,12 +305,28 @@ function applyPipelineStage(
 
   switch (stageName) {
     case 'where':
+      if (isRecord(stageArgs.condition) && typeof stageArgs.condition.operator === 'string') {
+        const op = stageArgs.condition.operator.toUpperCase();
+        const isArrayOperator =
+          op === 'IN' ||
+          op === 'NOT_IN' ||
+          op === 'ARRAY_CONTAINS_ANY' ||
+          op === 'ARRAY_CONTAINS_ALL';
+        if (isArrayOperator && !Array.isArray(stageArgs.condition.value)) {
+          throw new Error('invalid argument');
+        }
+      }
       return (
         stageArgs.condition !== undefined
           ? method.call(current, stageArgs.condition)
           : method.call(current, stageArgs)
       ) as WebPipelineInstance;
     case 'select':
+      if (Array.isArray(stageArgs.selections) && stageArgs.selections.length === 0) {
+        throw new Error(
+          'pipelineExecute() expected stage.options.selections to contain at least one value.',
+        );
+      }
       return (
         Array.isArray(stageArgs.selections)
           ? method.call(current, ...stageArgs.selections)
@@ -324,6 +345,11 @@ function applyPipelineStage(
           : method.call(current, stageArgs)
       ) as WebPipelineInstance;
     case 'sort':
+      if (Array.isArray(stageArgs.orderings) && stageArgs.orderings.length === 0) {
+        throw new Error(
+          'pipelineExecute() expected stage.options.orderings to contain at least one value.',
+        );
+      }
       return (
         Array.isArray(stageArgs.orderings)
           ? method.call(current, ...stageArgs.orderings)
@@ -342,11 +368,23 @@ function applyPipelineStage(
           : method.call(current, stageArgs)
       ) as WebPipelineInstance;
     case 'distinct':
+      if (Array.isArray(stageArgs.groups) && stageArgs.groups.length === 0) {
+        throw new Error(
+          'pipelineExecute() expected stage.options.groups to contain at least one value.',
+        );
+      }
       return (
         Array.isArray(stageArgs.groups)
           ? method.call(current, ...stageArgs.groups)
           : method.call(current, stageArgs)
       ) as WebPipelineInstance;
+    case 'aggregate':
+      if (Array.isArray(stageArgs.accumulators) && stageArgs.accumulators.length === 0) {
+        throw new Error(
+          'pipelineExecute() expected stage.options.accumulators to contain at least one value.',
+        );
+      }
+      return method.call(current, stageArgs) as WebPipelineInstance;
     case 'replaceWith':
       return (
         stageArgs.map !== undefined
@@ -354,16 +392,25 @@ function applyPipelineStage(
           : method.call(current, stageArgs)
       ) as WebPipelineInstance;
     case 'sample':
+      if (typeof stageArgs.documents !== 'number' && typeof stageArgs.percentage !== 'number') {
+        throw new Error(
+          'pipelineExecute() expected sample stage to include documents or percentage.',
+        );
+      }
       return (
         typeof stageArgs.documents === 'number'
           ? method.call(current, stageArgs.documents)
           : method.call(current, stageArgs)
       ) as WebPipelineInstance;
     case 'union': {
-      const nested = isSerializedPipeline(stageArgs.other)
-        ? buildWebSdkPipeline(firestore, stageArgs.other)
-        : stageArgs.other;
-      return method.call(current, nested) as WebPipelineInstance;
+      const rawOther = stageOptions.other;
+      if (!isSerializedPipeline(rawOther)) {
+        throw new Error(
+          'pipelineExecute() expected stage.options.other to be a serialized pipeline object.',
+        );
+      }
+      const nested = buildWebSdkPipeline(firestore, rawOther);
+      return method.call(current, { other: nested }) as WebPipelineInstance;
     }
     case 'unnest':
       return (
@@ -514,9 +561,22 @@ export async function executeWebSdkPipeline(
 
   let rawSnapshot: unknown;
   if (typeof sdkExecute === 'function') {
-    rawSnapshot = hasOptions
-      ? await sdkExecute({ pipeline: webSdkPipeline, ...executeOptions })
-      : await sdkExecute(webSdkPipeline);
+    if (hasOptions) {
+      try {
+        rawSnapshot = await sdkExecute(webSdkPipeline, executeOptions);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        const isLegacyObjectOverload =
+          message.includes('_terminated') ||
+          message.includes('Cannot read properties of undefined');
+        if (!isLegacyObjectOverload) {
+          throw error;
+        }
+        rawSnapshot = await sdkExecute({ pipeline: webSdkPipeline, ...executeOptions });
+      }
+    } else {
+      rawSnapshot = await sdkExecute(webSdkPipeline);
+    }
   } else if (typeof pipelineExecute === 'function') {
     rawSnapshot = hasOptions
       ? await pipelineExecute.call(webSdkPipeline, executeOptions)
