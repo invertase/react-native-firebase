@@ -21,6 +21,13 @@ import {
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
 import * as firebaseFirestorePipelines from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines';
 import type {
+  AggregateFunction,
+  AliasedAggregate,
+  AliasedExpression,
+  Expression,
+  Ordering,
+} from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines';
+import type {
   Firestore,
   Query,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
@@ -41,6 +48,20 @@ interface WebPipelineSdkHooks {
   execute?: PipelineExecuteFn;
 }
 
+type WebPipelineMethod = (...args: unknown[]) => unknown;
+
+type WebPipelineInstance = Record<string, unknown> & {
+  execute?: (options?: unknown) => Promise<unknown>;
+};
+
+type WebPipelineSource = Record<string, unknown> & {
+  collection?: WebPipelineMethod;
+  collectionGroup?: WebPipelineMethod;
+  database?: WebPipelineMethod;
+  documents?: WebPipelineMethod;
+  createFrom?: (query: Query) => unknown;
+};
+
 const FIRESTORE_LITE_UNSUPPORTED_SUFFIX =
   ' This operation is unavailable because the web runtime uses Firestore Lite.';
 
@@ -53,6 +74,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 type PipelineHelperFn = (...args: unknown[]) => unknown;
+type AliasedValue = { as: (name: string) => unknown };
 
 function getPipelineHelper(name: string): PipelineHelperFn {
   const helper = (firebaseFirestorePipelines as Record<string, unknown>)[name];
@@ -64,58 +86,56 @@ function getPipelineHelper(name: string): PipelineHelperFn {
   return helper as PipelineHelperFn;
 }
 
-function reviveExpressionNode(node: Record<string, unknown>): unknown {
+function reviveExpressionNode(node: Record<string, unknown>): Expression {
   if (node.exprType === 'Field' || typeof node.path === 'string') {
-    return getPipelineHelper('field')(node.path);
+    return getPipelineHelper('field')(node.path) as Expression;
   }
 
   if (node.exprType === 'Constant' || Object.prototype.hasOwnProperty.call(node, 'value')) {
-    return getPipelineHelper('constant')(revivePipelineValue(node.value));
+    return getPipelineHelper('constant')(revivePipelineValue(node.value)) as Expression;
   }
 
   if (typeof node.name === 'string') {
     const args = Array.isArray(node.args) ? node.args.map(revivePipelineValue) : [];
-    return getPipelineHelper(node.name)(...args);
+    return getPipelineHelper(node.name)(...args) as Expression;
   }
 
   throw new Error('pipelineExecute() failed to rebuild a serialized expression node for web SDK.');
 }
 
-function reviveAggregateNode(node: Record<string, unknown>): unknown {
+function reviveAggregateNode(node: Record<string, unknown>): AggregateFunction {
   if (typeof node.kind !== 'string') {
     throw new Error('pipelineExecute() failed to rebuild aggregate node: missing aggregate kind.');
   }
 
   const args = Array.isArray(node.args) ? node.args.map(revivePipelineValue) : [];
-  return getPipelineHelper(node.kind)(...args);
+  return getPipelineHelper(node.kind)(...args) as AggregateFunction;
 }
 
-function reviveOrderingNode(node: Record<string, unknown>): unknown {
+function reviveOrderingNode(node: Record<string, unknown>): Ordering {
   if (!Object.prototype.hasOwnProperty.call(node, 'expr')) {
     throw new Error('pipelineExecute() failed to rebuild ordering node: missing expr.');
   }
 
   const direction = node.direction === 'descending' ? 'descending' : 'ascending';
-  return getPipelineHelper(direction)(revivePipelineValue(node.expr));
+  return getPipelineHelper(direction)(revivePipelineValue(node.expr)) as Ordering;
 }
 
-function reviveAliasedNode(node: Record<string, unknown>, nodeKey: 'expr' | 'aggregate'): unknown {
+function reviveAliasedNode(
+  node: Record<string, unknown>,
+  nodeKey: 'expr' | 'aggregate',
+): AliasedExpression | AliasedAggregate {
   const alias = typeof node.alias === 'string' ? node.alias : undefined;
   if (!alias) {
     throw new Error(`pipelineExecute() failed to rebuild aliased node: missing ${nodeKey} alias.`);
   }
 
   const value = revivePipelineValue(node[nodeKey]);
-  if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+  if (!value || (typeof value !== 'object' && typeof value !== 'function') || !('as' in value)) {
     throw new Error(`pipelineExecute() failed to rebuild aliased ${nodeKey}: invalid value.`);
   }
 
-  const asFn = (value as Record<string, unknown>).as;
-  if (typeof asFn !== 'function') {
-    throw new Error(`pipelineExecute() failed to rebuild aliased ${nodeKey}: missing as(name).`);
-  }
-
-  return asFn.call(value, alias);
+  return (value as AliasedValue).as(alias) as AliasedExpression | AliasedAggregate;
 }
 
 function isFlatAliasedFieldNode(value: Record<string, unknown>): boolean {
@@ -156,8 +176,8 @@ function revivePipelineValue(value: unknown): unknown {
 
   if (isFlatAliasedFieldNode(value)) {
     const alias = (value.alias ?? value.as) as string;
-    const field = getPipelineHelper('field')(value.path);
-    const asFn = (field as Record<string, unknown>).as;
+    const field = getPipelineHelper('field')(value.path) as Expression & Partial<AliasedValue>;
+    const asFn = field.as;
     if (typeof asFn !== 'function') {
       throw new Error('pipelineExecute() failed to rebuild flat aliased field for web SDK.');
     }
@@ -166,8 +186,8 @@ function revivePipelineValue(value: unknown): unknown {
 
   if (isAliasedExpressionNode(value)) {
     const alias = (value.alias ?? value.as) as string;
-    const expr = revivePipelineValue(value.expr);
-    const asFn = (expr as Record<string, unknown>).as;
+    const expr = revivePipelineValue(value.expr) as Expression & Partial<AliasedValue>;
+    const asFn = expr.as;
     if (typeof asFn !== 'function') {
       throw new Error('pipelineExecute() failed to rebuild aliased expression for web SDK.');
     }
@@ -175,12 +195,13 @@ function revivePipelineValue(value: unknown): unknown {
   }
 
   if (isAliasedAggregateNode(value)) {
-    const aggregate = revivePipelineValue(value.aggregate);
-    const asFn = (aggregate as Record<string, unknown>).as;
+    const aggregate = revivePipelineValue(value.aggregate) as AggregateFunction &
+      Partial<AliasedValue>;
+    const asFn = aggregate.as;
     if (typeof asFn !== 'function') {
       throw new Error('pipelineExecute() failed to rebuild aliased aggregate for web SDK.');
     }
-    return asFn.call(aggregate, value.alias);
+    return asFn.call(aggregate, value.alias as string);
   }
 
   switch (value.__kind) {
@@ -265,11 +286,11 @@ function isSerializedPipeline(value: unknown): value is FirestorePipelineSeriali
 }
 
 function applyPipelineStage(
-  current: any,
+  current: WebPipelineInstance,
   stageName: string,
   stageOptions: Record<string, unknown>,
   firestore: Firestore,
-): any {
+): WebPipelineInstance {
   const revivedStageOptions = revivePipelineValue(stageOptions);
   const stageArgs = isRecord(revivedStageOptions) ? revivedStageOptions : stageOptions;
   const method = current?.[stageName];
@@ -279,73 +300,97 @@ function applyPipelineStage(
 
   switch (stageName) {
     case 'where':
-      return stageArgs.condition !== undefined
-        ? method.call(current, stageArgs.condition)
-        : method.call(current, stageArgs);
+      return (
+        stageArgs.condition !== undefined
+          ? method.call(current, stageArgs.condition)
+          : method.call(current, stageArgs)
+      ) as WebPipelineInstance;
     case 'select':
-      return Array.isArray(stageArgs.selections)
-        ? method.call(current, ...stageArgs.selections)
-        : method.call(current, stageArgs);
+      return (
+        Array.isArray(stageArgs.selections)
+          ? method.call(current, ...stageArgs.selections)
+          : method.call(current, stageArgs)
+      ) as WebPipelineInstance;
     case 'addFields':
-      return Array.isArray(stageArgs.fields)
-        ? method.call(current, ...stageArgs.fields)
-        : method.call(current, stageArgs);
+      return (
+        Array.isArray(stageArgs.fields)
+          ? method.call(current, ...stageArgs.fields)
+          : method.call(current, stageArgs)
+      ) as WebPipelineInstance;
     case 'removeFields':
-      return Array.isArray(stageArgs.fields)
-        ? method.call(current, ...stageArgs.fields)
-        : method.call(current, stageArgs);
+      return (
+        Array.isArray(stageArgs.fields)
+          ? method.call(current, ...stageArgs.fields)
+          : method.call(current, stageArgs)
+      ) as WebPipelineInstance;
     case 'sort':
-      return Array.isArray(stageArgs.orderings)
-        ? method.call(current, ...stageArgs.orderings)
-        : method.call(current, stageArgs);
+      return (
+        Array.isArray(stageArgs.orderings)
+          ? method.call(current, ...stageArgs.orderings)
+          : method.call(current, stageArgs)
+      ) as WebPipelineInstance;
     case 'limit':
-      return typeof stageArgs.limit === 'number'
-        ? method.call(current, stageArgs.limit)
-        : method.call(current, stageArgs);
+      return (
+        typeof stageArgs.limit === 'number'
+          ? method.call(current, stageArgs.limit)
+          : method.call(current, stageArgs)
+      ) as WebPipelineInstance;
     case 'offset':
-      return typeof stageArgs.offset === 'number'
-        ? method.call(current, stageArgs.offset)
-        : method.call(current, stageArgs);
+      return (
+        typeof stageArgs.offset === 'number'
+          ? method.call(current, stageArgs.offset)
+          : method.call(current, stageArgs)
+      ) as WebPipelineInstance;
     case 'distinct':
-      return Array.isArray(stageArgs.groups)
-        ? method.call(current, ...stageArgs.groups)
-        : method.call(current, stageArgs);
+      return (
+        Array.isArray(stageArgs.groups)
+          ? method.call(current, ...stageArgs.groups)
+          : method.call(current, stageArgs)
+      ) as WebPipelineInstance;
     case 'replaceWith':
-      return stageArgs.map !== undefined
-        ? method.call(current, stageArgs.map)
-        : method.call(current, stageArgs);
+      return (
+        stageArgs.map !== undefined
+          ? method.call(current, stageArgs.map)
+          : method.call(current, stageArgs)
+      ) as WebPipelineInstance;
     case 'sample':
-      return typeof stageArgs.documents === 'number'
-        ? method.call(current, stageArgs.documents)
-        : method.call(current, stageArgs);
+      return (
+        typeof stageArgs.documents === 'number'
+          ? method.call(current, stageArgs.documents)
+          : method.call(current, stageArgs)
+      ) as WebPipelineInstance;
     case 'union': {
       const nested = isSerializedPipeline(stageArgs.other)
         ? buildWebSdkPipeline(firestore, stageArgs.other)
         : stageArgs.other;
-      return method.call(current, nested);
+      return method.call(current, nested) as WebPipelineInstance;
     }
     case 'unnest':
-      return stageArgs.selectable !== undefined
-        ? method.call(current, stageArgs.selectable, stageArgs.indexField)
-        : method.call(current, stageArgs);
+      return (
+        stageArgs.selectable !== undefined
+          ? method.call(current, stageArgs.selectable, stageArgs.indexField)
+          : method.call(current, stageArgs)
+      ) as WebPipelineInstance;
     case 'rawStage':
-      return typeof stageArgs.name === 'string'
-        ? method.call(
-            current,
-            stageArgs.name,
-            stageArgs.params,
-            isRecord(stageArgs.options) ? stageArgs.options : undefined,
-          )
-        : method.call(current, stageArgs);
+      return (
+        typeof stageArgs.name === 'string'
+          ? method.call(
+              current,
+              stageArgs.name,
+              stageArgs.params,
+              isRecord(stageArgs.options) ? stageArgs.options : undefined,
+            )
+          : method.call(current, stageArgs)
+      ) as WebPipelineInstance;
     default:
-      return method.call(current, stageArgs);
+      return method.call(current, stageArgs) as WebPipelineInstance;
   }
 }
 
 function buildWebSdkPipeline(
   firestore: Firestore,
   pipeline: FirestorePipelineSerializedInternal,
-): any {
+): WebPipelineInstance {
   const pipelineFactory = (firestore as { pipeline?: () => unknown }).pipeline;
   if (typeof pipelineFactory !== 'function') {
     throw createLiteUnsupportedError(
@@ -353,44 +398,64 @@ function buildWebSdkPipeline(
     );
   }
 
-  const pipelineSource = pipelineFactory.call(firestore) as Record<string, unknown>;
+  const pipelineSource = pipelineFactory.call(firestore) as WebPipelineSource;
   const source = pipeline.source;
-  let currentPipeline: any;
+  let currentPipeline: WebPipelineInstance | undefined;
 
   switch (source.source) {
-    case 'collection':
-      currentPipeline =
-        isRecord(source.rawOptions) && source.rawOptions
-          ? (pipelineSource.collection as any)?.({
-              collection: source.path,
-              rawOptions: source.rawOptions,
-            })
-          : (pipelineSource.collection as any)?.(source.path);
+    case 'collection': {
+      const collectionMethod = pipelineSource.collection;
+      if (typeof collectionMethod === 'function') {
+        currentPipeline = (
+          isRecord(source.rawOptions) && source.rawOptions
+            ? collectionMethod.call(pipelineSource, {
+                collection: source.path,
+                rawOptions: source.rawOptions,
+              })
+            : collectionMethod.call(pipelineSource, source.path)
+        ) as WebPipelineInstance;
+      }
       break;
-    case 'collectionGroup':
-      currentPipeline =
-        isRecord(source.rawOptions) && source.rawOptions
-          ? (pipelineSource.collectionGroup as any)?.({
-              collectionId: source.collectionId,
-              rawOptions: source.rawOptions,
-            })
-          : (pipelineSource.collectionGroup as any)?.(source.collectionId);
+    }
+    case 'collectionGroup': {
+      const collectionGroupMethod = pipelineSource.collectionGroup;
+      if (typeof collectionGroupMethod === 'function') {
+        currentPipeline = (
+          isRecord(source.rawOptions) && source.rawOptions
+            ? collectionGroupMethod.call(pipelineSource, {
+                collectionId: source.collectionId,
+                rawOptions: source.rawOptions,
+              })
+            : collectionGroupMethod.call(pipelineSource, source.collectionId)
+        ) as WebPipelineInstance;
+      }
       break;
-    case 'database':
-      currentPipeline =
-        isRecord(source.rawOptions) && source.rawOptions
-          ? (pipelineSource.database as any)?.({ rawOptions: source.rawOptions })
-          : (pipelineSource.database as any)?.();
+    }
+    case 'database': {
+      const databaseMethod = pipelineSource.database;
+      if (typeof databaseMethod === 'function') {
+        currentPipeline = (
+          isRecord(source.rawOptions) && source.rawOptions
+            ? databaseMethod.call(pipelineSource, { rawOptions: source.rawOptions })
+            : databaseMethod.call(pipelineSource)
+        ) as WebPipelineInstance;
+      }
       break;
-    case 'documents':
-      currentPipeline =
-        isRecord(source.rawOptions) && source.rawOptions
-          ? (pipelineSource.documents as any)?.({
-              docs: source.documents,
-              rawOptions: source.rawOptions,
-            })
-          : (pipelineSource.documents as any)?.(source.documents);
+    }
+    case 'documents': {
+      const documentsMethod = pipelineSource.documents;
+      if (typeof documentsMethod === 'function') {
+        currentPipeline = (
+          isRecord(source.rawOptions) && source.rawOptions
+            ? documentsMethod.call(pipelineSource, {
+                docs: source.documents,
+                rawOptions: source.rawOptions,
+              })
+            : documentsMethod.call(pipelineSource, source.documents)
+        ) as WebPipelineInstance;
+      }
       break;
+    }
     case 'query': {
       if (typeof pipelineSource.createFrom !== 'function') {
         throw createLiteUnsupportedError(
@@ -410,7 +475,7 @@ function buildWebSdkPipeline(
       );
       currentPipeline = (pipelineSource.createFrom as (query: Query) => unknown)(
         query as unknown as Query,
-      );
+      ) as WebPipelineInstance;
       break;
     }
     default:
