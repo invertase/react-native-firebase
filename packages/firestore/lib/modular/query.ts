@@ -39,14 +39,10 @@ import type {
 import type { FieldPath } from './FieldPath';
 
 /**
- * An `AppliableConstraint` is an abstraction of a constraint that can be applied
- * to a Firestore query.
+ * Abstraction of a constraint that can be applied to a Firestore query.
+ * Not exported — public API matches firebase-js-sdk ({@link QueryConstraint} only).
  */
-export abstract class AppliableConstraint {
-  /**
-   * Takes the provided {@link Query} and returns a copy of the {@link Query} with this
-   * {@link AppliableConstraint} applied.
-   */
+abstract class AppliableConstraint {
   abstract _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
     query: Query<AppModelType, DbModelType>,
   ): Query<AppModelType, DbModelType>;
@@ -58,38 +54,21 @@ export abstract class AppliableConstraint {
  * {@link orderBy}, {@link startAt}, {@link startAfter}, {@link endBefore},
  * {@link endAt}, {@link limit}, {@link limitToLast} and can then be passed to
  * {@link query} to create a new query instance that also contains this `QueryConstraint`.
- *
- * @remarks
- * Matches Firebase JS SDK API. We use QueryConstraintBase for shared implementation
- * because Query objects are native module wrappers that expose methods matching
- * constraint types (orderBy, limit, etc.), allowing dynamic dispatch via `query[type]()`.
  */
 export abstract class QueryConstraint extends AppliableConstraint {
-  /** The type of this query constraint */
   abstract readonly type: QueryConstraintType;
 
-  /**
-   * Takes the provided {@link Query} and returns a copy of the {@link Query} with this
-   * {@link QueryConstraint} applied.
-   */
   _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
     _queryRef: Query<AppModelType, DbModelType>,
   ): Query<AppModelType, DbModelType> {
-    // This method is implemented in subclasses (QueryConstraintBase provides the default implementation)
-    // Making it non-abstract ensures it appears in .d.ts so subclasses inherit it
     throw new Error('_apply must be implemented by subclass');
   }
 }
 
 /**
- * Base implementation for orderBy/limit/startAt/endAt/where constraints.
- *
- * @remarks
- * Differs from JS SDK (where each constraint implements its own _apply) because
- * our Query objects are native wrappers. All constraints use the same pattern:
- * `query[this.type](...args)`, so we share implementation via this base class.
+ * Shared _apply for orderBy/limit/startAt/endAt/where. Not exported — implementation detail.
  */
-export abstract class QueryConstraintBase extends QueryConstraint {
+abstract class QueryConstraintBase extends QueryConstraint {
   abstract readonly type: QueryConstraintType;
   private readonly _args: unknown[];
 
