@@ -47,9 +47,19 @@ Pod::Spec.new do |s|
 
   # Firebase dependencies
   # Analytics has conditional dependencies that vary between SPM and CocoaPods.
-  # SPM: FirebaseAnalytics includes ad ID support by default.
+  # SPM: use FirebaseAnalyticsWithoutAdIdSupport when $RNFirebaseAnalyticsWithoutAdIdSupport = true
+  #      to avoid GoogleAppMeasurement APM symbols that require FirebaseRemoteConfig (linker error).
   # CocoaPods: IdentitySupport is a separate subspec controlled by $RNFirebaseAnalyticsWithoutAdIdSupport.
-  firebase_dependency(s, firebase_sdk_version, ['FirebaseAnalytics'], 'FirebaseAnalytics/Core')
+  if defined?(spm_dependency) && !defined?($RNFirebaseDisableSPM) &&
+     defined?($RNFirebaseAnalyticsWithoutAdIdSupport) && $RNFirebaseAnalyticsWithoutAdIdSupport
+    # FirebaseAnalyticsCore uses GoogleAppMeasurementCore (no IDFA, no APM objects).
+    # FirebaseAnalytics uses GoogleAppMeasurement which has APMETaskManager/APMMeasurement
+    # cross-references that cause linker errors when FirebasePerformance is not linked.
+    Pod::UI.puts "#{s.name}: Using FirebaseAnalyticsCore SPM product (no IDFA, uses GoogleAppMeasurementCore)."
+    firebase_dependency(s, firebase_sdk_version, ['FirebaseAnalyticsCore'], 'FirebaseAnalytics/Core')
+  else
+    firebase_dependency(s, firebase_sdk_version, ['FirebaseAnalytics'], 'FirebaseAnalytics/Core')
+  end
 
   unless defined?(spm_dependency)
     # CocoaPods-only: conditional IdentitySupport subspec
