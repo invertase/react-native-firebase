@@ -19,6 +19,7 @@ import {
   collection,
   collectionGroup,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
+import * as firebaseFirestorePipelines from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines';
 import type {
   Firestore,
   Query,
@@ -49,6 +50,158 @@ function createLiteUnsupportedError(message: string): Error {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+type PipelineHelperFn = (...args: unknown[]) => unknown;
+
+function getPipelineHelper(name: string): PipelineHelperFn {
+  const helper = (firebaseFirestorePipelines as Record<string, unknown>)[name];
+  if (typeof helper !== 'function') {
+    throw new Error(
+      `pipelineExecute() cannot rebuild "${name}" because the web helper is missing.`,
+    );
+  }
+  return helper as PipelineHelperFn;
+}
+
+function reviveExpressionNode(node: Record<string, unknown>): unknown {
+  if (node.exprType === 'Field' || typeof node.path === 'string') {
+    return getPipelineHelper('field')(node.path);
+  }
+
+  if (node.exprType === 'Constant' || Object.prototype.hasOwnProperty.call(node, 'value')) {
+    return getPipelineHelper('constant')(revivePipelineValue(node.value));
+  }
+
+  if (typeof node.name === 'string') {
+    const args = Array.isArray(node.args) ? node.args.map(revivePipelineValue) : [];
+    return getPipelineHelper(node.name)(...args);
+  }
+
+  throw new Error('pipelineExecute() failed to rebuild a serialized expression node for web SDK.');
+}
+
+function reviveAggregateNode(node: Record<string, unknown>): unknown {
+  if (typeof node.kind !== 'string') {
+    throw new Error('pipelineExecute() failed to rebuild aggregate node: missing aggregate kind.');
+  }
+
+  const args = Array.isArray(node.args) ? node.args.map(revivePipelineValue) : [];
+  return getPipelineHelper(node.kind)(...args);
+}
+
+function reviveOrderingNode(node: Record<string, unknown>): unknown {
+  if (!Object.prototype.hasOwnProperty.call(node, 'expr')) {
+    throw new Error('pipelineExecute() failed to rebuild ordering node: missing expr.');
+  }
+
+  const direction = node.direction === 'descending' ? 'descending' : 'ascending';
+  return getPipelineHelper(direction)(revivePipelineValue(node.expr));
+}
+
+function reviveAliasedNode(node: Record<string, unknown>, nodeKey: 'expr' | 'aggregate'): unknown {
+  const alias = typeof node.alias === 'string' ? node.alias : undefined;
+  if (!alias) {
+    throw new Error(`pipelineExecute() failed to rebuild aliased node: missing ${nodeKey} alias.`);
+  }
+
+  const value = revivePipelineValue(node[nodeKey]);
+  if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+    throw new Error(`pipelineExecute() failed to rebuild aliased ${nodeKey}: invalid value.`);
+  }
+
+  const asFn = (value as Record<string, unknown>).as;
+  if (typeof asFn !== 'function') {
+    throw new Error(`pipelineExecute() failed to rebuild aliased ${nodeKey}: missing as(name).`);
+  }
+
+  return asFn.call(value, alias);
+}
+
+function isFlatAliasedFieldNode(value: Record<string, unknown>): boolean {
+  const alias = value.alias ?? value.as;
+  return (
+    typeof value.path === 'string' &&
+    value.path.length > 0 &&
+    typeof alias === 'string' &&
+    alias.length > 0
+  );
+}
+
+function isAliasedExpressionNode(value: Record<string, unknown>): boolean {
+  const alias = value.alias ?? value.as;
+  return (
+    typeof alias === 'string' &&
+    alias.length > 0 &&
+    Object.prototype.hasOwnProperty.call(value, 'expr')
+  );
+}
+
+function isAliasedAggregateNode(value: Record<string, unknown>): boolean {
+  return (
+    typeof value.alias === 'string' &&
+    value.alias.length > 0 &&
+    Object.prototype.hasOwnProperty.call(value, 'aggregate')
+  );
+}
+
+function revivePipelineValue(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(revivePipelineValue);
+  }
+
+  if (!isRecord(value)) {
+    return value;
+  }
+
+  if (isFlatAliasedFieldNode(value)) {
+    const alias = (value.alias ?? value.as) as string;
+    const field = getPipelineHelper('field')(value.path);
+    const asFn = (field as Record<string, unknown>).as;
+    if (typeof asFn !== 'function') {
+      throw new Error('pipelineExecute() failed to rebuild flat aliased field for web SDK.');
+    }
+    return asFn.call(field, alias);
+  }
+
+  if (isAliasedExpressionNode(value)) {
+    const alias = (value.alias ?? value.as) as string;
+    const expr = revivePipelineValue(value.expr);
+    const asFn = (expr as Record<string, unknown>).as;
+    if (typeof asFn !== 'function') {
+      throw new Error('pipelineExecute() failed to rebuild aliased expression for web SDK.');
+    }
+    return asFn.call(expr, alias);
+  }
+
+  if (isAliasedAggregateNode(value)) {
+    const aggregate = revivePipelineValue(value.aggregate);
+    const asFn = (aggregate as Record<string, unknown>).as;
+    if (typeof asFn !== 'function') {
+      throw new Error('pipelineExecute() failed to rebuild aliased aggregate for web SDK.');
+    }
+    return asFn.call(aggregate, value.alias);
+  }
+
+  switch (value.__kind) {
+    case 'expression':
+      return reviveExpressionNode(value);
+    case 'aggregate':
+      return reviveAggregateNode(value);
+    case 'ordering':
+      return reviveOrderingNode(value);
+    case 'aliasedExpression':
+      return reviveAliasedNode(value, 'expr');
+    case 'aliasedAggregate':
+      return reviveAliasedNode(value, 'aggregate');
+    default: {
+      const revived: Record<string, unknown> = {};
+      for (const [key, entry] of Object.entries(value)) {
+        revived[key] = revivePipelineValue(entry);
+      }
+      return revived;
+    }
+  }
 }
 
 function normalizeExecuteOptions(
@@ -117,69 +270,75 @@ function applyPipelineStage(
   stageOptions: Record<string, unknown>,
   firestore: Firestore,
 ): any {
+  const revivedStageOptions = revivePipelineValue(stageOptions);
+  const stageArgs = isRecord(revivedStageOptions) ? revivedStageOptions : stageOptions;
   const method = current?.[stageName];
   if (typeof method !== 'function') {
     throw new Error(`Pipeline stage "${stageName}" is not supported by the current web SDK.`);
   }
 
   switch (stageName) {
+    case 'where':
+      return stageArgs.condition !== undefined
+        ? method.call(current, stageArgs.condition)
+        : method.call(current, stageArgs);
     case 'select':
-      return Array.isArray(stageOptions.selections)
-        ? method.call(current, ...stageOptions.selections)
-        : method.call(current, stageOptions);
+      return Array.isArray(stageArgs.selections)
+        ? method.call(current, ...stageArgs.selections)
+        : method.call(current, stageArgs);
     case 'addFields':
-      return Array.isArray(stageOptions.fields)
-        ? method.call(current, ...stageOptions.fields)
-        : method.call(current, stageOptions);
+      return Array.isArray(stageArgs.fields)
+        ? method.call(current, ...stageArgs.fields)
+        : method.call(current, stageArgs);
     case 'removeFields':
-      return Array.isArray(stageOptions.fields)
-        ? method.call(current, ...stageOptions.fields)
-        : method.call(current, stageOptions);
+      return Array.isArray(stageArgs.fields)
+        ? method.call(current, ...stageArgs.fields)
+        : method.call(current, stageArgs);
     case 'sort':
-      return Array.isArray(stageOptions.orderings)
-        ? method.call(current, ...stageOptions.orderings)
-        : method.call(current, stageOptions);
+      return Array.isArray(stageArgs.orderings)
+        ? method.call(current, ...stageArgs.orderings)
+        : method.call(current, stageArgs);
     case 'limit':
-      return typeof stageOptions.limit === 'number'
-        ? method.call(current, stageOptions.limit)
-        : method.call(current, stageOptions);
+      return typeof stageArgs.limit === 'number'
+        ? method.call(current, stageArgs.limit)
+        : method.call(current, stageArgs);
     case 'offset':
-      return typeof stageOptions.offset === 'number'
-        ? method.call(current, stageOptions.offset)
-        : method.call(current, stageOptions);
+      return typeof stageArgs.offset === 'number'
+        ? method.call(current, stageArgs.offset)
+        : method.call(current, stageArgs);
     case 'distinct':
-      return Array.isArray(stageOptions.groups)
-        ? method.call(current, ...stageOptions.groups)
-        : method.call(current, stageOptions);
+      return Array.isArray(stageArgs.groups)
+        ? method.call(current, ...stageArgs.groups)
+        : method.call(current, stageArgs);
     case 'replaceWith':
-      return stageOptions.map !== undefined
-        ? method.call(current, stageOptions.map)
-        : method.call(current, stageOptions);
+      return stageArgs.map !== undefined
+        ? method.call(current, stageArgs.map)
+        : method.call(current, stageArgs);
     case 'sample':
-      return typeof stageOptions.documents === 'number'
-        ? method.call(current, stageOptions.documents)
-        : method.call(current, stageOptions);
+      return typeof stageArgs.documents === 'number'
+        ? method.call(current, stageArgs.documents)
+        : method.call(current, stageArgs);
     case 'union': {
-      const nested = isSerializedPipeline(stageOptions.other)
-        ? buildWebSdkPipeline(firestore, stageOptions.other)
-        : stageOptions.other;
+      const nested = isSerializedPipeline(stageArgs.other)
+        ? buildWebSdkPipeline(firestore, stageArgs.other)
+        : stageArgs.other;
       return method.call(current, nested);
     }
     case 'unnest':
-      return stageOptions.selectable !== undefined
-        ? method.call(current, stageOptions.selectable, stageOptions.indexField)
-        : method.call(current, stageOptions);
+      return stageArgs.selectable !== undefined
+        ? method.call(current, stageArgs.selectable, stageArgs.indexField)
+        : method.call(current, stageArgs);
     case 'rawStage':
-      return typeof stageOptions.name === 'string'
+      return typeof stageArgs.name === 'string'
         ? method.call(
             current,
-            stageOptions.name,
-            stageOptions.params,
-            isRecord(stageOptions.options) ? stageOptions.options : undefined,
+            stageArgs.name,
+            stageArgs.params,
+            isRecord(stageArgs.options) ? stageArgs.options : undefined,
           )
-        : method.call(current, stageOptions);
+        : method.call(current, stageArgs);
     default:
-      return method.call(current, stageOptions);
+      return method.call(current, stageArgs);
   }
 }
 
