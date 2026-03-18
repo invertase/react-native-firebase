@@ -13,7 +13,7 @@ import {
 } from '@react-native-firebase/firestore';
 import { execute, field, and } from '@react-native-firebase/firestore/pipelines';
 
-const COLLECTION = 'firestore_pipeline_test';
+const COLLECTION = 'pipeline-collection';
 
 function randString(length: number): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -35,7 +35,7 @@ export function PipelinesE2ETestComponent() {
   const [result, setResult] = useState<string>('');
   const [loading, setLoading] = useState<string | null>(null);
   // "default" database does not seem to work
-  const db = getFirestore('firestore-pipeline-test');
+  const db = getFirestore('pipelines-e2e');
 
   const tests: TestCase[] = [
     {
