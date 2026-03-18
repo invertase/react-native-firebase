@@ -31,7 +31,6 @@ import type {
   FirestorePipelineTimestampInternal,
 } from '../types/internal';
 import { objectToWriteable } from './convert';
-import { createPipelineUnsupportedMessage } from '../pipelines/pipeline_support';
 import { buildQuery } from './query';
 import type { FilterSpec, OrderSpec, QueryOptions } from './query';
 
@@ -41,20 +40,15 @@ interface WebPipelineSdkHooks {
   execute?: PipelineExecuteFn;
 }
 
-type WebPipelineUnsupportedError = Error & { code: 'unsupported' };
+const FIRESTORE_LITE_UNSUPPORTED_SUFFIX =
+  ' This operation is unavailable because the web runtime uses Firestore Lite.';
+
+function createLiteUnsupportedError(message: string): Error {
+  return new Error(message + FIRESTORE_LITE_UNSUPPORTED_SUFFIX);
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
-}
-
-function createUnsupportedError(
-  pipeline: FirestorePipelineSerializedInternal,
-): WebPipelineUnsupportedError {
-  const error = new Error(
-    createPipelineUnsupportedMessage(pipeline),
-  ) as WebPipelineUnsupportedError;
-  error.code = 'unsupported';
-  return error;
 }
 
 function normalizeExecuteOptions(
@@ -195,7 +189,9 @@ function buildWebSdkPipeline(
 ): any {
   const pipelineFactory = (firestore as { pipeline?: () => unknown }).pipeline;
   if (typeof pipelineFactory !== 'function') {
-    throw createUnsupportedError(pipeline);
+    throw createLiteUnsupportedError(
+      'pipelineExecute() expected a Firestore instance with pipeline() support.',
+    );
   }
 
   const pipelineSource = pipelineFactory.call(firestore) as Record<string, unknown>;
@@ -207,7 +203,7 @@ function buildWebSdkPipeline(
       currentPipeline =
         isRecord(source.rawOptions) && source.rawOptions
           ? (pipelineSource.collection as any)?.({
-              path: source.path,
+              collection: source.path,
               rawOptions: source.rawOptions,
             })
           : (pipelineSource.collection as any)?.(source.path);
@@ -228,11 +224,19 @@ function buildWebSdkPipeline(
           : (pipelineSource.database as any)?.();
       break;
     case 'documents':
-      currentPipeline = (pipelineSource.documents as any)?.(source.documents);
+      currentPipeline =
+        isRecord(source.rawOptions) && source.rawOptions
+          ? (pipelineSource.documents as any)?.({
+              docs: source.documents,
+              rawOptions: source.rawOptions,
+            })
+          : (pipelineSource.documents as any)?.(source.documents);
       break;
     case 'query': {
       if (typeof pipelineSource.createFrom !== 'function') {
-        throw createUnsupportedError(pipeline);
+        throw createLiteUnsupportedError(
+          'pipelineExecute() expected pipeline source to support createFrom(query).',
+        );
       }
 
       const queryRef =
@@ -245,21 +249,25 @@ function buildWebSdkPipeline(
         source.orders as OrderSpec[],
         source.options as QueryOptions,
       );
-      currentPipeline = (pipelineSource.createFrom as (query: Query) => unknown)(query);
+      currentPipeline = (pipelineSource.createFrom as (query: Query) => unknown)(
+        query as unknown as Query,
+      );
       break;
     }
     default:
-      throw createUnsupportedError(pipeline);
+      throw new Error('pipelineExecute() received an unknown source type.');
   }
 
   if (!currentPipeline) {
-    throw createUnsupportedError(pipeline);
+    throw new Error(
+      `pipelineExecute() failed to construct source stage "${String(source.source)}" for web SDK.`,
+    );
   }
 
   for (let i = 0; i < pipeline.stages.length; i++) {
     const stage = pipeline.stages[i];
     if (!stage || typeof stage.stage !== 'string' || !isRecord(stage.options)) {
-      throw createUnsupportedError(pipeline);
+      throw new Error('pipelineExecute() expected each stage to include stage and options.');
     }
     currentPipeline = applyPipelineStage(currentPipeline, stage.stage, stage.options, firestore);
   }
@@ -268,12 +276,12 @@ function buildWebSdkPipeline(
 }
 
 export async function executeWebSdkPipeline(
-  firestore: Firestore,
+  firestore: Firestore | unknown,
   pipeline: FirestorePipelineSerializedInternal,
   options?: FirestorePipelineExecuteOptionsInternal,
   hooks?: WebPipelineSdkHooks,
 ): Promise<FirestorePipelineSnapshotInternal> {
-  const webSdkPipeline = buildWebSdkPipeline(firestore, pipeline);
+  const webSdkPipeline = buildWebSdkPipeline(firestore as Firestore, pipeline);
   const executeOptions = normalizeExecuteOptions(options);
   const hasOptions = Object.keys(executeOptions).length > 0;
 
@@ -290,7 +298,9 @@ export async function executeWebSdkPipeline(
       ? await pipelineExecute.call(webSdkPipeline, executeOptions)
       : await pipelineExecute.call(webSdkPipeline);
   } else {
-    throw createUnsupportedError(pipeline);
+    throw createLiteUnsupportedError(
+      'pipelineExecute() expected either web execute(...) or pipeline.execute(...).',
+    );
   }
 
   const snapshotRecord = isRecord(rawSnapshot) ? rawSnapshot : {};
