@@ -547,12 +547,12 @@ function buildWebSdkPipeline(
 }
 
 export async function executeWebSdkPipeline(
-  firestore: Firestore | unknown,
+  firestore: Firestore,
   pipeline: FirestorePipelineSerializedInternal,
   options?: FirestorePipelineExecuteOptionsInternal,
   hooks?: WebPipelineSdkHooks,
 ): Promise<FirestorePipelineSnapshotInternal> {
-  const webSdkPipeline = buildWebSdkPipeline(firestore as Firestore, pipeline);
+  const webSdkPipeline = buildWebSdkPipeline(firestore, pipeline);
   const executeOptions = normalizeExecuteOptions(options);
   const hasOptions = Object.keys(executeOptions).length > 0;
 
