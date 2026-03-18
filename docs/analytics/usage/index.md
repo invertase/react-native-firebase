@@ -58,7 +58,9 @@ Below is an example showing how a custom event can be logged. Please be aware th
 ```jsx
 import react, { useEffect } from 'react';
 import { View, Button } from 'react-native';
-import analytics from '@react-native-firebase/analytics';
+import { getAnalytics, logEvent } from '@react-native-firebase/analytics';
+
+const analytics = getAnalytics();
 
 function App() {
   return (
@@ -66,7 +68,7 @@ function App() {
       <Button
         title="Add To Basket"
         onPress={async () =>
-          await analytics().logEvent('basket', {
+          await logEvent(analytics, 'basket', {
             id: 3745092,
             item: 'mens grey t-shirt',
             description: ['round neck', 'long sleeved'],
@@ -91,7 +93,9 @@ Below is a sample of how to use one of the predefined methods the Analytics modu
 ```jsx
 import react, { useEffect } from 'react';
 import { View, Button } from 'react-native';
-import analytics from '@react-native-firebase/analytics';
+import { getAnalytics, logSelectContent } from '@react-native-firebase/analytics';
+
+const analytics = getAnalytics();
 
 function App() {
   return (
@@ -101,7 +105,7 @@ function App() {
         // Logs in the firebase analytics console as "select_content" event
         // only accepts the two object properties which accept strings.
         onPress={async () =>
-          await analytics().logSelectContent({
+          await logSelectContent(analytics, {
             content_type: 'clothing',
             item_id: 'abcd',
           })
@@ -140,9 +144,9 @@ if FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE has been set to FirebaseAnaly
 iOS if ConsentType.analyticsStorage has been set to ConsentStatus.denied.
 
 ```jsx
-import analytics from '@react-native-firebase/analytics';
+import { getAnalytics } from '@react-native-firebase/analytics';
 // ...
-const appInstanceId = await analytics().getAppInstanceId();
+const appInstanceId = await getAnalytics().getAppInstanceId();
 ```
 
 ### Web / Other platform instance id
