@@ -19,6 +19,7 @@ import {
   collection,
   collectionGroup,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
+import { execute } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines';
 import * as firebaseFirestorePipelines from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines';
 import type {
   AggregateFunction,
@@ -26,6 +27,8 @@ import type {
   AliasedExpression,
   Expression,
   Ordering,
+  Pipeline as WebSdkPipeline,
+  PipelineSource as WebSdkPipelineSource,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines';
 import type {
   Firestore,
@@ -42,20 +45,8 @@ import { objectToWriteable } from './convert';
 import { buildQuery } from './query';
 import type { FilterSpec, OrderSpec, QueryOptions } from './query';
 
-type WebPipelineMethod = (...args: unknown[]) => unknown;
-type WebPipelineExecuteMethod = (pipeline: unknown, options?: unknown) => Promise<unknown>;
-
-type WebPipelineInstance = Record<string, unknown> & {
-  execute?: (options?: unknown) => Promise<unknown>;
-};
-
-type WebPipelineSource = Record<string, unknown> & {
-  collection?: WebPipelineMethod;
-  collectionGroup?: WebPipelineMethod;
-  database?: WebPipelineMethod;
-  documents?: WebPipelineMethod;
-  createFrom?: (query: Query) => unknown;
-};
+type WebPipelineInstance = WebSdkPipeline & Record<string, unknown>;
+type WebPipelineSource = WebSdkPipelineSource<WebPipelineInstance> & Record<string, unknown>;
 
 const FIRESTORE_LITE_UNSUPPORTED_SUFFIX =
   ' This operation is unavailable because the web runtime uses Firestore Lite.';
@@ -225,21 +216,6 @@ function revivePipelineValue(value: unknown): unknown {
   }
 }
 
-function normalizeExecuteOptions(
-  options?: FirestorePipelineExecuteOptionsInternal,
-): FirestorePipelineExecuteOptionsInternal {
-  const executeOptions: FirestorePipelineExecuteOptionsInternal = {};
-
-  if (options?.indexMode === 'recommended') {
-    executeOptions.indexMode = 'recommended';
-  }
-  if (isRecord(options?.rawOptions)) {
-    executeOptions.rawOptions = options.rawOptions;
-  }
-
-  return executeOptions;
-}
-
 function serializeTimestamp(value: unknown): FirestorePipelineTimestampInternal | undefined {
   if (!value) {
     return undefined;
@@ -289,53 +265,40 @@ function buildCollectionSourcePipeline(
   pipelineSource: WebPipelineSource,
   source: Extract<FirestorePipelineSerializedInternal['source'], { source: 'collection' }>,
 ): WebPipelineInstance | undefined {
-  const collectionMethod = pipelineSource.collection;
-  if (typeof collectionMethod !== 'function') {
+  if (typeof pipelineSource.collection !== 'function') {
     return undefined;
   }
 
-  return (
-    isRecord(source.rawOptions) && source.rawOptions
-      ? collectionMethod.call(pipelineSource, {
-          collection: source.path,
-          rawOptions: source.rawOptions,
-        })
-      : collectionMethod.call(pipelineSource, source.path)
-  ) as WebPipelineInstance;
+  return pipelineSource.collection({
+    collection: source.path,
+    ...(isRecord(source.rawOptions) && source.rawOptions ? { rawOptions: source.rawOptions } : {}),
+  }) as WebPipelineInstance;
 }
 
 function buildCollectionGroupSourcePipeline(
   pipelineSource: WebPipelineSource,
   source: Extract<FirestorePipelineSerializedInternal['source'], { source: 'collectionGroup' }>,
 ): WebPipelineInstance | undefined {
-  const collectionGroupMethod = pipelineSource.collectionGroup;
-  if (typeof collectionGroupMethod !== 'function') {
+  if (typeof pipelineSource.collectionGroup !== 'function') {
     return undefined;
   }
 
-  return (
-    isRecord(source.rawOptions) && source.rawOptions
-      ? collectionGroupMethod.call(pipelineSource, {
-          collectionId: source.collectionId,
-          rawOptions: source.rawOptions,
-        })
-      : collectionGroupMethod.call(pipelineSource, source.collectionId)
-  ) as WebPipelineInstance;
+  return pipelineSource.collectionGroup({
+    collectionId: source.collectionId,
+    ...(isRecord(source.rawOptions) && source.rawOptions ? { rawOptions: source.rawOptions } : {}),
+  }) as WebPipelineInstance;
 }
 
 function buildDatabaseSourcePipeline(
   pipelineSource: WebPipelineSource,
   source: Extract<FirestorePipelineSerializedInternal['source'], { source: 'database' }>,
 ): WebPipelineInstance | undefined {
-  const databaseMethod = pipelineSource.database;
-  if (typeof databaseMethod !== 'function') {
+  if (typeof pipelineSource.database !== 'function') {
     return undefined;
   }
 
-  return (
-    isRecord(source.rawOptions) && source.rawOptions
-      ? databaseMethod.call(pipelineSource, { rawOptions: source.rawOptions })
-      : databaseMethod.call(pipelineSource)
+  return pipelineSource.database(
+    isRecord(source.rawOptions) && source.rawOptions ? { rawOptions: source.rawOptions } : {},
   ) as WebPipelineInstance;
 }
 
@@ -343,19 +306,14 @@ function buildDocumentsSourcePipeline(
   pipelineSource: WebPipelineSource,
   source: Extract<FirestorePipelineSerializedInternal['source'], { source: 'documents' }>,
 ): WebPipelineInstance | undefined {
-  const documentsMethod = pipelineSource.documents;
-  if (typeof documentsMethod !== 'function') {
+  if (typeof pipelineSource.documents !== 'function') {
     return undefined;
   }
 
-  return (
-    isRecord(source.rawOptions) && source.rawOptions
-      ? documentsMethod.call(pipelineSource, {
-          docs: source.documents,
-          rawOptions: source.rawOptions,
-        })
-      : documentsMethod.call(pipelineSource, source.documents)
-  ) as WebPipelineInstance;
+  return pipelineSource.documents({
+    docs: source.documents,
+    ...(isRecord(source.rawOptions) && source.rawOptions ? { rawOptions: source.rawOptions } : {}),
+  }) as WebPipelineInstance;
 }
 
 function buildQuerySourcePipeline(
@@ -579,33 +537,11 @@ function buildWebSdkPipeline(
   return currentPipeline;
 }
 
-function getWebSdkExecute(): WebPipelineExecuteMethod | undefined {
-  const execute = (firebaseFirestorePipelines as { execute?: unknown }).execute;
-  return typeof execute === 'function' ? (execute as WebPipelineExecuteMethod) : undefined;
-}
-
 async function executeWebSdkPipelineSnapshot(
   webSdkPipeline: WebPipelineInstance,
-  options?: FirestorePipelineExecuteOptionsInternal,
+  _options?: FirestorePipelineExecuteOptionsInternal,
 ): Promise<unknown> {
-  const executeOptions = normalizeExecuteOptions(options);
-  const hasOptions = Object.keys(executeOptions).length > 0;
-  const sdkExecute = getWebSdkExecute();
-
-  if (sdkExecute) {
-    return hasOptions ? sdkExecute(webSdkPipeline, executeOptions) : sdkExecute(webSdkPipeline);
-  }
-
-  const pipelineExecute = webSdkPipeline.execute;
-  if (typeof pipelineExecute === 'function') {
-    return hasOptions
-      ? pipelineExecute.call(webSdkPipeline, executeOptions)
-      : pipelineExecute.call(webSdkPipeline);
-  }
-
-  throw createLiteUnsupportedError(
-    'pipelineExecute() expected either web execute(...) or pipeline.execute(...).',
-  );
+  return execute(webSdkPipeline);
 }
 
 export async function executeWebSdkPipeline(
