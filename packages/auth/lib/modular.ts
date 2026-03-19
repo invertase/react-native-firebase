@@ -34,6 +34,7 @@ import type {
   IdTokenResult,
 } from './types/auth';
 import type { AuthInternal } from './types/internal';
+import type { PasswordPolicyValidationStatus } from './password-policy/PasswordPolicyImpl';
 
 /**
  * Returns the Auth instance associated with the provided FirebaseApp.
@@ -601,7 +602,10 @@ export function getCustomAuthDomain(auth: FirebaseAuth): Promise<string> {
   return (auth as AuthInternal).getCustomAuthDomain.call(auth, MODULAR_DEPRECATION_ARG);
 }
 
-export async function validatePassword(auth: FirebaseAuth, password: string): Promise<unknown> {
+export async function validatePassword(
+  auth: FirebaseAuth,
+  password: string,
+): Promise<PasswordPolicyValidationStatus> {
   if (!auth || !auth.app) {
     throw new Error(
       "firebase.auth().validatePassword(*) 'auth' must be a valid Auth instance with an 'app' property. Received: undefined",
@@ -614,5 +618,9 @@ export async function validatePassword(auth: FirebaseAuth, password: string): Pr
     );
   }
 
-  return (auth as AuthInternal).validatePassword.call(auth, password, MODULAR_DEPRECATION_ARG);
+  return (auth as AuthInternal).validatePassword.call(
+    auth,
+    password,
+    MODULAR_DEPRECATION_ARG,
+  );
 }

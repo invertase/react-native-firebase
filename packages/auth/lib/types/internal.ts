@@ -90,7 +90,7 @@ export type AuthInternal = FirebaseAuth & {
   ): PhoneAuthListenerInternal;
   verifyPhoneNumberForMultiFactor(phoneInfoOptions: { phoneNumber: string; session: string }): Promise<string>;
   verifyPhoneNumberWithMultiFactorInfo(multiFactorHint: { uid: string }, session: string): Promise<string>;
-  validatePassword(password: string, ...args: unknown[]): Promise<unknown>;
+  validatePassword(password: string, ...args: unknown[]): Promise<import('../password-policy/PasswordPolicyImpl').PasswordPolicyValidationStatus>;
 };
 
 /** Auth module with app reference (e.g. for PhoneAuthProvider). */

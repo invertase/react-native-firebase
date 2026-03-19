@@ -15,8 +15,42 @@
  *
  */
 
-// Minimum min password length enforced by the backend, even if no minimum length is set.
 const MINIMUM_MIN_PASSWORD_LENGTH = 6;
+
+export interface PasswordPolicyApiResponse {
+  customStrengthOptions?: {
+    minPasswordLength?: number;
+    maxPasswordLength?: number;
+    containsLowercaseCharacter?: boolean;
+    containsUppercaseCharacter?: boolean;
+    containsNumericCharacter?: boolean;
+    containsNonAlphanumericCharacter?: boolean;
+  };
+  enforcementState?: string;
+  allowedNonAlphanumericCharacters?: string[];
+  forceUpgradeOnSignin?: boolean;
+  schemaVersion?: number;
+}
+
+export interface PasswordPolicyCustomStrengthOptions {
+  minPasswordLength: number;
+  maxPasswordLength?: number;
+  containsLowercaseLetter?: boolean;
+  containsUppercaseLetter?: boolean;
+  containsNumericCharacter?: boolean;
+  containsNonAlphanumericCharacter?: boolean;
+}
+
+export interface PasswordPolicyValidationStatus {
+  isValid: boolean;
+  passwordPolicy: PasswordPolicyImpl;
+  meetsMinPasswordLength?: boolean;
+  meetsMaxPasswordLength?: boolean;
+  containsLowercaseLetter?: boolean;
+  containsUppercaseLetter?: boolean;
+  containsNumericCharacter?: boolean;
+  containsNonAlphanumericCharacter?: boolean;
+}
 
 /**
  * Stores password policy requirements and provides password validation against the policy.
@@ -24,12 +58,18 @@ const MINIMUM_MIN_PASSWORD_LENGTH = 6;
  * @internal
  */
 export class PasswordPolicyImpl {
-  constructor(response) {
-    // Only include custom strength options defined in the response.
-    const responseOptions = response.customStrengthOptions;
-    this.customStrengthOptions = {};
-    this.customStrengthOptions.minPasswordLength =
-      responseOptions.minPasswordLength ?? MINIMUM_MIN_PASSWORD_LENGTH;
+  customStrengthOptions: PasswordPolicyCustomStrengthOptions;
+  enforcementState: string;
+  allowedNonAlphanumericCharacters: string;
+  forceUpgradeOnSignin: boolean;
+  schemaVersion: number | undefined;
+
+  constructor(response: PasswordPolicyApiResponse) {
+    const responseOptions = response.customStrengthOptions ?? {};
+    this.customStrengthOptions = {
+      minPasswordLength:
+        responseOptions.minPasswordLength ?? MINIMUM_MIN_PASSWORD_LENGTH,
+    };
     if (responseOptions.maxPasswordLength) {
       this.customStrengthOptions.maxPasswordLength = responseOptions.maxPasswordLength;
     }
@@ -53,9 +93,8 @@ export class PasswordPolicyImpl {
     this.enforcementState =
       response.enforcementState === 'ENFORCEMENT_STATE_UNSPECIFIED'
         ? 'OFF'
-        : response.enforcementState;
+        : (response.enforcementState ?? 'OFF');
 
-    // Use an empty string if no non-alphanumeric characters are specified in the response.
     this.allowedNonAlphanumericCharacters =
       response.allowedNonAlphanumericCharacters?.join('') ?? '';
 
@@ -63,8 +102,8 @@ export class PasswordPolicyImpl {
     this.schemaVersion = response.schemaVersion;
   }
 
-  validatePassword(password) {
-    const status = {
+  validatePassword(password: string): PasswordPolicyValidationStatus {
+    const status: PasswordPolicyValidationStatus = {
       isValid: true,
       passwordPolicy: this,
     };
@@ -72,17 +111,20 @@ export class PasswordPolicyImpl {
     this.validatePasswordLengthOptions(password, status);
     this.validatePasswordCharacterOptions(password, status);
 
-    status.isValid &&= status.meetsMinPasswordLength ?? true;
-    status.isValid &&= status.meetsMaxPasswordLength ?? true;
-    status.isValid &&= status.containsLowercaseLetter ?? true;
-    status.isValid &&= status.containsUppercaseLetter ?? true;
-    status.isValid &&= status.containsNumericCharacter ?? true;
-    status.isValid &&= status.containsNonAlphanumericCharacter ?? true;
+    status.isValid = status.isValid && (status.meetsMinPasswordLength ?? true);
+    status.isValid = status.isValid && (status.meetsMaxPasswordLength ?? true);
+    status.isValid = status.isValid && (status.containsLowercaseLetter ?? true);
+    status.isValid = status.isValid && (status.containsUppercaseLetter ?? true);
+    status.isValid = status.isValid && (status.containsNumericCharacter ?? true);
+    status.isValid = status.isValid && (status.containsNonAlphanumericCharacter ?? true);
 
     return status;
   }
 
-  validatePasswordLengthOptions(password, status) {
+  validatePasswordLengthOptions(
+    password: string,
+    status: PasswordPolicyValidationStatus,
+  ): void {
     const minPasswordLength = this.customStrengthOptions.minPasswordLength;
     const maxPasswordLength = this.customStrengthOptions.maxPasswordLength;
     if (minPasswordLength) {
@@ -93,7 +135,10 @@ export class PasswordPolicyImpl {
     }
   }
 
-  validatePasswordCharacterOptions(password, status) {
+  validatePasswordCharacterOptions(
+    password: string,
+    status: PasswordPolicyValidationStatus,
+  ): void {
     this.updatePasswordCharacterOptionsStatuses(status, false, false, false, false);
 
     for (let i = 0; i < password.length; i++) {
@@ -109,24 +154,30 @@ export class PasswordPolicyImpl {
   }
 
   updatePasswordCharacterOptionsStatuses(
-    status,
-    containsLowercaseCharacter,
-    containsUppercaseCharacter,
-    containsNumericCharacter,
-    containsNonAlphanumericCharacter,
-  ) {
+    status: PasswordPolicyValidationStatus,
+    containsLowercaseCharacter: boolean,
+    containsUppercaseCharacter: boolean,
+    containsNumericCharacter: boolean,
+    containsNonAlphanumericCharacter: boolean,
+  ): void {
     if (this.customStrengthOptions.containsLowercaseLetter) {
-      status.containsLowercaseLetter ||= containsLowercaseCharacter;
+      status.containsLowercaseLetter =
+        (status.containsLowercaseLetter ?? false) || containsLowercaseCharacter;
     }
     if (this.customStrengthOptions.containsUppercaseLetter) {
-      status.containsUppercaseLetter ||= containsUppercaseCharacter;
+      status.containsUppercaseLetter =
+        (status.containsUppercaseLetter ?? false) || containsUppercaseCharacter;
     }
     if (this.customStrengthOptions.containsNumericCharacter) {
-      status.containsNumericCharacter ||= containsNumericCharacter;
+      status.containsNumericCharacter =
+        (status.containsNumericCharacter ?? false) || containsNumericCharacter;
     }
     if (this.customStrengthOptions.containsNonAlphanumericCharacter) {
-      status.containsNonAlphanumericCharacter ||= containsNonAlphanumericCharacter;
+      status.containsNonAlphanumericCharacter =
+        (status.containsNonAlphanumericCharacter ?? false) ||
+        containsNonAlphanumericCharacter;
     }
   }
 }
+
 export default PasswordPolicyImpl;

@@ -15,16 +15,24 @@
  *
  */
 
+import type { PasswordPolicyApiResponse } from './PasswordPolicyImpl';
+
+/** Auth instance with app.options.apiKey (for password policy API). */
+export interface AuthWithAppOptions {
+  app: { options: { apiKey: string } };
+}
+
 /**
  * Performs an API request to Firebase Console to get password policy json.
  *
- * @param {Object} auth - The authentication instance
- * @returns {Promise<Response>} A promise that resolves to the API response.
- * @throws {Error} Throws an error if the request fails or encounters an issue.
+ * @param auth - The authentication instance
+ * @returns A promise that resolves to the API response.
+ * @throws Throws an error if the request fails or encounters an issue.
  */
-export async function fetchPasswordPolicy(auth) {
+export async function fetchPasswordPolicy(
+  auth: AuthWithAppOptions,
+): Promise<PasswordPolicyApiResponse> {
   try {
-    // Identity toolkit API endpoint for password policy. Ensure this is enabled on Google cloud.
     const baseURL = 'https://identitytoolkit.googleapis.com/v2/passwordPolicy?key=';
     const apiKey = auth.app.options.apiKey;
 
@@ -35,10 +43,11 @@ export async function fetchPasswordPolicy(auth) {
         `firebase.auth().validatePassword(*) failed to fetch password policy from Firebase Console: ${response.statusText}. Details: ${errorDetails}`,
       );
     }
-    return await response.json();
+    return (await response.json()) as PasswordPolicyApiResponse;
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
     throw new Error(
-      `firebase.auth().validatePassword(*) Failed to fetch password policy: ${error.message}`,
+      `firebase.auth().validatePassword(*) Failed to fetch password policy: ${message}`,
     );
   }
 }

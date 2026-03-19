@@ -21,6 +21,14 @@ export type * from './types/auth';
 // Export modular API functions
 export * from './modular';
 
+// Export password policy types (for validatePassword return type)
+export type {
+  PasswordPolicyValidationStatus,
+  PasswordPolicyImpl,
+  PasswordPolicyCustomStrengthOptions,
+  PasswordPolicyApiResponse,
+} from './password-policy/PasswordPolicyImpl';
+
 // Export namespaced API
 export type { FirebaseAuthTypes } from './types/namespaced';
 export * from './namespaced';
