@@ -324,12 +324,24 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       List<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> args, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     requireParsedArgumentCount(args, 1, "map", fieldName);
-    if (!(args.get(0) instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode)) {
+    ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode mapArg = args.get(0);
+    if (mapArg instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionValueNode) {
+      ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionNode expression =
+          ((ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionValueNode) mapArg).expression;
+      if (expression
+          instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedConstantExpressionNode) {
+        mapArg =
+            ((ReactNativeFirebaseFirestorePipelineParser.ParsedConstantExpressionNode) expression)
+                .value;
+      }
+    }
+
+    if (!(mapArg instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode)) {
       return null;
     }
 
     Map<String, ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> entries =
-        ((ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode) args.get(0)).values;
+        ((ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode) mapArg).values;
     boolean allConstant = true;
     for (ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode value : entries.values()) {
       if (containsParsedExpression(value)) {
