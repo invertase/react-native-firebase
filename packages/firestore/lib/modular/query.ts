@@ -30,7 +30,6 @@ import type {
 import type {
   DocumentReferenceDeleteInternal,
   DocumentReferenceGetInternal,
-  QueryConstraintWithApplyInternal,
   QueryFilterConstraintWithFilterInternal,
   QueryInternal,
   QueryWithMethodInternal,
@@ -40,22 +39,62 @@ import type {
 import type { FieldPath } from './FieldPath';
 
 /**
- * Public interface for query constraints. Ensures generated .d.ts exposes _apply
- * so that QueryConstraint[] accepts instances from where(), orderBy(), etc.
+ * An `AppliableConstraint` is an abstraction of a constraint that can be applied
+ * to a Firestore query.
  */
-export interface QueryConstraint {
-  readonly type: QueryConstraintType;
-  _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+export abstract class AppliableConstraint {
+  /**
+   * Takes the provided {@link Query} and returns a copy of the {@link Query} with this
+   * {@link AppliableConstraint} applied.
+   */
+  abstract _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
     query: Query<AppModelType, DbModelType>,
   ): Query<AppModelType, DbModelType>;
 }
 
-/** Base implementation for orderBy/limit/startAt/endAt/where constraints. */
-export abstract class QueryConstraintBase implements QueryConstraint {
+/**
+ * A `QueryConstraint` is used to narrow the set of documents returned by a
+ * Firestore query. `QueryConstraint`s are created by invoking {@link where},
+ * {@link orderBy}, {@link startAt}, {@link startAfter}, {@link endBefore},
+ * {@link endAt}, {@link limit}, {@link limitToLast} and can then be passed to
+ * {@link query} to create a new query instance that also contains this `QueryConstraint`.
+ *
+ * @remarks
+ * Matches Firebase JS SDK API. We use QueryConstraintBase for shared implementation
+ * because Query objects are native module wrappers that expose methods matching
+ * constraint types (orderBy, limit, etc.), allowing dynamic dispatch via `query[type]()`.
+ */
+export abstract class QueryConstraint extends AppliableConstraint {
+  /** The type of this query constraint */
+  abstract readonly type: QueryConstraintType;
+
+  /**
+   * Takes the provided {@link Query} and returns a copy of the {@link Query} with this
+   * {@link QueryConstraint} applied.
+   */
+  _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
+    _queryRef: Query<AppModelType, DbModelType>,
+  ): Query<AppModelType, DbModelType> {
+    // This method is implemented in subclasses (QueryConstraintBase provides the default implementation)
+    // Making it non-abstract ensures it appears in .d.ts so subclasses inherit it
+    throw new Error('_apply must be implemented by subclass');
+  }
+}
+
+/**
+ * Base implementation for orderBy/limit/startAt/endAt/where constraints.
+ *
+ * @remarks
+ * Differs from JS SDK (where each constraint implements its own _apply) because
+ * our Query objects are native wrappers. All constraints use the same pattern:
+ * `query[this.type](...args)`, so we share implementation via this base class.
+ */
+export abstract class QueryConstraintBase extends QueryConstraint {
   abstract readonly type: QueryConstraintType;
   private readonly _args: unknown[];
 
   protected constructor(...args: unknown[]) {
+    super();
     this._args = args;
   }
 
@@ -72,20 +111,58 @@ export abstract class QueryConstraintBase implements QueryConstraint {
   }
 }
 
-export class QueryCompositeFilterConstraint implements QueryConstraint {
-  readonly type: 'or' | 'and';
-  readonly _filter: _Filter;
+export class QueryCompositeFilterConstraint extends AppliableConstraint {
+  /**
+   * @internal
+   */
+  protected constructor(
+    /** The type of this query constraint */
+    readonly type: 'or' | 'and',
+    private readonly _queryConstraints: QueryFilterConstraint[],
+  ) {
+    super();
+  }
 
-  constructor(type: 'or' | 'and', filters: _Filter[]) {
-    this.type = type;
-    this._filter = type === 'or' ? Filter.or(...filters) : Filter.and(...filters);
+  static _create(
+    type: 'or' | 'and',
+    _queryConstraints: QueryFilterConstraint[],
+  ): QueryCompositeFilterConstraint {
+    // Validate nested OR filters when creating the constraint
+    if (type === 'or') {
+      const filters = _queryConstraints.map(constraint => {
+        if (constraint instanceof QueryCompositeFilterConstraint) {
+          return constraint._filter;
+        }
+        return (constraint as unknown as QueryFilterConstraintWithFilterInternal)._filter;
+      });
+      // This will throw if nested OR filters are detected
+      Filter.or(...filters);
+    }
+    return new QueryCompositeFilterConstraint(type, _queryConstraints);
   }
 
   _apply<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
     query: Query<AppModelType, DbModelType>,
   ): Query<AppModelType, DbModelType> {
+    const filters = this._queryConstraints.map(constraint => {
+      if (constraint instanceof QueryCompositeFilterConstraint) {
+        return constraint._filter;
+      }
+      return (constraint as unknown as QueryFilterConstraintWithFilterInternal)._filter;
+    });
+    const _filter = this.type === 'or' ? Filter.or(...filters) : Filter.and(...filters);
     const where = (query as unknown as QueryWithWhereInternal<AppModelType, DbModelType>).where;
-    return where.call(query, this._filter, MODULAR_DEPRECATION_ARG);
+    return where.call(query, _filter, MODULAR_DEPRECATION_ARG);
+  }
+
+  get _filter(): _Filter {
+    const filters = this._queryConstraints.map(constraint => {
+      if (constraint instanceof QueryCompositeFilterConstraint) {
+        return constraint._filter;
+      }
+      return (constraint as unknown as QueryFilterConstraintWithFilterInternal)._filter;
+    });
+    return this.type === 'or' ? Filter.or(...filters) : Filter.and(...filters);
   }
 }
 
@@ -152,20 +229,23 @@ export function query<AppModelType = DocumentData, DbModelType extends DocumentD
 ): Query<AppModelType, DbModelType>;
 export function query<AppModelType = DocumentData, DbModelType extends DocumentData = DocumentData>(
   queryRef: Query<AppModelType, DbModelType>,
-  ...queryConstraints: Array<QueryCompositeFilterConstraint | QueryConstraint>
+  queryConstraint: QueryCompositeFilterConstraint | QueryConstraint | undefined,
+  ...additionalQueryConstraints: Array<QueryConstraint | QueryNonFilterConstraint>
 ): Query<AppModelType, DbModelType> {
+  let queryConstraints: AppliableConstraint[] = [];
+
+  if (queryConstraint instanceof AppliableConstraint) {
+    queryConstraints.push(queryConstraint);
+  }
+
+  queryConstraints = queryConstraints.concat(additionalQueryConstraints);
+
   let constrainedQuery = queryRef;
   for (const constraint of queryConstraints) {
     if (!constraint) {
       continue;
     }
-    const apply = (
-      constraint as unknown as QueryConstraintWithApplyInternal<AppModelType, DbModelType>
-    )._apply;
-    if (!apply) {
-      continue;
-    }
-    constrainedQuery = apply.call(constraint, constrainedQuery);
+    constrainedQuery = constraint._apply(constrainedQuery);
   }
   return constrainedQuery;
 }
@@ -178,22 +258,12 @@ export function where(
   return new QueryFieldFilterConstraint(fieldPath, opStr, value);
 }
 
-function toFilter(queryConstraint: QueryFilterConstraint): _Filter {
-  if (queryConstraint instanceof QueryCompositeFilterConstraint) {
-    return (queryConstraint as unknown as QueryFilterConstraintWithFilterInternal)._filter;
-  }
-  if (queryConstraint instanceof QueryFieldFilterConstraint) {
-    return (queryConstraint as unknown as QueryFilterConstraintWithFilterInternal)._filter;
-  }
-  throw new Error('Invalid query constraint: expected filter constraint');
-}
-
 export function or(...queryConstraints: QueryFilterConstraint[]): QueryCompositeFilterConstraint {
-  return new QueryCompositeFilterConstraint('or', queryConstraints.map(toFilter));
+  return QueryCompositeFilterConstraint._create('or', queryConstraints);
 }
 
 export function and(...queryConstraints: QueryFilterConstraint[]): QueryCompositeFilterConstraint {
-  return new QueryCompositeFilterConstraint('and', queryConstraints.map(toFilter));
+  return QueryCompositeFilterConstraint._create('and', queryConstraints);
 }
 
 export function orderBy(
