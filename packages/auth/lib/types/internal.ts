@@ -88,8 +88,13 @@ export type AuthInternal = FirebaseAuth & {
     forceResend?: boolean,
     ...args: unknown[]
   ): PhoneAuthListenerInternal;
+  verifyPhoneNumberForMultiFactor(phoneInfoOptions: { phoneNumber: string; session: string }): Promise<string>;
+  verifyPhoneNumberWithMultiFactorInfo(multiFactorHint: { uid: string }, session: string): Promise<string>;
   validatePassword(password: string, ...args: unknown[]): Promise<unknown>;
 };
+
+/** Auth module with app reference (e.g. for PhoneAuthProvider). */
+export type AuthModuleWithApp = { app: { auth(): AuthInternal } };
 
 /**
  * Internal User type (implementation detail).
@@ -169,7 +174,7 @@ export interface RNFBAuthModule {
   useUserAccessGroup(userAccessGroup: string): Promise<null>;
   verifyBeforeUpdateEmail(newEmail: string, actionCodeSettings?: unknown): Promise<unknown>;
   verifyPasswordResetCode(code: string): Promise<string>;
-  verifyPhoneNumber(phoneNumber: string, autoVerifyTimeout?: number | string, forceResend?: boolean): Promise<unknown>;
+  verifyPhoneNumber(phoneNumber: string, requestIdOrTimeout?: string | number, timeoutOrForceResend?: number | boolean, forceResend?: boolean): Promise<unknown>;
   verifyPhoneNumberForMultiFactor(phoneNumber: string, session: string): Promise<string>;
   verifyPhoneNumberWithMultiFactorInfo(uid: string, session: string): Promise<string>;
   unenrollMultiFactor(enrollmentId: string): Promise<void>;

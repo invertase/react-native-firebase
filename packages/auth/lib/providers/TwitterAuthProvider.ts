@@ -15,18 +15,20 @@
  *
  */
 
-const providerId = 'apple.com';
+import type { AuthCredential } from '../types/auth';
 
-export default class AppleAuthProvider {
+const providerId = 'twitter.com';
+
+export default class TwitterAuthProvider {
   constructor() {
-    throw new Error('`new AppleAuthProvider()` is not supported on the native Firebase SDKs.');
+    throw new Error('`new TwitterAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
-  static get PROVIDER_ID() {
+  static get PROVIDER_ID(): string {
     return providerId;
   }
 
-  static credential(token, secret) {
+  static credential(token: string, secret: string): AuthCredential {
     return {
       token,
       secret,

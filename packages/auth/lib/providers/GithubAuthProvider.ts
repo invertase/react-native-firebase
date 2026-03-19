@@ -15,6 +15,8 @@
  *
  */
 
+import type { AuthCredential } from '../types/auth';
+
 const providerId = 'github.com';
 
 export default class GithubAuthProvider {
@@ -22,11 +24,11 @@ export default class GithubAuthProvider {
     throw new Error('`new GithubAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
-  static get PROVIDER_ID() {
+  static get PROVIDER_ID(): string {
     return providerId;
   }
 
-  static credential(token) {
+  static credential(token: string): AuthCredential {
     return {
       token,
       secret: '',
