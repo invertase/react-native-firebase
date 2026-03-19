@@ -320,7 +320,7 @@ project.ext {
       // Overriding Library SDK Versions if desired
       firebase: [
         // Override Firebase SDK Version
-        bom           : "34.8.0"
+        bom           : "34.10.0"
       ],
     ],
   ])
@@ -335,7 +335,7 @@ Open your projects `/ios/Podfile` and add any of the globals shown below to the 
 
 ```ruby
 # Override Firebase SDK Version if desired
-$FirebaseSDKVersion = '12.9.0'
+$FirebaseSDKVersion = '12.10.0'
 ```
 
 Once changed, reinstall your projects pods via pod install and rebuild your project with `npx react-native run-ios`.
