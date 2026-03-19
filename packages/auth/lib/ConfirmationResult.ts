@@ -15,19 +15,24 @@
  *
  */
 
+import type { AuthInternal } from './types/internal';
+
 export default class ConfirmationResult {
-  constructor(auth, verificationId) {
+  _auth: AuthInternal;
+  _verificationId: string;
+
+  constructor(auth: AuthInternal, verificationId: string) {
     this._auth = auth;
     this._verificationId = verificationId;
   }
 
-  confirm(verificationCode) {
+  confirm(verificationCode: string): Promise<unknown> {
     return this._auth.native
       .confirmationResultConfirm(verificationCode)
-      .then(userCredential => this._auth._setUserCredential(userCredential));
+      .then((userCredential: unknown) => this._auth._setUserCredential(userCredential));
   }
 
-  get verificationId() {
+  get verificationId(): string {
     return this._verificationId;
   }
 }

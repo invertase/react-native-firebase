@@ -15,42 +15,16 @@
  *
  */
 
-import { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
- * Firebase Authentication package for React Native.
- *
- * #### Example: Access the firebase export from the `auth` package:
- *
- * ```js
- * import { firebase } from '@react-native-firebase/auth';
- *
- * // firebase.auth().X
- * ```
- *
- * #### Example: Using the default export from the `auth` package:
- *
- * ```js
- * import auth from '@react-native-firebase/auth';
- *
- * // auth().X
- * ```
- *
- * #### Example: Using the default export from the `app` package:
- *
- * ```js
- * import firebase from '@react-native-firebase/app';
- * import '@react-native-firebase/auth';
- *
- * // firebase.auth().X
- * ```
- * TODO @salakar @ehesp missing auth providers (PhoneAuthProvider, Facebook etc)
- *
- * @firebase auth
+ * @deprecated Use the exported types directly instead.
+ * FirebaseAuthTypes namespace is kept for backwards compatibility.
  */
+/* eslint-disable @typescript-eslint/no-namespace */
 export namespace FirebaseAuthTypes {
-  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
-  import NativeFirebaseError = ReactNativeFirebase.NativeFirebaseError;
+  type FirebaseModule = ReactNativeFirebase.FirebaseModule;
+  type NativeFirebaseError = ReactNativeFirebase.NativeFirebaseError;
 
   export interface NativeFirebaseAuthError extends NativeFirebaseError {
     userInfo: {
@@ -337,6 +311,22 @@ export namespace FirebaseAuthTypes {
     ): Promise<TotpSecret>;
   }
 
+  /**
+   * Auth error with custom data. Used as base for MultiFactorError.
+   */
+  export interface AuthError extends NativeFirebaseError {
+    readonly customData: Record<string, unknown>;
+  }
+
+  /**
+   * Operation type for multi-factor flows.
+   */
+  export const OperationType: {
+    SIGN_IN: 'signIn';
+    LINK: 'link';
+    REAUTHENTICATE: 'reauthenticate';
+  };
+
   export declare interface MultiFactorError extends AuthError {
     /** Details about the MultiFactorError. */
     readonly customData: AuthError['customData'] & {
@@ -470,6 +460,9 @@ export namespace FirebaseAuthTypes {
     PhoneMultiFactorGenerator: PhoneMultiFactorGenerator;
     SDK_VERSION: string;
   }
+
+  /** Auth instance type (alias for Module). */
+  export type Auth = Module;
 
   /**
    * A structure containing additional user information from a federated identity provider via {@link auth.UserCredential}.
@@ -2298,36 +2291,9 @@ export namespace FirebaseAuthTypes {
     get config(): Map<any, any>;
   }
 }
-
-export type CallbackOrObserver<T extends (...args: any[]) => any> = T | { next: T };
-
-type AuthNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
-  FirebaseAuthTypes.Module,
-  FirebaseAuthTypes.Statics
-> & {
-  auth: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
-    FirebaseAuthTypes.Module,
-    FirebaseAuthTypes.Statics
-  >;
-  firebase: ReactNativeFirebase.Module;
-  app(name?: string): ReactNativeFirebase.FirebaseApp;
-};
-
-declare const defaultExport: AuthNamespace;
-
-export const firebase: ReactNativeFirebase.Module & {
-  auth: typeof defaultExport;
-  app(name?: string): ReactNativeFirebase.FirebaseApp & { auth(): FirebaseAuthTypes.Module };
-};
-
-export default defaultExport;
-
-/**
- * Attach namespace to `firebase.` and `FirebaseApp.`.
- */
 declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
-    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+    type FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
       auth: FirebaseModuleWithStaticsAndApp<FirebaseAuthTypes.Module, FirebaseAuthTypes.Statics>;
     }
@@ -2336,5 +2302,3 @@ declare module '@react-native-firebase/app' {
     }
   }
 }
-
-export * from './modular';

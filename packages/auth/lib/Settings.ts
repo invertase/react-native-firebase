@@ -16,35 +16,40 @@
  */
 
 import { isAndroid } from '@react-native-firebase/app/dist/module/common';
+import type { AuthInternal } from './types/internal';
 
 export default class Settings {
-  constructor(auth) {
+  _auth: AuthInternal;
+  _forceRecaptchaFlowForTesting: boolean;
+  _appVerificationDisabledForTesting: boolean;
+
+  constructor(auth: AuthInternal) {
     this._auth = auth;
     this._forceRecaptchaFlowForTesting = false;
     this._appVerificationDisabledForTesting = false;
   }
 
-  get forceRecaptchaFlowForTesting() {
+  get forceRecaptchaFlowForTesting(): boolean {
     return this._forceRecaptchaFlowForTesting;
   }
 
-  set forceRecaptchaFlowForTesting(forceRecaptchaFlow) {
+  set forceRecaptchaFlowForTesting(forceRecaptchaFlow: boolean) {
     if (isAndroid) {
       this._forceRecaptchaFlowForTesting = forceRecaptchaFlow;
       this._auth.native.forceRecaptchaFlowForTesting(forceRecaptchaFlow);
     }
   }
 
-  get appVerificationDisabledForTesting() {
+  get appVerificationDisabledForTesting(): boolean {
     return this._appVerificationDisabledForTesting;
   }
 
-  set appVerificationDisabledForTesting(disabled) {
+  set appVerificationDisabledForTesting(disabled: boolean) {
     this._appVerificationDisabledForTesting = disabled;
     this._auth.native.setAppVerificationDisabledForTesting(disabled);
   }
 
-  setAutoRetrievedSmsCodeForPhoneNumber(phoneNumber, smsCode) {
+  setAutoRetrievedSmsCodeForPhoneNumber(phoneNumber: string, smsCode: string): Promise<null> {
     if (isAndroid) {
       return this._auth.native.setAutoRetrievedSmsCodeForPhoneNumber(phoneNumber, smsCode);
     }

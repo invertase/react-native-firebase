@@ -21,171 +21,179 @@ import {
   isUndefined,
   isBoolean,
 } from '@react-native-firebase/app/dist/module/common';
+import type { AuthInternal, NativeUserShape } from './types/internal';
+import type { AuthCredential, AuthProvider, ActionCodeSettings, UserInfo, MultiFactor, IdTokenResult } from './types/auth';
 
 export default class User {
-  constructor(auth, user) {
+  _auth: AuthInternal;
+  _user: NativeUserShape;
+
+  constructor(auth: AuthInternal, user: NativeUserShape) {
     this._auth = auth;
     this._user = user;
   }
 
-  get displayName() {
-    return this._user.displayName || null;
+  get displayName(): string | null {
+    return this._user.displayName ?? null;
   }
 
-  get email() {
-    return this._user.email || null;
+  get email(): string | null {
+    return this._user.email ?? null;
   }
 
-  get emailVerified() {
-    return this._user.emailVerified || false;
+  get emailVerified(): boolean {
+    return this._user.emailVerified ?? false;
   }
 
-  get isAnonymous() {
-    return this._user.isAnonymous || false;
+  get isAnonymous(): boolean {
+    return this._user.isAnonymous ?? false;
   }
 
-  get metadata() {
+  get metadata(): { lastSignInTime: string; creationTime: string } {
     const { metadata } = this._user;
-
+    const m = metadata ?? { lastSignInTime: 0, creationTime: 0 };
     return {
-      lastSignInTime: new Date(metadata.lastSignInTime).toISOString(),
-      creationTime: new Date(metadata.creationTime).toISOString(),
+      lastSignInTime: new Date(m.lastSignInTime).toISOString(),
+      creationTime: new Date(m.creationTime).toISOString(),
     };
   }
 
-  get multiFactor() {
-    return this._user.multiFactor || null;
+  get multiFactor(): MultiFactor | null {
+    return (this._user.multiFactor ?? null) as MultiFactor | null;
   }
 
-  get phoneNumber() {
-    return this._user.phoneNumber || null;
+  get phoneNumber(): string | null {
+    return this._user.phoneNumber ?? null;
   }
 
-  get tenantId() {
-    return this._user.tenantId || null;
+  get tenantId(): string | null {
+    return this._user.tenantId ?? null;
   }
 
-  get photoURL() {
-    return this._user.photoURL || null;
+  get photoURL(): string | null {
+    return this._user.photoURL ?? null;
   }
 
-  get providerData() {
-    return this._user.providerData;
+  get providerData(): UserInfo[] {
+    return (this._user.providerData ?? []) as UserInfo[];
   }
 
-  get providerId() {
-    return this._user.providerId;
+  get providerId(): string {
+    return this._user.providerId ?? '';
   }
 
-  get uid() {
-    return this._user.uid;
+  get uid(): string {
+    return this._user.uid ?? '';
   }
 
-  delete() {
+  delete(): Promise<void> {
     return this._auth.native.delete().then(() => {
       this._auth._setUser();
     });
   }
 
-  getIdToken(forceRefresh = false) {
+  getIdToken(forceRefresh = false): Promise<string> {
     return this._auth.native.getIdToken(forceRefresh);
   }
 
-  getIdTokenResult(forceRefresh = false) {
-    return this._auth.native.getIdTokenResult(forceRefresh);
+  getIdTokenResult(forceRefresh = false): Promise<IdTokenResult> {
+    return this._auth.native.getIdTokenResult(forceRefresh) as Promise<IdTokenResult>;
   }
 
-  linkWithCredential(credential) {
+  linkWithCredential(credential: AuthCredential): Promise<unknown> {
     return this._auth.native
       .linkWithCredential(credential.providerId, credential.token, credential.secret)
-      .then(userCredential => this._auth._setUserCredential(userCredential));
+      .then((userCredential: unknown) => this._auth._setUserCredential(userCredential));
   }
 
-  linkWithPopup(provider) {
-    // call through to linkWithRedirect for shared implementation
+  linkWithPopup(provider: AuthProvider): Promise<unknown> {
     return this.linkWithRedirect(provider);
   }
 
-  linkWithRedirect(provider) {
+  linkWithRedirect(provider: AuthProvider): Promise<unknown> {
+    const prov = provider as unknown as { toObject(): unknown };
     return this._auth.native
-      .linkWithProvider(provider.toObject())
-      .then(userCredential => this._auth._setUserCredential(userCredential));
+      .linkWithProvider(prov.toObject())
+      .then((userCredential: unknown) => this._auth._setUserCredential(userCredential));
   }
 
-  reauthenticateWithCredential(credential) {
+  reauthenticateWithCredential(credential: AuthCredential): Promise<unknown> {
     return this._auth.native
       .reauthenticateWithCredential(credential.providerId, credential.token, credential.secret)
-      .then(userCredential => this._auth._setUserCredential(userCredential));
+      .then((userCredential: unknown) => this._auth._setUserCredential(userCredential));
   }
 
-  reauthenticateWithPopup(provider) {
-    // call through to reauthenticateWithRedirect for shared implementation
+  reauthenticateWithPopup(provider: AuthProvider): Promise<unknown> {
     return this.reauthenticateWithRedirect(provider);
   }
 
-  reauthenticateWithRedirect(provider) {
+  reauthenticateWithRedirect(provider: AuthProvider): Promise<unknown> {
+    const prov = provider as unknown as { toObject(): unknown };
     return this._auth.native
-      .reauthenticateWithProvider(provider.toObject())
-      .then(userCredential => this._auth._setUserCredential(userCredential));
+      .reauthenticateWithProvider(prov.toObject())
+      .then((userCredential: unknown) => this._auth._setUserCredential(userCredential));
   }
 
-  reload() {
-    return this._auth.native.reload().then(user => {
+  reload(): Promise<void> {
+    return this._auth.native.reload().then((user: unknown) => {
       this._auth._setUser(user);
-    });
+    }) as Promise<void>;
   }
 
-  sendEmailVerification(actionCodeSettings) {
+  sendEmailVerification(actionCodeSettings?: ActionCodeSettings): Promise<unknown> {
     if (isObject(actionCodeSettings)) {
-      if (!isString(actionCodeSettings.url)) {
+      const acs = actionCodeSettings as Record<string, unknown>;
+      if (!isString(acs.url)) {
         throw new Error(
           "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.url' expected a string value.",
         );
       }
 
-      if (!isUndefined(actionCodeSettings.linkDomain) && !isString(actionCodeSettings.linkDomain)) {
+      if (!isUndefined(acs.linkDomain) && !isString(acs.linkDomain)) {
         throw new Error(
           "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.linkDomain' expected a string value.",
         );
       }
 
       if (
-        !isUndefined(actionCodeSettings.handleCodeInApp) &&
-        !isBoolean(actionCodeSettings.handleCodeInApp)
+        !isUndefined(acs.handleCodeInApp) &&
+        !isBoolean(acs.handleCodeInApp)
       ) {
         throw new Error(
           "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.handleCodeInApp' expected a boolean value.",
         );
       }
 
-      if (!isUndefined(actionCodeSettings.iOS)) {
-        if (!isObject(actionCodeSettings.iOS)) {
+      if (!isUndefined(acs.iOS)) {
+        if (!isObject(acs.iOS)) {
           throw new Error(
             "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.iOS' expected an object value.",
           );
         }
-        if (!isString(actionCodeSettings.iOS.bundleId)) {
+        const ios = acs.iOS as Record<string, unknown>;
+        if (!isString(ios.bundleId)) {
           throw new Error(
             "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.iOS.bundleId' expected a string value.",
           );
         }
       }
 
-      if (!isUndefined(actionCodeSettings.android)) {
-        if (!isObject(actionCodeSettings.android)) {
+      if (!isUndefined(acs.android)) {
+        if (!isObject(acs.android)) {
           throw new Error(
             "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.android' expected an object value.",
           );
         }
-        if (!isString(actionCodeSettings.android.packageName)) {
+        const android = acs.android as Record<string, unknown>;
+        if (!isString(android.packageName)) {
           throw new Error(
             "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.android.packageName' expected a string value.",
           );
         }
 
         if (
-          !isUndefined(actionCodeSettings.android.installApp) &&
-          !isBoolean(actionCodeSettings.android.installApp)
+          !isUndefined(android.installApp) &&
+          !isBoolean(android.installApp)
         ) {
           throw new Error(
             "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.android.installApp' expected a boolean value.",
@@ -193,8 +201,8 @@ export default class User {
         }
 
         if (
-          !isUndefined(actionCodeSettings.android.minimumVersion) &&
-          !isString(actionCodeSettings.android.minimumVersion)
+          !isUndefined(android.minimumVersion) &&
+          !isString(android.minimumVersion)
         ) {
           throw new Error(
             "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.android.minimumVersion' expected a string value.",
@@ -203,46 +211,46 @@ export default class User {
       }
     }
 
-    return this._auth.native.sendEmailVerification(actionCodeSettings).then(user => {
+    return this._auth.native.sendEmailVerification(actionCodeSettings).then((user: unknown) => {
       this._auth._setUser(user);
     });
   }
 
-  toJSON() {
-    return Object.assign({}, this._user);
+  toJSON(): Record<string, unknown> {
+    return Object.assign({}, this._user) as Record<string, unknown>;
   }
 
-  unlink(providerId) {
-    return this._auth.native.unlink(providerId).then(user => this._auth._setUser(user));
+  unlink(providerId: string): Promise<unknown> {
+    return this._auth.native.unlink(providerId).then((user: unknown) => this._auth._setUser(user));
   }
 
-  updateEmail(email) {
-    return this._auth.native.updateEmail(email).then(user => {
+  updateEmail(email: string): Promise<unknown> {
+    return this._auth.native.updateEmail(email).then((user: unknown) => {
       this._auth._setUser(user);
     });
   }
 
-  updatePassword(password) {
-    return this._auth.native.updatePassword(password).then(user => {
+  updatePassword(password: string): Promise<unknown> {
+    return this._auth.native.updatePassword(password).then((user: unknown) => {
       this._auth._setUser(user);
     });
   }
 
-  updatePhoneNumber(credential) {
+  updatePhoneNumber(credential: AuthCredential): Promise<unknown> {
     return this._auth.native
       .updatePhoneNumber(credential.providerId, credential.token, credential.secret)
-      .then(user => {
+      .then((user: unknown) => {
         this._auth._setUser(user);
       });
   }
 
-  updateProfile(updates) {
-    return this._auth.native.updateProfile(updates).then(user => {
+  updateProfile(updates: Record<string, unknown>): Promise<unknown> {
+    return this._auth.native.updateProfile(updates).then((user: unknown) => {
       this._auth._setUser(user);
     });
   }
 
-  verifyBeforeUpdateEmail(newEmail, actionCodeSettings) {
+  verifyBeforeUpdateEmail(newEmail: string, actionCodeSettings?: ActionCodeSettings): Promise<unknown> {
     if (!isString(newEmail)) {
       throw new Error(
         "firebase.auth.User.verifyBeforeUpdateEmail(*) 'newEmail' expected a string value.",
@@ -250,55 +258,58 @@ export default class User {
     }
 
     if (isObject(actionCodeSettings)) {
-      if (!isString(actionCodeSettings.url)) {
+      const acs = actionCodeSettings as Record<string, unknown>;
+      if (!isString(acs.url)) {
         throw new Error(
           "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.url' expected a string value.",
         );
       }
 
-      if (!isUndefined(actionCodeSettings.linkDomain) && !isString(actionCodeSettings.linkDomain)) {
+      if (!isUndefined(acs.linkDomain) && !isString(acs.linkDomain)) {
         throw new Error(
           "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.linkDomain' expected a string value.",
         );
       }
 
       if (
-        !isUndefined(actionCodeSettings.handleCodeInApp) &&
-        !isBoolean(actionCodeSettings.handleCodeInApp)
+        !isUndefined(acs.handleCodeInApp) &&
+        !isBoolean(acs.handleCodeInApp)
       ) {
         throw new Error(
           "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.handleCodeInApp' expected a boolean value.",
         );
       }
 
-      if (!isUndefined(actionCodeSettings.iOS)) {
-        if (!isObject(actionCodeSettings.iOS)) {
+      if (!isUndefined(acs.iOS)) {
+        if (!isObject(acs.iOS)) {
           throw new Error(
             "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.iOS' expected an object value.",
           );
         }
-        if (!isString(actionCodeSettings.iOS.bundleId)) {
+        const ios = acs.iOS as Record<string, unknown>;
+        if (!isString(ios.bundleId)) {
           throw new Error(
             "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.iOS.bundleId' expected a string value.",
           );
         }
       }
 
-      if (!isUndefined(actionCodeSettings.android)) {
-        if (!isObject(actionCodeSettings.android)) {
+      if (!isUndefined(acs.android)) {
+        if (!isObject(acs.android)) {
           throw new Error(
             "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.android' expected an object value.",
           );
         }
-        if (!isString(actionCodeSettings.android.packageName)) {
+        const android = acs.android as Record<string, unknown>;
+        if (!isString(android.packageName)) {
           throw new Error(
             "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.android.packageName' expected a string value.",
           );
         }
 
         if (
-          !isUndefined(actionCodeSettings.android.installApp) &&
-          !isBoolean(actionCodeSettings.android.installApp)
+          !isUndefined(android.installApp) &&
+          !isBoolean(android.installApp)
         ) {
           throw new Error(
             "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.android.installApp' expected a boolean value.",
@@ -306,8 +317,8 @@ export default class User {
         }
 
         if (
-          !isUndefined(actionCodeSettings.android.minimumVersion) &&
-          !isString(actionCodeSettings.android.minimumVersion)
+          !isUndefined(android.minimumVersion) &&
+          !isString(android.minimumVersion)
         ) {
           throw new Error(
             "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.android.minimumVersion' expected a string value.",
@@ -316,7 +327,7 @@ export default class User {
       }
     }
 
-    return this._auth.native.verifyBeforeUpdateEmail(newEmail, actionCodeSettings).then(user => {
+    return this._auth.native.verifyBeforeUpdateEmail(newEmail, actionCodeSettings).then((user: unknown) => {
       this._auth._setUser(user);
     });
   }
@@ -325,19 +336,19 @@ export default class User {
    * KNOWN UNSUPPORTED METHODS
    */
 
-  linkWithPhoneNumber() {
+  linkWithPhoneNumber(): never {
     throw new Error(
       'firebase.auth.User.linkWithPhoneNumber() is unsupported by the native Firebase SDKs.',
     );
   }
 
-  reauthenticateWithPhoneNumber() {
+  reauthenticateWithPhoneNumber(): never {
     throw new Error(
       'firebase.auth.User.reauthenticateWithPhoneNumber() is unsupported by the native Firebase SDKs.',
     );
   }
 
-  get refreshToken() {
+  get refreshToken(): never {
     throw new Error('firebase.auth.User.refreshToken is unsupported by the native Firebase SDKs.');
   }
 }

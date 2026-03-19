@@ -30,7 +30,11 @@ import {
   FirebaseModule,
   createModuleNamespace,
   getFirebaseRoot,
+  type ModuleConfig,
 } from '@react-native-firebase/app/dist/module/internal';
+import type { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { FirebaseAuthTypes } from './types/namespaced';
+import type { AuthInternal, NativeUserShape } from './types/internal';
 import ConfirmationResult from './ConfirmationResult';
 import PhoneAuthListener from './PhoneAuthListener';
 import PhoneMultiFactorGenerator from './PhoneMultiFactorGenerator';
@@ -49,7 +53,7 @@ import OIDCAuthProvider from './providers/OIDCAuthProvider';
 import PhoneAuthProvider from './providers/PhoneAuthProvider';
 import TwitterAuthProvider from './providers/TwitterAuthProvider';
 import { TotpSecret } from './TotpSecret';
-import version from './version';
+import { version } from './version';
 import fallBackModule from './web/RNFBAuthModule';
 import { PasswordPolicyMixin } from './password-policy/PasswordPolicyMixin';
 
@@ -96,23 +100,36 @@ const statics = {
 const namespace = 'auth';
 const nativeModuleName = 'RNFBAuthModule';
 
-class FirebaseAuthModule extends FirebaseModule {
-  constructor(...args) {
-    super(...args);
+class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
+  _user: InstanceType<typeof User> | null;
+  _settings: InstanceType<typeof Settings> | null;
+  _authResult: boolean;
+  _languageCode: string;
+  _tenantId: string | null;
+  _projectPasswordPolicy: unknown;
+  _tenantPasswordPolicies: Record<string, unknown>;
+
+  constructor(...args: [unknown, ModuleConfig, ...unknown[]]) {
+    super(
+      args[0] as ReactNativeFirebase.FirebaseAppBase,
+      args[1] as ModuleConfig,
+      ...(args.slice(2) as (string | null | undefined)[]),
+    );
     this._user = null;
     this._settings = null;
     this._authResult = false;
-    this._languageCode = this.native.APP_LANGUAGE[this.app._name];
+    const appName = (this.app as { _name?: string })._name ?? this.app.name;
+    this._languageCode = (this.native.APP_LANGUAGE[appName] ?? '') as string;
     this._tenantId = null;
     this._projectPasswordPolicy = null;
     this._tenantPasswordPolicies = {};
 
     if (!this.languageCode) {
-      this._languageCode = this.native.APP_LANGUAGE['[DEFAULT]'];
+      this._languageCode = (this.native.APP_LANGUAGE['[DEFAULT]'] ?? '') as string;
     }
 
-    if (this.native.APP_USER[this.app._name]) {
-      this._setUser(this.native.APP_USER[this.app._name]);
+    if (this.native.APP_USER[appName]) {
+      this._setUser(this.native.APP_USER[appName]);
     }
 
     this.emitter.addListener(this.eventNameForApp('auth_state_changed'), event => {
@@ -156,10 +173,10 @@ class FirebaseAuthModule extends FirebaseModule {
     }
     // as this is a setter, we can't use async/await. So we set it first so it is available immediately
     if (code === null) {
-      this._languageCode = this.native.APP_LANGUAGE[this.app._name];
-
+      const an = (this.app as { _name?: string })._name ?? this.app.name;
+      this._languageCode = (this.native.APP_LANGUAGE[an] ?? '') as string;
       if (!this.languageCode) {
-        this._languageCode = this.native.APP_LANGUAGE['[DEFAULT]'];
+        this._languageCode = (this.native.APP_LANGUAGE['[DEFAULT]'] ?? '') as string;
       }
     } else {
       this._languageCode = code;
@@ -168,7 +185,7 @@ class FirebaseAuthModule extends FirebaseModule {
     this.setLanguageCode(code);
   }
 
-  get config() {
+  get config(): Record<string, never> {
     // for modular API, firebase JS SDK has a config object which is not available in native SDKs
     return {};
   }
@@ -179,7 +196,7 @@ class FirebaseAuthModule extends FirebaseModule {
 
   get settings() {
     if (!this._settings) {
-      this._settings = new Settings(this);
+      this._settings = new Settings(this as unknown as AuthInternal);
     }
     return this._settings;
   }
@@ -188,15 +205,15 @@ class FirebaseAuthModule extends FirebaseModule {
     return this._user;
   }
 
-  _setUser(user) {
-    this._user = user ? createDeprecationProxy(new User(this, user)) : null;
+  _setUser(user: unknown) {
+    this._user = user ? createDeprecationProxy(new User(this as unknown as AuthInternal, user as NativeUserShape)) : null;
     this._authResult = true;
     this.emitter.emit(this.eventNameForApp('onUserChanged'), this._user);
     return this._user;
   }
 
-  _setUserCredential(userCredential) {
-    const user = createDeprecationProxy(new User(this, userCredential.user));
+  _setUserCredential(userCredential: { user: unknown; additionalUserInfo?: unknown }) {
+    const user = createDeprecationProxy(new User(this as unknown as AuthInternal, userCredential.user as NativeUserShape));
     this._user = user;
     this._authResult = true;
     this.emitter.emit(this.eventNameForApp('onUserChanged'), this._user);
@@ -216,17 +233,17 @@ class FirebaseAuthModule extends FirebaseModule {
     await this.native.setLanguageCode(code);
 
     if (code === null) {
-      this._languageCode = this.native.APP_LANGUAGE[this.app._name];
-
+      const an = (this.app as { _name?: string })._name ?? this.app.name;
+      this._languageCode = (this.native.APP_LANGUAGE[an] ?? '') as string;
       if (!this.languageCode) {
-        this._languageCode = this.native.APP_LANGUAGE['[DEFAULT]'];
+        this._languageCode = (this.native.APP_LANGUAGE['[DEFAULT]'] ?? '') as string;
       }
     } else {
       this._languageCode = code;
     }
   }
 
-  async setTenantId(tenantId) {
+  async setTenantId(tenantId: string) {
     if (!isString(tenantId)) {
       throw new Error("firebase.auth().setTenantId(*) expected 'tenantId' to be a string");
     }
@@ -280,7 +297,7 @@ class FirebaseAuthModule extends FirebaseModule {
 
   signOut() {
     return this.native.signOut().then(() => {
-      this._setUser();
+      this._setUser(undefined as unknown as InstanceType<typeof User>);
     });
   }
 
@@ -294,12 +311,12 @@ class FirebaseAuthModule extends FirebaseModule {
     if (isAndroid) {
       return this.native
         .signInWithPhoneNumber(phoneNumber, forceResend || false)
-        .then(result => new ConfirmationResult(this, result.verificationId));
+        .then(result => new ConfirmationResult(this as unknown as AuthInternal, result.verificationId));
     }
 
     return this.native
       .signInWithPhoneNumber(phoneNumber)
-      .then(result => new ConfirmationResult(this, result.verificationId));
+      .then(result => new ConfirmationResult(this as unknown as AuthInternal, result.verificationId));
   }
 
   verifyPhoneNumber(phoneNumber, autoVerifyTimeoutOrForceResend, forceResend) {
@@ -312,7 +329,7 @@ class FirebaseAuthModule extends FirebaseModule {
       _autoVerifyTimeout = autoVerifyTimeoutOrForceResend;
     }
 
-    return new PhoneAuthListener(this, phoneNumber, _autoVerifyTimeout, _forceResend);
+    return new PhoneAuthListener(this as unknown as AuthInternal, phoneNumber, _autoVerifyTimeout, _forceResend);
   }
 
   verifyPhoneNumberWithMultiFactorInfo(multiFactorHint, session) {
@@ -346,7 +363,7 @@ class FirebaseAuthModule extends FirebaseModule {
         /* istanbul ignore next - native error handling cannot be unit tested */
         .catch(error => {
           if (error.code === 'auth/password-does-not-meet-requirements') {
-            return this._recachePasswordPolicy()
+            return (this as unknown as { _recachePasswordPolicy: () => Promise<unknown> })._recachePasswordPolicy()
               .catch(() => {
                 // Silently ignore recache failures - the original error matters more
               })
@@ -367,7 +384,7 @@ class FirebaseAuthModule extends FirebaseModule {
         /* istanbul ignore next - native error handling cannot be unit tested */
         .catch(error => {
           if (error.code === 'auth/password-does-not-meet-requirements') {
-            return this._recachePasswordPolicy()
+            return (this as unknown as { _recachePasswordPolicy: () => Promise<unknown> })._recachePasswordPolicy()
               .catch(() => {
                 // Silently ignore recache failures - the original error matters more
               })
@@ -421,7 +438,7 @@ class FirebaseAuthModule extends FirebaseModule {
         /* istanbul ignore next - native error handling cannot be unit tested */
         .catch(error => {
           if (error.code === 'auth/password-does-not-meet-requirements') {
-            return this._recachePasswordPolicy()
+            return (this as unknown as { _recachePasswordPolicy: () => Promise<unknown> })._recachePasswordPolicy()
               .catch(() => {
                 // Silently ignore recache failures - the original error matters more
               })
@@ -520,21 +537,21 @@ class FirebaseAuthModule extends FirebaseModule {
     if (!urlMatches) {
       throw new Error('firebase.auth().useEmulator() unable to parse host and port from URL');
     }
-    const host = urlMatches[1];
-    const port = parseInt(urlMatches[2], 10);
+    const host = urlMatches[1]!;
+    const port = parseInt(urlMatches[2]!, 10);
     this.native.useEmulator(host, port);
     return [host, port]; // undocumented return, useful for unit testing
   }
 
-  getMultiFactorResolver(error) {
-    return getMultiFactorResolver(this, error);
+  getMultiFactorResolver(error: import('./types/auth').MultiFactorError) {
+    return getMultiFactorResolver(this as unknown as AuthInternal, error);
   }
 
-  multiFactor(user) {
-    if (user.userId !== this.currentUser.userId) {
+  multiFactor(user: InstanceType<typeof User>) {
+    if (user.uid !== this.currentUser!.uid) {
       throw new Error('firebase.auth().multiFactor() only operates on currentUser');
     }
-    return new MultiFactorUser(this, user);
+    return new MultiFactorUser(this as unknown as AuthInternal, user);
   }
 
   getCustomAuthDomain() {
@@ -548,9 +565,7 @@ Object.assign(FirebaseAuthModule.prototype, PasswordPolicyMixin);
 // import { SDK_VERSION } from '@react-native-firebase/auth';
 export const SDK_VERSION = version;
 
-// import auth from '@react-native-firebase/auth';
-// auth().X(...);
-export default createModuleNamespace({
+const authNamespace = createModuleNamespace({
   statics,
   version,
   namespace,
@@ -561,12 +576,32 @@ export default createModuleNamespace({
   ModuleClass: FirebaseAuthModule,
 });
 
-export * from './modular/index';
+type AuthNamespace = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  FirebaseAuthTypes.Module,
+  FirebaseAuthTypes.Statics
+> & {
+  auth: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+    FirebaseAuthTypes.Module,
+    FirebaseAuthTypes.Statics
+  >;
+  firebase: ReactNativeFirebase.Module;
+  app(name?: string): ReactNativeFirebase.FirebaseApp;
+};
+
+// import auth from '@react-native-firebase/auth';
+// auth().X(...);
+export default authNamespace as unknown as AuthNamespace;
 
 // import auth, { firebase } from '@react-native-firebase/auth';
 // auth().X(...);
 // firebase.auth().X(...);
-export const firebase = getFirebaseRoot();
+export const firebase =
+  getFirebaseRoot() as unknown as ReactNativeFirebase.FirebaseNamespacedExport<
+    'auth',
+    FirebaseAuthTypes.Module,
+    FirebaseAuthTypes.Statics,
+    true
+  >;
 
 // Register the interop module for non-native platforms.
 setReactNativeModule(nativeModuleName, fallBackModule);
