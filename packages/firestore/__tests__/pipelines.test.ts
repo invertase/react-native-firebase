@@ -89,14 +89,14 @@ describe('Firestore pipelines runtime', function () {
       .collection('firestore')
       .unnest(field('scores').as('score'), 'attempt')
       .serialize();
+    const unnestStage: any = serialized.stages[0];
 
     expect(serialized.stages).toHaveLength(1);
-    expect(serialized.stages[0]?.stage).toBe('unnest');
-    expect(serialized.stages[0]?.options?.indexField).toBe('attempt');
-    expect(serialized.stages[0]?.options?.selectable?.alias).toBe('score');
+    expect(unnestStage?.stage).toBe('unnest');
+    expect(unnestStage?.options?.indexField).toBe('attempt');
+    expect(unnestStage?.options?.selectable?.alias).toBe('score');
     expect(
-      serialized.stages[0]?.options?.selectable?.path ??
-        serialized.stages[0]?.options?.selectable?.expr?.path,
+      unnestStage?.options?.selectable?.path ?? unnestStage?.options?.selectable?.expr?.path,
     ).toBe('scores');
   });
 
@@ -290,6 +290,7 @@ describe('Firestore pipelines runtime', function () {
       .aggregate(f('rating').average().as('averageRating'));
 
     const serialized = pipeline.serialize();
+    const selectStage: any = serialized.stages[1];
     expect(serialized.stages[0]).toMatchObject({
       stage: 'where',
       options: {
@@ -299,16 +300,16 @@ describe('Firestore pipelines runtime', function () {
         },
       },
     });
-    expect(serialized.stages[1]?.stage).toBe('select');
-    expect(serialized.stages[1]?.options?.selections).toHaveLength(3);
-    expect(serialized.stages[1]?.options?.selections?.[0]).toMatchObject({
+    expect(selectStage?.stage).toBe('select');
+    expect(selectStage?.options?.selections).toHaveLength(3);
+    expect(selectStage?.options?.selections?.[0]).toMatchObject({
       alias: 'title',
     });
-    expect(serialized.stages[1]?.options?.selections?.[1]).toMatchObject({
+    expect(selectStage?.options?.selections?.[1]).toMatchObject({
       alias: 'boostedRating',
       expr: { exprType: 'Function', name: 'add' },
     });
-    expect(serialized.stages[1]?.options?.selections?.[2]).toMatchObject({
+    expect(selectStage?.options?.selections?.[2]).toMatchObject({
       alias: 'isFantasy',
       expr: { exprType: 'Function', name: 'equal' },
     });

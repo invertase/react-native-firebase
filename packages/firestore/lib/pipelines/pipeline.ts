@@ -26,28 +26,10 @@ import type {
   PipelineRawStageOptions,
 } from './stage_options';
 import type { BooleanExpression, Selectable, Field, Ordering, Accumulator } from './expressions';
+import type { FirestorePipelineSerializedInternal } from '../types/internal';
 
-/**
- * @internal
- * Serialized pipeline payload shape forwarded to native/web executors.
- */
-export interface SerializedPipeline {
-  source: {
-    source: string;
-    collectionId?: string;
-    path?: string;
-    queryType?: string;
-    filters?: unknown[];
-    orders?: unknown[];
-    options?: { limit?: number; [key: string]: unknown };
-    documents?: string[];
-    [key: string]: unknown;
-  };
-  stages: Array<{
-    stage: string;
-    options: Record<string, unknown>;
-  }>;
-}
+/** @internal Serialized pipeline payload shape forwarded to native/web executors. */
+export type SerializedPipeline = FirestorePipelineSerializedInternal;
 
 /**
  * @beta

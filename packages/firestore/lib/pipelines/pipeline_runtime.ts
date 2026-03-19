@@ -85,6 +85,11 @@ interface RuntimePipeline extends Pipeline {
   serialize(visiting?: WeakSet<object>): FirestorePipelineSerializedInternal;
 }
 
+interface RuntimePipelineStageInternal {
+  stage: FirestorePipelineStageInternal['stage'];
+  options: Record<string, unknown>;
+}
+
 function isRuntimePipeline(value: unknown): value is RuntimePipeline {
   return isObject(value) && (value as unknown as RuntimePipeline)[PIPELINE_RUNTIME_SYMBOL] === true;
 }
@@ -340,19 +345,22 @@ class RuntimePipelineImpl<T = DocumentData> implements RuntimePipeline {
   readonly firestore: FirestoreInternal;
 
   private readonly _source: FirestorePipelineSourceInternal;
-  private readonly _stages: FirestorePipelineStageInternal[];
+  private readonly _stages: RuntimePipelineStageInternal[];
 
   constructor(
     firestore: FirestoreInternal,
     source: FirestorePipelineSourceInternal,
-    stages: FirestorePipelineStageInternal[] = [],
+    stages: RuntimePipelineStageInternal[] = [],
   ) {
     this.firestore = firestore;
     this._source = source;
     this._stages = stages;
   }
 
-  private append(stage: string, options: Record<string, unknown>): RuntimePipelineImpl<T> {
+  private append(
+    stage: RuntimePipelineStageInternal['stage'],
+    options: Record<string, unknown>,
+  ): RuntimePipelineImpl<T> {
     return new RuntimePipelineImpl(this.firestore, this._source, [
       ...this._stages,
       { stage, options },
@@ -367,10 +375,13 @@ class RuntimePipelineImpl<T = DocumentData> implements RuntimePipeline {
     }
 
     visiting.add(this);
-    const stages = this._stages.map(stage => ({
-      stage: stage.stage,
-      options: serializeValue(stage.options, visiting) as Record<string, unknown>,
-    }));
+    const stages = this._stages.map(
+      stage =>
+        ({
+          stage: stage.stage,
+          options: serializeValue(stage.options, visiting),
+        }) as FirestorePipelineStageInternal,
+    );
     const source = serializeValue(this._source, visiting) as FirestorePipelineSourceInternal;
     visiting.delete(this);
 
@@ -730,7 +741,7 @@ class RuntimePipelineSourceImpl<
       queryType: internals._modifiers.type,
       filters: internals._modifiers.filters,
       orders: internals._modifiers.orders,
-      options: internals._modifiers.options as unknown as Record<string, unknown>,
+      options: internals._modifiers.options,
     }) as unknown as TPipeline;
   }
 }

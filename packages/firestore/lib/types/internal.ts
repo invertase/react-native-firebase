@@ -95,6 +95,96 @@ export interface FirestoreAggregateQueryResultInternal {
   [key: string]: unknown;
 }
 
+/** Serialized expression node passed to native pipeline execute bridge. */
+export interface FirestorePipelineFieldExpressionInternal {
+  __kind?: 'expression';
+  exprType: 'Field';
+  path: string;
+}
+
+/** Serialized constant expression node passed to native pipeline execute bridge. */
+export interface FirestorePipelineConstantExpressionInternal {
+  __kind?: 'expression';
+  exprType: 'Constant';
+  value: FirestorePipelineSerializedValueInternal;
+}
+
+/** Serialized function expression node passed to native pipeline execute bridge. */
+export interface FirestorePipelineFunctionExpressionInternal {
+  __kind?: 'expression';
+  exprType?: 'Function';
+  name: string;
+  args?: FirestorePipelineSerializedValueInternal[];
+}
+
+/** Serialized aggregate function node passed to native pipeline execute bridge. */
+export interface FirestorePipelineAggregateFunctionInternal {
+  __kind?: 'aggregate';
+  exprType?: 'AggregateFunction';
+  kind: string;
+  args?: FirestorePipelineSerializedValueInternal[];
+}
+
+/** Serialized ordering node passed to native pipeline execute bridge. */
+export interface FirestorePipelineOrderingInternal {
+  __kind?: 'ordering';
+  expr: FirestorePipelineExpressionInternal;
+  direction: 'ascending' | 'descending';
+}
+
+/** Flat aliased field shape used to avoid nested field parsing on native platforms. */
+export interface FirestorePipelineFlatAliasedFieldInternal {
+  path: string;
+  alias: string;
+  as: string;
+}
+
+/** Serialized aliased expression node passed to native pipeline execute bridge. */
+export interface FirestorePipelineAliasedExpressionInternal {
+  __kind?: 'aliasedExpression';
+  exprType?: 'AliasedExpression';
+  selectable?: true;
+  expr: FirestorePipelineExpressionInternal;
+  alias: string;
+  as: string;
+}
+
+/** Serialized aliased aggregate node passed to native pipeline execute bridge. */
+export interface FirestorePipelineAliasedAggregateInternal {
+  __kind?: 'aliasedAggregate';
+  aggregate: FirestorePipelineAggregateFunctionInternal;
+  alias: string;
+}
+
+export type FirestorePipelineExpressionInternal =
+  | FirestorePipelineFieldExpressionInternal
+  | FirestorePipelineConstantExpressionInternal
+  | FirestorePipelineFunctionExpressionInternal;
+
+export type FirestorePipelineSelectableInternal =
+  | FirestorePipelineExpressionInternal
+  | FirestorePipelineFlatAliasedFieldInternal
+  | FirestorePipelineAliasedExpressionInternal;
+
+export type FirestorePipelineSerializedRecordInternal = {
+  [key: string]: FirestorePipelineSerializedValueInternal;
+};
+
+export type FirestorePipelineSerializedValueInternal =
+  | null
+  | boolean
+  | number
+  | string
+  | FirestorePipelineExpressionInternal
+  | FirestorePipelineAggregateFunctionInternal
+  | FirestorePipelineOrderingInternal
+  | FirestorePipelineFlatAliasedFieldInternal
+  | FirestorePipelineAliasedExpressionInternal
+  | FirestorePipelineAliasedAggregateInternal
+  | FirestorePipelineSerializedInternal
+  | FirestorePipelineSerializedValueInternal[]
+  | FirestorePipelineSerializedRecordInternal;
+
 /** Serialized pipeline source passed to native execute bridge. */
 export type FirestorePipelineSourceInternal =
   | {
@@ -120,16 +210,117 @@ export type FirestorePipelineSourceInternal =
       source: 'query';
       path: string;
       queryType: FirestoreQueryTypeInternal;
-      filters: unknown[];
-      orders: unknown[];
-      options: Record<string, unknown>;
+      filters: FirestoreFilterSpecInternal[];
+      orders: FirestoreOrderSpecInternal[];
+      options: FirestoreQueryOptionsInternal;
     };
 
-/** Serialized pipeline stage passed to native execute bridge. */
-export interface FirestorePipelineStageInternal {
-  stage: string;
-  options: Record<string, unknown>;
-}
+export type FirestorePipelineStageInternal =
+  | {
+      stage: 'where';
+      options: {
+        condition: FirestorePipelineExpressionInternal;
+      };
+    }
+  | {
+      stage: 'select';
+      options: {
+        selections: Array<string | FirestorePipelineSelectableInternal>;
+      };
+    }
+  | {
+      stage: 'addFields';
+      options: {
+        fields: FirestorePipelineSelectableInternal[];
+      };
+    }
+  | {
+      stage: 'removeFields';
+      options: {
+        fields: Array<string | FirestorePipelineFieldExpressionInternal>;
+      };
+    }
+  | {
+      stage: 'sort';
+      options: {
+        orderings: FirestorePipelineOrderingInternal[];
+      };
+    }
+  | {
+      stage: 'limit';
+      options: {
+        limit: number;
+      };
+    }
+  | {
+      stage: 'offset';
+      options: {
+        offset: number;
+      };
+    }
+  | {
+      stage: 'aggregate';
+      options: {
+        accumulators: FirestorePipelineAliasedAggregateInternal[];
+        groups?: Array<string | FirestorePipelineSelectableInternal>;
+      };
+    }
+  | {
+      stage: 'distinct';
+      options: {
+        groups: Array<string | FirestorePipelineSelectableInternal>;
+      };
+    }
+  | {
+      stage: 'findNearest';
+      options: {
+        field: string | FirestorePipelineFieldExpressionInternal;
+        vectorValue: number[] | { values: number[] };
+        distanceMeasure: 'euclidean' | 'cosine' | 'dot_product';
+        limit?: number;
+        distanceField?: string;
+      };
+    }
+  | {
+      stage: 'replaceWith';
+      options: {
+        map:
+          | string
+          | FirestorePipelineExpressionInternal
+          | FirestorePipelineFlatAliasedFieldInternal
+          | FirestorePipelineAliasedExpressionInternal;
+      };
+    }
+  | {
+      stage: 'sample';
+      options: { documents: number } | { percentage: number };
+    }
+  | {
+      stage: 'union';
+      options: {
+        other: FirestorePipelineSerializedInternal;
+      };
+    }
+  | {
+      stage: 'unnest';
+      options: {
+        selectable: FirestorePipelineSelectableInternal;
+        indexField?: string;
+      };
+    }
+  | {
+      stage: 'rawStage';
+      options: {
+        name: string;
+        params?: FirestorePipelineSerializedValueInternal;
+        options: Record<string, unknown>;
+      };
+    };
+
+export type FirestorePipelineStageNameInternal = FirestorePipelineStageInternal['stage'];
+
+export type FirestorePipelineStageOptionsInternal<TStage extends FirestorePipelineStageNameInternal> =
+  Extract<FirestorePipelineStageInternal, { stage: TStage }>['options'];
 
 /** Serialized pipeline payload passed to native execute bridge. */
 export interface FirestorePipelineSerializedInternal {
