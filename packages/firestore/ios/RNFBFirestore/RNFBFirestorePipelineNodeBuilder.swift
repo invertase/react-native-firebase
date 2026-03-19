@@ -290,6 +290,17 @@ final class RNFBFirestorePipelineNodeBuilder {
     return try coerceFunctionExpression(name: name, args: args, fieldName: fieldName)
   }
 
+  // NOTE: iOS pipeline function lowering lives in this builder.
+  //
+  // If a serialized JS pipeline function is not supported by the currently linked
+  // Firebase iOS pipeline runtime, add or document it here first.
+  //
+  // Some functions are intentionally blocked before reaching native on iOS
+  // (see `pipeline_support.ts` / `getIOSUnsupportedPipelineFunctions()`)
+  // because the installed iOS SDK/runtime currently rejects them with
+  // `invalid-argument` even though newer Firebase snippets may show them.
+  // When iOS support becomes available, implement the lowering here and then
+  // remove the corresponding JS-side unsupported-function guard.
   private func coerceFunctionExpression(
     name: String,
     args: [Any],

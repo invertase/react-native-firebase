@@ -49,6 +49,9 @@ export const PIPELINE_STAGE_TYPES = [
 export const PIPELINE_UNSUPPORTED_BASE_MESSAGE =
   'Firestore pipelines are not supported by this native implementation yet.';
 
+// Keep this in sync with iOS native support in
+// `RNFBFirestorePipelineNodeBuilder.swift`.
+// Remove entries once the iOS node builder/runtime path supports them.
 const IOS_UNSUPPORTED_FUNCTION_NAMES = new Set<string>([
   'arrayGet',
   'arrayConcat',
