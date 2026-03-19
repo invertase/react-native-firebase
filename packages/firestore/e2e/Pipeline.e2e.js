@@ -824,4 +824,977 @@ describe('FirestorePipeline', function () {
       });
     });
   });
+
+  describe('operator and function coverage', function () {
+    describe('comparison and logical operators', function () {
+      it('filters with greaterThan, lessThanOrEqual, notEqual, exists, not/isAbsent, equalAny, notEqualAny', async function () {
+        const {
+          execute,
+          field,
+          and,
+          greaterThan,
+          lessThanOrEqual,
+          notEqual,
+          exists,
+          isAbsent,
+          not,
+          equalAny,
+          notEqualAny,
+        } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/comparison-ops`);
+
+        // doc 'a': price=20 (>10 ✓), stock=50 (<=100 ✓), active ✓, sku present ✓, EU in list ✓, tag not spam ✓ → PASS
+        // doc 'b': price=5 (>10 ✗), no sku ✗, tag=spam ✗ → FAIL
+        // doc 'c': price=30 (>10 ✓), stock=80 ✓, active ✓, sku present ✓, APAC not in [EU,US] ✗ → FAIL
+        await Promise.all([
+          setDoc(doc(coll, 'a'), {
+            price: 20,
+            stock: 50,
+            status: 'active',
+            sku: 'SKU001',
+            region: 'EU',
+            tag: 'news',
+          }),
+          setDoc(doc(coll, 'b'), {
+            price: 5,
+            stock: 150,
+            status: 'discontinued',
+            region: 'US',
+            tag: 'spam',
+          }),
+          setDoc(doc(coll, 'c'), {
+            price: 30,
+            stock: 80,
+            status: 'active',
+            sku: 'SKU003',
+            region: 'APAC',
+            tag: 'info',
+          }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .where(
+              and(
+                greaterThan(field('price'), 10),
+                lessThanOrEqual(field('stock'), 100),
+                notEqual(field('status'), 'discontinued'),
+                exists(field('sku')),
+                not(isAbsent(field('region'))),
+                equalAny(field('region'), ['EU', 'US']),
+                notEqualAny(field('tag'), ['spam', 'bot']),
+              ),
+            )
+            .select('price', 'stock', 'sku'),
+        );
+
+        snapshot.results.should.have.length(1);
+        snapshot.results[0].data().sku.should.equal('SKU001');
+      });
+
+      it('evaluates conditional, isType, logicalMaximum, logicalMinimum', async function () {
+        const { execute, field, constant, conditional, isType, logicalMaximum, logicalMinimum } =
+          firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          stock: 5,
+          bidA: 100,
+          bidB: 150,
+          askA: 200,
+          askB: 175,
+          value: 'hello',
+        });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              conditional(
+                field('stock').greaterThan(0),
+                constant('in-stock'),
+                constant('out-of-stock'),
+              ).as('availability'),
+              isType(field('value'), 'string').as('isString'),
+              logicalMaximum(field('bidA'), field('bidB')).as('topBid'),
+              logicalMinimum(field('askA'), field('askB')).as('bottomAsk'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.availability.should.equal('in-stock');
+        data.isString.should.equal(true);
+        data.topBid.should.equal(150);
+        data.bottomAsk.should.equal(175);
+      });
+
+      it('evaluates xor in a where clause', async function () {
+        const { execute, field, xor } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/xor-ops`);
+
+        // xor: exactly one of isPublic/isVerified is true
+        await Promise.all([
+          setDoc(doc(coll, 'a'), { isPublic: true, isVerified: false }),
+          setDoc(doc(coll, 'b'), { isPublic: true, isVerified: true }),
+          setDoc(doc(coll, 'c'), { isPublic: false, isVerified: true }),
+          setDoc(doc(coll, 'd'), { isPublic: false, isVerified: false }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .where(xor(field('isPublic').equal(true), field('isVerified').equal(true)))
+            .sort(field('__name__').ascending())
+            .select('isPublic', 'isVerified'),
+        );
+
+        snapshot.results.should.have.length(2);
+        snapshot.results[0].data().isPublic.should.equal(true);
+        snapshot.results[0].data().isVerified.should.equal(false);
+        snapshot.results[1].data().isPublic.should.equal(false);
+        snapshot.results[1].data().isVerified.should.equal(true);
+      });
+    });
+
+    describe('arithmetic operators', function () {
+      it('evaluates add, subtract, multiply, divide, mod, pow, abs, ceil, floor, round', async function () {
+        const {
+          execute,
+          field,
+          add,
+          subtract,
+          multiply,
+          divide,
+          mod,
+          pow,
+          abs,
+          ceil,
+          floor,
+          round,
+        } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          subtotal: 100,
+          tax: 8,
+          msrp: 50,
+          salePrice: 35,
+          price: 10,
+          qty: 3,
+          revenue: 500,
+          units: 4,
+          id: 27,
+          rating: 4,
+          rawScore: 7.8,
+          balance: -42,
+          score: 3.567,
+        });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              add(field('subtotal'), field('tax')).as('total'),
+              subtract(field('msrp'), field('salePrice')).as('savings'),
+              multiply(field('price'), field('qty')).as('lineTotal'),
+              divide(field('revenue'), field('units')).as('revenuePerUnit'),
+              mod(field('id'), 10).as('shard'),
+              pow(field('rating'), 2).as('squaredRating'),
+              abs(field('balance')).as('absBalance'),
+              ceil(field('rawScore')).as('ceiledScore'),
+              floor(field('rawScore')).as('flooredScore'),
+              round(field('score'), 2).as('roundedScore'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.total.should.equal(108);
+        data.savings.should.equal(15);
+        data.lineTotal.should.equal(30);
+        data.revenuePerUnit.should.equal(125);
+        data.shard.should.equal(7);
+        data.squaredRating.should.equal(16);
+        data.absBalance.should.equal(42);
+        data.ceiledScore.should.equal(8);
+        data.flooredScore.should.equal(7);
+        should(data.roundedScore).be.approximately(3.57, 0.001);
+      });
+
+      it('evaluates sqrt, trunc, exp, ln, log, log10, rand', async function () {
+        const { execute, field, sqrt, trunc, exp, ln, log, log10, rand } =
+          firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          area: 4,
+          value: 3.789,
+          x: 0,
+          y: 1,
+          logBase: 100,
+        });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              sqrt(field('area')).as('side'),
+              trunc(field('value'), 2).as('truncValue'),
+              exp(field('x')).as('expX'),
+              ln(field('y')).as('lnY'),
+              log(field('logBase'), 10).as('logVal'),
+              log10(field('logBase')).as('log10Val'),
+              rand().as('randomValue'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.side.should.equal(2);
+        should(data.truncValue).be.approximately(3.78, 0.001);
+        data.expX.should.equal(1);
+        data.lnY.should.equal(0);
+        should(data.logVal).be.approximately(2, 0.0001);
+        should(data.log10Val).be.approximately(2, 0.0001);
+        data.randomValue.should.be.a.Number();
+        data.randomValue.should.be.greaterThanOrEqual(0);
+        should(data.randomValue).be.lessThan(1);
+      });
+    });
+
+    describe('string operators', function () {
+      it('filters with startsWith, endsWith, stringContains, like, regexContains', async function () {
+        const { execute, field, and, startsWith, endsWith, stringContains, like, regexContains } =
+          firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(
+          db,
+          `${COLLECTION}/${Utils.randString(12, '#aA')}/string-predicates`,
+        );
+
+        await Promise.all([
+          setDoc(doc(coll, 'a'), {
+            username: 'admin_user',
+            email: 'test@example.com',
+            bio: 'senior developer',
+            role: 'engineer',
+            phone: '+1-555-0100',
+          }),
+          setDoc(doc(coll, 'b'), {
+            username: 'guest',
+            email: 'other@gmail.com',
+            bio: 'product manager',
+            role: 'manager',
+            phone: '555-0200',
+          }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .where(
+              and(
+                startsWith(field('username'), 'admin'),
+                endsWith(field('email'), '.com'),
+                stringContains(field('bio'), 'developer'),
+                like(field('role'), 'eng%'),
+                regexContains(field('phone'), '^\\+1'),
+              ),
+            )
+            .select('username'),
+        );
+
+        snapshot.results.should.have.length(1);
+        snapshot.results[0].data().username.should.equal('admin_user');
+      });
+
+      it('transforms with toUpper, toLower, trim, ltrim, rtrim, substring, length, byteLength, charLength', async function () {
+        const {
+          execute,
+          field,
+          toUpper,
+          toLower,
+          trim,
+          ltrim,
+          rtrim,
+          substring,
+          length,
+          byteLength,
+          charLength,
+        } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          name: 'Alice',
+          rawText: '  hello  ',
+          bio: 'React Native developer',
+        });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              toUpper(field('name')).as('upperName'),
+              toLower(field('name')).as('lowerName'),
+              trim(field('rawText')).as('trimmed'),
+              ltrim(field('rawText')).as('ltrimmed'),
+              rtrim(field('rawText')).as('rtrimmed'),
+              substring(field('bio'), 0, 12).as('shortBio'),
+              length(field('name')).as('nameLength'),
+              byteLength(field('name')).as('byteLen'),
+              charLength(field('name')).as('charLen'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.upperName.should.equal('ALICE');
+        data.lowerName.should.equal('alice');
+        data.trimmed.should.equal('hello');
+        data.ltrimmed.should.equal('hello  ');
+        data.rtrimmed.should.equal('  hello');
+        data.shortBio.should.equal('React Native');
+        data.nameLength.should.equal(5);
+        data.byteLen.should.equal(5);
+        data.charLen.should.equal(5);
+      });
+
+      it('transforms with stringConcat, concat, stringIndexOf, stringRepeat, stringReplaceAll, stringReplaceOne, split, reverse, stringReverse', async function () {
+        const {
+          execute,
+          field,
+          stringConcat,
+          concat,
+          stringIndexOf,
+          stringRepeat,
+          stringReplaceAll,
+          stringReplaceOne,
+          reverse,
+          stringReverse,
+          split,
+        } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          firstName: 'John',
+          lastName: 'Doe',
+          a: 'foo',
+          b: 'bar',
+          c: 'baz',
+          email: 'john@example.com',
+          sep: '-',
+          text: 'foo bar foo',
+          code: 'abc',
+          csvField: 'a,b,c',
+          token: 'abc123',
+        });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              stringConcat(field('firstName'), ' ', field('lastName')).as('fullName'),
+              concat(field('a'), field('b'), field('c')).as('concatResult'),
+              stringIndexOf(field('email'), '@').as('atIndex'),
+              stringRepeat(field('sep'), 3).as('tripled'),
+              stringReplaceAll(field('text'), 'foo', 'bar').as('replaced'),
+              stringReplaceOne(field('text'), 'foo', 'bar').as('replacedOnce'),
+              split(field('csvField'), ',').as('parts'),
+              reverse(field('code')).as('reversedCode'),
+              stringReverse(field('token')).as('reversedToken'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.fullName.should.equal('John Doe');
+        data.concatResult.should.equal('foobarbaz');
+        data.atIndex.should.equal(4);
+        data.tripled.should.equal('---');
+        data.replaced.should.equal('bar bar bar');
+        data.replacedOnce.should.equal('bar bar foo');
+        data.parts.should.eql(['a', 'b', 'c']);
+        data.reversedCode.should.equal('cba');
+        data.reversedToken.should.equal('321cba');
+      });
+
+      it('evaluates regexFind, regexFindAll, regexMatch', async function () {
+        const { execute, field, regexFind, regexFindAll, regexMatch } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          text: 'Order 123 and 456',
+          code: 'ABC',
+        });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              regexFind(field('text'), '\\d+').as('firstNumber'),
+              regexFindAll(field('text'), '\\d+').as('allNumbers'),
+              regexMatch(field('code'), '^[A-Z]{3}$').as('isValidCode'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.firstNumber.should.equal('123');
+        data.allNumbers.should.eql(['123', '456']);
+        data.isValidCode.should.equal(true);
+      });
+    });
+
+    describe('map operators', function () {
+      it('evaluates map, mapGet, mapKeys, mapValues, mapEntries', async function () {
+        const { execute, field, constant, map, mapGet, mapKeys, mapValues, mapEntries } =
+          firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          settings: { theme: 'dark', language: 'en' },
+          metadata: { x: 1, y: 2 },
+        });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              map({ type: constant('doc'), version: constant(1) }).as('meta'),
+              mapGet(field('settings'), 'theme').as('theme'),
+              mapKeys(field('metadata')).as('metaKeys'),
+              mapValues(field('metadata')).as('metaValues'),
+              mapEntries(field('settings')).as('settingsEntries'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.meta.should.eql({ type: 'doc', version: 1 });
+        data.theme.should.equal('dark');
+        data.metaKeys.sort().should.eql(['x', 'y']);
+        data.metaValues.sort((a, b) => a - b).should.eql([1, 2]);
+        data.settingsEntries.should.have.length(2);
+      });
+
+      it('evaluates mapSet, mapRemove, mapMerge', async function () {
+        const { execute, field, constant, mapSet, mapRemove, mapMerge } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          prefs: { color: 'blue', legacyKey: 'old' },
+          defaults: { a: 1, b: 2 },
+          overrides: { b: 99, c: 3 },
+        });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              mapSet(field('prefs'), 'updated', constant(true)).as('updatedPrefs'),
+              mapRemove(field('prefs'), 'legacyKey').as('cleanedPrefs'),
+              mapMerge(field('defaults'), field('overrides')).as('merged'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.updatedPrefs.should.eql({ color: 'blue', legacyKey: 'old', updated: true });
+        data.cleanedPrefs.should.eql({ color: 'blue' });
+        data.merged.should.eql({ a: 1, b: 99, c: 3 });
+      });
+    });
+
+    describe('array operators', function () {
+      it('evaluates array, arrayLength, arrayGet, arrayConcat, arraySum and array predicates', async function () {
+        const {
+          execute,
+          field,
+          constant,
+          array,
+          arrayLength,
+          arrayGet,
+          arrayConcat,
+          arraySum,
+          and,
+          arrayContains,
+          arrayContainsAny,
+          arrayContainsAll,
+        } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/array-ops`);
+
+        await Promise.all([
+          setDoc(doc(coll, 'p1'), {
+            tags: ['typescript', 'js'],
+            permissions: ['read', 'write'],
+            primaryTags: ['a', 'b'],
+            secondaryTags: ['c', 'd'],
+            scores: [10, 20, 30],
+            items: ['x', 'y', 'z'],
+          }),
+          setDoc(doc(coll, 'p2'), {
+            tags: ['python'],
+            permissions: ['read'],
+            primaryTags: ['e'],
+            secondaryTags: ['f'],
+            scores: [5],
+            items: ['only'],
+          }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .where(
+              and(
+                arrayContains(field('tags'), 'typescript'),
+                arrayContainsAny(field('tags'), ['js', 'ts']),
+                arrayContainsAll(field('permissions'), ['read', 'write']),
+              ),
+            )
+            .select(
+              array([constant(1), constant(2), constant(3)]).as('fixedArr'),
+              arrayLength(field('tags')).as('tagCount'),
+              arrayGet(field('items'), 0).as('firstItem'),
+              arrayConcat(field('primaryTags'), field('secondaryTags')).as('allTags'),
+              arraySum(field('scores')).as('totalScore'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.fixedArr.should.eql([1, 2, 3]);
+        data.tagCount.should.equal(2);
+        data.firstItem.should.equal('x');
+        data.allTags.should.eql(['a', 'b', 'c', 'd']);
+        data.totalScore.should.equal(60);
+      });
+    });
+
+    describe('aggregate functions', function () {
+      it('evaluates countAll, count, countDistinct, countIf, sum, average, minimum, maximum, first, last, arrayAgg, arrayAggDistinct', async function () {
+        const {
+          execute,
+          field,
+          countAll,
+          count,
+          countDistinct,
+          countIf,
+          sum,
+          average,
+          minimum,
+          maximum,
+          first,
+          last,
+          arrayAgg,
+          arrayAggDistinct,
+        } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/agg-all`);
+
+        await Promise.all([
+          setDoc(doc(coll, 'a1'), {
+            userId: 'u1',
+            sessionId: 's1',
+            converted: true,
+            revenue: 100,
+            price: 10,
+            score: 50,
+            category: 'A',
+          }),
+          setDoc(doc(coll, 'a2'), {
+            userId: 'u2',
+            sessionId: 's1',
+            converted: false,
+            revenue: 200,
+            price: 20,
+            score: 70,
+            category: 'A',
+          }),
+          setDoc(doc(coll, 'a3'), {
+            userId: 'u3',
+            sessionId: 's2',
+            converted: true,
+            revenue: 150,
+            price: 5,
+            score: 90,
+            category: 'B',
+          }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .aggregate({
+              accumulators: [
+                countAll().as('total'),
+                count(field('userId')).as('userCount'),
+                countDistinct(field('sessionId')).as('uniqueSessions'),
+                countIf(field('converted').equal(true)).as('conversions'),
+                sum(field('revenue')).as('totalRevenue'),
+                average(field('revenue')).as('avgRevenue'),
+                minimum(field('price')).as('minPrice'),
+                maximum(field('price')).as('maxPrice'),
+                first(field('score')).as('firstScore'),
+                last(field('score')).as('lastScore'),
+                arrayAgg(field('category')).as('allCategories'),
+                arrayAggDistinct(field('category')).as('distinctCategories'),
+              ],
+            }),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.total.should.equal(3);
+        data.userCount.should.equal(3);
+        data.uniqueSessions.should.equal(2);
+        data.conversions.should.equal(2);
+        data.totalRevenue.should.equal(450);
+        data.avgRevenue.should.equal(150);
+        data.minPrice.should.equal(5);
+        data.maxPrice.should.equal(20);
+        data.firstScore.should.be.a.Number();
+        data.lastScore.should.be.a.Number();
+        data.allCategories.sort().should.eql(['A', 'A', 'B']);
+        data.distinctCategories.sort().should.eql(['A', 'B']);
+      });
+
+      it('evaluates grouped aggregate with minimum, maximum, first, last per group', async function () {
+        const { execute, field, minimum, maximum, first, last, Ordering } =
+          firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/agg-grouped`);
+
+        await Promise.all([
+          setDoc(doc(coll, 'e1'), { dept: 'eng', salary: 80, name: 'Alice' }),
+          setDoc(doc(coll, 'e2'), { dept: 'eng', salary: 120, name: 'Bob' }),
+          setDoc(doc(coll, 'e3'), { dept: 'sales', salary: 60, name: 'Carol' }),
+          setDoc(doc(coll, 'e4'), { dept: 'sales', salary: 90, name: 'Dave' }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .aggregate({
+              accumulators: [
+                minimum(field('salary')).as('minSalary'),
+                maximum(field('salary')).as('maxSalary'),
+                first(field('name')).as('firstName'),
+                last(field('name')).as('lastName'),
+              ],
+              groups: [field('dept').as('dept')],
+            })
+            .sort(Ordering.of(field('dept')).ascending()),
+        );
+
+        snapshot.results.should.have.length(2);
+        const eng = snapshot.results.find(r => r.data().dept === 'eng').data();
+        const sales = snapshot.results.find(r => r.data().dept === 'sales').data();
+        eng.minSalary.should.equal(80);
+        eng.maxSalary.should.equal(120);
+        eng.firstName.should.be.a.String();
+        eng.lastName.should.be.a.String();
+        sales.minSalary.should.equal(60);
+        sales.maxSalary.should.equal(90);
+      });
+    });
+
+    describe('timestamp functions', function () {
+      it('evaluates timestampToUnixMillis, timestampToUnixSeconds, timestampAdd, timestampSubtract, timestampTruncate, unixMillisToTimestamp', async function () {
+        const {
+          execute,
+          field,
+          timestampToUnixMillis,
+          timestampToUnixSeconds,
+          timestampAdd,
+          timestampSubtract,
+          timestampTruncate,
+          unixMillisToTimestamp,
+        } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc, Timestamp } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        const eventTime = new Timestamp(1700000000, 0);
+
+        await setDoc(doc(db, docPath), {
+          eventTime,
+          epochMs: 1700000000000,
+        });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              timestampToUnixMillis(field('eventTime')).as('eventTimeMs'),
+              timestampToUnixSeconds(field('eventTime')).as('eventTimeSec'),
+              timestampAdd(field('eventTime'), 'day', 1).as('nextDay'),
+              timestampSubtract(field('eventTime'), 'hour', 1).as('prevHour'),
+              timestampTruncate(field('eventTime'), 'day').as('dayBucket'),
+              unixMillisToTimestamp(field('epochMs')).as('fromEpochMs'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.eventTimeMs.should.equal(1700000000000);
+        data.eventTimeSec.should.equal(1700000000);
+        data.nextDay.constructor.name.should.equal('Timestamp');
+        data.nextDay.seconds.should.equal(1700000000 + 86400);
+        data.prevHour.constructor.name.should.equal('Timestamp');
+        data.prevHour.seconds.should.equal(1700000000 - 3600);
+        data.dayBucket.constructor.name.should.equal('Timestamp');
+        data.fromEpochMs.constructor.name.should.equal('Timestamp');
+        data.fromEpochMs.seconds.should.equal(1700000000);
+      });
+
+      it('evaluates currentTimestamp, timestampToUnixMicros, unixSecondsToTimestamp, unixMicrosToTimestamp', async function () {
+        const {
+          execute,
+          field,
+          currentTimestamp,
+          timestampToUnixMicros,
+          unixSecondsToTimestamp,
+          unixMicrosToTimestamp,
+        } = firestorePipelinesModular;
+        const { getFirestore, doc, setDoc, Timestamp } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        const eventTime = new Timestamp(1700000000, 0);
+
+        await setDoc(doc(db, docPath), {
+          eventTime,
+          epochSec: 1700000000,
+          epochMicros: 1700000000000000,
+        });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              currentTimestamp().as('now'),
+              timestampToUnixMicros(field('eventTime')).as('eventTimeMicros'),
+              unixSecondsToTimestamp(field('epochSec')).as('fromSec'),
+              unixMicrosToTimestamp(field('epochMicros')).as('fromMicros'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.now.constructor.name.should.equal('Timestamp');
+        should(data.now.toMillis()).be.greaterThan(0);
+        data.eventTimeMicros.should.equal(1700000000000000);
+        data.fromSec.constructor.name.should.equal('Timestamp');
+        data.fromSec.seconds.should.equal(1700000000);
+        data.fromMicros.constructor.name.should.equal('Timestamp');
+        data.fromMicros.seconds.should.equal(1700000000);
+      });
+
+      it('evaluates type, collectionId, documentId', async function () {
+        const { execute, field, type, collectionId, documentId } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/metadata-ops`);
+
+        await setDoc(doc(coll, 'item1'), { value: 'hello', num: 42 });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .select(
+              type(field('value')).as('valueType'),
+              type(field('num')).as('numType'),
+              collectionId(field('__name__')).as('collId'),
+              documentId(field('__name__')).as('docId'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        data.valueType.should.equal('string');
+        data.numType.should.be.a.String();
+        data.collId.should.be.a.String();
+        data.docId.should.equal('item1');
+      });
+    });
+
+    describe('vector distance functions', function () {
+      it('evaluates cosineDistance, dotProduct, euclideanDistance, vectorLength', async function () {
+        const { execute, field, cosineDistance, dotProduct, euclideanDistance, vectorLength } =
+          firestorePipelinesModular;
+        const { getFirestore, doc, setDoc, vector } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        await setDoc(doc(db, docPath), {
+          embedding: vector([1.0, 0.0, 0.0]),
+        });
+
+        const queryVec = [1.0, 0.0, 0.0];
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              cosineDistance(field('embedding'), queryVec).as('cosDist'),
+              dotProduct(field('embedding'), queryVec).as('dotDist'),
+              euclideanDistance(field('embedding'), queryVec).as('euclidDist'),
+              vectorLength(field('embedding')).as('vecLen'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        // identical vectors: cosine distance = 0, dot product = 1, euclidean distance = 0
+        should(data.cosDist).be.approximately(0, 0.0001);
+        should(data.dotDist).be.approximately(1, 0.0001);
+        should(data.euclidDist).be.approximately(0, 0.0001);
+        // vectorLength returns the number of dimensions
+        data.vecLen.should.equal(3);
+      });
+
+      it('computes non-trivial cosineDistance, dotProduct, euclideanDistance between distinct vectors', async function () {
+        const { execute, field, cosineDistance, dotProduct, euclideanDistance } =
+          firestorePipelinesModular;
+        const { getFirestore, doc, setDoc, vector } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const docPath = `${COLLECTION}/${Utils.randString(12, '#aA')}`;
+
+        // [1,0] vs [0,1]: orthogonal → cosine distance = 1, dot = 0, euclidean = sqrt(2)
+        await setDoc(doc(db, docPath), {
+          embedding: vector([1.0, 0.0]),
+        });
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .documents([docPath])
+            .select(
+              cosineDistance(field('embedding'), [0.0, 1.0]).as('cosDist'),
+              dotProduct(field('embedding'), [0.0, 1.0]).as('dotDist'),
+              euclideanDistance(field('embedding'), [0.0, 1.0]).as('euclidDist'),
+            ),
+        );
+
+        snapshot.results.should.have.length(1);
+        const data = snapshot.results[0].data();
+        should(data.cosDist).be.approximately(1, 0.0001);
+        should(data.dotDist).be.approximately(0, 0.0001);
+        should(data.euclidDist).be.approximately(Math.sqrt(2), 0.0001);
+      });
+    });
+
+    describe('sort operators', function () {
+      it('sorts using standalone ascending and descending functions', async function () {
+        const { execute, field, ascending, descending } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/sort-standalone`);
+
+        await Promise.all([
+          setDoc(doc(coll, 'a'), { createdAt: 3, score: 1 }),
+          setDoc(doc(coll, 'b'), { createdAt: 1, score: 3 }),
+          setDoc(doc(coll, 'c'), { createdAt: 2, score: 2 }),
+        ]);
+
+        const ascSnapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .sort(ascending(field('createdAt')))
+            .select('createdAt', 'score'),
+        );
+
+        ascSnapshot.results.should.have.length(3);
+        ascSnapshot.results[0].data().createdAt.should.equal(1);
+        ascSnapshot.results[1].data().createdAt.should.equal(2);
+        ascSnapshot.results[2].data().createdAt.should.equal(3);
+
+        const descSnapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .sort(descending(field('score')))
+            .select('createdAt', 'score'),
+        );
+
+        descSnapshot.results.should.have.length(3);
+        descSnapshot.results[0].data().score.should.equal(3);
+        descSnapshot.results[1].data().score.should.equal(2);
+        descSnapshot.results[2].data().score.should.equal(1);
+      });
+
+      it('sorts with multi-key ascending/descending tie-break', async function () {
+        const { execute, field, ascending, descending } = firestorePipelinesModular;
+        const { getFirestore, collection, doc, setDoc } = firestoreModular;
+        const db = getFirestore(DATABASE_ID);
+        const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/sort-multi`);
+
+        await Promise.all([
+          setDoc(doc(coll, 'a'), { tier: 1, name: 'Zara' }),
+          setDoc(doc(coll, 'b'), { tier: 1, name: 'Anna' }),
+          setDoc(doc(coll, 'c'), { tier: 2, name: 'Mike' }),
+        ]);
+
+        const snapshot = await execute(
+          db
+            .pipeline()
+            .collection(coll)
+            .sort(ascending(field('tier')), ascending(field('name')))
+            .select('tier', 'name'),
+        );
+
+        snapshot.results.should.have.length(3);
+        snapshot.results[0].data().name.should.equal('Anna');
+        snapshot.results[1].data().name.should.equal('Zara');
+        snapshot.results[2].data().name.should.equal('Mike');
+      });
+    });
+  });
 });
