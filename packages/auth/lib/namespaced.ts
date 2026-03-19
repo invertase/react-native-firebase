@@ -297,7 +297,7 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
 
   signOut() {
     return this.native.signOut().then(() => {
-      this._setUser(undefined as unknown as InstanceType<typeof User>);
+      this._setUser(undefined);
     });
   }
 

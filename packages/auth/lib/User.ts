@@ -111,9 +111,8 @@ export default class User {
   }
 
   linkWithRedirect(provider: AuthProvider): Promise<unknown> {
-    const prov = provider as unknown as { toObject(): unknown };
     return this._auth.native
-      .linkWithProvider(prov.toObject())
+      .linkWithProvider(provider.toObject())
       .then((userCredential: unknown) => this._auth._setUserCredential(userCredential));
   }
 
@@ -128,9 +127,8 @@ export default class User {
   }
 
   reauthenticateWithRedirect(provider: AuthProvider): Promise<unknown> {
-    const prov = provider as unknown as { toObject(): unknown };
     return this._auth.native
-      .reauthenticateWithProvider(prov.toObject())
+      .reauthenticateWithProvider(provider.toObject())
       .then((userCredential: unknown) => this._auth._setUserCredential(userCredential));
   }
 

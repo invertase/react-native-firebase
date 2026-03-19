@@ -16,15 +16,16 @@
  */
 
 import type { AuthInternal } from './types/internal';
+import type { MultiFactorInfo } from './types/auth';
 
 interface ResolverShape {
-  hints: unknown[];
+  hints: MultiFactorInfo[];
   session: string;
 }
 
 export default class MultiFactorResolver {
   _auth: AuthInternal;
-  hints: unknown[];
+  hints: MultiFactorInfo[];
   session: string;
 
   constructor(auth: AuthInternal, resolver: ResolverShape) {

@@ -129,6 +129,8 @@ export interface AuthCredential {
 export interface AuthProvider {
   readonly PROVIDER_ID: string;
   credential(token: string | null, secret?: string): AuthCredential;
+  /** Serializes provider for native (e.g. OAuthProvider). */
+  toObject(): unknown;
 }
 
 /**
