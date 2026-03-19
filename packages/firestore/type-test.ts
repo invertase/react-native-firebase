@@ -8,8 +8,107 @@
 // PART 1 — NAMESPACED API
 // ---------------------------------------------------------------------------
 // Import namespaced API: default export and firebase, plus types used in Part 1.
-import firestore, { firebase } from '.';
-import type { FirebaseFirestoreTypes } from '.';
+import firestore, {
+  firebase,
+  getFirestore,
+  connectFirestoreEmulator,
+  setLogLevel,
+  initializeFirestore,
+  doc,
+  collection,
+  collectionGroup,
+  refEqual,
+  setDoc,
+  updateDoc,
+  addDoc,
+  enableNetwork,
+  disableNetwork,
+  clearPersistence,
+  clearIndexedDbPersistence,
+  terminate,
+  waitForPendingWrites,
+  runTransaction,
+  getCountFromServer,
+  getAggregateFromServer,
+  sum,
+  average,
+  count,
+  loadBundle,
+  namedQuery,
+  writeBatch,
+  getPersistentCacheIndexManager,
+  enablePersistentCacheIndexAutoCreation,
+  disablePersistentCacheIndexAutoCreation,
+  deleteAllPersistentCacheIndexes,
+  query,
+  where,
+  or,
+  and,
+  orderBy,
+  startAt,
+  startAfter,
+  endAt,
+  endBefore,
+  limit,
+  limitToLast,
+  type QueryConstraint,
+  getDoc,
+  getDocFromCache,
+  getDocFromServer,
+  getDocs,
+  getDocsFromCache,
+  getDocsFromServer,
+  deleteDoc,
+  onSnapshot,
+  snapshotEqual,
+  queryEqual,
+  onSnapshotsInSync,
+  deleteField,
+  serverTimestamp,
+  arrayUnion,
+  arrayRemove,
+  increment,
+  FieldPath,
+  documentId,
+  Bytes,
+  GeoPoint,
+  Timestamp,
+  VectorValue,
+  vector,
+  CACHE_SIZE_UNLIMITED,
+  AggregateField,
+  AggregateQuerySnapshot,
+  DocumentReference,
+  Query,
+  QueryDocumentSnapshot,
+} from '.';
+import type {
+  FirebaseFirestoreTypes,
+  Firestore,
+  DocumentData,
+  LoadBundleTaskProgress,
+  FirestoreDataConverter,
+  WithFieldValue,
+  PartialWithFieldValue,
+} from '.';
+import './lib/pipelines';
+import {
+  execute as executePipeline,
+  field as pipelineField,
+  and as pipelineAnd, //duplicate
+  or as pipelineOr, //duplicate
+  lessThan as pipelineLessThan,
+  stringConcat as pipelineStringConcat,
+  arrayContainsAny as pipelineArrayContainsAny,
+  toLower as pipelineToLower,
+  Ordering as PipelineOrdering,
+  countAll,
+  sum as pipelineSum,
+  average as pipelineAverage,
+  maximum,
+  constant as pipelineConstant,
+} from './lib/pipelines';
+import type { Pipeline as FirestorePipeline, PipelineSource as FirestorePipelineSource } from './lib/pipelines';
 
 // ----- Default export and module access -----
 console.log(firestore().app);
@@ -225,91 +324,6 @@ nsDocWithConv.get().then((snap: FirebaseFirestoreTypes.DocumentSnapshot<User>) =
   if (u) console.log(u.name, u.age);
 });
 
-// ---------------------------------------------------------------------------
-// PART 2 — MODULAR API
-// ---------------------------------------------------------------------------
-// All exports from lib/modular.ts (and re-exports from index).
-import {
-  getFirestore,
-  connectFirestoreEmulator,
-  setLogLevel,
-  initializeFirestore,
-  doc,
-  collection,
-  collectionGroup,
-  refEqual,
-  setDoc,
-  updateDoc,
-  addDoc,
-  enableNetwork,
-  disableNetwork,
-  clearPersistence,
-  clearIndexedDbPersistence,
-  terminate,
-  waitForPendingWrites,
-  runTransaction,
-  getCountFromServer,
-  getAggregateFromServer,
-  sum,
-  average,
-  count,
-  loadBundle,
-  namedQuery,
-  writeBatch,
-  getPersistentCacheIndexManager,
-  enablePersistentCacheIndexAutoCreation,
-  disablePersistentCacheIndexAutoCreation,
-  deleteAllPersistentCacheIndexes,
-  query,
-  where,
-  or,
-  and,
-  orderBy,
-  startAt,
-  startAfter,
-  endAt,
-  endBefore,
-  limit,
-  limitToLast,
-  type QueryConstraint,
-  getDoc,
-  getDocFromCache,
-  getDocFromServer,
-  getDocs,
-  getDocsFromCache,
-  getDocsFromServer,
-  deleteDoc,
-  onSnapshot,
-  snapshotEqual,
-  queryEqual,
-  onSnapshotsInSync,
-  deleteField,
-  serverTimestamp,
-  arrayUnion,
-  arrayRemove,
-  increment,
-  FieldPath,
-  documentId,
-  Bytes,
-  GeoPoint,
-  Timestamp,
-  VectorValue,
-  vector,
-  CACHE_SIZE_UNLIMITED,
-  AggregateField,
-  AggregateQuerySnapshot,
-  DocumentReference,
-  Query,
-  QueryDocumentSnapshot,
-} from '.';
-import type {
-  Firestore,
-  DocumentData,
-  LoadBundleTaskProgress,
-  FirestoreDataConverter,
-  WithFieldValue,
-  PartialWithFieldValue,
-} from '.';
 
 // ----- getFirestore -----
 const modFirestore1 = getFirestore();
@@ -694,3 +708,159 @@ interface Foo {
 const fooWrapper = new ObjectWrapper<Foo>();
 fooWrapper.withFieldValueT({ id: '', foo: increment(1) });
 fooWrapper.withPartialFieldValueT({ foo: increment(1) });
+
+// ---------------------------------------------------------------------------
+// PART 3 — PIPELINES API
+// ---------------------------------------------------------------------------
+type FirestoreWithPipeline = Firestore & {
+  pipeline(): FirestorePipelineSource<FirestorePipeline>;
+};
+const pipelineDb = getFirestore() as FirestoreWithPipeline;
+const pipelineCollectionRef = collection(pipelineDb, 'pipeline-books');
+const pipelineDocRef = doc(pipelineCollectionRef, 'book-a');
+const pipelineQuerySource = query(
+  pipelineCollectionRef,
+  where('rating', '>=', 4),
+  orderBy('rating', 'desc'),
+  limit(5),
+);
+void pipelineDocRef;
+void pipelineQuerySource;
+
+const pipelineFromCollectionRef = pipelineDb
+  .pipeline()
+  .collection(pipelineCollectionRef)
+  .where(pipelineField('rating').greaterThanOrEqual(4))
+  .sort(PipelineOrdering.of(pipelineField('rating')).descending())
+  .limit(2);
+void pipelineFromCollectionRef;
+
+const pipelineFromCollectionPath = pipelineDb
+  .pipeline()
+  .collection('pipeline-books')
+  .where({ condition: pipelineField('author').equal('Alice') })
+  .select('title', 'author');
+void pipelineFromCollectionPath;
+
+const pipelineFromCollectionOptions = pipelineDb.pipeline().collection({
+  path: 'pipeline-books',
+  rawOptions: { explain: true },
+});
+void pipelineFromCollectionOptions;
+
+const pipelineFromCollectionGroup = pipelineDb
+  .pipeline()
+  .collectionGroup('pipeline-books')
+  .sort(pipelineField('rating').descending());
+void pipelineFromCollectionGroup;
+
+const pipelineFromDatabase = pipelineDb.pipeline().database({ rawOptions: { explain: true } });
+void pipelineFromDatabase;
+
+const pipelineFromDocs = pipelineDb
+  .pipeline()
+  .documents(['pipeline-books/book-a', 'pipeline-books/book-b'])
+  .select('title');
+void pipelineFromDocs;
+
+const pipelineFromDocsOptions = pipelineDb.pipeline().documents({
+  docs: ['pipeline-books/book-a', 'pipeline-books/book-c'],
+});
+void pipelineFromDocsOptions;
+
+const pipelineFromQuery = pipelineDb.pipeline().collection('pipeline-books');
+void pipelineFromQuery;
+
+const pipelineUnion = pipelineDb
+  .pipeline()
+  .collection('cities/sf/restaurants')
+  .where(pipelineField('type').equal('Chinese'))
+  .union(
+    pipelineDb
+      .pipeline()
+      .collection('cities/ny/restaurants')
+      .where(pipelineField('type').equal('Italian')),
+  )
+  .where(pipelineField('rating').greaterThanOrEqual(4.5))
+  .sort(pipelineField('__name__').descending());
+void pipelineUnion;
+
+const pipelineWithTransforms = pipelineDb
+  .pipeline()
+  .collection('books')
+  .where(
+    pipelineOr(
+      pipelineAnd(
+        pipelineField('rating').greaterThan(4),
+        pipelineLessThan(pipelineField('price'), pipelineConstant(10)),
+      ),
+      pipelineField('genre').equal('Fantasy'),
+    ),
+  )
+  .addFields(pipelineStringConcat(pipelineField('title'), ' by ', pipelineField('author')).as('fullTitle'))
+  .removeFields('legacyField')
+  .select(
+    pipelineField('fullTitle'),
+    pipelineField('rating').greaterThan(4).as('isTopRated'),
+    pipelineArrayContainsAny(pipelineField('genre'), ['Fantasy', pipelineConstant('Sci-Fi')]).as(
+      'matchesGenre',
+    ),
+  )
+  .sort(PipelineOrdering.of(pipelineField('rating')).descending(), pipelineField('__name__').ascending())
+  .offset(1)
+  .limit({ n: 10 });
+void pipelineWithTransforms;
+
+const pipelineAggregateDistinct = pipelineDb
+  .pipeline()
+  .collection('cities')
+  .aggregate({
+    accumulators: [
+      countAll().as('total'),
+      pipelineSum('population').as('populationTotal'),
+      pipelineAverage('population').as('populationAvg'),
+      maximum('population').as('populationMax'),
+    ],
+    groups: [
+      pipelineField('country').as('country'),
+      pipelineToLower(pipelineField('state')).as('normalizedState'),
+    ],
+  })
+  .where(pipelineField('populationTotal').greaterThan(1000))
+  .distinct(pipelineField('normalizedState'), 'country');
+void pipelineAggregateDistinct;
+
+const pipelineFindNearest = pipelineDb.pipeline().collection('cities').findNearest({
+  field: 'embedding',
+  vectorValue: [1.5, 2.345],
+  distanceMeasure: 'COSINE',
+  distanceField: 'computedDistance',
+  limit: 10,
+});
+void pipelineFindNearest;
+
+const pipelineSampleAndUnnest = pipelineDb
+  .pipeline()
+  .collection('users')
+  .sample({ percentage: 0.5 })
+  .unnest(pipelineField('scores').as('userScore'), 'attempt')
+  .replaceWith(pipelineField('profile'));
+void pipelineSampleAndUnnest;
+
+executePipeline(pipelineFromCollectionRef).then(snapshot => {
+  console.log(snapshot.executionTime.toMillis());
+  snapshot.results.forEach(result => {
+    console.log(result.id);
+    console.log(result?.ref?.path);
+    console.log(result.data());
+    console.log(result.get('rating'));
+  });
+});
+
+executePipeline({
+  pipeline: pipelineWithTransforms,
+  indexMode: 'recommended',
+  rawOptions: { requestLabel: 'type-test' },
+}).then(snapshot => {
+  console.log(snapshot.results.length);
+});
