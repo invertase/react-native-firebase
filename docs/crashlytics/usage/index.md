@@ -60,14 +60,16 @@ There are various methods to set attributes for the crash report, in order to pr
 ```js
 import React, { useEffect } from 'react';
 import { View, Button } from 'react-native';
-import crashlytics from '@react-native-firebase/crashlytics';
+import { getCrashlytics, log, setUserId, setAttribute, setAttributes, crash } from '@react-native-firebase/crashlytics';
+
+const crashlytics = getCrashlytics();
 
 async function onSignIn(user) {
-  crashlytics().log('User signed in.');
+  log(crashlytics, 'User signed in.');
   await Promise.all([
-    crashlytics().setUserId(user.uid),
-    crashlytics().setAttribute('credits', String(user.credits)),
-    crashlytics().setAttributes({
+    setUserId(crashlytics, user.uid),
+    setAttribute(crashlytics, 'credits', String(user.credits)),
+    setAttributes(crashlytics, {
       role: 'admin',
       followers: '13',
       email: user.email,
@@ -78,7 +80,7 @@ async function onSignIn(user) {
 
 export default function App() {
   useEffect(() => {
-    crashlytics().log('App mounted.');
+    log(crashlytics, 'App mounted.');
   }, []);
 
   return (
@@ -94,7 +96,7 @@ export default function App() {
           })
         }
       />
-      <Button title="Test Crash" onPress={() => crashlytics().crash()} />
+      <Button title="Test Crash" onPress={() => crash(crashlytics)} />
     </View>
   );
 }
@@ -108,15 +110,16 @@ Crashlytics using the `recordError` method. This will also provide you with the 
 ```jsx
 import React, { useState, useEffect } from 'react';
 import { View, Text } from 'react-native';
-import crashlytics from '@react-native-firebase/crashlytics';
+import { getCrashlytics, log, recordError } from '@react-native-firebase/crashlytics';
 
+const crashlytics = getCrashlytics();
 const users = [];
 
 export default function App() {
   const [userCounts, setUserCounts] = useState(null);
 
   function updateUserCounts() {
-    crashlytics().log('Updating user count.');
+    log(crashlytics, 'Updating user count.');
     try {
       if (users) {
         // An empty array is truthy, but not actually true.
@@ -124,13 +127,13 @@ export default function App() {
         setUserCounts(userCounts.push(users.length));
       }
     } catch (error) {
-      crashlytics().recordError(error);
+      recordError(crashlytics, error);
       console.log(error);
     }
   }
 
   useEffect(() => {
-    crashlytics().log('App mounted.');
+    log(crashlytics, 'App mounted.');
     if (users == true) setUserCounts([]);
     updateUserCounts();
   }, []);
@@ -159,21 +162,22 @@ This can be done throughout the app with a simple method call to `setCrashlytics
 ```jsx
 import React, { useState } from 'react';
 import { View, Button, Text } from 'react-native';
-import crashlytics from '@react-native-firebase/crashlytics';
+import { getCrashlytics, setCrashlyticsCollectionEnabled, crash } from '@react-native-firebase/crashlytics';
+
+const crashlytics = getCrashlytics();
 
 export default function App() {
-  const [enabled, setEnabled] = useState(crashlytics().isCrashlyticsCollectionEnabled);
+  const [enabled, setEnabled] = useState(crashlytics.isCrashlyticsCollectionEnabled);
 
   async function toggleCrashlytics() {
-    await crashlytics()
-      .setCrashlyticsCollectionEnabled(!enabled)
-      .then(() => setEnabled(crashlytics().isCrashlyticsCollectionEnabled));
+    await setCrashlyticsCollectionEnabled(crashlytics, !enabled)
+      .then(() => setEnabled(crashlytics.isCrashlyticsCollectionEnabled));
   }
 
   return (
     <View>
       <Button title="Toggle Crashlytics" onPress={toggleCrashlytics} />
-      <Button title="Crash" onPress={() => crashlytics().crash()} />
+      <Button title="Crash" onPress={() => crash(crashlytics)} />
       <Text>Crashlytics is currently {enabled ? 'enabled' : 'disabled'}</Text>
     </View>
   );
