@@ -91,7 +91,6 @@ import type {
   WithFieldValue,
   PartialWithFieldValue,
 } from '.';
-import './lib/pipelines';
 import {
   execute,
   field,
@@ -107,8 +106,7 @@ import {
   average as pipelineAverage,
   maximum,
   constant,
-} from './lib/pipelines';
-import type { Pipeline as FirestorePipeline, PipelineSource as FirestorePipelineSource } from './lib/pipelines';
+} from '@react-native-firebase/firestore/pipelines';
 
 // ----- Default export and module access -----
 console.log(firestore().app);
@@ -712,10 +710,7 @@ fooWrapper.withPartialFieldValueT({ foo: increment(1) });
 // ---------------------------------------------------------------------------
 // PART 3 — PIPELINES API
 // ---------------------------------------------------------------------------
-type FirestoreWithPipeline = Firestore & {
-  pipeline(): FirestorePipelineSource<FirestorePipeline>;
-};
-const pipelineDb = getFirestore() as FirestoreWithPipeline;
+const pipelineDb = getFirestore();
 const pipelineCollectionRef = collection(pipelineDb, 'pipeline-books');
 const pipelineDocRef = doc(pipelineCollectionRef, 'book-a');
 const pipelineQuerySource = query(
@@ -762,10 +757,12 @@ const pipelineFromDocs = pipelineDb
   .documents(['pipeline-books/book-a', 'pipeline-books/book-b'])
   .select('title');
 void pipelineFromDocs;
+const docRef = doc(collection(pipelineDb, 'pipeline-books'), 'book-a');
 
 const pipelineFromDocsOptions = pipelineDb.pipeline().documents({
-  docs: ['pipeline-books/book-a', 'pipeline-books/book-c'],
+  docs: [docRef, 'pipeline-books/book-c'],
 });
+
 void pipelineFromDocsOptions;
 
 const pipelineFromQuery = pipelineDb.pipeline().collection('pipeline-books');
