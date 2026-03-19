@@ -16,8 +16,8 @@
  */
 
 #import <RNFBApp/RNFBRCTEventEmitter.h>
-#import <React/RCTUtils.h>
 #import <RNFBFirestore/RNFBFirestore-Swift.h>
+#import <React/RCTUtils.h>
 
 #import "RNFBFirestoreCollectionModule.h"
 #import "RNFBFirestoreCommon.h"
@@ -321,25 +321,24 @@ RCT_EXPORT_METHOD(pipelineExecute
                        if (error != nil) {
                          NSError *nativeError = error[@"nativeError"];
                          if (nativeError != nil) {
-                           [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:nativeError];
+                           [RNFBFirestoreCommon promiseRejectFirestoreException:reject
+                                                                          error:nativeError];
                            return;
                          }
 
                          NSString *code = error[@"code"];
                          NSString *message = error[@"message"];
                          reject(code ?: @"firestore/unknown",
-                                message ?: @"Failed to execute pipeline.",
-                                nil);
+                                message ?: @"Failed to execute pipeline.", nil);
                          return;
                        }
-                      if (result == nil) {
-                        reject(@"firestore/unknown",
-                               @"Failed to execute pipeline: empty pipeline response.",
-                               nil);
-                        return;
-                      }
+                       if (result == nil) {
+                         reject(@"firestore/unknown",
+                                @"Failed to execute pipeline: empty pipeline response.", nil);
+                         return;
+                       }
 
-                      resolve(result);
+                       resolve(result);
                      }];
 }
 
