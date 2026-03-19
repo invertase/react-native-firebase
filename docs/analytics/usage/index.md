@@ -144,9 +144,9 @@ if FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE has been set to FirebaseAnaly
 iOS if ConsentType.analyticsStorage has been set to ConsentStatus.denied.
 
 ```jsx
-import { getAnalytics } from '@react-native-firebase/analytics';
+import { getAnalytics, getAppInstanceId } from '@react-native-firebase/analytics';
 // ...
-const appInstanceId = await getAnalytics().getAppInstanceId();
+const appInstanceId = await getAppInstanceId(getAnalytics());
 ```
 
 ### Web / Other platform instance id
