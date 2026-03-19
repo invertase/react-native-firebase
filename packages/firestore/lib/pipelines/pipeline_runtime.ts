@@ -71,6 +71,7 @@ import type {
 } from './stage_options';
 import type { PipelineExecuteOptions } from './pipeline_options';
 import { getFirestore } from '../modular';
+import { getIOSUnsupportedPipelineFunctions } from './pipeline_support';
 
 const PIPELINE_RUNTIME_SYMBOL = Symbol.for('RNFBFirestorePipelineRuntime');
 const PIPELINE_RUNTIME_INSTALLER_SYMBOL = Symbol.for('RNFBFirestorePipelineRuntimeInstaller');
@@ -821,6 +822,7 @@ export async function executeRuntimePipeline(
   pipelineOrOptions: Pipeline | PipelineExecuteOptions,
 ): Promise<PipelineSnapshot> {
   const { runtimePipeline, executeOptions } = parseExecuteInput(pipelineOrOptions);
+  const serializedPipeline = runtimePipeline.serialize();
   if (isIOS || isAndroid) {
     if (executeOptions.indexMode) {
       throw new Error(
@@ -835,8 +837,17 @@ export async function executeRuntimePipeline(
     }
   }
 
+  if (isIOS) {
+    const unsupportedFunctions = getIOSUnsupportedPipelineFunctions(serializedPipeline);
+    if (unsupportedFunctions.length) {
+      throw new Error(
+        `pipelineExecute() does not support these functions on iOS yet: ${unsupportedFunctions.join(', ')}.`,
+      );
+    }
+  }
+
   const nativeResponse = (await runtimePipeline.firestore.native.pipelineExecute(
-    runtimePipeline.serialize(),
+    serializedPipeline,
     executeOptions,
   )) as FirestorePipelineSnapshotInternal;
 

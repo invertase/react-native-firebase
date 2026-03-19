@@ -39,6 +39,13 @@ async function expectAsyncError(run, expectedMessage, expectedCode) {
   }
 }
 
+async function expectIOSUnsupportedFunctions(run, functionNames) {
+  return expectAsyncError(
+    run,
+    `pipelineExecute() does not support these functions on iOS yet: ${[...functionNames].sort().join(', ')}.`,
+  );
+}
+
 describe('FirestorePipeline', function () {
   describe('Modular API', function () {
     it('serializes source builders and stage ordering', function () {
@@ -912,21 +919,26 @@ describe('FirestorePipeline', function () {
           value: 'hello',
         });
 
-        const snapshot = await execute(
-          db
-            .pipeline()
-            .documents([docPath])
-            .select(
-              conditional(
-                field('stock').greaterThan(0),
-                constant('in-stock'),
-                constant('out-of-stock'),
-              ).as('availability'),
-              isType(field('value'), 'string').as('isString'),
-              logicalMaximum(field('bidA'), field('bidB')).as('topBid'),
-              logicalMinimum(field('askA'), field('askB')).as('bottomAsk'),
-            ),
-        );
+        const pipeline = db
+          .pipeline()
+          .documents([docPath])
+          .select(
+            conditional(
+              field('stock').greaterThan(0),
+              constant('in-stock'),
+              constant('out-of-stock'),
+            ).as('availability'),
+            isType(field('value'), 'string').as('isString'),
+            logicalMaximum(field('bidA'), field('bidB')).as('topBid'),
+            logicalMinimum(field('askA'), field('askB')).as('bottomAsk'),
+          );
+
+        if (Platform.ios) {
+          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['isType']);
+          return;
+        }
+
+        const snapshot = await execute(pipeline);
 
         snapshot.results.should.have.length(1);
         const data = snapshot.results[0].data();
@@ -1003,23 +1015,28 @@ describe('FirestorePipeline', function () {
           score: 3.567,
         });
 
-        const snapshot = await execute(
-          db
-            .pipeline()
-            .documents([docPath])
-            .select(
-              add(field('subtotal'), field('tax')).as('total'),
-              subtract(field('msrp'), field('salePrice')).as('savings'),
-              multiply(field('price'), field('qty')).as('lineTotal'),
-              divide(field('revenue'), field('units')).as('revenuePerUnit'),
-              mod(field('id'), 10).as('shard'),
-              pow(field('rating'), 2).as('squaredRating'),
-              abs(field('balance')).as('absBalance'),
-              ceil(field('rawScore')).as('ceiledScore'),
-              floor(field('rawScore')).as('flooredScore'),
-              round(field('score'), 2).as('roundedScore'),
-            ),
-        );
+        const pipeline = db
+          .pipeline()
+          .documents([docPath])
+          .select(
+            add(field('subtotal'), field('tax')).as('total'),
+            subtract(field('msrp'), field('salePrice')).as('savings'),
+            multiply(field('price'), field('qty')).as('lineTotal'),
+            divide(field('revenue'), field('units')).as('revenuePerUnit'),
+            mod(field('id'), 10).as('shard'),
+            pow(field('rating'), 2).as('squaredRating'),
+            abs(field('balance')).as('absBalance'),
+            ceil(field('rawScore')).as('ceiledScore'),
+            floor(field('rawScore')).as('flooredScore'),
+            round(field('score'), 2).as('roundedScore'),
+          );
+
+        if (Platform.ios) {
+          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['ceil', 'floor', 'round']);
+          return;
+        }
+
+        const snapshot = await execute(pipeline);
 
         snapshot.results.should.have.length(1);
         const data = snapshot.results[0].data();
@@ -1050,20 +1067,28 @@ describe('FirestorePipeline', function () {
           logBase: 100,
         });
 
-        const snapshot = await execute(
-          db
-            .pipeline()
-            .documents([docPath])
-            .select(
-              sqrt(field('area')).as('side'),
-              trunc(field('value'), 2).as('truncValue'),
-              exp(field('x')).as('expX'),
-              ln(field('y')).as('lnY'),
-              log(field('logBase'), 10).as('logVal'),
-              log10(field('logBase')).as('log10Val'),
-              rand().as('randomValue'),
-            ),
-        );
+        const pipeline = db
+          .pipeline()
+          .documents([docPath])
+          .select(
+            sqrt(field('area')).as('side'),
+            trunc(field('value'), 2).as('truncValue'),
+            exp(field('x')).as('expX'),
+            ln(field('y')).as('lnY'),
+            log(field('logBase'), 10).as('logVal'),
+            log10(field('logBase')).as('log10Val'),
+            rand().as('randomValue'),
+          );
+
+        if (Platform.ios) {
+          await expectIOSUnsupportedFunctions(
+            () => execute(pipeline),
+            ['log10', 'rand', 'sqrt', 'trunc'],
+          );
+          return;
+        }
+
+        const snapshot = await execute(pipeline);
 
         snapshot.results.should.have.length(1);
         const data = snapshot.results[0].data();
@@ -1151,22 +1176,30 @@ describe('FirestorePipeline', function () {
           bio: 'React Native developer',
         });
 
-        const snapshot = await execute(
-          db
-            .pipeline()
-            .documents([docPath])
-            .select(
-              toUpper(field('name')).as('upperName'),
-              toLower(field('name')).as('lowerName'),
-              trim(field('rawText')).as('trimmed'),
-              ltrim(field('rawText')).as('ltrimmed'),
-              rtrim(field('rawText')).as('rtrimmed'),
-              substring(field('bio'), 0, 12).as('shortBio'),
-              length(field('name')).as('nameLength'),
-              byteLength(field('name')).as('byteLen'),
-              charLength(field('name')).as('charLen'),
-            ),
-        );
+        const pipeline = db
+          .pipeline()
+          .documents([docPath])
+          .select(
+            toUpper(field('name')).as('upperName'),
+            toLower(field('name')).as('lowerName'),
+            trim(field('rawText')).as('trimmed'),
+            ltrim(field('rawText')).as('ltrimmed'),
+            rtrim(field('rawText')).as('rtrimmed'),
+            substring(field('bio'), 0, 12).as('shortBio'),
+            length(field('name')).as('nameLength'),
+            byteLength(field('name')).as('byteLen'),
+            charLength(field('name')).as('charLen'),
+          );
+
+        if (Platform.ios) {
+          await expectIOSUnsupportedFunctions(
+            () => execute(pipeline),
+            ['length', 'ltrim', 'rtrim', 'substring'],
+          );
+          return;
+        }
+
+        const snapshot = await execute(pipeline);
 
         snapshot.results.should.have.length(1);
         const data = snapshot.results[0].data();
@@ -1213,22 +1246,37 @@ describe('FirestorePipeline', function () {
           token: 'abc123',
         });
 
-        const snapshot = await execute(
-          db
-            .pipeline()
-            .documents([docPath])
-            .select(
-              stringConcat(field('firstName'), ' ', field('lastName')).as('fullName'),
-              concat(field('a'), field('b'), field('c')).as('concatResult'),
-              stringIndexOf(field('email'), '@').as('atIndex'),
-              stringRepeat(field('sep'), 3).as('tripled'),
-              stringReplaceAll(field('text'), 'foo', 'bar').as('replaced'),
-              stringReplaceOne(field('text'), 'foo', 'bar').as('replacedOnce'),
-              split(field('csvField'), ',').as('parts'),
-              reverse(field('code')).as('reversedCode'),
-              stringReverse(field('token')).as('reversedToken'),
-            ),
-        );
+        const pipeline = db
+          .pipeline()
+          .documents([docPath])
+          .select(
+            stringConcat(field('firstName'), ' ', field('lastName')).as('fullName'),
+            concat(field('a'), field('b'), field('c')).as('concatResult'),
+            stringIndexOf(field('email'), '@').as('atIndex'),
+            stringRepeat(field('sep'), 3).as('tripled'),
+            stringReplaceAll(field('text'), 'foo', 'bar').as('replaced'),
+            stringReplaceOne(field('text'), 'foo', 'bar').as('replacedOnce'),
+            split(field('csvField'), ',').as('parts'),
+            reverse(field('code')).as('reversedCode'),
+            stringReverse(field('token')).as('reversedToken'),
+          );
+
+        if (Platform.ios) {
+          await expectIOSUnsupportedFunctions(
+            () => execute(pipeline),
+            [
+              'concat',
+              'split',
+              'stringIndexOf',
+              'stringRepeat',
+              'stringReplaceAll',
+              'stringReplaceOne',
+            ],
+          );
+          return;
+        }
+
+        const snapshot = await execute(pipeline);
 
         snapshot.results.should.have.length(1);
         const data = snapshot.results[0].data();
@@ -1378,25 +1426,30 @@ describe('FirestorePipeline', function () {
           }),
         ]);
 
-        const snapshot = await execute(
-          db
-            .pipeline()
-            .collection(coll)
-            .where(
-              and(
-                arrayContains(field('tags'), 'typescript'),
-                arrayContainsAny(field('tags'), ['js', 'ts']),
-                arrayContainsAll(field('permissions'), ['read', 'write']),
-              ),
-            )
-            .select(
-              array([constant(1), constant(2), constant(3)]).as('fixedArr'),
-              arrayLength(field('tags')).as('tagCount'),
-              arrayGet(field('items'), 0).as('firstItem'),
-              arrayConcat(field('primaryTags'), field('secondaryTags')).as('allTags'),
-              arraySum(field('scores')).as('totalScore'),
+        const pipeline = db
+          .pipeline()
+          .collection(coll)
+          .where(
+            and(
+              arrayContains(field('tags'), 'typescript'),
+              arrayContainsAny(field('tags'), ['js', 'ts']),
+              arrayContainsAll(field('permissions'), ['read', 'write']),
             ),
-        );
+          )
+          .select(
+            array([constant(1), constant(2), constant(3)]).as('fixedArr'),
+            arrayLength(field('tags')).as('tagCount'),
+            arrayGet(field('items'), 0).as('firstItem'),
+            arrayConcat(field('primaryTags'), field('secondaryTags')).as('allTags'),
+            arraySum(field('scores')).as('totalScore'),
+          );
+
+        if (Platform.ios) {
+          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['arrayConcat', 'arrayGet']);
+          return;
+        }
+
+        const snapshot = await execute(pipeline);
 
         snapshot.results.should.have.length(1);
         const data = snapshot.results[0].data();
@@ -1563,19 +1616,24 @@ describe('FirestorePipeline', function () {
           epochMs: 1700000000000,
         });
 
-        const snapshot = await execute(
-          db
-            .pipeline()
-            .documents([docPath])
-            .select(
-              timestampToUnixMillis(field('eventTime')).as('eventTimeMs'),
-              timestampToUnixSeconds(field('eventTime')).as('eventTimeSec'),
-              timestampAdd(field('eventTime'), 'day', 1).as('nextDay'),
-              timestampSubtract(field('eventTime'), 'hour', 1).as('prevHour'),
-              timestampTruncate(field('eventTime'), 'day').as('dayBucket'),
-              unixMillisToTimestamp(field('epochMs')).as('fromEpochMs'),
-            ),
-        );
+        const pipeline = db
+          .pipeline()
+          .documents([docPath])
+          .select(
+            timestampToUnixMillis(field('eventTime')).as('eventTimeMs'),
+            timestampToUnixSeconds(field('eventTime')).as('eventTimeSec'),
+            timestampAdd(field('eventTime'), 'day', 1).as('nextDay'),
+            timestampSubtract(field('eventTime'), 'hour', 1).as('prevHour'),
+            timestampTruncate(field('eventTime'), 'day').as('dayBucket'),
+            unixMillisToTimestamp(field('epochMs')).as('fromEpochMs'),
+          );
+
+        if (Platform.ios) {
+          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['timestampTruncate']);
+          return;
+        }
+
+        const snapshot = await execute(pipeline);
 
         snapshot.results.should.have.length(1);
         const data = snapshot.results[0].data();
@@ -1732,7 +1790,7 @@ describe('FirestorePipeline', function () {
 
     describe('sort operators', function () {
       it('sorts using standalone ascending and descending functions', async function () {
-        const { execute, field, ascending, descending } = firestorePipelinesModular;
+        const { execute, field, ascending } = firestorePipelinesModular;
         const { getFirestore, collection, doc, setDoc } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
         const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/sort-standalone`);
@@ -1771,7 +1829,7 @@ describe('FirestorePipeline', function () {
       });
 
       it('sorts with multi-key ascending/descending tie-break', async function () {
-        const { execute, field, ascending, descending } = firestorePipelinesModular;
+        const { execute, field, ascending } = firestorePipelinesModular;
         const { getFirestore, collection, doc, setDoc } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
         const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/sort-multi`);

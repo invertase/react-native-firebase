@@ -15,7 +15,10 @@
  *
  */
 
-import type { FirestorePipelineSerializedInternal } from '../types/internal';
+import type {
+  FirestorePipelineSerializedInternal,
+  FirestorePipelineSerializedValueInternal,
+} from '../types/internal';
 
 export const PIPELINE_SOURCE_TYPES = [
   'collection',
@@ -46,6 +49,30 @@ export const PIPELINE_STAGE_TYPES = [
 export const PIPELINE_UNSUPPORTED_BASE_MESSAGE =
   'Firestore pipelines are not supported by this native implementation yet.';
 
+const IOS_UNSUPPORTED_FUNCTION_NAMES = new Set<string>([
+  'arrayGet',
+  'arrayConcat',
+  'ceil',
+  'concat',
+  'floor',
+  'isType',
+  'length',
+  'log10',
+  'ltrim',
+  'rand',
+  'round',
+  'rtrim',
+  'split',
+  'sqrt',
+  'stringIndexOf',
+  'stringRepeat',
+  'stringReplaceAll',
+  'stringReplaceOne',
+  'substring',
+  'timestampTruncate',
+  'trunc',
+]);
+
 export function createPipelineUnsupportedMessage(
   pipeline?: FirestorePipelineSerializedInternal | null,
 ): string {
@@ -60,4 +87,58 @@ export function createPipelineUnsupportedMessage(
   }
 
   return PIPELINE_UNSUPPORTED_BASE_MESSAGE;
+}
+
+export function getIOSUnsupportedPipelineFunctions(
+  pipeline?: FirestorePipelineSerializedInternal | null,
+): string[] {
+  if (!pipeline) {
+    return [];
+  }
+
+  const unsupported = new Set<string>();
+  collectIOSUnsupportedFunctions(
+    pipeline as unknown as FirestorePipelineSerializedValueInternal,
+    unsupported,
+  );
+  return Array.from(unsupported).sort();
+}
+
+function collectIOSUnsupportedFunctions(
+  value: FirestorePipelineSerializedValueInternal,
+  unsupported: Set<string>,
+): void {
+  if (Array.isArray(value)) {
+    value.forEach(entry => collectIOSUnsupportedFunctions(entry, unsupported));
+    return;
+  }
+
+  if (!value || typeof value !== 'object') {
+    return;
+  }
+
+  const objectValue = value as Record<string, unknown>;
+
+  if (isSerializedFunctionExpression(objectValue)) {
+    if (IOS_UNSUPPORTED_FUNCTION_NAMES.has(objectValue.name)) {
+      unsupported.add(objectValue.name);
+    }
+
+    if (Array.isArray(objectValue.args)) {
+      objectValue.args.forEach(entry => collectIOSUnsupportedFunctions(entry, unsupported));
+    }
+  }
+
+  Object.values(objectValue).forEach(entry => {
+    collectIOSUnsupportedFunctions(entry as FirestorePipelineSerializedValueInternal, unsupported);
+  });
+}
+
+function isSerializedFunctionExpression(
+  value: Record<string, unknown>,
+): value is { name: string; args?: FirestorePipelineSerializedValueInternal[] } {
+  return (
+    typeof value.name === 'string' &&
+    (value.exprType === 'Function' || value.__kind === 'expression')
+  );
 }
