@@ -56,37 +56,11 @@ import com.google.firebase.firestore.pipeline.Selectable;
 import com.google.firebase.firestore.pipeline.UnnestOptions;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
 class ReactNativeFirebaseFirestorePipelineExecutor {
-  private static final Set<String> SOURCE_TYPES =
-      new HashSet<>(
-          Arrays.asList("collection", "collectionGroup", "database", "documents", "query"));
-
-  private static final Set<String> KNOWN_STAGES =
-      new HashSet<>(
-          Arrays.asList(
-              "where",
-              "select",
-              "addFields",
-              "removeFields",
-              "sort",
-              "limit",
-              "offset",
-              "aggregate",
-              "distinct",
-              "findNearest",
-              "replaceWith",
-              "sample",
-              "union",
-              "unnest",
-              "rawStage"));
-
   private final FirebaseFirestore firestore;
 
   ReactNativeFirebaseFirestorePipelineExecutor(FirebaseFirestore firestore) {
@@ -95,9 +69,10 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
 
   void execute(ReadableMap pipeline, ReadableMap options, Promise promise) {
     try {
-      validatePipelineRequest(pipeline, options);
-      Pipeline sdkPipeline = buildNativePipeline(pipeline);
-      Pipeline.ExecuteOptions executeOptions = buildExecuteOptions(options);
+      ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineRequest request =
+          ReactNativeFirebaseFirestorePipelineParser.parse(pipeline, options);
+      Pipeline sdkPipeline = buildNativePipeline(request);
+      Pipeline.ExecuteOptions executeOptions = buildExecuteOptions(request.options);
       Task<Pipeline.Snapshot> executeTask =
           executeOptions == null ? sdkPipeline.execute() : sdkPipeline.execute(executeOptions);
       executeTask.addOnCompleteListener(task -> resolvePipelineTask(task, promise));
@@ -106,149 +81,6 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     } catch (Exception e) {
       rejectPromiseWithCodeAndMessage(
           promise, "unknown", "Failed to execute pipeline: " + e.getMessage());
-    }
-  }
-
-  private void validatePipelineRequest(ReadableMap pipeline, ReadableMap options)
-      throws PipelineValidationException {
-    if (pipeline == null) {
-      throw new PipelineValidationException("pipelineExecute() expected a pipeline object.");
-    }
-
-    if (!pipeline.hasKey("source") || pipeline.getType("source") != ReadableType.Map) {
-      throw new PipelineValidationException(
-          "pipelineExecute() expected pipeline.source to be an object.");
-    }
-
-    if (!pipeline.hasKey("stages") || pipeline.getType("stages") != ReadableType.Array) {
-      throw new PipelineValidationException(
-          "pipelineExecute() expected pipeline.stages to be an array.");
-    }
-
-    ReadableMap source = pipeline.getMap("source");
-    ReadableArray stages = pipeline.getArray("stages");
-    if (source == null || stages == null) {
-      throw new PipelineValidationException("pipelineExecute() expected source and stages.");
-    }
-
-    validateSource(source);
-    validateStages(stages);
-    validateOptions(options);
-  }
-
-  private void validateSource(ReadableMap source) throws PipelineValidationException {
-    if (!source.hasKey("source") || source.getType("source") != ReadableType.String) {
-      throw new PipelineValidationException(
-          "pipelineExecute() expected pipeline.source.source to be a string.");
-    }
-
-    String sourceType = source.getString("source");
-    if (sourceType == null || !SOURCE_TYPES.contains(sourceType)) {
-      throw new PipelineValidationException("pipelineExecute() received an unknown source type.");
-    }
-
-    switch (sourceType) {
-      case "collection":
-        validateNonEmptyString(source, "path", "pipeline.source.path");
-        break;
-      case "collectionGroup":
-        validateNonEmptyString(source, "collectionId", "pipeline.source.collectionId");
-        break;
-      case "documents":
-        if (!source.hasKey("documents") || source.getType("documents") != ReadableType.Array) {
-          throw new PipelineValidationException(
-              "pipelineExecute() expected pipeline.source.documents to be an array.");
-        }
-        ReadableArray documents = source.getArray("documents");
-        if (documents == null || documents.size() == 0) {
-          throw new PipelineValidationException(
-              "pipelineExecute() expected pipeline.source.documents to contain at least one"
-                  + " document path.");
-        }
-        for (int i = 0; i < documents.size(); i++) {
-          if (documents.getType(i) != ReadableType.String) {
-            throw new PipelineValidationException(
-                "pipelineExecute() expected pipeline.source.documents entries to be strings.");
-          }
-        }
-        break;
-      case "query":
-        validateNonEmptyString(source, "path", "pipeline.source.path");
-        validateNonEmptyString(source, "queryType", "pipeline.source.queryType");
-        if (!source.hasKey("filters") || source.getType("filters") != ReadableType.Array) {
-          throw new PipelineValidationException(
-              "pipelineExecute() expected pipeline.source.filters to be an array.");
-        }
-        if (!source.hasKey("orders") || source.getType("orders") != ReadableType.Array) {
-          throw new PipelineValidationException(
-              "pipelineExecute() expected pipeline.source.orders to be an array.");
-        }
-        if (!source.hasKey("options") || source.getType("options") != ReadableType.Map) {
-          throw new PipelineValidationException(
-              "pipelineExecute() expected pipeline.source.options to be an object.");
-        }
-        break;
-      case "database":
-      default:
-        break;
-    }
-  }
-
-  private void validateStages(ReadableArray stages) throws PipelineValidationException {
-    for (int i = 0; i < stages.size(); i++) {
-      if (stages.getType(i) != ReadableType.Map) {
-        throw new PipelineValidationException(
-            "pipelineExecute() expected each pipeline stage to be an object.");
-      }
-
-      ReadableMap stage = stages.getMap(i);
-      if (stage == null) {
-        throw new PipelineValidationException(
-            "pipelineExecute() expected each stage to be non-null.");
-      }
-
-      if (!stage.hasKey("stage") || stage.getType("stage") != ReadableType.String) {
-        throw new PipelineValidationException(
-            "pipelineExecute() expected each stage.stage to be a string.");
-      }
-
-      String stageName = stage.getString("stage");
-      if (stageName == null || stageName.isEmpty()) {
-        throw new PipelineValidationException(
-            "pipelineExecute() expected each stage.stage to be a non-empty string.");
-      }
-
-      if (!KNOWN_STAGES.contains(stageName)) {
-        throw new PipelineValidationException(
-            "pipelineExecute() received an unknown stage: " + stageName + ".");
-      }
-
-      if (!stage.hasKey("options") || stage.getType("options") != ReadableType.Map) {
-        throw new PipelineValidationException(
-            "pipelineExecute() expected each stage.options to be an object.");
-      }
-    }
-  }
-
-  private void validateOptions(ReadableMap options) throws PipelineValidationException {
-    if (options == null) {
-      return;
-    }
-
-    if (options.hasKey("indexMode") && options.getType("indexMode") != ReadableType.String) {
-      throw new PipelineValidationException(
-          "pipelineExecute() expected options.indexMode to be a string.");
-    }
-
-    String indexMode = options.getString("indexMode");
-    if (indexMode != null && !"recommended".equals(indexMode)) {
-      throw new PipelineValidationException(
-          "pipelineExecute() only supports options.indexMode=\"recommended\".");
-    }
-
-    if (options.hasKey("rawOptions") && options.getType("rawOptions") != ReadableType.Map) {
-      throw new PipelineValidationException(
-          "pipelineExecute() expected options.rawOptions to be an object.");
     }
   }
 
@@ -273,40 +105,36 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
         promise, "unknown", "Failed to execute pipeline: empty pipeline task response.");
   }
 
-  private Pipeline buildNativePipeline(ReadableMap pipeline) throws PipelineValidationException {
-    ReadableMap source = Objects.requireNonNull(pipeline.getMap("source"));
-    ReadableArray stages = Objects.requireNonNull(pipeline.getArray("stages"));
-    Pipeline currentPipeline = buildSourcePipeline(source);
+  private Pipeline buildNativePipeline(
+      ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineRequest request)
+      throws PipelineValidationException {
+    Pipeline currentPipeline = buildSourcePipeline(request.source);
 
-    for (int i = 0; i < stages.size(); i++) {
-      ReadableMap stage = Objects.requireNonNull(stages.getMap(i));
-      String stageName = Objects.requireNonNull(stage.getString("stage"));
-      ReadableMap stageOptions = Objects.requireNonNull(stage.getMap("options"));
-      currentPipeline = applyStage(currentPipeline, stageName, stageOptions);
+    for (ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineStage stage : request.stages) {
+      currentPipeline = applyStage(currentPipeline, stage.stageName, stage.options);
     }
 
     return currentPipeline;
   }
 
-  private Pipeline buildSourcePipeline(ReadableMap source) throws PipelineValidationException {
-    String sourceType = source.getString("source");
+  private Pipeline buildSourcePipeline(
+      ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineSource source)
+      throws PipelineValidationException {
+    String sourceType = source.sourceType;
     PipelineSource pipelineSource = firestore.pipeline();
 
     if ("collection".equals(sourceType)) {
-      String path = requireNonEmptyString(source, "path", "pipeline.source.path");
-      CollectionSourceOptions options = buildCollectionSourceOptions(source.getMap("rawOptions"));
+      CollectionSourceOptions options = buildCollectionSourceOptions(source.rawOptions);
       return options == null
-          ? pipelineSource.collection(path)
-          : pipelineSource.collection(firestore.collection(path), options);
+          ? pipelineSource.collection(source.path)
+          : pipelineSource.collection(firestore.collection(source.path), options);
     }
 
     if ("collectionGroup".equals(sourceType)) {
-      String collectionId =
-          requireNonEmptyString(source, "collectionId", "pipeline.source.collectionId");
-      CollectionGroupOptions options = buildCollectionGroupOptions(source.getMap("rawOptions"));
+      CollectionGroupOptions options = buildCollectionGroupOptions(source.rawOptions);
       return options == null
-          ? pipelineSource.collectionGroup(collectionId)
-          : pipelineSource.collectionGroup(collectionId, options);
+          ? pipelineSource.collectionGroup(source.collectionId)
+          : pipelineSource.collectionGroup(source.collectionId, options);
     }
 
     if ("database".equals(sourceType)) {
@@ -314,33 +142,19 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     }
 
     if ("documents".equals(sourceType)) {
-      ReadableArray documents = source.getArray("documents");
-      if (documents == null || documents.size() == 0) {
+      if (source.documents == null || source.documents.length == 0) {
         throw new PipelineValidationException(
             "pipelineExecute() expected pipeline.source.documents to contain at least one document"
                 + " path.");
       }
-
-      String[] documentPaths = new String[documents.size()];
-      for (int i = 0; i < documents.size(); i++) {
-        if (documents.getType(i) != ReadableType.String) {
-          throw new PipelineValidationException(
-              "pipelineExecute() expected pipeline.source.documents entries to be strings.");
-        }
-        documentPaths[i] = documents.getString(i);
-      }
-
-      return pipelineSource.documents(documentPaths);
+      return pipelineSource.documents(source.documents);
     }
 
     if ("query".equals(sourceType)) {
-      String path = requireNonEmptyString(source, "path", "pipeline.source.path");
-      String queryType = requireNonEmptyString(source, "queryType", "pipeline.source.queryType");
-      ReadableArray filters = Objects.requireNonNull(source.getArray("filters"));
-      ReadableArray orders = Objects.requireNonNull(source.getArray("orders"));
-      ReadableMap queryOptions = Objects.requireNonNull(source.getMap("options"));
-
-      Query baseQuery = getQueryForFirestore(firestore, path, queryType);
+      Query baseQuery = getQueryForFirestore(firestore, source.path, source.queryType);
+      ReadableArray filters = Arguments.makeNativeArray(source.filters);
+      ReadableArray orders = Arguments.makeNativeArray(source.orders);
+      ReadableMap queryOptions = Arguments.makeNativeMap(source.options);
       ReactNativeFirebaseFirestoreQuery firestoreQuery =
           new ReactNativeFirebaseFirestoreQuery(
               "pipeline", "pipeline", baseQuery, filters, orders, queryOptions);
@@ -350,7 +164,7 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     throw new PipelineValidationException("pipelineExecute() received an unknown source type.");
   }
 
-  private CollectionSourceOptions buildCollectionSourceOptions(ReadableMap rawOptions)
+  private CollectionSourceOptions buildCollectionSourceOptions(Map<String, Object> rawOptions)
       throws PipelineValidationException {
     CollectionHints hints = buildCollectionHints(rawOptions);
     if (hints == null) {
@@ -360,7 +174,7 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     return new CollectionSourceOptions().withHints(hints);
   }
 
-  private CollectionGroupOptions buildCollectionGroupOptions(ReadableMap rawOptions)
+  private CollectionGroupOptions buildCollectionGroupOptions(Map<String, Object> rawOptions)
       throws PipelineValidationException {
     CollectionHints hints = buildCollectionHints(rawOptions);
     if (hints == null) {
@@ -370,7 +184,7 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     return new CollectionGroupOptions().withHints(hints);
   }
 
-  private CollectionHints buildCollectionHints(ReadableMap rawOptions)
+  private CollectionHints buildCollectionHints(Map<String, Object> rawOptions)
       throws PipelineValidationException {
     if (rawOptions == null) {
       return null;
@@ -384,8 +198,8 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
       hasHint = true;
     }
 
-    if (rawOptions.hasKey("ignoreIndexFields")) {
-      Object ignoreIndexFields = getJavaValue(rawOptions, "ignoreIndexFields");
+    if (rawOptions.containsKey("ignoreIndexFields")) {
+      Object ignoreIndexFields = rawOptions.get("ignoreIndexFields");
       String[] fields =
           coerceStringList(ignoreIndexFields, "pipeline.source.rawOptions.ignoreIndexFields");
       if (fields.length > 0) {
@@ -397,41 +211,34 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     return hasHint ? hints : null;
   }
 
-  private Pipeline.ExecuteOptions buildExecuteOptions(ReadableMap options)
+  private Pipeline.ExecuteOptions buildExecuteOptions(
+      ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineExecuteOptions options)
       throws PipelineValidationException {
-    if (options == null) {
+    if (options == null || options.isEmpty()) {
       return null;
     }
 
     Pipeline.ExecuteOptions executeOptions = new Pipeline.ExecuteOptions();
     boolean hasOptions = false;
 
-    if (options.hasKey("indexMode") && options.getType("indexMode") == ReadableType.String) {
-      String indexMode = options.getString("indexMode");
-      if ("recommended".equals(indexMode)) {
-        // This continues to produce "Client specified an invalid argument" error so we throw early
-        // in JS code when present
-        executeOptions =
-            executeOptions.withIndexMode(Pipeline.ExecuteOptions.IndexMode.RECOMMENDED);
-        hasOptions = true;
-      }
+    if ("recommended".equals(options.indexMode)) {
+      // This continues to produce "Client specified an invalid argument" error so we throw early
+      // in JS code when present
+      executeOptions = executeOptions.withIndexMode(Pipeline.ExecuteOptions.IndexMode.RECOMMENDED);
+      hasOptions = true;
     }
 
-    ReadableMap rawOptions =
-        options.hasKey("rawOptions") && options.getType("rawOptions") == ReadableType.Map
-            ? options.getMap("rawOptions")
-            : null;
-    if (rawOptions != null) {
+    if (options.rawOptions != null) {
       // This continues to produce "Client specified an invalid argument" error so we throw early in
       // JS code when present
-      executeOptions = applyExecuteRawOptions(executeOptions, rawOptions);
+      executeOptions = applyExecuteRawOptions(executeOptions, options.rawOptions);
       hasOptions = true;
     }
 
     return hasOptions ? executeOptions : null;
   }
 
-  private Pipeline applyStage(Pipeline pipeline, String stageName, ReadableMap stageOptions)
+  private Pipeline applyStage(Pipeline pipeline, String stageName, Map<String, Object> stageOptions)
       throws PipelineValidationException {
     switch (stageName) {
       case "where":
@@ -445,11 +252,9 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
       case "sort":
         return applySortStage(pipeline, stageOptions);
       case "limit":
-        return pipeline.limit(
-            coerceInt(getJavaValue(stageOptions, "limit"), "stage.options.limit"));
+        return pipeline.limit(coerceInt(stageOptions.get("limit"), "stage.options.limit"));
       case "offset":
-        return pipeline.offset(
-            coerceInt(getJavaValue(stageOptions, "offset"), "stage.options.offset"));
+        return pipeline.offset(coerceInt(stageOptions.get("offset"), "stage.options.offset"));
       case "aggregate":
         return applyAggregateStage(pipeline, stageOptions);
       case "distinct":
@@ -472,17 +277,17 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     }
   }
 
-  private Pipeline applyWhereStage(Pipeline pipeline, ReadableMap stageOptions)
+  private Pipeline applyWhereStage(Pipeline pipeline, Map<String, Object> stageOptions)
       throws PipelineValidationException {
-    Object conditionValue = getJavaValue(stageOptions, "condition");
+    Object conditionValue = stageOptions.get("condition");
     BooleanExpression condition =
         coerceBooleanExpression(conditionValue, "stage.options.condition");
     return pipeline.where(condition);
   }
 
-  private Pipeline applySelectStage(Pipeline pipeline, ReadableMap stageOptions)
+  private Pipeline applySelectStage(Pipeline pipeline, Map<String, Object> stageOptions)
       throws PipelineValidationException {
-    Object selectionsValue = getJavaValue(stageOptions, "selections");
+    Object selectionsValue = stageOptions.get("selections");
     List<Object> selections = coerceList(selectionsValue, "stage.options.selections");
     if (selections.isEmpty()) {
       throw new PipelineValidationException(
@@ -513,9 +318,9 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     return pipeline.select(first, (Object[]) rest);
   }
 
-  private Pipeline applyAddFieldsStage(Pipeline pipeline, ReadableMap stageOptions)
+  private Pipeline applyAddFieldsStage(Pipeline pipeline, Map<String, Object> stageOptions)
       throws PipelineValidationException {
-    Object fieldsValue = getJavaValue(stageOptions, "fields");
+    Object fieldsValue = stageOptions.get("fields");
     List<Object> fields = coerceList(fieldsValue, "stage.options.fields");
     if (fields.isEmpty()) {
       throw new PipelineValidationException(
@@ -532,9 +337,9 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     return pipeline.addFields(first, rest);
   }
 
-  private Pipeline applyRemoveFieldsStage(Pipeline pipeline, ReadableMap stageOptions)
+  private Pipeline applyRemoveFieldsStage(Pipeline pipeline, Map<String, Object> stageOptions)
       throws PipelineValidationException {
-    Object fieldsValue = getJavaValue(stageOptions, "fields");
+    Object fieldsValue = stageOptions.get("fields");
     String[] fields = coerceStringList(fieldsValue, "stage.options.fields");
     if (fields.length == 0) {
       throw new PipelineValidationException(
@@ -546,9 +351,9 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     return pipeline.removeFields(first, rest);
   }
 
-  private Pipeline applySortStage(Pipeline pipeline, ReadableMap stageOptions)
+  private Pipeline applySortStage(Pipeline pipeline, Map<String, Object> stageOptions)
       throws PipelineValidationException {
-    Object orderingsValue = getJavaValue(stageOptions, "orderings");
+    Object orderingsValue = stageOptions.get("orderings");
     List<Object> orderings = coerceList(orderingsValue, "stage.options.orderings");
     if (orderings.isEmpty()) {
       throw new PipelineValidationException(
@@ -565,9 +370,9 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     return pipeline.sort(first, rest);
   }
 
-  private Pipeline applyAggregateStage(Pipeline pipeline, ReadableMap stageOptions)
+  private Pipeline applyAggregateStage(Pipeline pipeline, Map<String, Object> stageOptions)
       throws PipelineValidationException {
-    Object accumulatorsValue = getJavaValue(stageOptions, "accumulators");
+    Object accumulatorsValue = stageOptions.get("accumulators");
     List<Object> accumulators = coerceList(accumulatorsValue, "stage.options.accumulators");
     if (accumulators.isEmpty()) {
       throw new PipelineValidationException(
@@ -586,9 +391,8 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     AggregateStage aggregateStage =
         AggregateStage.withAccumulators(firstAccumulator, restAccumulators);
 
-    if (stageOptions.hasKey("groups")) {
-      List<Object> groups =
-          coerceList(getJavaValue(stageOptions, "groups"), "stage.options.groups");
+    if (stageOptions.containsKey("groups")) {
+      List<Object> groups = coerceList(stageOptions.get("groups"), "stage.options.groups");
       if (!groups.isEmpty()) {
         boolean allStrings = true;
         for (Object group : groups) {
@@ -618,9 +422,9 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     return pipeline.aggregate(aggregateStage);
   }
 
-  private Pipeline applyDistinctStage(Pipeline pipeline, ReadableMap stageOptions)
+  private Pipeline applyDistinctStage(Pipeline pipeline, Map<String, Object> stageOptions)
       throws PipelineValidationException {
-    Object groupsValue = getJavaValue(stageOptions, "groups");
+    Object groupsValue = stageOptions.get("groups");
     List<Object> groups = coerceList(groupsValue, "stage.options.groups");
     if (groups.isEmpty()) {
       throw new PipelineValidationException(
@@ -651,23 +455,23 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     return pipeline.distinct(first, rest);
   }
 
-  private Pipeline applyFindNearestStage(Pipeline pipeline, ReadableMap stageOptions)
+  private Pipeline applyFindNearestStage(Pipeline pipeline, Map<String, Object> stageOptions)
       throws PipelineValidationException {
-    String fieldPath = coerceFieldPath(getJavaValue(stageOptions, "field"), "stage.options.field");
-    double[] vector = coerceVectorValue(getJavaValue(stageOptions, "vectorValue"));
+    String fieldPath = coerceFieldPath(stageOptions.get("field"), "stage.options.field");
+    double[] vector = coerceVectorValue(stageOptions.get("vectorValue"));
     FindNearestStage.DistanceMeasure distanceMeasure =
         coerceDistanceMeasure(
             optionalString(stageOptions, "distanceMeasure"), "stage.options.distanceMeasure");
 
-    boolean hasOptions = stageOptions.hasKey("limit") || stageOptions.hasKey("distanceField");
+    boolean hasOptions =
+        stageOptions.containsKey("limit") || stageOptions.containsKey("distanceField");
     if (!hasOptions) {
       return pipeline.findNearest(fieldPath, vector, distanceMeasure);
     }
 
     FindNearestOptions options = new FindNearestOptions();
-    if (stageOptions.hasKey("limit")) {
-      options =
-          options.withLimit(coerceLong(getJavaValue(stageOptions, "limit"), "stage.options.limit"));
+    if (stageOptions.containsKey("limit")) {
+      options = options.withLimit(coerceLong(stageOptions.get("limit"), "stage.options.limit"));
     }
     String distanceField = optionalString(stageOptions, "distanceField");
     if (distanceField != null && !distanceField.isEmpty()) {
@@ -677,9 +481,9 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     return pipeline.findNearest(fieldPath, Expression.vector(vector), distanceMeasure, options);
   }
 
-  private Pipeline applyReplaceWithStage(Pipeline pipeline, ReadableMap stageOptions)
+  private Pipeline applyReplaceWithStage(Pipeline pipeline, Map<String, Object> stageOptions)
       throws PipelineValidationException {
-    Object mapValue = getJavaValue(stageOptions, "map");
+    Object mapValue = stageOptions.get("map");
     if (mapValue instanceof String) {
       return pipeline.replaceWith((String) mapValue);
     }
@@ -688,16 +492,15 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     return pipeline.replaceWith(expression);
   }
 
-  private Pipeline applySampleStage(Pipeline pipeline, ReadableMap stageOptions)
+  private Pipeline applySampleStage(Pipeline pipeline, Map<String, Object> stageOptions)
       throws PipelineValidationException {
-    if (stageOptions.hasKey("documents")) {
-      int documents = coerceInt(getJavaValue(stageOptions, "documents"), "stage.options.documents");
+    if (stageOptions.containsKey("documents")) {
+      int documents = coerceInt(stageOptions.get("documents"), "stage.options.documents");
       return pipeline.sample(documents);
     }
 
-    if (stageOptions.hasKey("percentage")) {
-      double percentage =
-          coerceDouble(getJavaValue(stageOptions, "percentage"), "stage.options.percentage");
+    if (stageOptions.containsKey("percentage")) {
+      double percentage = coerceDouble(stageOptions.get("percentage"), "stage.options.percentage");
       return pipeline.sample(SampleStage.withPercentage(percentage));
     }
 
@@ -705,24 +508,26 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
         "pipelineExecute() expected sample stage to include documents or percentage.");
   }
 
-  private Pipeline applyUnionStage(Pipeline pipeline, ReadableMap stageOptions)
+  private Pipeline applyUnionStage(Pipeline pipeline, Map<String, Object> stageOptions)
       throws PipelineValidationException {
-    Object otherValue = getJavaValue(stageOptions, "other");
+    Object otherValue = stageOptions.get("other");
     if (!(otherValue instanceof Map)) {
       throw new PipelineValidationException(
           "pipelineExecute() expected stage.options.other to be a serialized pipeline object.");
     }
 
     @SuppressWarnings("unchecked")
-    ReadableMap otherPipelineMap = Arguments.makeNativeMap((Map<String, Object>) otherValue);
-    validatePipelineRequest(otherPipelineMap, null);
-    Pipeline otherPipeline = buildNativePipeline(otherPipelineMap);
-    return pipeline.union(otherPipeline);
+    Map<String, Object> otherPipeline = (Map<String, Object>) otherValue;
+    ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineRequest otherRequest =
+        ReactNativeFirebaseFirestorePipelineParser.parse(
+            Arguments.makeNativeMap(otherPipeline), null);
+    Pipeline otherPipelineInstance = buildNativePipeline(otherRequest);
+    return pipeline.union(otherPipelineInstance);
   }
 
-  private Pipeline applyUnnestStage(Pipeline pipeline, ReadableMap stageOptions)
+  private Pipeline applyUnnestStage(Pipeline pipeline, Map<String, Object> stageOptions)
       throws PipelineValidationException {
-    Object selectableValue = getJavaValue(stageOptions, "selectable");
+    Object selectableValue = stageOptions.get("selectable");
     Selectable selectable = coerceSelectable(selectableValue, "stage.options.selectable");
 
     String indexField = optionalString(stageOptions, "indexField");
@@ -734,13 +539,13 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     return pipeline.unnest(selectable, options);
   }
 
-  private Pipeline applyRawStage(Pipeline pipeline, ReadableMap stageOptions)
+  private Pipeline applyRawStage(Pipeline pipeline, Map<String, Object> stageOptions)
       throws PipelineValidationException {
     String stageName = requireNonEmptyString(stageOptions, "name", "stage.options.name");
     RawStage rawStage = RawStage.ofName(stageName);
 
-    if (stageOptions.hasKey("params")) {
-      Object paramsValue = getJavaValue(stageOptions, "params");
+    if (stageOptions.containsKey("params")) {
+      Object paramsValue = stageOptions.get("params");
       if (paramsValue instanceof List) {
         Object[] args = ((List<?>) paramsValue).toArray();
         rawStage = rawStage.withArguments(args);
@@ -749,51 +554,47 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
       }
     }
 
-    if (stageOptions.hasKey("options") && stageOptions.getType("options") == ReadableType.Map) {
-      ReadableMap rawStageOptions = stageOptions.getMap("options");
-      if (rawStageOptions != null) {
-        rawStage = applyPrimitiveRawStageOptions(rawStage, rawStageOptions);
-      }
+    if (stageOptions.containsKey("options") && stageOptions.get("options") instanceof Map) {
+      @SuppressWarnings("unchecked")
+      Map<String, Object> rawStageOptions = (Map<String, Object>) stageOptions.get("options");
+      rawStage = applyPrimitiveRawStageOptions(rawStage, rawStageOptions);
     }
 
     return pipeline.rawStage(rawStage);
   }
 
   private <T extends com.google.firebase.firestore.pipeline.AbstractOptions<T>>
-      T applyPrimitiveRawOptions(T options, ReadableMap rawOptions)
+      T applyPrimitiveRawOptions(T options, Map<String, Object> rawOptions)
           throws PipelineValidationException {
-    ReadableMapKeySetIterator iterator = rawOptions.keySetIterator();
-
-    while (iterator.hasNextKey()) {
-      String key = iterator.nextKey();
-      ReadableType type = rawOptions.getType(key);
-      if (type == ReadableType.Null) {
+    for (Map.Entry<String, Object> entry : rawOptions.entrySet()) {
+      String key = entry.getKey();
+      Object rawValue = entry.getValue();
+      if (rawValue == null) {
         continue;
       }
-      if (type == ReadableType.Boolean) {
-        options = options.with(key, rawOptions.getBoolean(key));
+      if (rawValue instanceof Boolean) {
+        options = options.with(key, (Boolean) rawValue);
         continue;
       }
-      if (type == ReadableType.String) {
-        options = options.with(key, rawOptions.getString(key));
+      if (rawValue instanceof String) {
+        options = options.with(key, (String) rawValue);
         continue;
       }
-      if (type == ReadableType.Number) {
-        double value = rawOptions.getDouble(key);
-        if (Math.floor(value) == value) {
-          options = options.with(key, (long) value);
+      if (rawValue instanceof Number) {
+        Number numberValue = (Number) rawValue;
+        if (numberValue instanceof Double || numberValue instanceof Float) {
+          options = options.with(key, numberValue.doubleValue());
         } else {
-          options = options.with(key, value);
+          options = options.with(key, numberValue.longValue());
         }
         continue;
       }
-      if (type == ReadableType.Array) {
+      if (rawValue instanceof List) {
         throw new PipelineValidationException(
             "pipelineExecute() received an unsupported raw option array for key: " + key + ".");
       }
-      if (type == ReadableType.Map) {
-        String fieldPath =
-            coerceFieldPath(getJavaValue(rawOptions, key), "options.rawOptions." + key);
+      if (rawValue instanceof Map) {
+        String fieldPath = coerceFieldPath(rawValue, "options.rawOptions." + key);
         options = options.with(key, Expression.field(fieldPath));
         continue;
       }
@@ -806,43 +607,38 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
   }
 
   private Pipeline.ExecuteOptions applyExecuteRawOptions(
-      Pipeline.ExecuteOptions options, ReadableMap rawOptions) throws PipelineValidationException {
-    ReadableMapKeySetIterator iterator = rawOptions.keySetIterator();
-
-    while (iterator.hasNextKey()) {
-      String rawKey = iterator.nextKey();
+      Pipeline.ExecuteOptions options, Map<String, Object> rawOptions) throws PipelineValidationException {
+    for (Map.Entry<String, Object> entry : rawOptions.entrySet()) {
+      String rawKey = entry.getKey();
       String key = normalizeRawOptionKey(rawKey);
-      ReadableType type = rawOptions.getType(rawKey);
-      if (type == ReadableType.Null) {
+      Object rawValue = entry.getValue();
+      if (rawValue == null) {
         continue;
       }
-      if (type == ReadableType.Boolean) {
-        options = options.with(key, rawOptions.getBoolean(rawKey));
+      if (rawValue instanceof Boolean) {
+        options = options.with(key, (Boolean) rawValue);
         continue;
       }
-      if (type == ReadableType.String) {
-        options = options.with(key, rawOptions.getString(rawKey));
+      if (rawValue instanceof String) {
+        options = options.with(key, (String) rawValue);
         continue;
       }
-      if (type == ReadableType.Number) {
-        double value = rawOptions.getDouble(rawKey);
-        if (Math.floor(value) == value) {
-          options = options.with(key, (long) value);
+      if (rawValue instanceof Number) {
+        Number numberValue = (Number) rawValue;
+        if (numberValue instanceof Double || numberValue instanceof Float) {
+          options = options.with(key, numberValue.doubleValue());
         } else {
-          options = options.with(key, value);
+          options = options.with(key, numberValue.longValue());
         }
         continue;
       }
-      if (type == ReadableType.Map) {
-        ReadableMap nestedMap = rawOptions.getMap(rawKey);
-        if (nestedMap == null) {
-          throw new PipelineValidationException(
-              "pipelineExecute() expected options.rawOptions." + rawKey + " to be an object.");
-        }
+      if (rawValue instanceof Map) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> nestedMap = (Map<String, Object>) rawValue;
         options = options.with(key, toRawOptions(nestedMap, "options.rawOptions." + rawKey));
         continue;
       }
-      if (type == ReadableType.Array) {
+      if (rawValue instanceof List) {
         throw new PipelineValidationException(
             "pipelineExecute() received an unsupported raw option array for key: " + rawKey + ".");
       }
@@ -854,45 +650,40 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     return options;
   }
 
-  private RawOptions toRawOptions(ReadableMap rawOptions, String fieldName)
+  private RawOptions toRawOptions(Map<String, Object> rawOptions, String fieldName)
       throws PipelineValidationException {
     RawOptions options = RawOptions.DEFAULT;
-    ReadableMapKeySetIterator iterator = rawOptions.keySetIterator();
-
-    while (iterator.hasNextKey()) {
-      String rawKey = iterator.nextKey();
+    for (Map.Entry<String, Object> entry : rawOptions.entrySet()) {
+      String rawKey = entry.getKey();
       String key = normalizeRawOptionKey(rawKey);
-      ReadableType type = rawOptions.getType(rawKey);
-      if (type == ReadableType.Null) {
+      Object rawValue = entry.getValue();
+      if (rawValue == null) {
         continue;
       }
-      if (type == ReadableType.Boolean) {
-        options = options.with(key, rawOptions.getBoolean(rawKey));
+      if (rawValue instanceof Boolean) {
+        options = options.with(key, (Boolean) rawValue);
         continue;
       }
-      if (type == ReadableType.String) {
-        options = options.with(key, rawOptions.getString(rawKey));
+      if (rawValue instanceof String) {
+        options = options.with(key, (String) rawValue);
         continue;
       }
-      if (type == ReadableType.Number) {
-        double value = rawOptions.getDouble(rawKey);
-        if (Math.floor(value) == value) {
-          options = options.with(key, (long) value);
+      if (rawValue instanceof Number) {
+        Number numberValue = (Number) rawValue;
+        if (numberValue instanceof Double || numberValue instanceof Float) {
+          options = options.with(key, numberValue.doubleValue());
         } else {
-          options = options.with(key, value);
+          options = options.with(key, numberValue.longValue());
         }
         continue;
       }
-      if (type == ReadableType.Map) {
-        ReadableMap nestedMap = rawOptions.getMap(rawKey);
-        if (nestedMap == null) {
-          throw new PipelineValidationException(
-              "pipelineExecute() expected " + fieldName + "." + rawKey + " to be an object.");
-        }
+      if (rawValue instanceof Map) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> nestedMap = (Map<String, Object>) rawValue;
         options = options.with(key, toRawOptions(nestedMap, fieldName + "." + rawKey));
         continue;
       }
-      if (type == ReadableType.Array) {
+      if (rawValue instanceof List) {
         throw new PipelineValidationException(
             "pipelineExecute() received an unsupported raw option array for key: " + rawKey + ".");
       }
@@ -924,36 +715,33 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     return normalized.toString();
   }
 
-  private RawStage applyPrimitiveRawStageOptions(RawStage rawStage, ReadableMap options)
+  private RawStage applyPrimitiveRawStageOptions(RawStage rawStage, Map<String, Object> options)
       throws PipelineValidationException {
-    ReadableMapKeySetIterator iterator = options.keySetIterator();
-
-    while (iterator.hasNextKey()) {
-      String key = iterator.nextKey();
-      ReadableType type = options.getType(key);
-      if (type == ReadableType.Null) {
+    for (Map.Entry<String, Object> entry : options.entrySet()) {
+      String key = entry.getKey();
+      Object rawValue = entry.getValue();
+      if (rawValue == null) {
         continue;
       }
-      if (type == ReadableType.Boolean) {
-        rawStage = rawStage.withOption(key, options.getBoolean(key));
+      if (rawValue instanceof Boolean) {
+        rawStage = rawStage.withOption(key, (Boolean) rawValue);
         continue;
       }
-      if (type == ReadableType.String) {
-        rawStage = rawStage.withOption(key, options.getString(key));
+      if (rawValue instanceof String) {
+        rawStage = rawStage.withOption(key, (String) rawValue);
         continue;
       }
-      if (type == ReadableType.Number) {
-        double value = options.getDouble(key);
-        if (Math.floor(value) == value) {
-          rawStage = rawStage.withOption(key, (long) value);
+      if (rawValue instanceof Number) {
+        Number numberValue = (Number) rawValue;
+        if (numberValue instanceof Double || numberValue instanceof Float) {
+          rawStage = rawStage.withOption(key, numberValue.doubleValue());
         } else {
-          rawStage = rawStage.withOption(key, value);
+          rawStage = rawStage.withOption(key, numberValue.longValue());
         }
         continue;
       }
-      if (type == ReadableType.Map) {
-        String fieldPath =
-            coerceFieldPath(getJavaValue(options, key), "stage.options.options." + key);
+      if (rawValue instanceof Map) {
+        String fieldPath = coerceFieldPath(rawValue, "stage.options.options." + key);
         rawStage = rawStage.withOption(key, Expression.field(fieldPath));
         continue;
       }
@@ -1009,7 +797,10 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
 
     Map<String, Object> data = result.getData();
     if (data != null) {
-      map.putMap("data", objectMapToWritable(data));
+      Object normalizedData = unwrapPipelineResultValue(data);
+      if (normalizedData instanceof Map) {
+        map.putMap("data", objectMapToWritable((Map<String, Object>) normalizedData));
+      }
     }
 
     WritableMap createTime = serializeTimestamp(result.getCreateTime());
@@ -1038,6 +829,35 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     map.putDouble("seconds", timestamp.getSeconds());
     map.putInt("nanoseconds", timestamp.getNanoseconds());
     return map;
+  }
+
+  private Object unwrapPipelineResultValue(Object value) {
+    if (value instanceof List) {
+      List<?> listValue = (List<?>) value;
+      List<Object> normalized = new java.util.ArrayList<>(listValue.size());
+      for (Object item : listValue) {
+        normalized.add(unwrapPipelineResultValue(item));
+      }
+      return normalized;
+    }
+
+    if (!(value instanceof Map)) {
+      return value;
+    }
+
+    Map<?, ?> mapValue = (Map<?, ?>) value;
+    Object exprType = mapValue.get("exprType");
+    if (exprType instanceof String && ((String) exprType).equalsIgnoreCase("constant")) {
+      return unwrapPipelineResultValue(mapValue.get("value"));
+    }
+
+    Map<String, Object> normalized = new java.util.LinkedHashMap<>();
+    for (Map.Entry<?, ?> entry : mapValue.entrySet()) {
+      if (entry.getKey() instanceof String) {
+        normalized.put((String) entry.getKey(), unwrapPipelineResultValue(entry.getValue()));
+      }
+    }
+    return normalized;
   }
 
   private Object getJavaValue(ReadableMap map, String key) {
@@ -1152,22 +972,23 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     return value;
   }
 
-  private String optionalString(ReadableMap map, String key) {
-    if (map == null || !map.hasKey(key) || map.getType(key) == ReadableType.Null) {
+  private String optionalString(Map<String, Object> map, String key) {
+    if (map == null || !map.containsKey(key) || map.get(key) == null) {
       return null;
     }
 
-    if (map.getType(key) != ReadableType.String) {
+    Object value = map.get(key);
+    if (!(value instanceof String)) {
       return null;
     }
 
-    return map.getString(key);
+    return (String) value;
   }
 
-  private String requireNonEmptyString(ReadableMap map, String key, String fieldName)
+  private String requireNonEmptyString(Map<String, Object> map, String key, String fieldName)
       throws PipelineValidationException {
     validateNonEmptyString(map, key, fieldName);
-    return map.getString(key);
+    return (String) map.get(key);
   }
 
   private int coerceInt(Object value, String fieldName) throws PipelineValidationException {
@@ -1348,6 +1169,11 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
       args.add(argsValue);
     }
 
+    Expression specialized = buildSpecialExpressionFunction((String) nameValue, args, fieldName);
+    if (specialized != null) {
+      return specialized;
+    }
+
     Expression[] expressions = new Expression[args.size()];
     for (int i = 0; i < args.size(); i++) {
       expressions[i] = coerceExpression(args.get(i), fieldName + ".args[" + i + "]");
@@ -1355,6 +1181,351 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
 
     String functionName = normalizeExpressionFunctionName((String) nameValue);
     return Expression.rawFunction(functionName, expressions);
+  }
+
+  private Expression buildSpecialExpressionFunction(
+      String functionName, List<Object> args, String fieldName) throws PipelineValidationException {
+    String normalizedName = canonicalizeExpressionFunctionName(functionName);
+
+    switch (normalizedName) {
+      case "array":
+        return buildArrayExpression(args, fieldName);
+      case "map":
+        return buildMapExpression(args, fieldName);
+      case "conditional":
+        requireArgumentCount(args, 3, functionName, fieldName);
+        return Expression.conditional(
+            coerceBooleanExpression(args.get(0), fieldName + ".args[0]"),
+            coerceExpression(args.get(1), fieldName + ".args[1]"),
+            coerceExpression(args.get(2), fieldName + ".args[2]"));
+      case "currenttimestamp":
+        requireArgumentCount(args, 0, functionName, fieldName);
+        return Expression.currentTimestamp();
+      case "type":
+        requireArgumentCount(args, 1, functionName, fieldName);
+        return coerceExpression(args.get(0), fieldName + ".args[0]").type();
+      case "collectionid":
+        requireArgumentCount(args, 1, functionName, fieldName);
+        return coerceExpression(args.get(0), fieldName + ".args[0]").collectionId();
+      case "documentid":
+        requireArgumentCount(args, 1, functionName, fieldName);
+        return coerceExpression(args.get(0), fieldName + ".args[0]").documentId();
+      case "istype":
+        requireArgumentCount(args, 2, functionName, fieldName);
+        return coerceExpression(args.get(0), fieldName + ".args[0]")
+            .type()
+            .equal(coerceStringLiteral(args.get(1), fieldName + ".args[1]"));
+      case "logicalmaximum":
+        return buildLogicalExtremaExpression(true, args, functionName, fieldName);
+      case "logicalminimum":
+        return buildLogicalExtremaExpression(false, args, functionName, fieldName);
+      case "mapget":
+        requireArgumentCount(args, 2, functionName, fieldName);
+        return buildMapGetExpression(args, fieldName);
+      case "mapmerge":
+        return buildMapMergeExpression(args, functionName, fieldName);
+      case "arraylength":
+        requireArgumentCount(args, 1, functionName, fieldName);
+        return coerceExpression(args.get(0), fieldName + ".args[0]").arrayLength();
+      case "arrayget":
+        requireArgumentCount(args, 2, functionName, fieldName);
+        return buildArrayGetExpression(args, fieldName);
+      case "arrayconcat":
+        return buildArrayConcatExpression(args, functionName, fieldName);
+      case "arraysum":
+        requireArgumentCount(args, 1, functionName, fieldName);
+        return coerceExpression(args.get(0), fieldName + ".args[0]").arraySum();
+      case "vectorlength":
+        requireArgumentCount(args, 1, functionName, fieldName);
+        return coerceExpression(args.get(0), fieldName + ".args[0]").vectorLength();
+      case "cosinedistance":
+        requireArgumentCount(args, 2, functionName, fieldName);
+        return buildVectorDistanceExpression("cosineDistance", args, fieldName);
+      case "dotproduct":
+        requireArgumentCount(args, 2, functionName, fieldName);
+        return buildVectorDistanceExpression("dotProduct", args, fieldName);
+      case "euclideandistance":
+        requireArgumentCount(args, 2, functionName, fieldName);
+        return buildVectorDistanceExpression("euclideanDistance", args, fieldName);
+      case "timestamptounixmicros":
+        requireArgumentCount(args, 1, functionName, fieldName);
+        return coerceExpression(args.get(0), fieldName + ".args[0]").timestampToUnixMicros();
+      case "timestamptounixmillis":
+        requireArgumentCount(args, 1, functionName, fieldName);
+        return coerceExpression(args.get(0), fieldName + ".args[0]").timestampToUnixMillis();
+      case "timestamptounixseconds":
+        requireArgumentCount(args, 1, functionName, fieldName);
+        return coerceExpression(args.get(0), fieldName + ".args[0]").timestampToUnixSeconds();
+      case "unixmicrostotimestamp":
+        requireArgumentCount(args, 1, functionName, fieldName);
+        return coerceExpression(args.get(0), fieldName + ".args[0]").unixMicrosToTimestamp();
+      case "unixmillistotimestamp":
+        requireArgumentCount(args, 1, functionName, fieldName);
+        return coerceExpression(args.get(0), fieldName + ".args[0]").unixMillisToTimestamp();
+      case "unixsecondstotimestamp":
+        requireArgumentCount(args, 1, functionName, fieldName);
+        return coerceExpression(args.get(0), fieldName + ".args[0]").unixSecondsToTimestamp();
+      case "timestampadd":
+        requireArgumentCount(args, 3, functionName, fieldName);
+        return buildTimestampMathExpression(true, args, fieldName);
+      case "timestampsubtract":
+        requireArgumentCount(args, 3, functionName, fieldName);
+        return buildTimestampMathExpression(false, args, fieldName);
+      case "timestamptruncate":
+        if (args.size() == 2) {
+          return buildTimestampTruncateExpression(args, fieldName);
+        }
+        return null;
+      default:
+        return null;
+    }
+  }
+
+  private Expression buildArrayExpression(List<Object> args, String fieldName)
+      throws PipelineValidationException {
+    List<?> elements;
+    if (args.size() == 1 && args.get(0) instanceof List) {
+      elements = (List<?>) args.get(0);
+    } else {
+      elements = args;
+    }
+
+    List<Object> resolvedConstants = new java.util.ArrayList<>(elements.size());
+    boolean allConstant = true;
+    for (Object element : elements) {
+      Object resolved = unwrapSerializedConstantDeep(element);
+      resolvedConstants.add(resolved);
+      if (containsSerializedExpression(resolved)) {
+        allConstant = false;
+      }
+    }
+
+    if (allConstant) {
+      return constantExpression(resolvedConstants);
+    }
+
+    Expression[] expressions = new Expression[elements.size()];
+    for (int i = 0; i < elements.size(); i++) {
+      expressions[i] = coerceExpression(elements.get(i), fieldName + ".args[" + i + "]");
+    }
+    return Expression.rawFunction("array", expressions);
+  }
+
+  private Expression buildMapExpression(List<Object> args, String fieldName)
+      throws PipelineValidationException {
+    requireArgumentCount(args, 1, "map", fieldName);
+    Object entriesValue = args.get(0);
+    if (!(entriesValue instanceof Map)) {
+      return null;
+    }
+
+    Map<?, ?> entries = (Map<?, ?>) entriesValue;
+    Map<String, Object> resolvedConstants = new java.util.LinkedHashMap<>();
+    boolean allConstant = true;
+
+    for (Map.Entry<?, ?> entry : entries.entrySet()) {
+      if (!(entry.getKey() instanceof String)) {
+        throw new PipelineValidationException(
+            "pipelineExecute() expected " + fieldName + ".args[0] map keys to be strings.");
+      }
+
+      String key = (String) entry.getKey();
+      Object resolved = unwrapSerializedConstantDeep(entry.getValue());
+      resolvedConstants.put(key, resolved);
+      if (containsSerializedExpression(resolved)) {
+        allConstant = false;
+      }
+    }
+
+    if (allConstant) {
+      return constantExpression(resolvedConstants);
+    }
+
+    Expression[] expressions = new Expression[entries.size() * 2];
+    int index = 0;
+
+    for (Map.Entry<?, ?> entry : entries.entrySet()) {
+      if (!(entry.getKey() instanceof String)) {
+        throw new PipelineValidationException(
+            "pipelineExecute() expected " + fieldName + ".args[0] map keys to be strings.");
+      }
+
+      String key = (String) entry.getKey();
+      expressions[index++] = constantExpression(key);
+      expressions[index++] = coerceExpression(entry.getValue(), fieldName + ".args[0]." + key);
+    }
+
+    return Expression.rawFunction("map", expressions);
+  }
+
+  private Expression buildLogicalExtremaExpression(
+      boolean maximum, List<Object> args, String functionName, String fieldName)
+      throws PipelineValidationException {
+    if (args.size() < 2) {
+      throw new PipelineValidationException(
+          "pipelineExecute() expected " + fieldName + "." + functionName + " to include at least 2 arguments.");
+    }
+
+    Expression left = coerceExpression(args.get(0), fieldName + ".args[0]");
+    Expression[] others = new Expression[args.size() - 1];
+    for (int i = 1; i < args.size(); i++) {
+      others[i - 1] = coerceExpression(args.get(i), fieldName + ".args[" + i + "]");
+    }
+
+    return maximum ? left.logicalMaximum(others) : left.logicalMinimum(others);
+  }
+
+  private Expression buildMapGetExpression(List<Object> args, String fieldName)
+      throws PipelineValidationException {
+    Expression mapExpr = coerceExpression(args.get(0), fieldName + ".args[0]");
+    Object keyValue = unwrapSerializedConstant(args.get(1));
+    if (keyValue instanceof String) {
+      return mapExpr.mapGet((String) keyValue);
+    }
+    return mapExpr.mapGet(coerceExpression(args.get(1), fieldName + ".args[1]"));
+  }
+
+  private Expression buildMapMergeExpression(List<Object> args, String functionName, String fieldName)
+      throws PipelineValidationException {
+    if (args.size() < 2) {
+      throw new PipelineValidationException(
+          "pipelineExecute() expected " + fieldName + "." + functionName + " to include at least 2 arguments.");
+    }
+
+    Expression left = coerceExpression(args.get(0), fieldName + ".args[0]");
+    Expression right = coerceExpression(args.get(1), fieldName + ".args[1]");
+    Expression[] others = new Expression[Math.max(0, args.size() - 2)];
+    for (int i = 2; i < args.size(); i++) {
+      others[i - 2] = coerceExpression(args.get(i), fieldName + ".args[" + i + "]");
+    }
+
+    return left.mapMerge(right, others);
+  }
+
+  private Expression buildArrayGetExpression(List<Object> args, String fieldName)
+      throws PipelineValidationException {
+    Expression arrayExpr = coerceExpression(args.get(0), fieldName + ".args[0]");
+    Object indexValue = unwrapSerializedConstant(args.get(1));
+    if (indexValue instanceof Number) {
+      return arrayExpr.arrayGet(((Number) indexValue).intValue());
+    }
+    return arrayExpr.arrayGet(coerceExpression(args.get(1), fieldName + ".args[1]"));
+  }
+
+  private Expression buildArrayConcatExpression(List<Object> args, String functionName, String fieldName)
+      throws PipelineValidationException {
+    if (args.size() < 2) {
+      throw new PipelineValidationException(
+          "pipelineExecute() expected " + fieldName + "." + functionName + " to include at least 2 arguments.");
+    }
+
+    Expression arrayExpr = coerceExpression(args.get(0), fieldName + ".args[0]");
+    Object secondValue = toRawValueOrExpression(args.get(1), fieldName + ".args[1]");
+    Object[] rest = new Object[Math.max(0, args.size() - 2)];
+    for (int i = 2; i < args.size(); i++) {
+      rest[i - 2] = toRawValueOrExpression(args.get(i), fieldName + ".args[" + i + "]");
+    }
+    return arrayExpr.arrayConcat(secondValue, rest);
+  }
+
+  private Expression buildVectorDistanceExpression(
+      String functionName, List<Object> args, String fieldName) throws PipelineValidationException {
+    Expression left = coerceExpression(args.get(0), fieldName + ".args[0]");
+    Object rightValue = args.get(1);
+    Object normalizedRightValue = unwrapSerializedConstantDeep(rightValue);
+
+    if (normalizedRightValue instanceof List
+        || (normalizedRightValue instanceof Map
+            && ((Map<?, ?>) normalizedRightValue).get("values") != null)) {
+      double[] vector = coerceVectorValue(normalizedRightValue);
+      switch (functionName) {
+        case "cosineDistance":
+          return left.cosineDistance(vector);
+        case "dotProduct":
+          return left.dotProduct(vector);
+        default:
+          return left.euclideanDistance(vector);
+      }
+    }
+
+    Expression right = coerceExpression(rightValue, fieldName + ".args[1]");
+    switch (functionName) {
+      case "cosineDistance":
+        return left.cosineDistance(right);
+      case "dotProduct":
+        return left.dotProduct(right);
+      default:
+        return left.euclideanDistance(right);
+    }
+  }
+
+  private Expression buildTimestampMathExpression(
+      boolean addition, List<Object> args, String fieldName) throws PipelineValidationException {
+    Expression base = coerceExpression(args.get(0), fieldName + ".args[0]");
+    Object unitValue = unwrapSerializedConstant(args.get(1));
+    Object amountValue = unwrapSerializedConstant(args.get(2));
+
+    if (unitValue instanceof String && amountValue instanceof Number) {
+      long amount = ((Number) amountValue).longValue();
+      return addition
+          ? base.timestampAdd((String) unitValue, amount)
+          : base.timestampSubtract((String) unitValue, amount);
+    }
+
+    Expression unitExpression = coerceExpression(args.get(1), fieldName + ".args[1]");
+    Expression amountExpression = coerceExpression(args.get(2), fieldName + ".args[2]");
+    return addition
+        ? base.timestampAdd(unitExpression, amountExpression)
+        : base.timestampSubtract(unitExpression, amountExpression);
+  }
+
+  private Expression buildTimestampTruncateExpression(List<Object> args, String fieldName)
+      throws PipelineValidationException {
+    Expression base = coerceExpression(args.get(0), fieldName + ".args[0]");
+    Object granularityValue = unwrapSerializedConstant(args.get(1));
+    if (granularityValue instanceof String) {
+      return base.timestampTruncate((String) granularityValue);
+    }
+    return base.timestampTruncate(coerceExpression(args.get(1), fieldName + ".args[1]"));
+  }
+
+  private void requireArgumentCount(
+      List<Object> args, int expectedCount, String functionName, String fieldName)
+      throws PipelineValidationException {
+    if (args.size() != expectedCount) {
+      throw new PipelineValidationException(
+          "pipelineExecute() expected "
+              + fieldName
+              + "."
+              + functionName
+              + " to include exactly "
+              + expectedCount
+              + " arguments.");
+    }
+  }
+
+  private String coerceStringLiteral(Object value, String fieldName) throws PipelineValidationException {
+    Object rawValue = unwrapSerializedConstant(value);
+    if (rawValue instanceof String) {
+      return (String) rawValue;
+    }
+    throw new PipelineValidationException(
+        "pipelineExecute() expected " + fieldName + " to resolve to a string.");
+  }
+
+  private Object toRawValueOrExpression(Object value, String fieldName) throws PipelineValidationException {
+    Object rawValue = unwrapSerializedConstantDeep(value);
+    if (containsSerializedExpression(rawValue)) {
+      return coerceExpression(value, fieldName);
+    }
+    return rawValue;
+  }
+
+  private String canonicalizeExpressionFunctionName(String name) {
+    if (name == null) {
+      return "";
+    }
+    return name.toLowerCase(Locale.ROOT).replace("_", "").replace("-", "");
   }
 
   /**
@@ -1367,15 +1538,30 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     if (name == null) {
       return name;
     }
-    // Explicit overrides: JS uses "lower"/"upper" as canonical names (via toCanonicalFunctionName)
-    // but the backend wire names are "to_lower"/"to_upper".
-    String lowered = name.toLowerCase(Locale.ROOT);
-    if ("lower".equals(lowered) || "tolower".equals(lowered)) {
-      return "to_lower";
+
+    switch (canonicalizeExpressionFunctionName(name)) {
+      case "conditional":
+        return "cond";
+      case "logicalmaximum":
+        return "logical_max";
+      case "logicalminimum":
+        return "logical_min";
+      case "lower":
+      case "tolower":
+        return "to_lower";
+      case "upper":
+      case "toupper":
+        return "to_upper";
+      case "stringconcat":
+        return "string_concat";
+      case "timestamptruncate":
+        return "timestamp_trunc";
+      case "timestampsubtract":
+        return "timestamp_sub";
+      default:
+        break;
     }
-    if ("upper".equals(lowered) || "toupper".equals(lowered)) {
-      return "to_upper";
-    }
+
     // General camelCase -> snake_case: insert '_' before each uppercase letter and lowercase it.
     // Single-word lowercase names (add, exists, map, trim, etc.) pass through unchanged.
     StringBuilder result = new StringBuilder(name.length() + 8);
@@ -1466,6 +1652,69 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
       return unwrapSerializedConstant(map.get("value"));
     }
     return value;
+  }
+
+  private Object unwrapSerializedConstantDeep(Object value) {
+    Object unwrapped = unwrapSerializedConstant(value);
+    if (unwrapped != value) {
+      return unwrapSerializedConstantDeep(unwrapped);
+    }
+
+    if (value instanceof List) {
+      List<?> listValue = (List<?>) value;
+      List<Object> resolved = new java.util.ArrayList<>(listValue.size());
+      for (Object item : listValue) {
+        resolved.add(unwrapSerializedConstantDeep(item));
+      }
+      return resolved;
+    }
+
+    if (value instanceof Map) {
+      Map<?, ?> mapValue = (Map<?, ?>) value;
+      Map<String, Object> resolved = new java.util.LinkedHashMap<>();
+      for (Map.Entry<?, ?> entry : mapValue.entrySet()) {
+        if (entry.getKey() instanceof String) {
+          resolved.put((String) entry.getKey(), unwrapSerializedConstantDeep(entry.getValue()));
+        }
+      }
+      return resolved;
+    }
+
+    return value;
+  }
+
+  private boolean containsSerializedExpression(Object value) {
+    if (value instanceof List) {
+      for (Object item : (List<?>) value) {
+        if (containsSerializedExpression(item)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    if (!(value instanceof Map)) {
+      return false;
+    }
+
+    Map<?, ?> mapValue = (Map<?, ?>) value;
+    Object exprType = mapValue.get("exprType");
+    if (exprType instanceof String) {
+      return true;
+    }
+    if (mapValue.containsKey("name")
+        || mapValue.containsKey("path")
+        || mapValue.containsKey("fieldPath")
+        || mapValue.containsKey("expr")
+        || mapValue.containsKey("expression")) {
+      return true;
+    }
+    for (Object item : mapValue.values()) {
+      if (containsSerializedExpression(item)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private Selectable coerceSelectable(Object value, String fieldName)
@@ -2016,21 +2265,21 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
             + " to be one of COSINE, EUCLIDEAN, DOT_PRODUCT.");
   }
 
-  private void validateNonEmptyString(ReadableMap map, String key, String fieldName)
+  private void validateNonEmptyString(Map<String, Object> map, String key, String fieldName)
       throws PipelineValidationException {
-    if (!map.hasKey(key) || map.getType(key) != ReadableType.String) {
+    if (map == null || !map.containsKey(key) || !(map.get(key) instanceof String)) {
       throw new PipelineValidationException(
           "pipelineExecute() expected " + fieldName + " to be a string.");
     }
 
-    String value = map.getString(key);
+    String value = (String) map.get(key);
     if (value == null || value.isEmpty()) {
       throw new PipelineValidationException(
           "pipelineExecute() expected " + fieldName + " to be a non-empty string.");
     }
   }
 
-  private static class PipelineValidationException extends Exception {
+  static class PipelineValidationException extends Exception {
     PipelineValidationException(String message) {
       super(message);
     }
