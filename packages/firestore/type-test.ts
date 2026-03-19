@@ -93,20 +93,20 @@ import type {
 } from '.';
 import './lib/pipelines';
 import {
-  execute as executePipeline,
-  field as pipelineField,
+  execute,
+  field,
   and as pipelineAnd, //duplicate
   or as pipelineOr, //duplicate
-  lessThan as pipelineLessThan,
-  stringConcat as pipelineStringConcat,
-  arrayContainsAny as pipelineArrayContainsAny,
-  toLower as pipelineToLower,
-  Ordering as PipelineOrdering,
+  lessThan,
+  stringConcat,
+  arrayContainsAny,
+  toLower,
+  Ordering,
   countAll,
   sum as pipelineSum,
   average as pipelineAverage,
   maximum,
-  constant as pipelineConstant,
+  constant,
 } from './lib/pipelines';
 import type { Pipeline as FirestorePipeline, PipelineSource as FirestorePipelineSource } from './lib/pipelines';
 
@@ -730,15 +730,15 @@ void pipelineQuerySource;
 const pipelineFromCollectionRef = pipelineDb
   .pipeline()
   .collection(pipelineCollectionRef)
-  .where(pipelineField('rating').greaterThanOrEqual(4))
-  .sort(PipelineOrdering.of(pipelineField('rating')).descending())
+  .where(field('rating').greaterThanOrEqual(4))
+  .sort(Ordering.of(field('rating')).descending())
   .limit(2);
 void pipelineFromCollectionRef;
 
 const pipelineFromCollectionPath = pipelineDb
   .pipeline()
   .collection('pipeline-books')
-  .where({ condition: pipelineField('author').equal('Alice') })
+  .where({ condition: field('author').equal('Alice') })
   .select('title', 'author');
 void pipelineFromCollectionPath;
 
@@ -751,7 +751,7 @@ void pipelineFromCollectionOptions;
 const pipelineFromCollectionGroup = pipelineDb
   .pipeline()
   .collectionGroup('pipeline-books')
-  .sort(pipelineField('rating').descending());
+  .sort(field('rating').descending());
 void pipelineFromCollectionGroup;
 
 const pipelineFromDatabase = pipelineDb.pipeline().database({ rawOptions: { explain: true } });
@@ -774,15 +774,15 @@ void pipelineFromQuery;
 const pipelineUnion = pipelineDb
   .pipeline()
   .collection('cities/sf/restaurants')
-  .where(pipelineField('type').equal('Chinese'))
+  .where(field('type').equal('Chinese'))
   .union(
     pipelineDb
       .pipeline()
       .collection('cities/ny/restaurants')
-      .where(pipelineField('type').equal('Italian')),
+      .where(field('type').equal('Italian')),
   )
-  .where(pipelineField('rating').greaterThanOrEqual(4.5))
-  .sort(pipelineField('__name__').descending());
+  .where(field('rating').greaterThanOrEqual(4.5))
+  .sort(field('__name__').descending());
 void pipelineUnion;
 
 const pipelineWithTransforms = pipelineDb
@@ -791,22 +791,22 @@ const pipelineWithTransforms = pipelineDb
   .where(
     pipelineOr(
       pipelineAnd(
-        pipelineField('rating').greaterThan(4),
-        pipelineLessThan(pipelineField('price'), pipelineConstant(10)),
+        field('rating').greaterThan(4),
+        lessThan(field('price'), constant(10)),
       ),
-      pipelineField('genre').equal('Fantasy'),
+      field('genre').equal('Fantasy'),
     ),
   )
-  .addFields(pipelineStringConcat(pipelineField('title'), ' by ', pipelineField('author')).as('fullTitle'))
+  .addFields(stringConcat(field('title'), ' by ', field('author')).as('fullTitle'))
   .removeFields('legacyField')
   .select(
-    pipelineField('fullTitle'),
-    pipelineField('rating').greaterThan(4).as('isTopRated'),
-    pipelineArrayContainsAny(pipelineField('genre'), ['Fantasy', pipelineConstant('Sci-Fi')]).as(
+    field('fullTitle'),
+    field('rating').greaterThan(4).as('isTopRated'),
+    arrayContainsAny(field('genre'), ['Fantasy', constant('Sci-Fi')]).as(
       'matchesGenre',
     ),
   )
-  .sort(PipelineOrdering.of(pipelineField('rating')).descending(), pipelineField('__name__').ascending())
+  .sort(Ordering.of(field('rating')).descending(), field('__name__').ascending())
   .offset(1)
   .limit({ n: 10 });
 void pipelineWithTransforms;
@@ -822,12 +822,12 @@ const pipelineAggregateDistinct = pipelineDb
       maximum('population').as('populationMax'),
     ],
     groups: [
-      pipelineField('country').as('country'),
-      pipelineToLower(pipelineField('state')).as('normalizedState'),
+      field('country').as('country'),
+      toLower(field('state')).as('normalizedState'),
     ],
   })
-  .where(pipelineField('populationTotal').greaterThan(1000))
-  .distinct(pipelineField('normalizedState'), 'country');
+  .where(field('populationTotal').greaterThan(1000))
+  .distinct(field('normalizedState'), 'country');
 void pipelineAggregateDistinct;
 
 const pipelineFindNearest = pipelineDb.pipeline().collection('cities').findNearest({
@@ -843,11 +843,11 @@ const pipelineSampleAndUnnest = pipelineDb
   .pipeline()
   .collection('users')
   .sample({ percentage: 0.5 })
-  .unnest(pipelineField('scores').as('userScore'), 'attempt')
-  .replaceWith(pipelineField('profile'));
+  .unnest(field('scores').as('userScore'), 'attempt')
+  .replaceWith(field('profile'));
 void pipelineSampleAndUnnest;
 
-executePipeline(pipelineFromCollectionRef).then(snapshot => {
+execute(pipelineFromCollectionRef).then(snapshot => {
   console.log(snapshot.executionTime.toMillis());
   snapshot.results.forEach(result => {
     console.log(result.id);
@@ -857,7 +857,7 @@ executePipeline(pipelineFromCollectionRef).then(snapshot => {
   });
 });
 
-executePipeline({
+execute({
   pipeline: pipelineWithTransforms,
   indexMode: 'recommended',
   rawOptions: { requestLabel: 'type-test' },
