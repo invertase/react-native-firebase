@@ -1357,47 +1357,40 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     return Expression.rawFunction(functionName, expressions);
   }
 
-  /** Normalize JS/camelCase names to backend wire names (e.g. lower -> to_lower). */
+  /**
+   * Normalize JS/camelCase function names to Firestore backend wire names (snake_case). For
+   * example: isAbsent -> is_absent, mapGet -> map_get, timestampToUnixMillis ->
+   * timestamp_to_unix_millis. Explicit overrides handle names whose JS canonical form differs from
+   * a straight camelCase conversion (e.g. toLower/lower both map to to_lower).
+   */
   private String normalizeExpressionFunctionName(String name) {
     if (name == null) {
       return name;
     }
-    String normalized = name.toLowerCase(Locale.ROOT).replace("-", "");
-    switch (normalized) {
-      case "lower":
-      case "tolower":
-        return "to_lower";
-      case "upper":
-      case "toupper":
-        return "to_upper";
-      case "startswith":
-        return "starts_with";
-      case "endswith":
-        return "ends_with";
-      case "arraycontains":
-        return "array_contains";
-      case "arraycontainsany":
-        return "array_contains_any";
-      case "arraycontainsall":
-        return "array_contains_all";
-      case "charlength":
-      case "characterlength":
-        return "char_length";
-      case "bytelength":
-        return "byte_length";
-      case "greaterthan":
-        return "greater_than";
-      case "lessthan":
-        return "less_than";
-      case "greaterthanorequal":
-        return "greater_than_or_equal";
-      case "lessthanorequal":
-        return "less_than_or_equal";
-      case "notequal":
-        return "not_equal";
-      default:
-        return name;
+    // Explicit overrides: JS uses "lower"/"upper" as canonical names (via toCanonicalFunctionName)
+    // but the backend wire names are "to_lower"/"to_upper".
+    String lowered = name.toLowerCase(Locale.ROOT);
+    if ("lower".equals(lowered) || "tolower".equals(lowered)) {
+      return "to_lower";
     }
+    if ("upper".equals(lowered) || "toupper".equals(lowered)) {
+      return "to_upper";
+    }
+    // General camelCase -> snake_case: insert '_' before each uppercase letter and lowercase it.
+    // Single-word lowercase names (add, exists, map, trim, etc.) pass through unchanged.
+    StringBuilder result = new StringBuilder(name.length() + 8);
+    for (int i = 0; i < name.length(); i++) {
+      char c = name.charAt(i);
+      if (Character.isUpperCase(c)) {
+        if (i > 0) {
+          result.append('_');
+        }
+        result.append(Character.toLowerCase(c));
+      } else {
+        result.append(c);
+      }
+    }
+    return result.toString();
   }
 
   private Expression constantExpression(Object value) throws PipelineValidationException {
@@ -1435,7 +1428,44 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
       return Expression.constant((byte[]) value);
     }
 
+    // For Map values (e.g. from map({key: constant('v')})), recursively unwrap any serialized
+    // Constant expression nodes so toExprOrConstant sees plain primitive values rather than
+    // nested expression descriptor objects.
+    if (value instanceof Map) {
+      Map<?, ?> mapValue = (Map<?, ?>) value;
+      Map<String, Object> resolved = new java.util.LinkedHashMap<>();
+      boolean unwrapped = false;
+      for (Map.Entry<?, ?> entry : mapValue.entrySet()) {
+        if (!(entry.getKey() instanceof String)) {
+          continue;
+        }
+        Object raw = unwrapSerializedConstant(entry.getValue());
+        resolved.put((String) entry.getKey(), raw);
+        if (raw != entry.getValue()) {
+          unwrapped = true;
+        }
+      }
+      return Expression.Companion.toExprOrConstant$com_google_firebase_firebase_firestore(
+          unwrapped ? resolved : value);
+    }
+
     return Expression.Companion.toExprOrConstant$com_google_firebase_firebase_firestore(value);
+  }
+
+  /**
+   * Recursively unwraps a serialized Constant expression node back to its raw value. Non-constant
+   * expression nodes (Fields, Functions) are returned unchanged.
+   */
+  private Object unwrapSerializedConstant(Object value) {
+    if (!(value instanceof Map)) {
+      return value;
+    }
+    Map<?, ?> map = (Map<?, ?>) value;
+    Object exprType = map.get("exprType");
+    if (exprType instanceof String && ((String) exprType).equalsIgnoreCase("constant")) {
+      return unwrapSerializedConstant(map.get("value"));
+    }
+    return value;
   }
 
   private Selectable coerceSelectable(Object value, String fieldName)
@@ -1895,7 +1925,7 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
         for (int i = 0; i < args.size(); i++) {
           expressions[i] = coerceExpression(args.get(i), fieldName + ".args[" + i + "]");
         }
-        return AggregateFunction.rawAggregate(kind, expressions);
+        return AggregateFunction.rawAggregate(normalizeExpressionFunctionName(kind), expressions);
     }
   }
 
