@@ -261,15 +261,11 @@ export namespace FirebaseAuthTypes {
    * 3- the return value of generateQrCodeUrl is a Promise because react-native bridge is async
    * @public
    */
-  export declare class TotpSecret {
-    /** used internally to support non-default auth instances */
-    private readonly auth;
+  export interface TotpSecret {
     /**
      * Shared secret key/seed used for enrolling in TOTP MFA and generating OTPs.
      */
     readonly secretKey: string;
-
-    private constructor();
 
     /**
      * Returns a QR code URL as described in
@@ -281,7 +277,7 @@ export namespace FirebaseAuthTypes {
      * @param issuer issuer of the TOTP (likely the app name).
      * @returns A Promise that resolves to a QR code URL string.
      */
-    async generateQrCodeUrl(accountName?: string, issuer?: string): Promise<string>;
+    generateQrCodeUrl(accountName?: string, issuer?: string): Promise<string>;
 
     /**
      * Opens the specified QR Code URL in an OTP authenticator app on the device.
@@ -321,10 +317,10 @@ export namespace FirebaseAuthTypes {
   /**
    * Operation type for multi-factor flows.
    */
-  export const OperationType: {
-    SIGN_IN: 'signIn';
-    LINK: 'link';
-    REAUTHENTICATE: 'reauthenticate';
+  export declare const OperationType: {
+    readonly SIGN_IN: 'signIn';
+    readonly LINK: 'link';
+    readonly REAUTHENTICATE: 'reauthenticate';
   };
 
   export declare interface MultiFactorError extends AuthError {
@@ -997,6 +993,8 @@ export namespace FirebaseAuthTypes {
    */
   export type AuthListenerCallback = (user: User | null) => void;
 
+  export type CallbackOrObserver<T extends (...args: any[]) => any> = T | { next: T };
+
   /**
    * A snapshot interface of the current phone auth state.
    *
@@ -1640,7 +1638,7 @@ export namespace FirebaseAuthTypes {
    *
    * TODO @salakar missing updateCurrentUser
    */
-  export class Module extends FirebaseModule {
+  export interface Module extends FirebaseModule {
     /**
      * The current `FirebaseApp` instance for this Firebase service.
      */
@@ -2280,20 +2278,14 @@ export namespace FirebaseAuthTypes {
      */
     getCustomAuthDomain(): Promise<string>;
     /**
-     * Sets the language code on the auth instance. This is to match Firebase JS SDK behavior.
-     * Please use the `setLanguageCode` method for setting the language code.
-     */
-    set languageCode(code: string | null);
-    /**
      * Gets the config used to initialize this auth instance. This is to match Firebase JS SDK behavior.
      * It returns an empty map as the config is not available in the native SDK.
      */
-    get config(): Map<any, any>;
+    readonly config: Map<any, any>;
   }
 }
 declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
-    type FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
       auth: FirebaseModuleWithStaticsAndApp<FirebaseAuthTypes.Module, FirebaseAuthTypes.Statics>;
     }
