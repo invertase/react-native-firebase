@@ -594,7 +594,7 @@ describe('FirestorePipeline', function () {
     });
 
     describe('stages and transforms', function () {
-      it('supports grouped aggregate + post-aggregate where (having style)', async function () {
+      it('supports grouped aggregate + post-aggregate where', async function () {
         const { execute, field, countAll, sum } = firestorePipelinesModular;
         const { getFirestore, collection, doc, setDoc } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
