@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { firebase } from '../lib';
-import { and, execute, field, greaterThan, Ordering } from '../lib/pipelines';
+import { and, constant, descending, execute, field, greaterThan, Ordering } from '../lib/pipelines';
 import '../lib/pipelines';
 
 describe('Firestore pipelines runtime', function () {
@@ -275,19 +275,18 @@ describe('Firestore pipelines runtime', function () {
 
   it('supports method-style expression chaining and ordering helper serialization', function () {
     const db: any = firebase.firestore();
-    const f = (path: string): any => field(path as any);
 
     const pipeline = db
       .pipeline()
       .collection('firestore')
-      .where(and(f('rating').greaterThan(4), f('genre').equal('Fantasy')))
+      .where(and(field('rating').greaterThan(4), field('genre').equal('Fantasy')))
       .select(
-        f('title').as('title'),
-        f('rating').add(1).as('boostedRating'),
-        f('genre').equal('Fantasy').as('isFantasy'),
+        field('title').as('title'),
+        field('rating').add(1).as('boostedRating'),
+        field('genre').equal('Fantasy').as('isFantasy'),
       )
-      .sort((Ordering.of(f('rating')) as any).descending())
-      .aggregate(f('rating').average().as('averageRating'));
+      .sort(Ordering.of(field('rating')).descending())
+      .aggregate(field('rating').average().as('averageRating'));
 
     const serialized = pipeline.serialize();
     const selectStage: any = serialized.stages[1];
@@ -335,6 +334,41 @@ describe('Firestore pipelines runtime', function () {
               kind: 'average',
             },
           },
+        ],
+      },
+    });
+  });
+
+  it('reuses the inner expression when re-wrapping orderings', function () {
+    const ordering = descending(field('rating'));
+    const rewritten = Ordering.of(ordering).ascending() as any;
+
+    expect(rewritten).toMatchObject({
+      __kind: 'ordering',
+      direction: 'ascending',
+      expr: {
+        __kind: 'expression',
+        exprType: 'Field',
+        path: 'rating',
+      },
+    });
+    expect(rewritten.expr.__kind).toBe('expression');
+  });
+
+  it('supports chaining constant expressions without Promise-like fields', function () {
+    const alias = constant(4).add(1).as('five');
+
+    expect('then' in alias).toBe(false);
+    expect(alias).toMatchObject({
+      __kind: 'aliasedExpression',
+      alias: 'five',
+      expr: {
+        __kind: 'expression',
+        exprType: 'Function',
+        name: 'add',
+        args: [
+          { __kind: 'expression', exprType: 'Constant', value: 4 },
+          { __kind: 'expression', exprType: 'Constant', value: 1 },
         ],
       },
     });

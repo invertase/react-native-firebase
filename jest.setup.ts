@@ -260,12 +260,6 @@ jest.doMock('react-native', () => {
           transactionApplyBuffer: jest.fn(),
           transactionBegin: jest.fn(),
           transactionDispose: jest.fn(),
-          pipelineExecute: jest.fn(() =>
-            Promise.reject({
-              code: 'firestore/unsupported',
-              message: 'Firestore pipelines are not supported by this native implementation yet.',
-            }),
-          ),
         },
         RNFBInAppMessagingModule: {
           isMessagesDisplaySuppressed: false,
