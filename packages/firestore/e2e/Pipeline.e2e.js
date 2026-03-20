@@ -804,6 +804,29 @@ describe('FirestorePipeline', function () {
 
         if (Platform.ios) {
           await expectIOSUnsupportedFunctions(() => execute(pipeline), ['round']);
+
+          const iosSnapshot = await execute(
+            db
+              .pipeline()
+              .collection(coll)
+              .select(
+                field('rating').greaterThan(4).as('gt4'),
+                field('price').lessThan(10).as('cheap'),
+                and(field('rating').greaterThan(4), field('price').lessThan(10)).as('recommended'),
+                field('title').startsWith('The').as('startsWithThe'),
+                field('genre').arrayContains('Fantasy').as('hasFantasy'),
+                field('title').charLength().as('titleLength'),
+              ),
+          );
+
+          iosSnapshot.results.should.have.length(1);
+          const iosData = iosSnapshot.results[0].data();
+          iosData.gt4.should.equal(true);
+          iosData.cheap.should.equal(true);
+          iosData.recommended.should.equal(true);
+          iosData.startsWithThe.should.equal(true);
+          iosData.hasFantasy.should.equal(true);
+          iosData.titleLength.should.be.greaterThan(0);
           return;
         }
 
@@ -925,6 +948,27 @@ describe('FirestorePipeline', function () {
 
         if (Platform.ios) {
           await expectIOSUnsupportedFunctions(() => execute(pipeline), ['isType']);
+
+          const iosSnapshot = await execute(
+            db
+              .pipeline()
+              .documents([docPath])
+              .select(
+                conditional(
+                  field('stock').greaterThan(0),
+                  constant('in-stock'),
+                  constant('out-of-stock'),
+                ).as('availability'),
+                logicalMaximum(field('bidA'), field('bidB')).as('topBid'),
+                logicalMinimum(field('askA'), field('askB')).as('bottomAsk'),
+              ),
+          );
+
+          iosSnapshot.results.should.have.length(1);
+          const iosData = iosSnapshot.results[0].data();
+          iosData.availability.should.equal('in-stock');
+          iosData.topBid.should.equal(150);
+          iosData.bottomAsk.should.equal(175);
           return;
         }
 
@@ -1023,6 +1067,31 @@ describe('FirestorePipeline', function () {
 
         if (Platform.ios) {
           await expectIOSUnsupportedFunctions(() => execute(pipeline), ['ceil', 'floor', 'round']);
+
+          const iosSnapshot = await execute(
+            db
+              .pipeline()
+              .documents([docPath])
+              .select(
+                add(field('subtotal'), field('tax')).as('total'),
+                subtract(field('msrp'), field('salePrice')).as('savings'),
+                multiply(field('price'), field('qty')).as('lineTotal'),
+                divide(field('revenue'), field('units')).as('revenuePerUnit'),
+                mod(field('id'), 10).as('shard'),
+                pow(field('rating'), 2).as('squaredRating'),
+                abs(field('balance')).as('absBalance'),
+              ),
+          );
+
+          iosSnapshot.results.should.have.length(1);
+          const iosData = iosSnapshot.results[0].data();
+          iosData.total.should.equal(108);
+          iosData.savings.should.equal(15);
+          iosData.lineTotal.should.equal(30);
+          iosData.revenuePerUnit.should.equal(125);
+          iosData.shard.should.equal(7);
+          iosData.squaredRating.should.equal(16);
+          iosData.absBalance.should.equal(42);
           return;
         }
 
@@ -1075,6 +1144,23 @@ describe('FirestorePipeline', function () {
             () => execute(pipeline),
             ['log10', 'rand', 'sqrt', 'trunc'],
           );
+
+          const iosSnapshot = await execute(
+            db
+              .pipeline()
+              .documents([docPath])
+              .select(
+                exp(field('x')).as('expX'),
+                ln(field('y')).as('lnY'),
+                log(field('logBase'), 10).as('logVal'),
+              ),
+          );
+
+          iosSnapshot.results.should.have.length(1);
+          const iosData = iosSnapshot.results[0].data();
+          iosData.expX.should.equal(1);
+          iosData.lnY.should.equal(0);
+          should(iosData.logVal).be.approximately(2, 0.0001);
           return;
         }
 
@@ -1186,6 +1272,27 @@ describe('FirestorePipeline', function () {
             () => execute(pipeline),
             ['length', 'ltrim', 'rtrim', 'substring'],
           );
+
+          const iosSnapshot = await execute(
+            db
+              .pipeline()
+              .documents([docPath])
+              .select(
+                toUpper(field('name')).as('upperName'),
+                toLower(field('name')).as('lowerName'),
+                trim(field('rawText')).as('trimmed'),
+                byteLength(field('name')).as('byteLen'),
+                charLength(field('name')).as('charLen'),
+              ),
+          );
+
+          iosSnapshot.results.should.have.length(1);
+          const iosData = iosSnapshot.results[0].data();
+          iosData.upperName.should.equal('ALICE');
+          iosData.lowerName.should.equal('alice');
+          iosData.trimmed.should.equal('hello');
+          iosData.byteLen.should.equal(5);
+          iosData.charLen.should.equal(5);
           return;
         }
 
@@ -1263,6 +1370,23 @@ describe('FirestorePipeline', function () {
               'stringReplaceOne',
             ],
           );
+
+          const iosSnapshot = await execute(
+            db
+              .pipeline()
+              .documents([docPath])
+              .select(
+                stringConcat(field('firstName'), ' ', field('lastName')).as('fullName'),
+                reverse(field('code')).as('reversedCode'),
+                stringReverse(field('token')).as('reversedToken'),
+              ),
+          );
+
+          iosSnapshot.results.should.have.length(1);
+          const iosData = iosSnapshot.results[0].data();
+          iosData.fullName.should.equal('John Doe');
+          iosData.reversedCode.should.equal('cba');
+          iosData.reversedToken.should.equal('321cba');
           return;
         }
 
@@ -1436,6 +1560,30 @@ describe('FirestorePipeline', function () {
 
         if (Platform.ios) {
           await expectIOSUnsupportedFunctions(() => execute(pipeline), ['arrayConcat', 'arrayGet']);
+
+          const iosSnapshot = await execute(
+            db
+              .pipeline()
+              .collection(coll)
+              .where(
+                and(
+                  arrayContains(field('tags'), 'typescript'),
+                  arrayContainsAny(field('tags'), ['js', 'ts']),
+                  arrayContainsAll(field('permissions'), ['read', 'write']),
+                ),
+              )
+              .select(
+                array([constant(1), constant(2), constant(3)]).as('fixedArr'),
+                arrayLength(field('tags')).as('tagCount'),
+                arraySum(field('scores')).as('totalScore'),
+              ),
+          );
+
+          iosSnapshot.results.should.have.length(1);
+          const iosData = iosSnapshot.results[0].data();
+          iosData.fixedArr.should.eql([1, 2, 3]);
+          iosData.tagCount.should.equal(2);
+          iosData.totalScore.should.equal(60);
           return;
         }
 
@@ -1620,6 +1768,30 @@ describe('FirestorePipeline', function () {
 
         if (Platform.ios) {
           await expectIOSUnsupportedFunctions(() => execute(pipeline), ['timestampTruncate']);
+
+          const iosSnapshot = await execute(
+            db
+              .pipeline()
+              .documents([docPath])
+              .select(
+                timestampToUnixMillis(field('eventTime')).as('eventTimeMs'),
+                timestampToUnixSeconds(field('eventTime')).as('eventTimeSec'),
+                timestampAdd(field('eventTime'), 'day', 1).as('nextDay'),
+                timestampSubtract(field('eventTime'), 'hour', 1).as('prevHour'),
+                unixMillisToTimestamp(field('epochMs')).as('fromEpochMs'),
+              ),
+          );
+
+          iosSnapshot.results.should.have.length(1);
+          const iosData = iosSnapshot.results[0].data();
+          iosData.eventTimeMs.should.equal(1700000000000);
+          iosData.eventTimeSec.should.equal(1700000000);
+          iosData.nextDay.constructor.name.should.equal('Timestamp');
+          iosData.nextDay.seconds.should.equal(1700000000 + 86400);
+          iosData.prevHour.constructor.name.should.equal('Timestamp');
+          iosData.prevHour.seconds.should.equal(1700000000 - 3600);
+          iosData.fromEpochMs.constructor.name.should.equal('Timestamp');
+          iosData.fromEpochMs.seconds.should.equal(1700000000);
           return;
         }
 
