@@ -132,9 +132,17 @@ export interface FunctionExpression extends Selectable, FluentExpressionMethods 
 
 /**
  * @beta
+ * Constant/literal expression returned by `constant(...)`.
+ */
+export interface ConstantExpression extends FluentExpressionMethods {
+  readonly _brand?: 'ConstantExpression';
+}
+
+/**
+ * @beta
  * Expression type for pipeline parameters (field refs, literals, function results).
  */
-export type Expression = Field | FunctionExpression | Selectable | string;
+export type Expression = Field | FunctionExpression | ConstantExpression | Selectable | string;
 
 /**
  * @beta
@@ -151,7 +159,7 @@ export interface Ordering {
  * Accumulator for pipeline aggregate() (e.g. avg(field('rating')).as('avgRating'), countAll().as('total')).
  */
 export interface Accumulator {
-  as(name: string): Accumulator;
+  as(name: string): AliasedAggregate;
   readonly _brand?: 'Accumulator';
 }
 
@@ -189,7 +197,6 @@ type RuntimeNodeKind =
 type RuntimeDirection = 'ascending' | 'descending';
 
 const RUNTIME_NODE_SYMBOL = Symbol.for('RNFBFirestorePipelineExpressionNode');
-const RUNTIME_PROXY_SYMBOL = Symbol.for('RNFBFirestorePipelineExpressionProxy');
 
 interface RuntimeNodeBase {
   readonly [RUNTIME_NODE_SYMBOL]: true;
@@ -232,18 +239,35 @@ interface RuntimeAliasedAggregateNode extends RuntimeNodeBase {
   alias: string;
 }
 
-type RuntimeNode =
-  | RuntimeExpressionNode
-  | RuntimeAggregateNode
-  | RuntimeOrderingNode
-  | RuntimeAliasedExpressionNode
-  | RuntimeAliasedAggregateNode;
+type RuntimeExpressionMethods = FluentExpressionMethods;
+type RuntimeOrderingMethods = Pick<Ordering, 'ascending' | 'descending'>;
+type RuntimeAggregateMethods = Pick<Accumulator, 'as'>;
 
-function isRecord(value: unknown): value is Record<string, unknown> {
+type ConstantExpressionNode = RuntimeExpressionNode & RuntimeExpressionMethods & ConstantExpression;
+type RuntimeExpressionFluentNode =
+  | (RuntimeExpressionNode & RuntimeExpressionMethods & Field)
+  | (RuntimeExpressionNode & RuntimeExpressionMethods & FunctionExpression)
+  | (RuntimeExpressionNode & RuntimeExpressionMethods & BooleanExpression)
+  | ConstantExpressionNode;
+type FieldNode = RuntimeExpressionFluentNode & Field;
+type FunctionExpressionNode = RuntimeExpressionFluentNode & FunctionExpression;
+type AggregateNode = RuntimeAggregateNode & RuntimeAggregateMethods & AggregateFunction;
+type OrderingNode = RuntimeOrderingNode & RuntimeOrderingMethods & Ordering;
+type AliasedExpressionNode = RuntimeAliasedExpressionNode & AliasedExpression;
+type AliasedAggregateNode = RuntimeAliasedAggregateNode & AliasedAggregate;
+
+type RuntimeNode =
+  | RuntimeExpressionFluentNode
+  | AggregateNode
+  | OrderingNode
+  | AliasedExpressionNode
+  | AliasedAggregateNode;
+
+function isRecord(value: unknown): value is Record<PropertyKey, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function isPlainObject(value: unknown): value is Record<string, unknown> {
+function isPlainObject(value: unknown): value is Record<PropertyKey, unknown> {
   if (!isRecord(value)) {
     return false;
   }
@@ -262,7 +286,11 @@ function isDocumentReferenceLike(value: unknown): value is { path: string; fires
 }
 
 function isRuntimeNode(value: unknown): value is RuntimeNode {
-  return isRecord(value) && (value as unknown as RuntimeNodeBase)[RUNTIME_NODE_SYMBOL] === true;
+  return isRecord(value) && value[RUNTIME_NODE_SYMBOL] === true;
+}
+
+function isOrderingNode(value: unknown): value is OrderingNode {
+  return isRuntimeNode(value) && value.__kind === 'ordering';
 }
 
 function containsRuntimeNode(value: unknown): boolean {
@@ -323,7 +351,7 @@ const AGGREGATE_KINDS = new Set<string>([
   'arrayAggDistinct',
 ]);
 
-const EXPRESSION_METHOD_NAMES = new Set<string>([
+const EXPRESSION_METHOD_NAMES = [
   'and',
   'or',
   'gt',
@@ -436,94 +464,78 @@ const EXPRESSION_METHOD_NAMES = new Set<string>([
   'vectorLength',
   'xor',
   'length',
-]);
+] as const;
 
-function createNodeProxy<T extends RuntimeNode>(target: T): T {
-  const targetRecord = target as unknown as Record<PropertyKey, unknown>;
-  const cached = targetRecord[RUNTIME_PROXY_SYMBOL];
-  if (cached) {
-    return cached as T;
-  }
-
-  const proxy = new Proxy(targetRecord, {
-    get(currentTarget, property, receiver) {
-      if (property === 'then') {
-        return undefined;
-      }
-
-      if (property in currentTarget) {
-        return Reflect.get(currentTarget, property, receiver);
-      }
-
-      if (property === 'as') {
-        return (name: string) => {
-          if (currentTarget.__kind === 'aggregate') {
-            return createAliasedAggregate(receiver as RuntimeAggregateNode, name);
-          }
-
-          return createAliasedExpression(receiver as RuntimeNode, name);
-        };
-      }
-
-      if (property === 'ascending') {
-        if (currentTarget.__kind === 'ordering') {
-          return () => createOrdering((receiver as RuntimeOrderingNode).expr, 'ascending');
-        }
-
-        return () => createOrdering(receiver as RuntimeNode, 'ascending');
-      }
-
-      if (property === 'descending') {
-        if (currentTarget.__kind === 'ordering') {
-          return () => createOrdering((receiver as RuntimeOrderingNode).expr, 'descending');
-        }
-
-        return () => createOrdering(receiver as RuntimeNode, 'descending');
-      }
-
-      if (property === 'countAll') {
-        return () => createAggregate('countAll');
-      }
-
-      if (typeof property !== 'string') {
-        return Reflect.get(currentTarget, property, receiver);
-      }
-
-      if (currentTarget.__kind !== 'expression' || !EXPRESSION_METHOD_NAMES.has(property)) {
-        return undefined;
-      }
-
-      return (...args: unknown[]) => createMethodResult(property, receiver as RuntimeNode, args);
-    },
-  }) as T;
-
-  Object.defineProperty(target, RUNTIME_PROXY_SYMBOL, {
-    value: proxy,
-    enumerable: false,
-    configurable: false,
-    writable: false,
-  });
-
-  return proxy;
+function createNode<TNode extends RuntimeNodeBase, TMethods extends object>(
+  proto: TMethods,
+  node: TNode,
+): TNode & TMethods {
+  const runtimeNode: TNode & TMethods = Object.create(proto);
+  Object.assign(runtimeNode, node);
+  return runtimeNode;
 }
 
-function createField(path: unknown): Field {
-  return createNodeProxy({
+function createExpressionProto(): RuntimeExpressionMethods {
+  const proto: Partial<RuntimeExpressionMethods> = {
+    as(this: RuntimeExpressionFluentNode, name: string): AliasedExpressionNode {
+      return createAliasedExpression(this, name);
+    },
+
+    ascending(this: RuntimeExpressionFluentNode): OrderingNode {
+      return createOrdering(this, 'ascending');
+    },
+
+    descending(this: RuntimeExpressionFluentNode): OrderingNode {
+      return createOrdering(this, 'descending');
+    },
+  };
+
+  for (const methodName of EXPRESSION_METHOD_NAMES) {
+    Object.defineProperty(proto, methodName, {
+      value(this: RuntimeExpressionFluentNode, ...args: unknown[]) {
+        return createMethodResult(methodName, this, args);
+      },
+    });
+  }
+
+  return proto as RuntimeExpressionMethods;
+}
+
+const expressionProto = createExpressionProto();
+
+const aggregateProto: RuntimeAggregateMethods = {
+  as(this: AggregateNode, name: string): AliasedAggregateNode {
+    return createAliasedAggregate(this, name);
+  },
+};
+
+const orderingProto: RuntimeOrderingMethods = {
+  ascending(this: OrderingNode): OrderingNode {
+    return createOrdering(this.expr, 'ascending');
+  },
+
+  descending(this: OrderingNode): OrderingNode {
+    return createOrdering(this.expr, 'descending');
+  },
+};
+
+function createField(path: unknown): FieldNode {
+  return createNode(expressionProto, {
     [RUNTIME_NODE_SYMBOL]: true,
     __kind: 'expression',
     exprType: 'Field',
     selectable: true,
     path: String(path ?? ''),
-  }) as unknown as Field;
+  });
 }
 
-function createConstant(value: unknown): Expression {
-  return createNodeProxy({
+function createConstant(value: unknown): ConstantExpressionNode {
+  return createNode(expressionProto, {
     [RUNTIME_NODE_SYMBOL]: true,
     __kind: 'expression',
     exprType: 'Constant',
     value,
-  }) as unknown as Expression;
+  });
 }
 
 function normalizeMapLikeValue(value: Record<string, unknown>): Record<string, unknown> {
@@ -573,67 +585,70 @@ function toExpressionArgument(value: unknown, fieldString = false): RuntimeNode 
   }
 
   if (fieldString && typeof value === 'string') {
-    return createField(value) as unknown as RuntimeNode;
+    return createField(value);
   }
 
   if (Array.isArray(value) && containsRuntimeNode(value)) {
     return createFunctionExpression(
       'array',
       value.map(entry => toExpressionArgument(entry)),
-    ) as unknown as RuntimeNode;
+    );
   }
 
-  return createConstant(normalizeRawValue(value)) as unknown as RuntimeNode;
+  return createConstant(normalizeRawValue(value));
 }
 
-function createFunctionExpression(name: string, args: RuntimeNode[]): FunctionExpression {
-  return createNodeProxy({
+function createFunctionExpression(name: string, args: RuntimeNode[]): FunctionExpressionNode {
+  return createNode(expressionProto, {
     [RUNTIME_NODE_SYMBOL]: true,
     __kind: 'expression',
     exprType: 'Function',
     selectable: true,
     name,
     args,
-  }) as unknown as FunctionExpression;
+  });
 }
 
-function createAggregate(kind: string, args: RuntimeNode[] = []): AggregateFunction {
-  return createNodeProxy({
+function createAggregate(kind: string, args: RuntimeNode[] = []): AggregateNode {
+  return createNode(aggregateProto, {
     [RUNTIME_NODE_SYMBOL]: true,
     __kind: 'aggregate',
     exprType: 'AggregateFunction',
     kind,
     args,
-  }) as unknown as AggregateFunction;
+  });
 }
 
-function createAliasedExpression(expr: RuntimeNode, alias: string): AliasedExpression {
-  return createNodeProxy({
+function createAliasedExpression(
+  expr: RuntimeExpressionFluentNode,
+  alias: string,
+): AliasedExpressionNode {
+  return createNode(Object.prototype, {
     [RUNTIME_NODE_SYMBOL]: true,
     __kind: 'aliasedExpression',
     exprType: 'AliasedExpression',
     selectable: true,
     expr,
     alias,
-  }) as unknown as AliasedExpression;
+  });
 }
 
-function createAliasedAggregate(aggregate: RuntimeAggregateNode, alias: string): AliasedAggregate {
-  return createNodeProxy({
+function createAliasedAggregate(aggregate: AggregateNode, alias: string): AliasedAggregateNode {
+  return createNode(Object.prototype, {
     [RUNTIME_NODE_SYMBOL]: true,
     __kind: 'aliasedAggregate',
     aggregate,
     alias,
-  }) as unknown as AliasedAggregate;
+  });
 }
 
-function createOrdering(expr: RuntimeNode, direction: RuntimeDirection): Ordering {
-  return createNodeProxy({
+function createOrdering(expr: RuntimeNode, direction: RuntimeDirection): OrderingNode {
+  return createNode(orderingProto, {
     [RUNTIME_NODE_SYMBOL]: true,
     __kind: 'ordering',
     expr,
     direction,
-  }) as unknown as Ordering;
+  });
 }
 
 function normalizeGlobalArguments(name: string, args: unknown[]): RuntimeNode[] {
@@ -752,29 +767,23 @@ function createGlobalResult(name: string, rawArgs: unknown[]): RuntimeNode {
   const canonicalName = toCanonicalFunctionName(name);
 
   if (canonicalName === 'field') {
-    return createField(rawArgs[0]) as unknown as RuntimeNode;
+    return createField(rawArgs[0]);
   }
 
   if (canonicalName === 'constant') {
-    return createConstant(normalizeRawValue(rawArgs[0])) as unknown as RuntimeNode;
+    return createConstant(normalizeRawValue(rawArgs[0]));
   }
 
   if (canonicalName === 'ascending') {
-    return createOrdering(
-      toExpressionArgument(rawArgs[0], true),
-      'ascending',
-    ) as unknown as RuntimeNode;
+    return createOrdering(toExpressionArgument(rawArgs[0], true), 'ascending');
   }
 
   if (canonicalName === 'descending') {
-    return createOrdering(
-      toExpressionArgument(rawArgs[0], true),
-      'descending',
-    ) as unknown as RuntimeNode;
+    return createOrdering(toExpressionArgument(rawArgs[0], true), 'descending');
   }
 
   if (canonicalName === 'countAll') {
-    return createAggregate('countAll') as unknown as RuntimeNode;
+    return createAggregate('countAll');
   }
 
   if (canonicalName === 'array') {
@@ -782,42 +791,35 @@ function createGlobalResult(name: string, rawArgs: unknown[]): RuntimeNode {
     return createFunctionExpression(
       'array',
       elements.map(entry => toExpressionArgument(entry)),
-    ) as unknown as RuntimeNode;
+    );
   }
 
   if (canonicalName === 'map') {
-    return createFunctionExpression('map', [
-      toExpressionArgument(rawArgs[0]),
-    ]) as unknown as RuntimeNode;
+    return createFunctionExpression('map', [toExpressionArgument(rawArgs[0])]);
   }
 
   if (AGGREGATE_KINDS.has(canonicalName)) {
-    return createAggregate(
-      canonicalName,
-      normalizeGlobalArguments(canonicalName, rawArgs),
-    ) as unknown as RuntimeNode;
+    return createAggregate(canonicalName, normalizeGlobalArguments(canonicalName, rawArgs));
   }
 
-  return createFunctionExpression(
-    canonicalName,
-    normalizeGlobalArguments(canonicalName, rawArgs),
-  ) as unknown as RuntimeNode;
+  return createFunctionExpression(canonicalName, normalizeGlobalArguments(canonicalName, rawArgs));
 }
 
-function createMethodResult(name: string, base: RuntimeNode, rawArgs: unknown[]): RuntimeNode {
+function createMethodResult(
+  name: string,
+  base: RuntimeExpressionFluentNode,
+  rawArgs: unknown[],
+): RuntimeNode {
   const canonicalName = toCanonicalFunctionName(name);
 
   if (AGGREGATE_KINDS.has(canonicalName)) {
-    return createAggregate(canonicalName, [
-      base,
-      ...rawArgs.map(arg => toExpressionArgument(arg)),
-    ]) as unknown as RuntimeNode;
+    return createAggregate(canonicalName, [base, ...rawArgs.map(arg => toExpressionArgument(arg))]);
   }
 
   return createFunctionExpression(canonicalName, [
     base,
     ...rawArgs.map(arg => toExpressionArgument(arg)),
-  ]) as unknown as RuntimeNode;
+  ]);
 }
 
 function callExportedHelper(name: string, argsLike: IArguments): unknown {
@@ -831,7 +833,7 @@ function callExportedHelper(name: string, argsLike: IArguments): unknown {
  * Returns a Field reference for use in pipeline expressions.
  */
 export function field(_path: string): Field {
-  return callExportedHelper('field', arguments) as Field;
+  return createField(_path);
 }
 
 /**
@@ -1031,15 +1033,11 @@ export function endsWith(
  */
 export const OrderingHelper = {
   of(_fieldOrOrdering: Field | Ordering): Ordering {
-    if (
-      isRecord(_fieldOrOrdering) &&
-      isRuntimeNode(_fieldOrOrdering) &&
-      (_fieldOrOrdering as RuntimeNode).__kind === 'ordering'
-    ) {
-      return _fieldOrOrdering as unknown as Ordering;
+    if (isOrderingNode(_fieldOrOrdering)) {
+      return _fieldOrOrdering;
     }
 
-    return createGlobalResult('ascending', [_fieldOrOrdering]) as unknown as Ordering;
+    return createOrdering(toExpressionArgument(_fieldOrOrdering, true), 'ascending');
   },
 };
 
@@ -1048,7 +1046,7 @@ export const OrderingHelper = {
  * Ascending ordering (standalone). Use in sort().
  */
 export function ascending(_expr: Expression): Ordering {
-  return callExportedHelper('ascending', arguments) as Ordering;
+  return createOrdering(toExpressionArgument(_expr, true), 'ascending');
 }
 
 /**
@@ -1056,7 +1054,7 @@ export function ascending(_expr: Expression): Ordering {
  * Descending ordering (standalone). Use in sort().
  */
 export function descending(_expr: Expression): Ordering {
-  return callExportedHelper('descending', arguments) as Ordering;
+  return createOrdering(toExpressionArgument(_expr, true), 'descending');
 }
 
 /**
@@ -1072,7 +1070,7 @@ export function avg(_f: Field | Selectable): Accumulator {
  * Count-all aggregation (e.g. countAll().as('total')).
  */
 export function countAll(): AggregateFunction {
-  return callExportedHelper('countAll', arguments) as AggregateFunction;
+  return createAggregate('countAll');
 }
 
 /**
@@ -1080,7 +1078,7 @@ export function countAll(): AggregateFunction {
  * Map expression for replaceWith etc.
  */
 export function map(_entries: Record<string, unknown>): FunctionExpression {
-  return callExportedHelper('map', arguments) as FunctionExpression;
+  return createFunctionExpression('map', [toExpressionArgument(_entries)]);
 }
 
 /**
@@ -1088,7 +1086,10 @@ export function map(_entries: Record<string, unknown>): FunctionExpression {
  * Array expression.
  */
 export function array(_elements: unknown[]): FunctionExpression {
-  return callExportedHelper('array', arguments) as FunctionExpression;
+  return createFunctionExpression(
+    'array',
+    _elements.map(entry => toExpressionArgument(entry)),
+  );
 }
 
 // --- Arithmetic / constant expression helpers (align with JS SDK) ---
@@ -1121,7 +1122,7 @@ export function constant(_value: unknown): Expression;
 export function constant(
   _value: number | string | boolean | null | unknown,
 ): Expression | BooleanExpression {
-  return callExportedHelper('constant', arguments) as Expression | BooleanExpression;
+  return createConstant(normalizeRawValue(_value)) as Expression | BooleanExpression;
 }
 
 /**
