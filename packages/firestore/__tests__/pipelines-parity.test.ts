@@ -11,11 +11,11 @@ import {
 const ROOT = process.cwd();
 const ANDROID_EXECUTOR_PATH = join(
   ROOT,
-  'packages/firestore/android/src/reactnative/java/io/invertase/firebase/firestore/ReactNativeFirebaseFirestorePipelineExecutor.java',
+  'packages/firestore/android/src/reactnative/java/io/invertase/firebase/firestore/ReactNativeFirebaseFirestorePipelineParser.java',
 );
 const IOS_EXECUTOR_PATH = join(
   ROOT,
-  'packages/firestore/ios/RNFBFirestore/RNFBFirestorePipelineCallHandler.swift',
+  'packages/firestore/ios/RNFBFirestore/RNFBFirestorePipelineParser.swift',
 );
 
 function extractQuotedList(source: string, marker: string, endMarker: string): string[] {
