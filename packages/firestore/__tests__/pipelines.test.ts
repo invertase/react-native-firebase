@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { firebase } from '../lib';
 import { and, constant, descending, execute, field, greaterThan, Ordering } from '../lib/pipelines';
 import '../lib/pipelines';
+import { ConstantExpression } from '../lib/pipelines/expressions';
 
 describe('Firestore pipelines runtime', function () {
   beforeAll(function () {
@@ -356,7 +357,7 @@ describe('Firestore pipelines runtime', function () {
   });
 
   it('supports chaining constant expressions without Promise-like fields', function () {
-    const alias = constant(4).add(1).as('five');
+    const alias = (constant(4) as ConstantExpression).add(1).as('five');
 
     expect('then' in alias).toBe(false);
     expect(alias).toMatchObject({

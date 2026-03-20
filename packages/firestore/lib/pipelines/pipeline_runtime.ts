@@ -48,7 +48,13 @@ import FieldPath, { fromDotSeparatedString } from '../FieldPath';
 import { extractFieldPathData } from '../utils';
 import { parseNativeMap } from '../utils/serialize';
 
-import type { BooleanExpression, Field, Ordering, Selectable, Accumulator } from './expressions';
+import type {
+  AliasedAggregate,
+  BooleanExpression,
+  Field,
+  Ordering,
+  Selectable,
+} from './expressions';
 import type { Pipeline } from './pipeline';
 import type {
   PipelineCollectionSourceOptions,
@@ -469,20 +475,20 @@ class RuntimePipelineImpl<T = DocumentData> implements RuntimePipeline {
     return this.append('offset', { offset });
   }
 
-  aggregate(...accumulator: Accumulator[]): Pipeline<T>;
+  aggregate(...accumulator: AliasedAggregate[]): Pipeline<T>;
   aggregate(options: PipelineAggregateOptions): Pipeline<T>;
-  aggregate(...accumulatorOrOptions: Accumulator[] | [PipelineAggregateOptions]): Pipeline<T> {
+  aggregate(...accumulatorOrOptions: AliasedAggregate[] | [PipelineAggregateOptions]): Pipeline<T> {
     const first = accumulatorOrOptions[0];
     const isOptionsRecord =
       accumulatorOrOptions.length === 1 &&
       isRecord(first) &&
       hasAnyKey(first, ['accumulators', 'accumulator', 'groups', 'group']);
     const accumulators = isOptionsRecord
-      ? (first.accumulators ?? (first as { accumulator?: Accumulator[] }).accumulator) || []
-      : (accumulatorOrOptions as Accumulator[]);
+      ? (first.accumulators ?? (first as { accumulator?: AliasedAggregate[] }).accumulator) || []
+      : (accumulatorOrOptions as AliasedAggregate[]);
     const groups = isOptionsRecord
       ? ((first.groups ?? (first as { group?: (Field | string)[] }).group) as
-          | (Field | string)[]
+          | (string | Selectable)[]
           | undefined)
       : undefined;
 

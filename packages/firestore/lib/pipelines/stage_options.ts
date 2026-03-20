@@ -26,7 +26,6 @@ import type {
   BooleanExpression,
   Expression,
   AliasedAggregate,
-  Accumulator,
 } from './expressions';
 
 /**
@@ -40,8 +39,8 @@ export type PipelineDistanceMeasure = 'COSINE' | 'EUCLIDEAN' | 'DOT_PRODUCT';
  * Options for pipeline aggregate() stage.
  */
 export interface PipelineAggregateOptions {
-  accumulators?: Accumulator[];
-  groups?: Selectable[];
+  accumulators?: AliasedAggregate[];
+  groups?: Array<string | Selectable>;
 }
 
 /**

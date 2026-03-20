@@ -25,7 +25,13 @@ import type {
   PipelineUnnestOptions,
   PipelineRawStageOptions,
 } from './stage_options';
-import type { BooleanExpression, Selectable, Field, Ordering, Accumulator } from './expressions';
+import type {
+  BooleanExpression,
+  Selectable,
+  Field,
+  Ordering,
+  AliasedAggregate,
+} from './expressions';
 import type { DocumentData } from '../types/firestore';
 import type { FirestorePipelineSerializedInternal } from '../types/internal';
 
@@ -64,7 +70,7 @@ export interface Pipeline<T = DocumentData> {
   offset(n: number): Pipeline<T>;
   offset(options: { n: number }): Pipeline<T>;
 
-  aggregate(...accumulator: Accumulator[]): Pipeline<T>;
+  aggregate(...accumulator: AliasedAggregate[]): Pipeline<T>;
   aggregate(options: PipelineAggregateOptions): Pipeline<T>;
 
   distinct(...group: (Field | string)[]): Pipeline<T>;
