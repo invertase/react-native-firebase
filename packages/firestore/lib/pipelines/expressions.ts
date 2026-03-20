@@ -92,13 +92,22 @@ interface FluentExpressionMethods {
   descending(): Ordering;
   add(value: Expression): FunctionExpression;
   add(value: unknown): FunctionExpression;
+  average(): AggregateFunction;
+  count(): AggregateFunction;
+  countDistinct(): AggregateFunction;
   equal(expression: Expression): BooleanExpression;
   equal(value: unknown): BooleanExpression;
+  first(): AggregateFunction;
   greaterThan(expression: Expression): BooleanExpression;
   greaterThan(value: unknown): BooleanExpression;
   greaterThanOrEqual(expression: Expression): BooleanExpression;
   greaterThanOrEqual(value: unknown): BooleanExpression;
+  last(): AggregateFunction;
+  maximum(): AggregateFunction;
+  minimum(): AggregateFunction;
   sum(): AggregateFunction;
+  arrayAgg(): AggregateFunction;
+  arrayAggDistinct(): AggregateFunction;
 }
 
 export interface BooleanExpression extends Selectable, FluentExpressionMethods {
@@ -244,10 +253,11 @@ type RuntimeOrderingMethods = Pick<Ordering, 'ascending' | 'descending'>;
 type RuntimeAggregateMethods = Pick<Accumulator, 'as'>;
 
 type ConstantExpressionNode = RuntimeExpressionNode & RuntimeExpressionMethods & ConstantExpression;
+type BooleanExpressionNode = RuntimeExpressionNode & RuntimeExpressionMethods & BooleanExpression;
 type RuntimeExpressionFluentNode =
   | (RuntimeExpressionNode & RuntimeExpressionMethods & Field)
   | (RuntimeExpressionNode & RuntimeExpressionMethods & FunctionExpression)
-  | (RuntimeExpressionNode & RuntimeExpressionMethods & BooleanExpression)
+  | BooleanExpressionNode
   | ConstantExpressionNode;
 type FieldNode = RuntimeExpressionFluentNode & Field;
 type FunctionExpressionNode = RuntimeExpressionFluentNode & FunctionExpression;
@@ -609,6 +619,17 @@ function createFunctionExpression(name: string, args: RuntimeNode[]): FunctionEx
   });
 }
 
+function createBooleanExpression(name: string, args: RuntimeNode[]): BooleanExpressionNode {
+  return createNode(expressionProto, {
+    [RUNTIME_NODE_SYMBOL]: true,
+    __kind: 'expression',
+    exprType: 'Function',
+    selectable: true,
+    name,
+    args,
+  });
+}
+
 function createAggregate(kind: string, args: RuntimeNode[] = []): AggregateNode {
   return createNode(aggregateProto, {
     [RUNTIME_NODE_SYMBOL]: true,
@@ -763,48 +784,6 @@ function normalizeGlobalArguments(name: string, args: unknown[]): RuntimeNode[] 
   return args.map((arg, index) => toExpressionArgument(arg, fieldIndexList.includes(index)));
 }
 
-function createGlobalResult(name: string, rawArgs: unknown[]): RuntimeNode {
-  const canonicalName = toCanonicalFunctionName(name);
-
-  if (canonicalName === 'field') {
-    return createField(rawArgs[0]);
-  }
-
-  if (canonicalName === 'constant') {
-    return createConstant(normalizeRawValue(rawArgs[0]));
-  }
-
-  if (canonicalName === 'ascending') {
-    return createOrdering(toExpressionArgument(rawArgs[0], true), 'ascending');
-  }
-
-  if (canonicalName === 'descending') {
-    return createOrdering(toExpressionArgument(rawArgs[0], true), 'descending');
-  }
-
-  if (canonicalName === 'countAll') {
-    return createAggregate('countAll');
-  }
-
-  if (canonicalName === 'array') {
-    const elements = Array.isArray(rawArgs[0]) ? rawArgs[0] : [];
-    return createFunctionExpression(
-      'array',
-      elements.map(entry => toExpressionArgument(entry)),
-    );
-  }
-
-  if (canonicalName === 'map') {
-    return createFunctionExpression('map', [toExpressionArgument(rawArgs[0])]);
-  }
-
-  if (AGGREGATE_KINDS.has(canonicalName)) {
-    return createAggregate(canonicalName, normalizeGlobalArguments(canonicalName, rawArgs));
-  }
-
-  return createFunctionExpression(canonicalName, normalizeGlobalArguments(canonicalName, rawArgs));
-}
-
 function createMethodResult(
   name: string,
   base: RuntimeExpressionFluentNode,
@@ -822,8 +801,32 @@ function createMethodResult(
   ]);
 }
 
-function callExportedHelper(name: string, argsLike: IArguments): unknown {
-  return createGlobalResult(name, Array.from(argsLike));
+function callBooleanHelper(name: string, argsLike: IArguments): BooleanExpression {
+  return createBooleanExpression(
+    toCanonicalFunctionName(name),
+    normalizeGlobalArguments(name, Array.from(argsLike)),
+  );
+}
+
+function callFunctionHelper(name: string, argsLike: IArguments): FunctionExpression {
+  return createFunctionExpression(
+    toCanonicalFunctionName(name),
+    normalizeGlobalArguments(name, Array.from(argsLike)),
+  );
+}
+
+function callAggregateHelper(name: string, argsLike: IArguments): AggregateFunction {
+  return createAggregate(
+    toCanonicalFunctionName(name),
+    normalizeGlobalArguments(name, Array.from(argsLike)),
+  );
+}
+
+function callExpressionHelper(name: string, argsLike: IArguments): FunctionExpression {
+  return createFunctionExpression(
+    toCanonicalFunctionName(name),
+    normalizeGlobalArguments(name, Array.from(argsLike)),
+  );
 }
 
 // --- Expression / helper stubs (for use in where, select, addFields, aggregate, sort, etc.) ---
@@ -848,7 +851,7 @@ export function and(
   void first;
   void second;
   void more;
-  return callExportedHelper('and', arguments) as BooleanExpression;
+  return callBooleanHelper('and', arguments);
 }
 
 /**
@@ -863,7 +866,7 @@ export function or(
   void first;
   void second;
   void more;
-  return callExportedHelper('or', arguments) as BooleanExpression;
+  return callBooleanHelper('or', arguments);
 }
 
 /**
@@ -871,7 +874,7 @@ export function or(
  * Greater-than comparison.
  */
 export function gt(_left: Expression, _right: Expression): BooleanExpression {
-  return callExportedHelper('gt', arguments) as BooleanExpression;
+  return callBooleanHelper('gt', arguments);
 }
 
 /**
@@ -879,7 +882,7 @@ export function gt(_left: Expression, _right: Expression): BooleanExpression {
  * Greater-than comparison (alias for gt).
  */
 export function greaterThan(_left: Expression, _right: Expression): BooleanExpression {
-  return callExportedHelper('greaterThan', arguments) as BooleanExpression;
+  return callBooleanHelper('greaterThan', arguments);
 }
 
 /**
@@ -887,7 +890,7 @@ export function greaterThan(_left: Expression, _right: Expression): BooleanExpre
  * Equality comparison.
  */
 export function eq(_left: Expression, _right: Expression): BooleanExpression {
-  return callExportedHelper('eq', arguments) as BooleanExpression;
+  return callBooleanHelper('eq', arguments);
 }
 
 /**
@@ -895,7 +898,7 @@ export function eq(_left: Expression, _right: Expression): BooleanExpression {
  * Equality comparison (alias for eq).
  */
 export function equal(_left: Expression, _right: Expression): BooleanExpression {
-  return callExportedHelper('equal', arguments) as BooleanExpression;
+  return callBooleanHelper('equal', arguments);
 }
 
 /**
@@ -903,7 +906,7 @@ export function equal(_left: Expression, _right: Expression): BooleanExpression 
  * Inequality comparison.
  */
 export function notEqual(_left: Expression, _right: Expression): BooleanExpression {
-  return callExportedHelper('notEqual', arguments) as BooleanExpression;
+  return callBooleanHelper('notEqual', arguments);
 }
 
 /**
@@ -911,7 +914,7 @@ export function notEqual(_left: Expression, _right: Expression): BooleanExpressi
  * Greater-than-or-equal comparison.
  */
 export function gte(_left: Expression, _right: Expression): BooleanExpression {
-  return callExportedHelper('gte', arguments) as BooleanExpression;
+  return callBooleanHelper('gte', arguments);
 }
 
 /**
@@ -919,7 +922,7 @@ export function gte(_left: Expression, _right: Expression): BooleanExpression {
  * Less-than comparison.
  */
 export function lt(_left: Expression, _right: Expression): BooleanExpression {
-  return callExportedHelper('lt', arguments) as BooleanExpression;
+  return callBooleanHelper('lt', arguments);
 }
 
 /**
@@ -927,7 +930,7 @@ export function lt(_left: Expression, _right: Expression): BooleanExpression {
  * Less-than comparison (alias for lt).
  */
 export function lessThan(_left: Expression, _right: Expression): BooleanExpression {
-  return callExportedHelper('lessThan', arguments) as BooleanExpression;
+  return callBooleanHelper('lessThan', arguments);
 }
 
 /**
@@ -935,7 +938,7 @@ export function lessThan(_left: Expression, _right: Expression): BooleanExpressi
  * Less-than-or-equal comparison.
  */
 export function lte(_left: Expression, _right: Expression): BooleanExpression {
-  return callExportedHelper('lte', arguments) as BooleanExpression;
+  return callBooleanHelper('lte', arguments);
 }
 
 /**
@@ -943,7 +946,7 @@ export function lte(_left: Expression, _right: Expression): BooleanExpression {
  * Less-than-or-equal comparison (alias for lte).
  */
 export function lessThanOrEqual(_left: Expression, _right: Expression): BooleanExpression {
-  return callExportedHelper('lessThanOrEqual', arguments) as BooleanExpression;
+  return callBooleanHelper('lessThanOrEqual', arguments);
 }
 
 /**
@@ -951,7 +954,7 @@ export function lessThanOrEqual(_left: Expression, _right: Expression): BooleanE
  * Greater-than-or-equal comparison (alias for gte).
  */
 export function greaterThanOrEqual(_left: Expression, _right: Expression): BooleanExpression {
-  return callExportedHelper('greaterThanOrEqual', arguments) as BooleanExpression;
+  return callBooleanHelper('greaterThanOrEqual', arguments);
 }
 
 /**
@@ -959,7 +962,7 @@ export function greaterThanOrEqual(_left: Expression, _right: Expression): Boole
  * Checks if a field exists (or expression evaluates to a value).
  */
 export function exists(_valueOrFieldName: Expression): BooleanExpression {
-  return callExportedHelper('exists', arguments) as BooleanExpression;
+  return callBooleanHelper('exists', arguments);
 }
 
 /**
@@ -970,7 +973,7 @@ export function arrayContains(
   _arrayOrFieldName: Expression,
   _element: Expression,
 ): BooleanExpression {
-  return callExportedHelper('arrayContains', arguments) as BooleanExpression;
+  return callBooleanHelper('arrayContains', arguments);
 }
 
 /**
@@ -981,7 +984,7 @@ export function arrayContainsAny(
   _arrayOrFieldName: Expression,
   _values: Array<Expression | unknown>,
 ): BooleanExpression {
-  return callExportedHelper('arrayContainsAny', arguments) as BooleanExpression;
+  return callBooleanHelper('arrayContainsAny', arguments);
 }
 
 /**
@@ -992,7 +995,7 @@ export function arrayContainsAll(
   _arrayOrFieldName: Expression,
   _values: Array<Expression | unknown>,
 ): BooleanExpression {
-  return callExportedHelper('arrayContainsAll', arguments) as BooleanExpression;
+  return callBooleanHelper('arrayContainsAll', arguments);
 }
 
 /**
@@ -1008,7 +1011,7 @@ export function startsWith(
   _stringOrFieldName: string | Expression,
   _prefix: string | Expression,
 ): BooleanExpression {
-  return callExportedHelper('startsWith', arguments) as BooleanExpression;
+  return callBooleanHelper('startsWith', arguments);
 }
 
 /**
@@ -1024,7 +1027,7 @@ export function endsWith(
   _stringOrFieldName: string | Expression,
   _suffix: string | Expression,
 ): BooleanExpression {
-  return callExportedHelper('endsWith', arguments) as BooleanExpression;
+  return callBooleanHelper('endsWith', arguments);
 }
 
 /**
@@ -1062,7 +1065,7 @@ export function descending(_expr: Expression): Ordering {
  * Average aggregation (e.g. avg(field('rating')).as('avgRating')).
  */
 export function avg(_f: Field | Selectable): Accumulator {
-  return callExportedHelper('avg', arguments) as Accumulator;
+  return callAggregateHelper('avg', arguments);
 }
 
 /**
@@ -1098,31 +1101,29 @@ export function array(_elements: unknown[]): FunctionExpression {
  * @beta
  * Creates a constant expression for a number value.
  */
-export function constant(_value: number): Expression;
+export function constant(_value: number): ConstantExpression;
 /**
  * @beta
  * Creates a constant expression for a string value.
  */
-export function constant(_value: string): Expression;
+export function constant(_value: string): ConstantExpression;
 /**
  * @beta
  * Creates a constant boolean expression.
  */
-export function constant(_value: boolean): BooleanExpression;
+export function constant(_value: boolean): ConstantExpression;
 /**
  * @beta
  * Creates a constant expression for null.
  */
-export function constant(_value: null): Expression;
+export function constant(_value: null): ConstantExpression;
 /**
  * @beta
  * Creates a constant expression for a value (e.g. GeoPoint, Timestamp, Date, Bytes, DocumentReference, VectorValue).
  */
-export function constant(_value: unknown): Expression;
-export function constant(
-  _value: number | string | boolean | null | unknown,
-): Expression | BooleanExpression {
-  return createConstant(normalizeRawValue(_value)) as Expression | BooleanExpression;
+export function constant(_value: unknown): ConstantExpression;
+export function constant(_value: number | string | boolean | null | unknown): ConstantExpression {
+  return createConstant(normalizeRawValue(_value));
 }
 
 /**
@@ -1147,7 +1148,7 @@ export function add(
   _first: Expression | string,
   _second: Expression | unknown,
 ): FunctionExpression {
-  return callExportedHelper('add', arguments) as FunctionExpression;
+  return callFunctionHelper('add', arguments);
 }
 
 /**
@@ -1174,7 +1175,7 @@ export function subtract(
   _leftOrField: Expression | string,
   _rightOrValue: Expression | unknown,
 ): FunctionExpression {
-  return callExportedHelper('subtract', arguments) as FunctionExpression;
+  return callFunctionHelper('subtract', arguments);
 }
 
 // --- Additional arithmetic and aggregate helpers (align with JS SDK) ---
@@ -1203,7 +1204,7 @@ export function divide(
   _leftOrField: Expression | string,
   _rightOrValue: Expression | unknown,
 ): FunctionExpression {
-  return callExportedHelper('divide', arguments) as FunctionExpression;
+  return callFunctionHelper('divide', arguments);
 }
 
 /**
@@ -1220,7 +1221,7 @@ export function multiply(
   _first: Expression | string,
   _second: Expression | unknown,
 ): FunctionExpression {
-  return callExportedHelper('multiply', arguments) as FunctionExpression;
+  return callFunctionHelper('multiply', arguments);
 }
 
 /**
@@ -1239,7 +1240,7 @@ export function documentId(_documentPathExpr: Expression): FunctionExpression;
 export function documentId(
   _documentPath: string | DocumentReference | Expression,
 ): FunctionExpression {
-  return callExportedHelper('documentId', arguments) as FunctionExpression;
+  return callFunctionHelper('documentId', arguments);
 }
 
 /**
@@ -1253,7 +1254,7 @@ export function sum(_expression: Expression): AggregateFunction;
  */
 export function sum(_fieldName: string): AggregateFunction;
 export function sum(_exprOrField: Expression | string): AggregateFunction {
-  return callExportedHelper('sum', arguments) as AggregateFunction;
+  return callAggregateHelper('sum', arguments);
 }
 
 /**
@@ -1267,7 +1268,7 @@ export function count(_expression: Expression): AggregateFunction;
  */
 export function count(_fieldName: string): AggregateFunction;
 export function count(_exprOrField: Expression | string): AggregateFunction {
-  return callExportedHelper('count', arguments) as AggregateFunction;
+  return callAggregateHelper('count', arguments);
 }
 
 /**
@@ -1282,7 +1283,7 @@ export function average(_expression: Expression): AggregateFunction;
  */
 export function average(_fieldName: string): AggregateFunction;
 export function average(_exprOrField: Expression | string): AggregateFunction {
-  return callExportedHelper('average', arguments) as AggregateFunction;
+  return callAggregateHelper('average', arguments);
 }
 
 // --- More expression and aggregate helpers (align with JS SDK) ---
@@ -1298,7 +1299,7 @@ export function abs(_expr: Expression): FunctionExpression;
  */
 export function abs(_fieldName: string): FunctionExpression;
 export function abs(_exprOrField: Expression | string): FunctionExpression {
-  return callExportedHelper('abs', arguments) as FunctionExpression;
+  return callFunctionHelper('abs', arguments);
 }
 
 /**
@@ -1308,7 +1309,7 @@ export function abs(_exprOrField: Expression | string): FunctionExpression {
 export function ceil(_fieldName: string): FunctionExpression;
 export function ceil(_expression: Expression): FunctionExpression;
 export function ceil(_exprOrField: Expression | string): FunctionExpression {
-  return callExportedHelper('ceil', arguments) as FunctionExpression;
+  return callFunctionHelper('ceil', arguments);
 }
 
 /**
@@ -1318,7 +1319,7 @@ export function ceil(_exprOrField: Expression | string): FunctionExpression {
 export function floor(_expr: Expression): FunctionExpression;
 export function floor(_fieldName: string): FunctionExpression;
 export function floor(_exprOrField: Expression | string): FunctionExpression {
-  return callExportedHelper('floor', arguments) as FunctionExpression;
+  return callFunctionHelper('floor', arguments);
 }
 
 /**
@@ -1333,7 +1334,7 @@ export function mod(
   _leftOrField: Expression | string,
   _rightOrValue: Expression | unknown,
 ): FunctionExpression {
-  return callExportedHelper('mod', arguments) as FunctionExpression;
+  return callFunctionHelper('mod', arguments);
 }
 
 /**
@@ -1355,7 +1356,7 @@ export function round(
   _exprOrField: Expression | string,
   _decimalPlaces?: number | Expression,
 ): FunctionExpression {
-  return callExportedHelper('round', arguments) as FunctionExpression;
+  return callFunctionHelper('round', arguments);
 }
 
 /**
@@ -1367,7 +1368,7 @@ export function conditional(
   _thenExpr: Expression,
   _elseExpr: Expression,
 ): FunctionExpression {
-  return callExportedHelper('conditional', arguments) as FunctionExpression;
+  return callFunctionHelper('conditional', arguments);
 }
 
 /**
@@ -1375,7 +1376,7 @@ export function conditional(
  * Count distinct values of an expression or field.
  */
 export function countDistinct(_expr: Expression | string): AggregateFunction {
-  return callExportedHelper('countDistinct', arguments) as AggregateFunction;
+  return callAggregateHelper('countDistinct', arguments);
 }
 
 /**
@@ -1385,7 +1386,7 @@ export function countDistinct(_expr: Expression | string): AggregateFunction {
 export function first(_expression: Expression): AggregateFunction;
 export function first(_fieldName: string): AggregateFunction;
 export function first(_exprOrField: Expression | string): AggregateFunction {
-  return callExportedHelper('first', arguments) as AggregateFunction;
+  return callAggregateHelper('first', arguments);
 }
 
 /**
@@ -1395,7 +1396,7 @@ export function first(_exprOrField: Expression | string): AggregateFunction {
 export function last(_expression: Expression): AggregateFunction;
 export function last(_fieldName: string): AggregateFunction;
 export function last(_exprOrField: Expression | string): AggregateFunction {
-  return callExportedHelper('last', arguments) as AggregateFunction;
+  return callAggregateHelper('last', arguments);
 }
 
 // --- arrayAgg, concat, sqrt, currentTimestamp, not, ifAbsent, ifError, string helpers ---
@@ -1407,7 +1408,7 @@ export function last(_exprOrField: Expression | string): AggregateFunction {
 export function arrayAgg(_expression: Expression): AggregateFunction;
 export function arrayAgg(_fieldName: string): AggregateFunction;
 export function arrayAgg(_exprOrField: Expression | string): AggregateFunction {
-  return callExportedHelper('arrayAgg', arguments) as AggregateFunction;
+  return callAggregateHelper('arrayAgg', arguments);
 }
 
 /**
@@ -1429,7 +1430,7 @@ export function concat(
   _second: Expression | unknown,
   ..._others: Array<Expression | unknown>
 ): FunctionExpression {
-  return callExportedHelper('concat', arguments) as FunctionExpression;
+  return callFunctionHelper('concat', arguments);
 }
 
 /**
@@ -1439,7 +1440,7 @@ export function concat(
 export function sqrt(_expression: Expression): FunctionExpression;
 export function sqrt(_fieldName: string): FunctionExpression;
 export function sqrt(_exprOrField: Expression | string): FunctionExpression {
-  return callExportedHelper('sqrt', arguments) as FunctionExpression;
+  return callFunctionHelper('sqrt', arguments);
 }
 
 /**
@@ -1447,7 +1448,7 @@ export function sqrt(_exprOrField: Expression | string): FunctionExpression {
  * Server timestamp at execution time.
  */
 export function currentTimestamp(): FunctionExpression {
-  return callExportedHelper('currentTimestamp', arguments) as FunctionExpression;
+  return callFunctionHelper('currentTimestamp', arguments);
 }
 
 /**
@@ -1455,7 +1456,7 @@ export function currentTimestamp(): FunctionExpression {
  * Logical NOT of a boolean expression.
  */
 export function not(_booleanExpr: BooleanExpression): BooleanExpression {
-  return callExportedHelper('not', arguments) as BooleanExpression;
+  return callBooleanHelper('not', arguments);
 }
 
 /**
@@ -1473,7 +1474,7 @@ export function ifAbsent(
   _ifExpr: string | Expression,
   _elseValue: Expression | unknown,
 ): Expression {
-  return callExportedHelper('ifAbsent', arguments) as Expression;
+  return callExpressionHelper('ifAbsent', arguments);
 }
 
 /**
@@ -1490,7 +1491,7 @@ export function ifError(
   _tryExpr: BooleanExpression | Expression,
   _catch: BooleanExpression | Expression | unknown,
 ): BooleanExpression | FunctionExpression {
-  return callExportedHelper('ifError', arguments) as BooleanExpression | FunctionExpression;
+  return callFunctionHelper('ifError', arguments);
 }
 
 /**
@@ -1500,7 +1501,7 @@ export function ifError(
 export function toLower(_fieldName: string): FunctionExpression;
 export function toLower(_stringExpression: Expression): FunctionExpression;
 export function toLower(_fieldOrExpr: string | Expression): FunctionExpression {
-  return callExportedHelper('toLower', arguments) as FunctionExpression;
+  return callFunctionHelper('toLower', arguments);
 }
 
 /**
@@ -1510,7 +1511,7 @@ export function toLower(_fieldOrExpr: string | Expression): FunctionExpression {
 export function toUpper(_fieldName: string): FunctionExpression;
 export function toUpper(_stringExpression: Expression): FunctionExpression;
 export function toUpper(_fieldOrExpr: string | Expression): FunctionExpression {
-  return callExportedHelper('toUpper', arguments) as FunctionExpression;
+  return callFunctionHelper('toUpper', arguments);
 }
 
 /**
@@ -1526,7 +1527,7 @@ export function trim(
   _fieldOrExpr: string | Expression,
   _valueToTrim?: string | Expression,
 ): FunctionExpression {
-  return callExportedHelper('trim', arguments) as FunctionExpression;
+  return callFunctionHelper('trim', arguments);
 }
 
 /**
@@ -1554,7 +1555,7 @@ export function substring(
   _position: number | Expression,
   _length?: number | Expression,
 ): FunctionExpression {
-  return callExportedHelper('substring', arguments) as FunctionExpression;
+  return callFunctionHelper('substring', arguments);
 }
 
 // --- Array expression helpers (align with JS SDK) ---
@@ -1566,7 +1567,7 @@ export function substring(
 export function arrayAggDistinct(_expression: Expression): AggregateFunction;
 export function arrayAggDistinct(_fieldName: string): AggregateFunction;
 export function arrayAggDistinct(_exprOrField: Expression | string): AggregateFunction {
-  return callExportedHelper('arrayAggDistinct', arguments) as AggregateFunction;
+  return callAggregateHelper('arrayAggDistinct', arguments);
 }
 
 /**
@@ -1588,7 +1589,7 @@ export function arrayConcat(
   _second: Expression | unknown[],
   ..._others: Array<Expression | unknown[]>
 ): FunctionExpression {
-  return callExportedHelper('arrayConcat', arguments) as FunctionExpression;
+  return callFunctionHelper('arrayConcat', arguments);
 }
 
 /**
@@ -1603,7 +1604,7 @@ export function arrayGet(
   _arrayOrField: string | Expression,
   _offset: number | Expression,
 ): FunctionExpression {
-  return callExportedHelper('arrayGet', arguments) as FunctionExpression;
+  return callFunctionHelper('arrayGet', arguments);
 }
 
 /**
@@ -1613,7 +1614,7 @@ export function arrayGet(
 export function arrayLength(_fieldName: string): FunctionExpression;
 export function arrayLength(_array: Expression): FunctionExpression;
 export function arrayLength(_fieldOrExpr: string | Expression): FunctionExpression {
-  return callExportedHelper('arrayLength', arguments) as FunctionExpression;
+  return callFunctionHelper('arrayLength', arguments);
 }
 
 /**
@@ -1623,7 +1624,7 @@ export function arrayLength(_fieldOrExpr: string | Expression): FunctionExpressi
 export function arraySum(_fieldName: string): FunctionExpression;
 export function arraySum(_expression: Expression): FunctionExpression;
 export function arraySum(_fieldOrExpr: string | Expression): FunctionExpression {
-  return callExportedHelper('arraySum', arguments) as FunctionExpression;
+  return callFunctionHelper('arraySum', arguments);
 }
 
 // --- Batch: byteLength, charLength, collectionId, countIf, exp, join, like, ln, log, log10, maximum, minimum, pow, reverse, split ---
@@ -1631,29 +1632,29 @@ export function arraySum(_fieldOrExpr: string | Expression): FunctionExpression 
 export function byteLength(_expr: Expression): FunctionExpression;
 export function byteLength(_fieldName: string): FunctionExpression;
 export function byteLength(_exprOrField: Expression | string): FunctionExpression {
-  return callExportedHelper('byteLength', arguments) as FunctionExpression;
+  return callFunctionHelper('byteLength', arguments);
 }
 
 export function charLength(_fieldName: string): FunctionExpression;
 export function charLength(_stringExpression: Expression): FunctionExpression;
 export function charLength(_fieldOrExpr: string | Expression): FunctionExpression {
-  return callExportedHelper('charLength', arguments) as FunctionExpression;
+  return callFunctionHelper('charLength', arguments);
 }
 
 export function collectionId(_fieldName: string): FunctionExpression;
 export function collectionId(_expression: Expression): FunctionExpression;
 export function collectionId(_fieldOrExpr: string | Expression): FunctionExpression {
-  return callExportedHelper('collectionId', arguments) as FunctionExpression;
+  return callFunctionHelper('collectionId', arguments);
 }
 
 export function countIf(_booleanExpr: BooleanExpression): AggregateFunction {
-  return callExportedHelper('countIf', arguments) as AggregateFunction;
+  return callAggregateHelper('countIf', arguments);
 }
 
 export function exp(_expression: Expression): FunctionExpression;
 export function exp(_fieldName: string): FunctionExpression;
 export function exp(_exprOrField: Expression | string): FunctionExpression {
-  return callExportedHelper('exp', arguments) as FunctionExpression;
+  return callFunctionHelper('exp', arguments);
 }
 
 export function join(_arrayFieldName: string, _delimiter: string): Expression;
@@ -1664,7 +1665,7 @@ export function join(
   _arrayOrField: string | Expression,
   _delimiter: string | Expression,
 ): Expression {
-  return callExportedHelper('join', arguments) as Expression;
+  return callExpressionHelper('join', arguments);
 }
 
 export function like(_fieldName: string, _pattern: string): BooleanExpression;
@@ -1675,13 +1676,13 @@ export function like(
   _fieldOrExpr: string | Expression,
   _pattern: string | Expression,
 ): BooleanExpression {
-  return callExportedHelper('like', arguments) as BooleanExpression;
+  return callBooleanHelper('like', arguments);
 }
 
 export function ln(_fieldName: string): FunctionExpression;
 export function ln(_expression: Expression): FunctionExpression;
 export function ln(_fieldOrExpr: string | Expression): FunctionExpression {
-  return callExportedHelper('ln', arguments) as FunctionExpression;
+  return callFunctionHelper('ln', arguments);
 }
 
 export function log(_expression: Expression, _base: number): FunctionExpression;
@@ -1692,25 +1693,25 @@ export function log(
   _exprOrField: Expression | string,
   _base: number | Expression,
 ): FunctionExpression {
-  return callExportedHelper('log', arguments) as FunctionExpression;
+  return callFunctionHelper('log', arguments);
 }
 
 export function log10(_fieldName: string): FunctionExpression;
 export function log10(_expression: Expression): FunctionExpression;
 export function log10(_fieldOrExpr: string | Expression): FunctionExpression {
-  return callExportedHelper('log10', arguments) as FunctionExpression;
+  return callFunctionHelper('log10', arguments);
 }
 
 export function maximum(_expression: Expression): AggregateFunction;
 export function maximum(_fieldName: string): AggregateFunction;
 export function maximum(_exprOrField: Expression | string): AggregateFunction {
-  return callExportedHelper('maximum', arguments) as AggregateFunction;
+  return callAggregateHelper('maximum', arguments);
 }
 
 export function minimum(_expression: Expression): AggregateFunction;
 export function minimum(_fieldName: string): AggregateFunction;
 export function minimum(_exprOrField: Expression | string): AggregateFunction {
-  return callExportedHelper('minimum', arguments) as AggregateFunction;
+  return callAggregateHelper('minimum', arguments);
 }
 
 export function pow(_base: Expression, _exponent: Expression): FunctionExpression;
@@ -1721,13 +1722,13 @@ export function pow(
   _base: Expression | string,
   _exponent: Expression | number,
 ): FunctionExpression {
-  return callExportedHelper('pow', arguments) as FunctionExpression;
+  return callFunctionHelper('pow', arguments);
 }
 
 export function reverse(_stringExpression: Expression): FunctionExpression;
 export function reverse(_field: string): FunctionExpression;
 export function reverse(_exprOrField: Expression | string): FunctionExpression {
-  return callExportedHelper('reverse', arguments) as FunctionExpression;
+  return callFunctionHelper('reverse', arguments);
 }
 
 export function split(_fieldName: string, _delimiter: string): FunctionExpression;
@@ -1738,7 +1739,7 @@ export function split(
   _fieldOrExpr: string | Expression,
   _delimiter: string | Expression,
 ): FunctionExpression {
-  return callExportedHelper('split', arguments) as FunctionExpression;
+  return callFunctionHelper('split', arguments);
 }
 
 // --- Batch 2: cosineDistance, dotProduct, equalAny, euclideanDistance, isAbsent, isError, isType, logicalMaximum, logicalMinimum, ltrim, notEqualAny, rand, rtrim, stringConcat ---
@@ -1763,7 +1764,7 @@ export function cosineDistance(
   _fieldOrExpr: string | Expression,
   _vectorOrExpr: number[] | VectorValue | Expression,
 ): FunctionExpression {
-  return callExportedHelper('cosineDistance', arguments) as FunctionExpression;
+  return callFunctionHelper('cosineDistance', arguments);
 }
 
 export function dotProduct(_fieldName: string, _vector: number[] | VectorValue): FunctionExpression;
@@ -1780,7 +1781,7 @@ export function dotProduct(
   _fieldOrExpr: string | Expression,
   _vectorOrExpr: number[] | VectorValue | Expression,
 ): FunctionExpression {
-  return callExportedHelper('dotProduct', arguments) as FunctionExpression;
+  return callFunctionHelper('dotProduct', arguments);
 }
 
 export function equalAny(
@@ -1797,7 +1798,7 @@ export function equalAny(
   _exprOrField: string | Expression,
   _valuesOrArray: Array<Expression | unknown> | Expression,
 ): BooleanExpression {
-  return callExportedHelper('equalAny', arguments) as BooleanExpression;
+  return callBooleanHelper('equalAny', arguments);
 }
 
 export function euclideanDistance(
@@ -1820,23 +1821,23 @@ export function euclideanDistance(
   _fieldOrExpr: string | Expression,
   _vectorOrExpr: number[] | VectorValue | Expression,
 ): FunctionExpression {
-  return callExportedHelper('euclideanDistance', arguments) as FunctionExpression;
+  return callFunctionHelper('euclideanDistance', arguments);
 }
 
 export function isAbsent(_value: Expression): BooleanExpression;
 export function isAbsent(_field: string): BooleanExpression;
 export function isAbsent(_valueOrField: Expression | string): BooleanExpression {
-  return callExportedHelper('isAbsent', arguments) as BooleanExpression;
+  return callBooleanHelper('isAbsent', arguments);
 }
 
 export function isError(_value: Expression): BooleanExpression {
-  return callExportedHelper('isError', arguments) as BooleanExpression;
+  return callBooleanHelper('isError', arguments);
 }
 
 export function isType(_fieldName: string, _type: Type): BooleanExpression;
 export function isType(_expression: Expression, _type: Type): BooleanExpression;
 export function isType(_fieldOrExpr: string | Expression, _type: Type): BooleanExpression {
-  return callExportedHelper('isType', arguments) as BooleanExpression;
+  return callBooleanHelper('isType', arguments);
 }
 
 export function logicalMaximum(
@@ -1854,7 +1855,7 @@ export function logicalMaximum(
   _second: Expression | unknown,
   ..._others: Array<Expression | unknown>
 ): FunctionExpression {
-  return callExportedHelper('logicalMaximum', arguments) as FunctionExpression;
+  return callFunctionHelper('logicalMaximum', arguments);
 }
 
 export function logicalMinimum(
@@ -1872,7 +1873,7 @@ export function logicalMinimum(
   _second: Expression | unknown,
   ..._others: Array<Expression | unknown>
 ): FunctionExpression {
-  return callExportedHelper('logicalMinimum', arguments) as FunctionExpression;
+  return callFunctionHelper('logicalMinimum', arguments);
 }
 
 export function ltrim(
@@ -1887,7 +1888,7 @@ export function ltrim(
   _fieldOrExpr: string | Expression,
   _valueToTrim?: string | Expression | Bytes,
 ): FunctionExpression {
-  return callExportedHelper('ltrim', arguments) as FunctionExpression;
+  return callFunctionHelper('ltrim', arguments);
 }
 
 export function notEqualAny(
@@ -1904,11 +1905,11 @@ export function notEqualAny(
   _elemOrField: string | Expression,
   _valuesOrArray: Array<Expression | unknown> | Expression,
 ): BooleanExpression {
-  return callExportedHelper('notEqualAny', arguments) as BooleanExpression;
+  return callBooleanHelper('notEqualAny', arguments);
 }
 
 export function rand(): FunctionExpression {
-  return callExportedHelper('rand', arguments) as FunctionExpression;
+  return callFunctionHelper('rand', arguments);
 }
 
 export function rtrim(
@@ -1923,7 +1924,7 @@ export function rtrim(
   _fieldOrExpr: string | Expression,
   _valueToTrim?: string | Expression | Bytes,
 ): FunctionExpression {
-  return callExportedHelper('rtrim', arguments) as FunctionExpression;
+  return callFunctionHelper('rtrim', arguments);
 }
 
 export function stringConcat(
@@ -1941,7 +1942,7 @@ export function stringConcat(
   _second: Expression | string,
   ..._others: Array<Expression | string>
 ): FunctionExpression {
-  return callExportedHelper('stringConcat', arguments) as FunctionExpression;
+  return callFunctionHelper('stringConcat', arguments);
 }
 
 // --- Batch 3: map*, regex*, stringContains, stringIndexOf, stringRepeat, stringReplaceAll ---
@@ -1949,19 +1950,19 @@ export function stringConcat(
 export function mapEntries(_mapField: string): FunctionExpression;
 export function mapEntries(_mapExpression: Expression): FunctionExpression;
 export function mapEntries(_mapOrExpr: string | Expression): FunctionExpression {
-  return callExportedHelper('mapEntries', arguments) as FunctionExpression;
+  return callFunctionHelper('mapEntries', arguments);
 }
 
 export function mapGet(_fieldName: string, _subField: string): FunctionExpression;
 export function mapGet(_mapExpression: Expression, _subField: string): FunctionExpression;
 export function mapGet(_mapOrExpr: string | Expression, _subField: string): FunctionExpression {
-  return callExportedHelper('mapGet', arguments) as FunctionExpression;
+  return callFunctionHelper('mapGet', arguments);
 }
 
 export function mapKeys(_mapField: string): FunctionExpression;
 export function mapKeys(_mapExpression: Expression): FunctionExpression;
 export function mapKeys(_mapOrExpr: string | Expression): FunctionExpression {
-  return callExportedHelper('mapKeys', arguments) as FunctionExpression;
+  return callFunctionHelper('mapKeys', arguments);
 }
 
 export function mapMerge(
@@ -1979,7 +1980,7 @@ export function mapMerge(
   _second: Record<string, unknown> | Expression,
   ..._others: Array<Record<string, unknown> | Expression>
 ): FunctionExpression {
-  return callExportedHelper('mapMerge', arguments) as FunctionExpression;
+  return callFunctionHelper('mapMerge', arguments);
 }
 
 export function mapRemove(_mapField: string, _key: string): FunctionExpression;
@@ -1990,7 +1991,7 @@ export function mapRemove(
   _mapOrExpr: string | Expression,
   _keyOrExpr: string | Expression,
 ): FunctionExpression {
-  return callExportedHelper('mapRemove', arguments) as FunctionExpression;
+  return callFunctionHelper('mapRemove', arguments);
 }
 
 export function mapSet(
@@ -2011,13 +2012,13 @@ export function mapSet(
   _value: unknown,
   ..._more: unknown[]
 ): FunctionExpression {
-  return callExportedHelper('mapSet', arguments) as FunctionExpression;
+  return callFunctionHelper('mapSet', arguments);
 }
 
 export function mapValues(_mapField: string): FunctionExpression;
 export function mapValues(_mapExpression: Expression): FunctionExpression;
 export function mapValues(_mapOrExpr: string | Expression): FunctionExpression {
-  return callExportedHelper('mapValues', arguments) as FunctionExpression;
+  return callFunctionHelper('mapValues', arguments);
 }
 
 export function regexContains(_fieldName: string, _pattern: string): BooleanExpression;
@@ -2031,7 +2032,7 @@ export function regexContains(
   _fieldOrExpr: string | Expression,
   _pattern: string | Expression,
 ): BooleanExpression {
-  return callExportedHelper('regexContains', arguments) as BooleanExpression;
+  return callBooleanHelper('regexContains', arguments);
 }
 
 export function regexFind(_fieldName: string, _pattern: string): FunctionExpression;
@@ -2042,7 +2043,7 @@ export function regexFind(
   _fieldOrExpr: string | Expression,
   _pattern: string | Expression,
 ): FunctionExpression {
-  return callExportedHelper('regexFind', arguments) as FunctionExpression;
+  return callFunctionHelper('regexFind', arguments);
 }
 
 export function regexFindAll(_fieldName: string, _pattern: string): FunctionExpression;
@@ -2056,7 +2057,7 @@ export function regexFindAll(
   _fieldOrExpr: string | Expression,
   _pattern: string | Expression,
 ): FunctionExpression {
-  return callExportedHelper('regexFindAll', arguments) as FunctionExpression;
+  return callFunctionHelper('regexFindAll', arguments);
 }
 
 export function regexMatch(_fieldName: string, _pattern: string): BooleanExpression;
@@ -2067,7 +2068,7 @@ export function regexMatch(
   _fieldOrExpr: string | Expression,
   _pattern: string | Expression,
 ): BooleanExpression {
-  return callExportedHelper('regexMatch', arguments) as BooleanExpression;
+  return callBooleanHelper('regexMatch', arguments);
 }
 
 export function stringContains(_fieldName: string, _substring: string): BooleanExpression;
@@ -2084,7 +2085,7 @@ export function stringContains(
   _fieldOrExpr: string | Expression,
   _substring: string | Expression,
 ): BooleanExpression {
-  return callExportedHelper('stringContains', arguments) as BooleanExpression;
+  return callBooleanHelper('stringContains', arguments);
 }
 
 export function stringIndexOf(
@@ -2099,7 +2100,7 @@ export function stringIndexOf(
   _fieldOrExpr: string | Expression,
   _search: string | Expression | Bytes,
 ): FunctionExpression {
-  return callExportedHelper('stringIndexOf', arguments) as FunctionExpression;
+  return callFunctionHelper('stringIndexOf', arguments);
 }
 
 export function stringRepeat(
@@ -2114,7 +2115,7 @@ export function stringRepeat(
   _fieldOrExpr: string | Expression,
   _repetitions: number | Expression,
 ): FunctionExpression {
-  return callExportedHelper('stringRepeat', arguments) as FunctionExpression;
+  return callFunctionHelper('stringRepeat', arguments);
 }
 
 export function stringReplaceAll(
@@ -2132,7 +2133,7 @@ export function stringReplaceAll(
   _find: string | Expression | Bytes,
   _replacement: string | Expression | Bytes,
 ): FunctionExpression {
-  return callExportedHelper('stringReplaceAll', arguments) as FunctionExpression;
+  return callFunctionHelper('stringReplaceAll', arguments);
 }
 
 // --- Batch 4: stringReplaceOne, stringReverse, timestamp*, trunc, type, unix*ToTimestamp, vectorLength, xor ---
@@ -2154,13 +2155,13 @@ export function stringReplaceOne(
   _find: string | Expression | Bytes,
   _replacement: string | Expression | Bytes,
 ): FunctionExpression {
-  return callExportedHelper('stringReplaceOne', arguments) as FunctionExpression;
+  return callFunctionHelper('stringReplaceOne', arguments);
 }
 
 export function stringReverse(_stringExpression: Expression): FunctionExpression;
 export function stringReverse(_field: string): FunctionExpression;
 export function stringReverse(_exprOrField: Expression | string): FunctionExpression {
-  return callExportedHelper('stringReverse', arguments) as FunctionExpression;
+  return callFunctionHelper('stringReverse', arguments);
 }
 
 export function timestampAdd(
@@ -2183,7 +2184,7 @@ export function timestampAdd(
   _unit: Expression | TimestampUnit,
   _amount: Expression | number,
 ): FunctionExpression {
-  return callExportedHelper('timestampAdd', arguments) as FunctionExpression;
+  return callFunctionHelper('timestampAdd', arguments);
 }
 
 export function timestampSubtract(
@@ -2206,25 +2207,25 @@ export function timestampSubtract(
   _unit: Expression | TimestampUnit,
   _amount: Expression | number,
 ): FunctionExpression {
-  return callExportedHelper('timestampSubtract', arguments) as FunctionExpression;
+  return callFunctionHelper('timestampSubtract', arguments);
 }
 
 export function timestampToUnixMicros(_expr: Expression): FunctionExpression;
 export function timestampToUnixMicros(_fieldName: string): FunctionExpression;
 export function timestampToUnixMicros(_exprOrField: Expression | string): FunctionExpression {
-  return callExportedHelper('timestampToUnixMicros', arguments) as FunctionExpression;
+  return callFunctionHelper('timestampToUnixMicros', arguments);
 }
 
 export function timestampToUnixMillis(_expr: Expression): FunctionExpression;
 export function timestampToUnixMillis(_fieldName: string): FunctionExpression;
 export function timestampToUnixMillis(_exprOrField: Expression | string): FunctionExpression {
-  return callExportedHelper('timestampToUnixMillis', arguments) as FunctionExpression;
+  return callFunctionHelper('timestampToUnixMillis', arguments);
 }
 
 export function timestampToUnixSeconds(_expr: Expression): FunctionExpression;
 export function timestampToUnixSeconds(_fieldName: string): FunctionExpression;
 export function timestampToUnixSeconds(_exprOrField: Expression | string): FunctionExpression {
-  return callExportedHelper('timestampToUnixSeconds', arguments) as FunctionExpression;
+  return callFunctionHelper('timestampToUnixSeconds', arguments);
 }
 
 export function timestampTruncate(
@@ -2252,7 +2253,7 @@ export function timestampTruncate(
   _granularity: TimeGranularity | Expression,
   _timezone?: string | Expression,
 ): FunctionExpression {
-  return callExportedHelper('timestampTruncate', arguments) as FunctionExpression;
+  return callFunctionHelper('timestampTruncate', arguments);
 }
 
 export function trunc(_fieldName: string): FunctionExpression;
@@ -2266,37 +2267,37 @@ export function trunc(
   _fieldOrExpr: string | Expression,
   _decimalPlaces?: number | Expression,
 ): FunctionExpression {
-  return callExportedHelper('trunc', arguments) as FunctionExpression;
+  return callFunctionHelper('trunc', arguments);
 }
 
 export function type(_fieldName: string): FunctionExpression;
 export function type(_expression: Expression): FunctionExpression;
 export function type(_fieldOrExpr: string | Expression): FunctionExpression {
-  return callExportedHelper('type', arguments) as FunctionExpression;
+  return callFunctionHelper('type', arguments);
 }
 
 export function unixMicrosToTimestamp(_expr: Expression): FunctionExpression;
 export function unixMicrosToTimestamp(_fieldName: string): FunctionExpression;
 export function unixMicrosToTimestamp(_exprOrField: Expression | string): FunctionExpression {
-  return callExportedHelper('unixMicrosToTimestamp', arguments) as FunctionExpression;
+  return callFunctionHelper('unixMicrosToTimestamp', arguments);
 }
 
 export function unixMillisToTimestamp(_expr: Expression): FunctionExpression;
 export function unixMillisToTimestamp(_fieldName: string): FunctionExpression;
 export function unixMillisToTimestamp(_exprOrField: Expression | string): FunctionExpression {
-  return callExportedHelper('unixMillisToTimestamp', arguments) as FunctionExpression;
+  return callFunctionHelper('unixMillisToTimestamp', arguments);
 }
 
 export function unixSecondsToTimestamp(_expr: Expression): FunctionExpression;
 export function unixSecondsToTimestamp(_fieldName: string): FunctionExpression;
 export function unixSecondsToTimestamp(_exprOrField: Expression | string): FunctionExpression {
-  return callExportedHelper('unixSecondsToTimestamp', arguments) as FunctionExpression;
+  return callFunctionHelper('unixSecondsToTimestamp', arguments);
 }
 
 export function vectorLength(_vectorExpression: Expression): FunctionExpression;
 export function vectorLength(_fieldName: string): FunctionExpression;
 export function vectorLength(_exprOrField: Expression | string): FunctionExpression {
-  return callExportedHelper('vectorLength', arguments) as FunctionExpression;
+  return callFunctionHelper('vectorLength', arguments);
 }
 
 export function xor(
@@ -2304,7 +2305,7 @@ export function xor(
   _second: BooleanExpression,
   ..._additionalConditions: BooleanExpression[]
 ): BooleanExpression {
-  return callExportedHelper('xor', arguments) as BooleanExpression;
+  return callBooleanHelper('xor', arguments);
 }
 
 /**
@@ -2314,5 +2315,5 @@ export function xor(
 export function length(_fieldName: string): FunctionExpression;
 export function length(_expression: Expression): FunctionExpression;
 export function length(_fieldOrExpr: string | Expression): FunctionExpression {
-  return callExportedHelper('length', arguments) as FunctionExpression;
+  return callFunctionHelper('length', arguments);
 }
