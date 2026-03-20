@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { execute } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines';
-import { executeWebSdkPipeline } from '../lib/web/pipeline';
+import * as firebaseFirestorePipelines from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines';
+import { executeWebSdkPipeline } from '../lib/web/pipelines/pipeline';
 
 jest.mock('@react-native-firebase/app/dist/module/internal/web/firebaseFirestorePipelines', () => {
   const actual = jest.requireActual(
@@ -10,6 +11,11 @@ jest.mock('@react-native-firebase/app/dist/module/internal/web/firebaseFirestore
   return {
     ...actual,
     execute: jest.fn(),
+    array: jest.fn(actual.array as (...args: unknown[]) => unknown),
+    conditional: jest.fn(actual.conditional as (...args: unknown[]) => unknown),
+    isType: jest.fn(actual.isType as (...args: unknown[]) => unknown),
+    mapGet: jest.fn(actual.mapGet as (...args: unknown[]) => unknown),
+    euclideanDistance: jest.fn(actual.euclideanDistance as (...args: unknown[]) => unknown),
   };
 });
 
@@ -225,6 +231,109 @@ describe('Firestore web pipeline bridge', function () {
     ).rejects.toThrow('pipelineExecute() expected the web SDK snapshot to include executionTime.');
   });
 
+  it('falls back to documents source paths when projection results omit refs', async function () {
+    const pipelineInstance: any = {};
+    pipelineInstance.select = jest.fn(() => pipelineInstance);
+    const firestore = {
+      pipeline: jest.fn(() => ({
+        documents: jest.fn(() => pipelineInstance),
+      })),
+    } as any;
+
+    (execute as jest.Mock).mockImplementation(async () => ({
+      executionTime: { seconds: 5, nanoseconds: 0 },
+      results: [
+        {
+          data: () => ({ title: 'One' }),
+        },
+        {
+          data: () => ({ title: 'Two' }),
+        },
+      ],
+    }));
+
+    const response = await executeWebSdkPipeline(
+      firestore,
+      {
+        source: { source: 'documents', documents: ['books/one', 'books/two'] },
+        stages: [{ stage: 'select', options: { selections: ['title'] } }],
+      },
+      undefined,
+    );
+
+    expect(response).toEqual({
+      executionTime: { seconds: 5, nanoseconds: 0 },
+      results: [
+        {
+          path: 'books/one',
+          id: 'one',
+          data: { title: [8, 'One'] },
+          createTime: undefined,
+          updateTime: undefined,
+        },
+        {
+          path: 'books/two',
+          id: 'two',
+          data: { title: [8, 'Two'] },
+          createTime: undefined,
+          updateTime: undefined,
+        },
+      ],
+    });
+  });
+
+  it('rejects invalid execute options before calling the web SDK', async function () {
+    const firestore = {
+      pipeline: jest.fn(),
+    } as any;
+
+    await expect(
+      executeWebSdkPipeline(
+        firestore,
+        {
+          source: { source: 'collection', path: 'books' },
+          stages: [],
+        },
+        { indexMode: 'invalid' } as any,
+      ),
+    ).rejects.toThrow('pipelineExecute() expected options.indexMode to equal "recommended".');
+
+    expect(firestore.pipeline).not.toHaveBeenCalled();
+    expect(execute as jest.Mock).not.toHaveBeenCalled();
+  });
+
+  it('rejects empty addFields and removeFields stage arrays during request parsing', async function () {
+    const firestore = {
+      pipeline: jest.fn(),
+    } as any;
+
+    await expect(
+      executeWebSdkPipeline(
+        firestore,
+        {
+          source: { source: 'collection', path: 'books' },
+          stages: [{ stage: 'addFields', options: { fields: [] } }],
+        } as any,
+        undefined,
+      ),
+    ).rejects.toThrow(
+      'pipelineExecute() expected stage.options.fields to contain at least one value.',
+    );
+
+    await expect(
+      executeWebSdkPipeline(
+        firestore,
+        {
+          source: { source: 'collection', path: 'books' },
+          stages: [{ stage: 'removeFields', options: { fields: [] } }],
+        } as any,
+        undefined,
+      ),
+    ).rejects.toThrow(
+      'pipelineExecute() expected stage.options.fields to contain at least one value.',
+    );
+  });
+
   it('passes source rawOptions to collection and documents inputs with SDK option keys', async function () {
     const collectionPipeline: any = {};
     const documentsPipeline: any = {};
@@ -279,5 +388,187 @@ describe('Firestore web pipeline bridge', function () {
       docs: ['books/one', 'books/two'],
       rawOptions: { read_time: '2026-03-17T00:00:00Z' },
     });
+  });
+
+  it('rebuilds helper arguments using raw helper inputs instead of wrapped constants', async function () {
+    const pipelineInstance: any = {};
+    pipelineInstance.select = jest.fn(() => pipelineInstance);
+    const firestore = {
+      pipeline: jest.fn(() => ({
+        collection: jest.fn(() => pipelineInstance),
+      })),
+    } as any;
+
+    const isTypeMock = firebaseFirestorePipelines.isType as jest.Mock;
+    const mapGetMock = firebaseFirestorePipelines.mapGet as jest.Mock;
+    const euclideanDistanceMock = firebaseFirestorePipelines.euclideanDistance as jest.Mock;
+
+    isTypeMock.mockClear();
+    mapGetMock.mockClear();
+    euclideanDistanceMock.mockClear();
+
+    (execute as jest.Mock).mockImplementation(async () => ({
+      executionTime: { seconds: 9, nanoseconds: 0 },
+      results: [],
+    }));
+
+    await executeWebSdkPipeline(
+      firestore,
+      {
+        source: { source: 'collection', path: 'books' },
+        stages: [
+          {
+            stage: 'select',
+            options: {
+              selections: [
+                {
+                  alias: 'valueType',
+                  as: 'valueType',
+                  expr: {
+                    __kind: 'expression',
+                    exprType: 'Function',
+                    name: 'isType',
+                    args: [
+                      { __kind: 'expression', exprType: 'Field', path: 'value' },
+                      { __kind: 'expression', exprType: 'Constant', value: 'string' },
+                    ],
+                  },
+                },
+                {
+                  alias: 'theme',
+                  as: 'theme',
+                  expr: {
+                    __kind: 'expression',
+                    exprType: 'Function',
+                    name: 'mapGet',
+                    args: [
+                      { __kind: 'expression', exprType: 'Field', path: 'settings' },
+                      { __kind: 'expression', exprType: 'Constant', value: 'theme' },
+                    ],
+                  },
+                },
+                {
+                  alias: 'distance',
+                  as: 'distance',
+                  expr: {
+                    __kind: 'expression',
+                    exprType: 'Function',
+                    name: 'euclideanDistance',
+                    args: [
+                      { __kind: 'expression', exprType: 'Field', path: 'embedding' },
+                      { __kind: 'expression', exprType: 'Constant', value: [1, 0] },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      undefined,
+    );
+
+    expect(isTypeMock.mock.calls.at(-1)?.[1]).toBe('string');
+    expect(mapGetMock.mock.calls.at(-1)?.[1]).toBe('theme');
+    expect(euclideanDistanceMock.mock.calls.at(-1)?.[1]).toEqual([1, 0]);
+  });
+
+  it('preserves helper-specific shapes for conditional and array builders', async function () {
+    const pipelineInstance: any = {};
+    pipelineInstance.select = jest.fn(() => pipelineInstance);
+    const firestore = {
+      pipeline: jest.fn(() => ({
+        collection: jest.fn(() => pipelineInstance),
+      })),
+    } as any;
+
+    const arrayMock = firebaseFirestorePipelines.array as jest.Mock;
+    const conditionalMock = firebaseFirestorePipelines.conditional as jest.Mock;
+
+    arrayMock.mockClear();
+    conditionalMock.mockClear();
+
+    (execute as jest.Mock).mockImplementation(async () => ({
+      executionTime: { seconds: 10, nanoseconds: 0 },
+      results: [],
+    }));
+
+    await executeWebSdkPipeline(
+      firestore,
+      {
+        source: { source: 'collection', path: 'books' },
+        stages: [
+          {
+            stage: 'select',
+            options: {
+              selections: [
+                {
+                  alias: 'fixedArr',
+                  as: 'fixedArr',
+                  expr: {
+                    __kind: 'expression',
+                    exprType: 'Function',
+                    name: 'array',
+                    args: [
+                      { __kind: 'expression', exprType: 'Constant', value: 1 },
+                      { __kind: 'expression', exprType: 'Constant', value: 2 },
+                      { __kind: 'expression', exprType: 'Constant', value: 3 },
+                    ],
+                  },
+                },
+                {
+                  alias: 'availability',
+                  as: 'availability',
+                  expr: {
+                    __kind: 'expression',
+                    exprType: 'Function',
+                    name: 'conditional',
+                    args: [
+                      {
+                        __kind: 'expression',
+                        exprType: 'Function',
+                        name: 'greaterThan',
+                        args: [
+                          { __kind: 'expression', exprType: 'Field', path: 'stock' },
+                          { __kind: 'expression', exprType: 'Constant', value: 0 },
+                        ],
+                      },
+                      { __kind: 'expression', exprType: 'Constant', value: 'in-stock' },
+                      { __kind: 'expression', exprType: 'Constant', value: 'out-of-stock' },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      undefined,
+    );
+
+    expect(arrayMock.mock.calls.at(-1)?.[0]).toEqual([1, 2, 3]);
+    expect(typeof conditionalMock.mock.calls.at(-1)?.[1]).toBe('object');
+    expect(typeof conditionalMock.mock.calls.at(-1)?.[2]).toBe('object');
+  });
+
+  it('keeps malformed union validation on the serialized-pipeline contract', async function () {
+    const firestore = {
+      pipeline: jest.fn(() => ({
+        collection: jest.fn(),
+      })),
+    } as any;
+
+    await expect(
+      executeWebSdkPipeline(
+        firestore,
+        {
+          source: { source: 'collection', path: 'books' },
+          stages: [{ stage: 'union', options: { other: {} } }],
+        } as any,
+        undefined,
+      ),
+    ).rejects.toThrow(
+      'pipelineExecute() expected stage.options.other to be a serialized pipeline object.',
+    );
   });
 });
