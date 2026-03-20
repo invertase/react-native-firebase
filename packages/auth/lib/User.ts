@@ -22,14 +22,23 @@ import {
   isBoolean,
 } from '@react-native-firebase/app/dist/module/common';
 import type { AuthInternal, NativeUserShape } from './types/internal';
-import type { AuthCredential, AuthProvider, ActionCodeSettings, UserInfo, MultiFactor, IdTokenResult } from './types/auth';
+import type {
+  AuthCredential,
+  AuthProvider,
+  ActionCodeSettings,
+  FirebaseAuth,
+  UserInfo,
+  MultiFactor,
+  IdTokenResult,
+} from './types/auth';
+import type { FirebaseAuthTypes } from './types/namespaced';
 
 export default class User {
   _auth: AuthInternal;
   _user: NativeUserShape;
 
-  constructor(auth: AuthInternal, user: NativeUserShape) {
-    this._auth = auth;
+  constructor(auth: FirebaseAuth, user: NativeUserShape) {
+    this._auth = auth as AuthInternal;
     this._user = user;
   }
 
@@ -100,36 +109,48 @@ export default class User {
     return this._auth.native.getIdTokenResult(forceRefresh) as Promise<IdTokenResult>;
   }
 
-  linkWithCredential(credential: AuthCredential): Promise<unknown> {
+  linkWithCredential(credential: AuthCredential): Promise<FirebaseAuthTypes.UserCredential> {
     return this._auth.native
       .linkWithCredential(credential.providerId, credential.token, credential.secret)
-      .then((userCredential: unknown) => this._auth._setUserCredential(userCredential));
+      .then((userCredential: unknown) =>
+        this._auth._setUserCredential(userCredential),
+      ) as Promise<FirebaseAuthTypes.UserCredential>;
   }
 
-  linkWithPopup(provider: AuthProvider): Promise<unknown> {
+  linkWithPopup(provider: AuthProvider): Promise<FirebaseAuthTypes.UserCredential> {
     return this.linkWithRedirect(provider);
   }
 
-  linkWithRedirect(provider: AuthProvider): Promise<unknown> {
+  linkWithRedirect(provider: AuthProvider): Promise<FirebaseAuthTypes.UserCredential> {
     return this._auth.native
       .linkWithProvider(provider.toObject())
-      .then((userCredential: unknown) => this._auth._setUserCredential(userCredential));
+      .then((userCredential: unknown) =>
+        this._auth._setUserCredential(userCredential),
+      ) as Promise<FirebaseAuthTypes.UserCredential>;
   }
 
-  reauthenticateWithCredential(credential: AuthCredential): Promise<unknown> {
+  reauthenticateWithCredential(credential: AuthCredential): Promise<FirebaseAuthTypes.UserCredential> {
     return this._auth.native
       .reauthenticateWithCredential(credential.providerId, credential.token, credential.secret)
-      .then((userCredential: unknown) => this._auth._setUserCredential(userCredential));
+      .then((userCredential: unknown) =>
+        this._auth._setUserCredential(userCredential),
+      ) as Promise<FirebaseAuthTypes.UserCredential>;
   }
 
-  reauthenticateWithPopup(provider: AuthProvider): Promise<unknown> {
-    return this.reauthenticateWithRedirect(provider);
-  }
-
-  reauthenticateWithRedirect(provider: AuthProvider): Promise<unknown> {
+  reauthenticateWithPopup(provider: AuthProvider): Promise<FirebaseAuthTypes.UserCredential> {
     return this._auth.native
       .reauthenticateWithProvider(provider.toObject())
-      .then((userCredential: unknown) => this._auth._setUserCredential(userCredential));
+      .then((userCredential: unknown) =>
+        this._auth._setUserCredential(userCredential),
+      ) as Promise<FirebaseAuthTypes.UserCredential>;
+  }
+
+  reauthenticateWithRedirect(provider: AuthProvider): Promise<void> {
+    return this._auth.native
+      .reauthenticateWithProvider(provider.toObject())
+      .then((userCredential: unknown) => {
+        this._auth._setUserCredential(userCredential);
+      }) as Promise<void>;
   }
 
   reload(): Promise<void> {
@@ -138,7 +159,7 @@ export default class User {
     }) as Promise<void>;
   }
 
-  sendEmailVerification(actionCodeSettings?: ActionCodeSettings): Promise<unknown> {
+  sendEmailVerification(actionCodeSettings?: ActionCodeSettings): Promise<void> {
     if (isObject(actionCodeSettings)) {
       const acs = actionCodeSettings as Record<string, unknown>;
       if (!isString(acs.url)) {
@@ -211,44 +232,46 @@ export default class User {
 
     return this._auth.native.sendEmailVerification(actionCodeSettings).then((user: unknown) => {
       this._auth._setUser(user);
-    });
+    }) as Promise<void>;
   }
 
   toJSON(): Record<string, unknown> {
     return Object.assign({}, this._user) as Record<string, unknown>;
   }
 
-  unlink(providerId: string): Promise<unknown> {
-    return this._auth.native.unlink(providerId).then((user: unknown) => this._auth._setUser(user));
+  unlink(providerId: string): Promise<FirebaseAuthTypes.User> {
+    return this._auth.native.unlink(providerId).then((user: unknown) =>
+      this._auth._setUser(user),
+    ) as Promise<FirebaseAuthTypes.User>;
   }
 
-  updateEmail(email: string): Promise<unknown> {
+  updateEmail(email: string): Promise<void> {
     return this._auth.native.updateEmail(email).then((user: unknown) => {
       this._auth._setUser(user);
-    });
+    }) as Promise<void>;
   }
 
-  updatePassword(password: string): Promise<unknown> {
+  updatePassword(password: string): Promise<void> {
     return this._auth.native.updatePassword(password).then((user: unknown) => {
       this._auth._setUser(user);
-    });
+    }) as Promise<void>;
   }
 
-  updatePhoneNumber(credential: AuthCredential): Promise<unknown> {
+  updatePhoneNumber(credential: AuthCredential): Promise<void> {
     return this._auth.native
       .updatePhoneNumber(credential.providerId, credential.token, credential.secret)
       .then((user: unknown) => {
         this._auth._setUser(user);
-      });
+      }) as Promise<void>;
   }
 
-  updateProfile(updates: Record<string, unknown>): Promise<unknown> {
+  updateProfile(updates: Record<string, unknown>): Promise<void> {
     return this._auth.native.updateProfile(updates).then((user: unknown) => {
       this._auth._setUser(user);
-    });
+    }) as Promise<void>;
   }
 
-  verifyBeforeUpdateEmail(newEmail: string, actionCodeSettings?: ActionCodeSettings): Promise<unknown> {
+  verifyBeforeUpdateEmail(newEmail: string, actionCodeSettings?: ActionCodeSettings): Promise<void> {
     if (!isString(newEmail)) {
       throw new Error(
         "firebase.auth.User.verifyBeforeUpdateEmail(*) 'newEmail' expected a string value.",
@@ -327,7 +350,7 @@ export default class User {
 
     return this._auth.native.verifyBeforeUpdateEmail(newEmail, actionCodeSettings).then((user: unknown) => {
       this._auth._setUser(user);
-    });
+    }) as Promise<void>;
   }
 
   /**

@@ -547,7 +547,7 @@ export namespace FirebaseAuthTypes {
   export type MultiFactorInfo = PhoneMultiFactorInfo | TotpMultiFactorInfo;
 
   export interface PhoneMultiFactorInfo extends MultiFactorInfoCommon {
-    factorId: 'phone';
+    factorId: string;
     /**
      * The phone number used for this factor.
      */
@@ -555,7 +555,7 @@ export namespace FirebaseAuthTypes {
   }
 
   export interface TotpMultiFactorInfo extends MultiFactorInfoCommon {
-    factorId: 'totp';
+    factorId: string;
   }
 
   export interface MultiFactorInfoCommon {
@@ -1286,6 +1286,11 @@ export namespace FirebaseAuthTypes {
      *  - The user's unique ID.
      */
     uid: string;
+
+    /**
+     * The tenant ID for this user, or null if the user is not associated with a tenant.
+     */
+    tenantId: string | null;
 
     /**
      * Delete the current user.

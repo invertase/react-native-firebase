@@ -110,7 +110,7 @@ export interface NativeUserShape {
   email?: string | null;
   emailVerified?: boolean;
   isAnonymous?: boolean;
-  metadata?: { lastSignInTime: number; creationTime: number };
+  metadata?: { lastSignInTime: number | string; creationTime: number | string };
   multiFactor?: unknown;
   phoneNumber?: string | null;
   tenantId?: string | null;

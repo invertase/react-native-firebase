@@ -15,23 +15,13 @@
  *
  */
 
-import type { FirebaseApp } from '@react-native-firebase/app';
+import type { FirebaseAuthTypes } from './namespaced';
 
 /**
- * Auth module instance (modular API).
+ * Auth instance from {@link getAuth} / `firebase.auth()`.
+ * Uses the namespaced module shape so compatibility methods are typed (e.g. deprecation tests).
  */
-export interface FirebaseAuth {
-  /** The FirebaseApp this Auth instance is associated with */
-  app: FirebaseApp;
-  /** The currently signed-in user (or null) */
-  readonly currentUser: User | null;
-  /** The current language code */
-  readonly languageCode: string;
-  /** The current tenant ID or null */
-  readonly tenantId: string | null;
-  /** Auth settings */
-  readonly settings: AuthSettings;
-}
+export type FirebaseAuth = FirebaseAuthTypes.Module;
 
 /**
  * Auth settings (modular API).

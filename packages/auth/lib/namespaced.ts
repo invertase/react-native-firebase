@@ -37,7 +37,9 @@ import type { FirebaseAuthTypes } from './types/namespaced';
 import type { AuthInternal, NativeUserShape } from './types/internal';
 import ConfirmationResult from './ConfirmationResult';
 import PhoneAuthListener from './PhoneAuthListener';
+// @ts-ignore — JS implementation, no separate types (see tsconfig package allowJs)
 import PhoneMultiFactorGenerator from './PhoneMultiFactorGenerator';
+// @ts-ignore — JS implementation, no separate types (see tsconfig package allowJs)
 import TotpMultiFactorGenerator from './TotpMultiFactorGenerator';
 import Settings from './Settings';
 import User from './User';
@@ -52,8 +54,10 @@ import OAuthProvider from './providers/OAuthProvider';
 import OIDCAuthProvider from './providers/OIDCAuthProvider';
 import PhoneAuthProvider from './providers/PhoneAuthProvider';
 import TwitterAuthProvider from './providers/TwitterAuthProvider';
+// @ts-ignore — JS implementation, no separate types (see tsconfig package allowJs)
 import { TotpSecret } from './TotpSecret';
 import { version } from './version';
+// @ts-ignore — JS implementation, no separate types (see tsconfig package allowJs)
 import fallBackModule from './web/RNFBAuthModule';
 import { PasswordPolicyMixin } from './password-policy/PasswordPolicyMixin';
 
