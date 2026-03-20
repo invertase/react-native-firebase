@@ -18,5 +18,5 @@
 // We need to share firebase imports between modules, otherwise
 // apps and instances of the firebase modules are not shared.
 export { getApp } from 'firebase/app';
-// In a separate file because there are duplicate symbols in 'firebase/firestore/lite' and 'firebase/firestore/pipelines'
+// In a separate file because there are duplicate symbols in 'firebase/firestore/lite' and 'firebase/firestore/lite/pipelines'
 export * from 'firebase/firestore/lite/pipelines';
