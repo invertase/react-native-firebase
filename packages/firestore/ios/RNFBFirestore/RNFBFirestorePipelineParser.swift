@@ -28,10 +28,46 @@ struct RNFBFirestoreParsedPipelineSource {
   let collectionId: String?
   let documents: [String]
   let queryType: String?
-  let filters: [Any]
-  let orders: [Any]
-  let options: [String: Any]
+  let query: RNFBFirestoreParsedQuerySource?
   let rawOptions: [String: Any]?
+}
+
+struct RNFBFirestoreParsedQuerySource {
+  let filters: [RNFBFirestoreParsedValueNode]
+  let orders: [RNFBFirestoreParsedValueNode]
+  let options: [String: RNFBFirestoreParsedValueNode]
+}
+
+indirect enum RNFBFirestoreParsedExpressionNode {
+  case field(path: String)
+  case constant(RNFBFirestoreParsedValueNode)
+  case function(name: String, args: [RNFBFirestoreParsedValueNode])
+}
+
+indirect enum RNFBFirestoreParsedValueNode {
+  case primitive(Any)
+  case list([RNFBFirestoreParsedValueNode])
+  case map([String: RNFBFirestoreParsedValueNode])
+  case expression(RNFBFirestoreParsedExpressionNode)
+}
+
+struct RNFBFirestoreParsedSelectableNode {
+  let expression: RNFBFirestoreParsedExpressionNode
+  let alias: String?
+  let isFlatFieldAlias: Bool
+}
+
+struct RNFBFirestoreParsedOrderingNode {
+  let expression: RNFBFirestoreParsedExpressionNode
+  let descending: Bool
+  let fieldShortcut: Bool
+}
+
+struct RNFBFirestoreParsedAggregateNode {
+  let kind: String
+  let alias: String
+  let primaryValue: RNFBFirestoreParsedValueNode?
+  let args: [RNFBFirestoreParsedValueNode]
 }
 
 enum RNFBFirestoreParsedPipelineStage {
@@ -82,15 +118,15 @@ struct RNFBFirestoreParsedPipelineExecuteOptions {
 }
 
 struct RNFBFirestoreParsedWhereStage {
-  let condition: Any
+  let condition: RNFBFirestoreParsedExpressionNode
 }
 
 struct RNFBFirestoreParsedSelectStage {
-  let selections: [Any]
+  let selections: [RNFBFirestoreParsedSelectableNode]
 }
 
 struct RNFBFirestoreParsedAddFieldsStage {
-  let fields: [Any]
+  let fields: [RNFBFirestoreParsedSelectableNode]
 }
 
 struct RNFBFirestoreParsedRemoveFieldsStage {
@@ -98,50 +134,50 @@ struct RNFBFirestoreParsedRemoveFieldsStage {
 }
 
 struct RNFBFirestoreParsedSortStage {
-  let orderings: [Any]
+  let orderings: [RNFBFirestoreParsedOrderingNode]
 }
 
 struct RNFBFirestoreParsedLimitStage {
-  let limit: Any
+  let limit: NSNumber
 }
 
 struct RNFBFirestoreParsedOffsetStage {
-  let offset: Any
+  let offset: NSNumber
 }
 
 struct RNFBFirestoreParsedAggregateStage {
-  let accumulators: [[String: Any]]
-  let groups: [Any]
+  let accumulators: [RNFBFirestoreParsedAggregateNode]
+  let groups: [RNFBFirestoreParsedSelectableNode]
 }
 
 struct RNFBFirestoreParsedDistinctStage {
-  let groups: [Any]
+  let groups: [RNFBFirestoreParsedSelectableNode]
 }
 
 struct RNFBFirestoreParsedFindNearestStage {
-  let field: Any
-  let vectorValue: Any?
+  let field: RNFBFirestoreParsedExpressionNode
+  let vectorValue: RNFBFirestoreParsedValueNode
   let distanceMeasure: String
   let limit: NSNumber?
-  let distanceField: Any?
+  let distanceField: RNFBFirestoreParsedExpressionNode?
 }
 
 struct RNFBFirestoreParsedReplaceWithStage {
-  let value: Any
+  let value: RNFBFirestoreParsedExpressionNode
 }
 
 struct RNFBFirestoreParsedSampleStage {
-  let documents: Any?
-  let percentage: Any?
+  let documents: NSNumber?
+  let percentage: NSNumber?
 }
 
 struct RNFBFirestoreParsedUnionStage {
-  let other: [String: Any]
+  let other: RNFBFirestoreParsedPipelineRequest
 }
 
 struct RNFBFirestoreParsedUnnestStage {
-  let selectable: Any
-  let indexField: Any?
+  let selectable: RNFBFirestoreParsedSelectableNode
+  let indexField: RNFBFirestoreParsedExpressionNode?
 }
 
 struct RNFBFirestoreParsedRawStage {
@@ -168,9 +204,16 @@ enum RNFBFirestorePipelineParser {
       throw PipelineValidationError("pipelineExecute() expected a pipeline object.")
     }
 
+    return try parsePipelineMap(pipeline, options: options as? [String: Any])
+  }
+
+  private static func parsePipelineMap(
+    _ pipeline: [String: Any],
+    options: [String: Any]?
+  ) throws -> RNFBFirestoreParsedPipelineRequest {
     let source = try parseSource(requireMap(pipeline, key: "source", fieldName: "pipeline.source"))
     let stages = try parseStages(requireStageArray(pipeline, key: "stages", fieldName: "pipeline.stages"))
-    let executeOptions = try parseOptions(options as? [String: Any])
+    let executeOptions = try parseOptions(options)
     return RNFBFirestoreParsedPipelineRequest(source: source, stages: stages, options: executeOptions)
   }
 
@@ -189,9 +232,7 @@ enum RNFBFirestorePipelineParser {
         collectionId: nil,
         documents: [],
         queryType: nil,
-        filters: [],
-        orders: [],
-        options: [:],
+        query: nil,
         rawOptions: try parseUnsupportedSourceRawOptions(source, sourceType: sourceType)
       )
     case "collectionGroup":
@@ -201,9 +242,7 @@ enum RNFBFirestorePipelineParser {
         collectionId: try requireNonEmptyString(source, key: "collectionId", fieldName: "pipeline.source.collectionId"),
         documents: [],
         queryType: nil,
-        filters: [],
-        orders: [],
-        options: [:],
+        query: nil,
         rawOptions: try parseUnsupportedSourceRawOptions(source, sourceType: sourceType)
       )
     case "database":
@@ -213,9 +252,7 @@ enum RNFBFirestorePipelineParser {
         collectionId: nil,
         documents: [],
         queryType: nil,
-        filters: [],
-        orders: [],
-        options: [:],
+        query: nil,
         rawOptions: try parseUnsupportedSourceRawOptions(source, sourceType: sourceType)
       )
     case "documents":
@@ -239,9 +276,7 @@ enum RNFBFirestorePipelineParser {
         collectionId: nil,
         documents: parsedDocuments,
         queryType: nil,
-        filters: [],
-        orders: [],
-        options: [:],
+        query: nil,
         rawOptions: nil
       )
     case "query":
@@ -251,14 +286,33 @@ enum RNFBFirestorePipelineParser {
         collectionId: nil,
         documents: [],
         queryType: try requireNonEmptyString(source, key: "queryType", fieldName: "pipeline.source.queryType"),
-        filters: try requireArray(source, key: "filters", fieldName: "pipeline.source.filters"),
-        orders: try requireArray(source, key: "orders", fieldName: "pipeline.source.orders"),
-        options: try requireMap(source, key: "options", fieldName: "pipeline.source.options"),
+        query: try parseQuerySource(source),
         rawOptions: nil
       )
     default:
       throw PipelineValidationError("pipelineExecute() received an unknown source type.")
     }
+  }
+
+  private static func parseQuerySource(_ source: [String: Any]) throws -> RNFBFirestoreParsedQuerySource {
+    let filters = try requireArray(source, key: "filters", fieldName: "pipeline.source.filters")
+    let orders = try requireArray(source, key: "orders", fieldName: "pipeline.source.orders")
+    let options = try requireMap(source, key: "options", fieldName: "pipeline.source.options")
+
+    return RNFBFirestoreParsedQuerySource(
+      filters: try filters.enumerated().map { index, value in
+        try parseQuerySourceValueNode(value, fieldName: "pipeline.source.filters[\(index)]")
+      },
+      orders: try orders.enumerated().map { index, value in
+        try parseQuerySourceValueNode(value, fieldName: "pipeline.source.orders[\(index)]")
+      },
+      options: try options.reduce(into: [String: RNFBFirestoreParsedValueNode]()) { result, entry in
+        result[entry.key] = try parseQuerySourceValueNode(
+          entry.value,
+          fieldName: "pipeline.source.options.\(entry.key)"
+        )
+      }
+    )
   }
 
   private static func parseStages(_ stages: [[String: Any]]) throws -> [RNFBFirestoreParsedPipelineStage] {
@@ -288,15 +342,24 @@ enum RNFBFirestorePipelineParser {
     switch stageName {
     case "where":
       return .whereStage(RNFBFirestoreParsedWhereStage(
-        condition: try requireValue(options, key: "condition", fieldName: "\(fieldName).options.condition")
+        condition: try parseExpressionNode(
+          requireValue(options, key: "condition", fieldName: "\(fieldName).options.condition"),
+          fieldName: "\(fieldName).options.condition"
+        )
       ))
     case "select":
       return .selectStage(RNFBFirestoreParsedSelectStage(
-        selections: try requireArray(options, key: "selections", fieldName: "\(fieldName).options.selections")
+        selections: try parseSelectableNodes(
+          requireArray(options, key: "selections", fieldName: "\(fieldName).options.selections"),
+          fieldName: "\(fieldName).options.selections"
+        )
       ))
     case "addFields":
       return .addFieldsStage(RNFBFirestoreParsedAddFieldsStage(
-        fields: try requireArray(options, key: "fields", fieldName: "\(fieldName).options.fields")
+        fields: try parseSelectableNodes(
+          requireArray(options, key: "fields", fieldName: "\(fieldName).options.fields"),
+          fieldName: "\(fieldName).options.fields"
+        )
       ))
     case "removeFields":
       return .removeFieldsStage(RNFBFirestoreParsedRemoveFieldsStage(
@@ -304,38 +367,53 @@ enum RNFBFirestorePipelineParser {
       ))
     case "sort":
       return .sortStage(RNFBFirestoreParsedSortStage(
-        orderings: try requireArray(options, key: "orderings", fieldName: "\(fieldName).options.orderings")
+        orderings: try parseOrderingNodes(
+          requireArray(options, key: "orderings", fieldName: "\(fieldName).options.orderings"),
+          fieldName: "\(fieldName).options.orderings"
+        )
       ))
     case "limit":
       return .limitStage(RNFBFirestoreParsedLimitStage(
-        limit: try requireValue(options, key: "limit", fieldName: "\(fieldName).options.limit")
+        limit: try requireNumber(options, key: "limit", fieldName: "\(fieldName).options.limit")
       ))
     case "offset":
       return .offsetStage(RNFBFirestoreParsedOffsetStage(
-        offset: try requireValue(options, key: "offset", fieldName: "\(fieldName).options.offset")
+        offset: try requireNumber(options, key: "offset", fieldName: "\(fieldName).options.offset")
       ))
     case "aggregate":
       return .aggregateStage(try parseAggregateStage(options, fieldName: "\(fieldName).options"))
     case "distinct":
       return .distinctStage(RNFBFirestoreParsedDistinctStage(
-        groups: try requireArray(options, key: "groups", fieldName: "\(fieldName).options.groups")
+        groups: try parseSelectableNodes(
+          requireArray(options, key: "groups", fieldName: "\(fieldName).options.groups"),
+          fieldName: "\(fieldName).options.groups"
+        )
       ))
     case "findNearest":
       return .findNearestStage(try parseFindNearestStage(options, fieldName: "\(fieldName).options"))
     case "replaceWith":
       return .replaceWithStage(RNFBFirestoreParsedReplaceWithStage(
-        value: try requireValue(options, key: "map", fieldName: "\(fieldName).options.map")
+        value: try parseExpressionNode(
+          requireValue(options, key: "map", fieldName: "\(fieldName).options.map"),
+          fieldName: "\(fieldName).options.map"
+        )
       ))
     case "sample":
       return .sampleStage(try parseSampleStage(options, fieldName: "\(fieldName).options"))
     case "union":
       return .unionStage(RNFBFirestoreParsedUnionStage(
-        other: try requireMap(options, key: "other", fieldName: "\(fieldName).options.other")
+        other: try parsePipelineMap(
+          requireMap(options, key: "other", fieldName: "\(fieldName).options.other"),
+          options: nil
+        )
       ))
     case "unnest":
       return .unnestStage(RNFBFirestoreParsedUnnestStage(
-        selectable: try requireValue(options, key: "selectable", fieldName: "\(fieldName).options.selectable"),
-        indexField: options["indexField"]
+        selectable: try parseSelectableNode(
+          requireValue(options, key: "selectable", fieldName: "\(fieldName).options.selectable"),
+          fieldName: "\(fieldName).options.selectable"
+        ),
+        indexField: try optionalExpressionNode(options, key: "indexField", fieldName: "\(fieldName).options.indexField")
       ))
     case "rawStage":
       return .rawStage(RNFBFirestoreParsedRawStage(
@@ -472,6 +550,46 @@ enum RNFBFirestorePipelineParser {
     return value
   }
 
+  private static func optionalExpressionNode(
+    _ map: [String: Any],
+    key: String,
+    fieldName: String
+  ) throws -> RNFBFirestoreParsedExpressionNode? {
+    guard let value = map[key] else {
+      return nil
+    }
+
+    return try parseExpressionNode(value, fieldName: fieldName)
+  }
+
+  private static func requireNumber(
+    _ map: [String: Any],
+    key: String,
+    fieldName: String
+  ) throws -> NSNumber {
+    guard let value = map[key] as? NSNumber else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to be a number.")
+    }
+
+    return value
+  }
+
+  private static func optionalNumber(
+    _ map: [String: Any],
+    key: String,
+    fieldName: String
+  ) throws -> NSNumber? {
+    guard let value = map[key] else {
+      return nil
+    }
+
+    guard let number = value as? NSNumber else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to be a number.")
+    }
+
+    return number
+  }
+
   private static func requireStringArray(
     _ map: [String: Any],
     key: String,
@@ -494,21 +612,18 @@ enum RNFBFirestorePipelineParser {
     _ options: [String: Any],
     fieldName: String
   ) throws -> RNFBFirestoreParsedAggregateStage {
-    let rawAccumulators = try requireArray(options, key: "accumulators", fieldName: "\(fieldName).accumulators")
-    guard !rawAccumulators.isEmpty else {
-      throw PipelineValidationError("pipelineExecute() expected \(fieldName).accumulators to contain at least one value.")
-    }
+    let accumulators = try parseAggregateNodes(
+      requireArray(options, key: "accumulators", fieldName: "\(fieldName).accumulators"),
+      fieldName: "\(fieldName).accumulators"
+    )
 
-    let accumulators = try rawAccumulators.enumerated().map { index, value -> [String: Any] in
-      guard let map = value as? [String: Any] else {
-        throw PipelineValidationError("pipelineExecute() expected \(fieldName).accumulators[\(index)] to be an object.")
-      }
-      return map
-    }
-
-    let groups: [Any]
+    let groups: [RNFBFirestoreParsedSelectableNode]
     if options["groups"] != nil {
-      groups = try requireArray(options, key: "groups", fieldName: "\(fieldName).groups")
+      groups = try parseSelectableNodes(
+        requireArray(options, key: "groups", fieldName: "\(fieldName).groups"),
+        fieldName: "\(fieldName).groups",
+        requireNonEmpty: false
+      )
     } else {
       groups = []
     }
@@ -526,16 +641,18 @@ enum RNFBFirestorePipelineParser {
       fieldName: "\(fieldName).distanceMeasure"
     )
 
-    if let limit = options["limit"], !(limit is NSNumber) {
-      throw PipelineValidationError("pipelineExecute() expected \(fieldName).limit to be a number.")
-    }
-
     return RNFBFirestoreParsedFindNearestStage(
-      field: try requireValue(options, key: "field", fieldName: "\(fieldName).field"),
-      vectorValue: options["vectorValue"],
+      field: try parseExpressionNode(
+        requireValue(options, key: "field", fieldName: "\(fieldName).field"),
+        fieldName: "\(fieldName).field"
+      ),
+      vectorValue: try parseValueNode(
+        requireValue(options, key: "vectorValue", fieldName: "\(fieldName).vectorValue"),
+        fieldName: "\(fieldName).vectorValue"
+      ),
       distanceMeasure: distanceMeasure,
-      limit: options["limit"] as? NSNumber,
-      distanceField: options["distanceField"]
+      limit: try optionalNumber(options, key: "limit", fieldName: "\(fieldName).limit"),
+      distanceField: try optionalExpressionNode(options, key: "distanceField", fieldName: "\(fieldName).distanceField")
     )
   }
 
@@ -550,14 +667,377 @@ enum RNFBFirestorePipelineParser {
       throw PipelineValidationError("pipelineExecute() expected sample stage to include documents or percentage.")
     }
 
-    if let documents, !(documents is NSNumber) {
-      throw PipelineValidationError("pipelineExecute() expected \(fieldName).documents to be a number.")
+    return RNFBFirestoreParsedSampleStage(
+      documents: try optionalNumber(options, key: "documents", fieldName: "\(fieldName).documents"),
+      percentage: try optionalNumber(options, key: "percentage", fieldName: "\(fieldName).percentage")
+    )
+  }
+
+  private static func parseSelectableNodes(
+    _ values: [Any],
+    fieldName: String,
+    requireNonEmpty: Bool = true
+  ) throws -> [RNFBFirestoreParsedSelectableNode] {
+    if requireNonEmpty && values.isEmpty {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to contain at least one value.")
     }
 
-    if let percentage, !(percentage is NSNumber) {
-      throw PipelineValidationError("pipelineExecute() expected \(fieldName).percentage to be a number.")
+    return try values.enumerated().map { index, value in
+      try parseSelectableNode(value, fieldName: "\(fieldName)[\(index)]")
+    }
+  }
+
+  private static func parseSelectableNode(
+    _ value: Any,
+    fieldName: String
+  ) throws -> RNFBFirestoreParsedSelectableNode {
+    if value is String {
+      return RNFBFirestoreParsedSelectableNode(
+        expression: try parseExpressionNode(value, fieldName: fieldName),
+        alias: nil,
+        isFlatFieldAlias: false
+      )
     }
 
-    return RNFBFirestoreParsedSampleStage(documents: documents, percentage: percentage)
+    guard let map = value as? [String: Any] else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to be a selectable expression.")
+    }
+
+    let alias = firstString(map["alias"], map["as"], map["name"])
+    if let alias, !alias.isEmpty {
+      if map["path"] != nil || map["fieldPath"] != nil || map["segments"] != nil {
+        return RNFBFirestoreParsedSelectableNode(
+          expression: .field(path: try coerceFieldPath(value, fieldName: "\(fieldName).path")),
+          alias: alias,
+          isFlatFieldAlias: true
+        )
+      }
+
+      let expressionValue = firstNonNil(map["expr"], map["expression"], map["field"]) ?? value
+      return RNFBFirestoreParsedSelectableNode(
+        expression: try parseExpressionNode(expressionValue, fieldName: "\(fieldName).expr"),
+        alias: alias,
+        isFlatFieldAlias: false
+      )
+    }
+
+    return RNFBFirestoreParsedSelectableNode(
+      expression: try parseExpressionNode(value, fieldName: fieldName),
+      alias: nil,
+      isFlatFieldAlias: false
+    )
+  }
+
+  private static func parseOrderingNodes(
+    _ values: [Any],
+    fieldName: String
+  ) throws -> [RNFBFirestoreParsedOrderingNode] {
+    guard !values.isEmpty else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to contain at least one value.")
+    }
+
+    return try values.enumerated().map { index, value in
+      try parseOrderingNode(value, fieldName: "\(fieldName)[\(index)]")
+    }
+  }
+
+  private static func parseOrderingNode(
+    _ value: Any,
+    fieldName: String
+  ) throws -> RNFBFirestoreParsedOrderingNode {
+    if value is String {
+      return RNFBFirestoreParsedOrderingNode(
+        expression: try parseExpressionNode(value, fieldName: fieldName),
+        descending: false,
+        fieldShortcut: true
+      )
+    }
+
+    guard let map = value as? [String: Any] else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to be a string or object.")
+    }
+
+    let direction = (map["direction"] as? String) ?? "asc"
+    let expressionValue = firstNonNil(
+      map["expression"],
+      map["expr"],
+      map["field"],
+      map["fieldPath"],
+      map["path"],
+      value
+    ) as Any
+
+    return RNFBFirestoreParsedOrderingNode(
+      expression: try parseExpressionNode(expressionValue, fieldName: fieldName),
+      descending: isDescendingDirection(direction),
+      fieldShortcut: false
+    )
+  }
+
+  private static func parseAggregateNodes(
+    _ values: [Any],
+    fieldName: String
+  ) throws -> [RNFBFirestoreParsedAggregateNode] {
+    guard !values.isEmpty else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to contain at least one value.")
+    }
+
+    return try values.enumerated().map { index, value in
+      try parseAggregateNode(value, fieldName: "\(fieldName)[\(index)]")
+    }
+  }
+
+  private static func parseAggregateNode(
+    _ value: Any,
+    fieldName: String
+  ) throws -> RNFBFirestoreParsedAggregateNode {
+    guard let map = value as? [String: Any] else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to be an object.")
+    }
+
+    let aggregateValue = map["aggregate"] ?? value
+    guard let aggregateMap = aggregateValue as? [String: Any] else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName).aggregate to be an object.")
+    }
+
+    guard let kind = firstString(
+      aggregateMap["kind"],
+      aggregateMap["name"],
+      aggregateMap["function"],
+      aggregateMap["op"]
+    ), !kind.isEmpty else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to include an aggregate kind.")
+    }
+
+    let alias = firstString(map["alias"], map["as"], map["name"]) ?? kind.lowercased()
+    let primaryExpression = firstNonNil(aggregateMap["expr"], aggregateMap["field"]) ?? aggregateMap["value"]
+    let primaryValue = try primaryExpression.map {
+      try parseValueNode($0, fieldName: "\(fieldName).expr")
+    }
+    let args = try parseArgumentValueNodes(aggregateMap["args"], fieldName: "\(fieldName).args")
+
+    return RNFBFirestoreParsedAggregateNode(kind: kind, alias: alias, primaryValue: primaryValue, args: args)
+  }
+
+  private static func parseExpressionNode(
+    _ value: Any,
+    fieldName: String
+  ) throws -> RNFBFirestoreParsedExpressionNode {
+    if let stringValue = value as? String {
+      return .field(path: stringValue)
+    }
+
+    if let map = value as? [String: Any] {
+      if let nested = map["expr"] {
+        return try parseExpressionNode(nested, fieldName: "\(fieldName).expr")
+      }
+      if let nested = map["expression"] {
+        return try parseExpressionNode(nested, fieldName: "\(fieldName).expression")
+      }
+
+      if let operatorName = map["operator"] as? String {
+        return try parseOperatorExpressionNode(map: map, operatorName: operatorName, fieldName: fieldName)
+      }
+
+      if let exprType = map["exprType"] as? String {
+        let normalizedType = exprType.lowercased()
+        if normalizedType == "field" {
+          return .field(path: try coerceFieldPath(value, fieldName: fieldName))
+        }
+        if normalizedType == "constant" {
+          return .constant(try parseValueNode(map["value"] as Any, fieldName: "\(fieldName).value"))
+        }
+      }
+
+      if map["name"] != nil {
+        guard let nameValue = map["name"] as? String, !nameValue.isEmpty else {
+          throw PipelineValidationError("pipelineExecute() expected \(fieldName).name to be a non-empty string.")
+        }
+
+        return .function(
+          name: nameValue,
+          args: try parseArgumentValueNodes(map["args"], fieldName: "\(fieldName).args")
+        )
+      }
+
+      if map["fieldPath"] != nil || map["path"] != nil || map["segments"] != nil || map["_segments"] != nil {
+        return .field(path: try coerceFieldPath(value, fieldName: fieldName))
+      }
+    }
+
+    return .constant(try parseValueNode(value, fieldName: fieldName))
+  }
+
+  private static func parseOperatorExpressionNode(
+    map: [String: Any],
+    operatorName: String,
+    fieldName: String
+  ) throws -> RNFBFirestoreParsedExpressionNode {
+    let normalizedOperator = operatorName.uppercased()
+    if normalizedOperator == "AND" || normalizedOperator == "OR" {
+      guard let queries = map["queries"] as? [Any], !queries.isEmpty else {
+        throw PipelineValidationError("pipelineExecute() expected \(fieldName).queries to contain boolean expressions.")
+      }
+
+      let args = try queries.enumerated().map { index, query in
+        RNFBFirestoreParsedValueNode.expression(
+          try parseExpressionNode(query, fieldName: "\(fieldName).queries[\(index)]")
+        )
+      }
+      return .function(name: normalizedOperator == "AND" ? "and" : "or", args: args)
+    }
+
+    let fieldValue = map["fieldPath"] ?? map["field"]
+    guard let fieldValue else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName).fieldPath to be provided.")
+    }
+
+    let rightValue = map["value"] ?? map["right"] ?? map["operand"] ?? NSNull()
+    return .function(name: mapOperatorToFunction(normalizedOperator), args: [
+      .expression(try parseExpressionNode(fieldValue, fieldName: "\(fieldName).fieldPath")),
+      try parseValueNode(rightValue, fieldName: "\(fieldName).value"),
+    ])
+  }
+
+  private static func parseArgumentValueNodes(
+    _ argsValue: Any?,
+    fieldName: String
+  ) throws -> [RNFBFirestoreParsedValueNode] {
+    guard let argsValue else {
+      return []
+    }
+
+    if let rawArgs = argsValue as? [Any] {
+      return try rawArgs.enumerated().map { index, value in
+        try parseValueNode(value, fieldName: "\(fieldName)[\(index)]")
+      }
+    }
+
+    return [try parseValueNode(argsValue, fieldName: "\(fieldName)[0]")]
+  }
+
+  private static func parseValueNode(
+    _ value: Any,
+    fieldName: String
+  ) throws -> RNFBFirestoreParsedValueNode {
+    if let map = value as? [String: Any] {
+      if isExpressionLike(map) {
+        return .expression(try parseExpressionNode(value, fieldName: fieldName))
+      }
+
+      return .map(try map.reduce(into: [String: RNFBFirestoreParsedValueNode]()) { result, entry in
+        result[entry.key] = try parseValueNode(entry.value, fieldName: "\(fieldName).\(entry.key)")
+      })
+    }
+
+    if let list = value as? [Any] {
+      return .list(try list.enumerated().map { index, entry in
+        try parseValueNode(entry, fieldName: "\(fieldName)[\(index)]")
+      })
+    }
+
+    return .primitive(value)
+  }
+
+  private static func parseQuerySourceValueNode(
+    _ value: Any,
+    fieldName: String
+  ) throws -> RNFBFirestoreParsedValueNode {
+    if let map = value as? [String: Any] {
+      return .map(try map.reduce(into: [String: RNFBFirestoreParsedValueNode]()) { result, entry in
+        result[entry.key] = try parseQuerySourceValueNode(entry.value, fieldName: "\(fieldName).\(entry.key)")
+      })
+    }
+
+    if let list = value as? [Any] {
+      return .list(try list.enumerated().map { index, entry in
+        try parseQuerySourceValueNode(entry, fieldName: "\(fieldName)[\(index)]")
+      })
+    }
+
+    return .primitive(value)
+  }
+
+  private static func isExpressionLike(_ map: [String: Any]) -> Bool {
+    map["exprType"] != nil || map["operator"] != nil || map["name"] != nil || map["expr"] != nil ||
+      map["expression"] != nil || map["fieldPath"] != nil || map["path"] != nil ||
+      map["segments"] != nil || map["_segments"] != nil
+  }
+
+  private static func coerceFieldPath(
+    _ value: Any,
+    fieldName: String
+  ) throws -> String {
+    if let fieldPath = value as? String, !fieldPath.isEmpty {
+      return fieldPath
+    }
+
+    if let map = value as? [String: Any] {
+      let path = firstNonNil(map["path"], map["fieldPath"])
+      if let path, !(path is [String: Any]) {
+        return try coerceFieldPath(path, fieldName: fieldName)
+      }
+
+      let segments = (map["segments"] as? [Any]) ?? (map["_segments"] as? [Any])
+      if let segments {
+        let stringSegments = try segments.enumerated().map { _, segment -> String in
+          guard let stringSegment = segment as? String else {
+            throw PipelineValidationError("pipelineExecute() expected \(fieldName) segment values to be strings.")
+          }
+          return stringSegment
+        }
+
+        let pathValue = stringSegments.joined(separator: ".")
+        if !pathValue.isEmpty {
+          return pathValue
+        }
+      }
+    }
+
+    throw PipelineValidationError("pipelineExecute() expected \(fieldName) to resolve to a field path string.")
+  }
+
+  private static func firstString(_ values: Any?...) -> String? {
+    for value in values {
+      if let stringValue = value as? String, !stringValue.isEmpty {
+        return stringValue
+      }
+    }
+
+    return nil
+  }
+
+  private static func firstNonNil(_ values: Any?...) -> Any? {
+    for value in values where value != nil {
+      return value
+    }
+
+    return nil
+  }
+
+  private static func isDescendingDirection(_ direction: String?) -> Bool {
+    guard let direction else {
+      return false
+    }
+
+    let normalized = direction.lowercased()
+    return normalized == "desc" || normalized == "descending"
+  }
+
+  private static func mapOperatorToFunction(_ operatorName: String) -> String {
+    switch operatorName {
+    case "==", "=", "EQUAL": return "equal"
+    case "!=", "<>", "NOT_EQUAL": return "not_equal"
+    case ">", "GREATER_THAN": return "greater_than"
+    case ">=", "GREATER_THAN_OR_EQUAL": return "greater_than_or_equal"
+    case "<", "LESS_THAN": return "less_than"
+    case "<=", "LESS_THAN_OR_EQUAL": return "less_than_or_equal"
+    case "ARRAY_CONTAINS", "ARRAY-CONTAINS": return "array_contains"
+    case "ARRAY_CONTAINS_ANY", "ARRAY-CONTAINS-ANY": return "array_contains_any"
+    case "ARRAY_CONTAINS_ALL", "ARRAY-CONTAINS-ALL": return "array_contains_all"
+    case "IN": return "equal_any"
+    case "NOT_IN": return "not_equal_any"
+    default: return operatorName.lowercased()
+    }
   }
 }

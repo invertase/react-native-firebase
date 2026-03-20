@@ -66,14 +66,17 @@ final class RNFBFirestorePipelineBridgeFactory {
       guard let queryType = source.queryType else {
         throw PipelineValidationError("pipelineExecute() expected pipeline.source.queryType to be a non-empty string.")
       }
+      guard let querySource = source.query else {
+        throw PipelineValidationError("pipelineExecute() expected query source payload to be provided.")
+      }
 
       let baseQuery = RNFBFirestoreCommon.getQueryFor(firestore, path: path, type: queryType)
       let query = RNFBFirestoreQuery(
         modifiers: firestore,
         query: baseQuery,
-        filters: source.filters,
-        orders: source.orders,
-        options: source.options
+        filters: buildQuerySourceArray(querySource.filters),
+        orders: buildQuerySourceArray(querySource.orders),
+        options: buildQuerySourceMap(querySource.options)
       ).instance()
 
       guard let query else {
@@ -128,11 +131,10 @@ final class RNFBFirestorePipelineBridgeFactory {
       }
       throw PipelineValidationError("pipelineExecute() expected sample stage to include documents or percentage.")
     case let .unionStage(parsed):
-      let otherRequest = try RNFBFirestorePipelineParser.parse(pipeline: parsed.other as NSDictionary, options: nil)
-      let otherStages = try buildStageBridges(firestore: firestore, request: otherRequest)
+      let otherStages = try buildStageBridges(firestore: firestore, request: parsed.other)
       return UnionStageBridge(other: PipelineBridge(stages: otherStages, db: firestore))
     case let .unnestStage(parsed):
-      let expression = try nodeBuilder.coerceExpression(parsed.selectable, fieldName: "stage.options.selectable")
+      let expression = try nodeBuilder.coerceExpression(parsed.selectable.expression, fieldName: "stage.options.selectable")
       let alias = nodeBuilder.coerceAlias(from: parsed.selectable) ?? "_unnest"
       let indexExpr: ExprBridge?
       if let indexField = parsed.indexField {
@@ -152,13 +154,12 @@ final class RNFBFirestorePipelineBridgeFactory {
 
   private func buildAggregateStage(_ stage: RNFBFirestoreParsedAggregateStage) throws -> StageBridge {
     var accumulators: [String: AggregateFunctionBridge] = [:]
-    for (index, map) in stage.accumulators.enumerated() {
-      let alias = (map["alias"] as? String) ?? (map["as"] as? String) ?? (map["name"] as? String) ?? "acc_\(index)"
-      let aggregateFn = try nodeBuilder.coerceAggregateFunction(
-        map,
+    for (index, accumulator) in stage.accumulators.enumerated() {
+      let aggregate = try nodeBuilder.coerceAliasedAggregate(
+        accumulator,
         fieldName: "stage.options.accumulators[\(index)]"
       )
-      accumulators[alias] = aggregateFn
+      accumulators[aggregate.alias] = aggregate.function
     }
 
     let groups = stage.groups.isEmpty
@@ -192,5 +193,52 @@ final class RNFBFirestorePipelineBridgeFactory {
       return number.doubleValue
     }
     throw PipelineValidationError("pipelineExecute() expected \(fieldName) to be a number.")
+  }
+
+  private func buildQuerySourceArray(_ values: [RNFBFirestoreParsedValueNode]) -> [Any] {
+    values.map(buildQuerySourceValue)
+  }
+
+  private func buildQuerySourceMap(_ values: [String: RNFBFirestoreParsedValueNode]) -> [String: Any] {
+    values.reduce(into: [String: Any]()) { result, entry in
+      result[entry.key] = buildQuerySourceValue(entry.value)
+    }
+  }
+
+  private func buildQuerySourceValue(_ value: RNFBFirestoreParsedValueNode) -> Any {
+    switch value {
+    case let .primitive(primitive):
+      return primitive
+    case let .list(values):
+      return buildQuerySourceArray(values)
+    case let .map(values):
+      return buildQuerySourceMap(values)
+    case let .expression(expression):
+      return buildQuerySourceExpression(expression)
+    }
+  }
+
+  private func buildQuerySourceExpression(_ expression: RNFBFirestoreParsedExpressionNode) -> Any {
+    switch expression {
+    case let .field(path):
+      return [
+        "__kind": "expression",
+        "exprType": "Field",
+        "path": path,
+      ]
+    case let .constant(value):
+      return [
+        "__kind": "expression",
+        "exprType": "Constant",
+        "value": buildQuerySourceValue(value),
+      ]
+    case let .function(name, args):
+      return [
+        "__kind": "expression",
+        "exprType": "Function",
+        "name": name,
+        "args": buildQuerySourceArray(args),
+      ]
+    }
   }
 }

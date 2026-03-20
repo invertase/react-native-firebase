@@ -18,6 +18,115 @@ import Foundation
 import FirebaseFirestore
 
 final class RNFBFirestorePipelineNodeBuilder {
+  func coerceExpression(
+    _ value: RNFBFirestoreParsedExpressionNode,
+    fieldName: String
+  ) throws -> ExprBridge {
+    switch value {
+    case let .field(path):
+      return FieldBridge(name: path)
+    case let .constant(constantValue):
+      return ConstantBridge(serializeValueNode(constantValue))
+    case let .function(name, args):
+      return try coerceFunctionExpression(
+        name: name,
+        args: args.map(serializeValueNode),
+        fieldName: fieldName
+      )
+    }
+  }
+
+  func coerceBooleanExpression(
+    _ value: RNFBFirestoreParsedExpressionNode,
+    fieldName: String
+  ) throws -> ExprBridge {
+    switch value {
+    case let .function(name, args):
+      return try coerceBooleanFunctionExpression(
+        name: name,
+        args: args.map(serializeValueNode),
+        fieldName: fieldName
+      )
+    default:
+      return try coerceExpression(value, fieldName: fieldName)
+    }
+  }
+
+  func coerceNamedSelectables(
+    _ values: [RNFBFirestoreParsedSelectableNode],
+    fieldName: String
+  ) throws -> [String: ExprBridge] {
+    guard !values.isEmpty else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to contain at least one value.")
+    }
+
+    var output: [String: ExprBridge] = [:]
+    for (index, value) in values.enumerated() {
+      let expression = try coerceExpression(value.expression, fieldName: "\(fieldName)[\(index)].expr")
+      let alias = coerceAlias(from: value) ?? expressionAlias(expression) ?? "field_\(index)"
+      output[alias] = expression
+    }
+    return output
+  }
+
+  func coerceOrderings(
+    _ values: [RNFBFirestoreParsedOrderingNode],
+    fieldName: String
+  ) throws -> [Any] {
+    guard !values.isEmpty else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to contain at least one value.")
+    }
+
+    return try values.enumerated().map { index, value in
+      OrderingBridge(
+        expr: try coerceExpression(value.expression, fieldName: "\(fieldName)[\(index)].expr"),
+        direction: value.descending ? "descending" : "ascending"
+      )
+    }
+  }
+
+  func coerceAliasedAggregate(
+    _ value: RNFBFirestoreParsedAggregateNode,
+    fieldName: String
+  ) throws -> (alias: String, function: AggregateFunctionBridge) {
+    var aggregate: [String: Any] = ["kind": value.kind]
+    if let primaryValue = value.primaryValue {
+      aggregate["expr"] = serializeValueNode(primaryValue)
+    }
+    if !value.args.isEmpty {
+      aggregate["args"] = value.args.map(serializeValueNode)
+    }
+
+    let serializedAccumulator: [String: Any] = [
+      "alias": value.alias,
+      "aggregate": aggregate,
+    ]
+
+    return (
+      alias: value.alias,
+      function: try coerceAggregateFunction(serializedAccumulator, fieldName: fieldName)
+    )
+  }
+
+  func coerceVector(
+    _ value: RNFBFirestoreParsedValueNode,
+    fieldName: String
+  ) throws -> [Double] {
+    try coerceVector(serializeValueNode(value), fieldName: fieldName)
+  }
+
+  func coerceFieldPath(
+    _ value: RNFBFirestoreParsedExpressionNode,
+    fieldName: String
+  ) throws -> String {
+    switch value {
+    case let .field(path):
+      return path
+    default:
+      return try coerceFieldPath(serializeExpressionNode(value), fieldName: fieldName)
+    }
+  }
+
   func coerceExpression(_ value: Any, fieldName: String) throws -> ExprBridge {
     if let stringValue = value as? String {
       return FieldBridge(name: stringValue)
@@ -763,11 +872,62 @@ final class RNFBFirestorePipelineNodeBuilder {
     return nil
   }
 
+  func coerceAlias(from value: RNFBFirestoreParsedSelectableNode) -> String? {
+    if let alias = value.alias, !alias.isEmpty {
+      return alias
+    }
+
+    if case let .field(path) = value.expression, !path.isEmpty {
+      return path
+    }
+
+    return nil
+  }
+
   private func expressionAlias(_ expression: ExprBridge) -> String? {
     if let field = expression as? FieldBridge {
       return field.field_name()
     }
     return nil
+  }
+
+  private func serializeExpressionNode(_ value: RNFBFirestoreParsedExpressionNode) -> Any {
+    switch value {
+    case let .field(path):
+      return [
+        "__kind": "expression",
+        "exprType": "Field",
+        "path": path,
+      ]
+    case let .constant(constantValue):
+      return [
+        "__kind": "expression",
+        "exprType": "constant",
+        "value": serializeValueNode(constantValue),
+      ]
+    case let .function(name, args):
+      return [
+        "__kind": "expression",
+        "exprType": "Function",
+        "name": name,
+        "args": args.map(serializeValueNode),
+      ]
+    }
+  }
+
+  private func serializeValueNode(_ value: RNFBFirestoreParsedValueNode) -> Any {
+    switch value {
+    case let .primitive(primitive):
+      return primitive
+    case let .list(values):
+      return values.map(serializeValueNode)
+    case let .map(values):
+      return values.reduce(into: [String: Any]()) { result, entry in
+        result[entry.key] = serializeValueNode(entry.value)
+      }
+    case let .expression(expression):
+      return serializeExpressionNode(expression)
+    }
   }
 
   private func coerceNumber(_ value: Any, fieldName: String) throws -> Double {
