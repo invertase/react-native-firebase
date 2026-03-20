@@ -17,7 +17,7 @@
 
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { AI, Backend } from './public-types';
-import { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import type { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { FirebaseAppCheckTypes } from '@react-native-firebase/app-check';
 import { VertexAIBackend } from './backend';
 

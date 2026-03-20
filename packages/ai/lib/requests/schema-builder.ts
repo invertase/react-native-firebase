@@ -259,7 +259,7 @@ export class ObjectSchema extends Schema {
   toJSON(): SchemaRequest {
     const obj = super.toJSON();
     obj.properties = { ...this.properties };
-    const required = [];
+    const required: string[] = [];
     if (this.optionalProperties) {
       for (const propertyKey of this.optionalProperties) {
         if (!this.properties.hasOwnProperty(propertyKey)) {

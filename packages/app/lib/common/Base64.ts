@@ -15,7 +15,6 @@
  *
  */
 
-// @ts-expect-error - No type declarations available
 import binaryToBase64 from 'react-native/Libraries/Utilities/binaryToBase64';
 import { promiseDefer } from './promise';
 

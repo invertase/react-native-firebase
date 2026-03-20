@@ -16,7 +16,7 @@
  */
 
 import { ReactNativeFirebase } from '@react-native-firebase/app';
-import { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import type { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { FirebaseAppCheckTypes } from '@react-native-firebase/app-check';
 import { Backend } from './backend';
 

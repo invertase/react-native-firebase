@@ -160,7 +160,7 @@ export function getText(
   response: GenerateContentResponse,
   partFilter: (part: Part) => boolean,
 ): string {
-  const textStrings = [];
+  const textStrings: string[] = [];
   if (response.candidates?.[0]?.content?.parts) {
     for (const part of response.candidates?.[0]?.content?.parts) {
       if (part.text && partFilter(part)) {
