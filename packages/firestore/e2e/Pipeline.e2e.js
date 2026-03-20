@@ -703,7 +703,7 @@ describe('FirestorePipeline', function () {
         snapshot.results[2].data().attempt.should.equal(0);
       });
 
-      it('rejects invalid native stage options with clear firestore errors', async function () {
+      it('rejects invalid stage options with clear validation errors', async function () {
         const { execute } = firestorePipelinesModular;
         const { getFirestore, collection, doc, setDoc } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
@@ -715,48 +715,31 @@ describe('FirestorePipeline', function () {
 
         await expectAsyncError(
           () => execute(db.pipeline().collection(coll).select()),
-          [
-            'pipelineExecute() expected stage.options.selections to contain at least one value.',
-            'pipelineExecute() expected pipeline.stages[0].options.selections to contain at least one value.',
-          ],
-          ['firestore/invalid-argument', 'firestore/unknown'],
+          'pipelineExecute() expected stage.options.selections to contain at least one value.',
         );
 
         await expectAsyncError(
           () => execute(db.pipeline().collection(coll).sort()),
-          [
-            'pipelineExecute() expected stage.options.orderings to contain at least one value.',
-            'pipelineExecute() expected pipeline.stages[0].options.orderings to contain at least one value.',
-          ],
-          ['firestore/invalid-argument', 'firestore/unknown'],
+          'pipelineExecute() expected stage.options.orderings to contain at least one value.',
         );
 
         await expectAsyncError(
           () => execute(db.pipeline().collection(coll).aggregate()),
-          [
-            'pipelineExecute() expected stage.options.accumulators to contain at least one value.',
-            'pipelineExecute() expected pipeline.stages[0].options.accumulators to contain at least one value.',
-          ],
-          ['firestore/invalid-argument', 'firestore/unknown'],
+          'pipelineExecute() expected stage.options.accumulators to contain at least one value.',
         );
 
         await expectAsyncError(
           () => execute(db.pipeline().collection(coll).distinct()),
-          [
-            'pipelineExecute() expected stage.options.groups to contain at least one value.',
-            'pipelineExecute() expected pipeline.stages[0].options.groups to contain at least one value.',
-          ],
-          ['firestore/invalid-argument', 'firestore/unknown'],
+          'pipelineExecute() expected stage.options.groups to contain at least one value.',
         );
 
         await expectAsyncError(
           () => execute(db.pipeline().collection(coll).sample({})),
           'pipelineExecute() expected sample stage to include documents or percentage.',
-          ['firestore/invalid-argument', 'firestore/unknown'],
         );
       });
 
-      it('rejects malformed where and malformed union payloads at native validation boundary', async function () {
+      it('rejects malformed where and malformed union payloads at validation boundary', async function () {
         const { execute } = firestorePipelinesModular;
         const { getFirestore, collection, doc, setDoc } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
@@ -776,7 +759,6 @@ describe('FirestorePipeline', function () {
                 .where({ condition: { operator: 'IN', fieldPath: 'tag', value: 'not-an-array' } }),
             ),
           'invalid argument',
-          ['firestore/invalid-argument', 'firestore/unknown'],
         );
 
         const badUnion = db.pipeline().collection(coll);
@@ -787,7 +769,6 @@ describe('FirestorePipeline', function () {
             'pipelineExecute() expected stage.options.other to be a serialized pipeline object.',
             'pipelineExecute() expected pipeline.source to be an object.',
           ],
-          ['firestore/invalid-argument', 'firestore/unknown'],
         );
       });
     });

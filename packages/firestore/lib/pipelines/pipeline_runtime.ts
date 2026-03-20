@@ -71,6 +71,7 @@ import type {
 import type { PipelineExecuteOptions } from './pipeline_options';
 import { getFirestore } from '../modular';
 import { getIOSUnsupportedPipelineFunctions } from './pipeline_support';
+import { validateExecuteOptions, validateSerializedPipeline } from './pipeline_validate';
 
 const PIPELINE_RUNTIME_SYMBOL = Symbol.for('RNFBFirestorePipelineRuntime');
 const PIPELINE_RUNTIME_INSTALLER_SYMBOL = Symbol.for('RNFBFirestorePipelineRuntimeInstaller');
@@ -810,10 +811,11 @@ function parseExecuteInput(pipelineOrOptions: Pipeline | PipelineExecuteOptions)
 
   return {
     runtimePipeline,
-    executeOptions: {
-      indexMode: pipelineOrOptions.indexMode === 'recommended' ? 'recommended' : undefined,
-      rawOptions: isRecord(pipelineOrOptions.rawOptions) ? pipelineOrOptions.rawOptions : undefined,
-    },
+    executeOptions:
+      validateExecuteOptions({
+        indexMode: pipelineOrOptions.indexMode,
+        rawOptions: pipelineOrOptions.rawOptions,
+      }) ?? {},
   };
 }
 
@@ -822,17 +824,7 @@ export async function executeRuntimePipeline(
 ): Promise<PipelineSnapshot> {
   const { runtimePipeline, executeOptions } = parseExecuteInput(pipelineOrOptions);
   const serializedPipeline = runtimePipeline.serialize();
-  if (executeOptions.indexMode) {
-    throw new Error(
-      'pipelineExecute() does not support options.indexMode because Firestore pipeline execute options are currently unstable or unavailable.',
-    );
-  }
-
-  if (isRecord(executeOptions.rawOptions)) {
-    throw new Error(
-      'pipelineExecute() does not support options.rawOptions because Firestore pipeline execute options are currently unstable or unavailable.',
-    );
-  }
+  validateSerializedPipeline(serializedPipeline);
 
   if (isIOS) {
     const unsupportedFunctions = getIOSUnsupportedPipelineFunctions(serializedPipeline);

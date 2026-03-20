@@ -22,9 +22,9 @@ import type {
   FirestorePipelineSerializedInternal,
   FirestorePipelineSnapshotInternal,
 } from '../../types/internal';
+import { validatePipelineExecuteRequest } from '../../pipelines/pipeline_validate';
 import { buildWebSdkPipeline } from './pipeline_bridge_factory';
 import type { WebPipelineInstance } from './pipeline_node_builder';
-import { parseWebSdkPipelineRequest } from './pipeline_parser';
 import { serializeWebSdkPipelineSnapshot } from './pipeline_snapshot_serializer';
 
 async function executeWebSdkPipelineSnapshot(
@@ -40,7 +40,7 @@ export async function executeWebSdkPipeline(
   pipeline: FirestorePipelineSerializedInternal,
   options?: FirestorePipelineExecuteOptionsInternal,
 ): Promise<FirestorePipelineSnapshotInternal> {
-  const request = parseWebSdkPipelineRequest(pipeline, options);
+  const request = validatePipelineExecuteRequest(pipeline, options);
   const webSdkPipeline = buildWebSdkPipeline(firestore, request);
   const rawSnapshot = await executeWebSdkPipelineSnapshot(webSdkPipeline, request.options);
   return serializeWebSdkPipelineSnapshot(rawSnapshot, request);
