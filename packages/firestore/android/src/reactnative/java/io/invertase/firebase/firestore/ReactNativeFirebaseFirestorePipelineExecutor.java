@@ -38,7 +38,6 @@ import com.google.firebase.firestore.Pipeline;
 import com.google.firebase.firestore.PipelineResult;
 import com.google.firebase.firestore.PipelineSource;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.pipeline.AggregateFunction;
 import com.google.firebase.firestore.pipeline.AggregateStage;
 import com.google.firebase.firestore.pipeline.AliasedAggregate;
 import com.google.firebase.firestore.pipeline.BooleanExpression;
@@ -323,7 +322,8 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
   private Pipeline applySelectStage(
       Pipeline pipeline, ReactNativeFirebaseFirestorePipelineParser.ParsedSelectStage stage)
       throws PipelineValidationException {
-    List<ReactNativeFirebaseFirestorePipelineParser.ParsedSelectableNode> selections = stage.selections;
+    List<ReactNativeFirebaseFirestorePipelineParser.ParsedSelectableNode> selections =
+        stage.selections;
     if (selections.isEmpty()) {
       throw new PipelineValidationException(
           "pipelineExecute() expected stage.options.selections to contain at least one value.");
@@ -591,7 +591,8 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
   }
 
   private Pipeline.ExecuteOptions applyExecuteRawOptions(
-      Pipeline.ExecuteOptions options, Map<String, Object> rawOptions) throws PipelineValidationException {
+      Pipeline.ExecuteOptions options, Map<String, Object> rawOptions)
+      throws PipelineValidationException {
     for (Map.Entry<String, Object> entry : rawOptions.entrySet()) {
       String rawKey = entry.getKey();
       String key = normalizeRawOptionKey(rawKey);

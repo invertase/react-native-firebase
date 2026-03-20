@@ -59,7 +59,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     Expression expression = coerceExpression(value.expression, fieldName + ".expr");
     if (value.fieldShortcut
-        && value.expression instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedFieldExpressionNode) {
+        && value.expression
+            instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedFieldExpressionNode) {
       String fieldPath =
           ((ReactNativeFirebaseFirestorePipelineParser.ParsedFieldExpressionNode) value.expression)
               .path;
@@ -172,14 +173,16 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       ReactNativeFirebaseFirestorePipelineParser.ParsedFunctionExpressionNode function,
       String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    Expression specialized = buildSpecialParsedExpressionFunction(function.name, function.args, fieldName);
+    Expression specialized =
+        buildSpecialParsedExpressionFunction(function.name, function.args, fieldName);
     if (specialized != null) {
       return specialized;
     }
 
     Expression[] expressions = new Expression[function.args.size()];
     for (int i = 0; i < function.args.size(); i++) {
-      expressions[i] = coerceExpressionValueNode(function.args.get(i), fieldName + ".args[" + i + "]");
+      expressions[i] =
+          coerceExpressionValueNode(function.args.get(i), fieldName + ".args[" + i + "]");
     }
     return Expression.rawFunction(normalizeExpressionFunctionName(function.name), expressions);
   }
@@ -253,22 +256,28 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         return buildParsedVectorDistanceExpression("euclideanDistance", args, fieldName);
       case "timestamptounixmicros":
         requireParsedArgumentCount(args, 1, functionName, fieldName);
-        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]").timestampToUnixMicros();
+        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]")
+            .timestampToUnixMicros();
       case "timestamptounixmillis":
         requireParsedArgumentCount(args, 1, functionName, fieldName);
-        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]").timestampToUnixMillis();
+        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]")
+            .timestampToUnixMillis();
       case "timestamptounixseconds":
         requireParsedArgumentCount(args, 1, functionName, fieldName);
-        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]").timestampToUnixSeconds();
+        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]")
+            .timestampToUnixSeconds();
       case "unixmicrostotimestamp":
         requireParsedArgumentCount(args, 1, functionName, fieldName);
-        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]").unixMicrosToTimestamp();
+        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]")
+            .unixMicrosToTimestamp();
       case "unixmillistotimestamp":
         requireParsedArgumentCount(args, 1, functionName, fieldName);
-        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]").unixMillisToTimestamp();
+        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]")
+            .unixMillisToTimestamp();
       case "unixsecondstotimestamp":
         requireParsedArgumentCount(args, 1, functionName, fieldName);
-        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]").unixSecondsToTimestamp();
+        return coerceExpressionValueNode(args.get(0), fieldName + ".args[0]")
+            .unixSecondsToTimestamp();
       case "timestampadd":
         requireParsedArgumentCount(args, 3, functionName, fieldName);
         return buildParsedTimestampMathExpression(true, args, fieldName);
@@ -327,7 +336,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode mapArg = args.get(0);
     if (mapArg instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionValueNode) {
       ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionNode expression =
-          ((ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionValueNode) mapArg).expression;
+          ((ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionValueNode) mapArg)
+              .expression;
       if (expression
           instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedConstantExpressionNode) {
         mapArg =
@@ -636,7 +646,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       Map<String, Object> output = new java.util.LinkedHashMap<>();
       for (Map.Entry<String, ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> entry :
           values.entrySet()) {
-        output.put(entry.getKey(), resolveValueNode(entry.getValue(), fieldName + "." + entry.getKey()));
+        output.put(
+            entry.getKey(), resolveValueNode(entry.getValue(), fieldName + "." + entry.getKey()));
       }
       return output;
     }
@@ -865,7 +876,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     for (int i = 0; i < args.size(); i++) {
       expressions[i] = coerceExpressionValueNode(args.get(i), fieldName + ".args[" + i + "]");
     }
-    return BooleanExpression.rawFunction(normalizeExpressionFunctionName(functionName), expressions);
+    return BooleanExpression.rawFunction(
+        normalizeExpressionFunctionName(functionName), expressions);
   }
 
   private BooleanExpression applyParsedComparison(
@@ -922,7 +934,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       ReactNativeFirebaseFirestorePipelineParser.ParsedAggregateNode aggregate, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     String normalizedKind = aggregate.kind.toLowerCase(Locale.ROOT);
-    ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode expressionValue = aggregate.primaryValue;
+    ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode expressionValue =
+        aggregate.primaryValue;
     if (expressionValue == null && aggregate.args != null && !aggregate.args.isEmpty()) {
       expressionValue = aggregate.args.get(0);
     }

@@ -54,7 +54,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     Map<String, Object> sourceMap = requireMap(pipeline, "source", "pipeline.source");
     List<Object> stagesArray = requireArray(pipeline, "stages", "pipeline.stages");
 
-    return new ParsedPipelineRequest(parseSource(sourceMap), parseStages(stagesArray), parseOptions(options));
+    return new ParsedPipelineRequest(
+        parseSource(sourceMap), parseStages(stagesArray), parseOptions(options));
   }
 
   private static ParsedPipelineSource parseSource(Map<String, Object> source)
@@ -75,9 +76,11 @@ final class ReactNativeFirebaseFirestorePipelineParser {
             requireNonEmptyString(source, "collectionId", "pipeline.source.collectionId"),
             optionalMap(source, "rawOptions", "pipeline.source.rawOptions"));
       case "database":
-        return ParsedPipelineSource.database(optionalMap(source, "rawOptions", "pipeline.source.rawOptions"));
+        return ParsedPipelineSource.database(
+            optionalMap(source, "rawOptions", "pipeline.source.rawOptions"));
       case "documents":
-        return ParsedPipelineSource.documents(parseDocuments(requireArray(source, "documents", "pipeline.source.documents")));
+        return ParsedPipelineSource.documents(
+            parseDocuments(requireArray(source, "documents", "pipeline.source.documents")));
       case "query":
         return ParsedPipelineSource.query(
             requireNonEmptyString(source, "path", "pipeline.source.path"),
@@ -145,12 +148,17 @@ final class ReactNativeFirebaseFirestorePipelineParser {
                 "stage.options.selections"));
       case "addFields":
         return new ParsedAddFieldsStage(
-            parseSelectableNodes(requireArray(stageOptions, "fields", "stage.options.fields"), "stage.options.fields"));
+            parseSelectableNodes(
+                requireArray(stageOptions, "fields", "stage.options.fields"),
+                "stage.options.fields"));
       case "removeFields":
-        return new ParsedRemoveFieldsStage(requireArray(stageOptions, "fields", "stage.options.fields"));
+        return new ParsedRemoveFieldsStage(
+            requireArray(stageOptions, "fields", "stage.options.fields"));
       case "sort":
         return new ParsedSortStage(
-            parseOrderingNodes(requireArray(stageOptions, "orderings", "stage.options.orderings"), "stage.options.orderings"));
+            parseOrderingNodes(
+                requireArray(stageOptions, "orderings", "stage.options.orderings"),
+                "stage.options.orderings"));
       case "limit":
         return new ParsedLimitStage(requireValue(stageOptions, "limit", "stage.options.limit"));
       case "offset":
@@ -163,7 +171,9 @@ final class ReactNativeFirebaseFirestorePipelineParser {
             optionalSelectableNodes(stageOptions, "groups", "stage.options.groups"));
       case "distinct":
         return new ParsedDistinctStage(
-            parseSelectableNodes(requireArray(stageOptions, "groups", "stage.options.groups"), "stage.options.groups"));
+            parseSelectableNodes(
+                requireArray(stageOptions, "groups", "stage.options.groups"),
+                "stage.options.groups"));
       case "findNearest":
         return new ParsedFindNearestStage(
             requireValue(stageOptions, "field", "stage.options.field"),
@@ -173,7 +183,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
             optionalString(stageOptions, "distanceField"));
       case "replaceWith":
         return new ParsedReplaceWithStage(
-            parseExpressionNode(requireValue(stageOptions, "map", "stage.options.map"), "stage.options.map"));
+            parseExpressionNode(
+                requireValue(stageOptions, "map", "stage.options.map"), "stage.options.map"));
       case "sample":
         return new ParsedSampleStage(stageOptions.get("documents"), stageOptions.get("percentage"));
       case "union":
@@ -240,7 +251,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     return parsedDocuments;
   }
 
-  private static Map<String, Object> requireMap(Map<String, Object> map, String key, String fieldName)
+  private static Map<String, Object> requireMap(
+      Map<String, Object> map, String key, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     Object value = map.get(key);
     if (!(value instanceof Map)) {
@@ -274,7 +286,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     return requireArray(map, key, fieldName);
   }
 
-  private static Map<String, Object> optionalMap(Map<String, Object> map, String key, String fieldName)
+  private static Map<String, Object> optionalMap(
+      Map<String, Object> map, String key, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     if (!map.containsKey(key) || map.get(key) == null) {
       return null;
@@ -309,7 +322,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     return value instanceof String ? (String) value : null;
   }
 
-  private static List<ParsedSelectableNode> parseSelectableNodes(List<Object> values, String fieldName)
+  private static List<ParsedSelectableNode> parseSelectableNodes(
+      List<Object> values, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     List<ParsedSelectableNode> output = new java.util.ArrayList<>(values.size());
     for (int i = 0; i < values.size(); i++) {
@@ -334,7 +348,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     return output;
   }
 
-  private static List<ParsedAggregateNode> parseAggregateNodes(List<Object> values, String fieldName)
+  private static List<ParsedAggregateNode> parseAggregateNodes(
+      List<Object> values, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     List<ParsedAggregateNode> output = new java.util.ArrayList<>(values.size());
     for (int i = 0; i < values.size(); i++) {
@@ -346,8 +361,7 @@ final class ReactNativeFirebaseFirestorePipelineParser {
   private static ParsedSelectableNode parseSelectableNode(Object value, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     if (value instanceof String) {
-      return new ParsedSelectableNode(
-          parseExpressionNode(value, fieldName), null, false);
+      return new ParsedSelectableNode(parseExpressionNode(value, fieldName), null, false);
     }
 
     if (!(value instanceof Map)) {
@@ -360,7 +374,9 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     if (alias != null && !alias.isEmpty()) {
       if (map.containsKey("path") || map.containsKey("fieldPath") || map.containsKey("segments")) {
         return new ParsedSelectableNode(
-            new ParsedFieldExpressionNode(coerceFieldPath(value, fieldName + ".path")), alias, true);
+            new ParsedFieldExpressionNode(coerceFieldPath(value, fieldName + ".path")),
+            alias,
+            true);
       }
 
       Object exprValue = firstNonNull(map.get("expr"), map.get("expression"), map.get("field"));
@@ -397,7 +413,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
             map.get("fieldPath"),
             map.get("path"),
             value);
-    return new ParsedOrderingNode(parseExpressionNode(expressionValue, fieldName), descending, false);
+    return new ParsedOrderingNode(
+        parseExpressionNode(expressionValue, fieldName), descending, false);
   }
 
   private static ParsedAggregateNode parseAggregateNode(Object value, String fieldName)
@@ -436,9 +453,7 @@ final class ReactNativeFirebaseFirestorePipelineParser {
       expressionValue = aggregateMap.get("value");
     }
     ParsedValueNode primaryValue =
-        expressionValue == null
-            ? null
-            : parseValueNode(expressionValue, fieldName + ".expr");
+        expressionValue == null ? null : parseValueNode(expressionValue, fieldName + ".expr");
 
     java.util.List<ParsedValueNode> args = new java.util.ArrayList<>();
     Object argsValue = aggregateMap.get("args");
@@ -491,8 +506,7 @@ final class ReactNativeFirebaseFirestorePipelineParser {
               "pipelineExecute() expected " + fieldName + ".name to be a non-empty string.");
         }
         return new ParsedFunctionExpressionNode(
-            (String) nameValue,
-            parseArgumentValueNodes(map.get("args"), fieldName + ".args"));
+            (String) nameValue, parseArgumentValueNodes(map.get("args"), fieldName + ".args"));
       }
 
       if (map.containsKey("fieldPath")
@@ -519,9 +533,12 @@ final class ReactNativeFirebaseFirestorePipelineParser {
       List<?> queries = (List<?>) queriesValue;
       java.util.List<ParsedValueNode> args = new java.util.ArrayList<>(queries.size());
       for (int i = 0; i < queries.size(); i++) {
-        args.add(new ParsedExpressionValueNode(parseExpressionNode(queries.get(i), fieldName + ".queries[" + i + "]")));
+        args.add(
+            new ParsedExpressionValueNode(
+                parseExpressionNode(queries.get(i), fieldName + ".queries[" + i + "]")));
       }
-      return new ParsedFunctionExpressionNode("AND".equals(normalizedOperator) ? "and" : "or", args);
+      return new ParsedFunctionExpressionNode(
+          "AND".equals(normalizedOperator) ? "and" : "or", args);
     }
 
     Object fieldValue = map.get("fieldPath") != null ? map.get("fieldPath") : map.get("field");
@@ -531,7 +548,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     }
 
     java.util.List<ParsedValueNode> args = new java.util.ArrayList<>(2);
-    args.add(new ParsedExpressionValueNode(parseExpressionNode(fieldValue, fieldName + ".fieldPath")));
+    args.add(
+        new ParsedExpressionValueNode(parseExpressionNode(fieldValue, fieldName + ".fieldPath")));
     Object rightValue =
         map.containsKey("value")
             ? map.get("value")
@@ -540,7 +558,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     return new ParsedFunctionExpressionNode(mapOperatorToFunction(normalizedOperator), args);
   }
 
-  private static java.util.List<ParsedValueNode> parseArgumentValueNodes(Object argsValue, String fieldName)
+  private static java.util.List<ParsedValueNode> parseArgumentValueNodes(
+      Object argsValue, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     java.util.List<ParsedValueNode> args = new java.util.ArrayList<>();
     if (argsValue == null) {
@@ -920,11 +939,13 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     }
 
     static ParsedPipelineSource database(Map<String, Object> rawOptions) {
-      return new ParsedPipelineSource("database", null, null, null, null, null, null, null, rawOptions);
+      return new ParsedPipelineSource(
+          "database", null, null, null, null, null, null, null, rawOptions);
     }
 
     static ParsedPipelineSource documents(String[] documents) {
-      return new ParsedPipelineSource("documents", null, null, documents, null, null, null, null, null);
+      return new ParsedPipelineSource(
+          "documents", null, null, documents, null, null, null, null, null);
     }
 
     static ParsedPipelineSource query(
@@ -1013,7 +1034,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     final List<ParsedAggregateNode> accumulators;
     final List<ParsedSelectableNode> groups;
 
-    ParsedAggregateStage(List<ParsedAggregateNode> accumulators, List<ParsedSelectableNode> groups) {
+    ParsedAggregateStage(
+        List<ParsedAggregateNode> accumulators, List<ParsedSelectableNode> groups) {
       super("aggregate");
       this.accumulators = accumulators;
       this.groups = groups;
@@ -1037,7 +1059,11 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     final String distanceField;
 
     ParsedFindNearestStage(
-        Object field, Object vectorValue, String distanceMeasure, Object limit, String distanceField) {
+        Object field,
+        Object vectorValue,
+        String distanceMeasure,
+        Object limit,
+        String distanceField) {
       super("findNearest");
       this.field = field;
       this.vectorValue = vectorValue;

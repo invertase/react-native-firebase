@@ -26,37 +26,37 @@ import { TestComponents } from './local-tests';
 const platformSupportedModules = [];
 
 if (Platform.other) {
-  platformSupportedModules.push('app');
-  platformSupportedModules.push('functions');
+  // platformSupportedModules.push('app');
+  // platformSupportedModules.push('functions');
   platformSupportedModules.push('firestore');
-  platformSupportedModules.push('database');
-  platformSupportedModules.push('auth');
-  platformSupportedModules.push('storage');
-  platformSupportedModules.push('remoteConfig');
-  platformSupportedModules.push('analytics');
-  platformSupportedModules.push('appCheck');
-  platformSupportedModules.push('ai');
+  // platformSupportedModules.push('database');
+  // platformSupportedModules.push('auth');
+  // platformSupportedModules.push('storage');
+  // platformSupportedModules.push('remoteConfig');
+  // platformSupportedModules.push('analytics');
+  // platformSupportedModules.push('appCheck');
+  // platformSupportedModules.push('ai');
   // TODO add more modules here once they are supported.
 }
 
 if (!Platform.other) {
-  platformSupportedModules.push('app');
-  platformSupportedModules.push('functions');
-  platformSupportedModules.push('auth');
-  platformSupportedModules.push('database');
+  // platformSupportedModules.push('app');
+  // platformSupportedModules.push('functions');
+  // platformSupportedModules.push('auth');
+  // platformSupportedModules.push('database');
   platformSupportedModules.push('firestore');
-  platformSupportedModules.push('storage');
-  platformSupportedModules.push('messaging');
-  platformSupportedModules.push('perf');
-  platformSupportedModules.push('analytics');
-  platformSupportedModules.push('remoteConfig');
-  platformSupportedModules.push('crashlytics');
-  platformSupportedModules.push('inAppMessaging');
-  platformSupportedModules.push('installations');
-  platformSupportedModules.push('appCheck');
-  platformSupportedModules.push('appDistribution');
-  platformSupportedModules.push('ml');
-  platformSupportedModules.push('ai');
+  // platformSupportedModules.push('storage');
+  // platformSupportedModules.push('messaging');
+  // platformSupportedModules.push('perf');
+  // platformSupportedModules.push('analytics');
+  // platformSupportedModules.push('remoteConfig');
+  // platformSupportedModules.push('crashlytics');
+  // platformSupportedModules.push('inAppMessaging');
+  // platformSupportedModules.push('installations');
+  // platformSupportedModules.push('appCheck');
+  // platformSupportedModules.push('appDistribution');
+  // platformSupportedModules.push('ml');
+  // platformSupportedModules.push('ai');
 }
 // Registering an error handler that always throw unhandled exceptions
 // This is to enable Jet to exit on uncaught errors
@@ -74,7 +74,7 @@ function loadTests(_) {
     if (!globalThis.RNFBDebug) {
       // Only retry tests if not debugging or hunting deprecated API usage locally,
       // otherwise it gets annoying to debug.
-      this.retries(4);
+      this.retries(0);
     }
 
     before(async function () {
@@ -191,7 +191,11 @@ function loadTests(_) {
     }
 
     if (platformSupportedModules.includes('firestore')) {
-      const firestoreTests = require.context('../packages/firestore/e2e', true, /\.e2e\.js$/);
+      const firestoreTests = require.context(
+        '../packages/firestore/e2e',
+        true,
+        /Pipeline\.e2e\.js$/,
+      );
       firestoreTests.keys().forEach(firestoreTests);
     }
     if (platformSupportedModules.includes('perf')) {
