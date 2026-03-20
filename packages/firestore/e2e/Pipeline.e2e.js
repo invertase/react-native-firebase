@@ -723,25 +723,37 @@ describe('FirestorePipeline', function () {
 
         await expectAsyncError(
           () => execute(db.pipeline().collection(coll).select()),
-          'pipelineExecute() expected stage.options.selections to contain at least one value.',
+          [
+            'pipelineExecute() expected stage.options.selections to contain at least one value.',
+            'pipelineExecute() expected pipeline.stages[0].options.selections to contain at least one value.',
+          ],
           ['firestore/invalid-argument', 'firestore/unknown'],
         );
 
         await expectAsyncError(
           () => execute(db.pipeline().collection(coll).sort()),
-          'pipelineExecute() expected stage.options.orderings to contain at least one value.',
+          [
+            'pipelineExecute() expected stage.options.orderings to contain at least one value.',
+            'pipelineExecute() expected pipeline.stages[0].options.orderings to contain at least one value.',
+          ],
           ['firestore/invalid-argument', 'firestore/unknown'],
         );
 
         await expectAsyncError(
           () => execute(db.pipeline().collection(coll).aggregate()),
-          'pipelineExecute() expected stage.options.accumulators to contain at least one value.',
+          [
+            'pipelineExecute() expected stage.options.accumulators to contain at least one value.',
+            'pipelineExecute() expected pipeline.stages[0].options.accumulators to contain at least one value.',
+          ],
           ['firestore/invalid-argument', 'firestore/unknown'],
         );
 
         await expectAsyncError(
           () => execute(db.pipeline().collection(coll).distinct()),
-          'pipelineExecute() expected stage.options.groups to contain at least one value.',
+          [
+            'pipelineExecute() expected stage.options.groups to contain at least one value.',
+            'pipelineExecute() expected pipeline.stages[0].options.groups to contain at least one value.',
+          ],
           ['firestore/invalid-argument', 'firestore/unknown'],
         );
 
@@ -804,20 +816,25 @@ describe('FirestorePipeline', function () {
           genre: ['Fantasy', 'Adventure'],
         });
 
-        const snapshot = await execute(
-          db
-            .pipeline()
-            .collection(coll)
-            .select(
-              field('rating').greaterThan(4).as('gt4'),
-              field('price').lessThan(10).as('cheap'),
-              and(field('rating').greaterThan(4), field('price').lessThan(10)).as('recommended'),
-              field('title').startsWith('The').as('startsWithThe'),
-              field('genre').arrayContains('Fantasy').as('hasFantasy'),
-              field('title').charLength().as('titleLength'),
-              field('price').multiply(field('sold')).round().as('revenueRounded'),
-            ),
-        );
+        const pipeline = db
+          .pipeline()
+          .collection(coll)
+          .select(
+            field('rating').greaterThan(4).as('gt4'),
+            field('price').lessThan(10).as('cheap'),
+            and(field('rating').greaterThan(4), field('price').lessThan(10)).as('recommended'),
+            field('title').startsWith('The').as('startsWithThe'),
+            field('genre').arrayContains('Fantasy').as('hasFantasy'),
+            field('title').charLength().as('titleLength'),
+            field('price').multiply(field('sold')).round().as('revenueRounded'),
+          );
+
+        if (Platform.ios) {
+          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['round']);
+          return;
+        }
+
+        const snapshot = await execute(pipeline);
 
         snapshot.results.should.have.length(1);
         const data = snapshot.results[0].data();
@@ -1790,7 +1807,7 @@ describe('FirestorePipeline', function () {
 
     describe('sort operators', function () {
       it('sorts using standalone ascending and descending functions', async function () {
-        const { execute, field, ascending } = firestorePipelinesModular;
+        const { execute, field, ascending, descending } = firestorePipelinesModular;
         const { getFirestore, collection, doc, setDoc } = firestoreModular;
         const db = getFirestore(DATABASE_ID);
         const coll = collection(db, `${COLLECTION}/${Utils.randString(12, '#aA')}/sort-standalone`);
