@@ -56,7 +56,7 @@ import type {
   FirestorePipelineSnapshotInternal,
   FirestorePipelineSerializedInternal,
 } from '../types/internal';
-import { executeWebSdkPipeline } from './pipeline';
+import { executeWebSdkPipeline } from './pipelines/pipeline';
 
 function rejectWithCodeAndMessage(code: string, message: string): Promise<never> {
   return Promise.reject(getWebError({ code, message } as Error & { code: string }));

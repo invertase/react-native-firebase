@@ -319,8 +319,9 @@ export type FirestorePipelineStageInternal =
 
 export type FirestorePipelineStageNameInternal = FirestorePipelineStageInternal['stage'];
 
-export type FirestorePipelineStageOptionsInternal<TStage extends FirestorePipelineStageNameInternal> =
-  Extract<FirestorePipelineStageInternal, { stage: TStage }>['options'];
+export type FirestorePipelineStageOptionsInternal<
+  TStage extends FirestorePipelineStageNameInternal,
+> = Extract<FirestorePipelineStageInternal, { stage: TStage }>['options'];
 
 /** Serialized pipeline payload passed to native execute bridge. */
 export interface FirestorePipelineSerializedInternal {
