@@ -17,6 +17,7 @@
 
 import type { DocumentData, DocumentReference } from '../types/firestore';
 import type Timestamp from '../FirestoreTimestamp';
+import type { FieldPath } from '../modular/FieldPath';
 import type { Field } from './expressions';
 
 /**
@@ -25,7 +26,7 @@ import type { Field } from './expressions';
  */
 export interface PipelineResult<T = DocumentData> {
   data(): T;
-  get(fieldPath: string | import('../modular/FieldPath').FieldPath | Field): unknown;
+  get(fieldPath: string | FieldPath | Field): unknown;
   readonly ref?: DocumentReference;
   readonly id?: string;
   readonly createTime?: Timestamp;

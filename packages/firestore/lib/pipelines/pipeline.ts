@@ -26,6 +26,7 @@ import type {
   PipelineRawStageOptions,
 } from './stage_options';
 import type { BooleanExpression, Selectable, Field, Ordering, Accumulator } from './expressions';
+import type { DocumentData } from '../types/firestore';
 import type { FirestorePipelineSerializedInternal } from '../types/internal';
 
 /** @internal Serialized pipeline payload shape forwarded to native/web executors. */
@@ -35,7 +36,7 @@ export type SerializedPipeline = FirestorePipelineSerializedInternal;
  * @beta
  * Pipeline with chained stages. Each stage returns a new Pipeline (immutable chain).
  */
-export interface Pipeline<T = import('../types/firestore').DocumentData> {
+export interface Pipeline<T = DocumentData> {
   /**
    * @internal
    * Serializes the source + stage chain to the wire format.
