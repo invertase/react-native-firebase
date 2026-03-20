@@ -169,10 +169,7 @@ describe('Firestore web pipeline bridge', function () {
           { stage: 'limit', options: { limit: 1 } },
         ],
       },
-      {
-        indexMode: 'recommended',
-        rawOptions: { request_label: 'jest' },
-      },
+      undefined,
     );
 
     expect(pipelineSource.collection as jest.Mock).toHaveBeenCalledWith({
@@ -194,6 +191,38 @@ describe('Firestore web pipeline bridge', function () {
         },
       ],
     });
+  });
+
+  it('rejects unsupported execute options for web pipeline execution', async function () {
+    const firestore = {
+      pipeline: jest.fn(),
+    } as any;
+
+    await expect(
+      executeWebSdkPipeline(
+        firestore,
+        {
+          source: { source: 'collection', path: 'books' },
+          stages: [],
+        },
+        { indexMode: 'recommended' },
+      ),
+    ).rejects.toThrow(
+      'pipelineExecute() does not support options.indexMode because Firestore pipeline execute options are currently unstable or unavailable.',
+    );
+
+    await expect(
+      executeWebSdkPipeline(
+        firestore,
+        {
+          source: { source: 'collection', path: 'books' },
+          stages: [],
+        },
+        { rawOptions: { request_label: 'jest' } },
+      ),
+    ).rejects.toThrow(
+      'pipelineExecute() does not support options.rawOptions because Firestore pipeline execute options are currently unstable or unavailable.',
+    );
   });
 
   it('throws when web Firestore instance does not expose pipeline()', async function () {

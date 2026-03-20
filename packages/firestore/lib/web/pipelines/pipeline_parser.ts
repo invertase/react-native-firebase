@@ -206,8 +206,20 @@ function validateExecuteOptions(
     throw new Error('pipelineExecute() expected options.indexMode to equal "recommended".');
   }
 
+  if (options.indexMode !== undefined) {
+    throw new Error(
+      'pipelineExecute() does not support options.indexMode because Firestore pipeline execute options are currently unstable or unavailable.',
+    );
+  }
+
   if (options.rawOptions !== undefined && !isRecord(options.rawOptions)) {
     throw new Error('pipelineExecute() expected options.rawOptions to be an object.');
+  }
+
+  if (options.rawOptions !== undefined) {
+    throw new Error(
+      'pipelineExecute() does not support options.rawOptions because Firestore pipeline execute options are currently unstable or unavailable.',
+    );
   }
 
   return options as FirestorePipelineExecuteOptionsInternal;

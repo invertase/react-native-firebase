@@ -192,7 +192,7 @@ describe('Firestore pipelines runtime', function () {
     );
   });
 
-  it('validates execute input and enforces native execute option guards', async function () {
+  it('validates execute input and rejects unsupported execute options', async function () {
     const db: any = firebase.firestore();
     const nativeExecute = jest.fn(async () => ({
       executionTime: [1735689600, 123000000],
@@ -219,7 +219,7 @@ describe('Firestore pipelines runtime', function () {
           indexMode: 'recommended',
         }),
       ).rejects.toThrow(
-        'pipelineExecute() does not support options.indexMode on Android and iOS because native Firestore pipeline execute options are currently unstable or unavailable.',
+        'pipelineExecute() does not support options.indexMode because Firestore pipeline execute options are currently unstable or unavailable.',
       );
 
       await expect(
@@ -228,7 +228,7 @@ describe('Firestore pipelines runtime', function () {
           rawOptions: { requestLabel: 'unit-test' },
         }),
       ).rejects.toThrow(
-        'pipelineExecute() does not support options.rawOptions on Android and iOS because native Firestore pipeline execute options are currently unstable or unavailable.',
+        'pipelineExecute() does not support options.rawOptions because Firestore pipeline execute options are currently unstable or unavailable.',
       );
 
       await expect(execute('invalid-input' as any)).rejects.toThrow(

@@ -449,7 +449,7 @@ describe('FirestorePipeline', function () {
         replaceSnapshot.results[0].data().should.eql({ label: 'C', rank: 3 });
       });
 
-      it('supports execute(options) with indexMode and rawOptions payload', async function () {
+      it('rejects execute(options) when indexMode or rawOptions are provided', async function () {
         const { getFirestore, collection, doc, setDoc } = firestoreModular;
         const { execute, field } = firestorePipelinesModular;
         const db = getFirestore(DATABASE_ID);
@@ -472,21 +472,13 @@ describe('FirestorePipeline', function () {
           rawOptions: { requestLabel: 'e2e-execute-options' },
         };
 
-        if (Platform.ios || Platform.android) {
-          await expectAsyncError(
-            () => execute(executeOptions),
-            [
-              'pipelineExecute() does not support options.indexMode on Android and iOS because native Firestore pipeline execute options are currently unstable or unavailable.',
-              'pipelineExecute() does not support options.rawOptions on Android and iOS because native Firestore pipeline execute options are currently unstable or unavailable.',
-            ],
-          );
-          return;
-        }
-
-        const snapshot = await execute(executeOptions);
-        snapshot.results.should.have.length(2);
-        snapshot.results[0].data().score.should.equal(7);
-        snapshot.results[1].data().score.should.equal(5);
+        await expectAsyncError(
+          () => execute(executeOptions),
+          [
+            'pipelineExecute() does not support options.indexMode because Firestore pipeline execute options are currently unstable or unavailable.',
+            'pipelineExecute() does not support options.rawOptions because Firestore pipeline execute options are currently unstable or unavailable.',
+          ],
+        );
       });
     });
   });
