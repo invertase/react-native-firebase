@@ -1101,28 +1101,30 @@ export function array(_elements: unknown[]): FunctionExpression {
  * @beta
  * Creates a constant expression for a number value.
  */
-export function constant(_value: number): ConstantExpression;
+export function constant(_value: number): Expression;
 /**
  * @beta
  * Creates a constant expression for a string value.
  */
-export function constant(_value: string): ConstantExpression;
+export function constant(_value: string): Expression;
 /**
  * @beta
  * Creates a constant boolean expression.
  */
-export function constant(_value: boolean): ConstantExpression;
+export function constant(_value: boolean): BooleanExpression;
 /**
  * @beta
  * Creates a constant expression for null.
  */
-export function constant(_value: null): ConstantExpression;
+export function constant(_value: null): Expression;
 /**
  * @beta
  * Creates a constant expression for a value (e.g. GeoPoint, Timestamp, Date, Bytes, DocumentReference, VectorValue).
  */
-export function constant(_value: unknown): ConstantExpression;
-export function constant(_value: number | string | boolean | null | unknown): ConstantExpression {
+export function constant(_value: unknown): Expression;
+export function constant(
+  _value: number | string | boolean | null | unknown,
+): Expression | BooleanExpression {
   return createConstant(normalizeRawValue(_value));
 }
 
