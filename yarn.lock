@@ -6617,6 +6617,7 @@ __metadata:
   resolution: "@react-native-firebase/vertexai@workspace:packages/vertexai"
   dependencies:
     "@react-native-firebase/ai": "npm:23.8.8"
+    "@react-native-firebase/auth": "npm:23.8.8"
     "@types/text-encoding": "npm:^0.0.40"
     react-native-builder-bob: "npm:^0.40.17"
     react-native-fetch-api: "npm:^3.0.0"

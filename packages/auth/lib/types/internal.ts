@@ -135,6 +135,10 @@ export interface RNFBAuthModule {
   fetchSignInMethodsForEmail(email: string): Promise<string[]>;
   finalizeMultiFactorEnrollment(token: string, secret: string, displayName?: string): Promise<void>;
   finalizeTotpEnrollment(totpSecret: string, verificationCode: string, displayName?: string): Promise<void>;
+  generateTotpSecret(session: unknown): Promise<{ secretKey: string }>;
+  generateQrCodeUrl(secretKey: string, accountName: string, issuer: string): Promise<string>;
+  openInOtpApp(secretKey: string, qrCodeUrl: string): Promise<unknown> | unknown;
+  assertionForSignIn?(uid: string, verificationCode: string): unknown;
   forceRecaptchaFlowForTesting(forceRecaptchaFlow: boolean): void;
   getCustomAuthDomain(): Promise<string>;
   getIdToken(forceRefresh?: boolean): Promise<string>;

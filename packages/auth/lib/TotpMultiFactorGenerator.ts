@@ -18,6 +18,8 @@
 import { isOther } from '@react-native-firebase/app/dist/module/common';
 import { TotpSecret } from './TotpSecret';
 import { getAuth } from './modular';
+import type { MultiFactorAssertion } from './types/auth';
+import type { AuthInternal } from './types/internal';
 
 export default class TotpMultiFactorGenerator {
   static FACTOR_ID = 'totp';
@@ -28,27 +30,26 @@ export default class TotpMultiFactorGenerator {
     );
   }
 
-  static assertionForSignIn(uid, verificationCode) {
+  static assertionForSignIn(uid: string, verificationCode: string): unknown {
     if (isOther) {
-      // we require the web native assertion when using firebase-js-sdk
-      // as it has functions used by the SDK, a shim won't do
-      return getAuth().native.assertionForSignIn(uid, verificationCode);
+      return (getAuth() as AuthInternal).native.assertionForSignIn!(uid, verificationCode);
     }
     return { uid, verificationCode };
   }
 
-  static assertionForEnrollment(totpSecret, verificationCode) {
-    return { totpSecret: totpSecret.secretKey, verificationCode };
+  static assertionForEnrollment(totpSecret: TotpSecret, verificationCode: string): MultiFactorAssertion {
+    return {
+      totpSecret: totpSecret.secretKey,
+      verificationCode,
+    } as unknown as MultiFactorAssertion;
   }
 
-  static async generateSecret(session, auth) {
+  static async generateSecret(session: unknown, auth: AuthInternal): Promise<TotpSecret> {
     if (!session) {
       throw new Error('Session is required to generate a TOTP secret.');
     }
     const {
       secretKey,
-      // Other properties are not publicly exposed in native APIs
-      // hashingAlgorithm, codeLength, codeIntervalSeconds, enrollmentCompletionDeadline
     } = await auth.native.generateTotpSecret(session);
 
     return new TotpSecret(secretKey, auth);

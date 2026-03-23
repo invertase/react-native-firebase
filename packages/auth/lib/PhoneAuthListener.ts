@@ -223,18 +223,20 @@ export default class PhoneAuthListener {
     this._addUserObserver(observer);
 
     if (isFunction(errorCb)) {
+      const onError = errorCb;
       const subscription = this._auth.emitter.addListener(this._publicEvents.error!, (event: unknown) => {
         subscription.remove();
-        errorCb(event);
+        onError(event);
       });
     }
 
     if (isFunction(successCb)) {
+      const onSuccess = successCb;
       const subscription = this._auth.emitter.addListener(
         this._publicEvents.success!,
         (event: PhoneAuthSnapshot) => {
           subscription.remove();
-          successCb(event);
+          onSuccess(event);
         },
       );
     }

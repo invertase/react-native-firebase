@@ -161,7 +161,7 @@ export default class User {
 
   sendEmailVerification(actionCodeSettings?: ActionCodeSettings): Promise<void> {
     if (isObject(actionCodeSettings)) {
-      const acs = actionCodeSettings as Record<string, unknown>;
+      const acs = actionCodeSettings as unknown as Record<string, unknown>;
       if (!isString(acs.url)) {
         throw new Error(
           "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.url' expected a string value.",
@@ -279,7 +279,7 @@ export default class User {
     }
 
     if (isObject(actionCodeSettings)) {
-      const acs = actionCodeSettings as Record<string, unknown>;
+      const acs = actionCodeSettings as unknown as Record<string, unknown>;
       if (!isString(acs.url)) {
         throw new Error(
           "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.url' expected a string value.",
