@@ -223,9 +223,8 @@ build/Release
 node_modules/
 jspm_packages/
 
-# TypeScript v1 declaration files (ignore directory contents, not the folder itself — needed to un-ignore files)
-typings/*
-!typings/react-native-binaryToBase64.d.ts
+# TypeScript v1 declaration files
+typings/
 
 # Optional npm cache directory
 .npm
