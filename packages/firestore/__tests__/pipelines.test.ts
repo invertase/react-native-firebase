@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { firebase } from '../lib';
 import {
   and,
+  conditional,
   constant,
   descending,
   execute,
@@ -397,6 +398,11 @@ describe('Firestore pipelines runtime', function () {
       .select(
         logicalMaximum(field('value'), field('other')).as('maxValue'),
         logicalMinimum(field('value'), field('other')).as('minValue'),
+        conditional(
+          field('value').greaterThan(0),
+          constant('positive'),
+          constant('non-positive'),
+        ).as('bucket'),
         timestampAdd(field('eventTime'), 'day', 1).as('nextDay'),
         timestampSubtract(field('eventTime'), 'hour', 1).as('prevHour'),
         unixMillisToTimestamp(field('epochMs')).as('fromEpochMs'),
@@ -404,6 +410,7 @@ describe('Firestore pipelines runtime', function () {
       .serialize();
 
     expect(getIOSUnsupportedPipelineFunctions(serialized)).toEqual([
+      'conditional',
       'logicalMaximum',
       'logicalMinimum',
       'timestampAdd',

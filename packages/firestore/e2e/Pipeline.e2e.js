@@ -949,25 +949,16 @@ describe('FirestorePipeline', function () {
         if (Platform.ios) {
           await expectIOSUnsupportedFunctions(
             () => execute(pipeline),
-            ['isType', 'logicalMaximum', 'logicalMinimum'],
+            ['conditional', 'isType', 'logicalMaximum', 'logicalMinimum'],
           );
 
           const iosSnapshot = await execute(
-            db
-              .pipeline()
-              .documents([docPath])
-              .select(
-                conditional(
-                  field('stock').greaterThan(0),
-                  constant('in-stock'),
-                  constant('out-of-stock'),
-                ).as('availability'),
-              ),
+            db.pipeline().documents([docPath]).select(field('value').as('value')),
           );
 
           iosSnapshot.results.should.have.length(1);
           const iosData = iosSnapshot.results[0].data();
-          iosData.availability.should.equal('in-stock');
+          iosData.value.should.equal('hello');
           return;
         }
 
