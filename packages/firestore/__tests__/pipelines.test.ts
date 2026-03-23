@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { firebase } from '../lib';
 import {
+  arrayGet,
   and,
   conditional,
   constant,
@@ -8,12 +9,13 @@ import {
   execute,
   field,
   greaterThan,
-  logicalMaximum,
-  logicalMinimum,
   Ordering,
+  round,
+  stringRepeat,
+  substring,
   timestampAdd,
   timestampSubtract,
-  unixMillisToTimestamp,
+  trunc,
 } from '../lib/pipelines';
 import '../lib/pipelines';
 import { ConstantExpression } from '../lib/pipelines/expressions';
@@ -396,26 +398,30 @@ describe('Firestore pipelines runtime', function () {
       .pipeline()
       .documents(['firestore/a'])
       .select(
-        logicalMaximum(field('value'), field('other')).as('maxValue'),
-        logicalMinimum(field('value'), field('other')).as('minValue'),
+        arrayGet(field('items'), 0).as('firstItem'),
         conditional(
           field('value').greaterThan(0),
           constant('positive'),
           constant('non-positive'),
         ).as('bucket'),
+        round(field('score'), 2).as('roundedScore'),
+        stringRepeat(field('separator'), 3).as('divider'),
+        substring(field('label'), 0, 4).as('labelPrefix'),
         timestampAdd(field('eventTime'), 'day', 1).as('nextDay'),
         timestampSubtract(field('eventTime'), 'hour', 1).as('prevHour'),
-        unixMillisToTimestamp(field('epochMs')).as('fromEpochMs'),
+        trunc(field('score'), 2).as('truncatedScore'),
       )
       .serialize();
 
     expect(getIOSUnsupportedPipelineFunctions(serialized)).toEqual([
+      'arrayGet',
       'conditional',
-      'logicalMaximum',
-      'logicalMinimum',
+      'round',
+      'stringRepeat',
+      'substring',
       'timestampAdd',
       'timestampSubtract',
-      'unixMillisToTimestamp',
+      'trunc',
     ]);
   });
 });

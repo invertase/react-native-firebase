@@ -947,18 +947,24 @@ describe('FirestorePipeline', function () {
           );
 
         if (Platform.ios) {
-          await expectIOSUnsupportedFunctions(
-            () => execute(pipeline),
-            ['conditional', 'isType', 'logicalMaximum', 'logicalMinimum'],
-          );
+          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['conditional']);
 
           const iosSnapshot = await execute(
-            db.pipeline().documents([docPath]).select(field('value').as('value')),
+            db
+              .pipeline()
+              .documents([docPath])
+              .select(
+                isType(field('value'), 'string').as('isString'),
+                logicalMaximum(field('bidA'), field('bidB')).as('topBid'),
+                logicalMinimum(field('askA'), field('askB')).as('bottomAsk'),
+              ),
           );
 
           iosSnapshot.results.should.have.length(1);
           const iosData = iosSnapshot.results[0].data();
-          iosData.value.should.equal('hello');
+          iosData.isString.should.equal(true);
+          iosData.topBid.should.equal(150);
+          iosData.bottomAsk.should.equal(175);
           return;
         }
 
@@ -1056,7 +1062,7 @@ describe('FirestorePipeline', function () {
           );
 
         if (Platform.ios) {
-          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['ceil', 'floor', 'round']);
+          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['round']);
 
           const iosSnapshot = await execute(
             db
@@ -1070,6 +1076,8 @@ describe('FirestorePipeline', function () {
                 mod(field('id'), 10).as('shard'),
                 pow(field('rating'), 2).as('squaredRating'),
                 abs(field('balance')).as('absBalance'),
+                ceil(field('rawScore')).as('ceiledScore'),
+                floor(field('rawScore')).as('flooredScore'),
               ),
           );
 
@@ -1082,6 +1090,8 @@ describe('FirestorePipeline', function () {
           iosData.shard.should.equal(7);
           iosData.squaredRating.should.equal(16);
           iosData.absBalance.should.equal(42);
+          iosData.ceiledScore.should.equal(8);
+          iosData.flooredScore.should.equal(7);
           return;
         }
 
@@ -1130,27 +1140,32 @@ describe('FirestorePipeline', function () {
           );
 
         if (Platform.ios) {
-          await expectIOSUnsupportedFunctions(
-            () => execute(pipeline),
-            ['log10', 'rand', 'sqrt', 'trunc'],
-          );
+          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['trunc']);
 
           const iosSnapshot = await execute(
             db
               .pipeline()
               .documents([docPath])
               .select(
+                sqrt(field('area')).as('side'),
                 exp(field('x')).as('expX'),
                 ln(field('y')).as('lnY'),
                 log(field('logBase'), 10).as('logVal'),
+                log10(field('logBase')).as('log10Val'),
+                rand().as('randomValue'),
               ),
           );
 
           iosSnapshot.results.should.have.length(1);
           const iosData = iosSnapshot.results[0].data();
+          iosData.side.should.equal(2);
           iosData.expX.should.equal(1);
           iosData.lnY.should.equal(0);
           should(iosData.logVal).be.approximately(2, 0.0001);
+          should(iosData.log10Val).be.approximately(2, 0.0001);
+          iosData.randomValue.should.be.a.Number();
+          iosData.randomValue.should.be.greaterThanOrEqual(0);
+          should(iosData.randomValue).be.lessThan(1);
           return;
         }
 
@@ -1258,10 +1273,7 @@ describe('FirestorePipeline', function () {
           );
 
         if (Platform.ios) {
-          await expectIOSUnsupportedFunctions(
-            () => execute(pipeline),
-            ['length', 'ltrim', 'rtrim', 'substring'],
-          );
+          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['substring']);
 
           const iosSnapshot = await execute(
             db
@@ -1271,6 +1283,9 @@ describe('FirestorePipeline', function () {
                 toUpper(field('name')).as('upperName'),
                 toLower(field('name')).as('lowerName'),
                 trim(field('rawText')).as('trimmed'),
+                ltrim(field('rawText')).as('ltrimmed'),
+                rtrim(field('rawText')).as('rtrimmed'),
+                length(field('name')).as('nameLength'),
                 byteLength(field('name')).as('byteLen'),
                 charLength(field('name')).as('charLen'),
               ),
@@ -1281,6 +1296,9 @@ describe('FirestorePipeline', function () {
           iosData.upperName.should.equal('ALICE');
           iosData.lowerName.should.equal('alice');
           iosData.trimmed.should.equal('hello');
+          iosData.ltrimmed.should.equal('hello  ');
+          iosData.rtrimmed.should.equal('  hello');
+          iosData.nameLength.should.equal(5);
           iosData.byteLen.should.equal(5);
           iosData.charLen.should.equal(5);
           return;
@@ -1349,17 +1367,7 @@ describe('FirestorePipeline', function () {
           );
 
         if (Platform.ios) {
-          await expectIOSUnsupportedFunctions(
-            () => execute(pipeline),
-            [
-              'concat',
-              'split',
-              'stringIndexOf',
-              'stringRepeat',
-              'stringReplaceAll',
-              'stringReplaceOne',
-            ],
-          );
+          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['stringRepeat']);
 
           const iosSnapshot = await execute(
             db
@@ -1367,6 +1375,11 @@ describe('FirestorePipeline', function () {
               .documents([docPath])
               .select(
                 stringConcat(field('firstName'), ' ', field('lastName')).as('fullName'),
+                concat(field('a'), field('b'), field('c')).as('concatResult'),
+                stringIndexOf(field('email'), '@').as('atIndex'),
+                stringReplaceAll(field('text'), 'foo', 'bar').as('replaced'),
+                stringReplaceOne(field('text'), 'foo', 'bar').as('replacedOnce'),
+                split(field('csvField'), ',').as('parts'),
                 reverse(field('code')).as('reversedCode'),
                 stringReverse(field('token')).as('reversedToken'),
               ),
@@ -1375,6 +1388,11 @@ describe('FirestorePipeline', function () {
           iosSnapshot.results.should.have.length(1);
           const iosData = iosSnapshot.results[0].data();
           iosData.fullName.should.equal('John Doe');
+          iosData.concatResult.should.equal('foobarbaz');
+          iosData.atIndex.should.equal(4);
+          iosData.replaced.should.equal('bar bar bar');
+          iosData.replacedOnce.should.equal('bar bar foo');
+          iosData.parts.should.eql(['a', 'b', 'c']);
           iosData.reversedCode.should.equal('cba');
           iosData.reversedToken.should.equal('321cba');
           return;
@@ -1549,7 +1567,7 @@ describe('FirestorePipeline', function () {
           );
 
         if (Platform.ios) {
-          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['arrayConcat', 'arrayGet']);
+          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['arrayGet']);
 
           const iosSnapshot = await execute(
             db
@@ -1565,6 +1583,7 @@ describe('FirestorePipeline', function () {
               .select(
                 array([constant(1), constant(2), constant(3)]).as('fixedArr'),
                 arrayLength(field('tags')).as('tagCount'),
+                arrayConcat(field('primaryTags'), field('secondaryTags')).as('allTags'),
                 arraySum(field('scores')).as('totalScore'),
               ),
           );
@@ -1573,6 +1592,7 @@ describe('FirestorePipeline', function () {
           const iosData = iosSnapshot.results[0].data();
           iosData.fixedArr.should.eql([1, 2, 3]);
           iosData.tagCount.should.equal(2);
+          iosData.allTags.should.eql(['a', 'b', 'c', 'd']);
           iosData.totalScore.should.equal(60);
           return;
         }
@@ -1759,7 +1779,7 @@ describe('FirestorePipeline', function () {
         if (Platform.ios) {
           await expectIOSUnsupportedFunctions(
             () => execute(pipeline),
-            ['timestampAdd', 'timestampSubtract', 'timestampTruncate', 'unixMillisToTimestamp'],
+            ['timestampAdd', 'timestampSubtract'],
           );
 
           const iosSnapshot = await execute(
@@ -1769,6 +1789,8 @@ describe('FirestorePipeline', function () {
               .select(
                 timestampToUnixMillis(field('eventTime')).as('eventTimeMs'),
                 timestampToUnixSeconds(field('eventTime')).as('eventTimeSec'),
+                timestampTruncate(field('eventTime'), 'day').as('dayBucket'),
+                unixMillisToTimestamp(field('epochMs')).as('fromEpochMs'),
               ),
           );
 
@@ -1776,6 +1798,9 @@ describe('FirestorePipeline', function () {
           const iosData = iosSnapshot.results[0].data();
           iosData.eventTimeMs.should.equal(1700000000000);
           iosData.eventTimeSec.should.equal(1700000000);
+          iosData.dayBucket.constructor.name.should.equal('Timestamp');
+          iosData.fromEpochMs.constructor.name.should.equal('Timestamp');
+          iosData.fromEpochMs.seconds.should.equal(1700000000);
           return;
         }
 

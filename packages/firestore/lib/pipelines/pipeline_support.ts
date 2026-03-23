@@ -54,32 +54,13 @@ export const PIPELINE_UNSUPPORTED_BASE_MESSAGE =
 // Remove entries once the iOS node builder/runtime path supports them.
 const IOS_UNSUPPORTED_FUNCTION_NAMES = new Set<string>([
   'arrayGet',
-  'arrayConcat',
-  'ceil',
   'conditional',
-  'concat',
-  'floor',
-  'isType',
-  'length',
-  'logicalMaximum',
-  'logicalMinimum',
-  'log10',
-  'ltrim',
-  'rand',
   'round',
-  'rtrim',
-  'split',
-  'sqrt',
-  'stringIndexOf',
   'stringRepeat',
-  'stringReplaceAll',
-  'stringReplaceOne',
   'substring',
   'timestampAdd',
   'timestampSubtract',
-  'timestampTruncate',
   'trunc',
-  'unixMillisToTimestamp',
 ]);
 
 export function createPipelineUnsupportedMessage(
