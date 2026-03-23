@@ -1,8 +1,22 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { firebase } from '../lib';
-import { and, constant, descending, execute, field, greaterThan, Ordering } from '../lib/pipelines';
+import {
+  and,
+  constant,
+  descending,
+  execute,
+  field,
+  greaterThan,
+  logicalMaximum,
+  logicalMinimum,
+  Ordering,
+  timestampAdd,
+  timestampSubtract,
+  unixMillisToTimestamp,
+} from '../lib/pipelines';
 import '../lib/pipelines';
 import { ConstantExpression } from '../lib/pipelines/expressions';
+import { getIOSUnsupportedPipelineFunctions } from '../lib/pipelines/pipeline_support';
 
 describe('Firestore pipelines runtime', function () {
   beforeAll(function () {
@@ -373,5 +387,28 @@ describe('Firestore pipelines runtime', function () {
         ],
       },
     });
+  });
+
+  it('detects unsupported iOS runtime functions from serialized pipelines', function () {
+    const db: any = firebase.firestore();
+    const serialized = db
+      .pipeline()
+      .documents(['firestore/a'])
+      .select(
+        logicalMaximum(field('value'), field('other')).as('maxValue'),
+        logicalMinimum(field('value'), field('other')).as('minValue'),
+        timestampAdd(field('eventTime'), 'day', 1).as('nextDay'),
+        timestampSubtract(field('eventTime'), 'hour', 1).as('prevHour'),
+        unixMillisToTimestamp(field('epochMs')).as('fromEpochMs'),
+      )
+      .serialize();
+
+    expect(getIOSUnsupportedPipelineFunctions(serialized)).toEqual([
+      'logicalMaximum',
+      'logicalMinimum',
+      'timestampAdd',
+      'timestampSubtract',
+      'unixMillisToTimestamp',
+    ]);
   });
 });

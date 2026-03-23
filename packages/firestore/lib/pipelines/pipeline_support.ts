@@ -60,6 +60,8 @@ const IOS_UNSUPPORTED_FUNCTION_NAMES = new Set<string>([
   'floor',
   'isType',
   'length',
+  'logicalMaximum',
+  'logicalMinimum',
   'log10',
   'ltrim',
   'rand',
@@ -72,8 +74,11 @@ const IOS_UNSUPPORTED_FUNCTION_NAMES = new Set<string>([
   'stringReplaceAll',
   'stringReplaceOne',
   'substring',
+  'timestampAdd',
+  'timestampSubtract',
   'timestampTruncate',
   'trunc',
+  'unixMillisToTimestamp',
 ]);
 
 export function createPipelineUnsupportedMessage(

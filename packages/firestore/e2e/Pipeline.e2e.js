@@ -947,7 +947,10 @@ describe('FirestorePipeline', function () {
           );
 
         if (Platform.ios) {
-          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['isType']);
+          await expectIOSUnsupportedFunctions(
+            () => execute(pipeline),
+            ['isType', 'logicalMaximum', 'logicalMinimum'],
+          );
 
           const iosSnapshot = await execute(
             db
@@ -959,16 +962,12 @@ describe('FirestorePipeline', function () {
                   constant('in-stock'),
                   constant('out-of-stock'),
                 ).as('availability'),
-                logicalMaximum(field('bidA'), field('bidB')).as('topBid'),
-                logicalMinimum(field('askA'), field('askB')).as('bottomAsk'),
               ),
           );
 
           iosSnapshot.results.should.have.length(1);
           const iosData = iosSnapshot.results[0].data();
           iosData.availability.should.equal('in-stock');
-          iosData.topBid.should.equal(150);
-          iosData.bottomAsk.should.equal(175);
           return;
         }
 
@@ -1767,7 +1766,10 @@ describe('FirestorePipeline', function () {
           );
 
         if (Platform.ios) {
-          await expectIOSUnsupportedFunctions(() => execute(pipeline), ['timestampTruncate']);
+          await expectIOSUnsupportedFunctions(
+            () => execute(pipeline),
+            ['timestampAdd', 'timestampSubtract', 'timestampTruncate', 'unixMillisToTimestamp'],
+          );
 
           const iosSnapshot = await execute(
             db
@@ -1776,9 +1778,6 @@ describe('FirestorePipeline', function () {
               .select(
                 timestampToUnixMillis(field('eventTime')).as('eventTimeMs'),
                 timestampToUnixSeconds(field('eventTime')).as('eventTimeSec'),
-                timestampAdd(field('eventTime'), 'day', 1).as('nextDay'),
-                timestampSubtract(field('eventTime'), 'hour', 1).as('prevHour'),
-                unixMillisToTimestamp(field('epochMs')).as('fromEpochMs'),
               ),
           );
 
@@ -1786,12 +1785,6 @@ describe('FirestorePipeline', function () {
           const iosData = iosSnapshot.results[0].data();
           iosData.eventTimeMs.should.equal(1700000000000);
           iosData.eventTimeSec.should.equal(1700000000);
-          iosData.nextDay.constructor.name.should.equal('Timestamp');
-          iosData.nextDay.seconds.should.equal(1700000000 + 86400);
-          iosData.prevHour.constructor.name.should.equal('Timestamp');
-          iosData.prevHour.seconds.should.equal(1700000000 - 3600);
-          iosData.fromEpochMs.constructor.name.should.equal('Timestamp');
-          iosData.fromEpochMs.seconds.should.equal(1700000000);
           return;
         }
 
