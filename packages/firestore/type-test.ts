@@ -58,9 +58,7 @@ const nsDocRef = nsColl.doc('alice');
 const nsQuery = nsColl.where('name', '==', 'test');
 
 nsDocRef.set({ name: 'Alice', count: 1 }).then(() => {});
-nsDocRef
-  .set({ name: 'Alice' }, { merge: true })
-  .then(() => {});
+nsDocRef.set({ name: 'Alice' }, { merge: true }).then(() => {});
 
 nsDocRef.update({ count: 2 }).then(() => {});
 nsDocRef.update('count', 3).then(() => {});
@@ -106,6 +104,10 @@ const unsubDoc2 = nsDocRef.onSnapshot(
   { includeMetadataChanges: true },
   (_snap: FirebaseFirestoreTypes.DocumentSnapshot) => {},
 );
+const unsubDoc4 = nsDocRef.onSnapshot(
+  { source: 'cache' },
+  (_snap: FirebaseFirestoreTypes.DocumentSnapshot) => {},
+);
 const unsubDoc3 = nsDocRef.onSnapshot({
   next: (_snap: FirebaseFirestoreTypes.DocumentSnapshot) => {},
   error: (_e: Error) => {},
@@ -113,6 +115,7 @@ const unsubDoc3 = nsDocRef.onSnapshot({
 unsubDoc1();
 unsubDoc2();
 unsubDoc3();
+unsubDoc4();
 
 // ----- onSnapshot (query) -----
 const unsubQuery1 = nsQuery.onSnapshot((snap: FirebaseFirestoreTypes.QuerySnapshot) => {
@@ -122,8 +125,13 @@ const unsubQuery2 = nsQuery.onSnapshot(
   { includeMetadataChanges: true },
   { next: (_snap: FirebaseFirestoreTypes.QuerySnapshot) => {}, error: (_e: Error) => {} },
 );
+const unsubQuery3 = nsQuery.onSnapshot(
+  { source: 'cache', includeMetadataChanges: true },
+  { next: (_snap: FirebaseFirestoreTypes.QuerySnapshot) => {}, error: (_e: Error) => {} },
+);
 unsubQuery1();
 unsubQuery2();
+unsubQuery3();
 
 // ----- Query: where, orderBy, limit, cursor -----
 const nsQuery2 = nsColl
@@ -145,13 +153,15 @@ console.log(nsLoadTask.then(() => {}));
 const nsNamed = nsFirestore.namedQuery('my-query');
 console.log(nsNamed);
 
-nsFirestore.runTransaction(async (tx: FirebaseFirestoreTypes.Transaction) => {
-  const snap = await tx.get(nsDocRef);
-  if (snap.exists()) {
-    tx.update(nsDocRef, { count: ((snap.data() as { count?: number })?.count ?? 0) + 1 });
-  }
-  return null;
-}).then(() => {});
+nsFirestore
+  .runTransaction(async (tx: FirebaseFirestoreTypes.Transaction) => {
+    const snap = await tx.get(nsDocRef);
+    if (snap.exists()) {
+      tx.update(nsDocRef, { count: ((snap.data() as { count?: number })?.count ?? 0) + 1 });
+    }
+    return null;
+  })
+  .then(() => {});
 
 // ----- Firestore instance: persistence and network -----
 nsFirestore.clearPersistence().then(() => {});
@@ -196,13 +206,15 @@ const nsArrayRemove = firebase.firestore.FieldValue.arrayRemove(1);
 void nsArrayRemove;
 const nsIncrement = firebase.firestore.FieldValue.increment(1);
 
-nsDocRef.set({
-  name: 'x',
-  deleted: nsDelete,
-  ts: nsServerTs,
-  arr: nsArrayUnion,
-  cnt: nsIncrement,
-}).then(() => {});
+nsDocRef
+  .set({
+    name: 'x',
+    deleted: nsDelete,
+    ts: nsServerTs,
+    arr: nsArrayUnion,
+    cnt: nsIncrement,
+  })
+  .then(() => {});
 
 // ----- withConverter (namespaced) -----
 interface User {
@@ -453,15 +465,23 @@ deleteDoc(modDoc).then(() => {});
 // ----- onSnapshot (modular) -----
 const unsubMod1 = onSnapshot(modDoc, snap => snap.data());
 const unsubMod2 = onSnapshot(modDoc, { includeMetadataChanges: true }, snap => snap.data());
+const unsubMod5 = onSnapshot(modDoc, { source: 'cache' }, snap => snap.data());
 const unsubMod3 = onSnapshot(modDoc, {
   next: _snap => {},
   error: (_e: Error) => {},
 });
 const unsubMod4 = onSnapshot(modQuery1, snap => snap.docs);
+const unsubMod6 = onSnapshot(
+  modQuery1,
+  { source: 'cache', includeMetadataChanges: true },
+  snap => snap.docs,
+);
 unsubMod1();
 unsubMod2();
 unsubMod3();
 unsubMod4();
+unsubMod5();
+unsubMod6();
 
 // ----- snapshotEqual, queryEqual -----
 getDoc(modDoc).then(s1 => {

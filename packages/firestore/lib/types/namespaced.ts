@@ -16,6 +16,7 @@
  */
 
 import { ReactNativeFirebase } from '@react-native-firebase/app';
+import type { ListenSource } from './firestore';
 
 /**
  * Firebase Cloud Firestore package for React Native.
@@ -491,7 +492,7 @@ export namespace FirebaseFirestoreTypes {
      * ```js
      * const unsubscribe = firebase.firestore().doc('users/alovelace')
      *   .onSnapshot(
-     *     { includeMetadataChanges: true }, // SnapshotListenerOptions
+     *     { source: 'cache', includeMetadataChanges: true }, // SnapshotListenerOptions
      *     (documentSnapshot) => {}, // onNext
      *     (error) => console.error(error), // onError
      *   );
@@ -1356,7 +1357,7 @@ export namespace FirebaseFirestoreTypes {
      * ```js
      * const unsubscribe = firebase.firestore().collection('users')
      *   .onSnapshot(
-     *     { includeMetadataChanges: true }, // SnapshotListenerOptions
+     *     { source: 'cache', includeMetadataChanges: true }, // SnapshotListenerOptions
      *     (querySnapshot) => {}, // onNext
      *     (error) => console.error(error), // onError
      *   );
@@ -1764,7 +1765,11 @@ export namespace FirebaseFirestoreTypes {
     /**
      * Include a change even if only the metadata of the query or of a document changed. Default is false.
      */
-    includeMetadataChanges: boolean;
+    includeMetadataChanges?: boolean;
+    /**
+     * Set the source the query listens to. Default is 'default'.
+     */
+    source?: ListenSource;
   }
 
   /**

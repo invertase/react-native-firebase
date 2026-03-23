@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-const { wipe } = require('../helpers');
+const { wipe, setDocumentOutOfBand } = require('../helpers');
 const COLLECTION = 'firestore';
 const NO_RULE_COLLECTION = 'no_rules';
 
@@ -316,6 +316,69 @@ describe('firestore().collection().onSnapshot()', function () {
           "'options' SnapshotOptions.includeMetadataChanges must be a boolean value",
         );
         return Promise.resolve();
+      }
+    });
+
+    it("throws if SnapshotListenerOptions.source is invalid ('server')", function () {
+      try {
+        firebase.firestore().collection(NO_RULE_COLLECTION).onSnapshot({
+          source: 'server',
+        });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'options' SnapshotOptions.source must be one of 'default' or 'cache'",
+        );
+        return Promise.resolve();
+      }
+    });
+
+    it('cache source query listeners ignore out-of-band server writes', async function () {
+      if (Platform.other) {
+        return;
+      }
+
+      const collectionPath = `${COLLECTION}/${Utils.randString(12, '#aA')}/cache-source`;
+      const colRef = firebase.firestore().collection(collectionPath);
+      await colRef.doc('one').set({ enabled: true });
+      await colRef.get();
+
+      const callback = sinon.spy();
+      const unsub = colRef.onSnapshot({ source: 'cache' }, callback);
+      try {
+        await Utils.spyToBeCalledOnceAsync(callback);
+        await setDocumentOutOfBand(`${collectionPath}/server-write`, { enabled: false });
+        await Utils.sleep(1500);
+        callback.should.be.callCount(1);
+
+        await colRef.doc('local-write').set({ enabled: true });
+        await Utils.spyToBeCalledTimesAsync(callback, 2);
+      } finally {
+        unsub();
+      }
+    });
+
+    it('default source query listeners receive out-of-band server writes', async function () {
+      if (Platform.other) {
+        return;
+      }
+
+      const collectionPath = `${COLLECTION}/${Utils.randString(12, '#aA')}/cache-source-meta`;
+      const colRef = firebase.firestore().collection(collectionPath);
+      await colRef.doc('one').set({ enabled: true });
+      await colRef.get();
+
+      const callback = sinon.spy();
+      const unsub = colRef.onSnapshot(
+        { source: 'default', includeMetadataChanges: true },
+        callback,
+      );
+      try {
+        await Utils.spyToBeCalledOnceAsync(callback);
+        await setDocumentOutOfBand(`${collectionPath}/server-write`, { enabled: false });
+        await Utils.spyToBeCalledTimesAsync(callback, 2, 8000);
+      } finally {
+        unsub();
       }
     });
 
@@ -632,6 +695,21 @@ describe('firestore().collection().onSnapshot()', function () {
       } catch (error) {
         error.message.should.containEql(
           "'options' SnapshotOptions.includeMetadataChanges must be a boolean value",
+        );
+        return Promise.resolve();
+      }
+    });
+
+    it("throws if SnapshotListenerOptions.source is invalid ('server')", function () {
+      const { getFirestore, collection, onSnapshot } = firestoreModular;
+      try {
+        onSnapshot(collection(getFirestore(), NO_RULE_COLLECTION), {
+          source: 'server',
+        });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'options' SnapshotOptions.source must be one of 'default' or 'cache'",
         );
         return Promise.resolve();
       }

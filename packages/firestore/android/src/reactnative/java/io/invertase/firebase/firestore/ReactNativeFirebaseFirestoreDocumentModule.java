@@ -78,18 +78,26 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
           }
         };
 
-    MetadataChanges metadataChanges;
+    SnapshotListenOptions.Builder snapshotListenOptionsBuilder = new SnapshotListenOptions.Builder();
 
     if (listenerOptions != null
         && listenerOptions.hasKey("includeMetadataChanges")
         && listenerOptions.getBoolean("includeMetadataChanges")) {
-      metadataChanges = MetadataChanges.INCLUDE;
+      snapshotListenOptionsBuilder.setMetadataChanges(MetadataChanges.INCLUDE);
     } else {
-      metadataChanges = MetadataChanges.EXCLUDE;
+      snapshotListenOptionsBuilder.setMetadataChanges(MetadataChanges.EXCLUDE);
+    }
+
+    if (listenerOptions != null
+        && listenerOptions.hasKey("source")
+        && "cache".equals(listenerOptions.getString("source"))) {
+      snapshotListenOptionsBuilder.setSource(ListenSource.CACHE);
+    } else {
+      snapshotListenOptionsBuilder.setSource(ListenSource.DEFAULT);
     }
 
     ListenerRegistration listenerRegistration =
-        documentReference.addSnapshotListener(metadataChanges, listener);
+        documentReference.addSnapshotListener(snapshotListenOptionsBuilder.build(), listener);
 
     documentSnapshotListeners.put(listenerId, listenerRegistration);
   }

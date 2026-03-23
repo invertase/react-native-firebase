@@ -334,6 +334,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
       int listenerId,
       ReadableMap listenerOptions) {
     MetadataChanges metadataChanges;
+    SnapshotListenOptions.Builder snapshotListenOptionsBuilder = new SnapshotListenOptions.Builder();
 
     if (listenerOptions != null
         && listenerOptions.hasKey("includeMetadataChanges")
@@ -341,6 +342,15 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
       metadataChanges = MetadataChanges.INCLUDE;
     } else {
       metadataChanges = MetadataChanges.EXCLUDE;
+    }
+    snapshotListenOptionsBuilder.setMetadataChanges(metadataChanges);
+
+    if (listenerOptions != null
+        && listenerOptions.hasKey("source")
+        && "cache".equals(listenerOptions.getString("source"))) {
+      snapshotListenOptionsBuilder.setSource(ListenSource.CACHE);
+    } else {
+      snapshotListenOptionsBuilder.setSource(ListenSource.DEFAULT);
     }
 
     final EventListener<QuerySnapshot> listener =
@@ -358,7 +368,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
         };
 
     ListenerRegistration listenerRegistration =
-        firestoreQuery.query.addSnapshotListener(metadataChanges, listener);
+        firestoreQuery.query.addSnapshotListener(snapshotListenOptionsBuilder.build(), listener);
 
     collectionSnapshotListeners.put(listenerId, listenerRegistration);
   }

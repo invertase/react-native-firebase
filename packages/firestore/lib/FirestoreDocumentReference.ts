@@ -38,7 +38,7 @@ import type DocumentSnapshot from './FirestoreDocumentSnapshot';
 import type { FirestoreInternal, FirestoreSyncEventBodyInternal } from './types/internal';
 import type { DocumentSnapshotNativeData } from './FirestoreDocumentSnapshot';
 import type FirestorePath from './FirestorePath';
-import type { DocumentData, FirestoreDataConverter } from './types/firestore';
+import type { DocumentData, FirestoreDataConverter, ListenSource } from './types/firestore';
 
 let FirestoreCollectionReference:
   | (new (
@@ -188,7 +188,7 @@ export default class DocumentReference {
   }
 
   onSnapshot(...args: unknown[]): () => void {
-    let snapshotListenOptions: { includeMetadataChanges?: boolean };
+    let snapshotListenOptions: { includeMetadataChanges?: boolean; source?: ListenSource };
     let callback: (snapshot: DocumentSnapshot | null, error: Error | null) => void;
     let onNext: (snapshot: DocumentSnapshot) => void;
     let onError: (error: Error) => void;
