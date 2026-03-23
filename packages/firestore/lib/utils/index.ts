@@ -196,7 +196,7 @@ export function parseSnapshotArgs(args: unknown[]): ParseSnapshotArgsResult {
   }
 
   if (isObject(args[0]) && !isPartialObserver(args[0])) {
-    const opts = args[0] as { includeMetadataChanges?: boolean; source?: 'default' | 'cache' };
+    const opts = args[0] as { includeMetadataChanges?: boolean; source?: ListenSource };
     snapshotListenOptions.includeMetadataChanges =
       opts.includeMetadataChanges == null ? false : opts.includeMetadataChanges;
     snapshotListenOptions.source = opts.source == null ? 'default' : opts.source;
