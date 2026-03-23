@@ -31,7 +31,7 @@ import type {
   PartialSnapshotObserverInternal,
 } from '../types/internal';
 import FieldPath, { fromDotSeparatedString } from '../FieldPath';
-import type { ListenSource } from 'lib/types/firestore';
+import type { ListenSource } from '../types/firestore';
 
 export function extractFieldPathData(data: unknown, segments: string[]): unknown {
   if (!isObject(data)) {
