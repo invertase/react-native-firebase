@@ -54,6 +54,7 @@ import com.google.firebase.firestore.pipeline.SampleStage;
 import com.google.firebase.firestore.pipeline.Selectable;
 import com.google.firebase.firestore.pipeline.UnnestOptions;
 import java.util.Arrays;
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -62,6 +63,54 @@ import java.util.Map;
 class ReactNativeFirebaseFirestorePipelineExecutor {
   private final FirebaseFirestore firestore;
   private final ReactNativeFirebaseFirestorePipelineNodeBuilder nodeBuilder;
+
+  private static final class PipelineBox {
+    Pipeline value;
+  }
+
+  private interface PendingPipelineStage {}
+
+  private static final class ReadyPipelineStage implements PendingPipelineStage {
+    final ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineStage stage;
+
+    ReadyPipelineStage(ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineStage stage) {
+      this.stage = stage;
+    }
+  }
+
+  private static final class PendingUnionPipelineStage implements PendingPipelineStage {
+    final PipelineBox childBox;
+
+    PendingUnionPipelineStage(PipelineBox childBox) {
+      this.childBox = childBox;
+    }
+  }
+
+  private abstract static class PipelineBuildFrame {}
+
+  private static final class EnterPipelineBuildFrame extends PipelineBuildFrame {
+    final ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineRequest request;
+    final PipelineBox box;
+
+    EnterPipelineBuildFrame(
+        ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineRequest request, PipelineBox box) {
+      this.request = request;
+      this.box = box;
+    }
+  }
+
+  private static final class ExitPipelineBuildFrame extends PipelineBuildFrame {
+    final Pipeline sourcePipeline;
+    final List<PendingPipelineStage> stages;
+    final PipelineBox box;
+
+    ExitPipelineBuildFrame(
+        Pipeline sourcePipeline, List<PendingPipelineStage> stages, PipelineBox box) {
+      this.sourcePipeline = sourcePipeline;
+      this.stages = stages;
+      this.box = box;
+    }
+  }
 
   ReactNativeFirebaseFirestorePipelineExecutor(FirebaseFirestore firestore) {
     this.firestore = firestore;
@@ -109,13 +158,67 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
   private Pipeline buildNativePipeline(
       ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineRequest request)
       throws PipelineValidationException {
-    Pipeline currentPipeline = buildSourcePipeline(request.source);
+    PipelineBox rootBox = new PipelineBox();
+    ArrayDeque<PipelineBuildFrame> stack = new ArrayDeque<>();
+    stack.push(new EnterPipelineBuildFrame(request, rootBox));
 
-    for (ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineStage stage : request.stages) {
-      currentPipeline = applyStage(currentPipeline, stage);
+    while (!stack.isEmpty()) {
+      PipelineBuildFrame frame = stack.pop();
+      if (frame instanceof EnterPipelineBuildFrame) {
+        EnterPipelineBuildFrame enterFrame = (EnterPipelineBuildFrame) frame;
+        Pipeline sourcePipeline = buildSourcePipeline(enterFrame.request.source);
+        List<PendingPipelineStage> pendingStages =
+            new java.util.ArrayList<>(enterFrame.request.stages.size());
+        List<Map.Entry<ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineRequest, PipelineBox>>
+            nestedRequests = new java.util.ArrayList<>();
+
+        for (ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineStage stage :
+            enterFrame.request.stages) {
+          if (stage instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedUnionStage) {
+            PipelineBox childBox = new PipelineBox();
+            pendingStages.add(new PendingUnionPipelineStage(childBox));
+            nestedRequests.add(
+                new java.util.AbstractMap.SimpleEntry<>(
+                    ((ReactNativeFirebaseFirestorePipelineParser.ParsedUnionStage) stage).other,
+                    childBox));
+          } else {
+            pendingStages.add(new ReadyPipelineStage(stage));
+          }
+        }
+
+        stack.push(new ExitPipelineBuildFrame(sourcePipeline, pendingStages, enterFrame.box));
+        for (int i = nestedRequests.size() - 1; i >= 0; i--) {
+          Map.Entry<ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineRequest, PipelineBox>
+              nestedEntry = nestedRequests.get(i);
+          stack.push(new EnterPipelineBuildFrame(nestedEntry.getKey(), nestedEntry.getValue()));
+        }
+        continue;
+      }
+
+      ExitPipelineBuildFrame exitFrame = (ExitPipelineBuildFrame) frame;
+      Pipeline currentPipeline = exitFrame.sourcePipeline;
+      for (PendingPipelineStage pendingStage : exitFrame.stages) {
+        if (pendingStage instanceof ReadyPipelineStage) {
+          currentPipeline =
+              applyStage(currentPipeline, ((ReadyPipelineStage) pendingStage).stage);
+          continue;
+        }
+
+        Pipeline otherPipelineInstance = ((PendingUnionPipelineStage) pendingStage).childBox.value;
+        if (otherPipelineInstance == null) {
+          throw new PipelineValidationException(
+              "pipelineExecute() failed to build nested union pipeline.");
+        }
+        currentPipeline = currentPipeline.union(otherPipelineInstance);
+      }
+
+      exitFrame.box.value = currentPipeline;
     }
 
-    return currentPipeline;
+    if (rootBox.value == null) {
+      throw new PipelineValidationException("pipelineExecute() failed to build pipeline.");
+    }
+    return rootBox.value;
   }
 
   private Pipeline buildSourcePipeline(
@@ -506,8 +609,7 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
   private Pipeline applyUnionStage(
       Pipeline pipeline, ReactNativeFirebaseFirestorePipelineParser.ParsedUnionStage stage)
       throws PipelineValidationException {
-    Pipeline otherPipelineInstance = buildNativePipeline(stage.other);
-    return pipeline.union(otherPipelineInstance);
+    throw new PipelineValidationException("pipelineExecute() failed to build nested union pipeline.");
   }
 
   private Pipeline applyUnnestStage(

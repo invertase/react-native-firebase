@@ -5,6 +5,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import java.util.Arrays;
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -35,6 +36,71 @@ final class ReactNativeFirebaseFirestorePipelineParser {
               "unnest",
               "rawStage"));
 
+  private static final class ParsedPipelineRequestBox {
+    ParsedPipelineRequest value;
+  }
+
+  private interface PendingParsedStage {}
+
+  private static final class ReadyParsedStage implements PendingParsedStage {
+    final ParsedPipelineStage stage;
+
+    ReadyParsedStage(ParsedPipelineStage stage) {
+      this.stage = stage;
+    }
+  }
+
+  private static final class PendingUnionStage implements PendingParsedStage {
+    final ParsedPipelineRequestBox childBox;
+
+    PendingUnionStage(ParsedPipelineRequestBox childBox) {
+      this.childBox = childBox;
+    }
+  }
+
+  private abstract static class PipelineParseFrame {}
+
+  private static final class EnterPipelineParseFrame extends PipelineParseFrame {
+    final Map<String, Object> pipeline;
+    final Map<String, Object> options;
+    final ParsedPipelineRequestBox box;
+
+    EnterPipelineParseFrame(
+        Map<String, Object> pipeline, Map<String, Object> options, ParsedPipelineRequestBox box) {
+      this.pipeline = pipeline;
+      this.options = options;
+      this.box = box;
+    }
+  }
+
+  private static final class ExitPipelineParseFrame extends PipelineParseFrame {
+    final ParsedPipelineSource source;
+    final List<PendingParsedStage> stages;
+    final ParsedPipelineExecuteOptions options;
+    final ParsedPipelineRequestBox box;
+
+    ExitPipelineParseFrame(
+        ParsedPipelineSource source,
+        List<PendingParsedStage> stages,
+        ParsedPipelineExecuteOptions options,
+        ParsedPipelineRequestBox box) {
+      this.source = source;
+      this.stages = stages;
+      this.options = options;
+      this.box = box;
+    }
+  }
+
+  private static final class StageDescriptor {
+    final String stageName;
+    final Map<String, Object> stageOptions;
+
+    StageDescriptor(String stageName, Map<String, Object> stageOptions) {
+      this.stageName = stageName;
+      this.stageOptions = stageOptions;
+    }
+  }
+
   private ReactNativeFirebaseFirestorePipelineParser() {}
 
   static ParsedPipelineRequest parse(ReadableMap pipeline, ReadableMap options)
@@ -51,11 +117,81 @@ final class ReactNativeFirebaseFirestorePipelineParser {
   private static ParsedPipelineRequest parsePipelineMap(
       Map<String, Object> pipeline, Map<String, Object> options)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    Map<String, Object> sourceMap = requireMap(pipeline, "source", "pipeline.source");
-    List<Object> stagesArray = requireArray(pipeline, "stages", "pipeline.stages");
+    ParsedPipelineRequestBox rootBox = new ParsedPipelineRequestBox();
+    ArrayDeque<PipelineParseFrame> stack = new ArrayDeque<>();
+    stack.push(new EnterPipelineParseFrame(pipeline, options, rootBox));
 
-    return new ParsedPipelineRequest(
-        parseSource(sourceMap), parseStages(stagesArray), parseOptions(options));
+    while (!stack.isEmpty()) {
+      PipelineParseFrame frame = stack.pop();
+      if (frame instanceof EnterPipelineParseFrame) {
+        EnterPipelineParseFrame enterFrame = (EnterPipelineParseFrame) frame;
+        ParsedPipelineSource source =
+            parseSource(requireMap(enterFrame.pipeline, "source", "pipeline.source"));
+        List<Object> stagesArray = requireArray(enterFrame.pipeline, "stages", "pipeline.stages");
+        ParsedPipelineExecuteOptions parsedOptions = parseOptions(enterFrame.options);
+        List<PendingParsedStage> pendingStages = new java.util.ArrayList<>(stagesArray.size());
+        List<Map.Entry<Map<String, Object>, ParsedPipelineRequestBox>> nestedPipelines =
+            new java.util.ArrayList<>();
+
+        for (int i = 0; i < stagesArray.size(); i++) {
+          Object stageValue = stagesArray.get(i);
+          if (!(stageValue instanceof Map)) {
+            throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+                "pipelineExecute() expected each pipeline stage to be an object.");
+          }
+
+          @SuppressWarnings("unchecked")
+          Map<String, Object> stageMap = (Map<String, Object>) stageValue;
+          String fieldName = "pipeline.stages[" + i + "]";
+          StageDescriptor descriptor = parseStageDescriptor(stageMap, fieldName);
+          if ("union".equals(descriptor.stageName)) {
+            ParsedPipelineRequestBox childBox = new ParsedPipelineRequestBox();
+            pendingStages.add(new PendingUnionStage(childBox));
+            nestedPipelines.add(
+                new java.util.AbstractMap.SimpleEntry<>(
+                    requireMap(descriptor.stageOptions, "other", fieldName + ".options.other"),
+                    childBox));
+          } else {
+            pendingStages.add(
+                new ReadyParsedStage(parseStage(descriptor.stageName, descriptor.stageOptions)));
+          }
+        }
+
+        stack.push(
+            new ExitPipelineParseFrame(source, pendingStages, parsedOptions, enterFrame.box));
+        for (int i = nestedPipelines.size() - 1; i >= 0; i--) {
+          Map.Entry<Map<String, Object>, ParsedPipelineRequestBox> nestedEntry =
+              nestedPipelines.get(i);
+          stack.push(new EnterPipelineParseFrame(nestedEntry.getKey(), null, nestedEntry.getValue()));
+        }
+        continue;
+      }
+
+      ExitPipelineParseFrame exitFrame = (ExitPipelineParseFrame) frame;
+      List<ParsedPipelineStage> stages = new java.util.ArrayList<>(exitFrame.stages.size());
+      for (PendingParsedStage pendingStage : exitFrame.stages) {
+        if (pendingStage instanceof ReadyParsedStage) {
+          stages.add(((ReadyParsedStage) pendingStage).stage);
+          continue;
+        }
+
+        ParsedPipelineRequestBox childBox = ((PendingUnionStage) pendingStage).childBox;
+        if (childBox.value == null) {
+          throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+              "pipelineExecute() failed to parse nested union pipeline.");
+        }
+        stages.add(new ParsedUnionStage(childBox.value));
+      }
+
+      exitFrame.box.value =
+          new ParsedPipelineRequest(exitFrame.source, stages, exitFrame.options);
+    }
+
+    if (rootBox.value == null) {
+      throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+          "pipelineExecute() expected a pipeline object.");
+    }
+    return rootBox.value;
   }
 
   private static ParsedPipelineSource parseSource(Map<String, Object> source)
@@ -94,43 +230,29 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     }
   }
 
-  private static List<ParsedPipelineStage> parseStages(List<Object> stages)
+  private static StageDescriptor parseStageDescriptor(Map<String, Object> stageMap, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    List<ParsedPipelineStage> parsedStages = new java.util.ArrayList<>(stages.size());
-
-    for (int i = 0; i < stages.size(); i++) {
-      Object stageValue = stages.get(i);
-      if (!(stageValue instanceof Map)) {
-        throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-            "pipelineExecute() expected each pipeline stage to be an object.");
-      }
-
-      @SuppressWarnings("unchecked")
-      Map<String, Object> stageMap = (Map<String, Object>) stageValue;
-      Object stageNameValue = stageMap.get("stage");
-      if (!(stageNameValue instanceof String) || ((String) stageNameValue).isEmpty()) {
-        throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-            "pipelineExecute() expected each stage.stage to be a non-empty string.");
-      }
-
-      String stageName = (String) stageNameValue;
-      if (!KNOWN_STAGES.contains(stageName)) {
-        throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-            "pipelineExecute() received an unknown stage: " + stageName + ".");
-      }
-
-      Object optionsValue = stageMap.get("options");
-      if (!(optionsValue instanceof Map)) {
-        throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-            "pipelineExecute() expected each stage.options to be an object.");
-      }
-
-      @SuppressWarnings("unchecked")
-      Map<String, Object> stageOptions = (Map<String, Object>) optionsValue;
-      parsedStages.add(parseStage(stageName, stageOptions));
+    Object stageNameValue = stageMap.get("stage");
+    if (!(stageNameValue instanceof String) || ((String) stageNameValue).isEmpty()) {
+      throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+          "pipelineExecute() expected " + fieldName + ".stage to be a non-empty string.");
     }
 
-    return parsedStages;
+    String stageName = (String) stageNameValue;
+    if (!KNOWN_STAGES.contains(stageName)) {
+      throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+          "pipelineExecute() received an unknown stage: " + stageName + ".");
+    }
+
+    Object optionsValue = stageMap.get("options");
+    if (!(optionsValue instanceof Map)) {
+      throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+          "pipelineExecute() expected " + fieldName + ".options to be an object.");
+    }
+
+    @SuppressWarnings("unchecked")
+    Map<String, Object> stageOptions = (Map<String, Object>) optionsValue;
+    return new StageDescriptor(stageName, stageOptions);
   }
 
   private static ParsedPipelineStage parseStage(String stageName, Map<String, Object> stageOptions)
@@ -188,8 +310,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
       case "sample":
         return new ParsedSampleStage(stageOptions.get("documents"), stageOptions.get("percentage"));
       case "union":
-        return new ParsedUnionStage(
-            parsePipelineMap(requireMap(stageOptions, "other", "stage.options.other"), null));
+        throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+            "pipelineExecute() failed to parse nested union pipeline.");
       case "unnest":
         return new ParsedUnnestStage(
             parseSelectableNode(
