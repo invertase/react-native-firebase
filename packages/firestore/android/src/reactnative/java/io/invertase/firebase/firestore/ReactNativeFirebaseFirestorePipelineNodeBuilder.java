@@ -29,9 +29,15 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     Object value;
   }
 
+  private static final class ConstantValueBox {
+    Object value;
+  }
+
   private interface ValueResolutionFrame {}
 
   private interface SerializationFrame {}
+
+  private interface ConstantResolutionFrame {}
 
   private static final class EnterValueResolutionFrame implements ValueResolutionFrame {
     final ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode value;
@@ -145,6 +151,38 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         SerializedValueBox valueBox, SerializedExpressionBox expressionBox) {
       this.valueBox = valueBox;
       this.expressionBox = expressionBox;
+    }
+  }
+
+  private static final class EnterConstantResolutionFrame implements ConstantResolutionFrame {
+    final Object value;
+    final String fieldName;
+    final ConstantValueBox box;
+
+    EnterConstantResolutionFrame(Object value, String fieldName, ConstantValueBox box) {
+      this.value = value;
+      this.fieldName = fieldName;
+      this.box = box;
+    }
+  }
+
+  private static final class ExitConstantListFrame implements ConstantResolutionFrame {
+    final ConstantValueBox box;
+    final List<ConstantValueBox> childBoxes;
+
+    ExitConstantListFrame(ConstantValueBox box, List<ConstantValueBox> childBoxes) {
+      this.box = box;
+      this.childBoxes = childBoxes;
+    }
+  }
+
+  private static final class ExitConstantMapFrame implements ConstantResolutionFrame {
+    final ConstantValueBox box;
+    final List<Map.Entry<String, ConstantValueBox>> entries;
+
+    ExitConstantMapFrame(ConstantValueBox box, List<Map.Entry<String, ConstantValueBox>> entries) {
+      this.box = box;
+      this.entries = entries;
     }
   }
 
@@ -986,45 +1024,91 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
 
   private Object resolveConstantValue(Object value, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    Object currentValue = value;
-    String currentFieldName = fieldName;
+    ConstantValueBox rootBox = new ConstantValueBox();
+    ArrayDeque<ConstantResolutionFrame> stack = new ArrayDeque<>();
+    stack.push(new EnterConstantResolutionFrame(value, fieldName, rootBox));
 
-    while (currentValue instanceof Map) {
-      @SuppressWarnings("unchecked")
-      Map<String, Object> map = (Map<String, Object>) currentValue;
-      Object constantValue = unwrapConstantValue(map, currentFieldName);
-      if (constantValue == null) {
-        break;
+    while (!stack.isEmpty()) {
+      ConstantResolutionFrame frame = stack.pop();
+      if (frame instanceof EnterConstantResolutionFrame) {
+        EnterConstantResolutionFrame enterFrame = (EnterConstantResolutionFrame) frame;
+        Object currentValue = enterFrame.value;
+        String currentFieldName = enterFrame.fieldName;
+
+        while (currentValue instanceof Map) {
+          @SuppressWarnings("unchecked")
+          Map<String, Object> map = (Map<String, Object>) currentValue;
+          Object constantValue = unwrapConstantValue(map, currentFieldName);
+          if (constantValue == null) {
+            break;
+          }
+          currentValue = constantValue;
+        }
+
+        if (currentValue instanceof Map) {
+          @SuppressWarnings("unchecked")
+          Map<String, Object> map = (Map<String, Object>) currentValue;
+          if (isSerializedExpressionLike(map)) {
+            enterFrame.box.value = coerceExpression(map, currentFieldName);
+            continue;
+          }
+
+          List<Map.Entry<String, ConstantValueBox>> entries = new ArrayList<>(map.size());
+          stack.push(new ExitConstantMapFrame(enterFrame.box, entries));
+          List<Map.Entry<String, Object>> pendingEntries = new ArrayList<>(map.entrySet());
+          for (Map.Entry<String, Object> entry : pendingEntries) {
+            ConstantValueBox childBox = new ConstantValueBox();
+            entries.add(new java.util.AbstractMap.SimpleEntry<>(entry.getKey(), childBox));
+          }
+          for (int i = pendingEntries.size() - 1; i >= 0; i--) {
+            Map.Entry<String, Object> entry = pendingEntries.get(i);
+            stack.push(
+                new EnterConstantResolutionFrame(
+                    entry.getValue(),
+                    currentFieldName + "." + entry.getKey(),
+                    entries.get(i).getValue()));
+          }
+          continue;
+        }
+
+        if (currentValue instanceof List) {
+          List<?> values = (List<?>) currentValue;
+          List<ConstantValueBox> childBoxes = new ArrayList<>(values.size());
+          for (int i = 0; i < values.size(); i++) {
+            childBoxes.add(new ConstantValueBox());
+          }
+          stack.push(new ExitConstantListFrame(enterFrame.box, childBoxes));
+          for (int i = values.size() - 1; i >= 0; i--) {
+            stack.push(
+                new EnterConstantResolutionFrame(
+                    values.get(i), currentFieldName + "[" + i + "]", childBoxes.get(i)));
+          }
+          continue;
+        }
+
+        enterFrame.box.value = currentValue;
+        continue;
       }
-      currentValue = constantValue;
-    }
 
-    if (currentValue instanceof Map) {
-      @SuppressWarnings("unchecked")
-      Map<String, Object> map = (Map<String, Object>) currentValue;
-      if (isSerializedExpressionLike(map)) {
-        return coerceExpression(map, currentFieldName);
+      if (frame instanceof ExitConstantListFrame) {
+        ExitConstantListFrame exitFrame = (ExitConstantListFrame) frame;
+        List<Object> output = new ArrayList<>(exitFrame.childBoxes.size());
+        for (ConstantValueBox childBox : exitFrame.childBoxes) {
+          output.add(childBox.value);
+        }
+        exitFrame.box.value = output;
+        continue;
       }
 
+      ExitConstantMapFrame exitFrame = (ExitConstantMapFrame) frame;
       Map<String, Object> output = new LinkedHashMap<>();
-      for (Map.Entry<String, Object> entry : map.entrySet()) {
-        output.put(
-            entry.getKey(),
-            resolveConstantValue(entry.getValue(), currentFieldName + "." + entry.getKey()));
+      for (Map.Entry<String, ConstantValueBox> entry : exitFrame.entries) {
+        output.put(entry.getKey(), entry.getValue().value);
       }
-      return output;
+      exitFrame.box.value = output;
     }
 
-    if (currentValue instanceof List) {
-      List<?> values = (List<?>) currentValue;
-      List<Object> output = new ArrayList<>(values.size());
-      for (int i = 0; i < values.size(); i++) {
-        output.add(resolveConstantValue(values.get(i), currentFieldName + "[" + i + "]"));
-      }
-      return output;
-    }
-
-    return currentValue;
+    return rootBox.value;
   }
 
   private boolean containsSerializedExpression(Object value) {
