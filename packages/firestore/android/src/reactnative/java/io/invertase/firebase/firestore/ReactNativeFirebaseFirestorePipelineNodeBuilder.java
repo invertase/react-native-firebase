@@ -14,6 +14,48 @@ import java.util.Locale;
 import java.util.Map;
 
 final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
+  private static final class ResolvedValueBox {
+    Object value;
+  }
+
+  private interface ValueResolutionFrame {}
+
+  private static final class EnterValueResolutionFrame implements ValueResolutionFrame {
+    final ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode value;
+    final String fieldName;
+    final ResolvedValueBox box;
+
+    EnterValueResolutionFrame(
+        ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode value,
+        String fieldName,
+        ResolvedValueBox box) {
+      this.value = value;
+      this.fieldName = fieldName;
+      this.box = box;
+    }
+  }
+
+  private static final class ExitListValueResolutionFrame implements ValueResolutionFrame {
+    final ResolvedValueBox box;
+    final List<ResolvedValueBox> childBoxes;
+
+    ExitListValueResolutionFrame(ResolvedValueBox box, List<ResolvedValueBox> childBoxes) {
+      this.box = box;
+      this.childBoxes = childBoxes;
+    }
+  }
+
+  private static final class ExitMapValueResolutionFrame implements ValueResolutionFrame {
+    final ResolvedValueBox box;
+    final List<Map.Entry<String, ResolvedValueBox>> entries;
+
+    ExitMapValueResolutionFrame(
+        ResolvedValueBox box, List<Map.Entry<String, ResolvedValueBox>> entries) {
+      this.box = box;
+      this.entries = entries;
+    }
+  }
+
   Expression coerceExpression(
       ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionNode value, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
@@ -95,67 +137,73 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
 
   String coerceFieldPath(Object value, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    if (value instanceof String) {
-      String fieldPath = (String) value;
-      if (!fieldPath.isEmpty()) {
-        return fieldPath;
-      }
-    }
+    Object currentValue = value;
 
-    if (value instanceof Map) {
-      Map<?, ?> map = (Map<?, ?>) value;
-      Object directPath = map.get("path");
-      if (directPath instanceof String && !((String) directPath).isEmpty()) {
-        return (String) directPath;
-      }
-
-      Object fieldPath = map.get("fieldPath");
-      if (fieldPath != null && fieldPath != map) {
-        return coerceFieldPath(fieldPath, fieldName);
-      }
-
-      Object segments = map.get("segments");
-      if (!(segments instanceof List)) {
-        segments = map.get("_segments");
-      }
-      if (segments instanceof List) {
-        List<?> list = (List<?>) segments;
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < list.size(); i++) {
-          Object segment = list.get(i);
-          if (!(segment instanceof String)) {
-            throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-                "pipelineExecute() expected " + fieldName + " segment values to be strings.");
-          }
-          if (i > 0) {
-            builder.append('.');
-          }
-          builder.append((String) segment);
-        }
-        String path = builder.toString();
-        if (!path.isEmpty()) {
-          return path;
+    while (true) {
+      if (currentValue instanceof String) {
+        String fieldPath = (String) currentValue;
+        if (!fieldPath.isEmpty()) {
+          return fieldPath;
         }
       }
-    }
 
-    throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-        "pipelineExecute() expected " + fieldName + " to resolve to a field path string.");
+      if (currentValue instanceof Map) {
+        Map<?, ?> map = (Map<?, ?>) currentValue;
+        Object directPath = map.get("path");
+        if (directPath instanceof String && !((String) directPath).isEmpty()) {
+          return (String) directPath;
+        }
+
+        Object fieldPath = map.get("fieldPath");
+        if (fieldPath != null && fieldPath != map) {
+          currentValue = fieldPath;
+          continue;
+        }
+
+        Object segments = map.get("segments");
+        if (!(segments instanceof List)) {
+          segments = map.get("_segments");
+        }
+        if (segments instanceof List) {
+          List<?> list = (List<?>) segments;
+          StringBuilder builder = new StringBuilder();
+          for (int i = 0; i < list.size(); i++) {
+            Object segment = list.get(i);
+            if (!(segment instanceof String)) {
+              throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+                  "pipelineExecute() expected " + fieldName + " segment values to be strings.");
+            }
+            if (i > 0) {
+              builder.append('.');
+            }
+            builder.append((String) segment);
+          }
+          String path = builder.toString();
+          if (!path.isEmpty()) {
+            return path;
+          }
+        }
+      }
+
+      throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+          "pipelineExecute() expected " + fieldName + " to resolve to a field path string.");
+    }
   }
 
   double[] coerceVectorValue(Object value)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    if (value instanceof Map) {
-      Object nestedValues = ((Map<?, ?>) value).get("values");
-      return coerceVectorValue(nestedValues);
+    Object currentValue = value;
+
+    while (currentValue instanceof Map) {
+      currentValue = ((Map<?, ?>) currentValue).get("values");
     }
 
-    if (!(value instanceof List)) {
+    if (!(currentValue instanceof List)) {
       throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
           "pipelineExecute() expected findNearest.vectorValue to be an array.");
     }
 
-    List<?> values = (List<?>) value;
+    List<?> values = (List<?>) currentValue;
     double[] vector = new double[values.size()];
     for (int i = 0; i < values.size(); i++) {
       Object item = values.get(i);
@@ -616,74 +664,151 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
   private Object resolveValueNode(
       ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode value, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    if (value instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedPrimitiveValueNode) {
-      return ((ReactNativeFirebaseFirestorePipelineParser.ParsedPrimitiveValueNode) value).value;
-    }
-    if (value instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionValueNode) {
-      ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionNode expression =
-          ((ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionValueNode) value).expression;
-      if (expression
-          instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedConstantExpressionNode) {
-        return resolveValueNode(
-            ((ReactNativeFirebaseFirestorePipelineParser.ParsedConstantExpressionNode) expression)
-                .value,
-            fieldName);
+    ResolvedValueBox rootBox = new ResolvedValueBox();
+    java.util.ArrayDeque<ValueResolutionFrame> stack = new java.util.ArrayDeque<>();
+    stack.push(new EnterValueResolutionFrame(value, fieldName, rootBox));
+
+    while (!stack.isEmpty()) {
+      ValueResolutionFrame frame = stack.pop();
+      if (frame instanceof EnterValueResolutionFrame) {
+        EnterValueResolutionFrame enterFrame = (EnterValueResolutionFrame) frame;
+        ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode currentValue = enterFrame.value;
+        String currentFieldName = enterFrame.fieldName;
+
+        if (currentValue instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedPrimitiveValueNode) {
+          enterFrame.box.value =
+              ((ReactNativeFirebaseFirestorePipelineParser.ParsedPrimitiveValueNode) currentValue)
+                  .value;
+          continue;
+        }
+
+        if (currentValue
+            instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionValueNode) {
+          ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionNode expression =
+              ((ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionValueNode) currentValue)
+                  .expression;
+          if (expression
+              instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedConstantExpressionNode) {
+            stack.push(
+                new EnterValueResolutionFrame(
+                    ((ReactNativeFirebaseFirestorePipelineParser.ParsedConstantExpressionNode)
+                            expression)
+                        .value,
+                    currentFieldName,
+                    enterFrame.box));
+            continue;
+          }
+          enterFrame.box.value = coerceExpression(expression, currentFieldName);
+          continue;
+        }
+
+        if (currentValue instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) {
+          List<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> values =
+              ((ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) currentValue).values;
+          List<ResolvedValueBox> childBoxes = new java.util.ArrayList<>(values.size());
+          for (int i = 0; i < values.size(); i++) {
+            childBoxes.add(new ResolvedValueBox());
+          }
+          stack.push(new ExitListValueResolutionFrame(enterFrame.box, childBoxes));
+          for (int i = values.size() - 1; i >= 0; i--) {
+            stack.push(
+                new EnterValueResolutionFrame(
+                    values.get(i), currentFieldName + "[" + i + "]", childBoxes.get(i)));
+          }
+          continue;
+        }
+
+        if (currentValue instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode) {
+          Map<String, ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> values =
+              ((ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode) currentValue).values;
+          List<Map.Entry<String, ResolvedValueBox>> entries = new java.util.ArrayList<>(values.size());
+          stack.push(new ExitMapValueResolutionFrame(enterFrame.box, entries));
+          List<Map.Entry<String, ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode>>
+              pendingEntries = new java.util.ArrayList<>(values.entrySet());
+          for (Map.Entry<String, ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> entry :
+              pendingEntries) {
+            ResolvedValueBox childBox = new ResolvedValueBox();
+            entries.add(new java.util.AbstractMap.SimpleEntry<>(entry.getKey(), childBox));
+          }
+          for (int i = pendingEntries.size() - 1; i >= 0; i--) {
+            Map.Entry<String, ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> entry =
+                pendingEntries.get(i);
+            stack.push(
+                new EnterValueResolutionFrame(
+                    entry.getValue(),
+                    currentFieldName + "." + entry.getKey(),
+                    entries.get(i).getValue()));
+          }
+          continue;
+        }
+
+        enterFrame.box.value = null;
+        continue;
       }
-      return coerceExpression(expression, fieldName);
-    }
-    if (value instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) {
-      List<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> values =
-          ((ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) value).values;
-      List<Object> output = new java.util.ArrayList<>(values.size());
-      for (int i = 0; i < values.size(); i++) {
-        output.add(resolveValueNode(values.get(i), fieldName + "[" + i + "]"));
+
+      if (frame instanceof ExitListValueResolutionFrame) {
+        ExitListValueResolutionFrame exitFrame = (ExitListValueResolutionFrame) frame;
+        List<Object> output = new java.util.ArrayList<>(exitFrame.childBoxes.size());
+        for (ResolvedValueBox childBox : exitFrame.childBoxes) {
+          output.add(childBox.value);
+        }
+        exitFrame.box.value = output;
+        continue;
       }
-      return output;
-    }
-    if (value instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode) {
-      Map<String, ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> values =
-          ((ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode) value).values;
+
+      ExitMapValueResolutionFrame exitFrame = (ExitMapValueResolutionFrame) frame;
       Map<String, Object> output = new java.util.LinkedHashMap<>();
-      for (Map.Entry<String, ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> entry :
-          values.entrySet()) {
-        output.put(
-            entry.getKey(), resolveValueNode(entry.getValue(), fieldName + "." + entry.getKey()));
+      for (Map.Entry<String, ResolvedValueBox> entry : exitFrame.entries) {
+        output.put(entry.getKey(), entry.getValue().value);
       }
-      return output;
+      exitFrame.box.value = output;
     }
-    return null;
+
+    return rootBox.value;
   }
 
   private boolean containsParsedExpression(
       ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode value) {
-    if (value instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionValueNode) {
-      ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionNode expression =
-          ((ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionValueNode) value).expression;
-      if (expression
-          instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedConstantExpressionNode) {
-        return containsParsedExpression(
-            ((ReactNativeFirebaseFirestorePipelineParser.ParsedConstantExpressionNode) expression)
-                .value);
+    java.util.ArrayDeque<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> stack =
+        new java.util.ArrayDeque<>();
+    stack.push(value);
+
+    while (!stack.isEmpty()) {
+      ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode currentValue = stack.pop();
+      if (currentValue
+          instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionValueNode) {
+        ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionNode expression =
+            ((ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionValueNode) currentValue)
+                .expression;
+        if (expression
+            instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedConstantExpressionNode) {
+          stack.push(
+              ((ReactNativeFirebaseFirestorePipelineParser.ParsedConstantExpressionNode) expression)
+                  .value);
+          continue;
+        }
+        return true;
       }
-      return true;
-    }
-    if (value instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) {
-      for (ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode entry :
-          ((ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) value).values) {
-        if (containsParsedExpression(entry)) {
-          return true;
+
+      if (currentValue instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) {
+        List<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> values =
+            ((ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) currentValue).values;
+        for (int i = values.size() - 1; i >= 0; i--) {
+          stack.push(values.get(i));
+        }
+        continue;
+      }
+
+      if (currentValue instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode) {
+        for (ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode entry :
+            ((ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode) currentValue)
+                .values
+                .values()) {
+          stack.push(entry);
         }
       }
-      return false;
     }
-    if (value instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode) {
-      for (ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode entry :
-          ((ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode) value).values.values()) {
-        if (containsParsedExpression(entry)) {
-          return true;
-        }
-      }
-    }
+
     return false;
   }
 
