@@ -33,11 +33,17 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     Object value;
   }
 
+  private static final class LoweredBooleanBox {
+    BooleanExpression value;
+  }
+
   private interface ValueResolutionFrame {}
 
   private interface SerializationFrame {}
 
   private interface ConstantResolutionFrame {}
+
+  private interface BooleanLoweringFrame {}
 
   private static final class EnterValueResolutionFrame implements ValueResolutionFrame {
     final ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode value;
@@ -183,6 +189,36 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     ExitConstantMapFrame(ConstantValueBox box, List<Map.Entry<String, ConstantValueBox>> entries) {
       this.box = box;
       this.entries = entries;
+    }
+  }
+
+  private static final class EnterBooleanLoweringFrame implements BooleanLoweringFrame {
+    final Object value;
+    final String fieldName;
+    final LoweredBooleanBox box;
+
+    EnterBooleanLoweringFrame(Object value, String fieldName, LoweredBooleanBox box) {
+      this.value = value;
+      this.fieldName = fieldName;
+      this.box = box;
+    }
+  }
+
+  private static final class ExitBooleanLogicalFrame implements BooleanLoweringFrame {
+    final LoweredBooleanBox box;
+    final boolean andOperator;
+    final List<LoweredBooleanBox> childBoxes;
+    final String fieldName;
+
+    ExitBooleanLogicalFrame(
+        LoweredBooleanBox box,
+        boolean andOperator,
+        List<LoweredBooleanBox> childBoxes,
+        String fieldName) {
+      this.box = box;
+      this.andOperator = andOperator;
+      this.childBoxes = childBoxes;
+      this.fieldName = fieldName;
     }
   }
 
@@ -407,42 +443,126 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
 
   BooleanExpression coerceBooleanExpression(Object value, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    Object currentValue = value;
-    String currentFieldName = fieldName;
+    LoweredBooleanBox rootBox = new LoweredBooleanBox();
+    ArrayDeque<BooleanLoweringFrame> stack = new ArrayDeque<>();
+    stack.push(new EnterBooleanLoweringFrame(value, fieldName, rootBox));
 
-    while (currentValue instanceof Map) {
-      Map<?, ?> map = (Map<?, ?>) currentValue;
-      Object nested = map.get("condition");
-      if (nested != null) {
-        currentValue = nested;
-        currentFieldName = currentFieldName + ".condition";
-        continue;
+    while (!stack.isEmpty()) {
+      BooleanLoweringFrame frame = stack.pop();
+      if (frame instanceof EnterBooleanLoweringFrame) {
+        EnterBooleanLoweringFrame enterFrame = (EnterBooleanLoweringFrame) frame;
+        Object currentValue = enterFrame.value;
+        String currentFieldName = enterFrame.fieldName;
+
+        while (currentValue instanceof Map) {
+          Map<?, ?> map = (Map<?, ?>) currentValue;
+          Object nested = map.get("condition");
+          if (nested == null) {
+            break;
+          }
+          currentValue = nested;
+          currentFieldName = currentFieldName + ".condition";
+        }
+
+        if (currentValue instanceof Map) {
+          @SuppressWarnings("unchecked")
+          Map<String, Object> map = (Map<String, Object>) currentValue;
+
+          Object operatorName = map.get("operator");
+          if (operatorName instanceof String) {
+            String normalizedOperator = ((String) operatorName).toUpperCase(Locale.ROOT);
+            if ("AND".equals(normalizedOperator) || "OR".equals(normalizedOperator)) {
+              Object queriesValue = map.get("queries");
+              if (!(queriesValue instanceof List) || ((List<?>) queriesValue).isEmpty()) {
+                throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+                    "pipelineExecute() expected "
+                        + currentFieldName
+                        + ".queries to contain boolean expressions.");
+              }
+
+              List<?> queries = (List<?>) queriesValue;
+              List<LoweredBooleanBox> childBoxes = new ArrayList<>(queries.size());
+              for (int i = 0; i < queries.size(); i++) {
+                childBoxes.add(new LoweredBooleanBox());
+              }
+              stack.push(
+                  new ExitBooleanLogicalFrame(
+                      enterFrame.box, "AND".equals(normalizedOperator), childBoxes, currentFieldName));
+              for (int i = queries.size() - 1; i >= 0; i--) {
+                stack.push(
+                    new EnterBooleanLoweringFrame(
+                        queries.get(i), currentFieldName + ".queries[" + i + "]", childBoxes.get(i)));
+              }
+              continue;
+            }
+
+            enterFrame.box.value =
+                coerceBooleanOperatorExpression(map, (String) operatorName, currentFieldName);
+            continue;
+          }
+
+          Object name = map.get("name");
+          if (name instanceof String) {
+            String normalizedName = canonicalizeExpressionFunctionName((String) name);
+            List<Object> args = normalizeArgs(map.get("args"));
+            if ("and".equals(normalizedName) || "or".equals(normalizedName)) {
+              if (args.isEmpty()) {
+                throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+                    "pipelineExecute() expected "
+                        + currentFieldName
+                        + ".args to contain boolean expressions.");
+              }
+
+              List<LoweredBooleanBox> childBoxes = new ArrayList<>(args.size());
+              for (int i = 0; i < args.size(); i++) {
+                childBoxes.add(new LoweredBooleanBox());
+              }
+              stack.push(
+                  new ExitBooleanLogicalFrame(
+                      enterFrame.box, "and".equals(normalizedName), childBoxes, currentFieldName));
+              for (int i = args.size() - 1; i >= 0; i--) {
+                stack.push(
+                    new EnterBooleanLoweringFrame(
+                        args.get(i), currentFieldName + ".args[" + i + "]", childBoxes.get(i)));
+              }
+              continue;
+            }
+
+            enterFrame.box.value = booleanExpressionFromFunction((String) name, args, currentFieldName);
+            continue;
+          }
+        }
+
+        Expression expression = coerceExpression(currentValue, currentFieldName);
+        if (expression instanceof BooleanExpression) {
+          enterFrame.box.value = (BooleanExpression) expression;
+          continue;
+        }
+        throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+            "pipelineExecute() expected "
+                + currentFieldName
+                + " to resolve to a boolean expression.");
       }
 
-      Object operatorName = map.get("operator");
-      if (operatorName instanceof String) {
-        @SuppressWarnings("unchecked")
-        Map<String, Object> stringMap = (Map<String, Object>) map;
-        return coerceBooleanOperatorExpression(stringMap, (String) operatorName, currentFieldName);
+      ExitBooleanLogicalFrame exitFrame = (ExitBooleanLogicalFrame) frame;
+      BooleanExpression[] expressions = new BooleanExpression[exitFrame.childBoxes.size()];
+      for (int i = 0; i < exitFrame.childBoxes.size(); i++) {
+        BooleanExpression valueAtIndex = exitFrame.childBoxes.get(i).value;
+        if (valueAtIndex == null) {
+          throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+              "pipelineExecute() expected "
+                  + exitFrame.fieldName
+                  + " to contain boolean expressions.");
+        }
+        expressions[i] = valueAtIndex;
       }
-
-      Object name = map.get("name");
-      if (name instanceof String) {
-        return booleanExpressionFromFunction(
-            (String) name, normalizeArgs(map.get("args")), currentFieldName);
-      }
-
-      break;
+      BooleanExpression first = expressions[0];
+      BooleanExpression[] rest = Arrays.copyOfRange(expressions, 1, expressions.length);
+      exitFrame.box.value =
+          exitFrame.andOperator ? Expression.and(first, rest) : Expression.or(first, rest);
     }
 
-    Expression expression = coerceExpression(currentValue, currentFieldName);
-    if (expression instanceof BooleanExpression) {
-      return (BooleanExpression) expression;
-    }
-    throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-        "pipelineExecute() expected "
-            + currentFieldName
-            + " to resolve to a boolean expression.");
+    return rootBox.value;
   }
 
   private Expression coerceFunctionExpression(String name, List<Object> args, String fieldName)
