@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
+import { describe, expect, it, jest } from '@jest/globals';
 import { firebase } from '../lib';
 import {
   arrayGet,
@@ -22,16 +22,6 @@ import { ConstantExpression } from '../lib/pipelines/expressions';
 import { getIOSUnsupportedPipelineFunctions } from '../lib/pipelines/pipeline_support';
 
 describe('Firestore pipelines runtime', function () {
-  beforeAll(function () {
-    // @ts-ignore test
-    globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-  });
-
-  afterAll(function () {
-    // @ts-ignore test
-    globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = false;
-  });
-
   it('installs pipeline() and serializes source builders', function () {
     const db: any = firebase.firestore();
     const docRef = db.doc('firestore/a');
