@@ -358,14 +358,17 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     Object currentValue = value;
     String currentFieldName = fieldName;
+    List<String> pendingUnaryFunctions = new ArrayList<>();
 
     while (true) {
       if (currentValue instanceof String) {
-        return Expression.field((String) currentValue);
+        return applyPendingUnaryExpressionFunctions(
+            Expression.field((String) currentValue), pendingUnaryFunctions);
       }
 
       if (currentValue instanceof Expression) {
-        return (Expression) currentValue;
+        return applyPendingUnaryExpressionFunctions(
+            (Expression) currentValue, pendingUnaryFunctions);
       }
 
       if (currentValue == null
@@ -378,7 +381,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
           || currentValue instanceof DocumentReference
           || currentValue instanceof com.google.firebase.firestore.VectorValue
           || currentValue instanceof byte[]) {
-        return constantExpression(currentValue);
+        return applyPendingUnaryExpressionFunctions(
+            constantExpression(currentValue), pendingUnaryFunctions);
       }
 
       if (!(currentValue instanceof Map)) {
@@ -413,18 +417,30 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         if (isBooleanFunctionName((String) name)) {
           return coerceBooleanExpression(currentValue, currentFieldName);
         }
+        List<Object> args = normalizeArgs(map.get("args"));
+        String normalizedFunctionName = canonicalizeExpressionFunctionName((String) name);
+        if (isDeferredUnaryExpressionFunction(normalizedFunctionName) && args.size() == 1) {
+          pendingUnaryFunctions.add(normalizedFunctionName);
+          currentValue = args.get(0);
+          currentFieldName = currentFieldName + ".args[0]";
+          continue;
+        }
         return coerceFunctionExpression(
-            (String) name, normalizeArgs(map.get("args")), currentFieldName);
+            (String) name, args, currentFieldName);
       }
 
       Object exprType = map.get("exprType");
       if (exprType instanceof String) {
         String normalizedType = ((String) exprType).toLowerCase(Locale.ROOT);
         if ("field".equals(normalizedType)) {
-          return Expression.field(coerceFieldPath(currentValue, currentFieldName));
+          return applyPendingUnaryExpressionFunctions(
+              Expression.field(coerceFieldPath(currentValue, currentFieldName)),
+              pendingUnaryFunctions);
         }
         if ("constant".equals(normalizedType)) {
-          return constantExpression(resolveConstantValue(map.get("value"), currentFieldName + ".value"));
+          return applyPendingUnaryExpressionFunctions(
+              constantExpression(resolveConstantValue(map.get("value"), currentFieldName + ".value")),
+              pendingUnaryFunctions);
         }
       }
 
@@ -432,7 +448,9 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
           || map.containsKey("path")
           || map.containsKey("segments")
           || map.containsKey("_segments")) {
-        return Expression.field(coerceFieldPath(currentValue, currentFieldName));
+        return applyPendingUnaryExpressionFunctions(
+            Expression.field(coerceFieldPath(currentValue, currentFieldName)),
+            pendingUnaryFunctions);
       }
 
       throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
@@ -1355,6 +1373,70 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         || "arraycontainsall".equals(normalizedName)
         || "equalany".equals(normalizedName)
         || "notequalany".equals(normalizedName);
+  }
+
+  private boolean isDeferredUnaryExpressionFunction(String normalizedFunctionName) {
+    return "type".equals(normalizedFunctionName)
+        || "collectionid".equals(normalizedFunctionName)
+        || "documentid".equals(normalizedFunctionName)
+        || "arraylength".equals(normalizedFunctionName)
+        || "arraysum".equals(normalizedFunctionName)
+        || "vectorlength".equals(normalizedFunctionName)
+        || "timestamptounixmicros".equals(normalizedFunctionName)
+        || "timestamptounixmillis".equals(normalizedFunctionName)
+        || "timestamptounixseconds".equals(normalizedFunctionName)
+        || "unixmicrostotimestamp".equals(normalizedFunctionName)
+        || "unixmillistotimestamp".equals(normalizedFunctionName)
+        || "unixsecondstotimestamp".equals(normalizedFunctionName);
+  }
+
+  private Expression applyPendingUnaryExpressionFunctions(
+      Expression expression, List<String> pendingUnaryFunctions) {
+    Expression currentExpression = expression;
+    for (int i = pendingUnaryFunctions.size() - 1; i >= 0; i--) {
+      String functionName = pendingUnaryFunctions.get(i);
+      switch (functionName) {
+        case "type":
+          currentExpression = currentExpression.type();
+          break;
+        case "collectionid":
+          currentExpression = currentExpression.collectionId();
+          break;
+        case "documentid":
+          currentExpression = currentExpression.documentId();
+          break;
+        case "arraylength":
+          currentExpression = currentExpression.arrayLength();
+          break;
+        case "arraysum":
+          currentExpression = currentExpression.arraySum();
+          break;
+        case "vectorlength":
+          currentExpression = currentExpression.vectorLength();
+          break;
+        case "timestamptounixmicros":
+          currentExpression = currentExpression.timestampToUnixMicros();
+          break;
+        case "timestamptounixmillis":
+          currentExpression = currentExpression.timestampToUnixMillis();
+          break;
+        case "timestamptounixseconds":
+          currentExpression = currentExpression.timestampToUnixSeconds();
+          break;
+        case "unixmicrostotimestamp":
+          currentExpression = currentExpression.unixMicrosToTimestamp();
+          break;
+        case "unixmillistotimestamp":
+          currentExpression = currentExpression.unixMillisToTimestamp();
+          break;
+        case "unixsecondstotimestamp":
+          currentExpression = currentExpression.unixSecondsToTimestamp();
+          break;
+        default:
+          break;
+      }
+    }
+    return currentExpression;
   }
 
   private String mapOperatorToFunctionName(String operatorName) {
