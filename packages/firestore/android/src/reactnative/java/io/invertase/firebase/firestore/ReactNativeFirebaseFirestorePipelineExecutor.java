@@ -112,6 +112,28 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
     }
   }
 
+  private abstract static class ReadableContainerBuildFrame {}
+
+  private static final class ReadableMapBuildFrame extends ReadableContainerBuildFrame {
+    final ReadableMap source;
+    final Map<String, Object> target;
+
+    ReadableMapBuildFrame(ReadableMap source, Map<String, Object> target) {
+      this.source = source;
+      this.target = target;
+    }
+  }
+
+  private static final class ReadableArrayBuildFrame extends ReadableContainerBuildFrame {
+    final ReadableArray source;
+    final List<Object> target;
+
+    ReadableArrayBuildFrame(ReadableArray source, List<Object> target) {
+      this.source = source;
+      this.target = target;
+    }
+  }
+
   ReactNativeFirebaseFirestorePipelineExecutor(FirebaseFirestore firestore) {
     this.firestore = firestore;
     this.nodeBuilder = new ReactNativeFirebaseFirestorePipelineNodeBuilder();
@@ -978,78 +1000,125 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
 
   private Map<String, Object> readableMapToJava(ReadableMap readableMap) {
     Map<String, Object> output = new HashMap<>();
-    ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
-
-    while (iterator.hasNextKey()) {
-      String key = iterator.nextKey();
-      ReadableType type = readableMap.getType(key);
-      if (type == ReadableType.Null) {
-        output.put(key, null);
-        continue;
-      }
-
-      switch (type) {
-        case Boolean:
-          output.put(key, readableMap.getBoolean(key));
-          break;
-        case Number:
-          output.put(key, coerceNumber(readableMap.getDouble(key)));
-          break;
-        case String:
-          output.put(key, readableMap.getString(key));
-          break;
-        case Map:
-          ReadableMap nestedMap = readableMap.getMap(key);
-          output.put(key, nestedMap == null ? null : readableMapToJava(nestedMap));
-          break;
-        case Array:
-          ReadableArray nestedArray = readableMap.getArray(key);
-          output.put(key, nestedArray == null ? null : readableArrayToJava(nestedArray));
-          break;
-        case Null:
-        default:
-          output.put(key, null);
-      }
-    }
-
+    ArrayDeque<ReadableContainerBuildFrame> stack = new ArrayDeque<>();
+    stack.push(new ReadableMapBuildFrame(readableMap, output));
+    populateReadableContainers(stack);
     return output;
   }
 
   private List<Object> readableArrayToJava(ReadableArray readableArray) {
     List<Object> output = new java.util.ArrayList<>();
-    for (int i = 0; i < readableArray.size(); i++) {
-      ReadableType type = readableArray.getType(i);
-      if (type == ReadableType.Null) {
-        output.add(null);
+    ArrayDeque<ReadableContainerBuildFrame> stack = new ArrayDeque<>();
+    stack.push(new ReadableArrayBuildFrame(readableArray, output));
+    populateReadableContainers(stack);
+    return output;
+  }
+
+  private void populateReadableContainers(ArrayDeque<ReadableContainerBuildFrame> stack) {
+    // Use an explicit stack so deeply nested pipeline inputs do not rely on JVM recursion depth.
+    while (!stack.isEmpty()) {
+      ReadableContainerBuildFrame frame = stack.pop();
+
+      if (frame instanceof ReadableMapBuildFrame) {
+        ReadableMapBuildFrame mapFrame = (ReadableMapBuildFrame) frame;
+        ReadableMapKeySetIterator iterator = mapFrame.source.keySetIterator();
+
+        while (iterator.hasNextKey()) {
+          String key = iterator.nextKey();
+          ReadableType type = mapFrame.source.getType(key);
+          if (type == ReadableType.Null) {
+            mapFrame.target.put(key, null);
+            continue;
+          }
+
+          switch (type) {
+            case Boolean:
+              mapFrame.target.put(key, mapFrame.source.getBoolean(key));
+              break;
+            case Number:
+              mapFrame.target.put(key, coerceNumber(mapFrame.source.getDouble(key)));
+              break;
+            case String:
+              mapFrame.target.put(key, mapFrame.source.getString(key));
+              break;
+            case Map:
+              ReadableMap nestedMap = mapFrame.source.getMap(key);
+              if (nestedMap == null) {
+                mapFrame.target.put(key, null);
+                break;
+              }
+
+              Map<String, Object> nestedMapOutput = new HashMap<>();
+              mapFrame.target.put(key, nestedMapOutput);
+              stack.push(new ReadableMapBuildFrame(nestedMap, nestedMapOutput));
+              break;
+            case Array:
+              ReadableArray nestedArray = mapFrame.source.getArray(key);
+              if (nestedArray == null) {
+                mapFrame.target.put(key, null);
+                break;
+              }
+
+              List<Object> nestedArrayOutput = new java.util.ArrayList<>();
+              mapFrame.target.put(key, nestedArrayOutput);
+              stack.push(new ReadableArrayBuildFrame(nestedArray, nestedArrayOutput));
+              break;
+            case Null:
+            default:
+              mapFrame.target.put(key, null);
+          }
+        }
+
         continue;
       }
 
-      switch (type) {
-        case Boolean:
-          output.add(readableArray.getBoolean(i));
-          break;
-        case Number:
-          output.add(coerceNumber(readableArray.getDouble(i)));
-          break;
-        case String:
-          output.add(readableArray.getString(i));
-          break;
-        case Map:
-          ReadableMap nestedMap = readableArray.getMap(i);
-          output.add(nestedMap == null ? null : readableMapToJava(nestedMap));
-          break;
-        case Array:
-          ReadableArray nestedArray = readableArray.getArray(i);
-          output.add(nestedArray == null ? null : readableArrayToJava(nestedArray));
-          break;
-        case Null:
-        default:
-          output.add(null);
-          break;
+      ReadableArrayBuildFrame arrayFrame = (ReadableArrayBuildFrame) frame;
+      for (int i = 0; i < arrayFrame.source.size(); i++) {
+        ReadableType type = arrayFrame.source.getType(i);
+        if (type == ReadableType.Null) {
+          arrayFrame.target.add(null);
+          continue;
+        }
+
+        switch (type) {
+          case Boolean:
+            arrayFrame.target.add(arrayFrame.source.getBoolean(i));
+            break;
+          case Number:
+            arrayFrame.target.add(coerceNumber(arrayFrame.source.getDouble(i)));
+            break;
+          case String:
+            arrayFrame.target.add(arrayFrame.source.getString(i));
+            break;
+          case Map:
+            ReadableMap nestedMap = arrayFrame.source.getMap(i);
+            if (nestedMap == null) {
+              arrayFrame.target.add(null);
+              break;
+            }
+
+            Map<String, Object> nestedMapOutput = new HashMap<>();
+            arrayFrame.target.add(nestedMapOutput);
+            stack.push(new ReadableMapBuildFrame(nestedMap, nestedMapOutput));
+            break;
+          case Array:
+            ReadableArray nestedArray = arrayFrame.source.getArray(i);
+            if (nestedArray == null) {
+              arrayFrame.target.add(null);
+              break;
+            }
+
+            List<Object> nestedArrayOutput = new java.util.ArrayList<>();
+            arrayFrame.target.add(nestedArrayOutput);
+            stack.push(new ReadableArrayBuildFrame(nestedArray, nestedArrayOutput));
+            break;
+          case Null:
+          default:
+            arrayFrame.target.add(null);
+            break;
+        }
       }
     }
-
-    return output;
   }
 
   private Number coerceNumber(double value) {
