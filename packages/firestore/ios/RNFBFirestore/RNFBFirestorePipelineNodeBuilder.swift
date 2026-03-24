@@ -18,6 +18,46 @@ import Foundation
 import FirebaseFirestore
 
 final class RNFBFirestorePipelineNodeBuilder {
+  private final class SerializedValueBox {
+    var value: Any?
+  }
+
+  private final class SerializedExpressionBox {
+    var value: Any?
+  }
+
+  private enum SerializationFrame {
+    case expressionEnter(
+      RNFBFirestoreParsedExpressionNode,
+      SerializedExpressionBox
+    )
+    case expressionFunctionExit(
+      SerializedExpressionBox,
+      String,
+      [SerializedValueBox]
+    )
+    case valueEnter(
+      RNFBFirestoreParsedValueNode,
+      SerializedValueBox
+    )
+    case valueListExit(
+      SerializedValueBox,
+      [SerializedValueBox]
+    )
+    case valueMapExit(
+      SerializedValueBox,
+      [(String, SerializedValueBox)]
+    )
+    case expressionConstantExit(
+      SerializedExpressionBox,
+      SerializedValueBox
+    )
+    case valueExpressionExit(
+      SerializedValueBox,
+      SerializedExpressionBox
+    )
+  }
+
   func coerceExpression(
     _ value: RNFBFirestoreParsedExpressionNode,
     fieldName: String
@@ -892,42 +932,157 @@ final class RNFBFirestorePipelineNodeBuilder {
   }
 
   private func serializeExpressionNode(_ value: RNFBFirestoreParsedExpressionNode) -> Any {
-    switch value {
-    case let .field(path):
-      return [
-        "__kind": "expression",
-        "exprType": "Field",
-        "path": path,
-      ]
-    case let .constant(constantValue):
-      return [
-        "__kind": "expression",
-        "exprType": "constant",
-        "value": serializeValueNode(constantValue),
-      ]
-    case let .function(name, args):
-      return [
-        "__kind": "expression",
-        "exprType": "Function",
-        "name": name,
-        "args": args.map(serializeValueNode),
-      ]
+    let rootBox = SerializedExpressionBox()
+    var stack: [SerializationFrame] = [
+      .expressionEnter(value, rootBox),
+    ]
+
+    while let frame = stack.popLast() {
+      switch frame {
+      case let .expressionEnter(expression, box):
+        switch expression {
+        case let .field(path):
+          box.value = [
+            "__kind": "expression",
+            "exprType": "Field",
+            "path": path,
+          ]
+        case let .constant(constantValue):
+          let valueBox = SerializedValueBox()
+          stack.append(.expressionConstantExit(box, valueBox))
+          stack.append(.valueEnter(constantValue, valueBox))
+        case let .function(name, args):
+          let argBoxes = args.map { _ in SerializedValueBox() }
+          stack.append(.expressionFunctionExit(box, name, argBoxes))
+          for index in args.indices.reversed() {
+            stack.append(.valueEnter(args[index], argBoxes[index]))
+          }
+        }
+      case let .expressionFunctionExit(box, name, argBoxes):
+        box.value = [
+          "__kind": "expression",
+          "exprType": "Function",
+          "name": name,
+          "args": argBoxes.map { $0.value as Any },
+        ]
+      case let .valueEnter(value, box):
+        switch value {
+        case let .primitive(primitive):
+          box.value = primitive
+        case let .list(values):
+          let childBoxes = values.map { _ in SerializedValueBox() }
+          stack.append(.valueListExit(box, childBoxes))
+          for index in values.indices.reversed() {
+            stack.append(.valueEnter(values[index], childBoxes[index]))
+          }
+        case let .map(values):
+          let entries = values.map { (key: $0.key, box: SerializedValueBox(), value: $0.value) }
+          stack.append(.valueMapExit(box, entries.map { ($0.key, $0.box) }))
+          for entry in entries.reversed() {
+            stack.append(.valueEnter(entry.value, entry.box))
+          }
+        case let .expression(expression):
+          let expressionBox = SerializedExpressionBox()
+          stack.append(.valueExpressionExit(box, expressionBox))
+          stack.append(.expressionEnter(expression, expressionBox))
+        }
+      case let .valueListExit(box, childBoxes):
+        box.value = childBoxes.map { $0.value as Any }
+      case let .valueMapExit(box, entries):
+        var output: [String: Any] = [:]
+        for (key, childBox) in entries {
+          output[key] = childBox.value
+        }
+        box.value = output
+      case let .expressionConstantExit(expressionBox, valueBox):
+        expressionBox.value = [
+          "__kind": "expression",
+          "exprType": "constant",
+          "value": valueBox.value as Any,
+        ]
+      case let .valueExpressionExit(valueBox, expressionBox):
+        valueBox.value = expressionBox.value
+      }
     }
+
+    return rootBox.value as Any
   }
 
   private func serializeValueNode(_ value: RNFBFirestoreParsedValueNode) -> Any {
-    switch value {
-    case let .primitive(primitive):
-      return primitive
-    case let .list(values):
-      return values.map(serializeValueNode)
-    case let .map(values):
-      return values.reduce(into: [String: Any]()) { result, entry in
-        result[entry.key] = serializeValueNode(entry.value)
+    let rootBox = SerializedValueBox()
+    var stack: [SerializationFrame] = [
+      .valueEnter(value, rootBox),
+    ]
+
+    while let frame = stack.popLast() {
+      switch frame {
+      case let .valueEnter(value, box):
+        switch value {
+        case let .primitive(primitive):
+          box.value = primitive
+        case let .list(values):
+          let childBoxes = values.map { _ in SerializedValueBox() }
+          stack.append(.valueListExit(box, childBoxes))
+          for index in values.indices.reversed() {
+            stack.append(.valueEnter(values[index], childBoxes[index]))
+          }
+        case let .map(values):
+          let entries = values.map { (key: $0.key, box: SerializedValueBox(), value: $0.value) }
+          stack.append(.valueMapExit(box, entries.map { ($0.key, $0.box) }))
+          for entry in entries.reversed() {
+            stack.append(.valueEnter(entry.value, entry.box))
+          }
+        case let .expression(expression):
+          let expressionBox = SerializedExpressionBox()
+          stack.append(.valueExpressionExit(box, expressionBox))
+          stack.append(.expressionEnter(expression, expressionBox))
+        }
+      case let .valueListExit(box, childBoxes):
+        box.value = childBoxes.map { $0.value as Any }
+      case let .valueMapExit(box, entries):
+        var output: [String: Any] = [:]
+        for (key, childBox) in entries {
+          output[key] = childBox.value
+        }
+        box.value = output
+      case let .expressionEnter(expression, box):
+        switch expression {
+        case let .field(path):
+          box.value = [
+            "__kind": "expression",
+            "exprType": "Field",
+            "path": path,
+          ]
+        case let .constant(constantValue):
+          let valueBox = SerializedValueBox()
+          stack.append(.expressionConstantExit(box, valueBox))
+          stack.append(.valueEnter(constantValue, valueBox))
+        case let .function(name, args):
+          let argBoxes = args.map { _ in SerializedValueBox() }
+          stack.append(.expressionFunctionExit(box, name, argBoxes))
+          for index in args.indices.reversed() {
+            stack.append(.valueEnter(args[index], argBoxes[index]))
+          }
+        }
+      case let .expressionFunctionExit(box, name, argBoxes):
+        box.value = [
+          "__kind": "expression",
+          "exprType": "Function",
+          "name": name,
+          "args": argBoxes.map { $0.value as Any },
+        ]
+      case let .expressionConstantExit(expressionBox, valueBox):
+        expressionBox.value = [
+          "__kind": "expression",
+          "exprType": "constant",
+          "value": valueBox.value as Any,
+        ]
+      case let .valueExpressionExit(valueBox, expressionBox):
+        valueBox.value = expressionBox.value
       }
-    case let .expression(expression):
-      return serializeExpressionNode(expression)
     }
+
+    return rootBox.value as Any
   }
 
   private func coerceNumber(_ value: Any, fieldName: String) throws -> Double {

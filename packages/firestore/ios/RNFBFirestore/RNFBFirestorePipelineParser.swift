@@ -204,6 +204,10 @@ enum RNFBFirestorePipelineParser {
     var value: RNFBFirestoreParsedValueNode?
   }
 
+  private final class ParsedExpressionNodeBox {
+    var value: RNFBFirestoreParsedExpressionNode?
+  }
+
   private enum PendingParsedStage {
     case ready(RNFBFirestoreParsedPipelineStage)
     case union(ParsedPipelineRequestBox)
@@ -235,6 +239,58 @@ enum RNFBFirestorePipelineParser {
     case exitMap(
       ParsedValueNodeBox,
       [(String, ParsedValueNodeBox)]
+    )
+  }
+
+  private enum ExpressionValueParseFrame {
+    case expressionEnter(
+      Any,
+      ParsedExpressionNodeBox,
+      String
+    )
+    case expressionValueExit(
+      ParsedValueNodeBox,
+      ParsedExpressionNodeBox,
+      String
+    )
+    case expressionConstantExit(
+      ParsedExpressionNodeBox,
+      ParsedValueNodeBox,
+      String
+    )
+    case expressionFunctionExit(
+      ParsedExpressionNodeBox,
+      String,
+      [ParsedValueNodeBox],
+      String
+    )
+    case expressionOperatorLogicalExit(
+      ParsedExpressionNodeBox,
+      String,
+      [ParsedExpressionNodeBox],
+      String
+    )
+    case expressionOperatorBinaryExit(
+      ParsedExpressionNodeBox,
+      String,
+      ParsedExpressionNodeBox,
+      ParsedValueNodeBox,
+      String
+    )
+    case valueEnter(
+      Any,
+      ParsedValueNodeBox,
+      String
+    )
+    case valueListExit(
+      ParsedValueNodeBox,
+      [ParsedValueNodeBox],
+      String
+    )
+    case valueMapExit(
+      ParsedValueNodeBox,
+      [(String, ParsedValueNodeBox)],
+      String
     )
   }
 
@@ -931,80 +987,14 @@ enum RNFBFirestorePipelineParser {
     _ value: Any,
     fieldName: String
   ) throws -> RNFBFirestoreParsedExpressionNode {
-    if let stringValue = value as? String {
-      return .field(path: stringValue)
+    let rootBox = ParsedExpressionNodeBox()
+    try parseExpressionValueTree(.expressionEnter(value, rootBox, fieldName))
+
+    guard let expression = rootBox.value else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to be provided.")
     }
 
-    if let map = value as? [String: Any] {
-      if let nested = map["expr"] {
-        return try parseExpressionNode(nested, fieldName: "\(fieldName).expr")
-      }
-      if let nested = map["expression"] {
-        return try parseExpressionNode(nested, fieldName: "\(fieldName).expression")
-      }
-
-      if let operatorName = map["operator"] as? String {
-        return try parseOperatorExpressionNode(map: map, operatorName: operatorName, fieldName: fieldName)
-      }
-
-      if let exprType = map["exprType"] as? String {
-        let normalizedType = exprType.lowercased()
-        if normalizedType == "field" {
-          return .field(path: try coerceFieldPath(value, fieldName: fieldName))
-        }
-        if normalizedType == "constant" {
-          return .constant(try parseValueNode(map["value"] as Any, fieldName: "\(fieldName).value"))
-        }
-      }
-
-      if map["name"] != nil {
-        guard let nameValue = map["name"] as? String, !nameValue.isEmpty else {
-          throw PipelineValidationError("pipelineExecute() expected \(fieldName).name to be a non-empty string.")
-        }
-
-        return .function(
-          name: nameValue,
-          args: try parseArgumentValueNodes(map["args"], fieldName: "\(fieldName).args")
-        )
-      }
-
-      if map["fieldPath"] != nil || map["path"] != nil || map["segments"] != nil || map["_segments"] != nil {
-        return .field(path: try coerceFieldPath(value, fieldName: fieldName))
-      }
-    }
-
-    return .constant(try parseValueNode(value, fieldName: fieldName))
-  }
-
-  private static func parseOperatorExpressionNode(
-    map: [String: Any],
-    operatorName: String,
-    fieldName: String
-  ) throws -> RNFBFirestoreParsedExpressionNode {
-    let normalizedOperator = operatorName.uppercased()
-    if normalizedOperator == "AND" || normalizedOperator == "OR" {
-      guard let queries = map["queries"] as? [Any], !queries.isEmpty else {
-        throw PipelineValidationError("pipelineExecute() expected \(fieldName).queries to contain boolean expressions.")
-      }
-
-      let args = try queries.enumerated().map { index, query in
-        RNFBFirestoreParsedValueNode.expression(
-          try parseExpressionNode(query, fieldName: "\(fieldName).queries[\(index)]")
-        )
-      }
-      return .function(name: normalizedOperator == "AND" ? "and" : "or", args: args)
-    }
-
-    let fieldValue = map["fieldPath"] ?? map["field"]
-    guard let fieldValue else {
-      throw PipelineValidationError("pipelineExecute() expected \(fieldName).fieldPath to be provided.")
-    }
-
-    let rightValue = map["value"] ?? map["right"] ?? map["operand"] ?? NSNull()
-    return .function(name: mapOperatorToFunction(normalizedOperator), args: [
-      .expression(try parseExpressionNode(fieldValue, fieldName: "\(fieldName).fieldPath")),
-      try parseValueNode(rightValue, fieldName: "\(fieldName).value"),
-    ])
+    return expression
   }
 
   private static func parseArgumentValueNodes(
@@ -1028,23 +1018,14 @@ enum RNFBFirestorePipelineParser {
     _ value: Any,
     fieldName: String
   ) throws -> RNFBFirestoreParsedValueNode {
-    if let map = value as? [String: Any] {
-      if isExpressionLike(map) {
-        return .expression(try parseExpressionNode(value, fieldName: fieldName))
-      }
+    let rootBox = ParsedValueNodeBox()
+    try parseExpressionValueTree(.valueEnter(value, rootBox, fieldName))
 
-      return .map(try map.reduce(into: [String: RNFBFirestoreParsedValueNode]()) { result, entry in
-        result[entry.key] = try parseValueNode(entry.value, fieldName: "\(fieldName).\(entry.key)")
-      })
+    guard let parsedValue = rootBox.value else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to be provided.")
     }
 
-    if let list = value as? [Any] {
-      return .list(try list.enumerated().map { index, entry in
-        try parseValueNode(entry, fieldName: "\(fieldName)[\(index)]")
-      })
-    }
-
-    return .primitive(value)
+    return parsedValue
   }
 
   private static func parseQuerySourceValueNode(
@@ -1112,33 +1093,217 @@ enum RNFBFirestorePipelineParser {
     _ value: Any,
     fieldName: String
   ) throws -> String {
-    if let fieldPath = value as? String, !fieldPath.isEmpty {
-      return fieldPath
-    }
+    var currentValue: Any = value
 
-    if let map = value as? [String: Any] {
-      let path = firstNonNil(map["path"], map["fieldPath"])
-      if let path, !(path is [String: Any]) {
-        return try coerceFieldPath(path, fieldName: fieldName)
+    while true {
+      if let fieldPath = currentValue as? String, !fieldPath.isEmpty {
+        return fieldPath
       }
 
-      let segments = (map["segments"] as? [Any]) ?? (map["_segments"] as? [Any])
-      if let segments {
-        let stringSegments = try segments.enumerated().map { _, segment -> String in
-          guard let stringSegment = segment as? String else {
-            throw PipelineValidationError("pipelineExecute() expected \(fieldName) segment values to be strings.")
+      if let map = currentValue as? [String: Any] {
+        let path = firstNonNil(map["path"], map["fieldPath"])
+        if let path, !(path is [String: Any]) {
+          currentValue = path
+          continue
+        }
+
+        let segments = (map["segments"] as? [Any]) ?? (map["_segments"] as? [Any])
+        if let segments {
+          let stringSegments = try segments.enumerated().map { _, segment -> String in
+            guard let stringSegment = segment as? String else {
+              throw PipelineValidationError("pipelineExecute() expected \(fieldName) segment values to be strings.")
+            }
+            return stringSegment
           }
-          return stringSegment
-        }
 
-        let pathValue = stringSegments.joined(separator: ".")
-        if !pathValue.isEmpty {
-          return pathValue
+          let pathValue = stringSegments.joined(separator: ".")
+          if !pathValue.isEmpty {
+            return pathValue
+          }
         }
       }
-    }
 
-    throw PipelineValidationError("pipelineExecute() expected \(fieldName) to resolve to a field path string.")
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to resolve to a field path string.")
+    }
+  }
+
+  private static func parseExpressionValueTree(
+    _ initialFrame: ExpressionValueParseFrame
+  ) throws {
+    var stack: [ExpressionValueParseFrame] = [initialFrame]
+
+    while let frame = stack.popLast() {
+      switch frame {
+      case let .expressionEnter(value, box, fieldName):
+        if let stringValue = value as? String {
+          box.value = .field(path: stringValue)
+          continue
+        }
+
+        if let map = value as? [String: Any] {
+          if let nested = map["expr"] {
+            stack.append(.expressionEnter(nested, box, "\(fieldName).expr"))
+            continue
+          }
+          if let nested = map["expression"] {
+            stack.append(.expressionEnter(nested, box, "\(fieldName).expression"))
+            continue
+          }
+
+          if let operatorName = map["operator"] as? String {
+            let normalizedOperator = operatorName.uppercased()
+            if normalizedOperator == "AND" || normalizedOperator == "OR" {
+              guard let queries = map["queries"] as? [Any], !queries.isEmpty else {
+                throw PipelineValidationError("pipelineExecute() expected \(fieldName).queries to contain boolean expressions.")
+              }
+
+              let queryBoxes = queries.map { _ in ParsedExpressionNodeBox() }
+              stack.append(.expressionOperatorLogicalExit(box, normalizedOperator, queryBoxes, fieldName))
+              for index in queries.indices.reversed() {
+                stack.append(.expressionEnter(queries[index], queryBoxes[index], "\(fieldName).queries[\(index)]"))
+              }
+              continue
+            }
+
+            let fieldValue = map["fieldPath"] ?? map["field"]
+            guard let fieldValue else {
+              throw PipelineValidationError("pipelineExecute() expected \(fieldName).fieldPath to be provided.")
+            }
+
+            let rightValue = map["value"] ?? map["right"] ?? map["operand"] ?? NSNull()
+            let fieldBox = ParsedExpressionNodeBox()
+            let valueBox = ParsedValueNodeBox()
+            stack.append(.expressionOperatorBinaryExit(box, normalizedOperator, fieldBox, valueBox, fieldName))
+            stack.append(.valueEnter(rightValue, valueBox, "\(fieldName).value"))
+            stack.append(.expressionEnter(fieldValue, fieldBox, "\(fieldName).fieldPath"))
+            continue
+          }
+
+          if let exprType = map["exprType"] as? String {
+            let normalizedType = exprType.lowercased()
+            if normalizedType == "field" {
+              box.value = .field(path: try coerceFieldPath(value, fieldName: fieldName))
+              continue
+            }
+            if normalizedType == "constant" {
+              let valueBox = ParsedValueNodeBox()
+              stack.append(.expressionConstantExit(box, valueBox, fieldName))
+              stack.append(.valueEnter(map["value"] as Any, valueBox, "\(fieldName).value"))
+              continue
+            }
+          }
+
+          if map["name"] != nil {
+            guard let nameValue = map["name"] as? String, !nameValue.isEmpty else {
+              throw PipelineValidationError("pipelineExecute() expected \(fieldName).name to be a non-empty string.")
+            }
+
+            let rawArgs: [Any]
+            if let args = map["args"] as? [Any] {
+              rawArgs = args
+            } else if let singleArg = map["args"] {
+              rawArgs = [singleArg]
+            } else {
+              rawArgs = []
+            }
+
+            let argBoxes = rawArgs.map { _ in ParsedValueNodeBox() }
+            stack.append(.expressionFunctionExit(box, nameValue, argBoxes, fieldName))
+            for index in rawArgs.indices.reversed() {
+              stack.append(.valueEnter(rawArgs[index], argBoxes[index], "\(fieldName).args[\(index)]"))
+            }
+            continue
+          }
+
+          if map["fieldPath"] != nil || map["path"] != nil || map["segments"] != nil || map["_segments"] != nil {
+            box.value = .field(path: try coerceFieldPath(value, fieldName: fieldName))
+            continue
+          }
+        }
+
+        let valueBox = ParsedValueNodeBox()
+        stack.append(.expressionConstantExit(box, valueBox, fieldName))
+        stack.append(.valueEnter(value, valueBox, fieldName))
+      case let .expressionValueExit(box, expressionBox, fieldName):
+        guard let expression = expressionBox.value else {
+          throw PipelineValidationError("pipelineExecute() expected \(fieldName) to be provided.")
+        }
+        box.value = .expression(expression)
+      case let .expressionConstantExit(box, valueBox, fieldName):
+        guard let value = valueBox.value else {
+          throw PipelineValidationError("pipelineExecute() expected \(fieldName) to be provided.")
+        }
+        box.value = .constant(value)
+      case let .expressionFunctionExit(box, name, argBoxes, fieldName):
+        let args = try argBoxes.enumerated().map { index, argBox in
+          guard let value = argBox.value else {
+            throw PipelineValidationError("pipelineExecute() expected \(fieldName).args[\(index)] to be provided.")
+          }
+          return value
+        }
+        box.value = .function(name: name, args: args)
+      case let .expressionOperatorLogicalExit(box, normalizedOperator, queryBoxes, fieldName):
+        let args = try queryBoxes.enumerated().map { index, queryBox in
+          guard let expression = queryBox.value else {
+            throw PipelineValidationError("pipelineExecute() expected \(fieldName).queries[\(index)] to be provided.")
+          }
+          return RNFBFirestoreParsedValueNode.expression(expression)
+        }
+        box.value = .function(name: normalizedOperator == "AND" ? "and" : "or", args: args)
+      case let .expressionOperatorBinaryExit(box, normalizedOperator, fieldBox, valueBox, fieldName):
+        guard let fieldExpression = fieldBox.value else {
+          throw PipelineValidationError("pipelineExecute() expected \(fieldName).fieldPath to be provided.")
+        }
+        guard let rightValue = valueBox.value else {
+          throw PipelineValidationError("pipelineExecute() expected \(fieldName).value to be provided.")
+        }
+        box.value = .function(name: mapOperatorToFunction(normalizedOperator), args: [
+          .expression(fieldExpression),
+          rightValue,
+        ])
+      case let .valueEnter(value, box, fieldName):
+        if let map = value as? [String: Any] {
+          if isExpressionLike(map) {
+            let expressionBox = ParsedExpressionNodeBox()
+            stack.append(.expressionValueExit(box, expressionBox, fieldName))
+            stack.append(.expressionEnter(value, expressionBox, fieldName))
+            continue
+          }
+
+          let entries = map.map { (key: $0.key, value: $0.value, box: ParsedValueNodeBox()) }
+          stack.append(.valueMapExit(box, entries.map { ($0.key, $0.box) }, fieldName))
+          for entry in entries.reversed() {
+            stack.append(.valueEnter(entry.value, entry.box, "\(fieldName).\(entry.key)"))
+          }
+          continue
+        }
+
+        if let list = value as? [Any] {
+          let childBoxes = list.map { _ in ParsedValueNodeBox() }
+          stack.append(.valueListExit(box, childBoxes, fieldName))
+          for index in list.indices.reversed() {
+            stack.append(.valueEnter(list[index], childBoxes[index], "\(fieldName)[\(index)]"))
+          }
+          continue
+        }
+
+        box.value = .primitive(value)
+      case let .valueListExit(box, childBoxes, fieldName):
+        box.value = .list(try childBoxes.enumerated().map { index, childBox in
+          guard let value = childBox.value else {
+            throw PipelineValidationError("pipelineExecute() expected \(fieldName)[\(index)] to be provided.")
+          }
+          return value
+        })
+      case let .valueMapExit(box, entries, fieldName):
+        box.value = .map(try entries.reduce(into: [String: RNFBFirestoreParsedValueNode]()) { result, entry in
+          guard let value = entry.1.value else {
+            throw PipelineValidationError("pipelineExecute() expected \(fieldName).\(entry.0) to be provided.")
+          }
+          result[entry.0] = value
+        })
+      }
+    }
   }
 
   private static func firstString(_ values: Any?...) -> String? {
