@@ -40,7 +40,10 @@ export interface PhoneAuthListenerInternal {
     errorCb?: (error: unknown) => void,
     successCb?: (snapshot: unknown) => void,
   ): PhoneAuthListenerInternal;
-  then(onFulfilled?: ((a: unknown) => unknown) | null, onRejected?: ((a: unknown) => unknown) | null): Promise<unknown>;
+  then(
+    onFulfilled?: ((a: unknown) => unknown) | null,
+    onRejected?: ((a: unknown) => unknown) | null,
+  ): Promise<unknown>;
   catch(onRejected: (a: unknown) => unknown): Promise<unknown>;
 }
 
@@ -58,29 +61,65 @@ export type AuthInternal = FirebaseAuth & {
   checkActionCode(code: string, ...args: unknown[]): Promise<ActionCodeInfo>;
   confirmPasswordReset(code: string, newPassword: string, ...args: unknown[]): Promise<void>;
   connectAuthEmulator(url: string, options?: unknown): void;
-  createUserWithEmailAndPassword(email: string, password: string, ...args: unknown[]): Promise<UserCredential>;
+  createUserWithEmailAndPassword(
+    email: string,
+    password: string,
+    ...args: unknown[]
+  ): Promise<UserCredential>;
   fetchSignInMethodsForEmail(email: string, ...args: unknown[]): Promise<string[]>;
   getMultiFactorResolver(error: MultiFactorError, ...args: unknown[]): MultiFactorResolver | null;
   isSignInWithEmailLink(emailLink: string, ...args: unknown[]): Promise<boolean>;
   onAuthStateChanged(nextOrObserver: unknown, ...args: unknown[]): () => void;
   onIdTokenChanged(nextOrObserver: unknown, ...args: unknown[]): () => void;
-  sendPasswordResetEmail(email: string, actionCodeSettings?: ActionCodeSettings | null, ...args: unknown[]): Promise<void>;
-  sendSignInLinkToEmail(email: string, actionCodeSettings?: ActionCodeSettings, ...args: unknown[]): Promise<void>;
+  sendPasswordResetEmail(
+    email: string,
+    actionCodeSettings?: ActionCodeSettings | null,
+    ...args: unknown[]
+  ): Promise<void>;
+  sendSignInLinkToEmail(
+    email: string,
+    actionCodeSettings?: ActionCodeSettings,
+    ...args: unknown[]
+  ): Promise<void>;
   setLanguageCode(languageCode: string | null, ...args: unknown[]): Promise<void>;
   signInAnonymously(...args: unknown[]): Promise<UserCredential>;
   signInWithCredential(credential: AuthCredential, ...args: unknown[]): Promise<UserCredential>;
   signInWithCustomToken(customToken: string, ...args: unknown[]): Promise<UserCredential>;
-  signInWithEmailAndPassword(email: string, password: string, ...args: unknown[]): Promise<UserCredential>;
-  signInWithEmailLink(email: string, emailLink: string, ...args: unknown[]): Promise<UserCredential>;
-  signInWithPhoneNumber(phoneNumber: string, forceResend?: boolean, ...args: unknown[]): Promise<ConfirmationResult>;
-  signInWithPopup(provider: AuthProvider, resolver?: unknown, ...args: unknown[]): Promise<UserCredential>;
-  signInWithRedirect(provider: AuthProvider, resolver?: unknown, ...args: unknown[]): Promise<UserCredential>;
+  signInWithEmailAndPassword(
+    email: string,
+    password: string,
+    ...args: unknown[]
+  ): Promise<UserCredential>;
+  signInWithEmailLink(
+    email: string,
+    emailLink: string,
+    ...args: unknown[]
+  ): Promise<UserCredential>;
+  signInWithPhoneNumber(
+    phoneNumber: string,
+    forceResend?: boolean,
+    ...args: unknown[]
+  ): Promise<ConfirmationResult>;
+  signInWithPopup(
+    provider: AuthProvider,
+    resolver?: unknown,
+    ...args: unknown[]
+  ): Promise<UserCredential>;
+  signInWithRedirect(
+    provider: AuthProvider,
+    resolver?: unknown,
+    ...args: unknown[]
+  ): Promise<UserCredential>;
   signOut(...args: unknown[]): Promise<void>;
   useEmulator(url: string, options?: unknown, ...args: unknown[]): void;
   useUserAccessGroup(userAccessGroup: string, ...args: unknown[]): Promise<null>;
   getCustomAuthDomain(...args: unknown[]): Promise<string>;
   verifyPasswordResetCode(code: string, ...args: unknown[]): Promise<string>;
-  resolveMultiFactorSignIn(session: string, verificationId: string, verificationCode: string): Promise<UserCredential>;
+  resolveMultiFactorSignIn(
+    session: string,
+    verificationId: string,
+    verificationCode: string,
+  ): Promise<UserCredential>;
   resolveTotpSignIn(session: string, uid: string, totpSecret: string): Promise<UserCredential>;
   verifyPhoneNumber(
     phoneNumber: string,
@@ -88,9 +127,18 @@ export type AuthInternal = FirebaseAuth & {
     forceResend?: boolean,
     ...args: unknown[]
   ): PhoneAuthListenerInternal;
-  verifyPhoneNumberForMultiFactor(phoneInfoOptions: { phoneNumber: string; session: string }): Promise<string>;
-  verifyPhoneNumberWithMultiFactorInfo(multiFactorHint: { uid: string }, session: string): Promise<string>;
-  validatePassword(password: string, ...args: unknown[]): Promise<import('../password-policy/PasswordPolicyImpl').PasswordPolicyValidationStatus>;
+  verifyPhoneNumberForMultiFactor(phoneInfoOptions: {
+    phoneNumber: string;
+    session: string;
+  }): Promise<string>;
+  verifyPhoneNumberWithMultiFactorInfo(
+    multiFactorHint: { uid: string },
+    session: string,
+  ): Promise<string>;
+  validatePassword(
+    password: string,
+    ...args: unknown[]
+  ): Promise<import('../password-policy/PasswordPolicyImpl').PasswordPolicyValidationStatus>;
 };
 
 /** Auth module with app reference (e.g. for PhoneAuthProvider). */
@@ -128,13 +176,22 @@ export interface RNFBAuthModule {
   applyActionCode(code: string): Promise<void>;
   checkActionCode(code: string): Promise<ActionCodeInfo>;
   configureAuthDomain(): void;
-  confirmationResultConfirm(verificationCode: string): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
+  confirmationResultConfirm(
+    verificationCode: string,
+  ): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
   confirmPasswordReset(code: string, newPassword: string): Promise<void>;
-  createUserWithEmailAndPassword(email: string, password: string): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
+  createUserWithEmailAndPassword(
+    email: string,
+    password: string,
+  ): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
   delete(): Promise<void>;
   fetchSignInMethodsForEmail(email: string): Promise<string[]>;
   finalizeMultiFactorEnrollment(token: string, secret: string, displayName?: string): Promise<void>;
-  finalizeTotpEnrollment(totpSecret: string, verificationCode: string, displayName?: string): Promise<void>;
+  finalizeTotpEnrollment(
+    totpSecret: string,
+    verificationCode: string,
+    displayName?: string,
+  ): Promise<void>;
   generateTotpSecret(session: unknown): Promise<{ secretKey: string }>;
   generateQrCodeUrl(secretKey: string, accountName: string, issuer: string): Promise<string>;
   openInOtpApp(secretKey: string, qrCodeUrl: string): Promise<unknown> | unknown;
@@ -146,15 +203,36 @@ export interface RNFBAuthModule {
   getMultiFactorResolver?(error: unknown): unknown;
   getSession(): Promise<unknown>;
   isSignInWithEmailLink(emailLink: string): Promise<boolean>;
-  linkWithCredential(providerId: string, token: string, secret: string): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
+  linkWithCredential(
+    providerId: string,
+    token: string,
+    secret: string,
+  ): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
   linkWithProvider(provider: unknown): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
   reload(): Promise<unknown>;
-  reauthenticateWithCredential(providerId: string, token: string, secret: string): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
-  reauthenticateWithProvider(provider: unknown): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
-  resolveMultiFactorSignIn(session: string, verificationId: string, verificationCode: string): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
-  resolveTotpSignIn(session: string, uid: string, totpSecret: string): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
+  reauthenticateWithCredential(
+    providerId: string,
+    token: string,
+    secret: string,
+  ): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
+  reauthenticateWithProvider(
+    provider: unknown,
+  ): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
+  resolveMultiFactorSignIn(
+    session: string,
+    verificationId: string,
+    verificationCode: string,
+  ): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
+  resolveTotpSignIn(
+    session: string,
+    uid: string,
+    totpSecret: string,
+  ): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
   revokeToken(authorizationCode: string): Promise<void>;
-  sendPasswordResetEmail(email: string, actionCodeSettings: ActionCodeSettings | null): Promise<void>;
+  sendPasswordResetEmail(
+    email: string,
+    actionCodeSettings: ActionCodeSettings | null,
+  ): Promise<void>;
   sendSignInLinkToEmail(email: string, actionCodeSettings: Record<string, unknown>): Promise<void>;
   sendEmailVerification(actionCodeSettings?: unknown): Promise<unknown>;
   setAppVerificationDisabledForTesting(disabled: boolean): void;
@@ -162,11 +240,26 @@ export interface RNFBAuthModule {
   setLanguageCode(code: string | null): Promise<void>;
   setTenantId(tenantId: string): Promise<void>;
   signInAnonymously(): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
-  signInWithCredential(providerId: string, token: string, secret: string): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
-  signInWithCustomToken(customToken: string): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
-  signInWithEmailAndPassword(email: string, password: string): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
-  signInWithEmailLink(email: string, emailLink: string): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
-  signInWithPhoneNumber(phoneNumber: string, forceResend?: boolean): Promise<{ verificationId: string }>;
+  signInWithCredential(
+    providerId: string,
+    token: string,
+    secret: string,
+  ): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
+  signInWithCustomToken(
+    customToken: string,
+  ): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
+  signInWithEmailAndPassword(
+    email: string,
+    password: string,
+  ): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
+  signInWithEmailLink(
+    email: string,
+    emailLink: string,
+  ): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
+  signInWithPhoneNumber(
+    phoneNumber: string,
+    forceResend?: boolean,
+  ): Promise<{ verificationId: string }>;
   signInWithProvider(provider: unknown): Promise<{ user: unknown; additionalUserInfo?: unknown }>;
   signOut(): Promise<void>;
   unlink(providerId: string): Promise<unknown>;
@@ -178,7 +271,12 @@ export interface RNFBAuthModule {
   useUserAccessGroup(userAccessGroup: string): Promise<null>;
   verifyBeforeUpdateEmail(newEmail: string, actionCodeSettings?: unknown): Promise<unknown>;
   verifyPasswordResetCode(code: string): Promise<string>;
-  verifyPhoneNumber(phoneNumber: string, requestIdOrTimeout?: string | number, timeoutOrForceResend?: number | boolean, forceResend?: boolean): Promise<unknown>;
+  verifyPhoneNumber(
+    phoneNumber: string,
+    requestIdOrTimeout?: string | number,
+    timeoutOrForceResend?: number | boolean,
+    forceResend?: boolean,
+  ): Promise<unknown>;
   verifyPhoneNumberForMultiFactor(phoneNumber: string, session: string): Promise<string>;
   verifyPhoneNumberWithMultiFactorInfo(uid: string, session: string): Promise<string>;
   unenrollMultiFactor(enrollmentId: string): Promise<void>;

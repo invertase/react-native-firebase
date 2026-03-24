@@ -207,14 +207,18 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
   }
 
   _setUser(user: unknown) {
-    this._user = user ? createDeprecationProxy(new User(this as unknown as AuthInternal, user as NativeUserShape)) : null;
+    this._user = user
+      ? createDeprecationProxy(new User(this as unknown as AuthInternal, user as NativeUserShape))
+      : null;
     this._authResult = true;
     this.emitter.emit(this.eventNameForApp('onUserChanged'), this._user);
     return this._user;
   }
 
   _setUserCredential(userCredential: { user: unknown; additionalUserInfo?: unknown }) {
-    const user = createDeprecationProxy(new User(this as unknown as AuthInternal, userCredential.user as NativeUserShape));
+    const user = createDeprecationProxy(
+      new User(this as unknown as AuthInternal, userCredential.user as NativeUserShape),
+    );
     this._user = user;
     this._authResult = true;
     this.emitter.emit(this.eventNameForApp('onUserChanged'), this._user);
@@ -318,12 +322,16 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     if (isAndroid) {
       return this.native
         .signInWithPhoneNumber(phoneNumber, forceResend || false)
-        .then(result => new ConfirmationResult(this as unknown as AuthInternal, result.verificationId));
+        .then(
+          result => new ConfirmationResult(this as unknown as AuthInternal, result.verificationId),
+        );
     }
 
     return this.native
       .signInWithPhoneNumber(phoneNumber)
-      .then(result => new ConfirmationResult(this as unknown as AuthInternal, result.verificationId));
+      .then(
+        result => new ConfirmationResult(this as unknown as AuthInternal, result.verificationId),
+      );
   }
 
   verifyPhoneNumber(
@@ -340,7 +348,12 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
       _autoVerifyTimeout = autoVerifyTimeoutOrForceResend;
     }
 
-    return new PhoneAuthListener(this as unknown as AuthInternal, phoneNumber, _autoVerifyTimeout, _forceResend);
+    return new PhoneAuthListener(
+      this as unknown as AuthInternal,
+      phoneNumber,
+      _autoVerifyTimeout,
+      _forceResend,
+    );
   }
 
   verifyPhoneNumberWithMultiFactorInfo(
@@ -353,7 +366,9 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     );
   }
 
-  verifyPhoneNumberForMultiFactor(phoneInfoOptions: FirebaseAuthTypes.PhoneMultiFactorEnrollInfoOptions) {
+  verifyPhoneNumberForMultiFactor(
+    phoneInfoOptions: FirebaseAuthTypes.PhoneMultiFactorEnrollInfoOptions,
+  ) {
     const { phoneNumber, session } = phoneInfoOptions;
     return this.native.verifyPhoneNumberForMultiFactor(phoneNumber, session as unknown as string);
   }
@@ -380,7 +395,8 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
         /* istanbul ignore next - native error handling cannot be unit tested */
         .catch(error => {
           if (error.code === 'auth/password-does-not-meet-requirements') {
-            return (this as unknown as { _recachePasswordPolicy: () => Promise<unknown> })._recachePasswordPolicy()
+            return (this as unknown as { _recachePasswordPolicy: () => Promise<unknown> })
+              ._recachePasswordPolicy()
               .catch(() => {
                 // Silently ignore recache failures - the original error matters more
               })
@@ -401,7 +417,8 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
         /* istanbul ignore next - native error handling cannot be unit tested */
         .catch(error => {
           if (error.code === 'auth/password-does-not-meet-requirements') {
-            return (this as unknown as { _recachePasswordPolicy: () => Promise<unknown> })._recachePasswordPolicy()
+            return (this as unknown as { _recachePasswordPolicy: () => Promise<unknown> })
+              ._recachePasswordPolicy()
               .catch(() => {
                 // Silently ignore recache failures - the original error matters more
               })
@@ -441,10 +458,7 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     email: string,
     actionCodeSettings: FirebaseAuthTypes.ActionCodeSettings | Record<string, unknown> = {},
   ) {
-    return this.native.sendSignInLinkToEmail(
-      email,
-      actionCodeSettings as Record<string, unknown>,
-    );
+    return this.native.sendSignInLinkToEmail(email, actionCodeSettings as Record<string, unknown>);
   }
 
   isSignInWithEmailLink(emailLink: string) {
@@ -464,7 +478,8 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
         /* istanbul ignore next - native error handling cannot be unit tested */
         .catch(error => {
           if (error.code === 'auth/password-does-not-meet-requirements') {
-            return (this as unknown as { _recachePasswordPolicy: () => Promise<unknown> })._recachePasswordPolicy()
+            return (this as unknown as { _recachePasswordPolicy: () => Promise<unknown> })
+              ._recachePasswordPolicy()
               .catch(() => {
                 // Silently ignore recache failures - the original error matters more
               })

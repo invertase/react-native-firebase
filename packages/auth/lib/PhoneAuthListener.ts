@@ -224,10 +224,13 @@ export default class PhoneAuthListener {
 
     if (isFunction(errorCb)) {
       const onError = errorCb;
-      const subscription = this._auth.emitter.addListener(this._publicEvents.error!, (event: unknown) => {
-        subscription.remove();
-        onError(event);
-      });
+      const subscription = this._auth.emitter.addListener(
+        this._publicEvents.error!,
+        (event: unknown) => {
+          subscription.remove();
+          onError(event);
+        },
+      );
     }
 
     if (isFunction(successCb)) {

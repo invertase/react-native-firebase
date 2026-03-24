@@ -29,10 +29,7 @@ import { AIError } from '../lib/errors';
 import { logger } from '../lib/logger';
 import { ReadableStream } from 'web-streams-polyfill';
 
-type LiveReceiveYield =
-  | LiveServerContent
-  | LiveServerToolCall
-  | LiveServerToolCallCancellation;
+type LiveReceiveYield = LiveServerContent | LiveServerToolCall | LiveServerToolCallCancellation;
 
 class MockWebSocketHandler implements WebSocketHandler {
   connect = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);

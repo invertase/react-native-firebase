@@ -129,7 +129,9 @@ export default class User {
       ) as Promise<FirebaseAuthTypes.UserCredential>;
   }
 
-  reauthenticateWithCredential(credential: AuthCredential): Promise<FirebaseAuthTypes.UserCredential> {
+  reauthenticateWithCredential(
+    credential: AuthCredential,
+  ): Promise<FirebaseAuthTypes.UserCredential> {
     return this._auth.native
       .reauthenticateWithCredential(credential.providerId, credential.token, credential.secret)
       .then((userCredential: unknown) =>
@@ -174,10 +176,7 @@ export default class User {
         );
       }
 
-      if (
-        !isUndefined(acs.handleCodeInApp) &&
-        !isBoolean(acs.handleCodeInApp)
-      ) {
+      if (!isUndefined(acs.handleCodeInApp) && !isBoolean(acs.handleCodeInApp)) {
         throw new Error(
           "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.handleCodeInApp' expected a boolean value.",
         );
@@ -210,19 +209,13 @@ export default class User {
           );
         }
 
-        if (
-          !isUndefined(android.installApp) &&
-          !isBoolean(android.installApp)
-        ) {
+        if (!isUndefined(android.installApp) && !isBoolean(android.installApp)) {
           throw new Error(
             "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.android.installApp' expected a boolean value.",
           );
         }
 
-        if (
-          !isUndefined(android.minimumVersion) &&
-          !isString(android.minimumVersion)
-        ) {
+        if (!isUndefined(android.minimumVersion) && !isString(android.minimumVersion)) {
           throw new Error(
             "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.android.minimumVersion' expected a string value.",
           );
@@ -240,9 +233,9 @@ export default class User {
   }
 
   unlink(providerId: string): Promise<FirebaseAuthTypes.User> {
-    return this._auth.native.unlink(providerId).then((user: unknown) =>
-      this._auth._setUser(user),
-    ) as Promise<FirebaseAuthTypes.User>;
+    return this._auth.native
+      .unlink(providerId)
+      .then((user: unknown) => this._auth._setUser(user)) as Promise<FirebaseAuthTypes.User>;
   }
 
   updateEmail(email: string): Promise<void> {
@@ -271,7 +264,10 @@ export default class User {
     }) as Promise<void>;
   }
 
-  verifyBeforeUpdateEmail(newEmail: string, actionCodeSettings?: ActionCodeSettings): Promise<void> {
+  verifyBeforeUpdateEmail(
+    newEmail: string,
+    actionCodeSettings?: ActionCodeSettings,
+  ): Promise<void> {
     if (!isString(newEmail)) {
       throw new Error(
         "firebase.auth.User.verifyBeforeUpdateEmail(*) 'newEmail' expected a string value.",
@@ -292,10 +288,7 @@ export default class User {
         );
       }
 
-      if (
-        !isUndefined(acs.handleCodeInApp) &&
-        !isBoolean(acs.handleCodeInApp)
-      ) {
+      if (!isUndefined(acs.handleCodeInApp) && !isBoolean(acs.handleCodeInApp)) {
         throw new Error(
           "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.handleCodeInApp' expected a boolean value.",
         );
@@ -328,19 +321,13 @@ export default class User {
           );
         }
 
-        if (
-          !isUndefined(android.installApp) &&
-          !isBoolean(android.installApp)
-        ) {
+        if (!isUndefined(android.installApp) && !isBoolean(android.installApp)) {
           throw new Error(
             "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.android.installApp' expected a boolean value.",
           );
         }
 
-        if (
-          !isUndefined(android.minimumVersion) &&
-          !isString(android.minimumVersion)
-        ) {
+        if (!isUndefined(android.minimumVersion) && !isString(android.minimumVersion)) {
           throw new Error(
             "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.android.minimumVersion' expected a string value.",
           );
@@ -348,9 +335,11 @@ export default class User {
       }
     }
 
-    return this._auth.native.verifyBeforeUpdateEmail(newEmail, actionCodeSettings).then((user: unknown) => {
-      this._auth._setUser(user);
-    }) as Promise<void>;
+    return this._auth.native
+      .verifyBeforeUpdateEmail(newEmail, actionCodeSettings)
+      .then((user: unknown) => {
+        this._auth._setUser(user);
+      }) as Promise<void>;
   }
 
   /**

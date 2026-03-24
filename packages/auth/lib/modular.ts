@@ -91,7 +91,10 @@ export function beforeAuthStateChanged(
  * @param {string} oobCode - The out-of-band code sent to the user.
  * @returns {Promise<ActionCodeInfo>}
  */
-export async function checkActionCode(auth: FirebaseAuth, oobCode: string): Promise<ActionCodeInfo> {
+export async function checkActionCode(
+  auth: FirebaseAuth,
+  oobCode: string,
+): Promise<ActionCodeInfo> {
   return (auth as AuthInternal).checkActionCode.call(auth, oobCode, MODULAR_DEPRECATION_ARG);
 }
 
@@ -126,12 +129,13 @@ export function connectAuthEmulator(
   url: string,
   options?: { disableWarnings?: boolean },
 ): void {
-  ((auth as AuthInternal).useEmulator as (url: string, options?: unknown, ...args: unknown[]) => void).call(
-    auth,
-    url,
-    options,
-    MODULAR_DEPRECATION_ARG,
-  );
+  (
+    (auth as AuthInternal).useEmulator as (
+      url: string,
+      options?: unknown,
+      ...args: unknown[]
+    ) => void
+  ).call(auth, url, options, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -164,7 +168,11 @@ export async function fetchSignInMethodsForEmail(
   auth: FirebaseAuth,
   email: string,
 ): Promise<string[]> {
-  return (auth as AuthInternal).fetchSignInMethodsForEmail.call(auth, email, MODULAR_DEPRECATION_ARG);
+  return (auth as AuthInternal).fetchSignInMethodsForEmail.call(
+    auth,
+    email,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 /**
@@ -194,21 +202,33 @@ export async function getRedirectResult(
 }
 
 export function isSignInWithEmailLink(auth: FirebaseAuth, emailLink: string): Promise<boolean> {
-  return (auth as AuthInternal).isSignInWithEmailLink.call(auth, emailLink, MODULAR_DEPRECATION_ARG);
+  return (auth as AuthInternal).isSignInWithEmailLink.call(
+    auth,
+    emailLink,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 export function onAuthStateChanged(
   auth: FirebaseAuth,
   nextOrObserver: (user: User | null) => void | { next: (user: User | null) => void },
 ): () => void {
-  return (auth as AuthInternal).onAuthStateChanged.call(auth, nextOrObserver, MODULAR_DEPRECATION_ARG);
+  return (auth as AuthInternal).onAuthStateChanged.call(
+    auth,
+    nextOrObserver,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 export function onIdTokenChanged(
   auth: FirebaseAuth,
   nextOrObserver: (user: User | null) => void | { next: (user: User | null) => void },
 ): () => void {
-  return (auth as AuthInternal).onIdTokenChanged.call(auth, nextOrObserver, MODULAR_DEPRECATION_ARG);
+  return (auth as AuthInternal).onIdTokenChanged.call(
+    auth,
+    nextOrObserver,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 export async function revokeAccessToken(_auth: FirebaseAuth, _token: string): Promise<void> {
@@ -253,7 +273,11 @@ export async function signInWithCredential(
   auth: FirebaseAuth,
   credential: AuthCredential,
 ): Promise<UserCredential> {
-  return (auth as AuthInternal).signInWithCredential.call(auth, credential, MODULAR_DEPRECATION_ARG);
+  return (auth as AuthInternal).signInWithCredential.call(
+    auth,
+    credential,
+    MODULAR_DEPRECATION_ARG,
+  );
 }
 
 export async function signInWithCustomToken(
@@ -360,17 +384,10 @@ export function useDeviceLanguage(_auth: FirebaseAuth): void {
 }
 
 export function setLanguageCode(auth: FirebaseAuth, languageCode: string): Promise<void> {
-  return (auth as AuthInternal).setLanguageCode.call(
-    auth,
-    languageCode,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (auth as AuthInternal).setLanguageCode.call(auth, languageCode, MODULAR_DEPRECATION_ARG);
 }
 
-export function useUserAccessGroup(
-  auth: FirebaseAuth,
-  userAccessGroup: string,
-): Promise<null> {
+export function useUserAccessGroup(auth: FirebaseAuth, userAccessGroup: string): Promise<null> {
   return (auth as AuthInternal).useUserAccessGroup.call(
     auth,
     userAccessGroup,
@@ -378,10 +395,7 @@ export function useUserAccessGroup(
   );
 }
 
-export async function verifyPasswordResetCode(
-  auth: FirebaseAuth,
-  code: string,
-): Promise<string> {
+export async function verifyPasswordResetCode(auth: FirebaseAuth, code: string): Promise<string> {
   return (auth as AuthInternal).verifyPasswordResetCode.call(auth, code, MODULAR_DEPRECATION_ARG);
 }
 
@@ -404,15 +418,10 @@ export async function getIdToken(user: User, forceRefresh?: boolean): Promise<st
   );
 }
 
-export async function getIdTokenResult(
-  user: User,
-  forceRefresh?: boolean,
-): Promise<IdTokenResult> {
-  return (user as unknown as { getIdTokenResult: (...args: unknown[]) => Promise<IdTokenResult> }).getIdTokenResult.call(
-    user,
-    forceRefresh,
-    MODULAR_DEPRECATION_ARG,
-  );
+export async function getIdTokenResult(user: User, forceRefresh?: boolean): Promise<IdTokenResult> {
+  return (
+    user as unknown as { getIdTokenResult: (...args: unknown[]) => Promise<IdTokenResult> }
+  ).getIdTokenResult.call(user, forceRefresh, MODULAR_DEPRECATION_ARG);
 }
 
 /**
@@ -425,11 +434,9 @@ export async function linkWithCredential(
   user: User,
   credential: AuthCredential,
 ): Promise<UserCredential> {
-  return (user as unknown as { linkWithCredential: (...args: unknown[]) => Promise<UserCredential> }).linkWithCredential.call(
-    user,
-    credential,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (
+    user as unknown as { linkWithCredential: (...args: unknown[]) => Promise<UserCredential> }
+  ).linkWithCredential.call(user, credential, MODULAR_DEPRECATION_ARG);
 }
 
 export async function linkWithPhoneNumber(
@@ -445,12 +452,9 @@ export async function linkWithPopup(
   provider: AuthProvider,
   resolver?: unknown,
 ): Promise<UserCredential> {
-  return (user as unknown as { linkWithPopup: (...args: unknown[]) => Promise<UserCredential> }).linkWithPopup.call(
-    user,
-    provider,
-    resolver,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (
+    user as unknown as { linkWithPopup: (...args: unknown[]) => Promise<UserCredential> }
+  ).linkWithPopup.call(user, provider, resolver, MODULAR_DEPRECATION_ARG);
 }
 
 export async function linkWithRedirect(
@@ -458,12 +462,9 @@ export async function linkWithRedirect(
   provider: AuthProvider,
   resolver?: unknown,
 ): Promise<UserCredential> {
-  return (user as unknown as { linkWithRedirect: (...args: unknown[]) => Promise<UserCredential> }).linkWithRedirect.call(
-    user,
-    provider,
-    resolver,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (
+    user as unknown as { linkWithRedirect: (...args: unknown[]) => Promise<UserCredential> }
+  ).linkWithRedirect.call(user, provider, resolver, MODULAR_DEPRECATION_ARG);
 }
 
 export function multiFactor(user: User): MultiFactorUser {
@@ -474,11 +475,11 @@ export async function reauthenticateWithCredential(
   user: User,
   credential: AuthCredential,
 ): Promise<UserCredential> {
-  return (user as unknown as { reauthenticateWithCredential: (...args: unknown[]) => Promise<UserCredential> }).reauthenticateWithCredential.call(
-    user,
-    credential,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (
+    user as unknown as {
+      reauthenticateWithCredential: (...args: unknown[]) => Promise<UserCredential>;
+    }
+  ).reauthenticateWithCredential.call(user, credential, MODULAR_DEPRECATION_ARG);
 }
 
 export async function reauthenticateWithPhoneNumber(
@@ -494,12 +495,9 @@ export async function reauthenticateWithPopup(
   provider: AuthProvider,
   resolver?: unknown,
 ): Promise<UserCredential> {
-  return (user as unknown as { reauthenticateWithPopup: (...args: unknown[]) => Promise<UserCredential> }).reauthenticateWithPopup.call(
-    user,
-    provider,
-    resolver,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (
+    user as unknown as { reauthenticateWithPopup: (...args: unknown[]) => Promise<UserCredential> }
+  ).reauthenticateWithPopup.call(user, provider, resolver, MODULAR_DEPRECATION_ARG);
 }
 
 export async function reauthenticateWithRedirect(
@@ -507,12 +505,11 @@ export async function reauthenticateWithRedirect(
   provider: AuthProvider,
   resolver?: unknown,
 ): Promise<UserCredential> {
-  return (user as unknown as { reauthenticateWithRedirect: (...args: unknown[]) => Promise<UserCredential> }).reauthenticateWithRedirect.call(
-    user,
-    provider,
-    resolver,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (
+    user as unknown as {
+      reauthenticateWithRedirect: (...args: unknown[]) => Promise<UserCredential>;
+    }
+  ).reauthenticateWithRedirect.call(user, provider, resolver, MODULAR_DEPRECATION_ARG);
 }
 
 export async function reload(user: User): Promise<void> {
@@ -526,11 +523,9 @@ export async function sendEmailVerification(
   user: User,
   actionCodeSettings?: ActionCodeSettings,
 ): Promise<void> {
-  return (user as unknown as { sendEmailVerification: (...args: unknown[]) => Promise<void> }).sendEmailVerification.call(
-    user,
-    actionCodeSettings,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (
+    user as unknown as { sendEmailVerification: (...args: unknown[]) => Promise<void> }
+  ).sendEmailVerification.call(user, actionCodeSettings, MODULAR_DEPRECATION_ARG);
 }
 
 export async function unlink(user: User, providerId: string): Promise<User> {
@@ -542,41 +537,30 @@ export async function unlink(user: User, providerId: string): Promise<User> {
 }
 
 export async function updateEmail(user: User, newEmail: string): Promise<void> {
-  return (user as unknown as { updateEmail: (...args: unknown[]) => Promise<void> }).updateEmail.call(
-    user,
-    newEmail,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (
+    user as unknown as { updateEmail: (...args: unknown[]) => Promise<void> }
+  ).updateEmail.call(user, newEmail, MODULAR_DEPRECATION_ARG);
 }
 
 export async function updatePassword(user: User, newPassword: string): Promise<void> {
-  return (user as unknown as { updatePassword: (...args: unknown[]) => Promise<void> }).updatePassword.call(
-    user,
-    newPassword,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (
+    user as unknown as { updatePassword: (...args: unknown[]) => Promise<void> }
+  ).updatePassword.call(user, newPassword, MODULAR_DEPRECATION_ARG);
 }
 
-export async function updatePhoneNumber(
-  user: User,
-  credential: AuthCredential,
-): Promise<void> {
-  return (user as unknown as { updatePhoneNumber: (...args: unknown[]) => Promise<void> }).updatePhoneNumber.call(
-    user,
-    credential,
-    MODULAR_DEPRECATION_ARG,
-  );
+export async function updatePhoneNumber(user: User, credential: AuthCredential): Promise<void> {
+  return (
+    user as unknown as { updatePhoneNumber: (...args: unknown[]) => Promise<void> }
+  ).updatePhoneNumber.call(user, credential, MODULAR_DEPRECATION_ARG);
 }
 
 export async function updateProfile(
   user: User,
   profile: { displayName?: string | null; photoURL?: string | null },
 ): Promise<void> {
-  return (user as unknown as { updateProfile: (...args: unknown[]) => Promise<void> }).updateProfile.call(
-    user,
-    profile,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (
+    user as unknown as { updateProfile: (...args: unknown[]) => Promise<void> }
+  ).updateProfile.call(user, profile, MODULAR_DEPRECATION_ARG);
 }
 
 export async function verifyBeforeUpdateEmail(
@@ -584,12 +568,9 @@ export async function verifyBeforeUpdateEmail(
   newEmail: string,
   actionCodeSettings?: ActionCodeSettings,
 ): Promise<void> {
-  return (user as unknown as { verifyBeforeUpdateEmail: (...args: unknown[]) => Promise<void> }).verifyBeforeUpdateEmail.call(
-    user,
-    newEmail,
-    actionCodeSettings,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (
+    user as unknown as { verifyBeforeUpdateEmail: (...args: unknown[]) => Promise<void> }
+  ).verifyBeforeUpdateEmail.call(user, newEmail, actionCodeSettings, MODULAR_DEPRECATION_ARG);
 }
 
 export function getAdditionalUserInfo(
@@ -618,9 +599,5 @@ export async function validatePassword(
     );
   }
 
-  return (auth as AuthInternal).validatePassword.call(
-    auth,
-    password,
-    MODULAR_DEPRECATION_ARG,
-  );
+  return (auth as AuthInternal).validatePassword.call(auth, password, MODULAR_DEPRECATION_ARG);
 }

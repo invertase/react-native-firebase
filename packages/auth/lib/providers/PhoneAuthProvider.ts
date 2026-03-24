@@ -58,6 +58,10 @@ export default class PhoneAuthProvider {
           phoneInfoOptions.session ?? '',
         );
     }
-    return this._auth.app.auth().verifyPhoneNumberForMultiFactor(phoneInfoOptions as { phoneNumber: string; session: string });
+    return this._auth.app
+      .auth()
+      .verifyPhoneNumberForMultiFactor(
+        phoneInfoOptions as { phoneNumber: string; session: string },
+      );
   }
 }

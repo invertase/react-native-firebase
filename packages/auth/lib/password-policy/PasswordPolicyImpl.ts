@@ -67,8 +67,7 @@ export class PasswordPolicyImpl {
   constructor(response: PasswordPolicyApiResponse) {
     const responseOptions = response.customStrengthOptions ?? {};
     this.customStrengthOptions = {
-      minPasswordLength:
-        responseOptions.minPasswordLength ?? MINIMUM_MIN_PASSWORD_LENGTH,
+      minPasswordLength: responseOptions.minPasswordLength ?? MINIMUM_MIN_PASSWORD_LENGTH,
     };
     if (responseOptions.maxPasswordLength) {
       this.customStrengthOptions.maxPasswordLength = responseOptions.maxPasswordLength;
@@ -121,10 +120,7 @@ export class PasswordPolicyImpl {
     return status;
   }
 
-  validatePasswordLengthOptions(
-    password: string,
-    status: PasswordPolicyValidationStatus,
-  ): void {
+  validatePasswordLengthOptions(password: string, status: PasswordPolicyValidationStatus): void {
     const minPasswordLength = this.customStrengthOptions.minPasswordLength;
     const maxPasswordLength = this.customStrengthOptions.maxPasswordLength;
     if (minPasswordLength) {
@@ -135,10 +131,7 @@ export class PasswordPolicyImpl {
     }
   }
 
-  validatePasswordCharacterOptions(
-    password: string,
-    status: PasswordPolicyValidationStatus,
-  ): void {
+  validatePasswordCharacterOptions(password: string, status: PasswordPolicyValidationStatus): void {
     this.updatePasswordCharacterOptionsStatuses(status, false, false, false, false);
 
     for (let i = 0; i < password.length; i++) {
@@ -174,8 +167,7 @@ export class PasswordPolicyImpl {
     }
     if (this.customStrengthOptions.containsNonAlphanumericCharacter) {
       status.containsNonAlphanumericCharacter =
-        (status.containsNonAlphanumericCharacter ?? false) ||
-        containsNonAlphanumericCharacter;
+        (status.containsNonAlphanumericCharacter ?? false) || containsNonAlphanumericCharacter;
     }
   }
 }

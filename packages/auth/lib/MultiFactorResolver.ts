@@ -34,7 +34,12 @@ export default class MultiFactorResolver {
     this.session = resolver.session;
   }
 
-  resolveSignIn(assertion: { token?: string; secret?: string; uid?: string; verificationCode?: string }): Promise<unknown> {
+  resolveSignIn(assertion: {
+    token?: string;
+    secret?: string;
+    uid?: string;
+    verificationCode?: string;
+  }): Promise<unknown> {
     const { token, secret, uid, verificationCode } = assertion;
 
     if (token && secret) {

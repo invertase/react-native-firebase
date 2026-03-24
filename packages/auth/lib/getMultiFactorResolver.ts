@@ -18,7 +18,11 @@
 import { isOther } from '@react-native-firebase/app/dist/module/common';
 import MultiFactorResolver from './MultiFactorResolver';
 import type { AuthInternal } from './types/internal';
-import type { MultiFactorError, MultiFactorInfo, MultiFactorResolver as MultiFactorResolverType } from './types/auth';
+import type {
+  MultiFactorError,
+  MultiFactorInfo,
+  MultiFactorResolver as MultiFactorResolverType,
+} from './types/auth';
 
 interface ErrorWithResolver {
   userInfo?: { resolver?: unknown };
@@ -44,7 +48,10 @@ export function getMultiFactorResolver(
     Object.prototype.hasOwnProperty.call(err.userInfo, 'resolver') &&
     err.userInfo.resolver
   ) {
-    return new MultiFactorResolver(auth, err.userInfo.resolver as { hints: MultiFactorInfo[]; session: string }) as MultiFactorResolverType;
+    return new MultiFactorResolver(
+      auth,
+      err.userInfo.resolver as { hints: MultiFactorInfo[]; session: string },
+    ) as MultiFactorResolverType;
   }
 
   return null;

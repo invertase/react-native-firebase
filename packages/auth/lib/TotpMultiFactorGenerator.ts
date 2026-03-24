@@ -37,7 +37,10 @@ export default class TotpMultiFactorGenerator {
     return { uid, verificationCode };
   }
 
-  static assertionForEnrollment(totpSecret: TotpSecret, verificationCode: string): MultiFactorAssertion {
+  static assertionForEnrollment(
+    totpSecret: TotpSecret,
+    verificationCode: string,
+  ): MultiFactorAssertion {
     return {
       totpSecret: totpSecret.secretKey,
       verificationCode,
@@ -48,9 +51,7 @@ export default class TotpMultiFactorGenerator {
     if (!session) {
       throw new Error('Session is required to generate a TOTP secret.');
     }
-    const {
-      secretKey,
-    } = await auth.native.generateTotpSecret(session);
+    const { secretKey } = await auth.native.generateTotpSecret(session);
 
     return new TotpSecret(secretKey, auth);
   }

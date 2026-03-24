@@ -53,7 +53,15 @@ export class MultiFactorUser {
    * Optionally set a displayName. This method will reload the current user
    * profile, which is necessary to see the multi-factor changes.
    */
-  async enroll(multiFactorAssertion: { token?: string; secret?: string; totpSecret?: string; verificationCode?: string }, displayName?: string): Promise<void> {
+  async enroll(
+    multiFactorAssertion: {
+      token?: string;
+      secret?: string;
+      totpSecret?: string;
+      verificationCode?: string;
+    },
+    displayName?: string,
+  ): Promise<void> {
     const { token, secret, totpSecret, verificationCode } = multiFactorAssertion;
     if (token && secret) {
       await this._auth.native.finalizeMultiFactorEnrollment(token, secret, displayName);

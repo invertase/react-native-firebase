@@ -59,7 +59,11 @@ export default class OAuthProvider {
   }
 
   /** @internal */
-  toObject(): { providerId: string | null; scopes: string[]; customParameters: Record<string, unknown> } {
+  toObject(): {
+    providerId: string | null;
+    scopes: string[];
+    customParameters: Record<string, unknown>;
+  } {
     return {
       providerId: this.#providerId,
       scopes: this.#scopes,
