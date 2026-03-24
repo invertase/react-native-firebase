@@ -196,6 +196,53 @@ enum RNFBFirestorePipelineParser {
     "aggregate", "distinct", "findNearest", "replaceWith", "sample", "union", "unnest", "rawStage",
   ]
 
+  private final class ParsedPipelineRequestBox {
+    var value: RNFBFirestoreParsedPipelineRequest?
+  }
+
+  private final class ParsedValueNodeBox {
+    var value: RNFBFirestoreParsedValueNode?
+  }
+
+  private enum PendingParsedStage {
+    case ready(RNFBFirestoreParsedPipelineStage)
+    case union(ParsedPipelineRequestBox)
+  }
+
+  private enum PipelineParseFrame {
+    case enter(
+      pipeline: [String: Any],
+      options: [String: Any]?,
+      box: ParsedPipelineRequestBox
+    )
+    case exit(
+      source: RNFBFirestoreParsedPipelineSource,
+      stages: [PendingParsedStage],
+      options: RNFBFirestoreParsedPipelineExecuteOptions,
+      box: ParsedPipelineRequestBox
+    )
+  }
+
+  private enum QuerySourceValueParseFrame {
+    case enter(
+      Any,
+      ParsedValueNodeBox
+    )
+    case exitList(
+      ParsedValueNodeBox,
+      [ParsedValueNodeBox]
+    )
+    case exitMap(
+      ParsedValueNodeBox,
+      [(String, ParsedValueNodeBox)]
+    )
+  }
+
+  private struct StageDescriptor {
+    let name: String
+    let options: [String: Any]
+  }
+
   static func parse(
     pipeline: NSDictionary?,
     options: NSDictionary?
@@ -211,10 +258,75 @@ enum RNFBFirestorePipelineParser {
     _ pipeline: [String: Any],
     options: [String: Any]?
   ) throws -> RNFBFirestoreParsedPipelineRequest {
-    let source = try parseSource(requireMap(pipeline, key: "source", fieldName: "pipeline.source"))
-    let stages = try parseStages(requireStageArray(pipeline, key: "stages", fieldName: "pipeline.stages"))
-    let executeOptions = try parseOptions(options)
-    return RNFBFirestoreParsedPipelineRequest(source: source, stages: stages, options: executeOptions)
+    let rootBox = ParsedPipelineRequestBox()
+    var stack: [PipelineParseFrame] = [
+      .enter(pipeline: pipeline, options: options, box: rootBox),
+    ]
+
+    while let frame = stack.popLast() {
+      switch frame {
+      case let .enter(pipeline, options, box):
+        let source = try parseSource(requireMap(pipeline, key: "source", fieldName: "pipeline.source"))
+        let stageMaps = try requireStageArray(pipeline, key: "stages", fieldName: "pipeline.stages")
+        let executeOptions = try parseOptions(options)
+        var stages: [PendingParsedStage] = []
+        var nestedPipelines: [([String: Any], ParsedPipelineRequestBox)] = []
+        stages.reserveCapacity(stageMaps.count)
+
+        for (index, stage) in stageMaps.enumerated() {
+          let fieldName = "pipeline.stages[\(index)]"
+          let descriptor = try parseStageDescriptor(stage, fieldName: fieldName)
+          if descriptor.name == "union" {
+            let childBox = ParsedPipelineRequestBox()
+            stages.append(.union(childBox))
+            nestedPipelines.append((
+              try requireMap(descriptor.options, key: "other", fieldName: "\(fieldName).options.other"),
+              childBox
+            ))
+          } else {
+            stages.append(.ready(try parseStage(
+              stageName: descriptor.name,
+              options: descriptor.options,
+              fieldName: fieldName
+            )))
+          }
+        }
+
+        stack.append(.exit(
+          source: source,
+          stages: stages,
+          options: executeOptions,
+          box: box
+        ))
+
+        for (nestedPipeline, childBox) in nestedPipelines.reversed() {
+          stack.append(.enter(pipeline: nestedPipeline, options: nil, box: childBox))
+        }
+      case let .exit(source, pendingStages, options, box):
+        var stages: [RNFBFirestoreParsedPipelineStage] = []
+        stages.reserveCapacity(pendingStages.count)
+
+        for pendingStage in pendingStages {
+          switch pendingStage {
+          case let .ready(stage):
+            stages.append(stage)
+          case let .union(childBox):
+            guard let other = childBox.value else {
+              throw PipelineValidationError("pipelineExecute() failed to parse nested union pipeline.")
+            }
+            stages.append(.unionStage(RNFBFirestoreParsedUnionStage(other: other)))
+          }
+        }
+
+        box.value = RNFBFirestoreParsedPipelineRequest(source: source, stages: stages, options: options)
+      }
+    }
+
+    guard let request = rootBox.value else {
+      throw PipelineValidationError("pipelineExecute() expected a pipeline object.")
+    }
+
+    return request
   }
 
   private static func parseSource(_ source: [String: Any]) throws -> RNFBFirestoreParsedPipelineSource {
@@ -315,16 +427,10 @@ enum RNFBFirestorePipelineParser {
     )
   }
 
-  private static func parseStages(_ stages: [[String: Any]]) throws -> [RNFBFirestoreParsedPipelineStage] {
-    try stages.enumerated().map { index, stage in
-      try parseStage(stage, fieldName: "pipeline.stages[\(index)]")
-    }
-  }
-
-  private static func parseStage(
+  private static func parseStageDescriptor(
     _ stage: [String: Any],
     fieldName: String
-  ) throws -> RNFBFirestoreParsedPipelineStage {
+  ) throws -> StageDescriptor {
     guard let stageName = stage["stage"] as? String else {
       throw PipelineValidationError("pipelineExecute() expected \(fieldName).stage to be a string.")
     }
@@ -338,7 +444,14 @@ enum RNFBFirestorePipelineParser {
     }
 
     let options = try requireMap(stage, key: "options", fieldName: "\(fieldName).options")
+    return StageDescriptor(name: stageName, options: options)
+  }
 
+  private static func parseStage(
+    stageName: String,
+    options: [String: Any],
+    fieldName: String
+  ) throws -> RNFBFirestoreParsedPipelineStage {
     switch stageName {
     case "where":
       return .whereStage(RNFBFirestoreParsedWhereStage(
@@ -401,12 +514,7 @@ enum RNFBFirestorePipelineParser {
     case "sample":
       return .sampleStage(try parseSampleStage(options, fieldName: "\(fieldName).options"))
     case "union":
-      return .unionStage(RNFBFirestoreParsedUnionStage(
-        other: try parsePipelineMap(
-          requireMap(options, key: "other", fieldName: "\(fieldName).options.other"),
-          options: nil
-        )
-      ))
+      throw PipelineValidationError("pipelineExecute() failed to parse nested union pipeline.")
     case "unnest":
       return .unnestStage(RNFBFirestoreParsedUnnestStage(
         selectable: try parseSelectableNode(
@@ -943,19 +1051,55 @@ enum RNFBFirestorePipelineParser {
     _ value: Any,
     fieldName: String
   ) throws -> RNFBFirestoreParsedValueNode {
-    if let map = value as? [String: Any] {
-      return .map(try map.reduce(into: [String: RNFBFirestoreParsedValueNode]()) { result, entry in
-        result[entry.key] = try parseQuerySourceValueNode(entry.value, fieldName: "\(fieldName).\(entry.key)")
-      })
+    let rootBox = ParsedValueNodeBox()
+    var stack: [QuerySourceValueParseFrame] = [
+      .enter(value, rootBox),
+    ]
+
+    while let frame = stack.popLast() {
+      switch frame {
+      case let .enter(value, box):
+        if let map = value as? [String: Any] {
+          let entries = map.map { (key: $0.key, value: $0.value, box: ParsedValueNodeBox()) }
+          stack.append(.exitMap(box, entries.map { ($0.key, $0.box) }))
+          for entry in entries.reversed() {
+            stack.append(.enter(entry.value, entry.box))
+          }
+          continue
+        }
+
+        if let list = value as? [Any] {
+          let childBoxes = list.map { _ in ParsedValueNodeBox() }
+          stack.append(.exitList(box, childBoxes))
+          for index in list.indices.reversed() {
+            stack.append(.enter(list[index], childBoxes[index]))
+          }
+          continue
+        }
+
+        box.value = .primitive(value)
+      case let .exitList(box, childBoxes):
+        box.value = .list(try childBoxes.enumerated().map { index, childBox in
+          guard let value = childBox.value else {
+            throw PipelineValidationError("pipelineExecute() expected \(fieldName)[\(index)] to be provided.")
+          }
+          return value
+        })
+      case let .exitMap(box, entries):
+        box.value = .map(try entries.reduce(into: [String: RNFBFirestoreParsedValueNode]()) { result, entry in
+          guard let value = entry.1.value else {
+            throw PipelineValidationError("pipelineExecute() expected \(fieldName).\(entry.0) to be provided.")
+          }
+          result[entry.0] = value
+        })
+      }
     }
 
-    if let list = value as? [Any] {
-      return .list(try list.enumerated().map { index, entry in
-        try parseQuerySourceValueNode(entry, fieldName: "\(fieldName)[\(index)]")
-      })
+    guard let parsedValue = rootBox.value else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to be provided.")
     }
 
-    return .primitive(value)
+    return parsedValue
   }
 
   private static func isExpressionLike(_ map: [String: Any]) -> Bool {
