@@ -224,7 +224,7 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     };
   }
 
-  async setLanguageCode(code) {
+  async setLanguageCode(code: string | null) {
     if (!isString(code) && !isNull(code)) {
       throw new Error(
         "firebase.auth().setLanguageCode(*) expected 'languageCode' to be a string or null value",
@@ -252,7 +252,9 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     await this.native.setTenantId(tenantId);
   }
 
-  onAuthStateChanged(listenerOrObserver) {
+  onAuthStateChanged(
+    listenerOrObserver: FirebaseAuthTypes.CallbackOrObserver<FirebaseAuthTypes.AuthListenerCallback>,
+  ) {
     const listener = parseListenerOrObserver(listenerOrObserver);
     const subscription = this.emitter.addListener(
       this.eventNameForApp('onAuthStateChanged'),
@@ -267,7 +269,9 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     return () => subscription.remove();
   }
 
-  onIdTokenChanged(listenerOrObserver) {
+  onIdTokenChanged(
+    listenerOrObserver: FirebaseAuthTypes.CallbackOrObserver<FirebaseAuthTypes.AuthListenerCallback>,
+  ) {
     const listener = parseListenerOrObserver(listenerOrObserver);
     const subscription = this.emitter.addListener(
       this.eventNameForApp('onIdTokenChanged'),
@@ -282,7 +286,9 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     return () => subscription.remove();
   }
 
-  onUserChanged(listenerOrObserver) {
+  onUserChanged(
+    listenerOrObserver: FirebaseAuthTypes.CallbackOrObserver<FirebaseAuthTypes.AuthListenerCallback>,
+  ) {
     const listener = parseListenerOrObserver(listenerOrObserver);
     const subscription = this.emitter.addListener(this.eventNameForApp('onUserChanged'), listener);
     if (this._authResult) {
@@ -308,7 +314,7 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
-  signInWithPhoneNumber(phoneNumber, forceResend) {
+  signInWithPhoneNumber(phoneNumber: string, forceResend?: boolean) {
     if (isAndroid) {
       return this.native
         .signInWithPhoneNumber(phoneNumber, forceResend || false)
@@ -320,29 +326,39 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
       .then(result => new ConfirmationResult(this as unknown as AuthInternal, result.verificationId));
   }
 
-  verifyPhoneNumber(phoneNumber, autoVerifyTimeoutOrForceResend, forceResend) {
+  verifyPhoneNumber(
+    phoneNumber: string,
+    autoVerifyTimeoutOrForceResend?: number | boolean,
+    forceResend?: boolean,
+  ) {
     let _forceResend = forceResend;
     let _autoVerifyTimeout = 60;
 
     if (isBoolean(autoVerifyTimeoutOrForceResend)) {
       _forceResend = autoVerifyTimeoutOrForceResend;
-    } else {
+    } else if (typeof autoVerifyTimeoutOrForceResend === 'number') {
       _autoVerifyTimeout = autoVerifyTimeoutOrForceResend;
     }
 
     return new PhoneAuthListener(this as unknown as AuthInternal, phoneNumber, _autoVerifyTimeout, _forceResend);
   }
 
-  verifyPhoneNumberWithMultiFactorInfo(multiFactorHint, session) {
-    return this.native.verifyPhoneNumberWithMultiFactorInfo(multiFactorHint.uid, session);
+  verifyPhoneNumberWithMultiFactorInfo(
+    multiFactorHint: FirebaseAuthTypes.MultiFactorInfo,
+    session: FirebaseAuthTypes.MultiFactorSession,
+  ) {
+    return this.native.verifyPhoneNumberWithMultiFactorInfo(
+      multiFactorHint.uid,
+      session as unknown as string,
+    );
   }
 
-  verifyPhoneNumberForMultiFactor(phoneInfoOptions) {
+  verifyPhoneNumberForMultiFactor(phoneInfoOptions: FirebaseAuthTypes.PhoneMultiFactorEnrollInfoOptions) {
     const { phoneNumber, session } = phoneInfoOptions;
-    return this.native.verifyPhoneNumberForMultiFactor(phoneNumber, session);
+    return this.native.verifyPhoneNumberForMultiFactor(phoneNumber, session as unknown as string);
   }
 
-  resolveMultiFactorSignIn(session, verificationId, verificationCode) {
+  resolveMultiFactorSignIn(session: string, verificationId: string, verificationCode: string) {
     return this.native
       .resolveMultiFactorSignIn(session, verificationId, verificationCode)
       .then(userCredential => {
@@ -350,13 +366,13 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
       });
   }
 
-  resolveTotpSignIn(session, uid, totpSecret) {
+  resolveTotpSignIn(session: string, uid: string, totpSecret: string) {
     return this.native.resolveTotpSignIn(session, uid, totpSecret).then(userCredential => {
       return this._setUserCredential(userCredential);
     });
   }
 
-  createUserWithEmailAndPassword(email, password) {
+  createUserWithEmailAndPassword(email: string, password: string) {
     return (
       this.native
         .createUserWithEmailAndPassword(email, password)
@@ -377,7 +393,7 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     );
   }
 
-  signInWithEmailAndPassword(email, password) {
+  signInWithEmailAndPassword(email: string, password: string) {
     return (
       this.native
         .signInWithEmailAndPassword(email, password)
@@ -398,41 +414,50 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     );
   }
 
-  signInWithCustomToken(customToken) {
+  signInWithCustomToken(customToken: string) {
     return this.native
       .signInWithCustomToken(customToken)
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
-  signInWithCredential(credential) {
+  signInWithCredential(credential: FirebaseAuthTypes.AuthCredential) {
     return this.native
       .signInWithCredential(credential.providerId, credential.token, credential.secret)
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
-  revokeToken(authorizationCode) {
+  revokeToken(authorizationCode: string) {
     return this.native.revokeToken(authorizationCode);
   }
 
-  sendPasswordResetEmail(email, actionCodeSettings = null) {
+  sendPasswordResetEmail(
+    email: string,
+    actionCodeSettings: FirebaseAuthTypes.ActionCodeSettings | null = null,
+  ) {
     return this.native.sendPasswordResetEmail(email, actionCodeSettings);
   }
 
-  sendSignInLinkToEmail(email, actionCodeSettings = {}) {
-    return this.native.sendSignInLinkToEmail(email, actionCodeSettings);
+  sendSignInLinkToEmail(
+    email: string,
+    actionCodeSettings: FirebaseAuthTypes.ActionCodeSettings | Record<string, unknown> = {},
+  ) {
+    return this.native.sendSignInLinkToEmail(
+      email,
+      actionCodeSettings as Record<string, unknown>,
+    );
   }
 
-  isSignInWithEmailLink(emailLink) {
+  isSignInWithEmailLink(emailLink: string) {
     return this.native.isSignInWithEmailLink(emailLink);
   }
 
-  signInWithEmailLink(email, emailLink) {
+  signInWithEmailLink(email: string, emailLink: string) {
     return this.native
       .signInWithEmailLink(email, emailLink)
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
-  confirmPasswordReset(code, newPassword) {
+  confirmPasswordReset(code: string, newPassword: string) {
     return (
       this.native
         .confirmPasswordReset(code, newPassword)
@@ -452,25 +477,25 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     );
   }
 
-  applyActionCode(code) {
+  applyActionCode(code: string) {
     return this.native.applyActionCode(code).then(user => {
       this._setUser(user);
     });
   }
 
-  checkActionCode(code) {
+  checkActionCode(code: string) {
     return this.native.checkActionCode(code);
   }
 
-  fetchSignInMethodsForEmail(email) {
+  fetchSignInMethodsForEmail(email: string) {
     return this.native.fetchSignInMethodsForEmail(email);
   }
 
-  verifyPasswordResetCode(code) {
+  verifyPasswordResetCode(code: string) {
     return this.native.verifyPasswordResetCode(code);
   }
 
-  useUserAccessGroup(userAccessGroup) {
+  useUserAccessGroup(userAccessGroup: string) {
     if (isAndroid) {
       return Promise.resolve();
     }
@@ -487,13 +512,13 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     throw new Error('firebase.auth().setPersistence() is unsupported by the native Firebase SDKs.');
   }
 
-  signInWithPopup(provider) {
+  signInWithPopup(provider: FirebaseAuthTypes.AuthProvider & { toObject(): object }) {
     return this.native
       .signInWithProvider(provider.toObject())
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
-  signInWithRedirect(provider) {
+  signInWithRedirect(provider: FirebaseAuthTypes.AuthProvider & { toObject(): object }) {
     return this.native
       .signInWithProvider(provider.toObject())
       .then(userCredential => this._setUserCredential(userCredential));
@@ -506,7 +531,7 @@ class FirebaseAuthModule extends FirebaseModule<typeof nativeModuleName> {
     );
   }
 
-  useEmulator(url) {
+  useEmulator(url: string) {
     if (!url || !isString(url) || !isValidUrl(url)) {
       throw new Error('firebase.auth().useEmulator() takes a non-empty string URL');
     }

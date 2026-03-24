@@ -26,6 +26,7 @@ import auth, {
   multiFactor,
   EmailAuthProvider,
 } from '.';
+import type { ConfirmationResult, User, UserCredential } from './lib/types/auth';
 
 console.log(auth().app);
 
@@ -180,55 +181,49 @@ console.log(authModular2.app.name);
 const authModular3 = initializeAuth(firebase.app());
 console.log(authModular3.app.name);
 
-onAuthStateChanged(authInstance, (user: FirebaseAuthTypes.User | null) => {
+onAuthStateChanged(authInstance, (user: User | null) => {
   console.log(user?.email);
 });
 
-onIdTokenChanged(authInstance, (user: FirebaseAuthTypes.User | null) => {
+onIdTokenChanged(authInstance, (user: User | null) => {
   console.log(user?.email);
 });
 
-signInAnonymously(authInstance).then((credential: FirebaseAuthTypes.UserCredential) => {
+signInAnonymously(authInstance).then((credential: UserCredential) => {
   console.log(credential.user.uid);
 });
 
 signInWithEmailAndPassword(authInstance, 'test@example.com', 'password123').then(
-  (credential: FirebaseAuthTypes.UserCredential) => {
+  (credential: UserCredential) => {
     console.log(credential.user.email);
   },
 );
 
 const emailCredential = EmailAuthProvider.credential('test@example.com', 'password');
-signInWithCredential(authInstance, emailCredential).then(
-  (credential: FirebaseAuthTypes.UserCredential) => {
-    console.log(credential.user.email);
-  },
-);
+signInWithCredential(authInstance, emailCredential).then((credential: UserCredential) => {
+  console.log(credential.user.email);
+});
 
-signInWithCustomToken(authInstance, 'custom-token').then(
-  (credential: FirebaseAuthTypes.UserCredential) => {
-    console.log(credential.user.uid);
-  },
-);
+signInWithCustomToken(authInstance, 'custom-token').then((credential: UserCredential) => {
+  console.log(credential.user.uid);
+});
 
 signInWithEmailLink(authInstance, 'test@example.com', 'email-link').then(
-  (credential: FirebaseAuthTypes.UserCredential) => {
+  (credential: UserCredential) => {
     console.log(credential.user.email);
   },
 );
 
-signInWithPhoneNumber(authInstance, '+1234567890').then(
-  (result: FirebaseAuthTypes.ConfirmationResult) => {
-    console.log(result.verificationId);
-  },
-);
+signInWithPhoneNumber(authInstance, '+1234567890').then((result: ConfirmationResult) => {
+  console.log(result.verificationId);
+});
 
 signOut(authInstance).then(() => {
   console.log('Signed out');
 });
 
 createUserWithEmailAndPassword(authInstance, 'new@example.com', 'password123').then(
-  (credential: FirebaseAuthTypes.UserCredential) => {
+  (credential: UserCredential) => {
     console.log(credential.user.email);
   },
 );
