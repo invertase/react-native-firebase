@@ -40,6 +40,14 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     ParsedPipelineRequest value;
   }
 
+  private static final class ParsedExpressionNodeBox {
+    ParsedExpressionNode value;
+  }
+
+  private static final class ParsedValueNodeBox {
+    ParsedValueNode value;
+  }
+
   private interface PendingParsedStage {}
 
   private static final class ReadyParsedStage implements PendingParsedStage {
@@ -59,6 +67,20 @@ final class ReactNativeFirebaseFirestorePipelineParser {
   }
 
   private abstract static class PipelineParseFrame {}
+
+  private abstract static class ExpressionValueParseFrame {}
+
+  private static final class PendingValueEntry {
+    final String key;
+    final Object value;
+    final ParsedValueNodeBox box;
+
+    PendingValueEntry(String key, Object value, ParsedValueNodeBox box) {
+      this.key = key;
+      this.value = value;
+      this.box = box;
+    }
+  }
 
   private static final class EnterPipelineParseFrame extends PipelineParseFrame {
     final Map<String, Object> pipeline;
@@ -88,6 +110,140 @@ final class ReactNativeFirebaseFirestorePipelineParser {
       this.stages = stages;
       this.options = options;
       this.box = box;
+    }
+  }
+
+  private static final class ExpressionEnterFrame extends ExpressionValueParseFrame {
+    final Object value;
+    final ParsedExpressionNodeBox box;
+    final String fieldName;
+
+    ExpressionEnterFrame(Object value, ParsedExpressionNodeBox box, String fieldName) {
+      this.value = value;
+      this.box = box;
+      this.fieldName = fieldName;
+    }
+  }
+
+  private static final class ExpressionValueExitFrame extends ExpressionValueParseFrame {
+    final ParsedValueNodeBox valueBox;
+    final ParsedExpressionNodeBox expressionBox;
+    final String fieldName;
+
+    ExpressionValueExitFrame(
+        ParsedValueNodeBox valueBox, ParsedExpressionNodeBox expressionBox, String fieldName) {
+      this.valueBox = valueBox;
+      this.expressionBox = expressionBox;
+      this.fieldName = fieldName;
+    }
+  }
+
+  private static final class ExpressionConstantExitFrame extends ExpressionValueParseFrame {
+    final ParsedExpressionNodeBox expressionBox;
+    final ParsedValueNodeBox valueBox;
+    final String fieldName;
+
+    ExpressionConstantExitFrame(
+        ParsedExpressionNodeBox expressionBox, ParsedValueNodeBox valueBox, String fieldName) {
+      this.expressionBox = expressionBox;
+      this.valueBox = valueBox;
+      this.fieldName = fieldName;
+    }
+  }
+
+  private static final class ExpressionFunctionExitFrame extends ExpressionValueParseFrame {
+    final ParsedExpressionNodeBox box;
+    final String name;
+    final List<ParsedValueNodeBox> argBoxes;
+    final String fieldName;
+
+    ExpressionFunctionExitFrame(
+        ParsedExpressionNodeBox box,
+        String name,
+        List<ParsedValueNodeBox> argBoxes,
+        String fieldName) {
+      this.box = box;
+      this.name = name;
+      this.argBoxes = argBoxes;
+      this.fieldName = fieldName;
+    }
+  }
+
+  private static final class ExpressionOperatorLogicalExitFrame extends ExpressionValueParseFrame {
+    final ParsedExpressionNodeBox box;
+    final String normalizedOperator;
+    final List<ParsedExpressionNodeBox> queryBoxes;
+    final String fieldName;
+
+    ExpressionOperatorLogicalExitFrame(
+        ParsedExpressionNodeBox box,
+        String normalizedOperator,
+        List<ParsedExpressionNodeBox> queryBoxes,
+        String fieldName) {
+      this.box = box;
+      this.normalizedOperator = normalizedOperator;
+      this.queryBoxes = queryBoxes;
+      this.fieldName = fieldName;
+    }
+  }
+
+  private static final class ExpressionOperatorBinaryExitFrame extends ExpressionValueParseFrame {
+    final ParsedExpressionNodeBox box;
+    final String normalizedOperator;
+    final ParsedExpressionNodeBox fieldBox;
+    final ParsedValueNodeBox valueBox;
+    final String fieldName;
+
+    ExpressionOperatorBinaryExitFrame(
+        ParsedExpressionNodeBox box,
+        String normalizedOperator,
+        ParsedExpressionNodeBox fieldBox,
+        ParsedValueNodeBox valueBox,
+        String fieldName) {
+      this.box = box;
+      this.normalizedOperator = normalizedOperator;
+      this.fieldBox = fieldBox;
+      this.valueBox = valueBox;
+      this.fieldName = fieldName;
+    }
+  }
+
+  private static final class ValueEnterFrame extends ExpressionValueParseFrame {
+    final Object value;
+    final ParsedValueNodeBox box;
+    final String fieldName;
+
+    ValueEnterFrame(Object value, ParsedValueNodeBox box, String fieldName) {
+      this.value = value;
+      this.box = box;
+      this.fieldName = fieldName;
+    }
+  }
+
+  private static final class ValueListExitFrame extends ExpressionValueParseFrame {
+    final ParsedValueNodeBox box;
+    final List<ParsedValueNodeBox> childBoxes;
+    final String fieldName;
+
+    ValueListExitFrame(ParsedValueNodeBox box, List<ParsedValueNodeBox> childBoxes, String fieldName) {
+      this.box = box;
+      this.childBoxes = childBoxes;
+      this.fieldName = fieldName;
+    }
+  }
+
+  private static final class ValueMapExitFrame extends ExpressionValueParseFrame {
+    final ParsedValueNodeBox box;
+    final List<Map.Entry<String, ParsedValueNodeBox>> entries;
+    final String fieldName;
+
+    ValueMapExitFrame(
+        ParsedValueNodeBox box,
+        List<Map.Entry<String, ParsedValueNodeBox>> entries,
+        String fieldName) {
+      this.box = box;
+      this.entries = entries;
+      this.fieldName = fieldName;
     }
   }
 
@@ -591,93 +747,13 @@ final class ReactNativeFirebaseFirestorePipelineParser {
 
   private static ParsedExpressionNode parseExpressionNode(Object value, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    if (value instanceof String) {
-      return new ParsedFieldExpressionNode((String) value);
-    }
-
-    if (value instanceof Map) {
-      Map<?, ?> map = (Map<?, ?>) value;
-      if (map.containsKey("expr")) {
-        return parseExpressionNode(map.get("expr"), fieldName + ".expr");
-      }
-      if (map.containsKey("expression")) {
-        return parseExpressionNode(map.get("expression"), fieldName + ".expression");
-      }
-
-      Object operatorValue = map.get("operator");
-      if (operatorValue instanceof String) {
-        return parseOperatorExpressionNode(map, (String) operatorValue, fieldName);
-      }
-
-      Object exprType = map.get("exprType");
-      if (exprType instanceof String) {
-        String normalizedType = ((String) exprType).toLowerCase(java.util.Locale.ROOT);
-        if ("field".equals(normalizedType)) {
-          return new ParsedFieldExpressionNode(coerceFieldPath(value, fieldName));
-        }
-        if ("constant".equals(normalizedType)) {
-          return new ParsedConstantExpressionNode(
-              parseValueNode(map.get("value"), fieldName + ".value"));
-        }
-      }
-
-      if (map.containsKey("name")) {
-        Object nameValue = map.get("name");
-        if (!(nameValue instanceof String) || ((String) nameValue).isEmpty()) {
-          throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-              "pipelineExecute() expected " + fieldName + ".name to be a non-empty string.");
-        }
-        return new ParsedFunctionExpressionNode(
-            (String) nameValue, parseArgumentValueNodes(map.get("args"), fieldName + ".args"));
-      }
-
-      if (map.containsKey("fieldPath")
-          || map.containsKey("path")
-          || map.containsKey("segments")
-          || map.containsKey("_segments")) {
-        return new ParsedFieldExpressionNode(coerceFieldPath(value, fieldName));
-      }
-    }
-
-    return new ParsedConstantExpressionNode(parseValueNode(value, fieldName));
-  }
-
-  private static ParsedExpressionNode parseOperatorExpressionNode(
-      Map<?, ?> map, String operator, String fieldName)
-      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    String normalizedOperator = operator.toUpperCase(java.util.Locale.ROOT);
-    if ("AND".equals(normalizedOperator) || "OR".equals(normalizedOperator)) {
-      Object queriesValue = map.get("queries");
-      if (!(queriesValue instanceof List) || ((List<?>) queriesValue).isEmpty()) {
-        throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-            "pipelineExecute() expected " + fieldName + ".queries to contain boolean expressions.");
-      }
-      List<?> queries = (List<?>) queriesValue;
-      java.util.List<ParsedValueNode> args = new java.util.ArrayList<>(queries.size());
-      for (int i = 0; i < queries.size(); i++) {
-        args.add(
-            new ParsedExpressionValueNode(
-                parseExpressionNode(queries.get(i), fieldName + ".queries[" + i + "]")));
-      }
-      return new ParsedFunctionExpressionNode(
-          "AND".equals(normalizedOperator) ? "and" : "or", args);
-    }
-
-    Object fieldValue = map.get("fieldPath") != null ? map.get("fieldPath") : map.get("field");
-    if (fieldValue == null) {
+    ParsedExpressionNodeBox rootBox = new ParsedExpressionNodeBox();
+    parseExpressionValueTree(new ExpressionEnterFrame(value, rootBox, fieldName));
+    if (rootBox.value == null) {
       throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-          "pipelineExecute() expected " + fieldName + ".fieldPath to be provided.");
+          "pipelineExecute() expected " + fieldName + " to be provided.");
     }
-
-    java.util.List<ParsedValueNode> args = new java.util.ArrayList<>(2);
-    args.add(
-        new ParsedExpressionValueNode(parseExpressionNode(fieldValue, fieldName + ".fieldPath")));
-    Object rightValue =
-        map.containsKey("value")
-            ? map.get("value")
-            : map.containsKey("right") ? map.get("right") : map.get("operand");
-    args.add(parseValueNode(rightValue, fieldName + ".value"));
-    return new ParsedFunctionExpressionNode(mapOperatorToFunction(normalizedOperator), args);
+    return rootBox.value;
   }
 
   private static java.util.List<ParsedValueNode> parseArgumentValueNodes(
@@ -700,33 +776,13 @@ final class ReactNativeFirebaseFirestorePipelineParser {
 
   private static ParsedValueNode parseValueNode(Object value, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    if (value instanceof Map) {
-      Map<?, ?> map = (Map<?, ?>) value;
-      if (isExpressionLike(map)) {
-        return new ParsedExpressionValueNode(parseExpressionNode(value, fieldName));
-      }
-
-      Map<String, ParsedValueNode> entries = new java.util.LinkedHashMap<>();
-      for (Map.Entry<?, ?> entry : map.entrySet()) {
-        if (entry.getKey() instanceof String) {
-          entries.put(
-              (String) entry.getKey(),
-              parseValueNode(entry.getValue(), fieldName + "." + entry.getKey()));
-        }
-      }
-      return new ParsedMapValueNode(entries);
+    ParsedValueNodeBox rootBox = new ParsedValueNodeBox();
+    parseExpressionValueTree(new ValueEnterFrame(value, rootBox, fieldName));
+    if (rootBox.value == null) {
+      throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+          "pipelineExecute() expected " + fieldName + " to be provided.");
     }
-
-    if (value instanceof List) {
-      List<?> list = (List<?>) value;
-      java.util.List<ParsedValueNode> entries = new java.util.ArrayList<>(list.size());
-      for (int i = 0; i < list.size(); i++) {
-        entries.add(parseValueNode(list.get(i), fieldName + "[" + i + "]"));
-      }
-      return new ParsedListValueNode(entries);
-    }
-
-    return new ParsedPrimitiveValueNode(value);
+    return rootBox.value;
   }
 
   private static boolean isExpressionLike(Map<?, ?> map) {
@@ -744,47 +800,359 @@ final class ReactNativeFirebaseFirestorePipelineParser {
 
   private static String coerceFieldPath(Object value, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    if (value instanceof String) {
-      String fieldPath = (String) value;
-      if (!fieldPath.isEmpty()) {
-        return fieldPath;
+    Object currentValue = value;
+
+    while (true) {
+      if (currentValue instanceof String) {
+        String fieldPath = (String) currentValue;
+        if (!fieldPath.isEmpty()) {
+          return fieldPath;
+        }
       }
+
+      if (currentValue instanceof Map) {
+        Map<?, ?> map = (Map<?, ?>) currentValue;
+        Object path = firstNonNull(map.get("path"), map.get("fieldPath"));
+        if (path != null && !(path instanceof Map)) {
+          currentValue = path;
+          continue;
+        }
+
+        Object segments = map.get("segments");
+        if (!(segments instanceof List)) {
+          segments = map.get("_segments");
+        }
+        if (segments instanceof List) {
+          List<?> list = (List<?>) segments;
+          StringBuilder builder = new StringBuilder();
+          for (int i = 0; i < list.size(); i++) {
+            Object segment = list.get(i);
+            if (!(segment instanceof String)) {
+              throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+                  "pipelineExecute() expected " + fieldName + " segment values to be strings.");
+            }
+            if (i > 0) {
+              builder.append('.');
+            }
+            builder.append((String) segment);
+          }
+          String pathValue = builder.toString();
+          if (!pathValue.isEmpty()) {
+            return pathValue;
+          }
+        }
+      }
+
+      throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+          "pipelineExecute() expected " + fieldName + " to resolve to a field path string.");
     }
+  }
 
-    if (value instanceof Map) {
-      Map<?, ?> map = (Map<?, ?>) value;
-      Object path = firstNonNull(map.get("path"), map.get("fieldPath"));
-      if (path != null && !(path instanceof Map)) {
-        return coerceFieldPath(path, fieldName);
+  private static void parseExpressionValueTree(ExpressionValueParseFrame initialFrame)
+      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
+    ArrayDeque<ExpressionValueParseFrame> stack = new ArrayDeque<>();
+    stack.push(initialFrame);
+
+    while (!stack.isEmpty()) {
+      ExpressionValueParseFrame frame = stack.pop();
+      if (frame instanceof ExpressionEnterFrame) {
+        ExpressionEnterFrame enterFrame = (ExpressionEnterFrame) frame;
+        Object value = enterFrame.value;
+        String fieldName = enterFrame.fieldName;
+
+        if (value instanceof String) {
+          enterFrame.box.value = new ParsedFieldExpressionNode((String) value);
+          continue;
+        }
+
+        if (value instanceof Map) {
+          Map<?, ?> map = (Map<?, ?>) value;
+          if (map.containsKey("expr")) {
+            stack.push(
+                new ExpressionEnterFrame(
+                    map.get("expr"), enterFrame.box, fieldName + ".expr"));
+            continue;
+          }
+          if (map.containsKey("expression")) {
+            stack.push(
+                new ExpressionEnterFrame(
+                    map.get("expression"), enterFrame.box, fieldName + ".expression"));
+            continue;
+          }
+
+          Object operatorValue = map.get("operator");
+          if (operatorValue instanceof String) {
+            String normalizedOperator =
+                ((String) operatorValue).toUpperCase(java.util.Locale.ROOT);
+            if ("AND".equals(normalizedOperator) || "OR".equals(normalizedOperator)) {
+              Object queriesValue = map.get("queries");
+              if (!(queriesValue instanceof List) || ((List<?>) queriesValue).isEmpty()) {
+                throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+                    "pipelineExecute() expected "
+                        + fieldName
+                        + ".queries to contain boolean expressions.");
+              }
+              List<?> queries = (List<?>) queriesValue;
+              List<ParsedExpressionNodeBox> queryBoxes =
+                  new java.util.ArrayList<>(queries.size());
+              for (int i = 0; i < queries.size(); i++) {
+                queryBoxes.add(new ParsedExpressionNodeBox());
+              }
+              stack.push(
+                  new ExpressionOperatorLogicalExitFrame(
+                      enterFrame.box, normalizedOperator, queryBoxes, fieldName));
+              for (int i = queries.size() - 1; i >= 0; i--) {
+                stack.push(
+                    new ExpressionEnterFrame(
+                        queries.get(i), queryBoxes.get(i), fieldName + ".queries[" + i + "]"));
+              }
+              continue;
+            }
+
+            Object fieldValue = map.get("fieldPath") != null ? map.get("fieldPath") : map.get("field");
+            if (fieldValue == null) {
+              throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+                  "pipelineExecute() expected " + fieldName + ".fieldPath to be provided.");
+            }
+
+            Object rightValue =
+                map.containsKey("value")
+                    ? map.get("value")
+                    : map.containsKey("right") ? map.get("right") : map.get("operand");
+            ParsedExpressionNodeBox fieldBox = new ParsedExpressionNodeBox();
+            ParsedValueNodeBox valueBox = new ParsedValueNodeBox();
+            stack.push(
+                new ExpressionOperatorBinaryExitFrame(
+                    enterFrame.box, normalizedOperator, fieldBox, valueBox, fieldName));
+            stack.push(new ValueEnterFrame(rightValue, valueBox, fieldName + ".value"));
+            stack.push(new ExpressionEnterFrame(fieldValue, fieldBox, fieldName + ".fieldPath"));
+            continue;
+          }
+
+          Object exprType = map.get("exprType");
+          if (exprType instanceof String) {
+            String normalizedType = ((String) exprType).toLowerCase(java.util.Locale.ROOT);
+            if ("field".equals(normalizedType)) {
+              enterFrame.box.value = new ParsedFieldExpressionNode(coerceFieldPath(value, fieldName));
+              continue;
+            }
+            if ("constant".equals(normalizedType)) {
+              ParsedValueNodeBox valueBox = new ParsedValueNodeBox();
+              stack.push(new ExpressionConstantExitFrame(enterFrame.box, valueBox, fieldName));
+              stack.push(new ValueEnterFrame(map.get("value"), valueBox, fieldName + ".value"));
+              continue;
+            }
+          }
+
+          if (map.containsKey("name")) {
+            Object nameValue = map.get("name");
+            if (!(nameValue instanceof String) || ((String) nameValue).isEmpty()) {
+              throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+                  "pipelineExecute() expected " + fieldName + ".name to be a non-empty string.");
+            }
+
+            List<Object> rawArgs = new java.util.ArrayList<>();
+            Object argsValue = map.get("args");
+            if (argsValue instanceof List) {
+              for (Object rawArg : (List<?>) argsValue) {
+                rawArgs.add(rawArg);
+              }
+            } else if (argsValue != null) {
+              rawArgs.add(argsValue);
+            }
+
+            List<ParsedValueNodeBox> argBoxes = new java.util.ArrayList<>(rawArgs.size());
+            for (int i = 0; i < rawArgs.size(); i++) {
+              argBoxes.add(new ParsedValueNodeBox());
+            }
+            stack.push(
+                new ExpressionFunctionExitFrame(
+                    enterFrame.box, (String) nameValue, argBoxes, fieldName));
+            for (int i = rawArgs.size() - 1; i >= 0; i--) {
+              stack.push(
+                  new ValueEnterFrame(rawArgs.get(i), argBoxes.get(i), fieldName + ".args[" + i + "]"));
+            }
+            continue;
+          }
+
+          if (map.containsKey("fieldPath")
+              || map.containsKey("path")
+              || map.containsKey("segments")
+              || map.containsKey("_segments")) {
+            enterFrame.box.value = new ParsedFieldExpressionNode(coerceFieldPath(value, fieldName));
+            continue;
+          }
+        }
+
+        ParsedValueNodeBox valueBox = new ParsedValueNodeBox();
+        stack.push(new ExpressionConstantExitFrame(enterFrame.box, valueBox, fieldName));
+        stack.push(new ValueEnterFrame(value, valueBox, fieldName));
+        continue;
       }
 
-      Object segments = map.get("segments");
-      if (!(segments instanceof List)) {
-        segments = map.get("_segments");
+      if (frame instanceof ExpressionValueExitFrame) {
+        ExpressionValueExitFrame exitFrame = (ExpressionValueExitFrame) frame;
+        if (exitFrame.expressionBox.value == null) {
+          throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+              "pipelineExecute() expected " + exitFrame.fieldName + " to be provided.");
+        }
+        exitFrame.valueBox.value = new ParsedExpressionValueNode(exitFrame.expressionBox.value);
+        continue;
       }
-      if (segments instanceof List) {
-        List<?> list = (List<?>) segments;
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < list.size(); i++) {
-          Object segment = list.get(i);
-          if (!(segment instanceof String)) {
+
+      if (frame instanceof ExpressionConstantExitFrame) {
+        ExpressionConstantExitFrame exitFrame = (ExpressionConstantExitFrame) frame;
+        if (exitFrame.valueBox.value == null) {
+          throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+              "pipelineExecute() expected " + exitFrame.fieldName + " to be provided.");
+        }
+        exitFrame.expressionBox.value = new ParsedConstantExpressionNode(exitFrame.valueBox.value);
+        continue;
+      }
+
+      if (frame instanceof ExpressionFunctionExitFrame) {
+        ExpressionFunctionExitFrame exitFrame = (ExpressionFunctionExitFrame) frame;
+        List<ParsedValueNode> args = new java.util.ArrayList<>(exitFrame.argBoxes.size());
+        for (int i = 0; i < exitFrame.argBoxes.size(); i++) {
+          ParsedValueNode value = exitFrame.argBoxes.get(i).value;
+          if (value == null) {
             throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-                "pipelineExecute() expected " + fieldName + " segment values to be strings.");
+                "pipelineExecute() expected "
+                    + exitFrame.fieldName
+                    + ".args["
+                    + i
+                    + "] to be provided.");
           }
-          if (i > 0) {
-            builder.append('.');
-          }
-          builder.append((String) segment);
+          args.add(value);
         }
-        String pathValue = builder.toString();
-        if (!pathValue.isEmpty()) {
-          return pathValue;
-        }
+        exitFrame.box.value = new ParsedFunctionExpressionNode(exitFrame.name, args);
+        continue;
       }
-    }
 
-    throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-        "pipelineExecute() expected " + fieldName + " to resolve to a field path string.");
+      if (frame instanceof ExpressionOperatorLogicalExitFrame) {
+        ExpressionOperatorLogicalExitFrame exitFrame = (ExpressionOperatorLogicalExitFrame) frame;
+        List<ParsedValueNode> args = new java.util.ArrayList<>(exitFrame.queryBoxes.size());
+        for (int i = 0; i < exitFrame.queryBoxes.size(); i++) {
+          ParsedExpressionNode expression = exitFrame.queryBoxes.get(i).value;
+          if (expression == null) {
+            throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+                "pipelineExecute() expected "
+                    + exitFrame.fieldName
+                    + ".queries["
+                    + i
+                    + "] to be provided.");
+          }
+          args.add(new ParsedExpressionValueNode(expression));
+        }
+        exitFrame.box.value =
+            new ParsedFunctionExpressionNode(
+                "AND".equals(exitFrame.normalizedOperator) ? "and" : "or", args);
+        continue;
+      }
+
+      if (frame instanceof ExpressionOperatorBinaryExitFrame) {
+        ExpressionOperatorBinaryExitFrame exitFrame = (ExpressionOperatorBinaryExitFrame) frame;
+        if (exitFrame.fieldBox.value == null) {
+          throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+              "pipelineExecute() expected " + exitFrame.fieldName + ".fieldPath to be provided.");
+        }
+        if (exitFrame.valueBox.value == null) {
+          throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+              "pipelineExecute() expected " + exitFrame.fieldName + ".value to be provided.");
+        }
+        List<ParsedValueNode> args = new java.util.ArrayList<>(2);
+        args.add(new ParsedExpressionValueNode(exitFrame.fieldBox.value));
+        args.add(exitFrame.valueBox.value);
+        exitFrame.box.value =
+            new ParsedFunctionExpressionNode(
+                mapOperatorToFunction(exitFrame.normalizedOperator), args);
+        continue;
+      }
+
+      if (frame instanceof ValueEnterFrame) {
+        ValueEnterFrame enterFrame = (ValueEnterFrame) frame;
+        Object value = enterFrame.value;
+        String fieldName = enterFrame.fieldName;
+
+        if (value instanceof Map) {
+          Map<?, ?> map = (Map<?, ?>) value;
+          if (isExpressionLike(map)) {
+            ParsedExpressionNodeBox expressionBox = new ParsedExpressionNodeBox();
+            stack.push(new ExpressionValueExitFrame(enterFrame.box, expressionBox, fieldName));
+            stack.push(new ExpressionEnterFrame(value, expressionBox, fieldName));
+            continue;
+          }
+
+          List<PendingValueEntry> pendingEntries = new java.util.ArrayList<>();
+          List<Map.Entry<String, ParsedValueNodeBox>> exitEntries = new java.util.ArrayList<>();
+          for (Map.Entry<?, ?> entry : map.entrySet()) {
+            if (entry.getKey() instanceof String) {
+              ParsedValueNodeBox childBox = new ParsedValueNodeBox();
+              String key = (String) entry.getKey();
+              pendingEntries.add(new PendingValueEntry(key, entry.getValue(), childBox));
+              exitEntries.add(new java.util.AbstractMap.SimpleEntry<>(key, childBox));
+            }
+          }
+          stack.push(new ValueMapExitFrame(enterFrame.box, exitEntries, fieldName));
+          for (int i = pendingEntries.size() - 1; i >= 0; i--) {
+            PendingValueEntry entry = pendingEntries.get(i);
+            stack.push(
+                new ValueEnterFrame(entry.value, entry.box, fieldName + "." + entry.key));
+          }
+          continue;
+        }
+
+        if (value instanceof List) {
+          List<?> list = (List<?>) value;
+          List<ParsedValueNodeBox> childBoxes = new java.util.ArrayList<>(list.size());
+          for (int i = 0; i < list.size(); i++) {
+            childBoxes.add(new ParsedValueNodeBox());
+          }
+          stack.push(new ValueListExitFrame(enterFrame.box, childBoxes, fieldName));
+          for (int i = list.size() - 1; i >= 0; i--) {
+            stack.push(new ValueEnterFrame(list.get(i), childBoxes.get(i), fieldName + "[" + i + "]"));
+          }
+          continue;
+        }
+
+        enterFrame.box.value = new ParsedPrimitiveValueNode(value);
+        continue;
+      }
+
+      if (frame instanceof ValueListExitFrame) {
+        ValueListExitFrame exitFrame = (ValueListExitFrame) frame;
+        List<ParsedValueNode> values = new java.util.ArrayList<>(exitFrame.childBoxes.size());
+        for (int i = 0; i < exitFrame.childBoxes.size(); i++) {
+          ParsedValueNode value = exitFrame.childBoxes.get(i).value;
+          if (value == null) {
+            throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+                "pipelineExecute() expected "
+                    + exitFrame.fieldName
+                    + "["
+                    + i
+                    + "] to be provided.");
+          }
+          values.add(value);
+        }
+        exitFrame.box.value = new ParsedListValueNode(values);
+        continue;
+      }
+
+      ValueMapExitFrame exitFrame = (ValueMapExitFrame) frame;
+      Map<String, ParsedValueNode> values = new java.util.LinkedHashMap<>();
+      for (Map.Entry<String, ParsedValueNodeBox> entry : exitFrame.entries) {
+        if (entry.getValue().value == null) {
+          throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+              "pipelineExecute() expected "
+                  + exitFrame.fieldName
+                  + "."
+                  + entry.getKey()
+                  + " to be provided.");
+        }
+        values.put(entry.getKey(), entry.getValue().value);
+      }
+      exitFrame.box.value = new ParsedMapValueNode(values);
+    }
   }
 
   private static String firstString(Object... values) {
