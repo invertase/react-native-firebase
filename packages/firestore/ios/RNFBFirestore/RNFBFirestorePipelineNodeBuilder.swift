@@ -58,6 +58,22 @@ final class RNFBFirestorePipelineNodeBuilder {
     )
   }
 
+  private enum ConstantResolutionFrame {
+    case enter(
+      Any,
+      String,
+      SerializedValueBox
+    )
+    case exitList(
+      SerializedValueBox,
+      [SerializedValueBox]
+    )
+    case exitMap(
+      SerializedValueBox,
+      [(String, SerializedValueBox)]
+    )
+  }
+
   func coerceExpression(
     _ value: RNFBFirestoreParsedExpressionNode,
     fieldName: String
@@ -168,58 +184,72 @@ final class RNFBFirestorePipelineNodeBuilder {
   }
 
   func coerceExpression(_ value: Any, fieldName: String) throws -> ExprBridge {
-    if let stringValue = value as? String {
-      return FieldBridge(name: stringValue)
-    }
+    var currentValue: Any = value
+    var currentFieldName = fieldName
 
-    if let expression = value as? ExprBridge {
-      return expression
-    }
+    while true {
+      if let stringValue = currentValue as? String {
+        return FieldBridge(name: stringValue)
+      }
 
-    if value is NSNull || value is NSNumber || value is Date || value is Timestamp ||
-      value is GeoPoint || value is DocumentReference || value is VectorValue {
-      return ConstantBridge(value)
-    }
+      if let expression = currentValue as? ExprBridge {
+        return expression
+      }
 
-    guard let map = value as? [String: Any] else {
-      throw PipelineValidationError("pipelineExecute() could not convert \(fieldName) into a pipeline expression.")
-    }
+      if currentValue is NSNull || currentValue is NSNumber || currentValue is Date || currentValue is Timestamp ||
+        currentValue is GeoPoint || currentValue is DocumentReference || currentValue is VectorValue {
+        return ConstantBridge(currentValue)
+      }
 
-    if let nested = map["expr"] {
-      return try coerceExpression(nested, fieldName: "\(fieldName).expr")
-    }
-    if let nested = map["expression"] {
-      return try coerceExpression(nested, fieldName: "\(fieldName).expression")
-    }
+      guard let map = currentValue as? [String: Any] else {
+        throw PipelineValidationError("pipelineExecute() could not convert \(currentFieldName) into a pipeline expression.")
+      }
 
-    if let operatorName = map["operator"] as? String {
-      return try coerceBooleanOperatorExpression(map: map, operatorName: operatorName, fieldName: fieldName)
-    }
-
-    if let name = map["name"] as? String {
-      let args = (map["args"] as? [Any]) ?? []
-      return try coerceFunctionExpression(name: name, args: args, fieldName: fieldName)
-    }
-
-    if map["fieldPath"] != nil || map["path"] != nil || map["segments"] != nil || map["_segments"] != nil {
-      return FieldBridge(name: try coerceFieldPath(map, fieldName: fieldName))
-    }
-
-    if let kind = (map["exprType"] as? String)?.lowercased(), kind == "constant" {
-      return ConstantBridge(map["value"] as Any)
-    }
-
-    throw PipelineValidationError("pipelineExecute() could not convert \(fieldName) into a pipeline expression.")
-  }
-
-  func coerceBooleanExpression(_ value: Any, fieldName: String) throws -> ExprBridge {
-    if let map = value as? [String: Any] {
-      if let nested = map["condition"] {
-        return try coerceBooleanExpression(nested, fieldName: "\(fieldName).condition")
+      if let nested = map["expr"] {
+        currentValue = nested
+        currentFieldName = "\(currentFieldName).expr"
+        continue
+      }
+      if let nested = map["expression"] {
+        currentValue = nested
+        currentFieldName = "\(currentFieldName).expression"
+        continue
       }
 
       if let operatorName = map["operator"] as? String {
-        return try coerceBooleanOperatorExpression(map: map, operatorName: operatorName, fieldName: fieldName)
+        return try coerceBooleanOperatorExpression(map: map, operatorName: operatorName, fieldName: currentFieldName)
+      }
+
+      if let name = map["name"] as? String {
+        let args = (map["args"] as? [Any]) ?? []
+        return try coerceFunctionExpression(name: name, args: args, fieldName: currentFieldName)
+      }
+
+      if map["fieldPath"] != nil || map["path"] != nil || map["segments"] != nil || map["_segments"] != nil {
+        return FieldBridge(name: try coerceFieldPath(map, fieldName: currentFieldName))
+      }
+
+      if let kind = (map["exprType"] as? String)?.lowercased(), kind == "constant" {
+        return ConstantBridge(map["value"] as Any)
+      }
+
+      throw PipelineValidationError("pipelineExecute() could not convert \(currentFieldName) into a pipeline expression.")
+    }
+  }
+
+  func coerceBooleanExpression(_ value: Any, fieldName: String) throws -> ExprBridge {
+    var currentValue: Any = value
+    var currentFieldName = fieldName
+
+    while let map = currentValue as? [String: Any] {
+      if let nested = map["condition"] {
+        currentValue = nested
+        currentFieldName = "\(currentFieldName).condition"
+        continue
+      }
+
+      if let operatorName = map["operator"] as? String {
+        return try coerceBooleanOperatorExpression(map: map, operatorName: operatorName, fieldName: currentFieldName)
       }
 
       if let name = map["name"] as? String {
@@ -231,11 +261,11 @@ final class RNFBFirestorePipelineNodeBuilder {
         } else {
           rawArgs = []
         }
-        return try coerceBooleanFunctionExpression(name: name, args: rawArgs, fieldName: fieldName)
+        return try coerceBooleanFunctionExpression(name: name, args: rawArgs, fieldName: currentFieldName)
       }
     }
 
-    return try coerceExpression(value, fieldName: fieldName)
+    return try coerceExpression(currentValue, fieldName: currentFieldName)
   }
 
   func coerceAggregateFunction(
@@ -352,35 +382,40 @@ final class RNFBFirestorePipelineNodeBuilder {
   }
 
   func coerceFieldPath(_ value: Any, fieldName: String) throws -> String {
-    if let string = value as? String, !string.isEmpty {
-      return string
-    }
+    var currentValue: Any = value
 
-    if let map = value as? [String: Any] {
-      if let path = map["path"] as? String, !path.isEmpty {
-        return path
+    while true {
+      if let string = currentValue as? String, !string.isEmpty {
+        return string
       }
 
-      if let fieldPath = map["fieldPath"], !(fieldPath is [String: Any]) {
-        return try coerceFieldPath(fieldPath, fieldName: fieldName)
-      }
-
-      let segments = (map["segments"] as? [Any]) ?? (map["_segments"] as? [Any]) ?? []
-      if !segments.isEmpty {
-        let stringSegments = try segments.map { segment -> String in
-          guard let value = segment as? String else {
-            throw PipelineValidationError("pipelineExecute() expected \(fieldName) segment values to be strings.")
-          }
-          return value
-        }
-        let path = stringSegments.joined(separator: ".")
-        if !path.isEmpty {
+      if let map = currentValue as? [String: Any] {
+        if let path = map["path"] as? String, !path.isEmpty {
           return path
         }
-      }
-    }
 
-    throw PipelineValidationError("pipelineExecute() expected \(fieldName) to resolve to a field path string.")
+        if let fieldPath = map["fieldPath"], !(fieldPath is [String: Any]) {
+          currentValue = fieldPath
+          continue
+        }
+
+        let segments = (map["segments"] as? [Any]) ?? (map["_segments"] as? [Any]) ?? []
+        if !segments.isEmpty {
+          let stringSegments = try segments.map { segment -> String in
+            guard let value = segment as? String else {
+              throw PipelineValidationError("pipelineExecute() expected \(fieldName) segment values to be strings.")
+            }
+            return value
+          }
+          let path = stringSegments.joined(separator: ".")
+          if !path.isEmpty {
+            return path
+          }
+        }
+      }
+
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to resolve to a field path string.")
+    }
   }
 
   func coerceStringArray(
@@ -633,64 +668,111 @@ final class RNFBFirestorePipelineNodeBuilder {
   }
 
   private func coerceVectorExpressionValue(_ value: Any, fieldName: String) throws -> ExprBridge {
-    if let map = value as? [String: Any], let constantValue = try unwrapConstantValue(map, fieldName: fieldName) {
-      return try coerceVectorExpressionValue(constantValue, fieldName: fieldName)
+    var currentValue: Any = value
+
+    while let map = currentValue as? [String: Any] {
+      if let constantValue = try unwrapConstantValue(map, fieldName: fieldName) {
+        currentValue = constantValue
+        continue
+      }
+
+      if map["values"] != nil {
+        let vector = try coerceVector(map["values"], fieldName: fieldName)
+        return ConstantBridge(VectorValue(__array: vector.map { NSNumber(value: $0) }))
+      }
+
+      break
     }
 
-    if let map = value as? [String: Any], map["values"] != nil {
-      let vector = try coerceVector(map["values"], fieldName: fieldName)
+    if currentValue is [Any] {
+      let vector = try coerceVector(currentValue, fieldName: fieldName)
       return ConstantBridge(VectorValue(__array: vector.map { NSNumber(value: $0) }))
     }
 
-    if value is [Any] {
-      let vector = try coerceVector(value, fieldName: fieldName)
-      return ConstantBridge(VectorValue(__array: vector.map { NSNumber(value: $0) }))
-    }
-
-    return try coerceExpressionValue(value, fieldName: fieldName)
+    return try coerceExpressionValue(currentValue, fieldName: fieldName)
   }
 
   private func resolveConstantValue(_ value: Any, fieldName: String) throws -> Any {
-    if let map = value as? [String: Any] {
-      if let constantValue = try unwrapConstantValue(map, fieldName: fieldName) {
-        return try resolveConstantValue(constantValue, fieldName: fieldName)
-      }
+    let rootBox = SerializedValueBox()
+    var stack: [ConstantResolutionFrame] = [
+      .enter(value, fieldName, rootBox),
+    ]
 
-      if isSerializedExpressionLike(map) {
-        return try coerceExpression(map, fieldName: fieldName)
-      }
+    while let frame = stack.popLast() {
+      switch frame {
+      case let .enter(value, currentFieldName, box):
+        var currentValue: Any = value
 
-      var output: [String: Any] = [:]
-      for (key, nestedValue) in map {
-        output[key] = try resolveConstantValue(nestedValue, fieldName: "\(fieldName).\(key)")
+        while let map = currentValue as? [String: Any],
+              let constantValue = try unwrapConstantValue(map, fieldName: currentFieldName) {
+          currentValue = constantValue
+        }
+
+        if let map = currentValue as? [String: Any] {
+          if isSerializedExpressionLike(map) {
+            box.value = try coerceExpression(map, fieldName: currentFieldName)
+            continue
+          }
+
+          let entries = map.map { (key: $0.key, box: SerializedValueBox(), value: $0.value) }
+          stack.append(.exitMap(box, entries.map { ($0.key, $0.box) }))
+          for entry in entries.reversed() {
+            stack.append(.enter(entry.value, "\(currentFieldName).\(entry.key)", entry.box))
+          }
+          continue
+        }
+
+        if let values = currentValue as? [Any] {
+          let childBoxes = values.map { _ in SerializedValueBox() }
+          stack.append(.exitList(box, childBoxes))
+          for index in values.indices.reversed() {
+            stack.append(.enter(values[index], "\(currentFieldName)[\(index)]", childBoxes[index]))
+          }
+          continue
+        }
+
+        box.value = currentValue
+      case let .exitList(box, childBoxes):
+        box.value = childBoxes.map { $0.value as Any }
+      case let .exitMap(box, entries):
+        var output: [String: Any] = [:]
+        for (key, childBox) in entries {
+          output[key] = childBox.value
+        }
+        box.value = output
       }
-      return output
     }
 
-    if let values = value as? [Any] {
-      return try values.enumerated().map { index, nestedValue in
-        try resolveConstantValue(nestedValue, fieldName: "\(fieldName)[\(index)]")
-      }
-    }
-
-    return value
+    return rootBox.value as Any
   }
 
   private func containsSerializedExpression(_ value: Any) -> Bool {
-    if let map = value as? [String: Any] {
-      if let constantValue = try? unwrapConstantValue(map, fieldName: "") {
-        return containsSerializedExpression(constantValue)
+    var stack: [Any] = [value]
+
+    while let value = stack.popLast() {
+      var currentValue: Any = value
+
+      while let map = currentValue as? [String: Any],
+            let constantValue = try? unwrapConstantValue(map, fieldName: "") {
+        currentValue = constantValue
       }
 
-      if isSerializedExpressionLike(map) {
-        return true
+      if let map = currentValue as? [String: Any] {
+        if isSerializedExpressionLike(map) {
+          return true
+        }
+
+        for nestedValue in map.values {
+          stack.append(nestedValue)
+        }
+        continue
       }
 
-      return map.values.contains(where: containsSerializedExpression)
-    }
-
-    if let values = value as? [Any] {
-      return values.contains(where: containsSerializedExpression)
+      if let values = currentValue as? [Any] {
+        for nestedValue in values {
+          stack.append(nestedValue)
+        }
+      }
     }
 
     return false
