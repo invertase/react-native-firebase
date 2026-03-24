@@ -181,6 +181,7 @@ export interface MultiFactorResolver {
 /**
  * Multi-factor session (opaque).
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type -- opaque native handle (matches FirebaseAuthTypes.MultiFactorSession)
 export interface MultiFactorSession {}
 
 /**
