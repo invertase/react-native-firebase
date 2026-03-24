@@ -15,8 +15,29 @@
  *
  */
 
-// Export modular types from types/auth
-export type * from './types/auth';
+// Export modular types from types/auth (explicit list: `export type *` needs TS 5+; website TypeDoc uses TS 4.x)
+export type {
+  FirebaseAuth,
+  AuthSettings,
+  User,
+  UserInfo,
+  UserMetadata,
+  MultiFactor,
+  MultiFactorInfo,
+  IdTokenResult,
+  AuthCredential,
+  AuthProvider,
+  UserCredential,
+  AdditionalUserInfo,
+  ActionCodeSettings,
+  ActionCodeInfo,
+  ConfirmationResult,
+  MultiFactorResolver,
+  MultiFactorSession,
+  MultiFactorAssertion,
+  MultiFactorError,
+  Unsubscribe,
+} from './types/auth';
 
 // Export modular API functions
 export * from './modular';
@@ -29,7 +50,7 @@ export type {
   PasswordPolicyApiResponse,
 } from './password-policy/PasswordPolicyImpl';
 
-// Export namespaced API
-export type { FirebaseAuthTypes } from './types/namespaced';
+// Export namespaced API (namespace export; not `export type` — invalid for namespaces in TS 4.x)
+export { FirebaseAuthTypes } from './types/namespaced';
 export * from './namespaced';
 export { default } from './namespaced';

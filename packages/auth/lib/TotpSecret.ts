@@ -38,7 +38,9 @@ export class TotpSecret {
     if (!isString(accountName) || !isString(issuer) || accountName === '' || issuer === '') {
       return '';
     }
-    return this.auth.native.generateQrCodeUrl(this.secretKey, accountName, issuer);
+    const name = accountName;
+    const iss = issuer;
+    return this.auth.native.generateQrCodeUrl(this.secretKey, name, iss);
   }
 
   /**

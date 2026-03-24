@@ -1,5 +1,6 @@
 {
   "include": [
+    "packages/app/lib/shims/react-native-binaryToBase64.d.ts",
     "packages/ai/lib/types/polyfills.d.ts",
     "packages/app-check/lib/index.d.ts",
     "packages/app-check/lib/modular/index.d.ts",
@@ -54,7 +55,7 @@
   ],
   "compilerOptions": {
     "noEmit": true,
-    "target": "es5",
+    "target": "es2015",
     "module": "commonjs",
     "declaration": true,
     "importHelpers": true,
@@ -75,6 +76,24 @@
     "lib": ["es2015", "es2016", "esnext", "dom"],
     "types": ["react-native", "node"],
     "paths": {
+      "@react-native-firebase/app/dist/module/common/*": [
+        "./packages/app/lib/common/*"
+      ],
+      "@react-native-firebase/app/dist/module/common": [
+        "./packages/app/lib/common/index.ts"
+      ],
+      "@react-native-firebase/app/dist/module/internal/web/*": [
+        "./packages/app/lib/internal/web/*"
+      ],
+      "@react-native-firebase/app/dist/module/internal/*": [
+        "./packages/app/lib/internal/*"
+      ],
+      "@react-native-firebase/app/dist/module/internal": [
+        "./packages/app/lib/internal/index.ts"
+      ],
+      "@react-native-firebase/app/dist/module/types/internal": [
+        "./packages/app/lib/types/internal.ts"
+      ],
       "@react-native-firebase/*": ["./packages/*/lib/index.ts", "./packages/*/lib/index.d.ts"]
     }
   },
