@@ -15,13 +15,14 @@ import { execute, field, and } from '@react-native-firebase/firestore/pipelines'
 
 const COLLECTION = 'pipeline-collection';
 
+const testUtils = globalThis as typeof globalThis & {
+  Utils: {
+    randString(length: number, chars: string): string;
+  };
+};
+
 function randString(length: number): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
+  return testUtils.Utils.randString(length, '#aA');
 }
 
 type TestFn = () => Promise<string[]>;
