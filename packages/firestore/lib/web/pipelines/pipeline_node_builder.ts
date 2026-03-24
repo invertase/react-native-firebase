@@ -61,104 +61,6 @@ function isExpressionNode(value: Record<string, unknown>): boolean {
   );
 }
 
-function reviveHelperInputValue(value: unknown): unknown {
-  if (Array.isArray(value)) {
-    return value.map(reviveHelperInputValue);
-  }
-
-  if (!isRecord(value)) {
-    return value;
-  }
-
-  if (
-    isFlatAliasedFieldNode(value) ||
-    isAliasedExpressionNode(value) ||
-    isAliasedAggregateNode(value)
-  ) {
-    return revivePipelineValue(value);
-  }
-
-  if (isExpressionNode(value)) {
-    if (value.exprType === 'Constant' || Object.prototype.hasOwnProperty.call(value, 'value')) {
-      return reviveHelperInputValue(value.value);
-    }
-
-    return reviveExpressionNode(value);
-  }
-
-  if (value.__kind === 'aggregate' || value.__kind === 'ordering') {
-    return revivePipelineValue(value);
-  }
-
-  const revived: Record<string, unknown> = {};
-  for (const [key, entry] of Object.entries(value)) {
-    revived[key] = reviveHelperInputValue(entry);
-  }
-  return revived;
-}
-
-function reviveExpressionNode(node: Record<string, unknown>): Expression {
-  if (node.exprType === 'Field' || typeof node.path === 'string') {
-    return getPipelineHelper('field')(node.path) as Expression;
-  }
-
-  if (node.exprType === 'Constant' || Object.prototype.hasOwnProperty.call(node, 'value')) {
-    return getPipelineHelper('constant')(revivePipelineValue(node.value)) as Expression;
-  }
-
-  if (typeof node.name === 'string') {
-    const args = Array.isArray(node.args) ? node.args : [];
-
-    if (node.name === 'array') {
-      return getPipelineHelper(node.name)(args.map(reviveHelperInputValue)) as Expression;
-    }
-
-    if (node.name === 'conditional') {
-      return getPipelineHelper(node.name)(...args.map(revivePipelineValue)) as Expression;
-    }
-
-    const revivedArgs = args.map(reviveHelperInputValue);
-    return getPipelineHelper(node.name)(...revivedArgs) as Expression;
-  }
-
-  throw new Error('pipelineExecute() failed to rebuild a serialized expression node for web SDK.');
-}
-
-function reviveAggregateNode(node: Record<string, unknown>): AggregateFunction {
-  if (typeof node.kind !== 'string') {
-    throw new Error('pipelineExecute() failed to rebuild aggregate node: missing aggregate kind.');
-  }
-
-  const args = Array.isArray(node.args) ? node.args.map(reviveHelperInputValue) : [];
-  return getPipelineHelper(node.kind)(...args) as AggregateFunction;
-}
-
-function reviveOrderingNode(node: Record<string, unknown>): Ordering {
-  if (!Object.prototype.hasOwnProperty.call(node, 'expr')) {
-    throw new Error('pipelineExecute() failed to rebuild ordering node: missing expr.');
-  }
-
-  const direction = node.direction === 'descending' ? 'descending' : 'ascending';
-  return getPipelineHelper(direction)(revivePipelineValue(node.expr)) as Ordering;
-}
-
-function reviveAliasedNode(
-  node: Record<string, unknown>,
-  nodeKey: 'expr' | 'aggregate',
-): AliasedExpression | AliasedAggregate {
-  const alias = typeof node.alias === 'string' ? node.alias : undefined;
-  if (!alias) {
-    throw new Error(`pipelineExecute() failed to rebuild aliased node: missing ${nodeKey} alias.`);
-  }
-
-  const value = revivePipelineValue(node[nodeKey]);
-  if (!value || (typeof value !== 'object' && typeof value !== 'function') || !('as' in value)) {
-    throw new Error(`pipelineExecute() failed to rebuild aliased ${nodeKey}: invalid value.`);
-  }
-
-  return (value as AliasedValue).as(alias) as AliasedExpression | AliasedAggregate;
-}
-
 function isFlatAliasedFieldNode(value: Record<string, unknown>): boolean {
   const alias = value.alias ?? value.as;
   return (
@@ -186,62 +88,326 @@ function isAliasedAggregateNode(value: Record<string, unknown>): boolean {
   );
 }
 
-export function revivePipelineValue(value: unknown): unknown {
-  if (Array.isArray(value)) {
-    return value.map(revivePipelineValue);
-  }
+type ReviveMode = 'pipeline' | 'helper';
 
-  if (!isRecord(value)) {
-    return value;
-  }
-
-  if (isFlatAliasedFieldNode(value)) {
-    const alias = (value.alias ?? value.as) as string;
-    const field = getPipelineHelper('field')(value.path) as Expression & Partial<AliasedValue>;
-    const asFn = field.as;
-    if (typeof asFn !== 'function') {
-      throw new Error('pipelineExecute() failed to rebuild flat aliased field for web SDK.');
+type ReviveWorkFrame =
+  | {
+      kind: 'evaluate';
+      mode: ReviveMode;
+      value: unknown;
+      resolve: (result: unknown) => void;
     }
-    return asFn.call(field, alias);
+  | {
+      kind: 'finalize';
+      run: () => void;
+    };
+
+function rebuildFlatAliasedField(value: Record<string, unknown>): unknown {
+  const alias = (value.alias ?? value.as) as string;
+  const field = getPipelineHelper('field')(value.path) as Expression & Partial<AliasedValue>;
+  const asFn = field.as;
+  if (typeof asFn !== 'function') {
+    throw new Error('pipelineExecute() failed to rebuild flat aliased field for web SDK.');
+  }
+  return asFn.call(field, alias);
+}
+
+function applyAlias(
+  revivedValue: unknown,
+  alias: string,
+  nodeKey: 'expr' | 'aggregate',
+): AliasedExpression | AliasedAggregate {
+  if (
+    !revivedValue ||
+    (typeof revivedValue !== 'object' && typeof revivedValue !== 'function') ||
+    !('as' in revivedValue)
+  ) {
+    throw new Error(`pipelineExecute() failed to rebuild aliased ${nodeKey}: invalid value.`);
   }
 
-  if (isAliasedExpressionNode(value)) {
-    const alias = (value.alias ?? value.as) as string;
-    const expr = revivePipelineValue(value.expr) as Expression & Partial<AliasedValue>;
-    const asFn = expr.as;
-    if (typeof asFn !== 'function') {
-      throw new Error('pipelineExecute() failed to rebuild aliased expression for web SDK.');
+  return (revivedValue as AliasedValue).as(alias) as AliasedExpression | AliasedAggregate;
+}
+
+function rebuildExpressionNode(
+  stack: ReviveWorkFrame[],
+  node: Record<string, unknown>,
+  mode: ReviveMode,
+  resolve: (result: unknown) => void,
+): void {
+  if (node.exprType === 'Field' || typeof node.path === 'string') {
+    resolve(getPipelineHelper('field')(node.path) as Expression);
+    return;
+  }
+
+  if (node.exprType === 'Constant' || Object.prototype.hasOwnProperty.call(node, 'value')) {
+    if (mode === 'helper') {
+      stack.push({
+        kind: 'evaluate',
+        mode,
+        value: node.value,
+        resolve,
+      });
+      return;
     }
-    return asFn.call(expr, alias);
+
+    let revivedValue: unknown;
+    stack.push({
+      kind: 'finalize',
+      run: () => {
+        resolve(getPipelineHelper('constant')(revivedValue) as Expression);
+      },
+    });
+    stack.push({
+      kind: 'evaluate',
+      mode,
+      value: node.value,
+      resolve: result => {
+        revivedValue = result;
+      },
+    });
+    return;
   }
 
-  if (isAliasedAggregateNode(value)) {
-    const aggregate = revivePipelineValue(value.aggregate) as AggregateFunction &
-      Partial<AliasedValue>;
-    const asFn = aggregate.as;
-    if (typeof asFn !== 'function') {
-      throw new Error('pipelineExecute() failed to rebuild aliased aggregate for web SDK.');
+  if (typeof node.name === 'string') {
+    const helperName = node.name;
+    const args = Array.isArray(node.args) ? node.args : [];
+    const revivedArgs = new Array(args.length);
+    const argsMode = helperName === 'conditional' ? 'pipeline' : 'helper';
+
+    stack.push({
+      kind: 'finalize',
+      run: () => {
+        if (helperName === 'array') {
+          resolve(getPipelineHelper(helperName)(revivedArgs) as Expression);
+          return;
+        }
+        resolve(getPipelineHelper(helperName)(...revivedArgs) as Expression);
+      },
+    });
+
+    for (let i = args.length - 1; i >= 0; i--) {
+      stack.push({
+        kind: 'evaluate',
+        mode: argsMode,
+        value: args[i],
+        resolve: result => {
+          revivedArgs[i] = result;
+        },
+      });
     }
-    return asFn.call(aggregate, value.alias as string);
+    return;
   }
 
-  switch (value.__kind) {
-    case 'expression':
-      return reviveExpressionNode(value);
-    case 'aggregate':
-      return reviveAggregateNode(value);
-    case 'ordering':
-      return reviveOrderingNode(value);
-    case 'aliasedExpression':
-      return reviveAliasedNode(value, 'expr');
-    case 'aliasedAggregate':
-      return reviveAliasedNode(value, 'aggregate');
-    default: {
-      const revived: Record<string, unknown> = {};
-      for (const [key, entry] of Object.entries(value)) {
-        revived[key] = revivePipelineValue(entry);
+  throw new Error('pipelineExecute() failed to rebuild a serialized expression node for web SDK.');
+}
+
+function rebuildAggregateNode(
+  stack: ReviveWorkFrame[],
+  node: Record<string, unknown>,
+  resolve: (result: unknown) => void,
+): void {
+  if (typeof node.kind !== 'string') {
+    throw new Error('pipelineExecute() failed to rebuild aggregate node: missing aggregate kind.');
+  }
+
+  const helperName = node.kind;
+  const args = Array.isArray(node.args) ? node.args : [];
+  const revivedArgs = new Array(args.length);
+
+  stack.push({
+    kind: 'finalize',
+    run: () => {
+      resolve(getPipelineHelper(helperName)(...revivedArgs) as AggregateFunction);
+    },
+  });
+
+  for (let i = args.length - 1; i >= 0; i--) {
+    stack.push({
+      kind: 'evaluate',
+      mode: 'helper',
+      value: args[i],
+      resolve: result => {
+        revivedArgs[i] = result;
+      },
+    });
+  }
+}
+
+function rebuildOrderingNode(
+  stack: ReviveWorkFrame[],
+  node: Record<string, unknown>,
+  resolve: (result: unknown) => void,
+): void {
+  if (!Object.prototype.hasOwnProperty.call(node, 'expr')) {
+    throw new Error('pipelineExecute() failed to rebuild ordering node: missing expr.');
+  }
+
+  const direction = node.direction === 'descending' ? 'descending' : 'ascending';
+  let revivedExpr: unknown;
+
+  stack.push({
+    kind: 'finalize',
+    run: () => {
+      resolve(getPipelineHelper(direction)(revivedExpr) as Ordering);
+    },
+  });
+  stack.push({
+    kind: 'evaluate',
+    mode: 'pipeline',
+    value: node.expr,
+    resolve: result => {
+      revivedExpr = result;
+    },
+  });
+}
+
+function rebuildAliasedNode(
+  stack: ReviveWorkFrame[],
+  node: Record<string, unknown>,
+  nodeKey: 'expr' | 'aggregate',
+  resolve: (result: unknown) => void,
+): void {
+  const alias = typeof node.alias === 'string' ? node.alias : undefined;
+  if (!alias) {
+    throw new Error(`pipelineExecute() failed to rebuild aliased node: missing ${nodeKey} alias.`);
+  }
+
+  let revivedValue: unknown;
+  stack.push({
+    kind: 'finalize',
+    run: () => {
+      resolve(applyAlias(revivedValue, alias, nodeKey));
+    },
+  });
+  stack.push({
+    kind: 'evaluate',
+    mode: 'pipeline',
+    value: node[nodeKey],
+    resolve: result => {
+      revivedValue = result;
+    },
+  });
+}
+
+function reviveValueWithMode(value: unknown, mode: ReviveMode): unknown {
+  let finalValue: unknown;
+  const stack: ReviveWorkFrame[] = [
+    {
+      kind: 'evaluate',
+      mode,
+      value,
+      resolve: result => {
+        finalValue = result;
+      },
+    },
+  ];
+
+  while (stack.length > 0) {
+    const frame = stack.pop()!;
+
+    if (frame.kind === 'finalize') {
+      frame.run();
+      continue;
+    }
+
+    const currentValue = frame.value;
+    if (Array.isArray(currentValue)) {
+      const revived = new Array(currentValue.length);
+      frame.resolve(revived);
+      for (let i = currentValue.length - 1; i >= 0; i--) {
+        stack.push({
+          kind: 'evaluate',
+          mode: frame.mode,
+          value: currentValue[i],
+          resolve: result => {
+            revived[i] = result;
+          },
+        });
       }
-      return revived;
+      continue;
+    }
+
+    if (!isRecord(currentValue)) {
+      frame.resolve(currentValue);
+      continue;
+    }
+
+    if (frame.mode === 'helper') {
+      if (
+        isFlatAliasedFieldNode(currentValue) ||
+        isAliasedExpressionNode(currentValue) ||
+        isAliasedAggregateNode(currentValue) ||
+        currentValue.__kind === 'aggregate' ||
+        currentValue.__kind === 'ordering'
+      ) {
+        stack.push({
+          kind: 'evaluate',
+          mode: 'pipeline',
+          value: currentValue,
+          resolve: frame.resolve,
+        });
+        continue;
+      }
+
+      if (isExpressionNode(currentValue)) {
+        rebuildExpressionNode(stack, currentValue, frame.mode, frame.resolve);
+        continue;
+      }
+    } else {
+      if (isFlatAliasedFieldNode(currentValue)) {
+        frame.resolve(rebuildFlatAliasedField(currentValue));
+        continue;
+      }
+
+      if (isAliasedExpressionNode(currentValue)) {
+        rebuildAliasedNode(stack, currentValue, 'expr', frame.resolve);
+        continue;
+      }
+
+      if (isAliasedAggregateNode(currentValue)) {
+        rebuildAliasedNode(stack, currentValue, 'aggregate', frame.resolve);
+        continue;
+      }
+
+      switch (currentValue.__kind) {
+        case 'expression':
+          rebuildExpressionNode(stack, currentValue, frame.mode, frame.resolve);
+          continue;
+        case 'aggregate':
+          rebuildAggregateNode(stack, currentValue, frame.resolve);
+          continue;
+        case 'ordering':
+          rebuildOrderingNode(stack, currentValue, frame.resolve);
+          continue;
+        case 'aliasedExpression':
+          rebuildAliasedNode(stack, currentValue, 'expr', frame.resolve);
+          continue;
+        case 'aliasedAggregate':
+          rebuildAliasedNode(stack, currentValue, 'aggregate', frame.resolve);
+          continue;
+        default:
+      }
+    }
+
+    const revived: Record<string, unknown> = {};
+    frame.resolve(revived);
+    const entries = Object.entries(currentValue);
+    for (let i = entries.length - 1; i >= 0; i--) {
+      const [key, entry] = entries[i]!;
+      stack.push({
+        kind: 'evaluate',
+        mode: frame.mode,
+        value: entry,
+        resolve: result => {
+          revived[key] = result;
+        },
+      });
     }
   }
+
+  return finalValue;
+}
+
+export function revivePipelineValue(value: unknown): unknown {
+  return reviveValueWithMode(value, 'pipeline');
 }

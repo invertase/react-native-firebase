@@ -124,22 +124,35 @@ function buildQuerySourcePipeline(
   return pipelineSource.createFrom(query as unknown as Query) as WebPipelineInstance;
 }
 
+function getPipelineStageMethod(
+  current: WebPipelineInstance,
+  stageName: string,
+): (this: WebPipelineInstance, ...args: unknown[]) => unknown {
+  const method = current?.[stageName] as ((this: WebPipelineInstance, ...args: unknown[]) => unknown)
+    | undefined;
+  if (typeof method !== 'function') {
+    throw new Error(`Pipeline stage "${stageName}" is not supported by the current web SDK.`);
+  }
+  return method;
+}
+
 function applyPipelineStage(
   current: WebPipelineInstance,
   stage: FirestorePipelineSerializedInternal['stages'][number],
-  firestore: Firestore,
+  nestedUnionPipeline?: WebPipelineInstance,
 ): WebPipelineInstance {
+  if (stage.stage === 'union') {
+    return getPipelineStageMethod(current, stage.stage).call(current, {
+      other: nestedUnionPipeline,
+    }) as WebPipelineInstance;
+  }
+
   const revivedStageOptions = revivePipelineValue(stage.options);
   const stageArgs = (isRecord(revivedStageOptions) ? revivedStageOptions : stage.options) as Record<
     string,
     unknown
   >;
-  const method = current?.[stage.stage] as
-    | ((this: WebPipelineInstance, ...args: unknown[]) => unknown)
-    | undefined;
-  if (typeof method !== 'function') {
-    throw new Error(`Pipeline stage "${stage.stage}" is not supported by the current web SDK.`);
-  }
+  const method = getPipelineStageMethod(current, stage.stage);
 
   switch (stage.stage) {
     case 'where':
@@ -215,12 +228,6 @@ function applyPipelineStage(
           ? method.call(current, stageArgs.documents)
           : method.call(current, stageArgs)
       ) as WebPipelineInstance;
-    case 'union': {
-      const nested = buildWebSdkPipeline(firestore, {
-        pipeline: stage.options.other,
-      });
-      return method.call(current, { other: nested }) as WebPipelineInstance;
-    }
     case 'unnest':
       return (
         stageArgs.selectable !== undefined
@@ -243,19 +250,13 @@ function applyPipelineStage(
   }
 }
 
-export function buildWebSdkPipeline(
+function buildSourcePipeline(
   firestore: Firestore,
-  request: Pick<WebParsedPipelineRequest, 'pipeline'>,
+  pipelineFactory: () => unknown,
+  pipeline: FirestorePipelineSerializedInternal,
 ): WebPipelineInstance {
-  const pipelineFactory = (firestore as { pipeline?: () => unknown }).pipeline;
-  if (typeof pipelineFactory !== 'function') {
-    throw createLiteUnsupportedError(
-      'pipelineExecute() expected a Firestore instance with pipeline() support.',
-    );
-  }
-
   const pipelineSource = pipelineFactory.call(firestore) as WebPipelineSource;
-  const source = request.pipeline.source;
+  const source = pipeline.source;
   let currentPipeline: WebPipelineInstance | undefined;
 
   switch (source.source) {
@@ -284,9 +285,92 @@ export function buildWebSdkPipeline(
     );
   }
 
-  for (let i = 0; i < request.pipeline.stages.length; i++) {
-    currentPipeline = applyPipelineStage(currentPipeline, request.pipeline.stages[i]!, firestore);
+  return currentPipeline;
+}
+
+type PipelineBuildFrame = {
+  kind: 'pipeline';
+  pipeline: FirestorePipelineSerializedInternal;
+  currentPipeline: WebPipelineInstance;
+  stageIndex: number;
+};
+
+type UnionBuildFrame = {
+  kind: 'union';
+  parent: PipelineBuildFrame;
+  stage: Extract<FirestorePipelineSerializedInternal['stages'][number], { stage: 'union' }>;
+  method: (this: WebPipelineInstance, ...args: unknown[]) => unknown;
+};
+
+export function buildWebSdkPipeline(
+  firestore: Firestore,
+  request: Pick<WebParsedPipelineRequest, 'pipeline'>,
+): WebPipelineInstance {
+  const pipelineFactory = (firestore as { pipeline?: () => unknown }).pipeline;
+  if (typeof pipelineFactory !== 'function') {
+    throw createLiteUnsupportedError(
+      'pipelineExecute() expected a Firestore instance with pipeline() support.',
+    );
   }
 
-  return currentPipeline;
+  const stack: Array<PipelineBuildFrame | UnionBuildFrame> = [
+    {
+      kind: 'pipeline',
+      pipeline: request.pipeline,
+      currentPipeline: buildSourcePipeline(firestore, pipelineFactory, request.pipeline),
+      stageIndex: 0,
+    },
+  ];
+  let lastCompletedPipeline: WebPipelineInstance | undefined;
+
+  while (stack.length > 0) {
+    const frame = stack[stack.length - 1]!;
+
+    if (frame.kind === 'union') {
+      if (!lastCompletedPipeline) {
+        throw new Error('pipelineExecute() failed to rebuild nested union pipeline for web SDK.');
+      }
+
+      frame.parent.currentPipeline = frame.method.call(frame.parent.currentPipeline, {
+        other: lastCompletedPipeline,
+      }) as WebPipelineInstance;
+      frame.parent.stageIndex += 1;
+      lastCompletedPipeline = undefined;
+      stack.pop();
+      continue;
+    }
+
+    if (frame.stageIndex >= frame.pipeline.stages.length) {
+      lastCompletedPipeline = frame.currentPipeline;
+      stack.pop();
+      continue;
+    }
+
+    const stage = frame.pipeline.stages[frame.stageIndex]!;
+    if (stage.stage !== 'union') {
+      frame.currentPipeline = applyPipelineStage(frame.currentPipeline, stage);
+      frame.stageIndex += 1;
+      continue;
+    }
+
+    const unionPipeline = stage.options.other as FirestorePipelineSerializedInternal;
+    stack.push({
+      kind: 'union',
+      parent: frame,
+      stage,
+      method: getPipelineStageMethod(frame.currentPipeline, stage.stage),
+    });
+    stack.push({
+      kind: 'pipeline',
+      pipeline: unionPipeline,
+      currentPipeline: buildSourcePipeline(firestore, pipelineFactory, unionPipeline),
+      stageIndex: 0,
+    });
+  }
+
+  if (!lastCompletedPipeline) {
+    throw new Error('pipelineExecute() failed to rebuild a pipeline for web SDK.');
+  }
+
+  return lastCompletedPipeline;
 }

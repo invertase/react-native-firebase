@@ -19,7 +19,6 @@ import type {
   FirestorePipelineExecuteOptionsInternal,
   FirestorePipelineSerializedInternal,
   FirestorePipelineSourceInternal,
-  FirestorePipelineStageInternal,
 } from '../types/internal';
 
 export interface ValidatedPipelineExecuteRequest {
@@ -105,7 +104,7 @@ function validateStage(
   stage: unknown,
   stagePath: string,
   optionsPath: string,
-): asserts stage is FirestorePipelineStageInternal {
+): unknown {
   if (!isRecord(stage) || typeof stage.stage !== 'string' || !isRecord(stage.options)) {
     throw new Error(`pipelineExecute() expected ${stagePath} to include stage and options.`);
   }
@@ -113,22 +112,22 @@ function validateStage(
   switch (stage.stage) {
     case 'select':
       validateNonEmptyStageArray(stage.options.selections, `${optionsPath}.selections`);
-      return;
+      return undefined;
     case 'addFields':
       validateNonEmptyStageArray(stage.options.fields, `${optionsPath}.fields`);
-      return;
+      return undefined;
     case 'removeFields':
       validateNonEmptyStageArray(stage.options.fields, `${optionsPath}.fields`);
-      return;
+      return undefined;
     case 'sort':
       validateNonEmptyStageArray(stage.options.orderings, `${optionsPath}.orderings`);
-      return;
+      return undefined;
     case 'aggregate':
       validateNonEmptyStageArray(stage.options.accumulators, `${optionsPath}.accumulators`);
-      return;
+      return undefined;
     case 'distinct':
       validateNonEmptyStageArray(stage.options.groups, `${optionsPath}.groups`);
-      return;
+      return undefined;
     case 'sample': {
       const hasDocuments = typeof stage.options.documents === 'number';
       const hasPercentage = typeof stage.options.percentage === 'number';
@@ -137,7 +136,7 @@ function validateStage(
           'pipelineExecute() expected sample stage to include documents or percentage.',
         );
       }
-      return;
+      return undefined;
     }
     case 'union':
       if (
@@ -149,8 +148,7 @@ function validateStage(
           'pipelineExecute() expected stage.options.other to be a serialized pipeline object.',
         );
       }
-      validateSerializedPipeline(stage.options.other, `${optionsPath}.other`);
-      return;
+      return stage.options.other;
     case 'where':
     case 'limit':
     case 'offset':
@@ -158,7 +156,7 @@ function validateStage(
     case 'replaceWith':
     case 'unnest':
     case 'rawStage':
-      return;
+      return undefined;
     default:
       throw new Error(`pipelineExecute() received an unknown stage: ${stage.stage}.`);
   }
@@ -168,20 +166,37 @@ export function validateSerializedPipeline(
   pipeline: unknown,
   fieldName: string = 'pipeline',
 ): asserts pipeline is FirestorePipelineSerializedInternal {
-  if (!isRecord(pipeline)) {
-    throw new Error(`pipelineExecute() expected ${fieldName} to be an object.`);
-  }
+  const pending: Array<{ pipeline: unknown; fieldName: string }> = [{ pipeline, fieldName }];
 
-  validateSource(pipeline.source, `${fieldName}.source`);
+  for (let index = 0; index < pending.length; index++) {
+    const current = pending[index]!;
+    if (!isRecord(current.pipeline)) {
+      throw new Error(`pipelineExecute() expected ${current.fieldName} to be an object.`);
+    }
 
-  if (!Array.isArray(pipeline.stages)) {
-    throw new Error(`pipelineExecute() expected ${fieldName}.stages to be an array.`);
-  }
+    validateSource(current.pipeline.source, `${current.fieldName}.source`);
 
-  for (let i = 0; i < pipeline.stages.length; i++) {
-    const optionsPath =
-      fieldName === 'pipeline' ? 'stage.options' : `${fieldName}.stages[${i}].options`;
-    validateStage(pipeline.stages[i], `${fieldName}.stages[${i}]`, optionsPath);
+    if (!Array.isArray(current.pipeline.stages)) {
+      throw new Error(`pipelineExecute() expected ${current.fieldName}.stages to be an array.`);
+    }
+
+    for (let i = 0; i < current.pipeline.stages.length; i++) {
+      const optionsPath =
+        current.fieldName === 'pipeline'
+          ? 'stage.options'
+          : `${current.fieldName}.stages[${i}].options`;
+      const nestedPipeline = validateStage(
+        current.pipeline.stages[i],
+        `${current.fieldName}.stages[${i}]`,
+        optionsPath,
+      );
+      if (nestedPipeline) {
+        pending.push({
+          pipeline: nestedPipeline,
+          fieldName: `${optionsPath}.other`,
+        });
+      }
+    }
   }
 }
 
