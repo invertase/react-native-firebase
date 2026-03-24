@@ -52,6 +52,21 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     }
   }
 
+  private static final class PendingBooleanReceiverOperation {
+    final String normalizedName;
+    final List<Object> args;
+    final String fieldName;
+    final String originalName;
+
+    PendingBooleanReceiverOperation(
+        String normalizedName, String originalName, List<Object> args, String fieldName) {
+      this.normalizedName = normalizedName;
+      this.originalName = originalName;
+      this.args = args;
+      this.fieldName = fieldName;
+    }
+  }
+
   private interface ValueResolutionFrame {}
 
   private interface SerializationFrame {}
@@ -952,6 +967,129 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     return currentExpression;
   }
 
+  private BooleanExpression coerceReceiverBooleanChain(
+      String normalizedName, String originalName, List<Object> args, String fieldName)
+      throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
+    List<PendingReceiverOperation> pendingReceiverOperations = new ArrayList<>();
+
+    Object currentValue = args.get(0);
+    String currentFieldName = fieldName + ".args[0]";
+
+    while (currentValue instanceof Map) {
+      @SuppressWarnings("unchecked")
+      Map<String, Object> map = (Map<String, Object>) currentValue;
+
+      Object nested = map.get("expr");
+      if (nested != null) {
+        currentValue = nested;
+        currentFieldName = currentFieldName + ".expr";
+        continue;
+      }
+
+      nested = map.get("expression");
+      if (nested != null) {
+        currentValue = nested;
+        currentFieldName = currentFieldName + ".expression";
+        continue;
+      }
+
+      Object name = map.get("name");
+      if (!(name instanceof String)) {
+        break;
+      }
+
+      List<Object> nestedArgs = normalizeArgs(map.get("args"));
+      String nestedNormalizedName = canonicalizeExpressionFunctionName((String) name);
+      if (!isDeferredReceiverExpressionFunction(nestedNormalizedName) || nestedArgs.isEmpty()) {
+        break;
+      }
+
+      pendingReceiverOperations.add(
+          new PendingReceiverOperation(
+              nestedNormalizedName, (String) name, nestedArgs, currentFieldName));
+      currentValue = nestedArgs.get(0);
+      currentFieldName = currentFieldName + ".args[0]";
+    }
+
+    Expression baseExpression = coerceExpression(currentValue, currentFieldName);
+    Expression currentExpression = applyPendingReceiverOperations(baseExpression, pendingReceiverOperations);
+    Object rightArg = args.get(1);
+
+    switch (normalizedName) {
+      case "equal":
+        return containsSerializedExpression(rightArg)
+            ? currentExpression.equal(coerceExpressionValue(rightArg, fieldName + ".args[1]"))
+            : currentExpression.equal(resolveConstantValue(rightArg, fieldName + ".args[1]"));
+      case "notequal":
+        return containsSerializedExpression(rightArg)
+            ? currentExpression.notEqual(coerceExpressionValue(rightArg, fieldName + ".args[1]"))
+            : currentExpression.notEqual(resolveConstantValue(rightArg, fieldName + ".args[1]"));
+      case "greaterthan":
+        return containsSerializedExpression(rightArg)
+            ? currentExpression.greaterThan(coerceExpressionValue(rightArg, fieldName + ".args[1]"))
+            : currentExpression.greaterThan(resolveConstantValue(rightArg, fieldName + ".args[1]"));
+      case "greaterthanorequal":
+        return containsSerializedExpression(rightArg)
+            ? currentExpression.greaterThanOrEqual(
+                coerceExpressionValue(rightArg, fieldName + ".args[1]"))
+            : currentExpression.greaterThanOrEqual(
+                resolveConstantValue(rightArg, fieldName + ".args[1]"));
+      case "lessthan":
+        return containsSerializedExpression(rightArg)
+            ? currentExpression.lessThan(coerceExpressionValue(rightArg, fieldName + ".args[1]"))
+            : currentExpression.lessThan(resolveConstantValue(rightArg, fieldName + ".args[1]"));
+      case "lessthanorequal":
+        return containsSerializedExpression(rightArg)
+            ? currentExpression.lessThanOrEqual(
+                coerceExpressionValue(rightArg, fieldName + ".args[1]"))
+            : currentExpression.lessThanOrEqual(
+                resolveConstantValue(rightArg, fieldName + ".args[1]"));
+      case "arraycontains":
+        return containsSerializedExpression(rightArg)
+            ? currentExpression.arrayContains(
+                coerceExpressionValue(rightArg, fieldName + ".args[1]"))
+            : currentExpression.arrayContains(resolveConstantValue(rightArg, fieldName + ".args[1]"));
+      case "arraycontainsany":
+        if (!containsSerializedExpression(rightArg)) {
+          Object resolved = resolveConstantValue(rightArg, fieldName + ".args[1]");
+          if (resolved instanceof List) {
+            return currentExpression.arrayContainsAny((List<?>) resolved);
+          }
+        }
+        return currentExpression.arrayContainsAny(
+            coerceExpressionValue(rightArg, fieldName + ".args[1]"));
+      case "arraycontainsall":
+        if (!containsSerializedExpression(rightArg)) {
+          Object resolved = resolveConstantValue(rightArg, fieldName + ".args[1]");
+          if (resolved instanceof List) {
+            return currentExpression.arrayContainsAll((List<?>) resolved);
+          }
+        }
+        return currentExpression.arrayContainsAll(
+            coerceExpressionValue(rightArg, fieldName + ".args[1]"));
+      case "equalany":
+        if (!containsSerializedExpression(rightArg)) {
+          Object resolved = resolveConstantValue(rightArg, fieldName + ".args[1]");
+          if (resolved instanceof List) {
+            return currentExpression.equalAny((List<?>) resolved);
+          }
+        }
+        return currentExpression.equalAny(coerceExpressionValue(rightArg, fieldName + ".args[1]"));
+      case "notequalany":
+        if (!containsSerializedExpression(rightArg)) {
+          Object resolved = resolveConstantValue(rightArg, fieldName + ".args[1]");
+          if (resolved instanceof List) {
+            return currentExpression.notEqualAny((List<?>) resolved);
+          }
+        }
+        return currentExpression.notEqualAny(
+            coerceExpressionValue(rightArg, fieldName + ".args[1]"));
+      default:
+        throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+            "pipelineExecute() expected a boolean receiver operation.");
+    }
+  }
+
   private Expression buildArrayExpression(List<Object> args, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     List<Object> elements = args;
@@ -1216,52 +1354,7 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
                 + fieldName
                 + ".args to include left and right operands.");
       }
-
-      Expression left = coerceExpressionValue(args.get(0), fieldName + ".args[0]");
-
-      if ("equal".equals(normalizedName)) {
-        return applyComparison(left::equal, args.get(1), fieldName + ".args[1]");
-      }
-      if ("notequal".equals(normalizedName)) {
-        return applyComparison(left::notEqual, args.get(1), fieldName + ".args[1]");
-      }
-      if ("greaterthan".equals(normalizedName)) {
-        return applyComparison(left::greaterThan, args.get(1), fieldName + ".args[1]");
-      }
-      if ("greaterthanorequal".equals(normalizedName)) {
-        return applyComparison(left::greaterThanOrEqual, args.get(1), fieldName + ".args[1]");
-      }
-      if ("lessthan".equals(normalizedName)) {
-        return applyComparison(left::lessThan, args.get(1), fieldName + ".args[1]");
-      }
-      if ("lessthanorequal".equals(normalizedName)) {
-        return applyComparison(left::lessThanOrEqual, args.get(1), fieldName + ".args[1]");
-      }
-      if ("arraycontains".equals(normalizedName)) {
-        return applyArrayContains(left, args.get(1), fieldName + ".args[1]");
-      }
-      if ("arraycontainsany".equals(normalizedName)) {
-        return applyArrayContainsAny(left, args.get(1), fieldName + ".args[1]");
-      }
-      if ("arraycontainsall".equals(normalizedName)) {
-        return applyArrayContainsAll(left, args.get(1), fieldName + ".args[1]");
-      }
-      if ("equalany".equals(normalizedName)) {
-        if (!containsSerializedExpression(args.get(1))) {
-          Object right = resolveConstantValue(args.get(1), fieldName + ".args[1]");
-          if (right instanceof List) {
-            return left.equalAny((List<?>) right);
-          }
-        }
-        return left.equalAny(coerceExpressionValue(args.get(1), fieldName + ".args[1]"));
-      }
-      if (!containsSerializedExpression(args.get(1))) {
-        Object right = resolveConstantValue(args.get(1), fieldName + ".args[1]");
-        if (right instanceof List) {
-          return left.notEqualAny((List<?>) right);
-        }
-      }
-      return left.notEqualAny(coerceExpressionValue(args.get(1), fieldName + ".args[1]"));
+      return coerceReceiverBooleanChain(normalizedName, functionName, args, fieldName);
     }
 
     Expression[] expressions = new Expression[args.size()];
