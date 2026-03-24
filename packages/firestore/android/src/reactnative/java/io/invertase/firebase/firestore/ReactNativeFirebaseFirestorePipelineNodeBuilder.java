@@ -405,13 +405,14 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
 
       Object operatorName = map.get("operator");
       if (operatorName instanceof String) {
-        @SuppressWarnings("unchecked")
-        Map<String, Object> stringMap = (Map<String, Object>) map;
-        return coerceBooleanOperatorExpression(stringMap, (String) operatorName, currentFieldName);
+        return coerceBooleanExpression(currentValue, currentFieldName);
       }
 
       Object name = map.get("name");
       if (name instanceof String) {
+        if (isBooleanFunctionName((String) name)) {
+          return coerceBooleanExpression(currentValue, currentFieldName);
+        }
         return coerceFunctionExpression(
             (String) name, normalizeArgs(map.get("args")), currentFieldName);
       }
@@ -896,23 +897,6 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       Map<String, Object> map, String operatorName, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     String normalizedOperator = operatorName.toUpperCase(Locale.ROOT);
-    if ("AND".equals(normalizedOperator) || "OR".equals(normalizedOperator)) {
-      Object queriesValue = map.get("queries");
-      if (!(queriesValue instanceof List) || ((List<?>) queriesValue).isEmpty()) {
-        throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-            "pipelineExecute() expected " + fieldName + ".queries to contain boolean expressions.");
-      }
-
-      List<?> queries = (List<?>) queriesValue;
-      BooleanExpression[] expressions = new BooleanExpression[queries.size()];
-      for (int i = 0; i < queries.size(); i++) {
-        expressions[i] = coerceBooleanExpression(queries.get(i), fieldName + ".queries[" + i + "]");
-      }
-      BooleanExpression first = expressions[0];
-      BooleanExpression[] rest = Arrays.copyOfRange(expressions, 1, expressions.length);
-      return "AND".equals(normalizedOperator) ? Expression.and(first, rest) : Expression.or(first, rest);
-    }
-
     Object fieldValue = map.get("fieldPath") != null ? map.get("fieldPath") : map.get("field");
     if (fieldValue == null) {
       throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
@@ -932,21 +916,6 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       String functionName, List<Object> args, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     String normalizedName = canonicalizeExpressionFunctionName(functionName);
-
-    if ("and".equals(normalizedName) || "or".equals(normalizedName)) {
-      if (args.isEmpty()) {
-        throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-            "pipelineExecute() expected " + fieldName + ".args to contain boolean expressions.");
-      }
-
-      BooleanExpression[] expressions = new BooleanExpression[args.size()];
-      for (int i = 0; i < args.size(); i++) {
-        expressions[i] = coerceBooleanValue(args.get(i), fieldName + ".args[" + i + "]");
-      }
-      BooleanExpression first = expressions[0];
-      BooleanExpression[] rest = Arrays.copyOfRange(expressions, 1, expressions.length);
-      return "and".equals(normalizedName) ? Expression.and(first, rest) : Expression.or(first, rest);
-    }
 
     if ("equal".equals(normalizedName)
         || "notequal".equals(normalizedName)
@@ -1369,6 +1338,23 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         || map.get("path") != null
         || map.get("segments") != null
         || map.get("_segments") != null;
+  }
+
+  private boolean isBooleanFunctionName(String functionName) {
+    String normalizedName = canonicalizeExpressionFunctionName(functionName);
+    return "and".equals(normalizedName)
+        || "or".equals(normalizedName)
+        || "equal".equals(normalizedName)
+        || "notequal".equals(normalizedName)
+        || "greaterthan".equals(normalizedName)
+        || "greaterthanorequal".equals(normalizedName)
+        || "lessthan".equals(normalizedName)
+        || "lessthanorequal".equals(normalizedName)
+        || "arraycontains".equals(normalizedName)
+        || "arraycontainsany".equals(normalizedName)
+        || "arraycontainsall".equals(normalizedName)
+        || "equalany".equals(normalizedName)
+        || "notequalany".equals(normalizedName);
   }
 
   private String mapOperatorToFunctionName(String operatorName) {
