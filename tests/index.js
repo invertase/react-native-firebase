@@ -15,9 +15,5 @@
  *
  */
 
-// Default: Jet integration test bundle. For standalone manual screens under
-// tests/test-app/examples/, comment out the next two lines and require one example, e.g.:
-//   require('./test-app/examples/app');
-//   require('./test-app/examples/messaging');
 require('./globals');
 require('./app');
