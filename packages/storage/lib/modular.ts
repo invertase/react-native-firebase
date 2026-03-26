@@ -36,6 +36,23 @@ type WithModularDeprecationArg<F> = F extends (...args: infer P) => infer R
   ? (...args: [...P, typeof MODULAR_DEPRECATION_ARG]) => R
   : never;
 
+function getRefUrl(path: string): string | null {
+  const isEncodedUrl = /^[a-z][a-z0-9+.-]*%3A%2F%2F/i.test(path);
+  const normalizedPath = isEncodedUrl ? decodeURIComponent(path) : path;
+
+  if (/^(gs:\/\/|https?:\/\/)/i.test(normalizedPath)) {
+    return normalizedPath;
+  }
+
+  if (/^[a-z][a-z0-9+.-]*:\/\//i.test(normalizedPath)) {
+    throw new Error(
+      "firebase.storage().refFromURL(*) 'url' must be a string value and begin with 'gs://' or 'https://'.",
+    );
+  }
+
+  return null;
+}
+
 /**
  * Returns a Storage instance for the given app.
  * @param app - FirebaseApp. Optional.
@@ -110,12 +127,17 @@ export function ref(
   }
 
   const storage = storageOrRef as FirebaseStorage;
-  if (path != null && (path.startsWith('gs://') || path.startsWith('https://'))) {
+  if (path != null && typeof path !== 'string') {
+    throw new Error("firebase.storage().ref(*) 'path' must be a string value.");
+  }
+
+  const refUrl = path == null ? null : getRefUrl(path);
+  if (refUrl != null) {
     return (
       (storage as StorageInternal).refFromURL as WithModularDeprecationArg<
         StorageInternal['refFromURL']
       >
-    ).call(storage, path, MODULAR_DEPRECATION_ARG);
+    ).call(storage, refUrl, MODULAR_DEPRECATION_ARG);
   }
   return (
     (storage as StorageInternal).ref as WithModularDeprecationArg<StorageInternal['ref']>
