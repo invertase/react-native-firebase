@@ -26,6 +26,88 @@ final class RNFBFirestorePipelineNodeBuilder {
     var value: Any?
   }
 
+  private final class ExprBridgeBox {
+    var value: ExprBridge?
+  }
+
+  private final class RawParamBox {
+    var value: Any?
+  }
+
+  private enum ExpressionCoercionMode {
+    case expression
+    case booleanExpression
+    case expressionValue
+    case comparisonOperand
+    case vectorExpressionValue
+  }
+
+  private enum ExpressionCoercionFrame {
+    case enter(
+      Any,
+      String,
+      ExpressionCoercionMode,
+      ExprBridgeBox
+    )
+    case functionExit(
+      ExprBridgeBox,
+      String,
+      [ExprBridgeBox],
+      String
+    )
+    case conditionalExit(
+      ExprBridgeBox,
+      ExprBridgeBox,
+      ExprBridgeBox,
+      ExprBridgeBox,
+      String
+    )
+    case arrayExit(
+      ExprBridgeBox,
+      [ExprBridgeBox],
+      String
+    )
+    case mapLiteralExit(
+      ExprBridgeBox,
+      [(String, ExprBridgeBox)],
+      String
+    )
+    case mapPassthroughExit(
+      ExprBridgeBox,
+      [ExprBridgeBox],
+      String
+    )
+    case logicalOperatorExit(
+      ExprBridgeBox,
+      String,
+      [ExprBridgeBox],
+      String
+    )
+    case binaryOperatorExit(
+      ExprBridgeBox,
+      String,
+      String,
+      ExprBridgeBox,
+      String
+    )
+  }
+
+  private enum RawParamCoercionFrame {
+    case enter(
+      Any,
+      String,
+      RawParamBox
+    )
+    case listExit(
+      RawParamBox,
+      [RawParamBox]
+    )
+    case mapExit(
+      RawParamBox,
+      [(String, RawParamBox)]
+    )
+  }
+
   private enum SerializationFrame {
     case expressionEnter(
       RNFBFirestoreParsedExpressionNode,
@@ -78,34 +160,14 @@ final class RNFBFirestorePipelineNodeBuilder {
     _ value: RNFBFirestoreParsedExpressionNode,
     fieldName: String
   ) throws -> ExprBridge {
-    switch value {
-    case let .field(path):
-      return FieldBridge(name: path)
-    case let .constant(constantValue):
-      return ConstantBridge(serializeValueNode(constantValue))
-    case let .function(name, args):
-      return try coerceFunctionExpression(
-        name: name,
-        args: args.map(serializeValueNode),
-        fieldName: fieldName
-      )
-    }
+    try coerceExpression(serializeExpressionNode(value), fieldName: fieldName)
   }
 
   func coerceBooleanExpression(
     _ value: RNFBFirestoreParsedExpressionNode,
     fieldName: String
   ) throws -> ExprBridge {
-    switch value {
-    case let .function(name, args):
-      return try coerceBooleanFunctionExpression(
-        name: name,
-        args: args.map(serializeValueNode),
-        fieldName: fieldName
-      )
-    default:
-      return try coerceExpression(value, fieldName: fieldName)
-    }
+    try coerceBooleanExpression(serializeExpressionNode(value), fieldName: fieldName)
   }
 
   func coerceNamedSelectables(
@@ -175,97 +237,15 @@ final class RNFBFirestorePipelineNodeBuilder {
     _ value: RNFBFirestoreParsedExpressionNode,
     fieldName: String
   ) throws -> String {
-    switch value {
-    case let .field(path):
-      return path
-    default:
-      return try coerceFieldPath(serializeExpressionNode(value), fieldName: fieldName)
-    }
+    try coerceFieldPath(serializeExpressionNode(value), fieldName: fieldName)
   }
 
   func coerceExpression(_ value: Any, fieldName: String) throws -> ExprBridge {
-    var currentValue: Any = value
-    var currentFieldName = fieldName
-
-    while true {
-      if let stringValue = currentValue as? String {
-        return FieldBridge(name: stringValue)
-      }
-
-      if let expression = currentValue as? ExprBridge {
-        return expression
-      }
-
-      if currentValue is NSNull || currentValue is NSNumber || currentValue is Date || currentValue is Timestamp ||
-        currentValue is GeoPoint || currentValue is DocumentReference || currentValue is VectorValue {
-        return ConstantBridge(currentValue)
-      }
-
-      guard let map = currentValue as? [String: Any] else {
-        throw PipelineValidationError("pipelineExecute() could not convert \(currentFieldName) into a pipeline expression.")
-      }
-
-      if let nested = map["expr"] {
-        currentValue = nested
-        currentFieldName = "\(currentFieldName).expr"
-        continue
-      }
-      if let nested = map["expression"] {
-        currentValue = nested
-        currentFieldName = "\(currentFieldName).expression"
-        continue
-      }
-
-      if let operatorName = map["operator"] as? String {
-        return try coerceBooleanOperatorExpression(map: map, operatorName: operatorName, fieldName: currentFieldName)
-      }
-
-      if let name = map["name"] as? String {
-        let args = (map["args"] as? [Any]) ?? []
-        return try coerceFunctionExpression(name: name, args: args, fieldName: currentFieldName)
-      }
-
-      if map["fieldPath"] != nil || map["path"] != nil || map["segments"] != nil || map["_segments"] != nil {
-        return FieldBridge(name: try coerceFieldPath(map, fieldName: currentFieldName))
-      }
-
-      if let kind = (map["exprType"] as? String)?.lowercased(), kind == "constant" {
-        return ConstantBridge(map["value"] as Any)
-      }
-
-      throw PipelineValidationError("pipelineExecute() could not convert \(currentFieldName) into a pipeline expression.")
-    }
+    try coerceExpressionTree(value, fieldName: fieldName, mode: .expression)
   }
 
   func coerceBooleanExpression(_ value: Any, fieldName: String) throws -> ExprBridge {
-    var currentValue: Any = value
-    var currentFieldName = fieldName
-
-    while let map = currentValue as? [String: Any] {
-      if let nested = map["condition"] {
-        currentValue = nested
-        currentFieldName = "\(currentFieldName).condition"
-        continue
-      }
-
-      if let operatorName = map["operator"] as? String {
-        return try coerceBooleanOperatorExpression(map: map, operatorName: operatorName, fieldName: currentFieldName)
-      }
-
-      if let name = map["name"] as? String {
-        let rawArgs: [Any]
-        if let args = map["args"] as? [Any] {
-          rawArgs = args
-        } else if let singleArg = map["args"] {
-          rawArgs = [singleArg]
-        } else {
-          rawArgs = []
-        }
-        return try coerceBooleanFunctionExpression(name: name, args: rawArgs, fieldName: currentFieldName)
-      }
-    }
-
-    return try coerceExpression(currentValue, fieldName: currentFieldName)
+    try coerceExpressionTree(value, fieldName: fieldName, mode: .booleanExpression)
   }
 
   func coerceAggregateFunction(
@@ -471,7 +451,10 @@ final class RNFBFirestorePipelineNodeBuilder {
     args: [Any],
     fieldName: String
   ) throws -> ExprBridge {
-    return try coerceFunctionExpression(name: name, args: args, fieldName: fieldName)
+    return try coerceBooleanExpression([
+      "name": name,
+      "args": args,
+    ], fieldName: fieldName)
   }
 
   // NOTE: iOS pipeline function lowering lives in this builder.
@@ -490,83 +473,10 @@ final class RNFBFirestorePipelineNodeBuilder {
     args: [Any],
     fieldName: String
   ) throws -> ExprBridge {
-    let normalized = canonicalizeFunctionName(name)
-
-    if normalized == "array" {
-      return try buildArrayExpression(args, fieldName: fieldName)
-    }
-
-    if normalized == "map" {
-      return try buildMapExpression(args, fieldName: fieldName)
-    }
-
-    if normalized == "conditional" {
-      guard args.count == 3 else {
-        throw PipelineValidationError("pipelineExecute() expected \(fieldName).conditional to include exactly 3 arguments.")
-      }
-
-      return FunctionExprBridge(name: "cond", args: [
-        try coerceBooleanExpression(args[0], fieldName: "\(fieldName).args[0]"),
-        try coerceExpressionValue(args[1], fieldName: "\(fieldName).args[1]"),
-        try coerceExpressionValue(args[2], fieldName: "\(fieldName).args[2]"),
-      ])
-    }
-
-    if normalized == "logicalmaximum" || normalized == "logicalminimum" {
-      guard args.count >= 2 else {
-        throw PipelineValidationError("pipelineExecute() expected \(fieldName).\(name) to include at least 2 arguments.")
-      }
-
-      return FunctionExprBridge(
-        name: normalizeExpressionFunctionName(name),
-        args: try args.enumerated().map { index, value in
-          try coerceExpressionValue(value, fieldName: "\(fieldName).args[\(index)]")
-        })
-    }
-
-    if normalized == "cosinedistance" || normalized == "dotproduct" || normalized == "euclideandistance" {
-      guard args.count == 2 else {
-        throw PipelineValidationError("pipelineExecute() expected \(fieldName).\(name) to include exactly 2 arguments.")
-      }
-
-      return FunctionExprBridge(name: normalizeExpressionFunctionName(name), args: [
-        try coerceExpressionValue(args[0], fieldName: "\(fieldName).args[0]"),
-        try coerceVectorExpressionValue(args[1], fieldName: "\(fieldName).args[1]"),
-      ])
-    }
-
-    if normalized == "and" || normalized == "or" {
-      guard !args.isEmpty else {
-        throw PipelineValidationError("pipelineExecute() expected \(fieldName).args to contain boolean expressions.")
-      }
-
-      let parsedArgs = try args.enumerated().map { index, value in
-        try coerceBooleanExpression(value, fieldName: "\(fieldName).args[\(index)]")
-      }
-      return FunctionExprBridge(name: normalized, args: parsedArgs)
-    }
-
-    let comparisonFunctions: Set<String> = [
-      "equal", "notequal", "greaterthan", "greaterthanorequal", "lessthan", "lessthanorequal",
-      "arraycontains", "arraycontainsany", "arraycontainsall", "equalany", "notequalany",
-    ]
-
-    if comparisonFunctions.contains(normalized) {
-      guard args.count >= 2 else {
-        throw PipelineValidationError(
-          "pipelineExecute() expected \(fieldName).args to include left and right operands.")
-      }
-
-      let left = try coerceExpression(args[0], fieldName: "\(fieldName).args[0]")
-      let right = try coerceComparisonOperand(args[1], fieldName: "\(fieldName).args[1]")
-      let canonicalName = canonicalComparisonFunctionName(normalized)
-      return FunctionExprBridge(name: canonicalName, args: [left, right])
-    }
-
-    let parsedArgs = try args.enumerated().map { index, value in
-      try coerceExpressionValue(value, fieldName: "\(fieldName).args[\(index)]")
-    }
-    return FunctionExprBridge(name: normalizeExpressionFunctionName(name), args: parsedArgs)
+    return try coerceExpression([
+      "name": name,
+      "args": args,
+    ], fieldName: fieldName)
   }
 
   private func buildArrayExpression(_ args: [Any], fieldName: String) throws -> ExprBridge {
@@ -643,53 +553,15 @@ final class RNFBFirestorePipelineNodeBuilder {
   }
 
   private func coerceComparisonOperand(_ value: Any, fieldName: String) throws -> ExprBridge {
-    if let map = value as? [String: Any] {
-      return try coerceExpression(map, fieldName: fieldName)
-    }
-
-    if let values = value as? [Any] {
-      return ConstantBridge(values)
-    }
-
-    if value is NSNull || value is NSNumber || value is String || value is Date || value is Timestamp ||
-      value is GeoPoint || value is DocumentReference || value is VectorValue {
-      return ConstantBridge(value)
-    }
-
-    return try coerceExpression(value, fieldName: fieldName)
+    try coerceExpressionTree(value, fieldName: fieldName, mode: .comparisonOperand)
   }
 
   private func coerceExpressionValue(_ value: Any, fieldName: String) throws -> ExprBridge {
-    if containsSerializedExpression(value) {
-      return try coerceExpression(value, fieldName: fieldName)
-    }
-
-    return ConstantBridge(try resolveConstantValue(value, fieldName: fieldName))
+    try coerceExpressionTree(value, fieldName: fieldName, mode: .expressionValue)
   }
 
   private func coerceVectorExpressionValue(_ value: Any, fieldName: String) throws -> ExprBridge {
-    var currentValue: Any = value
-
-    while let map = currentValue as? [String: Any] {
-      if let constantValue = try unwrapConstantValue(map, fieldName: fieldName) {
-        currentValue = constantValue
-        continue
-      }
-
-      if map["values"] != nil {
-        let vector = try coerceVector(map["values"], fieldName: fieldName)
-        return ConstantBridge(VectorValue(__array: vector.map { NSNumber(value: $0) }))
-      }
-
-      break
-    }
-
-    if currentValue is [Any] {
-      let vector = try coerceVector(currentValue, fieldName: fieldName)
-      return ConstantBridge(VectorValue(__array: vector.map { NSNumber(value: $0) }))
-    }
-
-    return try coerceExpressionValue(currentValue, fieldName: fieldName)
+    try coerceExpressionTree(value, fieldName: fieldName, mode: .vectorExpressionValue)
   }
 
   private func resolveConstantValue(_ value: Any, fieldName: String) throws -> Any {
@@ -967,18 +839,466 @@ final class RNFBFirestorePipelineNodeBuilder {
   }
 
   private func coerceRawParamValue(_ value: Any, fieldName: String) throws -> Any {
-    if value is ExprBridge || value is AggregateFunctionBridge {
-      return value
-    }
-    if let map = value as? [String: Any] {
-      return try coerceRawParamDictionary(map, fieldName: fieldName)
-    }
-    if let array = value as? [Any] {
-      return try array.enumerated().map { index, nested in
-        try coerceRawParamValue(nested, fieldName: "\(fieldName)[\(index)]")
+    let rootBox = RawParamBox()
+    var stack: [RawParamCoercionFrame] = [
+      .enter(value, fieldName, rootBox),
+    ]
+
+    while let frame = stack.popLast() {
+      switch frame {
+      case let .enter(value, currentFieldName, box):
+        if value is ExprBridge || value is AggregateFunctionBridge {
+          box.value = value
+          continue
+        }
+
+        if let map = value as? [String: Any] {
+          let entries = map.map { (key: $0.key, box: RawParamBox(), value: $0.value) }
+          stack.append(.mapExit(box, entries.map { ($0.key, $0.box) }))
+          for entry in entries.reversed() {
+            stack.append(.enter(entry.value, "\(currentFieldName).\(entry.key)", entry.box))
+          }
+          continue
+        }
+
+        if let array = value as? [Any] {
+          let childBoxes = array.map { _ in RawParamBox() }
+          stack.append(.listExit(box, childBoxes))
+          for index in array.indices.reversed() {
+            stack.append(.enter(array[index], "\(currentFieldName)[\(index)]", childBoxes[index]))
+          }
+          continue
+        }
+
+        box.value = try coerceExpression(value, fieldName: currentFieldName)
+      case let .listExit(box, childBoxes):
+        box.value = childBoxes.map { $0.value as Any }
+      case let .mapExit(box, entries):
+        var output: [String: Any] = [:]
+        for (key, childBox) in entries {
+          output[key] = childBox.value
+        }
+        box.value = output
       }
     }
-    return try coerceExpression(value, fieldName: fieldName)
+
+    return rootBox.value as Any
+  }
+
+  private func coerceExpressionTree(
+    _ value: Any,
+    fieldName: String,
+    mode: ExpressionCoercionMode
+  ) throws -> ExprBridge {
+    let comparisonFunctions: Set<String> = [
+      "equal", "notequal", "greaterthan", "greaterthanorequal", "lessthan", "lessthanorequal",
+      "arraycontains", "arraycontainsany", "arraycontainsall", "equalany", "notequalany",
+    ]
+
+    let rootBox = ExprBridgeBox()
+    var stack: [ExpressionCoercionFrame] = [
+      .enter(value, fieldName, mode, rootBox),
+    ]
+
+    while let frame = stack.popLast() {
+      switch frame {
+      case let .enter(value, currentFieldName, currentMode, box):
+        switch currentMode {
+        case .expressionValue:
+          if containsSerializedExpression(value) {
+            stack.append(.enter(value, currentFieldName, .expression, box))
+          } else {
+            box.value = ConstantBridge(try resolveConstantValue(value, fieldName: currentFieldName))
+          }
+          continue
+        case .comparisonOperand:
+          if let map = value as? [String: Any] {
+            stack.append(.enter(map, currentFieldName, .expression, box))
+            continue
+          }
+          if let values = value as? [Any] {
+            box.value = ConstantBridge(values)
+            continue
+          }
+          if isImmediateExpressionConstant(value) {
+            box.value = ConstantBridge(value)
+            continue
+          }
+          stack.append(.enter(value, currentFieldName, .expression, box))
+          continue
+        case .vectorExpressionValue:
+          var currentValue: Any = value
+          while let map = currentValue as? [String: Any],
+                let constantValue = try unwrapConstantValue(map, fieldName: currentFieldName) {
+            currentValue = constantValue
+          }
+
+          if let map = currentValue as? [String: Any], map["values"] != nil {
+            let vector = try coerceVector(map["values"], fieldName: currentFieldName)
+            box.value = ConstantBridge(VectorValue(__array: vector.map { NSNumber(value: $0) }))
+            continue
+          }
+
+          if currentValue is [Any] {
+            let vector = try coerceVector(currentValue, fieldName: currentFieldName)
+            box.value = ConstantBridge(VectorValue(__array: vector.map { NSNumber(value: $0) }))
+            continue
+          }
+
+          if containsSerializedExpression(currentValue) {
+            stack.append(.enter(currentValue, currentFieldName, .expression, box))
+          } else {
+            box.value = ConstantBridge(try resolveConstantValue(currentValue, fieldName: currentFieldName))
+          }
+          continue
+        case .expression, .booleanExpression:
+          var currentValue: Any = value
+          var currentField = currentFieldName
+
+          expressionLoop: while true {
+            if currentMode == .booleanExpression,
+              let conditionMap = currentValue as? [String: Any],
+              let nested = conditionMap["condition"] {
+              currentValue = nested
+              currentField = "\(currentField).condition"
+              continue
+            }
+
+            if let stringValue = currentValue as? String {
+              box.value = FieldBridge(name: stringValue)
+              break expressionLoop
+            }
+
+            if let expression = currentValue as? ExprBridge {
+              box.value = expression
+              break expressionLoop
+            }
+
+            if isImmediateExpressionConstant(currentValue) {
+              box.value = ConstantBridge(currentValue)
+              break expressionLoop
+            }
+
+            guard let map = currentValue as? [String: Any] else {
+              throw PipelineValidationError(
+                "pipelineExecute() could not convert \(currentField) into a pipeline expression.")
+            }
+
+            if let nested = map["expr"] {
+              currentValue = nested
+              currentField = "\(currentField).expr"
+              continue
+            }
+            if let nested = map["expression"] {
+              currentValue = nested
+              currentField = "\(currentField).expression"
+              continue
+            }
+
+            if let operatorName = map["operator"] as? String {
+              let normalizedOperator = operatorName.uppercased()
+              if normalizedOperator == "AND" || normalizedOperator == "OR" {
+                guard let queries = map["queries"] as? [Any], !queries.isEmpty else {
+                  throw PipelineValidationError(
+                    "pipelineExecute() expected \(currentField).queries to contain boolean expressions.")
+                }
+
+                let queryBoxes = queries.map { _ in ExprBridgeBox() }
+                stack.append(.logicalOperatorExit(
+                  box,
+                  normalizedOperator == "AND" ? "and" : "or",
+                  queryBoxes,
+                  currentField
+                ))
+                for index in queries.indices.reversed() {
+                  stack.append(.enter(
+                    queries[index],
+                    "\(currentField).queries[\(index)]",
+                    .booleanExpression,
+                    queryBoxes[index]
+                  ))
+                }
+                break expressionLoop
+              }
+
+              let fieldValue = map["fieldPath"] ?? map["field"]
+              guard let fieldValue else {
+                throw PipelineValidationError("pipelineExecute() expected \(currentField).fieldPath to be provided.")
+              }
+
+              let leftFieldPath = try coerceFieldPath(fieldValue, fieldName: "\(currentField).fieldPath")
+              let right = map["value"] ?? map["right"] ?? map["operand"] ?? NSNull()
+              let rightBox = ExprBridgeBox()
+              stack.append(.binaryOperatorExit(
+                box,
+                mapOperatorToFunction(normalizedOperator),
+                leftFieldPath,
+                rightBox,
+                currentField
+              ))
+              stack.append(.enter(right, "\(currentField).value", .comparisonOperand, rightBox))
+              break expressionLoop
+            }
+
+            if let name = map["name"] as? String {
+              let rawArgs: [Any]
+              if let args = map["args"] as? [Any] {
+                rawArgs = args
+              } else if let singleArg = map["args"] {
+                rawArgs = [singleArg]
+              } else {
+                rawArgs = []
+              }
+
+              let normalized = canonicalizeFunctionName(name)
+
+              if normalized == "array" {
+                let elements: [Any]
+                if rawArgs.count == 1,
+                  let unwrapped = try unwrapConstantArray(rawArgs[0], fieldName: "\(currentField).args[0]") {
+                  elements = unwrapped
+                } else {
+                  elements = rawArgs
+                }
+
+                if !elements.contains(where: containsSerializedExpression) {
+                  box.value = ConstantBridge(try elements.enumerated().map { index, element in
+                    try resolveConstantValue(element, fieldName: "\(currentField).args[\(index)]")
+                  })
+                  break expressionLoop
+                }
+
+                let argBoxes = elements.map { _ in ExprBridgeBox() }
+                stack.append(.arrayExit(box, argBoxes, currentField))
+                for index in elements.indices.reversed() {
+                  stack.append(.enter(
+                    elements[index],
+                    "\(currentField).args[\(index)]",
+                    .expressionValue,
+                    argBoxes[index]
+                  ))
+                }
+                break expressionLoop
+              }
+
+              if normalized == "map" {
+                guard rawArgs.count == 1 else {
+                  throw PipelineValidationError(
+                    "pipelineExecute() expected \(currentField).map to include exactly 1 argument.")
+                }
+
+                if let entries = try unwrapConstantMap(rawArgs[0], fieldName: "\(currentField).args[0]") {
+                  if !entries.values.contains(where: containsSerializedExpression) {
+                    var resolved: [String: Any] = [:]
+                    for (key, entryValue) in entries {
+                      resolved[key] = try resolveConstantValue(
+                        entryValue,
+                        fieldName: "\(currentField).args[0].\(key)"
+                      )
+                    }
+                    box.value = ConstantBridge(resolved)
+                    break expressionLoop
+                  }
+
+                  let entryBoxes = entries.map { (key: $0.key, box: ExprBridgeBox(), value: $0.value) }
+                  stack.append(.mapLiteralExit(
+                    box,
+                    entryBoxes.map { ($0.key, $0.box) },
+                    currentField
+                  ))
+                  for entry in entryBoxes.reversed() {
+                    stack.append(.enter(
+                      entry.value,
+                      "\(currentField).args[0].\(entry.key)",
+                      .expressionValue,
+                      entry.box
+                    ))
+                  }
+                  break expressionLoop
+                }
+
+                let argBoxes = rawArgs.map { _ in ExprBridgeBox() }
+                stack.append(.mapPassthroughExit(box, argBoxes, currentField))
+                for index in rawArgs.indices.reversed() {
+                  stack.append(.enter(
+                    rawArgs[index],
+                    "\(currentField).args[\(index)]",
+                    .expressionValue,
+                    argBoxes[index]
+                  ))
+                }
+                break expressionLoop
+              }
+
+              if normalized == "conditional" {
+                guard rawArgs.count == 3 else {
+                  throw PipelineValidationError(
+                    "pipelineExecute() expected \(currentField).conditional to include exactly 3 arguments.")
+                }
+
+                let conditionBox = ExprBridgeBox()
+                let trueBox = ExprBridgeBox()
+                let falseBox = ExprBridgeBox()
+                stack.append(.conditionalExit(box, conditionBox, trueBox, falseBox, currentField))
+                stack.append(.enter(rawArgs[2], "\(currentField).args[2]", .expressionValue, falseBox))
+                stack.append(.enter(rawArgs[1], "\(currentField).args[1]", .expressionValue, trueBox))
+                stack.append(.enter(rawArgs[0], "\(currentField).args[0]", .booleanExpression, conditionBox))
+                break expressionLoop
+              }
+
+              if normalized == "logicalmaximum" || normalized == "logicalminimum" {
+                guard rawArgs.count >= 2 else {
+                  throw PipelineValidationError(
+                    "pipelineExecute() expected \(currentField).\(name) to include at least 2 arguments.")
+                }
+
+                let argBoxes = rawArgs.map { _ in ExprBridgeBox() }
+                stack.append(.functionExit(box, normalizeExpressionFunctionName(name), argBoxes, currentField))
+                for index in rawArgs.indices.reversed() {
+                  stack.append(.enter(
+                    rawArgs[index],
+                    "\(currentField).args[\(index)]",
+                    .expressionValue,
+                    argBoxes[index]
+                  ))
+                }
+                break expressionLoop
+              }
+
+              if normalized == "cosinedistance" || normalized == "dotproduct" || normalized == "euclideandistance" {
+                guard rawArgs.count == 2 else {
+                  throw PipelineValidationError(
+                    "pipelineExecute() expected \(currentField).\(name) to include exactly 2 arguments.")
+                }
+
+                let argBoxes = rawArgs.map { _ in ExprBridgeBox() }
+                stack.append(.functionExit(box, normalizeExpressionFunctionName(name), argBoxes, currentField))
+                stack.append(.enter(rawArgs[1], "\(currentField).args[1]", .vectorExpressionValue, argBoxes[1]))
+                stack.append(.enter(rawArgs[0], "\(currentField).args[0]", .expressionValue, argBoxes[0]))
+                break expressionLoop
+              }
+
+              if normalized == "and" || normalized == "or" {
+                guard !rawArgs.isEmpty else {
+                  throw PipelineValidationError(
+                    "pipelineExecute() expected \(currentField).args to contain boolean expressions.")
+                }
+
+                let argBoxes = rawArgs.map { _ in ExprBridgeBox() }
+                stack.append(.functionExit(box, normalized, argBoxes, currentField))
+                for index in rawArgs.indices.reversed() {
+                  stack.append(.enter(
+                    rawArgs[index],
+                    "\(currentField).args[\(index)]",
+                    .booleanExpression,
+                    argBoxes[index]
+                  ))
+                }
+                break expressionLoop
+              }
+
+              if comparisonFunctions.contains(normalized) {
+                guard rawArgs.count >= 2 else {
+                  throw PipelineValidationError(
+                    "pipelineExecute() expected \(currentField).args to include left and right operands.")
+                }
+
+                let argBoxes = rawArgs.map { _ in ExprBridgeBox() }
+                stack.append(.functionExit(box, canonicalComparisonFunctionName(normalized), argBoxes, currentField))
+                stack.append(.enter(rawArgs[1], "\(currentField).args[1]", .comparisonOperand, argBoxes[1]))
+                stack.append(.enter(rawArgs[0], "\(currentField).args[0]", .expression, argBoxes[0]))
+                break expressionLoop
+              }
+
+              let argBoxes = rawArgs.map { _ in ExprBridgeBox() }
+              stack.append(.functionExit(box, normalizeExpressionFunctionName(name), argBoxes, currentField))
+              for index in rawArgs.indices.reversed() {
+                stack.append(.enter(
+                  rawArgs[index],
+                  "\(currentField).args[\(index)]",
+                  .expressionValue,
+                  argBoxes[index]
+                ))
+              }
+              break expressionLoop
+            }
+
+            if map["fieldPath"] != nil || map["path"] != nil || map["segments"] != nil || map["_segments"] != nil {
+              box.value = FieldBridge(name: try coerceFieldPath(map, fieldName: currentField))
+              break expressionLoop
+            }
+
+            if let kind = (map["exprType"] as? String)?.lowercased(), kind == "constant" {
+              box.value = ConstantBridge(map["value"] as Any)
+              break expressionLoop
+            }
+
+            throw PipelineValidationError(
+              "pipelineExecute() could not convert \(currentField) into a pipeline expression.")
+          }
+        }
+      case let .functionExit(box, name, argBoxes, currentFieldName):
+        box.value = FunctionExprBridge(
+          name: name,
+          args: try argBoxes.enumerated().map { index, argBox in
+            try requireExpressionValue(argBox, fieldName: "\(currentFieldName).args[\(index)]")
+          }
+        )
+      case let .conditionalExit(box, conditionBox, trueBox, falseBox, currentFieldName):
+        box.value = FunctionExprBridge(name: "cond", args: [
+          try requireExpressionValue(conditionBox, fieldName: "\(currentFieldName).args[0]"),
+          try requireExpressionValue(trueBox, fieldName: "\(currentFieldName).args[1]"),
+          try requireExpressionValue(falseBox, fieldName: "\(currentFieldName).args[2]"),
+        ])
+      case let .arrayExit(box, argBoxes, currentFieldName):
+        box.value = FunctionExprBridge(
+          name: "array",
+          args: try argBoxes.enumerated().map { index, argBox in
+            try requireExpressionValue(argBox, fieldName: "\(currentFieldName).args[\(index)]")
+          }
+        )
+      case let .mapLiteralExit(box, entries, currentFieldName):
+        var args: [ExprBridge] = []
+        for (key, valueBox) in entries {
+          args.append(ConstantBridge(key))
+          args.append(try requireExpressionValue(valueBox, fieldName: "\(currentFieldName).args[0].\(key)"))
+        }
+        box.value = FunctionExprBridge(name: "map", args: args)
+      case let .mapPassthroughExit(box, argBoxes, currentFieldName):
+        box.value = FunctionExprBridge(
+          name: "map",
+          args: try argBoxes.enumerated().map { index, argBox in
+            try requireExpressionValue(argBox, fieldName: "\(currentFieldName).args[\(index)]")
+          }
+        )
+      case let .logicalOperatorExit(box, name, argBoxes, currentFieldName):
+        box.value = FunctionExprBridge(
+          name: name,
+          args: try argBoxes.enumerated().map { index, argBox in
+            try requireExpressionValue(argBox, fieldName: "\(currentFieldName).queries[\(index)]")
+          }
+        )
+      case let .binaryOperatorExit(box, name, leftFieldPath, rightBox, currentFieldName):
+        box.value = FunctionExprBridge(name: name, args: [
+          FieldBridge(name: leftFieldPath),
+          try requireExpressionValue(rightBox, fieldName: "\(currentFieldName).value"),
+        ])
+      }
+    }
+
+    return try requireExpressionValue(rootBox, fieldName: fieldName)
+  }
+
+  private func requireExpressionValue(_ box: ExprBridgeBox, fieldName: String) throws -> ExprBridge {
+    guard let value = box.value else {
+      throw PipelineValidationError("pipelineExecute() expected \(fieldName) to be provided.")
+    }
+    return value
+  }
+
+  private func isImmediateExpressionConstant(_ value: Any) -> Bool {
+    value is NSNull || value is NSNumber || value is Date || value is Timestamp ||
+      value is GeoPoint || value is DocumentReference || value is VectorValue
   }
 
   func coerceAlias(from value: Any) -> String? {
