@@ -60,7 +60,7 @@ module.exports = {
     emulator: {
       type: 'android.emulator',
       device: {
-        avdName: 'TestingAVD',
+        avdName: 'API35_ANDROID',
       },
     },
   },
