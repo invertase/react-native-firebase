@@ -53,8 +53,8 @@ import com.google.firebase.firestore.pipeline.RawStage;
 import com.google.firebase.firestore.pipeline.SampleStage;
 import com.google.firebase.firestore.pipeline.Selectable;
 import com.google.firebase.firestore.pipeline.UnnestOptions;
-import java.util.Arrays;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -191,7 +191,9 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
         Pipeline sourcePipeline = buildSourcePipeline(enterFrame.request.source);
         List<PendingPipelineStage> pendingStages =
             new java.util.ArrayList<>(enterFrame.request.stages.size());
-        List<Map.Entry<ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineRequest, PipelineBox>>
+        List<
+                Map.Entry<
+                    ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineRequest, PipelineBox>>
             nestedRequests = new java.util.ArrayList<>();
 
         for (ReactNativeFirebaseFirestorePipelineParser.ParsedPipelineStage stage :
@@ -221,8 +223,7 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
       Pipeline currentPipeline = exitFrame.sourcePipeline;
       for (PendingPipelineStage pendingStage : exitFrame.stages) {
         if (pendingStage instanceof ReadyPipelineStage) {
-          currentPipeline =
-              applyStage(currentPipeline, ((ReadyPipelineStage) pendingStage).stage);
+          currentPipeline = applyStage(currentPipeline, ((ReadyPipelineStage) pendingStage).stage);
           continue;
         }
 
@@ -631,7 +632,8 @@ class ReactNativeFirebaseFirestorePipelineExecutor {
   private Pipeline applyUnionStage(
       Pipeline pipeline, ReactNativeFirebaseFirestorePipelineParser.ParsedUnionStage stage)
       throws PipelineValidationException {
-    throw new PipelineValidationException("pipelineExecute() failed to build nested union pipeline.");
+    throw new PipelineValidationException(
+        "pipelineExecute() failed to build nested union pipeline.");
   }
 
   private Pipeline applyUnnestStage(

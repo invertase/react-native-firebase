@@ -4,8 +4,8 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
-import java.util.Arrays;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -225,7 +225,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     final List<ParsedValueNodeBox> childBoxes;
     final String fieldName;
 
-    ValueListExitFrame(ParsedValueNodeBox box, List<ParsedValueNodeBox> childBoxes, String fieldName) {
+    ValueListExitFrame(
+        ParsedValueNodeBox box, List<ParsedValueNodeBox> childBoxes, String fieldName) {
       this.box = box;
       this.childBoxes = childBoxes;
       this.fieldName = fieldName;
@@ -318,7 +319,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
         for (int i = nestedPipelines.size() - 1; i >= 0; i--) {
           Map.Entry<Map<String, Object>, ParsedPipelineRequestBox> nestedEntry =
               nestedPipelines.get(i);
-          stack.push(new EnterPipelineParseFrame(nestedEntry.getKey(), null, nestedEntry.getValue()));
+          stack.push(
+              new EnterPipelineParseFrame(nestedEntry.getKey(), null, nestedEntry.getValue()));
         }
         continue;
       }
@@ -339,8 +341,7 @@ final class ReactNativeFirebaseFirestorePipelineParser {
         stages.add(new ParsedUnionStage(childBox.value));
       }
 
-      exitFrame.box.value =
-          new ParsedPipelineRequest(exitFrame.source, stages, exitFrame.options);
+      exitFrame.box.value = new ParsedPipelineRequest(exitFrame.source, stages, exitFrame.options);
     }
 
     if (rootBox.value == null) {
@@ -386,7 +387,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
     }
   }
 
-  private static StageDescriptor parseStageDescriptor(Map<String, Object> stageMap, String fieldName)
+  private static StageDescriptor parseStageDescriptor(
+      Map<String, Object> stageMap, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     Object stageNameValue = stageMap.get("stage");
     if (!(stageNameValue instanceof String) || ((String) stageNameValue).isEmpty()) {
@@ -869,8 +871,7 @@ final class ReactNativeFirebaseFirestorePipelineParser {
           Map<?, ?> map = (Map<?, ?>) value;
           if (map.containsKey("expr")) {
             stack.push(
-                new ExpressionEnterFrame(
-                    map.get("expr"), enterFrame.box, fieldName + ".expr"));
+                new ExpressionEnterFrame(map.get("expr"), enterFrame.box, fieldName + ".expr"));
             continue;
           }
           if (map.containsKey("expression")) {
@@ -882,8 +883,7 @@ final class ReactNativeFirebaseFirestorePipelineParser {
 
           Object operatorValue = map.get("operator");
           if (operatorValue instanceof String) {
-            String normalizedOperator =
-                ((String) operatorValue).toUpperCase(java.util.Locale.ROOT);
+            String normalizedOperator = ((String) operatorValue).toUpperCase(java.util.Locale.ROOT);
             if ("AND".equals(normalizedOperator) || "OR".equals(normalizedOperator)) {
               Object queriesValue = map.get("queries");
               if (!(queriesValue instanceof List) || ((List<?>) queriesValue).isEmpty()) {
@@ -893,8 +893,7 @@ final class ReactNativeFirebaseFirestorePipelineParser {
                         + ".queries to contain boolean expressions.");
               }
               List<?> queries = (List<?>) queriesValue;
-              List<ParsedExpressionNodeBox> queryBoxes =
-                  new java.util.ArrayList<>(queries.size());
+              List<ParsedExpressionNodeBox> queryBoxes = new java.util.ArrayList<>(queries.size());
               for (int i = 0; i < queries.size(); i++) {
                 queryBoxes.add(new ParsedExpressionNodeBox());
               }
@@ -909,7 +908,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
               continue;
             }
 
-            Object fieldValue = map.get("fieldPath") != null ? map.get("fieldPath") : map.get("field");
+            Object fieldValue =
+                map.get("fieldPath") != null ? map.get("fieldPath") : map.get("field");
             if (fieldValue == null) {
               throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
                   "pipelineExecute() expected " + fieldName + ".fieldPath to be provided.");
@@ -933,7 +933,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
           if (exprType instanceof String) {
             String normalizedType = ((String) exprType).toLowerCase(java.util.Locale.ROOT);
             if ("field".equals(normalizedType)) {
-              enterFrame.box.value = new ParsedFieldExpressionNode(coerceFieldPath(value, fieldName));
+              enterFrame.box.value =
+                  new ParsedFieldExpressionNode(coerceFieldPath(value, fieldName));
               continue;
             }
             if ("constant".equals(normalizedType)) {
@@ -970,7 +971,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
                     enterFrame.box, (String) nameValue, argBoxes, fieldName));
             for (int i = rawArgs.size() - 1; i >= 0; i--) {
               stack.push(
-                  new ValueEnterFrame(rawArgs.get(i), argBoxes.get(i), fieldName + ".args[" + i + "]"));
+                  new ValueEnterFrame(
+                      rawArgs.get(i), argBoxes.get(i), fieldName + ".args[" + i + "]"));
             }
             continue;
           }
@@ -1096,8 +1098,7 @@ final class ReactNativeFirebaseFirestorePipelineParser {
           stack.push(new ValueMapExitFrame(enterFrame.box, exitEntries, fieldName));
           for (int i = pendingEntries.size() - 1; i >= 0; i--) {
             PendingValueEntry entry = pendingEntries.get(i);
-            stack.push(
-                new ValueEnterFrame(entry.value, entry.box, fieldName + "." + entry.key));
+            stack.push(new ValueEnterFrame(entry.value, entry.box, fieldName + "." + entry.key));
           }
           continue;
         }
@@ -1110,7 +1111,8 @@ final class ReactNativeFirebaseFirestorePipelineParser {
           }
           stack.push(new ValueListExitFrame(enterFrame.box, childBoxes, fieldName));
           for (int i = list.size() - 1; i >= 0; i--) {
-            stack.push(new ValueEnterFrame(list.get(i), childBoxes.get(i), fieldName + "[" + i + "]"));
+            stack.push(
+                new ValueEnterFrame(list.get(i), childBoxes.get(i), fieldName + "[" + i + "]"));
           }
           continue;
         }

@@ -163,7 +163,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     final String fieldName;
     final LoweredExpressionBox box;
 
-    EnterObjectVectorExpressionValueFrame(Object value, String fieldName, LoweredExpressionBox box) {
+    EnterObjectVectorExpressionValueFrame(
+        Object value, String fieldName, LoweredExpressionBox box) {
       this.value = value;
       this.fieldName = fieldName;
       this.box = box;
@@ -191,9 +192,7 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     final List<String> pendingUnaryFunctions;
 
     ExitApplyPendingUnaryBooleanFrame(
-        LoweredExpressionBox box,
-        LoweredBooleanBox childBox,
-        List<String> pendingUnaryFunctions) {
+        LoweredExpressionBox box, LoweredBooleanBox childBox, List<String> pendingUnaryFunctions) {
       this.box = box;
       this.childBox = childBox;
       this.pendingUnaryFunctions = pendingUnaryFunctions;
@@ -258,7 +257,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     final LoweredExpressionBox box;
     final List<LoweredExpressionBox> childBoxes;
 
-    ExitObjectArrayExpressionFrame(LoweredExpressionBox box, List<LoweredExpressionBox> childBoxes) {
+    ExitObjectArrayExpressionFrame(
+        LoweredExpressionBox box, List<LoweredExpressionBox> childBoxes) {
       this.box = box;
       this.childBoxes = childBoxes;
     }
@@ -1099,16 +1099,22 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
               }
               stack.push(
                   new ExitBooleanLogicalFrame(
-                      enterFrame.box, "AND".equals(normalizedOperator), childBoxes, currentFieldName));
+                      enterFrame.box,
+                      "AND".equals(normalizedOperator),
+                      childBoxes,
+                      currentFieldName));
               for (int i = queries.size() - 1; i >= 0; i--) {
                 stack.push(
                     new EnterObjectBooleanFrame(
-                        queries.get(i), currentFieldName + ".queries[" + i + "]", childBoxes.get(i)));
+                        queries.get(i),
+                        currentFieldName + ".queries[" + i + "]",
+                        childBoxes.get(i)));
               }
               continue;
             }
 
-            Object fieldValue = map.get("fieldPath") != null ? map.get("fieldPath") : map.get("field");
+            Object fieldValue =
+                map.get("fieldPath") != null ? map.get("fieldPath") : map.get("field");
             if (fieldValue == null) {
               throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
                   "pipelineExecute() expected " + currentFieldName + ".fieldPath to be provided.");
@@ -1121,7 +1127,11 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
                     ? map.get("value")
                     : map.containsKey("right") ? map.get("right") : map.get("operand"));
             scheduleBooleanFunctionLowering(
-                mapOperatorToFunctionName(normalizedOperator), args, currentFieldName, enterFrame.box, stack);
+                mapOperatorToFunctionName(normalizedOperator),
+                args,
+                currentFieldName,
+                enterFrame.box,
+                stack);
             continue;
           }
 
@@ -1152,7 +1162,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
               continue;
             }
 
-            scheduleBooleanFunctionLowering((String) name, args, currentFieldName, enterFrame.box, stack);
+            scheduleBooleanFunctionLowering(
+                (String) name, args, currentFieldName, enterFrame.box, stack);
             continue;
           }
         }
@@ -1171,10 +1182,13 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
           continue;
         }
         if (containsLowerableExpression(enterFrame.value)) {
-          stack.push(new EnterObjectExpressionFrame(enterFrame.value, enterFrame.fieldName, enterFrame.box));
+          stack.push(
+              new EnterObjectExpressionFrame(
+                  enterFrame.value, enterFrame.fieldName, enterFrame.box));
           continue;
         }
-        enterFrame.box.value = constantExpression(resolveConstantValue(enterFrame.value, enterFrame.fieldName));
+        enterFrame.box.value =
+            constantExpression(resolveConstantValue(enterFrame.value, enterFrame.fieldName));
         continue;
       }
 
@@ -1185,11 +1199,13 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
           continue;
         }
         if (containsLowerableExpression(enterFrame.value)) {
-          stack.push(new EnterObjectBooleanFrame(enterFrame.value, enterFrame.fieldName, enterFrame.box));
+          stack.push(
+              new EnterObjectBooleanFrame(enterFrame.value, enterFrame.fieldName, enterFrame.box));
           continue;
         }
 
-        Expression expression = constantExpression(resolveConstantValue(enterFrame.value, enterFrame.fieldName));
+        Expression expression =
+            constantExpression(resolveConstantValue(enterFrame.value, enterFrame.fieldName));
         if (expression instanceof BooleanExpression) {
           enterFrame.box.value = (BooleanExpression) expression;
           continue;
@@ -1210,7 +1226,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
           LoweredExpressionBox expressionBox = new LoweredExpressionBox();
           stack.push(new ExitSetObjectFromExpressionFrame(enterFrame.box, expressionBox));
           stack.push(
-              new EnterObjectExpressionValueFrame(enterFrame.value, enterFrame.fieldName, expressionBox));
+              new EnterObjectExpressionValueFrame(
+                  enterFrame.value, enterFrame.fieldName, expressionBox));
           continue;
         }
         enterFrame.box.value = resolveConstantValue(enterFrame.value, enterFrame.fieldName);
@@ -1258,7 +1275,9 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
           continue;
         }
 
-        stack.push(new EnterObjectExpressionValueFrame(currentValue, enterFrame.fieldName, enterFrame.box));
+        stack.push(
+            new EnterObjectExpressionValueFrame(
+                currentValue, enterFrame.fieldName, enterFrame.box));
         continue;
       }
 
@@ -1361,7 +1380,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
           expressions[i] = exitFrame.childBoxes.get(i).value;
         }
         exitFrame.box.value =
-            Expression.rawFunction(normalizeExpressionFunctionName(exitFrame.functionName), expressions);
+            Expression.rawFunction(
+                normalizeExpressionFunctionName(exitFrame.functionName), expressions);
         continue;
       }
 
@@ -1397,273 +1417,287 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
 
         switch (operation.normalizedName) {
           case "logicalmaximum":
-          case "logicalminimum": {
-            if (args.size() < 2) {
-              throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-                  "pipelineExecute() expected "
-                      + operationFieldName
-                      + "."
-                      + operation.originalName
-                      + " to include at least 2 arguments.");
+          case "logicalminimum":
+            {
+              if (args.size() < 2) {
+                throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+                    "pipelineExecute() expected "
+                        + operationFieldName
+                        + "."
+                        + operation.originalName
+                        + " to include at least 2 arguments.");
+              }
+              List<LoweredExpressionBox> childBoxes = new ArrayList<>(args.size() - 1);
+              for (int i = 1; i < args.size(); i++) {
+                childBoxes.add(new LoweredExpressionBox());
+              }
+              stack.push(
+                  new ExitReceiverLogicalExtremaFrame(
+                      continueFrame.box,
+                      continueFrame.pendingOperations,
+                      nextIndex,
+                      currentExpression,
+                      "logicalmaximum".equals(operation.normalizedName),
+                      childBoxes));
+              for (int i = childBoxes.size() - 1; i >= 0; i--) {
+                int argIndex = i + 1;
+                stack.push(
+                    new EnterObjectExpressionValueFrame(
+                        args.get(argIndex),
+                        operationFieldName + ".args[" + argIndex + "]",
+                        childBoxes.get(i)));
+              }
+              continue;
             }
-            List<LoweredExpressionBox> childBoxes = new ArrayList<>(args.size() - 1);
-            for (int i = 1; i < args.size(); i++) {
-              childBoxes.add(new LoweredExpressionBox());
-            }
-            stack.push(
-                new ExitReceiverLogicalExtremaFrame(
-                    continueFrame.box,
-                    continueFrame.pendingOperations,
-                    nextIndex,
-                    currentExpression,
-                    "logicalmaximum".equals(operation.normalizedName),
-                    childBoxes));
-            for (int i = childBoxes.size() - 1; i >= 0; i--) {
-              int argIndex = i + 1;
+          case "mapget":
+            {
+              Object keyArg = args.get(1);
+              if (!containsLowerableExpression(keyArg)) {
+                Object keyValue = resolveConstantValue(keyArg, operationFieldName + ".args[1]");
+                if (keyValue instanceof String) {
+                  stack.push(
+                      new ContinueReceiverExpressionChainFrame(
+                          continueFrame.box,
+                          null,
+                          continueFrame.pendingOperations,
+                          nextIndex,
+                          currentExpression.mapGet((String) keyValue)));
+                  continue;
+                }
+              }
+
+              LoweredExpressionBox keyBox = new LoweredExpressionBox();
+              stack.push(
+                  new ExitReceiverMapGetFrame(
+                      continueFrame.box,
+                      continueFrame.pendingOperations,
+                      nextIndex,
+                      currentExpression,
+                      keyBox));
               stack.push(
                   new EnterObjectExpressionValueFrame(
-                      args.get(argIndex),
-                      operationFieldName + ".args[" + argIndex + "]",
-                      childBoxes.get(i)));
+                      keyArg, operationFieldName + ".args[1]", keyBox));
+              continue;
             }
-            continue;
-          }
-          case "mapget": {
-            Object keyArg = args.get(1);
-            if (!containsLowerableExpression(keyArg)) {
-              Object keyValue = resolveConstantValue(keyArg, operationFieldName + ".args[1]");
-              if (keyValue instanceof String) {
-                stack.push(
-                    new ContinueReceiverExpressionChainFrame(
-                        continueFrame.box,
-                        null,
-                        continueFrame.pendingOperations,
-                        nextIndex,
-                        currentExpression.mapGet((String) keyValue)));
-                continue;
+          case "mapmerge":
+            {
+              if (args.size() < 2) {
+                throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+                    "pipelineExecute() expected "
+                        + operationFieldName
+                        + "."
+                        + operation.originalName
+                        + " to include at least 2 arguments.");
               }
+              List<LoweredExpressionBox> childBoxes = new ArrayList<>(args.size() - 1);
+              for (int i = 1; i < args.size(); i++) {
+                childBoxes.add(new LoweredExpressionBox());
+              }
+              stack.push(
+                  new ExitReceiverMapMergeFrame(
+                      continueFrame.box,
+                      continueFrame.pendingOperations,
+                      nextIndex,
+                      currentExpression,
+                      childBoxes));
+              for (int i = childBoxes.size() - 1; i >= 0; i--) {
+                int argIndex = i + 1;
+                stack.push(
+                    new EnterObjectExpressionValueFrame(
+                        args.get(argIndex),
+                        operationFieldName + ".args[" + argIndex + "]",
+                        childBoxes.get(i)));
+              }
+              continue;
             }
+          case "arrayget":
+            {
+              Object indexArg = args.get(1);
+              if (!containsLowerableExpression(indexArg)) {
+                Object indexValue = resolveConstantValue(indexArg, operationFieldName + ".args[1]");
+                if (indexValue instanceof Number) {
+                  stack.push(
+                      new ContinueReceiverExpressionChainFrame(
+                          continueFrame.box,
+                          null,
+                          continueFrame.pendingOperations,
+                          nextIndex,
+                          currentExpression.arrayGet(((Number) indexValue).intValue())));
+                  continue;
+                }
+              }
 
-            LoweredExpressionBox keyBox = new LoweredExpressionBox();
-            stack.push(
-                new ExitReceiverMapGetFrame(
-                    continueFrame.box,
-                    continueFrame.pendingOperations,
-                    nextIndex,
-                    currentExpression,
-                    keyBox));
-            stack.push(
-                new EnterObjectExpressionValueFrame(keyArg, operationFieldName + ".args[1]", keyBox));
-            continue;
-          }
-          case "mapmerge": {
-            if (args.size() < 2) {
-              throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-                  "pipelineExecute() expected "
-                      + operationFieldName
-                      + "."
-                      + operation.originalName
-                      + " to include at least 2 arguments.");
-            }
-            List<LoweredExpressionBox> childBoxes = new ArrayList<>(args.size() - 1);
-            for (int i = 1; i < args.size(); i++) {
-              childBoxes.add(new LoweredExpressionBox());
-            }
-            stack.push(
-                new ExitReceiverMapMergeFrame(
-                    continueFrame.box,
-                    continueFrame.pendingOperations,
-                    nextIndex,
-                    currentExpression,
-                    childBoxes));
-            for (int i = childBoxes.size() - 1; i >= 0; i--) {
-              int argIndex = i + 1;
+              LoweredExpressionBox indexBox = new LoweredExpressionBox();
+              stack.push(
+                  new ExitReceiverArrayGetFrame(
+                      continueFrame.box,
+                      continueFrame.pendingOperations,
+                      nextIndex,
+                      currentExpression,
+                      indexBox));
               stack.push(
                   new EnterObjectExpressionValueFrame(
-                      args.get(argIndex),
-                      operationFieldName + ".args[" + argIndex + "]",
-                      childBoxes.get(i)));
+                      indexArg, operationFieldName + ".args[1]", indexBox));
+              continue;
             }
-            continue;
-          }
-          case "arrayget": {
-            Object indexArg = args.get(1);
-            if (!containsLowerableExpression(indexArg)) {
-              Object indexValue = resolveConstantValue(indexArg, operationFieldName + ".args[1]");
-              if (indexValue instanceof Number) {
-                stack.push(
-                    new ContinueReceiverExpressionChainFrame(
-                        continueFrame.box,
-                        null,
-                        continueFrame.pendingOperations,
-                        nextIndex,
-                        currentExpression.arrayGet(((Number) indexValue).intValue())));
-                continue;
+          case "arrayconcat":
+            {
+              if (args.size() < 2) {
+                throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+                    "pipelineExecute() expected "
+                        + operationFieldName
+                        + "."
+                        + operation.originalName
+                        + " to include at least 2 arguments.");
               }
-            }
-
-            LoweredExpressionBox indexBox = new LoweredExpressionBox();
-            stack.push(
-                new ExitReceiverArrayGetFrame(
-                    continueFrame.box,
-                    continueFrame.pendingOperations,
-                    nextIndex,
-                    currentExpression,
-                    indexBox));
-            stack.push(
-                new EnterObjectExpressionValueFrame(
-                    indexArg, operationFieldName + ".args[1]", indexBox));
-            continue;
-          }
-          case "arrayconcat": {
-            if (args.size() < 2) {
-              throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-                  "pipelineExecute() expected "
-                      + operationFieldName
-                      + "."
-                      + operation.originalName
-                      + " to include at least 2 arguments.");
-            }
-            List<LoweredObjectBox> childBoxes = new ArrayList<>(args.size() - 1);
-            for (int i = 1; i < args.size(); i++) {
-              childBoxes.add(new LoweredObjectBox());
-            }
-            stack.push(
-                new ExitReceiverArrayConcatFrame(
-                    continueFrame.box,
-                    continueFrame.pendingOperations,
-                    nextIndex,
-                    currentExpression,
-                    childBoxes));
-            for (int i = childBoxes.size() - 1; i >= 0; i--) {
-              int argIndex = i + 1;
+              List<LoweredObjectBox> childBoxes = new ArrayList<>(args.size() - 1);
+              for (int i = 1; i < args.size(); i++) {
+                childBoxes.add(new LoweredObjectBox());
+              }
               stack.push(
-                  new EnterObjectValueOrExpressionFrame(
-                      args.get(argIndex),
-                      operationFieldName + ".args[" + argIndex + "]",
-                      childBoxes.get(i)));
+                  new ExitReceiverArrayConcatFrame(
+                      continueFrame.box,
+                      continueFrame.pendingOperations,
+                      nextIndex,
+                      currentExpression,
+                      childBoxes));
+              for (int i = childBoxes.size() - 1; i >= 0; i--) {
+                int argIndex = i + 1;
+                stack.push(
+                    new EnterObjectValueOrExpressionFrame(
+                        args.get(argIndex),
+                        operationFieldName + ".args[" + argIndex + "]",
+                        childBoxes.get(i)));
+              }
+              continue;
             }
-            continue;
-          }
           case "cosinedistance":
           case "dotproduct":
-          case "euclideandistance": {
-            Object rightArg = args.get(1);
-            if (!containsLowerableExpression(rightArg)) {
-              Object rightValue = resolveConstantValue(rightArg, operationFieldName + ".args[1]");
-              if (rightValue instanceof List
-                  || (rightValue instanceof Map && ((Map<?, ?>) rightValue).get("values") != null)) {
-                double[] vector = coerceVectorValue(rightValue);
-                Expression nextExpression =
-                    "cosinedistance".equals(operation.normalizedName)
-                        ? currentExpression.cosineDistance(vector)
-                        : "dotproduct".equals(operation.normalizedName)
-                            ? currentExpression.dotProduct(vector)
-                            : currentExpression.euclideanDistance(vector);
-                stack.push(
-                    new ContinueReceiverExpressionChainFrame(
-                        continueFrame.box,
-                        null,
-                        continueFrame.pendingOperations,
-                        nextIndex,
-                        nextExpression));
-                continue;
+          case "euclideandistance":
+            {
+              Object rightArg = args.get(1);
+              if (!containsLowerableExpression(rightArg)) {
+                Object rightValue = resolveConstantValue(rightArg, operationFieldName + ".args[1]");
+                if (rightValue instanceof List
+                    || (rightValue instanceof Map
+                        && ((Map<?, ?>) rightValue).get("values") != null)) {
+                  double[] vector = coerceVectorValue(rightValue);
+                  Expression nextExpression =
+                      "cosinedistance".equals(operation.normalizedName)
+                          ? currentExpression.cosineDistance(vector)
+                          : "dotproduct".equals(operation.normalizedName)
+                              ? currentExpression.dotProduct(vector)
+                              : currentExpression.euclideanDistance(vector);
+                  stack.push(
+                      new ContinueReceiverExpressionChainFrame(
+                          continueFrame.box,
+                          null,
+                          continueFrame.pendingOperations,
+                          nextIndex,
+                          nextExpression));
+                  continue;
+                }
               }
-            }
 
-            LoweredExpressionBox rightBox = new LoweredExpressionBox();
-            stack.push(
-                new ExitReceiverVectorDistanceFrame(
-                    continueFrame.box,
-                    continueFrame.pendingOperations,
-                    nextIndex,
-                    currentExpression,
-                    operation.normalizedName,
-                    rightBox));
-            stack.push(
-                new EnterObjectVectorExpressionValueFrame(
-                    rightArg, operationFieldName + ".args[1]", rightBox));
-            continue;
-          }
+              LoweredExpressionBox rightBox = new LoweredExpressionBox();
+              stack.push(
+                  new ExitReceiverVectorDistanceFrame(
+                      continueFrame.box,
+                      continueFrame.pendingOperations,
+                      nextIndex,
+                      currentExpression,
+                      operation.normalizedName,
+                      rightBox));
+              stack.push(
+                  new EnterObjectVectorExpressionValueFrame(
+                      rightArg, operationFieldName + ".args[1]", rightBox));
+              continue;
+            }
           case "timestampadd":
-          case "timestampsubtract": {
-            if (args.size() != 3) {
-              throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
-                  "pipelineExecute() expected "
-                      + operationFieldName
-                      + "."
-                      + operation.originalName
-                      + " to include exactly 3 arguments.");
-            }
-            Object unitArg = args.get(1);
-            Object amountArg = args.get(2);
-            if (!containsLowerableExpression(unitArg) && !containsLowerableExpression(amountArg)) {
-              Object unitValue = resolveConstantValue(unitArg, operationFieldName + ".args[1]");
-              Object amountValue = resolveConstantValue(amountArg, operationFieldName + ".args[2]");
-              if (unitValue instanceof String && amountValue instanceof Number) {
-                long amount = ((Number) amountValue).longValue();
-                Expression nextExpression =
-                    "timestampadd".equals(operation.normalizedName)
-                        ? currentExpression.timestampAdd((String) unitValue, amount)
-                        : currentExpression.timestampSubtract((String) unitValue, amount);
-                stack.push(
-                    new ContinueReceiverExpressionChainFrame(
-                        continueFrame.box,
-                        null,
-                        continueFrame.pendingOperations,
-                        nextIndex,
-                        nextExpression));
-                continue;
+          case "timestampsubtract":
+            {
+              if (args.size() != 3) {
+                throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
+                    "pipelineExecute() expected "
+                        + operationFieldName
+                        + "."
+                        + operation.originalName
+                        + " to include exactly 3 arguments.");
               }
-            }
-
-            LoweredExpressionBox unitBox = new LoweredExpressionBox();
-            LoweredExpressionBox amountBox = new LoweredExpressionBox();
-            stack.push(
-                new ExitReceiverTimestampMathFrame(
-                    continueFrame.box,
-                    continueFrame.pendingOperations,
-                    nextIndex,
-                    currentExpression,
-                    operation.normalizedName,
-                    unitBox,
-                    amountBox));
-            stack.push(
-                new EnterObjectExpressionValueFrame(amountArg, operationFieldName + ".args[2]", amountBox));
-            stack.push(
-                new EnterObjectExpressionValueFrame(unitArg, operationFieldName + ".args[1]", unitBox));
-            continue;
-          }
-          case "timestamptruncate": {
-            Object granularityArg = args.get(1);
-            if (!containsLowerableExpression(granularityArg)) {
-              Object granularityValue =
-                  resolveConstantValue(granularityArg, operationFieldName + ".args[1]");
-              if (granularityValue instanceof String) {
-                stack.push(
-                    new ContinueReceiverExpressionChainFrame(
-                        continueFrame.box,
-                        null,
-                        continueFrame.pendingOperations,
-                        nextIndex,
-                        currentExpression.timestampTruncate((String) granularityValue)));
-                continue;
+              Object unitArg = args.get(1);
+              Object amountArg = args.get(2);
+              if (!containsLowerableExpression(unitArg)
+                  && !containsLowerableExpression(amountArg)) {
+                Object unitValue = resolveConstantValue(unitArg, operationFieldName + ".args[1]");
+                Object amountValue =
+                    resolveConstantValue(amountArg, operationFieldName + ".args[2]");
+                if (unitValue instanceof String && amountValue instanceof Number) {
+                  long amount = ((Number) amountValue).longValue();
+                  Expression nextExpression =
+                      "timestampadd".equals(operation.normalizedName)
+                          ? currentExpression.timestampAdd((String) unitValue, amount)
+                          : currentExpression.timestampSubtract((String) unitValue, amount);
+                  stack.push(
+                      new ContinueReceiverExpressionChainFrame(
+                          continueFrame.box,
+                          null,
+                          continueFrame.pendingOperations,
+                          nextIndex,
+                          nextExpression));
+                  continue;
+                }
               }
-            }
 
-            LoweredExpressionBox granularityBox = new LoweredExpressionBox();
-            stack.push(
-                new ExitReceiverTimestampTruncateFrame(
-                    continueFrame.box,
-                    continueFrame.pendingOperations,
-                    nextIndex,
-                    currentExpression,
-                    granularityBox));
-            stack.push(
-                new EnterObjectExpressionValueFrame(
-                    granularityArg, operationFieldName + ".args[1]", granularityBox));
-            continue;
-          }
+              LoweredExpressionBox unitBox = new LoweredExpressionBox();
+              LoweredExpressionBox amountBox = new LoweredExpressionBox();
+              stack.push(
+                  new ExitReceiverTimestampMathFrame(
+                      continueFrame.box,
+                      continueFrame.pendingOperations,
+                      nextIndex,
+                      currentExpression,
+                      operation.normalizedName,
+                      unitBox,
+                      amountBox));
+              stack.push(
+                  new EnterObjectExpressionValueFrame(
+                      amountArg, operationFieldName + ".args[2]", amountBox));
+              stack.push(
+                  new EnterObjectExpressionValueFrame(
+                      unitArg, operationFieldName + ".args[1]", unitBox));
+              continue;
+            }
+          case "timestamptruncate":
+            {
+              Object granularityArg = args.get(1);
+              if (!containsLowerableExpression(granularityArg)) {
+                Object granularityValue =
+                    resolveConstantValue(granularityArg, operationFieldName + ".args[1]");
+                if (granularityValue instanceof String) {
+                  stack.push(
+                      new ContinueReceiverExpressionChainFrame(
+                          continueFrame.box,
+                          null,
+                          continueFrame.pendingOperations,
+                          nextIndex,
+                          currentExpression.timestampTruncate((String) granularityValue)));
+                  continue;
+                }
+              }
+
+              LoweredExpressionBox granularityBox = new LoweredExpressionBox();
+              stack.push(
+                  new ExitReceiverTimestampTruncateFrame(
+                      continueFrame.box,
+                      continueFrame.pendingOperations,
+                      nextIndex,
+                      currentExpression,
+                      granularityBox));
+              stack.push(
+                  new EnterObjectExpressionValueFrame(
+                      granularityArg, operationFieldName + ".args[1]", granularityBox));
+              continue;
+            }
           default:
             stack.push(
                 new ContinueReceiverExpressionChainFrame(
@@ -1688,7 +1722,11 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
                 : exitFrame.currentExpression.logicalMinimum(others);
         stack.push(
             new ContinueReceiverExpressionChainFrame(
-                exitFrame.box, null, exitFrame.pendingOperations, exitFrame.nextIndex, nextExpression));
+                exitFrame.box,
+                null,
+                exitFrame.pendingOperations,
+                exitFrame.nextIndex,
+                nextExpression));
         continue;
       }
 
@@ -1760,7 +1798,11 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
                     : exitFrame.currentExpression.euclideanDistance(exitFrame.rightBox.value);
         stack.push(
             new ContinueReceiverExpressionChainFrame(
-                exitFrame.box, null, exitFrame.pendingOperations, exitFrame.nextIndex, nextExpression));
+                exitFrame.box,
+                null,
+                exitFrame.pendingOperations,
+                exitFrame.nextIndex,
+                nextExpression));
         continue;
       }
 
@@ -1774,7 +1816,11 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
                     exitFrame.unitBox.value, exitFrame.amountBox.value);
         stack.push(
             new ContinueReceiverExpressionChainFrame(
-                exitFrame.box, null, exitFrame.pendingOperations, exitFrame.nextIndex, nextExpression));
+                exitFrame.box,
+                null,
+                exitFrame.pendingOperations,
+                exitFrame.nextIndex,
+                nextExpression));
         continue;
       }
 
@@ -1809,7 +1855,11 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         LoweredExpressionBox rightBox = new LoweredExpressionBox();
         stack.push(
             new ExitFinalizeBooleanReceiverFrame(
-                exitFrame.box, leftExpression, exitFrame.normalizedName, rightBox, exitFrame.fieldName));
+                exitFrame.box,
+                leftExpression,
+                exitFrame.normalizedName,
+                rightBox,
+                exitFrame.fieldName));
         stack.push(new EnterObjectExpressionValueFrame(rightArg, rightFieldName, rightBox));
         continue;
       }
@@ -1831,111 +1881,123 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     String normalizedName = canonicalizeExpressionFunctionName(functionName);
 
     switch (normalizedName) {
-      case "array": {
-        List<Object> elements = args;
-        if (args.size() == 1) {
-          List<Object> unwrapped = unwrapConstantArray(args.get(0), fieldName + ".args[0]");
-          if (unwrapped != null) {
-            elements = unwrapped;
+      case "array":
+        {
+          List<Object> elements = args;
+          if (args.size() == 1) {
+            List<Object> unwrapped = unwrapConstantArray(args.get(0), fieldName + ".args[0]");
+            if (unwrapped != null) {
+              elements = unwrapped;
+            }
           }
-        }
 
-        boolean allConstant = true;
-        for (Object element : elements) {
-          if (containsLowerableExpression(element)) {
-            allConstant = false;
-            break;
+          boolean allConstant = true;
+          for (Object element : elements) {
+            if (containsLowerableExpression(element)) {
+              allConstant = false;
+              break;
+            }
           }
-        }
 
-        if (allConstant) {
-          List<Object> resolved = new ArrayList<>(elements.size());
+          if (allConstant) {
+            List<Object> resolved = new ArrayList<>(elements.size());
+            for (int i = 0; i < elements.size(); i++) {
+              resolved.add(resolveConstantValue(elements.get(i), fieldName + ".args[" + i + "]"));
+            }
+            box.value = constantExpression(resolved);
+            return;
+          }
+
+          List<LoweredExpressionBox> childBoxes = new ArrayList<>(elements.size());
           for (int i = 0; i < elements.size(); i++) {
-            resolved.add(resolveConstantValue(elements.get(i), fieldName + ".args[" + i + "]"));
+            childBoxes.add(new LoweredExpressionBox());
           }
-          box.value = constantExpression(resolved);
+          stack.push(new ExitObjectArrayExpressionFrame(box, childBoxes));
+          for (int i = elements.size() - 1; i >= 0; i--) {
+            stack.push(
+                new EnterObjectExpressionValueFrame(
+                    elements.get(i), fieldName + ".args[" + i + "]", childBoxes.get(i)));
+          }
           return;
         }
-
-        List<LoweredExpressionBox> childBoxes = new ArrayList<>(elements.size());
-        for (int i = 0; i < elements.size(); i++) {
-          childBoxes.add(new LoweredExpressionBox());
-        }
-        stack.push(new ExitObjectArrayExpressionFrame(box, childBoxes));
-        for (int i = elements.size() - 1; i >= 0; i--) {
-          stack.push(
-              new EnterObjectExpressionValueFrame(
-                  elements.get(i), fieldName + ".args[" + i + "]", childBoxes.get(i)));
-        }
-        return;
-      }
-      case "map": {
-        requireArgumentCount(args, 1, "map", fieldName);
-        Map<String, Object> entries = unwrapConstantMap(args.get(0), fieldName + ".args[0]");
-        if (entries == null) {
-          scheduleRawExpressionFunction(functionName, args, fieldName, box, stack);
-          return;
-        }
-
-        boolean allConstant = true;
-        for (Object entryValue : entries.values()) {
-          if (containsLowerableExpression(entryValue)) {
-            allConstant = false;
-            break;
+      case "map":
+        {
+          requireArgumentCount(args, 1, "map", fieldName);
+          Map<String, Object> entries = unwrapConstantMap(args.get(0), fieldName + ".args[0]");
+          if (entries == null) {
+            scheduleRawExpressionFunction(functionName, args, fieldName, box, stack);
+            return;
           }
-        }
 
-        if (allConstant) {
-          Map<String, Object> resolved = new LinkedHashMap<>();
+          boolean allConstant = true;
+          for (Object entryValue : entries.values()) {
+            if (containsLowerableExpression(entryValue)) {
+              allConstant = false;
+              break;
+            }
+          }
+
+          if (allConstant) {
+            Map<String, Object> resolved = new LinkedHashMap<>();
+            for (Map.Entry<String, Object> entry : entries.entrySet()) {
+              resolved.put(
+                  entry.getKey(),
+                  resolveConstantValue(entry.getValue(), fieldName + ".args[0]." + entry.getKey()));
+            }
+            box.value = constantExpression(resolved);
+            return;
+          }
+
+          List<Map.Entry<String, LoweredExpressionBox>> boxedEntries =
+              new ArrayList<>(entries.size());
           for (Map.Entry<String, Object> entry : entries.entrySet()) {
-            resolved.put(
-                entry.getKey(),
-                resolveConstantValue(entry.getValue(), fieldName + ".args[0]." + entry.getKey()));
+            boxedEntries.add(
+                new java.util.AbstractMap.SimpleEntry<>(
+                    entry.getKey(), new LoweredExpressionBox()));
           }
-          box.value = constantExpression(resolved);
+          stack.push(new ExitObjectMapExpressionFrame(box, boxedEntries));
+          List<Map.Entry<String, Object>> pendingEntries = new ArrayList<>(entries.entrySet());
+          for (int i = pendingEntries.size() - 1; i >= 0; i--) {
+            Map.Entry<String, Object> entry = pendingEntries.get(i);
+            stack.push(
+                new EnterObjectExpressionValueFrame(
+                    entry.getValue(),
+                    fieldName + ".args[0]." + entry.getKey(),
+                    boxedEntries.get(i).getValue()));
+          }
           return;
         }
-
-        List<Map.Entry<String, LoweredExpressionBox>> boxedEntries = new ArrayList<>(entries.size());
-        for (Map.Entry<String, Object> entry : entries.entrySet()) {
-          boxedEntries.add(
-              new java.util.AbstractMap.SimpleEntry<>(entry.getKey(), new LoweredExpressionBox()));
-        }
-        stack.push(new ExitObjectMapExpressionFrame(box, boxedEntries));
-        List<Map.Entry<String, Object>> pendingEntries = new ArrayList<>(entries.entrySet());
-        for (int i = pendingEntries.size() - 1; i >= 0; i--) {
-          Map.Entry<String, Object> entry = pendingEntries.get(i);
+      case "conditional":
+        {
+          requireArgumentCount(args, 3, functionName, fieldName);
+          LoweredBooleanBox conditionBox = new LoweredBooleanBox();
+          LoweredExpressionBox trueBox = new LoweredExpressionBox();
+          LoweredExpressionBox falseBox = new LoweredExpressionBox();
           stack.push(
-              new EnterObjectExpressionValueFrame(
-                  entry.getValue(),
-                  fieldName + ".args[0]." + entry.getKey(),
-                  boxedEntries.get(i).getValue()));
+              new ExitObjectConditionalExpressionFrame(box, conditionBox, trueBox, falseBox));
+          stack.push(
+              new EnterObjectExpressionValueFrame(args.get(2), fieldName + ".args[2]", falseBox));
+          stack.push(
+              new EnterObjectExpressionValueFrame(args.get(1), fieldName + ".args[1]", trueBox));
+          stack.push(
+              new EnterObjectBooleanValueFrame(args.get(0), fieldName + ".args[0]", conditionBox));
+          return;
         }
-        return;
-      }
-      case "conditional": {
-        requireArgumentCount(args, 3, functionName, fieldName);
-        LoweredBooleanBox conditionBox = new LoweredBooleanBox();
-        LoweredExpressionBox trueBox = new LoweredExpressionBox();
-        LoweredExpressionBox falseBox = new LoweredExpressionBox();
-        stack.push(new ExitObjectConditionalExpressionFrame(box, conditionBox, trueBox, falseBox));
-        stack.push(new EnterObjectExpressionValueFrame(args.get(2), fieldName + ".args[2]", falseBox));
-        stack.push(new EnterObjectExpressionValueFrame(args.get(1), fieldName + ".args[1]", trueBox));
-        stack.push(new EnterObjectBooleanValueFrame(args.get(0), fieldName + ".args[0]", conditionBox));
-        return;
-      }
       case "currenttimestamp":
         requireArgumentCount(args, 0, functionName, fieldName);
         box.value = Expression.currentTimestamp();
         return;
-      case "istype": {
-        requireArgumentCount(args, 2, functionName, fieldName);
-        String typeName = coerceStringValue(args.get(1), fieldName + ".args[1]");
-        LoweredExpressionBox expressionBox = new LoweredExpressionBox();
-        stack.push(new ExitObjectIsTypeExpressionFrame(box, expressionBox, typeName));
-        stack.push(new EnterObjectExpressionValueFrame(args.get(0), fieldName + ".args[0]", expressionBox));
-        return;
-      }
+      case "istype":
+        {
+          requireArgumentCount(args, 2, functionName, fieldName);
+          String typeName = coerceStringValue(args.get(1), fieldName + ".args[1]");
+          LoweredExpressionBox expressionBox = new LoweredExpressionBox();
+          stack.push(new ExitObjectIsTypeExpressionFrame(box, expressionBox, typeName));
+          stack.push(
+              new EnterObjectExpressionValueFrame(
+                  args.get(0), fieldName + ".args[0]", expressionBox));
+          return;
+        }
       case "logicalmaximum":
       case "logicalminimum":
       case "mapget":
@@ -1951,7 +2013,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         return;
       case "timestamptruncate":
         if (args.size() == 2) {
-          scheduleReceiverExpressionChain(normalizedName, functionName, args, fieldName, box, stack);
+          scheduleReceiverExpressionChain(
+              normalizedName, functionName, args, fieldName, box, stack);
           return;
         }
         box.value = null;
@@ -2029,7 +2092,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       LoweredExpressionBox box,
       ArrayDeque<ObjectLoweringFrame> stack)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    ReceiverChainSeed seed = collectReceiverExpressionChain(normalizedName, originalName, args, fieldName);
+    ReceiverChainSeed seed =
+        collectReceiverExpressionChain(normalizedName, originalName, args, fieldName);
     LoweredExpressionBox baseBox = new LoweredExpressionBox();
     stack.push(
         new ContinueReceiverExpressionChainFrame(
@@ -2045,10 +2109,12 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       LoweredBooleanBox box,
       ArrayDeque<ObjectLoweringFrame> stack)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
-    ReceiverChainSeed seed = collectReceiverExpressionChain(normalizedName, originalName, args, fieldName);
+    ReceiverChainSeed seed =
+        collectReceiverExpressionChain(normalizedName, originalName, args, fieldName);
     LoweredExpressionBox leftBox = new LoweredExpressionBox();
     LoweredExpressionBox baseBox = new LoweredExpressionBox();
-    stack.push(new ExitApplyBooleanReceiverFrame(box, leftBox, normalizedName, args.get(1), fieldName));
+    stack.push(
+        new ExitApplyBooleanReceiverFrame(box, leftBox, normalizedName, args.get(1), fieldName));
     stack.push(
         new ContinueReceiverExpressionChainFrame(
             leftBox, baseBox, seed.pendingOperations, seed.pendingOperations.size() - 1, null));
@@ -2068,7 +2134,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     }
 
     List<PendingReceiverOperation> pendingOperations = new ArrayList<>();
-    pendingOperations.add(new PendingReceiverOperation(normalizedName, originalName, args, fieldName));
+    pendingOperations.add(
+        new PendingReceiverOperation(normalizedName, originalName, args, fieldName));
 
     Object currentValue = args.get(0);
     String currentFieldName = fieldName + ".args[0]";
@@ -2193,7 +2260,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     return childBox;
   }
 
-  private void requireArgumentCount(List<Object> args, int expectedCount, String functionName, String fieldName)
+  private void requireArgumentCount(
+      List<Object> args, int expectedCount, String functionName, String fieldName)
       throws ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException {
     if (args.size() != expectedCount) {
       throw new ReactNativeFirebaseFirestorePipelineExecutor.PipelineValidationException(
@@ -3040,7 +3108,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode currentValue = enterFrame.value;
         String currentFieldName = enterFrame.fieldName;
 
-        if (currentValue instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedPrimitiveValueNode) {
+        if (currentValue
+            instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedPrimitiveValueNode) {
           enterFrame.box.value =
               ((ReactNativeFirebaseFirestorePipelineParser.ParsedPrimitiveValueNode) currentValue)
                   .value;
@@ -3067,9 +3136,11 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
           continue;
         }
 
-        if (currentValue instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) {
+        if (currentValue
+            instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) {
           List<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> values =
-              ((ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) currentValue).values;
+              ((ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) currentValue)
+                  .values;
           List<ResolvedValueBox> childBoxes = new java.util.ArrayList<>(values.size());
           for (int i = 0; i < values.size(); i++) {
             childBoxes.add(new ResolvedValueBox());
@@ -3086,7 +3157,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         if (currentValue instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode) {
           Map<String, ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> values =
               ((ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode) currentValue).values;
-          List<Map.Entry<String, ResolvedValueBox>> entries = new java.util.ArrayList<>(values.size());
+          List<Map.Entry<String, ResolvedValueBox>> entries =
+              new java.util.ArrayList<>(values.size());
           stack.push(new ExitMapValueResolutionFrame(enterFrame.box, entries));
           List<Map.Entry<String, ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode>>
               pendingEntries = new java.util.ArrayList<>(values.entrySet());
@@ -3167,8 +3239,7 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       if (currentValue instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode) {
         for (ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode entry :
             ((ReactNativeFirebaseFirestorePipelineParser.ParsedMapValueNode) currentValue)
-                .values
-                .values()) {
+                .values.values()) {
           stack.push(entry);
         }
       }
@@ -3187,7 +3258,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
       SerializationFrame frame = stack.pop();
       if (frame instanceof EnterSerializedExpressionFrame) {
         EnterSerializedExpressionFrame enterFrame = (EnterSerializedExpressionFrame) frame;
-        ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionNode expression = enterFrame.value;
+        ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionNode expression =
+            enterFrame.value;
 
         if (expression
             instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedFieldExpressionNode) {
@@ -3221,7 +3293,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         for (int i = 0; i < function.args.size(); i++) {
           argBoxes.add(new SerializedValueBox());
         }
-        stack.push(new ExitSerializedExpressionFunctionFrame(enterFrame.box, function.name, argBoxes));
+        stack.push(
+            new ExitSerializedExpressionFunctionFrame(enterFrame.box, function.name, argBoxes));
         for (int i = function.args.size() - 1; i >= 0; i--) {
           stack.push(new EnterSerializedValueFrame(function.args.get(i), argBoxes.get(i)));
         }
@@ -3248,16 +3321,19 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         EnterSerializedValueFrame enterFrame = (EnterSerializedValueFrame) frame;
         ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode currentValue = enterFrame.value;
 
-        if (currentValue instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedPrimitiveValueNode) {
+        if (currentValue
+            instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedPrimitiveValueNode) {
           enterFrame.box.value =
               ((ReactNativeFirebaseFirestorePipelineParser.ParsedPrimitiveValueNode) currentValue)
                   .value;
           continue;
         }
 
-        if (currentValue instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) {
+        if (currentValue
+            instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) {
           List<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> values =
-              ((ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) currentValue).values;
+              ((ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) currentValue)
+                  .values;
           List<SerializedValueBox> childBoxes = new ArrayList<>(values.size());
           for (int i = 0; i < values.size(); i++) {
             childBoxes.add(new SerializedValueBox());
@@ -3293,7 +3369,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         stack.push(new ExitSerializedValueExpressionFrame(enterFrame.box, expressionBox));
         stack.push(
             new EnterSerializedExpressionFrame(
-                ((ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionValueNode) currentValue)
+                ((ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionValueNode)
+                        currentValue)
                     .expression,
                 expressionBox));
         continue;
@@ -3337,7 +3414,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
     return rootBox.value;
   }
 
-  private Object serializeValueNode(ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode value) {
+  private Object serializeValueNode(
+      ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode value) {
     SerializedValueBox rootBox = new SerializedValueBox();
     ArrayDeque<SerializationFrame> stack = new ArrayDeque<>();
     stack.push(new EnterSerializedValueFrame(value, rootBox));
@@ -3348,16 +3426,19 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         EnterSerializedValueFrame enterFrame = (EnterSerializedValueFrame) frame;
         ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode currentValue = enterFrame.value;
 
-        if (currentValue instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedPrimitiveValueNode) {
+        if (currentValue
+            instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedPrimitiveValueNode) {
           enterFrame.box.value =
               ((ReactNativeFirebaseFirestorePipelineParser.ParsedPrimitiveValueNode) currentValue)
                   .value;
           continue;
         }
 
-        if (currentValue instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) {
+        if (currentValue
+            instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) {
           List<ReactNativeFirebaseFirestorePipelineParser.ParsedValueNode> values =
-              ((ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) currentValue).values;
+              ((ReactNativeFirebaseFirestorePipelineParser.ParsedListValueNode) currentValue)
+                  .values;
           List<SerializedValueBox> childBoxes = new ArrayList<>(values.size());
           for (int i = 0; i < values.size(); i++) {
             childBoxes.add(new SerializedValueBox());
@@ -3393,7 +3474,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         stack.push(new ExitSerializedValueExpressionFrame(enterFrame.box, expressionBox));
         stack.push(
             new EnterSerializedExpressionFrame(
-                ((ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionValueNode) currentValue)
+                ((ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionValueNode)
+                        currentValue)
                     .expression,
                 expressionBox));
         continue;
@@ -3421,7 +3503,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
 
       if (frame instanceof EnterSerializedExpressionFrame) {
         EnterSerializedExpressionFrame enterFrame = (EnterSerializedExpressionFrame) frame;
-        ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionNode expression = enterFrame.value;
+        ReactNativeFirebaseFirestorePipelineParser.ParsedExpressionNode expression =
+            enterFrame.value;
 
         if (expression
             instanceof ReactNativeFirebaseFirestorePipelineParser.ParsedFieldExpressionNode) {
@@ -3455,7 +3538,8 @@ final class ReactNativeFirebaseFirestorePipelineNodeBuilder {
         for (int i = 0; i < function.args.size(); i++) {
           argBoxes.add(new SerializedValueBox());
         }
-        stack.push(new ExitSerializedExpressionFunctionFrame(enterFrame.box, function.name, argBoxes));
+        stack.push(
+            new ExitSerializedExpressionFunctionFrame(enterFrame.box, function.name, argBoxes));
         for (int i = function.args.size() - 1; i >= 0; i--) {
           stack.push(new EnterSerializedValueFrame(function.args.get(i), argBoxes.get(i)));
         }

@@ -100,11 +100,7 @@ function validateNonEmptyStageArray(value: unknown, fieldName: string): void {
   }
 }
 
-function validateStage(
-  stage: unknown,
-  stagePath: string,
-  optionsPath: string,
-): unknown {
+function validateStage(stage: unknown, stagePath: string, optionsPath: string): unknown {
   if (!isRecord(stage) || typeof stage.stage !== 'string' || !isRecord(stage.options)) {
     throw new Error(`pipelineExecute() expected ${stagePath} to include stage and options.`);
   }
