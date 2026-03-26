@@ -27,7 +27,8 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = firebase_ios_target
   s.macos.deployment_target = firebase_macos_target
   s.tvos.deployment_target = firebase_tvos_target
-  s.source_files        = 'ios/**/*.{h,m,mm}'
+  s.swift_version       = '5.10'
+  s.source_files        = 'ios/**/*.{h,m,mm,swift}'
 
   s.dependency          'RNFBApp'
 

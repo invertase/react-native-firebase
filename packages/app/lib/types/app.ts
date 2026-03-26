@@ -163,7 +163,6 @@ export namespace ReactNativeFirebase {
    * Module-specific methods (auth(), analytics(), etc.) are added here via declaration merging
    * from individual package .d.ts files.
    */
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export interface FirebaseApp extends FirebaseAppBase {
     // Module methods are added here via declaration merging, e.g.:
     // auth(): FirebaseAuthTypes.Module;
