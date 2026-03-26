@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.8.8](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v23.8.8) (2026-03-12)
+
+### Bug Fixes
+
+- **app, android:** avoid NullPointerException in isAppInForeground check ([d90d171](https://github.com/invertase/react-native-firebase/commit/d90d171d5faecaeaa7487a5dac0ba9ef843971bc))
+- **app, ios:** adopt firebase-ios-sdk 12.9.0 ([da083c4](https://github.com/invertase/react-native-firebase/commit/da083c486ebde8141cc1facb0f2338b87498b56d)), closes [/firebase.google.com/support/release-notes/ios#version*1290*-\_february_3_2026](https://github.com/invertase//firebase.google.com/support/release-notes/ios/issues/version_1290_-_february_3_2026)
+- **app:** general deprecation notice for old arch / specific error if module requires ([2b6adad](https://github.com/invertase/react-native-firebase/commit/2b6adadf71ee5b62026ee68d4ce9a0785fa8897e))
+- **deps:** ios-sdk 12.10.0 / android-sdk 34.10.0 / js-sdk 12.10.0 ([ff36c3d](https://github.com/invertase/react-native-firebase/commit/ff36c3d1ce49eed47e8ae5340edc5b56e97a2b81))
+- **messaging, expo:** retrieve expo-notification config if available, then deprecated notification ([#8663](https://github.com/invertase/react-native-firebase/issues/8663)) ([eb90301](https://github.com/invertase/react-native-firebase/commit/eb90301c49af807c4bd3eecadd9a67364c4a30a4))
+
+## [23.8.7](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v23.8.7) (2026-03-12)
+
+### Bug Fixes
+
+- **app, android:** avoid NullPointerException in isAppInForeground check ([d90d171](https://github.com/invertase/react-native-firebase/commit/d90d171d5faecaeaa7487a5dac0ba9ef843971bc))
+- **app, ios:** adopt firebase-ios-sdk 12.9.0 ([da083c4](https://github.com/invertase/react-native-firebase/commit/da083c486ebde8141cc1facb0f2338b87498b56d)), closes [/firebase.google.com/support/release-notes/ios#version*1290*-\_february_3_2026](https://github.com/invertase//firebase.google.com/support/release-notes/ios/issues/version_1290_-_february_3_2026)
+- **app:** general deprecation notice for old arch / specific error if module requires ([2b6adad](https://github.com/invertase/react-native-firebase/commit/2b6adadf71ee5b62026ee68d4ce9a0785fa8897e))
+- **deps:** ios-sdk 12.10.0 / android-sdk 34.10.0 / js-sdk 12.10.0 ([ff36c3d](https://github.com/invertase/react-native-firebase/commit/ff36c3d1ce49eed47e8ae5340edc5b56e97a2b81))
+- **messaging, expo:** retrieve expo-notification config if available, then deprecated notification ([#8663](https://github.com/invertase/react-native-firebase/issues/8663)) ([eb90301](https://github.com/invertase/react-native-firebase/commit/eb90301c49af807c4bd3eecadd9a67364c4a30a4))
+
 ## [23.8.6](https://github.com/invertase/react-native-firebase/compare/v23.8.5...v23.8.6) (2026-02-03)
 
 ### Bug Fixes

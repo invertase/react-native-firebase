@@ -127,10 +127,10 @@ export default [
       'mocha/no-top-level-hooks': 'off',
       'mocha/no-hooks-for-single-case': 'off',
       'mocha/no-setup-in-describe': 'off',
-      // Allow `{}` in type positions (e.g. T extends {} to match firebase-js-sdk).
+      // Allow `{}` in type positions and empty interfaces (e.g. T extends {}, placeholder pipeline types), matches firebase-js-sdk.
       '@typescript-eslint/no-empty-object-type': [
         'error',
-        { allowObjectTypes: 'always' },
+        { allowObjectTypes: 'always', allowInterfaces: 'always' },
       ],
     },
   },

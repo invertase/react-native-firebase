@@ -17,5 +17,7 @@
 
 // We need to share firebase imports between modules, otherwise
 // apps and instances of the firebase modules are not shared.
+// Need to import pipelines to ensure they are available in the web runtime.
+import 'firebase/firestore/lite/pipelines';
 export { getApp } from 'firebase/app';
 export * from 'firebase/firestore/lite';

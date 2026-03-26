@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [23.8.8](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v23.8.8) (2026-03-12)
+
+### Bug Fixes
+
+- **auth, web:** avoid react-native-specific methods in web ([cef8fed](https://github.com/invertase/react-native-firebase/commit/cef8fed1bd6099f4b028c85fd70193394ba6328c))
+- **auth:** auto-register encoded app ID URL scheme for phone auth reCAPTCHA ([#8902](https://github.com/invertase/react-native-firebase/issues/8902)) ([b7f8772](https://github.com/invertase/react-native-firebase/commit/b7f8772ccdea706e939c678eeed70c0fae66a33b))
+- **messaging, expo:** retrieve expo-notification config if available, then deprecated notification ([#8663](https://github.com/invertase/react-native-firebase/issues/8663)) ([eb90301](https://github.com/invertase/react-native-firebase/commit/eb90301c49af807c4bd3eecadd9a67364c4a30a4))
+
+## [23.8.7](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v23.8.7) (2026-03-12)
+
+### Bug Fixes
+
+- **auth, web:** avoid react-native-specific methods in web ([cef8fed](https://github.com/invertase/react-native-firebase/commit/cef8fed1bd6099f4b028c85fd70193394ba6328c))
+- **auth:** auto-register encoded app ID URL scheme for phone auth reCAPTCHA ([#8902](https://github.com/invertase/react-native-firebase/issues/8902)) ([b7f8772](https://github.com/invertase/react-native-firebase/commit/b7f8772ccdea706e939c678eeed70c0fae66a33b))
+- **messaging, expo:** retrieve expo-notification config if available, then deprecated notification ([#8663](https://github.com/invertase/react-native-firebase/issues/8663)) ([eb90301](https://github.com/invertase/react-native-firebase/commit/eb90301c49af807c4bd3eecadd9a67364c4a30a4))
+
 ## [23.8.6](https://github.com/invertase/react-native-firebase/compare/v23.8.5...v23.8.6) (2026-02-03)
 
 **Note:** Version bump only for package @react-native-firebase/auth

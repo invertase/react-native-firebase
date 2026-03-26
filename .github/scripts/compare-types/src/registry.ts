@@ -15,6 +15,7 @@ import type { PackageConfig } from './types';
 
 import storageConfig from '../packages/storage/config';
 import firestoreConfig from '../packages/firestore/config';
+import firestorePipelinesConfig from '../packages/firestore-pipelines/config';
 
 const SCRIPT_DIR = path.resolve(__dirname, '..');
 const REPO_ROOT = path.resolve(SCRIPT_DIR, '..', '..', '..');
@@ -23,10 +24,11 @@ export interface PackageEntry {
   /** Short name used in reports (e.g. "remote-config"). */
   name: string;
   /**
-   * Path to the firebase-js-sdk public type snapshot (.d.ts).
-   * Kept in .github/scripts/compare-types/packages/<name>/firebase-sdk.d.ts.
+   * Paths to the firebase-js-sdk public type snapshot(s) (.d.ts).
+   * Kept in .github/scripts/compare-types/packages/<name>/.
+   * Exports from all files are merged (first file wins for duplicate names).
    */
-  firebaseSdkTypesPath: string;
+  firebaseSdkTypesPaths: string[];
   /**
    * The primary modular .d.ts files from the built RN Firebase package,
    * listed in priority order (first file's exports take precedence).
@@ -55,12 +57,9 @@ function rnDist(packageName: string): string {
 export const packages: PackageEntry[] = [
   // {
   //   name: 'remote-config',
-  //   firebaseSdkTypesPath: path.join(
-  //     SCRIPT_DIR,
-  //     'packages',
-  //     'remote-config',
-  //     'firebase-sdk.d.ts',
-  //   ),
+  //   firebaseSdkTypesPaths: [
+  //     path.join(SCRIPT_DIR, 'packages', 'remote-config', 'firebase-sdk.d.ts'),
+  //   ],
   //   rnFirebaseModularFiles: [
   //     path.join(rnDist('remote-config'), 'types', 'modular.d.ts'),
   //     path.join(rnDist('remote-config'), 'modular.d.ts'),
@@ -93,12 +92,14 @@ export const packages: PackageEntry[] = [
   },
   {
     name: 'firestore',
-    firebaseSdkTypesPath: path.join(
-      SCRIPT_DIR,
-      'packages',
-      'firestore',
-      'firestore-js-sdk.d.ts',
-    ),
+    firebaseSdkTypesPaths: [
+      path.join(
+        SCRIPT_DIR,
+        'packages',
+        'firestore',
+        'firestore-js-sdk.d.ts',
+      ),
+    ],
     rnFirebaseModularFiles: [
       path.join(rnDist('firestore'), 'types', 'firestore.d.ts'),
       path.join(rnDist('firestore'), 'modular.d.ts'),
@@ -130,6 +131,31 @@ export const packages: PackageEntry[] = [
       path.join(rnDist('firestore'), 'FieldValue.d.ts'),
     ],
     config: firestoreConfig,
+  },
+  {
+    name: 'firestore-pipelines',
+    firebaseSdkTypesPaths: [
+      path.join(
+        SCRIPT_DIR,
+        'packages',
+        'firestore-pipelines',
+        'pipelines.d.ts',
+      ),
+    ],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('firestore'), 'pipelines', 'index.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('firestore'), 'pipelines', 'expressions.d.ts'),
+      path.join(rnDist('firestore'), 'pipelines', 'pipeline.d.ts'),
+      path.join(rnDist('firestore'), 'pipelines', 'pipeline-result.d.ts'),
+      path.join(rnDist('firestore'), 'pipelines', 'pipeline-source.d.ts'),
+      path.join(rnDist('firestore'), 'pipelines', 'pipeline_impl.d.ts'),
+      path.join(rnDist('firestore'), 'pipelines', 'pipeline_options.d.ts'),
+      path.join(rnDist('firestore'), 'pipelines', 'stage_options.d.ts'),
+      path.join(rnDist('firestore'), 'pipelines', 'types.d.ts'),
+    ],
+    config: firestorePipelinesConfig,
   },
 ];
 

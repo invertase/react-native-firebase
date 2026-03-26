@@ -23,6 +23,7 @@ import {
   GenerateContentStreamResult,
   Part,
   AIErrorCode,
+  URLContextMetadata,
 } from '../types';
 import { AIError } from '../errors';
 import { createEnhancedContentResponse } from './response-helpers';
@@ -99,6 +100,20 @@ async function* generateResponseSequence(
     const { value, done } = await reader.read();
     if (done) {
       break;
+    }
+
+    const firstCandidate = (
+      apiSettings.backend.backendType === BackendType.GOOGLE_AI
+        ? GoogleAIMapper.mapGenerateContentResponse(value as GoogleAIGenerateContentResponse)
+        : value
+    ).candidates?.[0];
+    if (
+      !firstCandidate?.content?.parts &&
+      !firstCandidate?.finishReason &&
+      !firstCandidate?.citationMetadata &&
+      !firstCandidate?.urlContextMetadata
+    ) {
+      continue;
     }
 
     let enhancedResponse: EnhancedGenerateContentResponse;
@@ -188,6 +203,19 @@ export function aggregateResponses(responses: GenerateContentResponse[]): Genera
         aggregatedResponse.candidates[i].finishReason = candidate.finishReason;
         aggregatedResponse.candidates[i].finishMessage = candidate.finishMessage;
         aggregatedResponse.candidates[i].safetyRatings = candidate.safetyRatings;
+        aggregatedResponse.candidates[i].groundingMetadata = candidate.groundingMetadata;
+
+        // urlContextMetadata is defined in the first chunk of the response stream.
+        // In subsequent chunks it is often undefined; do not overwrite the first value.
+        const urlContextMetadata = candidate.urlContextMetadata as unknown;
+        if (
+          typeof urlContextMetadata === 'object' &&
+          urlContextMetadata !== null &&
+          Object.keys(urlContextMetadata).length > 0
+        ) {
+          aggregatedResponse.candidates[i].urlContextMetadata =
+            urlContextMetadata as URLContextMetadata;
+        }
 
         /**
          * Candidates should always have content and parts, but this handles

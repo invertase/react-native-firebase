@@ -258,7 +258,6 @@ export namespace FirebaseAuthTypes {
     ERROR: 'error';
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export interface MultiFactorSession {
     // this is has no documented contents, it is simply returned from some APIs and passed to others
   }

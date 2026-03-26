@@ -171,6 +171,12 @@ const config: PackageConfig = {
         'configuration API is not yet implemented in RN Firebase.',
     },
     {
+      name: 'PersistentCacheIndexManager',
+      reason:
+        'Class in firebase-js-sdk for managing persistent cache indexes. RN Firebase ' +
+        'implements this via the native module; the type shape differs (e.g. async methods).',
+    },
+    {
       name: 'PersistentCacheSettings',
       reason:
         'Configuration interface for the persistent local cache. The local cache ' +
@@ -220,6 +226,12 @@ const config: PackageConfig = {
         'Firebase functions. Not part of the firebase-js-sdk public Firestore API.',
     },
     {
+      name: 'LiteTransaction',
+      reason:
+        'RN Firebase base class for Transaction (LiteTransaction). Not exported in the ' +
+        'firebase-js-sdk public API; used internally for type hierarchy.',
+    },
+    {
       name: 'clearPersistence',
       reason:
         'RN Firebase-specific alias for clearIndexedDbPersistence. Provides a ' +
@@ -231,13 +243,6 @@ const config: PackageConfig = {
         'RN Firebase-specific helper class for constructing composite query ' +
         'filters. Provides a convenience API on top of the standard `where`, ' +
         '`and`, and `or` filter functions.',
-    },
-    {
-      name: 'FirestoreError',
-      reason:
-        'Type alias for `Error` in RN Firebase. The firebase-js-sdk uses ' +
-        '`FirestoreError` as a class extending `FirebaseError`, but RN Firebase ' +
-        'uses its own `NativeFirebaseError` type for error handling.',
     },
   ],
 
@@ -320,6 +325,113 @@ const config: PackageConfig = {
       reason:
         'The firebase-js-sdk includes an optional `source` property (of type ' +
         '`ListenSource`) which is not yet supported in RN Firebase.',
+    },
+    // --- Wrapper classes (same public API, different structure: getters vs properties, readonly, toJSON/fromJSON) ---
+    {
+      name: 'DocumentReference',
+      reason:
+        'RN Firebase wrapper class over native; public API matches but type shape differs: ' +
+        'SDK uses getters (get id(), get path()) and includes toJSON/static fromJSON; RN uses properties.',
+    },
+    {
+      name: 'CollectionReference',
+      reason:
+        'RN Firebase wrapper class over native; same public API but different type shape ' +
+        '(e.g. getters vs properties, internal members).',
+    },
+    {
+      name: 'DocumentSnapshot',
+      reason:
+        'RN Firebase wrapper class; same public API but type shape differs from SDK ' +
+        '(e.g. getters vs properties, optional toJSON/fromJSON in SDK).',
+    },
+    {
+      name: 'QuerySnapshot',
+      reason:
+        'RN Firebase wrapper class; same public API but type shape differs from SDK.',
+    },
+    {
+      name: 'Firestore',
+      reason:
+        'RN Firebase wrapper over native Firestore; type shape differs (e.g. get app(), toJSON; ' +
+        'SDK has private constructor, readonly members).',
+    },
+    {
+      name: 'QueryConstraint',
+      reason:
+        'RN Firebase uses different constraint type hierarchy; same runtime behaviour, different type shape.',
+    },
+    {
+      name: 'QueryFieldFilterConstraint',
+      reason:
+        'RN Firebase constraint types differ in shape from SDK; same runtime behaviour.',
+    },
+    {
+      name: 'QueryCompositeFilterConstraint',
+      reason:
+        'RN Firebase constraint types differ in shape from SDK; same runtime behaviour.',
+    },
+    {
+      name: 'QueryEndAtConstraint',
+      reason:
+        'RN Firebase constraint types differ in shape from SDK; same runtime behaviour.',
+    },
+    {
+      name: 'Transaction',
+      reason:
+        'RN Firebase Transaction wrapper; type shape differs (e.g. SDK extends LiteTransaction, ' +
+        'different method signatures).',
+    },
+    {
+      name: 'WriteBatch',
+      reason:
+        'RN Firebase WriteBatch; type shape differs (e.g. extra update overload in RN for ' +
+        'fieldOrUpdateData form).',
+    },
+    {
+      name: 'FieldPath',
+      reason:
+        'RN Firebase FieldPath class; same public API but type shape differs from SDK ' +
+        '(e.g. static of(), internal members).',
+    },
+    {
+      name: 'FieldValue',
+      reason:
+        'RN Firebase FieldValue class; same public API but type shape differs from SDK.',
+    },
+    {
+      name: 'Bytes',
+      reason:
+        'RN Firebase Bytes class; SDK includes toJSON/fromJSON and toString; RN type shape differs.',
+    },
+    {
+      name: 'Timestamp',
+      reason:
+        'RN Firebase Timestamp class; same public API but type shape differs from SDK ' +
+        '(e.g. toJSON, fromMillis, internal members).',
+    },
+    {
+      name: 'GeoPoint',
+      reason:
+        'RN Firebase GeoPoint class; same public API but type shape differs from SDK ' +
+        '(e.g. toJSON, fromJSON).',
+    },
+    {
+      name: 'VectorValue',
+      reason:
+        'RN Firebase VectorValue class; type shape differs from SDK (e.g. toJSON/fromJSON).',
+    },
+    {
+      name: 'AggregateField',
+      reason:
+        'RN Firebase adds internal members (_internalFieldPath, _phantomType) for implementation; ' +
+        'public API equivalent.',
+    },
+    {
+      name: 'AggregateQuerySnapshot',
+      reason:
+        'RN Firebase exposes internal members (_query, _data, _isGetCountFromServer, _fieldsProto) ' +
+        'for implementation; public data() API equivalent.',
     },
   ],
 };

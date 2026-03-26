@@ -75,6 +75,7 @@
       "@react-native-firebase/app/dist/module/types/common": [
         "packages/app/dist/typescript/lib/types/common"
       ],
+      "@react-native-firebase/firestore/pipelines": ["./packages/firestore/dist/typescript/lib/pipelines/index.d.ts"],
     }
   },
   "exclude": ["node_modules", "**/*.spec.ts", "packages/**/dist"]
