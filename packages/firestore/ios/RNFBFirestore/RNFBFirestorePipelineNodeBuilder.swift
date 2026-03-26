@@ -920,6 +920,10 @@ final class RNFBFirestorePipelineNodeBuilder {
             box.value = ConstantBridge(values)
             continue
           }
+          if let stringValue = value as? String {
+            box.value = ConstantBridge(stringValue)
+            continue
+          }
           if isImmediateExpressionConstant(value) {
             box.value = ConstantBridge(value)
             continue
