@@ -9,6 +9,7 @@ import fs from 'fs';
 import {
   Project,
   Node,
+  type ClassDeclaration,
   type ExportedDeclarations,
   type SourceFile,
 } from 'ts-morph';
@@ -20,6 +21,7 @@ import type {
   InterfaceShape,
   TypeAliasShape,
   VariableShape,
+  ClassShape,
 } from './types';
 
 // ---------------------------------------------------------------------------
@@ -27,43 +29,89 @@ import type {
 // ---------------------------------------------------------------------------
 
 /**
+ * Strips JSDoc and block comments from type text so that comparison is based
+ * only on the actual type structure, not code comments.
+ */
+function stripComments(s: string): string {
+  return s
+    .replace(/\/\*\*[\s\S]*?\*\//g, '') // JSDoc /** ... */
+    .replace(/\/\*[\s\S]*?\*\//g, '');  // Block /* ... */
+}
+
+/** Collapses all whitespace (including newlines) to a single space. */
+function collapseWhitespace(s: string): string {
+  return s.replace(/\s+/g, ' ');
+}
+
+/** Trims leading and trailing whitespace from type text. */
+function trimTypeText(s: string): string {
+  return s.trim();
+}
+
+/**
+ * Normalizes union type formatting: strips a leading `|` that TypeScript
+ * emits when a union is written with a leading `|` on each line
+ * (e.g. `| 'a' | 'b'` → `'a' | 'b'`), and the same inside parentheses.
+ */
+function normalizeUnionPipeFormatting(s: string): string {
+  return s
+    .replace(/^\| /, '')
+    .replace(/\(\s*\|/g, '(');
+}
+
+/**
+ * Removes spaces adjacent to brackets, parens, commas, colons, and angle/curly
+ * braces so that e.g. `( k: infer I, )` and `(k: infer I)` compare equal.
+ */
+function normalizeSpacingAroundDelimiters(s: string): string {
+  return s
+    .replace(/\s*\(\s*/g, '(')
+    .replace(/\s*\)\s*/g, ')')
+    .replace(/\s*\[\s*/g, '[')
+    .replace(/\s*\]\s*/g, ']')
+    .replace(/\s*<\s*/g, '<')
+    .replace(/\s*>\s*/g, '>')
+    .replace(/\s*,\s*/g, ',')
+    .replace(/\s*:\s*/g, ':')
+    .replace(/\s*\{\s*/g, '{')
+    .replace(/\s*\}\s*/g, '}');
+}
+
+/** Removes trailing comma before `)` or `]` (formatting-only). */
+function normalizeTrailingCommaBeforeClosing(s: string): string {
+  return s.replace(/,\s*\)/g, ')').replace(/,\s*\]/g, ']');
+}
+
+/** Removes leading comma after `(` or `[` (formatting-only). */
+function normalizeLeadingCommaAfterOpening(s: string): string {
+  return s.replace(/\(\s*,/g, '(').replace(/\[\s*,/g, '[');
+}
+
+/**
+ * Normalizes optional semicolons in object types
+ * (e.g. `{ a: string; }` vs `{ a: string }`, or `;` before `,`).
+ */
+function normalizeSemicolonsInObjectTypes(s: string): string {
+  return s.replace(/;\s*}/g, '}').replace(/;\s*,/g, ',');
+}
+
+/**
  * Normalizes type text so that formatting-only differences (multi-line vs
  * single-line, whitespace around punctuation, trailing commas) do not affect
  * comparison. Types that are semantically identical should compare equal.
+ * JSDoc and block comments are stripped so only the type structure is compared.
  */
 function normalizeType(s: string): string {
-  return (
-    s
-      .trim()
-      // Collapse all whitespace (including newlines) to a single space
-      .replace(/\s+/g, ' ')
-      // Strip a leading pipe that TypeScript emits when a union type is
-      // written with a leading `|` on each line (e.g. `| 'a' | 'b'` → `'a' | 'b'`)
-      .replace(/^\| /, '')
-      // Same when the union is inside parentheses: ( | A | B ) or (| A | B ) → ( A | B )
-      .replace(/\(\s*\|/g, '(')
-      // Remove spaces adjacent to brackets/parens/commas/colons so that
-      // `( k: infer I, )` and `(k: infer I)` normalize to the same string
-      .replace(/\s*\(\s*/g, '(')
-      .replace(/\s*\)\s*/g, ')')
-      .replace(/\s*\[\s*/g, '[')
-      .replace(/\s*\]\s*/g, ']')
-      .replace(/\s*<\s*/g, '<')
-      .replace(/\s*>\s*/g, '>')
-      .replace(/\s*,\s*/g, ',')
-      .replace(/\s*:\s*/g, ':')
-      .replace(/\s*\{\s*/g, '{')
-      .replace(/\s*\}\s*/g, '}')
-      // Remove trailing comma before ) or ] (formatting-only)
-      .replace(/,\s*\)/g, ')')
-      .replace(/,\s*\]/g, ']')
-      // Remove leading comma after ( or [ (formatting-only)
-      .replace(/\(\s*,/g, '(')
-      .replace(/\[\s*,/g, '[')
-      // Optional trailing semicolons in object types (e.g. { a: string; } vs { a: string })
-      .replace(/;\s*}/g, '}')
-      .replace(/;\s*,/g, ',')
-  );
+  return [
+    stripComments,
+    trimTypeText,
+    collapseWhitespace,
+    normalizeUnionPipeFormatting,
+    normalizeSpacingAroundDelimiters,
+    normalizeTrailingCommaBeforeClosing,
+    normalizeLeadingCommaAfterOpening,
+    normalizeSemicolonsInObjectTypes,
+  ].reduce((acc, fn) => fn(acc), s);
 }
 
 // ---------------------------------------------------------------------------
@@ -127,6 +175,37 @@ function extractVariableShape(decl: any): VariableShape {
   return { kind: 'variable', type };
 }
 
+/**
+ * Extract instance members from a class declaration (for comparison).
+ * Treats class shape like an interface so SDK classes can match RN interfaces.
+ */
+function extractClassShape(decl: ClassDeclaration): ClassShape {
+  const members: InterfaceMember[] = [];
+  for (const member of decl.getMembers()) {
+    if (Node.isPropertyDeclaration(member)) {
+      const typeNode = member.getTypeNode();
+      members.push({
+        name: member.getName(),
+        type: normalizeType(typeNode?.getText() ?? 'any'),
+        optional: member.hasQuestionToken(),
+      });
+    } else if (Node.isMethodDeclaration(member)) {
+      const methodParams = member
+        .getParameters()
+        .map((p) => normalizeType(p.getTypeNode()?.getText() ?? 'any'));
+      const retType = normalizeType(
+        member.getReturnTypeNode()?.getText() ?? 'void',
+      );
+      members.push({
+        name: member.getName(),
+        type: `(${methodParams.join(', ')}) => ${retType}`,
+        optional: member.hasQuestionToken(),
+      });
+    }
+  }
+  return { kind: 'class', members };
+}
+
 function extractShape(
   declarations: ReadonlyArray<ExportedDeclarations>,
 ): ExportShape | null {
@@ -142,6 +221,9 @@ function extractShape(
     }
     if (Node.isVariableDeclaration(decl)) {
       return extractVariableShape(decl);
+    }
+    if (Node.isClassDeclaration(decl)) {
+      return extractClassShape(decl);
     }
   }
   return null;

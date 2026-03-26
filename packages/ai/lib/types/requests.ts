@@ -313,7 +313,6 @@ export interface GoogleSearchTool {
  *
  * @public
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface GoogleSearch {}
 
 /**
@@ -348,7 +347,6 @@ export interface URLContextTool {
  *
  * @beta
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface URLContext {}
 
 /**
@@ -465,5 +463,4 @@ export interface SpeechConfig {
  *
  * @beta
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface AudioTranscriptionConfig {}

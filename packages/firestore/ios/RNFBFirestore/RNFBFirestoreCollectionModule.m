@@ -16,9 +16,21 @@
  */
 
 #import <RNFBApp/RNFBRCTEventEmitter.h>
+#if __has_include(<RNFBFirestore/RNFBFirestore-Swift.h>)
+// This import will work in situations where `use_frameworks!` is in use
+#import <RNFBFirestore/RNFBFirestore-Swift.h>
+#elif __has_include("RNFBFirestore-Swift.h")
+// If `use_frameworks!` is not in use (for example, while using pre-built
+// react-native core) then header imports based on frameworks assumptions fail.
+// So, if frameworks are not available, fall back to importing the header directly, it
+// should be findable from a header search path pointing to the build
+// directory. See firebase-ios-sdk#12611 for more context.
+#import "RNFBFirestore-Swift.h"
+#endif
 #import <React/RCTUtils.h>
 
 #import "RNFBFirestoreCollectionModule.h"
+#import "RNFBFirestoreCommon.h"
 
 static __strong NSMutableDictionary *collectionSnapshotListeners;
 static NSString *const RNFB_FIRESTORE_COLLECTION_SYNC = @"firestore_collection_sync_event";
@@ -300,6 +312,44 @@ RCT_EXPORT_METHOD(aggregateQuery
                      resolve(snapshotMap);
                    }
                  }];
+}
+
+RCT_EXPORT_METHOD(pipelineExecute
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)databaseId
+                  : (NSDictionary *)pipeline
+                  : (NSDictionary *)options
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
+                                                         databaseId:databaseId];
+  RNFBFirestorePipelineCallHandler *handler = [[RNFBFirestorePipelineCallHandler alloc] init];
+  [handler executeWithFirestore:firestore
+                       pipeline:pipeline
+                        options:options
+                     completion:^(NSDictionary *_Nullable result, NSDictionary *_Nullable error) {
+                       if (error != nil) {
+                         NSError *nativeError = error[@"nativeError"];
+                         if (nativeError != nil) {
+                           [RNFBFirestoreCommon promiseRejectFirestoreException:reject
+                                                                          error:nativeError];
+                           return;
+                         }
+
+                         NSString *code = error[@"code"];
+                         NSString *message = error[@"message"];
+                         reject(code ?: @"firestore/unknown",
+                                message ?: @"Failed to execute pipeline.", nil);
+                         return;
+                       }
+                       if (result == nil) {
+                         reject(@"firestore/unknown",
+                                @"Failed to execute pipeline: empty pipeline response.", nil);
+                         return;
+                       }
+
+                       resolve(result);
+                     }];
 }
 
 RCT_EXPORT_METHOD(collectionGet

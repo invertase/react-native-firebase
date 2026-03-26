@@ -38,6 +38,7 @@ import {
   writeBatch,
   terminate,
 } from '@react-native-firebase/app/dist/module/internal/web/firebaseFirestore';
+
 import type {
   Firestore,
   Transaction,
@@ -50,6 +51,12 @@ import {
 import { objectToWriteable, readableToObject, parseDocumentBatches } from './convert';
 import { buildQuery } from './query';
 import type { FilterSpec, OrderSpec, QueryOptions } from './query';
+import type {
+  FirestorePipelineExecuteOptionsInternal,
+  FirestorePipelineSnapshotInternal,
+  FirestorePipelineSerializedInternal,
+} from '../types/internal';
+import { executeWebSdkPipeline } from './pipelines/pipeline';
 
 function rejectWithCodeAndMessage(code: string, message: string): Promise<never> {
   return Promise.reject(getWebError({ code, message } as Error & { code: string }));
@@ -280,6 +287,18 @@ export default {
         response[aggregateQuery.key] = data[aggregateQuery.key];
       }
       return response;
+    });
+  },
+
+  pipelineExecute(
+    appName: string,
+    databaseId: string,
+    pipeline: FirestorePipelineSerializedInternal,
+    options?: FirestorePipelineExecuteOptionsInternal,
+  ): Promise<FirestorePipelineSnapshotInternal> {
+    return guard(async () => {
+      const firestore = getCachedFirestoreInstance(appName, databaseId);
+      return executeWebSdkPipeline(firestore, pipeline, options);
     });
   },
 

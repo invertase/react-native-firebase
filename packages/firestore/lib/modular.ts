@@ -63,6 +63,11 @@ import type { Unsubscribe } from './types/firestore';
 export { AggregateField, AggregateQuerySnapshot } from './FirestoreAggregate';
 
 export const CACHE_SIZE_UNLIMITED = -1;
+const PIPELINE_RUNTIME_INSTALLER_SYMBOL = Symbol.for('RNFBFirestorePipelineRuntimeInstaller');
+
+type GlobalWithPipelineInstaller = typeof globalThis & {
+  [PIPELINE_RUNTIME_INSTALLER_SYMBOL]?: (firestore?: FirestoreInternal) => void;
+};
 
 export function getFirestore(): Firestore;
 export function getFirestore(app: FirebaseApp): Firestore;
@@ -72,23 +77,32 @@ export function getFirestore(
   databaseId?: string,
 ): Firestore {
   const app = (name?: string) => getApp(name) as unknown as AppWithFirestoreInternal;
-
+  let firestore: Firestore;
   if (typeof appOrDatabaseId === 'string') {
-    return app().firestore(appOrDatabaseId);
-  }
-
-  if (appOrDatabaseId) {
+    firestore = app().firestore(appOrDatabaseId);
+  } else if (appOrDatabaseId) {
     if (databaseId) {
-      return app(appOrDatabaseId.name).firestore(databaseId);
+      firestore = app(appOrDatabaseId.name).firestore(databaseId);
+    } else {
+      firestore = app(appOrDatabaseId.name).firestore();
     }
-    return app(appOrDatabaseId.name).firestore();
+  } else if (databaseId) {
+    firestore = app().firestore(databaseId);
+  } else {
+    firestore = app().firestore();
   }
 
-  if (databaseId) {
-    return app().firestore(databaseId);
+  const runtimeGlobal = globalThis as GlobalWithPipelineInstaller;
+  const installPipelineRuntime = runtimeGlobal[PIPELINE_RUNTIME_INSTALLER_SYMBOL];
+  if (typeof installPipelineRuntime === 'function') {
+    try {
+      installPipelineRuntime(firestore as FirestoreInternal);
+    } catch {
+      // Avoid changing getFirestore behavior if optional pipeline runtime install fails.
+    }
   }
 
-  return app().firestore();
+  return firestore;
 }
 
 export function doc(

@@ -185,7 +185,9 @@ import newPackageConfig from '../packages/<package-name>/config';
 // inside the packages array:
 {
   name: '<package-name>',
-  firebaseSdkTypesPath: path.join(SCRIPT_DIR, 'packages', '<package-name>', 'firebase-sdk.d.ts'),
+  firebaseSdkTypesPaths: [
+    path.join(SCRIPT_DIR, 'packages', '<package-name>', 'firebase-sdk.d.ts'),
+  ],
   rnFirebaseModularFiles: [
     path.join(rnDist('<package-name>'), 'types', 'modular.d.ts'),
     path.join(rnDist('<package-name>'), 'modular.d.ts'),

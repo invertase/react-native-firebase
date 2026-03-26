@@ -263,7 +263,7 @@ public class ReactNativeFirebaseFirestoreSerialize {
    * @param map Map<String, Object>
    * @return WritableMap
    */
-  private static WritableMap objectMapToWritable(Map<String, Object> map) {
+  static WritableMap objectMapToWritable(Map<String, Object> map) {
     WritableMap writableMap = Arguments.createMap();
 
     for (Map.Entry<String, Object> entry : map.entrySet()) {

@@ -94,6 +94,9 @@
       "@react-native-firebase/app/dist/module/types/internal": [
         "./packages/app/lib/types/internal.ts"
       ],
+      "@react-native-firebase/firestore/pipelines": [
+        "./packages/firestore/dist/typescript/lib/pipelines/index.d.ts"
+      ],
       "@react-native-firebase/*": ["./packages/*/lib/index.ts", "./packages/*/lib/index.d.ts"]
     }
   },
