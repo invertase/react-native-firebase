@@ -178,7 +178,6 @@ describe('Storage', function () {
       expect(toString).toBeDefined();
     });
 
-
     it('`setMaxDownloadRetryTime` function is properly exposed to end user', function () {
       expect(setMaxDownloadRetryTime).toBeDefined();
     });
