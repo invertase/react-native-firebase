@@ -33,11 +33,11 @@ import type { WebParsedPipelineRequest } from './pipeline_parser';
 import { buildQuery } from '../query';
 import type { FilterSpec, OrderSpec, QueryOptions } from '../query';
 
-const FIRESTORE_LITE_UNSUPPORTED_SUFFIX =
-  ' This operation is unavailable because the web runtime uses Firestore Lite.';
+const PIPELINE_RUNTIME_IMPORT_SUFFIX =
+  ' Import "@react-native-firebase/firestore/pipelines" before using pipelines so the pipeline runtime is installed.';
 
-function createLiteUnsupportedError(message: string): Error {
-  return new Error(message + FIRESTORE_LITE_UNSUPPORTED_SUFFIX);
+function createPipelineRuntimeImportError(message: string): Error {
+  return new Error(message + PIPELINE_RUNTIME_IMPORT_SUFFIX);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -105,7 +105,7 @@ function buildQuerySourcePipeline(
   source: Extract<FirestorePipelineSerializedInternal['source'], { source: 'query' }>,
 ): WebPipelineInstance {
   if (typeof pipelineSource.createFrom !== 'function') {
-    throw createLiteUnsupportedError(
+    throw createPipelineRuntimeImportError(
       'pipelineExecute() expected pipeline source to support createFrom(query).',
     );
   }
@@ -128,7 +128,8 @@ function getPipelineStageMethod(
   current: WebPipelineInstance,
   stageName: string,
 ): (this: WebPipelineInstance, ...args: unknown[]) => unknown {
-  const method = current?.[stageName] as ((this: WebPipelineInstance, ...args: unknown[]) => unknown)
+  const method = current?.[stageName] as
+    | ((this: WebPipelineInstance, ...args: unknown[]) => unknown)
     | undefined;
   if (typeof method !== 'function') {
     throw new Error(`Pipeline stage "${stageName}" is not supported by the current web SDK.`);
@@ -308,7 +309,7 @@ export function buildWebSdkPipeline(
 ): WebPipelineInstance {
   const pipelineFactory = (firestore as { pipeline?: () => unknown }).pipeline;
   if (typeof pipelineFactory !== 'function') {
-    throw createLiteUnsupportedError(
+    throw createPipelineRuntimeImportError(
       'pipelineExecute() expected a Firestore instance with pipeline() support.',
     );
   }
