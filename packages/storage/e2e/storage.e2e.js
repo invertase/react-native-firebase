@@ -371,7 +371,9 @@ describe('storage() modular', function () {
       const refObj = ref(getStorage(), url);
       refObj.bucket.should.equal('react-native-firebase-testing.appspot.com');
       refObj.name.should.equal('1mbTestFile.gif');
-      refObj.toString().should.equal('gs://react-native-firebase-testing.appspot.com/1mbTestFile.gif');
+      refObj
+        .toString()
+        .should.equal('gs://react-native-firebase-testing.appspot.com/1mbTestFile.gif');
     });
 
     it('accepts a https encoded url', async function () {
@@ -382,7 +384,9 @@ describe('storage() modular', function () {
       const refObj = ref(getStorage(), url);
       refObj.bucket.should.equal('react-native-firebase-testing.appspot.com');
       refObj.name.should.equal('1mbTestFile.gif');
-      refObj.toString().should.equal('gs://react-native-firebase-testing.appspot.com/1mbTestFile.gif');
+      refObj
+        .toString()
+        .should.equal('gs://react-native-firebase-testing.appspot.com/1mbTestFile.gif');
     });
 
     it('throws an error if https url could not be parsed', async function () {
