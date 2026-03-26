@@ -93,7 +93,7 @@ export default class PhoneAuthListener {
       const eventName = this._internalEvents[type as keyof typeof this._internalEvents]!;
       const handler = (this as unknown as Record<string, (e: unknown) => void>)[`_${type}Handler`];
       const subscription = this._auth.emitter.addListener(eventName, (event: unknown) => {
-        if (typeof handler === 'function') handler(event);
+        if (typeof handler === 'function') handler.call(this, event);
         subscription.remove();
       });
     }
