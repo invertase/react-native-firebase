@@ -141,6 +141,7 @@ function extractInterfaceShape(decl: any): InterfaceShape {
   const members: InterfaceMember[] = [];
   for (const member of decl.getMembers()) {
     if (Node.isPropertySignature(member)) {
+      if (member.getName().startsWith('_')) continue;
       const typeNode = member.getTypeNode();
       members.push({
         name: member.getName(),
@@ -148,6 +149,7 @@ function extractInterfaceShape(decl: any): InterfaceShape {
         optional: member.hasQuestionToken(),
       });
     } else if (Node.isMethodSignature(member)) {
+      if (member.getName().startsWith('_')) continue;
       // Render method signature as a function type string for comparison
       const methodParams = member
         .getParameters()
@@ -196,6 +198,7 @@ function extractClassShape(decl: ClassDeclaration): ClassShape {
   const members: InterfaceMember[] = [];
   for (const member of decl.getMembers()) {
     if (Node.isPropertyDeclaration(member)) {
+      if (member.getName().startsWith('_')) continue;
       const typeNode = member.getTypeNode();
       members.push({
         name: member.getName(),
@@ -203,6 +206,7 @@ function extractClassShape(decl: ClassDeclaration): ClassShape {
         optional: member.hasQuestionToken(),
       });
     } else if (Node.isMethodDeclaration(member)) {
+      if (member.getName().startsWith('_')) continue;
       const methodParams = member
         .getParameters()
         .map((p) => normalizeType(p.getTypeNode()?.getText() ?? 'any'));
@@ -266,6 +270,7 @@ function collectExportsFromSourceFile(
   into: Map<string, ExportEntry>,
 ): void {
   for (const [name, decls] of sf.getExportedDeclarations()) {
+    if (name.startsWith('_')) continue;
     if (into.has(name)) continue; // first file wins (no overwriting)
     const shape = extractShape(decls);
     if (shape) {
