@@ -622,7 +622,7 @@ describe('auth().currentUser', function () {
           try {
             await firebase.auth().currentUser.delete();
           } catch (e) {
-            consle.log(e);
+            console.log(e);
             /* do nothing */
           }
 
@@ -1621,7 +1621,7 @@ describe('auth().currentUser', function () {
           try {
             await deleteUser(auth.currentUser);
           } catch (e) {
-            consle.log(e);
+            console.log(e);
             /* do nothing */
           }
 

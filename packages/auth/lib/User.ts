@@ -59,11 +59,16 @@ export default class User {
   }
 
   get metadata(): { lastSignInTime: string; creationTime: string } {
-    const { metadata } = this._user;
-    const m = metadata ?? { lastSignInTime: 0, creationTime: 0 };
+    const raw = this._user.metadata;
+    const lastMs = raw != null && raw.lastSignInTime != null ? Number(raw.lastSignInTime) : 0;
+    const creationMs = raw != null && raw.creationTime != null ? Number(raw.creationTime) : 0;
+    const toIso = (ms: number) => {
+      const d = new Date(ms);
+      return Number.isNaN(d.getTime()) ? new Date(0).toISOString() : d.toISOString();
+    };
     return {
-      lastSignInTime: new Date(m.lastSignInTime).toISOString(),
-      creationTime: new Date(m.creationTime).toISOString(),
+      lastSignInTime: toIso(lastMs),
+      creationTime: toIso(creationMs),
     };
   }
 
