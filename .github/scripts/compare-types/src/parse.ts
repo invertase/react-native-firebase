@@ -134,7 +134,7 @@ function hasInternalComment(node: any): boolean {
 
   return node.getLeadingCommentRanges().some((comment: any) => {
     const text = comment.getText();
-    return text.includes('@internal') || text.includes('Excluded from this release type');
+    return text.includes('@internal');
   });
 }
 
