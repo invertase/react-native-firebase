@@ -1,6 +1,6 @@
 # Feature Porting Workflow
 
-Quick reference guide for porting features from Firebase JS SDK to React Native Firebase AI using AI assistance.
+Quick reference guide for using the local AI type snapshot and compare-types script to spot AI feature gaps, then port them into React Native Firebase incrementally.
 
 ---
 
@@ -11,14 +11,12 @@ Quick reference guide for porting features from Firebase JS SDK to React Native 
 ```
 Follow @porting-workflow.md
 
-Firebase JS SDK location: [YOUR_PATH]/firebase-js-sdk/packages/ai
-
 Start at Step 1: Discovery
 ```
 
 The workflow will:
-1. Compare packages using rules from `ai-package.md`
-2. List missing features by priority
+1. Review `ai-package.md` and the AI compare-types config
+2. Run `yarn compare:types` and focus on the `ai` package output
 3. Guide you through porting one feature at a time
 
 ---
@@ -27,44 +25,49 @@ The workflow will:
 
 ### **Step 1: Discovery** - What's Missing?
 
-**When user provides Firebase JS SDK path, execute the following:**
+**Before discovery:**
 
-Compare Firebase JS SDK AI package with React Native Firebase AI package.
+1. Ensure `.github/scripts/compare-types/packages/ai/firebase-sdk.d.ts` contains the latest firebase-js-sdk AI public type snapshot
+2. Review `.github/scripts/compare-types/packages/ai/config.ts` for documented differences
 
-**Paths:**
-- Firebase JS SDK: [user-provided path]
-- React Native Firebase: Current workspace `packages/ai/`
+**Then execute the following:**
+
+Run `yarn compare:types` from the repo root and analyze the `ai` package output.
 
 **Instructions:**
-1. Read `/.cursor/rules/ai/ai-package.md` to understand known differences
-2. Compare the packages and identify missing features
-3. Categorize by priority:
-   - 🔴 **HIGH**: Core API functions (e.g., getLiveGenerativeModel, getTemplateGenerativeModel)
-   - 🟡 **MEDIUM**: Model classes (e.g., LiveGenerativeModel, TemplateGenerativeModel)
-   - 🟢 **LOW**: Helper methods, utilities, optimizations
-   - ⚪ **SKIP**: Browser-specific features (Chrome adapter, Hybrid mode)
-4. For each missing feature, specify:
+1. Read `/.cursor/rules/ai/ai-package.md` to understand known platform differences
+2. Read `.github/scripts/compare-types/packages/ai/config.ts` to understand documented type drift
+3. Run `yarn compare:types`
+4. Categorize undocumented `ai` findings by priority:
+   - 🔴 **HIGH**: Core API functions or entry points
+   - 🟡 **MEDIUM**: Model classes, sessions, request/response types
+   - 🟢 **LOW**: Helpers, utilities, or non-blocking type refinements
+   - ⚪ **SKIP**: Browser-only features or intentional architecture differences
+5. For each candidate gap, specify:
    - Feature name
+   - Compare-types category (`Missing in RN Firebase`, `Different shape`, or `STALE`)
    - Portability (portable vs browser-specific)
-   - Files involved in JS SDK
+   - Likely RN files involved
    - Brief description
 
 **Output format:**
 ```
-Found X missing features:
+Found X AI gaps:
 
 🔴 HIGH PRIORITY:
 1. [Feature] - [Description] (portable/browser-specific)
-   Files: [list]
+   Compare-types: [category]
+   RN files: [list]
 
 🟡 MEDIUM PRIORITY:
 1. [Feature] - [Description] (portable/browser-specific)
-   Files: [list]
+   Compare-types: [category]
+   RN files: [list]
 
 🟢 LOW PRIORITY:
 ...
 
-⚪ SKIP (Browser-only):
+⚪ SKIP (Browser-only / intentional):
 1. [Feature] - [Reason]
 ```
 
@@ -78,29 +81,35 @@ Then ask: "Which feature would you like to port first?"
 
 Analyze the feature for porting:
 
-1. **Files involved in JS SDK:**
-   - List all source files
-   - List all test files
+1. **Compare-types evidence:**
+   - Quote the relevant `ai` package findings
+   - Identify whether the gap is a missing export, a type-shape mismatch, or stale config
 
-2. **Required RN adaptations:**
+2. **Likely RN files involved:**
+   - List the RN source files and tests you expect to update
+   - Map public exports to `lib/` and `__tests__/`
+
+3. **Required RN adaptations:**
    - Import changes (`@firebase/*` → `@react-native-firebase/*`)
    - Type changes (`FirebaseApp` → `ReactNativeFirebase.FirebaseApp`)
    - Polyfill requirements (fetch, ReadableStream, TextEncoder)
    - Component system removal (if applicable)
 
-3. **Browser-specific checks:**
+4. **Browser-specific checks:**
    - Scan for `window`, `document`, DOM APIs
-   - Check for Service Workers, localStorage
-   - Identify if Chrome adapter or Hybrid mode related
+   - Check for Service Workers, localStorage, or browser audio APIs
+   - Identify if Chrome adapter, Hybrid mode, or other web-only features are involved
 
-4. **Complexity estimate:**
-   - Low: Simple file port, minimal changes
+5. **Complexity estimate:**
+   - Low: Simple type/export update
    - Medium: Multiple files, some adaptations needed
-   - High: Complex dependencies, significant adaptations
+   - High: Complex dependencies, significant runtime changes
 
-5. **Dependencies:**
+6. **Dependencies and references:**
    - List any new packages needed
    - Verify RN compatibility
+   - Do not assume the firebase-js-sdk repo is available locally
+   - If implementation details beyond the type snapshot are required, ask the user for the relevant source/context before proceeding
 
 **Then ask:** "Ready to implement? (yes/no)"
 
@@ -108,8 +117,8 @@ Analyze the feature for porting:
 
 Execute these steps:
 
-1. **Create source files:**
-   - Port from `src/` to `lib/`
+1. **Create or update source files:**
+   - Add or update the RN implementation in `lib/`
    - Apply all adaptations from Phase 1
    - Ensure polyfills are used correctly
 
@@ -118,11 +127,10 @@ Execute these steps:
    - Add types to `lib/public-types.ts` if needed
 
 3. **Port tests:**
-   - Port from `src/*.test.ts` to `__tests__/*.test.ts`
-   - Keep identical filenames
-   - Convert Mocha/Chai to Jest
-   - Remove browser-specific test utilities
-   - Ensure coverage matches JS SDK
+   - Port or add tests in `__tests__/`
+   - Keep equivalent file naming where possible
+   - Use Jest-compatible patterns
+   - Ensure coverage matches the intended feature
 
 4. **Show all changes:**
    - List every file created/modified
@@ -135,11 +143,10 @@ Execute these steps:
    ✅ Complete. Changes made:
 
    Source files:
-   - Created lib/[...]
-   - Updated lib/index.ts
+   - Created/updated lib/[...]
 
    Test files:
-   - Ported __tests__/[...] (adapted for Jest)
+   - Ported/updated __tests__/[...]
 
    Key adaptations:
    - [List any notable changes]
@@ -158,22 +165,22 @@ Execute these steps:
 1. Reference the original discovery list
 2. Ask: "Next feature: [FEATURE_NAME] (Priority: [HIGH/MEDIUM/LOW]). Proceed?"
 3. If user says yes, go to Step 2 with that feature
-4. If user says no or picks different feature, go to Step 2 with their choice
-5. If all features done, congratulate and summarize what was ported
+4. If user says no or picks a different feature, go to Step 2 with their choice
+5. If all features are done, summarize what was ported
 
 ---
 
 ## ✅ Quality Checklist (Before Committing)
 
-- [ ] All imports updated (`@firebase/*` → `@react-native-firebase/*`)
+- [ ] `.github/scripts/compare-types/packages/ai/firebase-sdk.d.ts` is up to date for discovery
+- [ ] All imports updated (`@firebase/*` → `@react-native-firebase/*`) where applicable
 - [ ] Polyfills used correctly (fetch, ReadableStream, TextEncoder)
 - [ ] No browser-specific APIs (`window`, `document`, etc.)
 - [ ] Exports added to `lib/index.ts`
 - [ ] Types exported from `lib/public-types.ts` if needed
-- [ ] Tests ported to `__tests__/` with same filenames
-- [ ] Tests adapted for Jest (from Karma/Mocha)
-- [ ] Test coverage matches JS SDK
-- [ ] Files in correct locations (`src/` → `lib/`)
+- [ ] Tests added or updated in `__tests__/`
+- [ ] Test coverage matches the intended feature
+- [ ] Files are in the correct RN locations (`lib/`, `__tests__/`)
 
 ---
 
@@ -181,27 +188,28 @@ Execute these steps:
 
 ```
 USER: Follow @porting-workflow.md
-      Firebase JS SDK location: /Users/me/firebase-js-sdk/packages/ai
       Start at Step 1: Discovery
 
-AI: [Reads ai-package.md rules, compares packages]
+AI: [Reads ai-package.md, reviews ai config, runs compare-types]
 
-    Found 3 missing features:
+    Found 3 AI gaps:
 
     🔴 HIGH PRIORITY:
     1. Live API (getLiveGenerativeModel, LiveGenerativeModel, LiveSession)
        - Real-time bidirectional communication via WebSocket
-       - Files: src/api.ts, src/models/live-generative-model.ts,
-                src/methods/live-session.ts, src/websocket.ts
+       - Compare-types: Missing in RN Firebase
+       - RN files: lib/index.ts, lib/models/live-generative-model.ts,
+                   lib/methods/live-session.ts, lib/websocket.ts
        - Portable ✓
 
     🟡 MEDIUM PRIORITY:
     1. Template Models (getTemplateGenerativeModel, TemplateGenerativeModel)
        - Server-side template execution
-       - Files: src/api.ts, src/models/template-generative-model.ts
+       - Compare-types: Missing in RN Firebase
+       - RN files: lib/index.ts, lib/models/template-generative-model.ts
        - Portable ✓
 
-    ⚪ SKIP (Browser-only):
+    ⚪ SKIP (Browser-only / intentional):
     1. Hybrid Mode - Chrome on-device AI (not available in RN)
 
     Which feature would you like to port first?
@@ -212,13 +220,19 @@ AI: [Phase 1 - Analysis]
 
     Live API Analysis:
 
-    Files involved:
-    - src/api.ts (add getLiveGenerativeModel export)
-    - src/models/live-generative-model.ts
-    - src/methods/live-session.ts, live-session-helpers.ts
-    - src/websocket.ts
-    - src/types/live-responses.ts
-    - Tests: 3 test files
+    Compare-types evidence:
+    - Missing in RN Firebase: getLiveGenerativeModel
+    - Missing in RN Firebase: LiveGenerativeModel
+    - Missing in RN Firebase: LiveSession
+
+    RN files involved:
+    - lib/index.ts
+    - lib/models/live-generative-model.ts
+    - lib/methods/live-session.ts
+    - lib/websocket.ts
+    - lib/types/live-responses.ts
+    - __tests__/live-generative-model.test.ts
+    - __tests__/live-session.test.ts
 
     Required adaptations:
     - Import: @firebase/app → @react-native-firebase/app
@@ -229,64 +243,29 @@ AI: [Phase 1 - Analysis]
     - No window/document usage ✓
     - WebSocket is native in RN ✓
 
-    Complexity: Medium-High (multiple files, WebSocket handling)
+    Complexity: Medium-High
 
     Ready to implement? (yes/no)
-
-USER: yes
-
-AI: [Phase 2 - Implementation]
-    [Creates all files...]
-
-    ✅ Complete. Changes made:
-
-    Source files:
-    - Created lib/models/live-generative-model.ts
-    - Created lib/methods/live-session.ts
-    - Created lib/methods/live-session-helpers.ts
-    - Created lib/websocket.ts
-    - Created lib/types/live-responses.ts
-    - Updated lib/index.ts (added getLiveGenerativeModel, LiveGenerativeModel exports)
-
-    Test files:
-    - Ported __tests__/live-generative-model.test.ts (adapted for Jest)
-    - Ported __tests__/live-session.test.ts (adapted for Jest)
-    - Ported __tests__/websocket.test.ts (adapted for Jest)
-
-    Key adaptations:
-    - Changed imports from @firebase/* to @react-native-firebase/*
-    - Removed component provider logic
-    - WebSocket uses native RN WebSocket API
-
-    Review and commit when ready.
-
-USER: [reviews code, writes commit message, commits]
-      committed
-
-AI: Next feature: Template Models (Priority: MEDIUM). Proceed?
-
-USER: yes
-
-[Process repeats...]
 ```
 
 ---
 
 ## 🎯 Key Principles
 
-1. **One feature = One commit** - Clean git history
-2. **Show before doing** - Always present plan first
-3. **Wait for approval** - User stays in control
-4. **Pause between features** - Time to review and commit
-5. **Respect known differences** - Don't port browser-specific code
+1. **One feature = One commit** - clean git history
+2. **Show before doing** - always present the plan first
+3. **Wait for approval** - user stays in control
+4. **Use compare-types first** - discovery starts from the local AI snapshot, not a checked-out firebase-js-sdk repo
+5. **Respect known differences** - don't port browser-specific or intentionally divergent APIs
 
 ---
 
 ## 📚 Related Files
 
-- `/.cursor/rules/ai/ai-package.md` - Known differences and porting rules
+- `/.cursor/rules/ai/ai-package.md` - Known differences and parity rules
 - `/.cursor/rules/ai/porting-workflow.md` - This file
-- `README.md` - Package documentation
+- `.github/scripts/compare-types/packages/ai/firebase-sdk.d.ts` - Local firebase-js-sdk AI type snapshot
+- `.github/scripts/compare-types/packages/ai/config.ts` - Documented AI type differences
 
 ---
 
@@ -297,17 +276,15 @@ USER: yes
 ```
 Follow @porting-workflow.md
 
-Firebase JS SDK location: [YOUR_PATH]/firebase-js-sdk/packages/ai
-
 Start at Step 1: Discovery
 ```
 
 **The AI will:**
 - ✅ Read the porting rules automatically
-- ✅ Compare packages and list missing features
+- ✅ Run the AI compare-types workflow
+- ✅ List undocumented gaps by priority
 - ✅ Guide you through porting one feature at a time
 - ✅ Wait for your approval at each step
-- ✅ Pause after each feature for you to commit
 
 **You control:**
 - Which features to port

@@ -6,17 +6,16 @@ This document describes the **intentional differences** between the React Native
 
 ## 🎯 Purpose
 
-When comparing this React Native Firebase AI package with the Firebase JS SDK AI package (from `firebase/firebase-js-sdk`), this file documents all **expected and correct** differences. Any difference NOT listed here is potentially a missing feature that should be evaluated for porting.
+When checking type parity for the React Native Firebase AI package, use this file to distinguish **intentional differences** from real API drift. Any AI difference that is not documented here or in the compare-types config is a candidate feature gap that should be evaluated for porting.
 
 This cursor rules file lives in `.cursor/rules/` and helps AI assistants understand the intentional architectural differences between the web and mobile implementations.
 
-### 📦 Setup for Comparison
-To effectively use this file for feature parity checks:
-1. Clone both repositories locally:
-   - `git clone https://github.com/invertase/react-native-firebase.git`
-   - `git clone https://github.com/firebase/firebase-js-sdk.git`
-2. When asking AI to compare, reference both package directories
-3. Use these cursor rules to filter out known differences
+### 📦 Type Parity Workflow
+Use the local compare-types workflow instead of checking out the `firebase-js-sdk` repo:
+1. Update `.github/scripts/compare-types/packages/ai/firebase-sdk.d.ts` with the latest firebase-js-sdk AI public types
+2. Review `.github/scripts/compare-types/packages/ai/config.ts` for intentionally documented differences
+3. Run `yarn compare:types` from the repo root
+4. Treat any undocumented AI difference as a signal that a new type or feature may need to be added in RN Firebase
 
 ---
 
@@ -607,10 +606,11 @@ export interface AI {
 
 Use this checklist when identifying new APIs in Firebase JS SDK to port:
 
-### 1. **Identify the Feature**
-   - What files are involved in JS SDK?
-   - What public APIs are exposed?
-   - What types are exported?
+### 1. **Identify the Gap**
+   - Update `.github/scripts/compare-types/packages/ai/firebase-sdk.d.ts` if needed
+   - Run `yarn compare:types`
+   - Focus on the `ai` package output
+   - Note any `Missing in RN Firebase` or `Different shape` entries that are not already explained in `config.ts`
 
 ### 2. **Check for Browser-Specific Code**
    - ❌ Skip if uses Chrome on-device AI (Hybrid mode, ChromeAdapter)
@@ -674,34 +674,23 @@ Use this checklist when identifying new APIs in Firebase JS SDK to port:
 
 ---
 
-## 📝 Example: How to Compare Packages
+## 📝 Example: How to Check Type Parity
 
-### Step 1: Compare Exports
+### Step 1: Update the AI Snapshot
+Populate `.github/scripts/compare-types/packages/ai/firebase-sdk.d.ts` with the latest firebase-js-sdk AI public types.
+
+### Step 2: Run the Comparison
 ```bash
-# Check what's exported in JS SDK api.ts
-grep "^export" /path/to/firebase-js-sdk/packages/ai/src/api.ts
-
-# Check what's exported in RN index.ts
-grep "^export" /path/to/react-native-firebase/packages/ai/lib/index.ts
+yarn compare:types
 ```
 
-### Step 2: Compare Model Classes
-```bash
-# List model classes in JS SDK
-ls /path/to/firebase-js-sdk/packages/ai/src/models/
-
-# List model classes in RN Firebase
-ls /path/to/react-native-firebase/packages/ai/lib/models/
-```
-
-### Step 3: Filter Known Differences
-- **Ignore** chrome-adapter related differences
-- **Ignore** factory files, component registration
-- **Ignore** hybrid/on-device features
-- **Evaluate** new model classes, methods, types
+### Step 3: Review the `ai` Package Output
+- **Ignore** differences already documented in `.github/scripts/compare-types/packages/ai/config.ts`
+- **Ignore** browser-only or architectural differences documented in this rules file
+- **Evaluate** undocumented missing exports, undocumented shape changes, and stale config entries
 
 ### Step 4: Identify Real Gaps
-Any difference NOT documented in these cursor rules is a potential feature gap.
+Any undocumented AI difference reported by compare-types is a potential feature gap.
 
 ---
 
@@ -732,31 +721,30 @@ Any difference NOT documented in these cursor rules is a potential feature gap.
 
 ## 🔄 Version Tracking
 
-- **Firebase JS SDK Version**: 2.6.0 (as of this comparison)
+- **Firebase JS SDK Source of Truth**: `.github/scripts/compare-types/packages/ai/firebase-sdk.d.ts`
 - **React Native Firebase Version**: 23.5.0
-- **Last Comparison Date**: 2025-11-19
+- **Last Comparison Date**: 2026-03-27
 
-When updating, check Firebase JS SDK changelog for new features and re-evaluate what needs porting.
+When updating, refresh the local AI type snapshot and re-run `yarn compare:types`.
 
 ---
 
 ## 💡 Tips for AI-Assisted Porting
 
-When asking AI to compare packages:
+When asking AI to evaluate AI parity:
 
 **Good prompt:**
-> "Compare firebase-js-sdk/packages/ai with react-native-firebase/packages/ai. Ignore differences documented in the cursor rules. What new features in JS SDK need to be ported?"
+> "Read `.cursor/rules/ai/ai-package.md`, review `.github/scripts/compare-types/packages/ai/config.ts`, run `yarn compare:types`, and tell me which undocumented AI differences look like real RN Firebase feature gaps."
 
 **Bad prompt:**
-> "What are all the differences between these packages?"
-> (This will list all the intentional differences too)
+> "What are all the differences in AI?"
+> (This ignores the documented exceptions and compare-types config)
 
 **Focus areas for comparison:**
-- New model classes (e.g., LiveGenerativeModel, TemplateGenerativeModel)
-- New methods on existing models
-- New types/interfaces for public APIs
-- New request/response types
-- New exported functions from api.ts
+- Undocumented `Missing in RN Firebase` entries
+- Undocumented `Different shape` entries
+- Stale config entries that imply the RN types now match and the config should be cleaned up
+- Public API additions that suggest a new model, method, or request/response type
 
 **Ignore for comparison:**
 - Component registration code
@@ -768,6 +756,7 @@ When asking AI to compare packages:
 - WebSocket `binaryType` differences (RN uses runtime detection instead)
 - WebSocket URL construction methods (RN uses manual string building)
 - WebSocket test mock types (RN uses function types, not DOM EventListener/MessageEvent)
+- Differences already documented in `.github/scripts/compare-types/packages/ai/config.ts`
 
 ---
 
@@ -785,7 +774,7 @@ When asked to port features from Firebase JS SDK to React Native Firebase AI, fo
 
 ### Feature Identification Priority
 
-When comparing packages, identify missing features in this order:
+When reviewing `yarn compare:types` output for `ai`, identify missing features in this order:
 1. **High Priority**: Core API functions (getLiveGenerativeModel, etc.)
 2. **Medium Priority**: Model classes (LiveGenerativeModel, TemplateGenerativeModel)
 3. **Low Priority**: Helper methods, utilities, optimizations
@@ -796,7 +785,8 @@ When comparing packages, identify missing features in this order:
 ```
 Present:
 - Feature name and description
-- Files involved in JS SDK
+- Relevant compare-types findings
+- Likely RN files involved
 - Required adaptations for RN
 - Browser-specific checks (skip if found)
 - Estimated complexity
