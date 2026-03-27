@@ -17,10 +17,12 @@ import type {
   ExportEntry,
   ExportShape,
   InterfaceMember,
+  EnumMember,
   FunctionShape,
   InterfaceShape,
   TypeAliasShape,
   VariableShape,
+  EnumShape,
   ClassShape,
 } from './types';
 
@@ -175,6 +177,17 @@ function extractVariableShape(decl: any): VariableShape {
   return { kind: 'variable', type };
 }
 
+function extractEnumShape(decl: any): EnumShape {
+  const members: EnumMember[] = decl.getMembers().map((member: any) => ({
+    name: member.getName(),
+    value: member.getInitializer()
+      ? normalizeType(member.getInitializer().getText())
+      : undefined,
+  }));
+
+  return { kind: 'enum', members };
+}
+
 /**
  * Extract instance members from a class declaration (for comparison).
  * Treats class shape like an interface so SDK classes can match RN interfaces.
@@ -221,6 +234,9 @@ function extractShape(
     }
     if (Node.isVariableDeclaration(decl)) {
       return extractVariableShape(decl);
+    }
+    if (Node.isEnumDeclaration(decl)) {
+      return extractEnumShape(decl);
     }
     if (Node.isClassDeclaration(decl)) {
       return extractClassShape(decl);
