@@ -74,7 +74,7 @@ export const packages: PackageEntry[] = [
   {
     name: 'ai',
     firebaseSdkTypesPaths: [
-      path.join(SCRIPT_DIR, 'packages', 'ai', 'firebase-sdk.d.ts'),
+      path.join(SCRIPT_DIR, 'packages', 'ai', 'ai-sdk.d.ts'),
     ],
     rnFirebaseModularFiles: [
       path.join(rnDist('ai'), 'index.d.ts'),
