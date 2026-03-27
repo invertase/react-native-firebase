@@ -357,21 +357,6 @@ const config: PackageConfig = {
         'SDK has private constructor, readonly members).',
     },
     {
-      name: 'QueryConstraint',
-      reason:
-        'RN Firebase uses different constraint type hierarchy; same runtime behaviour, different type shape.',
-    },
-    {
-      name: 'QueryFieldFilterConstraint',
-      reason:
-        'RN Firebase constraint types differ in shape from SDK; same runtime behaviour.',
-    },
-    {
-      name: 'QueryCompositeFilterConstraint',
-      reason:
-        'RN Firebase constraint types differ in shape from SDK; same runtime behaviour.',
-    },
-    {
       name: 'QueryEndAtConstraint',
       reason:
         'RN Firebase constraint types differ in shape from SDK; same runtime behaviour.',
@@ -387,12 +372,6 @@ const config: PackageConfig = {
       reason:
         'RN Firebase WriteBatch; type shape differs (e.g. extra update overload in RN for ' +
         'fieldOrUpdateData form).',
-    },
-    {
-      name: 'FieldPath',
-      reason:
-        'RN Firebase FieldPath class; same public API but type shape differs from SDK ' +
-        '(e.g. static of(), internal members).',
     },
     {
       name: 'FieldValue',
@@ -411,21 +390,9 @@ const config: PackageConfig = {
         '(e.g. toJSON, fromMillis, internal members).',
     },
     {
-      name: 'GeoPoint',
-      reason:
-        'RN Firebase GeoPoint class; same public API but type shape differs from SDK ' +
-        '(e.g. toJSON, fromJSON).',
-    },
-    {
       name: 'VectorValue',
       reason:
         'RN Firebase VectorValue class; type shape differs from SDK (e.g. toJSON/fromJSON).',
-    },
-    {
-      name: 'AggregateField',
-      reason:
-        'RN Firebase adds internal members (_internalFieldPath, _phantomType) for implementation; ' +
-        'public API equivalent.',
     },
     {
       name: 'AggregateQuerySnapshot',

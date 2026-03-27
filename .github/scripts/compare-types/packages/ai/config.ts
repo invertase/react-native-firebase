@@ -113,26 +113,6 @@ const config: PackageConfig = {
       reason:
         'RN Firebase-specific schema helper interface used by the local schema-builder implementation and request typing.',
     },
-    {
-      name: 'GoogleAICountTokensRequest',
-      reason:
-        'RN Firebase internal Google AI transport request type re-exported from generated declarations. Not part of the firebase-js-sdk public API.',
-    },
-    {
-      name: 'GoogleAIGenerateContentResponse',
-      reason:
-        'RN Firebase internal Google AI transport response type re-exported from generated declarations. Not part of the firebase-js-sdk public API.',
-    },
-    {
-      name: 'GoogleAIGenerateContentCandidate',
-      reason:
-        'RN Firebase internal Google AI transport candidate type re-exported from generated declarations. Not part of the firebase-js-sdk public API.',
-    },
-    {
-      name: 'GoogleAICitationMetadata',
-      reason:
-        'RN Firebase internal Google AI citation metadata type re-exported from generated declarations. Not part of the firebase-js-sdk public API.',
-    },
   ],
   differentShape: [
     {
@@ -166,44 +146,9 @@ const config: PackageConfig = {
         'RN Firebase inlines the protobuf date type as local `Date`, while the firebase-js-sdk declaration references a generated alias name. The public structure is equivalent.',
     },
     {
-      name: 'CodeExecutionResultPart',
-      reason:
-        'RN Firebase includes `thoughtSignature` fields in content-part unions to represent streamed thought-signature metadata returned by the native-backed implementation.',
-    },
-    {
-      name: 'ExecutableCodePart',
-      reason:
-        'RN Firebase includes `thoughtSignature` fields in content-part unions to represent streamed thought-signature metadata returned by the native-backed implementation.',
-    },
-    {
-      name: 'FileDataPart',
-      reason:
-        'RN Firebase includes `thoughtSignature` fields in content-part unions to represent streamed thought-signature metadata returned by the native-backed implementation.',
-    },
-    {
-      name: 'FunctionCallPart',
-      reason:
-        'RN Firebase includes `thoughtSignature` fields in content-part unions to represent streamed thought-signature metadata returned by the native-backed implementation.',
-    },
-    {
-      name: 'FunctionResponsePart',
-      reason:
-        'RN Firebase includes `thoughtSignature` fields in content-part unions to represent streamed thought-signature metadata returned by the native-backed implementation.',
-    },
-    {
-      name: 'InlineDataPart',
-      reason:
-        'RN Firebase includes `thoughtSignature` fields in content-part unions to represent streamed thought-signature metadata returned by the native-backed implementation.',
-    },
-    {
       name: 'InferenceMode',
       reason:
         'RN Firebase omits the browser-only in-cloud preference mode used by Chrome hybrid/on-device inference, so the enum-like object has fewer values.',
-    },
-    {
-      name: 'TextPart',
-      reason:
-        'RN Firebase includes `thoughtSignature` on text parts to carry streamed thought-signature metadata used by its response handling.',
     },
     {
       name: 'URLRetrievalStatus',
