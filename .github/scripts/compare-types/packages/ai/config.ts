@@ -20,9 +20,197 @@ import type { PackageConfig } from '../../src/types';
 
 const config: PackageConfig = {
   nameMapping: {},
-  missingInRN: [],
-  extraInRN: [],
-  differentShape: [],
+  missingInRN: [
+    {
+      name: 'startAudioConversation',
+      reason:
+        'Browser-only audio conversation helper built on Web Audio and getUserMedia. React Native has no equivalent built-in implementation.',
+    },
+    {
+      name: 'AudioConversationController',
+      reason:
+        'Browser-only audio conversation controller for the Web Audio based live-session helpers. Not available in React Native.',
+    },
+    {
+      name: 'StartAudioConversationOptions',
+      reason:
+        'Options type for the browser-only audio conversation helper APIs, which are intentionally not implemented in React Native.',
+    },
+    {
+      name: 'ChromeAdapter',
+      reason:
+        "Chrome on-device AI adapter is browser-specific and intentionally not supported by React Native Firebase's AI package.",
+    },
+    {
+      name: 'HybridParams',
+      reason:
+        'Hybrid mode combines Chrome on-device AI with cloud inference, which is a browser-only feature and intentionally absent in React Native.',
+    },
+    {
+      name: 'OnDeviceParams',
+      reason:
+        'On-device inference params are only used by the browser Chrome adapter / hybrid flow, which is not supported in React Native.',
+    },
+    {
+      name: 'InferenceSource',
+      reason:
+        'Inference source only reports whether a hybrid request ran on-device or in-cloud. React Native Firebase does not support hybrid/on-device inference.',
+    },
+    {
+      name: 'LanguageModelCreateCoreOptions',
+      reason:
+        'Chrome Prompt API type for browser on-device language models. Not relevant to the React Native runtime.',
+    },
+    {
+      name: 'LanguageModelCreateOptions',
+      reason:
+        'Chrome Prompt API type for browser on-device language models. Not relevant to the React Native runtime.',
+    },
+    {
+      name: 'LanguageModelExpected',
+      reason:
+        'Chrome Prompt API type tied to browser-only on-device language model integration.',
+    },
+    {
+      name: 'LanguageModelMessage',
+      reason:
+        'Chrome Prompt API message type used by browser-only on-device language model integration.',
+    },
+    {
+      name: 'LanguageModelMessageContent',
+      reason:
+        'Chrome Prompt API content type used by browser-only on-device language model integration.',
+    },
+    {
+      name: 'LanguageModelMessageContentValue',
+      reason:
+        'Chrome Prompt API content value type used by browser-only on-device language model integration.',
+    },
+    {
+      name: 'LanguageModelMessageRole',
+      reason:
+        'Chrome Prompt API role type used by browser-only on-device language model integration.',
+    },
+    {
+      name: 'LanguageModelMessageType',
+      reason:
+        'Chrome Prompt API message type discriminator used by browser-only on-device language model integration.',
+    },
+    {
+      name: 'LanguageModelPromptOptions',
+      reason:
+        'Chrome Prompt API prompt options type used by browser-only on-device language model integration.',
+    },
+  ],
+  extraInRN: [
+    {
+      name: 'GroundingAttribution',
+      reason:
+        'Deprecated legacy grounding attribution type retained in RN Firebase declarations for compatibility, even though the JS SDK no longer exports it publicly.',
+    },
+    {
+      name: 'ObjectSchemaInterface',
+      reason:
+        'RN Firebase-specific schema helper interface used by the local schema-builder implementation and request typing.',
+    },
+    {
+      name: 'GoogleAICountTokensRequest',
+      reason:
+        'RN Firebase internal Google AI transport request type re-exported from generated declarations. Not part of the firebase-js-sdk public API.',
+    },
+    {
+      name: 'GoogleAIGenerateContentResponse',
+      reason:
+        'RN Firebase internal Google AI transport response type re-exported from generated declarations. Not part of the firebase-js-sdk public API.',
+    },
+    {
+      name: 'GoogleAIGenerateContentCandidate',
+      reason:
+        'RN Firebase internal Google AI transport candidate type re-exported from generated declarations. Not part of the firebase-js-sdk public API.',
+    },
+    {
+      name: 'GoogleAICitationMetadata',
+      reason:
+        'RN Firebase internal Google AI citation metadata type re-exported from generated declarations. Not part of the firebase-js-sdk public API.',
+    },
+  ],
+  differentShape: [
+    {
+      name: 'getAI',
+      reason:
+        'RN Firebase uses `ReactNativeFirebase.FirebaseApp` and injects auth/app-check modules directly instead of the firebase-js-sdk provider-based app wiring.',
+    },
+    {
+      name: 'getGenerativeModel',
+      reason:
+        'RN Firebase intentionally accepts only `ModelParams`; the firebase-js-sdk also accepts browser-only `HybridParams` for Chrome on-device AI.',
+    },
+    {
+      name: 'AI',
+      reason:
+        'RN Firebase uses `ReactNativeFirebase.FirebaseApp` and exposes direct `auth` / `appCheck` module references instead of firebase-js-sdk provider-based internals.',
+    },
+    {
+      name: 'AIOptions',
+      reason:
+        'RN Firebase includes direct `auth` and `appCheck` modules in options because it does not use firebase-js-sdk providers.',
+    },
+    {
+      name: 'EnhancedGenerateContentResponse',
+      reason:
+        'RN Firebase does not expose `inferenceSource` because hybrid on-device / in-cloud inference is a browser-only feature.',
+    },
+    {
+      name: 'Citation',
+      reason:
+        'RN Firebase inlines the protobuf date type as local `Date`, while the firebase-js-sdk declaration references a generated alias name. The public structure is equivalent.',
+    },
+    {
+      name: 'CodeExecutionResultPart',
+      reason:
+        'RN Firebase includes `thoughtSignature` fields in content-part unions to represent streamed thought-signature metadata returned by the native-backed implementation.',
+    },
+    {
+      name: 'ExecutableCodePart',
+      reason:
+        'RN Firebase includes `thoughtSignature` fields in content-part unions to represent streamed thought-signature metadata returned by the native-backed implementation.',
+    },
+    {
+      name: 'FileDataPart',
+      reason:
+        'RN Firebase includes `thoughtSignature` fields in content-part unions to represent streamed thought-signature metadata returned by the native-backed implementation.',
+    },
+    {
+      name: 'FunctionCallPart',
+      reason:
+        'RN Firebase includes `thoughtSignature` fields in content-part unions to represent streamed thought-signature metadata returned by the native-backed implementation.',
+    },
+    {
+      name: 'FunctionResponsePart',
+      reason:
+        'RN Firebase includes `thoughtSignature` fields in content-part unions to represent streamed thought-signature metadata returned by the native-backed implementation.',
+    },
+    {
+      name: 'InlineDataPart',
+      reason:
+        'RN Firebase includes `thoughtSignature` fields in content-part unions to represent streamed thought-signature metadata returned by the native-backed implementation.',
+    },
+    {
+      name: 'InferenceMode',
+      reason:
+        'RN Firebase omits the browser-only in-cloud preference mode used by Chrome hybrid/on-device inference, so the enum-like object has fewer values.',
+    },
+    {
+      name: 'TextPart',
+      reason:
+        'RN Firebase includes `thoughtSignature` on text parts to carry streamed thought-signature metadata used by its response handling.',
+    },
+    {
+      name: 'URLRetrievalStatus',
+      reason:
+        'Both packages expose the same URL retrieval status constants, but the generated declaration text differs (`string`-valued object in JS SDK vs readonly literal constants in RN).',
+    },
+  ],
 };
 
 export default config;
