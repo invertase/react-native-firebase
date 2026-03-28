@@ -162,7 +162,6 @@ struct {
     _initialNotification = notificationDict;
   }
 
-
   if (_originalDelegate != nil && originalDelegateRespondsTo.didReceiveNotificationResponse) {
     [_originalDelegate userNotificationCenter:center
                didReceiveNotificationResponse:response
