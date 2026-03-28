@@ -153,6 +153,16 @@ struct {
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
     didReceiveNotificationResponse:(UNNotificationResponse *)response
              withCompletionHandler:(void (^)(void))completionHandler {
+  if (![[response actionIdentifier] isEqualToString:UNNotificationDefaultActionIdentifier]){
+    if (_originalDelegate != nil && originalDelegateRespondsTo.didReceiveNotificationResponse) {
+      [_originalDelegate userNotificationCenter:center
+                 didReceiveNotificationResponse:response
+                          withCompletionHandler:completionHandler];
+    } else {
+      completionHandler();
+    }
+    return;
+  }
   NSDictionary *remoteNotification = response.notification.request.content.userInfo;
   if (remoteNotification[@"gcm.message_id"]) {
     NSDictionary *notificationDict =
