@@ -153,16 +153,15 @@ struct {
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
     didReceiveNotificationResponse:(UNNotificationResponse *)response
              withCompletionHandler:(void (^)(void))completionHandler {
-  if ([[response actionIdentifier] isEqualToString:UNNotificationDefaultActionIdentifier]) {
-    NSDictionary *remoteNotification = response.notification.request.content.userInfo;
-    if (remoteNotification[@"gcm.message_id"]) {
-      NSDictionary *notificationDict =
-          [RNFBMessagingSerializer remoteMessageUserInfoToDict:remoteNotification];
-      [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_notification_opened"
-                                                 body:notificationDict];
-      _initialNotification = notificationDict;
-    }
+  NSDictionary *remoteNotification = response.notification.request.content.userInfo;
+  if ([[response actionIdentifier] isEqualToString:UNNotificationDefaultActionIdentifier] && remoteNotification[@"gcm.message_id"]) {
+    NSDictionary *notificationDict =
+        [RNFBMessagingSerializer remoteMessageUserInfoToDict:remoteNotification];
+    [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_notification_opened"
+                                               body:notificationDict];
+    _initialNotification = notificationDict;
   }
+
 
   if (_originalDelegate != nil && originalDelegateRespondsTo.didReceiveNotificationResponse) {
     [_originalDelegate userNotificationCenter:center
