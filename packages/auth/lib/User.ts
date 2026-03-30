@@ -33,6 +33,26 @@ import type {
 } from './types/auth';
 import type { FirebaseAuthTypes } from './types/namespaced';
 
+/** Milliseconds since epoch; native modules use numbers, web auth supplies ISO strings (see RNFBAuthModule userMetadataToObject). */
+function metadataTimestampToMs(value: number | string | null | undefined): number {
+  if (value == null) {
+    return 0;
+  }
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : 0;
+  }
+  const s = String(value).trim();
+  if (s === '') {
+    return 0;
+  }
+  if (/^-?\d+(\.\d+)?$/.test(s)) {
+    const n = Number(s);
+    return Number.isFinite(n) ? n : 0;
+  }
+  const parsed = new Date(s).getTime();
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
 export default class User {
   _auth: AuthInternal;
   _user: NativeUserShape;
@@ -60,8 +80,10 @@ export default class User {
 
   get metadata(): { lastSignInTime: string; creationTime: string } {
     const raw = this._user.metadata;
-    const lastMs = raw != null && raw.lastSignInTime != null ? Number(raw.lastSignInTime) : 0;
-    const creationMs = raw != null && raw.creationTime != null ? Number(raw.creationTime) : 0;
+    const lastMs =
+      raw != null && raw.lastSignInTime != null ? metadataTimestampToMs(raw.lastSignInTime) : 0;
+    const creationMs =
+      raw != null && raw.creationTime != null ? metadataTimestampToMs(raw.creationTime) : 0;
     const toIso = (ms: number) => {
       const d = new Date(ms);
       return Number.isNaN(d.getTime()) ? new Date(0).toISOString() : d.toISOString();
