@@ -28,5 +28,23 @@ target 'io.invertase.testing-macOS' do
 
   post_install do |installer|
     react_native_post_install(installer)
+    # Xcode 26+ Apple Clang: fmt 11.0.2's FMT_STRING + consteval fails with
+    # "call to consteval function ... is not a constant expression" (fmt#4177 / #4247).
+    # Until RN bumps fmt, disable compile-time format checks for pods that compile {fmt}.
+    %w[fmt RCT-Folly].each do |pod_name|
+      installer.pods_project.targets.each do |target|
+        next unless target.name == pod_name
+
+        target.build_configurations.each do |config|
+          defs = config.build_settings['GCC_PREPROCESSOR_DEFINITIONS']
+          defs = [defs] if defs.is_a?(String)
+          defs = ['$(inherited)'] if defs.nil? || defs.empty?
+          defs = defs.flatten.compact
+          next if defs.any? { |d| d.to_s.include?('FMT_USE_CONSTEVAL') }
+
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = defs + ['FMT_USE_CONSTEVAL=0']
+        end
+      end
+    end
   end
 end
