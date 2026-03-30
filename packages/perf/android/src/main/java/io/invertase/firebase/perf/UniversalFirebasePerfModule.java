@@ -83,6 +83,10 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
     return Tasks.call(
         () -> {
           Trace trace = traces.get(id);
+          // Traces can be cleared during module teardown before JS stops them.
+          if (trace == null) {
+            return null;
+          }
 
           Set<String> metricKeys = metrics.keySet();
           Set<String> attributeKeys = attributes.keySet();
@@ -119,6 +123,10 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
     return Tasks.call(
         () -> {
           ScreenTrace trace = screenTraces.get(id);
+          // Screen traces can be cleared during module teardown before JS stops them.
+          if (trace == null) {
+            return null;
+          }
           trace.sendScreenTrace();
           screenTraces.remove(id);
 
@@ -140,6 +148,10 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
     return Tasks.call(
         () -> {
           HttpMetric httpMetric = httpMetrics.get(id);
+          // HTTP metrics can be cleared during module teardown before JS stops them.
+          if (httpMetric == null) {
+            return null;
+          }
 
           if (httpMetricConfig.containsKey("httpResponseCode")) {
             httpMetric.setHttpResponseCode((int) httpMetricConfig.getDouble("httpResponseCode"));
