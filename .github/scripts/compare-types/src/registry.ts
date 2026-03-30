@@ -73,12 +73,12 @@ export const packages: PackageEntry[] = [
   // },
   {
     name: 'storage',
-    firebaseSdkTypesPath: path.join(
+    firebaseSdkTypesPaths: [path.join(
       SCRIPT_DIR,
       'packages',
       'storage',
       'storage-js-sdk.d.ts',
-    ),
+    )],
     rnFirebaseModularFiles: [
       path.join(rnDist('storage'), 'types', 'storage.d.ts'),
       path.join(rnDist('storage'), 'modular.d.ts'),
