@@ -1,5 +1,5 @@
 diff --git a/node_modules/react-native-macos/Libraries/Blob/BlobManager.js b/node_modules/react-native-macos/Libraries/Blob/BlobManager.js
-index f4c5ed3..f7afaf4 100644
+index f4c5ed374..f7afaf4e9 100644
 --- a/node_modules/react-native-macos/Libraries/Blob/BlobManager.js
 +++ b/node_modules/react-native-macos/Libraries/Blob/BlobManager.js
 @@ -9,7 +9,7 @@
@@ -11,7 +11,7 @@ index f4c5ed3..f7afaf4 100644
  import NativeBlobModule from './NativeBlobModule';
  import invariant from 'invariant';
  
-@@ -67,9 +67,11 @@ class BlobManager {
+@@ -67,9 +67,11 @@
      const blobId = uuidv4();
      const items = parts.map(part => {
        if (part instanceof ArrayBuffer || ArrayBuffer.isView(part)) {
@@ -26,7 +26,7 @@ index f4c5ed3..f7afaf4 100644
        }
        if (part instanceof Blob) {
          return {
-@@ -92,6 +94,7 @@ class BlobManager {
+@@ -92,6 +94,7 @@
      }, 0);
  
      NativeBlobModule.createFromParts(items, blobId);
@@ -35,10 +35,10 @@ index f4c5ed3..f7afaf4 100644
      return BlobManager.createFromOptions({
        blobId,
 diff --git a/node_modules/react-native-macos/Libraries/Blob/RCTBlobManager.mm b/node_modules/react-native-macos/Libraries/Blob/RCTBlobManager.mm
-index 9d4cde7..c9e6a81 100755
+index 9d4cde7c4..304638bf1 100755
 --- a/node_modules/react-native-macos/Libraries/Blob/RCTBlobManager.mm
 +++ b/node_modules/react-native-macos/Libraries/Blob/RCTBlobManager.mm
-@@ -95,6 +95,7 @@ RCT_EXPORT_MODULE(BlobModule)
+@@ -95,6 +95,7 @@
  - (void)store:(NSData *)data withId:(NSString *)blobId
  {
    std::lock_guard<std::mutex> lock(_blobsMutex);
@@ -46,7 +46,7 @@ index 9d4cde7..c9e6a81 100755
    _blobs[blobId] = data;
  }
  
-@@ -117,9 +118,13 @@ RCT_EXPORT_MODULE(BlobModule)
+@@ -117,9 +118,13 @@
    NSData *data;
    {
      std::lock_guard<std::mutex> lock(_blobsMutex);
@@ -60,7 +60,7 @@ index 9d4cde7..c9e6a81 100755
      return nil;
    }
    if (offset != 0 || (size != -1 && size != data.length)) {
-@@ -156,6 +161,7 @@ RCT_EXPORT_MODULE(BlobModule)
+@@ -156,6 +161,7 @@
  - (void)remove:(NSString *)blobId
  {
    std::lock_guard<std::mutex> lock(_blobsMutex);
@@ -68,7 +68,7 @@ index 9d4cde7..c9e6a81 100755
    [_blobs removeObjectForKey:blobId];
  }
  
-@@ -217,15 +223,19 @@ RCT_EXPORT_METHOD(createFromParts : (NSArray<NSDictionary<NSString *, id> *> *)p
+@@ -217,15 +223,19 @@
      }
    }
  
@@ -88,10 +88,10 @@ index 9d4cde7..c9e6a81 100755
    });
  }
  
-@@ -297,13 +307,30 @@ RCT_EXPORT_METHOD(release : (NSString *)blobId)
+@@ -297,13 +307,30 @@
    // @lint-ignore FBOBJCUNTYPEDCOLLECTION1
    NSDictionary *blob = [RCTConvert NSDictionary:data[@"blob"]];
-   
+ 
 +  // FIXME so here - we checked that data[@"blob"] was non-nil in canHandleHandleNetworkingRequest
 +
    NSString *contentType = @"application/octet-stream";
@@ -121,10 +121,10 @@ index 9d4cde7..c9e6a81 100755
  
  - (BOOL)canHandleNetworkingResponse:(NSString *)responseType
 diff --git a/node_modules/react-native-macos/Libraries/Network/RCTNetworking.mm b/node_modules/react-native-macos/Libraries/Network/RCTNetworking.mm
-index 80d8c30..b68a67e 100644
+index 80d8c3058..b68a67e77 100644
 --- a/node_modules/react-native-macos/Libraries/Network/RCTNetworking.mm
 +++ b/node_modules/react-native-macos/Libraries/Network/RCTNetworking.mm
-@@ -417,9 +417,19 @@ RCT_EXPORT_MODULE()
+@@ -417,9 +417,19 @@
    for (id<RCTNetworkingRequestHandler> handler in _requestHandlers) {
      if ([handler canHandleNetworkingRequest:query]) {
        // @lint-ignore FBOBJCUNTYPEDCOLLECTION1
@@ -148,25 +148,23 @@ index 80d8c30..b68a67e 100644
      }
    }
 diff --git a/node_modules/react-native-macos/third-party-podspecs/RCT-Folly.podspec b/node_modules/react-native-macos/third-party-podspecs/RCT-Folly.podspec
-index 18ac2ad..31b1597 100644
+index b3c60a50a..d0cd7d498 100644
 --- a/node_modules/react-native-macos/third-party-podspecs/RCT-Folly.podspec
 +++ b/node_modules/react-native-macos/third-party-podspecs/RCT-Folly.podspec
-@@ -23,7 +23,7 @@ Pod::Spec.new do |spec|
-   spec.dependency 'boost'
+@@ -24,7 +24,7 @@
    spec.dependency 'DoubleConversion'
    spec.dependency 'glog'
--  spec.dependency "fast_float", "6.1.4"
+   spec.dependency "fast_float", "6.1.4"
 -  spec.dependency "fmt", "11.0.2"
-+  spec.dependency "fast_float", "6.1.4"
 +  spec.dependency "fmt", "12.1.0"
    spec.compiler_flags = folly_compiler_flags + ' -DFOLLY_HAVE_PTHREAD=1 -Wno-documentation -faligned-new'
    spec.source_files = 'folly/String.cpp',
                        'folly/Conv.cpp',
 diff --git a/node_modules/react-native-macos/third-party-podspecs/fmt.podspec b/node_modules/react-native-macos/third-party-podspecs/fmt.podspec
-index 77f369c..d8f73df 100644
+index 2f38990e2..a40c5755e 100644
 --- a/node_modules/react-native-macos/third-party-podspecs/fmt.podspec
 +++ b/node_modules/react-native-macos/third-party-podspecs/fmt.podspec
-@@ -8,14 +8,14 @@ fmt_git_url = fmt_config[:git]
+@@ -8,14 +8,14 @@
  
  Pod::Spec.new do |spec|
    spec.name = "fmt"
@@ -184,43 +182,50 @@ index 77f369c..d8f73df 100644
    spec.pod_target_xcconfig = {
      "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
 diff --git a/node_modules/react-native-macos/React/CoreModules/React-CoreModules.podspec b/node_modules/react-native-macos/React/CoreModules/React-CoreModules.podspec
-index b9fbc6e..b0fd9db 100644
+index ca1136800..71eb7ce9e 100644
 --- a/node_modules/react-native-macos/React/CoreModules/React-CoreModules.podspec
 +++ b/node_modules/react-native-macos/React/CoreModules/React-CoreModules.podspec
-@@ -66,7 +66,7 @@ Pod::Spec.new do |s|
+@@ -65,7 +65,7 @@
+   # macOS]
    s.dependency "DoubleConversion"
    s.dependency "fast_float", "6.1.4"
 -  s.dependency "fmt", "11.0.2"
 +  s.dependency "fmt", "12.1.0"
    s.dependency "RCT-Folly", folly_version
    s.dependency "RCTTypeSafety", version
+   s.dependency "React-Core/CoreModulesHeaders", version
 diff --git a/node_modules/react-native-macos/Libraries/Blob/React-RCTBlob.podspec b/node_modules/react-native-macos/Libraries/Blob/React-RCTBlob.podspec
-index e5e64ae..f37974c 100644
+index 9d758c174..6dfb3ab9d 100644
 --- a/node_modules/react-native-macos/Libraries/Blob/React-RCTBlob.podspec
 +++ b/node_modules/react-native-macos/Libraries/Blob/React-RCTBlob.podspec
-@@ -51,7 +51,7 @@ Pod::Spec.new do |s|
+@@ -50,7 +50,7 @@
+ 
    s.dependency "DoubleConversion"
    s.dependency "fast_float", "6.1.4"
 -  s.dependency "fmt", "11.0.2"
 +  s.dependency "fmt", "12.1.0"
    s.dependency "RCT-Folly", folly_version
    s.dependency "React-jsi"
+   s.dependency "React-Core/RCTBlobHeaders"
 diff --git a/node_modules/react-native-macos/ReactCommon/react/renderer/graphics/React-graphics.podspec b/node_modules/react-native-macos/ReactCommon/react/renderer/graphics/React-graphics.podspec
-index 1c84ea6..4468691 100644
+index aa624ac25..77c33c774 100644
 --- a/node_modules/react-native-macos/ReactCommon/react/renderer/graphics/React-graphics.podspec
 +++ b/node_modules/react-native-macos/ReactCommon/react/renderer/graphics/React-graphics.podspec
-@@ -71,7 +71,7 @@ Pod::Spec.new do |s|
+@@ -70,7 +70,7 @@
+   s.dependency "React-Core" # [macOS] Needed for RCTUIKit
    s.dependency "DoubleConversion"
    s.dependency "fast_float", "6.1.4"
 -  s.dependency "fmt", "11.0.2"
 +  s.dependency "fmt", "12.1.0"
- 
+   
    if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+     s.dependency "hermes-engine"
 diff --git a/node_modules/react-native-macos/ReactCommon/react/renderer/debug/React-rendererdebug.podspec b/node_modules/react-native-macos/ReactCommon/react/renderer/debug/React-rendererdebug.podspec
-index 39b2409..b22a7cf 100644
+index 52dc39c87..834a33ab6 100644
 --- a/node_modules/react-native-macos/ReactCommon/react/renderer/debug/React-rendererdebug.podspec
 +++ b/node_modules/react-native-macos/ReactCommon/react/renderer/debug/React-rendererdebug.podspec
-@@ -60,7 +60,7 @@ Pod::Spec.new do |s|
+@@ -59,6 +59,6 @@
+   s.dependency "RCT-Folly", folly_version
    s.dependency "DoubleConversion"
    s.dependency "fast_float", "6.1.4"
 -  s.dependency "fmt", "11.0.2"
@@ -228,101 +233,119 @@ index 39b2409..b22a7cf 100644
    add_dependency(s, "React-debug")
  end
 diff --git a/node_modules/react-native-macos/ReactCommon/react/nativemodule/samples/ReactCommon-Samples.podspec b/node_modules/react-native-macos/ReactCommon/react/nativemodule/samples/ReactCommon-Samples.podspec
-index 12255cc..4b88d3a 100644
+index 68b579a7b..229b5baf6 100644
 --- a/node_modules/react-native-macos/ReactCommon/react/nativemodule/samples/ReactCommon-Samples.podspec
 +++ b/node_modules/react-native-macos/ReactCommon/react/nativemodule/samples/ReactCommon-Samples.podspec
-@@ -70,7 +70,7 @@ Pod::Spec.new do |s|
+@@ -69,7 +69,7 @@
+   s.dependency "RCT-Folly"
    s.dependency "DoubleConversion"
    s.dependency "fast_float", "6.1.4"
 -  s.dependency "fmt", "11.0.2"
 +  s.dependency "fmt", "12.1.0"
    s.dependency "React-Core"
    s.dependency "React-cxxreact"
+   s.dependency "React-jsi"
 diff --git a/node_modules/react-native-macos/ReactCommon/hermes/React-hermes.podspec b/node_modules/react-native-macos/ReactCommon/hermes/React-hermes.podspec
-index 8962122..597e65d 100644
+index 3a072cf9d..bb87ec8d9 100644
 --- a/node_modules/react-native-macos/ReactCommon/hermes/React-hermes.podspec
 +++ b/node_modules/react-native-macos/ReactCommon/hermes/React-hermes.podspec
-@@ -49,7 +49,7 @@ Pod::Spec.new do |s|
+@@ -48,7 +48,7 @@
+   s.dependency "RCT-Folly", folly_version
    s.dependency "DoubleConversion"
    s.dependency "fast_float", "6.1.4"
 -  s.dependency "fmt", "11.0.2"
 +  s.dependency "fmt", "12.1.0"
    s.dependency "glog"
    s.dependency "hermes-engine"
+   s.dependency "React-jsi"
 diff --git a/node_modules/react-native-macos/ReactCommon/cxxreact/React-cxxreact.podspec b/node_modules/react-native-macos/ReactCommon/cxxreact/React-cxxreact.podspec
-index 6a4c577..ee5f4a7 100644
+index 2f05b75b7..00c51f48f 100644
 --- a/node_modules/react-native-macos/ReactCommon/cxxreact/React-cxxreact.podspec
 +++ b/node_modules/react-native-macos/ReactCommon/cxxreact/React-cxxreact.podspec
-@@ -45,7 +45,7 @@ Pod::Spec.new do |s|
+@@ -44,7 +44,7 @@
+   s.dependency "boost"
    s.dependency "DoubleConversion"
    s.dependency "fast_float", "6.1.4"
 -  s.dependency "fmt", "11.0.2"
 +  s.dependency "fmt", "12.1.0"
    s.dependency "RCT-Folly", folly_version
    s.dependency "glog"
+   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
 diff --git a/node_modules/react-native-macos/ReactCommon/jsi/React-jsi.podspec b/node_modules/react-native-macos/ReactCommon/jsi/React-jsi.podspec
-index 226de4e..51a8080 100644
+index fb3cbe955..dc84e5da7 100644
 --- a/node_modules/react-native-macos/ReactCommon/jsi/React-jsi.podspec
 +++ b/node_modules/react-native-macos/ReactCommon/jsi/React-jsi.podspec
-@@ -48,7 +48,7 @@ Pod::Spec.new do |s|
+@@ -47,7 +47,7 @@
+   s.dependency "boost"
    s.dependency "DoubleConversion"
    s.dependency "fast_float", "6.1.4"
 -  s.dependency "fmt", "11.0.2"
 +  s.dependency "fmt", "12.1.0"
    s.dependency "RCT-Folly", folly_version
    s.dependency "glog"
+ 
 diff --git a/node_modules/react-native-macos/ReactCommon/jsiexecutor/React-jsiexecutor.podspec b/node_modules/react-native-macos/ReactCommon/jsiexecutor/React-jsiexecutor.podspec
-index 6147342..f05c64b 100644
+index 17641842b..5b1af8066 100644
 --- a/node_modules/react-native-macos/ReactCommon/jsiexecutor/React-jsiexecutor.podspec
 +++ b/node_modules/react-native-macos/ReactCommon/jsiexecutor/React-jsiexecutor.podspec
-@@ -44,7 +44,7 @@ Pod::Spec.new do |s|
+@@ -43,7 +43,7 @@
+   s.dependency "RCT-Folly", folly_version
    s.dependency "DoubleConversion"
    s.dependency "fast_float", "6.1.4"
 -  s.dependency "fmt", "11.0.2"
 +  s.dependency "fmt", "12.1.0"
    s.dependency "glog"
    add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
+ 
 diff --git a/node_modules/react-native-macos/ReactCommon/React-Fabric.podspec b/node_modules/react-native-macos/ReactCommon/React-Fabric.podspec
-index 7b85ec6..8366505 100644
+index 08b5134be..b0db245c3 100644
 --- a/node_modules/react-native-macos/ReactCommon/React-Fabric.podspec
 +++ b/node_modules/react-native-macos/ReactCommon/React-Fabric.podspec
-@@ -56,7 +56,7 @@ Pod::Spec.new do |s|
+@@ -55,7 +55,7 @@
+   s.dependency "glog"
    s.dependency "DoubleConversion"
    s.dependency "fast_float", "6.1.4"
 -  s.dependency "fmt", "11.0.2"
 +  s.dependency "fmt", "12.1.0"
    s.dependency "React-Core"
    s.dependency "React-debug"
+   s.dependency "React-featureflags"
 diff --git a/node_modules/react-native-macos/ReactCommon/React-FabricComponents.podspec b/node_modules/react-native-macos/ReactCommon/React-FabricComponents.podspec
-index 2ef353a..c574f87 100644
+index 33f4dd2ff..0263c53a8 100644
 --- a/node_modules/react-native-macos/ReactCommon/React-FabricComponents.podspec
 +++ b/node_modules/react-native-macos/ReactCommon/React-FabricComponents.podspec
-@@ -78,7 +78,7 @@ Pod::Spec.new do |s|
+@@ -77,7 +77,7 @@
+   s.dependency "glog"
    s.dependency "DoubleConversion"
    s.dependency "fast_float", "6.1.4"
 -  s.dependency "fmt", "11.0.2"
 +  s.dependency "fmt", "12.1.0"
    s.dependency "React-Core"
    s.dependency "React-debug"
+   s.dependency "React-featureflags"
 diff --git a/node_modules/react-native-macos/ReactCommon/React-FabricImage.podspec b/node_modules/react-native-macos/ReactCommon/React-FabricImage.podspec
-index f443661..20f9d7e 100644
+index 0fa0a4017..87ad5f8b1 100644
 --- a/node_modules/react-native-macos/ReactCommon/React-FabricImage.podspec
 +++ b/node_modules/react-native-macos/ReactCommon/React-FabricImage.podspec
-@@ -78,7 +78,7 @@ Pod::Spec.new do |s|
+@@ -77,7 +77,7 @@
+   s.dependency "glog"
    s.dependency "DoubleConversion"
    s.dependency "fast_float", "6.1.4"
 -  s.dependency "fmt", "11.0.2"
 +  s.dependency "fmt", "12.1.0"
    s.dependency "React-featureflags"
    s.dependency "React-utils"
+   s.dependency "Yoga"
 diff --git a/node_modules/react-native-macos/ReactCommon/ReactCommon.podspec b/node_modules/react-native-macos/ReactCommon/ReactCommon.podspec
-index b61a654..14a6707 100644
+index a6020da9f..080372dfa 100644
 --- a/node_modules/react-native-macos/ReactCommon/ReactCommon.podspec
 +++ b/node_modules/react-native-macos/ReactCommon/ReactCommon.podspec
-@@ -56,7 +56,7 @@ Pod::Spec.new do |s|
+@@ -55,7 +55,7 @@
+     ss.dependency "React-logger", version
      ss.dependency "DoubleConversion"
      ss.dependency "fast_float", "6.1.4"
 -    ss.dependency "fmt", "11.0.2"
 +    ss.dependency "fmt", "12.1.0"
      ss.dependency "glog"
      if using_hermes
+       ss.dependency "hermes-engine"
