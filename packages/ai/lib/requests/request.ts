@@ -153,7 +153,7 @@ export class TemplateRequestUrl {
  * Log language and "fire/version" to x-goog-api-client
  */
 function getClientHeaders(): string {
-  const loggingTags = [];
+  const loggingTags: string[] = [];
   loggingTags.push(`${LANGUAGE_TAG}/${PACKAGE_VERSION}`);
   loggingTags.push(`fire/${PACKAGE_VERSION}`);
   return loggingTags.join(' ');

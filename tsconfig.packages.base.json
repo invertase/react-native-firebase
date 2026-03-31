@@ -1,4 +1,5 @@
 {
+  "files": ["./packages/app/lib/shims/react-native-binaryToBase64.d.ts"],
   "compilerOptions": {
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

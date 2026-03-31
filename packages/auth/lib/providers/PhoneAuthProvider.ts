@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -16,21 +15,32 @@
  *
  */
 
+import type { AuthCredential } from '../types/auth';
+import type { AuthModuleWithApp } from '../types/internal';
+
 const providerId = 'phone';
 
+export interface PhoneInfoOptions {
+  phoneNumber?: string;
+  session?: string;
+  multiFactorHint?: { uid: string };
+}
+
 export default class PhoneAuthProvider {
-  constructor(auth) {
+  _auth: AuthModuleWithApp;
+
+  constructor(auth: AuthModuleWithApp) {
     if (auth === undefined) {
       throw new Error('`new PhoneAuthProvider()` is not supported on the native Firebase SDKs.');
     }
     this._auth = auth;
   }
 
-  static get PROVIDER_ID() {
+  static get PROVIDER_ID(): string {
     return providerId;
   }
 
-  static credential(verificationId, code) {
+  static credential(verificationId: string, code: string): AuthCredential {
     return {
       token: verificationId,
       secret: code,
@@ -38,15 +48,19 @@ export default class PhoneAuthProvider {
     };
   }
 
-  verifyPhoneNumber(phoneInfoOptions, appVerifier) {
+  verifyPhoneNumber(phoneInfoOptions: PhoneInfoOptions, _appVerifier?: unknown): Promise<unknown> {
     if (phoneInfoOptions.multiFactorHint) {
       return this._auth.app
         .auth()
         .verifyPhoneNumberWithMultiFactorInfo(
           phoneInfoOptions.multiFactorHint,
-          phoneInfoOptions.session,
+          phoneInfoOptions.session ?? '',
         );
     }
-    return this._auth.app.auth().verifyPhoneNumberForMultiFactor(phoneInfoOptions);
+    return this._auth.app
+      .auth()
+      .verifyPhoneNumberForMultiFactor(
+        phoneInfoOptions as { phoneNumber: string; session: string },
+      );
   }
 }

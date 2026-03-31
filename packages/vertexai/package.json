@@ -38,6 +38,7 @@
     "provenance": true
   },
   "devDependencies": {
+    "@react-native-firebase/auth": "23.8.8",
     "@types/text-encoding": "^0.0.40",
     "react-native-builder-bob": "^0.40.17",
     "typescript": "^5.9.3"

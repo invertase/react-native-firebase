@@ -15,19 +15,24 @@
  *
  */
 
-export default class PhoneMultiFactorGenerator {
-  static FACTOR_ID = 'phone';
+import type { AuthCredential } from '../types/auth';
 
+const providerId = 'google.com';
+
+export default class GoogleAuthProvider {
   constructor() {
-    throw new Error(
-      '`new PhoneMultiFactorGenerator()` is not supported on the native Firebase SDKs.',
-    );
+    throw new Error('`new GoogleAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
-  static assertion(credential) {
-    // There is no logic here, we mainly do this for API compatibility
-    // (following the Web API).
-    const { token, secret } = credential;
-    return { token, secret };
+  static get PROVIDER_ID(): string {
+    return providerId;
+  }
+
+  static credential(token: string, secret: string): AuthCredential {
+    return {
+      token,
+      secret,
+      providerId,
+    };
   }
 }

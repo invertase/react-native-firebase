@@ -15,6 +15,8 @@
  *
  */
 
+import type { AuthCredential } from '../types/auth';
+
 const linkProviderId = 'emailLink';
 const passwordProviderId = 'password';
 
@@ -23,19 +25,19 @@ export default class EmailAuthProvider {
     throw new Error('`new EmailAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
-  static get EMAIL_LINK_SIGN_IN_METHOD() {
+  static get EMAIL_LINK_SIGN_IN_METHOD(): string {
     return linkProviderId;
   }
 
-  static get EMAIL_PASSWORD_SIGN_IN_METHOD() {
+  static get EMAIL_PASSWORD_SIGN_IN_METHOD(): string {
     return passwordProviderId;
   }
 
-  static get PROVIDER_ID() {
+  static get PROVIDER_ID(): string {
     return passwordProviderId;
   }
 
-  static credential(email, password) {
+  static credential(email: string, password: string): AuthCredential {
     return {
       token: email,
       secret: password,
@@ -43,7 +45,7 @@ export default class EmailAuthProvider {
     };
   }
 
-  static credentialWithLink(email, emailLink) {
+  static credentialWithLink(email: string, emailLink: string): AuthCredential {
     return {
       token: email,
       secret: emailLink,

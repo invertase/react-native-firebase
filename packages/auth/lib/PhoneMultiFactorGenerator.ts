@@ -15,22 +15,19 @@
  *
  */
 
-const providerId = 'facebook.com';
+import type { AuthCredential, MultiFactorAssertion } from './types/auth';
 
-export default class FacebookAuthProvider {
+export default class PhoneMultiFactorGenerator {
+  static FACTOR_ID = 'phone';
+
   constructor() {
-    throw new Error('`new FacebookAuthProvider()` is not supported on the native Firebase SDKs.');
+    throw new Error(
+      '`new PhoneMultiFactorGenerator()` is not supported on the native Firebase SDKs.',
+    );
   }
 
-  static get PROVIDER_ID() {
-    return providerId;
-  }
-
-  static credential(token, secret = '') {
-    return {
-      token,
-      secret,
-      providerId,
-    };
+  static assertion(credential: AuthCredential): MultiFactorAssertion {
+    const { token, secret } = credential;
+    return { token, secret };
   }
 }

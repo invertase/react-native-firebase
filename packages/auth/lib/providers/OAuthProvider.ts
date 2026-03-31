@@ -15,19 +15,18 @@
  *
  */
 
-export default class OAuthProvider {
-  /** @internal */
-  #providerId = null;
-  /** @internal */
-  #customParameters = {};
-  /** @internal */
-  #scopes = [];
+import type { AuthCredential } from '../types/auth';
 
-  constructor(providerId) {
+export default class OAuthProvider {
+  #providerId: string | null = null;
+  #customParameters: Record<string, unknown> = {};
+  #scopes: string[] = [];
+
+  constructor(providerId: string) {
     this.#providerId = providerId;
   }
 
-  static credential(idToken, accessToken) {
+  static credential(idToken: string, accessToken: string): AuthCredential {
     return {
       token: idToken,
       secret: accessToken,
@@ -35,32 +34,36 @@ export default class OAuthProvider {
     };
   }
 
-  get PROVIDER_ID() {
+  get PROVIDER_ID(): string | null {
     return this.#providerId;
   }
 
-  setCustomParameters(customOAuthParameters) {
+  setCustomParameters(customOAuthParameters: Record<string, unknown>): this {
     this.#customParameters = customOAuthParameters;
     return this;
   }
 
-  getCustomParameters() {
+  getCustomParameters(): Record<string, unknown> {
     return this.#customParameters;
   }
 
-  addScope(scope) {
+  addScope(scope: string): this {
     if (!this.#scopes.includes(scope)) {
       this.#scopes.push(scope);
     }
     return this;
   }
 
-  getScopes() {
+  getScopes(): string[] {
     return [...this.#scopes];
   }
 
   /** @internal */
-  toObject() {
+  toObject(): {
+    providerId: string | null;
+    scopes: string[];
+    customParameters: Record<string, unknown>;
+  } {
     return {
       providerId: this.#providerId,
       scopes: this.#scopes,

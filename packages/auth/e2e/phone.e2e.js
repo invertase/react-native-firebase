@@ -46,12 +46,11 @@ describe('auth() => Phone', function () {
         confirmResult.confirm.should.be.a.Function();
         const lastSmsCode = await getLastSmsCode(testPhone);
         const userCredential = await confirmResult.confirm(lastSmsCode);
-        userCredential.user.should.be.instanceOf(
-          require('@react-native-firebase/auth/lib/User').default,
-        );
-
-        // Broken check, phone number is undefined
-        // userCredential.user.phoneNumber.should.equal(TEST_PHONE_A);
+        const { user } = userCredential;
+        // Avoid instanceof: Metro may load User from two module paths (main vs deep require).
+        user.constructor.name.should.equal('User');
+        user.uid.should.be.a.String();
+        user.phoneNumber.should.equal(testPhone);
       });
 
       it('errors on invalid code', async function () {
@@ -237,12 +236,11 @@ describe('auth() => Phone', function () {
         confirmResult.confirm.should.be.a.Function();
         const lastSmsCode = await getLastSmsCode(testPhone);
         const userCredential = await confirmResult.confirm(lastSmsCode);
-        userCredential.user.should.be.instanceOf(
-          require('@react-native-firebase/auth/lib/User').default,
-        );
-
-        // Broken check, phone number is undefined
-        // userCredential.user.phoneNumber.should.equal(TEST_PHONE_A);
+        const { user } = userCredential;
+        // Avoid instanceof: Metro may load User from two module paths (main vs deep require).
+        user.constructor.name.should.equal('User');
+        user.uid.should.be.a.String();
+        user.phoneNumber.should.equal(testPhone);
       });
 
       it('errors on invalid code', async function () {

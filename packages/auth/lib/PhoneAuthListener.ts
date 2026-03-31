@@ -22,22 +22,40 @@ import {
   promiseDefer,
 } from '@react-native-firebase/app/dist/module/common';
 import NativeFirebaseError from '@react-native-firebase/app/dist/module/internal/NativeFirebaseError';
+import type { AuthInternal } from './types/internal';
 
 let REQUEST_ID = 0;
 
+export interface PhoneAuthSnapshot {
+  verificationId: string;
+  code: string | null;
+  error: unknown;
+  state: 'sent' | 'timeout' | 'verified' | 'error';
+}
+
 export default class PhoneAuthListener {
-  constructor(auth, phoneNumber, timeout, forceResend) {
+  _auth: AuthInternal;
+  _reject: ((error: unknown) => void) | null;
+  _resolve: ((snapshot: PhoneAuthSnapshot) => void) | null;
+  _promise: Promise<PhoneAuthSnapshot> | null;
+  _jsStack: string | undefined;
+  _timeout: number;
+  _phoneAuthRequestId: number;
+  _forceResending: boolean;
+  _internalEvents: Record<string, string>;
+  _publicEvents: Record<string, string>;
+
+  constructor(auth: AuthInternal, phoneNumber: string, timeout?: number, forceResend?: boolean) {
     this._auth = auth;
     this._reject = null;
     this._resolve = null;
     this._promise = null;
     this._jsStack = new Error().stack;
 
-    this._timeout = timeout || 20;
+    this._timeout = timeout ?? 20;
     this._phoneAuthRequestId = REQUEST_ID++;
-    this._forceResending = forceResend || false;
+    this._forceResending = forceResend ?? false;
 
-    // internal events
     this._internalEvents = {
       codeSent: `phone:auth:${this._phoneAuthRequestId}:onCodeSent`,
       verificationFailed: `phone:auth:${this._phoneAuthRequestId}:onVerificationFailed`,
@@ -45,7 +63,6 @@ export default class PhoneAuthListener {
       codeAutoRetrievalTimeout: `phone:auth:${this._phoneAuthRequestId}:onCodeAutoRetrievalTimeout`,
     };
 
-    // user observer events
     this._publicEvents = {
       error: `phone:auth:${this._phoneAuthRequestId}:error`,
       event: `phone:auth:${this._phoneAuthRequestId}:event`,
@@ -57,82 +74,77 @@ export default class PhoneAuthListener {
     if (isAndroid) {
       this._auth.native.verifyPhoneNumber(
         phoneNumber,
-        this._phoneAuthRequestId + '',
+        String(this._phoneAuthRequestId),
         this._timeout,
         this._forceResending,
       );
     }
 
     if (isIOS) {
-      this._auth.native.verifyPhoneNumber(phoneNumber, this._phoneAuthRequestId + '');
+      this._auth.native.verifyPhoneNumber(phoneNumber, String(this._phoneAuthRequestId));
     }
   }
 
-  _subscribeToEvents() {
+  _subscribeToEvents(): void {
     const events = Object.keys(this._internalEvents);
 
     for (let i = 0, len = events.length; i < len; i++) {
-      const type = events[i];
-      const subscription = this._auth.emitter.addListener(this._internalEvents[type], event => {
-        this[`_${type}Handler`](event);
+      const type = events[i]!;
+      const eventName = this._internalEvents[type as keyof typeof this._internalEvents]!;
+      const handler = (this as unknown as Record<string, (e: unknown) => void>)[`_${type}Handler`];
+      const subscription = this._auth.emitter.addListener(eventName, (event: unknown) => {
+        if (typeof handler === 'function') handler.call(this, event);
         subscription.remove();
       });
     }
   }
 
-  _addUserObserver(observer) {
-    this._auth.emitter.addListener(this._publicEvents.event, observer);
+  _addUserObserver(observer: (snapshot: PhoneAuthSnapshot) => void): void {
+    this._auth.emitter.addListener(this._publicEvents.event!, observer);
   }
 
-  _emitToObservers(snapshot) {
-    this._auth.emitter.emit(this._publicEvents.event, snapshot);
+  _emitToObservers(snapshot: PhoneAuthSnapshot): void {
+    this._auth.emitter.emit(this._publicEvents.event!, snapshot);
   }
 
-  _emitToErrorCb(snapshot) {
+  _emitToErrorCb(snapshot: { error: unknown }): void {
     const { error } = snapshot;
     if (this._reject) {
       this._reject(error);
     }
-    this._auth.emitter.emit(this._publicEvents.error, error);
+    this._auth.emitter.emit(this._publicEvents.error!, error);
   }
 
-  _emitToSuccessCb(snapshot) {
+  _emitToSuccessCb(snapshot: PhoneAuthSnapshot): void {
     if (this._resolve) {
       this._resolve(snapshot);
     }
-    this._auth.emitter.emit(this._publicEvents.success, snapshot);
+    this._auth.emitter.emit(this._publicEvents.success!, snapshot);
   }
 
-  _removeAllListeners() {
+  _removeAllListeners(): void {
     setTimeout(() => {
-      // move to next event loop - not sure if needed
-      // internal listeners
       Object.values(this._internalEvents).forEach(event => {
         this._auth.emitter.removeAllListeners(event);
       });
 
-      // user observer listeners
       Object.values(this._publicEvents).forEach(publicEvent => {
         this._auth.emitter.removeAllListeners(publicEvent);
       });
     }, 0);
   }
 
-  _promiseDeferred() {
+  _promiseDeferred(): void {
     if (!this._promise) {
-      const { promise, resolve, reject } = promiseDefer();
+      const { promise, resolve, reject } = promiseDefer<PhoneAuthSnapshot>();
       this._promise = promise;
       this._resolve = resolve;
       this._reject = reject;
     }
   }
 
-  /* --------------------------
-   --- INTERNAL EVENT HANDLERS
-   ---------------------------- */
-
-  _codeSentHandler(credential) {
-    const snapshot = {
+  _codeSentHandler(credential: { verificationId: string }): void {
+    const snapshot: PhoneAuthSnapshot = {
       verificationId: credential.verificationId,
       code: null,
       error: null,
@@ -144,15 +156,10 @@ export default class PhoneAuthListener {
     if (isIOS) {
       this._emitToSuccessCb(snapshot);
     }
-
-    if (isAndroid) {
-      // android can auto retrieve so we don't emit to successCb immediately,
-      // if auto retrieve times out then that will emit to successCb
-    }
   }
 
-  _codeAutoRetrievalTimeoutHandler(credential) {
-    const snapshot = {
+  _codeAutoRetrievalTimeoutHandler(credential: { verificationId: string }): void {
+    const snapshot: PhoneAuthSnapshot = {
       verificationId: credential.verificationId,
       code: null,
       error: null,
@@ -163,10 +170,10 @@ export default class PhoneAuthListener {
     this._emitToSuccessCb(snapshot);
   }
 
-  _verificationCompleteHandler(credential) {
-    const snapshot = {
+  _verificationCompleteHandler(credential: { verificationId: string; code?: string }): void {
+    const snapshot: PhoneAuthSnapshot = {
       verificationId: credential.verificationId,
-      code: credential.code || null,
+      code: credential.code ?? null,
       error: null,
       state: 'verified',
     };
@@ -176,26 +183,31 @@ export default class PhoneAuthListener {
     this._removeAllListeners();
   }
 
-  _verificationFailedHandler(state) {
-    const snapshot = {
+  _verificationFailedHandler(state: { verificationId: string; error: unknown }): void {
+    const snapshot: PhoneAuthSnapshot = {
       verificationId: state.verificationId,
       code: null,
       error: null,
       state: 'error',
     };
 
-    snapshot.error = new NativeFirebaseError({ userInfo: state.error }, this._jsStack, 'auth');
+    (snapshot as { error: unknown }).error = new NativeFirebaseError(
+      { userInfo: state.error } as never,
+      this._jsStack ?? '',
+      'auth',
+    );
 
     this._emitToObservers(snapshot);
     this._emitToErrorCb(snapshot);
     this._removeAllListeners();
   }
 
-  /* -------------
-   -- PUBLIC API
-   --------------*/
-
-  on(event, observer, errorCb, successCb) {
+  on(
+    event: string,
+    observer: (snapshot: PhoneAuthSnapshot) => void,
+    errorCb?: (error: unknown) => void,
+    successCb?: (snapshot: PhoneAuthSnapshot) => void,
+  ): this {
     if (event !== 'state_changed') {
       throw new Error(
         "firebase.auth.PhoneAuthListener.on(*, _, _, _) 'event' must equal 'state_changed'.",
@@ -211,34 +223,45 @@ export default class PhoneAuthListener {
     this._addUserObserver(observer);
 
     if (isFunction(errorCb)) {
-      const subscription = this._auth.emitter.addListener(this._publicEvents.error, event => {
-        subscription.remove();
-        errorCb(event);
-      });
+      const onError = errorCb;
+      const subscription = this._auth.emitter.addListener(
+        this._publicEvents.error!,
+        (event: unknown) => {
+          subscription.remove();
+          onError(event);
+        },
+      );
     }
 
     if (isFunction(successCb)) {
-      const subscription = this._auth.emitter.addListener(this._publicEvents.success, event => {
-        subscription.remove();
-        successCb(event);
-      });
+      const onSuccess = successCb;
+      const subscription = this._auth.emitter.addListener(
+        this._publicEvents.success!,
+        (event: PhoneAuthSnapshot) => {
+          subscription.remove();
+          onSuccess(event);
+        },
+      );
     }
 
     return this;
   }
 
-  then(fn) {
+  then(
+    onFulfilled?: ((a: PhoneAuthSnapshot) => unknown) | null,
+    onRejected?: ((a: unknown) => unknown) | null,
+  ): Promise<unknown> | undefined {
     this._promiseDeferred();
     if (this._promise) {
-      return this._promise.then.bind(this._promise)(fn);
+      return this._promise.then.bind(this._promise)(onFulfilled, onRejected);
     }
     return undefined;
   }
 
-  catch(fn) {
+  catch(onRejected: (a: unknown) => unknown): Promise<unknown> | undefined {
     this._promiseDeferred();
     if (this._promise) {
-      return this._promise.catch.bind(this._promise)(fn);
+      return this._promise.catch.bind(this._promise)(onRejected);
     }
     return undefined;
   }

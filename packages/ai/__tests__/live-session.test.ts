@@ -29,6 +29,8 @@ import { AIError } from '../lib/errors';
 import { logger } from '../lib/logger';
 import { ReadableStream } from 'web-streams-polyfill';
 
+type LiveReceiveYield = LiveServerContent | LiveServerToolCall | LiveServerToolCallCancellation;
+
 class MockWebSocketHandler implements WebSocketHandler {
   connect = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
   send = jest.fn<(data: string | ArrayBuffer) => void>();
@@ -216,7 +218,7 @@ describe('LiveSession', function () {
   describe('receive()', function () {
     it('should correctly parse and transform all server message types', async function () {
       const receivePromise = (async () => {
-        const responses = [];
+        const responses: LiveReceiveYield[] = [];
         for await (const response of session.receive()) {
           responses.push(response);
         }
@@ -257,7 +259,7 @@ describe('LiveSession', function () {
     it('should log a warning and skip messages that are not objects', async function () {
       const loggerSpy = jest.spyOn(logger, 'warn');
       const receivePromise = (async () => {
-        const responses = [];
+        const responses: LiveReceiveYield[] = [];
         for await (const response of session.receive()) {
           responses.push(response);
         }
@@ -282,7 +284,7 @@ describe('LiveSession', function () {
     it('should log a warning and skip objects of unknown type', async function () {
       const loggerSpy = jest.spyOn(logger, 'warn');
       const receivePromise = (async () => {
-        const responses = [];
+        const responses: LiveReceiveYield[] = [];
         for await (const response of session.receive()) {
           responses.push(response);
         }

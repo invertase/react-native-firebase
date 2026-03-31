@@ -15,22 +15,24 @@
  *
  */
 
-const providerId = 'oidc.';
+import type { AuthCredential } from '../types/auth';
 
-export default class OIDCAuthProvider {
+const providerId = 'apple.com';
+
+export default class AppleAuthProvider {
   constructor() {
-    throw new Error('`new OIDCAuthProvider()` is not supported on the native Firebase SDKs.');
+    throw new Error('`new AppleAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
-  static get PROVIDER_ID() {
+  static get PROVIDER_ID(): string {
     return providerId;
   }
 
-  static credential(oidcSuffix, idToken, accessToken) {
+  static credential(token: string, secret: string): AuthCredential {
     return {
-      token: idToken,
-      secret: accessToken,
-      providerId: providerId + oidcSuffix,
+      token,
+      secret,
+      providerId,
     };
   }
 }

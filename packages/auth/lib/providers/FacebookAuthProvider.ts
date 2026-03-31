@@ -15,18 +15,20 @@
  *
  */
 
-const providerId = 'google.com';
+import type { AuthCredential } from '../types/auth';
 
-export default class GoogleAuthProvider {
+const providerId = 'facebook.com';
+
+export default class FacebookAuthProvider {
   constructor() {
-    throw new Error('`new GoogleAuthProvider()` is not supported on the native Firebase SDKs.');
+    throw new Error('`new FacebookAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
-  static get PROVIDER_ID() {
+  static get PROVIDER_ID(): string {
     return providerId;
   }
 
-  static credential(token, secret) {
+  static credential(token: string, secret = ''): AuthCredential {
     return {
       token,
       secret,

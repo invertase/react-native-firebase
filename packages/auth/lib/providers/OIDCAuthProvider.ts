@@ -15,22 +15,24 @@
  *
  */
 
-const providerId = 'twitter.com';
+import type { AuthCredential } from '../types/auth';
 
-export default class TwitterAuthProvider {
+const providerId = 'oidc.';
+
+export default class OIDCAuthProvider {
   constructor() {
-    throw new Error('`new TwitterAuthProvider()` is not supported on the native Firebase SDKs.');
+    throw new Error('`new OIDCAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
-  static get PROVIDER_ID() {
+  static get PROVIDER_ID(): string {
     return providerId;
   }
 
-  static credential(token, secret) {
+  static credential(oidcSuffix: string, idToken: string, accessToken: string): AuthCredential {
     return {
-      token,
-      secret,
-      providerId,
+      token: idToken,
+      secret: accessToken,
+      providerId: providerId + oidcSuffix,
     };
   }
 }

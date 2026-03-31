@@ -622,7 +622,8 @@ describe('auth().currentUser', function () {
           try {
             await firebase.auth().currentUser.delete();
           } catch (e) {
-            consle.log(e);
+            // eslint-disable-next-line no-console
+            console.log(e);
             /* do nothing */
           }
 
@@ -1621,7 +1622,8 @@ describe('auth().currentUser', function () {
           try {
             await deleteUser(auth.currentUser);
           } catch (e) {
-            consle.log(e);
+            // eslint-disable-next-line no-console
+            console.log(e);
             /* do nothing */
           }
 
