@@ -13,6 +13,7 @@
 import path from 'path';
 import type { PackageConfig } from './types';
 
+import aiConfig from '../packages/ai/config';
 import firestoreConfig from '../packages/firestore/config';
 import firestorePipelinesConfig from '../packages/firestore-pipelines/config';
 
@@ -70,6 +71,44 @@ export const packages: PackageEntry[] = [
   //   ],
   //   config: remoteConfigConfig,
   // },
+  {
+    name: 'ai',
+    firebaseSdkTypesPaths: [
+      path.join(SCRIPT_DIR, 'packages', 'ai', 'ai-sdk.d.ts'),
+    ],
+    rnFirebaseModularFiles: [
+      path.join(rnDist('ai'), 'index.d.ts'),
+    ],
+    rnFirebaseSupportFiles: [
+      path.join(rnDist('ai'), 'backend.d.ts'),
+      path.join(rnDist('ai'), 'errors.d.ts'),
+      path.join(rnDist('ai'), 'public-types.d.ts'),
+      path.join(rnDist('ai'), 'methods', 'chat-session.d.ts'),
+      path.join(rnDist('ai'), 'methods', 'live-session.d.ts'),
+      path.join(rnDist('ai'), 'models', 'index.d.ts'),
+      path.join(rnDist('ai'), 'models', 'ai-model.d.ts'),
+      path.join(rnDist('ai'), 'models', 'generative-model.d.ts'),
+      path.join(rnDist('ai'), 'models', 'imagen-model.d.ts'),
+      path.join(rnDist('ai'), 'models', 'live-generative-model.d.ts'),
+      path.join(rnDist('ai'), 'models', 'template-generative-model.d.ts'),
+      path.join(rnDist('ai'), 'models', 'template-imagen-model.d.ts'),
+      path.join(rnDist('ai'), 'requests', 'imagen-image-format.d.ts'),
+      path.join(rnDist('ai'), 'requests', 'schema-builder.d.ts'),
+      path.join(rnDist('ai'), 'types', 'index.d.ts'),
+      path.join(rnDist('ai'), 'types', 'content.d.ts'),
+      path.join(rnDist('ai'), 'types', 'enums.d.ts'),
+      path.join(rnDist('ai'), 'types', 'error.d.ts'),
+      path.join(rnDist('ai'), 'types', 'googleai.d.ts'),
+      path.join(rnDist('ai'), 'types', 'live-responses.d.ts'),
+      path.join(rnDist('ai'), 'types', 'requests.d.ts'),
+      path.join(rnDist('ai'), 'types', 'responses.d.ts'),
+      path.join(rnDist('ai'), 'types', 'schema.d.ts'),
+      path.join(rnDist('ai'), 'types', 'imagen', 'index.d.ts'),
+      path.join(rnDist('ai'), 'types', 'imagen', 'requests.d.ts'),
+      path.join(rnDist('ai'), 'types', 'imagen', 'responses.d.ts'),
+    ],
+    config: aiConfig,
+  },
   {
     name: 'firestore',
     firebaseSdkTypesPaths: [

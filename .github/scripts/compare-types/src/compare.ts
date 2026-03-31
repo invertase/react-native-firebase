@@ -11,6 +11,7 @@ import type {
   InterfaceShape,
   TypeAliasShape,
   VariableShape,
+  EnumShape,
   ClassShape,
   PackageConfig,
   ComparisonResult,
@@ -38,6 +39,12 @@ export function shapeToString(shape: ExportShape): string {
       return shape.type;
     case 'variable':
       return shape.type;
+    case 'enum': {
+      const members = shape.members
+        .map(m => `${m.name}${m.value !== undefined ? `=${m.value}` : ''}`)
+        .join('; ');
+      return `{ ${members} }`;
+    }
   }
 }
 
@@ -78,11 +85,56 @@ function interfacesMatch(a: InterfaceShape, b: InterfaceShape): boolean {
   return true;
 }
 
+function enumsMatch(a: EnumShape, b: EnumShape): boolean {
+  if (a.members.length !== b.members.length) return false;
+
+  const aSorted = [...a.members].sort((x, y) => x.name.localeCompare(y.name));
+  const bSorted = [...b.members].sort((x, y) => x.name.localeCompare(y.name));
+
+  return aSorted.every(
+    (member, i) =>
+      member.name === bSorted[i].name && member.value === bSorted[i].value,
+  );
+}
+
+function enumLikeVariableShape(shape: VariableShape): EnumShape | null {
+  const trimmed = shape.type.trim();
+  if (!trimmed.startsWith('{') || !trimmed.endsWith('}')) return null;
+
+  const body = trimmed.slice(1, -1).trim();
+  if (!body) return { kind: 'enum', members: [] };
+
+  const members = body
+    .split(';')
+    .map(part => part.trim())
+    .filter(Boolean)
+    .map(part => {
+      const match = part.match(/^readonly\s+([^:]+):(.+)$/);
+      if (!match) return null;
+
+      return {
+        name: match[1].trim(),
+        value: match[2].trim(),
+      };
+    });
+
+  if (members.some(member => member === null)) return null;
+  return { kind: 'enum', members: members as EnumShape['members'] };
+}
+
 function shapesMatch(sdk: ExportShape, rn: ExportShape): boolean {
   if (sdk.kind !== rn.kind) {
     // When kinds differ, treat as match only across the class boundary (SDK class
     // vs RN interface or type alias, etc.). We do not compare structure across
     // that boundary.
+    if (sdk.kind === 'variable' && rn.kind === 'enum') {
+      const sdkEnumLike = enumLikeVariableShape(sdk as VariableShape);
+      return sdkEnumLike ? enumsMatch(sdkEnumLike, rn as EnumShape) : false;
+    }
+    if (sdk.kind === 'enum' && rn.kind === 'variable') {
+      const rnEnumLike = enumLikeVariableShape(rn as VariableShape);
+      return rnEnumLike ? enumsMatch(sdk as EnumShape, rnEnumLike) : false;
+    }
     if (sdk.kind === 'class' || rn.kind === 'class') return true;
     return false;
   }
@@ -97,6 +149,8 @@ function shapesMatch(sdk: ExportShape, rn: ExportShape): boolean {
       return sdk.type === (rn as TypeAliasShape).type;
     case 'variable':
       return sdk.type === (rn as VariableShape).type;
+    case 'enum':
+      return enumsMatch(sdk, rn as EnumShape);
   }
 }
 

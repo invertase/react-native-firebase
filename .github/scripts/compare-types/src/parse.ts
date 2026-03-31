@@ -9,6 +9,7 @@ import fs from 'fs';
 import {
   Project,
   Node,
+  SyntaxKind,
   type ClassDeclaration,
   type ExportedDeclarations,
   type SourceFile,
@@ -17,10 +18,12 @@ import type {
   ExportEntry,
   ExportShape,
   InterfaceMember,
+  EnumMember,
   FunctionShape,
   InterfaceShape,
   TypeAliasShape,
   VariableShape,
+  EnumShape,
   ClassShape,
 } from './types';
 
@@ -118,6 +121,36 @@ function normalizeType(s: string): string {
 // Shape extraction
 // ---------------------------------------------------------------------------
 
+function hasInternalJsDocTag(node: any): boolean {
+  if (typeof node.getJsDocs !== 'function') return false;
+
+  return node.getJsDocs().some((doc: any) =>
+    doc.getTags().some((tag: any) => tag.getTagName() === 'internal'),
+  );
+}
+
+function hasInternalComment(node: any): boolean {
+  if (typeof node.getLeadingCommentRanges !== 'function') return false;
+
+  return node.getLeadingCommentRanges().some((comment: any) => {
+    const text = comment.getText();
+    return text.includes('@internal');
+  });
+}
+
+function isInternalDeclaration(node: any): boolean {
+  return hasInternalJsDocTag(node) || hasInternalComment(node);
+}
+
+function isNonPublicClassMember(member: any): boolean {
+  if (typeof member.hasModifier !== 'function') return false;
+
+  return (
+    member.hasModifier(SyntaxKind.PrivateKeyword) ||
+    member.hasModifier(SyntaxKind.ProtectedKeyword)
+  );
+}
+
 function extractFunctionShape(
   decl: Parameters<typeof Node.isFunctionDeclaration>[0] & {
     getParameters: () => { getTypeNode: () => { getText: () => string } | undefined; isRestParameter: () => boolean }[];
@@ -139,6 +172,8 @@ function extractInterfaceShape(decl: any): InterfaceShape {
   const members: InterfaceMember[] = [];
   for (const member of decl.getMembers()) {
     if (Node.isPropertySignature(member)) {
+      if (isInternalDeclaration(member)) continue;
+      if (member.getName().startsWith('_')) continue;
       const typeNode = member.getTypeNode();
       members.push({
         name: member.getName(),
@@ -146,6 +181,8 @@ function extractInterfaceShape(decl: any): InterfaceShape {
         optional: member.hasQuestionToken(),
       });
     } else if (Node.isMethodSignature(member)) {
+      if (isInternalDeclaration(member)) continue;
+      if (member.getName().startsWith('_')) continue;
       // Render method signature as a function type string for comparison
       const methodParams = member
         .getParameters()
@@ -175,6 +212,20 @@ function extractVariableShape(decl: any): VariableShape {
   return { kind: 'variable', type };
 }
 
+function extractEnumShape(decl: any): EnumShape {
+  const members: EnumMember[] = decl
+    .getMembers()
+    .filter((member: any) => !isInternalDeclaration(member))
+    .map((member: any) => ({
+      name: member.getName(),
+      value: member.getInitializer()
+        ? normalizeType(member.getInitializer().getText())
+        : undefined,
+    }));
+
+  return { kind: 'enum', members };
+}
+
 /**
  * Extract instance members from a class declaration (for comparison).
  * Treats class shape like an interface so SDK classes can match RN interfaces.
@@ -183,6 +234,8 @@ function extractClassShape(decl: ClassDeclaration): ClassShape {
   const members: InterfaceMember[] = [];
   for (const member of decl.getMembers()) {
     if (Node.isPropertyDeclaration(member)) {
+      if (isInternalDeclaration(member) || isNonPublicClassMember(member)) continue;
+      if (member.getName().startsWith('_')) continue;
       const typeNode = member.getTypeNode();
       members.push({
         name: member.getName(),
@@ -190,6 +243,8 @@ function extractClassShape(decl: ClassDeclaration): ClassShape {
         optional: member.hasQuestionToken(),
       });
     } else if (Node.isMethodDeclaration(member)) {
+      if (isInternalDeclaration(member) || isNonPublicClassMember(member)) continue;
+      if (member.getName().startsWith('_')) continue;
       const methodParams = member
         .getParameters()
         .map((p) => normalizeType(p.getTypeNode()?.getText() ?? 'any'));
@@ -210,6 +265,7 @@ function extractShape(
   declarations: ReadonlyArray<ExportedDeclarations>,
 ): ExportShape | null {
   for (const decl of declarations) {
+    if (isInternalDeclaration(decl)) continue;
     if (Node.isFunctionDeclaration(decl)) {
       return extractFunctionShape(decl as any);
     }
@@ -221,6 +277,9 @@ function extractShape(
     }
     if (Node.isVariableDeclaration(decl)) {
       return extractVariableShape(decl);
+    }
+    if (Node.isEnumDeclaration(decl)) {
+      return extractEnumShape(decl);
     }
     if (Node.isClassDeclaration(decl)) {
       return extractClassShape(decl);
@@ -250,6 +309,7 @@ function collectExportsFromSourceFile(
   into: Map<string, ExportEntry>,
 ): void {
   for (const [name, decls] of sf.getExportedDeclarations()) {
+    if (name.startsWith('_')) continue;
     if (into.has(name)) continue; // first file wins (no overwriting)
     const shape = extractShape(decls);
     if (shape) {
