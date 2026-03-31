@@ -44,14 +44,14 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
 
   @Override
   public void invalidate() {
-    super.invalidate();
-
     for (int i = 0, size = documentSnapshotListeners.size(); i < size; i++) {
       int key = documentSnapshotListeners.keyAt(i);
       ListenerRegistration listenerRegistration = documentSnapshotListeners.get(key);
       listenerRegistration.remove();
     }
     documentSnapshotListeners.clear();
+
+    super.invalidate();
   }
 
   @ReactMethod
