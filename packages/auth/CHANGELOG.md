@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [24.0.0](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v24.0.0) (2026-04-01)
+
+### Features
+
+- **firestore:** Support for Firestore pipelines API ([#8931](https://github.com/invertase/react-native-firebase/issues/8931)) ([54021c4](https://github.com/invertase/react-native-firebase/commit/54021c4af427abc3c8e224b546d68661aa1fc590))
+
+### Bug Fixes
+
+- **auth, web:** avoid react-native-specific methods in web ([06426f2](https://github.com/invertase/react-native-firebase/commit/06426f24a94574e1364c48737ba0b01396b37d63))
+- **auth:** auto-register encoded app ID URL scheme for phone auth reCAPTCHA ([#8902](https://github.com/invertase/react-native-firebase/issues/8902)) ([d2ddbf7](https://github.com/invertase/react-native-firebase/commit/d2ddbf7cf2a9ee445a18bcde7c7b5089bba8756d))
+- **messaging, expo:** retrieve expo-notification config if available, then deprecated notification ([#8663](https://github.com/invertase/react-native-firebase/issues/8663)) ([aa63174](https://github.com/invertase/react-native-firebase/commit/aa63174b997b62176964d9935929cb686b03f8b3))
+
 ## [23.8.8](https://github.com/invertase/react-native-firebase/compare/v23.8.6...v23.8.8) (2026-03-12)
 
 ### Bug Fixes
