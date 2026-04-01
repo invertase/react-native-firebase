@@ -13,6 +13,8 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 Please see https://rnfirebase.io/migrating-to-v24 for a guide on updating your types
 if you were using the previous firestore typescript types.
 
+*In general* everything should behave the same as v23 but the typescript types have changed. It is our hope you as a developer can adopt these changes easily and your app works exactly the same.
+
 It is always our goal to be a drop-in replacement for firebase-js-sdk, type for type, API for API.
 In general all firestore types should now be the same as the firestore modular types from firebase-js-sdk
 
@@ -22,12 +24,12 @@ In general all firestore types should now be the same as the firestore modular t
 
 ### Features
 
+- **firestore:** Support for Firestore pipelines API ([#8931](https://github.com/invertase/react-native-firebase/issues/8931)) ([54021c4](https://github.com/invertase/react-native-firebase/commit/54021c4af427abc3c8e224b546d68661aa1fc590))
+- **firestore:** implement withConverter ([#8744](https://github.com/invertase/react-native-firebase/issues/8744)) ([13d6bb3](https://github.com/invertase/react-native-firebase/commit/13d6bb3dfa3328fe987179d6e342d1551a208a38))
 - **ai:** `CodeExecutionTool` types for allowing model to run code ([#8866](https://github.com/invertase/react-native-firebase/issues/8866)) ([81a0f19](https://github.com/invertase/react-native-firebase/commit/81a0f1910955a0295b6b308d5c08c17af0384b04))
 - **ai:** `SearchEntryPoint` in grounding metadata responses ([#8894](https://github.com/invertase/react-native-firebase/issues/8894)) ([6a35bec](https://github.com/invertase/react-native-firebase/commit/6a35bec5a252bd1d080cce6e0353956a74b860cf))
 - **ai:** `UrlContextTool` to inform responses from provided URLs ([#8893](https://github.com/invertase/react-native-firebase/issues/8893)) ([29cad20](https://github.com/invertase/react-native-firebase/commit/29cad202a1b9c08045d76f7b7ecf529fa3546c95))
 - **analytics, ios:** add support for `logTransaction` ([#8921](https://github.com/invertase/react-native-firebase/issues/8921)) ([1039e9a](https://github.com/invertase/react-native-firebase/commit/1039e9a9e6560d04ecaec7a04f7364b7a4dbf99c))
-- **firestore:** Support for Firestore pipelines API ([#8931](https://github.com/invertase/react-native-firebase/issues/8931)) ([54021c4](https://github.com/invertase/react-native-firebase/commit/54021c4af427abc3c8e224b546d68661aa1fc590))
-- **firestore:** implement withConverter ([#8744](https://github.com/invertase/react-native-firebase/issues/8744)) ([13d6bb3](https://github.com/invertase/react-native-firebase/commit/13d6bb3dfa3328fe987179d6e342d1551a208a38))
 - **functions:** convert functions to new architecture / drop functions old architecture ([a2108bb](https://github.com/invertase/react-native-firebase/commit/a2108bb09ef87aa3b805697b4ed44a35cad8b203))
 - **functions:** httpsCallable.stream support ([#8799](https://github.com/invertase/react-native-firebase/issues/8799)) ([baae936](https://github.com/invertase/react-native-firebase/commit/baae936174935419bd327dda9f36b1198bacbb4f))
 
