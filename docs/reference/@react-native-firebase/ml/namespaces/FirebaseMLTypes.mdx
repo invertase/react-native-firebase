@@ -1,0 +1,98 @@
+[**React Native Firebase**](../../../README.mdx)
+
+***
+
+[React Native Firebase](../../../packages.mdx) / [@react-native-firebase/ml](../README.mdx) / FirebaseMLTypes
+
+# FirebaseMLTypes
+
+Firebase ML package for React Native.
+
+#### Example 1
+
+Access the firebase export from the `ml` package:
+
+```js
+import { firebase } from '@react-native-firebase/ml';
+
+// firebase.ml().X
+```
+
+#### Example 2
+
+Using the default export from the `ml` package:
+
+```js
+import ml from '@react-native-firebase/ml';
+
+// ml().X
+```
+
+#### Example 3
+
+Using the default export from the `app` package:
+
+```js
+import firebase from '@react-native-firebase/app';
+import '@react-native-firebase/ml';
+
+// firebase.ml().X
+```
+
+## Firebase
+
+ml
+
+## Classes
+
+### Module
+
+Defined in: [index.d.ts:62](https://github.com/invertase/react-native-firebase/blob/main/packages/ml/lib/index.d.ts#L62)
+
+A class that all React Native Firebase modules extend from to provide default behaviour.
+
+#### Extends
+
+- [`FirebaseModule`](../../app/namespaces/ReactNativeFirebase.mdx#abstract-firebasemodule)
+
+#### Constructors
+
+##### Constructor
+
+> **new Module**(): [`Module`](#module)
+
+###### Returns
+
+[`Module`](#module)
+
+###### Inherited from
+
+[`FirebaseModule`](../../app/namespaces/ReactNativeFirebase.mdx#abstract-firebasemodule).[`constructor`](../../app/namespaces/ReactNativeFirebase.mdx#constructor)
+
+#### Properties
+
+##### app
+
+> **app**: [`FirebaseApp`](../../app/namespaces/ReactNativeFirebase.mdx#firebaseapp)
+
+Defined in: [index.d.ts:66](https://github.com/invertase/react-native-firebase/blob/main/packages/ml/lib/index.d.ts#L66)
+
+The current `FirebaseApp` instance for this Firebase service.
+
+###### Overrides
+
+[`FirebaseModule`](../../app/namespaces/ReactNativeFirebase.mdx#abstract-firebasemodule).[`app`](../../app/namespaces/ReactNativeFirebase.mdx#app)
+
+## Interfaces
+
+### Statics
+
+Defined in: [index.d.ts:58](https://github.com/invertase/react-native-firebase/blob/main/packages/ml/lib/index.d.ts#L58)
+
+#### Properties
+
+##### SDK\_VERSION
+
+> **SDK\_VERSION**: `string`
+
+Defined in: [index.d.ts:59](https://github.com/invertase/react-native-firebase/blob/main/packages/ml/lib/index.d.ts#L59)

@@ -1,0 +1,1873 @@
+[**React Native Firebase**](../../../README.mdx)
+
+***
+
+[React Native Firebase](../../../packages.mdx) / [@react-native-firebase/storage](../README.mdx) / FirebaseStorageTypes
+
+# FirebaseStorageTypes
+
+Firebase Cloud Storage package for React Native.
+
+#### Example 1
+
+Access the firebase export from the `storage` package:
+
+```js
+import { firebase } from '@react-native-firebase/storage';
+
+// firebase.storage().X
+```
+
+#### Example 2
+
+Using the default export from the `storage` package:
+
+```js
+import storage from '@react-native-firebase/storage';
+
+// storage().X
+```
+
+#### Example 3
+
+Using the default export from the `app` package:
+
+```js
+import firebase from '@react-native-firebase/app';
+import '@react-native-firebase/storage';
+
+// firebase.storage().X
+```
+
+## Firebase
+
+storage
+
+## Classes
+
+### Module
+
+Defined in: [index.d.ts:1023](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L1023)
+
+The Cloud Storage service is available for the default app, a given app or a specific storage bucket.
+
+#### Example 1
+
+Get the storage instance for the **default app**:
+
+```js
+const storageForDefaultApp = firebase.storage();
+```
+
+#### Example 2
+
+Get the storage instance for a **secondary app**:
+
+```js
+const otherApp = firebase.app('otherApp');
+const storageForOtherApp = firebase.storage(otherApp);
+```
+
+#### Example 3
+
+Get the storage instance for a **specific storage bucket**:
+
+```js
+const defaultApp = firebase.app();
+const storageForBucket = defaultApp.storage('gs://another-bucket-url');
+
+const otherApp = firebase.app('otherApp');
+const storageForOtherAppBucket = otherApp.storage('gs://another-bucket-url');
+```
+
+#### Extends
+
+- [`FirebaseModule`](../../app/namespaces/ReactNativeFirebase.mdx#abstract-firebasemodule)
+
+#### Constructors
+
+##### Constructor
+
+> **new Module**(): [`Module`](#module)
+
+###### Returns
+
+[`Module`](#module)
+
+###### Inherited from
+
+[`FirebaseModule`](../../app/namespaces/ReactNativeFirebase.mdx#abstract-firebasemodule).[`constructor`](../../app/namespaces/ReactNativeFirebase.mdx#constructor)
+
+#### Methods
+
+##### ref()
+
+> **ref**(`path?`): [`Reference`](#reference)
+
+Defined in: [index.d.ts:1113](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L1113)
+
+Returns a new storage.Reference instance.
+
+#### Example
+
+```js
+const ref = firebase.storage().ref('cats.gif');
+```
+
+###### Parameters
+
+###### path?
+
+`string`
+
+An optional string pointing to a location on the storage bucket. If no path
+is provided, the returned reference will be the bucket root path.
+
+###### Returns
+
+[`Reference`](#reference)
+
+##### refFromURL()
+
+> **refFromURL**(`url`): [`Reference`](#reference)
+
+Defined in: [index.d.ts:1132](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L1132)
+
+Returns a new storage.Reference instance from a storage bucket URL.
+
+#### Example
+
+```js
+const gsUrl = 'gs://react-native-firebase-testing/cats.gif';
+const httpUrl = 'https://firebasestorage.googleapis.com/v0/b/react-native-firebase-testing.appspot.com/o/cats.gif';
+
+const refFromGsUrl = firebase.storage().refFromURL(gsUrl);
+// or
+const refFromHttpUrl = firebase.storage().refFromURL(httpUrl);
+```
+
+###### Parameters
+
+###### url
+
+`string`
+
+A storage bucket URL pointing to a single file or location. Must be either a `gs://` url or an `http` url,
+e.g. `gs://assets/logo.png` or `https://firebasestorage.googleapis.com/v0/b/react-native-firebase-testing.appspot.com/o/cats.gif`.
+
+###### Returns
+
+[`Reference`](#reference)
+
+##### setMaxDownloadRetryTime()
+
+> **setMaxDownloadRetryTime**(`time`): `Promise`\<`void`\>
+
+Defined in: [index.d.ts:1075](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L1075)
+
+Sets the maximum time in milliseconds to retry a download if a failure occurs.
+
+#### Example
+
+```js
+await firebase.storage().setMaxDownloadRetryTime(25000);
+```
+
+###### Parameters
+
+###### time
+
+`number`
+
+The new maximum download retry time in milliseconds.
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### setMaxOperationRetryTime()
+
+> **setMaxOperationRetryTime**(`time`): `Promise`\<`void`\>
+
+Defined in: [index.d.ts:1099](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L1099)
+
+Sets the maximum time in milliseconds to retry operations other than upload and download if a failure occurs.
+
+#### Example
+
+```js
+await firebase.storage().setMaxOperationRetryTime(5000);
+```
+
+###### Parameters
+
+###### time
+
+`number`
+
+The new maximum operation retry time in milliseconds.
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### setMaxUploadRetryTime()
+
+> **setMaxUploadRetryTime**(`time`): `Promise`\<`void`\>
+
+Defined in: [index.d.ts:1051](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L1051)
+
+Sets the maximum time in milliseconds to retry an upload if a failure occurs.
+
+#### Example
+
+```js
+await firebase.storage().setMaxUploadRetryTime(25000);
+```
+
+###### Parameters
+
+###### time
+
+`number`
+
+The new maximum upload retry time in milliseconds.
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### useEmulator()
+
+> **useEmulator**(`host`, `port`): `void`
+
+Defined in: [index.d.ts:1147](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L1147)
+
+Modify this Storage instance to communicate with the Firebase Storage emulator.
+This must be called synchronously immediately following the first call to firebase.storage().
+Do not use with production credentials as emulator traffic is not encrypted.
+
+Note: on android, hosts 'localhost' and '127.0.0.1' are automatically remapped to '10.0.2.2' (the
+"host" computer IP address for android emulators) to make the standard development experience easy.
+If you want to use the emulator on a real android device, you will need to specify the actual host
+computer IP address.
+
+###### Parameters
+
+###### host
+
+`string`
+
+###### port
+
+`number`
+
+###### Returns
+
+`void`
+
+#### Properties
+
+##### app
+
+> **app**: [`FirebaseApp`](../../app/namespaces/ReactNativeFirebase.mdx#firebaseapp)
+
+Defined in: [index.d.ts:1027](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L1027)
+
+The current `FirebaseApp` instance for this Firebase service.
+
+###### Overrides
+
+[`FirebaseModule`](../../app/namespaces/ReactNativeFirebase.mdx#abstract-firebasemodule).[`app`](../../app/namespaces/ReactNativeFirebase.mdx#app)
+
+##### maxDownloadRetryTime
+
+> **maxDownloadRetryTime**: `number`
+
+Defined in: [index.d.ts:1062](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L1062)
+
+Returns the current maximum time in milliseconds to retry a download if a failure occurs.
+
+#### Example
+
+```js
+const downloadRetryTime = firebase.storage().maxUploadRetryTime;
+```
+
+##### maxOperationRetryTime
+
+> **maxOperationRetryTime**: `number`
+
+Defined in: [index.d.ts:1086](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L1086)
+
+Returns the current maximum time in milliseconds to retry operations other than upload and download if a failure occurs.
+
+#### Example
+
+```js
+const maxOperationRetryTime = firebase.storage().maxOperationRetryTime;
+```
+
+##### maxUploadRetryTime
+
+> **maxUploadRetryTime**: `number`
+
+Defined in: [index.d.ts:1038](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L1038)
+
+Returns the current maximum time in milliseconds to retry an upload if a failure occurs.
+
+#### Example
+
+```js
+const uploadRetryTime = firebase.storage().maxUploadRetryTime;
+```
+
+## Interfaces
+
+### EmulatorMockTokenOptions
+
+Defined in: [index.d.ts:983](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L983)
+
+Storage Emulator options. Web only.
+
+#### Properties
+
+##### mockUserToken?
+
+> `optional` **mockUserToken?**: `string`
+
+Defined in: [index.d.ts:987](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L987)
+
+the mock auth token to use for unit testing Security Rules.
+
+***
+
+### FullMetadata
+
+Defined in: [index.d.ts:348](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L348)
+
+The full readable metadata returned by `TaskSnapshot.metadata` or `StorageReference.getMetadata()`.
+
+#### Extends
+
+- [`SettableMetadata`](#settablemetadata)
+
+#### Properties
+
+##### bucket
+
+> **bucket**: `string`
+
+Defined in: [index.d.ts:363](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L363)
+
+The bucket this storage object is contained in.
+
+#### Example Value
+
+```
+gs://my-project-storage-bucket
+```
+
+##### cacheControl?
+
+> `optional` **cacheControl?**: `string` \| `null`
+
+Defined in: [index.d.ts:273](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L273)
+
+The 'Cache-Control' HTTP header that will be set on the storage object when it's requested.
+
+#### Example 1
+
+To turn off caching, you can set the following cacheControl value.
+
+```js
+{
+  cacheControl: 'no-store',
+}
+```
+
+#### Example 2
+
+To aggressively cache an object, e.g. static assets, you can set the following cacheControl value.
+
+```js
+{
+  cacheControl: 'public, max-age=31536000',
+}
+```
+
+[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control)
+
+###### Inherited from
+
+[`SettableMetadata`](#settablemetadata).[`cacheControl`](#cachecontrol-1)
+
+##### contentDisposition?
+
+> `optional` **contentDisposition?**: `string` \| `null`
+
+Defined in: [index.d.ts:280](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L280)
+
+The 'Content-Disposition' HTTP header that will be set on the storage object when it's requested.
+
+[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)
+
+###### Inherited from
+
+[`SettableMetadata`](#settablemetadata).[`contentDisposition`](#contentdisposition-1)
+
+##### contentEncoding?
+
+> `optional` **contentEncoding?**: `string` \| `null`
+
+Defined in: [index.d.ts:287](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L287)
+
+The 'Content-Encoding' HTTP header that will be used on the storage object when it's requested.
+
+[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding)
+
+###### Inherited from
+
+[`SettableMetadata`](#settablemetadata).[`contentEncoding`](#contentencoding-1)
+
+##### contentLanguage?
+
+> `optional` **contentLanguage?**: `string` \| `null`
+
+Defined in: [index.d.ts:294](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L294)
+
+The 'Content-Language' HTTP header that will be set on the storage object when it's requested.
+
+[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Language)
+
+###### Inherited from
+
+[`SettableMetadata`](#settablemetadata).[`contentLanguage`](#contentlanguage-1)
+
+##### contentType?
+
+> `optional` **contentType?**: `string` \| `null`
+
+Defined in: [index.d.ts:317](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L317)
+
+The 'Content-Type' HTTP header that will be set on the object when it's requested.
+
+This is used to indicate the media type (or MIME type) of the object. When uploading a file
+Firebase Cloud Storage for React Native will attempt to automatically detect this if `contentType`
+is not already set, if it fails to detect a media type it will default to `application/octet-stream`.
+
+For `DATA_URL` string formats uploaded via `putString` this will also be automatically extracted if available.
+
+#### Example
+
+Setting the content type as JSON, e.g. for when uploading a JSON string via `putString`.
+
+```js
+{
+  contentType: 'application/json',
+}
+```
+
+[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type)
+
+###### Inherited from
+
+[`SettableMetadata`](#settablemetadata).[`contentType`](#contenttype-1)
+
+##### customMetadata?
+
+> `optional` **customMetadata?**: \{\[`key`: `string`\]: `string`; \} \| `null`
+
+Defined in: [index.d.ts:340](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L340)
+
+Additional user-defined custom metadata for this storage object.
+
+All values must be strings. Set to null to delete all. Any keys ommitted during update will be removed.
+
+#### Example
+
+Adding a user controlled NSFW meta data field.
+
+```js
+{
+  customMetadata: {
+    'nsfw': 'true'
+  },
+}
+
+###### Inherited from
+
+[`SettableMetadata`](#settablemetadata).[`customMetadata`](#custommetadata-1)
+
+##### fullPath
+
+> **fullPath**: `string`
+
+Defined in: [index.d.ts:374](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L374)
+
+The full path to this storage object in its bucket.
+
+#### Example Value
+
+```
+invertase/logo.png
+```
+
+##### generation
+
+> **generation**: `string`
+
+Defined in: [index.d.ts:381](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L381)
+
+Storage object generation values enable users to uniquely identify data resources, e.g. object versioning.
+
+Read more on generation on the [Google Cloud Storage documentation](https://cloud.google.com/storage/docs/generations-preconditions).
+
+##### md5hash?
+
+> `optional` **md5hash?**: `string` \| `null`
+
+Defined in: [index.d.ts:322](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L322)
+
+You may specify the md5hash of the file in metadata on upload only. It may not be updated via updateMetadata
+
+###### Inherited from
+
+[`SettableMetadata`](#settablemetadata).[`md5hash`](#md5hash-2)
+
+##### md5Hash
+
+> **md5Hash**: `string` \| `null`
+
+Defined in: [index.d.ts:352](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L352)
+
+A Base64-encoded MD5 hash of the storage object being uploaded.
+
+##### metageneration
+
+> **metageneration**: `string`
+
+Defined in: [index.d.ts:388](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L388)
+
+Storage object metageneration values enable users to uniquely identify data resources, e.g. object versioning.
+
+Read more on metageneration on the [Google Cloud Storage documentation](https://cloud.google.com/storage/docs/generations-preconditions).
+
+##### name
+
+> **name**: `string`
+
+Defined in: [index.d.ts:399](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L399)
+
+The short name of storage object in its bucket, e.g. it's file name.
+
+#### Example Value
+
+```
+logo.png
+```
+
+##### size
+
+> **size**: `number`
+
+Defined in: [index.d.ts:404](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L404)
+
+The size of this storage object in bytes.
+
+##### timeCreated
+
+> **timeCreated**: `string`
+
+Defined in: [index.d.ts:415](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L415)
+
+A date string representing when this storage object was created.
+
+#### Example Value
+
+```
+2019-05-02T00:34:56.264Z
+```
+
+##### updated
+
+> **updated**: `string`
+
+Defined in: [index.d.ts:426](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L426)
+
+A date string representing when this storage object was last updated.
+
+#### Example Value
+
+```
+2019-05-02T00:35:56.264Z
+```
+
+***
+
+### ListOptions
+
+Defined in: [index.d.ts:946](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L946)
+
+The options `list()` accepts.
+
+#### Properties
+
+##### maxResults?
+
+> `optional` **maxResults?**: `number`
+
+Defined in: [index.d.ts:950](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L950)
+
+If set, limits the total number of `prefixes` and `items` to return. The default and maximum maxResults is 1000.
+
+##### pageToken?
+
+> `optional` **pageToken?**: `string`
+
+Defined in: [index.d.ts:955](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L955)
+
+The `nextPageToken` from a previous call to `list()`. If provided, listing is resumed from the previous position.
+
+***
+
+### ListResult
+
+Defined in: [index.d.ts:961](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L961)
+
+Result returned by `list()`.
+
+#### Properties
+
+##### items
+
+> **items**: [`Reference`](#reference)[]
+
+Defined in: [index.d.ts:965](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L965)
+
+Objects in this directory. You can call `getMetadata()` and `getDownloadUrl()` on them.
+
+##### nextPageToken
+
+> **nextPageToken**: `string` \| `null`
+
+Defined in: [index.d.ts:970](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L970)
+
+If set, there might be more results for this list. Use this token to resume the list.
+
+##### prefixes
+
+> **prefixes**: [`Reference`](#reference)[]
+
+Defined in: [index.d.ts:977](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L977)
+
+References to prefixes (sub-folders). You can call `list()` on them to get its contents.
+
+Folders are implicit based on '/' in the object paths. For example, if a bucket has two objects '/a/b/1' and '/a/b/2', list('/a') will return '/a/b' as a prefix.
+
+***
+
+### Reference
+
+Defined in: [index.d.ts:450](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L450)
+
+Represents a reference to a Google Cloud Storage object in React Native Firebase.
+
+A reference can be used to upload and download storage objects, get/set storage object metadata, retrieve storage object download urls and delete storage objects.
+
+#### Example 1
+
+Get a reference to a specific storage path.
+
+```js
+const ref = firebase.storage().ref('invertase/logo.png');
+```
+
+#### Example 2
+
+Get a reference to a specific storage path on another bucket in the same firebase project.
+
+```js
+const ref = firebase.storage().refFromURL('gs://other-bucket/invertase/logo.png');
+```
+
+#### Methods
+
+##### child()
+
+> **child**(`path`): [`Reference`](#reference)
+
+Defined in: [index.d.ts:501](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L501)
+
+Returns a reference to a relative path from this reference.
+
+#### Example
+
+```js
+const parent = firebase.storage().ref('invertase');
+const ref = parent.child('logo.png');
+```
+
+###### Parameters
+
+###### path
+
+`string`
+
+The relative path from this reference. Leading, trailing, and consecutive slashes are removed.
+
+###### Returns
+
+[`Reference`](#reference)
+
+##### delete()
+
+> **delete**(): `Promise`\<`void`\>
+
+Defined in: [index.d.ts:513](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L513)
+
+Deletes the object at this reference's location.
+
+#### Example
+
+```js
+const ref = firebase.storage().ref('invertase/logo.png');
+await ref.delete();
+```
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### getDownloadURL()
+
+> **getDownloadURL**(): `Promise`\<`string`\>
+
+Defined in: [index.d.ts:525](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L525)
+
+Fetches a long lived download URL for this object.
+
+#### Example
+
+```js
+const ref = firebase.storage().ref('invertase/logo.png');
+const url = await ref.getDownloadURL();
+```
+
+###### Returns
+
+`Promise`\<`string`\>
+
+##### getMetadata()
+
+> **getMetadata**(): `Promise`\<[`FullMetadata`](#fullmetadata)\>
+
+Defined in: [index.d.ts:538](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L538)
+
+Fetches metadata for the object at this location, if one exists.
+
+#### Example
+
+```js
+const ref = firebase.storage().ref('invertase/logo.png');
+const metadata = await ref.getMetadata();
+console.log('Cache control: ', metadata.cacheControl);
+```
+
+###### Returns
+
+`Promise`\<[`FullMetadata`](#fullmetadata)\>
+
+##### list()
+
+> **list**(`options?`): `Promise`\<[`ListResult`](#listresult)\>
+
+Defined in: [index.d.ts:563](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L563)
+
+List items (files) and prefixes (folders) under this storage reference.
+
+List API is only available for Firebase Rules Version 2.
+
+GCS is a key-blob store. Firebase Storage imposes the semantic of '/' delimited folder structure.
+Refer to GCS's List API if you want to learn more.
+
+To adhere to Firebase Rules's Semantics, Firebase Storage does not support objects whose paths
+end with "/" or contain two consecutive "/"s. Firebase Storage List API will filter these unsupported objects.
+list() may fail if there are too many unsupported objects in the bucket.
+
+#### Example
+
+```js
+const ref = firebase.storage().ref('/');
+const results = await ref.list({
+  maxResults: 30,
+});
+```
+
+###### Parameters
+
+###### options?
+
+[`ListOptions`](#listoptions)
+
+An optional ListOptions interface.
+
+###### Returns
+
+`Promise`\<[`ListResult`](#listresult)\>
+
+##### listAll()
+
+> **listAll**(): `Promise`\<[`ListResult`](#listresult)\>
+
+Defined in: [index.d.ts:581](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L581)
+
+List all items (files) and prefixes (folders) under this storage reference.
+
+This is a helper method for calling list() repeatedly until there are no more results. The default pagination size is 1000.
+
+Note: The results may not be consistent if objects are changed while this operation is running.
+
+Warning: `listAll` may potentially consume too many resources if there are too many results.
+
+#### Example
+
+```js
+const ref = firebase.storage().ref('/');
+const results = await ref.listAll();
+```
+
+###### Returns
+
+`Promise`\<[`ListResult`](#listresult)\>
+
+##### put()
+
+> **put**(`data`, `metadata?`): [`Task`](#task)
+
+Defined in: [index.d.ts:632](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L632)
+
+Puts data onto the storage bucket.
+
+#### Example
+
+```js
+const ref = firebase.storage().ref('invertase/new-logo.png');
+const task = ref.put(BLOB, {
+  cacheControl: 'no-store', // disable caching
+});
+```
+
+###### Parameters
+
+###### data
+
+`Blob` \| `ArrayBuffer` \| `Uint8Array`\<`ArrayBufferLike`\>
+
+The data to upload to the storage bucket at the reference location.
+
+###### metadata?
+
+[`SettableMetadata`](#settablemetadata)
+
+###### Returns
+
+[`Task`](#task)
+
+##### putFile()
+
+> **putFile**(`localFilePath`, `metadata?`): [`Task`](#task)
+
+Defined in: [index.d.ts:599](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L599)
+
+Puts a file from local disk onto the storage bucket.
+
+#### Example
+
+```js
+const ref = firebase.storage().ref('invertase/new-logo.png');
+const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/new-logo.png`;
+const task = ref.putFile(path, {
+  cacheControl: 'no-store', // disable caching
+});
+```
+
+###### Parameters
+
+###### localFilePath
+
+`string`
+
+The local file path to upload to the bucket at the reference location.
+
+###### metadata?
+
+[`SettableMetadata`](#settablemetadata)
+
+Any additional `SettableMetadata` for this task.
+
+###### Returns
+
+[`Task`](#task)
+
+##### putString()
+
+> **putString**(`data`, `format?`, `metadata?`): [`Task`](#task)
+
+Defined in: [index.d.ts:650](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L650)
+
+Puts a string on the storage bucket. Depending on the string type, set a storage.StringFormat type.
+
+#### Example
+
+```js
+const ref = firebase.storage().ref('invertase/new-logo.png');
+const task = ref.putString('PEZvbyBCYXI+', firebase.storage.StringFormat.BASE64, {
+  cacheControl: 'no-store', // disable caching
+});
+```
+
+###### Parameters
+
+###### data
+
+`string`
+
+The string data, must match the format provided.
+
+###### format?
+
+`"raw"` \| `"base64"` \| `"base64url"` \| `"data_url"`
+
+The format type of the string, e.g. a Base64 format string.
+
+###### metadata?
+
+[`SettableMetadata`](#settablemetadata)
+
+Any additional `SettableMetadata` for this task.
+
+###### Returns
+
+[`Task`](#task)
+
+##### toString()
+
+> **toString**(): `string`
+
+Defined in: [index.d.ts:487](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L487)
+
+Returns a gs:// URL for this object in the form `gs://<bucket>/<path>/<to>/<object>`.
+
+#### Example
+
+```js
+const ref = firebase.storage().ref('invertase/logo.png');
+console.log('Full path: ', ref.toString()); // gs://invertase.io/invertase/logo.png
+```
+
+###### Returns
+
+`string`
+
+##### updateMetadata()
+
+> **updateMetadata**(`metadata`): `Promise`\<[`FullMetadata`](#fullmetadata)\>
+
+Defined in: [index.d.ts:672](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L672)
+
+Updates the metadata for this reference object on the storage bucket.
+
+#### Example
+
+```js
+const ref = firebase.storage().ref('invertase/nsfw-logo.png');
+const updatedMetadata = await ref.updateMetadata({
+  customMetadata: {
+    'nsfw': 'true',
+  }
+});
+```
+
+###### Parameters
+
+###### metadata
+
+[`SettableMetadata`](#settablemetadata)
+
+A `SettableMetadata` instance to update.
+
+###### Returns
+
+`Promise`\<[`FullMetadata`](#fullmetadata)\>
+
+##### writeToFile()
+
+> **writeToFile**(`localFilePath`): [`Task`](#task)
+
+Defined in: [index.d.ts:615](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L615)
+
+Downloads a file to the specified local file path on the device.
+
+#### Example
+
+Get a Download Storage task to download a file:
+
+```js
+const downloadTo = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/foobar.json`;
+
+const task = firebase.storage().ref('/foo/bar.json').writeToFile(downloadTo);
+```
+
+###### Parameters
+
+###### localFilePath
+
+`string`
+
+###### Returns
+
+[`Task`](#task)
+
+#### Properties
+
+##### bucket
+
+> **bucket**: `string`
+
+Defined in: [index.d.ts:454](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L454)
+
+The name of the bucket containing this reference's object.
+
+##### fullPath
+
+> **fullPath**: `string`
+
+Defined in: [index.d.ts:462](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L462)
+
+The full path of this object.
+
+##### name
+
+> **name**: `string`
+
+Defined in: [index.d.ts:467](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L467)
+
+The short name of this object, which is the last component of the full path. For example,
+if fullPath is 'full/path/image.png', name is 'image.png'.
+
+##### parent
+
+> **parent**: [`Reference`](#reference) \| `null`
+
+Defined in: [index.d.ts:458](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L458)
+
+A reference pointing to the parent location of this reference, or null if this reference is the root.
+
+##### root
+
+> **root**: [`Reference`](#reference)
+
+Defined in: [index.d.ts:471](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L471)
+
+A reference to the root of this reference's bucket.
+
+##### storage
+
+> **storage**: [`Module`](#module)
+
+Defined in: [index.d.ts:475](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L475)
+
+The storage service associated with this reference.
+
+***
+
+### SettableMetadata
+
+Defined in: [index.d.ts:247](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L247)
+
+An interface representing all the metadata properties that can be set.
+
+This is used in updateMetadata, put, putString & putFile.
+
+#### Extended by
+
+- [`FullMetadata`](#fullmetadata)
+
+#### Properties
+
+##### cacheControl?
+
+> `optional` **cacheControl?**: `string` \| `null`
+
+Defined in: [index.d.ts:273](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L273)
+
+The 'Cache-Control' HTTP header that will be set on the storage object when it's requested.
+
+#### Example 1
+
+To turn off caching, you can set the following cacheControl value.
+
+```js
+{
+  cacheControl: 'no-store',
+}
+```
+
+#### Example 2
+
+To aggressively cache an object, e.g. static assets, you can set the following cacheControl value.
+
+```js
+{
+  cacheControl: 'public, max-age=31536000',
+}
+```
+
+[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control)
+
+##### contentDisposition?
+
+> `optional` **contentDisposition?**: `string` \| `null`
+
+Defined in: [index.d.ts:280](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L280)
+
+The 'Content-Disposition' HTTP header that will be set on the storage object when it's requested.
+
+[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)
+
+##### contentEncoding?
+
+> `optional` **contentEncoding?**: `string` \| `null`
+
+Defined in: [index.d.ts:287](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L287)
+
+The 'Content-Encoding' HTTP header that will be used on the storage object when it's requested.
+
+[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding)
+
+##### contentLanguage?
+
+> `optional` **contentLanguage?**: `string` \| `null`
+
+Defined in: [index.d.ts:294](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L294)
+
+The 'Content-Language' HTTP header that will be set on the storage object when it's requested.
+
+[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Language)
+
+##### contentType?
+
+> `optional` **contentType?**: `string` \| `null`
+
+Defined in: [index.d.ts:317](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L317)
+
+The 'Content-Type' HTTP header that will be set on the object when it's requested.
+
+This is used to indicate the media type (or MIME type) of the object. When uploading a file
+Firebase Cloud Storage for React Native will attempt to automatically detect this if `contentType`
+is not already set, if it fails to detect a media type it will default to `application/octet-stream`.
+
+For `DATA_URL` string formats uploaded via `putString` this will also be automatically extracted if available.
+
+#### Example
+
+Setting the content type as JSON, e.g. for when uploading a JSON string via `putString`.
+
+```js
+{
+  contentType: 'application/json',
+}
+```
+
+[Learn more about this header on Mozilla.](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type)
+
+##### customMetadata?
+
+> `optional` **customMetadata?**: \{\[`key`: `string`\]: `string`; \} \| `null`
+
+Defined in: [index.d.ts:340](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L340)
+
+Additional user-defined custom metadata for this storage object.
+
+All values must be strings. Set to null to delete all. Any keys ommitted during update will be removed.
+
+#### Example
+
+Adding a user controlled NSFW meta data field.
+
+```js
+{
+  customMetadata: {
+    'nsfw': 'true'
+  },
+}
+
+##### md5hash?
+
+> `optional` **md5hash?**: `string` \| `null`
+
+Defined in: [index.d.ts:322](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L322)
+
+You may specify the md5hash of the file in metadata on upload only. It may not be updated via updateMetadata
+
+***
+
+### Statics
+
+Defined in: [index.d.ts:206](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L206)
+
+Cloud Storage statics.
+
+#### Example
+
+```js
+firebase.storage;
+```
+
+#### Properties
+
+##### SDK\_VERSION
+
+> **SDK\_VERSION**: `string`
+
+Defined in: [index.d.ts:239](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L239)
+
+##### StringFormat
+
+> **StringFormat**: [`StringFormat`](#stringformat-1)
+
+Defined in: [index.d.ts:216](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L216)
+
+Possible string formats used for uploading via `StorageReference.putString()`
+
+#### Example
+
+```js
+firebase.storage.StringFormat;
+```
+
+##### TaskEvent
+
+> **TaskEvent**: [`TaskEvent`](#taskevent-1)
+
+Defined in: [index.d.ts:238](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L238)
+
+An event to subscribe to that is triggered on a Upload or Download task.
+
+#### Example
+
+```js
+firebase.storage.TaskEvent;
+```
+
+##### TaskState
+
+> **TaskState**: [`TaskState`](#taskstate-1)
+
+Defined in: [index.d.ts:227](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L227)
+
+A collection of properties that indicates the current tasks state.
+
+#### Example
+
+```js
+firebase.storage.TaskState;
+```
+
+***
+
+### StringFormat
+
+Defined in: [index.d.ts:67](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L67)
+
+Possible string formats used for uploading via `StorageReference.putString()`
+
+```js
+firebase.storage.StringFormat;
+```
+
+#### Properties
+
+##### BASE64
+
+> **BASE64**: `"base64"`
+
+Defined in: [index.d.ts:103](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L103)
+
+Base64 string format.
+
+Learn more about Base64 [on the Mozilla Web Docs](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding)
+
+#### Usage
+
+```js
+firebase.storage.StringFormat.BASE64;
+```
+
+#### Example String Format
+
+```js
+const sampleString = 'PEZvbyBCYXI+';
+```
+
+##### BASE64URL
+
+> **BASE64URL**: `"base64url"`
+
+Defined in: [index.d.ts:121](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L121)
+
+Base64Url string format.
+
+#### Usage
+
+```js
+firebase.storage.StringFormat.BASE64URL;
+```
+
+#### Example String Format
+
+```js
+const sampleString = 'PEZvbyBCYXI-';
+```
+
+##### DATA\_URL
+
+> **DATA\_URL**: `"data_url"`
+
+Defined in: [index.d.ts:138](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L138)
+
+Data URL string format.
+
+#### Usage
+
+```js
+firebase.storage.StringFormat.DATA_URL;
+```
+
+#### Example String Format
+
+```js
+const sampleString = 'data:text/plain;base64,PEZvbyBCYXI+';
+```
+
+##### RAW
+
+> **RAW**: `"raw"`
+
+Defined in: [index.d.ts:83](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L83)
+
+Raw string format.
+
+#### Usage
+
+```js
+firebase.storage.StringFormat.RAW;
+```
+
+#### Example String Format
+
+```js
+const sampleString = '<Foo Bar>';
+```
+
+***
+
+### Task
+
+Defined in: [index.d.ts:746](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L746)
+
+Storage Task used for Uploading or Downloading files.
+
+#### Example 1
+
+Get a Upload Storage task to upload a string:
+
+```js
+const string = '{ "foo": 1 }';
+const task = firebase
+ .storage()
+ .ref('/foo/bar.json')
+ .putString(string);
+```
+
+#### Example 2
+
+Get a Download Storage task to download a file:
+
+```js
+const downloadTo = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/bar.json`;
+
+const task = firebase
+ .storage()
+ .ref('/foo/bar.json')
+ .writeToFile(downloadTo);
+```
+
+#### Methods
+
+##### cancel()
+
+> **cancel**(): `Promise`\<`boolean`\>
+
+Defined in: [index.d.ts:807](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L807)
+
+Cancel the current Download or Upload task.
+
+#### Example
+
+Cancel a task inside a state changed listener:
+
+```js
+task.on('state_changed', taskSnapshot => {
+  console.log('Cancelling my task!');
+  task.cancel();
+});
+```
+
+###### Returns
+
+`Promise`\<`boolean`\>
+
+##### catch()
+
+> **catch**(`onRejected`): `Promise`\<`any`\>
+
+Defined in: [index.d.ts:854](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L854)
+
+###### Parameters
+
+###### onRejected
+
+(`a`) => `any`
+
+###### Returns
+
+`Promise`\<`any`\>
+
+##### on()
+
+> **on**(`event`, `nextOrObserver?`, `error?`, `complete?`): () => `void`
+
+Defined in: [index.d.ts:837](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L837)
+
+Task event handler called when state has changed on the task.
+
+#### Example
+
+```js
+const task = firebase
+ .storage()
+ .ref('/foo/bar.json')
+ .writeToFile(downloadTo);
+
+task.on('state_changed', (taskSnapshot) => {
+  console.log(taskSnapshot.state);
+});
+
+task.then(() => {]
+  console.log('Task complete');
+})
+.catch((error) => {
+  console.error(error.message);
+});
+```
+
+###### Parameters
+
+###### event
+
+`"state_changed"`
+
+The event name to handle, always `state_changed`.
+
+###### nextOrObserver?
+
+[`TaskSnapshotObserver`](#tasksnapshotobserver) \| ((`a`) => `any`) \| `null`
+
+The optional event observer function.
+
+###### error?
+
+((`a`) => `any`) \| `null`
+
+An optional JavaScript error handler.
+
+###### complete?
+
+(() => `void`) \| `null`
+
+An optional complete handler function.
+
+###### Returns
+
+() => `void`
+
+##### pause()
+
+> **pause**(): `Promise`\<`boolean`\>
+
+Defined in: [index.d.ts:769](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L769)
+
+Pause the current Download or Upload task.
+
+#### Example
+
+Pause a running task inside a state changed listener:
+
+```js
+task.on('state_changed', taskSnapshot => {
+  if (taskSnapshot.state === firebase.storage.TaskState.RUNNING) {
+    console.log('Pausing my task!');
+    task.pause();
+  }
+});
+```
+
+###### Returns
+
+`Promise`\<`boolean`\>
+
+##### resume()
+
+> **resume**(): `Promise`\<`boolean`\>
+
+Defined in: [index.d.ts:789](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L789)
+
+Resume the current Download or Upload task.
+
+#### Example
+
+Resume a previously paused task inside a state changed listener:
+
+```js
+task.on('state_changed', taskSnapshot => {
+  // ... pause me ...
+  if (taskSnapshot.state === firebase.storage.TaskState.PAUSED) {
+    console.log('Resuming my task!');
+    task.resume();
+  }
+});
+```
+
+###### Returns
+
+`Promise`\<`boolean`\>
+
+##### then()
+
+> **then**(`onFulfilled?`, `onRejected?`): `Promise`\<`any`\>
+
+Defined in: [index.d.ts:849](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L849)
+
+###### Parameters
+
+###### onFulfilled?
+
+((`a`) => `any`) \| `null`
+
+###### onRejected?
+
+((`a`) => `any`) \| `null`
+
+###### Returns
+
+`Promise`\<`any`\>
+
+#### Properties
+
+##### snapshot
+
+> **snapshot**: [`TaskSnapshot`](#tasksnapshot-1) \| `null`
+
+Defined in: [index.d.ts:750](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L750)
+
+Initial state of Task.snapshot is `null`. Once uploading begins, it updates to a `TaskSnapshot` object.
+
+***
+
+### TaskEvent
+
+Defined in: [index.d.ts:150](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L150)
+
+An event to subscribe to that is triggered on a Upload or Download task.
+
+Event subscription is created via `StorageTask.on()`.
+
+```js
+firebase.storage.TaskEvent;
+```
+
+#### Properties
+
+##### STATE\_CHANGED
+
+> **STATE\_CHANGED**: `"state_changed"`
+
+Defined in: [index.d.ts:158](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L158)
+
+An event that indicates that the tasks state has changed.
+
+```js
+firebase.storage.TaskEvent.STATE_CHANGED;
+```
+
+***
+
+### TaskResult
+
+Defined in: [index.d.ts:931](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L931)
+
+Result returned from a non-resumable upload.
+
+#### Properties
+
+##### metadata
+
+> **metadata**: [`FullMetadata`](#fullmetadata)
+
+Defined in: [index.d.ts:935](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L935)
+
+The metadata of the tasks via a storage.FullMetadata interface.
+
+##### ref
+
+> **ref**: [`Reference`](#reference)
+
+Defined in: [index.d.ts:940](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L940)
+
+The storage.Reference of the task.
+
+***
+
+### TaskSnapshot
+
+Defined in: [index.d.ts:890](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L890)
+
+A TaskSnapshot provides information about a storage tasks state.
+
+#### Example 1
+
+```js
+firebase
+  .storage()
+  .ref('/foo/bar.json')
+  .putString(JSON.stringify({ foo: 'bar' }))
+  .then((taskSnapshot) => {
+    if (taskSnapshot.state === firebase.storage.TaskState.SUCCESS) {
+      console.log('Total bytes uploaded: ', taskSnapshot.totalBytes);
+    }
+  });
+```
+
+#### Example 2
+
+```js
+const task = firebase
+  .storage()
+  .ref('/foo/bar.json')
+  .putString(JSON.stringify({ foo: 'bar' }));
+
+task.on('state_changed', taskSnapshot => {
+  if (taskSnapshot.state === firebase.storage.TaskState.PAUSED) {
+    console.log('Resuming my task!');
+    task.resume();
+  }
+});
+```
+
+#### Properties
+
+##### bytesTransferred
+
+> **bytesTransferred**: `number`
+
+Defined in: [index.d.ts:894](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L894)
+
+The number of bytes currently transferred.
+
+##### error?
+
+> `optional` **error?**: [`NativeFirebaseError`](../../app/namespaces/ReactNativeFirebase.mdx#nativefirebaseerror)
+
+Defined in: [index.d.ts:925](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L925)
+
+If the storage.TaskSnapshot#state is `error`, returns a JavaScript error of the
+current task snapshot.
+
+##### metadata
+
+> **metadata**: [`FullMetadata`](#fullmetadata)
+
+Defined in: [index.d.ts:899](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L899)
+
+The metadata of the tasks via a storage.FullMetadata interface.
+
+##### ref
+
+> **ref**: [`Reference`](#reference)
+
+Defined in: [index.d.ts:904](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L904)
+
+The storage.Reference of the task.
+
+##### state
+
+> **state**: `"cancelled"` \| `"error"` \| `"paused"` \| `"running"` \| `"success"`
+
+Defined in: [index.d.ts:909](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L909)
+
+The current state of the task snapshot.
+
+##### task
+
+> **task**: [`Task`](#task)
+
+Defined in: [index.d.ts:914](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L914)
+
+The parent storage.Task of this snapshot.
+
+##### totalBytes
+
+> **totalBytes**: `number`
+
+Defined in: [index.d.ts:919](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L919)
+
+The total amount of bytes for this task.
+
+***
+
+### TaskSnapshotObserver
+
+Defined in: [index.d.ts:697](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L697)
+
+The snapshot observer returned from a storage.Task#on listener.
+
+#### Example
+
+```js
+const ref = firebase.storage().ref(...);
+const task = ref.put(...)
+
+task.on('state_changed', {
+  next(taskSnapshot) {
+    console.log(taskSnapshot.state);
+  },
+  error(error) {
+    console.error(error.message);
+  },
+  complete() {
+    console.log('Task complete');
+  },
+})
+```
+
+#### Properties
+
+##### complete
+
+> **complete**: () => `void`
+
+Defined in: [index.d.ts:715](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L715)
+
+Called when the task has completed successfully.
+
+###### Returns
+
+`void`
+
+##### error
+
+> **error**: (`error`) => `void`
+
+Defined in: [index.d.ts:710](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L710)
+
+Called when the task errors.
+
+###### Parameters
+
+###### error
+
+[`NativeFirebaseError`](../../app/namespaces/ReactNativeFirebase.mdx#nativefirebaseerror)
+
+A JavaScript error.
+
+###### Returns
+
+`void`
+
+##### next
+
+> **next**: (`taskSnapshot`) => `void`
+
+Defined in: [index.d.ts:703](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L703)
+
+Called when the task state changes.
+
+###### Parameters
+
+###### taskSnapshot
+
+[`TaskSnapshot`](#tasksnapshot-1)
+
+A `TaskSnapshot` for the event.
+
+###### Returns
+
+`void`
+
+***
+
+### TaskState
+
+Defined in: [index.d.ts:170](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L170)
+
+A collection of properties that indicates the current tasks state.
+
+An event subscription is created via `StorageTask.on()`.
+
+```js
+firebase.storage.TaskEvent;
+```
+
+#### Properties
+
+##### CANCELLED
+
+> **CANCELLED**: `"cancelled"`
+
+Defined in: [index.d.ts:174](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L174)
+
+Task has been cancelled by the user.
+
+##### ERROR
+
+> **ERROR**: `"error"`
+
+Defined in: [index.d.ts:179](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L179)
+
+An Error occurred, see TaskSnapshot.error for details.
+
+##### PAUSED
+
+> **PAUSED**: `"paused"`
+
+Defined in: [index.d.ts:184](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L184)
+
+Task has been paused. Resume the task via `StorageTask.resume()`.
+
+##### RUNNING
+
+> **RUNNING**: `"running"`
+
+Defined in: [index.d.ts:189](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L189)
+
+Task is running. Pause the task via `StorageTask.pause()`
+
+##### SUCCESS
+
+> **SUCCESS**: `"success"`
+
+Defined in: [index.d.ts:194](https://github.com/invertase/react-native-firebase/blob/main/packages/storage/lib/index.d.ts#L194)
+
+Task has completed successfully.

@@ -1,0 +1,5278 @@
+[**React Native Firebase**](../../README.mdx)
+
+***
+
+[React Native Firebase](../../packages.mdx) / @react-native-firebase/analytics
+
+# @react-native-firebase/analytics
+
+## Functions
+
+### getAnalytics()
+
+> **getAnalytics**(`app?`): [`Analytics`](#analytics)
+
+Defined in: [modular.ts:51](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L51)
+
+Returns an Analytics instance for the given app.
+
+#### Parameters
+
+##### app?
+
+[`FirebaseApp`](../app/namespaces/ReactNativeFirebase.mdx#firebaseapp)
+
+#### Returns
+
+[`Analytics`](#analytics)
+
+***
+
+### getAppInstanceId()
+
+> **getAppInstanceId**(`analytics`): `Promise`\<`string` \| `null`\>
+
+Defined in: [modular.ts:458](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L458)
+
+Retrieve the app instance id of the application.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+#### Returns
+
+`Promise`\<`string` \| `null`\>
+
+***
+
+### getGoogleAnalyticsClientId()
+
+> **getGoogleAnalyticsClientId**(`analytics`): `Promise`\<`string`\>
+
+Defined in: [modular.ts:71](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L71)
+
+Retrieves a unique Google Analytics identifier for the web client.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+#### Returns
+
+`Promise`\<`string`\>
+
+***
+
+### getSessionId()
+
+> **getSessionId**(`analytics`): `Promise`\<`number` \| `null`\>
+
+Defined in: [modular.ts:468](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L468)
+
+Retrieves the session id from the client.
+On iOS, Firebase SDK may return an error that is handled internally and may take many minutes to return a valid value. Check native debug logs for more details.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+#### Returns
+
+`Promise`\<`number` \| `null`\>
+
+***
+
+### initializeAnalytics()
+
+> **initializeAnalytics**(`app`, `_options?`): [`Analytics`](#analytics)
+
+Defined in: [modular.ts:61](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L61)
+
+Returns an Analytics instance for the given app.
+
+#### Parameters
+
+##### app
+
+[`FirebaseApp`](../app/namespaces/ReactNativeFirebase.mdx#firebaseapp)
+
+##### \_options?
+
+[`AnalyticsSettings`](#analyticssettings)
+
+#### Returns
+
+[`Analytics`](#analytics)
+
+***
+
+### initiateOnDeviceConversionMeasurementWithEmailAddress()
+
+> **initiateOnDeviceConversionMeasurementWithEmailAddress**(`analytics`, `emailAddress`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:935](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L935)
+
+start privacy-sensitive on-device conversion management.
+This is iOS-only.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### emailAddress
+
+`string`
+
+Email address, properly formatted complete with domain name e.g, 'user@example.com'.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### initiateOnDeviceConversionMeasurementWithHashedEmailAddress()
+
+> **initiateOnDeviceConversionMeasurementWithHashedEmailAddress**(`analytics`, `hashedEmailAddress`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:956](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L956)
+
+start privacy-sensitive on-device conversion management.
+This is iOS-only.
+This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### hashedEmailAddress
+
+`string`
+
+sha256-hashed of normalized email address, properly formatted complete with domain name e.g, 'user@example.com'
+
+#### Returns
+
+`Promise`\<`void`\>
+
+#### Link
+
+https://firebase.google.com/docs/tutorials/ads-ios-on-device-measurement/step-3#use-hashed-credentials
+
+***
+
+### initiateOnDeviceConversionMeasurementWithHashedPhoneNumber()
+
+> **initiateOnDeviceConversionMeasurementWithHashedPhoneNumber**(`analytics`, `hashedPhoneNumber`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:996](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L996)
+
+start privacy-sensitive on-device conversion management.
+This is iOS-only.
+This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### hashedPhoneNumber
+
+`string`
+
+sha256-hashed of normalized phone number in E.164 format - that is a leading + sign, then up to 15 digits, no dashes or spaces.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+#### Link
+
+https://firebase.google.com/docs/tutorials/ads-ios-on-device-measurement/step-3#use-hashed-credentials
+
+***
+
+### initiateOnDeviceConversionMeasurementWithPhoneNumber()
+
+> **initiateOnDeviceConversionMeasurementWithPhoneNumber**(`analytics`, `phoneNumber`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:975](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L975)
+
+start privacy-sensitive on-device conversion management.
+This is iOS-only.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### phoneNumber
+
+`string`
+
+Phone number in E.164 format - that is a leading + sign, then up to 15 digits, no dashes or spaces.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### isSupported()
+
+> **isSupported**(): `Promise`\<`boolean`\>
+
+Defined in: [modular.ts:1016](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L1016)
+
+Checks four different things.
+1. Checks if it's not a browser extension environment.
+2. Checks if cookies are enabled in current browser.
+3. Checks if IndexedDB is supported by the browser environment.
+4. Checks if the current browser context is valid for using IndexedDB.open().
+
+#### Returns
+
+`Promise`\<`boolean`\>
+
+***
+
+### logAddPaymentInfo()
+
+> **logAddPaymentInfo**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:519](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L519)
+
+E-Commerce Purchase event. This event signifies that an item(s) was purchased by a user. Note: This is different from the in-app purchase event, which is reported automatically for Google Play-based apps.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+##### params
+
+[`AddPaymentInfoEventParameters`](#addpaymentinfoeventparameters)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logAddShippingInfo()
+
+> **logAddShippingInfo**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:538](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L538)
+
+Add Payment Info event. This event signifies that a user has submitted their payment information to your app.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+##### params
+
+[`AddShippingInfoParameters`](#addshippinginfoparameters)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logAddToCart()
+
+> **logAddToCart**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:549](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L549)
+
+E-Commerce Add To Cart event.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+##### params
+
+[`AddToCartEventParameters`](#addtocarteventparameters)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logAddToWishlist()
+
+> **logAddToWishlist**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:560](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L560)
+
+E-Commerce Add To Wishlist event. This event signifies that an item was added to a wishlist.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+##### params
+
+[`AddToWishlistEventParameters`](#addtowishlisteventparameters)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logAppOpen()
+
+> **logAppOpen**(`analytics`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:571](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L571)
+
+App Open event. By logging this event when an App is moved to the foreground, developers can understand how often users leave and return during the course of a Session.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logBeginCheckout()
+
+> **logBeginCheckout**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:579](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L579)
+
+E-Commerce Begin Checkout event. This event signifies that a user has begun the process of checking out.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+##### params
+
+[`BeginCheckoutEventParameters`](#begincheckouteventparameters)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logCampaignDetails()
+
+> **logCampaignDetails**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:590](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L590)
+
+Log this event to supply the referral details of a re-engagement campaign.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+##### params
+
+[`CampaignDetailsEventParameters`](#campaigndetailseventparameters)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logEarnVirtualCurrency()
+
+> **logEarnVirtualCurrency**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:601](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L601)
+
+Earn Virtual Currency event. This event tracks the awarding of virtual currency in your app.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+##### params
+
+[`EarnVirtualCurrencyEventParameters`](#earnvirtualcurrencyeventparameters)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logEvent()
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params?`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:84](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L84)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"add_payment_info"`
+
+###### params?
+
+###### coupon?
+
+`string`
+
+###### currency?
+
+`string`
+
+###### items?
+
+[`Item`](#item)[]
+
+###### payment_type?
+
+`string`
+
+###### value?
+
+`number`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params?`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:97](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L97)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"add_shipping_info"`
+
+###### params?
+
+###### coupon?
+
+`string`
+
+###### currency?
+
+`string`
+
+###### items?
+
+[`Item`](#item)[]
+
+###### shipping_tier?
+
+`string`
+
+###### value?
+
+`number`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params?`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:110](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L110)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"add_to_cart"`
+
+###### params?
+
+###### currency?
+
+`string`
+
+###### items?
+
+[`Item`](#item)[]
+
+###### value?
+
+`number`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params?`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:121](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L121)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"add_to_wishlist"`
+
+###### params?
+
+###### currency?
+
+`string`
+
+###### items?
+
+[`Item`](#item)[]
+
+###### value?
+
+`number`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params?`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:132](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L132)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"begin_checkout"`
+
+###### params?
+
+###### coupon?
+
+`string`
+
+###### currency?
+
+`string`
+
+###### items?
+
+[`Item`](#item)[]
+
+###### value?
+
+`number`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params?`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:145](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L145)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"checkout_progress"`
+
+###### params?
+
+###### checkout_option?
+
+`string`
+
+###### checkout_step?
+
+`number`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params?`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:156](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L156)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"exception"`
+
+###### params?
+
+###### description?
+
+`string`
+
+###### fatal?
+
+`boolean`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params?`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:167](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L167)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"generate_lead"`
+
+###### params?
+
+###### currency?
+
+`string`
+
+###### value?
+
+`number`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:177](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L177)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"login"`
+
+###### params
+
+###### method
+
+`string` \| `undefined`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params?`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:186](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L186)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"page_view"`
+
+###### params?
+
+###### page_location?
+
+`string`
+
+###### page_path?
+
+`string`
+
+###### page_title?
+
+`string`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params?`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:198](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L198)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"purchase"`
+
+###### params?
+
+###### affiliation?
+
+`string`
+
+###### coupon?
+
+`string`
+
+###### currency?
+
+`string`
+
+###### items?
+
+[`Item`](#item)[]
+
+###### shipping?
+
+`number`
+
+###### tax?
+
+`number`
+
+###### transaction_id?
+
+`string`
+
+###### value?
+
+`number`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params?`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:215](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L215)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"refund"`
+
+###### params?
+
+###### affiliation?
+
+`string`
+
+###### coupon?
+
+`string`
+
+###### currency?
+
+`string`
+
+###### items?
+
+[`Item`](#item)[]
+
+###### shipping?
+
+`number`
+
+###### tax?
+
+`number`
+
+###### transaction_id?
+
+`string`
+
+###### value?
+
+`number`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params?`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:231](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L231)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"remove_from_cart"`
+
+###### params?
+
+###### currency?
+
+`string`
+
+###### items?
+
+[`Item`](#item)[]
+
+###### value?
+
+`number`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params?`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:242](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L242)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"screen_view"`
+
+###### params?
+
+###### screen_class?
+
+`unknown`
+
+###### screen_name?
+
+`string`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:253](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L253)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"search"`
+
+###### params
+
+###### destination?
+
+`string`
+
+###### end_date?
+
+`string`
+
+###### number_of_nights?
+
+`number`
+
+###### number_of_passengers?
+
+`number`
+
+###### number_of_rooms?
+
+`number`
+
+###### origin?
+
+`string`
+
+###### search_term
+
+`string` \| `undefined`
+
+###### start_date?
+
+`string`
+
+###### travel_class?
+
+`string`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:270](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L270)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"select_content"`
+
+###### params
+
+###### content_type
+
+`string` \| `undefined`
+
+###### item_id
+
+`string` \| `undefined`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:280](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L280)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"select_item"`
+
+###### params
+
+###### content_type
+
+`string` \| `undefined`
+
+###### item_list_id
+
+`string` \| `undefined`
+
+###### item_list_name
+
+`string` \| `undefined`
+
+###### items?
+
+[`Item`](#item)[]
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:292](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L292)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"select_promotion"`
+
+###### params
+
+###### creative_name
+
+`string`
+
+###### creative_slot
+
+`string`
+
+###### items?
+
+[`Item`](#item)[]
+
+###### location_id
+
+`string`
+
+###### promotion_id
+
+`string` \| `undefined`
+
+###### promotion_name
+
+`string` \| `undefined`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params?`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:306](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L306)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"set_checkout_option"`
+
+###### params?
+
+###### checkout_option?
+
+`string`
+
+###### checkout_step?
+
+`number`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:317](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L317)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"share"`
+
+###### params
+
+###### content_type
+
+`string` \| `undefined`
+
+###### item_id
+
+`string` \| `undefined`
+
+###### method
+
+`string` \| `undefined`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:328](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L328)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"sign_up"`
+
+###### params
+
+###### method
+
+`string` \| `undefined`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params?`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:337](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L337)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"timing_complete"`
+
+###### params?
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params?`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:346](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L346)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"view_cart"`
+
+###### params?
+
+###### currency?
+
+`string`
+
+###### items?
+
+[`Item`](#item)[]
+
+###### value?
+
+`number`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params?`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:357](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L357)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"view_item"`
+
+###### params?
+
+###### currency?
+
+`string`
+
+###### items?
+
+[`Item`](#item)[]
+
+###### value?
+
+`number`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params?`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:368](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L368)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"view_item_list"`
+
+###### params?
+
+###### item_list_id?
+
+`string`
+
+###### item_list_name?
+
+`string`
+
+###### items?
+
+[`Item`](#item)[]
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params?`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:379](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L379)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"view_promotion"`
+
+###### params?
+
+###### creative_name?
+
+`string`
+
+###### creative_slot?
+
+`string`
+
+###### items?
+
+[`Item`](#item)[]
+
+###### location_id?
+
+`string`
+
+###### promotion_id?
+
+`string`
+
+###### promotion_name?
+
+`string`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**(`analytics`, `name`, `params`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:393](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L393)
+
+Log a custom event with optional params.
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+`"view_search_results"`
+
+###### params
+
+###### search_term
+
+`string` \| `undefined`
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+#### Call Signature
+
+> **logEvent**\<`T`\>(`analytics`, `name`, `params?`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:403](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L403)
+
+Log a custom event with optional params.
+
+##### Type Parameters
+
+###### T
+
+`T` *extends* `string`
+
+##### Parameters
+
+###### analytics
+
+[`Analytics`](#analytics)
+
+###### name
+
+[`CustomEventName`](#customeventname)\<`T`\>
+
+###### params?
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+##### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logGenerateLead()
+
+> **logGenerateLead**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:612](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L612)
+
+Generate Lead event. Log this event when a lead has been generated in the app.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+##### params
+
+[`GenerateLeadEventParameters`](#generateleadeventparameters)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logJoinGroup()
+
+> **logJoinGroup**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:623](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L623)
+
+Join Group event. Log this event when a user joins a group such as a guild, team or family.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+##### params
+
+[`JoinGroupEventParameters`](#joingroupeventparameters)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logLevelEnd()
+
+> **logLevelEnd**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:634](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L634)
+
+Level End event.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+##### params
+
+[`LevelEndEventParameters`](#levelendeventparameters)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logLevelStart()
+
+> **logLevelStart**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:642](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L642)
+
+Level Start event.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+##### params
+
+[`LevelStartEventParameters`](#levelstarteventparameters)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logLevelUp()
+
+> **logLevelUp**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:653](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L653)
+
+Level Up event. This event signifies that a player has leveled up in your gaming app.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+##### params
+
+[`LevelUpEventParameters`](#levelupeventparameters)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logLogin()
+
+> **logLogin**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:661](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L661)
+
+Login event. Apps with a login feature can report this event to signify that a user has logged in.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+##### params
+
+[`LoginEventParameters`](#logineventparameters)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logPostScore()
+
+> **logPostScore**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:669](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L669)
+
+Post Score event. Log this event when the user posts a score in your gaming app.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+##### params
+
+[`PostScoreEventParameters`](#postscoreeventparameters)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logPurchase()
+
+> **logPurchase**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:697](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L697)
+
+E-Commerce Purchase event. This event signifies that an item(s) was purchased by a user.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### params
+
+[`PurchaseEventParameters`](#purchaseeventparameters)
+
+Event parameters.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logRefund()
+
+> **logRefund**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:708](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L708)
+
+E-Commerce Refund event. This event signifies that a refund was issued.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### params
+
+[`RefundEventParameters`](#refundeventparameters)
+
+Event parameters.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logRemoveFromCart()
+
+> **logRemoveFromCart**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:719](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L719)
+
+Remove from cart event.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### params
+
+[`RemoveFromCartEventParameters`](#removefromcarteventparameters)
+
+Event parameters.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logScreenView()
+
+> **logScreenView**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:530](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L530)
+
+Sets or clears the screen name and class the user is currently viewing.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+##### params
+
+[`ScreenViewParameters`](#screenviewparameters)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logSearch()
+
+> **logSearch**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:733](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L733)
+
+Search event. Apps that support search features can use this event to contextualize search operations by supplying the appropriate, corresponding parameters.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### params
+
+[`SearchEventParameters`](#searcheventparameters)
+
+Event parameters.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logSelectContent()
+
+> **logSelectContent**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:683](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L683)
+
+Select Content event. This general purpose event signifies that a user has selected some content of a certain type in an app.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### params
+
+[`SelectContentEventParameters`](#selectcontenteventparameters)
+
+Event parameters.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logSelectItem()
+
+> **logSelectItem**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:744](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L744)
+
+Select Item event. This event signifies that an item was selected by a user from a list.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### params
+
+[`SelectItemEventParameters`](#selectitemeventparameters)
+
+Event parameters.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logSelectPromotion()
+
+> **logSelectPromotion**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:772](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L772)
+
+Select promotion event. This event signifies that a user has selected a promotion offer.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### params
+
+[`SelectPromotionEventParameters`](#selectpromotioneventparameters)
+
+Event parameters.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logSetCheckoutOption()
+
+> **logSetCheckoutOption**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:758](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L758)
+
+Set checkout option event.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### params
+
+[`SetCheckoutOptionEventParameters`](#setcheckoutoptioneventparameters)
+
+Event parameters.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logShare()
+
+> **logShare**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:786](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L786)
+
+Share event. Apps with social features can log the Share event to identify the most viral content.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### params
+
+[`ShareEventParameters`](#shareeventparameters)
+
+Event parameters.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logSignUp()
+
+> **logSignUp**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:797](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L797)
+
+Sign Up event. This event indicates that a user has signed up for an account in your app.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### params
+
+[`SignUpEventParameters`](#signupeventparameters)
+
+Event parameters.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logSpendVirtualCurrency()
+
+> **logSpendVirtualCurrency**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:808](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L808)
+
+Spend Virtual Currency event. This event tracks the sale of virtual goods in your app.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### params
+
+[`SpendVirtualCurrencyEventParameters`](#spendvirtualcurrencyeventparameters)
+
+Event parameters.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logTransaction()
+
+> **logTransaction**(`analytics`, `transaction_id`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:424](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L424)
+
+Logs verified in-app purchase events in Google Analytics for Firebase
+after a purchase is successful.
+Modular API only; iOS only (StoreKit 2). Throws on Android and web before reaching native.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+##### transaction\_id
+
+`string`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logTutorialBegin()
+
+> **logTutorialBegin**(`analytics`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:821](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L821)
+
+Tutorial Begin event. This event signifies the start of the on-boarding process in your app.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logTutorialComplete()
+
+> **logTutorialComplete**(`analytics`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:831](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L831)
+
+Tutorial End event. Use this event to signify the user's completion of your app's on-boarding process.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logUnlockAchievement()
+
+> **logUnlockAchievement**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:842](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L842)
+
+Unlock Achievement event. Log this event when the user has unlocked an achievement in your game.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### params
+
+[`UnlockAchievementEventParameters`](#unlockachievementeventparameters)
+
+Event parameters.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logViewCart()
+
+> **logViewCart**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:856](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L856)
+
+E-commerce View Cart event. This event signifies that a user has viewed their cart.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### params
+
+[`ViewCartEventParameters`](#viewcarteventparameters)
+
+Event parameters.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logViewItem()
+
+> **logViewItem**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:867](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L867)
+
+View Item event. This event signifies that some content was shown to the user.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### params
+
+[`ViewItemEventParameters`](#viewitemeventparameters)
+
+Event parameters.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logViewItemList()
+
+> **logViewItemList**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:878](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L878)
+
+View Item List event. Log this event when the user has been presented with a list of items of a certain category.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### params
+
+[`ViewItemListEventParameters`](#viewitemlisteventparameters)
+
+Event parameters.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logViewPromotion()
+
+> **logViewPromotion**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:892](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L892)
+
+View Promotion event. This event signifies that a promotion was shown to a user.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### params
+
+[`ViewPromotionEventParameters`](#viewpromotioneventparameters)
+
+Event parameters.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### logViewSearchResults()
+
+> **logViewSearchResults**(`analytics`, `params`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:906](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L906)
+
+View Search Results event. Log this event when the user has been presented with the results of a search.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### params
+
+[`ViewSearchResultsParameters`](#viewsearchresultsparameters)
+
+Event parameters.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### resetAnalyticsData()
+
+> **resetAnalyticsData**(`analytics`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:510](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L510)
+
+Clears all analytics data for this instance from the device and resets the app instance ID.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### setAnalyticsCollectionEnabled()
+
+> **setAnalyticsCollectionEnabled**(`analytics`, `enabled`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:435](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L435)
+
+If true, allows the device to collect analytical data and send it to Firebase. Useful for GDPR.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+##### enabled
+
+`boolean`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### setConsent()
+
+> **setConsent**(`analytics`, `consentSettings`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:1026](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L1026)
+
+Sets the applicable end user consent state for this app.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### consentSettings
+
+[`ConsentSettings`](#consentsettings)
+
+See ConsentSettings.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### setDefaultEventParameters()
+
+> **setDefaultEventParameters**(`analytics`, `params?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:920](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L920)
+
+Adds parameters that will be set on every event logged from the SDK, including automatic ones.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+Analytics instance.
+
+##### params?
+
+Parameters to be added to the map of parameters added to every event.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### setSessionTimeoutDuration()
+
+> **setSessionTimeoutDuration**(`analytics`, `milliseconds?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:446](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L446)
+
+Sets the duration of inactivity that terminates the current session.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+##### milliseconds?
+
+`number` = `1800000`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### settings()
+
+> **settings**(`_options`): `void`
+
+Defined in: [modular.ts:1037](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L1037)
+
+Configures Firebase Analytics to use custom gtag or dataLayer names.
+Intended to be used if gtag.js script has been installed on this page independently of Firebase Analytics, and is using non-default names for either the gtag function or for dataLayer. Must be called before calling `getAnalytics()` or it won't have any effect. Web only.
+
+#### Parameters
+
+##### \_options
+
+[`SettingsOptions`](#settingsoptions)
+
+#### Returns
+
+`void`
+
+***
+
+### setUserId()
+
+> **setUserId**(`analytics`, `id`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:477](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L477)
+
+Gives a user a unique identification.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+##### id
+
+`string` \| `null`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### setUserProperties()
+
+> **setUserProperties**(`analytics`, `properties`, `options?`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:498](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L498)
+
+Sets multiple key/value pairs of data on the current user. Each Firebase project can have up to 25 uniquely named (case-sensitive) user properties.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+##### properties
+
+##### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions) = `...`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### setUserProperty()
+
+> **setUserProperty**(`analytics`, `name`, `value`): `Promise`\<`void`\>
+
+Defined in: [modular.ts:485](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/modular.ts#L485)
+
+Sets a key/value pair of data on the current user. Each Firebase project can have up to 25 uniquely named (case-sensitive) user properties.
+
+#### Parameters
+
+##### analytics
+
+[`Analytics`](#analytics)
+
+##### name
+
+`string`
+
+##### value
+
+`string` \| `null`
+
+#### Returns
+
+`Promise`\<`void`\>
+
+## Interfaces
+
+### AddPaymentInfoEventParameters
+
+Defined in: [types/analytics.ts:134](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L134)
+
+#### Properties
+
+##### coupon?
+
+> `optional` **coupon?**: `string`
+
+Defined in: [types/analytics.ts:144](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L144)
+
+Coupon code for a purchasable item.
+
+##### currency?
+
+> `optional` **currency?**: `string`
+
+Defined in: [types/analytics.ts:139](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L139)
+
+Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
+
+##### items?
+
+> `optional` **items?**: [`Item`](#item)[]
+
+Defined in: [types/analytics.ts:135](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L135)
+
+##### payment\_type?
+
+> `optional` **payment\_type?**: `string`
+
+Defined in: [types/analytics.ts:148](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L148)
+
+The chosen method of payment
+
+##### value?
+
+> `optional` **value?**: `number`
+
+Defined in: [types/analytics.ts:140](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L140)
+
+***
+
+### AddShippingInfoParameters
+
+Defined in: [types/analytics.ts:637](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L637)
+
+#### Properties
+
+##### coupon?
+
+> `optional` **coupon?**: `string`
+
+Defined in: [types/analytics.ts:652](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L652)
+
+Coupon code for a purchasable item.
+
+##### currency?
+
+> `optional` **currency?**: `string`
+
+Defined in: [types/analytics.ts:642](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L642)
+
+Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
+
+##### items?
+
+> `optional` **items?**: [`Item`](#item)[]
+
+Defined in: [types/analytics.ts:638](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L638)
+
+##### shipping\_tier?
+
+> `optional` **shipping\_tier?**: `string`
+
+Defined in: [types/analytics.ts:656](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L656)
+
+The shipping tier (e.g. Ground, Air, Next-day) selected for delivery of the purchased item
+
+##### value?
+
+> `optional` **value?**: `number`
+
+Defined in: [types/analytics.ts:648](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L648)
+
+A context-specific numeric value which is accumulated automatically for each event type. Values
+can include revenue, distance, time and points. When a value is set, the accompanying `currency`
+parameter should also be defined.
+
+***
+
+### AddToCartEventParameters
+
+Defined in: [types/analytics.ts:168](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L168)
+
+#### Properties
+
+##### currency?
+
+> `optional` **currency?**: `string`
+
+Defined in: [types/analytics.ts:173](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L173)
+
+Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
+
+##### items?
+
+> `optional` **items?**: [`Item`](#item)[]
+
+Defined in: [types/analytics.ts:169](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L169)
+
+##### value?
+
+> `optional` **value?**: `number`
+
+Defined in: [types/analytics.ts:177](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L177)
+
+value of item
+
+***
+
+### AddToWishlistEventParameters
+
+Defined in: [types/analytics.ts:180](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L180)
+
+#### Properties
+
+##### currency?
+
+> `optional` **currency?**: `string`
+
+Defined in: [types/analytics.ts:185](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L185)
+
+Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
+
+##### items?
+
+> `optional` **items?**: [`Item`](#item)[]
+
+Defined in: [types/analytics.ts:181](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L181)
+
+##### value?
+
+> `optional` **value?**: `number`
+
+Defined in: [types/analytics.ts:186](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L186)
+
+***
+
+### Analytics
+
+Defined in: [types/analytics.ts:881](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L881)
+
+Analytics module instance - returned from firebase.analytics() or firebase.app().analytics()
+
+#### Extends
+
+- [`FirebaseModule`](../app/namespaces/ReactNativeFirebase.mdx#abstract-firebasemodule)
+
+#### Methods
+
+##### getAppInstanceId()
+
+> **getAppInstanceId**(): `Promise`\<`string` \| `null`\>
+
+Defined in: [types/analytics.ts:895](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L895)
+
+###### Returns
+
+`Promise`\<`string` \| `null`\>
+
+##### getSessionId()
+
+> **getSessionId**(): `Promise`\<`number` \| `null`\>
+
+Defined in: [types/analytics.ts:897](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L897)
+
+###### Returns
+
+`Promise`\<`number` \| `null`\>
+
+##### initiateOnDeviceConversionMeasurementWithEmailAddress()
+
+> **initiateOnDeviceConversionMeasurementWithEmailAddress**(`emailAddress`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:953](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L953)
+
+###### Parameters
+
+###### emailAddress
+
+`string`
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### initiateOnDeviceConversionMeasurementWithHashedEmailAddress()
+
+> **initiateOnDeviceConversionMeasurementWithHashedEmailAddress**(`hashedEmailAddress`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:954](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L954)
+
+###### Parameters
+
+###### hashedEmailAddress
+
+`string`
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### initiateOnDeviceConversionMeasurementWithHashedPhoneNumber()
+
+> **initiateOnDeviceConversionMeasurementWithHashedPhoneNumber**(`hashedPhoneNumber`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:958](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L958)
+
+###### Parameters
+
+###### hashedPhoneNumber
+
+`string`
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### initiateOnDeviceConversionMeasurementWithPhoneNumber()
+
+> **initiateOnDeviceConversionMeasurementWithPhoneNumber**(`phoneNumber`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:957](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L957)
+
+###### Parameters
+
+###### phoneNumber
+
+`string`
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logAddPaymentInfo()
+
+> **logAddPaymentInfo**(`object`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:915](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L915)
+
+###### Parameters
+
+###### object
+
+[`AddPaymentInfoEventParameters`](#addpaymentinfoeventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logAddShippingInfo()
+
+> **logAddShippingInfo**(`object?`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:917](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L917)
+
+###### Parameters
+
+###### object?
+
+[`AddShippingInfoParameters`](#addshippinginfoparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logAddToCart()
+
+> **logAddToCart**(`object?`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:918](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L918)
+
+###### Parameters
+
+###### object?
+
+[`AddToCartEventParameters`](#addtocarteventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logAddToWishlist()
+
+> **logAddToWishlist**(`object?`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:919](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L919)
+
+###### Parameters
+
+###### object?
+
+[`AddToWishlistEventParameters`](#addtowishlisteventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logAppOpen()
+
+> **logAppOpen**(): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:920](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L920)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logBeginCheckout()
+
+> **logBeginCheckout**(`object?`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:921](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L921)
+
+###### Parameters
+
+###### object?
+
+[`BeginCheckoutEventParameters`](#begincheckouteventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logCampaignDetails()
+
+> **logCampaignDetails**(`object`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:922](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L922)
+
+###### Parameters
+
+###### object
+
+[`CampaignDetailsEventParameters`](#campaigndetailseventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logEarnVirtualCurrency()
+
+> **logEarnVirtualCurrency**(`object`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:923](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L923)
+
+###### Parameters
+
+###### object
+
+[`EarnVirtualCurrencyEventParameters`](#earnvirtualcurrencyeventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logEvent()
+
+> **logEvent**(`name`, `params?`, `options?`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:885](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L885)
+
+###### Parameters
+
+###### name
+
+`string`
+
+###### params?
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logGenerateLead()
+
+> **logGenerateLead**(`object?`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:924](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L924)
+
+###### Parameters
+
+###### object?
+
+[`GenerateLeadEventParameters`](#generateleadeventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logJoinGroup()
+
+> **logJoinGroup**(`object`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:925](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L925)
+
+###### Parameters
+
+###### object
+
+[`JoinGroupEventParameters`](#joingroupeventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logLevelEnd()
+
+> **logLevelEnd**(`object`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:926](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L926)
+
+###### Parameters
+
+###### object
+
+[`LevelEndEventParameters`](#levelendeventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logLevelStart()
+
+> **logLevelStart**(`object`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:927](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L927)
+
+###### Parameters
+
+###### object
+
+[`LevelStartEventParameters`](#levelstarteventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logLevelUp()
+
+> **logLevelUp**(`object`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:928](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L928)
+
+###### Parameters
+
+###### object
+
+[`LevelUpEventParameters`](#levelupeventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logLogin()
+
+> **logLogin**(`object`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:929](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L929)
+
+###### Parameters
+
+###### object
+
+[`LoginEventParameters`](#logineventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logPostScore()
+
+> **logPostScore**(`object`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:930](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L930)
+
+###### Parameters
+
+###### object
+
+[`PostScoreEventParameters`](#postscoreeventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logPurchase()
+
+> **logPurchase**(`object?`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:932](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L932)
+
+###### Parameters
+
+###### object?
+
+[`PurchaseEventParameters`](#purchaseeventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logRefund()
+
+> **logRefund**(`object?`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:933](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L933)
+
+###### Parameters
+
+###### object?
+
+[`RefundEventParameters`](#refundeventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logRemoveFromCart()
+
+> **logRemoveFromCart**(`object?`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:934](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L934)
+
+###### Parameters
+
+###### object?
+
+[`RemoveFromCartEventParameters`](#removefromcarteventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logScreenView()
+
+> **logScreenView**(`object`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:916](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L916)
+
+###### Parameters
+
+###### object
+
+[`ScreenViewParameters`](#screenviewparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logSearch()
+
+> **logSearch**(`object`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:935](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L935)
+
+###### Parameters
+
+###### object
+
+[`SearchEventParameters`](#searcheventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logSelectContent()
+
+> **logSelectContent**(`object`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:931](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L931)
+
+###### Parameters
+
+###### object
+
+[`SelectContentEventParameters`](#selectcontenteventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logSelectItem()
+
+> **logSelectItem**(`object`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:936](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L936)
+
+###### Parameters
+
+###### object
+
+[`SelectItemEventParameters`](#selectitemeventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logSelectPromotion()
+
+> **logSelectPromotion**(`object`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:938](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L938)
+
+###### Parameters
+
+###### object
+
+[`SelectPromotionEventParameters`](#selectpromotioneventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logSetCheckoutOption()
+
+> **logSetCheckoutOption**(`object`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:937](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L937)
+
+###### Parameters
+
+###### object
+
+[`SetCheckoutOptionEventParameters`](#setcheckoutoptioneventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logShare()
+
+> **logShare**(`object`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:939](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L939)
+
+###### Parameters
+
+###### object
+
+[`ShareEventParameters`](#shareeventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logSignUp()
+
+> **logSignUp**(`object`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:940](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L940)
+
+###### Parameters
+
+###### object
+
+[`SignUpEventParameters`](#signupeventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logSpendVirtualCurrency()
+
+> **logSpendVirtualCurrency**(`object`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:941](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L941)
+
+###### Parameters
+
+###### object
+
+[`SpendVirtualCurrencyEventParameters`](#spendvirtualcurrencyeventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logTransaction()
+
+> **logTransaction**(`transaction_id`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:942](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L942)
+
+###### Parameters
+
+###### transaction\_id
+
+`string`
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logTutorialBegin()
+
+> **logTutorialBegin**(): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:943](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L943)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logTutorialComplete()
+
+> **logTutorialComplete**(): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:944](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L944)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logUnlockAchievement()
+
+> **logUnlockAchievement**(`object`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:945](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L945)
+
+###### Parameters
+
+###### object
+
+[`UnlockAchievementEventParameters`](#unlockachievementeventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logViewCart()
+
+> **logViewCart**(`object?`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:946](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L946)
+
+###### Parameters
+
+###### object?
+
+[`ViewCartEventParameters`](#viewcarteventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logViewItem()
+
+> **logViewItem**(`object?`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:947](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L947)
+
+###### Parameters
+
+###### object?
+
+[`ViewItemEventParameters`](#viewitemeventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logViewItemList()
+
+> **logViewItemList**(`object?`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:948](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L948)
+
+###### Parameters
+
+###### object?
+
+[`ViewItemListEventParameters`](#viewitemlisteventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logViewPromotion()
+
+> **logViewPromotion**(`object?`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:949](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L949)
+
+###### Parameters
+
+###### object?
+
+[`ViewPromotionEventParameters`](#viewpromotioneventparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### logViewSearchResults()
+
+> **logViewSearchResults**(`object`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:950](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L950)
+
+###### Parameters
+
+###### object
+
+[`ViewSearchResultsParameters`](#viewsearchresultsparameters)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### resetAnalyticsData()
+
+> **resetAnalyticsData**(): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:908](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L908)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### setAnalyticsCollectionEnabled()
+
+> **setAnalyticsCollectionEnabled**(`enabled`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:891](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L891)
+
+###### Parameters
+
+###### enabled
+
+`boolean`
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### setConsent()
+
+> **setConsent**(`consentSettings`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:910](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L910)
+
+###### Parameters
+
+###### consentSettings
+
+[`ConsentSettings`](#consentsettings)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### setDefaultEventParameters()
+
+> **setDefaultEventParameters**(`params?`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:912](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L912)
+
+###### Parameters
+
+###### params?
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### setSessionTimeoutDuration()
+
+> **setSessionTimeoutDuration**(`milliseconds?`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:893](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L893)
+
+###### Parameters
+
+###### milliseconds?
+
+`number`
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### setUserId()
+
+> **setUserId**(`id`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:899](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L899)
+
+###### Parameters
+
+###### id
+
+`string` \| `null`
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### setUserProperties()
+
+> **setUserProperties**(`properties`, `options?`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:903](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L903)
+
+###### Parameters
+
+###### properties
+
+###### options?
+
+[`AnalyticsCallOptions`](#analyticscalloptions)
+
+###### Returns
+
+`Promise`\<`void`\>
+
+##### setUserProperty()
+
+> **setUserProperty**(`name`, `value`): `Promise`\<`void`\>
+
+Defined in: [types/analytics.ts:901](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L901)
+
+###### Parameters
+
+###### name
+
+`string`
+
+###### value
+
+`string` \| `null`
+
+###### Returns
+
+`Promise`\<`void`\>
+
+#### Properties
+
+##### app
+
+> **app**: [`FirebaseApp`](../app/namespaces/ReactNativeFirebase.mdx#firebaseapp)
+
+Defined in: [types/analytics.ts:883](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L883)
+
+The FirebaseApp this module is associated with
+
+###### Overrides
+
+[`FirebaseModule`](../app/namespaces/ReactNativeFirebase.mdx#abstract-firebasemodule).[`app`](../app/namespaces/ReactNativeFirebase.mdx#app)
+
+***
+
+### AnalyticsCallOptions
+
+Defined in: [types/analytics.ts:730](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L730)
+
+Additional options that can be passed to Analytics method calls such as logEvent. Web only.
+
+#### Properties
+
+##### global
+
+> **global**: `boolean`
+
+Defined in: [types/analytics.ts:734](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L734)
+
+If true, this config or event call applies globally to all Google Analytics properties on the page. Web only.
+
+***
+
+### AnalyticsSettings
+
+Defined in: [types/analytics.ts:723](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L723)
+
+Analytics instance initialization options. Web only.
+
+#### Properties
+
+##### config?
+
+> `optional` **config?**: [`EventParams`](#eventparams) \| [`GtagConfigParams`](#gtagconfigparams)
+
+Defined in: [types/analytics.ts:724](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L724)
+
+***
+
+### BeginCheckoutEventParameters
+
+Defined in: [types/analytics.ts:189](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L189)
+
+#### Indexable
+
+> \[`key`: `string`\]: `any`
+
+Custom event parameters.
+
+#### Properties
+
+##### coupon?
+
+> `optional` **coupon?**: `string`
+
+Defined in: [types/analytics.ts:199](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L199)
+
+Coupon code for a purchasable item.
+
+##### currency?
+
+> `optional` **currency?**: `string`
+
+Defined in: [types/analytics.ts:194](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L194)
+
+Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
+
+##### items?
+
+> `optional` **items?**: [`Item`](#item)[]
+
+Defined in: [types/analytics.ts:201](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L201)
+
+##### value?
+
+> `optional` **value?**: `number`
+
+Defined in: [types/analytics.ts:195](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L195)
+
+***
+
+### CampaignDetailsEventParameters
+
+Defined in: [types/analytics.ts:208](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L208)
+
+#### Properties
+
+##### aclid?
+
+> `optional` **aclid?**: `string`
+
+Defined in: [types/analytics.ts:232](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L232)
+
+A campaign detail click ID.
+
+##### campaign
+
+> **campaign**: `string`
+
+Defined in: [types/analytics.ts:220](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L220)
+
+Used for keyword analysis to identify a specific product promotion or strategic campaign.
+
+##### content?
+
+> `optional` **content?**: `string`
+
+Defined in: [types/analytics.ts:228](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L228)
+
+Used for A/B testing and content-targeted ads to differentiate ads or links that point to the same URL.
+
+##### cp1?
+
+> `optional` **cp1?**: `string`
+
+Defined in: [types/analytics.ts:233](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L233)
+
+##### medium
+
+> **medium**: `string`
+
+Defined in: [types/analytics.ts:216](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L216)
+
+Used to identify a medium such as email or cost-per-click (cpc).
+
+##### source
+
+> **source**: `string`
+
+Defined in: [types/analytics.ts:212](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L212)
+
+Used to identify a search engine, newsletter, or other source.
+
+##### term?
+
+> `optional` **term?**: `string`
+
+Defined in: [types/analytics.ts:224](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L224)
+
+Used with paid search to supply the keywords for ads.
+
+***
+
+### ConsentSettings
+
+Defined in: [types/analytics.ts:804](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L804)
+
+Consent status settings for each consent type.
+For more information, see
+[the GA4 reference documentation for consent state and consent types](https://developers.google.com/tag-platform/tag-manager/templates/consent-apis).
+
+#### Indexable
+
+> \[`key`: `string`\]: `unknown`
+
+#### Properties
+
+##### ad\_personalization?
+
+> `optional` **ad\_personalization?**: `boolean`
+
+Defined in: [types/analytics.ts:810](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L810)
+
+Sets consent for personalized advertising
+
+##### ad\_storage?
+
+> `optional` **ad\_storage?**: `boolean`
+
+Defined in: [types/analytics.ts:806](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L806)
+
+Enables storage, such as cookies, related to advertising
+
+##### ad\_user\_data?
+
+> `optional` **ad\_user\_data?**: `boolean`
+
+Defined in: [types/analytics.ts:808](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L808)
+
+Sets consent for sending user data to Google for online advertising purposes
+
+##### analytics\_storage?
+
+> `optional` **analytics\_storage?**: `boolean`
+
+Defined in: [types/analytics.ts:812](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L812)
+
+Enables storage, such as cookies, related to analytics (for example, visit duration)
+
+##### functionality\_storage?
+
+> `optional` **functionality\_storage?**: `boolean`
+
+Defined in: [types/analytics.ts:816](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L816)
+
+Enables storage that supports the functionality of the website or app such as language settings
+
+##### personalization\_storage?
+
+> `optional` **personalization\_storage?**: `boolean`
+
+Defined in: [types/analytics.ts:818](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L818)
+
+Enables storage related to personalization such as video recommendations
+
+##### security\_storage?
+
+> `optional` **security\_storage?**: [`ConsentStatusString`](#consentstatusstring)
+
+Defined in: [types/analytics.ts:823](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L823)
+
+Enables storage related to security such as authentication functionality, fraud prevention,
+and other user protection.
+
+***
+
+### EarnVirtualCurrencyEventParameters
+
+Defined in: [types/analytics.ts:245](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L245)
+
+#### Properties
+
+##### value
+
+> **value**: `number`
+
+Defined in: [types/analytics.ts:254](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L254)
+
+A context-specific numeric value which is accumulated automatically for each event type. Values
+can include revenue, distance, time and points.
+
+##### virtual\_currency\_name
+
+> **virtual\_currency\_name**: `string`
+
+Defined in: [types/analytics.ts:249](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L249)
+
+Name of virtual currency type. E.g. `gems`.
+
+***
+
+### EventParams
+
+Defined in: [types/analytics.ts:662](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L662)
+
+Standard gtag.js event parameters. For more information, see the GA4 reference documentation. Web only.
+
+#### Indexable
+
+> \[`key`: `string`\]: `unknown`
+
+#### Properties
+
+##### affiliation?
+
+> `optional` **affiliation?**: `string`
+
+Defined in: [types/analytics.ts:697](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L697)
+
+##### checkout\_option?
+
+> `optional` **checkout\_option?**: `string`
+
+Defined in: [types/analytics.ts:663](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L663)
+
+##### checkout\_step?
+
+> `optional` **checkout\_step?**: `number`
+
+Defined in: [types/analytics.ts:664](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L664)
+
+##### content\_type?
+
+> `optional` **content\_type?**: `string`
+
+Defined in: [types/analytics.ts:666](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L666)
+
+##### coupon?
+
+> `optional` **coupon?**: `string`
+
+Defined in: [types/analytics.ts:667](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L667)
+
+##### currency?
+
+> `optional` **currency?**: `string`
+
+Defined in: [types/analytics.ts:668](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L668)
+
+##### description?
+
+> `optional` **description?**: `string`
+
+Defined in: [types/analytics.ts:669](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L669)
+
+##### event\_category?
+
+> `optional` **event\_category?**: `string`
+
+Defined in: [types/analytics.ts:690](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L690)
+
+##### event\_label?
+
+> `optional` **event\_label?**: `string`
+
+Defined in: [types/analytics.ts:689](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L689)
+
+##### fatal?
+
+> `optional` **fatal?**: `boolean`
+
+Defined in: [types/analytics.ts:670](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L670)
+
+##### firebase\_screen?
+
+> `optional` **firebase\_screen?**: `string`
+
+Defined in: [types/analytics.ts:679](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L679)
+
+Firebase-specific. Use to log a `screen_name` to Firebase Analytics.
+
+##### firebase\_screen\_class?
+
+> `optional` **firebase\_screen\_class?**: `string`
+
+Defined in: [types/analytics.ts:683](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L683)
+
+Firebase-specific. Use to log a `screen_class` to Firebase Analytics.
+
+##### item\_id?
+
+> `optional` **item\_id?**: `string`
+
+Defined in: [types/analytics.ts:665](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L665)
+
+##### item\_list\_id?
+
+> `optional` **item\_list\_id?**: `string`
+
+Defined in: [types/analytics.ts:692](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L692)
+
+##### item\_list\_name?
+
+> `optional` **item\_list\_name?**: `string`
+
+Defined in: [types/analytics.ts:693](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L693)
+
+##### items?
+
+> `optional` **items?**: [`Item`](#item)[]
+
+Defined in: [types/analytics.ts:671](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L671)
+
+##### method?
+
+> `optional` **method?**: `string`
+
+Defined in: [types/analytics.ts:672](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L672)
+
+##### number?
+
+> `optional` **number?**: `string`
+
+Defined in: [types/analytics.ts:673](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L673)
+
+##### page\_location?
+
+> `optional` **page\_location?**: `string`
+
+Defined in: [types/analytics.ts:699](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L699)
+
+##### page\_path?
+
+> `optional` **page\_path?**: `string`
+
+Defined in: [types/analytics.ts:700](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L700)
+
+##### page\_title?
+
+> `optional` **page\_title?**: `string`
+
+Defined in: [types/analytics.ts:698](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L698)
+
+##### payment\_type?
+
+> `optional` **payment\_type?**: `string`
+
+Defined in: [types/analytics.ts:696](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L696)
+
+##### promotion\_id?
+
+> `optional` **promotion\_id?**: `string`
+
+Defined in: [types/analytics.ts:694](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L694)
+
+##### promotion\_name?
+
+> `optional` **promotion\_name?**: `string`
+
+Defined in: [types/analytics.ts:695](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L695)
+
+##### promotions?
+
+> `optional` **promotions?**: [`Promotion`](#promotion)[]
+
+Defined in: [types/analytics.ts:674](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L674)
+
+##### screen\_name?
+
+> `optional` **screen\_name?**: `string`
+
+Defined in: [types/analytics.ts:675](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L675)
+
+##### search\_term?
+
+> `optional` **search\_term?**: `string`
+
+Defined in: [types/analytics.ts:684](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L684)
+
+##### shipping?
+
+> `optional` **shipping?**: `number`
+
+Defined in: [types/analytics.ts:685](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L685)
+
+##### shipping\_tier?
+
+> `optional` **shipping\_tier?**: `string`
+
+Defined in: [types/analytics.ts:691](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L691)
+
+##### tax?
+
+> `optional` **tax?**: `number`
+
+Defined in: [types/analytics.ts:686](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L686)
+
+##### transaction\_id?
+
+> `optional` **transaction\_id?**: `string`
+
+Defined in: [types/analytics.ts:687](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L687)
+
+##### value?
+
+> `optional` **value?**: `number`
+
+Defined in: [types/analytics.ts:688](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L688)
+
+***
+
+### GenerateLeadEventParameters
+
+Defined in: [types/analytics.ts:257](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L257)
+
+#### Properties
+
+##### currency?
+
+> `optional` **currency?**: `string`
+
+Defined in: [types/analytics.ts:261](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L261)
+
+Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
+
+##### value?
+
+> `optional` **value?**: `number`
+
+Defined in: [types/analytics.ts:267](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L267)
+
+A context-specific numeric value which is accumulated automatically for each event type. Values
+can include revenue, distance, time and points. When a value is set, the accompanying `currency`
+parameter should also be defined.
+
+***
+
+### GtagConfigParams
+
+Defined in: [types/analytics.ts:740](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L740)
+
+A set of common Google Analytics config settings recognized by gtag.js. Web only.
+
+#### Indexable
+
+> \[`key`: `string`\]: `unknown`
+
+#### Properties
+
+##### allow\_ad\_personalization\_signals?
+
+> `optional` **allow\_ad\_personalization\_signals?**: `boolean`
+
+Defined in: [types/analytics.ts:793](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L793)
+
+If set to false, disables all advertising personalization with `gtag.js`.
+See [Disable advertising features](https://developers.google.com/analytics/devguides/collection/ga4/display-features)
+
+##### allow\_google\_signals?
+
+> `optional` **allow\_google\_signals?**: `boolean`
+
+Defined in: [types/analytics.ts:788](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L788)
+
+If set to false, disables all advertising features with `gtag.js`.
+See [Disable advertising features](https://developers.google.com/analytics/devguides/collection/ga4/display-features)
+
+##### cookie\_domain?
+
+> `optional` **cookie\_domain?**: `string`
+
+Defined in: [types/analytics.ts:762](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L762)
+
+Defaults to `auto`.
+See [Cookies and user identification](https://developers.google.com/analytics/devguides/collection/ga4/cookies-user-id)
+
+##### cookie\_expires?
+
+> `optional` **cookie\_expires?**: `number`
+
+Defined in: [types/analytics.ts:767](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L767)
+
+Defaults to 63072000 (two years, in seconds).
+See [Cookies and user identification](https://developers.google.com/analytics/devguides/collection/ga4/cookies-user-id)
+
+##### cookie\_flags?
+
+> `optional` **cookie\_flags?**: `string`
+
+Defined in: [types/analytics.ts:783](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L783)
+
+Appends additional flags to the cookie when set.
+See [Cookies and user identification](https://developers.google.com/analytics/devguides/collection/ga4/cookies-user-id)
+
+##### cookie\_prefix?
+
+> `optional` **cookie\_prefix?**: `string`
+
+Defined in: [types/analytics.ts:772](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L772)
+
+Defaults to `_ga`.
+See [Cookies and user identification](https://developers.google.com/analytics/devguides/collection/ga4/cookies-user-id)
+
+##### cookie\_update?
+
+> `optional` **cookie\_update?**: `boolean`
+
+Defined in: [types/analytics.ts:778](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L778)
+
+If set to true, will update cookies on each page load.
+Defaults to true.
+See [Cookies and user identification](https://developers.google.com/analytics/devguides/collection/ga4/cookies-user-id)
+
+##### page\_location?
+
+> `optional` **page\_location?**: `string`
+
+Defined in: [types/analytics.ts:757](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L757)
+
+The URL of the page.
+See [Page views](https://developers.google.com/analytics/devguides/collection/ga4/page-view)
+
+##### page\_title?
+
+> `optional` **page\_title?**: `string`
+
+Defined in: [types/analytics.ts:752](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L752)
+
+The title of the page.
+See [Page views](https://developers.google.com/analytics/devguides/collection/ga4/page-view)
+
+##### send\_page\_view?
+
+> `optional` **send\_page\_view?**: `boolean`
+
+Defined in: [types/analytics.ts:747](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L747)
+
+Whether or not a page view should be sent.
+If set to true (default), a page view is automatically sent upon initialization
+of analytics.
+See [Page views](https://developers.google.com/analytics/devguides/collection/ga4/page-view)
+
+***
+
+### Item
+
+Defined in: [types/analytics.ts:36](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L36)
+
+#### Indexable
+
+> \[`key`: `string`\]: `string` \| `number` \| `undefined`
+
+Custom event parameters. The parameter names can be up to 40 characters long and must start with an alphabetic character and contain only alphanumeric characters and underscores. String parameter values can be up to 100 characters long.
+The "firebase_", "google_" and "ga_" prefixes are reserved and should not be used for parameter names.
+
+#### Properties
+
+##### affiliation?
+
+> `optional` **affiliation?**: `string`
+
+Defined in: [types/analytics.ts:98](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L98)
+
+The affiliation of the item.
+
+##### coupon?
+
+> `optional` **coupon?**: `string`
+
+Defined in: [types/analytics.ts:102](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L102)
+
+The coupon associated with the item.
+
+##### creative\_name?
+
+> `optional` **creative\_name?**: `string`
+
+Defined in: [types/analytics.ts:106](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L106)
+
+The creative name associated with the item.
+
+##### creative\_slot?
+
+> `optional` **creative\_slot?**: `string`
+
+Defined in: [types/analytics.ts:110](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L110)
+
+The creative slot associated with the item.
+
+##### discount?
+
+> `optional` **discount?**: `number`
+
+Defined in: [types/analytics.ts:114](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L114)
+
+The discount applied to the item.
+
+##### index?
+
+> `optional` **index?**: `number`
+
+Defined in: [types/analytics.ts:118](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L118)
+
+The index of the item.
+
+##### item\_brand?
+
+> `optional` **item\_brand?**: `string`
+
+Defined in: [types/analytics.ts:40](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L40)
+
+The item's brand.
+
+##### item\_category?
+
+> `optional` **item\_category?**: `string`
+
+Defined in: [types/analytics.ts:52](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L52)
+
+First class item category.
+
+##### item\_category2?
+
+> `optional` **item\_category2?**: `string`
+
+Defined in: [types/analytics.ts:56](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L56)
+
+Second class item category.
+
+##### item\_category3?
+
+> `optional` **item\_category3?**: `string`
+
+Defined in: [types/analytics.ts:60](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L60)
+
+Third class item category.
+
+##### item\_category4?
+
+> `optional` **item\_category4?**: `string`
+
+Defined in: [types/analytics.ts:64](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L64)
+
+Fourth class item category.
+
+##### item\_category5?
+
+> `optional` **item\_category5?**: `string`
+
+Defined in: [types/analytics.ts:68](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L68)
+
+Fifth class item category.
+
+##### item\_id?
+
+> `optional` **item\_id?**: `string`
+
+Defined in: [types/analytics.ts:44](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L44)
+
+An item ID.
+
+##### item\_list\_id?
+
+> `optional` **item\_list\_id?**: `string`
+
+Defined in: [types/analytics.ts:72](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L72)
+
+The ID of the list in which the item was presented to the user.
+
+##### item\_list\_name?
+
+> `optional` **item\_list\_name?**: `string`
+
+Defined in: [types/analytics.ts:76](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L76)
+
+The name of the list in which the item was presented to the user.
+
+##### item\_name?
+
+> `optional` **item\_name?**: `string`
+
+Defined in: [types/analytics.ts:48](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L48)
+
+An item name.
+
+##### item\_variant?
+
+> `optional` **item\_variant?**: `string`
+
+Defined in: [types/analytics.ts:84](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L84)
+
+The Item variant.
+
+##### location\_id?
+
+> `optional` **location\_id?**: `string`
+
+Defined in: [types/analytics.ts:80](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L80)
+
+The Google [Place ID](https://developers.google.com/places/place-id) that corresponds to the associated item (String). Alternatively, you can supply your own custom Location ID.
+
+##### price?
+
+> `optional` **price?**: `number`
+
+Defined in: [types/analytics.ts:94](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L94)
+
+The Item price.
+Note that firebase analytics will display this as an integer with trailing zeros, due to some firebase-internal conversion.
+See https://github.com/invertase/react-native-firebase/issues/4578#issuecomment-771703420 for more information
+
+##### promotion\_id?
+
+> `optional` **promotion\_id?**: `string`
+
+Defined in: [types/analytics.ts:122](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L122)
+
+The promotion ID associated with the item.
+
+##### promotion\_name?
+
+> `optional` **promotion\_name?**: `string`
+
+Defined in: [types/analytics.ts:126](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L126)
+
+The promotion name associated with the item.
+
+##### quantity?
+
+> `optional` **quantity?**: `number`
+
+Defined in: [types/analytics.ts:88](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L88)
+
+The Item quantity.
+
+***
+
+### JoinGroupEventParameters
+
+Defined in: [types/analytics.ts:270](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L270)
+
+#### Properties
+
+##### group\_id
+
+> **group\_id**: `string`
+
+Defined in: [types/analytics.ts:274](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L274)
+
+Group/clan/guild id.
+
+***
+
+### LevelEndEventParameters
+
+Defined in: [types/analytics.ts:277](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L277)
+
+#### Properties
+
+##### level
+
+> **level**: `number`
+
+Defined in: [types/analytics.ts:281](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L281)
+
+Level in game.
+
+##### success?
+
+> `optional` **success?**: `string`
+
+Defined in: [types/analytics.ts:285](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L285)
+
+The result of an operation.
+
+***
+
+### LevelStartEventParameters
+
+Defined in: [types/analytics.ts:288](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L288)
+
+#### Properties
+
+##### level
+
+> **level**: `number`
+
+Defined in: [types/analytics.ts:292](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L292)
+
+Level in game.
+
+***
+
+### LevelUpEventParameters
+
+Defined in: [types/analytics.ts:295](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L295)
+
+#### Properties
+
+##### character?
+
+> `optional` **character?**: `string`
+
+Defined in: [types/analytics.ts:303](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L303)
+
+Character used in game.
+
+##### level
+
+> **level**: `number`
+
+Defined in: [types/analytics.ts:299](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L299)
+
+Level in game.
+
+***
+
+### LoginEventParameters
+
+Defined in: [types/analytics.ts:306](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L306)
+
+#### Properties
+
+##### method
+
+> **method**: `string`
+
+Defined in: [types/analytics.ts:310](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L310)
+
+The login method. E.g. `facebook.com`.
+
+***
+
+### PostScoreEventParameters
+
+Defined in: [types/analytics.ts:313](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L313)
+
+#### Properties
+
+##### character?
+
+> `optional` **character?**: `string`
+
+Defined in: [types/analytics.ts:325](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L325)
+
+Character used in game.
+
+##### level?
+
+> `optional` **level?**: `number`
+
+Defined in: [types/analytics.ts:321](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L321)
+
+Level in game.
+
+##### score
+
+> **score**: `number`
+
+Defined in: [types/analytics.ts:317](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L317)
+
+Score in game.
+
+***
+
+### Promotion
+
+Defined in: [types/analytics.ts:16](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L16)
+
+Promotion object for analytics events.
+
+#### Indexable
+
+> \[`key`: `string`\]: `any`
+
+#### Properties
+
+##### creative\_name?
+
+> `optional` **creative\_name?**: `string`
+
+Defined in: [types/analytics.ts:20](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L20)
+
+The name of a creative used in a promotional spot
+
+##### creative\_slot?
+
+> `optional` **creative\_slot?**: `string`
+
+Defined in: [types/analytics.ts:24](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L24)
+
+The name of a creative slot
+
+##### promotion\_id?
+
+> `optional` **promotion\_id?**: `string`
+
+Defined in: [types/analytics.ts:28](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L28)
+
+The ID of a product promotion
+
+##### promotion\_name?
+
+> `optional` **promotion\_name?**: `string`
+
+Defined in: [types/analytics.ts:32](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L32)
+
+The name of a product promotion
+
+***
+
+### PurchaseEventParameters
+
+Defined in: [types/analytics.ts:328](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L328)
+
+#### Indexable
+
+> \[`key`: `string`\]: `any`
+
+Custom event parameters.
+
+#### Properties
+
+##### affiliation?
+
+> `optional` **affiliation?**: `string`
+
+Defined in: [types/analytics.ts:332](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L332)
+
+A product affiliation to designate a supplying company or brick and mortar store location
+
+##### coupon?
+
+> `optional` **coupon?**: `string`
+
+Defined in: [types/analytics.ts:336](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L336)
+
+Coupon code for a purchasable item.
+
+##### currency?
+
+> `optional` **currency?**: `string`
+
+Defined in: [types/analytics.ts:340](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L340)
+
+Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
+
+##### items?
+
+> `optional` **items?**: [`Item`](#item)[]
+
+Defined in: [types/analytics.ts:342](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L342)
+
+##### shipping?
+
+> `optional` **shipping?**: `number`
+
+Defined in: [types/analytics.ts:346](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L346)
+
+Shipping cost.
+
+##### tax?
+
+> `optional` **tax?**: `number`
+
+Defined in: [types/analytics.ts:350](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L350)
+
+Tax amount.
+
+##### transaction\_id?
+
+> `optional` **transaction\_id?**: `string`
+
+Defined in: [types/analytics.ts:360](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L360)
+
+A single ID for a ecommerce group transaction.
+
+##### value?
+
+> `optional` **value?**: `number`
+
+Defined in: [types/analytics.ts:356](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L356)
+
+A context-specific numeric value which is accumulated automatically for each event type. Values
+can include revenue, distance, time and points. When a value is set, the accompanying `currency`
+parameter should also be defined.
+
+***
+
+### RefundEventParameters
+
+Defined in: [types/analytics.ts:383](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L383)
+
+#### Properties
+
+##### affiliation?
+
+> `optional` **affiliation?**: `string`
+
+Defined in: [types/analytics.ts:387](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L387)
+
+A product affiliation to designate a supplying company or brick and mortar store location
+
+##### coupon?
+
+> `optional` **coupon?**: `string`
+
+Defined in: [types/analytics.ts:391](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L391)
+
+Coupon code for a purchasable item.
+
+##### currency?
+
+> `optional` **currency?**: `string`
+
+Defined in: [types/analytics.ts:395](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L395)
+
+Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
+
+##### items?
+
+> `optional` **items?**: [`Item`](#item)[]
+
+Defined in: [types/analytics.ts:397](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L397)
+
+##### shipping?
+
+> `optional` **shipping?**: `number`
+
+Defined in: [types/analytics.ts:401](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L401)
+
+Shipping cost.
+
+##### tax?
+
+> `optional` **tax?**: `number`
+
+Defined in: [types/analytics.ts:405](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L405)
+
+Tax amount.
+
+##### transaction\_id?
+
+> `optional` **transaction\_id?**: `string`
+
+Defined in: [types/analytics.ts:415](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L415)
+
+A single ID for a ecommerce group transaction.
+
+##### value?
+
+> `optional` **value?**: `number`
+
+Defined in: [types/analytics.ts:411](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L411)
+
+A context-specific numeric value which is accumulated automatically for each event type. Values
+can include revenue, distance, time and points. When a value is set, the accompanying `currency`
+parameter should also be defined.
+
+***
+
+### RemoveFromCartEventParameters
+
+Defined in: [types/analytics.ts:418](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L418)
+
+#### Properties
+
+##### currency?
+
+> `optional` **currency?**: `string`
+
+Defined in: [types/analytics.ts:429](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L429)
+
+Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
+x
+
+##### items?
+
+> `optional` **items?**: [`Item`](#item)[]
+
+Defined in: [types/analytics.ts:419](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L419)
+
+##### value?
+
+> `optional` **value?**: `number`
+
+Defined in: [types/analytics.ts:425](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L425)
+
+A context-specific numeric value which is accumulated automatically for each event type. Values
+can include revenue, distance, time and points. When a value is set, the accompanying `currency`
+parameter should also be defined.
+
+***
+
+### ScreenViewParameters
+
+Defined in: [types/analytics.ts:367](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L367)
+
+#### Indexable
+
+> \[`key`: `string`\]: `any`
+
+Custom event parameters.
+
+#### Properties
+
+##### screen\_class?
+
+> `optional` **screen\_class?**: `string`
+
+Defined in: [types/analytics.ts:375](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L375)
+
+Current class associated with the view the user is currently viewing.
+
+##### screen\_name?
+
+> `optional` **screen\_name?**: `string`
+
+Defined in: [types/analytics.ts:371](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L371)
+
+Screen name the user is currently viewing.
+
+***
+
+### SearchEventParameters
+
+Defined in: [types/analytics.ts:432](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L432)
+
+#### Properties
+
+##### destination?
+
+> `optional` **destination?**: `string`
+
+Defined in: [types/analytics.ts:453](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L453)
+
+Flight or Travel destination. E.g. `Mountain View, CA`.
+
+##### end\_date?
+
+> `optional` **end\_date?**: `string`
+
+Defined in: [types/analytics.ts:461](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L461)
+
+The arrival date, check-out date, or rental end date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
+
+##### number\_of\_nights?
+
+> `optional` **number\_of\_nights?**: `number`
+
+Defined in: [types/analytics.ts:437](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L437)
+
+Number of nights staying at hotel.
+
+##### number\_of\_passengers?
+
+> `optional` **number\_of\_passengers?**: `number`
+
+Defined in: [types/analytics.ts:445](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L445)
+
+Number of passengers traveling.
+
+##### number\_of\_rooms?
+
+> `optional` **number\_of\_rooms?**: `number`
+
+Defined in: [types/analytics.ts:441](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L441)
+
+Number of rooms for travel events.
+
+##### origin?
+
+> `optional` **origin?**: `string`
+
+Defined in: [types/analytics.ts:449](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L449)
+
+Flight or Travel origin. E.g. `Mountain View, CA`.
+
+##### search\_term
+
+> **search\_term**: `string`
+
+Defined in: [types/analytics.ts:433](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L433)
+
+##### start\_date?
+
+> `optional` **start\_date?**: `string`
+
+Defined in: [types/analytics.ts:457](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L457)
+
+The departure date, check-in date, or rental start date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
+
+##### travel\_class?
+
+> `optional` **travel\_class?**: `string`
+
+Defined in: [types/analytics.ts:465](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L465)
+
+Travel class. E.g. `business`.
+
+***
+
+### SelectContentEventParameters
+
+Defined in: [types/analytics.ts:468](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L468)
+
+#### Properties
+
+##### content\_type
+
+> **content\_type**: `string`
+
+Defined in: [types/analytics.ts:469](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L469)
+
+##### item\_id
+
+> **item\_id**: `string`
+
+Defined in: [types/analytics.ts:473](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L473)
+
+An item ID.
+
+***
+
+### SelectItemEventParameters
+
+Defined in: [types/analytics.ts:476](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L476)
+
+#### Properties
+
+##### content\_type
+
+> **content\_type**: `string`
+
+Defined in: [types/analytics.ts:478](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L478)
+
+##### item\_list\_id
+
+> **item\_list\_id**: `string`
+
+Defined in: [types/analytics.ts:482](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L482)
+
+The ID of the list in which the item was presented to the user
+
+##### item\_list\_name
+
+> **item\_list\_name**: `string`
+
+Defined in: [types/analytics.ts:486](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L486)
+
+The name of the list in which the item was presented to the user
+
+##### items?
+
+> `optional` **items?**: [`Item`](#item)[]
+
+Defined in: [types/analytics.ts:477](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L477)
+
+***
+
+### SelectPromotionEventParameters
+
+Defined in: [types/analytics.ts:496](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L496)
+
+#### Properties
+
+##### creative\_name
+
+> **creative\_name**: `string`
+
+Defined in: [types/analytics.ts:500](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L500)
+
+The name of a creative used in a promotional spot
+
+##### creative\_slot
+
+> **creative\_slot**: `string`
+
+Defined in: [types/analytics.ts:504](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L504)
+
+The name of a creative slot
+
+##### items?
+
+> `optional` **items?**: [`Item`](#item)[]
+
+Defined in: [types/analytics.ts:505](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L505)
+
+##### location\_id
+
+> **location\_id**: `string`
+
+Defined in: [types/analytics.ts:509](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L509)
+
+The location associated with the event. Preferred to be the Google Place ID that corresponds to the associated item but could be overridden to a custom location ID string
+
+##### promotion\_id
+
+> **promotion\_id**: `string`
+
+Defined in: [types/analytics.ts:513](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L513)
+
+The ID of a product promotion
+
+##### promotion\_name
+
+> **promotion\_name**: `string`
+
+Defined in: [types/analytics.ts:517](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L517)
+
+The name of a product promotion
+
+***
+
+### SetCheckoutOptionEventParameters
+
+Defined in: [types/analytics.ts:489](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L489)
+
+#### Indexable
+
+> \[`key`: `string`\]: `any`
+
+#### Properties
+
+##### checkout\_option?
+
+> `optional` **checkout\_option?**: `string`
+
+Defined in: [types/analytics.ts:491](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L491)
+
+##### checkout\_step?
+
+> `optional` **checkout\_step?**: `number`
+
+Defined in: [types/analytics.ts:490](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L490)
+
+***
+
+### SettingsOptions
+
+Defined in: [types/analytics.ts:832](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L832)
+
+Specifies custom options for your Firebase Analytics instance.
+You must set these before initializing `firebase.analytics()`.
+
+#### Properties
+
+##### dataLayerName?
+
+> `optional` **dataLayerName?**: `string`
+
+Defined in: [types/analytics.ts:836](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L836)
+
+Sets custom name for `dataLayer` array used by `gtag.js`.
+
+##### gtagName?
+
+> `optional` **gtagName?**: `string`
+
+Defined in: [types/analytics.ts:834](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L834)
+
+Sets custom name for `gtag` function.
+
+***
+
+### ShareEventParameters
+
+Defined in: [types/analytics.ts:520](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L520)
+
+#### Properties
+
+##### content\_type
+
+> **content\_type**: `string`
+
+Defined in: [types/analytics.ts:524](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L524)
+
+Type of content selected.
+
+##### item\_id
+
+> **item\_id**: `string`
+
+Defined in: [types/analytics.ts:528](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L528)
+
+An item ID.
+
+##### method
+
+> **method**: `string`
+
+Defined in: [types/analytics.ts:532](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L532)
+
+A particular approach used in an operation; for example, "facebook" or "email" in the context of a sign_up or login event.
+
+***
+
+### SignUpEventParameters
+
+Defined in: [types/analytics.ts:535](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L535)
+
+#### Properties
+
+##### method
+
+> **method**: `string`
+
+Defined in: [types/analytics.ts:539](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L539)
+
+A particular approach used in an operation; for example, "facebook" or "email" in the context of a sign_up or login event.
+
+***
+
+### SpendVirtualCurrencyEventParameters
+
+Defined in: [types/analytics.ts:542](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L542)
+
+#### Properties
+
+##### item\_name
+
+> **item\_name**: `string`
+
+Defined in: [types/analytics.ts:546](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L546)
+
+An item name.
+
+##### value
+
+> **value**: `number`
+
+Defined in: [types/analytics.ts:556](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L556)
+
+A context-specific numeric value which is accumulated automatically for each event type. Values
+can include revenue, distance, time and points. When a value is set, the accompanying `currency`
+parameter should also be defined.
+
+##### virtual\_currency\_name
+
+> **virtual\_currency\_name**: `string`
+
+Defined in: [types/analytics.ts:550](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L550)
+
+Name of virtual currency type. E.g. `gems`.
+
+***
+
+### UnlockAchievementEventParameters
+
+Defined in: [types/analytics.ts:559](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L559)
+
+#### Properties
+
+##### achievement\_id
+
+> **achievement\_id**: `string`
+
+Defined in: [types/analytics.ts:563](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L563)
+
+Game achievement ID (String).
+
+***
+
+### ViewCartEventParameters
+
+Defined in: [types/analytics.ts:566](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L566)
+
+#### Properties
+
+##### currency?
+
+> `optional` **currency?**: `string`
+
+Defined in: [types/analytics.ts:571](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L571)
+
+Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
+
+##### items?
+
+> `optional` **items?**: [`Item`](#item)[]
+
+Defined in: [types/analytics.ts:567](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L567)
+
+##### value?
+
+> `optional` **value?**: `number`
+
+Defined in: [types/analytics.ts:577](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L577)
+
+A context-specific numeric value which is accumulated automatically for each event type. Values
+can include revenue, distance, time and points. When a value is set, the accompanying `currency`
+parameter should also be defined.
+
+***
+
+### ViewItemEventParameters
+
+Defined in: [types/analytics.ts:580](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L580)
+
+#### Properties
+
+##### currency?
+
+> `optional` **currency?**: `string`
+
+Defined in: [types/analytics.ts:585](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L585)
+
+Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
+
+##### items?
+
+> `optional` **items?**: [`Item`](#item)[]
+
+Defined in: [types/analytics.ts:581](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L581)
+
+##### value?
+
+> `optional` **value?**: `number`
+
+Defined in: [types/analytics.ts:591](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L591)
+
+A context-specific numeric value which is accumulated automatically for each event type. Values
+can include revenue, distance, time and points. When a value is set, the accompanying `currency`
+parameter should also be defined.
+
+***
+
+### ViewItemListEventParameters
+
+Defined in: [types/analytics.ts:601](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L601)
+
+#### Properties
+
+##### item\_list\_id?
+
+> `optional` **item\_list\_id?**: `string`
+
+Defined in: [types/analytics.ts:606](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L606)
+
+The ID of the list in which the item was presented to the user
+
+##### item\_list\_name?
+
+> `optional` **item\_list\_name?**: `string`
+
+Defined in: [types/analytics.ts:610](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L610)
+
+The name of the list in which the item was presented to the user
+
+##### items?
+
+> `optional` **items?**: [`Item`](#item)[]
+
+Defined in: [types/analytics.ts:602](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L602)
+
+***
+
+### ViewPromotionEventParameters
+
+Defined in: [types/analytics.ts:613](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L613)
+
+#### Properties
+
+##### creative\_name?
+
+> `optional` **creative\_name?**: `string`
+
+Defined in: [types/analytics.ts:622](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L622)
+
+The name of a creative used in a promotional spot
+
+##### creative\_slot?
+
+> `optional` **creative\_slot?**: `string`
+
+Defined in: [types/analytics.ts:626](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L626)
+
+The name of a creative slot
+
+##### items?
+
+> `optional` **items?**: [`Item`](#item)[]
+
+Defined in: [types/analytics.ts:614](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L614)
+
+##### location\_id?
+
+> `optional` **location\_id?**: `string`
+
+Defined in: [types/analytics.ts:618](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L618)
+
+The location associated with the event. Preferred to be the Google Place ID that corresponds to the associated item but could be overridden to a custom location ID string
+
+##### promotion\_id?
+
+> `optional` **promotion\_id?**: `string`
+
+Defined in: [types/analytics.ts:630](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L630)
+
+The ID of a product promotion
+
+##### promotion\_name?
+
+> `optional` **promotion\_name?**: `string`
+
+Defined in: [types/analytics.ts:634](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L634)
+
+The name of a product promotion
+
+***
+
+### ViewSearchResultsParameters
+
+Defined in: [types/analytics.ts:594](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L594)
+
+#### Properties
+
+##### search\_term
+
+> **search\_term**: `string`
+
+Defined in: [types/analytics.ts:598](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L598)
+
+The search string/keywords used.
+
+## Namespaces
+
+- [~~FirebaseAnalyticsTypes~~](namespaces/FirebaseAnalyticsTypes.mdx)
+
+## Type Aliases
+
+### ConsentStatusString
+
+> **ConsentStatusString** = `"granted"` \| `"denied"`
+
+Defined in: [types/analytics.ts:11](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L11)
+
+Consent status string values.
+
+***
+
+### Currency
+
+> **Currency** = `number`
+
+Defined in: [types/analytics.ts:6](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L6)
+
+A currency amount.
+
+***
+
+### CustomEventName
+
+> **CustomEventName**\<`T`\> = `T` *extends* [`EventNameString`](#eventnamestring) ? `never` : `T`
+
+Defined in: [types/analytics.ts:842](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L842)
+
+Any custom event name string not in the standard list of recommended event names.
+
+#### Type Parameters
+
+##### T
+
+`T`
+
+***
+
+### EventNameString
+
+> **EventNameString** = `"add_payment_info"` \| `"add_shipping_info"` \| `"add_to_cart"` \| `"add_to_wishlist"` \| `"begin_checkout"` \| `"checkout_progress"` \| `"exception"` \| `"generate_lead"` \| `"login"` \| `"page_view"` \| `"purchase"` \| `"refund"` \| `"remove_from_cart"` \| `"screen_view"` \| `"search"` \| `"select_content"` \| `"select_item"` \| `"select_promotion"` \| `"set_checkout_option"` \| `"share"` \| `"sign_up"` \| `"timing_complete"` \| `"view_cart"` \| `"view_item"` \| `"view_item_list"` \| `"view_promotion"` \| `"view_search_results"`
+
+Defined in: [types/analytics.ts:847](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/types/analytics.ts#L847)
+
+Type for standard Google Analytics event names. logEvent also accepts any custom string and interprets it as a custom event name.
+See https://firebase.google.com/docs/reference/js/analytics.md#eventnamestring
+
+## Variables
+
+### default
+
+> **default**: `AnalyticsNamespace`
+
+Defined in: [namespaced.ts:904](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/namespaced.ts#L904)
+
+***
+
+### firebase
+
+> `const` **firebase**: [`FirebaseNamespacedExport`](../app/namespaces/ReactNativeFirebase.mdx#firebasenamespacedexport)\<`"analytics"`, [`Analytics`](#analytics), `Statics`, `false`\>
+
+Defined in: [namespaced.ts:909](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/namespaced.ts#L909)
+
+***
+
+### SDK\_VERSION
+
+> `const` **SDK\_VERSION**: `string` = `version`
+
+Defined in: [namespaced.ts:875](https://github.com/invertase/react-native-firebase/blob/main/packages/analytics/lib/namespaced.ts#L875)
